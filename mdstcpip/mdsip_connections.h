@@ -4,13 +4,13 @@
 #define _GNU_SOURCE /* glibc2 needs this */
 
 #ifndef _WIN32
- #include <sysexits.h>
+#include <sysexits.h>
 #endif
-#include <mdsdescrip.h>
-#include <status.h>
 #include <ipdesc.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
 #include <pthread_port.h>
+#include <status.h>
 #define MDSIP_MAX_ARGS 256
 #define MDSIP_MAX_COMPRESS 9
 
@@ -67,11 +67,12 @@ typedef struct _connection {
   char *info_name;
   void *info;
   size_t info_len;
-  void* DBID;
+  void *DBID;
   unsigned char message_id;
   int client_type;
   int nargs;
-  struct descriptor *descrip[MDSIP_MAX_ARGS]; // list of descriptors for the message arguments
+  struct descriptor
+      *descrip[MDSIP_MAX_ARGS]; // list of descriptors for the message arguments
   MdsEventList *event;
   void *tdicontext[6];
   int addr;
@@ -84,15 +85,15 @@ typedef struct _connection {
 
 #define INVALID_CONNECTION_ID 0
 
-#define CON_IDLE	(con_t)0x00
-#define CON_CONNECT	(con_t)0x01
-#define CON_AUTHORIZE	(con_t)0x02
-#define CON_SEND	(con_t)0x04
-#define CON_FLUSH	(con_t)0x08
-#define CON_RECV	(con_t)0x10
-#define CON_SENDARG	(con_t)0x20
-#define CON_USER	(con_t)0x40
-#define CON_DISCONNECT	(con_t)0x80
+#define CON_IDLE (con_t)0x00
+#define CON_CONNECT (con_t)0x01
+#define CON_AUTHORIZE (con_t)0x02
+#define CON_SEND (con_t)0x04
+#define CON_FLUSH (con_t)0x08
+#define CON_RECV (con_t)0x10
+#define CON_SENDARG (con_t)0x20
+#define CON_USER (con_t)0x40
+#define CON_DISCONNECT (con_t)0x80
 
 #if defined(__CRAY) || defined(CRAY)
 int errno = 0;
@@ -147,20 +148,20 @@ typedef struct {
 /// | recv_to    | receive buffer from cocnection with time out |
 ///
 typedef struct _io_routines {
-  int (*connect)(Connection* c, char *protocol, char *connectString);
-  ssize_t (*send)(Connection* c, const void *buffer, size_t buflen, int nowait);
-  ssize_t (*recv)(Connection* c, void *buffer, size_t buflen);
-  int (*flush)(Connection* c);
+  int (*connect)(Connection *c, char *protocol, char *connectString);
+  ssize_t (*send)(Connection *c, const void *buffer, size_t buflen, int nowait);
+  ssize_t (*recv)(Connection *c, void *buffer, size_t buflen);
+  int (*flush)(Connection *c);
   int (*listen)(int argc, char **argv);
-  int (*authorize)(Connection* c, char *username);
+  int (*authorize)(Connection *c, char *username);
   int (*reuseCheck)(char *connectString, char *uniqueString, size_t buflen);
-  int (*disconnect)(Connection* c);
-  ssize_t (*recv_to)(Connection* c, void *buffer, size_t len, int to_msec);
-  int     (*check)(Connection* c);
+  int (*disconnect)(Connection *c);
+  ssize_t (*recv_to)(Connection *c, void *buffer, size_t len, int to_msec);
+  int (*check)(Connection *c);
 } IoRoutines;
 #define ACCESS_NOMATCH 0
 #define ACCESS_GRANTED 1
-#define ACCESS_DENIED  2
+#define ACCESS_DENIED 2
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST "---EVENTCAN---REQUEST---"
@@ -220,8 +221,8 @@ typedef void *pthread_mutex_t;
 /// \return
 ///
 EXPORT int AcceptConnection(char *protocol, char *info_name, SOCKET readfd,
-	                    void *info, size_t infolen, int *conid,
-	                    char **user);
+                            void *info, size_t infolen, int *conid,
+                            char **user);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -345,8 +346,7 @@ EXPORT void FreeMessage(void *message);
 /// \return the function returns the status held by the answered descriptor.
 ///
 EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
-	                 int *dims, int *numbytes, void **dptr);
-
+                         int *dims, int *numbytes, void **dptr);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -367,9 +367,10 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 /// \return the function returns the status held by the answered descriptor
 ///
 EXPORT int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
-	                   int *dims, int *numbytes, void **dptr, void **m);
+                           int *dims, int *numbytes, void **dptr, void **m);
 EXPORT int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims,
-	                   int *dims, int *numbytes, void **dptr, void **m, int timeout);
+                           int *dims, int *numbytes, void **dptr, void **m,
+                           int timeout);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -379,10 +380,10 @@ EXPORT int GetCompressionLevel();
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
-EXPORT void *GetConnectionInfoC(Connection* c, char **info_name, SOCKET *readfd,
-	                       size_t *len);
+EXPORT void *GetConnectionInfoC(Connection *c, char **info_name, SOCKET *readfd,
+                                size_t *len);
 EXPORT void *GetConnectionInfo(int id, char **info_name, SOCKET *readfd,
-	                       size_t *len);
+                               size_t *len);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -442,7 +443,7 @@ EXPORT Message *GetMdsMsg(int id, int *status);
 ///
 EXPORT Message *GetMdsMsgTO(int id, int *status, int timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
-Message *GetMdsMsgTOC(Connection* c, int *status, int to_msec);
+Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec);
 
 EXPORT unsigned char GetMode();
 
@@ -493,10 +494,10 @@ EXPORT IoRoutines *LoadIo(char *protocol);
 EXPORT void LockAsts();
 
 EXPORT struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype,
-	                           char ndims, int *dims, void *ptr);
+                                   char ndims, int *dims, void *ptr);
 EXPORT struct descrip *MakeDescripWithLength(struct descrip *in_descrip,
-	                                     char dtype, int length, char ndims,
-	                                     int *dims, void *ptr);
+                                             char dtype, int length, char ndims,
+                                             int *dims, void *ptr);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -525,12 +526,11 @@ EXPORT void MdsDispatchEvent(int id);
 /// \return
 ///
 EXPORT int MdsEventAst(int id, char *eventnam, void (*astadr)(), void *astprm,
-	               int *eventid);
+                       int *eventid);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
 EXPORT int MdsEventCan(int id, int eventid);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -604,16 +604,16 @@ EXPORT int MdsSetDefault(int id, char *node);
 /// \return the evaluation exit status of the expression.
 ///
 EXPORT int MdsValue(int id, char *exp, ...);
-EXPORT void MdsIpFree(void* ptr); // used to free ans.ptr returned by MdsValue
+EXPORT void MdsIpFree(void *ptr); // used to free ans.ptr returned by MdsValue
 
 EXPORT int NextConnection(void **ctx, char **info_name, void **info,
-	                  size_t *info_len);
+                          size_t *info_len);
 
 EXPORT void ParseCommand(int argc, char **argv, Options options[], int more,
-	                 int *rem_argc, char ***rem_argv);
+                         int *rem_argc, char ***rem_argv);
 
 EXPORT void ParseStdArgs(int argc, char **argv, int *extra_argc,
-	                 char ***extra_argv);
+                         char ***extra_argv);
 
 EXPORT void PrintHelp(char *);
 
@@ -647,8 +647,9 @@ EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 /// succesfully sent or false otherwise.
 ///
 EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
-	           unsigned short length, char ndims, int *dims, char *bytes);
-EXPORT int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* dsc);
+                   unsigned short length, char ndims, int *dims, char *bytes);
+EXPORT int SendDsc(int id, unsigned char idx, unsigned char nargs,
+                   struct descriptor *dsc);
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// This is the main function that is called by user or any higher level
@@ -674,7 +675,7 @@ EXPORT int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descri
 /// \return true if the message was succesfully sent or false otherwise.
 ///
 EXPORT int SendMdsMsg(int id, Message *m, int msg_options);
-int SendMdsMsgC(Connection* c, Message *m, int msg_options);
+int SendMdsMsgC(Connection *c, Message *m, int msg_options);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -688,8 +689,10 @@ int SendMdsMsgC(Connection* c, Message *m, int msg_options);
 /// \param info accessory info descriptor
 /// \param len length of accessory info descriptor
 ///
-EXPORT void SetConnectionInfo(int conid, char *info_name, SOCKET readfd, void *info, size_t len);
-EXPORT void SetConnectionInfoC(Connection* c, char *info_name, SOCKET readfd, void *info, size_t len);
+EXPORT void SetConnectionInfo(int conid, char *info_name, SOCKET readfd,
+                              void *info, size_t len);
+EXPORT void SetConnectionInfoC(Connection *c, char *info_name, SOCKET readfd,
+                               void *info, size_t len);
 
 EXPORT int SetCompressionLevel(int setting);
 
@@ -757,16 +760,17 @@ EXPORT int GetConnectionCompression(int conid);
 /// \return The new instanced connection id or -1 if error occurred.
 ///
 
-Connection* NewConnectionC(char *protocol);
-void DisconnectConnectionC(Connection* c);
-unsigned char IncrementConnectionMessageIdC(Connection* c);
-int AddConnection(Connection* c);
+Connection *NewConnectionC(char *protocol);
+void DisconnectConnectionC(Connection *c);
+unsigned char IncrementConnectionMessageIdC(Connection *c);
+int AddConnection(Connection *c);
 
 Connection *FindConnectionWithLock(int id, con_t state);
 Connection *FindConnectionSending(int id);
-void UnlockConnection(Connection* c);
+void UnlockConnection(Connection *c);
 
-EXPORT int SendToConnection(int id, const void *buffer, size_t buflen, int nowait);
+EXPORT int SendToConnection(int id, const void *buffer, size_t buflen,
+                            int nowait);
 EXPORT int FlushConnection(int id);
 EXPORT int ReceiveFromConnection(int id, void *buffer, size_t buflen);
 

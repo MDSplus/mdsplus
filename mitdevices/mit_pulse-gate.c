@@ -22,17 +22,17 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsdescrip.h>
 #include <mds_gendevice.h>
-#include <mitdevices_msg.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mitdevices_msg.h>
 
-#include <treeshr.h>
-#include <string.h>
-#include "mit_pulse_gen.h"
 #include "decoder.h"
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#define max(a,b) ((a) > (b) ? (a) : (b))
+#include "mit_pulse_gen.h"
+#include <string.h>
+#include <treeshr.h>
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 typedef struct descriptor *Dptr;
 
@@ -40,24 +40,29 @@ extern int mit_pulse___get_setup(Dptr, InGet_setupStruct *);
 extern int mit_decoder__get_event(int *, EventMask *);
 extern int GenDeviceFree();
 
-static int GetSetup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
-		    Dptr * output, int gate);
+static int GetSetup(struct descriptor *niddsc_ptr __attribute__((unused)),
+                    struct descriptor *method __attribute__((unused)),
+                    DecoderSetup *setup, EventMask *event_mask, Dptr *output,
+                    int gate);
 
-EXPORT int mit_pulse__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
-			 Dptr * output)
-{
+EXPORT int
+mit_pulse__get_setup(struct descriptor *niddsc_ptr __attribute__((unused)),
+                     struct descriptor *method __attribute__((unused)),
+                     DecoderSetup *setup, EventMask *event_mask, Dptr *output) {
   return GetSetup(niddsc_ptr, method, setup, event_mask, output, 0);
 }
 
-EXPORT int mit_gate__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
-			Dptr * output)
-{
+EXPORT int
+mit_gate__get_setup(struct descriptor *niddsc_ptr __attribute__((unused)),
+                    struct descriptor *method __attribute__((unused)),
+                    DecoderSetup *setup, EventMask *event_mask, Dptr *output) {
   return GetSetup(niddsc_ptr, method, setup, event_mask, output, 1);
 }
 
-static int GetSetup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
-		    Dptr * output, int gate)
-{
+static int GetSetup(struct descriptor *niddsc_ptr __attribute__((unused)),
+                    struct descriptor *method __attribute__((unused)),
+                    DecoderSetup *setup, EventMask *event_mask, Dptr *output,
+                    int gate) {
   int status;
   InGet_setupStruct s;
   status = mit_pulse___get_setup(niddsc_ptr, &s);
@@ -79,7 +84,9 @@ static int GetSetup(struct descriptor *niddsc_ptr __attribute__ ((unused)), stru
     output_nid = s.head_nid + MIT_PULSE_N_OUTPUT;
     output_nid_dsc.pointer = (char *)&output_nid;
     for (clock_source = EXT_1MHZ, period = 1E-6;
-	 period * 65534 < max_period && clock_source <= EXT_100HZ; clock_source++, period *= 10) ;
+         period * 65534 < max_period && clock_source <= EXT_100HZ;
+         clock_source++, period *= 10)
+      ;
     if (clock_source > EXT_100HZ)
       return TIMING$_INVDELDUR;
     switch (s.output_mode) {
@@ -132,23 +139,24 @@ static int GetSetup(struct descriptor *niddsc_ptr __attribute__ ((unused)), stru
       int event_nid = s.head_nid + MIT_PULSE_N_EVENT;
       status = mit_decoder__get_event(&event_nid, event_mask);
       if (!(status & 1))
-	goto error;
+        goto error;
     } else
       memset(event_mask, 0, sizeof(EventMask));
     if (gate) {
       static DESCRIPTOR(out_expression, "$1 + [$2,$3]");
-      TdiCompile((struct descriptor *)&out_expression, &trigger_nid_dsc, &gate_start_dsc, &gate_end_dsc,
-		 &out MDS_END_ARG);
+      TdiCompile((struct descriptor *)&out_expression, &trigger_nid_dsc,
+                 &gate_start_dsc, &gate_end_dsc, &out MDS_END_ARG);
     } else {
       static DESCRIPTOR(out_expression, "$1 + $2");
-      TdiCompile((struct descriptor *)&out_expression, &trigger_nid_dsc, &gate_start_dsc, &out MDS_END_ARG);
+      TdiCompile((struct descriptor *)&out_expression, &trigger_nid_dsc,
+                 &gate_start_dsc, &out MDS_END_ARG);
     }
     status = TreePutRecord(output_nid, (struct descriptor *)&out, 0);
     *output = &output_nid_dsc;
     GenDeviceFree(&s);
   }
   return status;
- error:
+error:
   GenDeviceFree(&s);
   return status;
 }

@@ -25,18 +25,19 @@ extern "C" {
 #define __union variant_union
 #endif
 
-#define CvtVAX_F 10		/* VAX F     Floating point data    */
-#define CvtVAX_D 11		/* VAX D     Floating point data    */
-#define CvtVAX_G 27		/* VAX G     Floating point data    */
-#define CvtVAX_H 28		/* VAX H     Floating point data    */
-#define CvtIEEE_S 52		/* IEEE S    Floating point data    */
-#define CvtIEEE_T 53		/* IEEE T    Floating point data    */
-#define CvtIBM_LONG 6		/* IBM Long  Floating point data    */
-#define CvtIBM_SHORT 7		/* IBM Short Floating point data    */
-#define CvtCRAY 8		/* Cray      Floating point data    */
-#define CvtIEEE_X 9		/* IEEE X    Floating point data    */
+#define CvtVAX_F 10    /* VAX F     Floating point data    */
+#define CvtVAX_D 11    /* VAX D     Floating point data    */
+#define CvtVAX_G 27    /* VAX G     Floating point data    */
+#define CvtVAX_H 28    /* VAX H     Floating point data    */
+#define CvtIEEE_S 52   /* IEEE S    Floating point data    */
+#define CvtIEEE_T 53   /* IEEE T    Floating point data    */
+#define CvtIBM_LONG 6  /* IBM Long  Floating point data    */
+#define CvtIBM_SHORT 7 /* IBM Short Floating point data    */
+#define CvtCRAY 8      /* Cray      Floating point data    */
+#define CvtIEEE_X 9    /* IEEE X    Floating point data    */
 
-extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue, uint32_t outdtype, uint32_t options);
+extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue,
+                           uint32_t outdtype, uint32_t options);
 
 #ifdef __cplusplus
 }
@@ -46,4 +47,4 @@ extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue, uint
 //#pragma standard
 //#endif
 
-#endif				/* __CVTDEF_LOADED */
+#endif /* __CVTDEF_LOADED */

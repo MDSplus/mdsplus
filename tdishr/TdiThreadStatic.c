@@ -35,12 +35,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdithreadstatic.h"
 
 #define YYLTYPE TDITHREADSTATIC_TYPE
-#include "tdiyacc.h"
-#include "tdilex.h"
 #include "../mdsshr/version.h"
+#include "tdilex.h"
+#include "tdiyacc.h"
 
 static inline TDITHREADSTATIC_TYPE *buffer_alloc() {
-  TDITHREADSTATIC_ARG = (TDITHREADSTATIC_TYPE *) calloc(1,sizeof(TDITHREADSTATIC_TYPE));
+  TDITHREADSTATIC_ARG =
+      (TDITHREADSTATIC_TYPE *)calloc(1, sizeof(TDITHREADSTATIC_TYPE));
   LibCreateVmZone(&TDI_VAR_PRIVATE.head_zone);
   LibCreateVmZone(&TDI_VAR_PRIVATE.data_zone);
   TDI_INTRINSIC_STAT = SsSUCCESS;
@@ -50,7 +51,7 @@ static inline TDITHREADSTATIC_TYPE *buffer_alloc() {
   TDI_VAR_NEW_NARG_D.dtype = DTYPE_L;
   TDI_VAR_NEW_NARG_D.class = CLASS_S;
   TDI_VAR_NEW_NARG_D.pointer = (char *)&TDI_VAR_NEW_NARG;
-  for (; TDI_STACK_IDX<TDI_STACK_SIZE ; TDI_STACK_IDX++ ) {
+  for (; TDI_STACK_IDX < TDI_STACK_SIZE; TDI_STACK_IDX++) {
     TDI_INDENT = 1;
     TDI_DECOMPILE_MAX = 0xffff;
   }
@@ -67,4 +68,5 @@ static void buffer_free(TDITHREADSTATIC_ARG) {
   free(TDITHREADSTATIC_VAR);
 }
 
-EXPORT IMPLEMENT_GETTHREADSTATIC(TDITHREADSTATIC_TYPE,TdiGetThreadStatic,THREADSTATIC_TDISHR,buffer_alloc,buffer_free)
+EXPORT IMPLEMENT_GETTHREADSTATIC(TDITHREADSTATIC_TYPE, TdiGetThreadStatic,
+                                 THREADSTATIC_TDISHR, buffer_alloc, buffer_free)

@@ -22,37 +22,40 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsdescrip.h>
+#include "devroutines.h"
+#include "joerger_cg_gen.h"
 #include <mds_gendevice.h>
-#include <mitdevices_msg.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <mitdevices_msg.h>
 #include <strroutines.h>
 #include <treeshr.h>
-#include <mdsshr.h>
-#include "joerger_cg_gen.h"
-#include "devroutines.h"
-
 
 static int one = 1;
-#define pio(f,a,d,q) {unsigned short dv=d;\
- if (!((status = DevCamChk(CamPiow(setup->name,a,f,&dv,16,0),&one,q)) & 1)) return status;}
+#define pio(f, a, d, q)                                                        \
+  {                                                                            \
+    unsigned short dv = d;                                                     \
+    if (!((status =                                                            \
+               DevCamChk(CamPiow(setup->name, a, f, &dv, 16, 0), &one, q)) &   \
+          1))                                                                  \
+      return status;                                                           \
+  }
 
-static float slopes[] =
-    { 1E9, 1, 1E-1, 1E-2, 1E-3, 1E-4, 2E-5, 1E-5, 4E-6, 2E-6, 1E-6, 4E-7, 2E-7, 1E-7, 5E-8,
-2.5E-8 };
+static float slopes[] = {1E9,  1,    1E-1, 1E-2, 1E-3, 1E-4, 2E-5, 1E-5,
+                         4E-6, 2E-6, 1E-6, 4E-7, 2E-7, 1E-7, 5E-8, 2.5E-8};
 
-static int SlopeToFreq(float slope, float *actslope)
-{
+static int SlopeToFreq(float slope, float *actslope) {
   int i;
-  for (i = 0; i < 16 && slope < (.95 * slopes[i]); i++) ;
+  for (i = 0; i < 16 && slope < (.95 * slopes[i]); i++)
+    ;
   i = i < 16 ? i : 15;
   *actslope = slopes[i];
   return i;
 }
 
-static int SetChannel(InInitStruct * setup, struct descriptor *channel_value, int channel,
-		      int *polarities)
-{
+static int SetChannel(InInitStruct *setup, struct descriptor *channel_value,
+                      int channel, int *polarities) {
   static EMPTYXD(xd);
   int status;
   int p = *polarities;
@@ -74,8 +77,8 @@ static int SetChannel(InInitStruct * setup, struct descriptor *channel_value, in
   return status;
 }
 
-int joerger_cg___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
-{
+int joerger_cg___init(struct descriptor *niddsc __attribute__((unused)),
+                      InInitStruct *setup) {
   int status;
   int polarities = 0;
   int clock_mode = 0;
@@ -86,13 +89,11 @@ int joerger_cg___init(struct descriptor *niddsc __attribute__ ((unused)), InInit
   SetChannel(setup, setup->channel_4, 4, &polarities);
   pio(17, 4, clock_mode, &one);
   pio(17, 5, polarities, &one);
-  pio(26, 1, 0, 0)
-      return status;
+  pio(26, 1, 0, 0) return status;
 }
 
-int joerger_cg___stop(struct descriptor *niddsc __attribute__ ((unused)), InStopStruct * setup)
-{
+int joerger_cg___stop(struct descriptor *niddsc __attribute__((unused)),
+                      InStopStruct *setup) {
   int status;
-  pio(9, 1, 0, 0)
-      return status;
+  pio(9, 1, 0, 0) return status;
 }

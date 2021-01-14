@@ -22,12 +22,11 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 extern int MDSEvent(char *eventname, int len, char *data);
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int status;
   if (argc < 2) {
     printf("Usage: %s <event> [optional-data-string]\n", argv[0]);

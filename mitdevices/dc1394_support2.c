@@ -29,17 +29,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    description: Based on libdc1394 version 2.  Works with RH5 (2.6)
 ********************************************************************/
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
 #include <dc1394/dc1394.h>
-#include <stdlib.h>
-#include <time.h>
+#include <errno.h>
 #include <inttypes.h>
-#include <sys/times.h>
-#include <pthread.h>
 #include <mdsplus/mdsconfig.h>
+#include <pthread.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/times.h>
+#include <time.h>
 
 static unsigned char *buf = NULL;
 static double *frame_times = NULL;
@@ -59,8 +59,7 @@ static int bytes;
 static char model[43] = "\0";
 static int needSwap = 0;
 
-static void CleanUp(void *arg __attribute__ ((unused)))
-{
+static void CleanUp(void *arg __attribute__((unused))) {
   if (debug_flag)
     printf("Starting Cleanup\n");
   dc1394_capture_stop(camera);
@@ -74,8 +73,8 @@ static void CleanUp(void *arg __attribute__ ((unused)))
     printf("Done with Cleanup\n");
 }
 
-static void swapbytes(unsigned char *dest, unsigned char *src, unsigned int sz)
-{
+static void swapbytes(unsigned char *dest, unsigned char *src,
+                      unsigned int sz) {
   register unsigned int i;
   register unsigned char t;
   for (i = 0; i < sz; i += 2) {
@@ -85,8 +84,7 @@ static void swapbytes(unsigned char *dest, unsigned char *src, unsigned int sz)
   }
 }
 
-EXPORT void *CaptureFrames(void *arg __attribute__ ((unused)))
-{
+EXPORT void *CaptureFrames(void *arg __attribute__((unused))) {
   uint64_t start_time;
 
   int i;
@@ -94,9 +92,9 @@ EXPORT void *CaptureFrames(void *arg __attribute__ ((unused)))
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &i);
   start_time = 0;
 
-    /*-----------------------------------------------------------------------
-     *  have the camera start sending us data
-     *-----------------------------------------------------------------------*/
+  /*-----------------------------------------------------------------------
+   *  have the camera start sending us data
+   *-----------------------------------------------------------------------*/
   err = dc1394_video_set_transmission(camera, DC1394_ON);
   if (err != DC1394_SUCCESS) {
     dc1394_log_error("unable to start camera iso transmission");
@@ -204,10 +202,10 @@ EXPORT void *CaptureFrames(void *arg __attribute__ ((unused)))
  *
  */
 
-EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
-	       int shutter, int gain, int trig_on, int frame_rate, int width_in,
-	       int height_in, int xoffset, int yoffset, int debug)
-{
+EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in,
+                      int trigger_mode, int shutter, int gain, int trig_on,
+                      int frame_rate, int width_in, int height_in, int xoffset,
+                      int yoffset, int debug) {
   pthread_t lthread_id;
 
   dc1394featureset_t features;
@@ -221,8 +219,8 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
     lthread_id = thread_id;
     if (pthread_cancel(thread_id) == 0) {
       if (pthread_join(lthread_id, NULL) != 0) {
-	perror("Unable to join child thread - restarting parent process");
-	exit(errno);
+        perror("Unable to join child thread - restarting parent process");
+        exit(errno);
       }
     }
     thread_id = 0;
@@ -233,19 +231,22 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
     d = dc1394_new();
     err = dc1394_camera_enumerate(d, &list);
     if (err != DC1394_SUCCESS) {
-      fprintf(stderr, "%s: in %s (%s, line %d): Failed to enumerate cameras - restarting server\n",
-	      dc1394_error_get_string(err), __FUNCTION__, __FILE__, __LINE__);
+      fprintf(stderr,
+              "%s: in %s (%s, line %d): Failed to enumerate cameras - "
+              "restarting server\n",
+              dc1394_error_get_string(err), __FUNCTION__, __FILE__, __LINE__);
       exit(0);
     }
     if (list->num == 0) {
-	fprintf(stderr, "no cameras found - restarting server\n");
-	exit(0);
+      fprintf(stderr, "no cameras found - restarting server\n");
+      exit(0);
     }
   }
   if (camera == NULL) {
     camera = dc1394_camera_new(d, list->ids[0].guid);
     if (!camera) {
-      fprintf(stderr, "Failed to initialize camera with guid %" PRIx64, list->ids[0].guid);
+      fprintf(stderr, "Failed to initialize camera with guid %" PRIx64,
+              list->ids[0].guid);
       dc1394_camera_free_list(list);
       exit(0);
     }
@@ -256,10 +257,12 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   strncat(model, camera->model, 20);
 
   if (debug)
-    printf("Using camera model %s with GUID %" PRIx64 "\n", model, camera->guid);
+    printf("Using camera model %s with GUID %" PRIx64 "\n", model,
+           camera->guid);
 
   if (iso_speed >= DC1394_ISO_SPEED_800) {
-    if (dc1394_video_set_operation_mode(camera, DC1394_OPERATION_MODE_1394B) != DC1394_SUCCESS) {
+    if (dc1394_video_set_operation_mode(camera, DC1394_OPERATION_MODE_1394B) !=
+        DC1394_SUCCESS) {
       fprintf(stderr, "Can't set 1394B mode. Reverting to 400Mbps\n");
       iso_speed = DC1394_ISO_SPEED_400;
     }
@@ -273,7 +276,8 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
 
   err = dc1394_video_get_supported_modes(camera, &modes);
   if (err != DC1394_SUCCESS) {
-    fprintf(stderr, "Failed to get supported camera modes - restarting server\n");
+    fprintf(stderr,
+            "Failed to get supported camera modes - restarting server\n");
     exit(0);
   }
   for (i = 0; i < modes.num; i++)
@@ -289,13 +293,18 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
     fprintf(stderr, "Failed to set camera mode - restarting server\n");
     exit(0);
   }
-  if ((mode >= DC1394_VIDEO_MODE_FORMAT7_0) && (mode <= DC1394_VIDEO_MODE_FORMAT7_7)) {
+  if ((mode >= DC1394_VIDEO_MODE_FORMAT7_0) &&
+      (mode <= DC1394_VIDEO_MODE_FORMAT7_7)) {
     if (debug > 0)
-      fprintf(stderr, "format 7 so attempting to set width %d height %d xoffset %d yoffset %d\n",
-	      width_in, height_in, xoffset, yoffset);
-    err = dc1394_format7_set_roi(camera, DC1394_VIDEO_MODE_FORMAT7_0, DC1394_COLOR_CODING_MONO8, DC1394_USE_MAX_AVAIL,	// use max packet size
-				 xoffset, yoffset,	// left, top
-				 width_in, height_in);	// width, height
+      fprintf(stderr,
+              "format 7 so attempting to set width %d height %d xoffset %d "
+              "yoffset %d\n",
+              width_in, height_in, xoffset, yoffset);
+    err = dc1394_format7_set_roi(camera, DC1394_VIDEO_MODE_FORMAT7_0,
+                                 DC1394_COLOR_CODING_MONO8,
+                                 DC1394_USE_MAX_AVAIL, // use max packet size
+                                 xoffset, yoffset,     // left, top
+                                 width_in, height_in); // width, height
   }
   if (debug > 0)
     printf("mode set, now the frame rate\n");
@@ -311,9 +320,11 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   }
 
   if (debug > 0)
-    fprintf(stderr, "DMA setup, now the trigger mode %d on/off %d\n", trigger_mode, trig_on);
+    fprintf(stderr, "DMA setup, now the trigger mode %d on/off %d\n",
+            trigger_mode, trig_on);
   /* set trigger mode */
-  if (dc1394_external_trigger_set_mode(camera, trigger_mode) != DC1394_SUCCESS) {
+  if (dc1394_external_trigger_set_mode(camera, trigger_mode) !=
+      DC1394_SUCCESS) {
     fprintf(stderr, "unable to set camera trigger mode\n");
   }
 
@@ -324,36 +335,42 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   if (debug > 0)
     printf("trigger mode set, now the shutter\n");
   /* set the shutter */
-  if (dc1394_feature_set_mode
-      (camera, DC1394_FEATURE_SHUTTER,
-       (shutter == 0) ? DC1394_FEATURE_MODE_AUTO : DC1394_FEATURE_MODE_MANUAL) != DC1394_SUCCESS) {
+  if (dc1394_feature_set_mode(camera, DC1394_FEATURE_SHUTTER,
+                              (shutter == 0) ? DC1394_FEATURE_MODE_AUTO
+                                             : DC1394_FEATURE_MODE_MANUAL) !=
+      DC1394_SUCCESS) {
     fprintf(stderr, "unable to set shutter to auto\n");
   }
   if (shutter != 0) {
-    if (dc1394_feature_set_value(camera, DC1394_FEATURE_SHUTTER, shutter) != DC1394_SUCCESS) {
+    if (dc1394_feature_set_value(camera, DC1394_FEATURE_SHUTTER, shutter) !=
+        DC1394_SUCCESS) {
       fprintf(stderr, "unable to set shutter to %d\n", shutter);
     }
   }
   if (debug > 0)
     printf("shutter set, now the gain\n");
   /* and the gain */
-  if (dc1394_feature_set_mode
-      (camera, DC1394_FEATURE_GAIN,
-       (gain == 0) ? DC1394_FEATURE_MODE_AUTO : DC1394_FEATURE_MODE_MANUAL) != DC1394_SUCCESS) {
+  if (dc1394_feature_set_mode(camera, DC1394_FEATURE_GAIN,
+                              (gain == 0) ? DC1394_FEATURE_MODE_AUTO
+                                          : DC1394_FEATURE_MODE_MANUAL) !=
+      DC1394_SUCCESS) {
     fprintf(stderr, "unable to set gain to auto\n");
   }
   if (gain != 0) {
-    if (dc1394_feature_set_value(camera, DC1394_FEATURE_GAIN, gain) != DC1394_SUCCESS) {
+    if (dc1394_feature_set_value(camera, DC1394_FEATURE_GAIN, gain) !=
+        DC1394_SUCCESS) {
       fprintf(stderr, "unable to set gain to %d\n", gain);
     }
   }
 
-  if (dc1394_get_image_size_from_video_mode(camera, mode, &width, &height) != DC1394_SUCCESS)
+  if (dc1394_get_image_size_from_video_mode(camera, mode, &width, &height) !=
+      DC1394_SUCCESS)
     fprintf(stderr, "Could not get width and height from video mode");
 
   dc1394_video_get_data_depth(camera, &bits_per_pixel);
-  bytes =
-      (bits_per_pixel <= 8) ? 1 : ((bits_per_pixel <= 16) ? 2 : ((bits_per_pixel <= 24) ? 3 : 4));
+  bytes = (bits_per_pixel <= 8)
+              ? 1
+              : ((bits_per_pixel <= 16) ? 2 : ((bits_per_pixel <= 24) ? 3 : 4));
 
   free(buf);
   framesize = width * height * bytes;
@@ -368,9 +385,9 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
     fprintf(stderr, "Failed to allocate times memory - restarting server\n");
     exit(0);
   }
-    /*-----------------------------------------------------------------------
-     *  report camera's features
-     *-----------------------------------------------------------------------*/
+  /*-----------------------------------------------------------------------
+   *  report camera's features
+   *-----------------------------------------------------------------------*/
   if (debug) {
     err = dc1394_feature_get_all(camera, &features);
     if (err != DC1394_SUCCESS) {
@@ -389,8 +406,7 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   return (1);
 }
 
-EXPORT int dc1394ReadTimes(double *data)
-{
+EXPORT int dc1394ReadTimes(double *data) {
   if (frame_times) {
     memcpy((char *)data, (char *)frame_times, next_frame * sizeof(double));
     return (1);
@@ -398,15 +414,14 @@ EXPORT int dc1394ReadTimes(double *data)
     return (0);
 }
 
-EXPORT int dc1394ReadFrames(unsigned char *data)
-{
+EXPORT int dc1394ReadFrames(unsigned char *data) {
   int status;
   if (buf) {
     if (next_frame > 0) {
       if (needSwap)
-	swapbytes(data, buf, framesize * next_frame);
+        swapbytes(data, buf, framesize * next_frame);
       else
-	memcpy(data, buf, framesize * next_frame);
+        memcpy(data, buf, framesize * next_frame);
       status = 1;
     } else {
       fprintf(stderr, "No frames taken");
@@ -419,25 +434,19 @@ EXPORT int dc1394ReadFrames(unsigned char *data)
   return (status);
 }
 
-EXPORT void dc1394GetCameraModel(char *string)
-{
-  strcpy(string, model);
-}
+EXPORT void dc1394GetCameraModel(char *string) { strcpy(string, model); }
 
-EXPORT void dc1394Done(void *arg __attribute__ ((unused)))
-{
-}
+EXPORT void dc1394Done(void *arg __attribute__((unused))) {}
 
-EXPORT void dc1394GetCaptureParams(int *num_frames, int *frame_width, int *frame_height, int *frame_depth)
-{
+EXPORT void dc1394GetCaptureParams(int *num_frames, int *frame_width,
+                                   int *frame_height, int *frame_depth) {
   *num_frames = next_frame;
   *frame_width = width;
   *frame_height = height;
   *frame_depth = bytes;
 }
 
-EXPORT extern int dc1394LoadImage()
-{
+EXPORT extern int dc1394LoadImage() {
   fprintf(stderr, "dc1394_support.so now loaded \n");
   return (1);
 }

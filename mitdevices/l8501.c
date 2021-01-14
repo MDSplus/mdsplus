@@ -22,42 +22,45 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsplus/mdsplus.h>
-#include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
-#include <mds_stdarg.h>
-#include <treeshr.h>
+#include "devroutines.h"
 #include "l8501_gen.h"
-#include <ncidef.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <Xmds/XmdsNidOptionMenu.h>
+#include <mds_gendevice.h>
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsplus/mdsplus.h>
+#include <mitdevices_msg.h>
+#include <ncidef.h>
+#include <treeshr.h>
 #include <xmdsshr.h>
-#include "devroutines.h"
 
-#define GET_FREQ_IDX(index, nid_idx) \
-  { int nid = setup->head_nid + nid_idx; \
-  return_on_error(DevFloat(&nid, &freq),status);\
-  for (i=0; freqs[i] != freq && i < 19; i++);\
-  if (i==19) return DEV$_BAD_FREQ;\
-  clk[index] = i;}
+#define GET_FREQ_IDX(index, nid_idx)                                           \
+  {                                                                            \
+    int nid = setup->head_nid + nid_idx;                                       \
+    return_on_error(DevFloat(&nid, &freq), status);                            \
+    for (i = 0; freqs[i] != freq && i < 19; i++)                               \
+      ;                                                                        \
+    if (i == 19)                                                               \
+      return DEV$_BAD_FREQ;                                                    \
+    clk[index] = i;                                                            \
+  }
 
 static int one = 1;
 
-#define pio(a,f,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0),status)
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define pio(a, f, d)                                                           \
+  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0),    \
+                  status)
+#define return_on_error(f, retstatus)                                          \
+  if (!((status = f) & 1))                                                     \
+    return retstatus;
 
-EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
-{
-  static float freqs[] = { 0.02, 0.05,
-    0.1, 0.2, 0.5,
-    1.0, 2.0, 5.0,
-    10.0, 20.0, 50.0,
-    100.0, 200.0, 500.0,
-    1000.0, 2000.0, 5000.0,
-    10000.0, 20000.0
-  };
+EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__((unused)),
+                        InInitStruct *setup) {
+  static float freqs[] = {0.02,   0.05,   0.1,    0.2,     0.5,    1.0,   2.0,
+                          5.0,    10.0,   20.0,   50.0,    100.0,  200.0, 500.0,
+                          1000.0, 2000.0, 5000.0, 10000.0, 20000.0};
 
   float freq;
   int count;
@@ -69,7 +72,7 @@ EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   int f2_count_nid = setup->head_nid + L8501_N_F2_COUNT;
   int f3_count_nid = setup->head_nid + L8501_N_F3_COUNT;
 
-  //static int retlen;
+  // static int retlen;
 
   /*********************************************
     Read in the name and mode records.
@@ -100,11 +103,12 @@ EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
     GET_FREQ_IDX(2, L8501_N_FREQ3);
     if ((clk[0] < 3) || (clk[1] < 3) || (clk[2] < 3))
       if ((clk[0] > 15) || (clk[1] > 15) || (clk[2] > 15))
-	return DEV$_BAD_FREQ;
+        return DEV$_BAD_FREQ;
       else {
-	range = 2;
-	clk_word = clk[0] | (clk[1] << 4) | (clk[2] << 8);
-    } else {
+        range = 2;
+        clk_word = clk[0] | (clk[1] << 4) | (clk[2] << 8);
+      }
+    else {
       range = 1;
       clk_word = (clk[0] - 3) | ((clk[1] - 3) << 4) | ((clk[2] - 3) << 8);
     }
@@ -162,8 +166,8 @@ EXPORT int l8501___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   return status;
 }
 
-EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
-{
+EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__((unused)),
+                         InStoreStruct *setup) {
   static float one_thous = 1.E-3;
   static DESCRIPTOR_FLOAT(one_thousandth, &one_thous);
   static int freq1_nid;
@@ -183,9 +187,9 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   static int trigger3_nid;
   static DESCRIPTOR_NID(trigger3, &trigger3_nid);
   static DESCRIPTOR(seconds, "seconds");
-  //static int mode;
+  // static int mode;
   unsigned short lam;
-  int status=1;
+  int status = 1;
   static DESCRIPTOR_FUNCTION_2(dt1, &OpcDivide, &one_thousandth, &freq1);
   static DESCRIPTOR_FUNCTION_2(dt2, &OpcDivide, &one_thousandth, &freq2);
   static DESCRIPTOR_FUNCTION_2(dt3, &OpcDivide, &one_thousandth, &freq3);
@@ -222,35 +226,49 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
     if (TreeIsOn(clock_out_nid) & 1) {
       static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt2, &f2_count);
       static DESCRIPTOR_FUNCTION_2(fswitch, &OpcAdd, &mult, &trigger1);
-      static FUNCTION(3) r_start = {
-      sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-      { __fill_name__(struct descriptor *) & past, (struct descriptor *)&trigger1,
-	(struct descriptor *)&fswitch}};
+      static FUNCTION(3) r_start = {sizeof(opcode_t),
+                                    DTYPE_FUNCTION,
+                                    CLASS_R,
+                                    (opcode_t *)&OpcVector,
+                                    3,
+                                    {__fill_name__(struct descriptor *) & past,
+                                     (struct descriptor *)&trigger1,
+                                     (struct descriptor *)&fswitch}};
       static FUNCTION(3) r_end = {
-      sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-      {__fill_name__(struct descriptor *) & trigger1, (struct descriptor *)&fswitch,
-       (struct descriptor *)&future}};
-      static FUNCTION(3) r_delta = {
-      sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-      {__fill_name__(struct descriptor *) & dt1, (struct descriptor *)&dt2,
-       (struct descriptor *)&dt3}};
+          sizeof(opcode_t),
+          DTYPE_FUNCTION,
+          CLASS_R,
+          (opcode_t *)&OpcVector,
+          3,
+          {__fill_name__(struct descriptor *) & trigger1,
+           (struct descriptor *)&fswitch, (struct descriptor *)&future}};
+      static FUNCTION(3)
+          r_delta = {sizeof(opcode_t),
+                     DTYPE_FUNCTION,
+                     CLASS_R,
+                     (opcode_t *)&OpcVector,
+                     3,
+                     {__fill_name__(struct descriptor *) & dt1,
+                      (struct descriptor *)&dt2, (struct descriptor *)&dt3}};
       static DESCRIPTOR_RANGE(range, &r_start, &r_end, &r_delta);
       static DESCRIPTOR_WITH_UNITS(clock, &range, &seconds);
-      return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
-	/******************************
-	 If stop trigger is wanted then
-	 declare an expression for the
-	 time of the stop trigger and
-	 write it out.
-	******************************/
+      return_on_error(
+          TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
+      /******************************
+       If stop trigger is wanted then
+       declare an expression for the
+       time of the stop trigger and
+       write it out.
+      ******************************/
       if (status & 1 && TreeIsOn(stop_out_nid) & 1) {
-	static DESCRIPTOR_FUNCTION_2(trig_mult_exp, &OpcMultiply, &dt3, &f3_count);
-	static DESCRIPTOR_FUNCTION_2(trig_add_exp, &OpcAdd, &fswitch,
-				     &trig_mult_exp);
-	static DESCRIPTOR_WITH_UNITS(stop, &trig_add_exp, &seconds);
-	return_on_error(TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
+        static DESCRIPTOR_FUNCTION_2(trig_mult_exp, &OpcMultiply, &dt3,
+                                     &f3_count);
+        static DESCRIPTOR_FUNCTION_2(trig_add_exp, &OpcAdd, &fswitch,
+                                     &trig_mult_exp);
+        static DESCRIPTOR_WITH_UNITS(stop, &trig_add_exp, &seconds);
+        return_on_error(
+            TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
       }
-
     }
     break;
 
@@ -263,82 +281,116 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   *************************************/
   case 1:
     if (TreeIsOn(clock_out_nid) & 1) {
-	/**********************************
-	  Read the lam register.  If there
-	  were overflows then store
-	  information based on the triggers.
-	************************************/
+      /**********************************
+        Read the lam register.  If there
+        were overflows then store
+        information based on the triggers.
+      ************************************/
       pio(2, 0, &lam);
       if (lam & 6) {
-	static FUNCTION(3) r_start = {
-	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-	{__fill_name__(struct descriptor *) & past, (struct descriptor *)&trigger1,
-	 (struct descriptor *)&trigger2}};
-	static FUNCTION(3) r_end = {
-	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-	{__fill_name__(struct descriptor *) & trigger1, (struct descriptor *)&trigger2,
-	 (struct descriptor *)&future}};
-	static FUNCTION(3) r_delta = {
-	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-	{__fill_name__(struct descriptor *) & dt1, (struct descriptor *)&dt2,
-	 (struct descriptor *)&dt3}};
-	static DESCRIPTOR_RANGE(range, &r_start, &r_end, &r_delta);
-	static DESCRIPTOR_WITH_UNITS(clock, &range, &seconds);
-	return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
+        static FUNCTION(3) r_start = {
+            sizeof(opcode_t),
+            DTYPE_FUNCTION,
+            CLASS_R,
+            (opcode_t *)&OpcVector,
+            3,
+            {__fill_name__(struct descriptor *) & past,
+             (struct descriptor *)&trigger1, (struct descriptor *)&trigger2}};
+        static FUNCTION(3) r_end = {
+            sizeof(opcode_t),
+            DTYPE_FUNCTION,
+            CLASS_R,
+            (opcode_t *)&OpcVector,
+            3,
+            {__fill_name__(struct descriptor *) & trigger1,
+             (struct descriptor *)&trigger2, (struct descriptor *)&future}};
+        static FUNCTION(3)
+            r_delta = {sizeof(opcode_t),
+                       DTYPE_FUNCTION,
+                       CLASS_R,
+                       (opcode_t *)&OpcVector,
+                       3,
+                       {__fill_name__(struct descriptor *) & dt1,
+                        (struct descriptor *)&dt2, (struct descriptor *)&dt3}};
+        static DESCRIPTOR_RANGE(range, &r_start, &r_end, &r_delta);
+        static DESCRIPTOR_WITH_UNITS(clock, &range, &seconds);
+        return_on_error(
+            TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0),
+            status);
 
-	  /***************************
-	    write out the stop trigger
-	    record.
-	  ****************************/
-	if (TreeIsOn(stop_out_nid) & 1) {
-	  DESCRIPTOR_WITH_UNITS(stop, &trigger3, &seconds);
-	  return_on_error(TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
-	}
+        /***************************
+          write out the stop trigger
+          record.
+        ****************************/
+        if (TreeIsOn(stop_out_nid) & 1) {
+          DESCRIPTOR_WITH_UNITS(stop, &trigger3, &seconds);
+          return_on_error(
+              TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0),
+              status);
+        }
       } else
-	  /****************************
-	    otherwise store information
-	    based on the counters.
-	  *****************************/
+      /****************************
+        otherwise store information
+        based on the counters.
+      *****************************/
       {
-	static short f2_count_act;
-	//static struct descriptor f2_count_actual =
-	//    { sizeof(f2_count_act), DTYPE_W, CLASS_S, (char *)&f2_count_act };
-	static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt2, &f2_count_act);
-	static DESCRIPTOR_FUNCTION_2(fswitch, &OpcAdd, &mult, &trigger1);
-	static FUNCTION(3) r_start = {
-	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-	{ __fill_name__(struct descriptor *) & past, (struct descriptor *)&trigger1,
-	  (struct descriptor *)&fswitch}};
-	static FUNCTION(3) r_end = {
-	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-	{__fill_name__(struct descriptor *) & trigger1, (struct descriptor *)&fswitch,
-	 (struct descriptor *)&future}};
-	static FUNCTION(3) r_delta = {
-	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
-	{__fill_name__(struct descriptor *) & dt1, (struct descriptor *)&dt2,
-	 (struct descriptor *)&dt3}};
-	static DESCRIPTOR_RANGE(range, (struct descriptor *)&r_start, (struct descriptor *)&r_end,
-				(struct descriptor *)&r_delta);
-	static DESCRIPTOR_WITH_UNITS(clock, &range, &seconds);
-	pio(0, 0, &f2_count_act);
-	return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
+        static short f2_count_act;
+        // static struct descriptor f2_count_actual =
+        //    { sizeof(f2_count_act), DTYPE_W, CLASS_S, (char *)&f2_count_act };
+        static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt2, &f2_count_act);
+        static DESCRIPTOR_FUNCTION_2(fswitch, &OpcAdd, &mult, &trigger1);
+        static FUNCTION(3) r_start = {
+            sizeof(opcode_t),
+            DTYPE_FUNCTION,
+            CLASS_R,
+            (opcode_t *)&OpcVector,
+            3,
+            {__fill_name__(struct descriptor *) & past,
+             (struct descriptor *)&trigger1, (struct descriptor *)&fswitch}};
+        static FUNCTION(3) r_end = {
+            sizeof(opcode_t),
+            DTYPE_FUNCTION,
+            CLASS_R,
+            (opcode_t *)&OpcVector,
+            3,
+            {__fill_name__(struct descriptor *) & trigger1,
+             (struct descriptor *)&fswitch, (struct descriptor *)&future}};
+        static FUNCTION(3)
+            r_delta = {sizeof(opcode_t),
+                       DTYPE_FUNCTION,
+                       CLASS_R,
+                       (opcode_t *)&OpcVector,
+                       3,
+                       {__fill_name__(struct descriptor *) & dt1,
+                        (struct descriptor *)&dt2, (struct descriptor *)&dt3}};
+        static DESCRIPTOR_RANGE(range, (struct descriptor *)&r_start,
+                                (struct descriptor *)&r_end,
+                                (struct descriptor *)&r_delta);
+        static DESCRIPTOR_WITH_UNITS(clock, &range, &seconds);
+        pio(0, 0, &f2_count_act);
+        return_on_error(
+            TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0),
+            status);
 
-	  /******************************
-	   if stop trigger is wanted then
-	     declare an expression for the
-	     time of the stop trigger and
-	     write it out.
-	  ******************************/
-	if (TreeIsOn(stop_out_nid) & 1) {
-	  static short f3_count_act;
-	  //static struct descriptor f3_count_actual =
-	  //    { sizeof(f3_count_act), DTYPE_W, CLASS_S, (char *)&f3_count_act };
-	  static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt3, &f3_count_act);
-	  static DESCRIPTOR_FUNCTION_2(fswitch2, &OpcAdd, &mult, &fswitch);
-	  static DESCRIPTOR_WITH_UNITS(stop, &fswitch2, &seconds);
-	  pio(1, 0, &f3_count);
-	  return_on_error(TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
-	}
+        /******************************
+         if stop trigger is wanted then
+           declare an expression for the
+           time of the stop trigger and
+           write it out.
+        ******************************/
+        if (TreeIsOn(stop_out_nid) & 1) {
+          static short f3_count_act;
+          // static struct descriptor f3_count_actual =
+          //    { sizeof(f3_count_act), DTYPE_W, CLASS_S, (char *)&f3_count_act
+          //    };
+          static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt3, &f3_count_act);
+          static DESCRIPTOR_FUNCTION_2(fswitch2, &OpcAdd, &mult, &fswitch);
+          static DESCRIPTOR_WITH_UNITS(stop, &fswitch2, &seconds);
+          pio(1, 0, &f3_count);
+          return_on_error(
+              TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0),
+              status);
+        }
       }
     }
     break;
@@ -349,7 +401,8 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   case 2:
     if (TreeIsOn(clock_out_nid) & 1) {
       static DESCRIPTOR_RANGE(range, 0, 0, &dt1);
-      return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&range, 0), status);
+      return_on_error(
+          TreePutRecord(clock_out_nid, (struct descriptor *)&range, 0), status);
     }
     break;
 
@@ -366,10 +419,12 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
       static DESCRIPTOR_FUNCTION_2(r_end, &OpcAdd, &duration, &trigger2);
       static DESCRIPTOR_RANGE(range, &trigger2, &r_end, &double_dt);
       static DESCRIPTOR_WITH_UNITS(clock, &range, &seconds);
-      return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
+      return_on_error(
+          TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);
       if (TreeIsOn(stop_out_nid) & 1) {
-	static DESCRIPTOR_WITH_UNITS(stop, &r_end, &seconds);
-	return_on_error(TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
+        static DESCRIPTOR_WITH_UNITS(stop, &r_end, &seconds);
+        return_on_error(
+            TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
       }
     }
     break;
@@ -387,21 +442,22 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 
 static int Check(Widget w);
 
-EXPORT int l8501__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
-{
-  static String uids[] = { "L8501.uid" };
+EXPORT int l8501__dw_setup(struct descriptor *niddsc __attribute__((unused)),
+                           struct descriptor *methoddsc __attribute__((unused)),
+                           Widget parent) {
+  static String uids[] = {"L8501.uid"};
   static int nid;
-  static MrmRegisterArg uilnames[] = { {"nid", (XtPointer) 0}, {"Check", (XtPointer) Check} };
-  static NCI_ITM nci[] =
-      { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
+  static MrmRegisterArg uilnames[] = {{"nid", (XtPointer)0},
+                                      {"Check", (XtPointer)Check}};
+  static NCI_ITM nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0},
+                          {0, NciEND_OF_LIST, 0, 0}};
   TreeGetNci(*(int *)niddsc->pointer, nci);
   uilnames[0].value = (char *)0 + nid;
-  return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "L8501", uilnames,
-			 XtNumber(uilnames), 0);
+  return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids),
+                         "L8501", uilnames, XtNumber(uilnames), 0);
 }
 
-static int Check(Widget w)
-{
+static int Check(Widget w) {
   int status = 1;
   static float freq1;
   static float freq2;
@@ -415,16 +471,17 @@ static int Check(Widget w)
   if ((xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*mode"))) &&
       (TdiData((struct descriptor *)xd, &mode_d MDS_END_ARG) & 1) &&
       (mode == 1 || mode == 2) &&
-      (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq1")))
-      && (TdiData((struct descriptor *)xd, &freq1_d MDS_END_ARG) & 1)
-      && (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq2")))
-      && (TdiData((struct descriptor *)xd, &freq2_d MDS_END_ARG) & 1)
-      && (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq3")))
-      && (TdiData((struct descriptor *)xd, &freq3_d MDS_END_ARG) & 1) && (freq1 < .2 || freq2 < .2 || freq3 < .2)
-      && (freq1 > 2000. || freq2 > 2000. || freq3 > 2000.)) {
+      (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq1"))) &&
+      (TdiData((struct descriptor *)xd, &freq1_d MDS_END_ARG) & 1) &&
+      (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq2"))) &&
+      (TdiData((struct descriptor *)xd, &freq2_d MDS_END_ARG) & 1) &&
+      (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq3"))) &&
+      (TdiData((struct descriptor *)xd, &freq3_d MDS_END_ARG) & 1) &&
+      (freq1 < .2 || freq2 < .2 || freq3 < .2) &&
+      (freq1 > 2000. || freq2 > 2000. || freq3 > 2000.)) {
     status = 0;
-    XmdsComplain(w,
-		 "Span of frequencies is two great.\nAll frequencies must be in the range of 20Hz - 2MHz\nor 200Hz - 20MHz");
+    XmdsComplain(w, "Span of frequencies is two great.\nAll frequencies must "
+                    "be in the range of 20Hz - 2MHz\nor 200Hz - 20MHz");
   }
   return status;
 }

@@ -24,21 +24,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$GET_INFO
+                Name:   SERVER$GET_INFO
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Find out what server is doing
+                Purpose: Find out what server is doing
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct dsc$descriptor *response)
+int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct
+dsc$descriptor *response)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -48,23 +49,23 @@ int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct dsc$descripto
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 Send Ast message to server asking server to tell what it is currently
 doing.
 
 ------------------------------------------------------------------------------*/
 
+#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
-#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 
 extern int ServerConnect();
 extern int GetAnswerInfoTS();
 
-EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
+EXPORT char *ServerGetInfo(int full __attribute__((unused)), char *server) {
   char *cmd = "MdsServerShr->ServerInfo:dsc()";
   char *ans;
   char *ansret;
@@ -72,21 +73,25 @@ EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
   void *mem = 0;
   SOCKET sock = ServerConnect(server);
   if (sock != INVALID_SOCKET) {
-    int status = SendArg(sock,(unsigned char)0,(char)DTYPE_CSTRING,(unsigned char)1,(short)strlen(cmd),0,0,cmd);
-    if STATUS_OK {
-      char dtype;
-      char ndims;
-      int dims[8];
-      int numbytes;
-      char *reply;
-      status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&reply, &mem, 10);
-      if (STATUS_OK && (dtype == DTYPE_CSTRING))
-	ans = reply;
-      else {
-	ans = "Invalid response from server";
-	len = strlen(ans);
+    int status = SendArg(sock, (unsigned char)0, (char)DTYPE_CSTRING,
+                         (unsigned char)1, (short)strlen(cmd), 0, 0, cmd);
+    if
+      STATUS_OK {
+        char dtype;
+        char ndims;
+        int dims[8];
+        int numbytes;
+        char *reply;
+        status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes,
+                                 (void **)&reply, &mem, 10);
+        if (STATUS_OK && (dtype == DTYPE_CSTRING))
+          ans = reply;
+        else {
+          ans = "Invalid response from server";
+          len = strlen(ans);
+        }
       }
-    } else {
+    else {
       ans = "No response from server";
       len = strlen(ans);
     }

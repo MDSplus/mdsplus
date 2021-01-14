@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   FERA$ROUTINES
+                Name:   FERA$ROUTINES
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:   23-APR-1992
+                Date:   23-APR-1992
 
-		Purpose: Support for FERA modules.
+                Purpose: Support for FERA modules.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
   INIT, STORE, methods for FERA
 
@@ -98,24 +98,21 @@ The data is dumped into the 4302 memory modules without using the hardware
    has a kludge deadspace.  The size of each module is set by switches on the
    side (to 12k, 14k, 15k, or 15.5k).
 
-	Jeff Casey     8/6/91 , mods 10/23/91, 5/92.
+        Jeff Casey     8/6/91 , mods 10/23/91, 5/92.
 
 ------------------------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <mdsdescrip.h>
 #include <mds_gendevice.h>
-#include <mitdevices_msg.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mitdevices_msg.h>
+#include <stdlib.h>
 #include <strroutines.h>
 
-#include <treeshr.h>
-#include <mdsshr.h>
-#include "fera_gen.h"
 #include "devroutines.h"
-
-
-
+#include "fera_gen.h"
+#include <mdsshr.h>
+#include <treeshr.h>
 
 /*------------------------------------------------------------------------------
 
@@ -133,23 +130,29 @@ static int three = 3;
 
  Subroutines referenced:                                                      */
 
-static int Unpack(unsigned short **buffer, int *num_pts, int num_mems, int chans, int pts_per_chan);
+static int Unpack(unsigned short **buffer, int *num_pts, int num_mems,
+                  int chans, int pts_per_chan);
 static int NElements(int nid);
 static char *ArrayRef(int nid, int num);
-static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int clock_nid, int nid);
+static int Put(unsigned short int *buffer, int pts_per_chan, int chans,
+               int clock_nid, int nid);
 
-EXPORT int fera___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
-{
+EXPORT int fera___init(struct descriptor *niddsc_ptr __attribute__((unused)),
+                       InInitStruct *setup) {
 
   int status = 1;
   int num_dig;
   int num_mem;
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define return_on_error(f, retstatus)                                          \
+  if (!((status = f) & 1))                                                     \
+    return retstatus;
 
   last_nid = 0;
 
   /* Reset the controler */
-  return_on_error(DevCamChk(CamPiow(setup->cntrl_name, 0, 9, 0, 16, 0), &one, &one), status);
+  return_on_error(
+      DevCamChk(CamPiow(setup->cntrl_name, 0, 9, 0, 16, 0), &one, &one),
+      status);
 
   /* setup the digitizers */
   if ((num_dig = NElements(setup->head_nid + FERA_N_DIG_NAME))) {
@@ -157,12 +160,15 @@ EXPORT int fera___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), I
     for (i = 0; i < num_dig; i++) {
       char *name = ArrayRef(setup->head_nid + FERA_N_DIG_NAME, i);
       if (name) {
-	static short ecl_cam = 0x2400;
-	return_on_error(DevCamChk(CamPiow(name, 0, 9, 0, 16, 0), &one, &one), status);	/* reset digitizer */
-	return_on_error(DevCamChk(CamPiow(name, 0, 16, &ecl_cam, 16, 0), &one, &one), status);	/* goto ECL/CAM mode */
+        static short ecl_cam = 0x2400;
+        return_on_error(DevCamChk(CamPiow(name, 0, 9, 0, 16, 0), &one, &one),
+                        status); /* reset digitizer */
+        return_on_error(
+            DevCamChk(CamPiow(name, 0, 16, &ecl_cam, 16, 0), &one, &one),
+            status); /* goto ECL/CAM mode */
       } else {
-	status = FERA$_DIGNOTSTRARRAY;
-	break;
+        status = FERA$_DIGNOTSTRARRAY;
+        break;
       }
     }
   } else
@@ -173,29 +179,37 @@ EXPORT int fera___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), I
     if ((num_mem = NElements(setup->head_nid + FERA_N_MEM_NAME))) {
       int i;
       for (i = 0; i < num_mem; i++) {
-	char *name = ArrayRef(setup->head_nid + FERA_N_MEM_NAME, i);
-	if (name) {
-	  return_on_error(DevCamChk(CamPiow(name, 1, 17, &one, 16, 0), &one, &one), status);
-	  return_on_error(DevCamChk(CamPiow(name, 0, 24, 0, 16, 0), &one, &one), status);
-	  return_on_error(DevCamChk(CamPiow(name, 0, 17, &zero, 16, 0), &one, &one), status);
-	  return_on_error(DevCamChk(CamPiow(name, 1, 17, &three, 16, 0), &one, &one), status);
-	} else {
-	  status = FERA$_MEMNOTSTRARRAY;
-	  break;
-	}
+        char *name = ArrayRef(setup->head_nid + FERA_N_MEM_NAME, i);
+        if (name) {
+          return_on_error(
+              DevCamChk(CamPiow(name, 1, 17, &one, 16, 0), &one, &one), status);
+          return_on_error(DevCamChk(CamPiow(name, 0, 24, 0, 16, 0), &one, &one),
+                          status);
+          return_on_error(
+              DevCamChk(CamPiow(name, 0, 17, &zero, 16, 0), &one, &one),
+              status);
+          return_on_error(
+              DevCamChk(CamPiow(name, 1, 17, &three, 16, 0), &one, &one),
+              status);
+        } else {
+          status = FERA$_MEMNOTSTRARRAY;
+          break;
+        }
       }
     } else
       status = FERA$_NOMEM;
   }
 
   /* Reset the controler */
-  return_on_error(DevCamChk(CamPiow(setup->cntrl_name, 0, 9, 0, 16, 0), &one, &one), status);
+  return_on_error(
+      DevCamChk(CamPiow(setup->cntrl_name, 0, 9, 0, 16, 0), &one, &one),
+      status);
 
   return status;
 }
 
-EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
-{
+EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__((unused)),
+                        InStoreStruct *setup) {
 
   int mem_status = 1;
   int put_status = 1;
@@ -208,7 +222,9 @@ EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   int *num_pts;
   unsigned short *buffer;
   int ind;
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define return_on_error(f, retstatus)                                          \
+  if (!((status = f) & 1))                                                     \
+    return retstatus;
 
   last_nid = 0;
 
@@ -228,12 +244,15 @@ EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
     char *name = ArrayRef(setup->head_nid + FERA_N_MEM_NAME, i);
     num_pts[i] = 0;
     if (name) {
-      return_on_error(DevCamChk(CamPiow(name, 1, 17, &one, 16, 0), &one, &one), status);
-      return_on_error(DevCamChk(CamPiow(name, 0, 2, &num_pts[i], 16, 0), &one, &one), status);
+      return_on_error(DevCamChk(CamPiow(name, 1, 17, &one, 16, 0), &one, &one),
+                      status);
+      return_on_error(
+          DevCamChk(CamPiow(name, 0, 2, &num_pts[i], 16, 0), &one, &one),
+          status);
       if (num_pts[i] >= 16 * 1024) {
-	num_pts[i] = 16 * 1024;
-	if (i == num_mem - 1)
-	  mem_status = FERA$_OVER_RUN;
+        num_pts[i] = 16 * 1024;
+        if (i == num_mem - 1)
+          mem_status = FERA$_OVER_RUN;
       }
       total_data += num_pts[i];
     }
@@ -247,24 +266,25 @@ EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
     if (num_pts[i]) {
       char *name = ArrayRef(setup->head_nid + FERA_N_MEM_NAME, i);
       if (name) {
-	return_on_error(DevCamChk
-			(CamQstopw(name, 0, 2, num_pts[i], &buffer[ind], 16, 0), &one, &one),
-			status)
+        return_on_error(
+            DevCamChk(CamQstopw(name, 0, 2, num_pts[i], &buffer[ind], 16, 0),
+                      &one, &one),
+            status)
       }
     }
   }
 
   status = Unpack(&buffer, num_pts, num_mem, num_chan, total_data / num_chan);
   if ((status & 1) || (status == FERA$_CONFUSED) || (status == FERA$_OVERFLOW))
-    put_status =
-	Put(buffer, total_data / num_chan, num_chan, setup->head_nid + FERA_N_EXT_CLOCK,
-	    setup->head_nid + FERA_N_OUTPUT);
+    put_status = Put(buffer, total_data / num_chan, num_chan,
+                     setup->head_nid + FERA_N_EXT_CLOCK,
+                     setup->head_nid + FERA_N_OUTPUT);
   free(buffer);
   return (put_status & 1) ? ((status & 1) ? mem_status : status) : put_status;
 }
 
-static int Unpack(unsigned short **buffer, int *num_pts, int num_mems, int chans, int pts_per_chan)
-{
+static int Unpack(unsigned short **buffer, int *num_pts, int num_mems,
+                  int chans, int pts_per_chan) {
   int status = 1;
   unsigned short *output = malloc(sizeof(short) * chans * pts_per_chan);
   int mem;
@@ -276,15 +296,15 @@ static int Unpack(unsigned short **buffer, int *num_pts, int num_mems, int chans
     for (i = 1; i <= num_pts[mem]; i++) {
       short data = (*buffer)[mem * 16384 + num_pts[mem] - i];
       if (data == 2047) {
-	status = FERA$_OVERFLOW;
+        status = FERA$_OVERFLOW;
       } else if (data > 1919) {
-	status = FERA$_CONFUSED;
+        status = FERA$_CONFUSED;
       }
       output[chan * pts_per_chan + pt] = data;
       chan++;
       if (chan == chans) {
-	chan = 0;
-	pt++;
+        chan = 0;
+        pt++;
       }
     }
   }
@@ -293,18 +313,19 @@ static int Unpack(unsigned short **buffer, int *num_pts, int num_mems, int chans
   return status;
 }
 
-static int NElements(int nid)
-{
+static int NElements(int nid) {
   static int num;
-  static struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)&num };
+  static struct descriptor_s num_dsc = {sizeof(int), DTYPE_L, CLASS_S,
+                                        (char *)&num};
   static DESCRIPTOR(set_var, "_TextArray = $1");
-  static struct descriptor_xd dummy_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
-  struct descriptor_s nid_dsc = { sizeof(int), DTYPE_NID, CLASS_S, (char *)0 };
+  static struct descriptor_xd dummy_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+  struct descriptor_s nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, (char *)0};
   int status = 1;
   nid_dsc.pointer = (char *)&nid;
   if (last_nid != nid) {
     last_nid = 0;
-    status = TdiExecute((struct descriptor *)&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&set_var, &nid_dsc,
+                        &dummy_xd MDS_END_ARG);
   }
   if (status & 1) {
     static DESCRIPTOR(size_expr, "SIZE(_TextArray)");
@@ -314,39 +335,43 @@ static int NElements(int nid)
   return (status & 1) ? num : 0;
 }
 
-static char *ArrayRef(int nid, int num)
-{
-  //  struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };
+static char *ArrayRef(int nid, int num) {
+  //  struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0
+  //  };
   static DESCRIPTOR(set_var, "_TextArray = $1");
-  static struct descriptor_xd dummy_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
-  struct descriptor_s nid_dsc = { sizeof(int), DTYPE_NID, CLASS_S, (char *)0 };
-  static struct descriptor_d empty_string = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor_xd dummy_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+  struct descriptor_s nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, (char *)0};
+  static struct descriptor_d empty_string = {0, DTYPE_T, CLASS_D, 0};
   int status = 1;
-  //num_dsc.pointer = (char *)&num;
-  //nid_dsc.pointer = (char *)&nid;
+  // num_dsc.pointer = (char *)&num;
+  // nid_dsc.pointer = (char *)&nid;
   if (last_nid != nid) {
     last_nid = 0;
-    status = TdiExecute((struct descriptor *)&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&set_var, &nid_dsc,
+                        &dummy_xd MDS_END_ARG);
   }
   if (status & 1) {
     static DESCRIPTOR(subscript_expr, "_TextArray[$]//\"\\0\"");
-    struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };
+    struct descriptor_s num_dsc = {sizeof(int), DTYPE_L, CLASS_S, (char *)0};
     num_dsc.pointer = (char *)&num;
-    status = TdiExecute((struct descriptor *)&subscript_expr, &num_dsc, &empty_string MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&subscript_expr, &num_dsc,
+                        &empty_string MDS_END_ARG);
   }
   return ((status & 1) == 0) ? 0 : empty_string.pointer;
 }
 
-static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int clock_nid, int nid)
-{
+static int Put(unsigned short int *buffer, int pts_per_chan, int chans,
+               int clock_nid, int nid) {
   DESCRIPTOR_A_COEFF_2(a_dsc, sizeof(short), DTYPE_W, (char *)0, 0, 0, 0);
-  DESCRIPTOR(expr,
-	     "BUILD_SIGNAL(BUILD_WITH_UNITS($VALUE*.25E-12,'Coulombs'), build_with_units($,'counts'), $, \
+  DESCRIPTOR(
+      expr,
+      "BUILD_SIGNAL(BUILD_WITH_UNITS($VALUE*.25E-12,'Coulombs'), build_with_units($,'counts'), $, \
 	                   build_with_units(0 : $ : 1, 'Channel'))");
-  struct descriptor_s clock_nid_dsc = { sizeof(int), DTYPE_NID, CLASS_S, (char *)0 };
+  struct descriptor_s clock_nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S,
+                                       (char *)0};
   int max_chan_num = chans - 1;
-  struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };
-  static struct descriptor_xd output_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+  struct descriptor_s num_dsc = {sizeof(int), DTYPE_L, CLASS_S, (char *)0};
+  static struct descriptor_xd output_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
   int status;
   a_dsc.pointer = (char *)buffer;
   a_dsc.arsize = pts_per_chan * chans * sizeof(short);
@@ -354,7 +379,8 @@ static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int cloc
   a_dsc.m[1] = chans;
   clock_nid_dsc.pointer = (char *)&clock_nid;
   num_dsc.pointer = (char *)&max_chan_num;
-  status = TdiCompile((struct descriptor *)&expr, &a_dsc, &clock_nid_dsc, &num_dsc, &output_xd MDS_END_ARG);
+  status = TdiCompile((struct descriptor *)&expr, &a_dsc, &clock_nid_dsc,
+                      &num_dsc, &output_xd MDS_END_ARG);
   if (status & 1) {
     status = TreePutRecord(nid, (struct descriptor *)&output_xd, 0);
     MdsFree1Dx(&output_xd, 0);

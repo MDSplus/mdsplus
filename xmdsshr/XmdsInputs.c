@@ -37,19 +37,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSINPUTS.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsInputs
+                Name:   XmdsInputs
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:    2-APR-1990
+                Date:    2-APR-1990
 
-		Purpose: Routines to handle digitizer channels (INPUTS)
+                Purpose: Routines to handle digitizer channels (INPUTS)
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
   void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx)
   void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
   void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
@@ -63,23 +63,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------
 
  Macros:                                                                      */
 
+#include <Xm/ToggleB.h>
+#include <Xm/Xm.h>
+#include <Xmds/XmdsExpr.h>
+#include <Xmds/XmdsInputs.h>
 #include <mdsdescrip.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strroutines.h>
 #include <treeshr.h>
-#include <Xm/Xm.h>
-#include <Xm/ToggleB.h>
-#include <Xmds/XmdsInputs.h>
-#include <Xmds/XmdsExpr.h>
-
 
 /*------------------------------------------------------------------------------
 
@@ -92,18 +91,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   expression widget to the coresponding nid in the
   conglomerate.
 ***************************************************/
-void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx)
-{
-  XmdsExprSetNid(w, ctx->inputs_nid + ctx->nodes_per_input * (XmdsWidgetToNumber(w, "input_") - 1),
-		 (strcmp(XtName(w), "start_idx") ? ctx->end_offset : ctx->start_offset));
+void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx) {
+  XmdsExprSetNid(
+      w,
+      ctx->inputs_nid +
+          ctx->nodes_per_input * (XmdsWidgetToNumber(w, "input_") - 1),
+      (strcmp(XtName(w), "start_idx") ? ctx->end_offset : ctx->start_offset));
 }
 
 /*************************************************************
   XmdsResetInput - Routine to 'RESET' a channel of the digitizer.
   Called by the DW_SETUP Reset routine.
 **************************************************************/
-void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
-{
+void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan) {
   char input_name[12];
   Widget input_w;
   sprintf(input_name, "*input_%d", chan);
@@ -112,7 +112,8 @@ void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
     int input_nid = ctx->inputs_nid + (chan - 1) * ctx->nodes_per_input;
     char *path;
     XmString label;
-    XmToggleButtonSetState(XtNameToWidget(input_w, "onoff"), TreeIsOn(input_nid) & 1, (Boolean) 0);
+    XmToggleButtonSetState(XtNameToWidget(input_w, "onoff"),
+                           TreeIsOn(input_nid) & 1, (Boolean)0);
     path = TreeGetMinimumPath(0, input_nid + ctx->data_offset);
     label = XmStringCreateSimple(path);
     TreeFree(path);
@@ -126,8 +127,7 @@ void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
   routines.  Writes out the information specified by the user for
   a channel.
 ******************************************************************/
-EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
-{
+EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan) {
   char input_name[12];
   Widget input_w;
   sprintf(input_name, "*input_%d", chan);
@@ -143,8 +143,7 @@ EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
   }
 }
 
-EXPORT int XmdsWidgetToNumber(Widget w, String prefix)
-{
+EXPORT int XmdsWidgetToNumber(Widget w, String prefix) {
   Widget widg;
   int number = -1;
   int length = strlen(prefix);
@@ -154,9 +153,9 @@ EXPORT int XmdsWidgetToNumber(Widget w, String prefix)
     int namelen = strlen(name);
     if (namelen > length) {
       if (!strncmp(prefix, name, length)) {
-	number = strtol(name + length, &endptr, 10);
-	if (endptr >= (name + namelen))
-	  break;
+        number = strtol(name + length, &endptr, 10);
+        if (endptr >= (name + namelen))
+          break;
       }
     }
   }

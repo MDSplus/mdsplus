@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$SET_DETAIL_PROC
+                Name:   SERVER$SET_DETAIL_PROC
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   16-NOV-1993
+                Date:   16-NOV-1993
 
-		Purpose: Set/Get detail procedure used during show server
+                Purpose: Set/Get detail procedure used during show server
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 void SERVER$SET_DETAIL_PROC( void (*)(struct dsc$descriptor *) )
 void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
@@ -49,17 +49,15 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
 #include <mdsplus/mdsconfig.h>
 
-static char *(*DetailProc) () = 0;
-EXPORT void ServerSetDetailProc(char *(*detail_proc) ()){
+static char *(*DetailProc)() = 0;
+EXPORT void ServerSetDetailProc(char *(*detail_proc)()) {
   DetailProc = detail_proc;
 }
 
-EXPORT char *(*ServerGetDetailProc()) () {
-  return DetailProc;
-}
+EXPORT char *(*ServerGetDetailProc())() { return DetailProc; }

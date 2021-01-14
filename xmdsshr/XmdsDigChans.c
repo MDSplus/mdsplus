@@ -40,26 +40,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSDIGCHANS.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSDIGCHANS
+                Name:   XMDSDIGCHANS
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:   22-FEB-1993
+                Date:   22-FEB-1993
 
-		Purpose: a pseudo widget for digitizer channels.  With start
-			 end, on/off, and path
+                Purpose: a pseudo widget for digitizer channels.  With start
+                         end, on/off, and path
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardinal argcount)
-void XmdsDigChansReset(Widget w)
-int XmdsDigChansPut(Widget w)
-int XmdsDigChansApply(Widget w)
-Boolean XmdsIsDigChans(Widget w)
+Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardinal
+argcount) void XmdsDigChansReset(Widget w) int XmdsDigChansPut(Widget w) int
+XmdsDigChansApply(Widget w) Boolean XmdsIsDigChans(Widget w)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993
@@ -69,20 +67,20 @@ Boolean XmdsIsDigChans(Widget w)
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */
 
-#include <stdio.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/ToggleBG.h>
+#include <Xmds/XmdsDigChans.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <ncidef.h>
+#include <stdio.h>
 #include <treeshr.h>
-#include <Mrm/MrmPublic.h>
-#include <Xmds/XmdsDigChans.h>
-#include <Xm/ToggleBG.h>
 
 #include <Xmds/XmdsExpr.h>
 #include <xmdsshr.h>
@@ -116,35 +114,32 @@ typedef struct _DigChansPart {
 } XmdsDigChansPart;
 
 static XtResource resources[] = {
-  {XmdsNchannels, "Channels", XmRInt, sizeof(int), XtOffsetOf(XmdsDigChansPart, channels),
-   XmRImmediate, (void *)4},
-  {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsDigChansPart, nid), XmRImmediate, NULL},
-  {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int), XtOffsetOf(XmdsDigChansPart, nid_offset),
-   XmRImmediate, NULL},
-  {XmdsNdataNidOffset, "NidOffset", XmRInt, sizeof(int),
-   XtOffsetOf(XmdsDigChansPart, data_nid_offset), XmRImmediate, NULL},
-  {XmdsNstartIdxNidOffset, "NidOffset", XmRInt, sizeof(int),
-   XtOffsetOf(XmdsDigChansPart, startidx_nid_offset), XmRImmediate,
-   (void *)1},
-  {XmdsNendIdxNidOffset, "NidOffset", XmRInt, sizeof(int),
-   XtOffsetOf(XmdsDigChansPart, endidx_nid_offset), XmRImmediate,
-   (void *)2},
-  {XmdsNnodesPerChannel, "Nodes", XmRInt, sizeof(int),
-   XtOffsetOf(XmdsDigChansPart, nodes_per_channel), XmRImmediate,
-   (void *)3},
-  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean),
-   XtOffsetOf(XmdsDigChansPart, put_on_apply), XmRImmediate,
-   (void *)1}
-};
+    {XmdsNchannels, "Channels", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsDigChansPart, channels), XmRImmediate, (void *)4},
+    {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsDigChansPart, nid),
+     XmRImmediate, NULL},
+    {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsDigChansPart, nid_offset), XmRImmediate, NULL},
+    {XmdsNdataNidOffset, "NidOffset", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsDigChansPart, data_nid_offset), XmRImmediate, NULL},
+    {XmdsNstartIdxNidOffset, "NidOffset", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsDigChansPart, startidx_nid_offset), XmRImmediate,
+     (void *)1},
+    {XmdsNendIdxNidOffset, "NidOffset", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsDigChansPart, endidx_nid_offset), XmRImmediate, (void *)2},
+    {XmdsNnodesPerChannel, "Nodes", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsDigChansPart, nodes_per_channel), XmRImmediate, (void *)3},
+    {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean),
+     XtOffsetOf(XmdsDigChansPart, put_on_apply), XmRImmediate, (void *)1}};
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardinal argcount)
-{
-  XmdsDigChansPart info = { 4, -1, 0, 0, 1, 2, 3, 1 };
-  static String hierarchy_name[] = { "XmdsDigChans.uid" };
+EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args,
+                                 Cardinal argcount) {
+  XmdsDigChansPart info = {4, -1, 0, 0, 1, 2, 3, 1};
+  static String hierarchy_name[] = {"XmdsDigChans.uid"};
   MrmHierarchy drm_hierarchy;
   MrmType class;
   int i;
@@ -156,13 +151,13 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardi
     info.nid = XmdsGetDeviceNid();
   MrmOpenHierarchy(XtNumber(hierarchy_name), hierarchy_name, 0, &drm_hierarchy);
   if (info.nodes_per_channel > 1)
-    MrmFetchWidgetOverride(drm_hierarchy, "channels", parent, name, args, argcount, &channels_w,
-			   &class);
+    MrmFetchWidgetOverride(drm_hierarchy, "channels", parent, name, args,
+                           argcount, &channels_w, &class);
   else
-    MrmFetchWidgetOverride(drm_hierarchy, "channels_1", parent, name, args, argcount, &channels_w,
-			   &class);
-  XtVaSetValues(XtNameToWidget(channels_w, "this_is_a_DigChans_widget"), XmNuserData,
-		(char *)0 + info.put_on_apply, NULL);
+    MrmFetchWidgetOverride(drm_hierarchy, "channels_1", parent, name, args,
+                           argcount, &channels_w, &class);
+  XtVaSetValues(XtNameToWidget(channels_w, "this_is_a_DigChans_widget"),
+                XmNuserData, (char *)0 + info.put_on_apply, NULL);
   rowcol_w = XtNameToWidget(channels_w, "*c_rowcol");
   for (i = 0; i < info.channels; i++) {
     char name_c[12];
@@ -171,7 +166,8 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardi
     /*    static struct descriptor path_s = {0,DTYPE_T,CLASS_D,0}; */
     static unsigned char path_s[256 * 12];
     static int path_len;
-    static NCI_ITM nci[] = { {256 * 12, NciMINPATH, path_s, &path_len}, {0, NciEND_OF_LIST, 0, 0} };
+    static NCI_ITM nci[] = {{256 * 12, NciMINPATH, path_s, &path_len},
+                            {0, NciEND_OF_LIST, 0, 0}};
     /*    static DESCRIPTOR(zero,"\0"); */
     int head_nid = i * info.nodes_per_channel + info.nid + info.nid_offset;
     int data_nid = head_nid + info.data_nid_offset;
@@ -185,12 +181,11 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardi
     path = XmStringCreateSimple((char *)path_s);
     /* StrFree1Dx(&path_s); */
     {
-      static MrmRegisterArg uilnames[] = { {"c_nid", NULL},
-      {"c_name", NULL},
-      {"c_startidx_nid", NULL},
-      {"c_endidx_nid", NULL},
-      {"c_path", NULL}
-      };
+      static MrmRegisterArg uilnames[] = {{"c_nid", NULL},
+                                          {"c_name", NULL},
+                                          {"c_startidx_nid", NULL},
+                                          {"c_endidx_nid", NULL},
+                                          {"c_path", NULL}};
       uilnames[0].value = data_nid + (char *)0;
       uilnames[1].value = name;
       uilnames[2].value = startidx_nid + (char *)0;
@@ -198,9 +193,9 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardi
       uilnames[4].value = path;
       MrmRegisterNamesInHierarchy(drm_hierarchy, uilnames, XtNumber(uilnames));
       if (info.nodes_per_channel > 1)
-	MrmFetchWidget(drm_hierarchy, "channel_dlog", rowcol_w, &w, &class);
+        MrmFetchWidget(drm_hierarchy, "channel_dlog", rowcol_w, &w, &class);
       else
-	MrmFetchWidget(drm_hierarchy, "channel_dlog_1", rowcol_w, &w, &class);
+        MrmFetchWidget(drm_hierarchy, "channel_dlog_1", rowcol_w, &w, &class);
       XtManageChild(w);
     }
     XmStringFree(name);
@@ -211,8 +206,7 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardi
   return channels_w;
 }
 
-EXPORT void XmdsDigChansReset(Widget w)
-{
+EXPORT void XmdsDigChansReset(Widget w) {
   Widget rowcol_w = XtNameToWidget(w, "*c_rowcol");
   int i;
   int num;
@@ -223,14 +217,13 @@ EXPORT void XmdsDigChansReset(Widget w)
     int nid;
     XtVaGetValues(chan_w[i], XmNuserData, &userdata, NULL);
     nid = (char *)userdata - (char *)0;
-    XmToggleButtonGadgetSetState(XtNameToWidget(chan_w[i], "*on_off_button"), XmdsIsOn((int)nid),
-				 FALSE);
+    XmToggleButtonGadgetSetState(XtNameToWidget(chan_w[i], "*on_off_button"),
+                                 XmdsIsOn((int)nid), FALSE);
   }
   XmdsResetAllXds(rowcol_w);
 }
 
-EXPORT int XmdsDigChansPut(Widget w)
-{
+EXPORT int XmdsDigChansPut(Widget w) {
   Widget rowcol_w = XtNameToWidget(w, "*c_rowcol");
   int i;
   int num;
@@ -243,30 +236,29 @@ EXPORT int XmdsDigChansPut(Widget w)
       int nid;
       int num_ctls;
       Widget *children;
-      XtVaGetValues(chan_w[i], XmNnumChildren, &num_ctls, XmNchildren, &children, XmNuserData,
-		    &user_data, NULL);
+      XtVaGetValues(chan_w[i], XmNnumChildren, &num_ctls, XmNchildren,
+                    &children, XmNuserData, &user_data, NULL);
       nid = (char *)user_data - (char *)0;
       if (XmToggleButtonGadgetGetState(children[1]))
-	TreeTurnOn(nid);
+        TreeTurnOn(nid);
       else
-	TreeTurnOff(nid);
+        TreeTurnOff(nid);
       if (num_ctls > 3) {
-	XmdsExprPut(children[2]);
-	XmdsExprPut(children[3]);
+        XmdsExprPut(children[2]);
+        XmdsExprPut(children[3]);
       }
     }
   }
   return status;
 }
 
-EXPORT int XmdsDigChansApply(Widget w)
-{
+EXPORT int XmdsDigChansApply(Widget w) {
   XtPointer PutOnApply;
-  XtVaGetValues(XtNameToWidget(w, "this_is_a_DigChans_widget"), XmNuserData, &PutOnApply, NULL);
+  XtVaGetValues(XtNameToWidget(w, "this_is_a_DigChans_widget"), XmNuserData,
+                &PutOnApply, NULL);
   return PutOnApply ? XmdsDigChansPut(w) : 1;
 }
 
-EXPORT Boolean XmdsIsDigChans(Widget w)
-{
+EXPORT Boolean XmdsIsDigChans(Widget w) {
   return XtNameToWidget(w, "this_is_a_DigChans_widget") != 0;
 }

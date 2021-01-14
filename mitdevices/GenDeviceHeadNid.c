@@ -29,13 +29,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ncidef.h>
 #include <treeshr.h>
 
-EXPORT int GenDeviceHeadNid(struct descriptor *niddsc)
-{
+EXPORT int GenDeviceHeadNid(struct descriptor *niddsc) {
   int nid = *(int *)niddsc->pointer;
   static int idx;
-  static NCI_ITM itmlst[] = { {sizeof(int), NciCONGLOMERATE_ELT, (unsigned char *)&idx, 0},
-  {0, NciEND_OF_LIST, 0, 0}
-  };
+  static NCI_ITM itmlst[] = {
+      {sizeof(int), NciCONGLOMERATE_ELT, (unsigned char *)&idx, 0},
+      {0, NciEND_OF_LIST, 0, 0}};
   TreeGetNci(nid, itmlst);
   return nid - idx + 1;
 }

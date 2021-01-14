@@ -22,9 +22,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdlib.h>
-#include <status.h>
 #include <libroutines.h>
+#include <status.h>
+#include <stdlib.h>
 
 #include "mdsip_connections.h"
 
@@ -32,25 +32,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  DoMessage  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-int DoMessage(int id){
+int DoMessage(int id) {
   Connection *c = FindConnection(id, 0);
-  static Message *(*processMessage) (Connection *, Message *) = NULL;
-  int status = LibFindImageSymbol_C("MdsIpSrvShr", "ProcessMessage", &processMessage);
-  if (STATUS_NOT_OK || !c) return 0; // will cause tunnel to terminate
+  static Message *(*processMessage)(Connection *, Message *) = NULL;
+  int status =
+      LibFindImageSymbol_C("MdsIpSrvShr", "ProcessMessage", &processMessage);
+  if (STATUS_NOT_OK || !c)
+    return 0; // will cause tunnel to terminate
   Message *msgptr = GetMdsMsg(id, &status);
   Message *ans = 0;
-  if STATUS_OK {
-    ans = processMessage(c, msgptr);
-    if (ans) {
-      status = SendMdsMsg(id, ans, 0);
-      free(ans);
+  if
+    STATUS_OK {
+      ans = processMessage(c, msgptr);
+      if (ans) {
+        status = SendMdsMsg(id, ans, 0);
+        free(ans);
+      }
     }
-  } else {
+  else {
     CloseConnection(id);
     status = 0; // will cause tunnel to terminate
   }
   free(msgptr);
   return status;
 }
-

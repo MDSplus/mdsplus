@@ -39,24 +39,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSONOFFTOGGLEBUTTON.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsOnOffToggleButton
+                Name:   XmdsOnOffToggleButton
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   14-JAN-1992
+                Date:   14-JAN-1992
 
-		Purpose:  On/Off Toggle button Pseudo-widget
+                Purpose:  On/Off Toggle button Pseudo-widget
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount);
-Boolean XmdsIsOnOffToggleButton(Widget w);
-void XmdsOnOffToggleButtonReset(Widget w);
-int XmdsOnOffToggleButtonPut(Widget w);
+Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args,
+Cardinal argcount); Boolean XmdsIsOnOffToggleButton(Widget w); void
+XmdsOnOffToggleButtonReset(Widget w); int XmdsOnOffToggleButtonPut(Widget w);
 int XmdsOnOffToggleButtonApply(Widget w);
 
 ------------------------------------------------------------------------------
@@ -67,19 +66,20 @@ int XmdsOnOffToggleButtonApply(Widget w);
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
-#include <mdsplus/mdsconfig.h>
-#include <mdsdescrip.h>
-#include <strroutines.h>
-#include <ncidef.h>
-#include <treeshr.h>
+#include <Mrm/MrmPublic.h>
 #include <Xm/ToggleB.h>
 #include <Xmds/XmdsOnOffToggleButton.h>
-#include <Mrm/MrmPublic.h>
+#include <mdsdescrip.h>
+#include <mdsplus/mdsconfig.h>
+#include <ncidef.h>
+#include <strroutines.h>
+#include <treeshr.h>
 #include <xmdsshr.h>
-Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount);
+Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args,
+                                   Cardinal argcount);
 Boolean XmdsIsOnOffToggleButton(Widget w);
 void XmdsOnOffToggleButtonReset(Widget w);
 int XmdsOnOffToggleButtonPut(Widget w);
@@ -94,26 +94,25 @@ typedef struct _Resources {
 } Resources;
 
 static Resources *GetResources(Widget w);
-static void Destroy(Widget w, Resources * info, XtPointer cb);
+static void Destroy(Widget w, Resources *info, XtPointer cb);
 
 static XtResource resources[] = {
-  {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid), XmRImmediate, 0},
-  {XmdsNnidOffset, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid_offset), XmRImmediate, 0},
-  {XmdsNshowPath, "ShowPath", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, show_path),
-   XmRImmediate, 0}
-  ,
-  {XmNlabelString, "LabelString", XmRString, sizeof(XmString), XtOffsetOf(Resources, label),
-   XmRImmediate, 0}
-  ,
-  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),
-   XmRImmediate, (void *)1}
-};
+    {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid),
+     XmRImmediate, 0},
+    {XmdsNnidOffset, "Nid", XmRInt, sizeof(int),
+     XtOffsetOf(Resources, nid_offset), XmRImmediate, 0},
+    {XmdsNshowPath, "ShowPath", XmRBoolean, sizeof(Boolean),
+     XtOffsetOf(Resources, show_path), XmRImmediate, 0},
+    {XmNlabelString, "LabelString", XmRString, sizeof(XmString),
+     XtOffsetOf(Resources, label), XmRImmediate, 0},
+    {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean),
+     XtOffsetOf(Resources, put_on_apply), XmRImmediate, (void *)1}};
 
-EXPORT Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount)
-{
+EXPORT Widget XmdsCreateOnOffToggleButton(Widget parent, String name,
+                                          ArgList args, Cardinal argcount) {
   Widget w;
-  Resources *info = (Resources *) XtMalloc(sizeof(Resources));
-  Resources default_info = { 0, 0, 0, 0, 1 };
+  Resources *info = (Resources *)XtMalloc(sizeof(Resources));
+  Resources default_info = {0, 0, 0, 0, 1};
   *info = default_info;
   XmdsSetSubvalues(info, resources, XtNumber(resources), args, argcount);
   if (info->nid == -1)
@@ -130,51 +129,48 @@ EXPORT Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList ar
   } else if (info->label)
     XtVaSetValues(w, XmNlabelString, info->label, NULL);
 
-  XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, info);
+  XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc)Destroy, info);
   XmdsOnOffToggleButtonReset(w);
   return w;
 }
 
-static void Destroy(Widget w, Resources * info, XtPointer cb)
-{
+static void Destroy(Widget w, Resources *info, XtPointer cb) {
   XtFree((char *)info);
 }
 
-EXPORT Boolean XmdsIsOnOffToggleButton(Widget w)
-{
+EXPORT Boolean XmdsIsOnOffToggleButton(Widget w) {
   return GetResources(w) != 0;
 }
 
-static Resources *GetResources(Widget w)
-{
+static Resources *GetResources(Widget w) {
   Resources *answer = 0;
-  if (XmIsToggleButton(w) && (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome)) {
+  if (XmIsToggleButton(w) &&
+      (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome)) {
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNdestroyCallback, &callbacks, NULL);
-    for (;
-	 callbacks->callback
-	 && !(answer =
-	      (Resources *) ((callbacks->callback == (XtCallbackProc) Destroy) ? callbacks->
-			     closure : 0)); callbacks = callbacks + 1) ;
+    for (; callbacks->callback &&
+           !(answer =
+                 (Resources *)((callbacks->callback == (XtCallbackProc)Destroy)
+                                   ? callbacks->closure
+                                   : 0));
+         callbacks = callbacks + 1)
+      ;
   }
   return answer;
 }
 
-EXPORT void XmdsOnOffToggleButtonReset(Widget w)
-{
+EXPORT void XmdsOnOffToggleButtonReset(Widget w) {
   Resources *info = GetResources(w);
   if (info)
     XmToggleButtonSetState(w, XmdsIsOn(info->nid + info->nid_offset), 0);
 }
 
-EXPORT int XmdsOnOffToggleButtonPut(Widget w)
-{
+EXPORT int XmdsOnOffToggleButtonPut(Widget w) {
   Resources *info = GetResources(w);
   return info ? XmdsSetState(info->nid + info->nid_offset, w) : 0;
 }
 
-EXPORT int XmdsOnOffToggleButtonApply(Widget w)
-{
+EXPORT int XmdsOnOffToggleButtonApply(Widget w) {
   Resources *info = GetResources(w);
   return info ? (info->put_on_apply ? XmdsOnOffToggleButtonPut(w) : 1) : 0;
 }

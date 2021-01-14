@@ -24,20 +24,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$DISPATCH_CLOSE
+                Name:   SERVER$DISPATCH_CLOSE
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Tell all servers which performed actions in dispatch
-	                 table to close their trees
+                Purpose: Tell all servers which performed actions in dispatch
+                         table to close their trees
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int SERVER$DISPATCH_CLOSE(DispatchTable *table)
 
@@ -49,13 +49,13 @@ int SERVER$DISPATCH_CLOSE(DispatchTable *table)
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
-#include <servershr.h>
 #include "servershrp.h"
-static char *Server(char *out, char *srv){
+#include <servershr.h>
+static char *Server(char *out, char *srv) {
   int i;
   for (i = 0; i < 32; i++)
     out[i] = srv[i] == ' ' ? 0 : srv[i];
@@ -63,11 +63,12 @@ static char *Server(char *out, char *srv){
   return out;
 }
 extern void serverDisarmDispatchTable(void *vtable);
-EXPORT int ServerDispatchClose(void *vtable){
-  if (!vtable) return MDSplusSUCCESS;
+EXPORT int ServerDispatchClose(void *vtable) {
+  if (!vtable)
+    return MDSplusSUCCESS;
   serverDisarmDispatchTable(vtable);
   char server[33];
-  DispatchTable *table = (DispatchTable *) vtable;
+  DispatchTable *table = (DispatchTable *)vtable;
   ActionInfo *action = table->actions;
   int num_actions = table->num;
   int i, j;
@@ -75,8 +76,8 @@ EXPORT int ServerDispatchClose(void *vtable){
     if (action[i].dispatched && !action[i].closed) {
       ServerCloseTrees(Server(server, action[i].server));
       for (j = i + 1; j < num_actions; j++) {
-	if (action[i].netid == action[j].netid)
-	  action[j].closed = 1;
+        if (action[i].netid == action[j].netid)
+          action[j].closed = 1;
       }
     }
   }

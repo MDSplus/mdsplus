@@ -22,7 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-//static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+// static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 /*
  * WARNING: This file is overwritten at code generation time.
  * Any changes to this file will be lost.
@@ -61,10 +61,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *       INCLUDE FILES
  *****************************************************************************/
 
-#include <Xm/Xm.h>
 #include <Xm/RowColumn.h>
-#include <stdio.h>
+#include <Xm/Xm.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /*****************************************************************************
@@ -93,47 +93,47 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
  * Handy definition used in SET_BACKGROUND_COLOR
-*/
-#define UNSET		(-1)
+ */
+#define UNSET (-1)
 
 /*
  * Set state of inclusion of prototypes properly
  */
 #ifdef NeedFunctionPrototypes
 #define ARGLIST(p)	(
-#define ARG(a, b)	a b,
+#define ARG(a, b) a b,
 #define GRA(a, b)	a b)
 #else
-#define ARGLIST(p)	p
-#define ARG(a, b)	a b;
-#define GRA(a, b)	a b;
+#define ARGLIST(p) p
+#define ARG(a, b) a b;
+#define GRA(a, b) a b;
 #endif
 
 #ifdef NeedFunctionPrototypes
 #ifdef __cplusplus
-#define UARG(a, b)	a,
+#define UARG(a, b) a,
 #define GRAU(a, b)	a)
 #else
-#define UARG(a, b)	a b,
+#define UARG(a, b) a b,
 #define GRAU(a, b)	a b)
 #endif
 #else
-#define UARG(a, b)	a b;
-#define GRAU(a, b)	a b;
+#define UARG(a, b) a b;
+#define GRAU(a, b) a b;
 #endif
 
 /*
  * Set up strcasecmp function
  */
 #if defined(LOCAL_STRCASECMP)
-#define STRCASECMP	StrCasecmp
+#define STRCASECMP StrCasecmp
 #ifndef NeedFunctionPrototypes
 static int StrCasecmp();
 #else
 static int StrCasecmp(char *, char *);
 #endif
 #else
-#define STRCASECMP	strcasecmp
+#define STRCASECMP strcasecmp
 #endif
 
 /*
@@ -142,12 +142,12 @@ static int StrCasecmp(char *, char *);
  */
 #ifdef __cplusplus
 #if XtSpecificationRelease < 5
-#define XTPOINTER	char *
+#define XTPOINTER char *
 #else
-#define XTPOINTER	XPointer
+#define XTPOINTER XPointer
 #endif
 #else
-#define XTPOINTER	XtPointer
+#define XTPOINTER XtPointer
 #endif
 
 /*
@@ -156,9 +156,29 @@ static int StrCasecmp(char *, char *);
  * If you add to the array, ALWAYS keep NUM_COMMON_WCHARS as the last
  * entry in the enum.  This will maintain correct memory usage, etc.
  */
-enum { WNull, WTab, WNewLine, WCarriageReturn, WFormFeed, WVerticalTab,
-  WBackSlash, WQuote, WHash, WColon, WideF, WideL, WideN, WideR,
-  WideT, WideV, WideUF, WideUL, WideUR, WideUT, WideZero, WideOne,
+enum {
+  WNull,
+  WTab,
+  WNewLine,
+  WCarriageReturn,
+  WFormFeed,
+  WVerticalTab,
+  WBackSlash,
+  WQuote,
+  WHash,
+  WColon,
+  WideF,
+  WideL,
+  WideN,
+  WideR,
+  WideT,
+  WideV,
+  WideUF,
+  WideUL,
+  WideUR,
+  WideUT,
+  WideZero,
+  WideOne,
   NUM_COMMON_WCHARS
 };
 
@@ -200,7 +220,8 @@ static size_t doMbstowcs(wchar_t *, char *, size_t);
 static size_t doWcstombs(char *, wchar_t *, size_t);
 static void copyWcsToMbs(char *, wchar_t *, int, Boolean);
 static int dombtowc(wchar_t *, char *, size_t);
-static Boolean extractSegment(wchar_t **, wchar_t **, size_t *, wchar_t **, size_t *, int *, Boolean *);
+static Boolean extractSegment(wchar_t **, wchar_t **, size_t *, wchar_t **,
+                              size_t *, int *, Boolean *);
 static XmString StringToXmString(char *);
 static char *getNextCStrDelim(char *);
 static int getCStrCount(char *);
@@ -226,8 +247,8 @@ static wchar_t *CStrCommonWideCharsGet();
  *      int :  0; s1 == s2
  *             1; s1 != s2
  */
-static int StrCasecmp ARGLIST((s1, s2)) ARG(register char *, s1) GRA(register char *, s2)
-{
+static int StrCasecmp ARGLIST((s1, s2)) ARG(register char *, s1)
+    GRA(register char *, s2) {
   register int c1, c2;
 
   while (*s1 && *s2) {
@@ -260,10 +281,7 @@ static int StrCasecmp ARGLIST((s1, s2)) ARG(register char *, s1) GRA(register ch
  * Output:
  *      int : always 1
  */
-static int mblen ARGLIST((s, n)) ARG(char *, s) GRA(size_t, n)
-{
-  return (1);
-}
+static int mblen ARGLIST((s, n)) ARG(char *, s) GRA(size_t, n) { return (1); }
 #endif
 
 /*
@@ -277,8 +295,7 @@ static int mblen ARGLIST((s, n)) ARG(char *, s) GRA(size_t, n)
  * Output:
  *      int : the number of characters found
  */
-static int strlenWc ARGLIST((ptr)) GRA(wchar_t *, ptr)
-{
+static int strlenWc ARGLIST((ptr)) GRA(wchar_t *, ptr) {
   register wchar_t *p = ptr;
   register int x = 0;
 
@@ -302,8 +319,8 @@ static int strlenWc ARGLIST((ptr)) GRA(wchar_t *, ptr)
  * Output:
  *      bytesConv - size_t : number of bytes converted
  */
-static size_t doMbstowcs ARGLIST((wcs, mbs, n)) ARG(wchar_t *, wcs) ARG(char *, mbs) GRA(size_t, n)
-{
+static size_t doMbstowcs ARGLIST((wcs, mbs, n)) ARG(wchar_t *, wcs)
+    ARG(char *, mbs) GRA(size_t, n) {
 #ifndef SUPPORTS_WCHARS
   int i;
 
@@ -329,8 +346,8 @@ static size_t doMbstowcs ARGLIST((wcs, mbs, n)) ARG(wchar_t *, wcs) ARG(char *, 
  * Output:
  *      bytesConv - size_t : number of bytes converted
  */
-static size_t doWcstombs ARGLIST((mbs, wcs, n)) ARG(char *, mbs) ARG(wchar_t *, wcs) GRA(size_t, n)
-{
+static size_t doWcstombs ARGLIST((mbs, wcs, n)) ARG(char *, mbs)
+    ARG(wchar_t *, wcs) GRA(size_t, n) {
 #ifndef SUPPORTS_WCHARS
   int i;
 
@@ -343,7 +360,7 @@ static size_t doWcstombs ARGLIST((mbs, wcs, n)) ARG(char *, mbs) ARG(wchar_t *, 
   size_t retval;
 
   retval = wcstombs(mbs, wcs, (n * sizeof(wchar_t)));
-  if (retval == (size_t) - 1)
+  if (retval == (size_t)-1)
     return (0);
   else
     return (retval);
@@ -365,10 +382,8 @@ static size_t doWcstombs ARGLIST((mbs, wcs, n)) ARG(char *, mbs) ARG(wchar_t *, 
  * Output:
  *      None
  */
-static void copyWcsToMbs
-ARGLIST((mbs, wcs, len, process_it))
-ARG(char *, mbs) ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it)
-{
+static void copyWcsToMbs ARGLIST((mbs, wcs, len, process_it)) ARG(char *, mbs)
+    ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it) {
   static wchar_t *tbuf = NULL;
   static int tbufSize = 0;
 
@@ -384,7 +399,7 @@ ARG(char *, mbs) ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it)
    * Make sure there's room in the buffer
    */
   if (tbufSize < len) {
-    tbuf = (wchar_t *) XtRealloc((char *)tbuf, (len + 1) * sizeof(wchar_t));
+    tbuf = (wchar_t *)XtRealloc((char *)tbuf, (len + 1) * sizeof(wchar_t));
     tbufSize = len;
   }
 
@@ -398,30 +413,30 @@ ARG(char *, mbs) ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it)
      * Check for quoted characters
      */
     if ((*fromP == commonWChars[WBackSlash]) && process_it) {
-      fromP++;			/* Skip quote */
-      if (fromP == x) {		/* Hanging quote? */
-	*toP++ = commonWChars[WBackSlash];
-	lenToConvert++;
-	break;
+      fromP++;          /* Skip quote */
+      if (fromP == x) { /* Hanging quote? */
+        *toP++ = commonWChars[WBackSlash];
+        lenToConvert++;
+        break;
       }
       tmp = *fromP++;
       if (tmp == commonWChars[WideN]) {
-	*toP++ = commonWChars[WNewLine];
+        *toP++ = commonWChars[WNewLine];
       } else if (tmp == commonWChars[WideT]) {
-	*toP++ = commonWChars[WTab];
+        *toP++ = commonWChars[WTab];
       } else if (tmp == commonWChars[WideR]) {
-	*toP++ = commonWChars[WCarriageReturn];
+        *toP++ = commonWChars[WCarriageReturn];
       } else if (tmp == commonWChars[WideF]) {
-	*toP++ = commonWChars[WFormFeed];
+        *toP++ = commonWChars[WFormFeed];
       } else if (tmp == commonWChars[WideV]) {
-	*toP++ = commonWChars[WVerticalTab];
+        *toP++ = commonWChars[WVerticalTab];
       } else if (tmp == commonWChars[WBackSlash]) {
-	*toP++ = commonWChars[WBackSlash];
+        *toP++ = commonWChars[WBackSlash];
       } else {
-	/*
-	 * No special translation needed
-	 */
-	*toP++ = tmp;
+        /*
+         * No special translation needed
+         */
+        *toP++ = tmp;
       }
     } else {
       *toP++ = *fromP++;
@@ -430,7 +445,7 @@ ARG(char *, mbs) ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it)
   }
 
   tmp = tbuf[lenToConvert];
-  tbuf[lenToConvert] = 0;	/* (wchar_t) NULL; */
+  tbuf[lenToConvert] = 0; /* (wchar_t) NULL; */
   numCvt = doWcstombs(mbs, tbuf, lenToConvert);
   tbuf[lenToConvert] = tmp;
 
@@ -454,9 +469,8 @@ ARG(char *, mbs) ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it)
  *	NOTE:  if wide is NULL, then this returns the number of bytes in
  *	       the multibyte character.
  */
-static int dombtowc
-ARGLIST((wide, multi, size)) ARG(wchar_t *, wide) ARG(char *, multi) GRA(size_t, size)
-{
+static int dombtowc ARGLIST((wide, multi, size)) ARG(wchar_t *, wide)
+    ARG(char *, multi) GRA(size_t, size) {
   int retVal = 0;
 
 #ifndef SUPPORTS_WCHARS
@@ -489,8 +503,7 @@ ARGLIST((wide, multi, size)) ARG(wchar_t *, wide) ARG(char *, multi) GRA(size_t,
  *	ptr - wchar_t* : pointer to character, if found, points to end
  *			of string otherwise ('\0').
  */
-static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str)
-{
+static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str) {
   wchar_t *ptr = str;
   wchar_t *commonWChars = CStrCommonWideCharsGet();
 
@@ -498,13 +511,13 @@ static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str)
     /*
      * Check for separator
      */
-    if ((*ptr == commonWChars[WHash]) ||
-	(*ptr == commonWChars[WQuote]) || (*ptr == commonWChars[WColon])) {
+    if ((*ptr == commonWChars[WHash]) || (*ptr == commonWChars[WQuote]) ||
+        (*ptr == commonWChars[WColon])) {
       return (ptr);
     } else if (*ptr == commonWChars[WBackSlash]) {
       ptr++;
       if (*ptr)
-	ptr++;			/* Skip quoted character */
+        ptr++; /* Skip quoted character */
     } else {
       ptr++;
     }
@@ -532,13 +545,10 @@ static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str)
  *	more - Boolean : True if more of the string to parse.
  *			False means done.
  */
-static Boolean extractSegment
-ARGLIST((str, tagStart, tagLen, txtStart, txtLen, pDir, pSep))
-ARG(wchar_t **, str)
-ARG(wchar_t **, tagStart)
-ARG(size_t *, tagLen)
-ARG(wchar_t **, txtStart) ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSep)
-{
+static Boolean extractSegment ARGLIST((str, tagStart, tagLen, txtStart, txtLen,
+                                       pDir, pSep)) ARG(wchar_t **, str)
+    ARG(wchar_t **, tagStart) ARG(size_t *, tagLen) ARG(wchar_t **, txtStart)
+        ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSep) {
   wchar_t *start;
   wchar_t *text;
   int textL;
@@ -549,7 +559,7 @@ ARG(wchar_t **, txtStart) ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, 
   Boolean sep;
   int dir;
   Boolean done;
-  //int *lenUp;
+  // int *lenUp;
   Boolean checkDir;
   wchar_t *commonWChars;
   wchar_t emptyStrWcs[1];
@@ -566,7 +576,7 @@ ARG(wchar_t **, txtStart) ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, 
   dir = XmSTRING_DIRECTION_L_TO_R;
   sep = False;
   done = False;
-  //lenUp = NULL;
+  // lenUp = NULL;
   commonWChars = CStrCommonWideCharsGet();
 
   /*
@@ -592,83 +602,89 @@ ARG(wchar_t **, txtStart) ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, 
     done = False;
     while (!done) {
       if (*start == commonWChars[WHash]) {
-	if (tagSeen) {
-	  done = True;
-	  break;
-	} else {
-	  tagSeen = True;
-	  tag = ++start;
-	  start = getNextSeparator(tag);
-	  if ((tagL = start - tag) == 0) {
-	    tag = NULL;		/* Null tag specified */
-	  }
-	}
+        if (tagSeen) {
+          done = True;
+          break;
+        } else {
+          tagSeen = True;
+          tag = ++start;
+          start = getNextSeparator(tag);
+          if ((tagL = start - tag) == 0) {
+            tag = NULL; /* Null tag specified */
+          }
+        }
       } else if (*start == commonWChars[WQuote]) {
-	text = ++start;
-	start = getNextSeparator(start);
-	while (!((*start == commonWChars[WQuote]) || (*start == commonWChars[WNull]))) {
-	  start = getNextSeparator(++start);
-	}
+        text = ++start;
+        start = getNextSeparator(start);
+        while (!((*start == commonWChars[WQuote]) ||
+                 (*start == commonWChars[WNull]))) {
+          start = getNextSeparator(++start);
+        }
 
-	if ((textL = start - text) == 0) {
-	  text = NULL;		/* Null text specified  */
-	}
-	/*
-	 * if a quote, skip over it
-	 */
-	if (*start == commonWChars[WQuote]) {
-	  start++;
-	}
-	done = True;
+        if ((textL = start - text) == 0) {
+          text = NULL; /* Null text specified  */
+        }
+        /*
+         * if a quote, skip over it
+         */
+        if (*start == commonWChars[WQuote]) {
+          start++;
+        }
+        done = True;
       } else if (*start == commonWChars[WColon]) {
-	if (modsSeen) {
-	  done = True;
-	  break;
-	}
+        if (modsSeen) {
+          done = True;
+          break;
+        }
 
-	/*
-	 * If the next character is a t or f, the we've got
-	 * a separator.
-	 */
-	modsSeen = True;
-	checkDir = False;
-	start++;
-	if ((*start == commonWChars[WideT]) ||
-	    (*start == commonWChars[WideUT]) || (*start == commonWChars[WideOne])) {
-	  sep = True;
-	  start++;
-	  checkDir = True;
-	} else if ((*start == commonWChars[WideF]) ||
-		   (*start == commonWChars[WideUF]) || (*start == commonWChars[WideZero])) {
-	  sep = False;
-	  start++;
-	  checkDir = True;
-	} else if ((*start == commonWChars[WideR]) || (*start == commonWChars[WideUR])) {
-	  start++;
-	  dir = XmSTRING_DIRECTION_R_TO_L;
-	} else if ((*start == commonWChars[WideL]) || (*start == commonWChars[WideUL])) {
-	  start++;
-	  dir = XmSTRING_DIRECTION_L_TO_R;
-	}
-	/*
-	 * Look for direction if necessary. This requires a bit of
-	 * look ahead.
-	 */
-	if (checkDir && (*start == commonWChars[WColon])) {
-	  if ((*(start + 1) == commonWChars[WideL]) || (*(start + 1) == commonWChars[WideUL])) {
-	    dir = XmSTRING_DIRECTION_L_TO_R;
-	    start += 2;
-	  } else if ((*(start + 1) == commonWChars[WideR]) ||
-		     (*(start + 1) == commonWChars[WideUR])) {
-	    dir = XmSTRING_DIRECTION_R_TO_L;
-	    start += 2;
-	  }
-	}
+        /*
+         * If the next character is a t or f, the we've got
+         * a separator.
+         */
+        modsSeen = True;
+        checkDir = False;
+        start++;
+        if ((*start == commonWChars[WideT]) ||
+            (*start == commonWChars[WideUT]) ||
+            (*start == commonWChars[WideOne])) {
+          sep = True;
+          start++;
+          checkDir = True;
+        } else if ((*start == commonWChars[WideF]) ||
+                   (*start == commonWChars[WideUF]) ||
+                   (*start == commonWChars[WideZero])) {
+          sep = False;
+          start++;
+          checkDir = True;
+        } else if ((*start == commonWChars[WideR]) ||
+                   (*start == commonWChars[WideUR])) {
+          start++;
+          dir = XmSTRING_DIRECTION_R_TO_L;
+        } else if ((*start == commonWChars[WideL]) ||
+                   (*start == commonWChars[WideUL])) {
+          start++;
+          dir = XmSTRING_DIRECTION_L_TO_R;
+        }
+        /*
+         * Look for direction if necessary. This requires a bit of
+         * look ahead.
+         */
+        if (checkDir && (*start == commonWChars[WColon])) {
+          if ((*(start + 1) == commonWChars[WideL]) ||
+              (*(start + 1) == commonWChars[WideUL])) {
+            dir = XmSTRING_DIRECTION_L_TO_R;
+            start += 2;
+          } else if ((*(start + 1) == commonWChars[WideR]) ||
+                     (*(start + 1) == commonWChars[WideUR])) {
+            dir = XmSTRING_DIRECTION_R_TO_L;
+            start += 2;
+          }
+        }
       } else {
-	/*
-	 * A bad string format! We'll just skip the character.
-	 */
-	start++;
+        /*
+         * A bad string format! We'll just skip the character.
+         */
+        start++;
       }
     }
   }
@@ -704,8 +720,7 @@ ARG(wchar_t **, txtStart) ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, 
  * Outputs:
  *	xstr - XmString : the allocated return structure
  */
-static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
-{
+static XmString StringToXmString ARGLIST((str)) GRA(char *, str) {
   static char *tagBuf = NULL;
   static size_t tagBufLen = 0;
   static char *textBuf = NULL;
@@ -733,7 +748,7 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
    * For expediencies sake, we'll overallocate this buffer so that
    * the wcs is guaranteed to fit (1 wc per byte in original string).
    */
-  wcStr = (wchar_t *) XtMalloc((strlen(str) + 1) * sizeof(wchar_t));
+  wcStr = (wchar_t *)XtMalloc((strlen(str) + 1) * sizeof(wchar_t));
   doMbstowcs(wcStr, str, strlen(str) + 1);
 
   /*
@@ -759,7 +774,6 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
       xmStr = XmStringConcat(s2, s1);
       XmStringFree(s1);
       XmStringFree(s2);
-
     }
 
     /*
@@ -767,23 +781,23 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
      */
     if (textLen) {
       if (textBufLen <= (textLen * sizeof(wchar_t))) {
-	textBufLen = (textLen + 1) * sizeof(wchar_t);
-	textBuf = (char *)XtRealloc(textBuf, textBufLen);
+        textBufLen = (textLen + 1) * sizeof(wchar_t);
+        textBuf = (char *)XtRealloc(textBuf, textBufLen);
       }
       copyWcsToMbs(textBuf, text, textLen, True);
 
       if (tagLen) {
-	if (tagBufLen <= (tagLen * sizeof(wchar_t))) {
-	  tagBufLen = (tagLen + 1) * sizeof(wchar_t);
-	  tagBuf = (char *)XtRealloc(tagBuf, tagBufLen);
-	}
-	copyWcsToMbs(tagBuf, tag, tagLen, False);
+        if (tagBufLen <= (tagLen * sizeof(wchar_t))) {
+          tagBufLen = (tagLen + 1) * sizeof(wchar_t);
+          tagBuf = (char *)XtRealloc(tagBuf, tagBufLen);
+        }
+        copyWcsToMbs(tagBuf, tag, tagLen, False);
       } else {
-	if (!tagBuf) {
-	  tagBufLen = strlen(XmSTRING_DEFAULT_CHARSET) + 1;
-	  tagBuf = (char *)XtMalloc(tagBufLen);
-	}
-	strcpy(tagBuf, XmSTRING_DEFAULT_CHARSET);
+        if (!tagBuf) {
+          tagBufLen = strlen(XmSTRING_DEFAULT_CHARSET) + 1;
+          tagBuf = (char *)XtMalloc(tagBufLen);
+        }
+        strcpy(tagBuf, XmSTRING_DEFAULT_CHARSET);
       }
 
       s1 = XmStringCreate(textBuf, tagBuf);
@@ -823,8 +837,7 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
  *      nextCStr - char* : pointer to the next delimiter. Returns NULL if no
  *			delimiter found.
  */
-static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
-{
+static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str) {
   char *comma = str;
   Boolean inQuotes = False;
   int len;
@@ -832,7 +845,7 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
   if (!str)
     return (NULL);
   if (!*str)
-    return (NULL);		/* At end */
+    return (NULL); /* At end */
 
 #ifdef __CENTERLINE__
   mblen((char *)NULL, sizeof(wchar_t));
@@ -846,7 +859,7 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
     }
 
     if (*comma == '\\') {
-      comma++;			/* Over quote */
+      comma++; /* Over quote */
       comma += mblen(comma, sizeof(wchar_t));
       continue;
     }
@@ -856,7 +869,7 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
      */
     if (!inQuotes) {
       if ((*comma == ',') || (*comma == '\012')) {
-	return (comma);
+        return (comma);
       }
     }
 
@@ -870,7 +883,7 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
     comma++;
   }
 
-  return (NULL);		/* None found */
+  return (NULL); /* None found */
 }
 
 /*
@@ -884,8 +897,7 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
  * Output:
  *      cnt - int : the number of XmStrings found
  */
-static int getCStrCount ARGLIST((str)) GRA(char *, str)
-{
+static int getCStrCount ARGLIST((str)) GRA(char *, str) {
   int x = 1;
   char *newStr;
 
@@ -911,18 +923,16 @@ static int getCStrCount ARGLIST((str)) GRA(char *, str)
  * Output:
  *     	cwc - wchar_t * : this array should never be written to or FREEd.
  */
-static wchar_t *CStrCommonWideCharsGet()
-{
+static wchar_t *CStrCommonWideCharsGet() {
   static wchar_t *CommonWideChars = NULL;
   /*
    * If you add to this array, don't forget to change the enum in
    * the TYPEDEFS and DEFINES section above to correspond to this
    * array.
    */
-  static char *characters[] = { "\000", "\t", "\n", "\r", "\f", "\v",
-    "\\", "\"", "#", ":", "f", "l", "n", "r",
-    "t", "v", "F", "L", "R", "T", "0", "1"
-  };
+  static char *characters[] = {"\000", "\t", "\n", "\r", "\f", "\v", "\\", "\"",
+                               "#",    ":",  "f",  "l",  "n",  "r",  "t",  "v",
+                               "F",    "L",  "R",  "T",  "0",  "1"};
 
   if (CommonWideChars == NULL) {
     int i;
@@ -930,7 +940,7 @@ static wchar_t *CStrCommonWideCharsGet()
     /*
      * Allocate and create the array.
      */
-    CommonWideChars = (wchar_t *) XtMalloc(NUM_COMMON_WCHARS * sizeof(wchar_t));
+    CommonWideChars = (wchar_t *)XtMalloc(NUM_COMMON_WCHARS * sizeof(wchar_t));
 
     for (i = 0; i < NUM_COMMON_WCHARS; i++) {
       (void)dombtowc(&(CommonWideChars[i]), characters[i], 1);
@@ -956,12 +966,12 @@ static wchar_t *CStrCommonWideCharsGet()
  * Output:
  *	Standard.
  */
-static Boolean CvtStringToXmString
-ARGLIST((d, args, num_args, fromVal, toVal, data))
-ARG(Display *, d)
-UARG(XrmValue *, args __attribute__ ((unused)))
-ARG(Cardinal *, num_args __attribute__ ((unused))) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data __attribute__ ((unused)))
-{
+static Boolean CvtStringToXmString ARGLIST((d, args, num_args, fromVal, toVal,
+                                            data)) ARG(Display *, d)
+    UARG(XrmValue *, args __attribute__((unused)))
+        ARG(Cardinal *, num_args __attribute__((unused)))
+            ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal)
+                GRAU(XtPointer, data __attribute__((unused))) {
   static XmString resStr;
   char *str;
 
@@ -969,12 +979,10 @@ ARG(Cardinal *, num_args __attribute__ ((unused))) ARG(XrmValue *, fromVal) ARG(
    * This converter takes no parameters
    */
   if (*num_args != 0) {
-    XtAppWarningMsg(XtDisplayToApplicationContext(d),
-		    "cvtStringToXmString",
-		    "wrongParameters",
-		    "XtToolkitError",
-		    "String to XmString converter needs no extra arguments",
-		    (String *) NULL, (Cardinal *) NULL);
+    XtAppWarningMsg(XtDisplayToApplicationContext(d), "cvtStringToXmString",
+                    "wrongParameters", "XtToolkitError",
+                    "String to XmString converter needs no extra arguments",
+                    (String *)NULL, (Cardinal *)NULL);
   }
 
   /*
@@ -987,14 +995,14 @@ ARG(Cardinal *, num_args __attribute__ ((unused))) ARG(XrmValue *, fromVal) ARG(
     /*
      * Convert into internal format
      */
-    resStr = StringToXmString(fromVal->addr + 2);	/* skip :: */
+    resStr = StringToXmString(fromVal->addr + 2); /* skip :: */
   }
 
   /*
    * Done, return result
    */
   if (toVal->addr == NULL) {
-    toVal->addr = (XTPOINTER) & resStr;
+    toVal->addr = (XTPOINTER)&resStr;
     toVal->size = sizeof(XmString);
   } else if (toVal->size < sizeof(XmString)) {
     toVal->size = sizeof(XmString);
@@ -1002,19 +1010,18 @@ ARG(Cardinal *, num_args __attribute__ ((unused))) ARG(XrmValue *, fromVal) ARG(
     XmStringFree(resStr);
     return (False);
   } else {
-    *(XmString *) toVal->addr = resStr;
+    *(XmString *)toVal->addr = resStr;
     toVal->size = sizeof(XmString);
   }
   return (True);
 }
 
-static void XmStringCvtDestroy
-ARGLIST((app, to, data, args, num_args))
-  UARG(XtAppContext, app __attribute__ ((unused)))
-  ARG(XrmValue *, to) UARG(XtPointer, data __attribute__ ((unused)))
-  UARG(XrmValue *, args __attribute__ ((unused))) GRAU(Cardinal *, num_args __attribute__ ((unused)))
-{
-  XmStringFree(*(XmString *) (to->addr));
+static void XmStringCvtDestroy ARGLIST((app, to, data, args, num_args))
+    UARG(XtAppContext, app __attribute__((unused))) ARG(XrmValue *, to)
+        UARG(XtPointer, data __attribute__((unused)))
+            UARG(XrmValue *, args __attribute__((unused)))
+                GRAU(Cardinal *, num_args __attribute__((unused))) {
+  XmStringFree(*(XmString *)(to->addr));
 }
 
 /*
@@ -1036,13 +1043,10 @@ ARGLIST((app, to, data, args, num_args))
  * Output:
  *	Standard.
  */
-static Boolean CvtStringToXmStringTable
-ARGLIST((d, args, num_args, fromVal, toVal, data))
-ARG(Display *, d)
-ARG(XrmValue *, args)
-ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal)
-GRAU(XtPointer, data __attribute__ ((unused)))
-{
+static Boolean CvtStringToXmStringTable ARGLIST((d, args, num_args, fromVal,
+                                                 toVal, data)) ARG(Display *, d)
+    ARG(XrmValue *, args) ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal)
+        ARG(XrmValue *, toVal) GRAU(XtPointer, data __attribute__((unused))) {
   static XmString *CStrTable;
   XmString *tblPtr;
   char *str;
@@ -1055,13 +1059,11 @@ GRAU(XtPointer, data __attribute__ ((unused)))
    * This converter takes no parameters
    */
   if (*num_args != 0) {
-    XtAppWarningMsg
-	(XtDisplayToApplicationContext(d),
-	 "cvtStringToXmStringTable",
-	 "wrongParameters",
-	 "XtToolkitError",
-	 "String to XmStringTable converter needs no extra arguments",
-	 (String *) NULL, (Cardinal *) NULL);
+    XtAppWarningMsg(
+        XtDisplayToApplicationContext(d), "cvtStringToXmStringTable",
+        "wrongParameters", "XtToolkitError",
+        "String to XmStringTable converter needs no extra arguments",
+        (String *)NULL, (Cardinal *)NULL);
   }
 
   /*
@@ -1074,7 +1076,8 @@ GRAU(XtPointer, data __attribute__ ((unused)))
   /*
    * Allocate the XmStrings + 1 for NULL termination
    */
-  CStrTable = (XmString *) XtMalloc((getCStrCount(str) + 1) * sizeof(XmString *));
+  CStrTable =
+      (XmString *)XtMalloc((getCStrCount(str) + 1) * sizeof(XmString *));
 
   /*
    * Use the string converter for the strings
@@ -1095,8 +1098,8 @@ GRAU(XtPointer, data __attribute__ ((unused)))
        * Overwrite nextDelim
        */
       if (nextDelim) {
-	*nextDelim = '\0';
-	nextDelim++;
+        *nextDelim = '\0';
+        nextDelim++;
       }
 
       /*
@@ -1105,7 +1108,7 @@ GRAU(XtPointer, data __attribute__ ((unused)))
       fVal.size = strlen(str) + 1;
       fVal.addr = str;
       tVal.size = sizeof(XTPOINTER);
-      tVal.addr = (XTPOINTER) tblPtr;
+      tVal.addr = (XTPOINTER)tblPtr;
 
       /*
        * Call converter ourselves since this is used to create
@@ -1132,7 +1135,7 @@ GRAU(XtPointer, data __attribute__ ((unused)))
    * Done, return result
    */
   if (toVal->addr == NULL) {
-    toVal->addr = (XTPOINTER) & CStrTable;
+    toVal->addr = (XTPOINTER)&CStrTable;
     toVal->size = sizeof(XmString);
   } else if (toVal->size < sizeof(XmString *)) {
     toVal->size = sizeof(XmString *);
@@ -1145,24 +1148,23 @@ GRAU(XtPointer, data __attribute__ ((unused)))
     XtFree((char *)CStrTable);
     return (False);
   } else {
-    *(XmString **) toVal->addr = CStrTable;
+    *(XmString **)toVal->addr = CStrTable;
     toVal->size = sizeof(XmString *);
   }
   return (True);
 }
 
-static void XmStringTableCvtDestroy
-ARGLIST((app, to, data, args, num_args))
-  UARG(XtAppContext, app __attribute__ ((unused)))
-  ARG(XrmValue *, to) UARG(XtPointer, data __attribute__ ((unused)))
-  UARG(XrmValue *, args __attribute__ ((unused))) GRAU(Cardinal *, num_args __attribute__ ((unused)))
-{
-  XmString *tblPtr = *(XmString **) (to->addr);
+static void XmStringTableCvtDestroy ARGLIST((app, to, data, args, num_args))
+    UARG(XtAppContext, app __attribute__((unused))) ARG(XrmValue *, to)
+        UARG(XtPointer, data __attribute__((unused)))
+            UARG(XrmValue *, args __attribute__((unused)))
+                GRAU(Cardinal *, num_args __attribute__((unused))) {
+  XmString *tblPtr = *(XmString **)(to->addr);
 
   while (*tblPtr) {
     XmStringFree(*tblPtr);
   }
-  XtFree((char *)(*(XmString **) (to->addr)));
+  XtFree((char *)(*(XmString **)(to->addr)));
 }
 
 /*****************************************************************************
@@ -1182,15 +1184,14 @@ ARGLIST((app, to, data, args, num_args))
  * Output:
  *      None
  */
-void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext)
-{
+void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext) {
   XtAppSetTypeConverter(appContext, XmRString, XmRXmString,
-			(XtTypeConverter) CvtStringToXmString,
-			NULL, 0, XtCacheNone, XmStringCvtDestroy);
+                        (XtTypeConverter)CvtStringToXmString, NULL, 0,
+                        XtCacheNone, XmStringCvtDestroy);
 
   XtAppSetTypeConverter(appContext, XmRString, XmRXmStringTable,
-			(XtTypeConverter) CvtStringToXmStringTable,
-			NULL, 0, XtCacheNone, XmStringTableCvtDestroy);
+                        (XtTypeConverter)CvtStringToXmStringTable, NULL, 0,
+                        XtCacheNone, XmStringTableCvtDestroy);
 }
 
 /*
@@ -1208,14 +1209,12 @@ void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext)
  *      None
  */
 #ifndef IGNORE_CONVERT
-XtPointer CONVERT
-ARGLIST((w, from_string, to_type, to_size, success))
-ARG(Widget, w)
-ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size __attribute__ ((unused))) GRA(Boolean *, success)
-{
-  XrmValue fromVal, toVal;	/* resource holders             */
-  Boolean convResult;		/* return value                 */
-  XtPointer val;		/* Pointer size return value    */
+XtPointer CONVERT ARGLIST((w, from_string, to_type, to_size, success))
+    ARG(Widget, w) ARG(char *, from_string) ARG(char *, to_type)
+        ARG(int, to_size __attribute__((unused))) GRA(Boolean *, success) {
+  XrmValue fromVal, toVal; /* resource holders             */
+  Boolean convResult;      /* return value                 */
+  XtPointer val;           /* Pointer size return value    */
 
   to_size = 0;
 
@@ -1256,7 +1255,7 @@ ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size __attribute__ ((u
      * If this conversion failed that we can pretty much return right
      * here because there is nothing else we can do.
      */
-    return ((XtPointer) NULL);
+    return ((XtPointer)NULL);
   }
 
   /*
@@ -1272,11 +1271,11 @@ ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size __attribute__ ((u
      * conversion code can't handle it.  It is possible for a string to
      * string conversion to happen so we do have to watch for it.
      */
-    val = (XTPOINTER) toVal.addr;
+    val = (XTPOINTER)toVal.addr;
   } else if (!strcmp(to_type, "Double")) {
-    val = (XTPOINTER) ((double *)toVal.addr);
+    val = (XTPOINTER)((double *)toVal.addr);
   } else if (!strcmp(to_type, "Float")) {
-    val = (XTPOINTER) ((float *)toVal.addr);
+    val = (XTPOINTER)((float *)toVal.addr);
   } else {
     /*
      * Here is the generic conversion return value handler.  This
@@ -1339,15 +1338,14 @@ ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size __attribute__ ((u
 
 #ifndef IGNORE_MENU_POST
 
-void MENU_POST
-ARGLIST((p, mw, ev, dispatch))
-  UARG(Widget, p __attribute__ ((unused))) ARG(XtPointer, mw) ARG(XEvent *, ev) GRAU(Boolean *, dispatch __attribute__ ((unused)))
-{
+void MENU_POST ARGLIST((p, mw, ev, dispatch))
+    UARG(Widget, p __attribute__((unused))) ARG(XtPointer, mw) ARG(XEvent *, ev)
+        GRAU(Boolean *, dispatch __attribute__((unused))) {
   Arg args[2];
   int argcnt;
   Cardinal button;
-  Widget m = (Widget) mw;
-  XButtonEvent *e = (XButtonEvent *) ev;
+  Widget m = (Widget)mw;
+  XButtonEvent *e = (XButtonEvent *)ev;
 
   argcnt = 0;
   XtSetArg(args[argcnt], XmNwhichButton, &button);
@@ -1381,10 +1379,9 @@ ARGLIST((p, mw, ev, dispatch))
  *          calculated at creation time.
  */
 
-void SET_BACKGROUND_COLOR
-ARGLIST((w, args, argcnt, bg_color))
-  ARG(Widget, w __attribute__ ((unused))) ARG(ArgList, args) ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
-{
+void SET_BACKGROUND_COLOR ARGLIST((w, args, argcnt, bg_color))
+    ARG(Widget, w __attribute__((unused))) ARG(ArgList, args)
+        ARG(Cardinal *, argcnt) GRA(Pixel, bg_color) {
 
 #if ((XmVERSION == 1) && (XmREVISION > 0))
   int i;
@@ -1400,10 +1397,10 @@ ARGLIST((w, args, argcnt, bg_color))
   selectLoc = topShadowLoc = bottomShadowLoc = UNSET;
   for (i = 0; i < *argcnt; i++) {
     if ((strcmp(args[i].name, XmNtopShadowColor) == 0) ||
-	(strcmp(args[i].name, XmNtopShadowPixmap) == 0)) {
+        (strcmp(args[i].name, XmNtopShadowPixmap) == 0)) {
       topShadowLoc = i;
     } else if ((strcmp(args[i].name, XmNbottomShadowColor) == 0) ||
-	       (strcmp(args[i].name, XmNbottomShadowPixmap) == 0)) {
+               (strcmp(args[i].name, XmNbottomShadowPixmap) == 0)) {
       bottomShadowLoc = i;
     } else if (strcmp(args[i].name, XmNarmColor) == 0) {
       selectLoc = i;
@@ -1419,8 +1416,8 @@ ARGLIST((w, args, argcnt, bg_color))
    * arglist.
    *
    */
-  if ((bottomShadowLoc == UNSET) ||
-      (topShadowLoc == UNSET) || (selectLoc == UNSET) || (fgLoc == UNSET)) {
+  if ((bottomShadowLoc == UNSET) || (topShadowLoc == UNSET) ||
+      (selectLoc == UNSET) || (fgLoc == UNSET)) {
     Arg larg[1];
     Colormap cmap;
     Pixel topShadow;
@@ -1430,7 +1427,8 @@ ARGLIST((w, args, argcnt, bg_color))
 
     XtSetArg(larg[0], XmNcolormap, &cmap);
     XtGetValues(w, larg, 1);
-    XmGetColors(XtScreen(w), cmap, bg_color, &fgColor, &topShadow, &bottomShadow, &select);
+    XmGetColors(XtScreen(w), cmap, bg_color, &fgColor, &topShadow,
+                &bottomShadow, &select);
 
     if (topShadowLoc == UNSET) {
       XtSetArg(args[*argcnt], XmNtopShadowColor, topShadow);
@@ -1471,8 +1469,7 @@ ARGLIST((w, args, argcnt, bg_color))
 #ifndef _BX_FIND_TOP_SHELL
 #define _BX_FIND_TOP_SHELL
 
-Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start)
-{
+Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start) {
   Widget p;
 
   while ((p = XtParent(start))) {
@@ -1480,7 +1477,7 @@ Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start)
   }
   return (start);
 }
-#endif				/* _BX_FIND_TOP_SHELL */
+#endif /* _BX_FIND_TOP_SHELL */
 
 /*
  * Function:
@@ -1498,9 +1495,8 @@ Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start)
 #ifndef _BX_WIDGETIDS_FROM_NAMES
 #define _BX_WIDGETIDS_FROM_NAMES
 
-WidgetList BxWidgetIdsFromNames
-ARGLIST((ref, cbName, stringList)) ARG(Widget, ref) ARG(char, *cbName)GRA(char, *stringList)
-{
+WidgetList BxWidgetIdsFromNames ARGLIST((ref, cbName, stringList))
+    ARG(Widget, ref) ARG(char, *cbName) GRA(char, *stringList) {
   WidgetList wgtIds = NULL;
   int wgtCount = 0;
   Widget inst;
@@ -1553,10 +1549,10 @@ ARGLIST((ref, cbName, stringList)) ARG(Widget, ref) ARG(char, *cbName)GRA(char, 
     ptr = start + strlen(start) - 1;
     while (ptr && *ptr) {
       if (isspace(*ptr)) {
-	ptr--;
+        ptr--;
       } else {
-	ptr++;
-	break;
+        ptr++;
+        break;
       }
     }
     if (ptr && *ptr) {
@@ -1577,17 +1573,19 @@ ARGLIST((ref, cbName, stringList)) ARG(Widget, ref) ARG(char, *cbName)GRA(char, 
     while (current != NULL) {
       inst = XtNameToWidget(current, widget);
       if (inst != NULL) {
-	wgtCount++;
-	wgtIds = (WidgetList) XtRealloc((char *)wgtIds, wgtCount * sizeof(Widget));
-	wgtIds[wgtCount - 1] = inst;
-	break;
+        wgtCount++;
+        wgtIds =
+            (WidgetList)XtRealloc((char *)wgtIds, wgtCount * sizeof(Widget));
+        wgtIds[wgtCount - 1] = inst;
+        break;
       }
       current = XtParent(current);
     }
 
     if (current == NULL) {
       printf("Callback Error (%s):\n\t\
-Cannot find widget %s\n", cbName, widget);
+Cannot find widget %s\n",
+             cbName, widget);
     }
     XtFree(widget);
     start = strtok(NULL, ",");
@@ -1596,29 +1594,28 @@ Cannot find widget %s\n", cbName, widget);
   /*
    * NULL terminate the list.
    */
-  wgtIds = (WidgetList) XtRealloc((char *)wgtIds, (wgtCount + 1) * sizeof(Widget));
+  wgtIds =
+      (WidgetList)XtRealloc((char *)wgtIds, (wgtCount + 1) * sizeof(Widget));
   wgtIds[wgtCount] = NULL;
 
   XtFree((char *)tmp);
   return (wgtIds);
 }
-#endif				/* _BX_WIDGETIDS_FROM_NAMES */
+#endif /* _BX_WIDGETIDS_FROM_NAMES */
 
-XtPointer SINGLE ARGLIST((val)) GRA(float, val)
-{
+XtPointer SINGLE ARGLIST((val)) GRA(float, val) {
   XtPointer pointer;
 
-  pointer = (XtPointer) XtMalloc(sizeof(float));
+  pointer = (XtPointer)XtMalloc(sizeof(float));
   if (pointer != NULL)
     *((float *)pointer) = val;
   return (pointer);
 }
 
-XtPointer DOUBLE ARGLIST((val)) GRA(double, val)
-{
+XtPointer DOUBLE ARGLIST((val)) GRA(double, val) {
   XtPointer pointer;
 
-  pointer = (XtPointer) XtMalloc(sizeof(double));
+  pointer = (XtPointer)XtMalloc(sizeof(double));
   if (pointer != NULL)
     *((double *)pointer) = val;
   return (pointer);
@@ -1640,15 +1637,14 @@ XtPointer DOUBLE ARGLIST((val)) GRA(double, val)
 /* ARGSUSED */
 void BxStoreWidgetId(
 #if NeedFunctionPrototypes
-		     Widget w, XtPointer client, XtPointer call __attribute__ ((unused)))
+    Widget w, XtPointer client, XtPointer call __attribute__((unused)))
 #else
-		      w, client, call)
-Widget w;
+    w, client, call) Widget w;
 XtPointer client;
 XtPointer call;
 #endif
 {
-  Widget *widAddr = (Widget *) client;
+  Widget *widAddr = (Widget *)client;
 
   if (widAddr == NULL) {
     return;

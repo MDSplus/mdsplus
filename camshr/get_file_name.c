@@ -36,8 +36,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-------------------------------------------------------------------------
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -55,21 +55,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Fri Apr 13 12:29:02 EDT 2001
 // Tue Apr 17 11:42:55 EDT 2001 -- more concice processing of '/' character
 //-------------------------------------------------------------------------
-char *get_file_name(char *filename)
-{
-  char *pEnv;			// pointer to environment var
-  static char db_dir[256], *pChar;	// needs to be persistant
+char *get_file_name(char *filename) {
+  char *pEnv;                      // pointer to environment var
+  static char db_dir[256], *pChar; // needs to be persistant
 
   // get environment variable
-  pEnv = getenv(DB_DIR);	// variable specified in ".../tunables.h"
+  pEnv = getenv(DB_DIR); // variable specified in ".../tunables.h"
 
   // adjust filename
   if (pEnv == NULL)
-    sprintf(db_dir, "%s", filename);	// ENV variable is NULL -- no change to filename
+    sprintf(db_dir, "%s",
+            filename); // ENV variable is NULL -- no change to filename
   else
-    sprintf(db_dir, "%s%s%s",	// ENV variable non-NULL -- prepend to filename
-	    pEnv, (*(pEnv + strlen(pEnv) - 1) != '/') ? "/" : "",	// add '/' if necessary
-	    filename);
+    sprintf(db_dir, "%s%s%s", // ENV variable non-NULL -- prepend to filename
+            pEnv,
+            (*(pEnv + strlen(pEnv) - 1) != '/') ? "/"
+                                                : "", // add '/' if necessary
+            filename);
 
   pChar = &db_dir[0];
 

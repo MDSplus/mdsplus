@@ -22,24 +22,22 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdlib.h>
 #include <mdsobjects.h>
+#include <stdlib.h>
 
+#include "mdsplus/AutoPointer.hpp"
 #include "testing.h"
 #include "testutils/unique_ptr.h"
-#include "mdsplus/AutoPointer.hpp"
 
 using namespace MDSplus;
 using namespace testing;
 
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused))) {
+  BEGIN_TESTING(Action);
+  SKIP_TEST("Action test is not implemented yet");
+  // TO BE DONE //
+  // ACTION and DISPATCHER is not tested yet //
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
-{
-    BEGIN_TESTING(Action);
-    SKIP_TEST("Action test is not implemented yet");
-    // TO BE DONE //
-    // ACTION and DISPATCHER is not tested yet //
-
-    END_TESTING;
+  END_TESTING;
 }
-

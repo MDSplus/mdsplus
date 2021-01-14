@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*****************************************************************************
-	Description:
+        Description:
 
    Ported from Jeff Casey's fortran support:
 
@@ -46,23 +46,26 @@ Note also that the front panel VETO and CLR inputs may inhibit action.
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
-#include <mds_stdarg.h>
-#include <treeshr.h>
-#include "hm650_gen.h"
 #include "devroutines.h"
-
+#include "hm650_gen.h"
+#include <mds_gendevice.h>
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mitdevices_msg.h>
+#include <treeshr.h>
 
 static int one = 1;
-#define min(a,b) ((a)<(b) ? (a) : (b))
-#define max(a,b) ((a)>(b) ? (a) : (b))
-#define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, mem, 0), &one, &one),status)
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define pio(f, a, d, mem)                                                      \
+  return_on_error(                                                             \
+      DevCamChk(CamPiow(setup->name, a, f, d, mem, 0), &one, &one), status)
+#define return_on_error(f, retstatus)                                          \
+  if (!((status = f) & 1))                                                     \
+    return retstatus;
 
-EXPORT int hm650___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
-{
+EXPORT int hm650___init(struct descriptor *niddsc __attribute__((unused)),
+                        InInitStruct *setup) {
   int status = 1;
   int dly_status = 1;
   int put_status = 1;
@@ -110,25 +113,26 @@ EXPORT int hm650___init(struct descriptor *niddsc __attribute__ ((unused)), InIn
     }
     pio(16, i, &ndelay, 16);
     if (status & 1) {
-      static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+      static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
       int trig_in = setup->head_nid + HM650_N_TRIG_IN_0 + i;
       int trig_out = setup->head_nid + HM650_N_TRIG_OUT_0 + i;
       delay = (ndelay | 0xFFF) / 4096. * 102.4;
       switch (ndelay >> 12) {
       case 1:
-	delay *= 10;
-	break;
+        delay *= 10;
+        break;
       case 2:
-	delay *= 100.;
-	break;
+        delay *= 100.;
+        break;
       case 3:
-	delay *= 1000.;
-	break;
+        delay *= 1000.;
+        break;
       }
       trig_dsc.pointer = (char *)&trig_in;
-      put_status = TdiCompile((struct descriptor *)&expr, &trig_dsc, &delay_dsc MDS_END_ARG);
+      put_status = TdiCompile((struct descriptor *)&expr, &trig_dsc,
+                              &delay_dsc MDS_END_ARG);
       if (put_status & 2)
-	put_status = TreePutRecord(trig_out, (struct descriptor *)&out_xd, 0);
+        put_status = TreePutRecord(trig_out, (struct descriptor *)&out_xd, 0);
     }
   }
 
@@ -144,8 +148,8 @@ EXPORT int hm650___init(struct descriptor *niddsc __attribute__ ((unused)), InIn
     return 1;
 }
 
-EXPORT int hm650___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
-{
+EXPORT int hm650___trigger(struct descriptor *niddsc __attribute__((unused)),
+                           InTriggerStruct *setup) {
   int status;
   pio(25, 0, 0, 16);
   return status;

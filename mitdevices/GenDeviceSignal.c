@@ -24,15 +24,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GEN_DEVICE$SIGNAL
+                Name:   GEN_DEVICE$SIGNAL
 
-		Type:   C function
+                Type:   C function
 
-		Author:	Giulio Fregonese
+                Author:	Giulio Fregonese
 
-		Date:    6-OCT-90
+                Date:    6-OCT-90
 
-		Purpose: Perform device specific error handling
+                Purpose: Perform device specific error handling
 
 ------------------------------------------------------------------------------
 
@@ -40,13 +40,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    under contract from Istituto Gas Ionizzati del CNR - Padova (Italy)
 
 --------------------------------------------------------------------------- */
-#include <treeshr.h>
 #include <stdio.h>
+#include <treeshr.h>
 
 extern int GenDeviceCallData();
 
-EXPORT int GenDeviceSignal(int head_nid, unsigned int status_id_1 __attribute__ ((unused)), unsigned int status_id_2)
-{
+EXPORT int GenDeviceSignal(int head_nid,
+                           unsigned int status_id_1 __attribute__((unused)),
+                           unsigned int status_id_2) {
   char *pathname = 0;
   pathname = TreeGetPath(head_nid);
   if (pathname != 0) {

@@ -23,32 +23,26 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <unistd.h>
 #include <fstream>
-#include <sys/types.h>
 #include <signal.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include <mdsobjects.h>
 
-
 #include "testing.h"
+#include "testutils/MdsIpInstancer.h"
 #include "testutils/testutils.h"
 #include "testutils/unique_ptr.h"
-#include "testutils/MdsIpInstancer.h"
-
-
 
 using namespace MDSplus;
 using namespace testing;
 
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused))) {
 
-
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
-{
-
-    Connection cnx((char*)"udt://localhost:8000",0);
-    cnx.openTree((char*)"test_tree",-1);
-    cnx.closeAllTrees();
-
+  Connection cnx((char *)"udt://localhost:8000", 0);
+  cnx.openTree((char *)"test_tree", -1);
+  cnx.closeAllTrees();
 }

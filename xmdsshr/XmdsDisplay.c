@@ -35,23 +35,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSDISPLAY.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSDISPLAY
+                Name:   XMDSDISPLAY
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:    6-MAY-1992
+                Date:    6-MAY-1992
 
-		Purpose: Xmds Widget to display a node's contents. (e.g. the
-	                 decompile ( value ( node ))
+                Purpose: Xmds Widget to display a node's contents. (e.g. the
+                         decompile ( value ( node ))
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-  Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount);
-  Boolean XmdsIsDisplay(Widget w);
+  Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal
+argcount); Boolean XmdsIsDisplay(Widget w);
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -61,23 +61,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
+#include <Mrm/MrmPublic.h>
+#include <Xm/Label.h>
+#include <Xmds/XmdsDisplay.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <Mrm/MrmPublic.h>
-#include <Xmds/XmdsDisplay.h>
-#include <Xm/Label.h>
 #define DisplayUserData 0xABCDEFA
 
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */
 
-#include <xmdsshr.h>
 #include <strroutines.h>
+#include <xmdsshr.h>
 extern int TdiEvaluate();
 extern int TdiDecompile();
 /*------------------------------------------------------------------------------
@@ -102,20 +102,20 @@ typedef struct _DisplayPart {
 } XmdsDisplayPart;
 
 static XtResource resources[] = {
-  {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsDisplayPart, nid), XmRImmediate, 0},
-  {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int), XtOffsetOf(XmdsDisplayPart, nid_offset),
-   XmRImmediate, 0}
-};
+    {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsDisplayPart, nid),
+     XmRImmediate, 0},
+    {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsDisplayPart, nid_offset), XmRImmediate, 0}};
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount)
-{
-  XmdsDisplayPart info = { -1, 0 };
+EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args,
+                                Cardinal argcount) {
+  XmdsDisplayPart info = {-1, 0};
   Widget w;
-  Arg lab_args[] = { {XmNlabelString, 0}, {XmNuserData, DisplayUserData} };
+  Arg lab_args[] = {{XmNlabelString, 0}, {XmNuserData, DisplayUserData}};
   Arg *merged_args;
   int nid;
 
@@ -127,21 +127,21 @@ EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardin
   else
     nid = -1;
   if (nid != -1) {
-    static struct descriptor_d display_dsc = { 0, DTYPE_T, CLASS_D, 0 };
-    static struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
-    struct descriptor nid_dsc = { sizeof(int), DTYPE_NID, CLASS_S, (char *)0 };
+    static struct descriptor_d display_dsc = {0, DTYPE_T, CLASS_D, 0};
+    static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+    struct descriptor nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, (char *)0};
     int status;
     nid_dsc.pointer = (char *)&nid;
     status = TdiEvaluate(&nid_dsc, &xd MDS_END_ARG);
     if (status & 1) {
       status = TdiDecompile(&xd, &display_dsc MDS_END_ARG);
       if (status & 1) {
-	static DESCRIPTOR(zero_dsc, "\0");
-	StrConcat((struct descriptor *)&display_dsc, (struct descriptor *)&display_dsc,
-		  &zero_dsc MDS_END_ARG);
-	lab_args[0].value = (long)XmStringCreateSimple(display_dsc.pointer);
+        static DESCRIPTOR(zero_dsc, "\0");
+        StrConcat((struct descriptor *)&display_dsc,
+                  (struct descriptor *)&display_dsc, &zero_dsc MDS_END_ARG);
+        lab_args[0].value = (long)XmStringCreateSimple(display_dsc.pointer);
       } else
-	lab_args[0].value = (long)XmStringCreateSimple("Error - Decomp");
+        lab_args[0].value = (long)XmStringCreateSimple("Error - Decomp");
     } else
       lab_args[0].value = (long)XmStringCreateSimple("Error - Eval");
   }
@@ -152,8 +152,7 @@ EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardin
   return w;
 }
 
-EXPORT Boolean XmdsIsDisplay(Widget w)
-{
+EXPORT Boolean XmdsIsDisplay(Widget w) {
   XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);
   if (user_data && (user_data == (XtPointer)DisplayUserData))

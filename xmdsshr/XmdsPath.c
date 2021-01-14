@@ -37,22 +37,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSPATH.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSPATH
+                Name:   XMDSPATH
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:    6-MAY-1992
+                Date:    6-MAY-1992
 
-		Purpose: Xmds Widget to display a node's path
+                Purpose: Xmds Widget to display a node's path
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-  Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount);
-  Boolean XmdsIsPath(Widget w);
+  Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal
+argcount); Boolean XmdsIsPath(Widget w);
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -62,19 +62,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
+#include <Mrm/MrmPublic.h>
+#include <Xm/Label.h>
+#include <Xm/Xm.h>
+#include <Xmds/XmdsPath.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <strroutines.h>
 #include <ncidef.h>
+#include <strroutines.h>
 #include <treeshr.h>
-#include <Mrm/MrmPublic.h>
-#include <Xm/Xm.h>
-#include <Xm/Label.h>
-#include <Xmds/XmdsPath.h>
 #include <xmdsshr.h>
 #define PathUserData 0xAAAAAAA
 
@@ -98,7 +98,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  Local variables:                                                             */
 
-
 typedef struct _PathPart {
   int nid;
   int nid_offset;
@@ -106,22 +105,22 @@ typedef struct _PathPart {
 } XmdsPathPart;
 
 static XtResource resources[] = {
-  {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, nid), XmRImmediate, 0},
-  {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, nid_offset),
-   XmRImmediate, 0},
-  {XmdsNpathType, "PathType", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, path_type),
-   XmRImmediate, 0}
-};
+    {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, nid),
+     XmRImmediate, 0},
+    {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsPathPart, nid_offset), XmRImmediate, 0},
+    {XmdsNpathType, "PathType", XmRInt, sizeof(int),
+     XtOffsetOf(XmdsPathPart, path_type), XmRImmediate, 0}};
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount)
-{
-  XmdsPathPart info = { -1, 0, 0 };
+EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args,
+                             Cardinal argcount) {
+  XmdsPathPart info = {-1, 0, 0};
   Widget w;
-  Arg lab_args[] = { {XmNlabelString, 0}, {XmNuserData, PathUserData} };
+  Arg lab_args[] = {{XmNlabelString, 0}, {XmNuserData, PathUserData}};
   Arg *merged_args;
   int nid;
 
@@ -133,12 +132,10 @@ EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal 
   else
     nid = -1;
   if (nid != -1) {
-    NCI_ITM nci[] = { {0, 0, 0, 0}
-    ,
-    {0, NciEND_OF_LIST, 0, 0}
-    };
+    NCI_ITM nci[] = {{0, 0, 0, 0}, {0, NciEND_OF_LIST, 0, 0}};
     int status;
-    nci[0].code = (info.path_type == NciABSOLUTE_PATH) ? NciFULLPATH : NciMINPATH;
+    nci[0].code =
+        (info.path_type == NciABSOLUTE_PATH) ? NciFULLPATH : NciMINPATH;
     status = TreeGetNci(nid, nci);
     if (status & 1) {
       lab_args[0].value = (long)XmStringCreateSimple(nci[0].pointer);
@@ -149,13 +146,12 @@ EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal 
     lab_args[0].value = (long)XmStringCreateSimple("No node");
   merged_args = XtMergeArgLists(args, argcount, lab_args, XtNumber(lab_args));
   w = XmCreateLabel(parent, name, merged_args, XtNumber(lab_args) + argcount);
-  XmStringFree((XmString) lab_args[0].value);
+  XmStringFree((XmString)lab_args[0].value);
   XtFree((char *)merged_args);
   return w;
 }
 
-EXPORT Boolean XmdsIsPath(Widget w)
-{
+EXPORT Boolean XmdsIsPath(Widget w) {
   XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);
   if (user_data && (user_data == (XtPointer)PathUserData))

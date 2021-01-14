@@ -36,7 +36,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *11    6-FEB-1992 12:45:29 TWF "Remove XmdsNapplyProc" */
 /*  *10    6-FEB-1992 11:39:15 TWF "Remove XmdsNapplyProc" */
 /*  *9     6-FEB-1992 11:20:34 TWF "Add XmdsNapplyProc to ApplyButton" */
-/*  *8    23-JAN-1992 09:51:49 TWF "make okbuttons widgets (vuit can't deal with gadgets)" */
+/*  *8    23-JAN-1992 09:51:49 TWF "make okbuttons widgets (vuit can't deal with
+ * gadgets)" */
 /*  *7    23-JAN-1992 09:05:44 TWF "Make okbuttons gadgets" */
 /*  *6    21-JAN-1992 09:31:49 TWF "Remove box" */
 /*  *5    16-JAN-1992 11:27:12 TWF "Automatically add defaults button" */
@@ -47,26 +48,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSOKBUTTONS.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsOkButtons
+                Name:   XmdsOkButtons
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   16-JAN-1992
+                Date:   16-JAN-1992
 
-		Purpose:  Ok, Apply, Reset, Cancel buttons with
-			  XmdsOkCallback, XmdsApplyCallback, XmdsResetCallback,
-		    and   XmdsCancelCallback activateCallbacks respectively.
+                Purpose:  Ok, Apply, Reset, Cancel buttons with
+                          XmdsOkCallback, XmdsApplyCallback, XmdsResetCallback,
+                    and   XmdsCancelCallback activateCallbacks respectively.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-int XmdsCreateOkButton(Widget parent, String name, ArgList args, Cardinal numargs);
-int XmdsCreateApplyButton(Widget parent, String name, ArgList args, Cardinal numargs);
-int XmdsCreateResetButton(Widget parent, String name, ArgList args, Cardinal numargs);
-int XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal numargs);
+int XmdsCreateOkButton(Widget parent, String name, ArgList args, Cardinal
+numargs); int XmdsCreateApplyButton(Widget parent, String name, ArgList args,
+Cardinal numargs); int XmdsCreateResetButton(Widget parent, String name, ArgList
+args, Cardinal numargs); int XmdsCreateCancelButton(Widget parent, String name,
+ArgList args, Cardinal numargs);
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -76,19 +78,19 @@ int XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal nu
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
 #include <Mrm/MrmPublic.h>
-#include <Xm/Xm.h>
 #include <Xm/PushB.h>
-#include <Xmds/XmdsOkButtons.h>
+#include <Xm/Xm.h>
 #include <Xmds/XmdsCallbacks.h>
+#include <Xmds/XmdsOkButtons.h>
 #include <xmdsshr.h>
 
-static Widget CreateButton(Widget parent, String name, ArgList args, Cardinal numargs, String ident,
-			   Boolean set_default);
+static Widget CreateButton(Widget parent, String name, ArgList args,
+                           Cardinal numargs, String ident, Boolean set_default);
 static int Apply(Widget w, XtCallbackList callbacks);
 static Widget FindShellChild(Widget w);
 static void Ok(Widget w, XtCallbackList callbacks);
@@ -96,100 +98,97 @@ static void Destroy(Widget w, XtCallbackList callbacks);
 static int CountCallbacks(XtCallbackList callbacks);
 
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+_Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-EXPORT Widget XmdsCreateOkButton(Widget parent, String name, ArgList args, Cardinal numargs)
-{
+    EXPORT Widget XmdsCreateOkButton(Widget parent, String name, ArgList args,
+                                     Cardinal numargs) {
   Widget w = CreateButton(parent, name, args, numargs, "Ok", 1);
   if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome) {
     int num_callbacks;
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNactivateCallback, &callbacks, NULL);
     num_callbacks = CountCallbacks(callbacks);
-    callbacks =
-	(XtCallbackList) memcpy(XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)), callbacks,
-				sizeof(*callbacks) * (num_callbacks + 1));
+    callbacks = (XtCallbackList)memcpy(
+        XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)), callbacks,
+        sizeof(*callbacks) * (num_callbacks + 1));
     XtRemoveAllCallbacks(w, XmNactivateCallback);
-    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) Ok, callbacks);
-    XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, callbacks);
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)Ok, callbacks);
+    XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc)Destroy, callbacks);
   } else
-    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsOkCallback, 0);
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsOkCallback, 0);
   return w;
 }
 
-static int CountCallbacks(XtCallbackList callbacks)
-{
+static int CountCallbacks(XtCallbackList callbacks) {
   int i;
-  for (i = 0; callbacks->callback; callbacks = callbacks + 1, i++) ;
+  for (i = 0; callbacks->callback; callbacks = callbacks + 1, i++)
+    ;
   return i;
 }
 
-static void Ok(Widget w, XtCallbackList callbacks)
-{
+static void Ok(Widget w, XtCallbackList callbacks) {
   if (Apply(w, callbacks))
     XtDestroyWidget(FindShellChild(w));
 }
 
-static Widget FindShellChild(Widget w)
-{
+static Widget FindShellChild(Widget w) {
   Widget sc;
-  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc)) ;
+  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc))
+    ;
   return sc;
 }
 
-static int Apply(Widget w, XtCallbackList callbacks)
-{
+static int Apply(Widget w, XtCallbackList callbacks) {
   int status = XmdsXdsAreValid(FindShellChild(w));
   for (; callbacks->callback && status; callbacks++)
-    status = (*(int (*)())callbacks->callback) (w, callbacks->closure);
+    status = (*(int (*)())callbacks->callback)(w, callbacks->closure);
   if (status)
     status = XmdsApplyAllXds(FindShellChild(w));
   return status;
 }
 
-static void Destroy(Widget w, XtCallbackList callbacks)
-{
+static void Destroy(Widget w, XtCallbackList callbacks) {
   XtFree((char *)callbacks);
 }
 
-EXPORT Widget XmdsCreateApplyButton(Widget parent, String name, ArgList args, Cardinal numargs)
-{
+EXPORT Widget XmdsCreateApplyButton(Widget parent, String name, ArgList args,
+                                    Cardinal numargs) {
   Widget w = CreateButton(parent, name, args, numargs, "Apply", 0);
   if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome) {
     int num_callbacks;
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNactivateCallback, &callbacks, NULL);
     num_callbacks = CountCallbacks(callbacks);
-    callbacks =
-	(XtCallbackList) memcpy(XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)), callbacks,
-				sizeof(*callbacks) * (num_callbacks + 1));
+    callbacks = (XtCallbackList)memcpy(
+        XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)), callbacks,
+        sizeof(*callbacks) * (num_callbacks + 1));
     XtRemoveAllCallbacks(w, XmNactivateCallback);
-    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) Apply, callbacks);
-    XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, callbacks);
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)Apply, callbacks);
+    XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc)Destroy, callbacks);
   } else
-    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsApplyCallback, 0);
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsApplyCallback, 0);
   return w;
 }
 
-EXPORT Widget XmdsCreateResetButton(Widget parent, String name, ArgList args, Cardinal numargs)
-{
+EXPORT Widget XmdsCreateResetButton(Widget parent, String name, ArgList args,
+                                    Cardinal numargs) {
   Widget w = CreateButton(parent, name, args, numargs, "Reset", 0);
-  XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsResetCallback, 0);
+  XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsResetCallback, 0);
   return w;
 }
 
-EXPORT Widget XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal numargs)
-{
+EXPORT Widget XmdsCreateCancelButton(Widget parent, String name, ArgList args,
+                                     Cardinal numargs) {
   Widget w = CreateButton(parent, name, args, numargs, "Cancel", 0);
-  XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsCancelCallback, 0);
+  XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsCancelCallback, 0);
   return w;
 }
 
-static Widget CreateButton(Widget parent, String name, ArgList args, Cardinal numargs, String ident,
-			   Boolean set_default)
-{
-  Arg arglist[] = { {XmNlabelString, 0} };
+static Widget CreateButton(Widget parent, String name, ArgList args,
+                           Cardinal numargs, String ident,
+                           Boolean set_default) {
+  Arg arglist[] = {{XmNlabelString, 0}};
 
   Widget w;
   arglist[0].value = (long)XmStringCreateSimple(ident);
@@ -198,6 +197,6 @@ static Widget CreateButton(Widget parent, String name, ArgList args, Cardinal nu
     XtSetValues(w, args, numargs);
   if (set_default)
     XtVaSetValues(FindShellChild(w), XmNdefaultButton, w, NULL);
-  XmStringFree((XmString) arglist[0].value);
+  XmStringFree((XmString)arglist[0].value);
   return w;
 }

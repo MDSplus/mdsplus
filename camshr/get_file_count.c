@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -70,9 +70,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db type
 // output:      number of entries [0..n]; FILE_ERROR [-2 * 2] if error
 //-------------------------------------------------------------------------
-int get_file_count(int dbType)
-{
-  void *dbptr;			// generic pointer to struct's
+int get_file_count(int dbType) {
+  void *dbptr; // generic pointer to struct's
   char dbFileName[16];
   int dbFileSize, entrySize, i, numOfEntries;
   int *FileIsMapped;
@@ -118,18 +117,18 @@ int get_file_count(int dbType)
   // get the appropriate count
   numOfEntries = 0;
   for (i = 0;; i += entrySize) {
-    if ((i + entrySize) > dbFileSize)	// make sure we don't fall off the end ...
+    if ((i + entrySize) > dbFileSize) // make sure we don't fall off the end ...
       break;
 
     //              sprintf(&ch, "%.1s", (char *)(dbptr+i));
 
-    if (*(char *)(dbptr + i) == ' ')	// we're done, so out'a here
+    if (*(char *)(dbptr + i) == ' ') // we're done, so out'a here
       break;
 
     ++numOfEntries;
   }
 
- GetFileCount_Exit:
+GetFileCount_Exit:
   if (MSGLVL(DETAILS))
     printf("get_file_count(%d):\n", numOfEntries);
 

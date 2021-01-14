@@ -22,15 +22,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "mdsip_connections.h"
 #include <pthread_port.h>
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
   int errout;
-  INIT_AND_FREE_ON_EXIT(char**,extra_argv);
+  INIT_AND_FREE_ON_EXIT(char **, extra_argv);
   IoRoutines *io;
   int extra_argc;
   ParseStdArgs(argc, argv, &extra_argc, &extra_argv);

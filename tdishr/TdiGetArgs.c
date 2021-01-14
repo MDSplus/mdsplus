@@ -23,23 +23,21 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiGetArgs.C
-	Fetches signal, data, and category of each input.
-	Guesses input conversion and output category.
-	Empty XD if not a signal.
-	Empty XD or null units if not with_units.
-	Permits BUILD_UNITS(BUILD_SIGNAL(data),units) or BUILD_SIGNAL(BUILD_UNITS(data,units)) and others.
-	Internal routine called by
-	        Tdi1Build       Tdi1Same        Tdi1Scalar      Tdi1Trans       Tdi1Trim
-	        Tdi1RANGE       Tdi1SetRange    Tdi1Vector
+        Fetches signal, data, and category of each input.
+        Guesses input conversion and output category.
+        Empty XD if not a signal.
+        Empty XD or null units if not with_units.
+        Permits BUILD_UNITS(BUILD_SIGNAL(data),units) or
+   BUILD_SIGNAL(BUILD_UNITS(data,units)) and others. Internal routine called by
+                Tdi1Build       Tdi1Same        Tdi1Scalar      Tdi1Trans
+   Tdi1Trim Tdi1RANGE       Tdi1SetRange    Tdi1Vector
 
-	Ken Klare, LANL CTR-7   (c)1989,1990
+        Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#include <stdlib.h>
 #include <mdsdescrip.h>
-#include <tdishr_messages.h>
 #include <mdsshr.h>
-
-
+#include <stdlib.h>
+#include <tdishr_messages.h>
 
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -55,136 +53,143 @@ extern int Tdi2Any();
 extern int Tdi2Cmplx();
 
 int TdiGetSignalUnitsData(struct descriptor *in_ptr,
-			  struct descriptor_xd *signal_ptr,
-			  struct descriptor_xd *units_ptr, struct descriptor_xd *data_ptr)
-{
-  static const unsigned char omitsu[] = { DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0 };
-  static const unsigned char omits[] = { DTYPE_SIGNAL, 0 };
-  static const unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
+                          struct descriptor_xd *signal_ptr,
+                          struct descriptor_xd *units_ptr,
+                          struct descriptor_xd *data_ptr) {
+  static const unsigned char omitsu[] = {DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0};
+  static const unsigned char omits[] = {DTYPE_SIGNAL, 0};
+  static const unsigned char omitu[] = {DTYPE_WITH_UNITS, 0};
   struct descriptor_xd tmp, *keep;
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
   MdsFree1Dx(signal_ptr, NULL);
   status = tdi_get_data(omitsu, in_ptr, data_ptr);
-  if STATUS_OK
+  if
+    STATUS_OK
+  switch (data_ptr->pointer->dtype) {
+  case DTYPE_SIGNAL:
+    *signal_ptr = *data_ptr;
+    *data_ptr = EMPTY_XD;
+    keep = TDI_SELF_PTR;
+    TDI_SELF_PTR = (struct descriptor_xd *)signal_ptr->pointer;
+    status = tdi_get_data(
+        omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data,
+        data_ptr);
+    if
+      STATUS_OK
     switch (data_ptr->pointer->dtype) {
-    case DTYPE_SIGNAL:
-      *signal_ptr = *data_ptr;
-      *data_ptr = EMPTY_XD;
-      keep = TDI_SELF_PTR;
-      TDI_SELF_PTR = (struct descriptor_xd *)signal_ptr->pointer;
-      status = tdi_get_data(omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data, data_ptr);
-      if STATUS_OK
-	switch (data_ptr->pointer->dtype) {
-	case DTYPE_WITH_UNITS:
-	  tmp = *data_ptr;
-	  *data_ptr = EMPTY_XD;
-	  status =
-	      TdiData(((struct descriptor_with_units *)tmp.pointer)->units, units_ptr MDS_END_ARG);
-	  if STATUS_OK
-	    status =
-		TdiData(((struct descriptor_with_units *)tmp.pointer)->data, data_ptr MDS_END_ARG);
-	  MdsFree1Dx(&tmp, NULL);
-	  break;
-	default:
-	  MdsFree1Dx(units_ptr, NULL);
-	  break;
-	}
-      TDI_SELF_PTR = keep;
-      break;
     case DTYPE_WITH_UNITS:
       tmp = *data_ptr;
       *data_ptr = EMPTY_XD;
-      status = TdiUnits(tmp.pointer, units_ptr MDS_END_ARG);
-      if STATUS_OK
-	status = tdi_get_data(omits, tmp.pointer, data_ptr);
-      if STATUS_OK
-	switch (data_ptr->pointer->dtype) {
-	case DTYPE_SIGNAL:
-	  *signal_ptr = *data_ptr;
-	  *data_ptr = EMPTY_XD;
-	  status = TdiData(signal_ptr->pointer, data_ptr MDS_END_ARG);
-	  break;
-	default:
-	  break;
-	}
+      status = TdiData(((struct descriptor_with_units *)tmp.pointer)->units,
+                       units_ptr MDS_END_ARG);
+      if
+        STATUS_OK
+      status = TdiData(((struct descriptor_with_units *)tmp.pointer)->data,
+                       data_ptr MDS_END_ARG);
       MdsFree1Dx(&tmp, NULL);
       break;
     default:
       MdsFree1Dx(units_ptr, NULL);
       break;
     }
+    TDI_SELF_PTR = keep;
+    break;
+  case DTYPE_WITH_UNITS:
+    tmp = *data_ptr;
+    *data_ptr = EMPTY_XD;
+    status = TdiUnits(tmp.pointer, units_ptr MDS_END_ARG);
+    if
+      STATUS_OK
+    status = tdi_get_data(omits, tmp.pointer, data_ptr);
+    if
+      STATUS_OK
+    switch (data_ptr->pointer->dtype) {
+    case DTYPE_SIGNAL:
+      *signal_ptr = *data_ptr;
+      *data_ptr = EMPTY_XD;
+      status = TdiData(signal_ptr->pointer, data_ptr MDS_END_ARG);
+      break;
+    default:
+      break;
+    }
+    MdsFree1Dx(&tmp, NULL);
+    break;
+  default:
+    MdsFree1Dx(units_ptr, NULL);
+    break;
+  }
   return status;
 }
 
 void UseNativeFloat(struct TdiCatStruct *cat) {
   dtype_t type;
   tdicat_t tcat;
-#define CHECK(TYPE) tcat = TdiREF_CAT[type = TYPE].cat;\
-  if ((tcat & ~(TdiCAT_WIDE_EXP)) == (cat->out_cat & ~(TdiCAT_WIDE_EXP)))\
+#define CHECK(TYPE)                                                            \
+  tcat = TdiREF_CAT[type = TYPE].cat;                                          \
+  if ((tcat & ~(TdiCAT_WIDE_EXP)) == (cat->out_cat & ~(TdiCAT_WIDE_EXP)))      \
     goto found;
-  CHECK(DTYPE_NATIVE_FLOAT  );
-  CHECK(DTYPE_NATIVE_DOUBLE );
-  CHECK(DTYPE_FLOAT_COMPLEX );
+  CHECK(DTYPE_NATIVE_FLOAT);
+  CHECK(DTYPE_NATIVE_DOUBLE);
+  CHECK(DTYPE_FLOAT_COMPLEX);
   CHECK(DTYPE_DOUBLE_COMPLEX);
   return;
-found: ;
+found:;
   cat->out_dtype = type;
-  cat->out_cat   = tcat;
+  cat->out_cat = tcat;
 }
 
 /*-------------------------------------------------------------------*/
 
-int TdiGetArgs(opcode_t opcode,
-	       int narg,
-	       struct descriptor *list[],
-	       struct descriptor_xd sig[],
-	       struct descriptor_xd uni[], struct descriptor_xd dat[], struct TdiCatStruct cats[])
-{
+int TdiGetArgs(opcode_t opcode, int narg, struct descriptor *list[],
+               struct descriptor_xd sig[], struct descriptor_xd uni[],
+               struct descriptor_xd dat[], struct TdiCatStruct cats[]) {
   INIT_STATUS;
   struct TdiCatStruct *cptr;
-  struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
+  struct TdiFunctionStruct *fun_ptr =
+      (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int nc = 0, j;
-  tdicat_t
-	i1 = TDIREF_CAT(fun_ptr->i1).cat,
-	i2 = TDIREF_CAT(fun_ptr->i2).cat,
-	o1 = TDIREF_CAT(fun_ptr->o1).cat,
-	o2 = TDIREF_CAT(fun_ptr->o2).cat;
+  tdicat_t i1 = TDIREF_CAT(fun_ptr->i1).cat, i2 = TDIREF_CAT(fun_ptr->i2).cat,
+           o1 = TDIREF_CAT(fun_ptr->o1).cat, o2 = TDIREF_CAT(fun_ptr->o2).cat;
   unsigned char nd = 0, jd;
-  int use_native = (fun_ptr->f2 != Tdi2Keep && fun_ptr->f2 != Tdi2Long2
-		    && fun_ptr->f2 != Tdi2Any && fun_ptr->f2 != Tdi2Cmplx);
-	/***************************
-	Get signal, units, and data.
-	***************************/
+  int use_native = (fun_ptr->f2 != Tdi2Keep && fun_ptr->f2 != Tdi2Long2 &&
+                    fun_ptr->f2 != Tdi2Any && fun_ptr->f2 != Tdi2Cmplx);
+  /***************************
+  Get signal, units, and data.
+  ***************************/
   for (j = 0; j < narg; ++j) {
     sig[j] = uni[j] = dat[j] = EMPTY_XD;
-    if STATUS_OK
-      status = TdiGetSignalUnitsData(list[j], &sig[j], &uni[j], &dat[j]);
+    if
+      STATUS_OK
+    status = TdiGetSignalUnitsData(list[j], &sig[j], &uni[j], &dat[j]);
   }
 
-	/******************************
-	Find category of data type.
-	Adjust out in f2 routine.
-	Make in into out in CVT_ARGS.
-	******************************/
-  if STATUS_OK
-    for (nd = 0, nc = 0, j = 0; j < narg; ++j) {
-      struct descriptor *dat_ptr = dat[j].pointer;
+  /******************************
+  Find category of data type.
+  Adjust out in f2 routine.
+  Make in into out in CVT_ARGS.
+  ******************************/
+  if
+    STATUS_OK
+  for (nd = 0, nc = 0, j = 0; j < narg; ++j) {
+    struct descriptor *dat_ptr = dat[j].pointer;
 
-      cptr = &cats[j];
-      cptr->out_dtype = cptr->in_dtype = jd = dat_ptr->dtype;
-      if (jd > nd && (nd = jd) >= TdiCAT_MAX) {
-	status = TdiINVDTYDSC;
-	break;
-      }
-      cptr->out_cat = (unsigned short)(((cptr->in_cat = TdiREF_CAT[jd].cat) | i1) & i2);
-      if (jd != DTYPE_MISSING)
-	nc |= cptr->out_cat;
-      if ((cptr->digits = TdiREF_CAT[jd].digits) == 0)
-	cptr->digits = dat_ptr->length;
+    cptr = &cats[j];
+    cptr->out_dtype = cptr->in_dtype = jd = dat_ptr->dtype;
+    if (jd > nd && (nd = jd) >= TdiCAT_MAX) {
+      status = TdiINVDTYDSC;
+      break;
     }
-  if STATUS_OK
-   for (j = 0; j < narg; j++) {
+    cptr->out_cat =
+        (unsigned short)(((cptr->in_cat = TdiREF_CAT[jd].cat) | i1) & i2);
+    if (jd != DTYPE_MISSING)
+      nc |= cptr->out_cat;
+    if ((cptr->digits = TdiREF_CAT[jd].digits) == 0)
+      cptr->digits = dat_ptr->length;
+  }
+  if
+    STATUS_OK
+  for (j = 0; j < narg; j++) {
     if (fun_ptr->i1 == fun_ptr->i2) {
       cats[j].out_dtype = fun_ptr->i2;
       cats[j].out_cat = i2;
@@ -192,21 +197,22 @@ int TdiGetArgs(opcode_t opcode,
       UseNativeFloat(&cats[j]);
   }
 
-	/***********************************************
-	Output cat and dtype are guesses, checked later.
-	***********************************************/
-  if STATUS_OK {
-    cptr = &cats[narg];
-    cptr->in_dtype = nd;
-    cptr->out_dtype = nd;
-    cptr->in_cat = TdiREF_CAT[nd].cat;
-    cptr->out_cat = (unsigned short)((nc | o1) & o2);
-    cptr->digits = TdiREF_CAT[nd].digits;
-    if (fun_ptr->o1 == fun_ptr->o2) {
-      cptr->out_dtype = cptr->in_dtype = fun_ptr->o2;
-      cptr->out_cat = cptr->in_cat = o2;
-    } else if (cptr->out_cat & 0x400 && use_native)
-      UseNativeFloat(cptr);
-  }
+  /***********************************************
+  Output cat and dtype are guesses, checked later.
+  ***********************************************/
+  if
+    STATUS_OK {
+      cptr = &cats[narg];
+      cptr->in_dtype = nd;
+      cptr->out_dtype = nd;
+      cptr->in_cat = TdiREF_CAT[nd].cat;
+      cptr->out_cat = (unsigned short)((nc | o1) & o2);
+      cptr->digits = TdiREF_CAT[nd].digits;
+      if (fun_ptr->o1 == fun_ptr->o2) {
+        cptr->out_dtype = cptr->in_dtype = fun_ptr->o2;
+        cptr->out_cat = cptr->in_cat = o2;
+      } else if (cptr->out_cat & 0x400 && use_native)
+        UseNativeFloat(cptr);
+    }
   return status;
 }

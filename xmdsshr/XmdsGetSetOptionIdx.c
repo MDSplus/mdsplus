@@ -29,19 +29,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSGETSETOPTIONIDX.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsGETSETOPTIONIDX
+                Name:   XmdsGETSETOPTIONIDX
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:    9-MAR-1990
+                Date:    9-MAR-1990
 
-		Purpose: Set/Get Option Widget selection by index
+                Purpose: Set/Get Option Widget selection by index
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 void XmdsSetOptionIdx(Widget w,int idx);
 int XmdsGetOptionIdx(Widget w);
@@ -54,7 +54,7 @@ int XmdsGetOptionIdx(Widget w);
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -80,26 +80,24 @@ int XmdsGetOptionIdx(Widget w);
 
  Local variables:                                                             */
 
-
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-EXPORT void XmdsSetOptionIdx(Widget w, Cardinal idx)
-{
+EXPORT void XmdsSetOptionIdx(Widget w, Cardinal idx) {
   static Widget pulldown;
   XtVaGetValues(w, XmNsubMenuId, &pulldown, NULL);
   if (pulldown) {
     Widget *options;
     Cardinal num_options;
-    XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
+    XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options,
+                  NULL);
     if (idx < num_options)
       XtVaSetValues(w, XmNmenuHistory, options[idx], NULL);
   }
 }
 
-EXPORT int XmdsGetOptionIdx(Widget w)
-{
+EXPORT int XmdsGetOptionIdx(Widget w) {
   int idx = -1;
   static Widget pulldown;
   static Widget option;
@@ -108,11 +106,12 @@ EXPORT int XmdsGetOptionIdx(Widget w)
     static Widget *options;
     static Cardinal num_options;
     Cardinal i;
-    XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
+    XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options,
+                  NULL);
     for (i = 0; i < num_options; i++)
       if (options[i] == option) {
-	idx = i;
-	break;
+        idx = i;
+        break;
       }
   }
   return idx;

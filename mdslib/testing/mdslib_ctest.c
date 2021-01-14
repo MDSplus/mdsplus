@@ -22,9 +22,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <math.h>
 #include <mdslib.h>
 #include <treeshr.h>
-#include <math.h>
 
 #define BUFFLEN 10
 
@@ -45,40 +45,35 @@ int dtype_cstring = DTYPE_CSTRING;
 #define TREE "TEST"
 #define SHOT 7357
 #define SHOTS "7357"
-#define TEST(test)\
-{\
-  int s = test;\
-  if ((s & 1) == 0)\
-  {\
-    fprintf(stderr, "%s:%d : " #test " = %d => ERROR\n", __FILE__, __LINE__, s);\
-    exit(1);\
-  }\
-}
+#define TEST(test)                                                             \
+  {                                                                            \
+    int s = test;                                                              \
+    if ((s & 1) == 0) {                                                        \
+      fprintf(stderr, "%s:%d : " #test " = %d => ERROR\n", __FILE__, __LINE__, \
+              s);                                                              \
+      exit(1);                                                                 \
+    }                                                                          \
+  }
 
-int testOpen(char* tree, int shot) { return MdsOpen(tree, &shot); }
-int testClose(char* tree, int shot) { return MdsClose(tree, &shot); }
+int testOpen(char *tree, int shot) { return MdsOpen(tree, &shot); }
+int testClose(char *tree, int shot) { return MdsClose(tree, &shot); }
 
-
-int testScalarString(char *expression, char *expected)
-{
+int testScalarString(char *expression, char *expected) {
   int length = strlen(expected);
   int lenalloc = length + 32;
   char *string = malloc(lenalloc);
   int dsc = descr(&dtype_cstring, string, &null, &lenalloc);
   status = MdsValue(expression, &dsc, &null, &returnlength);
   if (status & 1)
-    status = (returnlength == length) && (strncmp(string, expected, length) == 0);
+    status =
+        (returnlength == length) && (strncmp(string, expected, length) == 0);
   free(string);
   return (status);
 }
 
-int testSetDefault(char *node)
-{
-  return (MdsSetDefault(node));
-}
+int testSetDefault(char *node) { return (MdsSetDefault(node)); }
 
-int testNull(char *expression)
-{
+int testNull(char *expression) {
   char *buf = malloc(BUFFLEN);
   int bufflen = BUFFLEN;
   int dsc = descr(&dtype_cstring, buf, &null, &bufflen);
@@ -86,25 +81,19 @@ int testNull(char *expression)
   return ((status & 1) == 0 && (returnlength == 0));
 }
 
-int testPut1Dsc(char *node, char *expression, int dsc)
-{
+int testPut1Dsc(char *node, char *expression, int dsc) {
   return (MdsPut(node, expression, &dsc, &null));
 }
 
-int testPut2Dsc(char *node, char *expression, int dsc1, int dsc2)
-{
+int testPut2Dsc(char *node, char *expression, int dsc1, int dsc2) {
   return (MdsPut(node, expression, &dsc1, &dsc2, &null));
 }
 
-int testClearNode(char *node)
-{
-  return (MdsPut(node, "", &null));
-}
+int testClearNode(char *node) { return (MdsPut(node, "", &null)); }
 
 /******** MAJOR TEST SECTIONS ********/
 
-void TestTreeOpenClose()
-{
+void TestTreeOpenClose() {
   TEST(testOpen(TREE, SHOT));
   TEST(testOpen("FOOFOOFOO", 0xDEAD) ^ 1);
   TEST(testClose("FOOFOOFOO", 0xDEAD) == TreeNOT_OPEN);
@@ -115,8 +104,7 @@ void TestTreeOpenClose()
   TEST(testNull("$EXPT"));
 }
 
-void TestTdi()
-{
+void TestTdi() {
   int status;
   float result[10], result1;
   int dsc, dsc1, dsc2, i;
@@ -128,7 +116,8 @@ void TestTdi()
   for (i = 0; i < 10; i++)
     result[i] = 0;
 
-/**** should segfault with no return length argument!!!! need to provide NULL *****/
+  /**** should segfault with no return length argument!!!! need to provide NULL
+   * *****/
   dsc = descr(&dtype_float, &result1, &null);
   status = MdsValue("1.", &dsc, &null, 0);
   dsc = descr(&dtype_float, result, &sresult, &null);
@@ -153,8 +142,7 @@ void TestTdi()
   TEST(testScalarString("MACHINE()", machine));
 }
 
-void TestArray1D()
-{
+void TestArray1D() {
   int i;
   int dsc;
   int size = 100;
@@ -175,7 +163,7 @@ void TestArray1D()
     if (status & 1) {
       int i;
       for (i = 0; i < size; i++)
-	status = status && (array[i] == compare[i]);
+        status = status && (array[i] == compare[i]);
     }
   }
   TEST(status);
@@ -186,8 +174,7 @@ void TestArray1D()
   free(compare);
 }
 
-void TestArray2D()
-{
+void TestArray2D() {
   int dsc;
   int sx = 2;
   int sy = 13;
@@ -195,9 +182,8 @@ void TestArray2D()
   int syy = 20;
   int i;
   float array[2][13] = {
-    {0., 31., 28., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.},
-    {0., 31., 29., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.}
-  };
+      {0., 31., 28., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.},
+      {0., 31., 29., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.}};
   float compare[2][13];
   float compareBigger[4][20];
   for (i = 0; i < sx; i++) {
@@ -223,10 +209,10 @@ void TestArray2D()
     if (status & 1) {
       int i;
       for (i = 0; i < sx; i++) {
-	int j;
-	for (j = 0; j < sy; j++) {
-	  status = status && (array[i][j] == compare[i][j]);
-	}
+        int j;
+        for (j = 0; j < sy; j++) {
+          status = status && (array[i][j] == compare[i][j]);
+        }
       }
     }
   }
@@ -238,21 +224,19 @@ void TestArray2D()
     if (status & 1) {
       int i;
       for (i = 0; i < sx; i++) {
-	int j;
-	for (j = 0; j < sy; j++) {
-	  status = status && (array[i][j] == compare[i][j]);
-	}
+        int j;
+        for (j = 0; j < sy; j++) {
+          status = status && (array[i][j] == compare[i][j]);
+        }
       }
     }
   }
   TEST(status);
 
   TEST(testClearNode("\\TOP:A"));
-
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   (void)argv;
   int returnlength = 0;
   int status = 0;
@@ -264,7 +248,8 @@ int main(int argc, char *argv[])
     socket = MdsConnect("local://0");
     TEST((socket != INVALID_SOCKET));
   }
-  TEST(MdsValue("TreeOpenNew('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
+  TEST(
+      MdsValue("TreeOpenNew('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
   TEST(MdsValue("{_=-1;TreeAddNode('A',_,'ANY');}", &dsc, &null, &returnlength))
   TEST(MdsValue("TreeWrite('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
   TEST(MdsValue("TreeClose('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))

@@ -25,19 +25,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element BWFILTER.C */
 /*  *1    22-DEC-1997 10:45:22 TWF "Butterworth filter" */
 /*  CMS REPLACEMENT HISTORY, Element BWFILTER.C */
-#include <stdio.h>
-#include	<math.h>
+#include <math.h>
 #include <mdsplus/mdsconfig.h>
+#include <stdio.h>
 
-#define	PI 3.14159265359
-#define	max_order 10
+#define PI 3.14159265359
+#define max_order 10
 
-EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *out)
-{
+EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in,
+                    float *out) {
   int M, N;
   int p, q, order = *order_in;
   double num_coeff, den_coeff, c[max_order + 1], d[max_order + 1];
-  double coeff[2][max_order + 1] = {{0},{0}};
+  double coeff[2][max_order + 1] = {{0}, {0}};
   double w_cut = (double)*w_cut_in, omega_cut;
   int upto, i, j, k;
   int in_idx = 0, out_idx;
@@ -80,7 +80,7 @@ EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *
     y_filtered[j] = x_current[j];
   }
 
-/* Do dynamic filtering in time domain until input stream stops */
+  /* Do dynamic filtering in time domain until input stream stops */
 
   for (out_idx = 0; out_idx < *num && in_idx < *num; out_idx++) {
     y_filtered[0] = 0.0;
@@ -99,12 +99,11 @@ EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *
     for (i = M; i >= 1; i--) {
       x_current[i] = x_current[i - 1];
     }
-    for (j = N-1; j > 1; j--) {
-      y_filtered[j+1] = y_filtered[j];
+    for (j = N - 1; j > 1; j--) {
+      y_filtered[j + 1] = y_filtered[j];
     }
 
     x_current[0] = in[in_idx++];
-
   }
 
   return 1;

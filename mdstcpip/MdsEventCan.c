@@ -30,14 +30,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsEventCan  ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsEventCan(int id, int eventid)
-{
+int MdsEventCan(int id, int eventid) {
   struct descrip eventarg;
-  struct descrip ansarg = { 0 };
-  int status =
-      MdsValue(id, EVENTCANREQUEST,
-	       MakeDescrip((struct descrip *)&eventarg, DTYPE_LONG, 0, 0, &eventid),
-	       (struct descrip *)&ansarg, (struct descrip *)NULL);
+  struct descrip ansarg = {0};
+  int status = MdsValue(
+      id, EVENTCANREQUEST,
+      MakeDescrip((struct descrip *)&eventarg, DTYPE_LONG, 0, 0, &eventid),
+      (struct descrip *)&ansarg, (struct descrip *)NULL);
   free(ansarg.ptr);
   return status;
 }

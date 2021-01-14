@@ -24,10 +24,9 @@ extern "C" {
 
  */
 
-  JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString(JNIEnv *, jclass, jint);
+JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString(JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
-
 }
 #endif
 #endif

@@ -44,12 +44,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "lib/libcompat.h"
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include <errno.h>
 #include <setjmp.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "check_error.h"
 
@@ -58,43 +58,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 jmp_buf error_jmp_buffer;
 
-
 /* FIXME: including a colon at the end is a bad way to indicate an error */
-void eprintf(const char *fmt, const char *file, int line, ...)
-{
-    va_list args;
+void eprintf(const char *fmt, const char *file, int line, ...) {
+  va_list args;
 
-    fflush(stderr);
+  fflush(stderr);
 
-    fprintf(stderr, "%s:%d: ", file, line);
-    va_start(args, line);
-    vfprintf(stderr, fmt, args);
-    va_end(args);
+  fprintf(stderr, "%s:%d: ", file, line);
+  va_start(args, line);
+  vfprintf(stderr, fmt, args);
+  va_end(args);
 
-    /*include system error information if format ends in colon */
-    if(fmt[0] != '\0' && fmt[strlen(fmt) - 1] == ':')
-	fprintf(stderr, " %s", strerror(errno));
-    fprintf(stderr, "\n");
+  /*include system error information if format ends in colon */
+  if (fmt[0] != '\0' && fmt[strlen(fmt) - 1] == ':')
+    fprintf(stderr, " %s", strerror(errno));
+  fprintf(stderr, "\n");
 
-    exit(2);
+  exit(2);
 }
 
-void *emalloc(size_t n)
-{
-    void *p;
+void *emalloc(size_t n) {
+  void *p;
 
-    p = malloc(n);
-    if(p == NULL)
-	eprintf("malloc of %u bytes failed:", __FILE__, __LINE__ - 2, n);
-    return p;
+  p = malloc(n);
+  if (p == NULL)
+    eprintf("malloc of %u bytes failed:", __FILE__, __LINE__ - 2, n);
+  return p;
 }
 
-void *erealloc(void *ptr, size_t n)
-{
-    void *p;
+void *erealloc(void *ptr, size_t n) {
+  void *p;
 
-    p = realloc(ptr, n);
-    if(p == NULL)
-	eprintf("realloc of %u bytes failed:", __FILE__, __LINE__ - 2, n);
-    return p;
+  p = realloc(ptr, n);
+  if (p == NULL)
+    eprintf("realloc of %u bytes failed:", __FILE__, __LINE__ - 2, n);
+  return p;
 }

@@ -29,20 +29,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Josh Stillerman 2/21/02
  */
 
-#include <stdlib.h>
 #include <mdsplus/mdsconfig.h>
+#include <stdlib.h>
 extern void csakm_();
 extern float csval_();
 
-EXPORT int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
-{
+EXPORT int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v,
+                  float *x, float *y) {
   float slope;
   float intercept;
   int i;
   int knot_idx = 1;
   float high_x = 0.0;
   if (*num_knots > 1) {
-    slope = (knots_x[1] == knots_x[0]) ? 0 : (knots_y[1] - knots_y[0]) / (knots_x[1] - knots_x[0]);
+    slope = (knots_x[1] == knots_x[0])
+                ? 0
+                : (knots_y[1] - knots_y[0]) / (knots_x[1] - knots_x[0]);
     intercept = knots_y[1] - slope * knots_x[1];
     high_x = knots_x[1];
   } else if (*num_knots == 1) {
@@ -55,12 +57,13 @@ EXPORT int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, fl
   if (*num_v > 0) {
     for (i = 0; i < *num_v; i++) {
       while ((x[i] > high_x) && (knot_idx < (*num_knots - 1))) {
-	knot_idx++;
-	slope = (knots_x[knot_idx] == knots_x[knot_idx - 1]) ? 0 :
-	    (knots_y[knot_idx] - knots_y[knot_idx - 1]) / (knots_x[knot_idx] -
-							   knots_x[knot_idx - 1]);
-	intercept = knots_y[knot_idx] - slope * knots_x[knot_idx];
-	high_x = knots_x[knot_idx];
+        knot_idx++;
+        slope = (knots_x[knot_idx] == knots_x[knot_idx - 1])
+                    ? 0
+                    : (knots_y[knot_idx] - knots_y[knot_idx - 1]) /
+                          (knots_x[knot_idx] - knots_x[knot_idx - 1]);
+        intercept = knots_y[knot_idx] - slope * knots_x[knot_idx];
+        high_x = knots_x[knot_idx];
       }
       y[i] = slope * x[i] + intercept;
     }
@@ -70,8 +73,10 @@ EXPORT int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, fl
     int j = 0;
     while ((min_x > high_x) && (knot_idx < (*num_knots - 1))) {
       knot_idx++;
-      slope = (knots_x[knot_idx] == knots_x[knot_idx - 1]) ? 0 :
-	  (knots_y[knot_idx] - knots_y[knot_idx - 1]) / (knots_x[knot_idx] - knots_x[knot_idx - 1]);
+      slope = (knots_x[knot_idx] == knots_x[knot_idx - 1])
+                  ? 0
+                  : (knots_y[knot_idx] - knots_y[knot_idx - 1]) /
+                        (knots_x[knot_idx] - knots_x[knot_idx - 1]);
       intercept = knots_y[knot_idx] - slope * knots_x[knot_idx];
       high_x = knots_x[knot_idx];
     }
@@ -80,8 +85,10 @@ EXPORT int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, fl
       y[j] = knots_y[knot_idx];
       x[j++] = knots_x[knot_idx];
       knot_idx++;
-      slope = (knots_x[knot_idx] == knots_x[knot_idx - 1]) ? 0 :
-	  (knots_y[knot_idx] - knots_y[knot_idx - 1]) / (knots_x[knot_idx] - knots_x[knot_idx - 1]);
+      slope = (knots_x[knot_idx] == knots_x[knot_idx - 1])
+                  ? 0
+                  : (knots_y[knot_idx] - knots_y[knot_idx - 1]) /
+                        (knots_x[knot_idx] - knots_x[knot_idx - 1]);
       intercept = knots_y[knot_idx] - slope * knots_x[knot_idx];
       high_x = knots_x[knot_idx];
     }
@@ -92,8 +99,8 @@ EXPORT int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, fl
   return 1;
 }
 
-EXPORT int SplineFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
-{
+EXPORT int SplineFit(int *num_knots, float *knots_x, float *knots_y, int *num_v,
+                     float *x, float *y) {
   int i;
   if (*num_knots > 2) {
     float *fbreak = (float *)calloc(*num_knots, sizeof(float));

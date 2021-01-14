@@ -23,20 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <stdlib.h>
-#include <mdsobjects.h>
 #include "testing.h"
+#include <mdsobjects.h>
+#include <stdlib.h>
 
 #include <limits>
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
-{
-    BEGIN_TESTING(build);
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused))) {
+  BEGIN_TESTING(build);
 
-    TEST1(1);
-    TEST0(0);
+  TEST1(1);
+  TEST0(0);
 
-    END_TESTING
+  END_TESTING
 }
-
-

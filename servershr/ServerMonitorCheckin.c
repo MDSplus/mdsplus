@@ -24,21 +24,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$MONITOR_CHECKIN
+                Name:   SERVER$MONITOR_CHECKIN
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   23-APR-1992
+                Date:   23-APR-1992
 
-		Purpose: Checkin routine for action monitor
+                Purpose: Checkin routine for action monitor
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int astparam, void (*link_down)())
+int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int
+astparam, void (*link_down)())
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -48,38 +49,39 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <mdsshr.h>
-#include <ipdesc.h>
-#include <servershr.h>
 #include "servershrp.h"
+#include <ipdesc.h>
+#include <mdsshr.h>
+#include <servershr.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static void (*appAst)() = 0;
 
-static void eventAst(void *astprm, int msglen __attribute__ ((unused)), char *msg) {
-  (*appAst)(astprm,msg);
+static void eventAst(void *astprm, int msglen __attribute__((unused)),
+                     char *msg) {
+  (*appAst)(astprm, msg);
 }
 
-EXPORT int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
-{
+EXPORT int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm) {
   static int usingEvents = -1;
-  const char*        event_str = "event:";
+  const char *event_str = "event:";
   const unsigned int event_len = strlen(event_str);
-  if (usingEvents==-1) {
+  if (usingEvents == -1) {
     char *svr_env = getenv(server);
     if (!svr_env)
       svr_env = server;
-    if ((strlen(svr_env) > event_len)
-     && (strncasecmp(svr_env,event_str,event_len) == 0)) {
+    if ((strlen(svr_env) > event_len) &&
+        (strncasecmp(svr_env, event_str, event_len) == 0)) {
       int evid;
-      appAst=ast;
-      usingEvents = MDSEventAst(strdup(svr_env+event_len), eventAst, astprm, &evid) & 1;
+      appAst = ast;
+      usingEvents =
+          MDSEventAst(strdup(svr_env + event_len), eventAst, astprm, &evid) & 1;
     } else
       usingEvents = B_FALSE;
   }
@@ -90,14 +92,15 @@ EXPORT int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
     char *cstring = "";
     int zero = 0;
     int mode = MonitorCheckin;
-    return ServerSendMessage(0, server, SrvMonitor, NULL, NULL, NULL, ast, astprm, NULL, 8,
-			MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cstring),
-			MakeDescrip(&p2, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p3, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p4, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p5, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
-			MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, cstring),
-			MakeDescrip(&p8, DTYPE_LONG, 0, 0, &zero));
+    return ServerSendMessage(0, server, SrvMonitor, NULL, NULL, NULL, ast,
+                             astprm, NULL, 8,
+                             MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cstring),
+                             MakeDescrip(&p2, DTYPE_LONG, 0, 0, &zero),
+                             MakeDescrip(&p3, DTYPE_LONG, 0, 0, &zero),
+                             MakeDescrip(&p4, DTYPE_LONG, 0, 0, &zero),
+                             MakeDescrip(&p5, DTYPE_LONG, 0, 0, &zero),
+                             MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
+                             MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, cstring),
+                             MakeDescrip(&p8, DTYPE_LONG, 0, 0, &zero));
   }
 }

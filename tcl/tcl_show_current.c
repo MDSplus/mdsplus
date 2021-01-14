@@ -22,28 +22,27 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 
 /**********************************************************************
-* TCL_SHOW_CURRENT.C --
-*
-* TclShowCurrent:  Display current shotid.
-*
-* History:
-*  27-Apr-1998  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
+ * TCL_SHOW_CURRENT.C --
+ *
+ * TclShowCurrent:  Display current shotid.
+ *
+ * History:
+ *  27-Apr-1998  TRG  Create.  Ported from original mds code.
+ *
+ ************************************************************************/
 
-	/***************************************************************
-	 * TclShowCurrent:
-	 ***************************************************************/
-EXPORT int TclShowCurrent(void *ctx, char **error, char **output)
-{
+/***************************************************************
+ * TclShowCurrent:
+ ***************************************************************/
+EXPORT int TclShowCurrent(void *ctx, char **error, char **output) {
   int shot;
   char *experiment = 0;
 

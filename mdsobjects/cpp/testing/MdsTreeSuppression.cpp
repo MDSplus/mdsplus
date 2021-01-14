@@ -22,54 +22,49 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdlib.h>
 #include <mdsobjects.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 #include <dbidef.h>
-#include <ncidef.h>
 #include <mdstypes.h>
-#include <usagedef.h>
+#include <ncidef.h>
 #include <treeshr.h>
+#include <usagedef.h>
 
-
-
+#include "mdsplus/AutoPointer.hpp"
 #include "testing.h"
 #include "testutils/unique_ptr.h"
-#include "mdsplus/AutoPointer.hpp"
 
 using namespace MDSplus;
 using namespace testing;
 
-
-
 // this seems to catch a leak in treeshr
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
-{
-    BEGIN_TESTING(MDSTreeSuppression);
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused))) {
+  BEGIN_TESTING(MDSTreeSuppression);
 #ifdef _WIN32
-#define setenv(name,val,extra) _putenv_s(name,val)
+#define setenv(name, val, extra) _putenv_s(name, val)
 #endif
-    setenv("t_treesupp_path",".",1);
+  setenv("t_treesupp_path", ".", 1);
 
-    Tree * tree = new Tree("t_treesupp",-1,"NEW");
-    tree->write();
-    delete tree;
+  Tree *tree = new Tree("t_treesupp", -1, "NEW");
+  tree->write();
+  delete tree;
 
-    tree = new Tree("t_treesupp",-1,"EDIT");
+  tree = new Tree("t_treesupp", -1, "EDIT");
 
-    TreeNode * node = tree->addNode("dummy_node","NUMERIC");
-    delete node;
+  TreeNode *node = tree->addNode("dummy_node", "NUMERIC");
+  delete node;
 
-    TreeNode * node2 = tree->addNode("dummy_node2","TEXT");
-    delete node2;
+  TreeNode *node2 = tree->addNode("dummy_node2", "TEXT");
+  delete node2;
 
-    tree->write();
-    delete tree;
-    END_TESTING;
+  tree->write();
+  delete tree;
+  END_TESTING;
 }
-

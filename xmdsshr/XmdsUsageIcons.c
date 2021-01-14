@@ -32,20 +32,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSUSAGEICONS.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSUSAGEICONS
+                Name:   XMDSUSAGEICONS
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:    5-JAN-1990
+                Date:    5-JAN-1990
 
-		Purpose: Return pointer to MDS Usage Icons
-			 Must call XmdsUsageIconsInitialize first!
+                Purpose: Return pointer to MDS Usage Icons
+                         Must call XmdsUsageIconsInitialize first!
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 Pixmap *XmdsUsageIcons();
 void XmdsUsageIconsInitialize(Widget w);
@@ -58,13 +58,12 @@ void XmdsUsageIconsInitialize(Widget w);
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
-#include <X11/Xlib.h>
-#include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
+#include <X11/Xlib.h>
 #include <Xm/Xm.h>
 #include <usagedef.h>
 #include <xmdsshr.h>
@@ -101,9 +100,8 @@ static Pixmap *gray_icons;
 
  Executable:                                                                  */
 
-void XmdsUsageIconsInitialize(Widget w)
-{
-  static String hierarchy_name[] = { "xmds_usage_icons.uid" };
+void XmdsUsageIconsInitialize(Widget w) {
+  static String hierarchy_name[] = {"xmds_usage_icons.uid"};
   static MrmHierarchy mrm_hierarchy;
   int usage;
   int usages;
@@ -114,23 +112,19 @@ void XmdsUsageIconsInitialize(Widget w)
     icons = (unsigned long *)XtMalloc(sizeof(Pixmap) * usages * 2);
     gray_icons = icons + usages;
     for (usage = 0; usage < usages; usage++) {
-      char name[] = { 'U', 0, 0, 0, 0 };
+      char name[] = {'U', 0, 0, 0, 0};
       name[1] = '0' + (usage / 10);
       name[2] = '0' + usage - (usage / 10) * 10;
-      MrmFetchIconLiteral(mrm_hierarchy, name, XtScreen(w), XtDisplay(w), 0, 1, &icons[usage]);
+      MrmFetchIconLiteral(mrm_hierarchy, name, XtScreen(w), XtDisplay(w), 0, 1,
+                          &icons[usage]);
       name[0] = 'X';
-      MrmFetchIconLiteral(mrm_hierarchy, name, XtScreen(w), XtDisplay(w), 0, 1, &gray_icons[usage]);
+      MrmFetchIconLiteral(mrm_hierarchy, name, XtScreen(w), XtDisplay(w), 0, 1,
+                          &gray_icons[usage]);
     }
     MrmCloseHierarchy(mrm_hierarchy);
   }
 }
 
-Pixmap *XmdsUsageIcons()
-{
-  return icons;
-}
+Pixmap *XmdsUsageIcons() { return icons; }
 
-Pixmap *XmdsUsageGrayIcons()
-{
-  return gray_icons;
-}
+Pixmap *XmdsUsageGrayIcons() { return gray_icons; }

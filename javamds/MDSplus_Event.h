@@ -12,21 +12,24 @@ extern "C" {
  * Method:    setEventRaw
  * Signature: (Ljava/lang/String;[B)V
  */
-  JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw(JNIEnv *, jclass, jstring, jbyteArray);
+JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw(JNIEnv *, jclass, jstring,
+                                                      jbyteArray);
 
 /*
  * Class:     MDSplus_Event
  * Method:    registerEvent
  * Signature: (Ljava/lang/String;)J
  */
-  JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent(JNIEnv *, jobject, jstring);
+JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent(JNIEnv *, jobject,
+                                                         jstring);
 
 /*
  * Class:     MDSplus_Event
  * Method:    unregisterEvent
  * Signature: (J)V
  */
-  JNIEXPORT void JNICALL Java_MDSplus_Event_unregisterEvent(JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL Java_MDSplus_Event_unregisterEvent(JNIEnv *, jobject,
+                                                          jlong);
 
 #ifdef __cplusplus
 }

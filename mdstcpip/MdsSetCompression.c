@@ -24,16 +24,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "mdsip_connections.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MdsSetCompression  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-int MdsSetCompression(int id, int level)
-{
+int MdsSetCompression(int id, int level) {
   int old_level;
   if (level < 0)
     level = 0;

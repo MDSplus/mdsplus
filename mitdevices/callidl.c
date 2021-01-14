@@ -32,8 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <export.h>
 #include <signal.h>
 
-static int init()
-{
+static int init() {
   static int done = 0;
   int zero = 0;
   if (!done) {
@@ -43,8 +42,7 @@ static int init()
   return 1;
 }
 
-EXPORT int execute(char *command)
-{
+EXPORT int execute(char *command) {
   int status;
   sigset_t newsigset;
   sigemptyset(&newsigset);

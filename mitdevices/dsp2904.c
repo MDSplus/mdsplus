@@ -22,37 +22,41 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "devroutines.h"
+#include "dsp2904_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
-#include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
-#include <mds_stdarg.h>
-#include <ncidef.h>
-#include <treeshr.h>
-#include <mdsshr.h>
-#include <xmdsshr.h>
 #include <libroutines.h>
+#include <mds_gendevice.h>
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <mitdevices_msg.h>
+#include <ncidef.h>
 #include <stdlib.h>
-#include "dsp2904_gen.h"
-#include "devroutines.h"
+#include <treeshr.h>
+#include <xmdsshr.h>
 
 static int one = 1;
 #ifdef pio
 #undef pio
 #endif
-#define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, mem, 0), &one, 0),status)
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) {return retstatus;}
+#define pio(f, a, d, mem)                                                      \
+  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, mem, 0), &one, 0),   \
+                  status)
+#define return_on_error(f, retstatus)                                          \
+  if (!((status = f) & 1)) {                                                   \
+    return retstatus;                                                          \
+  }
 
-static unsigned int Input(InStoreStruct * setup, int code);
-static int AccessTraq(InStoreStruct * setup, int data, int memsize);
-static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned short *buffer);
+static unsigned int Input(InStoreStruct *setup, int code);
+static int AccessTraq(InStoreStruct *setup, int data, int memsize);
+static int ReadChannel(InStoreStruct *setup, int channel, int num,
+                       unsigned short *buffer);
 static void FixMenu(Widget w);
 
-
 extern int DevWait(float);
-EXPORT int dsp2904___add(int *head_nid)
-{
+EXPORT int dsp2904___add(int *head_nid) {
   int counter_bits_nid = *head_nid + DSP2904_N_COUNTER_BITS_32;
   int timer_bits_nid = *head_nid + DSP2904_N_TIMER_BITS_32;
   TreeTurnOff(counter_bits_nid);
@@ -60,16 +64,16 @@ EXPORT int dsp2904___add(int *head_nid)
   return 1;
 }
 
-EXPORT int dsp2904___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
-{
+EXPORT int dsp2904___init(struct descriptor *niddsc_ptr __attribute__((unused)),
+                          InInitStruct *setup) {
   int status;
   typedef struct _ModeReg {
-    unsigned gate:1;
-    unsigned wrap:1;
-    unsigned bits32:1;
-    unsigned time_of_count:1;
-    unsigned idx_divider:1;
-    unsigned:11;
+    unsigned gate : 1;
+    unsigned wrap : 1;
+    unsigned bits32 : 1;
+    unsigned time_of_count : 1;
+    unsigned idx_divider : 1;
+    unsigned : 11;
   } ModeReg;
   static ModeReg mode;
   float rate;
@@ -79,7 +83,7 @@ EXPORT int dsp2904___init(struct descriptor *niddsc_ptr __attribute__ ((unused))
   int counter_preset_nid = setup->head_nid + DSP2904_N_COUNTER_PRESET;
   int t_preset;
   int timer_preset_nid = setup->head_nid + DSP2904_N_TIMER_PRESET;
-  //float option;
+  // float option;
   mode.gate = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_GATE);
   mode.wrap = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_WRAP);
   mode.bits32 = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_BITS_32);
@@ -94,7 +98,9 @@ EXPORT int dsp2904___init(struct descriptor *niddsc_ptr __attribute__ ((unused))
   pio(16, 1, &mode, 16);
   if ((status = DevFloat(&rate_nid, &rate)) & 1) {
     float option;
-    for (rateidx = 0, option = 100E-9; (rateidx < 32) && (rate > option); rateidx++, option *= 2) ;
+    for (rateidx = 0, option = 100E-9; (rateidx < 32) && (rate > option);
+         rateidx++, option *= 2)
+      ;
     if (rateidx == 32)
       rateidx--;
   } else if (status == TreeNODATA)
@@ -114,28 +120,30 @@ EXPORT int dsp2904___init(struct descriptor *niddsc_ptr __attribute__ ((unused))
 #ifdef pio
 #undef pio
 #endif
-#define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->traq_name, a, f, d, mem,0), &one, 0),status)
-EXPORT int dsp2904___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
-{
+#define pio(f, a, d, mem)                                                      \
+  return_on_error(                                                             \
+      DevCamChk(CamPiow(setup->traq_name, a, f, d, mem, 0), &one, 0), status)
+EXPORT int dsp2904___store(struct descriptor *niddsc __attribute__((unused)),
+                           InStoreStruct *setup) {
   int status;
   int t_bits_32;
   int c_bits_32;
   struct _t4012_status {
-    unsigned sampling:1;
-    unsigned calibrate:1;
-    unsigned master_armed:1;
-    unsigned master_enabled:1;
-    unsigned stop_received:1;
-    unsigned triggered:1;
-    unsigned t4012p:1;
-    unsigned cal_mem:1;
-    unsigned:24;
+    unsigned sampling : 1;
+    unsigned calibrate : 1;
+    unsigned master_armed : 1;
+    unsigned master_enabled : 1;
+    unsigned stop_received : 1;
+    unsigned triggered : 1;
+    unsigned t4012p : 1;
+    unsigned cal_mem : 1;
+    unsigned : 24;
   } dig_status;
   int samples;
   unsigned short *low_word = 0;
   unsigned short *high_word = 0;
-  unsigned short (*data_long)[2] = 0;
-  //int channel;
+  unsigned short(*data_long)[2] = 0;
+  // int channel;
   int timer_bits_32 = setup->head_nid + DSP2904_N_TIMER_BITS_32;
   int counter_bits_32 = setup->head_nid + DSP2904_N_COUNTER_BITS_32;
   int timer_nid = setup->head_nid + DSP2904_N_TIMER;
@@ -161,22 +169,22 @@ EXPORT int dsp2904___store(struct descriptor *niddsc __attribute__ ((unused)), I
     return_on_error(DevLong(&channel_nid, &channel), status);
     if ((status = ReadChannel(setup, channel++, samples, low_word)) & 1) {
       if (t_bits_32) {
-	if ((status = ReadChannel(setup, channel++, samples, high_word)) & 1) {
-	  int i;
-	  DESCRIPTOR_A(raw, sizeof(*data_long), DTYPE_LU, 0, 0);
-	  raw.pointer = (char *)data_long;
-	  raw.arsize = samples * sizeof(*data_long);
-	  for (i = 0; i < samples; i++) {
-	    data_long[i][0] = low_word[i];
-	    data_long[i][1] = high_word[i];
-	  }
-	  status = TreePutRecord(timer_nid, (struct descriptor *)&raw, 0);
-	}
+        if ((status = ReadChannel(setup, channel++, samples, high_word)) & 1) {
+          int i;
+          DESCRIPTOR_A(raw, sizeof(*data_long), DTYPE_LU, 0, 0);
+          raw.pointer = (char *)data_long;
+          raw.arsize = samples * sizeof(*data_long);
+          for (i = 0; i < samples; i++) {
+            data_long[i][0] = low_word[i];
+            data_long[i][1] = high_word[i];
+          }
+          status = TreePutRecord(timer_nid, (struct descriptor *)&raw, 0);
+        }
       } else {
-	DESCRIPTOR_A(raw, sizeof(*low_word), DTYPE_WU, 0, 0);
-	raw.pointer = (char *)low_word;
-	raw.arsize = samples * sizeof(*low_word);
-	status = TreePutRecord(timer_nid, (struct descriptor *)&raw, 0);
+        DESCRIPTOR_A(raw, sizeof(*low_word), DTYPE_WU, 0, 0);
+        raw.pointer = (char *)low_word;
+        raw.arsize = samples * sizeof(*low_word);
+        status = TreePutRecord(timer_nid, (struct descriptor *)&raw, 0);
       }
     }
   }
@@ -186,22 +194,22 @@ EXPORT int dsp2904___store(struct descriptor *niddsc __attribute__ ((unused)), I
     return_on_error(DevLong(&channel_nid, &channel), status);
     if ((status = ReadChannel(setup, channel++, samples, low_word)) & 1) {
       if (c_bits_32) {
-	if ((status = ReadChannel(setup, channel++, samples, high_word)) & 1) {
-	  int i;
-	  DESCRIPTOR_A(raw, sizeof(*data_long), DTYPE_LU, 0, 0);
-	  raw.pointer = (char *)data_long;
-	  raw.arsize = samples * sizeof(*data_long);
-	  for (i = 0; i < samples; i++) {
-	    data_long[i][0] = low_word[i];
-	    data_long[i][1] = high_word[i];
-	  }
-	  status = TreePutRecord(counter_nid, (struct descriptor *)&raw, 0);
-	}
+        if ((status = ReadChannel(setup, channel++, samples, high_word)) & 1) {
+          int i;
+          DESCRIPTOR_A(raw, sizeof(*data_long), DTYPE_LU, 0, 0);
+          raw.pointer = (char *)data_long;
+          raw.arsize = samples * sizeof(*data_long);
+          for (i = 0; i < samples; i++) {
+            data_long[i][0] = low_word[i];
+            data_long[i][1] = high_word[i];
+          }
+          status = TreePutRecord(counter_nid, (struct descriptor *)&raw, 0);
+        }
       } else {
-	DESCRIPTOR_A(raw, sizeof(*low_word), DTYPE_WU, 0, 0);
-	raw.pointer = (char *)low_word;
-	raw.arsize = samples * sizeof(*low_word);
-	status = TreePutRecord(counter_nid, (struct descriptor *)&raw, 0);
+        DESCRIPTOR_A(raw, sizeof(*low_word), DTYPE_WU, 0, 0);
+        raw.pointer = (char *)low_word;
+        raw.arsize = samples * sizeof(*low_word);
+        status = TreePutRecord(counter_nid, (struct descriptor *)&raw, 0);
       }
     }
   }
@@ -213,8 +221,8 @@ EXPORT int dsp2904___store(struct descriptor *niddsc __attribute__ ((unused)), I
   return status;
 }
 
-static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned short *buffer)
-{
+static int ReadChannel(InStoreStruct *setup, int channel, int num,
+                       unsigned short *buffer) {
   int status;
   int points_to_read;
   int points_read = 0;
@@ -222,24 +230,26 @@ static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned sho
     unsigned short status;
     unsigned short bytcnt;
     unsigned int dummy;
-  } iosb = {
-    0, 0, 0};
-  int try;
+  } iosb = {0, 0, 0};
+  int try
+    ;
   int try_outer;
   for (try_outer = 0; try_outer < 3; try_outer++) {
     AccessTraq(setup, 0x0A000 | channel, 24);
     AccessTraq(setup, 0x0B000, 24);
     pio(8, 0, 0, 16);
-    for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (status & 1); try++) {
+    for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (status & 1); try ++) {
       pio(8, 0, 0, 16);
     }
     pio(10, 0, 0, 16);
-    for (points_to_read = num; points_to_read && (status & 1); points_to_read = num - points_read) {
+    for (points_to_read = num; points_to_read && (status & 1);
+         points_to_read = num - points_read) {
       int count = points_to_read > 32767 ? 32767 : points_to_read;
-      status = CamQstopw(setup->traq_name, 0, 2, count, buffer + points_read, 16, (unsigned short *)&iosb);
+      status = CamQstopw(setup->traq_name, 0, 2, count, buffer + points_read,
+                         16, (unsigned short *)&iosb);
       status = (status & 1) ? iosb.status : status;
       if (iosb.bytcnt == 0)
-	break;
+        break;
       points_read += iosb.bytcnt / 2;
     }
     if (points_to_read == 0)
@@ -250,8 +260,7 @@ static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned sho
   return status;
 }
 
-static unsigned int Input(InStoreStruct * setup, int code)
-{
+static unsigned int Input(InStoreStruct *setup, int code) {
   int status;
   unsigned short i;
   AccessTraq(setup, code, 16);
@@ -260,29 +269,31 @@ static unsigned int Input(InStoreStruct * setup, int code)
   return i;
 }
 
-static int AccessTraq(InStoreStruct * setup, int data, int memsize)
-{
-  int try;
+static int AccessTraq(InStoreStruct *setup, int data, int memsize) {
+  int try
+    ;
   int status;
   pio(17, 0, &data, memsize);
-  for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (status & 1); try++) {
+  for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (status & 1); try ++) {
     DevWait((float).0005);
     pio(17, 0, &data, memsize);
   }
   return status;
 }
 
-EXPORT int dsp2904__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
-{
-  static String uids[] = { "DSP2904.uid" };
-  static MrmRegisterArg uilnames[] = { {"FixMenu", (XtPointer) FixMenu} };
-  return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "DSP2904", uilnames,
-			 XtNumber(uilnames), 0);
+EXPORT int dsp2904__dw_setup(struct descriptor *niddsc __attribute__((unused)),
+                             struct descriptor *methoddsc
+                             __attribute__((unused)),
+                             Widget parent) {
+  static String uids[] = {"DSP2904.uid"};
+  static MrmRegisterArg uilnames[] = {{"FixMenu", (XtPointer)FixMenu}};
+  return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids),
+                         "DSP2904", uilnames, XtNumber(uilnames), 0);
 }
 
-static void FixMenu(Widget w)
-{
+static void FixMenu(Widget w) {
   Widget p_w;
   XtVaGetValues(w, XmNsubMenuId, &p_w, NULL);
-  XtVaSetValues(p_w, XmNorientation, XmVERTICAL, XmNnumColumns, 5, XmNpacking, XmPACK_COLUMN, NULL);
+  XtVaSetValues(p_w, XmNorientation, XmVERTICAL, XmNnumColumns, 5, XmNpacking,
+                XmPACK_COLUMN, NULL);
 }

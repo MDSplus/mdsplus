@@ -13,6 +13,4 @@ void generate_true_assert();
 }
 #endif
 
-
 #endif // MDSTESTDUMMY_H
-

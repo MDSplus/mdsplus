@@ -22,32 +22,37 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "mdsip_connections.h"
 #include "mdsIo.h"
+#include "mdsip_connections.h"
 #include <mdsshr.h>
+#include <status.h>
 #include <stdlib.h>
 #include <string.h>
-#include <status.h>
 
-
-int SendDsc(int id, unsigned char idx, unsigned char nargs, struct descriptor* dsc) {
+int SendDsc(int id, unsigned char idx, unsigned char nargs,
+            struct descriptor *dsc) {
   int status;
   INIT_AND_FREEXD_ON_EXIT(out);
   status = MdsSerializeDscOut(dsc, &out);
-  if STATUS_OK {
-    struct descriptor_a* array = (struct descriptor_a*)out.pointer;
-    int dims[MAX_DIMS] = {0};
-    dims[0] = array->arsize;
-    status = SendArg(id, idx, DTYPE_SERIAL, nargs, 1, 1, dims, (char*)array->pointer);
-  }
+  if
+    STATUS_OK {
+      struct descriptor_a *array = (struct descriptor_a *)out.pointer;
+      int dims[MAX_DIMS] = {0};
+      dims[0] = array->arsize;
+      status = SendArg(id, idx, DTYPE_SERIAL, nargs, 1, 1, dims,
+                       (char *)array->pointer);
+    }
   FREEXD_NOW(out);
   return status;
 }
 
-
-int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned short length, char ndims, int *dims, char *bytes){
-  Connection* c = (idx==0 || idx>nargs) ? FindConnectionWithLock(id, CON_SENDARG) : FindConnectionSending(id);
-  if (!c) return MDSplusERROR;  // both methods will leave connection id unlocked
+int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
+            unsigned short length, char ndims, int *dims, char *bytes) {
+  Connection *c = (idx == 0 || idx > nargs)
+                      ? FindConnectionWithLock(id, CON_SENDARG)
+                      : FindConnectionSending(id);
+  if (!c)
+    return MDSplusERROR; // both methods will leave connection id unlocked
 
   int msglen;
   int i;
@@ -59,7 +64,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   // * get the connection message_id and store it inside message              //
   if (idx > nargs) {
     /**** Special I/O message ****/
-    if (idx==MDS_IO_OPEN_ONE_K && c->version < MDSIP_VERSION_OPEN_ONE){
+    if (idx == MDS_IO_OPEN_ONE_K && c->version < MDSIP_VERSION_OPEN_ONE) {
       UnlockConnection(c);
       return MDSplusFATAL;
     }
@@ -68,10 +73,11 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
     for (i = 0; i < ndims; i++)
       nbytes *= dims[i];
   }
-  if (!bytes) nbytes = 0;
+  if (!bytes)
+    nbytes = 0;
   msglen = sizeof(MsgHdr) + nbytes;
   m = malloc(msglen);
-  memset(&m->h,0,sizeof(m->h));
+  memset(&m->h, 0, sizeof(m->h));
   m->h.client_type = 0;
   m->h.msglen = msglen;
   m->h.descriptor_idx = idx;
@@ -81,17 +87,19 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   m->h.ndims = ndims;
 #ifdef __CRAY
   for (i = 0; i < 4; i++)
-    m->h.dims[i] = ((ndims>i*2) ? (dims[i*2] << 32) : 0) | ((ndims > (i*2+1)) ? (dims[i*2+1]) : 0);
+    m->h.dims[i] = ((ndims > i * 2) ? (dims[i * 2] << 32) : 0) |
+                   ((ndims > (i * 2 + 1)) ? (dims[i * 2 + 1]) : 0);
 #else
-  for (i = 0; i < MAX_DIMS; i++)  m->h.dims[i] = i < ndims ? dims[i] : 0;
+  for (i = 0; i < MAX_DIMS; i++)
+    m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
-  if (nbytes>0)
+  if (nbytes > 0)
     memcpy(m->bytes, bytes, nbytes);
-  m->h.message_id = (idx == 0 || nargs == 0)
-	    ? IncrementConnectionMessageIdC(c)
-	    : c->message_id;
+  m->h.message_id = (idx == 0 || nargs == 0) ? IncrementConnectionMessageIdC(c)
+                                             : c->message_id;
   int status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
   free(m);
-  if STATUS_NOT_OK UnlockConnection(c);
+  if
+    STATUS_NOT_OK UnlockConnection(c);
   return status;
 }

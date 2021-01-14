@@ -43,24 +43,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-------------------------------------------------------------------------
 // include files
 //-------------------------------------------------------------------------
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
 
-#define CLR		33
+#define CLR 33
 
 // function prototype (local)
 static int strncmp_nocase(const char *s, const char *t, int n);
@@ -75,17 +75,17 @@ static int strncmp_nocase(const char *s, const char *t, int n);
 //                       0 for equal,
 //                      +1 for first greater than second
 //-------------------------------------------------------------------------
-int compare_str(const void *key1, const void *key2)
-{
+int compare_str(const void *key1, const void *key2) {
   int length, retval;
 
-  if (MSGLVL(11))		//              v                    v                   v                    v
-    printf
-	("comparing \033[01;%dm[\033[0m%s\033[01;%dm]\033[0m \033[01;%dm[\033[0m%s\033[01;%dm]\033[0m\n",
-	 CLR, (char *)key1, CLR, CLR, (char *)key2, CLR);
+  if (MSGLVL(11)) //              v                    v                   v v
+    printf("comparing \033[01;%dm[\033[0m%s\033[01;%dm]\033[0m "
+           "\033[01;%dm[\033[0m%s\033[01;%dm]\033[0m\n",
+           CLR, (char *)key1, CLR, CLR, (char *)key2, CLR);
 
   length = (strlen(key1) >= strlen(key2)) ? strlen(key1) : strlen(key2);
-  if ((retval = strncmp_nocase((const char *)key1, (const char *)key2, length)) > 0) {
+  if ((retval = strncmp_nocase((const char *)key1, (const char *)key2,
+                               length)) > 0) {
     if (MSGLVL(8))
       printf("comp(): key1 > key2\n");
 
@@ -107,12 +107,12 @@ int compare_str(const void *key1, const void *key2)
 // same as 'strncmp()' but ignores case
 //              (shamelessly copied from other mdsplus code)
 //-------------------------------------------------------------------------
-static int strncmp_nocase(const char *s, const char *t, int n)
-{
-  int i=0;
+static int strncmp_nocase(const char *s, const char *t, int n) {
+  int i = 0;
 
   if (MSGLVL(11))
-    printf("string sizes: *s(%d)  *t(%d)  n(%d)\n", (int)strlen(s),(int)strlen(t), n);
+    printf("string sizes: *s(%d)  *t(%d)  n(%d)\n", (int)strlen(s),
+           (int)strlen(t), n);
 
   for (; n; n--, s++, t++) {
     if (MSGLVL(11))

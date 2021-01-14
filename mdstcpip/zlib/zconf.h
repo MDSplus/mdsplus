@@ -12,22 +12,22 @@
  * If you *really* need a unique prefix for all types and library functions,
  * compile with -DZ_PREFIX. The "standard" zlib should be compiled without it.
  */
-#define deflateInit_	mds_deflateInit_
-#define deflate	mds_deflate
-#define deflateEnd	mds_deflateEnd
-#define inflateInit_ 	mds_inflateInit_
-#define inflate	mds_inflate
-#define inflateEnd	mds_inflateEnd
-#define deflateInit2_	mds_deflateInit2_
+#define deflateInit_ mds_deflateInit_
+#define deflate mds_deflate
+#define deflateEnd mds_deflateEnd
+#define inflateInit_ mds_inflateInit_
+#define inflate mds_inflate
+#define inflateEnd mds_inflateEnd
+#define deflateInit2_ mds_deflateInit2_
 #define deflateSetDictionary mds_deflateSetDictionary
-#define deflateCopy	mds_deflateCopy
-#define deflateReset	mds_deflateReset
-#define deflateParams	mds_deflateParams
-#define inflateInit2_	mds_inflateInit2_
+#define deflateCopy mds_deflateCopy
+#define deflateReset mds_deflateReset
+#define deflateParams mds_deflateParams
+#define inflateInit2_ mds_inflateInit2_
 #define inflateSetDictionary mds_inflateSetDictionary
-#define inflateSync	mds_inflateSync
+#define inflateSync mds_inflateSync
 #define inflateSyncPoint mds_inflateSyncPoint
-#define inflateReset	mds_inflateReset
+#define inflateReset mds_inflateReset
 #define inflate_blocks_new mds_inflate_blocks_new
 #define inflate_blocks mds_inflate_blocks
 #define inflate_trees_bits mds_inflate_trees_bits
@@ -45,22 +45,22 @@
 #define zcalloc mds_zcalloc
 #define zcfree mds_zcfree
 #define zlibVersion mds_zlibVersion
-#define compress	mds_compress
-#define compress2	mds_compress2
-#define uncompress	mds_uncompress
-#define adler32	mds_adler32
-#define crc32		mds_crc32
+#define compress mds_compress
+#define compress2 mds_compress2
+#define uncompress mds_uncompress
+#define adler32 mds_adler32
+#define crc32 mds_crc32
 #define get_crc_table mds_get_crc_table
-#define Byte		mds_Byte
-#define uInt		mds_uInt
-#define uLong		mds_uLong
-#define Bytef		mds_Bytef
-#define charf		mds_charf
-#define intf		mds_intf
-#define uIntf		mds_uIntf
-#define uLongf	mds_uLongf
-#define voidpf	mds_voidpf
-#define voidp		mds_voidp
+#define Byte mds_Byte
+#define uInt mds_uInt
+#define uLong mds_uLong
+#define Bytef mds_Bytef
+#define charf mds_charf
+#define intf mds_intf
+#define uIntf mds_uIntf
+#define uLongf mds_uLongf
+#define voidpf mds_voidpf
+#define voidp mds_voidp
 
 #if (defined(_WIN32) || defined(__WIN32__)) && !defined(WIN32)
 #define WIN32
@@ -85,7 +85,7 @@
 #define UNALIGNED_OK
 #endif
 
-#if (defined(MSDOS) || defined(_WINDOWS) || defined(WIN32))  && !defined(STDC)
+#if (defined(MSDOS) || defined(_WINDOWS) || defined(WIN32)) && !defined(STDC)
 #define STDC
 #endif
 #if defined(__STDC__) || defined(__cplusplus) || defined(__OS2__)
@@ -95,13 +95,14 @@
 #endif
 
 #ifndef STDC
-#ifndef const			/* cannot use !defined(STDC) && !defined(const) on Mac */
+#ifndef const /* cannot use !defined(STDC) && !defined(const) on Mac */
 #define const
 #endif
 #endif
 
 /* Some Mac compilers merge all .h files incorrectly: */
-#if defined(__MWERKS__) || defined(applec) ||defined(THINK_C) ||defined(__SC__)
+#if defined(__MWERKS__) || defined(applec) || defined(THINK_C) ||              \
+    defined(__SC__)
 #define NO_DUMMY_DECL
 #endif
 
@@ -125,11 +126,11 @@
  * gzip.)
  */
 #ifndef MAX_WBITS
-#define MAX_WBITS   15		/* 32K LZ77 window */
+#define MAX_WBITS 15 /* 32K LZ77 window */
 #endif
 
 /* The memory requirements for deflate are (in bytes):
-	    (1 << (windowBits+2)) +  (1 << (memLevel+9))
+            (1 << (windowBits+2)) +  (1 << (memLevel+9))
  that is: 128K for windowBits=15  +  128K for memLevel = 8  (default values)
  plus a few kilobytes for small objects. For example, if you want to reduce
  the default memory requirements from 256K to 128K, compile with
@@ -141,13 +142,13 @@
  for small objects.
 */
 
-			/* Type declarations */
+/* Type declarations */
 
-#ifndef OF			/* function prototypes */
+#ifndef OF /* function prototypes */
 #ifdef STDC
-#define OF(args)  args
+#define OF(args) args
 #else
-#define OF(args)  ()
+#define OF(args) ()
 #endif
 #endif
 
@@ -158,7 +159,7 @@
  * just define FAR to be empty.
  */
 #if (defined(M_I86SM) || defined(M_I86MM)) && !defined(__32BIT__)
-   /* MSC small or medium model */
+/* MSC small or medium model */
 #define SMALL_MEDIUM
 #ifdef _MSC_VER
 #define FAR _far
@@ -180,20 +181,20 @@
 #undef FAR
 #endif
 #include <windows.h>
-#define ZEXPORT  WINAPI
+#define ZEXPORT WINAPI
 #ifdef WIN32
-#define ZEXPORTVA  WINAPIV
+#define ZEXPORTVA WINAPIV
 #else
-#define ZEXPORTVA  FAR _cdecl _export
+#define ZEXPORTVA FAR _cdecl _export
 #endif
 #endif
-#if defined (__BORLANDC__)
-#if (__BORLANDC__ >= 0x0500) && defined (WIN32)
+#if defined(__BORLANDC__)
+#if (__BORLANDC__ >= 0x0500) && defined(WIN32)
 #include <windows.h>
 #define ZEXPORT __declspec(dllexport) WINAPI
 #define ZEXPORTRVA __declspec(dllexport) WINAPIV
 #else
-#if defined (_Windows) && defined (__DLL__)
+#if defined(_Windows) && defined(__DLL__)
 #define ZEXPORT _export
 #define ZEXPORTVA _export
 #endif
@@ -201,8 +202,8 @@
 #endif
 #endif
 
-#if defined (__BEOS__)
-#if defined (ZLIB_DLL)
+#if defined(__BEOS__)
+#if defined(ZLIB_DLL)
 #define ZEXTERN extern __declspec(dllexport)
 #else
 #define ZEXTERN extern __declspec(dllimport)
@@ -224,13 +225,13 @@
 #endif
 
 #if !defined(MACOS) && !defined(TARGET_OS_MAC)
-typedef unsigned char Byte;	/* 8 bits */
+typedef unsigned char Byte; /* 8 bits */
 #endif
-typedef unsigned int uInt;	/* 16 bits or more */
-typedef unsigned long uLong;	/* 32 bits or more */
+typedef unsigned int uInt;   /* 16 bits or more */
+typedef unsigned long uLong; /* 32 bits or more */
 
 #ifdef SMALL_MEDIUM
-   /* Borland C/C++ and some old MSC versions ignore FAR inside typedef */
+/* Borland C/C++ and some old MSC versions ignore FAR inside typedef */
 #define Bytef Byte FAR
 #else
 typedef Byte FAR Bytef;
@@ -249,44 +250,44 @@ typedef Byte *voidp;
 #endif
 
 #ifdef HAVE_UNISTD_H
-#include <sys/types.h>		/* for off_t */
-#include <unistd.h>		/* for SEEK_* and off_t */
-#define z_off_t  off_t
+#include <sys/types.h> /* for off_t */
+#include <unistd.h>    /* for SEEK_* and off_t */
+#define z_off_t off_t
 #endif
 #ifndef SEEK_SET
-#define SEEK_SET        0	/* Seek from beginning of file.  */
-#define SEEK_CUR        1	/* Seek from current position.  */
-#define SEEK_END        2	/* Set file pointer to EOF plus "offset" */
+#define SEEK_SET 0 /* Seek from beginning of file.  */
+#define SEEK_CUR 1 /* Seek from current position.  */
+#define SEEK_END 2 /* Set file pointer to EOF plus "offset" */
 #endif
 #ifndef z_off_t
-#define  z_off_t long
+#define z_off_t long
 #endif
 
 /* MVS linker does not support external names larger than 8 bytes */
 #if defined(__MVS__)
-#pragma map(deflateInit_,"DEIN")
-#pragma map(deflateInit2_,"DEIN2")
-#pragma map(deflateEnd,"DEEND")
-#pragma map(inflateInit_,"ININ")
-#pragma map(inflateInit2_,"ININ2")
-#pragma map(inflateEnd,"INEND")
-#pragma map(inflateSync,"INSY")
-#pragma map(inflateSetDictionary,"INSEDI")
-#pragma map(inflate_blocks,"INBL")
-#pragma map(inflate_blocks_new,"INBLNE")
-#pragma map(inflate_blocks_free,"INBLFR")
-#pragma map(inflate_blocks_reset,"INBLRE")
-#pragma map(inflate_codes_free,"INCOFR")
-#pragma map(inflate_codes,"INCO")
-#pragma map(inflate_fast,"INFA")
-#pragma map(inflate_flush,"INFLU")
-#pragma map(inflate_mask,"INMA")
-#pragma map(inflate_set_dictionary,"INSEDI2")
-#pragma map(inflate_copyright,"INCOPY")
-#pragma map(inflate_trees_bits,"INTRBI")
-#pragma map(inflate_trees_dynamic,"INTRDY")
-#pragma map(inflate_trees_fixed,"INTRFI")
-#pragma map(inflate_trees_free,"INTRFR")
+#pragma map(deflateInit_, "DEIN")
+#pragma map(deflateInit2_, "DEIN2")
+#pragma map(deflateEnd, "DEEND")
+#pragma map(inflateInit_, "ININ")
+#pragma map(inflateInit2_, "ININ2")
+#pragma map(inflateEnd, "INEND")
+#pragma map(inflateSync, "INSY")
+#pragma map(inflateSetDictionary, "INSEDI")
+#pragma map(inflate_blocks, "INBL")
+#pragma map(inflate_blocks_new, "INBLNE")
+#pragma map(inflate_blocks_free, "INBLFR")
+#pragma map(inflate_blocks_reset, "INBLRE")
+#pragma map(inflate_codes_free, "INCOFR")
+#pragma map(inflate_codes, "INCO")
+#pragma map(inflate_fast, "INFA")
+#pragma map(inflate_flush, "INFLU")
+#pragma map(inflate_mask, "INMA")
+#pragma map(inflate_set_dictionary, "INSEDI2")
+#pragma map(inflate_copyright, "INCOPY")
+#pragma map(inflate_trees_bits, "INTRBI")
+#pragma map(inflate_trees_dynamic, "INTRDY")
+#pragma map(inflate_trees_fixed, "INTRFI")
+#pragma map(inflate_trees_free, "INTRFR")
 #endif
 
-#endif				/* _ZCONF_H */
+#endif /* _ZCONF_H */

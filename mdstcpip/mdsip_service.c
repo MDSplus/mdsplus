@@ -22,15 +22,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <fcntl.h>
+#include <io.h>
 #include <mdsplus/mdsconfig.h>
-#include <stdlib.h>
 #include <process.h>
 #include <stdio.h>
-#include <io.h>
-#include <fcntl.h>
+#include <stdlib.h>
 
-#include <socket_port.h>
 #include "mdsip_connections.h"
+#include <socket_port.h>
 
 static int shut = 0;
 static HANDLE shutdownEventHandle;
@@ -42,17 +42,15 @@ static char **extra_argv;
 // static char *dirname = "bin_x86";
 // #endif
 
-static char *ServiceName(int generic)
-{
+static char *ServiceName(int generic) {
   char *name = strcpy((char *)malloc(512), "MDSplus ");
   if (!generic)
-    strcat(name, GetMulti()? "Action Server - Port " : "Data Server - Port ");
+    strcat(name, GetMulti() ? "Action Server - Port " : "Data Server - Port ");
   strcat(name, GetPortname());
   return name;
 }
 
-static int SpawnWorker(SOCKET sock)
-{
+static int SpawnWorker(SOCKET sock) {
   int status;
   STARTUPINFO startupinfo;
   PROCESS_INFORMATION pinfo;
@@ -62,19 +60,18 @@ static int SpawnWorker(SOCKET sock)
   sc_atts.bInheritHandle = TRUE;
   sc_atts.lpSecurityDescriptor = NULL;
   // sprintf(cmd,
-  //	  "%s\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",
-  //	  getenv("MDSPLUS_DIR"), dirname, GetPortname(), GetHostfile(), GetMaxCompressionLevel(),
-  //	  _getpid(), sock);
+  //	  "%s\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d
+  //--sockethandle=%d:%d", 	  getenv("MDSPLUS_DIR"), dirname, GetPortname(),
+  //GetHostfile(), GetMaxCompressionLevel(), 	  _getpid(), sock);
   sprintf(cmd,
-	  "mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%u",
-	  GetPortname(),
-	  GetHostfile(),
-	  GetMaxCompressionLevel(),
-	  _getpid(),
-	  (unsigned int)sock);
+          "mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d "
+          "--sockethandle=%d:%u",
+          GetPortname(), GetHostfile(), GetMaxCompressionLevel(), _getpid(),
+          (unsigned int)sock);
   memset(&startupinfo, 0, sizeof(startupinfo));
   startupinfo.cb = sizeof(startupinfo);
-  status = CreateProcess(NULL, TEXT(cmd), NULL, NULL, FALSE, 0, NULL, NULL, &startupinfo, &pinfo);
+  status = CreateProcess(NULL, TEXT(cmd), NULL, NULL, FALSE, 0, NULL, NULL,
+                         &startupinfo, &pinfo);
   printf("CreateProcess returned %d with cmd=%s\n", status, cmd);
   fflush(stdout);
   CloseHandle(pinfo.hProcess);
@@ -83,11 +80,10 @@ static int SpawnWorker(SOCKET sock)
 }
 
 static SERVICE_STATUS_HANDLE hService;
-static void ServiceMain(DWORD,  CHAR **);
+static void ServiceMain(DWORD, CHAR **);
 static SERVICE_STATUS serviceStatus;
 
-static void SetThisServiceStatus(int state, int hint)
-{
+static void SetThisServiceStatus(int state, int hint) {
   serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
   serviceStatus.dwCurrentState = state;
   serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
@@ -98,31 +94,28 @@ static void SetThisServiceStatus(int state, int hint)
   SetServiceStatus(hService, &serviceStatus);
 }
 
-VOID WINAPI serviceHandler(DWORD fdwControl)
-{
+VOID WINAPI serviceHandler(DWORD fdwControl) {
   switch (fdwControl) {
-  case SERVICE_CONTROL_STOP:
-    {
-      SetThisServiceStatus(SERVICE_STOP_PENDING, 1000);
-      SetThisServiceStatus(SERVICE_STOPPED, 0);
-      shut = 1;
-      PulseEvent(shutdownEventHandle);
-      break;
-    }
+  case SERVICE_CONTROL_STOP: {
+    SetThisServiceStatus(SERVICE_STOP_PENDING, 1000);
+    SetThisServiceStatus(SERVICE_STOPPED, 0);
+    shut = 1;
+    PulseEvent(shutdownEventHandle);
+    break;
+  }
   }
 }
 
-static void InitializeService()
-{
+static void InitializeService() {
   char name[120];
-  hService = RegisterServiceCtrlHandler(TEXT(ServiceName(1)), (LPHANDLER_FUNCTION) serviceHandler);
+  hService = RegisterServiceCtrlHandler(TEXT(ServiceName(1)),
+                                        (LPHANDLER_FUNCTION)serviceHandler);
   sprintf(name, "MDSIP_%s_SHUTDOWN", GetPortname());
   shutdownEventHandle = CreateEvent(NULL, FALSE, FALSE, TEXT(name));
   SetThisServiceStatus(SERVICE_START_PENDING, 1000);
 }
 
-static BOOL RemoveService()
-{
+static BOOL RemoveService() {
   BOOL status = 1;
   SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
   if (hSCManager) {
@@ -136,8 +129,7 @@ static BOOL RemoveService()
   return status;
 }
 
-static int InstallService()
-{
+static int InstallService() {
   int status = 1;
   SC_HANDLE hSCManager;
   RemoveService();
@@ -148,55 +140,59 @@ static int InstallService()
     static const char *multi_opt = "--multi";
     static const char *server_opt = "--server";
     static const char *data_opt = "";
-    const char *opts = GetMulti()? (GetContextSwitching()? "--multi" : "--server") : "";
+    const char *opts =
+        GetMulti() ? (GetContextSwitching() ? "--multi" : "--server") : "";
     SERVICE_DESCRIPTION sd;
-    LPTSTR description = (LPTSTR) malloc(4096);
+    LPTSTR description = (LPTSTR)malloc(4096);
     if (GetMulti()) {
       if (GetContextSwitching()) {
-	opts = multi_opt;
-	wsprintf(description,
-		 TEXT
-		 ("MDSplus data service listening on port %s.\nPermits multiple connections each with own tdi and tree context\n"),
-		 GetPortname());
+        opts = multi_opt;
+        wsprintf(
+            description,
+            TEXT("MDSplus data service listening on port %s.\nPermits multiple "
+                 "connections each with own tdi and tree context\n"),
+            GetPortname());
       } else {
-	opts = server_opt;
-	wsprintf(description,
-		 TEXT
-		 ("MDSplus data service listening on port %s.\nPermits multiple connections with shared tdi and tree context\n"),
-		 GetPortname());
+        opts = server_opt;
+        wsprintf(
+            description,
+            TEXT("MDSplus data service listening on port %s.\nPermits multiple "
+                 "connections with shared tdi and tree context\n"),
+            GetPortname());
       }
     } else {
       opts = data_opt;
       wsprintf(description,
-	       TEXT
-	       ("MDSplus data service listening on port %s.\nEach connections will spawn a private server.\n"),
-	       GetPortname());
+               TEXT("MDSplus data service listening on port %s.\nEach "
+                    "connections will spawn a private server.\n"),
+               GetPortname());
     }
     sd.lpDescription = description;
     cmd = (char *)malloc(strlen(GetPortname()) + strlen(GetHostfile()) + 500);
-//    sprintf(cmd, "%%MDSPLUS_DIR%%\\%s\\mdsip_service.exe --port=%s --hostfile=\"%s\" %s", dirname,
-//	    GetPortname(), GetHostfile(), opts);
+    //    sprintf(cmd, "%%MDSPLUS_DIR%%\\%s\\mdsip_service.exe --port=%s
+    //    --hostfile=\"%s\" %s", dirname,
+    //	    GetPortname(), GetHostfile(), opts);
     sprintf(cmd, "mdsip_service.exe --port=%s --hostfile=\"%s\" %s",
-	  GetPortname(), GetHostfile(), opts);
-    hService =
-	CreateService(hSCManager, ServiceName(1), ServiceName(0), SERVICE_ALL_ACCESS,
-		      SERVICE_WIN32_OWN_PROCESS, SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd,
-		      NULL, NULL, NULL, NULL, NULL);
+            GetPortname(), GetHostfile(), opts);
+    hService = CreateService(hSCManager, ServiceName(1), ServiceName(0),
+                             SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
+                             SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd,
+                             NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
       status = GetLastError();
     else {
       ChangeServiceConfig2(hService, SERVICE_CONFIG_DESCRIPTION, &sd);
       if (GetMulti()) {
-	SERVICE_FAILURE_ACTIONS sfa;
-	SC_ACTION actions[] = { {SC_ACTION_RESTART, 5000}
-	};
-	sfa.dwResetPeriod = INFINITE;
-	sfa.lpRebootMsg = NULL;
-	sfa.lpCommand = NULL;
-	sfa.cActions = 1;
-	sfa.lpsaActions = actions;
-	status = ChangeServiceConfig2(hService, SERVICE_CONFIG_FAILURE_ACTIONS, &sfa);
-	status = GetLastError();
+        SERVICE_FAILURE_ACTIONS sfa;
+        SC_ACTION actions[] = {{SC_ACTION_RESTART, 5000}};
+        sfa.dwResetPeriod = INFINITE;
+        sfa.lpRebootMsg = NULL;
+        sfa.lpCommand = NULL;
+        sfa.cActions = 1;
+        sfa.lpsaActions = actions;
+        status = ChangeServiceConfig2(hService, SERVICE_CONFIG_FAILURE_ACTIONS,
+                                      &sfa);
+        status = GetLastError();
       }
     }
     free(description);
@@ -208,12 +204,11 @@ static int InstallService()
   return status;
 }
 
-static short GetPort()
-{
+static short GetPort() {
   short port;
   char *name = GetPortname();
   struct servent *sp;
-  port = htons((short)strtol(name,NULL,0));
+  port = htons((short)strtol(name, NULL, 0));
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (sp == NULL) {
@@ -225,25 +220,23 @@ static short GetPort()
   return port;
 }
 
-static void RedirectOutput()
-{
+static void RedirectOutput() {
   char *logdir = GetLogDir();
   char *portname = GetPortname();
-  char *file = malloc(strlen(logdir)+strlen(portname)+20);
-  sprintf(file, "%s\\MDSIP_%s.log", logdir,GetPortname());
+  char *file = malloc(strlen(logdir) + strlen(portname) + 20);
+  sprintf(file, "%s\\MDSIP_%s.log", logdir, GetPortname());
   freopen(file, "w", stdout);
   freopen(file, "a", stderr);
   free(logdir);
   free(file);
 }
 
-static void ServiceMain(DWORD argc, CHAR **argv)
-{
+static void ServiceMain(DWORD argc, CHAR **argv) {
   SOCKET s;
   int status;
   static struct sockaddr_in sin;
   extern fd_set FdActive();
-  struct timeval timeout = { 1, 0 };
+  struct timeval timeout = {1, 0};
   int error_count = 0;
   fd_set readfds;
   fd_set fdactive;
@@ -282,23 +275,23 @@ static void ServiceMain(DWORD argc, CHAR **argv)
     }
     FD_ZERO(&fdactive);
     FD_SET(s, &fdactive);
-    for (readfds=fdactive; !shut; readfds=fdactive) {
-      if (select(s+1, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
-	error_count = 0;
-	if (FD_ISSET(s, &readfds)) {
-	  int len = sizeof(struct sockaddr_in);
-	  SOCKET sock = accept(s, (struct sockaddr *)&sin, &len);
-	  SpawnWorker(sock);
-	}
+    for (readfds = fdactive; !shut; readfds = fdactive) {
+      if (select(s + 1, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
+        error_count = 0;
+        if (FD_ISSET(s, &readfds)) {
+          int len = sizeof(struct sockaddr_in);
+          SOCKET sock = accept(s, (struct sockaddr *)&sin, &len);
+          SpawnWorker(sock);
+        }
       } else {
-	error_count++;
-	perror("error in main select");
-	fprintf(stderr, "Error count=%d\n", error_count);
-	fflush(stderr);
-	if (error_count > 100) {
-	  fprintf(stderr, "Error count exceeded, shutting down\n");
-	  shut = 1;
-	}
+        error_count++;
+        perror("error in main select");
+        fprintf(stderr, "Error count=%d\n", error_count);
+        fflush(stderr);
+        if (error_count > 100) {
+          fprintf(stderr, "Error count exceeded, shutting down\n");
+          shut = 1;
+        }
       }
     }
     shutdown(s, 2);
@@ -307,15 +300,13 @@ static void ServiceMain(DWORD argc, CHAR **argv)
 }
 
 DEFINE_INITIALIZESOCKETS;
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int x_argc;
   char **x_argv;
-  Options options[] = { {"i", "install", 0, 0, 0},
-  {"r", "remove", 0, 0, 0},
-  {"p", "port", 1, 0, 0},
-  {0, 0, 0, 0, 0}
-  };
+  Options options[] = {{"i", "install", 0, 0, 0},
+                       {"r", "remove", 0, 0, 0},
+                       {"p", "port", 1, 0, 0},
+                       {0, 0, 0, 0, 0}};
   ParseStdArgs(argc, argv, &x_argc, &x_argv);
   ParseCommand(x_argc, x_argv, options, 1, &extra_argc, &extra_argv);
   if (options[2].present && options[2].value)
@@ -329,9 +320,8 @@ int main(int argc, char **argv)
     RemoveService();
     exit(0);
   } else {
-    SERVICE_TABLE_ENTRY srvcTable[] = { {ServiceName(1), (LPSERVICE_MAIN_FUNCTION) ServiceMain}
-    , {NULL, NULL}
-    };
+    SERVICE_TABLE_ENTRY srvcTable[] = {
+        {ServiceName(1), (LPSERVICE_MAIN_FUNCTION)ServiceMain}, {NULL, NULL}};
     INITIALIZESOCKETS;
     StartServiceCtrlDispatcher(srvcTable);
   }

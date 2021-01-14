@@ -23,17 +23,15 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "mdsip_connections.h"
 #include <STATICdef.h>
 #include <stdlib.h>
-#include "mdsip_connections.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MdsClose  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-int MdsClose(int id)
-{
+int MdsClose(int id) {
   struct descrip ansarg;
   STATIC_CONSTANT char *expression = "TreeClose()";
   int status = MdsValue(id, expression, &ansarg, NULL);

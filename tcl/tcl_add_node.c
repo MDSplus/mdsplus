@@ -22,66 +22,68 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <ncidef.h>
-#include <usagedef.h>
-#include <string.h>
-#include <dcl.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <mdsshr.h>
-#include <treeshr.h>
-#include <mdsdcl_messages.h>
 #include "tcl_p.h"
+#include <dcl.h>
+#include <mdsdcl_messages.h>
+#include <mdsshr.h>
+#include <ncidef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <treeshr.h>
+#include <usagedef.h>
 
 /**********************************************************************
-* TCL_ADD_NODE.C --
-*
-* TclAddNode:  Add a node
-*
-* History:
-*  02-Feb-1998  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
+ * TCL_ADD_NODE.C --
+ *
+ * TclAddNode:  Add a node
+ *
+ * History:
+ *  02-Feb-1998  TRG  Create.  Ported from original mds code.
+ *
+ ************************************************************************/
 
-#define DSC(A)        (struct descriptor *)(A)
+#define DSC(A) (struct descriptor *)(A)
 
-	/*****************************************************************
-	 * TclAddNode:
-	 * Add a node
-	 *****************************************************************/
+/*****************************************************************
+ * TclAddNode:
+ * Add a node
+ *****************************************************************/
 
-char tclUsageToNumber(const char *usage, char **error)
-{
+char tclUsageToNumber(const char *usage, char **error) {
   struct usageMap {
     char *name;
     char value;
-  } map[] = { {
-  "ANY", TreeUSAGE_ANY}, {
-  "STRUCTURE", TreeUSAGE_STRUCTURE}, {
-  "ACTION", TreeUSAGE_ACTION}, {
-  "DEVICE", TreeUSAGE_DEVICE}, {
-  "DISPATCH", TreeUSAGE_DISPATCH}, {
-  "NUMERIC", TreeUSAGE_NUMERIC}, {
-  "SIGNAL", TreeUSAGE_SIGNAL}, {
-  "TASK", TreeUSAGE_TASK}, {
-  "TEXT", TreeUSAGE_TEXT}, {
-  "WINDOW", TreeUSAGE_WINDOW}, {
-  "AXIS", TreeUSAGE_AXIS}, {
-  "SUBTREE", TreeUSAGE_SUBTREE}, {
-  "COMPOUND_DATA", TreeUSAGE_COMPOUND_DATA}};
+  } map[] = {{"ANY", TreeUSAGE_ANY},
+             {"STRUCTURE", TreeUSAGE_STRUCTURE},
+             {"ACTION", TreeUSAGE_ACTION},
+             {"DEVICE", TreeUSAGE_DEVICE},
+             {"DISPATCH", TreeUSAGE_DISPATCH},
+             {"NUMERIC", TreeUSAGE_NUMERIC},
+             {"SIGNAL", TreeUSAGE_SIGNAL},
+             {"TASK", TreeUSAGE_TASK},
+             {"TEXT", TreeUSAGE_TEXT},
+             {"WINDOW", TreeUSAGE_WINDOW},
+             {"AXIS", TreeUSAGE_AXIS},
+             {"SUBTREE", TreeUSAGE_SUBTREE},
+             {"COMPOUND_DATA", TreeUSAGE_COMPOUND_DATA}};
   int i, mapsize = sizeof(map) / sizeof(struct usageMap);
   for (i = 0; i < mapsize; i++)
     if (strncasecmp(usage, map[i].name, strlen(usage)) == 0)
       return map[i].value;
   *error = malloc(strlen(usage) + 500);
-  sprintf(*error, "Error: Invalid usage specified '%s', use one of\n"
-	  "ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH,"
-	  "NUMERIC, SIGNAL,\nSTRUCTURE, SUBTREE, TASK, TEXT" " or WINDOW\n", usage);
+  sprintf(*error,
+          "Error: Invalid usage specified '%s', use one of\n"
+          "ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH,"
+          "NUMERIC, SIGNAL,\nSTRUCTURE, SUBTREE, TASK, TEXT"
+          " or WINDOW\n",
+          usage);
   return -1;
 }
 
-EXPORT int TclAddNode(void *ctx, char **error, char **output __attribute__ ((unused)))
-{				/* Return: status                 */
+EXPORT int TclAddNode(void *ctx, char **error,
+                      char **output
+                      __attribute__((unused))) { /* Return: status */
   int nid;
   int sts;
   char usage = 0;
@@ -100,8 +102,8 @@ EXPORT int TclAddNode(void *ctx, char **error, char **output __attribute__ ((unu
     if (usageStr) {
       usage = tclUsageToNumber(usageStr, error);
       if (usage == -1) {
-	sts = MdsdclIVVERB;
-	goto done;
+        sts = MdsdclIVVERB;
+        goto done;
       }
     }
     sts = TreeAddNode(nodnam, &nid, usage);
@@ -115,9 +117,10 @@ EXPORT int TclAddNode(void *ctx, char **error, char **output __attribute__ ((unu
     char *msg = MdsGetMsg(sts);
     free(*error);
     *error = malloc(strlen(nodnam) + strlen(msg) + 100);
-    sprintf(*error, "Error adding node %s\nError was: %s\n", nodnam, MdsGetMsg(sts));
+    sprintf(*error, "Error adding node %s\nError was: %s\n", nodnam,
+            MdsGetMsg(sts));
   }
- done:
+done:
   free(nodnam);
   free(modelType);
   free(qualifiers);

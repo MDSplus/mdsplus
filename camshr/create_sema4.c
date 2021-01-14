@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -59,10 +59,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 // according to X/OPEN we have to define it ourselves
 union semun {
-  int val;			// value for SETVAL
-  struct semid_ds *buf;		// buffer for IPC_STAT, IPC_SET
-  unsigned short int *array;	// array for GET_ALL, SET_ALL
-  struct seminfo *__buf;	// buffer for IPC_INFO
+  int val;                   // value for SETVAL
+  struct semid_ds *buf;      // buffer for IPC_STAT, IPC_SET
+  unsigned short int *array; // array for GET_ALL, SET_ALL
+  struct seminfo *__buf;     // buffer for IPC_INFO
 };
 #endif
 
@@ -70,7 +70,7 @@ union semun {
 // global stuff -- for all library routines to be able to access
 //-------------------------------------------------------------------------
 int semid;
-int sema4Exists = FALSE;	// initially doesn't exist
+int sema4Exists = FALSE; // initially doesn't exist
 
 //-------------------------------------------------------------------------
 // create_sema4()
@@ -81,12 +81,11 @@ int sema4Exists = FALSE;	// initially doesn't exist
 // input:       none
 // output:      SUCCESS, otherwise fatal error
 //-------------------------------------------------------------------------
-int create_sema4()
-{
+int create_sema4() {
   key_t key;
   union semun arg;
 
-  sema4Exists = FALSE;		//  at least at this point
+  sema4Exists = FALSE; //  at least at this point
 
   if (MSGLVL(FUNCTION_NAME))
     printf("create_sema4()\n");
@@ -94,21 +93,21 @@ int create_sema4()
   // obtain a key
   if ((key = ftok(SEMAPHORE_KEY_SEED, 'A')) == ERROR) {
     perror("ftok(create_sema4)");
-    exit(-1);			// fatal error !!!
+    exit(-1); // fatal error !!!
   }
   // get a semaphore id
   if ((semid = semget(key, 1, 0666 | IPC_CREAT)) == ERROR) {
     perror("semget(create_sema4)");
-    exit(-2);			// fatal error !!!
+    exit(-2); // fatal error !!!
   }
   // create semaphore and initialize it
   arg.val = 1;
   if (semctl(semid, 0, SETVAL, arg) == ERROR) {
     perror("semctl(create_asema4)");
-    exit(-3);			// fatal error !!!
+    exit(-3); // fatal error !!!
   }
 
-  sema4Exists = TRUE;		// if we get here, all's OK
+  sema4Exists = TRUE; // if we get here, all's OK
 
   return SUCCESS;
 }

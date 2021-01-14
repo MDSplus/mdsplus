@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$SET_LOGGING
+                Name:   SERVER$SET_LOGGING
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Set logging of server
+                Purpose: Set logging of server
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
 
@@ -48,7 +48,7 @@ int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
    Set logging on server:
 
@@ -58,12 +58,13 @@ int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
 
 ------------------------------------------------------------------------------*/
 
+#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
-#include "servershrp.h"
 
-EXPORT int ServerSetLogging(char *server, char logging_mode){
+EXPORT int ServerSetLogging(char *server, char logging_mode) {
   struct descrip p1;
-  return ServerSendMessage(0, server, SrvSetLogging, NULL, NULL, NULL, NULL, NULL, NULL, 1,
-			MakeDescrip(&p1, DTYPE_CHAR, 0, 0, &logging_mode));
+  return ServerSendMessage(0, server, SrvSetLogging, NULL, NULL, NULL, NULL,
+                           NULL, NULL, 1,
+                           MakeDescrip(&p1, DTYPE_CHAR, 0, 0, &logging_mode));
 }

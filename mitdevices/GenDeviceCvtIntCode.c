@@ -24,26 +24,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GEN_DEVICE$CVT_INT_CODE
+                Name:   GEN_DEVICE$CVT_INT_CODE
 
-		Type:   C function
+                Type:   C function
 
-		Author:	GABRIELE MANDUCHI
-			Istituto Gas Ionizzati del CNR - Padova (Italy)
+                Author:	GABRIELE MANDUCHI
+                        Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-		Date:   22-AUG-1989
+                Date:   22-AUG-1989
 
-		Purpose:  Convert integer to code, given translation table.
+                Purpose:  Convert integer to code, given translation table.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 EXPORT int GEN_DEVICE$CVT_INT_CODE( )
 
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -55,38 +55,40 @@ struct _table {
   int value;
 };
 
-EXPORT int GenDeviceCvtIntCode(code_ptr, value, table, dimension)
-short *code_ptr;
+EXPORT int GenDeviceCvtIntCode(code_ptr, value, table,
+                               dimension) short *code_ptr;
 int value;
 struct _table table[];
 int dimension;
 {
-/*------------------------------------------------------------------------------
+  /*------------------------------------------------------------------------------
 
- External functions or symbols referenced:                                    */
+   External functions or symbols referenced: */
 
-/*------------------------------------------------------------------------------
+  /*------------------------------------------------------------------------------
 
- Subroutines referenced:                                                      */
+   Subroutines referenced: */
 
-/*------------------------------------------------------------------------------
+  /*------------------------------------------------------------------------------
 
- Macros:                                                                      */
+   Macros: */
 
-/*------------------------------------------------------------------------------
+  /*------------------------------------------------------------------------------
 
- Global variables:                                                            */
+   Global variables: */
 
-/*------------------------------------------------------------------------------
+  /*------------------------------------------------------------------------------
 
- Local variables:                                                             */
+   Local variables: */
 
   register int current;
 
-/*------------------------------------------------------------------------------
+  /*------------------------------------------------------------------------------
 
- Executable:                                                                  */
-  for (current = 0; (current < dimension) && (table[current].value != value); current++) ;
+   Executable: */
+  for (current = 0; (current < dimension) && (table[current].value != value);
+       current++)
+    ;
   if (current == dimension)
     return LibKEYNOTFOU;
   else

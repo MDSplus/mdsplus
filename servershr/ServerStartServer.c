@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$START_SERVER
+                Name:   SERVER$START_SERVER
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Start a server process
+                Purpose: Start a server process
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int SERVER$START_SERVER( struct dsc$descriptor *server )
 
@@ -48,14 +48,12 @@ int SERVER$START_SERVER( struct dsc$descriptor *server )
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
+#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
-#include "servershrp.h"
 
-EXPORT int ServerStartServer(char *server){
-  return ServerConnect(server);
-}
+EXPORT int ServerStartServer(char *server) { return ServerConnect(server); }

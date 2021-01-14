@@ -26,28 +26,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern void csint_(int *n, float *x, float *y, float *br, float *coeff);
 
 #define N 5
-#define fEQ(a,b,d) (((a > b) ? a-b : b-a) < d)
+#define fEQ(a, b, d) (((a > b) ? a - b : b - a) < d)
 
-int main()
-{
-    float x[N] = {0.f,1.f,2.f,3.f,4.f};
-    float y[N] = {0.f,1.f,4.f,1.f,0.f};
-    int n = N;
-    float brk[N];
-    float cff[N*4];
-    csint_(&n, x, y, brk, cff);
-    float cffe[N*4] = {
-        0.,-4.,14.,-12.,
-        1.,4.,2.,-12.,
-        4.,0.,-10.,12.,
-        1.,-4.,2.,12.,
-        0.,4.,14.,12.,
-    };
-    float ebrk[N] = {0.,1.,2.,3.,4.};
-    int i;
-    for ( i = 0 ; i < N ; i++)
-        if (!fEQ(ebrk[i], brk[i], 1e-5f)) return 1;
-    for ( i = 0 ; i < 4*N ; i++)
-        if (!fEQ(cffe[i], cff[i], 1e-5f)) return 1;
-    return 0;
+int main() {
+  float x[N] = {0.f, 1.f, 2.f, 3.f, 4.f};
+  float y[N] = {0.f, 1.f, 4.f, 1.f, 0.f};
+  int n = N;
+  float brk[N];
+  float cff[N * 4];
+  csint_(&n, x, y, brk, cff);
+  float cffe[N * 4] = {
+      0.,   -4., 14., -12., 1., 4.,  2., -12., 4.,  0.,
+      -10., 12., 1.,  -4.,  2., 12., 0., 4.,   14., 12.,
+  };
+  float ebrk[N] = {0., 1., 2., 3., 4.};
+  int i;
+  for (i = 0; i < N; i++)
+    if (!fEQ(ebrk[i], brk[i], 1e-5f))
+      return 1;
+  for (i = 0; i < 4 * N; i++)
+    if (!fEQ(cffe[i], cff[i], 1e-5f))
+      return 1;
+  return 0;
 }

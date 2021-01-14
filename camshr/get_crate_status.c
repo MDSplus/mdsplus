@@ -51,11 +51,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Fri Aug 24 15:59:54 EDT 2001 -- fixed powered off condition (???)
 // Mon Aug 27 11:26:10 EDT 2001 -- re-fixed (?) powered off condition
 //-----------------------------------------------------------
-int get_crate_status(char *crate_name, int *ptr_crate_status)
-{
+int get_crate_status(char *crate_name, int *ptr_crate_status) {
   char controller[11];
   short SCCdata;
-  int status = SUCCESS;		// optimistic ...
+  int status = SUCCESS; // optimistic ...
   TranslatedIosb iosb;
 
   if (MSGLVL(FUNCTION_NAME))
@@ -68,19 +67,22 @@ int get_crate_status(char *crate_name, int *ptr_crate_status)
   // get crate status
   SCCdata = 0;
 
-  status = CamPiow(controller,	// serial crate controller name
-		   0,		// A    --\__ read status register
-		   1,		// F    --/
-		   &SCCdata,	// returned status
-		   16,		// mem == 16-bit data
-		   &iosb	// *iosb
-      );
+  status = CamPiow(controller, // serial crate controller name
+                   0,          // A    --\__ read status register
+                   1,          // F    --/
+                   &SCCdata,   // returned status
+                   16,         // mem == 16-bit data
+                   &iosb       // *iosb
+  );
 
   *ptr_crate_status = (short)((status & 1) ? SCCdata : 0) & 0x0ffff;
 
   if (MSGLVL(DETAILS))
-    printf("gcs(): %.6s  SCCdata = 0x%0x  CamPiow()status = 0x%0x  is %s-LINE\n", controller, SCCdata,	//*ptr_crate_status,
-	   status, (*ptr_crate_status & 0x3c00 || *ptr_crate_status & 3) ? "off" : "ON");
+    printf(
+        "gcs(): %.6s  SCCdata = 0x%0x  CamPiow()status = 0x%0x  is %s-LINE\n",
+        controller, SCCdata, //*ptr_crate_status,
+        status,
+        (*ptr_crate_status & 0x3c00 || *ptr_crate_status & 3) ? "off" : "ON");
 
   return SUCCESS;
 }

@@ -66,15 +66,14 @@ struct scsi_info {
 // puts value into crate.db; leaves unchanged if not found
 // NB! called by 'autoconfig()' in cts::verbs
 //-------------------------------------------------------------------------
-int map_scsi_device(char *highway_name)
-{
+int map_scsi_device(char *highway_name) {
   char line[80], *pline, tmp[7];
-  char dsf[11], hwytype='.';
+  char dsf[11], hwytype = '.';
   int adapter, i, numOfEntries, scsi_id, sg_number;
-  int status = SUCCESS;		// optimistic
+  int status = SUCCESS; // optimistic
   int found = FALSE;
   FILE *fp, *fopen();
-  extern struct CRATE *CRATEdb;	// pointer to in-memory copy of data file
+  extern struct CRATE *CRATEdb; // pointer to in-memory copy of data file
 
   if (MSGLVL(FUNCTION_NAME))
     printf("map_scsi_device('%s')\n", highway_name);
@@ -84,13 +83,13 @@ int map_scsi_device(char *highway_name)
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "failure to open '%s'\n", PROC_FILE);
 
-    status = FILE_ERROR;	// serious error !!! no scsi devices to check
+    status = FILE_ERROR; // serious error !!! no scsi devices to check
     goto MapScsiDevice_Exit;
   }
   // get current db file count
   if ((numOfEntries = get_file_count(CRATE_DB)) <= 0) {
     status = FILE_ERROR;
-    goto MapScsiDevice_Exit;	// we're done  :<
+    goto MapScsiDevice_Exit; // we're done  :<
   }
   if (MSGLVL(DETAILS))
     printf("crate.db count= %d\n", numOfEntries);
@@ -99,7 +98,7 @@ int map_scsi_device(char *highway_name)
   if (MSGLVL(DETAILS))
     printf("msd() looking up '%s'\n", highway_name);
   if ((i = lookup_entry(CRATE_DB, highway_name)) < 0) {
-    status = NO_DEVICE;		// no such device in db file
+    status = NO_DEVICE; // no such device in db file
     goto MapScsiDevice_Exit;
   }
   if (MSGLVL(DETAILS))
@@ -109,63 +108,64 @@ int map_scsi_device(char *highway_name)
   pline = &line[0];
 
   // scan all scsi devices
-  sg_number = 0;		// start at the beginning
+  sg_number = 0; // start at the beginning
   while (!found && (pline = fgets(line, sizeof(line), fp)) != NULL) {
     if (strncmp(pline, "Host:", 5) == EQUAL) {
       sscanf(line, "Host: scsi%d Channel: %*2c Id: %d %*s", &adapter, &scsi_id);
 
       sprintf(tmp, "GK%c%d", 'A' + adapter, scsi_id);
-      if (strncmp(tmp, highway_name, 4) == EQUAL) {	// found it
-	if (QueryHighwayType(tmp) == SUCCESS)	// determine highway type
-	  hwytype = tmp[5];
+      if (strncmp(tmp, highway_name, 4) == EQUAL) { // found it
+        if (QueryHighwayType(tmp) == SUCCESS)       // determine highway type
+          hwytype = tmp[5];
 
-	// we're done, so exit
-	found = TRUE;
+        // we're done, so exit
+        found = TRUE;
       } else
-	sg_number++;
-    }				// end of if() ....
-  }				// end of while() ...
+        sg_number++;
+    } // end of if() ....
+  }   // end of while() ...
 
   // 'lock' file with semaphore
   if (lock_file() != SUCCESS) {
-    status = FAILURE;		// LOCK_ERROR;          [2001.07.12]
+    status = FAILURE; // LOCK_ERROR;          [2001.07.12]
     goto MapScsiDevice_Exit;
   }
   // update memory mapped version
   if (found) {
-    sprintf(dsf, "%03d", sg_number);	// format conversion
+    sprintf(dsf, "%03d", sg_number); // format conversion
 #pragma GCC diagnostic push
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+    _Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
 #endif
-    strncpy((CRATEdb + i)->DSFname, dsf, 3);	// real device number
+        strncpy((CRATEdb + i)->DSFname, dsf, 3); // real device number
 #pragma GCC diagnostic pop
-    (CRATEdb + i)->HwyType = hwytype;	// highway type
+    (CRATEdb + i)->HwyType = hwytype; // highway type
   } else {
 #pragma GCC diagnostic push
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+    _Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
 #endif
-    strncpy((CRATEdb + i)->DSFname, "...", 3);	// place-holder device number
+        strncpy((CRATEdb + i)->DSFname, "...", 3); // place-holder device number
 #pragma GCC diagnostic pop
     (CRATEdb + i)->HwyType = '.';
   }
 
   // commit changes to file
   if (commit_entry(CRATE_DB) != SUCCESS) {
-    status = FAILURE;		// COMMIT_ERROR;        [2001.07.12]
+    status = FAILURE; // COMMIT_ERROR;        [2001.07.12]
     goto MapScsiDevice_Exit;
   }
   if (MSGLVL(DETAILS))
-    printf("'%.4s+%.3s+%c'\n", highway_name, (CRATEdb + i)->DSFname, (CRATEdb + i)->HwyType);
+    printf("'%.4s+%.3s+%c'\n", highway_name, (CRATEdb + i)->DSFname,
+           (CRATEdb + i)->HwyType);
 
   // unlock file
   if (unlock_file() != SUCCESS) {
-    status = FAILURE;		// UNLOCK_ERROR;        [2001.07.12]
+    status = FAILURE; // UNLOCK_ERROR;        [2001.07.12]
     goto MapScsiDevice_Exit;
   }
 
- MapScsiDevice_Exit:
+MapScsiDevice_Exit:
   // cleanup
   if (fp)
     fclose(fp);

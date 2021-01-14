@@ -39,21 +39,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element MdsGet1DxA.C */
 /*------------------------------------------------------------------------------
 
-		Name: MdsGet1DxA
+                Name: MdsGet1DxA
 
-		Type:   C function
+                Type:   C function
 
-		Author:	Thomas W. Fredian
-			MIT Plasma Fusion Center
+                Author:	Thomas W. Fredian
+                        MIT Plasma Fusion Center
 
-		Date:    8-SEP-1988
+                Date:    8-SEP-1988
 
-		Purpose: Get an XD pointing to an array descriptor
-			 Used by CVT_DX_DX_A.
+                Purpose: Get an XD pointing to an array descriptor
+                         Used by CVT_DX_DX_A.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
     status = MdsGet1DxA(in_dsc,length_ptr,dtype_ptr,out_xd);
 
@@ -65,22 +65,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 +-----------------------------------------------------------------------------*/
 
-#include <stdlib.h>
+#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
+#include <stdlib.h>
 
 static inline l_length_t align(l_length_t bytes, l_length_t size) {
-  if (size == 0) return bytes;
-  return ((bytes + size -1)/size)*size;
+  if (size == 0)
+    return bytes;
+  return ((bytes + size - 1) / size) * size;
 }
 
-EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr, const length_t *const length_ptr, const dtype_t *const dtype_ptr, mdsdsc_xd_t *const out_xd){
-  array_coeff *in_dsc = (array_coeff *) in_ptr;
+EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr,
+                      const length_t *const length_ptr,
+                      const dtype_t *const dtype_ptr,
+                      mdsdsc_xd_t *const out_xd) {
+  array_coeff *in_dsc = (array_coeff *)in_ptr;
   l_length_t new_arsize;
   l_length_t dsc_size;
   l_length_t new_size;
@@ -93,47 +97,55 @@ EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr, const length_t *const leng
     new_arsize = 0;
   else
     new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
-  dsc_size = (l_length_t)(sizeof(mdsdsc_a_t)
-	   + ((in_dsc->aflags.coeff || (new_arsize == 0)) ? sizeof(void*) + sizeof(int) * in_dsc->dimct : 0)
-	   + ( in_dsc->aflags.bounds                      ? sizeof(int) * (size_t)(in_dsc->dimct * 2)   : 0));
+  dsc_size = (l_length_t)(
+      sizeof(mdsdsc_a_t) +
+      ((in_dsc->aflags.coeff || (new_arsize == 0))
+           ? sizeof(void *) + sizeof(int) * in_dsc->dimct
+           : 0) +
+      (in_dsc->aflags.bounds ? sizeof(int) * (size_t)(in_dsc->dimct * 2) : 0));
   align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
-  if STATUS_OK {
-    out_dsc = (array_coeff *) out_xd->pointer;
-    *(mdsdsc_a_t *)out_dsc = *(mdsdsc_a_t *)in_dsc;
-    out_dsc->length = *length_ptr;
-    out_dsc->dtype = *dtype_ptr;
-    out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
-    out_dsc->arsize = new_arsize;
-    if (out_dsc->aflags.coeff || (new_arsize==0 && in_dsc->pointer)) {
-      if (!in_dsc->aflags.coeff) {//new_arsize==0; in_dsc->a0 invalid
-	out_dsc->aflags.coeff = 1;
-	out_dsc->a0 = out_dsc->pointer;
-        out_dsc->dimct = 0;
-      } else {
-	int64_t offset;
-	if (out_dsc->class == CLASS_CA)
-	  offset = ((int64_t) out_dsc->length) * ((int64_t)(intptr_t)in_dsc->a0  / ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
-	else
-	  offset = ((int64_t) out_dsc->length) * ((in_dsc->a0 - in_dsc->pointer) / ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
-	out_dsc->a0 = out_dsc->pointer + offset;
+  if
+    STATUS_OK {
+      out_dsc = (array_coeff *)out_xd->pointer;
+      *(mdsdsc_a_t *)out_dsc = *(mdsdsc_a_t *)in_dsc;
+      out_dsc->length = *length_ptr;
+      out_dsc->dtype = *dtype_ptr;
+      out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
+      out_dsc->arsize = new_arsize;
+      if (out_dsc->aflags.coeff || (new_arsize == 0 && in_dsc->pointer)) {
+        if (!in_dsc->aflags.coeff) { // new_arsize==0; in_dsc->a0 invalid
+          out_dsc->aflags.coeff = 1;
+          out_dsc->a0 = out_dsc->pointer;
+          out_dsc->dimct = 0;
+        } else {
+          int64_t offset;
+          if (out_dsc->class == CLASS_CA)
+            offset = ((int64_t)out_dsc->length) *
+                     ((int64_t)(intptr_t)in_dsc->a0 /
+                      ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
+          else
+            offset = ((int64_t)out_dsc->length) *
+                     ((in_dsc->a0 - in_dsc->pointer) /
+                      ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
+          out_dsc->a0 = out_dsc->pointer + offset;
+        }
+        for (i = 0; i < out_dsc->dimct; i++)
+          out_dsc->m[i] = in_dsc->m[i];
+        if (new_arsize == 0 && out_dsc->dimct == 0) {
+          out_dsc->dimct = 1;
+          out_dsc->m[0] = in_dsc->arsize;
+        }
+        if (in_dsc->aflags.bounds) {
+          bound_t *new_bound_ptr = (bound_t *)&out_dsc->m[out_dsc->dimct];
+          bound_t *a_bound_ptr = (bound_t *)&in_dsc->m[in_dsc->dimct];
+          for (i = 0; i < out_dsc->dimct; i++)
+            new_bound_ptr[i] = a_bound_ptr[i];
+        }
       }
-      for (i = 0; i < out_dsc->dimct; i++)
-	out_dsc->m[i] = in_dsc->m[i];
-      if (new_arsize == 0 && out_dsc->dimct == 0) {
-	out_dsc->dimct = 1;
-	out_dsc->m[0]=in_dsc->arsize;
-      }
-      if (in_dsc->aflags.bounds) {
-	bound_t *new_bound_ptr = (bound_t *)&out_dsc->m[out_dsc->dimct];
-	bound_t *a_bound_ptr = (bound_t *)&in_dsc->m[in_dsc->dimct];
-	for (i = 0; i < out_dsc->dimct; i++)
-	  new_bound_ptr[i] = a_bound_ptr[i];
-      }
+      out_dsc->class = CLASS_A;
     }
-    out_dsc->class = CLASS_A;
-  }
   return status;
 }

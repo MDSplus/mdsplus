@@ -23,44 +23,53 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*  CMS REPLACEMENT HISTORY, Element L8590_MEM.C */
-#include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
-#include <mds_stdarg.h>
-#include <treeshr.h>
-#include <stdlib.h>
-#include <ncidef.h>
-#include <strroutines.h>
-#include <libroutines.h>
-#include <Mrm/MrmPublic.h>
-#include <Xm/Xm.h>
-#include <Xm/List.h>
-#include <xmdsshr.h>
+#include "devroutines.h"
 #include "l8590_mem_gen.h"
 #include "l8590_sclr_gen.h"
-#include "devroutines.h"
+#include <Mrm/MrmPublic.h>
+#include <Xm/List.h>
+#include <Xm/Xm.h>
+#include <libroutines.h>
+#include <mds_gendevice.h>
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mitdevices_msg.h>
+#include <ncidef.h>
+#include <stdlib.h>
+#include <strroutines.h>
+#include <treeshr.h>
+#include <xmdsshr.h>
 
-//extern unsigned short OpcValue;
+// extern unsigned short OpcValue;
 
-extern int l8590_sclr___get_setup(struct descriptor *niddsc __attribute__ ((unused)), InGet_setupStruct * setup);
+extern int l8590_sclr___get_setup(struct descriptor *niddsc
+                                  __attribute__((unused)),
+                                  InGet_setupStruct *setup);
 extern int GenDeviceFree();
 
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) {\
-   if (setup_status & 1) GenDeviceFree(&sclr_setup);\
-   TreeSetDefaultNid(old_def); return retstatus; }
+#define return_on_error(f, retstatus)                                          \
+  if (!((status = f) & 1)) {                                                   \
+    if (setup_status & 1)                                                      \
+      GenDeviceFree(&sclr_setup);                                              \
+    TreeSetDefaultNid(old_def);                                                \
+    return retstatus;                                                          \
+  }
 
 static int one = 1;
 static int zero = 0;
 
-#define min(a,b) ((a) <= (b)) ? (a) : (b)
-#define max(a,b) ((a) >= (b)) ? (a) : (b)
-#define L8590_MEM_K_MAX_SCALERS    9
-#define pio(name,f,a,d) return_on_error(DevCamChk(CamPiow(name,a,f,d,16,0),&one,0),status);
-#define stop(name,f,a,cnt,d) return_on_error(DevCamChk(CamStopw(name,a,f,cnt,d,16,0),&one,0),status);
+#define min(a, b) ((a) <= (b)) ? (a) : (b)
+#define max(a, b) ((a) >= (b)) ? (a) : (b)
+#define L8590_MEM_K_MAX_SCALERS 9
+#define pio(name, f, a, d)                                                     \
+  return_on_error(DevCamChk(CamPiow(name, a, f, d, 16, 0), &one, 0), status);
+#define stop(name, f, a, cnt, d)                                               \
+  return_on_error(DevCamChk(CamStopw(name, a, f, cnt, d, 16, 0), &one, 0),     \
+                  status);
 
-int l8590_mem___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
-{
-  //static DESCRIPTOR(sclr_wild, "L8590_%");
+int l8590_mem___init(struct descriptor *niddsc_ptr __attribute__((unused)),
+                     InInitStruct *setup) {
+  // static DESCRIPTOR(sclr_wild, "L8590_%");
   int status;
   int old_def;
   void *ctx;
@@ -91,8 +100,8 @@ int l8590_mem___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InI
   return status;
 }
 
-int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
-{
+int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__((unused)),
+                      InStoreStruct *setup) {
   int total_chans = 0;
   int total_samps = 0;
   void *ctx;
@@ -101,7 +110,7 @@ int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), In
   int active[L8590_MEM_K_MAX_SCALERS];
   int samples[L8590_MEM_K_MAX_SCALERS];
   int old_def;
-  int status=1;
+  int status = 1;
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(unsigned short), DTYPE_WU, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -110,13 +119,14 @@ int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), In
   static int latch_nid;
   static DESCRIPTOR_NID(latch, &latch_nid);
   static FUNCTION(1) dvalue = {
-    sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcValue, 0, {0}};
+      sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t *)&OpcValue, 0, {0}};
   static DESCRIPTOR_SIGNAL_1(signal, &dvalue, &counts, &latch);
   int setup_status = 0;
   latch_nid = setup->head_nid + L8590_MEM_N_LATCH;
   TreeGetDefaultNid(&old_def);
   TreeSetDefaultNid(*(int *)niddsc_ptr->pointer);
-  for (ctx = 0, sclrs = 0; TreeFindNodeWild("L8590_%", &sclr_nids[sclrs], &ctx, -1) & 1; sclrs++) {
+  for (ctx = 0, sclrs = 0;
+       TreeFindNodeWild("L8590_%", &sclr_nids[sclrs], &ctx, -1) & 1; sclrs++) {
     sclr_niddsc.pointer = (char *)&sclr_nids[sclrs];
     setup_status = l8590_sclr___get_setup(&sclr_niddsc, &sclr_setup);
     if (setup_status & 1) {
@@ -131,7 +141,8 @@ int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), In
     }
   }
   if (total_samps > 32766) {
-    printf("Total samples too large for L8590_MEM: %s --- %d\n", setup->name, total_samps);
+    printf("Total samples too large for L8590_MEM: %s --- %d\n", setup->name,
+           total_samps);
     total_samps = 32767;
   }
 
@@ -159,30 +170,32 @@ int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), In
       cdata[i / total_chans + (i % total_chans) * samps_per_chan] = values[i];
     for (chan_idx = 0, sclr = 0; sclr < sclrs; sclr++) {
       for (chan = 0; chan < active[sclr]; chan++, chan_idx++) {
-	int data_nid =
-	    sclr_nids[sclr] + L8590_SCLR_N_INPUT_1 + (L8590_SCLR_N_INPUT_2 -
-						      L8590_SCLR_N_INPUT_1) * chan;
-	int start_nid = data_nid + L8590_SCLR_N_INPUT_1_STARTIDX - L8590_SCLR_N_INPUT_1;
-	int end_nid = data_nid + L8590_SCLR_N_INPUT_1_ENDIDX - L8590_SCLR_N_INPUT_1;
-	if (TreeIsOn(data_nid) & 1) {
-	  status = DevLong(&start_nid, (int *)&raw.bounds[0].l);
-	  if (status & 1)
-	    raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
-	  else
-	    raw.bounds[0].l = min_idx;
-	  status = DevLong(&end_nid, (int *)&raw.bounds[0].u);
-	  if (status & 1)
-	    raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
-	  else
-	    raw.bounds[0].u = max_idx;
-	  raw.m[0] = raw.bounds[0].u - raw.bounds[0].l + 1;
-	  if (raw.m[0] > 0) {
-	    raw.pointer = (char *)(cdata + chan_idx * samps_per_chan + raw.bounds[0].l);
-	    raw.a0 = raw.pointer - raw.bounds[0].l * sizeof(*cdata);
-	    raw.arsize = raw.m[0] * 2;
-	    status = TreePutRecord(data_nid, (struct descriptor *)&signal, 0);
-	  }
-	}
+        int data_nid = sclr_nids[sclr] + L8590_SCLR_N_INPUT_1 +
+                       (L8590_SCLR_N_INPUT_2 - L8590_SCLR_N_INPUT_1) * chan;
+        int start_nid =
+            data_nid + L8590_SCLR_N_INPUT_1_STARTIDX - L8590_SCLR_N_INPUT_1;
+        int end_nid =
+            data_nid + L8590_SCLR_N_INPUT_1_ENDIDX - L8590_SCLR_N_INPUT_1;
+        if (TreeIsOn(data_nid) & 1) {
+          status = DevLong(&start_nid, (int *)&raw.bounds[0].l);
+          if (status & 1)
+            raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
+          else
+            raw.bounds[0].l = min_idx;
+          status = DevLong(&end_nid, (int *)&raw.bounds[0].u);
+          if (status & 1)
+            raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
+          else
+            raw.bounds[0].u = max_idx;
+          raw.m[0] = raw.bounds[0].u - raw.bounds[0].l + 1;
+          if (raw.m[0] > 0) {
+            raw.pointer =
+                (char *)(cdata + chan_idx * samps_per_chan + raw.bounds[0].l);
+            raw.a0 = raw.pointer - raw.bounds[0].l * sizeof(*cdata);
+            raw.arsize = raw.m[0] * 2;
+            status = TreePutRecord(data_nid, (struct descriptor *)&signal, 0);
+          }
+        }
       }
     }
     free(values);
@@ -193,34 +206,37 @@ int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), In
 
 static void Load(Widget w);
 
-EXPORT int l8590_mem__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
-{
-  static String uids[] = { "L8590_MEM.uid" };
+EXPORT int l8590_mem__dw_setup(struct descriptor *niddsc
+                               __attribute__((unused)),
+                               struct descriptor *methoddsc
+                               __attribute__((unused)),
+                               Widget parent) {
+  static String uids[] = {"L8590_MEM.uid"};
   static int nid;
-  static MrmRegisterArg uilnames[] = { {"nid", (XtPointer) 0}, {"Load", (XtPointer) Load} };
-  static NCI_ITM nci[] =
-      { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
+  static MrmRegisterArg uilnames[] = {{"nid", (XtPointer)0},
+                                      {"Load", (XtPointer)Load}};
+  static NCI_ITM nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0},
+                          {0, NciEND_OF_LIST, 0, 0}};
   TreeGetNci(*(int *)niddsc->pointer, nci);
   uilnames[0].value = (char *)0 + nid;
-  return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "L8590_MEM",
-			 uilnames, XtNumber(uilnames), 0);
+  return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids),
+                         "L8590_MEM", uilnames, XtNumber(uilnames), 0);
 }
 
-static void Load(Widget w)
-{
+static void Load(Widget w) {
   char *l8590_memname;
   static char nodename[13];
-  static NCI_ITM itmlst[] = { {12, NciNODE_NAME, nodename, 0}, {0, 0, 0, 0} };
+  static NCI_ITM itmlst[] = {{12, NciNODE_NAME, nodename, 0}, {0, 0, 0, 0}};
   int i;
   XtPointer temp;
   int nid;
   int found = False;
   XtVaGetValues(w, XmNuserData, &temp, NULL);
-  nid = (intptr_t) temp;
+  nid = (intptr_t)temp;
   l8590_memname = TreeGetPath(nid);
   XmListDeleteAllItems(w);
   for (i = 1; i < 17; i++) {
-    //int ctx = 0;
+    // int ctx = 0;
     int dig_nid;
     int status;
     XmString item;

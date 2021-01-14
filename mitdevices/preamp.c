@@ -24,23 +24,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   PREAMP_ADD
+                Name:   PREAMP_ADD
 
-		Type:   C function
+                Type:   C function
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:    4-JAN-1993
+                Date:    4-JAN-1993
 
-		Purpose: Support routines for MIT PREAMP.
+                Purpose: Support routines for MIT PREAMP.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 EXPORT int PREAMP_ADD(struct descriptor *name,
-	             struct descriptor *qualifiers,
-	             int                   *head_nid)
+                     struct descriptor *qualifiers,
+                     int                   *head_nid)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993
@@ -50,30 +50,32 @@ EXPORT int PREAMP_ADD(struct descriptor *name,
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
   Support for 16 channel MIT designed preamplifier.
 
 ------------------------------------------------------------------------------*/
-#include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
-#include <mds_stdarg.h>
-#include <treeshr.h>
-#include <ncidef.h>
+#include "devroutines.h"
 #include "preamp_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
-#include <xmdsshr.h>
 #include <Xmds/XmdsExpr.h>
 #include <math.h>
-#include "devroutines.h"
+#include <mds_gendevice.h>
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mitdevices_msg.h>
+#include <ncidef.h>
+#include <treeshr.h>
+#include <xmdsshr.h>
 
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
-#define INPUT_NID(head_nid,part,i) head_nid + PREAMP_N_##part + i * (PREAMP_N_INPUT_02 - PREAMP_N_INPUT_01)
+#define return_on_error(f, retstatus)                                          \
+  if (!((status = f) & 1))                                                     \
+    return retstatus;
+#define INPUT_NID(head_nid, part, i)                                           \
+  head_nid + PREAMP_N_##part + i *(PREAMP_N_INPUT_02 - PREAMP_N_INPUT_01)
 
-EXPORT int preamp___add(int *head_nid)
-{
+EXPORT int preamp___add(int *head_nid) {
   int status;
   int i;
   for (i = 0; i < 16; i++) {
@@ -92,7 +94,8 @@ EXPORT int preamp___add(int *head_nid)
     g2_nid = INPUT_NID((*head_nid), INPUT_01_GAIN2, i);
     offset_nid = INPUT_NID((*head_nid), INPUT_01_OFFSET, i);
     output_nid = INPUT_NID((*head_nid), INPUT_01_OUTPUT, i);
-    TdiCompile((struct descriptor *)&expression, &offset_dsc, &g1_dsc, &g2_dsc, &output_dsc, &xd MDS_END_ARG);
+    TdiCompile((struct descriptor *)&expression, &offset_dsc, &g1_dsc, &g2_dsc,
+               &output_dsc, &xd MDS_END_ARG);
     status = TreePutRecord(input_nid, (struct descriptor *)&xd, 0);
   }
   return status;
@@ -101,33 +104,32 @@ EXPORT int preamp___add(int *head_nid)
 static void ask_incaa_proc(Widget w);
 static Boolean ask_incaa_button(Widget w);
 static void ask_incaa_create(Widget w);
-EXPORT int preamp__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
-{
+EXPORT int preamp__dw_setup(struct descriptor *niddsc __attribute__((unused)),
+                            struct descriptor *methoddsc
+                            __attribute__((unused)),
+                            Widget parent) {
   Widget dbox;
-  static String uids[] = { "PREAMP.uid" };
+  static String uids[] = {"PREAMP.uid"};
   static int nid;
-  static NCI_ITM nci[] =
-      { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
-  static MrmRegisterArg uilnames[] = { {"ask_incaa_proc", (char *)ask_incaa_proc},
-  {"ask_incaa_create", (char *)ask_incaa_create},
-  {"ask_incaa_button", (char *)ask_incaa_button}
-  };
+  static NCI_ITM nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0},
+                          {0, NciEND_OF_LIST, 0, 0}};
+  static MrmRegisterArg uilnames[] = {
+      {"ask_incaa_proc", (char *)ask_incaa_proc},
+      {"ask_incaa_create", (char *)ask_incaa_create},
+      {"ask_incaa_button", (char *)ask_incaa_button}};
   int status;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  status =
-      XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "PREAMP", uilnames,
-		      XtNumber(uilnames), &dbox);
+  status = XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids),
+                           "PREAMP", uilnames, XtNumber(uilnames), &dbox);
   return status;
 }
 
-static void ask_incaa_create(Widget w)
-{
+static void ask_incaa_create(Widget w) {
   int device_nid = XmdsGetDeviceNid();
   XtVaSetValues(w, XmNuserData, &device_nid, NULL);
 }
 
-static void ask_incaa_proc(Widget w)
-{
+static void ask_incaa_proc(Widget w) {
   Widget par = XtParent(w);
   Widget question = XtNameToWidget(par, "*.incaa_dlog");
   XtManageChild(question);
@@ -137,8 +139,7 @@ static void ask_incaa_proc(Widget w)
 #include "incaa16_gen.h"
 #undef InInitStruct
 
-static Boolean ask_incaa_button(Widget w)
-{
+static Boolean ask_incaa_button(Widget w) {
   Widget parent = XtParent(XtParent(w));
   int i;
   static int incaa_nid;
@@ -148,21 +149,24 @@ static Boolean ask_incaa_button(Widget w)
   XmString incaa_string;
   String incaa_name;
   int c_nids[INCAA16_K_CONG_NODES];
-  XtVaGetValues(w, XmNuserData, &device_nid, XmNtextString, &incaa_string, NULL);
-  incaa_name = XmStringUnparse(incaa_string, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+  XtVaGetValues(w, XmNuserData, &device_nid, XmNtextString, &incaa_string,
+                NULL);
+  incaa_name = XmStringUnparse(incaa_string, NULL, 0, XmCHARSET_TEXT, NULL, 0,
+                               XmOUTPUT_ALL);
   status = TreeFindNode(incaa_name, &incaa_nid);
   if (status & 1) {
     status = DevNids(&incaa_nid_dsc, sizeof(c_nids), c_nids);
     if (status & 1) {
       for (i = 1; i <= 16; i++) {
-	DESCRIPTOR_NID(nid_dsc, 0);
-	char name[] = { '*', '.', 'o', 'u', 't', 'p', 'u', 't', '_', '0', '0', 0 };
-	nid_dsc.pointer =
-	    (char *)&c_nids[INCAA16_N_INPUT_01 +
-			    (i - 1) * (INCAA16_N_INPUT_02 - INCAA16_N_INPUT_01)];
-	name[9] += i / 10;
-	name[10] += i % 10;
-	XmdsExprSetXd(XtNameToWidget(parent, name), &nid_dsc);
+        DESCRIPTOR_NID(nid_dsc, 0);
+        char name[] = {'*', '.', 'o', 'u', 't', 'p',
+                       'u', 't', '_', '0', '0', 0};
+        nid_dsc.pointer = (char *)&c_nids[INCAA16_N_INPUT_01 +
+                                          (i - 1) * (INCAA16_N_INPUT_02 -
+                                                     INCAA16_N_INPUT_01)];
+        name[9] += i / 10;
+        name[10] += i % 10;
+        XmdsExprSetXd(XtNameToWidget(parent, name), &nid_dsc);
       }
     } else
       XmdsComplain(parent, "Could not find specified INCAA");
@@ -173,11 +177,11 @@ static Boolean ask_incaa_button(Widget w)
 
 static int one = 1;
 
-EXPORT int preamp___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
-{
+EXPORT int preamp___init(struct descriptor *niddsc __attribute__((unused)),
+                         InInitStruct *setup) {
   int chan;
-  int status=1;
-  static float gains[] = { 1., 2., 4., 8., 16. };
+  int status = 1;
+  static float gains[] = {1., 2., 4., 8., 16.};
   for (chan = 0; chan < 16; chan++) {
     int input_nid = INPUT_NID(setup->head_nid, INPUT_01, chan);
     if (TreeIsOn(input_nid) & 1) {
@@ -193,14 +197,19 @@ EXPORT int preamp___init(struct descriptor *niddsc __attribute__ ((unused)), InI
       return_on_error(DevFloat(&g1_nid, &gain1), DEV$_BAD_GAIN);
       return_on_error(DevFloat(&g2_nid, &gain2), DEV$_BAD_GAIN);
       return_on_error(DevFloat(&offset_nid, &offset), DEV$_BAD_OFFSET);
-      for (g1 = 0; g1 < 5 && fabs(gains[g1] - gain1) > .1; g1++) ;
+      for (g1 = 0; g1 < 5 && fabs(gains[g1] - gain1) > .1; g1++)
+        ;
       if (g1 == 5)
-	return DEV$_BAD_GAIN;
-      for (g2 = 0; g2 < 5 && fabs(gains[g2] - gain2) > .1; g2++) ;
+        return DEV$_BAD_GAIN;
+      for (g2 = 0; g2 < 5 && fabs(gains[g2] - gain2) > .1; g2++)
+        ;
       if (g2 == 5)
-	return DEV$_BAD_GAIN;
-      ctl = (unsigned int)(4095. * (5. - offset) / 10. + .5) | g1 << 12 | g2 << 15;
-      return_on_error(DevCamChk(CamPiow(setup->name, chan, 16, &ctl, 24, 0), &one, &one), status);
+        return DEV$_BAD_GAIN;
+      ctl = (unsigned int)(4095. * (5. - offset) / 10. + .5) | g1 << 12 |
+            g2 << 15;
+      return_on_error(
+          DevCamChk(CamPiow(setup->name, chan, 16, &ctl, 24, 0), &one, &one),
+          status);
     }
   }
   return status;

@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 //-------------------------------------------------------------------------
 // issort()
@@ -67,9 +67,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                                              O'Reilly & Associates, (c) 1999
 //                                              ISBN: 1-56592-453-3
 //-------------------------------------------------------------------------
-int issort(void *data, int size, int esize, int (*compare) (const void *key1, const void *key2)
-    )
-{
+int issort(void *data, int size, int esize,
+           int (*compare)(const void *key1, const void *key2)) {
   void *key;
   char *a = data;
   int i, j;
