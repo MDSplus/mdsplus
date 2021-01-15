@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   J1819$METHODS
+		Name:   J1819$METHODS
 
-                Type:   C function
+		Type:   C function
 
-                Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
-                Date:   5-NOV-1991
+		Date:   5-NOV-1991
 
-                Purpose: Methods for J1819 devices.
+		Purpose: Methods for J1819 devices.
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 int J1819_INIT(struct descriptor *niddsc);
 
@@ -52,7 +52,7 @@ int J1819_TRIGGER(struct descriptor *niddsc);
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
@@ -66,44 +66,36 @@ int J1819_TRIGGER(struct descriptor *niddsc);
 #include "j1819_gen.h"
 #include "devroutines.h"
 
-// extern unsigned short OpcValue;
 
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define max(a, b) ((a) > (b) ? (a) : (b))
+
+
+//extern unsigned short OpcValue;
+
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
 static int one = 1;
-#define pio(f, a, d)                                                           \
-  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 24, 0), &one, 0),    \
-                  status)
-#define stop(f, a, n, d)                                                       \
-  return_on_error(                                                             \
-      DevCamChk(CamStopw(setup->name, a, f, n, d, 24, 0), &one, 0), status)
-#define fstop(f, a, n, d)                                                      \
-  return_on_error(                                                             \
-      DevCamChk(CamFStopw(setup->name, a, f, n, d, 24, 0), &one, 0), status)
-#define return_on_error(func, statret)                                         \
-  status = func;                                                               \
-  if (!(status & 1))                                                           \
-  return statret
+#define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 24, 0), &one, 0),status)
+#define stop(f,a,n,d)  return_on_error(DevCamChk(CamStopw(setup->name, a, f, n, d, 24, 0), &one, 0),status)
+#define fstop(f,a,n,d)  return_on_error(DevCamChk(CamFStopw(setup->name, a, f, n, d, 24, 0), &one, 0),status)
+#define return_on_error(func,statret) status = func; if (!(status & 1)) return statret
 
-EXPORT int j1819___init(struct descriptor *niddsc __attribute__((unused)),
-                        InInitStruct *setup) {
+EXPORT int j1819___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
+{
   int status;
   int mem_cntrl;
-  pio(24, 0, 0); /* Disable digitization */
-  pio(9, 0, 0);  /* Clear memory address */
+  pio(24, 0, 0);		/* Disable digitization */
+  pio(9, 0, 0);			/* Clear memory address */
   mem_cntrl =
-      (setup->samples <= 8182)
-          ? 0
-          : ((setup->samples <= 16384) ? 1
-                                       : ((setup->samples <= 24576) ? 2 : 3));
-  pio(17, 0, &mem_cntrl); /* Set the memory size */
-  pio(26, 0, 0);          /* enable digitization */
-  pio(9, 1, 0);           /* Clear the flip flop */
+      (setup->samples <=
+       8182) ? 0 : ((setup->samples <= 16384) ? 1 : ((setup->samples <= 24576) ? 2 : 3));
+  pio(17, 0, &mem_cntrl);	/* Set the memory size */
+  pio(26, 0, 0);		/* enable digitization */
+  pio(9, 1, 0);			/* Clear the flip flop */
   return status;
 }
 
-EXPORT int j1819___store(struct descriptor *niddsc __attribute__((unused)),
-                         InStoreStruct *setup) {
+EXPORT int j1819___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
+{
   static int start = 1;
   static DESCRIPTOR_LONG(start_dsc, &start);
   static int end;
@@ -134,7 +126,7 @@ EXPORT int j1819___store(struct descriptor *niddsc __attribute__((unused)),
   pio(27, 1, &dummy);
   if ((CamXandQ(0) & 1) == 0)
     return DEV$_NOT_TRIGGERED;
-  pio(0, 0, &dummy); /* skip first sample it is garbage */
+  pio(0, 0, &dummy);		/* skip first sample it is garbage */
 
   /* set num to the number they asked for but no more than 1 less
      than the total memory size.  We are reading one more sample than
@@ -143,8 +135,8 @@ EXPORT int j1819___store(struct descriptor *niddsc __attribute__((unused)),
   end = num;
   raw_dsc.arsize = num * sizeof(int);
   raw_dsc.pointer = malloc(raw_dsc.arsize);
-  for (ptr = (int *)raw_dsc.pointer, samples_to_read = num; samples_to_read;
-       ptr += read_size, samples_to_read -= read_size) {
+  for (ptr = (int *)raw_dsc.pointer, samples_to_read = num;
+       samples_to_read; ptr += read_size, samples_to_read -= read_size) {
     read_size = min(samples_to_read, 16383);
     if (fast && num < 16384) {
       fstop(0, 0, read_size, ptr);
@@ -153,14 +145,13 @@ EXPORT int j1819___store(struct descriptor *niddsc __attribute__((unused)),
     }
   }
   nid = setup->head_nid + J1819_N_INPUT;
-  return_on_error(TreePutRecord(nid, (struct descriptor *)&signal_dsc, 0),
-                  status);
+  return_on_error(TreePutRecord(nid, (struct descriptor *)&signal_dsc, 0), status);
   free(raw_dsc.pointer);
   return 1;
 }
 
-EXPORT int j1819___trigger(struct descriptor *niddsc __attribute__((unused)),
-                           InTriggerStruct *setup) {
+EXPORT int j1819___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
+{
   int status;
   pio(28, 0, 0);
   return status;

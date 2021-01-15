@@ -31,67 +31,63 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "l3512_gen.h"
 #include "devroutines.h"
 
-// extern unsigned short OpcValue;
+//extern unsigned short OpcValue;
+
+
+
 
 typedef struct {
-  unsigned range : 3;
-  unsigned mult : 4;
-  unsigned fill : 9;
+  unsigned range:3;
+  unsigned mult:4;
+  unsigned fill:9;
 } DwellCode;
 
 static DwellCode ConvertDwell();
 
 static int one = 1;
 static int zero = 0;
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
 #define max_tries 10
-#define return_on_error(f, retstatus)                                          \
-  if (!((status = f) & 1))                                                     \
-    return retstatus;
-#define pio(name, f, a, d, mem)                                                \
-  return_on_error(DevCamChk(CamPiow(name, a, f, d, mem, 0), &one, 0), status)
-#define stop(name, f, a, c, d)                                                 \
-  return_on_error(DevCamChk(CamStopw(name, a, f, c, d, 16, 0), &one, 0), status)
-#define fstop(name, f, a, c, d)                                                \
-  return_on_error(DevCamChk(CamFStopw(name, a, f, c, d, 16, 0), &one, 0),      \
-                  status)
+#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define pio(name,f,a,d,mem)  return_on_error(DevCamChk(CamPiow(name, a, f, d, mem, 0), &one, 0),status)
+#define stop(name,f,a,c,d)  return_on_error(DevCamChk(CamStopw(name, a, f, c, d, 16, 0), &one, 0),status)
+#define fstop(name,f,a,c,d)  return_on_error(DevCamChk(CamFStopw(name, a, f, c, d, 16, 0), &one, 0),status)
 
-EXPORT int l3512___init(struct descriptor *niddsc __attribute__((unused)),
-                        InInitStruct *setup) {
+EXPORT int l3512___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
+{
   int status;
   float duration;
   DwellCode dwell_code;
   struct {
-    unsigned __attribute__((packed)) offset : 8;
-    unsigned __attribute__((packed)) gain : 3;
-    unsigned __attribute__((packed)) decrement : 1;
-    unsigned __attribute__((packed)) multi : 1;
-    unsigned __attribute__((packed)) camac : 1;
-    unsigned __attribute__((packed)) not_used : 1;
-    unsigned __attribute__((packed)) disable : 1;
-  } setup_3512 = {0, 0, 0, 0, 1, 0, 0};
+ unsigned __attribute__ ((packed)) offset:8;
+ unsigned __attribute__ ((packed)) gain:3;
+ unsigned __attribute__ ((packed)) decrement:1;
+ unsigned __attribute__ ((packed)) multi:1;
+ unsigned __attribute__ ((packed)) camac:1;
+ unsigned __attribute__ ((packed)) not_used:1;
+ unsigned __attribute__ ((packed)) disable:1;
+  } setup_3512 = {
+  0, 0, 0, 0, 1, 0, 0};
   struct {
-    unsigned __attribute__((packed)) enable : 1;
-    unsigned __attribute__((packed)) autostart : 1;
-    unsigned __attribute__((packed)) rescan : 1;
-    unsigned __attribute__((packed)) fill : 13;
-  } setup_3587 = {1, 0, 0, 0};
+ unsigned __attribute__ ((packed)) enable:1;
+ unsigned __attribute__ ((packed)) autostart:1;
+ unsigned __attribute__ ((packed)) rescan:1;
+ unsigned __attribute__ ((packed)) fill:13;
+  } setup_3587 = {
+  1, 0, 0, 0};
   int i;
   int tries;
   static int kind;
   static DESCRIPTOR_LONG(kind_dsc, &kind);
-  if ((TdiKind(setup->duration, &kind_dsc MDS_END_ARG) & 1) &&
-      (kind <= 10 || kind == DTYPE_FS)) {
+  if ((TdiKind(setup->duration, &kind_dsc MDS_END_ARG) & 1) && (kind <= 10 || kind == DTYPE_FS)) {
     int duration_nid = setup->head_nid + L3512_N_DURATION;
     return_on_error(DevFloat(&duration_nid, &duration), status);
   } else
     duration = 0.0;
-  setup_3512.offset =
-      min(max(setup->offset * setup->num_channels / 256, 0), 255);
-  for (i = 8196 / min(max(setup->num_channels, 256), 8192), setup_3512.gain = 0;
-       i; setup_3512.gain++, i = i / 2)
-    ;
+  setup_3512.offset = min(max(setup->offset * setup->num_channels / 256, 0), 255);
+  for (i = 8196 / min(max(setup->num_channels, 256), 8192), setup_3512.gain = 0; i;
+       setup_3512.gain++, i = i / 2) ;
   setup_3512.disable = 1;
   pio(setup->name, 16, 0, (short *)&setup_3512, 16);
   pio(setup->name, 10, 0, 0, 16);
@@ -117,7 +113,8 @@ EXPORT int l3512___init(struct descriptor *niddsc __attribute__((unused)),
   return status;
 }
 
-static DwellCode ConvertDwell(float *dwell) {
+static DwellCode ConvertDwell(float *dwell)
+{
   DwellCode answer;
   float range;
   int i;
@@ -126,40 +123,35 @@ static DwellCode ConvertDwell(float *dwell) {
     answer.range = 0;
     answer.mult = 0;
   } else {
-    for (range = 1E-4, i = 1;
-         i < 7 && !(*dwell >= range && *dwell < (range * 9.5));
-         i++, range *= 10.)
-      ;
+    for (range = 1E-4, i = 1; i < 7 && !(*dwell >= range && *dwell < (range * 9.5));
+	 i++, range *= 10.) ;
     answer.range = i;
     answer.mult = min(max(*dwell / range, 0), 9);
   }
   return answer;
 }
 
-EXPORT int l3512___store(struct descriptor *niddsc __attribute__((unused)),
-                         InStoreStruct *setup) {
+EXPORT int l3512___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
+{
 
   unsigned short data[32768];
   int status;
   static float duration;
-  // int i;
+  //int i;
   static int kind;
   static DESCRIPTOR_LONG(kind_dsc, &kind);
   int values;
   int num_to_read;
   int comment_nid = setup->head_nid + L3512_N_COMMENT;
 
-  if ((TdiKind(setup->duration, &kind_dsc MDS_END_ARG) & 1) &&
-      (kind <= 10 || kind == DTYPE_FS)) {
+  if ((TdiKind(setup->duration, &kind_dsc MDS_END_ARG) & 1) && (kind <= 10 || kind == DTYPE_FS)) {
     int duration_nid = setup->head_nid + L3512_N_DURATION;
     return_on_error(DevFloat(&duration_nid, &duration), status);
   } else
     duration = 0.0;
-  pio(setup->memory_name, 19, 0, &zero,
-      16); /* Disable port for external histogram */
-  pio(setup->memory_name, 25, 0, 0, 16); /* Increment mode */
-  pio(setup->memory_name, 18, 1, &zero,
-      16); /* Set memory to location 0 for reads */
+  pio(setup->memory_name, 19, 0, &zero, 16);	/* Disable port for external histogram */
+  pio(setup->memory_name, 25, 0, 0, 16);	/* Increment mode */
+  pio(setup->memory_name, 18, 1, &zero, 16);	/* Set memory to location 0 for reads */
   values = setup->num_spectra * setup->num_channels;
   num_to_read = min(32767, values);
   if ((TreeIsOn(comment_nid) & 1) && (values < 32768)) {
@@ -189,16 +181,14 @@ EXPORT int l3512___store(struct descriptor *niddsc __attribute__((unused)),
     int spectra_nid = setup->head_nid + L3512_N_SPECTRA;
     value.ndesc = 0;
     raw.pointer = raw.a0 = (char *)data;
-    raw.arsize =
-        min(65536, setup->num_channels * setup->num_spectra * sizeof(short));
+    raw.arsize = min(65536, setup->num_channels * setup->num_spectra * sizeof(short));
     raw.m[0] = setup->num_channels;
     endrange_val = setup->num_channels - 1;
     endrange_val2 = duration * (setup->num_spectra - 1);
     raw.m[1] = setup->num_spectra;
     duration_nid = setup->head_nid + L3512_N_DURATION;
     signal.dimensions[1] =
-        (duration > 0.0 ? (struct descriptor *)&dim2
-                        : (struct descriptor *)&duration_niddsc);
+	(duration > 0.0 ? (struct descriptor *)&dim2 : (struct descriptor *)&duration_niddsc);
     status = TreePutRecord(spectra_nid, (struct descriptor *)&signal, 0);
   }
   return status;

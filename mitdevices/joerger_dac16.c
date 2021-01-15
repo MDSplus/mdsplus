@@ -33,17 +33,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include "devroutines.h"
 static int one = 1;
-#define return_on_error(f)                                                     \
-  if (!((status = f) & 1))                                                     \
-    return status;
-#define pio(f, a, d)                                                           \
-  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0))
-#define pio24(f, a, d)                                                         \
-  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 24, 0), &one, 0))
+#define return_on_error(f) if (!((status = f) & 1)) return status;
+#define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0))
+#define pio24(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 24, 0), &one, 0))
 
 extern int DevCamChk();
 
-int joerger_dac16___init(struct descriptor *nid_dsc, InInitStruct *setup) {
+int joerger_dac16___init(struct descriptor *nid_dsc, InInitStruct * setup)
+{
   int i;
   static int c_nids[JOERGER_DAC16_K_CONG_NODES];
   int status;
@@ -59,33 +56,33 @@ int joerger_dac16___init(struct descriptor *nid_dsc, InInitStruct *setup) {
     if (TreeIsOn(c_nids[JOERGER_DAC16_N_OUTPUT_01 + i]) & 1) {
       switch (range) {
       case 0:
-        if ((outputs[i] >= 0) && (outputs[i] <= 10)) {
-          short int data = outputs[i] / 10.0 * 4096;
-          pio(16, i, &data);
-        } else
-          bad_chans |= 1 << i;
-        break;
+	if ((outputs[i] >= 0) && (outputs[i] <= 10)) {
+	  short int data = outputs[i] / 10.0 * 4096;
+	  pio(16, i, &data);
+	} else
+	  bad_chans |= 1 << i;
+	break;
       case 1:
-        if ((outputs[i] >= 0) && (outputs[i] <= 5)) {
-          short int data = outputs[i] / 5.0 * 4096;
-          pio(16, i, &data);
-        } else
-          bad_chans |= 1 << i;
-        break;
+	if ((outputs[i] >= 0) && (outputs[i] <= 5)) {
+	  short int data = outputs[i] / 5.0 * 4096;
+	  pio(16, i, &data);
+	} else
+	  bad_chans |= 1 << i;
+	break;
       case 2:
-        if ((outputs[i] >= -10) && (outputs[i] <= 10)) {
-          short int data = (outputs[i] + 10) / 20.0 * 4096;
-          pio(16, i, &data);
-        } else
-          bad_chans |= 1 << i;
-        break;
+	if ((outputs[i] >= -10) && (outputs[i] <= 10)) {
+	  short int data = (outputs[i] + 10) / 20.0 * 4096;
+	  pio(16, i, &data);
+	} else
+	  bad_chans |= 1 << i;
+	break;
       case 3:
-        if ((outputs[i] >= -5) && (outputs[i] <= 5)) {
-          short int data = (outputs[i] + 5) / 10.0 * 4096;
-          pio(16, i, &data);
-        } else
-          bad_chans |= 1 << i;
-        break;
+	if ((outputs[i] >= -5) && (outputs[i] <= 5)) {
+	  short int data = (outputs[i] + 5) / 10.0 * 4096;
+	  pio(16, i, &data);
+	} else
+	  bad_chans |= 1 << i;
+	break;
       }
     }
   }

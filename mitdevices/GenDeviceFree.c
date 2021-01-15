@@ -24,17 +24,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   GEN_DEVICE$FREE
+		Name:   GEN_DEVICE$FREE
 
-                Type:   C function
+		Type:   C function
 
-                Author:	Gabriele Manduchi
-                        Istituto Gas Ionizzati del CNR - Padova (Italy)
+		Author:	Gabriele Manduchi
+			Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-                Date:   17-SEP-1993
+		Date:   17-SEP-1993
 
-                Purpose: Free dynamic data structures allocated by routines
-generatted by GEN_DEVICE
+		Purpose: Free dynamic data structures allocated by routines generatted by GEN_DEVICE
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
@@ -42,7 +41,8 @@ generatted by GEN_DEVICE
 #include <mdsshr.h>
 #include "gen_device.h"
 
-EXPORT int GenDeviceFree(CommonInStruct *in_struct) {
+EXPORT int GenDeviceFree(CommonInStruct * in_struct)
+{
   int i, status = 1;
   for (i = 0; (status & 1) && (i < in_struct->num_xds); i++)
     status = MdsFree1Dx(&in_struct->xds[i], 0);

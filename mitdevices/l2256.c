@@ -32,52 +32,41 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "l2256_gen.h"
 #include "devroutines.h"
 
-// extern unsigned short OpcAdd;
-// extern unsigned short OpcMultiply;
-// extern unsigned short OpcValue;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
+
+
 
 static int one = 1;
-#define pio(f, a)                                                              \
-  {                                                                            \
-    if (!((status =                                                            \
-               DevCamChk(CamPiow(setup->name, a, f, 0, 16, 0), &one, 0)) &     \
-          1))                                                                  \
-      return status;                                                           \
-  }
-#define pioqrep(f, a, d)                                                       \
-  {                                                                            \
-    if (!((status = DevCamChk(CamPioQrepw(setup->name, a, f, d, 16, 0), &one,  \
-                              &one)) &                                         \
-          1))                                                                  \
-      return status;                                                           \
-  }
-#define fstopw(f, a, n, d)                                                     \
-  {                                                                            \
-    if (!((status = DevCamChk(CamFStopw(setup->name, a, f, n, d, 16, 0), &one, \
-                              0)) &                                            \
-          1))                                                                  \
-      return status;                                                           \
-  }
-#define CHAN_NID(chan, field)                                                  \
-  c_nids[L2256_N_INPUTS + chan * L2256_K_NODES_PER_INP + field]
-#define min(a, b) ((a) <= (b)) ? (a) : (b)
-#define max(a, b) ((a) >= (b)) ? (a) : (b)
+#define pio(f,a) {\
+ if (!((status = DevCamChk(CamPiow(setup->name,a,f,0,16,0),&one,0)) & 1)) return status;}
+#define pioqrep(f,a,d) {\
+ if (!((status = DevCamChk(CamPioQrepw(setup->name,a,f,d,16,0),&one,&one)) & 1)) return status;}
+#define fstopw(f,a,n,d) {\
+ if (!((status = DevCamChk(CamFStopw(setup->name,a,f,n,d,16,0),&one,0)) & 1)) return status;}
+#define CHAN_NID(chan, field) c_nids[L2256_N_INPUTS+chan*L2256_K_NODES_PER_INP+field]
+#define min(a,b) ((a) <= (b)) ? (a) : (b)
+#define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int l2256___init(struct descriptor *niddsc __attribute__((unused)),
-                        InInitStruct *setup) {
+EXPORT int l2256___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
+{
   int status;
-  pio(9, 0) pio(26, 0) return status;
+  pio(9, 0)
+      pio(26, 0)
+      return status;
 }
 
-EXPORT int l2256___trigger(struct descriptor *niddsc __attribute__((unused)),
-                           InTriggerStruct *setup) {
+EXPORT int l2256___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
+{
   int status;
-  pio(25, 0) return status;
+  pio(25, 0)
+      return status;
 }
 
-EXPORT int l2256___store(struct descriptor *niddsc __attribute__((unused)),
-                         InStoreStruct *setup) {
-  // static struct descriptor name = { 0, DTYPE_T, CLASS_D, 0 };
+EXPORT int l2256___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
+{
+  //static struct descriptor name = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -93,15 +82,12 @@ EXPORT int l2256___store(struct descriptor *niddsc __attribute__((unused)),
   static float coefficient = .002;
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
   static float offset = 0;
-  static struct descriptor_s offset_d = {4, DTYPE_NATIVE_FLOAT, CLASS_S,
-                                         (char *)&offset};
-  // static int key;
-  // static DESCRIPTOR_LONG(key_d, &key);
+  static struct descriptor_s offset_d = { 4, DTYPE_NATIVE_FLOAT, CLASS_S, (char *)&offset };
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(value, (unsigned char *)&OpcValue, 0);
-  static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d,
-                               &value);
-  static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d,
-                               &add_exp);
+  static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d, &value);
+  static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &add_exp);
   static DESCRIPTOR(volts_str, "volts");
   static DESCRIPTOR_WITH_UNITS(volts, &mult_exp, &volts_str);
   static DESCRIPTOR_WINDOW(window, &start_d, &end_d, &trigger_d);
@@ -109,23 +95,22 @@ EXPORT int l2256___store(struct descriptor *niddsc __attribute__((unused)),
   static DESCRIPTOR(time_str, "seconds");
   static DESCRIPTOR_WITH_UNITS(time, &dimension, &time_str);
   static DESCRIPTOR_SIGNAL_1(signal, &volts, &counts, &time);
-  static float dts[] = {0.,      5.e-6,   2.e-6,   1.e-6,
-                        500.e-9, 200.e-9, 100.e-9, 50.e-9};
-  static int pre[] = {0, 128, 256, 348, 512, 640, 768, 896};
+  static float dts[] = { 0., 5.e-6, 2.e-6, 1.e-6, 500.e-9, 200.e-9, 100.e-9, 50.e-9 };
+  static int pre[] = { 0, 128, 256, 348, 512, 640, 768, 896 };
   int channel_nid = setup->head_nid + L2256_N_INPUT;
   short channel_data[1024];
   int status = 1;
-  // int maxidx;
-  // int minidx;
-  // int i;
+  //int maxidx;
+  //int minidx;
+  //int i;
   int pts;
 
   //#pragma member_alignment save
   //#pragma nomember_alignment
   struct {
-    unsigned __attribute__((packed)) frequency : 3;
-    unsigned __attribute__((packed)) pre : 3;
-    unsigned __attribute__((packed)) offset : 8;
+ unsigned __attribute__ ((packed)) frequency:3;
+ unsigned __attribute__ ((packed)) pre:3;
+ unsigned __attribute__ ((packed)) offset:8;
   } reg;
   //#pragma member_alignment restore
 
@@ -145,8 +130,9 @@ EXPORT int l2256___store(struct descriptor *niddsc __attribute__((unused)),
     raw.bounds[0].u = pts;
     raw.bounds[0].l = pts - 1023;
     raw.pointer = (char *)channel_data;
-    dimension.axis = (reg.frequency == 0) ? (struct descriptor *)&ext_clock_d
-                                          : (struct descriptor *)&int_clock_d;
+    dimension.axis =
+	(reg.frequency ==
+	 0) ? (struct descriptor *)&ext_clock_d : (struct descriptor *)&int_clock_d;
     raw.m[0] = 1024;
     raw.arsize = sizeof(channel_data);
     raw.a0 = (char *)(channel_data - raw.bounds[0].l);

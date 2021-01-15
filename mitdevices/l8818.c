@@ -33,86 +33,71 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "l8818_gen.h"
 #include "devroutines.h"
 
-// extern unsigned short OpcDble;
-// extern unsigned short OpcAdd;
-// extern unsigned short OpcMultiply;
-// extern unsigned short OpcValue;
+//extern unsigned short OpcDble;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
 extern int DevCamChk();
 
+
+
+
+
 static int one = 1;
 
-#define return_on_error(f, retstatus)                                          \
-  if (!((status = f) & 1))                                                     \
-    return retstatus;
-#define pio(f, a)                                                              \
-  {                                                                            \
-    if (!((status =                                                            \
-               DevCamChk(CamPiow(setup->name, a, f, 0, 16, 0), &one, 0)) &     \
-          1))                                                                  \
-      return status;                                                           \
-  }
-#define piod(f, a, d)                                                          \
-  {                                                                            \
-    if (!((status =                                                            \
-               DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0)) &     \
-          1))                                                                  \
-      return status;                                                           \
-  }
-#define fstop(f, a, num, data)                                                 \
-  {                                                                            \
-    if (!((status = DevCamChk(CamFStopw(setup->name, a, f, num, data, 16, 0),  \
-                              &one, &one)) &                                   \
-          1))                                                                  \
-      return status;                                                           \
-  }
-#define qrep(f, a, num, data)                                                  \
-  {                                                                            \
-    if (!((status = DevCamChk(CamQrepw(setup->name, a, f, num, data, 16, 0),   \
-                              &one, &one)) &                                   \
-          1))                                                                  \
-      return status;                                                           \
-  }
+#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define pio(f,a) {\
+ if (!((status = DevCamChk(CamPiow(setup->name,a,f,0,16,0),&one,0)) & 1)) return status;}
+#define piod(f,a, d) {\
+ if (!((status = DevCamChk(CamPiow(setup->name,a,f,d,16, 0),&one,0)) & 1)) return status;}
+#define fstop(f,a,num,data) {\
+ if (!((status = DevCamChk(CamFStopw(setup->name,a,f,num,data,16,0),&one,&one)) & 1)) return status;}
+#define qrep(f,a,num,data) {\
+ if (!((status = DevCamChk(CamQrepw(setup->name,a,f,num,data,16,0),&one,&one)) & 1)) return status;}
 
 typedef struct {
-  unsigned pre_trig : 4;
-  unsigned clock : 3;
-  unsigned fill : 1;
-  unsigned active_mem : 7;
-  unsigned user : 1;
+  unsigned pre_trig:4;
+  unsigned clock:3;
+  unsigned fill:1;
+  unsigned active_mem:7;
+  unsigned user:1;
 } L8818Control;
 
-EXPORT int l8818___init(struct descriptor *niddsc __attribute__((unused)),
-                        InInitStruct *setup) {
+EXPORT int l8818___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
+{
   L8818Control ctrl;
-  // float freq;
+  //float freq;
   int status;
-  // int active_mem_code;
+  //int active_mem_code;
   ctrl.active_mem = (setup->active_mem / 16) - 1;
   ctrl.pre_trig = setup->pre_trig;
   ctrl.clock = setup->clock_convert;
 
-  pio(25, 0) piod(16, 0, (short *)&ctrl) piod(19, 0, &setup->input_offset)
+  pio(25, 0)
+      piod(16, 0, (short *)&ctrl)
+      piod(19, 0, &setup->input_offset)
       pio(9, 0)
 
-          return status;
+      return status;
 }
 
-EXPORT int l8818___trigger(struct descriptor *niddsc __attribute__((unused)),
-                           InTriggerStruct *setup) {
+EXPORT int l8818___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
+{
   int status;
-  pio(25, 0) return status;
+  pio(25, 0)
+      return status;
 }
 
-EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__((unused)),
-                         InStoreStruct *setup) {
+EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
+{
 
-#define min(a, b) ((a) <= (b)) ? (a) : (b)
-#define max(a, b) ((a) >= (b)) ? (a) : (b)
+#define min(a,b) ((a) <= (b)) ? (a) : (b)
+#define max(a,b) ((a) >= (b)) ? (a) : (b)
 
   L8818Control ctrl;
 
-  // static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
+  //static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(unsigned char), DTYPE_BU, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -122,22 +107,19 @@ EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__((unused)),
   static DESCRIPTOR_NID(trigger_d, &trig_in_nid);
   static float frequency;
   static DESCRIPTOR_FLOAT(frequency_d, &frequency);
-  static DESCRIPTOR_FUNCTION_1(double_dt, (unsigned char *)&OpcDble,
-                               &frequency_d);
+  static DESCRIPTOR_FUNCTION_1(double_dt, (unsigned char *)&OpcDble, &frequency_d);
   static DESCRIPTOR_RANGE(int_clock_d, 0, 0, &double_dt);
   static int clock_in_nid;
   static DESCRIPTOR_NID(ext_clock_d, &clock_in_nid);
   static float coefficient = .510 / 256;
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
   static short offset = 0;
-  static struct descriptor_s offset_d = {2, DTYPE_W, CLASS_S, (char *)&offset};
-  // static int key;
-  // static DESCRIPTOR_LONG(key_d, &key);
+  static struct descriptor_s offset_d = { 2, DTYPE_W, CLASS_S, (char *)&offset };
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(value, (unsigned char *)&OpcValue, 0);
-  static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d,
-                               &value);
-  static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d,
-                               &add_exp);
+  static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d, &value);
+  static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &add_exp);
   static DESCRIPTOR(volts_str, "volts");
   static DESCRIPTOR_WITH_UNITS(volts, &mult_exp, &volts_str);
   static DESCRIPTOR_WINDOW(window, &start_d, &end_d, &trigger_d);
@@ -149,7 +131,7 @@ EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__((unused)),
   unsigned char *data_ptr;
   int status;
   int start_addr = 0;
-  // int dummy;
+  //int dummy;
 
   int max_mem;
   int pre_trig;
@@ -165,15 +147,14 @@ EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__((unused)),
   if (!CamXandQ(0))
     return DEV$_NOT_TRIGGERED;
 
-  piod(2, 0, &start_addr); /* this is either 0 or 1 */
+  piod(2, 0, &start_addr);	/* this is either 0 or 1 */
 
   piod(0, 0, (short *)&ctrl);
 
   if (ctrl.clock == 7) {
     dimension.axis = (struct descriptor *)&ext_clock_d;
   } else {
-    static float freqs[] = {10E-9,  20E-9,  40E-9,  80E-9,
-                            160E-9, 320E-9, 640E-9, 0};
+    static float freqs[] = { 10E-9, 20E-9, 40E-9, 80E-9, 160E-9, 320E-9, 640E-9, 0 };
     frequency = freqs[min(ctrl.clock, 7)];
     dimension.axis = (struct descriptor *)&int_clock_d;
   }
@@ -189,7 +170,7 @@ EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__((unused)),
 
   data_ptr = malloc(max_mem);
   raw.pointer = (char *)data_ptr + start_addr;
-  /*  raw.pointer = (char *)data_ptr+start_addr+16; */
+/*  raw.pointer = (char *)data_ptr+start_addr+16; */
   {
     int input_nid = setup->head_nid + L8818_N_INPUT;
     int startidx_nid = setup->head_nid + L8818_N_INPUT_STARTIDX;
@@ -197,33 +178,33 @@ EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__((unused)),
     if (TreeIsOn(input_nid) & 1) {
       status = DevLong(&startidx_nid, (int *)&raw.bounds[0].l);
       if (status & 1)
-        raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
+	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
-        raw.bounds[0].l = min_idx;
+	raw.bounds[0].l = min_idx;
 
       status = DevLong(&endidx_nid, (int *)&raw.bounds[0].u);
       if (status & 1)
-        raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
+	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
-        raw.bounds[0].u = max_idx;
+	raw.bounds[0].u = max_idx;
 
       status = 1;
       raw.m[0] = raw.bounds[0].u - raw.bounds[0].l + 1;
       if (raw.m[0] > 0) {
-        int samps;
-        /*      for (samples_to_read = raw.m[0]+start_addr+16; */
-        for (samples_to_read = raw.m[0]; (samples_to_read > 0) && (status & 1);
-             samples_to_read -= samps, data_ptr += samps) {
-          int ios;
-          samps = min(samples_to_read, 65534);
-          ios = (samps + 1) / 2;
-          fstop(2, 0, ios, data_ptr);
-        }
-        if (status & 1) {
-          raw.a0 = raw.pointer - raw.bounds[0].l;
-          raw.arsize = raw.m[0];
-          status = TreePutRecord(input_nid, (struct descriptor *)&signal, 0);
-        }
+	int samps;
+/*      for (samples_to_read = raw.m[0]+start_addr+16; */
+	for (samples_to_read = raw.m[0];
+	     (samples_to_read > 0) && (status & 1); samples_to_read -= samps, data_ptr += samps) {
+	  int ios;
+	  samps = min(samples_to_read, 65534);
+	  ios = (samps + 1) / 2;
+	  fstop(2, 0, ios, data_ptr);
+	}
+	if (status & 1) {
+	  raw.a0 = raw.pointer - raw.bounds[0].l;
+	  raw.arsize = raw.m[0];
+	  status = TreePutRecord(input_nid, (struct descriptor *)&signal, 0);
+	}
       }
     }
   }

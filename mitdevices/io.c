@@ -33,15 +33,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "acq32ioctl.h"
 #include <mdsplus/mdsconfig.h>
 #ifndef MAX
-#define MAX(a, b) ((a) > (b)) ? (a) : (b)
+#define MAX(a,b) ((a) > (b)) ? (a) : (b)
 #endif
 #ifndef MIN
-#define MIN(a, b) ((a) < (b)) ? (a) : (b)
+#define MIN(a,b) ((a) < (b)) ? (a) : (b)
 #endif
 
-#define MAX_CHUNK_SIZE 1024 * 1024
+#define MAX_CHUNK_SIZE 1024*1024
 
-EXPORT int OPEN(const char *pathname, int flags) {
+EXPORT int OPEN(const char *pathname, int flags)
+{
   int fd = open(pathname, flags);
   if (fd == -1) {
     char msg[132];
@@ -51,7 +52,8 @@ EXPORT int OPEN(const char *pathname, int flags) {
   return fd;
 }
 
-EXPORT int READ(int fd, void *buf, size_t count) {
+EXPORT int READ(int fd, void *buf, size_t count)
+{
   int bytes = 0;
   int bytes_to_read = count;
   while ((bytes_to_read > 0) && (bytes >= 0)) {
@@ -61,6 +63,7 @@ EXPORT int READ(int fd, void *buf, size_t count) {
       sprintf(msg, "READ returned zero, quit at %zd\n", count - bytes_to_read);
       perror(msg);
       break;
+
     }
     bytes_to_read -= bytes;
     buf += bytes;
@@ -68,15 +71,23 @@ EXPORT int READ(int fd, void *buf, size_t count) {
   return count - bytes_to_read;
 }
 
-EXPORT int CLOSE(int fd) { return close(fd); }
+EXPORT int CLOSE(int fd)
+{
+  return close(fd);
+}
 
-EXPORT FILE *FOPEN(const char *fname, const char *mode) {
+EXPORT FILE *FOPEN(const char *fname, const char *mode)
+{
   return fopen(fname, mode);
 }
 
-EXPORT int FCLOSE(FILE *fd) { return fclose(fd); }
+EXPORT int FCLOSE(FILE * fd)
+{
+  return fclose(fd);
+}
 
-EXPORT size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+EXPORT size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE * stream)
+{
   unsigned int samples_to_read = nmemb;
   int chunk_size;
   int this_chunk = 0;
@@ -87,8 +98,7 @@ EXPORT size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     this_chunk = fread(ptr, size, chunk_size, stream);
 
     if (this_chunk <= 0) {
-      fprintf(stderr, "fread returned zero, quit at %zd\n",
-              nmemb - samples_to_read);
+      fprintf(stderr, "fread returned zero, quit at %zd\n", nmemb - samples_to_read);
       break;
     }
 
@@ -113,16 +123,18 @@ EXPORT size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 /*   return ((this_chunk==0) ? nmemb : this_chunk); */
 /* } */
 
-EXPORT size_t FWRITE(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+EXPORT size_t FWRITE(void *ptr, size_t size, size_t nmemb, FILE * stream)
+{
   return fwrite(ptr, size, nmemb, stream);
 }
 
-EXPORT int FSEEK(FILE *stream, long offset, int whence) {
+EXPORT int FSEEK(FILE * stream, long offset, int whence)
+{
   return fseek(stream, offset, whence);
 }
 
-EXPORT int DMARead(short *buffer, const char *fname, int *chan, int *samples,
-                   int *active_chans) {
+EXPORT int DMARead(short *buffer, const char *fname, int *chan, int *samples, int *active_chans)
+{
   int lstart = 0;
   int lend = *samples;
   int linc = *active_chans;
@@ -131,17 +143,14 @@ EXPORT int DMARead(short *buffer, const char *fname, int *chan, int *samples,
   int fd;
   short *region;
 
-  /*  printf("Starting DMARead lstart = %d lend = %d linc = %d, length = %d\n",
-   * lstart, lend, linc, length); */
+  /*  printf("Starting DMARead lstart = %d lend = %d linc = %d, length = %d\n", lstart, lend, linc, length); */
   if ((fd = open(fname, O_RDWR)) < 0) {
     fprintf(stderr, "DMARead: failed to open device \"%s\" - ", fname);
     perror("");
     return -1;
   }
-  /* printf("about to mmap (null, %d, PROT_READ|PROT_WRITE, MAP_SHARED, %d,
-   * 0)\n", length, fd); */
-  region =
-      (short *)mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  /* printf("about to mmap (null, %d, PROT_READ|PROT_WRITE, MAP_SHARED, %d, 0)\n", length, fd); */
+  region = (short *)mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
   if (region == (short *)-1) {
     perror("DMARead mmap");
@@ -157,9 +166,9 @@ EXPORT int DMARead(short *buffer, const char *fname, int *chan, int *samples,
   return out;
 }
 
-EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples,
-                    int *active_chans, int *start, int *end, int *inc,
-                    float *coeffs, int *num_coeffs) {
+EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *active_chans,
+	     int *start, int *end, int *inc, float *coeffs, int *num_coeffs)
+{
   int sample;
   int lstart = 0;
   int lend = *samples;
@@ -168,27 +177,23 @@ EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples,
   int out;
   int fd;
   short *region;
-  // int i;
+  //int i;
 
-  /* printf("Starting DMARead lstart = %d lend = %d linc = %d, length = %d\n",
-   * lstart, lend, linc, length); */
+  /* printf("Starting DMARead lstart = %d lend = %d linc = %d, length = %d\n", lstart, lend, linc, length); */
   if ((fd = open(fname, O_RDWR)) < 0) {
     fprintf(stderr, "DMARead: failed to open device \"%s\" - ", fname);
     perror("");
     return -1;
   }
-  /* printf("about to mmap (null, %d, PROT_READ|PROT_WRITE, MAP_SHARED, %d,
-   * 0)\n", length, fd); */
-  region =
-      (short *)mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  /* printf("about to mmap (null, %d, PROT_READ|PROT_WRITE, MAP_SHARED, %d, 0)\n", length, fd); */
+  region = (short *)mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
   if (region == (short *)-1) {
     perror("DMARead mmap");
     return 1;
   }
   /*
-     printf("about to resample start=%d, end=%d, inc=%d, num_coeffs=%d\n",
-     *start, *end, *inc, *num_coeffs);
+     printf("about to resample start=%d, end=%d, inc=%d, num_coeffs=%d\n", *start, *end, *inc, *num_coeffs);
 
      printf("the coefs are: ");
      for (i = 0; i< *num_coeffs; i++)
@@ -203,26 +208,26 @@ EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples,
     for (i = 0; i < *num_coeffs; i++) {
       int idx = (sample + (i - *num_coeffs / 2)) * linc + *chan;
       if (idx < 0) {
-        /*
-           printf("front sample = %d i = %d idx = %d ", sample, i, idx);
-         */
-        idx = *chan;
-        /*
-           printf("%d\n", idx);
-         */
+	/*
+	   printf("front sample = %d i = %d idx = %d ", sample, i, idx);
+	 */
+	idx = *chan;
+	/*
+	   printf("%d\n", idx);
+	 */
       }
       if (idx >= ((int)(length / 2))) {
-        /*
-           printf("back sample = %d i = %d idx = %d ", sample, i, idx);
-         */
-        idx = (*samples - 1) * linc + *chan;
-        /*
-           printf("%d\n", idx);
-         */
+	/*
+	   printf("back sample = %d i = %d idx = %d ", sample, i, idx);
+	 */
+	idx = (*samples - 1) * linc + *chan;
+	/*
+	   printf("%d\n", idx);
+	 */
       }
       sam += (region[idx] * coeffs[i]);
       /*
-         printf("idx = %d src= %d ans = %f ", idx, (int)region[idx], sam);
+	 printf("idx = %d src= %d ans = %f ", idx, (int)region[idx], sam);
        */
     }
     /* printf("|"); */
@@ -236,8 +241,9 @@ EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples,
   return out;
 }
 
-EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end,
-                    int *inc, float *coeffs, int *num_coeffs) {
+EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, float *coeffs,
+	     int *num_coeffs)
+{
   int samples_to_go;
   int linc = (*num_coeffs <= 1) ? *inc : 1;
   int samples = (*end - *start + 1) / linc;
@@ -250,8 +256,7 @@ EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end,
   float sam;
 
   /*
-     printf("Starting DMARead3 start = %d end = %d linc = %d\n", *start, *end,
-     linc);
+     printf("Starting DMARead3 start = %d end = %d linc = %d\n", *start, *end, linc);
    */
   if ((fd = open(fname, O_RDONLY)) < 0) {
     fprintf(stderr, "DMARead: failed to open device \"%s\" - ", fname);
@@ -259,8 +264,7 @@ EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end,
     return -1;
   }
   /*
-     printf("about to mmap (null, %d, PROT_READ, MAP_SHARED, %d, 0)\n", length,
-     fd);
+     printf("about to mmap (null, %d, PROT_READ, MAP_SHARED, %d, 0)\n", length, fd);
    */
   region = (short *)mmap(NULL, length, PROT_READ, MAP_SHARED, fd, 0);
 
@@ -271,8 +275,7 @@ EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end,
   buffer_def.istart = *start;
   buffer_def.istride = linc;
   buffer_def.buffer = (short *)region;
-  for (samples_to_go = length / 2; samples_to_go > 0;
-       samples_to_go -= buffer_def.nsamples) {
+  for (samples_to_go = length / 2; samples_to_go > 0; samples_to_go -= buffer_def.nsamples) {
     buffer_def.nsamples = MIN(samples_to_go, MAX_CHUNK_SIZE);
     /*
        printf("about to ioctl istart = %d, istride= %d, nsamples = %d \n",
@@ -294,8 +297,8 @@ EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end,
       sam = 0.;
       /*      printf("."); */
       for (cidx = 0; cidx < *num_coeffs; cidx++) {
-        int iidx = MIN(MAX(idx * *inc + cidx - *num_coeffs / 2, 0), *end - 1);
-        sam += region[iidx] * coeffs[cidx];
+	int iidx = MIN(MAX(idx * *inc + cidx - *num_coeffs / 2, 0), *end - 1);
+	sam += region[iidx] * coeffs[cidx];
       }
       buffer[idx] = (int)sam;
     }
@@ -315,8 +318,8 @@ EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end,
   return (*end - *start + 1) / *inc;
 }
 
-EXPORT int Convolve(short *outbuf, short *inbuf, int inbuf_len, float *coeffs,
-                    int num_coeffs, int inc) {
+EXPORT int Convolve(short *outbuf, short *inbuf, int inbuf_len, float *coeffs, int num_coeffs, int inc)
+{
   int i, j, idx;
   int sample = 0;
   float total;

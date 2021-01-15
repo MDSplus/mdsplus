@@ -34,7 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX_CAMERAS 8
 #define FLAG_VALUE 0xDEADBEEF
 
-static unsigned char *NewCamBuf(int size) {
+static unsigned char *NewCamBuf(int size)
+{
   unsigned char *tmp;
   int *iptr;
 
@@ -51,18 +52,18 @@ static unsigned char *NewCamBuf(int size) {
   return tmp + 2 * sizeof(int);
 }
 
-static int CheckCamBuf(unsigned char *buf, int size) {
+static int CheckCamBuf(unsigned char *buf, int size)
+{
   int *start_flag_ptr = (int *)(buf - 2 * sizeof(int));
   int *size_ptr = (int *)(buf - sizeof(int));
   int *end_flag_ptr = (int *)(buf + size);
-  return ((*start_flag_ptr != FLAG_VALUE) || (*size_ptr != size) ||
-          (*end_flag_ptr != FLAG_VALUE));
+  return ((*start_flag_ptr != FLAG_VALUE) || (*size_ptr != size) || (*end_flag_ptr != FLAG_VALUE));
 }
 
 static int first = 1;
 typedef struct _DC1394Capture {
   int start_flag;
-  int camera_num; /* just counted from 1 in the order found */
+  int camera_num;		/* just counted from 1 in the order found */
   int bus;
   raw1394handle_t handle;
   char *dev_filename;
@@ -74,7 +75,7 @@ typedef struct _DC1394Capture {
 
   int width;
   int height;
-  int bpp; /* bytes per pixel */
+  int bpp;			/* bytes per pixel */
   int max_frames;
 
   unsigned char *frames;
@@ -82,7 +83,7 @@ typedef struct _DC1394Capture {
 
   dc1394_camerainfo camera_info;
   dc1394_miscinfo misc_info;
-  dc1394_cameracapture camera; /* returned by setup_capture */
+  dc1394_cameracapture camera;	/* returned by setup_capture */
   pthread_t thread_id;
 
   int debug;
@@ -94,10 +95,10 @@ static DC1394Capture Cameras[MAX_CAMERAS];
 static void *AcquireFrames(void *arg);
 void dc1394Done(void *arg);
 
-EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
-                      int trigger_mode, int shutter, int gain, int trig_on,
-                      int mode, int frame_rate, int debug) {
-  char dev_name[32]; /* /dev/video1394/n  where 0 >= n < MAX_CAMERAS */
+EXPORT int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode, int shutter,
+	       int gain, int trig_on, int mode, int frame_rate, int debug)
+{
+  char dev_name[32];		/* /dev/video1394/n  where 0 >= n < MAX_CAMERAS */
   dc1394_feature_set features;
   int numNodes;
   int numCameras;
@@ -127,8 +128,8 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
 
   /***********************************************/
   /* make room for the answers and write down all of the knobs for later use */
-  if ((width != Cameras[cam].width) || (height != Cameras[cam].height) ||
-      (max_frames != Cameras[cam].max_frames)) {
+  if ((width != Cameras[cam].width) ||
+      (height != Cameras[cam].height) || (max_frames != Cameras[cam].max_frames)) {
     if (Cameras[cam].frames != NULL)
       free(Cameras[cam].frames);
     if (Cameras[cam].times != NULL)
@@ -141,21 +142,17 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
     Cameras[cam].debug = debug;
   }
   if (Cameras[cam].frames == NULL) {
-    Cameras[cam].frames =
-        NewCamBuf(width * height * max_frames * Cameras[cam].bpp);
+    Cameras[cam].frames = NewCamBuf(width * height * max_frames * Cameras[cam].bpp);
     if (Cameras[cam].frames == NULL) {
-      fprintf(stderr,
-              "Could not allocate memory for %d frames (%d x %d x %d(bytes per "
-              "pixel))\n",
-              max_frames, width, height, Cameras[cam].bpp);
+      fprintf(stderr, "Could not allocate memory for %d frames (%d x %d x %d(bytes per pixel))\n",
+	      max_frames, width, height, Cameras[cam].bpp);
       Cameras[cam].max_frames = 0;
       return (0);
     }
 
     Cameras[cam].times = (double *)malloc(max_frames * sizeof(double));
     if (Cameras[cam].times == NULL) {
-      fprintf(stderr, "could not allocate memory for %d times - Aborting \n",
-              max_frames);
+      fprintf(stderr, "could not allocate memory for %d times - Aborting \n", max_frames);
       free(Cameras[cam].frames);
       Cameras[cam].frames = NULL;
       return (0);
@@ -170,16 +167,13 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
   Cameras[cam].shutter = shutter;
   Cameras[cam].gain = gain;
 
-  if (CheckCamBuf(Cameras[cam].frames,
-                  width * height * max_frames * Cameras[cam].bpp) != 0) {
-    fprintf(stderr, "*********************\n Camera buffer trashed "
-                    "\n*************************");
+  if (CheckCamBuf(Cameras[cam].frames, width * height * max_frames * Cameras[cam].bpp) != 0) {
+    fprintf(stderr, "*********************\n Camera buffer trashed \n*************************");
     return 0;
   }
 
   /* fill the frames with zeros */
-  memset((void *)Cameras[cam].frames, 0,
-         width * height * max_frames * Cameras[cam].bpp);
+  memset((void *)Cameras[cam].frames, 0, width * height * max_frames * Cameras[cam].bpp);
 
   /***********************************************/
 
@@ -202,10 +196,9 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
   Cameras[cam].handle = dc1394_create_handle(cam);
   if (Cameras[cam].handle == NULL) {
     fprintf(stderr, "Unable to aquire a raw1394 handle\n\n"
-                    "Please check \n"
-                    "  - if the kernel modules `ieee1394',`raw1394' and "
-                    "`ohci1394' are loaded \n"
-                    "  - if you have read/write access to /dev/raw1394\n\n");
+	    "Please check \n"
+	    "  - if the kernel modules `ieee1394',`raw1394' and `ohci1394' are loaded \n"
+	    "  - if you have read/write access to /dev/raw1394\n\n");
     return (0);
   }
 
@@ -223,18 +216,13 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
   if (debug > 0)
     fprintf(stderr, "have the node list and count, now setup the dma\n");
 
-  if (dc1394_dma_setup_capture(
-          Cameras[cam].handle, camera_nodes[0], 0,
-          FORMAT_VGA_NONCOMPRESSED + ((mode == 101) || (mode == 103)), mode,
-          SPEED_400, frame_rate, 3, /* frames */
-          0,                        /* drop frames */
-          dev_name, &Cameras[cam].camera) != DC1394_SUCCESS) {
-    fprintf(stderr,
-            "unable to setup camera-\n"
-            "check line %d of %s to make sure\n"
-            "that the video mode,framerate and format are\n"
-            "supported by your camera\n",
-            __LINE__, __FILE__);
+  if (dc1394_dma_setup_capture(Cameras[cam].handle, camera_nodes[0], 0, FORMAT_VGA_NONCOMPRESSED + ((mode == 101) || (mode == 103)), mode, SPEED_400, frame_rate, 3,	/* frames */
+			       0,	/* drop frames */
+			       dev_name, &Cameras[cam].camera) != DC1394_SUCCESS) {
+    fprintf(stderr, "unable to setup camera-\n"
+	    "check line %d of %s to make sure\n"
+	    "that the video mode,framerate and format are\n"
+	    "supported by your camera\n", __LINE__, __FILE__);
     dc1394_dma_release_camera(Cameras[cam].handle, &Cameras[cam].camera);
     dc1394_destroy_handle(Cameras[cam].handle);
     dc1394_free_camera_nodes(camera_nodes);
@@ -244,15 +232,15 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
   if (debug > 0)
     fprintf(stderr, "DMA setup, now the trigger mode\n");
   /* set trigger mode */
-  if (dc1394_set_trigger_mode(Cameras[cam].handle, Cameras[cam].camera.node,
-                              trigger_mode) != DC1394_SUCCESS) {
+  if (dc1394_set_trigger_mode(Cameras[cam].handle, Cameras[cam].camera.node, trigger_mode) !=
+      DC1394_SUCCESS) {
     fprintf(stderr, "unable to set camera trigger mode\n");
   }
 
   /* eventually the same for the shutter and gain */
 
-  if (dc1394_set_trigger_on_off(Cameras[cam].handle, Cameras[cam].camera.node,
-                                trig_on) != DC1394_SUCCESS) {
+  if (dc1394_set_trigger_on_off(Cameras[cam].handle, Cameras[cam].camera.node, trig_on) !=
+      DC1394_SUCCESS) {
     fprintf(stderr, "unable to set trigger on to %d\n", trig_on);
   }
 
@@ -260,17 +248,16 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
     fprintf(stderr, "trigger mode set, now the shutter\n");
   /* set the shutter */
   if (shutter == 0) {
-    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0],
-                           FEATURE_SHUTTER, 1) != DC1394_SUCCESS) {
+    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_SHUTTER, 1) !=
+	DC1394_SUCCESS) {
       fprintf(stderr, "unable to set shutter to auto\n");
     }
   } else {
-    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0],
-                           FEATURE_SHUTTER, 0) != DC1394_SUCCESS) {
+    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_SHUTTER, 0) !=
+	DC1394_SUCCESS) {
       fprintf(stderr, "unable to set shutter to manual\n");
     }
-    if (dc1394_set_shutter(Cameras[cam].handle, camera_nodes[0], shutter) !=
-        DC1394_SUCCESS) {
+    if (dc1394_set_shutter(Cameras[cam].handle, camera_nodes[0], shutter) != DC1394_SUCCESS) {
       fprintf(stderr, "unable to set shutter to %d\n", shutter);
     }
   }
@@ -278,17 +265,14 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
     fprintf(stderr, "shutter set, now the gain to %d\n", gain);
   /* and the gain */
   if (gain == 0) {
-    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_GAIN,
-                           1) != DC1394_SUCCESS) {
+    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_GAIN, 1) != DC1394_SUCCESS) {
       fprintf(stderr, "unable to set gain to auto\n");
     }
   } else {
-    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_GAIN,
-                           0) != DC1394_SUCCESS) {
+    if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_GAIN, 0) != DC1394_SUCCESS) {
       fprintf(stderr, "unable to set gain to manual\n");
     }
-    if (dc1394_set_gain(Cameras[cam].handle, camera_nodes[0], gain) !=
-        DC1394_SUCCESS) {
+    if (dc1394_set_gain(Cameras[cam].handle, camera_nodes[0], gain) != DC1394_SUCCESS) {
       fprintf(stderr, "unable to set gain to %d\n", gain);
     }
   }
@@ -299,73 +283,66 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
   /* free the camera nodes */
   dc1394_free_camera_nodes(camera_nodes);
 
-  /*   /\* make room for the answers and write down all of the knobs for later
-   * use *\/ */
-  /*   if ( (width != Cameras[cam].width) || */
-  /*        (height != Cameras[cam].height) || */
-  /*        (max_frames != Cameras[cam].max_frames) ){ */
-  /*     if (Cameras[cam].frames != NULL) */
-  /*       free(Cameras[cam].frames); */
-  /*     if (Cameras[cam].times != NULL) */
-  /*       free(Cameras[cam].times); */
-  /*     Cameras[cam].frames = NULL; */
-  /*     Cameras[cam].times = NULL; */
-  /*     Cameras[cam].width=0; */
-  /*     Cameras[cam].height=0; */
-  /*     Cameras[cam].max_frames=0; */
-  /*     Cameras[cam].debug = debug; */
-  /*   } */
-  /*   if (Cameras[cam].frames == NULL) { */
-  /*     Cameras[cam].frames = (unsigned char *)malloc(width*height*max_frames);
-   */
-  /*     if (Cameras[cam].frames == NULL) { */
-  /*       fprintf(stderr, "Could not allocate memory for %d frames (%d x
-   * %d)\n", max_frames, width, height); */
-  /*       dc1394_dma_release_camera(Cameras[cam].handle,&Cameras[cam].camera);
-   */
-  /*       Cameras[cam].max_frames = 0; */
-  /*       return(0); */
-  /*     } */
-  /*     Cameras[cam].times = (double *)malloc(max_frames*sizeof(double)); */
-  /*     if (Cameras[cam].times == NULL) { */
-  /*       fprintf(stderr, "could not allocate memory for %d times - Aborting
-   * \n", max_frames); */
-  /*       free (Cameras[cam].frames); */
-  /*       Cameras[cam].frames=NULL; */
-  /*       dc1394_dma_release_camera(Cameras[cam].handle,&Cameras[cam].camera);
-   */
-  /*       return(0); */
-  /*     } */
+/*   /\* make room for the answers and write down all of the knobs for later use *\/ */
+/*   if ( (width != Cameras[cam].width) || */
+/*        (height != Cameras[cam].height) || */
+/*        (max_frames != Cameras[cam].max_frames) ){ */
+/*     if (Cameras[cam].frames != NULL) */
+/*       free(Cameras[cam].frames); */
+/*     if (Cameras[cam].times != NULL) */
+/*       free(Cameras[cam].times); */
+/*     Cameras[cam].frames = NULL; */
+/*     Cameras[cam].times = NULL; */
+/*     Cameras[cam].width=0; */
+/*     Cameras[cam].height=0; */
+/*     Cameras[cam].max_frames=0; */
+/*     Cameras[cam].debug = debug; */
+/*   } */
+/*   if (Cameras[cam].frames == NULL) { */
+/*     Cameras[cam].frames = (unsigned char *)malloc(width*height*max_frames); */
+/*     if (Cameras[cam].frames == NULL) { */
+/*       fprintf(stderr, "Could not allocate memory for %d frames (%d x %d)\n", max_frames, width, height); */
+/*       dc1394_dma_release_camera(Cameras[cam].handle,&Cameras[cam].camera); */
+/*       Cameras[cam].max_frames = 0; */
+/*       return(0); */
+/*     } */
+/*     Cameras[cam].times = (double *)malloc(max_frames*sizeof(double)); */
+/*     if (Cameras[cam].times == NULL) { */
+/*       fprintf(stderr, "could not allocate memory for %d times - Aborting \n", max_frames); */
+/*       free (Cameras[cam].frames); */
+/*       Cameras[cam].frames=NULL; */
+/*       dc1394_dma_release_camera(Cameras[cam].handle,&Cameras[cam].camera); */
+/*       return(0); */
+/*     } */
 
-  /*     Cameras[cam].width = width; */
-  /*     Cameras[cam].height = height; */
-  /*     Cameras[cam].max_frames = max_frames; */
-  /*   } */
-  /*   Cameras[cam].next_frame = 0; */
-  /*   Cameras[cam].trigger_mode = trigger_mode; */
-  /*   Cameras[cam].shutter = shutter; */
-  /*   Cameras[cam].gain = gain; */
+/*     Cameras[cam].width = width; */
+/*     Cameras[cam].height = height; */
+/*     Cameras[cam].max_frames = max_frames; */
+/*   } */
+/*   Cameras[cam].next_frame = 0; */
+/*   Cameras[cam].trigger_mode = trigger_mode; */
+/*   Cameras[cam].shutter = shutter; */
+/*   Cameras[cam].gain = gain; */
 
-  /*   /\* fill the frames with zeros *\/ */
-  /*   memset((void *)Cameras[cam].frames, 0, width*height*max_frames); */
+/*   /\* fill the frames with zeros *\/ */
+/*   memset((void *)Cameras[cam].frames, 0, width*height*max_frames); */
 
   /* fill the frames with zeros */
   memset((void *)Cameras[cam].frames, 0, width * height * max_frames);
 
-  /*    if (dc1394_set_trigger_on_off(Cameras[cam].handle,
-   * Cameras[cam].camera.node, */
-  /* 				0) != DC1394_SUCCESS) */
-  /*     { */
-  /*       fprintf(stderr, "unable to set trigger on \n"); */
-  /*     } */
+/*    if (dc1394_set_trigger_on_off(Cameras[cam].handle, Cameras[cam].camera.node, */
+/* 				0) != DC1394_SUCCESS) */
+/*     { */
+/*       fprintf(stderr, "unable to set trigger on \n"); */
+/*     } */
 
-  /*-----------------------------------------------------------------------
+/*-----------------------------------------------------------------------
    *  have the camera start sending us data
    *-----------------------------------------------------------------------*/
   if (debug > 0)
     fprintf(stderr, "start the ISO transmission\n");
-  if (dc1394_start_iso_transmission(
-          Cameras[cam].handle, Cameras[cam].camera.node) != DC1394_SUCCESS) {
+  if (dc1394_start_iso_transmission(Cameras[cam].handle, Cameras[cam].camera.node)
+      != DC1394_SUCCESS) {
     fprintf(stderr, "unable to start camera iso transmission\n");
     dc1394_dma_release_camera(Cameras[cam].handle, &Cameras[cam].camera);
     dc1394_destroy_handle(Cameras[cam].handle);
@@ -374,8 +351,7 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
 
   if (debug > 0)
     fprintf(stderr, "Create the thread\n");
-  if (pthread_create(&Cameras[cam].thread_id, NULL, AcquireFrames,
-                     (void *)cam) != 0) {
+  if (pthread_create(&Cameras[cam].thread_id, NULL, AcquireFrames, (void *)cam) != 0) {
     fprintf(stderr, "Could not create thread to handle camera daq\n");
     dc1394_dma_release_camera(Cameras[cam].handle, &Cameras[cam].camera);
     return (0);
@@ -385,7 +361,8 @@ EXPORT int dc1394Init(int cam, int width, int height, int max_frames,
   return (1);
 }
 
-static void *AcquireFrames(void *arg) {
+static void *AcquireFrames(void *arg)
+{
   struct timeval tv;
   int start_sec;
   int cam = (int)arg;
@@ -393,11 +370,8 @@ static void *AcquireFrames(void *arg) {
   pthread_cleanup_push(dc1394Done, arg);
   gettimeofday(&tv, NULL);
   start_sec = tv.tv_sec;
-  //  fprintf(stderr, "Here I am in AcquireFrames - max_frames is %d, next_frame
-  //  is %d cam is %d\n", Cameras[cam].max_frames, Cameras[cam].next_frame,
-  //  cam);
-  for (Cameras[cam].next_frame = 0;
-       Cameras[cam].next_frame < Cameras[cam].max_frames;
+  //  fprintf(stderr, "Here I am in AcquireFrames - max_frames is %d,  next_frame is %d cam is %d\n", Cameras[cam].max_frames, Cameras[cam].next_frame, cam);
+  for (Cameras[cam].next_frame = 0; Cameras[cam].next_frame < Cameras[cam].max_frames;
        Cameras[cam].next_frame++) {
     if (Cameras[cam].debug > 1)
       fprintf(stderr, "trying to read %d \n", Cameras[cam].next_frame);
@@ -407,13 +381,11 @@ static void *AcquireFrames(void *arg) {
     }
     //  fprintf(stderr, "\t got one\n");
     gettimeofday(&tv, NULL);
-    Cameras[cam].times[Cameras[cam].next_frame] =
-        tv.tv_sec - start_sec + (double)tv.tv_usec * 1E-6;
+    Cameras[cam].times[Cameras[cam].next_frame] = tv.tv_sec - start_sec + (double)tv.tv_usec * 1E-6;
     memcpy((void *)Cameras[cam].frames +
-               Cameras[cam].next_frame * Cameras[cam].width *
-                   Cameras[cam].height * Cameras[cam].bpp,
-           Cameras[cam].camera.capture_buffer,
-           Cameras[cam].width * Cameras[cam].height * Cameras[cam].bpp);
+	   Cameras[cam].next_frame * Cameras[cam].width * Cameras[cam].height * Cameras[cam].bpp,
+	   Cameras[cam].camera.capture_buffer,
+	   Cameras[cam].width * Cameras[cam].height * Cameras[cam].bpp);
     dc1394_dma_done_with_buffer(&Cameras[cam].camera);
   }
   /* clean up active daq */
@@ -429,17 +401,18 @@ static void *AcquireFrames(void *arg) {
   return;
 }
 
-EXPORT int dc1394ReadFrames(int cam, char *data) {
+EXPORT int dc1394ReadFrames(int cam, char *data)
+{
   if (first) {
-    fprintf(stderr, "***********************\nIn ReadFrames but first is set ! "
-                    "- returning 0\n");
+    fprintf(stderr, "***********************\nIn ReadFrames but first is set ! - returning 0\n");
     return 0;
   }
-  if (CheckCamBuf(Cameras[cam].frames,
-                  Cameras[cam].width * Cameras[cam].height *
-                      Cameras[cam].max_frames * Cameras[cam].bpp) != 0) {
-    fprintf(stderr, "*******ReadFrames**************\n Camera buffer trashed "
-                    "\n*************************");
+  if (CheckCamBuf
+      (Cameras[cam].frames,
+       Cameras[cam].width * Cameras[cam].height * Cameras[cam].max_frames * Cameras[cam].bpp) !=
+      0) {
+    fprintf(stderr,
+	    "*******ReadFrames**************\n Camera buffer trashed \n*************************");
     return 0;
   }
 
@@ -448,53 +421,52 @@ EXPORT int dc1394ReadFrames(int cam, char *data) {
   if (Cameras[cam].frames != NULL)
     if (Cameras[cam].bpp == 2) {
       swab(Cameras[cam].frames, data,
-           Cameras[cam].width * Cameras[cam].height * Cameras[cam].next_frame *
-               Cameras[cam].bpp);
+	   Cameras[cam].width * Cameras[cam].height * Cameras[cam].next_frame * Cameras[cam].bpp);
     } else {
       memmove(data, Cameras[cam].frames,
-              Cameras[cam].width * Cameras[cam].height *
-                  Cameras[cam].next_frame * Cameras[cam].bpp);
-    }
-  else
+	      Cameras[cam].width * Cameras[cam].height * Cameras[cam].next_frame *
+	      Cameras[cam].bpp);
+  } else
     fprintf(stderr, "No memory allocated ReadFrames\n");
   return (1);
 }
 
-EXPORT int dc1394ReadTimes(int cam, double *data) {
+EXPORT int dc1394ReadTimes(int cam, double *data)
+{
   if (first) {
-    fprintf(stderr, "***********************\nIn ReadTimes but first is set ! "
-                    "- returning 0\n");
+    fprintf(stderr, "***********************\nIn ReadTimes but first is set ! - returning 0\n");
     return 0;
   }
-  if (CheckCamBuf(Cameras[cam].frames,
-                  Cameras[cam].width * Cameras[cam].height *
-                      Cameras[cam].max_frames * Cameras[cam].bpp) != 0) {
-    fprintf(stderr, "*******ReadTimes**************\n Camera buffer trashed "
-                    "\n*************************");
+  if (CheckCamBuf
+      (Cameras[cam].frames,
+       Cameras[cam].width * Cameras[cam].height * Cameras[cam].max_frames * Cameras[cam].bpp) !=
+      0) {
+    fprintf(stderr,
+	    "*******ReadTimes**************\n Camera buffer trashed \n*************************");
     return 0;
   }
   if (Cameras[cam].debug > 0)
     fprintf(stderr, "Reading times\n");
   if (Cameras[cam].times != NULL)
-    memmove((char *)data, Cameras[cam].times,
-            Cameras[cam].next_frame * sizeof(double));
+    memmove((char *)data, Cameras[cam].times, Cameras[cam].next_frame * sizeof(double));
   else
     fprintf(stderr, "No memory allocated ReadTimes\n");
   if (Cameras[cam].frames != NULL)
     return 1;
 }
 
-EXPORT int dc1394NumFrames(int cam) {
+EXPORT int dc1394NumFrames(int cam)
+{
   if (first) {
-    fprintf(stderr, "***********************\nIn NumFrames but first is set ! "
-                    "- returning 0\n");
+    fprintf(stderr, "***********************\nIn NumFrames but first is set ! - returning 0\n");
     return 0;
   }
-  if (CheckCamBuf(Cameras[cam].frames,
-                  Cameras[cam].width * Cameras[cam].height *
-                      Cameras[cam].max_frames * Cameras[cam].bpp) != 0) {
-    fprintf(stderr, "*******NumTimes**************\n Camera buffer trashed "
-                    "\n*************************");
+  if (CheckCamBuf
+      (Cameras[cam].frames,
+       Cameras[cam].width * Cameras[cam].height * Cameras[cam].max_frames * Cameras[cam].bpp) !=
+      0) {
+    fprintf(stderr,
+	    "*******NumTimes**************\n Camera buffer trashed \n*************************");
     return 0;
   }
   if (Cameras[cam].debug > 0)
@@ -502,19 +474,19 @@ EXPORT int dc1394NumFrames(int cam) {
   return (Cameras[cam].next_frame);
 }
 
-EXPORT void dc1394Done(void *arg) {
+EXPORT void dc1394Done(void *arg)
+{
   int cam = (int)arg;
   /* clean up any active daq */
   if (first)
-    fprintf(
-        stderr,
-        "***********************\nIn Done but first is set ! - returning 0\n");
+    fprintf(stderr, "***********************\nIn Done but first is set ! - returning 0\n");
 
-  if (CheckCamBuf(Cameras[cam].frames,
-                  Cameras[cam].width * Cameras[cam].height *
-                      Cameras[cam].max_frames * Cameras[cam].bpp) != 0) {
-    fprintf(stderr, "*******Done**************\n Camera buffer trashed "
-                    "\n*************************");
+  if (CheckCamBuf
+      (Cameras[cam].frames,
+       Cameras[cam].width * Cameras[cam].height * Cameras[cam].max_frames * Cameras[cam].bpp) !=
+      0) {
+    fprintf(stderr,
+	    "*******Done**************\n Camera buffer trashed \n*************************");
     return;
   }
   if (Cameras[cam].debug > 0)
@@ -544,7 +516,8 @@ EXPORT void dc1394Done(void *arg) {
   return;
 }
 
-EXPORT void dc1394Cleanup(void *arg) {
+EXPORT void dc1394Cleanup(void *arg)
+{
   int cam = (int)arg;
   void *status = NULL;
   if (Cameras[cam].thread_id) {
@@ -556,7 +529,8 @@ EXPORT void dc1394Cleanup(void *arg) {
   }
 }
 
-EXPORT int dc1394LoadImage() {
+EXPORT int dc1394LoadImage()
+{
   fprintf(stderr, "dc1394_support.so now loaded \n");
   return (1);
 }

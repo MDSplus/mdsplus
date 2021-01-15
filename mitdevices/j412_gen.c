@@ -25,18 +25,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "j412_gen.h"
-EXPORT int j412__add(struct descriptor *name_d_ptr,
-                     struct descriptor *dummy_d_ptr __attribute__((unused)),
-                     int *nid_ptr) {
+EXPORT int j412__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
+{
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "J412");
   static DESCRIPTOR_CONGLOM(conglom_d, &library_d, &model_d, 0, 0);
   int usage = TreeUSAGE_DEVICE;
   int curr_nid, old_nid, head_nid, status;
   long int flags = NciM_WRITE_ONCE;
-  NCI_ITM flag_itm[] = {{2, NciSET_FLAGS, 0, 0}, {0, 0, 0, 0}};
-  char *name_ptr = strncpy(malloc(name_d_ptr->length + 1), name_d_ptr->pointer,
-                           name_d_ptr->length);
+  NCI_ITM flag_itm[] = { {2, NciSET_FLAGS, 0, 0}, {0, 0, 0, 0} };
+  char *name_ptr = strncpy(malloc(name_d_ptr->length + 1), name_d_ptr->pointer, name_d_ptr->length);
   flag_itm[0].pointer = (unsigned char *)&flags;
   name_ptr[name_d_ptr->length] = 0;
   status = TreeStartConglomerate(J412_K_CONG_NODES);
@@ -56,42 +54,41 @@ EXPORT int j412__add(struct descriptor *name_d_ptr,
   status = TreeSetDefaultNid(head_nid);
   if (!(status & 1))
     return status;
-  ADD_NODE( : NAME, TreeUSAGE_TEXT)
-  ADD_NODE( : COMMENT, TreeUSAGE_TEXT)
-  ADD_NODE( : DT, TreeUSAGE_NUMERIC)
-  flags |= NciM_NO_WRITE_SHOT;
+ ADD_NODE(:NAME, TreeUSAGE_TEXT)
+ ADD_NODE(:COMMENT, TreeUSAGE_TEXT)
+ ADD_NODE(:DT, TreeUSAGE_NUMERIC)
+      flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.				"
-  ADD_NODE_EXPR( : START_TRIG, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:START_TRIG, TreeUSAGE_NUMERIC)
 #undef expr
-  flags |= NciM_NO_WRITE_SHOT;
+      flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
-  ADD_NODE( : SET_POINTS, TreeUSAGE_NUMERIC)
-  flags |= NciM_NO_WRITE_SHOT;
+ ADD_NODE(:SET_POINTS, TreeUSAGE_NUMERIC)
+      flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr "  :START_TRIG+:DT*:SET_POINTS    "
-  ADD_NODE_EXPR( : OUTPUT, TreeUSAGE_AXIS)
+ ADD_NODE_EXPR(:OUTPUT, TreeUSAGE_AXIS)
 #undef expr
-  flags |= NciM_WRITE_ONCE;
+      flags |= NciM_WRITE_ONCE;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.				"
-  ADD_NODE_EXPR( : NUM_CYCLES, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:NUM_CYCLES, TreeUSAGE_NUMERIC)
 #undef expr
-  flags |= NciM_NO_WRITE_SHOT;
+      flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
-  ADD_NODE_ACTION( : INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
-  status = TreeEndConglomerate();
+ ADD_NODE_ACTION(:INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
+      status = TreeEndConglomerate();
   if (!(status & 1))
     return status;
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int j412__part_name(struct descriptor *nid_d_ptr __attribute__((unused)),
-                           struct descriptor *method_d_ptr
-                           __attribute__((unused)),
-                           struct descriptor_d *out_d) {
+EXPORT int j412__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
+		    struct descriptor_d *out_d)
+{
   int element = 0, status;
-  NCI_ITM nci_list[] = {{4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0}};
+  NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
   nci_list[0].pointer = (unsigned char *)&element;
   status = TreeGetNci(*(int *)nid_d_ptr->pointer, nci_list);
   if (!(status & 1))
@@ -101,21 +98,21 @@ EXPORT int j412__part_name(struct descriptor *nid_d_ptr __attribute__((unused)),
     StrFree1Dx(out_d);
     break;
   case (J412_N_NAME + 1):
-    COPY_PART_NAME( : NAME) break;
+ COPY_PART_NAME(:NAME) break;
   case (J412_N_COMMENT + 1):
-    COPY_PART_NAME( : COMMENT) break;
+ COPY_PART_NAME(:COMMENT) break;
   case (J412_N_DT + 1):
-    COPY_PART_NAME( : DT) break;
+ COPY_PART_NAME(:DT) break;
   case (J412_N_START_TRIG + 1):
-    COPY_PART_NAME( : START_TRIG) break;
+ COPY_PART_NAME(:START_TRIG) break;
   case (J412_N_SET_POINTS + 1):
-    COPY_PART_NAME( : SET_POINTS) break;
+ COPY_PART_NAME(:SET_POINTS) break;
   case (J412_N_OUTPUT + 1):
-    COPY_PART_NAME( : OUTPUT) break;
+ COPY_PART_NAME(:OUTPUT) break;
   case (J412_N_NUM_CYCLES + 1):
-    COPY_PART_NAME( : NUM_CYCLES) break;
+ COPY_PART_NAME(:NUM_CYCLES) break;
   case (J412_N_INIT_ACTION + 1):
-    COPY_PART_NAME( : INIT_ACTION) break;
+ COPY_PART_NAME(:INIT_ACTION) break;
   default:
     status = TreeILLEGAL_ITEM;
   }
@@ -123,19 +120,13 @@ EXPORT int j412__part_name(struct descriptor *nid_d_ptr __attribute__((unused)),
 }
 
 extern int j412___init();
-#define free_xd_array                                                          \
-  {                                                                            \
-    int i;                                                                     \
-    for (i = 0; i < 2; i++)                                                    \
-      if (work_xd[i].l_length)                                                 \
-        MdsFree1Dx(&work_xd[i], 0);                                            \
-  }
-#define error(nid, code, code1)                                                \
-  { free_xd_array return GenDeviceSignal(nid, code, code1); }
+#define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
+#define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int j412__init(struct descriptor *nid_d_ptr __attribute__((unused)),
-                      struct descriptor *method_d_ptr __attribute__((unused))) {
-  declare_variables(InInitStruct) struct descriptor_xd work_xd[2];
+EXPORT int j412__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
+{
+  declare_variables(InInitStruct)
+  struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);
   initialize_variables(InInitStruct)

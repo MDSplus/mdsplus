@@ -24,25 +24,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   GEN_DEVICE$CVT_FLOAT_CODE
+		Name:   GEN_DEVICE$CVT_FLOAT_CODE
 
-                Type:   C function
+		Type:   C function
 
-                Author:	GABRIELE MANDUCHI
+		Author:	GABRIELE MANDUCHI
 
-                Date:   22-AUG-1989
+		Date:   22-AUG-1989
 
-                Purpose: Convert floating point number to code, given
-                    translation table.
+		Purpose: Convert floating point number to code, given
+		    translation table.
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 EXPORT int GEN_DEVICE$CVT_FLOAT_CODE(code_ptr, value, table, dimension)
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -54,43 +54,40 @@ struct _table {
   float value;
 };
 
-EXPORT int GenDeviceCvtFloatCode(code_ptr, value, table,
-                                 dimension) short *code_ptr;
+EXPORT int GenDeviceCvtFloatCode(code_ptr, value, table, dimension)
+short *code_ptr;
 float value;
 struct _table table[];
 int dimension;
 {
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   External functions or symbols referenced: */
+ External functions or symbols referenced:                                    */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Subroutines referenced: */
+ Subroutines referenced:                                                      */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Macros: */
+ Macros:                                                                      */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Global variables: */
+ Global variables:                                                            */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Local variables: */
+ Local variables:                                                             */
 
   register int current;
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Executable: */
+ Executable:                                                                  */
 
-  for (current = 0;
-       (value != (float)table[current].value) && (current < dimension);
-       current++)
-    ;
+  for (current = 0; (value != (float)table[current].value) && (current < dimension); current++) ;
   if (current == dimension)
     return LibKEYNOTFOU;
   else

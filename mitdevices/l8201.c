@@ -33,22 +33,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static int one = 1;
 static int zero = 0;
 
-#define return_on_error(f, retstatus)                                          \
-  if (!((status = f) & 1))                                                     \
-    return retstatus;
-#define pio(f, d)                                                              \
-  return_on_error(DevCamChk(CamPiow(setup->name, 0, f, d, 16, 0), &one, 0),    \
-                  status)
-#define stop(f)                                                                \
-  return_on_error(                                                             \
-      DevCamChk(CamStopw(setup->name, 0, f, 16384, buffer, 16, 0), &one, 0),   \
-      status)
+#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define pio(f,d) return_on_error(DevCamChk(CamPiow(setup->name,0,f,d, 16, 0),&one,0),status)
+#define stop(f)  return_on_error(DevCamChk(CamStopw(setup->name,0,f,16384,buffer,16,0),&one,0),status)
+
+
 
 static short buffer[16384];
 static DESCRIPTOR_A(data, sizeof(short), DTYPE_W, buffer, sizeof(buffer));
 
-EXPORT int l8201___init(struct descriptor *niddsc_ptr __attribute__((unused)),
-                        InInitStruct *setup) {
+EXPORT int l8201___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
+{
   int status;
   return_on_error(TdiData(setup->download, &data MDS_END_ARG), status);
   pio(9, 0);
@@ -58,8 +53,8 @@ EXPORT int l8201___init(struct descriptor *niddsc_ptr __attribute__((unused)),
   return status;
 }
 
-EXPORT int l8201___store(struct descriptor *niddsc_ptr __attribute__((unused)),
-                         InStoreStruct *setup) {
+EXPORT int l8201___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
+{
   int status;
   int upload_nid = setup->head_nid + L8201_N_UPLOAD;
   pio(9, 0);

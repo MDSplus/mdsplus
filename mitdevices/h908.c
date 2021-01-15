@@ -34,34 +34,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "h908_gen.h"
 #include "devroutines.h"
 
-static int ReadChannel(InStoreStruct *setup, int samps, int chan,
-                       short *data_ptr);
+
+
+
+
+static int ReadChannel(InStoreStruct * setup, int samps, int chan, short *data_ptr);
 
 static int one = 1;
 
-#define pio(f, a, data, bits)                                                  \
-  {                                                                            \
-    if (!((status = DevCamChk(CamPiow(setup->name, a, f, data, bits, 0), &one, \
-                              &one)) &                                         \
-          1))                                                                  \
-      return status;                                                           \
-  }
-#define return_on_error(f)                                                     \
-  if (!((status = f) & 1))                                                     \
-    return status;
-#define min(a, b) ((a) <= (b)) ? (a) : (b)
-#define max(a, b) ((a) >= (b)) ? (a) : (b)
+#define pio(f,a,data,bits) {\
+ if (!((status = DevCamChk(CamPiow(setup->name,a,f,data,bits,0),&one,&one)) & 1)) return status;}
+#define return_on_error(f) if (!((status = f) & 1)) return status;
+#define min(a,b) ((a) <= (b)) ? (a) : (b)
+#define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int h908___init(struct descriptor *niddsc __attribute__((unused)),
-                       InInitStruct *setup) {
+EXPORT int h908___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
+{
   struct _msetup {
-    unsigned pretrig : 1;
-    unsigned clock : 4;
-    unsigned active_chans : 2;
-    unsigned fill : 1;
-    unsigned pts : 16;
-    unsigned fill2 : 8;
-  } msetup = {0, 0, 0, 0, 0, 0};
+    unsigned pretrig:1;
+    unsigned clock:4;
+    unsigned active_chans:2;
+    unsigned fill:1;
+    unsigned pts:16;
+    unsigned fill2:8;
+  } msetup = {
+  0, 0, 0, 0, 0, 0};
   int status;
   int nid = setup->head_nid + H908_N_PTS;
   int onstat = TreeIsOn(nid);
@@ -80,33 +77,35 @@ EXPORT int h908___init(struct descriptor *niddsc __attribute__((unused)),
   return status;
 }
 
-EXPORT int h908___stop(struct descriptor *niddsc __attribute__((unused)),
-                       InStopStruct *setup) {
+EXPORT int h908___stop(struct descriptor *niddsc __attribute__ ((unused)), InStopStruct * setup)
+{
   int status;
-  pio(25, 0, 0, 16) return status;
+  pio(25, 0, 0, 16)
+      return status;
 }
 
-EXPORT int h908___trigger(struct descriptor *niddsc __attribute__((unused)),
-                          InTriggerStruct *setup) {
+EXPORT int h908___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
+{
   int status;
-  pio(25, 2, 0, 16) return status;
+  pio(25, 2, 0, 16)
+      return status;
 }
 
-EXPORT int h908___store(struct descriptor *niddsc __attribute__((unused)),
-                        InStoreStruct *setup) {
+EXPORT int h908___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
+{
   int status;
-  // int mstatus;
+  //int mstatus;
   struct _status {
-    unsigned mode : 3;
-    unsigned state : 2;
-    unsigned mem : 5;
-    unsigned gain : 2;
-    unsigned active_chans : 2;
-    unsigned clock : 4;
-    unsigned fill2 : 6;
+    unsigned mode:3;
+    unsigned state:2;
+    unsigned mem:5;
+    unsigned gain:2;
+    unsigned active_chans:2;
+    unsigned clock:4;
+    unsigned fill2:6;
   } hstat;
-  static float freqs[] = {0.,   2.5E-5, 5E-5, 1E-4, 2E-4, 5E-4, 1E-3, 2E-3,
-                          5E-3, 1E-2,   0.,   0.,   0.,   0.,   0.,   0.};
+  static float freqs[] =
+      { 0., 2.5E-5, 5E-5, 1E-4, 2E-4, 5E-4, 1E-3, 2E-3, 5E-3, 1E-2, 0., 0., 0., 0., 0., 0. };
   static DESCRIPTOR_FLOAT(frequency, 0);
   static DESCRIPTOR_RANGE(int_clock, 0, 0, &frequency);
   static int ext_clock_nid;
@@ -117,7 +116,7 @@ EXPORT int h908___store(struct descriptor *niddsc __attribute__((unused)),
   static EMPTYXD(signal);
   static int trigger_nid;
   static DESCRIPTOR_NID(trigger, &trigger_nid);
-  // static DESCRIPTOR_LONG(pts_d, &pts);
+  //static DESCRIPTOR_LONG(pts_d, &pts);
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR_LONG(start_d, &raw.bounds[0].l);
   static DESCRIPTOR_LONG(end_d, &raw.bounds[0].u);
@@ -128,7 +127,7 @@ EXPORT int h908___store(struct descriptor *niddsc __attribute__((unused)),
   int chan;
   int memsize;
   int chans;
-  static int actchans[] = {32, 16, 8, 4};
+  static int actchans[] = { 32, 16, 8, 4 };
   trigger_nid = setup->head_nid + H908_N_TRIGGER;
   pio(25, 2, 0, 16);
   pio(0, 0, &hstat, 24);
@@ -167,34 +166,30 @@ EXPORT int h908___store(struct descriptor *niddsc __attribute__((unused)),
       int samples_to_read;
       status = DevLong(&startidx_nid, (int *)&raw.bounds[0].l);
       if (status & 1)
-        raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
+	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
-        raw.bounds[0].l = min_idx;
+	raw.bounds[0].l = min_idx;
 
       status = DevLong(&endidx_nid, (int *)&raw.bounds[0].u);
       if (status & 1)
-        raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
+	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
-        raw.bounds[0].u = max_idx;
+	raw.bounds[0].u = max_idx;
 
       raw.m[0] = raw.bounds[0].u - raw.bounds[0].l + 1;
       if (raw.m[0] > 0) {
-        samples_to_read = raw.bounds[0].u - min_idx + 1;
-        status = ReadChannel(setup, samples_to_read, chan, buffer);
-        if (status & 1) {
-          static DESCRIPTOR(sig_exp,
-                            "BUILD_SIGNAL(BUILD_WITH_UNITS(1.25E-3*$VALUE,'"
-                            "volts'),BUILD_WITH_UNITS($,'counts')," //
-                            "BUILD_DIM(BUILD_WINDOW($,$,$),$))");
-          raw.pointer = (char *)(buffer + (raw.bounds[0].l - min_idx));
-          raw.a0 = (char *)(raw.pointer - raw.bounds[0].l);
-          raw.arsize = raw.m[0] * sizeof(short);
-          return_on_error(TdiCompile((struct descriptor *)&sig_exp, &raw,
-                                     &start_d, &end_d, &trigger, clock,
-                                     &signal MDS_END_ARG));
-          return_on_error(
-              TreePutRecord(sig_nid, (struct descriptor *)&signal, 0));
-        }
+	samples_to_read = raw.bounds[0].u - min_idx + 1;
+	status = ReadChannel(setup, samples_to_read, chan, buffer);
+	if (status & 1) {
+	  static DESCRIPTOR(sig_exp, "BUILD_SIGNAL(BUILD_WITH_UNITS(1.25E-3*$VALUE,'volts'),BUILD_WITH_UNITS($,'counts'),"	//
+			    "BUILD_DIM(BUILD_WINDOW($,$,$),$))");
+	  raw.pointer = (char *)(buffer + (raw.bounds[0].l - min_idx));
+	  raw.a0 = (char *)(raw.pointer - raw.bounds[0].l);
+	  raw.arsize = raw.m[0] * sizeof(short);
+	  return_on_error(TdiCompile
+			  ((struct descriptor *)&sig_exp, &raw, &start_d, &end_d, &trigger, clock, &signal MDS_END_ARG));
+	  return_on_error(TreePutRecord(sig_nid, (struct descriptor *)&signal, 0));
+	}
       }
     }
   }
@@ -203,8 +198,8 @@ EXPORT int h908___store(struct descriptor *niddsc __attribute__((unused)),
   return status;
 }
 
-static int ReadChannel(InStoreStruct *setup, int samps, int chan,
-                       short *data_ptr) {
+static int ReadChannel(InStoreStruct * setup, int samps, int chan, short *data_ptr)
+{
   int chan_select = (chan - 1) << 18;
   int status;
   short *dptr;
@@ -213,10 +208,9 @@ static int ReadChannel(InStoreStruct *setup, int samps, int chan,
   pio(16, 1, &chan_select, 24);
   if (!(CamXandQ(0) & 1))
     return 0;
-  for (dptr = data_ptr, remainder = samps, s = min(remainder, 32767); s;
-       dptr += s, remainder -= s, s = min(remainder, 32767)) {
-    return_on_error(
-        DevCamChk(CamFStopw(setup->name, 0, 2, s, dptr, 16, 0), &one, 0));
+  for (dptr = data_ptr, remainder = samps, s = min(remainder, 32767);
+       s; dptr += s, remainder -= s, s = min(remainder, 32767)) {
+    return_on_error(DevCamChk(CamFStopw(setup->name, 0, 2, s, dptr, 16, 0), &one, 0));
     chan_select += s;
     pio(16, 1, &chan_select, 24);
   }

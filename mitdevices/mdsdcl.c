@@ -36,17 +36,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <xmdsshr.h>
 #include "mdsdcl_gen.h"
 
+
 extern int mdsdcl_do_command();
 static int Apply();
 static void Reset();
 
-#define return_on_error(f, retstatus)                                          \
-  if (!((status = f) & 1))                                                     \
-    return retstatus;
+#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-EXPORT int mdsdcl___execute(struct descriptor *niddsc_ptr
-                            __attribute__((unused)),
-                            InExecuteStruct *setup) {
+EXPORT int mdsdcl___execute(struct descriptor *niddsc_ptr __attribute__ ((unused)), InExecuteStruct * setup)
+{
   int status = 1;
   char *line;
   for (line = strtok(setup->verbs, "\n"); line; line = strtok(0, "\n")) {
@@ -62,31 +60,31 @@ EXPORT int mdsdcl___execute(struct descriptor *niddsc_ptr
   return status;
 }
 
-EXPORT int mdsdcl__dw_setup(struct descriptor *niddsc __attribute__((unused)),
-                            struct descriptor *methoddsc
-                            __attribute__((unused)),
-                            Widget parent) {
-  static String uids[] = {"MDSDCL.uid"};
+EXPORT int mdsdcl__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
+{
+  static String uids[] = { "MDSDCL.uid" };
   static int nid;
-  static MrmRegisterArg uilnames[] = {{"selections_nid", (XtPointer)0},
-                                      {"Apply", (XtPointer)Apply},
-                                      {"Reset", (XtPointer)Reset}};
-  static NCI_ITM nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0},
-                          {0, NciEND_OF_LIST, 0, 0}};
-  // String verbs;
+  static MrmRegisterArg uilnames[] = { {"selections_nid", (XtPointer) 0},
+  {"Apply", (XtPointer) Apply},
+  {"Reset", (XtPointer) Reset}
+  };
+  static NCI_ITM nci[] =
+      { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
+  //String verbs;
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Executable: */
+ Executable:                                                                  */
 
   TreeGetNci(*(int *)niddsc->pointer, nci);
   uilnames[0].value = (char *)0 + (nid + MDSDCL_N_VERBS);
-  XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids),
-                  "MDSDCL", uilnames, XtNumber(uilnames), 0);
+  XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "MDSDCL", uilnames,
+		  XtNumber(uilnames), 0);
   return 1;
 }
 
-static int Apply(Widget w) {
+static int Apply(Widget w)
+{
   Widget list_w = XtNameToWidget(XtParent(w), "*interpreters");
   XtPointer user_data;
   int nid;
@@ -97,21 +95,19 @@ static int Apply(Widget w) {
   int i;
   int status = 1;
   XtVaGetValues(list_w, XmNuserData, &user_data, NULL);
-  nid = (intptr_t)user_data;
+  nid = (intptr_t) user_data;
   old_list = XmdsGetNidText(nid);
-  XtVaGetValues(list_w, XmNselectedItems, &selections, XmNselectedItemCount,
-                &num, NULL);
+  XtVaGetValues(list_w, XmNselectedItems, &selections, XmNselectedItemCount, &num, NULL);
   for (i = 0; i < num; i++) {
     String item;
-    item = XmStringUnparse(selections[i], NULL, 0, XmCHARSET_TEXT, NULL, 0,
-                           XmOUTPUT_ALL);
+    item = XmStringUnparse(selections[i], NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
     if (item) {
       if (list) {
-        list = XtRealloc(list, strlen(list) + strlen(item) + 2);
-        strcat(list, item);
+	list = XtRealloc(list, strlen(list) + strlen(item) + 2);
+	strcat(list, item);
       } else {
-        list = XtMalloc(strlen(item) + 2);
-        strcpy(list, item);
+	list = XtMalloc(strlen(item) + 2);
+	strcpy(list, item);
       }
       strcat(list, "\n");
       XtFree(item);
@@ -120,17 +116,17 @@ static int Apply(Widget w) {
   if ((list && (old_list ? strcmp(old_list, list) : 1)) ||
       (!list && (old_list ? strlen(old_list) : 0))) {
     if (list) {
-      static struct descriptor list_dsc = {0, DTYPE_T, CLASS_S, 0};
+      static struct descriptor list_dsc = { 0, DTYPE_T, CLASS_S, 0 };
       list_dsc.length = strlen(list);
       list_dsc.pointer = list;
       status = TreePutRecord(nid, &list_dsc, 0) & 1;
       if (!status)
-        XmdsComplain(XtParent(w), "Error writing interpreter selections");
+	XmdsComplain(XtParent(w), "Error writing interpreter selections");
     } else {
-      struct descriptor list_dsc = {0, DTYPE_T, CLASS_S, 0};
+      struct descriptor list_dsc = { 0, DTYPE_T, CLASS_S, 0 };
       status = TreePutRecord(nid, &list_dsc, 0) & 1;
       if (!status)
-        XmdsComplain(XtParent(w), "Error writing interpreter selections");
+	XmdsComplain(XtParent(w), "Error writing interpreter selections");
     }
   }
   XtFree(list);
@@ -140,26 +136,26 @@ static int Apply(Widget w) {
   return status & 1;
 }
 
-static void Reset(Widget w) {
+static void Reset(Widget w)
+{
   int status;
   Widget list_w = XtNameToWidget(XtParent(w), "*interpreters");
-  static struct descriptor_d cli = {0, DTYPE_T, CLASS_D, 0};
+  static struct descriptor_d cli = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR(initial, "_I=0");
   static DESCRIPTOR(clis, "(clis()[_I++]//\"\\0\")");
   XtPointer user_data;
   int nid;
   String selections;
   String selection;
-  // int ctx = 0;
+  //int ctx = 0;
   int first = 1;
   XtVaGetValues(list_w, XmNuserData, &user_data, NULL);
-  nid = (intptr_t)user_data;
+  nid = (intptr_t) user_data;
   XmListDeselectAllItems(list_w);
   XmListDeleteAllItems(list_w);
   TdiExecute((struct descriptor *)&initial, &cli MDS_END_ARG);
-  while (
-      (status = TdiExecute((struct descriptor *)&clis, &cli MDS_END_ARG) & 1 &&
-                cli.length > 0 && strlen(cli.pointer) > 0)) {
+  while ((status = TdiExecute((struct descriptor *)&clis, &cli MDS_END_ARG) & 1 && cli.length > 0
+	  && strlen(cli.pointer) > 0)) {
     XmString item;
     item = XmStringCreateSimple(cli.pointer);
     if (!XmListItemExists(list_w, item))
@@ -167,8 +163,7 @@ static void Reset(Widget w) {
     XmStringFree(item);
   }
   selections = XmdsGetNidText(nid);
-  for (selection = strtok(selections, "\n"); selection;
-       selection = strtok(0, "\n")) {
+  for (selection = strtok(selections, "\n"); selection; selection = strtok(0, "\n")) {
     XmString item = XmStringCreateSimple(selection);
     XmListSelectItem(list_w, item, 0);
     if (first) {

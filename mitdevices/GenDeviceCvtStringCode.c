@@ -24,27 +24,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   GEN_DEVICE$CVT_STRING_CODE
+		Name:   GEN_DEVICE$CVT_STRING_CODE
 
-                Type:   C function
+		Type:   C function
 
-                Author:	GABRIELE MANDUCHI
-                        Istituto Gas Ionizzati del CNR - Padova (Italy)
+		Author:	GABRIELE MANDUCHI
+			Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-                Date:   22-AUG-1989
+		Date:   22-AUG-1989
 
-                Purpose:  Convetr a string into module interenal code,
-                    given translation table.
+		Purpose:  Convetr a string into module interenal code,
+		    given translation table.
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 EXPORT int GEN_DEVICE$CVT_STRING_CODE( )
 
 ------------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
@@ -57,41 +57,38 @@ struct _table {
   short code;
   char *string;
 };
-EXPORT int GenDeviceCvtStringCode(short *code_ptr, char *string_ptr,
-                                  struct _table *table) {
+EXPORT int GenDeviceCvtStringCode(short *code_ptr, char *string_ptr, struct _table *table)
+{
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   External functions or symbols referenced: */
+ External functions or symbols referenced:                                    */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Subroutines referenced: */
+ Subroutines referenced:                                                      */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Macros: */
+ Macros:                                                                      */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Global variables: */
+ Global variables:                                                            */
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Local variables: */
+ Local variables:                                                             */
 
   register int current;
 
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-   Executable: */
+ Executable:                                                                  */
 
   if (!string_ptr)
     return (DEV$_BADPARAM);
-  for (current = 0;
-       table[current].string && strcmp(table[current].string, string_ptr);
-       current++)
-    ;
+  for (current = 0; table[current].string && strcmp(table[current].string, string_ptr); current++) ;
   if (table[current].string) {
     *code_ptr = table[current].code;
     return TreeSUCCESS;

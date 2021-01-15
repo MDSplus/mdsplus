@@ -31,20 +31,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include "mit__clock_gen.h"
 #include "decoder.h"
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
 
 typedef struct descriptor *Dptr;
 
 extern int mit__clock___get_setup(Dptr, InGet_setupStruct *);
 extern int GenDeviceFree();
 
-EXPORT int mit__clock__get_setup(struct descriptor *niddsc_ptr
-                                 __attribute__((unused)),
-                                 struct descriptor *method
-                                 __attribute__((unused)),
-                                 DecoderSetup *setup, EventMask *event_mask,
-                                 Dptr *output) {
+EXPORT int mit__clock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup,
+			  EventMask * event_mask, Dptr * output)
+{
   int status;
   InGet_setupStruct s;
   status = mit__clock___get_setup(niddsc_ptr, &s);
@@ -62,9 +59,7 @@ EXPORT int mit__clock__get_setup(struct descriptor *niddsc_ptr
     invert = (invert == TreeOFF) || (invert == TreeBOTH_OFF);
     max_period = 1 / s.frequency;
     for (clock_source = EXT_1MHZ, period = 1E-6;
-         period * 65534 < max_period && clock_source <= EXT_100HZ;
-         clock_source++, period *= 10)
-      ;
+	 period * 65534 < max_period && clock_source <= EXT_100HZ; clock_source++, period *= 10) ;
     setup->output_control = TOGGLE;
     setup->start_high = invert;
     setup->count_up = 0;
