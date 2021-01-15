@@ -55,16 +55,16 @@ int J1819_TRIGGER(struct descriptor *niddsc);
         Description:
 
 ------------------------------------------------------------------------------*/
-#include "devroutines.h"
-#include "j1819_gen.h"
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strroutines.h>
+#include <mds_stdarg.h>
 #include <treeshr.h>
+#include <strroutines.h>
+#include <string.h>
+#include <stdlib.h>
+#include "j1819_gen.h"
+#include "devroutines.h"
 
 // extern unsigned short OpcValue;
 

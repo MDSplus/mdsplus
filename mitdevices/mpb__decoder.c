@@ -22,26 +22,26 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "devroutines.h"
-#include "mpb__decoder_gen.h"
-#include <Mrm/MrmPublic.h>
-#include <Xm/RowColumn.h>
-#include <Xm/Text.h>
-#include <Xm/ToggleB.h>
-#include <Xm/Xm.h>
-#include <Xmds/XmdsExprField.h>
-#include <Xmds/XmdsNidOptionMenu.h>
-#include <libroutines.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
 #include <mitdevices_msg.h>
+#include <mdsdescrip.h>
+#include <treeshr.h>
 #include <ncidef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <treeshr.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
+#include <Xm/RowColumn.h>
+#include <Xm/ToggleB.h>
+#include <Xmds/XmdsExprField.h>
+#include <Xmds/XmdsNidOptionMenu.h>
+#include <Xm/Text.h>
+#include <mdsshr.h>
 #include <xmdsshr.h>
+#include <libroutines.h>
+#include <mds_stdarg.h>
+#include "mpb__decoder_gen.h"
+#include "devroutines.h"
+#include <mds_gendevice.h>
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif

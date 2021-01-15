@@ -22,13 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "devroutines.h"
-#include "mit_encoder_gen.h"
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 #include <treeshr.h>
+#include "mit_encoder_gen.h"
+#include "devroutines.h"
 
 extern int mit_encoder___set_event();
 extern int GenDeviceFree();

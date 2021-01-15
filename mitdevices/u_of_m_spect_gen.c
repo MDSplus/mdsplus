@@ -22,9 +22,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "u_of_m_spect_gen.h"
-#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_gendevice.h>
+#include "u_of_m_spect_gen.h"
 EXPORT int u_of_m_spect__add(struct descriptor *name_d_ptr,
                              struct descriptor *dummy_d_ptr
                              __attribute__((unused)),

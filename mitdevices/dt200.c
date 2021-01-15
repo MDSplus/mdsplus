@@ -23,12 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef _WIN32
+#include <mdsdescrip.h>
+#include <treeshr.h>
+#include <ncidef.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <Xm/XmP.h>
-#include <mdsdescrip.h>
-#include <ncidef.h>
-#include <treeshr.h>
 #include <xmdsshr.h>
 
 static void ManageChild(Widget w, char *name);

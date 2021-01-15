@@ -50,14 +50,14 @@ scaler
         Description:
 
 ------------------------------------------------------------------------------*/
-#include "devroutines.h"
-#include "h911_gen.h"
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
-#include <stdlib.h>
+#include <mds_stdarg.h>
 #include <treeshr.h>
+#include <stdlib.h>
+#include "h911_gen.h"
+#include "devroutines.h"
 static int one = 1;
 #define pio(f, a)                                                              \
   {                                                                            \

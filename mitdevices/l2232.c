@@ -53,15 +53,15 @@ __attribute__ ((unused)), InStoreStruct *setup)
         Description:
 
 ------------------------------------------------------------------------------*/
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 #include <treeshr.h>
+#include <mdsshr.h>
 
-#include "devroutines.h"
 #include "l2232_gen.h"
+#include "devroutines.h"
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */

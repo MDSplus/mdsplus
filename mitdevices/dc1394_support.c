@@ -22,14 +22,14 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <libdc1394/dc1394_control.h>
-#include <libraw1394/raw1394.h>
-#include <mdsplus/mdsconfig.h>
-#include <pthread.h>
-#include <signal.h>
 #include <stdio.h>
+#include <libraw1394/raw1394.h>
+#include <libdc1394/dc1394_control.h>
 #include <stdlib.h>
 #include <sys/timeb.h>
+#include <signal.h>
+#include <pthread.h>
+#include <mdsplus/mdsconfig.h>
 
 #define MAX_CAMERAS 8
 #define FLAG_VALUE 0xDEADBEEF

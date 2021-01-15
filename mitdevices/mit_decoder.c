@@ -22,18 +22,18 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "decoder.h"
-#include "devroutines.h"
-#include "mit_decoder_gen.h"
-#include <libroutines.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <mitdevices_msg.h>
 #include <stdio.h>
 #include <string.h>
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include <mdsshr.h>
 #include <treeshr.h>
+#include <libroutines.h>
+#include "mit_decoder_gen.h"
+#include "decoder.h"
+#include "devroutines.h"
 
 static int GetEvent(char *name, EventMask *mask);
 // static int GetOcta(int event_nid, EventMask * events);

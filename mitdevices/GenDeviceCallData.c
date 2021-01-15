@@ -69,11 +69,11 @@ Calls TDI$DATA for INCAA CADF.
 
 ------------------------------------------------------------------------------*/
 
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <mds_stdarg.h>
 
 EXPORT int GenDeviceCallData(int mode, int cur_nid,
                              struct descriptor_xd *setting_d_ptr) {

@@ -22,16 +22,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "acq32ioctl.h"
-#include <fcntl.h>
-#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <string.h>
+#include "acq32ioctl.h"
+#include <mdsplus/mdsconfig.h>
 #ifndef MAX
 #define MAX(a, b) ((a) > (b)) ? (a) : (b)
 #endif

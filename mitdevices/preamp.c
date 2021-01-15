@@ -55,19 +55,19 @@ EXPORT int PREAMP_ADD(struct descriptor *name,
   Support for 16 channel MIT designed preamplifier.
 
 ------------------------------------------------------------------------------*/
-#include "devroutines.h"
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include <treeshr.h>
+#include <ncidef.h>
 #include "preamp_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
+#include <xmdsshr.h>
 #include <Xmds/XmdsExpr.h>
 #include <math.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mitdevices_msg.h>
-#include <ncidef.h>
-#include <treeshr.h>
-#include <xmdsshr.h>
+#include "devroutines.h"
 
 #define return_on_error(f, retstatus)                                          \
   if (!((status = f) & 1))                                                     \

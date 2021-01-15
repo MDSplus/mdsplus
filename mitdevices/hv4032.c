@@ -120,14 +120,14 @@ Assumptions:
 
 ------------------------------------------------------------------------------*/
 
-#include "devroutines.h"
-#include "hv4032_gen.h"
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include "hv4032_gen.h"
+#include "devroutines.h"
 
 static void GetPodSettings(int nid, int *settings);
 

@@ -22,11 +22,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "devroutines.h"
-#include "l6810a_gen.h"
 #include <mds_gendevice.h>
-#include <mds_stdarg.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include "l6810a_gen.h"
+#include "devroutines.h"
 
 #define min(a, b) ((a) < (b)) ? (a) : (b)
 #define max(a, b) ((a) < (b)) ? (b) : (a)

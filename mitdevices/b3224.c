@@ -22,10 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include "b3224_gen.h"
 #include "devroutines.h"
-#include <mds_gendevice.h>
-#include <mdsdescrip.h>
 
 static int one = 1;
 #define pio(f, a, d)                                                           \

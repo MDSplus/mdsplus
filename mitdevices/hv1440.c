@@ -127,16 +127,16 @@ Assumptions:
   Ported from Jeff Casey's FORTRAN (JAS)
 ------------------------------------------------------------------------------*/
 
-#include "devroutines.h"
-#include "hv1440_gen.h"
-#include <libroutines.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <mitdevices_msg.h>
 #include <stdio.h>
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include <libroutines.h>
+#include "hv1440_gen.h"
+#include "devroutines.h"
 
 static int GetPodSettings(int nid, int *settings);
 static int one = 1;

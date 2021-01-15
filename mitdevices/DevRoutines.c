@@ -22,15 +22,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <camshr.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_stdarg.h>
 #include <mitdevices_msg.h>
+#include <treeshr.h>
 #include <ncidef.h>
+#include <time.h>
 #include <string.h>
 #include <tdishr.h>
-#include <time.h>
-#include <treeshr.h>
+#include <camshr.h>
 
 EXPORT int DevLong(int *nid, int *ans) {
   DESCRIPTOR_NID(nid_d, 0);

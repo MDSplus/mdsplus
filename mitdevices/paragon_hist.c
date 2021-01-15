@@ -46,22 +46,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------------*/
 
-#include "devroutines.h"
-#include "paragon_hist_gen.h"
-#include <libroutines.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsplus/mdsconfig.h>
-#include <mdsshr.h>
-#include <mdstypes.h>
-#include <mitdevices_msg.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#include <mdsplus/mdsconfig.h>
+#include <mdstypes.h>
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 #include <strroutines.h>
-#include <time.h>
+#include <libroutines.h>
+#include <mdsshr.h>
 #include <treeshr.h>
+#include <time.h>
+#include "paragon_hist_gen.h"
+#include "devroutines.h"
 
 EXPORT int PARAGON_FTP_COPY(char *report_in, struct descriptor *report_out,
                             int *isftp);

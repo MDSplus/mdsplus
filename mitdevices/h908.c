@@ -22,17 +22,17 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 
-#include "devroutines.h"
-#include "h908_gen.h"
-#include <mdsshr.h>
-#include <stdlib.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include <stdlib.h>
+#include "h908_gen.h"
+#include "devroutines.h"
 
 static int ReadChannel(InStoreStruct *setup, int samps, int chan,
                        short *data_ptr);

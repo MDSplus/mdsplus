@@ -22,16 +22,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "devroutines.h"
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 #include "joerger_dac16_gen.h"
 #include <libroutines.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <mitdevices_msg.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include "devroutines.h"
 static int one = 1;
 #define return_on_error(f)                                                     \
   if (!((status = f) & 1))                                                     \

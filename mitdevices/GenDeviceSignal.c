@@ -40,8 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    under contract from Istituto Gas Ionizzati del CNR - Padova (Italy)
 
 --------------------------------------------------------------------------- */
-#include <stdio.h>
 #include <treeshr.h>
+#include <stdio.h>
 
 extern int GenDeviceCallData();
 

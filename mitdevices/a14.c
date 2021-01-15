@@ -22,15 +22,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "a14_gen.h"
-#include <libroutines.h>
-#include <mds_gendevice.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <mds_gendevice.h>
+#include "a14_gen.h"
 #include <strroutines.h>
+#include <libroutines.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #define pio16(fv, av, d)                                                       \
   {                                                                            \

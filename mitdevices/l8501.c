@@ -22,19 +22,19 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "devroutines.h"
+#include <mdsplus/mdsplus.h>
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include <treeshr.h>
 #include "l8501_gen.h"
+#include <ncidef.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <Xmds/XmdsNidOptionMenu.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsplus/mdsplus.h>
-#include <mitdevices_msg.h>
-#include <ncidef.h>
-#include <treeshr.h>
 #include <xmdsshr.h>
+#include "devroutines.h"
 
 #define GET_FREQ_IDX(index, nid_idx)                                           \
   {                                                                            \

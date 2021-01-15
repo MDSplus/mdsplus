@@ -23,22 +23,22 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*  CMS REPLACEMENT HISTORY, Element L8590_MEM.C */
-#include "devroutines.h"
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include <treeshr.h>
+#include <stdlib.h>
+#include <ncidef.h>
+#include <strroutines.h>
+#include <libroutines.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
+#include <Xm/List.h>
+#include <xmdsshr.h>
 #include "l8590_mem_gen.h"
 #include "l8590_sclr_gen.h"
-#include <Mrm/MrmPublic.h>
-#include <Xm/List.h>
-#include <Xm/Xm.h>
-#include <libroutines.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mitdevices_msg.h>
-#include <ncidef.h>
-#include <stdlib.h>
-#include <strroutines.h>
-#include <treeshr.h>
-#include <xmdsshr.h>
+#include "devroutines.h"
 
 // extern unsigned short OpcValue;
 

@@ -37,10 +37,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 generatted by GEN_DEVICE
 
 ------------------------------------------------------------------------------*/
-#include "gen_device.h"
 #include <mdsdescrip.h>
-#include <mdsshr.h>
 #include <stdlib.h>
+#include <mdsshr.h>
+#include "gen_device.h"
 
 EXPORT int GenDeviceFree(CommonInStruct *in_struct) {
   int i, status = 1;

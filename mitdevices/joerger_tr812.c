@@ -22,18 +22,18 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 
-#include "devroutines.h"
-#include "joerger_tr812_gen.h"
-#include <libroutines.h>
-#include <mdsshr.h>
-#include <string.h>
-#include <strroutines.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include <strroutines.h>
+#include <libroutines.h>
+#include <string.h>
+#include "joerger_tr812_gen.h"
+#include "devroutines.h"
 
 // extern unsigned short OpcAdd;
 // extern unsigned short OpcMultiply;

@@ -22,23 +22,23 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "devroutines.h"
-#include "l8210_gen.h"
-#include <Mrm/MrmPublic.h>
-#include <Xm/Scale.h>
-#include <Xm/Xm.h>
-#include <Xmds/XmdsNidOptionMenu.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include <treeshr.h>
+#include <mdsshr.h>
 #include <ncidef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <treeshr.h>
+#include "l8210_gen.h"
+#include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
+#include <Xm/Scale.h>
 #include <xmdsshr.h>
+#include <Xmds/XmdsNidOptionMenu.h>
+#include "devroutines.h"
 
 extern int DevWait(float);
 static int one = 1;

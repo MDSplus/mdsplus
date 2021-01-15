@@ -22,17 +22,17 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "devroutines.h"
-#include "j221_gen.h"
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include <treeshr.h>
+#include <mdsshr.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <treeshr.h>
+#include "j221_gen.h"
+#include "devroutines.h"
 
 static int one = 1;
 static short zero = 0;

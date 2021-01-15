@@ -29,8 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Josh Stillerman 2/21/02
  */
 
-#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
+#include <mdsplus/mdsconfig.h>
 extern void csakm_();
 extern float csval_();
 

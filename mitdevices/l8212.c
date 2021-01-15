@@ -22,23 +22,23 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "l8212_04_gen.h"
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsplus/mdsplus.h>
-#include <mitdevices_msg.h>
-#include <ncidef.h>
 #include <stdio.h>
+#include <mdsplus/mdsplus.h>
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
+#include "l8212_04_gen.h"
+#include <ncidef.h>
 
-#include "devroutines.h"
-#include "libroutines.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/Scale.h>
 #include <Xmds/XmdsCallbacks.h>
 #include <Xmds/XmdsDigChans.h>
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <xmdsshr.h>
+#include "libroutines.h"
+#include "devroutines.h"
 
 /*
    All the init routines use one common function which takes the number
@@ -305,10 +305,10 @@ static int L8212__TRIGGER(struct descriptor *niddsc_ptr __attribute__((unused)),
   return 1;
 }
 
-#include <libroutines.h>
-#include <mdsshr.h>
-#include <strroutines.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include <libroutines.h>
+#include <strroutines.h>
 
 // extern unsigned short OpcAdd;
 // extern unsigned short OpcMultiply;

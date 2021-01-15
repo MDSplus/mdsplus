@@ -102,17 +102,17 @@ The data is dumped into the 4302 memory modules without using the hardware
 
 ------------------------------------------------------------------------------*/
 
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mitdevices_msg.h>
 #include <stdlib.h>
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 #include <strroutines.h>
 
-#include "devroutines.h"
-#include "fera_gen.h"
-#include <mdsshr.h>
 #include <treeshr.h>
+#include <mdsshr.h>
+#include "fera_gen.h"
+#include "devroutines.h"
 
 /*------------------------------------------------------------------------------
 

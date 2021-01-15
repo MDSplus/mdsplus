@@ -29,17 +29,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    description: Based on libdc1394 version 2.  Works with RH5 (2.6)
 ********************************************************************/
 
-#include <dc1394/dc1394.h>
 #include <errno.h>
-#include <inttypes.h>
-#include <mdsplus/mdsconfig.h>
-#include <pthread.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
-#include <sys/times.h>
+#include <dc1394/dc1394.h>
+#include <stdlib.h>
 #include <time.h>
+#include <inttypes.h>
+#include <sys/times.h>
+#include <pthread.h>
+#include <mdsplus/mdsconfig.h>
 
 static unsigned char *buf = NULL;
 static double *frame_times = NULL;

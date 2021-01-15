@@ -22,27 +22,27 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mdsdescrip.h>
+#include <mds_gendevice.h>
+#include <mds_stdarg.h>
+#include <mitdevices_msg.h>
+#include <ncidef.h>
+#include <Xm/XmP.h>
+#include <stdio.h>
+#include <Xmds/XmdsWavedraw.h>
 #include "b5910a_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/RowColumn.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#include <Xm/XmP.h>
+#include <libroutines.h>
+#include <treeshr.h>
+#include <mdsshr.h>
+#include <xmdsshr.h>
 #include <Xmds/XmdsExpr.h>
 #include <Xmds/XmdsNidOptionMenu.h>
-#include <Xmds/XmdsWavedraw.h>
 #include <Xmds/XmdsXdBox.h>
 #include <Xmds/XmdsXdBoxDialogButton.h>
-#include <libroutines.h>
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <mitdevices_msg.h>
-#include <ncidef.h>
-#include <stdio.h>
-#include <treeshr.h>
-#include <xmdsshr.h>
 #define DEVRANGE_MISMATCH 0x277c807a
 #define DEVBAD_ACTIVE_CHAN 0x277c8152
 static float fval = 0;

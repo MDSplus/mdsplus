@@ -22,25 +22,25 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mds_gendevice.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mds_gendevice.h>
 #include <mitdevices_msg.h>
+#include <mds_stdarg.h>
 
-#include "devroutines.h"
-#include "t4012_gen.h"
-#include <Mrm/MrmPublic.h>
-#include <Xm/List.h>
-#include <Xm/Xm.h>
-#include <libroutines.h>
+#include <treeshr.h>
 #include <mdsshr.h>
 #include <ncidef.h>
-#include <stdio.h>
-#include <strroutines.h>
-#include <time.h>
-#include <treeshr.h>
 #include <usagedef.h>
+#include <libroutines.h>
+#include <strroutines.h>
+#include "t4012_gen.h"
+#include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
 #include <xmdsshr.h>
+#include <Xm/List.h>
+#include <stdio.h>
+#include <time.h>
+#include "devroutines.h"
 
 static void Load(Widget w);
 static unsigned int Input(InStoreStruct *setup, int code);
