@@ -568,7 +568,11 @@ class BASLERACA(Device):
 
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
-      if self.restoreWorker() :
+      self.debugPrint("Stop acquisition Thread...")
+      self.restoreWorker()
+      if ( self.worker != None and self.worker.isAlive() ):
+      #if self.restoreWorker() :
+          self.debugPrint("Stop Worker...")
           self.worker.stop()
 
 ##########software trigger (start saving in mdsplus)############################################
