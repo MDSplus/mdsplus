@@ -26,9 +26,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
+#include <stdio.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
