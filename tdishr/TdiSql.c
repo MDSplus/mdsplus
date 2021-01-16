@@ -132,8 +132,8 @@ static int (*SYB_dbcoltype)() = 0;
 typedef unsigned char BYTE;
 typedef BYTE *LPBYTE;
 typedef const LPBYTE LPCBYTE;
-#include <sqlfront.h>
 #include <windows.h>
+#include <sqlfront.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include <sqldb.h>

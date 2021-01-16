@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #ifndef WIN32
+#include <windows.h>
 #include <sybdb.h>
 #include <sybfront.h>
 #ifndef ERREXIT
@@ -40,8 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef unsigned char BYTE;
 typedef BYTE *LPBYTE;
 typedef const LPBYTE LPCBYTE;
-#include <sqlfront.h>
 #include <windows.h>
+#include <sqlfront.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include <sqldb.h>

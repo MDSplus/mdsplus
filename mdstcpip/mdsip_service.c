@@ -24,13 +24,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <fcntl.h>
 #include <io.h>
-#include <mdsplus/mdsconfig.h>
 #include <process.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "mdsip_connections.h"
 #include <socket_port.h>
+#include <mdsplus/mdsconfig.h>
+#include "mdsip_connections.h"
 
 static int shut = 0;
 static HANDLE shutdownEventHandle;
