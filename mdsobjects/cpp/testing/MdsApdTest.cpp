@@ -22,23 +22,26 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsobjects.h>
 #include <stdlib.h>
+#include <mdsobjects.h>
 
-#include "mdsplus/AutoPointer.hpp"
 #include "testing.h"
 #include "testutils/unique_ptr.h"
+#include "mdsplus/AutoPointer.hpp"
 
 using namespace MDSplus;
 using namespace testing;
 
-int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
-  BEGIN_TESTING(Apd);
-  SKIP_TEST("Apd test is not implemented yet");
 
-  // NOTE: Apd does not increment reference counting !! //
-  // TO BE CONTINUED ... //
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+{
+    BEGIN_TESTING(Apd);
+    SKIP_TEST("Apd test is not implemented yet");
 
-  END_TESTING;
+    // NOTE: Apd does not increment reference counting !! //
+    // TO BE CONTINUED ... //
+
+    END_TESTING;
 }
+
+

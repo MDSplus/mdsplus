@@ -23,17 +23,20 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cstring>
 #include <string>
+#include <cstring>
+
 
 #include <mdsobjects.h>
 
-#include "mdsplus/AutoPointer.hpp"
 #include "testing.h"
 #include "testutils/unique_ptr.h"
+#include "mdsplus/AutoPointer.hpp"
 
 using namespace MDSplus;
 using namespace testing;
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  COMPOUND DATA   ////////////////////////////////////////////////////////////
@@ -55,37 +58,35 @@ using namespace testing;
 // class EXPORT Compound: public Data
 // public:
 //    Compound();
-//    Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data
-//    *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+//    Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 //    virtual void propagateDeletion();
 //    void * convertToDsc();
 //    virtual ~Compound();
 
-int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
-  BEGIN_TESTING(Compound);
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+{
+    BEGIN_TESTING(Compound);
 
-  Compound *com1 = new Compound();
+    Compound * com1 = new Compound();
 
-  Data *descs[4];
-  descs[0] = new Int32(123);
-  descs[1] = new String("descriptor 1");
-  descs[2] = new Float32(1.234);
-  const char *array = "test";
-  descs[3] = new Int8Array(array, 4);
+    Data * descs[4];
+    descs[0] = new Int32(123);
+    descs[1] = new String("descriptor 1");
+    descs[2] = new Float32(1.234);
+    const char * array = "test";
+    descs[3] = new Int8Array(array,4);
 
-  short dummy_opcode = 0;
+    short dummy_opcode = 0;
 
-  // propagate deletion should correctly perform deletion of descriptors.
-  Compound *com2 =
-      new Compound(0, sizeof(short), (char *)&dummy_opcode, 4, (char **)descs);
+    // propagate deletion should correctly perform deletion of descriptors.
+    Compound  * com2 = new Compound(0,sizeof(short),(char *)&dummy_opcode,4,(char **)descs);
 
-  deleteData(com1);
+    deleteData(com1);
 
-  // test for copy constructor ... commented as it should not compile //
-  //    com1 = new Compound(*com2);
+    // test for copy constructor ... commented as it should not compile //
+    //    com1 = new Compound(*com2);
 
-  deleteData(com2);
+    deleteData(com2);
 
-  END_TESTING;
+    END_TESTING;
 }
