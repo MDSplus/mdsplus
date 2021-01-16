@@ -69,6 +69,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include <dlfcn.h>
+#include< <stddef.h>
 #include <scsi/sg.h>
 
 #include "common.h"

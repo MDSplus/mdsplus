@@ -57,6 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************/
 #include <errno.h>
 #include <fcntl.h>
+#include <stddef.h>
 #include <scsi/scsi.h>
 #include <scsi/sg.h>
 #include <stdio.h>
