@@ -116,9 +116,12 @@ trigger.opts
 # bootstrap output files
 LabView/Makefile.in
 configure
+ChangeLog
+MANIFEST.MF
 docs/Makefile.in
 dwscope/Makefile.in
 include/camshr_messages.h
+include/mdsplus/mdsconfig.h
 include/mdsdcl_messages.h
 include/mdsplus/mdsconfig.h.in
 include/mdsshr_messages.h
@@ -151,6 +154,7 @@ mdsdcl/dcllex.h
 mdsdcl/dclyacc.h
 mdsdcl/mdsdclDeltatimeToSeconds.c
 mdsdcl/ocldToXml.c
+mdsdcl/mdsdclVersionInfo.c
 mdslib/docs/Makefile.in
 mdslib/testing/Makefile.in
 mdsobjects/cpp/docs/Makefile.in
@@ -159,6 +163,7 @@ mdsobjects/cpp/testing/testutils/Makefile.in
 mdsshr/MdsGetStdMsg.c
 mdsshr/docs/Makefile.in
 mdsshr/testing/Makefile.in
+mdsshr/version.h
 mdstcpip/docs/Makefile.in
 mdstcpip/docs/img/Makefile.in
 mdstcpip/zlib/Makefile.in
@@ -182,3 +187,15 @@ testing/selftest/Makefile.in
 treeshr/testing/Makefile.in
 wfevent/Makefile.in
 
+# Generated Java binaries
+java/*/classes/
+java/jdispatcher/jDispatchMonitor
+java/jdispatcher/jDispatcherIp
+java/jdispatcher/jServer
+java/jscope/jScope
+java/jscope/jScope.properties
+java/jtraverser/CompileTree
+java/jtraverser/DecompileTree
+java/jtraverser/jTraverser
+java/jtraverser2/jTraverser2
+java/jtraverser2/setupDevice
