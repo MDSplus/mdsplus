@@ -1,3 +1,6 @@
+#include <sys/types.h>
+#include <unistd.h>
+
 static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
                        int nowait);
 static int io_disconnect(Connection *c);
