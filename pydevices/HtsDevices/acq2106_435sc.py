@@ -32,10 +32,12 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     """
     D-Tacq ACQ2106 Signal Conditioning support.
     """
-
+    
     sc_parts = [
-        {'path':':DEF_GAIN1',  'type':'numeric', 'value': 0, 'options':('no_write_shot',)},
-        {'path':':DEF_GAIN2',  'type':'numeric', 'value': 0, 'options':('no_write_shot',)},
+        # IS_GLOBAL controls if the GAINS and OFFSETS are set globally or per channel
+        {'path':':IS_GLOBAL',  'type':'numeric', 'value': 0, 'options':('no_write_shot',)},
+        {'path':':DEF_GAIN1',  'type':'numeric', 'value': 1, 'options':('no_write_shot',)},
+        {'path':':DEF_GAIN2',  'type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':DEF_OFFSET', 'type':'numeric', 'value': 0, 'options':('no_write_shot',)},
     ]
 
@@ -44,7 +46,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
         for site in range(1,6,2):
             slot = self.getSlot(site)
-            if self.def_gain1.data() != 0 or self.def_gain2.data() != 0:
+            if self.is_global.data() == 1:
                 # Global controls for GAINS and OFFSETS
                 slot.SC32_OFFSET_ALL = self.def_offset.data()
                 print("Site {} OFFSET ALL {}".format(site, self.def_offset.data()))
@@ -55,17 +57,28 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 slot.SC32_G2_ALL     = self.def_gain2.data()
                 print("Site {} GAIN 2 ALL {}".format(site, self.def_gain2.data()))
             else:
-                for ic in range(32):
-                    exec("uut.s%d.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(site, ic+1, ic+1))
-                    exec("uut.s%d.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(site, ic+1, ic+1))
-                    exec("uut.s%d.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(site, ic+1, ic+1))
+                if site == 1:
+                    for ic in range(1,32):
+                        exec("uut.s1.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(ic, ic))
+                        exec("uut.s1.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(ic, ic))
+                        exec("uut.s1.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(ic, ic))
+                elif site == 3:
+                    for ic, jc in zip(range(33,64), range(1, 32)):
+                        exec("uut.s3.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
+                        exec("uut.s3.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
+                        exec("uut.s3.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))
+                elif site == 5:
+                    for ic, jc in zip(range(65,96), range(1, 32)):
+                        exec("uut.s5.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
+                        exec("uut.s5.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
+                        exec("uut.s5.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))
 
             slot.SC32_GAIN_COMMIT = 1
             print("GAIN Committed for site {}".format(site))
 
         super(_ACQ2106_435SC, self).init()
 
-        # For testing purpose only:
+        # For testing purpose only. Set trigger source to external hard trigger:
         uut.s0.SIG_SRC_TRG_0 = 'EXT'
 
     def store(self):
@@ -84,7 +97,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
     def unConditioning(self,num):
         chan     = self.__getattr__('INPUT_%3.3d' % num)
-        chan_nonsc = self.__getattr__('INPUT_%3.3d:NON_SC' % num)
+        chan_nonsc = self.__getattr__('INPUT_%3.3d:NC_INPUT' % num)
         expr = MDSplus.SUBTRACT(MDSplus.DIVIDE(chan, MDSplus.MULTIPLY(chan.SC_GAIN1, chan.SC_GAIN2)), chan.SC_OFFSET)
 
     def setSmooth(self,num):
@@ -132,8 +145,8 @@ def assemble(cls):
             {'path':':INPUT_%3.3d:SC_GAIN1'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain1',               'options':('no_write_shot',)},
             {'path':':INPUT_%3.3d:SC_GAIN2'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain2',               'options':('no_write_shot',)},
             {'path':':INPUT_%3.3d:SC_OFFSET'%(i+1,),   'type':'NUMERIC', 'valueExpr':'head.def_offset',              'options':('no_write_shot',)},   
-            {'path':':INPUT_%3.3d:NC_INPUT'%(i+1,),      'type':'SIGNAL',                                            'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:LR_INPUT'%(i+1,),     'type':'SIGNAL', 'valueExpr':'head.setSmooth(%d)' %(i+1,)},
+            {'path':':INPUT_%3.3d:NC_INPUT'%(i+1,),    'type':'SIGNAL',                                            'options':('no_write_model','write_once',)},
+            {'path':':INPUT_%3.3d:LR_INPUT'%(i+1,),    'type':'SIGNAL', 'valueExpr':'head.setSmooth(%d)' %(i+1,)},
         ]
 
 class ACQ2106_435SC_1ST(_ACQ2106_435SC): sites=1
