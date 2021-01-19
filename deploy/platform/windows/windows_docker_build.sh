@@ -18,6 +18,13 @@ test64="64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64 --with-winebottle=/workspace
 mkdir -p /workspace/winebottle32
 test32="32 i686-w64-mingw32   bin_x86    bin_x86    --with-winebottle=/workspace/winebottle32"
 
+runtests() {
+    # run tests with the platform specific params read from test32 and test64
+    testarch ${test64}
+    testarch ${test32};
+    checktests;
+}
+
 buildrelease() {
     abort=0
     ### Clean up workspace

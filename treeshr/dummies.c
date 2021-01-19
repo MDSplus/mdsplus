@@ -22,26 +22,23 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <treeshr.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <treeshr.h>
 
-#define Dummy(name,status) \
-int name()\
-{\
-  int stat = status;\
-  if (!(stat & 1))\
-    printf("%s not currently implemented\n",#name);\
-  return stat;\
-}
+#define Dummy(name, status)                                                    \
+  int name() {                                                                 \
+    int stat = status;                                                         \
+    if (!(stat & 1))                                                           \
+      printf("%s not currently implemented\n", #name);                         \
+    return stat;                                                               \
+  }
 
-#define DummyArgs(name,ret,args,status) \
-ret name args \
-{\
-  printf("%s not currently implemented\n",#name);\
-  return status;\
-}
+#define DummyArgs(name, ret, args, status)                                     \
+  ret name args {                                                              \
+    printf("%s not currently implemented\n", #name);                           \
+    return status;                                                             \
+  }
 
-Dummy(TreeEstablishRundownEvent, TreeSUCCESS)
-Dummy(TreeWait, TreeSUCCESS)
+Dummy(TreeEstablishRundownEvent, TreeSUCCESS) Dummy(TreeWait, TreeSUCCESS)

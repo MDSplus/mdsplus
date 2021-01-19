@@ -61,7 +61,7 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Timebase Div: ");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(40);
+        deviceField2.setOffsetNid(43);
         jPanel2.add(deviceField2);
 
         jPanel1.add(jPanel2);
@@ -69,7 +69,7 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Input");
         deviceField3.setNumCols(25);
-        deviceField3.setOffsetNid(22);
+        deviceField3.setOffsetNid(25);
         jPanel3.add(deviceField3);
 
         jPanel1.add(jPanel3);
@@ -77,13 +77,13 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Out Segment len (0 to disable writing): ");
         deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(37);
+        deviceField4.setOffsetNid(40);
         jPanel4.add(deviceField4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Out CPUs");
         deviceField5.setNumCols(4);
-        deviceField5.setOffsetNid(31);
+        deviceField5.setOffsetNid(34);
         jPanel4.add(deviceField5);
 
         jPanel1.add(jPanel4);

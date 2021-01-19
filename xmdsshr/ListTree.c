@@ -2201,14 +2201,26 @@ void ListTreeGetPathname(ListTreeReturnStruct * ret, char *dir)
 
 void ListTreeGetPathnameFromItem(ListTreeItem * item, char *dir)
 {
-  char tmppath[1024];
-
-  *dir = '\0';
-  while (item) {
-    sprintf(tmppath, "/%s%s", item->text, dir);
-    strcpy(dir, tmppath);
+  // build path from right to left
+  char mem[1024];
+  char* tmp = mem + sizeof(mem) - 1;
+  tmp[0] = '\0';
+  // prepend items
+  while (item)
+  {
+    const ssize_t len = item->text ? strlen(item->text) : 0;
+    if (len == 0 || len >= tmp - mem)
+    { // abort
+      dir = "";
+      return;
+    }
+    tmp -= len + 1;
+    tmp[0] = '/';
+    memcpy(tmp + 1, item->text, len);
     item = item->parent;
   }
+  // tmp should now be something like /a/b/c/d
+  strcpy(dir, tmp);
 }
 
 Widget XmCreateScrolledListTree(Widget parent, char *name, Arg * args, Cardinal count)

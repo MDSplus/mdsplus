@@ -1,6 +1,6 @@
 exec valgrind --tool=memcheck --leak-check=full --show-reachable=no\
  --xml=yes --xml-file=$(basename $1)-memcheck-%p.xml\
- --gen-suppressions=all --num-callers=30\
+ --gen-suppressions=all --num-callers=64\
  --trace-children-skip='*/ld,*/collect2,*/ldconfig,*/sh'\
  --trace-children=yes --child-silent-after-fork=yes\
  --trace-children-skip-by-arg='*SetMdsplusFileProtection*'\

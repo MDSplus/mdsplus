@@ -61,7 +61,8 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
         {'name':'Parameter5', 'type': 'int32'},
         {'name':'Parameter6', 'type': 'int32'},
         {'name':'Parameter7', 'type': 'int32'},
-        {'name':'Parameter8', 'type': 'int32'},
+        {'name':'SkipInvalidTunableParams', 'type': 'int32', 'value':0},
+
      ]
     parts = []
     

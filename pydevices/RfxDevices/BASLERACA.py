@@ -562,13 +562,17 @@ class BASLERACA(Device):
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Start Camera Acquisition : '+self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
       self.debugPrint("OK!")
-      self.worker.configure(self)
+      self.worker.configure(self.copy())
       self.saveWorker()
       self.worker.start()
 
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
-      if self.restoreWorker() :
+      self.debugPrint("Stop acquisition Thread...")
+      self.restoreWorker()
+      if ( self.worker != None and self.worker.isAlive() ):
+      #if self.restoreWorker() :
+          self.debugPrint("Stop Worker...")
           self.worker.stop()
 
 ##########software trigger (start saving in mdsplus)############################################

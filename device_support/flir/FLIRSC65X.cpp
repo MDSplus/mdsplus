@@ -1187,20 +1187,19 @@ printf("------------------------ Queued Buffer ---------------------------------
 	else
 		printf( "PvDevice not connect \n");
 
-
     // TLParamsLocked is optional but when present, it MUST be set to 1
     // before sending the AcquisitionStart command
     if ( lTLLocked != NULL )
     {
 usleep(3000);
         this->lResult = lTLLocked->SetValue( 1 );
+
 		if ( !this->lResult.IsOK() ) {printLastError("Error setting TLParamsLocked to 1!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
     }
-  
-	//reset timestamp counter
-    this->lResult = lResetTimestamp->Execute();
-	if ( !this->lResult.IsOK() ) {printLastError("Error resetting timestamp counter!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
 
+	//reset timestamp counter
+      this->lResult = lResetTimestamp->Execute();
+	if ( !this->lResult.IsOK() ) {printLastError("Error resetting timestamp counter!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 
     // Tell the device to start sending images
     this->lResult = lStart->Execute();
 	if ( !this->lResult.IsOK() ) {printLastError("Error sending StartAcquisition command to device!!!\n(%s)\n", lResult.GetDescription().GetAscii() ); return ERROR;} 	
@@ -1355,7 +1354,6 @@ int FLIR_SC65X::getFrame(int *status, void *frame, void *metaData)
 					*status=4; //complete + triggered!
 					triggered = 1;
 				}
-
 			}			
         }
         else  //new 28 agosto 2012

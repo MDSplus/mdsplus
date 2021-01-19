@@ -1,0 +1,54 @@
+{
+   Race
+   Helgrind:Race
+   ...
+   obj:*/libjava.so*
+}
+{
+   Race
+   Helgrind:Race
+   ...
+   obj:*/libjvm.so*
+}
+{
+   Addr4
+   Memcheck:Addr4
+   obj:*
+   obj:*
+}
+{
+   Addr8
+   Memcheck:Addr8
+   ...
+   obj:*/libjava.so*
+}
+{
+   Addr8
+   Memcheck:Addr8
+   ...
+   obj:*/libjvm.so*
+}
+{
+   Value4
+   Memcheck:Value4
+   ...
+   obj:*/libjava.so*
+}
+{
+   Value4
+   Memcheck:Value4
+   ...
+   obj:*/libjvm.so*
+}
+{
+   Value8
+   Memcheck:Value8
+   ...
+   obj:*/libjava.so*
+}
+{
+   Value8
+   Memcheck:Value8
+   ...
+   obj:*/libjvm.so*
+}

@@ -22,60 +22,60 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsplus/mdsconfig.h>
-#include <string.h>
-#include <ncidef.h>
 #include "treeshrp.h"
+#include <mdsplus/mdsconfig.h>
+#include <ncidef.h>
+#include <string.h>
 
-void TreeSerializeNciOut(const NCI * in, char *out) {
+void TreeSerializeNciOut(const NCI *in, char *out) {
   char *ptr = out;
   memset(out, 0, 42);
-  putint32(&ptr,&in->flags);
-  putint8 (&ptr,&in->flags2);
-  putint8 (&ptr,&in->spare);
-  putint64(&ptr,&in->time_inserted);
-  putint32(&ptr,&in->owner_identifier);
-  putint8 (&ptr,&in->class);
-  putint8 (&ptr,&in->dtype);
-  putint32(&ptr,&in->length);
-  putint8 (&ptr,&in->spare2);
-  putint32(&ptr,&in->status);
+  putint32(&ptr, &in->flags);
+  putint8(&ptr, &in->flags2);
+  putint8(&ptr, &in->spare);
+  putint64(&ptr, &in->time_inserted);
+  putint32(&ptr, &in->owner_identifier);
+  putint8(&ptr, &in->class);
+  putint8(&ptr, &in->dtype);
+  putint32(&ptr, &in->length);
+  putint8(&ptr, &in->spare2);
+  putint32(&ptr, &in->status);
   if (in->flags2 & NciM_DATA_IN_ATT_BLOCK) {
-    putint8 (&ptr,&in->DATA_INFO.DATA_IN_RECORD.element_length);
-    putchars(&ptr,&in->DATA_INFO.DATA_IN_RECORD.data, 11);
+    putint8(&ptr, &in->DATA_INFO.DATA_IN_RECORD.element_length);
+    putchars(&ptr, &in->DATA_INFO.DATA_IN_RECORD.data, 11);
   } else if (in->flags2 & NciM_ERROR_ON_PUT) {
-    putint32(&ptr,&in->DATA_INFO.ERROR_INFO.error_status);
-    putint32(&ptr,&in->DATA_INFO.ERROR_INFO.stv);
+    putint32(&ptr, &in->DATA_INFO.ERROR_INFO.error_status);
+    putint32(&ptr, &in->DATA_INFO.ERROR_INFO.stv);
   } else {
-    putint8 (&ptr,&in->DATA_INFO.DATA_LOCATION.file_level);
-    putint8 (&ptr,&in->DATA_INFO.DATA_LOCATION.file_version);
-    putchars(&ptr,&in->DATA_INFO.DATA_LOCATION.rfa, 6);
-    putint32(&ptr,&in->DATA_INFO.DATA_LOCATION.record_length);
+    putint8(&ptr, &in->DATA_INFO.DATA_LOCATION.file_level);
+    putint8(&ptr, &in->DATA_INFO.DATA_LOCATION.file_version);
+    putchars(&ptr, &in->DATA_INFO.DATA_LOCATION.rfa, 6);
+    putint32(&ptr, &in->DATA_INFO.DATA_LOCATION.record_length);
   }
 }
 
-void TreeSerializeNciIn(const char *in, NCI * out) {
-  char *ptr = (char*)in;
-  getint32(&ptr,&out->flags);
-  getint8 (&ptr,&out->flags2);
-  getint8 (&ptr,&out->spare);
-  getint64(&ptr,&out->time_inserted);
-  getint32(&ptr,&out->owner_identifier);
-  getint8 (&ptr,&out->class);
-  getint8 (&ptr,&out->dtype);
-  getint32(&ptr,&out->length);
-  getint8 (&ptr,&out->spare2);
-  getint32(&ptr,&out->status);
+void TreeSerializeNciIn(const char *in, NCI *out) {
+  char *ptr = (char *)in;
+  getint32(&ptr, &out->flags);
+  getint8(&ptr, &out->flags2);
+  getint8(&ptr, &out->spare);
+  getint64(&ptr, &out->time_inserted);
+  getint32(&ptr, &out->owner_identifier);
+  getint8(&ptr, &out->class);
+  getint8(&ptr, &out->dtype);
+  getint32(&ptr, &out->length);
+  getint8(&ptr, &out->spare2);
+  getint32(&ptr, &out->status);
   if (out->flags2 & NciM_DATA_IN_ATT_BLOCK) {
-    getint8 (&ptr,&out->DATA_INFO.DATA_IN_RECORD.element_length);
-    getchars(&ptr,&out->DATA_INFO.DATA_IN_RECORD.data, 11);
+    getint8(&ptr, &out->DATA_INFO.DATA_IN_RECORD.element_length);
+    getchars(&ptr, &out->DATA_INFO.DATA_IN_RECORD.data, 11);
   } else if (out->flags2 & NciM_ERROR_ON_PUT) {
-    getint32(&ptr,&out->DATA_INFO.ERROR_INFO.error_status);
-    getint32(&ptr,&out->DATA_INFO.ERROR_INFO.stv);
+    getint32(&ptr, &out->DATA_INFO.ERROR_INFO.error_status);
+    getint32(&ptr, &out->DATA_INFO.ERROR_INFO.stv);
   } else {
-    getint8 (&ptr,&out->DATA_INFO.DATA_LOCATION.file_level);
-    getint8 (&ptr,&out->DATA_INFO.DATA_LOCATION.file_version);
-    getchars(&ptr,&out->DATA_INFO.DATA_LOCATION.rfa, 6);
-    getint32(&ptr,&out->DATA_INFO.DATA_LOCATION.record_length);
+    getint8(&ptr, &out->DATA_INFO.DATA_LOCATION.file_level);
+    getint8(&ptr, &out->DATA_INFO.DATA_LOCATION.file_version);
+    getchars(&ptr, &out->DATA_INFO.DATA_LOCATION.rfa, 6);
+    getint32(&ptr, &out->DATA_INFO.DATA_LOCATION.record_length);
   }
 }

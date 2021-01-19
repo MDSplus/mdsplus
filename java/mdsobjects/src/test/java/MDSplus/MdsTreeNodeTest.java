@@ -4,6 +4,11 @@ import org.junit.*;
 
 public class MdsTreeNodeTest
 {
+	private static final java.lang.String expt = "TEST";
+	private static final java.lang.String altexpt = "TEST2";
+	private static final java.lang.String any = "NODE";
+	private static final int model = -1;
+	private static final int shot = 1;
 	private static final int array[] = new int[]
 	{ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 };
 
@@ -12,90 +17,91 @@ public class MdsTreeNodeTest
 	{
 		final Data currDir = Data.toData(System.getProperty("user.dir"));
 		MDSplus.Data.execute("setenv($//$)", new MDSplus.Data[]
-		{ Data.toData("java_test1_path="), currDir });
+		{ Data.toData(expt.toLowerCase() + "_path="), currDir });
 		MDSplus.Data.execute("setenv($//$)", new MDSplus.Data[]
-		{ Data.toData("java_test2_path="), currDir });
+		{ Data.toData(altexpt.toLowerCase() + "_path="), currDir });
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception
 	{}
 
+	private MDSplus.Tree tree;
+	private MDSplus.TreeNode node;
+
 	@Before
 	public void setUp() throws Exception
-	{}
+	{
+		final MDSplus.Tree new_tree = new MDSplus.Tree(expt, model, "NEW");
+		new_tree.addNode(any, "ANY");
+		new_tree.write();
+		new_tree.close();
+		tree = new MDSplus.Tree(expt, model);
+		node = tree.getNode(any);
+	}
 
 	@After
 	public void tearDown() throws Exception
-	{}
+	{
+		try
+		{
+			tree.quit();
+		}
+		catch (MdsException exc)
+		{
+			tree.close();
+		}
+	}
+
+	static private final void testAccessRights_write_exc(MDSplus.TreeNode node, java.lang.String exc)
+	{
+		try
+		{
+			node.putData(new MDSplus.Int32(1));
+			Assert.fail("Data written but " + exc +" expected");
+		}
+		catch (final MdsException e)
+		{
+			Assert.assertEquals(exc, e.toString().split("-", 3)[2].split(",",2)[0]);
+		}
+	}
 
 	@Test
 	public void testAccessRights() throws MdsException
 	{
-		// NO WRITE ////////////////////////////////////////////////////////////
-		final MDSplus.Tree tree = new MDSplus.Tree("java_test1", -1);
-		MDSplus.TreeNode node = tree.getNode("test_flags");
-		tree.createPulse(1);
-		final MDSplus.Tree shot = new MDSplus.Tree("java_test1", 1);
-		final MDSplus.TreeNode shot_node = shot.getNode("test_flags");
-		// NO WRITE MODEL //
+		Assert.assertEquals(false, node.isWriteOnce());
+		node.setWriteOnce(true);
+		Assert.assertEquals(true, node.isWriteOnce());
+		Assert.assertEquals(false, node.isNoWriteShot());
+		node.setNoWriteShot(true);
+		Assert.assertEquals(true, node.isNoWriteShot());
+		node.putData(new MDSplus.Int32(1));
+		testAccessRights_write_exc(node, "NOOVERWRITE");
 		Assert.assertEquals(false, node.isNoWriteModel());
-		node.putData(new MDSplus.Int32(5552369));
 		node.setNoWriteModel(true);
 		Assert.assertEquals(true, node.isNoWriteModel());
-		try
-		{
-			node.putData(new MDSplus.Int32(5552369));
-			Assert.fail("Data written in no write model node");
-		}
-		catch (final Exception exc)
-		{}
-		// but we can always write it in shot //
-		shot_node.putData(new MDSplus.Int32(5552369));
-		node.setNoWriteModel(false);
-		Assert.assertEquals(false, node.isNoWriteModel());
-		node.putData(new MDSplus.Int32(5552369));
-		// NO WRITE SHOT //
-		Assert.assertEquals(false, shot_node.isNoWriteShot());
-		shot_node.putData(new MDSplus.Int32(5552369));
-		shot_node.setNoWriteShot(true);
-		Assert.assertEquals(true, shot_node.isNoWriteShot());
-		try
-		{
-			shot_node.putData(new MDSplus.Int32(5552369));
-			Assert.fail("Data written in no write shot node");
-		}
-		catch (final Exception exc)
-		{}
-		// but we can always write it in model //
-		node.putData(new MDSplus.Int32(5552369));
-		shot_node.setNoWriteShot(false);
-		Assert.assertEquals(false, shot_node.isNoWriteShot());
-		shot_node.putData(new MDSplus.Int32(5552369));
-		Assert.assertEquals(false, node.isEssential());
-		node.setEssential(true);
-		Assert.assertEquals(true, node.isEssential());
-		node.setEssential(false);
-		Assert.assertEquals(false, node.isEssential());
-		// IS INCLUDED IN PULSE //
+		testAccessRights_write_exc(node, "NOOVERWRITE");
+		node.setWriteOnce(false);
+		testAccessRights_write_exc(node, "NOWRITEMODEL");
 		Assert.assertEquals(false, node.isIncludedInPulse());
-		shot.edit();
-		node = shot.addNode("onlypulse", "ANY");
 		node.setIncludedInPulse(true);
 		Assert.assertEquals(true, node.isIncludedInPulse());
-		tree.edit();
-		tree.addNode("test_seg", "STRUCTURE");
-		node = tree.addNode("test_seg:any", "ANY");
-		tree.write();
-		tree.close();
+		tree.createPulse(shot);
+		final MDSplus.Tree shot_tree = new MDSplus.Tree(expt, shot);
+		final MDSplus.TreeNode shot_node = shot_tree.getNode(any);
+		Assert.assertEquals(true, shot_node.isNoWriteShot());
+		testAccessRights_write_exc(shot_node, "NOWRITESHOT");
+		Assert.assertEquals(true, node.isCompressOnPut());
+		node.setCompressOnPut(false);
+		Assert.assertEquals(false, node.isCompressOnPut());
+		node.setCompressOnPut(true);
+		Assert.assertEquals(true, node.isCompressOnPut());
 	}
 
 	@Test
 	public void testArray() throws MdsException
 	{
 		final MDSplus.Array array_data = new MDSplus.Int32Array(array);
-		final MDSplus.Tree tree = new MDSplus.Tree("java_test1", -1);
-		final MDSplus.TreeNode node = tree.getNode("test_seg:any");
 		final MDSplus.Range array_time = new MDSplus.Range(new MDSplus.Int32(0), new MDSplus.Int32(9),
 				new MDSplus.Int32(1));
 		node.beginSegment(array_data.getElementAt(0), array_data.getElementAt(9), array_time, array_data);
@@ -141,67 +147,54 @@ public class MdsTreeNodeTest
 		Assert.assertEquals("-19 : 0 : 1", dim.toString());
 		dim = node.getSegmentDim(1);
 		Assert.assertEquals("10 : 19 : 1", dim.toString());
-		// timestamped
-		tree.edit();
-		tree.addNode("test_seg:ts", "SIGNAL");
-		tree.write();
-		tree.close();
+	}
+
+	@Test
+	public void testSubtree() throws Exception
+	{
+		{
+			final MDSplus.Tree parent = new MDSplus.Tree(altexpt, model, "NEW");
+			parent.addNode(expt, "SUBTREE");
+			parent.write();
+			parent.close();
+		}
+		final MDSplus.Tree parent = new MDSplus.Tree(altexpt, model);
+		Assert.assertEquals("\\"+altexpt+"::TOP", parent.getNode(0).getPath());
+		Assert.assertEquals("\\"+altexpt+"::TOP."+expt, parent.getNode(1).getFullPath());
+		// TODO: addNode(, "SUBTREE") may not set the flag properly .. this test fails
+		// Assert.assertEquals("\\"+expt+"::TOP", parent.getNode(1).getPath());
 	}
 
 	@Test
 	public void testNci() throws Exception
 	{
-		MDSplus.Data data;
-		final MDSplus.Tree tree = new MDSplus.Tree("java_test1", -1, "NEW");
-		final MDSplus.Tree tree2 = new MDSplus.Tree("java_test2", -1, "NEW");
-		tree2.addNode("test_node", "ANY");
-		tree.addNode("JAVA_TEST2", "SUBTREE");
-		MDSplus.TreeNode node = tree.addNode("test_node", "ANY");
-		final MDSplus.TreeNode node_child = tree.addNode("test_node:node_child", "ANY");
-		tree2.write();
+		tree.edit();
+		final MDSplus.TreeNode node_child = node.addNode("child", "STRUCTURE");
 		tree.write();
 		// CTR
 		final MDSplus.TreeNode new_node = new MDSplus.TreeNode(node.getNid(), tree);
-		Assert.assertEquals("TEST_NODE", new_node.getNodeName());
+		Assert.assertEquals(any, new_node.getNodeName());
 		Assert.assertEquals("ANY", new_node.getUsage());
-		node = tree.getNode("test_node");
 		// getTree()
 		Assert.assertEquals(node.getTree().getName(), tree.getName());
 		Assert.assertEquals(node.getTree().getShot(), tree.getShot());
-		// setTree()
-		node.setTree(tree2);
-		Assert.assertEquals(node.getTree().getName(), tree2.getName());
-		Assert.assertEquals(node.getTree().getShot(), tree2.getShot());
-		node.setTree(tree);
 		// getPath()
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE", node.getPath());
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE:NODE_CHILD", node_child.getPath());
-		// getPathStr()
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE", node.getPath());
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE:NODE_CHILD", node_child.getPath());
+		Assert.assertEquals("\\"+expt+"::TOP:"+any, node.getPath());
+		Assert.assertEquals("\\"+expt+"::TOP:"+any+".CHILD", node_child.getPath());
 		// getMinPath()
-		Assert.assertEquals("TEST_NODE", node.getMinPath());
-		Assert.assertEquals("TEST_NODE:NODE_CHILD", node_child.getMinPath());
-		// getMinPathStr()
-		Assert.assertEquals("TEST_NODE", node.getMinPath());
-		Assert.assertEquals("TEST_NODE:NODE_CHILD", node_child.getMinPath());
+		Assert.assertEquals(any, node.getMinPath());
+		Assert.assertEquals(any+".CHILD", node_child.getMinPath());
 		// getFullPath()
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE", node.getFullPath());
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE:NODE_CHILD", node_child.getFullPath());
-		// getFullPathStr()
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE", node.getFullPath());
-		Assert.assertEquals("\\JAVA_TEST1::TOP:TEST_NODE:NODE_CHILD", node_child.getFullPath());
+		Assert.assertEquals("\\"+expt+"::TOP:"+any, node.getFullPath());
+		Assert.assertEquals("\\"+expt+"::TOP:"+any+".CHILD", node_child.getFullPath());
 		// getNodeName()
-		Assert.assertEquals("TEST_NODE", node.getNodeName());
-		Assert.assertEquals("NODE_CHILD", node_child.getNodeName());
-		// getNodeNameStr()
-		Assert.assertEquals("TEST_NODE", node.getNodeName());
-		Assert.assertEquals("NODE_CHILD", node_child.getNodeName());
+		Assert.assertEquals(any, node.getNodeName());
+		Assert.assertEquals("CHILD", node_child.getNodeName());
 		// getNode()
-		MDSplus.TreeNode n = tree.getNode("test_node:node_child");
+		MDSplus.TreeNode n = tree.getNode("\\"+expt+"::TOP:"+any+".child");
 		Assert.assertEquals(node_child.getNid(), n.getNid());
 		// getNode( String )
-		n = tree.getNode("test_node:node_child");
+		n = tree.getNode(any+".child");
 		Assert.assertEquals(node_child.getNid(), n.getNid());
 		// isOn()
 		Assert.assertEquals(true, node.isOn());
@@ -211,7 +204,7 @@ public class MdsTreeNodeTest
 		node.setOn(true);
 		Assert.assertEquals(true, node.isOn());
 		// putData
-		data = new MDSplus.Int32(5552368);
+		MDSplus.Data data = new MDSplus.Int32(5552368);
 		node.putData(data);
 		// getData
 		data = node.getData();
@@ -248,13 +241,13 @@ public class MdsTreeNodeTest
 		catch (final Exception exc)
 		{}
 		tree.edit();
-		final MDSplus.TreeNode test_structure = tree.addNode("test_struct", "STRUCUTURE");
-		final MDSplus.TreeNode parent = tree.addNode("test_struct.parent", "STRUCTURE");
-		final MDSplus.TreeNode child = tree.addNode("test_struct.parent:child", "STRUCTURE");
-		final MDSplus.TreeNode brother = tree.addNode("test_struct.parent:brother", "STRUCTURE");
-		final MDSplus.TreeNode brother2 = tree.addNode("test_struct.parent:brother2", "STRUCTURE");
-		final MDSplus.TreeNode parmem1 = tree.addNode("test_struct.parent:mem1", "NUMERIC");
-		final MDSplus.TreeNode parmem2 = tree.addNode("test_struct.parent:mem2", "TEXT");
+		final MDSplus.TreeNode test_structure = tree.addNode("struct", "STRUCUTURE");
+		final MDSplus.TreeNode parent = tree.addNode("struct.parent", "STRUCTURE");
+		final MDSplus.TreeNode child = tree.addNode("struct.parent:child", "STRUCTURE");
+		final MDSplus.TreeNode brother = tree.addNode("struct.parent:brother", "STRUCTURE");
+		final MDSplus.TreeNode brother2 = tree.addNode("struct.parent:brother2", "STRUCTURE");
+		final MDSplus.TreeNode parmem1 = tree.addNode("struct.parent:mem1", "NUMERIC");
+		final MDSplus.TreeNode parmem2 = tree.addNode("struct.parent:mem2", "TEXT");
 		Assert.assertEquals(parent.getParent().getNid(), test_structure.getNid());
 		Assert.assertEquals(child.getParent().getNid(), parent.getNid());
 		Assert.assertEquals(test_structure.getChild().getNid(), parent.getNid());
@@ -299,48 +292,11 @@ public class MdsTreeNodeTest
 		Assert.assertEquals(1, tree.getNode("\\TOP").getDepth());
 		Assert.assertEquals(2, test_structure.getDepth());
 		Assert.assertEquals(3, parent.getDepth());
-		tree.edit();
-		node = tree.addNode("test_flags", "ANY");
-		Assert.assertEquals(false, node.isWriteOnce());
-		node.setWriteOnce(true);
-		Assert.assertEquals(true, node.isWriteOnce());
-		tree.write();
-		tree.close();
 	}
 
 	@Test
-	public void testPut() throws MdsException
+	public void testImages() throws MdsException
 	{
-		final MDSplus.Tree tree = new MDSplus.Tree("java_test1", -1);
-		final MDSplus.TreeNode node = tree.getNode("test_flags");
-		// WRITE ONCE //////////////////////////////////////////////////////////
-		Assert.assertEquals(true, node.isWriteOnce());
-		node.putData(new MDSplus.Int32(5552368));
-		try
-		{
-			node.putData(new MDSplus.Int32(5552369));
-			Assert.fail("Data put twice in write once node");
-		}
-		catch (final Exception exc)
-		{}
-		node.setWriteOnce(false);
-		Assert.assertEquals(false, node.isWriteOnce());
-		node.putData(new MDSplus.Int32(5552369));
-		// COMPRESS ON PUT /////////////////////////////////////////////////////
-		// compression is enabled by default //
-		Assert.assertEquals(true, node.isCompressOnPut());
-		node.setCompressOnPut(false);
-		Assert.assertEquals(false, node.isCompressOnPut());
-		node.setCompressOnPut(true);
-		Assert.assertEquals(true, node.isCompressOnPut());
-		tree.close();
-	}
-
-	@Test
-	public void testSegments() throws MdsException
-	{
-		final MDSplus.Tree tree = new MDSplus.Tree("java_test1", -1);
-		MDSplus.TreeNode n2 = tree.getNode("test_seg:image");
 		final byte image[] = new byte[]
 		{ 0, 0, 0, 0, 9, 9, 0, 0, 0, 0, 0, 0, 9, 9, 9, 0, 0, 0, 0, 0, 0, 9, 9, 9, 0, 0, 0, 1, 1, 1, 1, 9, 9, 1, 1, 1, 1,
 				1, 1, 1, 9, 9, 1, 1, 1, 0, 0, 9, 9, 9, 9, 9, 0, 0, 0, 0, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 9, 9, 9, 0, 0, 0,
@@ -361,32 +317,32 @@ public class MdsTreeNodeTest
 		// int dims[] = new int[]{4,7,9}; // { FRAMES, HEIGHT, WIDTH } //
 		final int dims[] = new int[]
 		{ 9, 7, 4 }; // { FRAMES, HEIGHT, WIDTH } //
-		n2.makeSegment(new MDSplus.Float32(0), new MDSplus.Float32((float) 0.35), new MDSplus.Float32Array(time1),
+		node.makeSegment(new MDSplus.Float32(0), new MDSplus.Float32((float) 0.35), new MDSplus.Float32Array(time1),
 				new MDSplus.Uint8Array(image, dims));
-		Assert.assertEquals(1, n2.getNumSegments());
-		Assert.assertArrayEquals(image, n2.getByteArray());
+		Assert.assertEquals(1, node.getNumSegments());
+		Assert.assertArrayEquals(image, node.getByteArray());
 		// add three frames in one segment
 		dims[2] = 3; // 3 FRAMES //
 		final byte[] image1 = new byte[9 * 7 * 3];
 		System.arraycopy(image, 0, image1, 0, 9 * 7 * 3);
-		n2.makeSegment(new MDSplus.Float32((float) 0.4), new MDSplus.Float32((float) 0.65),
+		node.makeSegment(new MDSplus.Float32((float) 0.4), new MDSplus.Float32((float) 0.65),
 				new MDSplus.Float32Array(time2), new MDSplus.Uint8Array(image1, dims));
-		Assert.assertEquals(2, n2.getNumSegments());
+		Assert.assertEquals(2, node.getNumSegments());
 		// put remaining segments ... //
-		n2.beginSegment(new MDSplus.Float32((float) 0.7), new MDSplus.Float32((float) 0.9),
+		node.beginSegment(new MDSplus.Float32((float) 0.7), new MDSplus.Float32((float) 0.9),
 				new MDSplus.Float32Array(time3), new MDSplus.Uint8Array(image1, dims));
-		Assert.assertEquals(3, n2.getNumSegments());
+		Assert.assertEquals(3, node.getNumSegments());
 		dims[2] = 1; // 1 FRAME //
 		final byte[] image2 = new byte[9 * 7 * 1];
 		System.arraycopy(image, 0, image2, 0, 9 * 7 * 1);
-		n2.putSegment((new MDSplus.Uint8Array(image2, dims)), -1);
+		node.putSegment((new MDSplus.Uint8Array(image2, dims)), -1);
 		dims[2] = 2; // 2 FRAMES //
 		final byte[] image3 = new byte[9 * 7 * 2];
 		System.arraycopy(image, 0, image3, 0, 9 * 7 * 2);
-		n2.putSegment((new MDSplus.Uint8Array(image3, dims)), -1);
-		Assert.assertEquals(3, n2.getNumSegments());
+		node.putSegment((new MDSplus.Uint8Array(image3, dims)), -1);
+		Assert.assertEquals(3, node.getNumSegments());
 		// TEST ALL DATA WRITTEN IN SIGNAL //
-		final byte[] test_image = n2.getData().getByteArray();
+		final byte[] test_image = node.getData().getByteArray();
 		// 1 2 3 4 //
 		int shift = 0;
 		int len = 4 * 7 * 9;
@@ -407,21 +363,26 @@ public class MdsTreeNodeTest
 		len = 2 * 7 * 9;
 		for (int i = 0; i < len; ++i)
 			Assert.assertEquals(image[i], test_image[i + shift]);
+	}
+
+	@Test
+	public void testTreeNode() throws MdsException
+	{
 		tree.edit();
-		final MDSplus.TreeNode root = tree.addNode("test_edit", "STRUCTURE");
-		final MDSplus.TreeNode n1 = tree.addNode("test_edit:n1", "ANY");
+		final MDSplus.TreeNode n1 = tree.addNode(any+":n1", "ANY");
 		// addNode with relative path //
-		n2 = n1.addNode("n2", "ANY");
+		MDSplus.TreeNode  n2 = n1.addNode("n2", "ANY");
+		MDSplus.TreeNode n3 = n1.addNode("\\top:"+any+":n3", "ANY");
+		tree.write();
 		Assert.assertEquals("N2", n2.getNodeName());
 		Assert.assertEquals("ANY", n2.getUsage());
 		Assert.assertEquals("N1", n2.getParent().getNodeName());
 		Assert.assertEquals("ANY", n2.getParent().getUsage());
 		// addNode with absolute path //
-		MDSplus.TreeNode n3 = n1.addNode("\\top.test_edit:n3", "ANY");
 		Assert.assertEquals("N3", n3.getNodeName());
 		Assert.assertEquals("ANY", n3.getUsage());
-		Assert.assertEquals("TEST_EDIT", n3.getParent().getNodeName());
-		Assert.assertEquals("STRUCTURE", n3.getParent().getUsage());
+		Assert.assertEquals(any, n3.getParent().getNodeName());
+		Assert.assertEquals("ANY", n3.getParent().getUsage());
 		// remove relative path //
 		n1.remove("n2");
 		try
@@ -435,17 +396,17 @@ public class MdsTreeNodeTest
 		n1.getParent().remove("n3");
 		n1.rename("\\top:test_rename");
 		Assert.assertEquals("TOP", n1.getParent().getNodeName());
-		n1.rename("\\top.test_edit:parent");
+		n1.rename("\\top:"+any+":parent");
 		Assert.assertEquals("PARENT", n1.getNodeName());
 		Assert.assertEquals("ANY", n1.getUsage());
-		Assert.assertEquals("TEST_EDIT", n1.getParent().getNodeName());
-		Assert.assertEquals("STRUCTURE", n1.getParent().getUsage());
+		Assert.assertEquals(any, n1.getParent().getNodeName());
+		Assert.assertEquals("ANY", n1.getParent().getUsage());
 		n2 = n1.addNode("subnode", "ANY");
 		n3 = n2.addNode("child", "ANY");
 		n3.move(n1);
 		Assert.assertEquals("PARENT", n3.getParent().getNodeName());
-		n3.move(root, "new_parent");
-		Assert.assertEquals("TEST_EDIT", n3.getParent().getNodeName());
+		n3.move(node, "new_parent");
+		Assert.assertEquals(any, n3.getParent().getNodeName());
 		n2.addTag("n2");
 		n3.addTag("n3");
 		n3 = tree.getNode("\\n3");
@@ -457,9 +418,15 @@ public class MdsTreeNodeTest
 		}
 		catch (final Exception exc)
 		{}
+	}
+
+	@Test
+	public void testDevices() throws MdsException
+	{
+		tree.edit();
 		try
 		{
-			n1.addDevice("device", "DIO2");
+			tree.addDevice("device", "DIO2"); // this prints the node name: why?
 		}
 		catch (final MdsException exc)
 		{
@@ -472,10 +439,8 @@ public class MdsTreeNodeTest
 	public void testTimestampedSegments() throws MdsException
 	{
 		final MDSplus.Array array_data = new MDSplus.Int32Array(array);
-		final MDSplus.Tree tree = new MDSplus.Tree("java_test1", -1);
-		final MDSplus.TreeNode ts_node = tree.getNode("test_seg:ts");
-		ts_node.beginTimestampedSegment(array_data);
-		Assert.assertEquals(1, ts_node.getNumSegments());
+		node.beginTimestampedSegment(array_data);
+		Assert.assertEquals(1, node.getNumSegments());
 		final long times[] = new long[10];
 		for (int i = 0; i < 10; ++i)
 		{
@@ -486,33 +451,28 @@ public class MdsTreeNodeTest
 		{ array[0], array[1], array[2] };
 		long subtimes[] = new long[]
 		{ times[0], times[1], times[2] };
-		ts_node.putTimestampedSegment(new MDSplus.Int32Array(subarray), subtimes);
+		node.putTimestampedSegment(new MDSplus.Int32Array(subarray), subtimes);
 		// putTimestampedSegment of size 4
 		subarray = new int[]
 		{ array[3], array[4], array[5], array[6] };
 		subtimes = new long[]
 		{ times[3], times[4], times[5], times[6] };
-		ts_node.putTimestampedSegment(new MDSplus.Int32Array(subarray), subtimes);
+		node.putTimestampedSegment(new MDSplus.Int32Array(subarray), subtimes);
 		// putTimestampedSegment of size 1
 		subarray = new int[]
 		{ array[7] };
 		subtimes = new long[]
 		{ times[7] };
-		ts_node.putTimestampedSegment(new MDSplus.Int32Array(subarray), subtimes);
+		node.putTimestampedSegment(new MDSplus.Int32Array(subarray), subtimes);
 		// putrow puts single element into segment
-		ts_node.putRow(new MDSplus.Int32(array[8]), times[8]);
+		node.putRow(new MDSplus.Int32(array[8]), times[8]);
 		// putrow puts two elements into segment
-		ts_node.putRow(new MDSplus.Int32(array[9]), times[9]);
-		Assert.assertArrayEquals(array, ts_node.getIntArray());
-		Assert.assertArrayEquals(times, ts_node.getDimensionAt(0).getLongArray());
+		node.putRow(new MDSplus.Int32(array[9]), times[9]);
+		Assert.assertArrayEquals(array, node.getIntArray());
+		Assert.assertArrayEquals(times, node.getDimensionAt(0).getLongArray());
 		// makeTimestampedSegment
-		ts_node.makeTimestampedSegment(array_data, times);
-		Assert.assertEquals(2, ts_node.getNumSegments());
-		Assert.assertEquals("[1Q,1Q,2Q,3Q,5Q,8Q,13Q,21Q,34Q,55Q]", ts_node.getSegmentDim(1).toString());
-		// IMAGES in segments //
-		tree.edit();
-		tree.addNode("test_seg:image", "SIGNAL");
-		tree.write();
-		tree.close();
+		node.makeTimestampedSegment(array_data, times);
+		Assert.assertEquals(2, node.getNumSegments());
+		Assert.assertEquals("[1Q,1Q,2Q,3Q,5Q,8Q,13Q,21Q,34Q,55Q]", node.getSegmentDim(1).toString());
 	}
 }

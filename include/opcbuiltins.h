@@ -481,5 +481,7 @@ OPC (   MakeOpaque,	MAKE_OPAQUE,	Make,	undef,		undef,		XX,YY,	OPAQUE,OPAQUE,2,2,
 OPC (   Dict,		DICT,		Dict,	undef,		undef,		XX,YY,	XX,YY,	0,254,	OK+I+S	)/*;%f9+ [a..z1:z2:dz..n@[this]]*/
 OPC (   Tuple,		TUPLE,		Tuple,	undef,		undef,		XX,YY,	XX,YY,	0,254,	OK+I+S	)/*;%f9+ [a..z1:z2:dz..n@[this]]*/
 OPC (   List,		LIST,		List,	undef,		undef,		XX,YY,	XX,YY,	0,254,	OK+I+S	)/*;%f9+ [a..z1:z2:dz..n@[this]]*/
+OPC (   Squeeze,	SQUEEZE,	Reshape,	undef,	undef,		XX,YY,	XX,YY,	1,2,	OK	)/*;%f9+ squeeze(array, [min ndim]) */
+OPC (   Flatten,	FLATTEN,	Reshape,	undef,	undef,		XX,YY,	XX,YY,	1,1,	OK	)/*;%f9+ flatten(array) */
 COM/*
 	.endm	;*/

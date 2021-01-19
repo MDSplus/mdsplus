@@ -370,11 +370,11 @@ class NI6368AI(Device):
             time.sleep(1)
 
             #self.device.debugPrint("Start device in acquisition thread %d"%(self.ai_fd)
-            status = NI6368AI.niLib.xseries_start_ai(c_int(self.ai_fd))
-            if(status != 0):
-                Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
-                self.error = self.ACQ_ERROR;                    
-                return
+            #status = NI6368AI.niLib.xseries_start_ai(c_int(self.ai_fd))
+            #if(status != 0):
+            #    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
+            #    self.error = self.ACQ_ERROR;                    
+            #    return
 
             #timeAt0 = timesIdx0[trigCount] + startTime;
             timeAt0 = startTime;
@@ -384,7 +384,7 @@ class NI6368AI(Device):
 
             while not self.stopReq:
                 try :
-                    status = NI6368AI.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(int(round(bufSize))), c_int(int(round(segmentSize))), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq,
+                    status = NI6368AI.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(self.ai_fd), c_int(len(self.chanMap)), chanFd_c, c_int(int(round(bufSize))), c_int(int(round(segmentSize))), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq,
                     c_int(self.device.getTree().shot), resNid_c)
                 except Exception as ex :
                     self.device.debugPrint('Acquisition thread start error : %s'%(str(ex)))
