@@ -44,9 +44,10 @@
 #define XmdsNendIdxNidOffset                                                   \
   "endIdxNidOffset" /* Offset from channel head to endidx */
 #define XmdsNnodesPerChannel                                                   \
-  "nodesPerChannel"                  /* Number of nodes per digitizer channel */
-#define XmdsNputOnApply "putOnApply" /* Put when a XmdsApplyAllXds is called   \
-                                      */
+  "nodesPerChannel" /* Number of nodes per digitizer channel */
+#define XmdsNputOnApply                                                        \
+  "putOnApply" /* Put when a XmdsApplyAllXds is called                         \
+                */
 
 /* External creation routines:
  */

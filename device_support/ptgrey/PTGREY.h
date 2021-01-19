@@ -1,5 +1,5 @@
 //#include <PvTypes.h>       //new 2019-09-19 for point grey streaming
-//connection #include <PvSystem.h>
+// connection #include <PvSystem.h>
 #include <PvBuffer.h>
 
 #include <PvDevice.h>

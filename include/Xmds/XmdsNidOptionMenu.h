@@ -36,13 +36,15 @@
 
 /* Resources */
 
-#define XmdsNnid "nid"               /* Nid */
-#define XmdsNnidOffset "nidOffset"   /* Nid offset */
-#define XmdsNputOnApply "putOnApply" /* Put when a XmdsApplyAllXds is called   \
-                                      */
+#define XmdsNnid "nid"             /* Nid */
+#define XmdsNnidOffset "nidOffset" /* Nid offset */
+#define XmdsNputOnApply                                                        \
+  "putOnApply" /* Put when a XmdsApplyAllXds is called                         \
+                */
 #define XmdsNlabelStrings "labelStrings" /* String table of button labels */
-#define XmdsNvalueStrings "valueStrings" /* String table of value expressions  \
-                                          */
+#define XmdsNvalueStrings                                                      \
+  "valueStrings" /* String table of value expressions                          \
+                  */
 #define XmdsNresetCallback                                                     \
   "resetCallback" /* User routine to call for resets (no nid) */
 #define XmdsNvalueChangedCallback                                              \

@@ -28,30 +28,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace mds = MDSplus;
 
+void throw_exception_msg() { throw mds::MdsException("test message"); }
 
-void throw_exception_msg() {
-    throw mds::MdsException("test message");
+void throw_exception_status() { throw mds::MdsException(5552368); }
+
+int main() {
+  BEGIN_TESTING(MdsException);
+
+  try {
+    throw_exception_msg();
+  } catch (mds::MdsException e) {
+    TEST1(std::string(e.what()) == "test message");
+  }
+
+  try {
+    throw_exception_status();
+  } catch (mds::MdsException e) {
+    TEST1(std::string(e.what()) == std::string(MdsGetMsg(5552368)));
+  }
+
+  END_TESTING;
 }
-
-void throw_exception_status() {
-    throw mds::MdsException(5552368);
-}
-
-
-int main()
-{
-    BEGIN_TESTING(MdsException);
-
-    try{ throw_exception_msg(); }
-    catch (mds::MdsException e) {
-	TEST1( std::string(e.what()) == "test message" );
-    }
-
-    try{ throw_exception_status(); }
-    catch (mds::MdsException e) {
-	TEST1( std::string(e.what()) == std::string(MdsGetMsg(5552368)) );
-    }
-
-    END_TESTING;
-}
-
