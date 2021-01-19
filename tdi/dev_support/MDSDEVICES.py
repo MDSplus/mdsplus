@@ -52,7 +52,7 @@ def MDSDEVICES(lock=threading.Lock(), cache=[None]):
                 tdidev = [
                     [k.rstrip(), v.rstrip()]
                     for k, v in tdidev.value.reshape(
-                            (int(tdidev.value.size/2), 2)).tolist()
+                        (int(tdidev.value.size/2), 2)).tolist()
                 ]
                 return tdidev+ans
             ans = [
@@ -69,6 +69,6 @@ def MDSDEVICES(lock=threading.Lock(), cache=[None]):
                 ans += importDevices(module)
             ans = numpy.array(list(dict(ans).items()))
             ans.view('%s,%s' % (
-                    ans.dtype, ans.dtype)).sort(order=['f0'], axis=0)
+                ans.dtype, ans.dtype)).sort(order=['f0'], axis=0)
             cache[0] = ans
     return cache[0]

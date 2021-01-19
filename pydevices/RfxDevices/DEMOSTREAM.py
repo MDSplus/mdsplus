@@ -3,22 +3,24 @@ from threading import Thread
 from ctypes import CDLL, c_int, c_char_p, c_short, byref
 from datetime import datetime
 
+
 class DEMOSTREAM(Device):
     """A Demo 1 Channel, 16 bit stream digitizer"""
-    parts=[
-        {'path':':ADDR','type':'text'}, {'path':':COMMENT','type':'text'},
-        {'path':':CLOCK_FREQ','type':'numeric', 'value':10000},
-        {'path':':TRIG_SOURCE','type':'numeric', 'value':0},
-        {'path':':SIG','type':'signal'},
-        {'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('SERVER','INIT',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)},
-        {'path':':START_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('SERVER','STORE',50,None),Method(None,'start_store',head))",
-        'options':('no_write_shot',)},
-        {'path':':STOP_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('SERVER','STORE',100,None),Method(None,'stop_store',head))",
-        'options':('no_write_shot',)},
+    parts = [
+        {'path': ':ADDR', 'type': 'text'}, {
+            'path': ':COMMENT', 'type': 'text'},
+        {'path': ':CLOCK_FREQ', 'type': 'numeric', 'value': 10000},
+        {'path': ':TRIG_SOURCE', 'type': 'numeric', 'value': 0},
+        {'path': ':SIG', 'type': 'signal'},
+        {'path': ':INIT_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('SERVER','INIT',50,None),Method(None,'init',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':START_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('SERVER','STORE',50,None),Method(None,'start_store',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':STOP_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('SERVER','STORE',100,None),Method(None,'stop_store',head))",
+         'options': ('no_write_shot',)},
     ]
     workers = {}
     NUM_CHUNK_SAMPLES = 1000
@@ -30,25 +32,23 @@ class DEMOSTREAM(Device):
 
     def checkWorker(self):
         if self.nid in self.workers:
-             if self.workers[self.nid].isAlive():
-                print( 'Avcquisition already running!!')
+            if self.workers[self.nid].isAlive():
+                print('Avcquisition already running!!')
                 return False
         return True
 
 
-########################AsynchStore class
+# AsynchStore class
     class AsynchStore(Thread):
 
-
-        def configure(self, deviceLib, addr, period, dataNode, triggerTime, event = None):
+        def configure(self, deviceLib, addr, period, dataNode, triggerTime, event=None):
             self.deviceLib = deviceLib
             self.addr = addr
             self.dataNode = dataNode
             self.period = period
             self.currTime = triggerTime
-            self.stopped = False;
+            self.stopped = False
             self.prevSecond = 0
-
 
         def run(self):
             DataArray = c_short * self.NUM_CHUNK_SAMPLES
@@ -56,21 +56,23 @@ class DEMOSTREAM(Device):
             self.dataNode.deleteData()
 
             while not self.stopped:
-                status = self.deviceLib.acquireChunk(c_char_p(self.addr), byref(rawChan), c_int(self.NUM_CHUNK_SAMPLES))
+                status = self.deviceLib.acquireChunk(
+                    c_char_p(self.addr), byref(rawChan), c_int(self.NUM_CHUNK_SAMPLES))
                 if status == -1:
                     print ('Acquisition Failed')
                     return
                 dataArr = Int16Array(rawChan)
                 startTime = Float64(self.currTime)
-                endTime = Float64(self.currTime + self.period * self.NUM_CHUNK_SAMPLES)
+                endTime = Float64(
+                    self.currTime + self.period * self.NUM_CHUNK_SAMPLES)
                 dim = Range(startTime, endTime, Float64(self.period))
                 self.dataNode.makeSegment(startTime, endTime, dim, dataArr)
                 self.currTime += self.period * self.NUM_CHUNK_SAMPLES
 
                 currSecond = datetime.now().second
                 if currSecond > self.prevSecond + 2:
-                   Event.setevent('DEMOSTREAM_READY')
-                   self.prevSecond = currSecond
+                    Event.setevent('DEMOSTREAM_READY')
+                    self.prevSecond = currSecond
 
         def stop(self):
             self.stopped = True
@@ -79,7 +81,7 @@ class DEMOSTREAM(Device):
 
     def start_store(self):
         try:
-           deviceLib = CDLL("libDemoAdcShr.so")
+            deviceLib = CDLL("libDemoAdcShr.so")
         except:
             print ('Cannot link to device library')
             return 0
@@ -102,7 +104,7 @@ class DEMOSTREAM(Device):
             return 0
 
         if not self.checkWorker():
-              return 0
+            return 0
 
         self.worker = self.AsynchStore()
         self.worker.daemon = True
@@ -113,9 +115,9 @@ class DEMOSTREAM(Device):
 
     def stop_store(self):
         try:
-           self.workers[self.nid].stop()
+            self.workers[self.nid].stop()
         except:
-           print('Cannot stop worker!!')
+            print('Cannot stop worker!!')
 #        self.worker.stop()
 
 #############################################################
@@ -133,7 +135,7 @@ class DEMOSTREAM(Device):
             print ('Missing Address in device')
             return 0
 
-        clockDict = {1000:1, 5000:2, 10000:3, 50000:4, 100000:5}
+        clockDict = {1000: 1, 5000: 2, 10000: 3, 50000: 4, 100000: 5}
         try:
             clockFreq = self.clock_freq.data()
             clockMode = clockDict[clockFreq]

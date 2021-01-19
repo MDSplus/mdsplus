@@ -35,6 +35,7 @@ class _ACQ1001_TR(acq400_base._ACQ400_TR_BASE):
     D-Tacq ACQ1001 transient support.
     """
 
+
 class_ch_dict = acq400_base.create_classes(
     _ACQ1001_TR, "ACQ1001_TR",
     list(_ACQ1001_TR.base_parts),

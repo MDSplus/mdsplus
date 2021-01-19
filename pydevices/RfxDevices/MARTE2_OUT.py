@@ -28,6 +28,8 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 @MC.BUILDER('TestOut', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_OUT(MC.MARTE2_COMPONENT):
-    inputs = [{'name': 'Uscita1', 'type': 'float32', 'dimensions': 0, 'parameters':{}}, {'name': 'Uscita2', 'type': 'int32', 'dimensions': [10],'parameters':{}}]
-    parameters = [{'name':'Parameter1', 'type': 'float32'}, {'name':'Parameter2', 'type': 'string'}]
+    inputs = [{'name': 'Uscita1', 'type': 'float32', 'dimensions': 0, 'parameters': {}}, {
+        'name': 'Uscita2', 'type': 'int32', 'dimensions': [10], 'parameters':{}}]
+    parameters = [{'name': 'Parameter1', 'type': 'float32'},
+                  {'name': 'Parameter2', 'type': 'string'}]
     parts = []

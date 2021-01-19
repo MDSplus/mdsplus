@@ -35,52 +35,59 @@ from threading import Thread
 from ctypes import CDLL, c_int, byref
 from time import sleep
 
-#class NI6682:
+# class NI6682:
+
+
 class NI6682(Device):
     """National Instrument 6682 device. This implementation uses only a limited set of the hardware facilities.
        In particular the board is just used as a Time-to-Digital Converter (TDC). """
     parts = [
-        {'path':':BOARD_ID', 'type':'numeric', 'value':0},
-        {'path':':COMMENT', 'type':'text'},
-        {'path':':CLOCK_SOURCE', 'type':'text', 'value':'PTP'},
+        {'path': ':BOARD_ID', 'type': 'numeric', 'value': 0},
+        {'path': ':COMMENT', 'type': 'text'},
+        {'path': ':CLOCK_SOURCE', 'type': 'text', 'value': 'PTP'},
     ]
 
     for i in range(3):
         parts.extend([
-            {'path':'.CHANNEL_PFI%d'%(i), 'type':'structure'},
-            {'path':'.CHANNEL_PFI%d:TRIG_MODE'%(i), 'type':'text', 'value':'EDGE_RISING'},
-            {'path':'.CHANNEL_PFI%d:DECIMATION'%(i), 'type':'numeric', 'value':1},
-            {'path':'.CHANNEL_PFI%d:TIME_SEC'%(i), 'type':'numeric', 'options':('no_write_model',)},
-            {'path':'.CHANNEL_PFI%d:TIME_NSEC'%(i), 'type':'numeric', 'options':('no_write_model',)},
+            {'path': '.CHANNEL_PFI%d' % (i), 'type': 'structure'},
+            {'path': '.CHANNEL_PFI%d:TRIG_MODE' % (
+                i), 'type': 'text', 'value': 'EDGE_RISING'},
+            {'path': '.CHANNEL_PFI%d:DECIMATION' % (
+                i), 'type': 'numeric', 'value': 1},
+            {'path': '.CHANNEL_PFI%d:TIME_SEC' % (
+                i), 'type': 'numeric', 'options': ('no_write_model',)},
+            {'path': '.CHANNEL_PFI%d:TIME_NSEC' % (
+                i), 'type': 'numeric', 'options': ('no_write_model',)},
         ])
     del(i)
     parts.extend([
-        {'path':':INITIALISE','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','INITIALISE',50,None),Method(None,'INITIALISE',head))",
-        'options':('no_write_shot',)},
-        {'path':':FINALISE','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','FINALISE',50,None),Method(None,'FINALISE',head))",
-        'options':('no_write_shot',)},
-        {'path':':START_STORE','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','START_STORE',50,None),Method(None,'START_STORE',head))",
-        'options':('no_write_shot',)},
-        {'path':':STOP_STORE','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','STOP_STORE',50,None),Method(None,'STOP_STORE',head))",
-        'options':('no_write_shot',)},
+        {'path': ':INITIALISE', 'type': 'action',
+         'valueExpr': "Action(Dispatch('PXI_SERVER','INITIALISE',50,None),Method(None,'INITIALISE',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':FINALISE', 'type': 'action',
+         'valueExpr': "Action(Dispatch('PXI_SERVER','FINALISE',50,None),Method(None,'FINALISE',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':START_STORE', 'type': 'action',
+         'valueExpr': "Action(Dispatch('PXI_SERVER','START_STORE',50,None),Method(None,'START_STORE',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':STOP_STORE', 'type': 'action',
+         'valueExpr': "Action(Dispatch('PXI_SERVER','STOP_STORE',50,None),Method(None,'STOP_STORE',head))",
+         'options': ('no_write_shot',)},
     ])
 
     # Corresponds to the nisync_edge_t type in nisynch.h
-    EDGE_RISING = 0;
-    EDGE_FALLING = 1;
-    EDGE_ANY = 2;
+    EDGE_RISING = 0
+    EDGE_FALLING = 1
+    EDGE_ANY = 2
 
     # A small subset of the enum type nisync_terminal_t in nisynch.h
-    PFI0 = 0;
-    PFI1 = 1;
-    PFI2 = 2;
+    PFI0 = 0
+    PFI1 = 1
+    PFI2 = 2
 
-    triggerModeDict = {'EDGE_RISING':EDGE_RISING, 'EDGE_FALLING':EDGE_FALLING, 'EDGE_ANY':EDGE_ANY}
-    channelsDict = {'PFI0':PFI0, 'PFI1':PFI1, 'PFI2':PFI2}
+    triggerModeDict = {'EDGE_RISING': EDGE_RISING,
+                       'EDGE_FALLING': EDGE_FALLING, 'EDGE_ANY': EDGE_ANY}
+    channelsDict = {'PFI0': PFI0, 'PFI1': PFI1, 'PFI2': PFI2}
 
     #libts = CDLL("/usr/local/lib/libtimestamping.so");
     libts = None
@@ -97,17 +104,16 @@ class NI6682(Device):
         #print "self.getFullPath() = ", self.getFullPath()
 
         try:
-            NI6682.ni6682Storemen[n];
+            NI6682.ni6682Storemen[n]
         except:
-            NI6682.ni6682Storemen[n] = self.Storeman(self);
+            NI6682.ni6682Storemen[n] = self.Storeman(self)
             print('NI6682::manageInfo(): INFO CREATED')
 
-        self.ni6682Storeman = NI6682.ni6682Storemen[n];
+        self.ni6682Storeman = NI6682.ni6682Storemen[n]
 
         print('NI6682::manageInfo(): INFO RESTORED')
 
         print("NI6682::manageInfo(): END")
-
 
     # INIT
     def INITIALISE(self):
@@ -116,7 +122,7 @@ class NI6682(Device):
         if NI6682.libts is None:
             NI6682.libts = CDLL("libtimestamping.so")
 
-        self.manageInfo();
+        self.manageInfo()
 
         try:
             boardId = self.board_id.data()
@@ -125,46 +131,48 @@ class NI6682(Device):
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        res = NI6682.libts.NI6682_Create(c_int(boardId));
+        res = NI6682.libts.NI6682_Create(c_int(boardId))
         print('NI6682_Create(): ', res)
 
-        res = NI6682.libts.NI6682_Initialise(c_int(boardId));
+        res = NI6682.libts.NI6682_Initialise(c_int(boardId))
         print('NI6682_Initialise(): ', res)
-
 
         for i in range(3):
 
-            tm = getattr(self, 'channel_pfi%d_trig_mode'%(i)).data();
+            tm = getattr(self, 'channel_pfi%d_trig_mode' % (i)).data()
 
             try:
                 self.triggerModeDict[tm]
                 # Better using __dict__ because getattr calls the constructor. Not possible why?
             except:
-                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
+                Data.execute('DevLogErr($1, $2)',
+                             self.nid, 'Invalid TRIG_MODE')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            print('CHANNEL_PFI%d.TRIG_MODE: '%(i), tm)
+            print('CHANNEL_PFI%d.TRIG_MODE: ' % (i), tm)
 
             try:
-                decimation = getattr(self, 'channel_pfi%d_decimation'%(i)).data();
-                if decimation < 1: # decimation must be greather than 0
-                    Data.execute('DevLogErr($1, $2)', self.nid, 'Decimation must be greater than 0: ', decimation)
+                decimation = getattr(
+                    self, 'channel_pfi%d_decimation' % (i)).data()
+                if decimation < 1:  # decimation must be greather than 0
+                    Data.execute('DevLogErr($1, $2)', self.nid,
+                                 'Decimation must be greater than 0: ', decimation)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
             except:
-                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
+                Data.execute('DevLogErr($1, $2)',
+                             self.nid, 'Invalid TRIG_MODE')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            print('CHANNEL_PFI%d.DECIMATION: '%(i), decimation)
+            print('CHANNEL_PFI%d.DECIMATION: ' % (i), decimation)
 
         # If executed for the first time
-
 
     # STORE
     def FINALISE(self):
 
         print('FINALISE')
 
-        self.manageInfo();
+        self.manageInfo()
 
-        #self.restoreInfo();
+        # self.restoreInfo();
         try:
             boardId = self.board_id.data()
             print('BOARD_ID: ' + str(boardId))
@@ -172,82 +180,88 @@ class NI6682(Device):
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-
-        res = NI6682.libts.NI6682_Finalise(c_int(boardId));
+        res = NI6682.libts.NI6682_Finalise(c_int(boardId))
         print('NI6682_Finalise(): ', res)
 
-        res = NI6682.libts.NI6682_Destroy(c_int(boardId));
+        res = NI6682.libts.NI6682_Destroy(c_int(boardId))
         print('NI6682_Destroy(): ', res)
-
 
     class Storeman(Thread):
         ''' This class is used to create the thread keeping empty the NI6682 buffer. '''
 
         def __init__(self, ni6682Obj):
 
-            super(self.__class__, self).__init__();
-            self.ni6682Obj = ni6682Obj;
-            self.keepWorking = True;
+            super(self.__class__, self).__init__()
+            self.ni6682Obj = ni6682Obj
+            self.keepWorking = True
 
             print("Storeman::__init__():", self.ni6682Obj)
 
         def run(self):
 
             print("Storeman::run(): STARTED")
-            boardId = self.ni6682Obj.board_id.data();
+            boardId = self.ni6682Obj.board_id.data()
 
             # Arm the channels
-            for i in range(0,3):
+            for i in range(0, 3):
 
-                tm = self.ni6682Obj.triggerModeDict[getattr(self.ni6682Obj, 'channel_pfi%d_trig_mode'%(i)).data()];
-                decimation = getattr(self.ni6682Obj, 'channel_pfi%d_decimation'%(i)).data();
+                tm = self.ni6682Obj.triggerModeDict[getattr(
+                    self.ni6682Obj, 'channel_pfi%d_trig_mode' % (i)).data()]
+                decimation = getattr(
+                    self.ni6682Obj, 'channel_pfi%d_decimation' % (i)).data()
 
-                print("Storeman::run(): boardId: ", boardId, "channel PFI%d,"%(i), " tm: ", tm, " decimation: ", decimation)
+                print("Storeman::run(): boardId: ", boardId, "channel PFI%d," %
+                      (i), " tm: ", tm, " decimation: ", decimation)
 
-                self.ni6682Obj.libts.NI6682_ArmChannel(c_int(boardId), c_int(i), c_int(tm), c_int(decimation));
+                self.ni6682Obj.libts.NI6682_ArmChannel(
+                    c_int(boardId), c_int(i), c_int(tm), c_int(decimation))
 
             # Main loop of the thread
             while self.keepWorking:
 
-                for i in range(0,3):
+                for i in range(0, 3):
 
-                    sec = c_int();
-                    nsec = c_int();
+                    sec = c_int()
+                    nsec = c_int()
 
                     # Get the data
-                    tmp = self.ni6682Obj.libts.NI6682_GetTimestamp(c_int(boardId), c_int(i), byref(sec), byref(nsec));
+                    tmp = self.ni6682Obj.libts.NI6682_GetTimestamp(
+                        c_int(boardId), c_int(i), byref(sec), byref(nsec))
                     while tmp != -1:
 
-                        t = Int64(sec.value*1000000000) + Int64(nsec.value);
+                        t = Int64(sec.value*1000000000) + Int64(nsec.value)
                         #t = Int64(sec.value<<32) + Int64(nsec.value);
                         #print "Storeman::run(): time = ", t.value
 
                         # Int64Array([sec.value]) is necessary, Int64Array(sec.value) does not work.
-                        getattr(self.ni6682Obj, 'channel_pfi%d_time_sec'%(i)).putRow(Int64(1), Int64Array([sec.value]), t);
-                        getattr(self.ni6682Obj, 'channel_pfi%d_time_nsec'%(i)).putRow(Int64(1), Int64Array([nsec.value]), t);
+                        getattr(self.ni6682Obj, 'channel_pfi%d_time_sec' %
+                                (i)).putRow(Int64(1), Int64Array([sec.value]), t)
+                        getattr(self.ni6682Obj, 'channel_pfi%d_time_nsec' % (
+                            i)).putRow(Int64(1), Int64Array([nsec.value]), t)
 
-                        tmp = self.ni6682Obj.libts.NI6682_GetTimestamp(c_int(boardId), c_int(i), byref(sec), byref(nsec));
+                        tmp = self.ni6682Obj.libts.NI6682_GetTimestamp(
+                            c_int(boardId), c_int(i), byref(sec), byref(nsec))
 
-                sleep(0.25);
+                sleep(0.25)
 
             # Disarm the channels
-            for i in range(0,3):
+            for i in range(0, 3):
 
-                self.ni6682Obj.libts.NI6682_DisarmChannel(c_int(boardId), c_int(i));
+                self.ni6682Obj.libts.NI6682_DisarmChannel(
+                    c_int(boardId), c_int(i))
                 pass
 
             print("Storeman::run(): STOPPED")
 
         def stop(self):
             ''' Stops the thread emptying the NI6682 buffers. '''
-            self.keepWorking = False;
-
+            self.keepWorking = False
 
     def START_STORE(self):
 
         print('START_STORE')
 
-        self.manageInfo();
+        self.manageInfo()
 
         # Check data
         try:
@@ -256,15 +270,14 @@ class NI6682(Device):
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        #self.restoreInfo();
-        self.ni6682Storeman.start();
-
+        # self.restoreInfo();
+        self.ni6682Storeman.start()
 
     def STOP_STORE(self):
 
         print('STOP_STORE')
 
-        self.manageInfo();
+        self.manageInfo()
 
         # Check data
         try:
@@ -273,9 +286,8 @@ class NI6682(Device):
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
+        # self.restoreInfo();
+        self.ni6682Storeman.stop()
 
-        #self.restoreInfo();
-        self.ni6682Storeman.stop();
-
-        del self.ni6682Storeman;
-        del NI6682.ni6682Storemen[self.getNid()];
+        del self.ni6682Storeman
+        del NI6682.ni6682Storemen[self.getNid()]

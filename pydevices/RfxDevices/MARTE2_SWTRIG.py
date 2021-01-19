@@ -31,33 +31,39 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('SWTrig', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
 class MARTE2_SWTRIG(MC.MARTE2_COMPONENT):
     outputs = [
-        {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Time', 'type': 'int32', 'dimensions': 0, 'parameters':{}}]
+        {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Time', 'type': 'int32', 'dimensions': 0, 'parameters': {}}]
     for trigIdx in range(8):
-        outputs.append({'name': 'Trigger'+str(trigIdx+1), 'type': 'uint8', 'dimensions': -1, 'parameters':[
-          {'name':'TriggerEvent', 'type':'string', 'value':''},
-          {'name':'WaitCycles', 'type': 'int32', 'value':0},
-          {'name':'TriggerCycles', 'type': 'int32', 'value':0}]})
+        outputs.append({'name': 'Trigger'+str(trigIdx+1), 'type': 'uint8', 'dimensions': -1, 'parameters': [
+            {'name': 'TriggerEvent', 'type': 'string', 'value': ''},
+            {'name': 'WaitCycles', 'type': 'int32', 'value': 0},
+            {'name': 'TriggerCycles', 'type': 'int32', 'value': 0}]})
     parameters = [
-        {'name':'StartEvent', 'type': 'string'},
-        {'name':'Frequency', 'type': 'float32'},
-        {'name':'StartTime', 'type': 'float32'},
-        {'name':'CpuMask', 'type': 'uint32'},
-        {'name':'StackSize', 'type': 'uint32'}
+        {'name': 'StartEvent', 'type': 'string'},
+        {'name': 'Frequency', 'type': 'float32'},
+        {'name': 'StartTime', 'type': 'float32'},
+        {'name': 'CpuMask', 'type': 'uint32'},
+        {'name': 'StackSize', 'type': 'uint32'}
     ]
     parts = []
 
     def prepareMarteInfo(self):
-      print('('+self.getFullPath()+'.parameters.par_3:value):1000000 : (1./'+self.getFullPath()+'.parameters.par_2:value)')
-      self.timebase.putData(self.getTree().tdiCompile('('+self.getFullPath()+'.parameters.par_3:value):1000000 : (1./'+self.getFullPath()+'.parameters.par_2:value)'))
-#declare only outputs for which event name is specified
-      for trigIdx in range(8):
-        try:
-          eventName = getattr(self, 'outputs_trigger%d_parameters_par_1_value'%(trigIdx + 1)).data()
-          print(eventName)
-          if eventName == '':
-            getattr(self, 'outputs_trigger%d_dimensions'%(trigIdx + 1)).putData(Float32(-1))
-          else:
-            getattr(self, 'outputs_trigger%d_dimensions'%(trigIdx + 1)).putData(Float32(0))
-        except:
-          getattr(self, 'outputs_trigger%d_dimensions'%(trigIdx + 1)).putData(Float32(-1))
+        print('('+self.getFullPath()+'.parameters.par_3:value):1000000 : (1./' +
+              self.getFullPath()+'.parameters.par_2:value)')
+        self.timebase.putData(self.getTree().tdiCompile(
+            '('+self.getFullPath()+'.parameters.par_3:value):1000000 : (1./'+self.getFullPath()+'.parameters.par_2:value)'))
+# declare only outputs for which event name is specified
+        for trigIdx in range(8):
+            try:
+                eventName = getattr(
+                    self, 'outputs_trigger%d_parameters_par_1_value' % (trigIdx + 1)).data()
+                print(eventName)
+                if eventName == '':
+                    getattr(self, 'outputs_trigger%d_dimensions' %
+                            (trigIdx + 1)).putData(Float32(-1))
+                else:
+                    getattr(self, 'outputs_trigger%d_dimensions' %
+                            (trigIdx + 1)).putData(Float32(0))
+            except:
+                getattr(self, 'outputs_trigger%d_dimensions' %
+                        (trigIdx + 1)).putData(Float32(-1))

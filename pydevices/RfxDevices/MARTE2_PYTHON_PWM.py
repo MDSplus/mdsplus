@@ -32,7 +32,7 @@ except ImportError:
 else:
     BUILDER = MP.BUILDER(piPWMOut)
 
+
 @BUILDER
 class MARTE2_PYTHON_PWM(MP.MARTE2_PYTHON):
     pass
-

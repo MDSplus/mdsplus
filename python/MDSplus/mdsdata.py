@@ -23,102 +23,130 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
-import numpy as _N, ctypes as _C
 
-_ver=_mimport('version')
-_dsc=_mimport('descriptor')
-_exc=_mimport('mdsExceptions')
+import numpy as _N
+import ctypes as _C
+
+_ver = _mimport('version')
+_dsc = _mimport('descriptor')
+_exc = _mimport('mdsExceptions')
 
 MDSplusException = _exc.MDSplusException
 #### Load Shared Libraries Referenced #######
 #
-_MdsShr=_ver.load_library('MdsShr')
-_MdsMisc=_ver.load_library('MdsMisc')
+_MdsShr = _ver.load_library('MdsShr')
+_MdsMisc = _ver.load_library('MdsMisc')
 #
 #############################################
+
+
 class staticmethodX(object):
     def __get__(self, inst, cls):
         if inst is not None:
             return self.method.__get__(inst)
         return self.static
+
     def __init__(self, method):
         self.method = method
-    def static(mself,self,*args,**kwargs):
-        if self is None: return None
-        return mself.method(Data(self),*args,**kwargs)
+
+    def static(mself, self, *args, **kwargs):
+        if self is None:
+            return None
+        return mself.method(Data(self), *args, **kwargs)
+
 
 def _unwrap(args):
-    if len(args)==1 and isinstance(args[0],tuple):
+    if len(args) == 1 and isinstance(args[0], tuple):
         return _unwrap(args[0])
     return args
-def TdiCompile(expression,*args,**kwargs):
-    """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    return _cmp.COMPILE(expression,*_unwrap(args))._setTree(**kwargs).evaluate()
 
-def TdiData(mdsobject,**kwargs):
+
+def TdiCompile(expression, *args, **kwargs):
+    """Compile a TDI expression. Format: TdiCompile('expression-string')"""
+    return _cmp.COMPILE(expression, *_unwrap(args))._setTree(**kwargs).evaluate()
+
+
+def TdiData(mdsobject, **kwargs):
     """Convert MDSplus object into primitive data type. Format: TdiData(mdsobject)"""
     return _cmp.DATA(mdsobject)._setTree(**kwargs).evaluate()
 
-def TdiDecompile(mdsobject,**kwargs):
+
+def TdiDecompile(mdsobject, **kwargs):
     """Decompile an MDSplus object. Format: TdiDecompile(mdsobject)"""
     return _ver.tostr(_cmp.DECOMPILE(mdsobject)._setTree(**kwargs).evaluate())
 
-def TdiEvaluate(mdsobject,**kwargs):
+
+def TdiEvaluate(mdsobject, **kwargs):
     """Evaluate an MDSplus object. Format: TdiEvaluate(mdsobject)"""
     return _cmp.EVALUATE(mdsobject)._setTree(**kwargs).evaluate()
 
-def TdiExecute(expression,*args,**kwargs):
+
+def TdiExecute(expression, *args, **kwargs):
     """Compile and evaluate a TDI expression. Format: TdiExecute('expression-string')"""
-    return _cmp.EXECUTE(expression,*_unwrap(args))._setTree(**kwargs).evaluate()
-tdi=TdiExecute
+    return _cmp.EXECUTE(expression, *_unwrap(args))._setTree(**kwargs).evaluate()
+
+
+tdi = TdiExecute
+
 
 class NoTreeRef(object):
     @property
     def tree(self): return
+
     @tree.setter
-    def tree(self,val): return
-    def _setTree(self,*a,**kw): return self
-    def __hasBadTreeReferences__(self,tree):
+    def tree(self, val): return
+
+    def _setTree(self, *a, **kw): return self
+
+    def __hasBadTreeReferences__(self, tree):
         return False
-    def __fixTreeReferences__(self,tree):
+
+    def __fixTreeReferences__(self, tree):
         return self
+
 
 class TreeRef(object):
     tree = None
-    def _setTree(self,*args,**kwargs):
-        if 'tree' in kwargs and isinstance(kwargs['tree'],_tre.Tree):
+
+    def _setTree(self, *args, **kwargs):
+        if 'tree' in kwargs and isinstance(kwargs['tree'], _tre.Tree):
             self.tree = kwargs['tree']
             return self
-        if len(args) == 1 and isinstance(args[0],_tre.Tree):
+        if len(args) == 1 and isinstance(args[0], _tre.Tree):
             self.tree = args[0]
             return self
         for arg in args:
-            if isinstance(arg,TreeRef) and isinstance(arg.tree,_tre.Tree):
+            if isinstance(arg, TreeRef) and isinstance(arg.tree, _tre.Tree):
                 self.tree = arg.tree
                 return self
         return self
-    def __hasBadTreeReferences__(self,tree):
-       return self.tree != tree
-    def __fixTreeReferences__(self,tree):
+
+    def __hasBadTreeReferences__(self, tree):
+        return self.tree != tree
+
+    def __fixTreeReferences__(self, tree):
         self.tree = tree
         return self
+
 
 class Data(NoTreeRef):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
-    __array_priority__ = 100. ##### Needed to force things like numpy-array * mdsplus-data to use our __rmul__
+    __array_priority__ = 100.  # Needed to force things like numpy-array * mdsplus-data to use our __rmul__
 
-    _units=None
-    _error=None
-    _help=None
-    _validation=None
-    __descriptor=None
+    _units = None
+    _error = None
+    _help = None
+    _validation = None
+    __descriptor = None
+
     @property  # numpy array
     def __array_interface__(self):
         data = _N.array(self.data(), copy=False)
@@ -126,51 +154,55 @@ class Data(NoTreeRef):
         aif['data'] = data
         return aif
 
-    def __new__(cls,*value):
+    def __new__(cls, *value):
         """Convert a python object to a MDSobject Data object
         @param value: Any value
         @rtype: Data
         """
-        if cls is not Data or len(value)==0:
+        if cls is not Data or len(value) == 0:
             return object.__new__(cls)
         value = value[0]
         if value is None:
             return EmptyData
-        if isinstance(value,(Data,_dsc.Descriptor)):
+        if isinstance(value, (Data, _dsc.Descriptor)):
             return value
-        if isinstance(value,(_N.ScalarType,_C._SimpleCData)):
+        if isinstance(value, (_N.ScalarType, _C._SimpleCData)):
             cls = _scr.Scalar
-        elif isinstance(value,(_N.ndarray,_C.Array)):
+        elif isinstance(value, (_N.ndarray, _C.Array)):
             cls = _arr.Array
-        elif isinstance(value,(tuple,list)):
+        elif isinstance(value, (tuple, list)):
             cls = _apd.List
-        elif isinstance(value,dict):
+        elif isinstance(value, dict):
             cls = _apd.Dictionary
-        elif isinstance(value,slice):
-            return _cmp.BUILD_RANGE.__new__(_cmp.BUILD_RANGE,value).evaluate()
+        elif isinstance(value, slice):
+            return _cmp.BUILD_RANGE.__new__(_cmp.BUILD_RANGE, value).evaluate()
         else:
-            raise TypeError('Cannot make MDSplus data type from type: %s' % (value.__class__,))
-        return cls.__new__(cls,value)
+            raise TypeError(
+                'Cannot make MDSplus data type from type: %s' % (value.__class__,))
+        return cls.__new__(cls, value)
 
-    def getXYSignal(self,x=None,xmin=None,xmax=None,num=2048):
+    def getXYSignal(self, x=None, xmin=None, xmax=None, num=2048):
         num = _C.c_int32(num)
         xmin = Data(xmin)
         xmax = Data(xmax)
         xd = _dsc.Descriptor_xd()
         if self.tree is None:
-          status = _MdsMisc. GetXYSignalXd(               self.ref,Data.byref(x),Data.byref(xmin),Data.byref(xmax),num,xd.ref)
+            status = _MdsMisc. GetXYSignalXd(self.ref, Data.byref(
+                x), Data.byref(xmin), Data.byref(xmax), num, xd.ref)
         else:
-          status = _MdsMisc._GetXYSignalXd(self.tree.pctx,self.ref,Data.byref(x),Data.byref(xmin),Data.byref(xmax),num,xd.ref)
+            status = _MdsMisc._GetXYSignalXd(self.tree.pctx, self.ref, Data.byref(
+                x), Data.byref(xmin), Data.byref(xmax), num, xd.ref)
         _exc.checkStatus(status)
         return xd.value
 
-    def __getattr__(self,name):
+    def __getattr__(self, name):
         def getXxx():
             return self.__getattribute__(name[3:].lower())
         if name.startswith('get'):
             return getXxx
+
         def setXxx(value):
-            self.__setattr__(name[3:].lower(),value)
+            self.__setattr__(name[3:].lower(), value)
             return self
         if name.startswith('set'):
             return setXxx
@@ -195,61 +227,65 @@ class Data(NoTreeRef):
         @rtype: Data"""
         return _cmp.UNITS_OF(self).evaluate()
 
-    def getDimensionAt(self,idx=0):
+    def getDimensionAt(self, idx=0):
         """Return dimension of object
         @param idx: Index of dimension
         @type idx: int
         @rtype: Data"""
-        return _cmp.DIM_OF(self,idx).evaluate()
-    dim_of=getDimensionAt
+        return _cmp.DIM_OF(self, idx).evaluate()
+    dim_of = getDimensionAt
 
     @property
     def units(self):
         """units associated with this data."""
         return _cmp.UNITS(self).evaluate()
+
     @units.setter
-    def units(self,units):
+    def units(self, units):
         if units is None:
-            if hasattr(self,'_units'):
-                delattr(self,'_units')
+            if hasattr(self, '_units'):
+                delattr(self, '_units')
         else:
-            self._units=units
+            self._units = units
 
     @property
     def error(self):
         """error property of this data."""
         return _cmp.ERROR_OF(self).evaluate()
+
     @error.setter
-    def error(self,error):
+    def error(self, error):
         if error is None:
-            if hasattr(self,'_error'):
-                delattr(self,'_error')
+            if hasattr(self, '_error'):
+                delattr(self, '_error')
         else:
-            self._error=error
+            self._error = error
 
     @property
     def help(self):
         """help property of this node."""
         return _cmp.HELP_OF(self).evaluate()
+
     @help.setter
-    def help(self,help):
+    def help(self, help):
         if help is None:
-            if hasattr(self,'_help'):
-                delattr(self,'_help')
+            if hasattr(self, '_help'):
+                delattr(self, '_help')
         else:
-            self._help=help
+            self._help = help
 
     @property
     def validation(self):
         """Validation property of this node"""
         return _cmp.VALIDATION_OF(self).evaluate()
+
     @validation.setter
-    def validation(self,validation):
+    def validation(self, validation):
         if validation is None:
-            if hasattr(self,'_validation'):
-                delattr(self,'_validation')
+            if hasattr(self, '_validation'):
+                delattr(self, '_validation')
         else:
-            self._validation=validation
+            self._validation = validation
 
     """ binary operator methods (order: https://docs.python.org/2/library/operator.html) """
     @staticmethod
@@ -258,128 +294,178 @@ class Data(NoTreeRef):
             return bool(data)
         return data
 
-    if _ver.npver < (1,8):  # e.g. on fc18 slower but more compatible
-        def __lt__(self,y): return _cmp.LT(self,y).evaluate().bool()
-        def __rlt__(self,y): return  Data(y)<self
-        def __le__(self,y): return _cmp.LE(self,y).evaluate().bool()
-        def __rle__(self,y): return  Data(y)<=self
-        def __eq__(self,y): return _cmp.EQ(self,y).evaluate().bool()
-        def __req__(self,y): return  Data(y)==self
-        def __ne__(self,y): return _cmp.NE(self,y).evaluate().bool()
-        def __rne__(self,y): return Data(y)!=self
-        def __gt__(self,y): return _cmp.GT(self,y).evaluate().bool()
-        def __rgt__(self,y): return  Data(y)>self
-        def __ge__(self,y): return _cmp.GE(self,y).evaluate().bool()
-        def __rge__(self,y): return  Data(y)>=self
-    else:
-        def __lt__(self,y): return self.__bool(self.data() < y)
-        def __rlt__(self,y): return self.__bool(y < self.data())
-        def __le__(self,y): return self.__bool(self.data() <= y)
-        def __rle__(self,y): return self.__bool(y <= self.data())
-        def __eq__(self,y): return self.__bool(self.data() == y)
-        def __req__(self,y): return self.__bool(y == self.data())
-        def __ne__(self,y): return self.__bool(self.data() != y)
-        def __rne__(self,y): return self.__bool(y != self.data())
-        def __gt__(self,y): return self.__bool(self.data() > y)
-        def __rgt__(self,y): return self.__bool(y > self.data())
-        def __ge__(self,y): return self.__bool(self.data() >= y)
-        def __rge__(self,y): return self.__bool(y >= self.data())
+    if _ver.npver < (1, 8):  # e.g. on fc18 slower but more compatible
+        def __lt__(self, y): return _cmp.LT(self, y).evaluate().bool()
 
-    def __add__(self,y):
-        return _cmp.ADD(self,y).evaluate()
-    def __radd__(self,y):
+        def __rlt__(self, y): return Data(y) < self
+
+        def __le__(self, y): return _cmp.LE(self, y).evaluate().bool()
+
+        def __rle__(self, y): return Data(y) <= self
+
+        def __eq__(self, y): return _cmp.EQ(self, y).evaluate().bool()
+
+        def __req__(self, y): return Data(y) == self
+
+        def __ne__(self, y): return _cmp.NE(self, y).evaluate().bool()
+
+        def __rne__(self, y): return Data(y) != self
+
+        def __gt__(self, y): return _cmp.GT(self, y).evaluate().bool()
+
+        def __rgt__(self, y): return Data(y) > self
+
+        def __ge__(self, y): return _cmp.GE(self, y).evaluate().bool()
+
+        def __rge__(self, y): return Data(y) >= self
+    else:
+        def __lt__(self, y): return self.__bool(self.data() < y)
+
+        def __rlt__(self, y): return self.__bool(y < self.data())
+
+        def __le__(self, y): return self.__bool(self.data() <= y)
+
+        def __rle__(self, y): return self.__bool(y <= self.data())
+
+        def __eq__(self, y): return self.__bool(self.data() == y)
+
+        def __req__(self, y): return self.__bool(y == self.data())
+
+        def __ne__(self, y): return self.__bool(self.data() != y)
+
+        def __rne__(self, y): return self.__bool(y != self.data())
+
+        def __gt__(self, y): return self.__bool(self.data() > y)
+
+        def __rgt__(self, y): return self.__bool(y > self.data())
+
+        def __ge__(self, y): return self.__bool(self.data() >= y)
+
+        def __rge__(self, y): return self.__bool(y >= self.data())
+
+    def __add__(self, y):
+        return _cmp.ADD(self, y).evaluate()
+
+    def __radd__(self, y):
         return Data(y)+self
-    def __iadd__(self,y):
+
+    def __iadd__(self, y):
         self._value = (self+y)._value
 
-    def __and__(self,y):
-        return _cmp.IAND(self,y).evaluate()
-    def __rand__(self,y):
-        return Data(y)&self
-    def __iand__(self,y):
-        self._value = (self&y)._value
+    def __and__(self, y):
+        return _cmp.IAND(self, y).evaluate()
 
-    def __div__(self,y):
-        return _cmp.DIVIDE(self,y).evaluate()
-    def __rdiv__(self,y):
+    def __rand__(self, y):
+        return Data(y) & self
+
+    def __iand__(self, y):
+        self._value = (self & y)._value
+
+    def __div__(self, y):
+        return _cmp.DIVIDE(self, y).evaluate()
+
+    def __rdiv__(self, y):
         return Data(y)/self
-    def __idiv__(self,y):
-        self._value = (self/y)._value
-    __truediv__=__div__
-    __rtruediv__=__rdiv__
-    __itruediv__=__idiv__
 
-    def __floordiv__(self,y):
-        return _cmp.FLOOR(_cmp.DIVIDE(self,y)).evaluate()
-    def __rfloordiv__(self,y):
+    def __idiv__(self, y):
+        self._value = (self/y)._value
+    __truediv__ = __div__
+    __rtruediv__ = __rdiv__
+    __itruediv__ = __idiv__
+
+    def __floordiv__(self, y):
+        return _cmp.FLOOR(_cmp.DIVIDE(self, y)).evaluate()
+
+    def __rfloordiv__(self, y):
         return Data(y)//self
-    def __ifloordiv__(self,y):
+
+    def __ifloordiv__(self, y):
         self._value = (self//y)._value
 
-    def __lshift__(self,y):
-        return _cmp.SHIFT_LEFT(self,y).evaluate()
-    def __rlshift__(self,y):
-        return Data(y)<<self
-    def __ilshift__(self,y):
-        self._value = (self<<y)._value
+    def __lshift__(self, y):
+        return _cmp.SHIFT_LEFT(self, y).evaluate()
 
-    def __mod__(self,y):
-        return _cmp.MOD(self,y).evaluate()
-    def __rmod__(self,y):
-        return Data(y)%self
-    def __imod__(self,y):
-        self._value = (self%y)._value
+    def __rlshift__(self, y):
+        return Data(y) << self
 
-    def __sub__(self,y):
-        return _cmp.SUBTRACT(self,y).evaluate()
-    def __rsub__(self,y):
+    def __ilshift__(self, y):
+        self._value = (self << y)._value
+
+    def __mod__(self, y):
+        return _cmp.MOD(self, y).evaluate()
+
+    def __rmod__(self, y):
+        return Data(y) % self
+
+    def __imod__(self, y):
+        self._value = (self % y)._value
+
+    def __sub__(self, y):
+        return _cmp.SUBTRACT(self, y).evaluate()
+
+    def __rsub__(self, y):
         return Data(y)-self
-    def __isub__(self,y):
+
+    def __isub__(self, y):
         self._value = (self-y)._value
 
-    def __rshift__(self,y):
-        return _cmp.SHIFT_RIGHT(self,y).evaluate()
-    def __rrshift__(self,y):
-        return Data(y)>>self
-    def __irshift__(self,y):
-        self._value = (self>>y)._value
+    def __rshift__(self, y):
+        return _cmp.SHIFT_RIGHT(self, y).evaluate()
 
-    def __mul__(self,y):
-        return _cmp.MULTIPLY(self,y).evaluate()
-    def __rmul__(self,y):
+    def __rrshift__(self, y):
+        return Data(y) >> self
+
+    def __irshift__(self, y):
+        self._value = (self >> y)._value
+
+    def __mul__(self, y):
+        return _cmp.MULTIPLY(self, y).evaluate()
+
+    def __rmul__(self, y):
         return Data(y)*self
-    def __imul__(self,y):
+
+    def __imul__(self, y):
         self._value = (self*y)._value
 
-    def __or__(self,y):
-        return _cmp.IOR(self,y).evaluate()
-    def __ror__(self,y):
-        return Data(y)|self
-    def __ior__(self,y):
-        self._value = (self|y)._value
+    def __or__(self, y):
+        return _cmp.IOR(self, y).evaluate()
 
-    def __pow__(self,y):
-        return _cmp.POWER(self,y).evaluate()
-    def __rpow__(self,y):
+    def __ror__(self, y):
+        return Data(y) | self
+
+    def __ior__(self, y):
+        self._value = (self | y)._value
+
+    def __pow__(self, y):
+        return _cmp.POWER(self, y).evaluate()
+
+    def __rpow__(self, y):
         return Data(y)**self
-    def __ipow__(self,y):
+
+    def __ipow__(self, y):
         self._value = (self**y)._value
 
-    def __xor__(self,y):
-        return bool(self)^y
-    def __rxor__(self,y):
-        return y^bool(self)
-    def __ixor__(self,y):
-        self._value = (self^y)._value
+    def __xor__(self, y):
+        return bool(self) ^ y
+
+    def __rxor__(self, y):
+        return y ^ bool(self)
+
+    def __ixor__(self, y):
+        self._value = (self ^ y)._value
 
     def __abs__(self):
         return _cmp.ABS(self).evaluate()
+
     def __invert__(self):
         return _cmp.INOT(self).evaluate()
+
     def __neg__(self):
         return _cmp.UNARY_MINUS(self).evaluate()
+
     def __pos__(self):
         return _cmp.UNARY_PLUS(self).evaluate()
+
     def __nonzero__(self):
         ans = self != 0
         if isinstance(ans, _N.ndarray):
@@ -391,25 +477,25 @@ class Data(NoTreeRef):
         @rtype: string"""
         return str(_cmp.DECOMPILE(self).evaluate())
 
-    def __getitem__(self,y):
+    def __getitem__(self, y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        ans = _cmp.SUBSCRIPT(self,y).evaluate()
-        if isinstance(ans,_arr.Array) and ans.shape[0]==0:
+        ans = _cmp.SUBSCRIPT(self, y).evaluate()
+        if isinstance(ans, _arr.Array) and ans.shape[0] == 0:
             raise IndexError
         return ans
 
     def __bool__(self):
         """Return boolean
         @rtype: Bool"""
-        if isinstance(self,_arr.Array):
-            return self._value!=0
-        elif isinstance(self,_cmp.Compound) and hasattr(self,'value_of'):
+        if isinstance(self, _arr.Array):
+            return self._value != 0
+        elif isinstance(self, _cmp.Compound) and hasattr(self, 'value_of'):
             return self.value_of().bool()
         else:
-            ans=int(self)
+            ans = int(self)
             return (ans & 1) == 1
-    bool=__bool__
+    bool = __bool__
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
@@ -433,12 +519,12 @@ class Data(NoTreeRef):
         @rtype: float"""
         return float(_cmp.DATA(_cmp.FT_FLOAT(self)).evaluate()._value)
 
-    def __round__(self,*arg):
+    def __round__(self, *arg):
         """Round value to next integer: x.__round__() <==> round(x)
         @rtype: Data"""
-        return round(self._value,*arg)
+        return round(self._value, *arg)
 
-    def compare(self,value):
+    def compare(self, value):
         """Compare this data with argument
         @param value: data to compare to
         @type value: Data
@@ -448,34 +534,34 @@ class Data(NoTreeRef):
         return bool(
             _MdsShr.MdsCompareXd(self.ref,
                                  Data.byref(value)))
+
     @property
     def descriptor(self):  # keep ref of descriptor with instance
         self.__descriptor = self._descriptor
         return self.__descriptor
 
     @staticmethod
-    def compile(*args,**kwargs):
+    def compile(*args, **kwargs):
         """Static method (routine in C++) which compiles the expression (via TdiCompile())
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
-        return TdiCompile(*args,**kwargs)
+        return TdiCompile(*args, **kwargs)
 
     @staticmethod
-    def execute(*args,**kwargs):
+    def execute(*args, **kwargs):
         """Execute and expression inserting optional arguments into the expression before evaluating
         @rtype: Data"""
-        return TdiExecute(*args,**kwargs)
+        return TdiExecute(*args, **kwargs)
 
     @staticmethodX
-    def evaluate(self,**kwargs):
+    def evaluate(self, **kwargs):
         """Return the result of TDI evaluate(this).
         @rtype: Data
         """
-        return TdiEvaluate(self,**kwargs)
+        return TdiEvaluate(self, **kwargs)
 
-
-    def assignTo(self,varname):
+    def assignTo(self, varname):
         """Set tdi variable with this data
         @param varname: The name of the public tdi variable to create
         @type varname: string
@@ -485,7 +571,7 @@ class Data(NoTreeRef):
         return _scr.Ident(varname).assign(self)
 
     @staticmethodX
-    def setTdiVar(self,varname):
+    def setTdiVar(self, varname):
         """Set tdi public variable with this data
         @param varname: The name of the public tdi variable to create
         @type varname: string
@@ -506,7 +592,7 @@ class Data(NoTreeRef):
             return None
 
     def _str_bad_ref(self):
-        return super(Data,self).__str__()
+        return super(Data, self).__str__()
 
     def __str__(self):
         try:
@@ -528,38 +614,40 @@ class Data(NoTreeRef):
         except _exc.MDSplusException:
             return self._str_bad_ref()
 
-    def data(self,*altvalue):
+    def data(self, *altvalue):
         """Return primitimive value of the data.
         @rtype: numpy or native type
         """
         try:
             data = _cmp.DATA(self).evaluate()
-            return data.value if isinstance(data,Data) else data
+            return data.value if isinstance(data, Data) else data
         except _exc.TreeNODATA:
             if len(altvalue):
                 return altvalue[0]
             raise
 
     @classmethod
-    def byref(cls,data):
-        if isinstance(data,(Data,_dsc.Descriptor)):
+    def byref(cls, data):
+        if isinstance(data, (Data, _dsc.Descriptor)):
             return data.ref
         if data is None:
             return _dsc.Descriptor.null
         dsc = cls(data)._descriptor
-        ptr = dsc.ptr_;ptr.value = dsc
+        ptr = dsc.ptr_
+        ptr.value = dsc
         return ptr
 
     @classmethod
-    def pointer(cls,data):
-        if isinstance(data,_dsc.Descriptor):
+    def pointer(cls, data):
+        if isinstance(data, _dsc.Descriptor):
             return data.ptr_
-        if isinstance(data,Data):
+        if isinstance(data, Data):
             return data.descriptor.ptr_
         if data is None:
             return _dsc.Descriptor.null
         dsc = cls(data)._descriptor
-        ptr = dsc.ptr_;ptr.value = dsc
+        ptr = dsc.ptr_
+        ptr.value = dsc
         return ptr
 
     @property
@@ -570,9 +658,9 @@ class Data(NoTreeRef):
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
-        return isinstance(x,_scr.Scalar)
+        return isinstance(x, _scr.Scalar)
 
-    def getData(self,*altvalue):
+    def getData(self, *altvalue):
         """Return primitimive value of the data.
         @rtype: Scalar,Array
         """
@@ -588,7 +676,7 @@ class Data(NoTreeRef):
         @rtype: Int8
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.BYTE(self).evaluate()
+        ans = _cmp.BYTE(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -598,7 +686,7 @@ class Data(NoTreeRef):
         @rtype: Int16
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.WORD(self).evaluate()
+        ans = _cmp.WORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -610,7 +698,7 @@ class Data(NoTreeRef):
         @rtype: Int32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.LONG(self).evaluate()
+        ans = _cmp.LONG(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -620,7 +708,7 @@ class Data(NoTreeRef):
         @rtype: Int64
         @raise TypeError: if data is not a scalar value
         """
-        ans=_cmp.QUADWORD(self).evaluate()
+        ans = _cmp.QUADWORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -630,7 +718,7 @@ class Data(NoTreeRef):
         @rtype: Float32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.FLOAT(self).evaluate()
+        ans = _cmp.FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -640,7 +728,7 @@ class Data(NoTreeRef):
         @rtype: Float64
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_cmp.FT_FLOAT(self).evaluate()
+        ans = _cmp.FT_FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -699,23 +787,23 @@ class Data(NoTreeRef):
         """Return True if data item contains a tree reference
         @rtype: Bool
         """
-        if isinstance(self,_tre.TreeNode):
+        if isinstance(self, _tre.TreeNode):
             return True
-        elif isinstance(self,_cmp.Compound):
+        elif isinstance(self, _cmp.Compound):
             for arg in self.args:
-                if isinstance(arg,Data) and arg.hasNodeReference():
+                if isinstance(arg, Data) and arg.hasNodeReference():
                     return True
-        elif isinstance(self,_apd.Apd):
+        elif isinstance(self, _apd.Apd):
             for arg in self.getDescs():
-                if isinstance(arg,Data) and arg.hasNodeReference():
+                if isinstance(arg, Data) and arg.hasNodeReference():
                     return True
-        elif isinstance(self,_scr.Ident):
-            return None # treated as False but is uncertain
+        elif isinstance(self, _scr.Ident):
+            return None  # treated as False but is uncertain
         return False
 
-    def mayHaveChanged(self): return True #deprecated
+    def mayHaveChanged(self): return True  # deprecated
 
-    def plot(self,title='',scope=None,row=1,col=1):
+    def plot(self, title='', scope=None, row=1, col=1):
         """Plot this data item
         @param title: Title of Scope. Used if scope argument is not provided
         @type title: str
@@ -728,8 +816,8 @@ class Data(NoTreeRef):
         @rtype: None
         """
         if scope is None:
-            scope=_mimport('scope').Scope(title)
-        scope.plot(self,self.dim_of(),row,col)
+            scope = _mimport('scope').Scope(title)
+        scope.plot(self, self.dim_of(), row, col)
         scope.show()
 
     def sind(self):
@@ -742,7 +830,7 @@ class Data(NoTreeRef):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
-        xd=_dsc.Descriptor_xd()
+        xd = _dsc.Descriptor_xd()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscOut(self.ref,
                                        xd.ref))
@@ -757,46 +845,60 @@ class Data(NoTreeRef):
         """
         if len(bytes) == 0:  # short cut if setevent did not send array
             return _apd.List([])
-        xd=_dsc.Descriptor_xd()
+        xd = _dsc.Descriptor_xd()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),
                                       xd.ref))
         return xd.value
 
-makeData=Data
+
+makeData = Data
+
 
 class EmptyData(Data):
-    _descriptor=_dsc.DescriptorNULL
-    dtype_id=24
+    _descriptor = _dsc.DescriptorNULL
+    dtype_id = 24
     """No Value aka *"""
-    def __init__(self,*value): pass
+
+    def __init__(self, *value): pass
+
     def decompile(self): return "*"
+
     @property
     def value(self): return None
+
     def data(self): return None
+
     @staticmethod
     def fromDescriptor(d): return EmptyData
+
+
 # the old API had EmptyData as instance
 EmptyData = EmptyData()
 
 # Missing should extend the class of EmptyData
+
+
 class Missing(EmptyData.__class__):
     """No Value aka $Missing"""
+
     def decompile(self): return "$Missing"
 
     @staticmethod
     def fromDescriptor(d): return Missing
 
+
 class DataX(Data):
     """Data with a list of childs in descs"""
-    def setDescAt(self,idx,value):
+
+    def setDescAt(self, idx, value):
         """Set descriptor at index idx (indexes start at 0)"""
-        if isinstance(idx,slice):
-            indices = idx.indices(self.maxdesc) # max ndesc
+        if isinstance(idx, slice):
+            indices = idx.indices(self.maxdesc)  # max ndesc
             last = indices[0]+len(value)*indices[2]
             diff = 1+last-len(self._descs)
-            if diff>0:
-                self._descs+=[None]*diff
+            if diff > 0:
+                self._descs += [None]*diff
             self._descs[idx] = tuple(Data(val) for val in value)
             self._setTree(*value)
         else:
@@ -804,79 +906,88 @@ class DataX(Data):
             if value is None:
                 if len(self._descs) > idx:
                     self._descs[idx] = None
-                else: last = -1
+                else:
+                    last = -1
             else:
                 diff = 1+idx-len(self._descs)
-                if diff>0:
-                    self._descs+=[None]*diff
-                self._descs[idx]=Data(value)
+                if diff > 0:
+                    self._descs += [None]*diff
+                self._descs[idx] = Data(value)
                 self._setTree(value)
         return self
 
-    def __getitem__(self,idx):
+    def __getitem__(self, idx):
         return self.getDescAt(idx)
 
-    def __setitem__(self,idx,value):
-        return self.setDescAt(idx,value)
+    def __setitem__(self, idx, value):
+        return self.setDescAt(idx, value)
 
-    def getDescAt(self,idx):
+    def getDescAt(self, idx):
         """Return descriptor with index idx (first descriptor is 0)
         @rtype: Data
         """
         if isinstance(idx, (slice,)):
             return self._descs[idx]
-        if idx<len(self.descs):
+        if idx < len(self.descs):
             return self._descs[idx]
         return None
+
     def getDescs(self):
         """Return descriptors or None if no descriptors
         @rtype: tuple,None
         """
         return self.descs
+
     @property
     def descs(self):
         return self._descs
 
     def getNumDescs(self):
-       """Return number of descriptors
-       @rtype: int
-       """
-       return len(self._descs)
+        """Return number of descriptors
+        @rtype: int
+        """
+        return len(self._descs)
 
-class TreeRefX(TreeRef,DataX):
+
+class TreeRefX(TreeRef, DataX):
     """TreeRef depending on DataX child descs"""
     @property
     def tree(self):
         for desc in self._descs:
-            if isinstance(desc,TreeRef):
-                tree=desc.tree
+            if isinstance(desc, TreeRef):
+                tree = desc.tree
                 if tree is not None:
                     return tree
         return None
+
     @tree.setter
-    def tree(self,tree):
-        if not isinstance(tree,_tre.Tree): return
+    def tree(self, tree):
+        if not isinstance(tree, _tre.Tree):
+            return
         for desc in self._descs:
-            if isinstance(desc,Data):
+            if isinstance(desc, Data):
                 desc._setTree(tree)
-    def __hasBadTreeReferences__(self,tree):
+
+    def __hasBadTreeReferences__(self, tree):
         for desc in self._descs:
-            if isinstance(desc,TreeRef) and desc.__hasBadTreeReferences__(tree):
+            if isinstance(desc, TreeRef) and desc.__hasBadTreeReferences__(tree):
                 return True
         return False
-    def __fixTreeReferences__(self,tree):
-        for idx,d in enumerate(self._descs):
-            if isinstance(d,Data) and d.__hasBadTreeReferences__(tree):
-                self._descs[idx]=d.__fixTreeReferences__(tree)
+
+    def __fixTreeReferences__(self, tree):
+        for idx, d in enumerate(self._descs):
+            if isinstance(d, Data) and d.__hasBadTreeReferences__(tree):
+                self._descs[idx] = d.__fixTreeReferences__(tree)
         return self
 
-_dsc.dtypeToClass[0]=Missing
-_dsc.dtypeToArrayClass[0]=Missing
-# also dtypeToClass expects its values to be classes
-_dsc.dtypeToClass[EmptyData.dtype_id]=EmptyData.__class__
 
-_cmp=_mimport('compound')
-_arr=_mimport('mdsarray')
-_scr=_mimport('mdsscalar')
-_tre=_mimport('tree')
-_apd=_mimport('apd')
+_dsc.dtypeToClass[0] = Missing
+_dsc.dtypeToArrayClass[0] = Missing
+# also dtypeToClass expects its values to be classes
+_dsc.dtypeToClass[EmptyData.dtype_id] = EmptyData.__class__
+
+_cmp = _mimport('compound')
+_arr = _mimport('mdsarray')
+_scr = _mimport('mdsscalar')
+_tre = _mimport('tree')
+_apd = _mimport('apd')

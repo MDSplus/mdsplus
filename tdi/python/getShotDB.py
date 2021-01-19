@@ -24,19 +24,21 @@
 #
 
 import MDSplus
-def getShotDB(expt,path=None,lower=None,upper=None):
-  try:
-    """
-    getShotDB("mytree")
-    getShotDB("mytree",0)
-    getShotDB("mytree","/my/local/tree/path")
-    getShotDB("mytree","myserver::")
-    getShotDB("mytree","myserver::/my/remote/tree/path")
-    getShotDB("mytree",*,_from)
-    getShotDB("mytree",*,*,_upto)
-    getShotDB("mytree",*,_from,_upto)
-    """
-    return MDSplus.Int32Array(MDSplus.Tree.getShotDB(expt,path,lower,upper))
-  except Exception:
-    import traceback
-    traceback.print_exc()
+
+
+def getShotDB(expt, path=None, lower=None, upper=None):
+    try:
+        """
+        getShotDB("mytree")
+        getShotDB("mytree",0)
+        getShotDB("mytree","/my/local/tree/path")
+        getShotDB("mytree","myserver::")
+        getShotDB("mytree","myserver::/my/remote/tree/path")
+        getShotDB("mytree",*,_from)
+        getShotDB("mytree",*,*,_upto)
+        getShotDB("mytree",*,_from,_upto)
+        """
+        return MDSplus.Int32Array(MDSplus.Tree.getShotDB(expt, path, lower, upper))
+    except Exception:
+        import traceback
+        traceback.print_exc()

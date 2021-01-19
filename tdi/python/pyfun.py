@@ -24,21 +24,27 @@
 #
 
 import MDSplus
-def pyfun(fun,module=None,*args):
+
+
+def pyfun(fun, module=None, *args):
     MDSplus.DEALLOCATE('public _py_exception')
-    fun    = MDSplus.Data(fun).data()
+    fun = MDSplus.Data(fun).data()
     module = MDSplus.Data(module).data()
+
     def getfun(fun):
         fun = str(fun)
         if module is not None:
             return __import__(str(module), globals(), locals(), [fun]).__dict__[fun]
-        builtins = __builtins__ if isinstance(__builtins__,dict) else __builtins__.__dict__
+        builtins = __builtins__ if isinstance(
+            __builtins__, dict) else __builtins__.__dict__
         if fun in builtins:
             return builtins[fun]
-        try:    return MDSplus.__dict__[fun]
-        except: raise MDSplus.TdiUNKNOWN_VAR(fun)
+        try:
+            return MDSplus.__dict__[fun]
+        except:
+            raise MDSplus.TdiUNKNOWN_VAR(fun)
     fun = getfun(fun)
-    args = tuple(map(MDSplus.Data.evaluate,args))
+    args = tuple(map(MDSplus.Data.evaluate, args))
     try:
         return fun(*args)
     except Exception as exc:

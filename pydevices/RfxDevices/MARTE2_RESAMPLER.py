@@ -32,42 +32,51 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_RESAMPLER(MC.MARTE2_COMPONENT):
     inputs = []
     for i in range(16):
-      inputs.append({'name': 'In'+str(i+1), 'type':'float64', 'dimensions': Data.compile('[1000]'), 'parameters':[]})
+        inputs.append({'name': 'In'+str(i+1), 'type': 'float64',
+                       'dimensions': Data.compile('[1000]'), 'parameters': []})
     outputs = []
     for i in range(16):
-      outputs.append({'name': 'Out'+str(i+1), 'type':'float64', 'dimensions':-1, 'parameters':[]})
-    parameters = [{'name':'SamplingPeriod', 'type': 'float64', 'value':1}, 
-                  {'name':'ResamplingFactor', 'type': 'int32', 'value':10}, 
-                  {'name':'UseLowPassFilter', 'type': 'int8', 'value':0}]
+        outputs.append({'name': 'Out'+str(i+1), 'type': 'float64',
+                        'dimensions': -1, 'parameters': []})
+    parameters = [{'name': 'SamplingPeriod', 'type': 'float64', 'value': 1},
+                  {'name': 'ResamplingFactor', 'type': 'int32', 'value': 10},
+                  {'name': 'UseLowPassFilter', 'type': 'int8', 'value': 0}]
     parts = []
 
     def prepareMarteInfo(self):
-#SamplingPeriod is derived fro timebase
-      samplingPeriod = self.timebase.evaluate().getDelta().data() 
-      currDim = self.inputs_in1_dimensions.data();
-      samplingPeriod = (1. * samplingPeriod)/currDim[0] 
-      self.parameters_par_1_value.putData(samplingPeriod)
-#All outputs must have the same type of the corresponding input 
-#and the dimensior reduced by sampling factor
-      resamplingFactor = self.parameters_par_2_value.data()
-#propagate first dimension to all active inputs
-      for chan in range(15):
-        try: 
-          getattr(self, 'inputs_in%d_value'%(chan+2)).getData() #Expected fail if no data samples
-          getattr(self, 'inputs_in%d_dimensions'%(chan+1)).putData(currDim)
-        except:
-          pass
-#propagate updated dimension (keeping into account resamplinFactor)
-      for chan in range(16):
-        try:
-          getattr(self, 'outputs_out%d_type'%(chan+1)).putData(getattr(self, 'inputs_in%d_type'%(chan+1)).data())
-          getattr(self, 'outputs_out%d_dimensions'%(chan+1)).putData(-1)
-          getattr(self, 'inputs_in%d_value'%(chan+1)).getData() #Expected fail if no data samples
-          currDim = getattr(self, 'inputs_in%d_dimensions'%(chan+1)).data() #The following should not fail
-          currDim[0] /= resamplingFactor
-          getattr(self, 'outputs_out%d_dimensions'%(chan+1)).putData(currDim)
-          getattr(self, 'outputs_out%d_samples'%(chan+1)).putData(currDim[0])
-        except:
-          pass
-      pass
-
+        # SamplingPeriod is derived fro timebase
+        samplingPeriod = self.timebase.evaluate().getDelta().data()
+        currDim = self.inputs_in1_dimensions.data()
+        samplingPeriod = (1. * samplingPeriod)/currDim[0]
+        self.parameters_par_1_value.putData(samplingPeriod)
+# All outputs must have the same type of the corresponding input
+# and the dimensior reduced by sampling factor
+        resamplingFactor = self.parameters_par_2_value.data()
+# propagate first dimension to all active inputs
+        for chan in range(15):
+            try:
+                # Expected fail if no data samples
+                getattr(self, 'inputs_in%d_value' % (chan+2)).getData()
+                getattr(self, 'inputs_in%d_dimensions' %
+                        (chan+1)).putData(currDim)
+            except:
+                pass
+# propagate updated dimension (keeping into account resamplinFactor)
+        for chan in range(16):
+            try:
+                getattr(self, 'outputs_out%d_type' % (
+                    chan+1)).putData(getattr(self, 'inputs_in%d_type' % (chan+1)).data())
+                getattr(self, 'outputs_out%d_dimensions' %
+                        (chan+1)).putData(-1)
+                # Expected fail if no data samples
+                getattr(self, 'inputs_in%d_value' % (chan+1)).getData()
+                currDim = getattr(self, 'inputs_in%d_dimensions' % (
+                    chan+1)).data()  # The following should not fail
+                currDim[0] /= resamplingFactor
+                getattr(self, 'outputs_out%d_dimensions' %
+                        (chan+1)).putData(currDim)
+                getattr(self, 'outputs_out%d_samples' %
+                        (chan+1)).putData(currDim[0])
+            except:
+                pass
+        pass

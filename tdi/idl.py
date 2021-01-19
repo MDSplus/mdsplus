@@ -33,11 +33,12 @@ ctypes.CDLL('librt.so', ctypes.RTLD_GLOBAL)
 try:
     ctypes.CDLL('libtermcap.so', ctypes.RTLD_GLOBAL)
 except:
-    ctypes.CDLL('libtinfo.so',ctypes.RTLD_GLOBAL)
-ctypes.CDLL('libgcc_s.so.1',ctypes.RTLD_GLOBAL)
-libidl=ctypes.CDLL('libidl.so')
+    ctypes.CDLL('libtinfo.so', ctypes.RTLD_GLOBAL)
+ctypes.CDLL('libgcc_s.so.1', ctypes.RTLD_GLOBAL)
+libidl = ctypes.CDLL('libidl.so')
 libidl.IDL_Init(ctypes.c_int32(32768 | 64),
                 ctypes.pointer(ctypes.c_int32(0)), ctypes.c_int32(0))
+
 
 def idl(command, libidl=libidl):
     libidl.IDL_ExecuteStr(ctypes.c_char_p(str(command)))

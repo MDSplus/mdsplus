@@ -31,28 +31,29 @@ from time import sleep
 class MARTE_COMMON(Device):
     """ MDSplus device superclass for MARTe applications """
     parts = [
-        {'path':':COMMENT', 'type':'text'},
-        {'path':':ID', 'type':'numeric', 'value':0},
-        {'path':':CONTROL', 'type':'text', 'value':'CONTROL'},
-        {'path':'.SIGNALS', 'type':'structure'},
-        {'path':'.SIGNALS:NAMES', 'type':'text'},
+        {'path': ':COMMENT', 'type': 'text'},
+        {'path': ':ID', 'type': 'numeric', 'value': 0},
+        {'path': ':CONTROL', 'type': 'text', 'value': 'CONTROL'},
+        {'path': '.SIGNALS', 'type': 'structure'},
+        {'path': '.SIGNALS:NAMES', 'type': 'text'},
     ]
     # Maximim number of stored signals: 256
     for i in range(256):
         parts.extend([
-            {'path':'.SIGNALS:SIGNAL_%03d'%(i+1), 'type':'structure'},
-            {'path':'.SIGNALS:SIGNAL_%03d:NAME'%(i+1), 'type':'text'},
-            {'path':'.SIGNALS:SIGNAL_%03d:DESCRIPTION'%(i+1), 'type':'text'},
-            {'path':'.SIGNALS:SIGNAL_%03d:DATA'%(i+1), 'type':'signal'},
+            {'path': '.SIGNALS:SIGNAL_%03d' % (i+1), 'type': 'structure'},
+            {'path': '.SIGNALS:SIGNAL_%03d:NAME' % (i+1), 'type': 'text'},
+            {'path': '.SIGNALS:SIGNAL_%03d:DESCRIPTION' % (
+                i+1), 'type': 'text'},
+            {'path': '.SIGNALS:SIGNAL_%03d:DATA' % (i+1), 'type': 'signal'},
         ])
     del(i)
     parts.extend([
-        {'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)},
-        {'path':':STORE_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
-        'options':('no_write_shot',)},
+        {'path': ':INIT_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('MARTE_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':STORE_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
+         'options': ('no_write_shot',)},
     ])
 
     def getEventName(self):
@@ -66,7 +67,8 @@ class MARTE_COMMON(Device):
         will send a SETUP event with the required information to allow
         MDSInterface service retrieving parameter and signal information
         """
-        eventStr = "SETUP " + self.tree.name + " "  + self.control.data() + " " + str(self.tree.shot) + " " + str(self.id.data()) + " "
+        eventStr = "SETUP " + self.tree.name + " " + self.control.data() + " " + \
+            str(self.tree.shot) + " " + str(self.id.data()) + " "
 
         eventStr = eventStr + " " + str(self.params.nid)
         eventStr = eventStr + " " + str(self.wave_params.nid)
@@ -118,7 +120,7 @@ class MARTE_COMMON(Device):
         will force flush buffered data.
         Typially called after COLLECTION_COMPLETE event
         """
-        eventStr = "STORE " +  str(self.id.data())
+        eventStr = "STORE " + str(self.id.data())
         print(eventStr)
         Event.setevent(self.getEventName(), eventStr)
         sleep(2)

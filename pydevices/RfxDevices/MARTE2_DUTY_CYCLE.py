@@ -30,19 +30,22 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 @MC.BUILDER('DutyCycleGAM', MC.MARTE2_COMPONENT.MODE_GAM)
 class MARTE2_DUTY_CYCLE(MC.MARTE2_COMPONENT):
-    inputs = [{'name': 'InBits', 'type':'uint32', 'dimensions': 0, 'parameters':[]}]
-    outputs = [{'name': 'OutBits', 'type':'uint32', 'dimensions': 0, 'parameters':[]}]
-    parameters = [{'name':'InFrequency', 'type': 'float32', 'value':1000}, 
-                  {'name':'OutFrequency', 'type': 'float32', 'value':10}, 
-                  {'name':'DutyCycle', 'type': 'float32', 'value':50}, 
-                  {'name':'ClockIdx', 'type': 'uint32', 'value':0}, 
-                  {'name':'EnableIdx', 'type': 'int32', 'value':-1}, 
-                  {'name':'AndMask', 'type': 'uint32', 'value':Uint32(0xFFFFFFFF)}, 
-                  {'name':'OrMask', 'type': 'uint32', 'value':0}] 
+    inputs = [{'name': 'InBits', 'type': 'uint32',
+               'dimensions': 0, 'parameters': []}]
+    outputs = [{'name': 'OutBits', 'type': 'uint32',
+                'dimensions': 0, 'parameters': []}]
+    parameters = [{'name': 'InFrequency', 'type': 'float32', 'value': 1000},
+                  {'name': 'OutFrequency', 'type': 'float32', 'value': 10},
+                  {'name': 'DutyCycle', 'type': 'float32', 'value': 50},
+                  {'name': 'ClockIdx', 'type': 'uint32', 'value': 0},
+                  {'name': 'EnableIdx', 'type': 'int32', 'value': -1},
+                  {'name': 'AndMask', 'type': 'uint32',
+                      'value': Uint32(0xFFFFFFFF)},
+                  {'name': 'OrMask', 'type': 'uint32', 'value': 0}]
     parts = []
 
     def prepareMarteInfo(self):
-#InFrequency is derived from timebase
-      period = self.timebase.evaluate().getDelta().data()
-      inFrequency = 1./period
-      self.parameters_par_1_value.putData(inFrequency)
+        # InFrequency is derived from timebase
+        period = self.timebase.evaluate().getDelta().data()
+        inFrequency = 1./period
+        self.parameters_par_1_value.putData(inFrequency)

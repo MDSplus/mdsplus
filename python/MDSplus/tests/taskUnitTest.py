@@ -25,26 +25,33 @@
 
 import sys
 from re import match
-from MDSplus import Tree,tcl,mdsExceptions as Exc
+from MDSplus import Tree, tcl, mdsExceptions as Exc
+
 
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-_UnitTest=_mimport("_UnitTest")
+
+
+_UnitTest = _mimport("_UnitTest")
+
+
 class Tests(_UnitTest.TreeTests):
     shotinc = 1
     tree = 'pytree'
 
     def dotask_timeout(self):
-      def test():
-          with Tree(self.tree,self.shot):
-              for i in range(1000):
-                  self._doExceptionTest('do TESTDEVICE:TASK_TIMEOUT',Exc.TdiTIMEOUT)
+        def test():
+            with Tree(self.tree, self.shot):
+                for i in range(1000):
+                    self._doExceptionTest(
+                        'do TESTDEVICE:TASK_TIMEOUT', Exc.TdiTIMEOUT)
 
     @staticmethod
     def getTests():
         return ['dotask_timeout']
+
 
 Tests.main(__name__)

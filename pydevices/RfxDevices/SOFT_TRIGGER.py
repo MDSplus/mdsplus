@@ -1,4 +1,4 @@
- #
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,31 +36,36 @@ from threading import Thread
 from ctypes import CDLL, byref, c_ulonglong, c_char_p
 import os
 
+
 class SOFT_TRIGGER(Device):
     """Generation of Events (with absolute time) at trigger occurrences"""
-    parts = [{'path':':COMMENT', 'type':'text'},
-        {'path':':REL_START', 'type':'numeric', 'value': -5},
-        {'path':':ABS_START', 'type':'numeric', 'value': 0},
-        {'path':':SYNC_DEVICE', 'type':'TEXT', 'value': 'DEFAULT'},
-    {'path':':ADVANCE_TIME', 'type':'numeric', 'value': 0}]
+    parts = [{'path': ':COMMENT', 'type': 'text'},
+             {'path': ':REL_START', 'type': 'numeric', 'value': -5},
+             {'path': ':ABS_START', 'type': 'numeric', 'value': 0},
+             {'path': ':SYNC_DEVICE', 'type': 'TEXT', 'value': 'DEFAULT'},
+             {'path': ':ADVANCE_TIME', 'type': 'numeric', 'value': 0}]
     for chanIdx in range(16):
-        parts.append({'path':'.CHANNEL_'+str(chanIdx+1), 'type':'structure'})
-        parts.append({'path':'.CHANNEL_'+str(chanIdx+1) +':MODE', 'type':'text', 'value':'DISABLED'})
-        parts.append({'path':'.CHANNEL_'+str(chanIdx+1) +':EVENT_TIME', 'type':'numeric'})
-        parts.append({'path':'.CHANNEL_'+str(chanIdx+1) +':EVENT_NAME', 'type':'text'})
+        parts.append({'path': '.CHANNEL_'+str(chanIdx+1), 'type': 'structure'})
+        parts.append({'path': '.CHANNEL_'+str(chanIdx+1) +
+                      ':MODE', 'type': 'text', 'value': 'DISABLED'})
+        parts.append({'path': '.CHANNEL_'+str(chanIdx+1) +
+                      ':EVENT_TIME', 'type': 'numeric'})
+        parts.append({'path': '.CHANNEL_'+str(chanIdx+1) +
+                      ':EVENT_NAME', 'type': 'text'})
 
-    parts.append({'path':':INIT','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','PON',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STOP','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','PPC',50,None),Method(None,'stop',head))",
-        'options':('no_write_shot',)})
+    parts.append({'path': ':INIT', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('PXI_SERVER','PON',50,None),Method(None,'init',head))",
+                  'options': ('no_write_shot',)})
+    parts.append({'path': ':STOP', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('PXI_SERVER','PPC',50,None),Method(None,'stop',head))",
+                  'options': ('no_write_shot',)})
 
-    syncDict = {'SYS': 'sys-conf.xml', '6682': 'nisync-6682.xml', '6683': 'nisync-6683h.xml', 'DEFAULT': "tcn-default.xml"}
+    syncDict = {'SYS': 'sys-conf.xml', '6682': 'nisync-6682.xml',
+                '6683': 'nisync-6683h.xml', 'DEFAULT': "tcn-default.xml"}
     tcnLib = None
 
     def debugPrint(self, msg="", obj=""):
-          print( self.name + ":" + msg, obj );
+        print(self.name + ":" + msg, obj)
 
     def getAbsTime(self, relTime):
         try:
@@ -90,9 +95,10 @@ class SOFT_TRIGGER(Device):
                 raise DevBAD_PARAMETER
 
             print(os.environ['TCN_CONFIG_PATH']+'/'+syncDevice)
-            retVal = SOFT_TRIGGER.tcnLib.tcn_register_device(c_char_p(os.environ['TCN_CONFIG_PATH']+'/'+syncDevice))
+            retVal = SOFT_TRIGGER.tcnLib.tcn_register_device(
+                c_char_p(os.environ['TCN_CONFIG_PATH']+'/'+syncDevice))
             if retVal != 0:
-                emsg = 'Cannot register device %s status = %d '%(syncDevice)
+                emsg = 'Cannot register device %s status = %d ' % (syncDevice)
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevCOMM_ERROR
 
@@ -121,13 +127,15 @@ class SOFT_TRIGGER(Device):
                 raise DevBAD_PARAMETER
             if mode == 'ENABLED':
                 try:
-                    eventName = getattr(self, 'channel_'+str(chan+1)+'_event_name').data()
+                    eventName = getattr(
+                        self, 'channel_'+str(chan+1)+'_event_name').data()
                 except:
                     emsg = 'Invalid event name for channel '+str(chan+1)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                     raise DevBAD_PARAMETER
                 try:
-                    eventTime = getattr(self, 'channel_'+str(chan+1)+'_event_time').data()
+                    eventTime = getattr(
+                        self, 'channel_'+str(chan+1)+'_event_time').data()
                 except:
                     emsg = 'Invalid event time for channel '+str(chan+1)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
@@ -142,7 +150,8 @@ class SOFT_TRIGGER(Device):
             worker.start()
 
     def soft_init(self):
-        self.debugPrint('=================  SOFT_TRIGGER soft_init ===============')
+        self.debugPrint(
+            '=================  SOFT_TRIGGER soft_init ===============')
 
         self.initLib()
         currentTime = c_ulonglong(0)
@@ -185,8 +194,10 @@ class SOFT_TRIGGER(Device):
             for evIdx in range(len(self.evTimes)):
                 currAbsTime = self.device.getAbsTime(self.evTimes[evIdx])
                 currAbsTime = currAbsTime - self.advanceTime * 1000000000
-                retval = SOFT_TRIGGER.tcnLib.tcn_wait_until(c_ulonglong(currAbsTime))
+                retval = SOFT_TRIGGER.tcnLib.tcn_wait_until(
+                    c_ulonglong(currAbsTime))
                 if retval == 0:
                     for eventName in self.eventDict[self.evTimes[evIdx]]:
-                        print('EVENT ' + eventName + ' AT '+str(self.evTimes[evIdx]))
+                        print('EVENT ' + eventName + ' AT ' +
+                              str(self.evTimes[evIdx]))
                         Event.setevent(eventName, Float64(self.evTimes[evIdx]))

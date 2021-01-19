@@ -30,21 +30,27 @@ gen_header = """ This module was generated using mdsshr/gen_messages.py
  and then do:
      python mdsshr/gen_messages.py"""
 anyfile = 'one of the "*_messages.xml" files'
-def add_c_header(f,filename=anyfile):
+
+
+def add_c_header(f, filename=anyfile):
     f.write("/*")
     f.write(cpy_header)
     f.write("*/\n")
-    f.write("/*%s\n"%("*"*54))
-    f.write(gen_header%filename)
-    f.write("\n%s*/\n"%("*"*54))
+    f.write("/*%s\n" % ("*"*54))
+    f.write(gen_header % filename)
+    f.write("\n%s*/\n" % ("*"*54))
+
+
 def add_py_header(f):
     for line in cpy_header.split('\n'):
-        line = ('# %s'%line).strip()
-        f.write('%s\n'%line)
-    f.write('%s\n'%("#"*56))
-    for line in (gen_header%anyfile).split('\n'):
-        f.write('#%s\n'%line)
-    f.write('%s\n'%("#"*56))
+        line = ('# %s' % line).strip()
+        f.write('%s\n' % line)
+    f.write('%s\n' % ("#"*56))
+    for line in (gen_header % anyfile).split('\n'):
+        f.write('#%s\n' % line)
+    f.write('%s\n' % ("#"*56))
+
+
 py_head = """
 
 class MdsException(Exception):
@@ -273,27 +279,31 @@ jma_tail = """\t\t\tdefault:
 
 
 import xml.etree.ElementTree as ET
-import sys,os
+import sys
+import os
 
 sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sevs = {'warning':0,'success':1,'error':2,'info':3,'fatal':4,'internal':7}
+sevs = {'warning': 0, 'success': 1, 'error': 2,
+        'info': 3, 'fatal': 4, 'internal': 7}
 faclist = []
 facnums = {}
 msglist = []
-severities=["W", "S", "E", "I", "F", "?", "?", "?"]
+severities = ["W", "S", "E", "I", "F", "?", "?", "?"]
 
-def gen_include(root,filename,faclist,msglistm,f_test):
+
+def gen_include(root, filename, faclist, msglistm, f_test):
     pfaclist = ["MDSplus"]
     print(filename)
-    with open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w') as f_inc:
-        add_c_header(f_inc,filename)
+    with open("%s/include/%sh" % (sourcedir, filename[0:-3]), 'w') as f_inc:
+        add_c_header(f_inc, filename)
         f_inc.write(inc_head)
         for f in root.iter('facility'):
             facnam = f.get('name')
             facnum = int(f.get('value'))
             if facnum in facnums:
-                raise Exception("Reused facility value %d, in %s. Previously used in %s" % (facnum, filename, facnums[facnum]))
-            facnums[facnum]=filename
+                raise Exception("Reused facility value %d, in %s. Previously used in %s" % (
+                    facnum, filename, facnums[facnum]))
+            facnums[facnum] = filename
             ffacnam = facnam
             faclist.append(facnam.upper())
             for status in f.iter('status'):
@@ -302,39 +312,43 @@ def gen_include(root,filename,faclist,msglistm,f_test):
                 msgnum = int(status.get('value'))
                 sev = sevs[status.get('severity').lower()]
                 msgn = (facnum << 16)+(msgnum << 3)+sev
-                text = status.get('text',"")
-                if len(text)==0: raise Exception("missing or empty text: %s in %s."%(facnam,filename))
-                depr = status.get('deprecated',"0")
+                text = status.get('text', "")
+                if len(text) == 0:
+                    raise Exception(
+                        "missing or empty text: %s in %s." % (facnam, filename))
+                depr = status.get('deprecated', "0")
                 sfacnam = status.get('facnam')
                 facabb = status.get('facabb')
                 if (sfacnam):
-                    facnam=sfacnam
+                    facnam = sfacnam
                 if f_test and facnam != 'Mdsdcl':
-                    f_test.write("printf(\"%(msg)s = %%0x, msgnum=%%d,\\n msg=%%s\\n\",%(msg)s,(%(msg)s&0xffff)>>3,MdsGetMsg(%(msg)s));\n" % {'msg':facnam+msgnam})
+                    f_test.write("printf(\"%(msg)s = %%0x, msgnum=%%d,\\n msg=%%s\\n\",%(msg)s,(%(msg)s&0xffff)>>3,MdsGetMsg(%(msg)s));\n" % {
+                                 'msg': facnam+msgnam})
                 msgnum = msgn & (-8)
-                inc_line = "#define %-24s %s" % (facnam+msgnam,hex(msgn))
+                inc_line = "#define %-24s %s" % (facnam+msgnam, hex(msgn))
                 try:
                     depr = bool(int(depr))
                     if depr:
-                        text = '%s (deprecated)'%(text,)
-                        inc_line = '%s // deprecated'%(inc_line,)
+                        text = '%s (deprecated)' % (text,)
+                        inc_line = '%s // deprecated' % (inc_line,)
                         depr = '\n  """ This Exception is deprecated """'
                     else:
                         depr = ''
                 except:
-                    depr = "use %s%s"%(facnam,depr.upper())
-                    text = '%s (deprecated: %s)'%(text,depr)
-                    inc_line = '%s // deprecated: %s'%(inc_line,depr)
-                    depr = '\n  """ This Exception is deprecated: %s """'%(depr,)
-                f_inc.write("%s\n"%(inc_line,))
+                    depr = "use %s%s" % (facnam, depr.upper())
+                    text = '%s (deprecated: %s)' % (text, depr)
+                    inc_line = '%s // deprecated: %s' % (inc_line, depr)
+                    depr = '\n  """ This Exception is deprecated: %s """' % (
+                        depr,)
+                f_inc.write("%s\n" % (inc_line,))
                 if (facabb):
-                    facnam=facabb
+                    facnam = facabb
                 facu = facnam.upper()
                 if (sfacnam or facabb) and facu not in faclist:
                     faclist.append(facu)
-                msg = {'msgnum':msgnum,'text':text.replace('"','\\"'),
-                       'fac':facnam,'facu':facu,'facabb':facabb,'msgnam':msgnam,
-                       'status':msgn,'message':text,'depr':depr,  'sev':severities[msgn&7]}
+                msg = {'msgnum': msgnum, 'text': text.replace('"', '\\"'),
+                       'fac': facnam, 'facu': facu, 'facabb': facabb, 'msgnam': msgnam,
+                       'status': msgn, 'message': text, 'depr': depr,  'sev': severities[msgn & 7]}
                 if not facnam in pfaclist:
                     pfaclist.append(facnam)
                 msglist.append(msg)
@@ -342,24 +356,24 @@ def gen_include(root,filename,faclist,msglistm,f_test):
 
 # gen_msglist():
 
-f_test=None
+f_test = None
 if len(sys.argv) > 1:
-    f_test=open('%s/testmsg.h'%sourcedir,'w');
-for root,dirs,files in os.walk(sourcedir):
+    f_test = open('%s/testmsg.h' % sourcedir, 'w')
+for root, dirs, files in os.walk(sourcedir):
     for filename in files:
         if not filename.endswith('messages.xml'):
             continue
         try:
-            tree = ET.parse("%s/%s"%(root, filename)).getroot()
-            gen_include(tree,filename.lower(),faclist,msglist,f_test)
+            tree = ET.parse("%s/%s" % (root, filename)).getroot()
+            gen_include(tree, filename.lower(), faclist, msglist, f_test)
         except Exception as e:
             print(e)
 if f_test:
     f_test.close()
 
-msglist = sorted(msglist, key = lambda item: item['msgnum'])
+msglist = sorted(msglist, key=lambda item: item['msgnum'])
 
-with open("%s/python/MDSplus/mdsExceptions.py"%sourcedir,'w') as f_py:
+with open("%s/python/MDSplus/mdsExceptions.py" % sourcedir, 'w') as f_py:
     add_py_header(f_py)
     f_py.write(py_head)
     facs = set([])
@@ -370,17 +384,17 @@ with open("%s/python/MDSplus/mdsExceptions.py"%sourcedir,'w') as f_py:
             facs.add(msg['fac'])
         f_py.write(py_exc_class % msg)
 
-with open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w') as f_getmsg:
+with open('%s/mdsshr/MdsGetStdMsg.c' % sourcedir, 'w') as f_getmsg:
     add_c_header(f_getmsg)
-    f_getmsg.write(msg_head);
+    f_getmsg.write(msg_head)
     for facu in faclist:
-        f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (facu,facu))
+        f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (facu, facu))
     f_getmsg.write(msg_fun)
     for msg in msglist:
         f_getmsg.write(msg_case % msg)
     f_getmsg.write(msg_tail)
 
-with open("%s/java/mdsplus-api/src/main/java/mds/MdsException.java"%sourcedir,'w') as f_jma:
+with open("%s/java/mdsplus-api/src/main/java/mds/MdsException.java" % sourcedir, 'w') as f_jma:
     add_c_header(f_jma)
     f_jma.write(jma_head)
     for msg in msglist:

@@ -32,18 +32,20 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_CONVERSION(MC.MARTE2_COMPONENT):
     inputs = []
     for i in range(16):
-      inputs.append({'name': 'In'+str(i+1), 'type':'float64', 'dimensions': 0, 'parameters':[]})
+        inputs.append({'name': 'In'+str(i+1), 'type': 'float64',
+                       'dimensions': 0, 'parameters': []})
     outputs = []
     for i in range(16):
-      outputs.append({'name': 'Out'+str(i+1), 'type':'float64', 'dimensions': 0, 'parameters':[]})
+        outputs.append({'name': 'Out'+str(i+1), 'type': 'float64',
+                        'dimensions': 0, 'parameters': []})
     parameters = []
     parts = []
 
     def prepareMarteInfo(self):
-#All outputs must have the same dimension of the corresponding input
-      for chan in range(16):
-        try:
-          getattr(self, 'outputs_out%d_dimensions'%(chan+1)).putData(getattr(self, 'inputs_in%d_dimensions'%(chan+1)).data())
-        except:
-          pass
-
+        # All outputs must have the same dimension of the corresponding input
+        for chan in range(16):
+            try:
+                getattr(self, 'outputs_out%d_dimensions' % (
+                    chan+1)).putData(getattr(self, 'inputs_in%d_dimensions' % (chan+1)).data())
+            except:
+                pass

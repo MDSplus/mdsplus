@@ -26,11 +26,12 @@
 import os
 example = '/javascripts/mdsScope.js'
 
+
 def doJavascripts(self):
-  jsfile = self.path_parts[1]
-  try:
-      with open('/'.join([os.path.dirname(__file__),'js',jsfile]),"r") as f:
-          contents=f.read()
-      return ('200 OK',[('Content-type','text/javascript'),],contents)
-  except:
-      return ('400 NOT FOUND',[('Content-type','text/javascript'),],'jsfile')
+    jsfile = self.path_parts[1]
+    try:
+        with open('/'.join([os.path.dirname(__file__), 'js', jsfile]), "r") as f:
+            contents = f.read()
+        return ('200 OK', [('Content-type', 'text/javascript'), ], contents)
+    except:
+        return ('400 NOT FOUND', [('Content-type', 'text/javascript'), ], 'jsfile')

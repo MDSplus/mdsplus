@@ -35,7 +35,7 @@ class MARTE2_PYTHON(MC.MARTE2_COMPONENT):
 
 class BUILDER:
     types = {
-        int:'int32',
+        int: 'int32',
         float: 'float64',
         np.int16: 'int16',
         np.int32: 'int32',
@@ -44,19 +44,19 @@ class BUILDER:
     }
 
     def __init__(self, module, pygam=None):
-      try:
-        self.module = module
-        self.pygam = pygam or module.pygam
-      except:
-        pass
+        try:
+            self.module = module
+            self.pygam = pygam or module.pygam
+        except:
+            pass
 
     @classmethod
     def convert_io(cls, name, dim, dtype):
-        if dim[0] == 1 :
+        if dim[0] == 1:
             if dim[1] == 1:
-              dim = 0
+                dim = 0
             else:
-              dim = [dim[1]]
+                dim = [dim[1]]
         try:
             dtype = cls.types[dtype]
         except KeyError:
@@ -75,7 +75,7 @@ class BUILDER:
         try:
             dtype = cls.types[dtype]
         except KeyError:
-             dtype = 'int32'
+            dtype = 'int32'
         return {
             'name': 'Parameters.' + name,
             'type': dtype,

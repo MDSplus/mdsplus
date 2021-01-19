@@ -23,9 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
-example = '/getnid/%s/-1?node=\\TOP'%os.environ.get('EXPT','main')
+example = '/getnid/%s/-1?node=\\TOP' % os.environ.get('EXPT', 'main')
+
 
 def doGetnid(self):
-    tree = self.openTree(self.path_parts[1],self.path_parts[2])
-    output=str(tree.getNode(self.args['node'][-1]).nid)
-    return ('200 OK',[('Content-type','text/plain')],output)
+    tree = self.openTree(self.path_parts[1], self.path_parts[2])
+    output = str(tree.getNode(self.args['node'][-1]).nid)
+    return ('200 OK', [('Content-type', 'text/plain')], output)

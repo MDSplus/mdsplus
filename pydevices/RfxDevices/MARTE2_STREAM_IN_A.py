@@ -33,13 +33,13 @@ class MARTE2_STREAM_IN_A(MC.MARTE2_COMPONENT):
     outputs = []
     for i in range(128):
         outputs.append(
-        {'name': 'Out'+format(i+1, '03d'), 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string', 'value': 'CH'+format(i+1, '03d')}]})
+            {'name': 'Out'+format(i+1, '03d'), 'type': 'float32', 'dimensions': 0, 'parameters': [
+                {'name': 'Channel', 'type': 'string', 'value': 'CH'+format(i+1, '03d')}]})
     parameters = [
-        {'name':'NumberOfBuffers', 'type': 'int32', 'value':100},
-        {'name':'CpuMask', 'type': 'int32', 'value': 127},
-        {'name':'StackSize', 'type': 'int32', 'value': 1000000},
-        {'name':'SynchronizingIdx', 'type': 'int32', 'value' : -1}
+        {'name': 'NumberOfBuffers', 'type': 'int32', 'value': 100},
+        {'name': 'CpuMask', 'type': 'int32', 'value': 127},
+        {'name': 'StackSize', 'type': 'int32', 'value': 1000000},
+        {'name': 'SynchronizingIdx', 'type': 'int32', 'value': -1}
     ]
     parts = []
 
