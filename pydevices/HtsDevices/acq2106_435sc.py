@@ -57,24 +57,10 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 slot.SC32_G2_ALL     = self.def_gain2.data()
                 print("Site {} GAIN 2 ALL {}".format(site, self.def_gain2.data()))
             else:
-                if site == 1:
-                    for ic in range(1,32):
-                        exec("uut.s1.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(ic, ic))
-                        exec("uut.s1.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(ic, ic))
-                        exec("uut.s1.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(ic, ic))
-                elif site == 3:
-                    for ic, jc in zip(range(33,64), range(1, 32)):
-                        exec("uut.s3.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
-                        exec("uut.s3.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
-                        exec("uut.s3.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))
-                elif site == 5:
-                    for ic, jc in zip(range(65,96), range(1, 32)):
-                        exec("uut.s5.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
-                        exec("uut.s5.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
-                        exec("uut.s5.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))
+                self.setGainsOffsets(site)
 
             slot.SC32_GAIN_COMMIT = 1
-            print("GAIN Committed for site {}".format(site))
+            print("GAINs Committed for site {}".format(site))
 
         super(_ACQ2106_435SC, self).init()
 
@@ -94,16 +80,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             if ch.on:
                 chan_unsc.record = MDSplus.BUILD_SIGNAL(ch.data() * (1.0/(ch.SC_GAIN1 * ch.SC_GAIN2)) - ch.SC_OFFSET, MDSplus.RAW_OF(ch), MDSplus.DIM_OF(ch))
     STORE=store
-
-    def unConditioning(self,num):
-        chan     = self.__getattr__('INPUT_%3.3d' % num)
-        chan_nonsc = self.__getattr__('INPUT_%3.3d:NC_INPUT' % num)
-        expr = MDSplus.SUBTRACT(MDSplus.DIVIDE(chan, MDSplus.MULTIPLY(chan.SC_GAIN1, chan.SC_GAIN2)), chan.SC_OFFSET)
-
-    def setSmooth(self,num):
-        chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan_nonsc =self.__getattr__('INPUT_%3.3d:LR_INPUT' % num)
-        chan_nonsc.setSegmentScale(MDSplus.SMOOTH(MDSplus.dVALUE(),100))
     
     def getSlot(self, site_number):
         uut = self.getUUT()
@@ -133,6 +109,33 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
         return uut
 
+    def setGainsOffsets(self, site):
+        uut = self.getUUT()
+        if site == 1:
+            for ic in range(1,32):
+                exec("uut.s1.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(ic, ic))
+                exec("uut.s1.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(ic, ic))
+                exec("uut.s1.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(ic, ic))
+        elif site == 3:
+            for ic, jc in zip(range(33,64), range(1, 32)):
+                exec("uut.s3.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
+                exec("uut.s3.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
+                exec("uut.s3.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))
+        elif site == 5:
+            for ic, jc in zip(range(65,96), range(1, 32)):
+                exec("uut.s5.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
+                exec("uut.s5.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
+                exec("uut.s5.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))  
+
+    def unConditioning(self,num):
+        chan     = self.__getattr__('INPUT_%3.3d' % num)
+        chan_nonsc = self.__getattr__('INPUT_%3.3d:NC_INPUT' % num)
+        expr = MDSplus.SUBTRACT(MDSplus.DIVIDE(chan, MDSplus.MULTIPLY(chan.SC_GAIN1, chan.SC_GAIN2)), chan.SC_OFFSET)
+
+    def setSmooth(self,num):
+        chan = self.__getattr__('INPUT_%3.3d' % num)
+        chan_nonsc =self.__getattr__('INPUT_%3.3d:LR_INPUT' % num)
+        chan_nonsc.setSegmentScale(MDSplus.SMOOTH(MDSplus.dVALUE(),100))
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
