@@ -16,7 +16,7 @@ public:
   static void _delete(void *ptr) { delete (T *)(ptr); }
 };
 
-template <typename T, typename D = Deleter<T>> class unique_ptr {
+template <typename T, typename D = Deleter<T> > class unique_ptr {
   unique_ptr(const T &ref) : ptr(new T(ref)) {}
   T *ptr;
 

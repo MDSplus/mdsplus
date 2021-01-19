@@ -804,7 +804,7 @@ CRcvQueue::~CRcvQueue() {
   delete m_pRendezvousQueue;
 
   // remove all queued messages
-  for (map<int32_t, std::queue<CPacket *>>::iterator i = m_mBuffer.begin();
+  for (map<int32_t, std::queue<CPacket *> >::iterator i = m_mBuffer.begin();
        i != m_mBuffer.end(); ++i) {
     while (!i->second.empty()) {
       CPacket *pkt = i->second.front();
@@ -970,7 +970,7 @@ DWORD WINAPI CRcvQueue::worker(LPVOID param)
 int CRcvQueue::recvfrom(int32_t id, CPacket &packet) {
   CGuard bufferlock(m_PassLock);
 
-  map<int32_t, std::queue<CPacket *>>::iterator i = m_mBuffer.find(id);
+  map<int32_t, std::queue<CPacket *> >::iterator i = m_mBuffer.find(id);
 
   if (i == m_mBuffer.end()) {
 #ifndef WIN32
@@ -1046,7 +1046,7 @@ void CRcvQueue::removeConnector(const UDTSOCKET &id) {
 
   CGuard bufferlock(m_PassLock);
 
-  map<int32_t, std::queue<CPacket *>>::iterator i = m_mBuffer.find(id);
+  map<int32_t, std::queue<CPacket *> >::iterator i = m_mBuffer.find(id);
   if (i != m_mBuffer.end()) {
     while (!i->second.empty()) {
       delete[] i->second.front()->m_pcData;
@@ -1079,7 +1079,7 @@ CUDT *CRcvQueue::getNewEntry() {
 void CRcvQueue::storePkt(int32_t id, CPacket *pkt) {
   CGuard bufferlock(m_PassLock);
 
-  map<int32_t, std::queue<CPacket *>>::iterator i = m_mBuffer.find(id);
+  map<int32_t, std::queue<CPacket *> >::iterator i = m_mBuffer.find(id);
 
   if (i == m_mBuffer.end()) {
     m_mBuffer[id].push(pkt);

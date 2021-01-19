@@ -67,7 +67,7 @@ public:
 
   template <typename T>
   static void test_data_numerics(mds::Data *data,
-                                 const std::vector<std::complex<T>> &array);
+                                 const std::vector<std::complex<T> > &array);
 
   static void test_data_string(mds::Data *data, const char *str) {
     char *data_str = data->getString();
@@ -297,7 +297,7 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data,
 template <typename T>
 inline void
 MdsDataTest::test_data_numerics(mds::Data *data,
-                                const std::vector<std::complex<T>> &array) {
+                                const std::vector<std::complex<T> > &array) {
   TEST1((unsigned int)data->getSize() == array.size());
 
   TEST_MDS_EXCEPTION(data->getByteArray(),
@@ -328,7 +328,7 @@ MdsDataTest::test_data_numerics(mds::Data *data,
                      "getDoubleArray() not supported for Complex data type");
 
   // cast T to double as all complex in Mds are double //
-  std::vector<std::complex<double>> array_d;
+  std::vector<std::complex<double> > array_d;
   for (size_t i = 0; i < array.size(); ++i) {
     const std::complex<T> &el = array[i];
     array_d.push_back(std::complex<double>(el.real(), el.imag()));

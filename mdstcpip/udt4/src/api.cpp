@@ -1040,7 +1040,7 @@ CUDTSocket *CUDTUnited::locate(const sockaddr *peer, const UDTSOCKET id,
                                int32_t isn) {
   CGuard cg(m_ControlLock);
 
-  map<int64_t, set<UDTSOCKET>>::iterator i = m_PeerRec.find((id << 30) + isn);
+  map<int64_t, set<UDTSOCKET> >::iterator i = m_PeerRec.find((id << 30) + isn);
   if (i == m_PeerRec.end())
     return NULL;
 
@@ -1164,7 +1164,7 @@ void CUDTUnited::removeSocket(const UDTSOCKET u) {
   }
 
   // remove from peer rec
-  map<int64_t, set<UDTSOCKET>>::iterator j =
+  map<int64_t, set<UDTSOCKET> >::iterator j =
       m_PeerRec.find((i->second->m_PeerID << 30) + i->second->m_iISN);
   if (j != m_PeerRec.end()) {
     j->second.erase(u);

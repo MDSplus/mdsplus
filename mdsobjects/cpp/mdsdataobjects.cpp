@@ -649,7 +649,7 @@ std::vector<double> Data::getDoubleArray() {
   return getArray(retData, numElements);
 }
 
-std::vector<std::complex<double>> Data::getComplexArray() {
+std::vector<std::complex<double> > Data::getComplexArray() {
   int numElements;
   std::complex<double> *retData = getComplexArray(&numElements);
   return getArray(retData, numElements);
