@@ -111,21 +111,19 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
     def setGainsOffsets(self, site):
         uut = self.getUUT()
-        if site == 1:
-            for ic in range(1,32):
+        for ic in range(1,32):
+            if site == 1:
                 exec("uut.s1.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(ic, ic))
                 exec("uut.s1.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(ic, ic))
                 exec("uut.s1.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(ic, ic))
-        elif site == 3:
-            for ic, jc in zip(range(33,64), range(1, 32)):
-                exec("uut.s3.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
-                exec("uut.s3.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
-                exec("uut.s3.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))
-        elif site == 5:
-            for ic, jc in zip(range(65,96), range(1, 32)):
-                exec("uut.s5.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(jc, ic))
-                exec("uut.s5.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(jc, ic))
-                exec("uut.s5.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(jc, ic))  
+            elif site == 3:
+                exec("uut.s3.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(ic, ic+32))
+                exec("uut.s3.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(ic, ic+32))
+                exec("uut.s3.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(ic, ic+32))
+            elif site == 5:
+                exec("uut.s5.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(ic, ic+64))
+                exec("uut.s5.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(ic, ic+64))
+                exec("uut.s5.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(ic, ic+64))  
 
     def unConditioning(self,num):
         chan     = self.__getattr__('INPUT_%3.3d' % num)
