@@ -125,15 +125,11 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 exec("uut.s5.SC32_G1_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN1' ).data()"%(ic, ic+64))
                 exec("uut.s5.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(ic, ic+64))  
 
-    def unConditioning(self,num):
-        chan     = self.__getattr__('INPUT_%3.3d' % num)
-        chan_nonsc = self.__getattr__('INPUT_%3.3d:NC_INPUT' % num)
-        expr = MDSplus.SUBTRACT(MDSplus.DIVIDE(chan, MDSplus.MULTIPLY(chan.SC_GAIN1, chan.SC_GAIN2)), chan.SC_OFFSET)
-
-    def setSmooth(self,num):
-        chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan_nonsc =self.__getattr__('INPUT_%3.3d:LR_INPUT' % num)
-        chan_nonsc.setSegmentScale(MDSplus.SMOOTH(MDSplus.dVALUE(),100))
+    # TODO: a function to smooth data while being adquired
+    # def setSmooth(self,num):
+    #     chan = self.__getattr__('INPUT_%3.3d' % num)
+    #     chan_nonsc =self.__getattr__('INPUT_%3.3d:LR_INPUT' % num)
+    #     chan_nonsc.setSegmentScale(MDSplus.SMOOTH(MDSplus.dVALUE(),100))
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
@@ -146,8 +142,8 @@ def assemble(cls):
             {'path':':INPUT_%3.3d:SC_GAIN1'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain1',               'options':('no_write_shot',)},
             {'path':':INPUT_%3.3d:SC_GAIN2'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain2',               'options':('no_write_shot',)},
             {'path':':INPUT_%3.3d:SC_OFFSET'%(i+1,),   'type':'NUMERIC', 'valueExpr':'head.def_offset',              'options':('no_write_shot',)},   
-            {'path':':INPUT_%3.3d:NC_INPUT'%(i+1,),    'type':'SIGNAL',                                            'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:LR_INPUT'%(i+1,),    'type':'SIGNAL', 'valueExpr':'head.setSmooth(%d)' %(i+1,)},
+            {'path':':INPUT_%3.3d:NC_INPUT'%(i+1,),    'type':'SIGNAL',                                              'options':('no_write_model','write_once',)},
+            {'path':':INPUT_%3.3d:LR_INPUT'%(i+1,),    'type':'SIGNAL'},
         ]
 
 class ACQ2106_435SC_1ST(_ACQ2106_435SC): sites=1
