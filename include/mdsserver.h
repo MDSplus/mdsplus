@@ -2,24 +2,23 @@
 #define _MDSSERVER
 #include <treeshr_hooks.h>
 
-typedef enum { doabort,		  /**** Abort current action or mdsdcl command ***/
-  action,			  /**** Execute an action nid in a tree ***/
-  close_tree,				  /**** Close open trees ***/
-  create_pulse,			      /**** Create pulse files for single tree (no subtrees) ***/
-  logging,			  /**** Turn logging on/off ***/
-  mdsdcl_command,		  /**** Execute MDSDCL command ***/
-  monitor,			  /**** Broadcast messages to action monitors ***/
-  show,				  /**** Request current status of server ***/
-  stop,				   /**** Stop server ***/
-  noop				  /**** Noop used to start server ***/
+typedef enum {
+  doabort,        /**** Abort current action or mdsdcl command ***/
+  action,         /**** Execute an action nid in a tree ***/
+  close_tree,     /**** Close open trees ***/
+  create_pulse,   /**** Create pulse files for single tree (no subtrees) ***/
+  logging,        /**** Turn logging on/off ***/
+  mdsdcl_command, /**** Execute MDSDCL command ***/
+  monitor,        /**** Broadcast messages to action monitors ***/
+  show,           /**** Request current status of server ***/
+  stop,           /**** Stop server ***/
+  noop            /**** Noop used to start server ***/
 } MsgType;
 
-typedef enum { none,
-  log,
-  statistics
-} LoggingType;
+typedef enum { none, log, statistics } LoggingType;
 
-typedef enum { build_table_begin = 1,
+typedef enum {
+  build_table_begin = 1,
   build_table,
   build_table_end,
   display_checkin,
@@ -84,12 +83,12 @@ typedef struct {
   struct descriptor *condition;
   int status;
   int netid;
-  unsigned on:1;
-  unsigned done:1;
-  unsigned closed:1;
-  unsigned dispatched:1;
-  unsigned doing:1;
-  unsigned recorded:1;
+  unsigned on : 1;
+  unsigned done : 1;
+  unsigned closed : 1;
+  unsigned dispatched : 1;
+  unsigned doing : 1;
+  unsigned recorded : 1;
 } ActionInfo;
 
 typedef struct {

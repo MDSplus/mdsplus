@@ -24,13 +24,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <libxml/tree.h>
 #include <libxml/parser.h>
+#include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
@@ -39,49 +39,57 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "mdsdclthreadstatic.h"
 
-/*| Find all nodes in the xml hierarchy with an xml "name" matching the category argument with it's content matching
-   the name argument stopping if there is an exact match. The matching is case insensitive and only checks the number
-   of characters provided by the name parameter. If their is a match and the node property has exacly the same
-   length as the name parameter then it is considered as an exact match.
+/*| Find all nodes in the xml hierarchy with an xml "name" matching the category
+   argument with it's content matching the name argument stopping if there is an
+   exact match. The matching is case insensitive and only checks the number of
+   characters provided by the name parameter. If their is a match and the node
+   property has exacly the same length as the name parameter then it is
+   considered as an exact match.
 
    \param node [in] Node to begin search with.
-   \param category [in] XML Node name to search for (i.e. "verb" would look for xml <verb .../> items).
-   \param name [in] Value to match with the content of the first property of the node found based on category.
-   \param list [in] Pointer to a dclNodList which describes an array of xmlNodes
-   \param exactFound [in,out] Pointer to an int flag which is set if the name parameter exactly matches the
-	  property of the xml node.
+   \param category [in] XML Node name to search for (i.e. "verb" would look for
+   xml <verb .../> items). \param name [in] Value to match with the content of
+   the first property of the node found based on category. \param list [in]
+   Pointer to a dclNodList which describes an array of xmlNodes \param
+   exactFound [in,out] Pointer to an int flag which is set if the name parameter
+   exactly matches the property of the xml node.
 
-   *** NOTE: This is only applicable for use on xml nodes which look like <category name="name"/> ***
+   *** NOTE: This is only applicable for use on xml nodes which look like
+   <category name="name"/> ***
    *** NOTE: This routine recurses on node siblings and children. ****
    */
 
-static void findEntity(xmlNodePtr node, const char *category, const char *name, dclNodeListPtr list,
-		       int *exactFound)
-{
+static void findEntity(xmlNodePtr node, const char *category, const char *name,
+                       dclNodeListPtr list, int *exactFound) {
 
   /* If exact match already found just return */
 
   if (*exactFound)
     return;
 
-  /* else if all the characters in the name argument match the property content consider it a match. */
+  /* else if all the characters in the name argument match the property content
+   * consider it a match. */
 
   else if (node->name &&
-	   (strcasecmp((const char *)node->name, category) == 0) &&
-	   ((name == NULL) ||
-	    (node->properties &&
-	     node->properties->children &&
-	     node->properties->children->content &&
-	     (strncasecmp(name, (const char *)node->properties->children->content, strlen(name)) ==
-	      0)))) {
+           (strcasecmp((const char *)node->name, category) == 0) &&
+           ((name == NULL) ||
+            (node->properties && node->properties->children &&
+             node->properties->children->content &&
+             (strncasecmp(name,
+                          (const char *)node->properties->children->content,
+                          strlen(name)) == 0)))) {
 
     /* Check if it is an exact match */
-    if ((name != NULL) && (strlen(name) == strlen((const char *)node->properties->children->content))) {	// if exact command match use it!
+    if ((name != NULL) &&
+        (strlen(name) ==
+         strlen((const char *)node->properties->children
+                    ->content))) { // if exact command match use it!
 
-      /* if already found other nodes but not exact match then free the "array" of nodes. */
+      /* if already found other nodes but not exact match then free the "array"
+       * of nodes. */
 
       if (list->count > 0 && list->nodes)
-	free(list->nodes);
+        free(list->nodes);
 
       /* allocate memory for one node ptr and load this node and return */
       list->nodes = malloc(sizeof(xmlNodePtr));
@@ -96,7 +104,8 @@ static void findEntity(xmlNodePtr node, const char *category, const char *name, 
     if (list->count == 0) {
       list->nodes = malloc(sizeof(xmlNodePtr));
     } else {
-      list->nodes = realloc(list->nodes, sizeof(xmlNodePtr) * (list->count + 1));
+      list->nodes =
+          realloc(list->nodes, sizeof(xmlNodePtr) * (list->count + 1));
     }
     list->nodes[list->count] = node;
     list->count++;
@@ -113,8 +122,7 @@ static void findEntity(xmlNodePtr node, const char *category, const char *name, 
     findEntity(node->children, category, name, list, exactFound);
 }
 
-static char *formatHelp(char *content)
-{
+static char *formatHelp(char *content) {
   int indentation = -1;
   int offset = 0;
   char *ans = strdup("");
@@ -126,35 +134,36 @@ static char *formatHelp(char *content)
   for (line = strsep(&hlp, "\n"); line; line = strsep(&hlp, "\n")) {
 #else
   char *saveptr = 0;
-  for (line = strtok_r(hlp, "\n", &saveptr); line; line = strtok_r(0, "\n", &saveptr)) {
+  for (line = strtok_r(hlp, "\n", &saveptr); line;
+       line = strtok_r(0, "\n", &saveptr)) {
 #endif
     if ((strlen(line) > 0) && (strspn(line, " \t") != strlen(line))) {
       char *nline;
       leading = 0;
       if (indentation == -1) {
-	for (indentation = 0; line[indentation] == ' '; indentation++) ;
-	offset = indentation - 2;
+        for (indentation = 0; line[indentation] == ' '; indentation++)
+          ;
+        offset = indentation - 2;
       }
       if (offset < 0) {
-	nline = strcpy(malloc(strlen(line) - offset + 1), "  ");
-	strcat(nline, line);
+        nline = strcpy(malloc(strlen(line) - offset + 1), "  ");
+        strcat(nline, line);
       } else {
-	nline = strcpy(malloc(strlen(line) - offset + 1), line + offset);
+        nline = strcpy(malloc(strlen(line) - offset + 1), line + offset);
       }
       ans = strcat(realloc(ans, strlen(ans) + strlen(nline) + 2), nline);
       free(nline);
       strcat(ans, "\n");
     } else {
       if (leading == 0)
-	ans = strcat(realloc(ans, strlen(ans) + 2), "\n");
+        ans = strcat(realloc(ans, strlen(ans) + 2), "\n");
     }
   }
   free(help);
   return ans;
 }
 
-int mdsdcl_do_help(const char *command, char **error, char **output)
-{
+int mdsdcl_do_help(const char *command, char **error, char **output) {
   int status = MdsdclIVVERB;
   dclDocListPtr doc_l;
   int helpFound = 0;
@@ -162,59 +171,63 @@ int mdsdcl_do_help(const char *command, char **error, char **output)
   int docIdx;
   xmlDocPtr *docs;
   int numDocs = 0;
-  for (doc_l = DCL_DOCS; doc_l != NULL; doc_l = doc_l->next, numDocs++) ;
+  for (doc_l = DCL_DOCS; doc_l != NULL; doc_l = doc_l->next, numDocs++)
+    ;
   docs = malloc(sizeof(void *) * numDocs);
-  for (doc_l = DCL_DOCS, docIdx = numDocs - 1; doc_l != NULL; doc_l = doc_l->next, docIdx--)
+  for (doc_l = DCL_DOCS, docIdx = numDocs - 1; doc_l != NULL;
+       doc_l = doc_l->next, docIdx--)
     docs[docIdx] = doc_l->doc;
   *output = strdup("\n");
   for (docIdx = 0; (status == MdsdclIVVERB) && (docIdx < numDocs); docIdx++) {
     xmlDocPtr doc = docs[docIdx];
     int exactFound = 0;
-    dclNodeList matchingHelp = { 0, 0 };
+    dclNodeList matchingHelp = {0, 0};
     if (command != 0) {
       findEntity(doc->children, "help", command, &matchingHelp, &exactFound);
       if (matchingHelp.count == 0) {
-	status = MdsdclIVVERB;
+        status = MdsdclIVVERB;
       } else {
-	int i;
-	for (i = 0; i < matchingHelp.count; i++) {
-	  char *content = (char *)(((xmlNodePtr) matchingHelp.nodes[i])->children->content);
-	  if (content != NULL) {
-	    char *help = formatHelp(content);
-	    helpFound = 1;
-	    *output = strcat(realloc(*output, strlen(*output) + strlen(help) + 1), help);
-	    free(help);
-	  }
-	}
-	free(matchingHelp.nodes);
+        int i;
+        for (i = 0; i < matchingHelp.count; i++) {
+          char *content =
+              (char *)(((xmlNodePtr)matchingHelp.nodes[i])->children->content);
+          if (content != NULL) {
+            char *help = formatHelp(content);
+            helpFound = 1;
+            *output = strcat(
+                realloc(*output, strlen(*output) + strlen(help) + 1), help);
+            free(help);
+          }
+        }
+        free(matchingHelp.nodes);
       }
     } else {
       findEntity(doc->children, "helpall", 0, &matchingHelp, &exactFound);
-      if ((matchingHelp.count == 1) &&
-	  matchingHelp.nodes &&
-	  matchingHelp.nodes[0] &&
-	  ((xmlNodePtr) matchingHelp.nodes[0])->children &&
-	  ((xmlNodePtr) matchingHelp.nodes[0])->children->content) {
-	char *content = (char *)(((xmlNodePtr) matchingHelp.nodes[0])->children->content);
-	char *help = formatHelp(content);
-	helpFound = 1;
-	*output = strcat(realloc(*output, strlen(*output) + strlen(help) + 1), help);
-	free(help);
+      if ((matchingHelp.count == 1) && matchingHelp.nodes &&
+          matchingHelp.nodes[0] &&
+          ((xmlNodePtr)matchingHelp.nodes[0])->children &&
+          ((xmlNodePtr)matchingHelp.nodes[0])->children->content) {
+        char *content =
+            (char *)(((xmlNodePtr)matchingHelp.nodes[0])->children->content);
+        char *help = formatHelp(content);
+        helpFound = 1;
+        *output =
+            strcat(realloc(*output, strlen(*output) + strlen(help) + 1), help);
+        free(help);
       };
       if ((matchingHelp.count > 0) && (matchingHelp.nodes))
-	free(matchingHelp.nodes);
+        free(matchingHelp.nodes);
     }
   }
   if (helpFound == 0) {
     if (*output) {
-      strcpy(*output,"");
+      strcpy(*output, "");
     }
     *error = strdup("No help available for that command.\n");
   }
   if (command == NULL)
-    *output =
-	strcat(realloc(*output, strlen(*output) + 80),
-	       "Type 'help command-name' for more info\n\n");
+    *output = strcat(realloc(*output, strlen(*output) + 80),
+                     "Type 'help command-name' for more info\n\n");
   free(docs);
   return 1;
 }

@@ -1,5 +1,6 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSNIDOPTIONMENU.H */
-/*  *6     4-NOV-1994 10:32:26 JAS "need to declare XmdsNidOptionMenuIdxGetXd in the .H file" */
+/*  *6     4-NOV-1994 10:32:26 JAS "need to declare XmdsNidOptionMenuIdxGetXd in
+ * the .H file" */
 /*  *5     3-MAR-1993 13:58:30 JAS "Add prottypes" */
 /*  *4    24-FEB-1993 16:38:39 JAS "port to decc" */
 /*  *3    24-FEB-1993 11:51:37 JAS "port to decc" */
@@ -8,15 +9,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSNIDOPTIONMENU.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsNidOptionMenu.H
+                Name:   XmdsNidOptionMenu.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   28-JAN-1992
+                Date:   28-JAN-1992
 
-		Purpose: Public declarations for XmdsNidOptionMenu widget
+                Purpose: Public declarations for XmdsNidOptionMenu widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -35,16 +36,20 @@
 
 /* Resources */
 
-#define XmdsNnid                    "nid"	/* Nid */
-#define XmdsNnidOffset              "nidOffset"	/* Nid offset */
-#define XmdsNputOnApply             "putOnApply"	/* Put when a XmdsApplyAllXds is called */
-#define XmdsNlabelStrings           "labelStrings"	/* String table of button labels */
-#define XmdsNvalueStrings	    "valueStrings"	/* String table of value expressions */
-#define XmdsNresetCallback	    "resetCallback"	/* User routine to call for resets (no nid) */
-#define XmdsNvalueChangedCallback   "valueChangedCallback"	/* User routine to call when the value changes */
+#define XmdsNnid "nid"               /* Nid */
+#define XmdsNnidOffset "nidOffset"   /* Nid offset */
+#define XmdsNputOnApply "putOnApply" /* Put when a XmdsApplyAllXds is called   \
+                                      */
+#define XmdsNlabelStrings "labelStrings" /* String table of button labels */
+#define XmdsNvalueStrings "valueStrings" /* String table of value expressions  \
+                                          */
+#define XmdsNresetCallback                                                     \
+  "resetCallback" /* User routine to call for resets (no nid) */
+#define XmdsNvalueChangedCallback                                              \
+  "valueChangedCallback" /* User routine to call when the value changes */
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreateNidOptionMenu();
@@ -57,9 +62,10 @@ extern int XmdsNidOptionMenuApply();
 extern void XmdsNidOptionMenuSetButton();
 struct descriptor_xd *XmdsNidOptionMenuIdxGetXd();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateNidOptionMenu(Widget parent, char *name, ArgList al, Cardinal ac);
+extern Widget XmdsCreateNidOptionMenu(Widget parent, char *name, ArgList al,
+                                      Cardinal ac);
 extern Boolean XmdsIsNidOptionMenu(Widget w);
 extern int *XmdsNidOptionMenuGetButtons(Widget w, int *num);
 extern struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w);
@@ -69,6 +75,6 @@ extern int XmdsNidOptionMenuApply(Widget w);
 extern void XmdsNidOptionMenuSetButton(Widget w, int idx, String text);
 struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
-#endif				/* _XmdsNidOptionMenu */
+#endif /* _XmdsNidOptionMenu */

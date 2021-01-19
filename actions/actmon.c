@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   ACTMON
+                Name:   ACTMON
 
-		Type:   C main program
+                Type:   C main program
 
-		Author:	Tom Fredian
+                Author:	Tom Fredian
 
-		Date:   21-APR-1992
+                Date:   21-APR-1992
 
-		Purpose: Action Monitor
+                Purpose: Action Monitor
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 $ MCR ACTMON -monitor monitor-name
 
@@ -48,7 +48,7 @@ $ MCR ACTMON -monitor monitor-name
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -57,26 +57,26 @@ $ MCR ACTMON -monitor monitor-name
  External functions or symbols referenced:                                    */
 
 #include "actlogp.h"
-#include <ctype.h>
-#include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
-#include <Xm/ToggleB.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
+#include <Xm/ToggleB.h>
+#include <Xm/Xm.h>
+#include <ctype.h>
 #include <mdsplus/mdsplus.h>
 static void Exit(Widget w, int *tag, XtPointer callback_data);
 static void MessageAst();
 static void EventUpdate();
-static void Phase(LinkedEvent * event);
-static void Dispatched(LinkedEvent * event);
-static void Doing(LinkedEvent * event);
-static void Done(LinkedEvent * event);
-static void CheckIn(char* monitor);
-static void DoOpenTree(LinkedEvent * event);
-static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct * cb);
-static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb);
-static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb);
+static void Phase(LinkedEvent *event);
+static void Dispatched(LinkedEvent *event);
+static void Doing(LinkedEvent *event);
+static void Done(LinkedEvent *event);
+static void CheckIn(char *monitor);
+static void DoOpenTree(LinkedEvent *event);
+static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct *cb);
+static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct *cb);
+static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct *cb);
 static void ConfirmServerAbort(Widget w, void *tag, void *cb);
 static void SetKillSensitive(Widget top);
 
@@ -106,34 +106,36 @@ static XmString doing_label;
 static XmString dispatched_label;
 static XmString error_label;
 static XtAppContext app_ctx;
-static char* expt  = NULL;
+static char *expt = NULL;
 
-#define offset(strc,field) (int)((void*)&(strc).field-(void*)&(strc))
+#define offset(strc, field) (int)((void *)&(strc).field - (void *)&(strc))
 
-
-int main(int argc, char** argv)
-{
-  static char* hierarchy_name[] = { "actmon.uid" };
-  static MrmRegisterArg callbacks[] = { {"Exit", (char *)Exit},
-  {"Disable", (char *)Disable},
-  {"ConfirmAbort", (char *)ConfirmAbort},
-  {"SetKillTarget", (char *)SetKillTarget},
+int main(int argc, char **argv) {
+  static char *hierarchy_name[] = {"actmon.uid"};
+  static MrmRegisterArg callbacks[] = {
+      {"Exit", (char *)Exit},
+      {"Disable", (char *)Disable},
+      {"ConfirmAbort", (char *)ConfirmAbort},
+      {"SetKillTarget", (char *)SetKillTarget},
   };
 
   MrmType class;
   static XrmOptionDescRec options[] = {
-     {"-monitor", "*monitor", XrmoptionSepArg, NULL},
-     {"-expt",    "*expt",    XrmoptionSepArg, NULL},
+      {"-monitor", "*monitor", XrmoptionSepArg, NULL},
+      {"-expt", "*expt", XrmoptionSepArg, NULL},
   };
   struct {
-    char* monitor;
-    char* images;
-    char* expt;
+    char *monitor;
+    char *images;
+    char *expt;
   } resource_list;
   static XtResource resources[] = {
-    {"monitor", "Monitor", XtRString, sizeof(char*), offset(resource_list,monitor), XtRString, "ACTION_MONITOR"},
-    {"images",  "Images",  XtRString, sizeof(char*), offset(resource_list,images ), XtRString, ""},
-    {"expt",    "Expt",    XtRString, sizeof(char*), offset(resource_list,expt   ), XtRString, NULL},
+      {"monitor", "Monitor", XtRString, sizeof(char *),
+       offset(resource_list, monitor), XtRString, "ACTION_MONITOR"},
+      {"images", "Images", XtRString, sizeof(char *),
+       offset(resource_list, images), XtRString, ""},
+      {"expt", "Expt", XtRString, sizeof(char *), offset(resource_list, expt),
+       XtRString, NULL},
   };
   MrmHierarchy drm_hierarchy;
   Widget top;
@@ -141,17 +143,18 @@ int main(int argc, char** argv)
   XInitThreads();
   MrmInitialize();
   MrmRegisterNames(callbacks, XtNumber(callbacks));
-  top = XtVaAppInitialize(&app_ctx, "ActMon", options, XtNumber(options), &argc, argv, NULL,
-			  XmNallowShellResize, 1, NULL);
-  XtGetApplicationResources(top, &resource_list, resources, XtNumber(resources), (Arg *) NULL, 0);
-  fprintf(stderr,"MONITOR: '%s'\n",resource_list.monitor);
+  top = XtVaAppInitialize(&app_ctx, "ActMon", options, XtNumber(options), &argc,
+                          argv, NULL, XmNallowShellResize, 1, NULL);
+  XtGetApplicationResources(top, &resource_list, resources, XtNumber(resources),
+                            (Arg *)NULL, 0);
+  fprintf(stderr, "MONITOR: '%s'\n", resource_list.monitor);
   if (resource_list.expt) {
     int len = strlen(resource_list.expt);
-    expt = malloc(sizeof(char)*(len+1));
+    expt = malloc(sizeof(char) * (len + 1));
     expt[len] = 0;
-    while (len-->0)
+    while (len-- > 0)
       expt[len] = toupper(resource_list.expt[len]);
-    fprintf(stderr,"EXPT:    '%s'\n",expt);
+    fprintf(stderr, "EXPT:    '%s'\n", expt);
   }
   MrmOpenHierarchy(XtNumber(hierarchy_name), hierarchy_name, 0, &drm_hierarchy);
   MrmFetchWidget(drm_hierarchy, "main", top, &mainWidget, &class);
@@ -175,7 +178,9 @@ int main(int argc, char** argv)
   return 0;
 }
 
-static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused))){
+static void Exit(Widget w __attribute__((unused)),
+                 int *tag __attribute__((unused)),
+                 XtPointer callback_data __attribute__((unused))) {
   exit(0);
 }
 
@@ -187,27 +192,30 @@ typedef struct serverList {
 
 static ServerList *Servers = NULL;
 
-static Widget FindTop(Widget w){
-  for (; w && XtParent(w); w = XtParent(w)) ;
+static Widget FindTop(Widget w) {
+  for (; w && XtParent(w); w = XtParent(w))
+    ;
   return w;
 }
 
-static void SetKillTarget(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
-			  XmListCallbackStruct * cb __attribute__ ((unused)))
-{
+static void SetKillTarget(Widget w __attribute__((unused)),
+                          int *tag __attribute__((unused)),
+                          XmListCallbackStruct *cb __attribute__((unused))) {
   static ServerList *server;
   int idx;
 
   if (cb->selected_item_count == 1) {
     idx = cb->item_position;
-    for (server = Servers; idx > 1; idx--, server = server->next) ;
+    for (server = Servers; idx > 1; idx--, server = server->next)
+      ;
     XmTextSetString(kill_target_w, server->server);
   } else {
     XmTextSetString(kill_target_w, "");
   }
 }
 
-static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused))){
+static void ConfirmAbort(Widget w, int *tag,
+                         XmListCallbackStruct *cb __attribute__((unused))) {
   static int operation;
   static Widget dialog = NULL;
   XmString text_cs;
@@ -217,7 +225,8 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribu
   if (!dialog) {
     dialog = XmCreateQuestionDialog(FindTop(w), "ConfirmServerAbort", NULL, 0);
     XtVaSetValues(dialog, XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL,
-		  XmNdefaultButtonType, XmDIALOG_CANCEL_BUTTON, XmNautoUnmanage, True, NULL);
+                  XmNdefaultButtonType, XmDIALOG_CANCEL_BUTTON, XmNautoUnmanage,
+                  True, NULL);
     XtSetSensitive(XmMessageBoxGetChild(dialog, XmDIALOG_HELP_BUTTON), 0);
     XtAddCallback(dialog, XmNokCallback, ConfirmServerAbort, (void *)&server);
   }
@@ -226,10 +235,15 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribu
   if (strlen(server) > 0) {
     switch (operation) {
     case 0:
-      sprintf(message, "Are you sure you want to abort the action\nRunning on server %s ?", server);
+      sprintf(
+          message,
+          "Are you sure you want to abort the action\nRunning on server %s ?",
+          server);
       break;
     case 1:
-      sprintf(message, "Are you sure you want to kill the action server:\n %s ?", server);
+      sprintf(message,
+              "Are you sure you want to kill the action server:\n %s ?",
+              server);
       break;
     case 2:
       sprintf(message, "Are you sure you want to \nKILL THE DISPATCHER ?");
@@ -239,33 +253,35 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribu
     }
     if (strlen(message) > 0) {
       text_cs = XmStringCreateLtoR(message, XmSTRING_DEFAULT_CHARSET);
-      XtVaSetValues(dialog, XmNmessageString, text_cs, XmNuserData, (void *)&operation, NULL);
+      XtVaSetValues(dialog, XmNmessageString, text_cs, XmNuserData,
+                    (void *)&operation, NULL);
       XmStringFree(text_cs);
       XtManageChild(dialog);
     }
   }
 }
 
-static int executable(const char *script){
+static int executable(const char *script) {
   int status;
   static const char *cmd_front = "/bin/sh -c '/usr/bin/which ";
   static const char *cmd_back = " > /dev/null 2>/dev/null'";
   static char cmd[132];
-  static struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, cmd };
+  static struct descriptor cmd_d = {0, DTYPE_T, CLASS_S, cmd};
   strcpy(cmd, cmd_front);
   strcat(cmd, script);
   strcat(cmd, cmd_back);
   cmd_d.length = strlen(cmd);
   status = LibSpawn(&cmd_d, 1, 0);
-/*  printf("evaluating / %s / returned %d\n", cmd, status); */
+  /*  printf("evaluating / %s / returned %d\n", cmd, status); */
   return !status;
 }
 
-static void SetKillSensitive(Widget top){
+static void SetKillSensitive(Widget top) {
   int i;
-  static const char *widgets[] = { "*abort_server_b", "*kill_server_b", "*kill_dispatcher_b" };
-  static const char *scripts[] =
-      { "mdsserver_abort", "mdsserver_kill", "mdsserver_kill_dispatcher" };
+  static const char *widgets[] = {"*abort_server_b", "*kill_server_b",
+                                  "*kill_dispatcher_b"};
+  static const char *scripts[] = {"mdsserver_abort", "mdsserver_kill",
+                                  "mdsserver_kill_dispatcher"};
   for (i = 0; i < 3; i++) {
     Widget w = XtNameToWidget(top, widgets[i]);
     if (executable(scripts[i])) {
@@ -274,13 +290,13 @@ static void SetKillSensitive(Widget top){
   }
 }
 
-static void ConfirmServerAbort(Widget w, void *tag __attribute__ ((unused)), void *cb __attribute__ ((unused)))
-{
+static void ConfirmServerAbort(Widget w, void *tag __attribute__((unused)),
+                               void *cb __attribute__((unused))) {
   int *op_ptr;
   int operation;
   char *server;
   char cmd[132];
-  static struct descriptor cmd_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+  static struct descriptor cmd_dsc = {0, DTYPE_T, CLASS_S, 0};
 
   cmd[0] = '\0';
   XtVaGetValues(w, XmNuserData, (void *)&op_ptr, NULL);
@@ -308,8 +324,8 @@ static void ConfirmServerAbort(Widget w, void *tag __attribute__ ((unused)), voi
   }
 }
 
-static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonCallbackStruct * cb)
-{
+static void Disable(Widget w __attribute__((unused)), int *tag,
+                    XmToggleButtonCallbackStruct *cb) {
   Widget dw = 0;
   switch (*tag) {
   case 4:
@@ -339,25 +355,27 @@ static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonC
   }
 }
 
-static void DoTimer(){
+static void DoTimer() {
   _DoTimer();
   XtAppAddTimeOut(app_ctx, 100, DoTimer, 0);
 }
 
-static void EventUpdate(LinkedEvent * event){
+static void EventUpdate(LinkedEvent *event) {
   _EventUpdate(event);
   XmTextSetString(kill_target_w, "");
 }
 
-static int FindServer(char *name, ServerList ** srv){
+static int FindServer(char *name, ServerList **srv) {
   ServerList *prev, *ptr, *newPtr;
   int idx;
   int match = 1;
   for (prev = NULL, idx = 1, ptr = Servers;
-       ptr && (match = strcasecmp(ptr->server, name)) < 0; prev = ptr, ptr = ptr->next, idx++) ;
+       ptr && (match = strcasecmp(ptr->server, name)) < 0;
+       prev = ptr, ptr = ptr->next, idx++)
+    ;
   if (match != 0) {
     XmString item;
-    newPtr = (ServerList *) XtMalloc(sizeof(ServerList));
+    newPtr = (ServerList *)XtMalloc(sizeof(ServerList));
     newPtr->server = (char *)XtMalloc(strlen(name) + 1);
     strcpy(newPtr->path, "");
     newPtr->next = ptr;
@@ -375,14 +393,16 @@ static int FindServer(char *name, ServerList ** srv){
   return idx;
 }
 
-static void PutLog(char *time, char *mode, char *status, char *server, char *path){
+static void PutLog(char *time, char *mode, char *status, char *server,
+                   char *path) {
   ServerList *srv;
   char text[2048];
   XmString item;
   int items;
   if ((LogWidgetOff && CurrentWidgetOff) || (LogWidget == 0))
     return;
-  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot,
+          mode, status, server, path);
   if (!LogWidgetOff) {
     item = XmStringCreateSimple(text);
     XmListAddItemUnselected(LogWidget, item, 0);
@@ -391,7 +411,7 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
     if (items > MaxLogLines) {
       DoingListItem *doing;
       for (doing = DoingList; doing; doing = doing->next)
-	doing->pos--;
+        doing->pos--;
       XmListDeletePos(LogWidget, 1);
     }
     XmListSetBottomPos(LogWidget, 0);
@@ -407,17 +427,17 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
     } else if (strcmp(mode, "DONE") == 0) {
       int idx = FindServer(server, &srv);
       if (strcmp(srv->path, path) == 0) {
-	strcpy(srv->path, "");
-	item = XmStringCreateSimple(server);
-	XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
-	XmStringFree(item);
+        strcpy(srv->path, "");
+        item = XmStringCreateSimple(server);
+        XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
+        XmStringFree(item);
       }
     }
   }
 }
 
-static void PutError(char *time, char* mode, char *status, char *server, char *path)
-{
+static void PutError(char *time, char *mode, char *status, char *server,
+                     char *path) {
 
   char text[2048];
   XmString item;
@@ -425,7 +445,8 @@ static void PutError(char *time, char* mode, char *status, char *server, char *p
 
   if (ErrorWidgetOff)
     return;
-  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot,
+          mode, status, server, path);
   item = XmStringCreateSimple(text);
   XmListAddItemUnselected(ErrorWidget, item, 0);
   XmStringFree(item);
@@ -440,11 +461,11 @@ static void PutError(char *time, char* mode, char *status, char *server, char *p
   /*
      XFlush(XtDisplay(ErrorWidget));
    */
-
 }
 
-static void DoOpenTree(LinkedEvent * event){
-  if (expt && strcmp(event->tree,expt)) return;
+static void DoOpenTree(LinkedEvent *event) {
+  if (expt && strcmp(event->tree, expt))
+    return;
   DoingListItem *doing;
   DoingListItem *next;
   XmListDeleteAllItems(ErrorWidget);
@@ -458,8 +479,7 @@ static void DoOpenTree(LinkedEvent * event){
   unique_tag_seed = 0;
 }
 
-static void Doing(LinkedEvent * event)
-{
+static void Doing(LinkedEvent *event) {
   DoingListItem *doing = malloc(sizeof(DoingListItem));
   DoingListItem *prev;
   DoingListItem *d;
@@ -467,7 +487,8 @@ static void Doing(LinkedEvent * event)
   int items;
   XtVaGetValues(LogWidget, XmNitemCount, &items, NULL);
   XmListSelectPos(LogWidget, 0, 0);
-  for (prev = 0, d = DoingList; d; prev = d, d = d->next) ;
+  for (prev = 0, d = DoingList; d; prev = d, d = d->next)
+    ;
   if (prev)
     prev->next = doing;
   else
@@ -477,7 +498,7 @@ static void Doing(LinkedEvent * event)
   doing->next = 0;
 }
 
-static void Done(LinkedEvent * event){
+static void Done(LinkedEvent *event) {
   DoingListItem *doing;
   DoingListItem *prev;
   int *items;
@@ -485,7 +506,8 @@ static void Done(LinkedEvent * event){
   XmListGetSelectedPos(LogWidget, &items, &num);
   free(items);
   for (prev = 0, doing = DoingList; doing && (doing->nid != event->nid);
-       prev = doing, doing = doing->next) ;
+       prev = doing, doing = doing->next)
+    ;
   if (doing) {
     XmListDeselectPos(LogWidget, doing->pos);
     if (prev)

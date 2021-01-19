@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -64,8 +64,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       name of file
 // output:      return the size of the db file, or error
 //-------------------------------------------------------------------------
-int get_db_file_size(char *FileName)
-{
+int get_db_file_size(char *FileName) {
   int retval;
   struct stat sbuf;
 
@@ -74,7 +73,7 @@ int get_db_file_size(char *FileName)
 
   if (Stat(FileName, &sbuf) == ERROR) {
     perror("stat()");
-    retval = FAILURE;		// error code is negative and odd
+    retval = FAILURE; // error code is negative and odd
   } else
     retval = sbuf.st_size;
 

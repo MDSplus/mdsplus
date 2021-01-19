@@ -13,5 +13,5 @@
  * 					-- Shawn A. Clifford (sac@eng.ufl.edu)
  */
 
-#define BIG_ENDIAN (((unsigned short)('@P')>>8) == 0x40)
-#define LITTLE_ENDIAN (((unsigned short)('@P')>>8) == 0x50)
+#define BIG_ENDIAN (((unsigned short)('@P') >> 8) == 0x40)
+#define LITTLE_ENDIAN (((unsigned short)('@P') >> 8) == 0x50)

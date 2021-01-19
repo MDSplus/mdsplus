@@ -14,15 +14,15 @@
 /*  CMS REPLACEMENT HISTORY, Element XMDSXDBOX.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsXdBox.H
+                Name:   XmdsXdBox.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   11-NOV-1991
+                Date:   11-NOV-1991
 
-		Purpose: Public declarations for  XdBox Widgets.
+                Purpose: Public declarations for  XdBox Widgets.
 
 
 ------------------------------------------------------------------------------
@@ -43,7 +43,7 @@
 
 #ifndef XmdsIsXdBox
 #define XmdsIsXdBox(w) XtIsSubclass(w, xmdsXdBoxWidgetClass)
-#endif				/* XmdsIsXdBox */
+#endif /* XmdsIsXdBox */
 
 /* Xd Widget Class */
 externalref WidgetClass xmdsXdBoxWidgetClass;
@@ -66,9 +66,10 @@ extern void XmdsXdBoxSetNid();
 extern void XmdsXdBoxSetState();
 extern void XmdsXdBoxSetXd();
 
-#else				/* _NO_PROTO_ */
+#else /* _NO_PROTO_ */
 
-extern Widget XmdsCreateXdBox(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern Widget XmdsCreateXdBox(Widget parent, char *name, ArgList args,
+                              Cardinal argcount);
 extern Boolean XmdsXdBoxApply(Widget w);
 extern Boolean XmdsXdBoxGetState(Widget w);
 extern struct descriptor *XmdsXdBoxGetXd(Widget w);
@@ -80,28 +81,28 @@ extern void XmdsXdBoxSetNid(Widget w, int nid);
 extern void XmdsXdBoxSetState(Widget w, Boolean state);
 extern void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc);
 
-#endif				/* _NO_PROTO_ */
+#endif /* _NO_PROTO_ */
 
 /* Resources */
 
-#define XmdsNapplyCallback	"applyCallback"
-#define XmdsNcancelCallback	"cancelCallback"
-#define XmdsNokCallback		"okCallback"
-#define XmdsNresetCallback	"resetCallback"
+#define XmdsNapplyCallback "applyCallback"
+#define XmdsNcancelCallback "cancelCallback"
+#define XmdsNokCallback "okCallback"
+#define XmdsNresetCallback "resetCallback"
 
-#define XmdsNautoDestroy        "autoDestroy"
-#define XmdsNautoUnmanage	"autoUnmanage"
-#define XmdsNautoPut		"autoPut"
-#define XmdsNputOnApply		"putOnApply"
+#define XmdsNautoDestroy "autoDestroy"
+#define XmdsNautoUnmanage "autoUnmanage"
+#define XmdsNautoPut "autoPut"
+#define XmdsNputOnApply "putOnApply"
 
-#define XmdsNdefaultNid		"defaultNid"
-#define XmdsNdisplayOnly	"displayOnly"
-#define XmdsNnid		"nid"
-#define XmdsNnidOffset          "nidOffset"
-#define XmdsNshowButtons	"showButtons"
-#define XmdsNusage		"usage"
-#define XmdsNxd			"xd"
+#define XmdsNdefaultNid "defaultNid"
+#define XmdsNdisplayOnly "displayOnly"
+#define XmdsNnid "nid"
+#define XmdsNnidOffset "nidOffset"
+#define XmdsNshowButtons "showButtons"
+#define XmdsNusage "usage"
+#define XmdsNxd "xd"
 
 #include <usagedef.h>
-#endif				/* _XmdsXdBox_h */
+#endif /* _XmdsXdBox_h */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

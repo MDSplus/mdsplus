@@ -23,22 +23,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1ShowVm.C
-	Show virtual memory zone
-	        SHOW_VM([print-level], [selection-mask])
+        Show virtual memory zone
+                SHOW_VM([print-level], [selection-mask])
 
-	Ken Klare, LANL CTR-7   (c)1989,1990
+        Ken Klare, LANL CTR-7   (c)1989,1990
 */
 
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <mdsshr_messages.h>
 
-
-
 extern int TdiGetLong();
 
-int Tdi1ShowVm()
-{
+int Tdi1ShowVm() {
   /*
   INIT_STATUS;
   int code, contex = 0, j = 1, mask, zone_id = 0;

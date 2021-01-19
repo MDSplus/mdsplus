@@ -24,22 +24,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   STEP_RESAMPLE
+                Name:   STEP_RESAMPLE
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   15-AUG-1990
+                Date:   15-AUG-1990
 
-		Purpose: Resample a signal using stepped interpolation.
-	                 Extrapolated points are set to zero.
+                Purpose: Resample a signal using stepped interpolation.
+                         Extrapolated points are set to zero.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor *x);
+struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor
+*x);
 
 ------------------------------------------------------------------------------
    Copyright (c) 1990
@@ -49,24 +50,26 @@ struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor *x)
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
 #include <libroutines.h>
-#include <mdsshr.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
 
 extern int TdiData();
 extern int TdiByte();
 extern int TdiDimOf();
 extern int TdiCvt();
 
-EXPORT struct descriptor *StepResample(struct descriptor *in_sig, struct descriptor *in_x)
-{
+EXPORT struct descriptor *StepResample(struct descriptor *in_sig,
+                                       struct descriptor *in_x) {
 
-#define return_on_error(func) if (!((status = func)&1)) return (struct descriptor *)&emptyxd;
+#define return_on_error(func)                                                  \
+  if (!((status = func) & 1))                                                  \
+    return (struct descriptor *)&emptyxd;
 
   int status;
   static EMPTYXD(emptyxd);
@@ -88,7 +91,8 @@ EXPORT struct descriptor *StepResample(struct descriptor *in_sig, struct descrip
   struct descriptor_signal *sig = (struct descriptor_signal *)in_sig;
   struct descriptor *x = in_x;
   static float zero = 0.0;
-  static struct descriptor float_dsc = { sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)&zero };
+  static struct descriptor float_dsc = {sizeof(float), DTYPE_FLOAT, CLASS_S,
+                                        (char *)&zero};
 
   int i;
   int j = 0;
@@ -136,8 +140,8 @@ EXPORT struct descriptor *StepResample(struct descriptor *in_sig, struct descrip
       new_y_b[i] = 0;
     else {
       for (; j < sig_elements; j++)
-	if (new_x_f[i] < sig_x_f[j])
-	  break;
+        if (new_x_f[i] < sig_x_f[j])
+          break;
       new_y_b[i] = sig_y_b[j - 1];
     }
   }

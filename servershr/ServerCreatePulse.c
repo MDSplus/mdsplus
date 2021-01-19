@@ -24,22 +24,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$CREATE_PULSE
+                Name:   SERVER$CREATE_PULSE
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Create a single tree pulse file
+                Purpose: Create a single tree pulse file
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descriptor *tree, int *shot,
-	                void (*ast)(), int astprm, int *netid, void (*link_down)())
+int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct
+dsc$descriptor *tree, int *shot, void (*ast)(), int astprm, int *netid, void
+(*link_down)())
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -49,7 +50,7 @@ int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descr
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -58,10 +59,11 @@ int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descr
 #include "servershrp.h"
 
 EXPORT int ServerCreatePulse(int *id, char *server, char *tree, int shot,
-		      void (*ast) (), void *astprm, int *retstatus, pthread_rwlock_t *lock, void (*before_ast) ())
-{
+                             void (*ast)(), void *astprm, int *retstatus,
+                             pthread_rwlock_t *lock, void (*before_ast)()) {
   struct descrip p1, p2;
-  return ServerSendMessage(id, server, SrvAction, retstatus, lock, NULL, ast, astprm, before_ast, 2,
-			MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
-			MakeDescrip(&p2, DTYPE_LONG, 0, 0, &shot));
+  return ServerSendMessage(id, server, SrvAction, retstatus, lock, NULL, ast,
+                           astprm, before_ast, 2,
+                           MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
+                           MakeDescrip(&p2, DTYPE_LONG, 0, 0, &shot));
 }

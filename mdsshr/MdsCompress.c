@@ -23,113 +23,118 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*	MDS$COMPRESS.C
-	Compress waveform or other data using specified or delta method.
-		status = MDS$COMPRESS(%descr(cimage), %descr(centry), %descr(input), %ref(output_xd))
-	Where:
-		cimage	is an input text descriptor of the logical name of file with default SYS$SHARE:.EXE.
-		centry	is an input text descriptor of the routine name in the image.
-		input	is an input array of acceptable type.
-			WARNING: An input XD is assumed compact and self-contained and the XD is freed.
-			Also assumed compressible. This is fine for TREE$COPY_TO_RECORD, the primary user.
-			Otherwise, you will have to use MDS$COPY_DXXD to gather and compact the input XD.
-		output_xd is an extended dynamic descriptor to be filled.
+        Compress waveform or other data using specified or delta method.
+                status = MDS$COMPRESS(%descr(cimage), %descr(centry),
+%descr(input), %ref(output_xd)) Where:
+                cimage	is an input text descriptor of the logical name of file
+with default SYS$SHARE:.EXE.
+                centry	is an input text descriptor of the routine name in the
+image. input	is an input array of acceptable type. WARNING: An input XD is
+assumed compact and self-contained and the XD is freed. Also assumed
+compressible. This is fine for TREE$COPY_TO_RECORD, the primary user. Otherwise,
+you will have to use MDS$COPY_DXXD to gather and compact the input XD. output_xd
+is an extended dynamic descriptor to be filled.
 
-	The input is converted into a CLASS_CA descriptor and the referenced data
-	is compressed by the method of "centry" in "cimage" and placed in a simple array.
-	Memory is allocated for the maximum sized result. It will be freed after it is copied.
-	The output_xd is filled with a CLASS_CA descriptor:
-	CA-dtype[0] ==> R-FUNCTION-DECOMPRESS	==> S-T ==> ximage text or NULL
-						==> S-T ==> xentry text or NULL
-						==> CA-dtype[1] ==> NULL
-						==> A-B ==> compressed
+        The input is converted into a CLASS_CA descriptor and the referenced
+data is compressed by the method of "centry" in "cimage" and placed in a simple
+array. Memory is allocated for the maximum sized result. It will be freed after
+it is copied. The output_xd is filled with a CLASS_CA descriptor: CA-dtype[0]
+==> R-FUNCTION-DECOMPRESS	==> S-T ==> ximage text or NULL
+                                                ==> S-T ==> xentry text or NULL
+                                                ==> CA-dtype[1] ==> NULL
+                                                ==> A-B ==> compressed
 
-	If result is larger than original, then we keep:
-	A-dtype ==> uncompressed
+        If result is larger than original, then we keep:
+        A-dtype ==> uncompressed
 
 The compression routine "centry":
-		status = centry(nitems, %descr(input), %descr(packed), bit, [%descr(ximage), %descr(xentry)])
-	Where:
-		nitems	is the number of element of the input to compress.
-		input	is an input array of acceptable type.
-		packed	is an output temporary array to hold the compressed data.
-		bit	is the number of bits in packed and sets the final length.
-		ximage	is an output dynamic text descriptor of the logical name or file with default SYS$SHARE:.EXE.
-		xentry	is an output dynamic text descriptor of the routine name in the image.
-	If ximage and xentry are unchanged, the default expansion method is used.
-	If packed is too small, ximage and xentry should not be set and status=LIB$_STRTRU returned.
+                status = centry(nitems, %descr(input), %descr(packed), bit,
+[%descr(ximage), %descr(xentry)]) Where: nitems	is the number of element of the
+input to compress. input	is an input array of acceptable type.
+                packed	is an output temporary array to hold the compressed
+data. bit	is the number of bits in packed and sets the final length.
+                ximage	is an output dynamic text descriptor of the logical name
+or file with default SYS$SHARE:.EXE. xentry	is an output dynamic text
+descriptor of the routine name in the image. If ximage and xentry are unchanged,
+the default expansion method is used. If packed is too small, ximage and xentry
+should not be set and status=LIB$_STRTRU returned.
 
 The expansion routine "xentry":
-		status = xentry(nitems, %descr(packed), %descr(output), [bit])
-	Where:
-		nitems	is the number of element of the input to compress.
-		packed	is an output temporary array to hold the compressed data.
-		output	is an output array to receive the expanded data.
-		bit	is the output number of bits in packed. (untested)
+                status = xentry(nitems, %descr(packed), %descr(output), [bit])
+        Where:
+                nitems	is the number of element of the input to compress.
+                packed	is an output temporary array to hold the compressed
+data. output	is an output array to receive the expanded data. bit	is the
+output number of bits in packed. (untested)
 
-	Ken Klare, LANL CTR-7	(c)1990
+        Ken Klare, LANL CTR-7	(c)1990
 */
 
-#include <string.h>
-#include <mdstypes.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <tdishr.h>
-#include <libroutines.h>
-#include <strroutines.h>
-#include <mdsshr_messages.h>
-#include <STATICdef.h>
-#include <mdsplus/mdsplus.h>
 #include "mdsshrp.h"
+#include <STATICdef.h>
+#include <libroutines.h>
+#include <mdsdescrip.h>
+#include <mdsplus/mdsplus.h>
+#include <mdsshr.h>
+#include <mdsshr_messages.h>
+#include <mdstypes.h>
+#include <string.h>
+#include <strroutines.h>
+#include <tdishr.h>
 
-#define _MOVC3(a,b,c) memcpy(c,b,(size_t)(a))
-#define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
+#define _MOVC3(a, b, c) memcpy(c, b, (size_t)(a))
+#define align(bytes, size) ((((bytes) + (size)-1) / (size)) * (size))
 typedef ARRAY_COEFF(char, 1) array_coef;
 typedef RECORD(4) mds_decompress_t;
 static opcode_t OpcDECOMPRESS = OPC_DECOMPRESS;
-STATIC_CONSTANT mds_decompress_t rec0 =
-  { sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (uint8_t*)&OpcDECOMPRESS, 4,
-    __fill_value__ {0, 0, 0, 0} };
+STATIC_CONSTANT mds_decompress_t rec0 = {sizeof(opcode_t),
+                                         DTYPE_FUNCTION,
+                                         CLASS_R,
+                                         (uint8_t *)&OpcDECOMPRESS,
+                                         4,
+                                         __fill_value__{0, 0, 0, 0}};
 STATIC_CONSTANT DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
-STATIC_CONSTANT mdsdsc_d_t  EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+STATIC_CONSTANT mdsdsc_d_t EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
 
 STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 /*--------------------------------------------------------------------------
-	The inner routine scans some classes and tries to compress arrays.
-	If successful returns 1, if unsuccessful returns NORMAL.
+        The inner routine scans some classes and tries to compress arrays.
+        If successful returns 1, if unsuccessful returns NORMAL.
 */
-STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage, const mdsdsc_t *const pcentry, const int64_t delta, mdsdsc_t *const pwork)
-{
+STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
+                            const mdsdsc_t *const pcentry, const int64_t delta,
+                            mdsdsc_t *const pwork) {
   int j, stat1, status = 1;
   unsigned int bit = 0;
-  int nitems, (*symbol) ();
+  int nitems, (*symbol)();
   char *pcmp, *plim;
   array_coef *pca0, *pca1;
-  mdsdsc_a_t  *pdat, *porig;
+  mdsdsc_a_t *pdat, *porig;
   mds_decompress_t *prec;
-  mdsdsc_d_t  dximage, dxentry;
+  mdsdsc_d_t dximage, dxentry;
   mdsdsc_t *pd0, *pd1, **ppd;
-  size_t asize,align_size;
+  size_t asize, align_size;
   if (pwork)
     switch (pwork->class) {
     case CLASS_APD:
-//      pd1 = (mdsdsc_t *) pwork->pointer;
+      //      pd1 = (mdsdsc_t *) pwork->pointer;
       ppd = (mdsdsc_t **)pwork->pointer;
-      j = (int)(((mdsdsc_a_t  *)pwork)->arsize / pwork->length);
+      j = (int)(((mdsdsc_a_t *)pwork)->arsize / pwork->length);
       while ((--j >= 0) && STATUS_OK)
-//      if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
-	if ((stat1 = compress(pcimage, pcentry, delta, *ppd++)) != 1)
-	  status = stat1;
+        //      if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
+        if ((stat1 = compress(pcimage, pcentry, delta, *ppd++)) != 1)
+          status = stat1;
       break;
     case CLASS_CA:
       if (pwork->pointer)
-	status = compress(pcimage, pcentry, delta, (mdsdsc_t *)pwork->pointer);
+        status = compress(pcimage, pcentry, delta, (mdsdsc_t *)pwork->pointer);
       break;
     case CLASS_R:
       ppd = &((mdsdsc_r_t *)pwork)->dscptrs[0];
       j = ((mdsdsc_r_t *)pwork)->ndesc;
       while ((--j >= 0) && (status & 1))
-	if ((stat1 = compress(pcimage, pcentry, delta, *(ppd++))) != 1)
-	  status = stat1;
+        if ((stat1 = compress(pcimage, pcentry, delta, *(ppd++))) != 1)
+          status = stat1;
       break;
 
     /*************************************************
@@ -148,95 +153,102 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage, const mdsdsc_t *const
     opcode added by final COPY_DXXD.
     *************************************************/
     case CLASS_A:
-      porig = (mdsdsc_a_t  *)((char *)pwork + delta);
-      asize = sizeof(mdsdsc_a_t ) +
-	  (porig->aflags.coeff ? sizeof(void *) + porig->dimct * sizeof(int) : 0) +
-	  (porig->aflags.bounds ? (size_t)(porig->dimct * 2) * sizeof(int) : 0);
+      porig = (mdsdsc_a_t *)((char *)pwork + delta);
+      asize =
+          sizeof(mdsdsc_a_t) +
+          (porig->aflags.coeff ? sizeof(void *) + porig->dimct * sizeof(int)
+                               : 0) +
+          (porig->aflags.bounds ? (size_t)(porig->dimct * 2) * sizeof(int) : 0);
       align_size = (porig->dtype == DTYPE_T) ? 1 : porig->length;
       asize = align(asize, align_size);
-  /**************************************************************
-    Check if we have minimum requirements.
-    Make two CLASS_CA descriptors with a0=offset.
-    First points to function descriptor.
-    Second is dummy for expansion function.
-    ASSUME compressor fails gracefully and only changes *pdat data.
-    **************************************************************/
-      prec = (mds_decompress_t *) align((size_t) ((char *)pwork + asize), sizeof(void *));
-      pca1 = (array_coef *) ((char *)prec + sizeof(rec0));
-      pdat = (mdsdsc_a_t  *)align((size_t) ((char *)pca1 + asize), sizeof(void *));
-      pcmp = (char *)pdat + sizeof(mdsdsc_a_t );
+      /**************************************************************
+        Check if we have minimum requirements.
+        Make two CLASS_CA descriptors with a0=offset.
+        First points to function descriptor.
+        Second is dummy for expansion function.
+        ASSUME compressor fails gracefully and only changes *pdat data.
+        **************************************************************/
+      prec = (mds_decompress_t *)align((size_t)((char *)pwork + asize),
+                                       sizeof(void *));
+      pca1 = (array_coef *)((char *)prec + sizeof(rec0));
+      pdat =
+          (mdsdsc_a_t *)align((size_t)((char *)pca1 + asize), sizeof(void *));
+      pcmp = (char *)pdat + sizeof(mdsdsc_a_t);
       plim = porig->pointer + porig->arsize - sizeof(opcode_t);
       if (pcmp >= plim)
-	break;
+        break;
 
-    /************************
-    Use data from saved copy.
-    ************************/
+      /************************
+      Use data from saved copy.
+      ************************/
       pwork->pointer += delta;
 
       *prec = rec0;
-      *pdat = *(mdsdsc_a_t  *)&dat0;
+      *pdat = *(mdsdsc_a_t *)&dat0;
       pdat->pointer = pcmp;
       pdat->arsize = (unsigned int)(plim - pcmp);
 
       nitems = (int)porig->arsize / (int)porig->length;
       if (pcentry) {
-	dximage = EMPTY_D;
-	dxentry = EMPTY_D;
-	status = LibFindImageSymbol(pcimage, pcentry, &symbol);
-	if (status & 1)
-	  status = (*symbol) (&nitems, pwork, pdat, &bit, &dximage, &dxentry);
-	pdat->arsize = (bit + 7) / 8;
-	pd0 = (mdsdsc_t *)(pdat->pointer + pdat->arsize);
-	if (dximage.pointer) {
-	  pd1 = &pd0[1] + dximage.length;
-	  if ((char *)pd1 < (char *)plim) {
-	    prec->dscptrs[0] = pd0;
-	    *pd0 = *(mdsdsc_t *)&dximage;
-	    _MOVC3(dximage.length, dximage.pointer, pd0->pointer = (char *)&pd0[1]);
-	  }
-	  pd0 = pd1;
-	  StrFree1Dx(&dximage);
-	}
-	if (dxentry.pointer) {
-	  pd1 = &pd0[1] + dxentry.length;
-	  if ((char *)pd1 < (char *)plim) {
-	    prec->dscptrs[1] = pd0;
-	    *pd0 = *(mdsdsc_t *)&dxentry;
-	    _MOVC3(dxentry.length, dxentry.pointer, pd0->pointer = (char *)&pd0[1]);
-	  }
-	  pd0 = pd1;
-	  StrFree1Dx(&dxentry);
-	}
-	if ((status & 1) && (status != LibSTRTRU) && ((char *)pd0 < (char *)plim))
-	  goto good;
-      /**************************************************
-      If it doesn't fit then must restore old data field.
-      **************************************************/
-	bit = 0;
-	prec->dscptrs[0] = 0;
-	prec->dscptrs[1] = 0;
-	_MOVC3(pdat->arsize = (unsigned int)(plim - pcmp), pcmp + delta, pcmp);
+        dximage = EMPTY_D;
+        dxentry = EMPTY_D;
+        status = LibFindImageSymbol(pcimage, pcentry, &symbol);
+        if (status & 1)
+          status = (*symbol)(&nitems, pwork, pdat, &bit, &dximage, &dxentry);
+        pdat->arsize = (bit + 7) / 8;
+        pd0 = (mdsdsc_t *)(pdat->pointer + pdat->arsize);
+        if (dximage.pointer) {
+          pd1 = &pd0[1] + dximage.length;
+          if ((char *)pd1 < (char *)plim) {
+            prec->dscptrs[0] = pd0;
+            *pd0 = *(mdsdsc_t *)&dximage;
+            _MOVC3(dximage.length, dximage.pointer,
+                   pd0->pointer = (char *)&pd0[1]);
+          }
+          pd0 = pd1;
+          StrFree1Dx(&dximage);
+        }
+        if (dxentry.pointer) {
+          pd1 = &pd0[1] + dxentry.length;
+          if ((char *)pd1 < (char *)plim) {
+            prec->dscptrs[1] = pd0;
+            *pd0 = *(mdsdsc_t *)&dxentry;
+            _MOVC3(dxentry.length, dxentry.pointer,
+                   pd0->pointer = (char *)&pd0[1]);
+          }
+          pd0 = pd1;
+          StrFree1Dx(&dxentry);
+        }
+        if ((status & 1) && (status != LibSTRTRU) &&
+            ((char *)pd0 < (char *)plim))
+          goto good;
+        /**************************************************
+        If it doesn't fit then must restore old data field.
+        **************************************************/
+        bit = 0;
+        prec->dscptrs[0] = 0;
+        prec->dscptrs[1] = 0;
+        _MOVC3(pdat->arsize = (unsigned int)(plim - pcmp), pcmp + delta, pcmp);
       }
 
-    /********************
-    Standard compression.
-    ********************/
-      status = MdsCmprs(&nitems, (mdsdsc_a_t  *)pwork, pdat, (int*)&bit);
+      /********************
+      Standard compression.
+      ********************/
+      status = MdsCmprs(&nitems, (mdsdsc_a_t *)pwork, pdat, (int *)&bit);
       pdat->arsize = (bit + 7) / 8;
       if ((status & 1) && (status != LibSTRTRU))
-	goto good;
-    /*************************************
-    Did not do a good job, so restore all.
-    *************************************/
+        goto good;
+      /*************************************
+      Did not do a good job, so restore all.
+      *************************************/
       status = 1;
       _MOVC3(asize + porig->arsize, porig, pwork);
       break;
- good:
-      pca0 = (array_coef *) pwork;
+    good:
+      pca0 = (array_coef *)pwork;
       pca0->class = CLASS_CA;
       if (pca0->aflags.coeff)
-	pca0->a0 = (char *)(pca0->a0 - porig->pointer);
+        pca0->a0 = (char *)(pca0->a0 - porig->pointer);
       _MOVC3((short)asize, (char *)pca0, (char *)pca1);
       pca0->pointer = (char *)prec;
       pca1->pointer = 0;
@@ -251,10 +263,12 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage, const mdsdsc_t *const
 }
 
 /*--------------------------------------------------------------------------
-	The outside routine.
+        The outside routine.
 */
-EXPORT int MdsCompress(const mdsdsc_t *const cimage_ptr, const mdsdsc_t *const centry_ptr, const mdsdsc_t *const in_ptr, mdsdsc_xd_t *const out_ptr)
-{
+EXPORT int MdsCompress(const mdsdsc_t *const cimage_ptr,
+                       const mdsdsc_t *const centry_ptr,
+                       const mdsdsc_t *const in_ptr,
+                       mdsdsc_xd_t *const out_ptr) {
   int status = 1;
   mdsdsc_xd_t work;
   STATIC_CONSTANT dtype_t dsc_dtype = DTYPE_DSC;
@@ -298,19 +312,19 @@ Compact/copy from work.
       int orig_len = work.l_length;
 #endif
       _MOVC3(work.l_length, work.pointer, out_ptr->pointer);
-      status =
-	  compress(cimage_ptr, centry_ptr, (char *)out_ptr->pointer - (char *)work.pointer,
-		   work.pointer);
+      status = compress(cimage_ptr, centry_ptr,
+                        (char *)out_ptr->pointer - (char *)work.pointer,
+                        work.pointer);
       if (status & 1)
-	status = MdsCopyDxXd(work.pointer, out_ptr);
+        status = MdsCopyDxXd(work.pointer, out_ptr);
       MdsFree1Dx(&work, NULL);
 #ifdef _RECURSIVE_COMPRESS
       if ((status == MdsCOMPRESSIBLE) && (orig_len / 2 > out_ptr->l_length)) {
-	work = *out_ptr;
-	out_ptr->pointer = 0;
-	out_ptr->l_length = 0;
+        work = *out_ptr;
+        out_ptr->pointer = 0;
+        out_ptr->l_length = 0;
       } else
-	status = 1;
+        status = 1;
 #endif
     }
   }
@@ -318,14 +332,14 @@ Compact/copy from work.
 }
 
 /*--------------------------------------------------------------------------
-	Expansion of compressed data.
+        Expansion of compressed data.
 
-		status = MdsDecompress(%ref(class_ca or r_function), %ref(output_xd))
+                status = MdsDecompress(%ref(class_ca or r_function),
+   %ref(output_xd))
 */
-EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr)
-{
+EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr) {
   const mdsdsc_r_t *prec = rec_ptr;
-  int status, (*symbol) ();
+  int status, (*symbol)();
   if (prec == 0) {
     MdsFree1Dx(out_ptr, NULL);
     return 1;
@@ -334,18 +348,17 @@ EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr)
     return MdsDecompress((mdsdsc_r_t *)rec_ptr->pointer, out_ptr);
   if (prec->class == CLASS_CA && prec->pointer)
     prec = (mdsdsc_r_t *)prec->pointer;
-  if (prec->class != CLASS_R
-      || prec->dtype != DTYPE_FUNCTION
-      || prec->pointer == 0 || *(unsigned short *)prec->pointer != OpcDECOMPRESS)
+  if (prec->class != CLASS_R || prec->dtype != DTYPE_FUNCTION ||
+      prec->pointer == 0 || *(unsigned short *)prec->pointer != OpcDECOMPRESS)
     status = MdsCopyDxXd((mdsdsc_t *)prec, out_ptr);
   else {
-    mdsdsc_a_t  *pa = (mdsdsc_a_t  *)prec->dscptrs[2];
+    mdsdsc_a_t *pa = (mdsdsc_a_t *)prec->dscptrs[2];
     int nitems = (int)pa->arsize / (int)pa->length;
     int bit = 0;
     if (prec->dscptrs[1]) {
       status = LibFindImageSymbol(prec->dscptrs[0], prec->dscptrs[1], &symbol);
       if (!(status & 1))
-	return status;
+        return status;
     } else {
       symbol = MdsXpand;
       status = 1;
@@ -354,13 +367,13 @@ EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr)
       status = MdsGet1DxA(pa, &pa->length, &pa->dtype, out_ptr);
     if (status & 1) {
       if (prec->dscptrs[3]->class == CLASS_CA) {
-	EMPTYXD(tmp_xd);
-	status = MdsDecompress((mdsdsc_r_t *)prec->dscptrs[3], &tmp_xd);
-	if (status & 1)
-	  status = (*symbol) (&nitems, tmp_xd.pointer, out_ptr->pointer, &bit);
-	MdsFree1Dx(&tmp_xd, 0);
+        EMPTYXD(tmp_xd);
+        status = MdsDecompress((mdsdsc_r_t *)prec->dscptrs[3], &tmp_xd);
+        if (status & 1)
+          status = (*symbol)(&nitems, tmp_xd.pointer, out_ptr->pointer, &bit);
+        MdsFree1Dx(&tmp_xd, 0);
       } else
-	status = (*symbol) (&nitems, prec->dscptrs[3], out_ptr->pointer, &bit);
+        status = (*symbol)(&nitems, prec->dscptrs[3], out_ptr->pointer, &bit);
     }
   }
   return status;

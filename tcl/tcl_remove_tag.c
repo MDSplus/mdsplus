@@ -22,30 +22,29 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 
-
 /**********************************************************************
-* TCL_REMOVE_TAG.C --
-*
-* Remove a tag name.
-*
-* History:
-*  28-Apr-1998  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
+ * TCL_REMOVE_TAG.C --
+ *
+ * Remove a tag name.
+ *
+ * History:
+ *  28-Apr-1998  TRG  Create.  Ported from original mds code.
+ *
+ ************************************************************************/
 
-	/***************************************************************
-	 * TclRemoveTag:
-	 *  Remove a tag name
-	 ***************************************************************/
-EXPORT int TclRemoveTag(void *ctx, char **error, char **output __attribute__ ((unused)))
-{
+/***************************************************************
+ * TclRemoveTag:
+ *  Remove a tag name
+ ***************************************************************/
+EXPORT int TclRemoveTag(void *ctx, char **error,
+                        char **output __attribute__((unused))) {
   int sts;
   char *tagnam = 0;
 
@@ -53,9 +52,11 @@ EXPORT int TclRemoveTag(void *ctx, char **error, char **output __attribute__ ((u
   sts = TreeRemoveTag(tagnam);
   if (~sts & 1) {
     char *msg = MdsGetMsg(sts);
-    *error = malloc(strlen(msg)+strlen(tagnam)+100);
-    sprintf(*error,"Error: Failed to remove tag '%s'\n"
-	    "Error message was: %s\n",tagnam,msg);
+    *error = malloc(strlen(msg) + strlen(tagnam) + 100);
+    sprintf(*error,
+            "Error: Failed to remove tag '%s'\n"
+            "Error message was: %s\n",
+            tagnam, msg);
   }
   free(tagnam);
   return sts;

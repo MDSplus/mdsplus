@@ -22,15 +22,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <libroutines.h>
 
-#include "mdsip_connections.h"
 #include "../mdsshr/version.h"
+#include "mdsip_connections.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  LoadIo  ////////////////////////////////////////////////////////////////////
@@ -39,22 +39,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern IoRoutines tunnel_routines;
 extern IoRoutines thread_routines;
 
-IoRoutines *LoadIo(char *protocol_in){
-  if (protocol_in == 0) protocol_in = "TCP";
+IoRoutines *LoadIo(char *protocol_in) {
+  if (protocol_in == 0)
+    protocol_in = "TCP";
   char *protocol = strcpy((char *)malloc(strlen(protocol_in) + 1), protocol_in);
   size_t i;
-  for (i = 0; i < strlen(protocol) ; i++) protocol[i] = toupper(protocol[i]);
-  if (strcmp(protocol,"THREAD")==0) {
+  for (i = 0; i < strlen(protocol); i++)
+    protocol[i] = toupper(protocol[i]);
+  if (strcmp(protocol, "THREAD") == 0) {
     free(protocol);
     return &thread_routines;
   }
-  char* image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
+  char *image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
   strcat(image, protocol);
   free(protocol);
-  IoRoutines *(*rtn) () = NULL;
-  int status = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
+  IoRoutines *(*rtn)() = NULL;
+  int status = LibFindImageSymbol_C(image, "Io", (void **)&rtn);
   free(image);
-  if (STATUS_OK && rtn) return rtn();
+  if (STATUS_OK && rtn)
+    return rtn();
   return &tunnel_routines;
 }
-

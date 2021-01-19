@@ -27,7 +27,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *8     3-MAR-1993 09:11:39 JAS "use prototypes" */
 /*  *7    23-FEB-1993 13:29:16 JAS "port to decc" */
 /*  *6    22-FEB-1993 11:06:01 JAS "port to decc" */
-/*  *5     4-DEC-1992 16:52:47 JAS "add optional last arg to return the widget fetched in" */
+/*  *5     4-DEC-1992 16:52:47 JAS "add optional last arg to return the widget
+ * fetched in" */
 /*  *4    30-JAN-1992 08:53:00 TWF "Add uil names argument to devicesetup" */
 /*  *3    21-JAN-1992 11:03:08 JAS "compilation problem" */
 /*  *2    21-JAN-1992 10:39:30 TWF "Support -1 device_nid" */
@@ -35,22 +36,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSDEVICESETUP.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsDeviceSetup
+                Name:   XmdsDeviceSetup
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   14-JAN-1992
+                Date:   14-JAN-1992
 
-		Purpose:  Generic Device Setup Routine
+                Purpose:  Generic Device Setup Routine
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, String ident, MrmRegisterArglist reglist,
-			 MrmCount regnum [,widget_return])
+int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids,
+String ident, MrmRegisterArglist reglist, MrmCount regnum [,widget_return])
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -60,7 +61,7 @@ int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, S
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -72,13 +73,14 @@ int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, S
 
 void XmdsSetDeviceNid(int nid);
 
-EXPORT int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, String ident,
-		    MrmRegisterArglist reglist, MrmCount regnum, Widget * widget_return)
-{
+EXPORT int XmdsDeviceSetup(Widget parent, int *nid, String uids[],
+                           Cardinal num_uids, String ident,
+                           MrmRegisterArglist reglist, MrmCount regnum,
+                           Widget *widget_return) {
   static int device_nid;
-  static NCI_ITM nci[] =
-      { {sizeof(int), NciCONGLOMERATE_NIDS, (unsigned char *)&device_nid, 0}, {0, NciEND_OF_LIST, 0,
-									       0} };
+  static NCI_ITM nci[] = {
+      {sizeof(int), NciCONGLOMERATE_NIDS, (unsigned char *)&device_nid, 0},
+      {0, NciEND_OF_LIST, 0, 0}};
   MrmType class;
   MrmHierarchy drm_hierarchy;
   Widget w;
@@ -102,12 +104,6 @@ EXPORT int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_
 
 static int device_nid = 0;
 
-EXPORT void XmdsSetDeviceNid(int nid)
-{
-  device_nid = nid;
-}
+EXPORT void XmdsSetDeviceNid(int nid) { device_nid = nid; }
 
-EXPORT int XmdsGetDeviceNid()
-{
-  return device_nid;
-}
+EXPORT int XmdsGetDeviceNid() { return device_nid; }

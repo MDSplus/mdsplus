@@ -22,43 +22,43 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
-#include <mdsshr.h>
 #include <mdsdcl_messages.h>
+#include <mdsshr.h>
 
 /**********************************************************************
-* TCL_WFEVENT.C --
-*
-* Wait for an event
-*
-* History:
-*  06-Sep-2000  TWF  Create.  Ported from original mdsPlus code.
-*
-***********************************************************************/
+ * TCL_WFEVENT.C --
+ *
+ * Wait for an event
+ *
+ * History:
+ *  06-Sep-2000  TWF  Create.  Ported from original mdsPlus code.
+ *
+ ***********************************************************************/
 
-	/***************************************************************
-	 * TclWfevent
-	 * Wait for MDSplus event
-	 ***************************************************************/
+/***************************************************************
+ * TclWfevent
+ * Wait for MDSplus event
+ ***************************************************************/
 
-EXPORT int TclWfevent(void *ctx, char **error, char **output __attribute__ ((unused)))
-{
+EXPORT int TclWfevent(void *ctx, char **error,
+                      char **output __attribute__((unused))) {
   char *event = 0;
   char *timeout = 0;
   int seconds = 0;
   int status;
   cli_get_value(ctx, "EVENT", &event);
   cli_get_value(ctx, "TIMEOUT", &timeout);
-  seconds = strtol(timeout,NULL,0);
+  seconds = strtol(timeout, NULL, 0);
   free(timeout);
   if (event) {
     if (seconds > 0) {
-      status = MDSWfeventTimed(event, 0, 0, 0,seconds);
+      status = MDSWfeventTimed(event, 0, 0, 0, seconds);
       if (!(status & 1))
-	*error = strdup("Timeout\n");
+        *error = strdup("Timeout\n");
     } else {
       status = MDSWfevent(event, 0, 0, 0);
     }

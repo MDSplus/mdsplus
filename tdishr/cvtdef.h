@@ -25,19 +25,20 @@ extern "C" {
 #define __union variant_union
 #endif
 
-#define CvtVAX_F 10		/* VAX F     Floating point data    */
-#define CvtVAX_D 11		/* VAX D     Floating point data    */
-#define CvtVAX_G 27		/* VAX G     Floating point data    */
-#define CvtVAX_H 28		/* VAX H     Floating point data    */
-#define CvtIEEE_S 52		/* IEEE S    Floating point data    */
-#define CvtIEEE_T 53		/* IEEE T    Floating point data    */
-#define CvtIBM_LONG 6		/* IBM Long  Floating point data    */
-#define CvtIBM_SHORT 7		/* IBM Short Floating point data    */
-#define CvtCRAY 8		/* Cray      Floating point data    */
-#define CvtIEEE_X 9		/* IEEE X    Floating point data    */
+#define CvtVAX_F 10    /* VAX F     Floating point data    */
+#define CvtVAX_D 11    /* VAX D     Floating point data    */
+#define CvtVAX_G 27    /* VAX G     Floating point data    */
+#define CvtVAX_H 28    /* VAX H     Floating point data    */
+#define CvtIEEE_S 52   /* IEEE S    Floating point data    */
+#define CvtIEEE_T 53   /* IEEE T    Floating point data    */
+#define CvtIBM_LONG 6  /* IBM Long  Floating point data    */
+#define CvtIBM_SHORT 7 /* IBM Short Floating point data    */
+#define CvtCRAY 8      /* Cray      Floating point data    */
+#define CvtIEEE_X 9    /* IEEE X    Floating point data    */
 
 extern unsigned long CvtConvertFloat(void *input_v, unsigned long input_t,
-				     void *output_v, unsigned long output_t, ...);
+                                     void *output_v, unsigned long output_t,
+                                     ...);
 
 #ifdef __cplusplus
 }
@@ -47,4 +48,4 @@ extern unsigned long CvtConvertFloat(void *input_v, unsigned long input_t,
 #pragma standard
 #endif
 
-#endif				/* __CVTDEF_LOADED */
+#endif /* __CVTDEF_LOADED */

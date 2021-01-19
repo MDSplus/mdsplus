@@ -22,16 +22,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "toolbox.h"
+#include <NIDAQmx.h>
 #include <cvirte.h>
 #include <math.h>
-#include <winsock.h>
-#include "toolbox.h"
 #include <mdslib.h>
-#include <NIDAQmx.h>
+#include <winsock.h>
 
 #define NBUF (64)
 #define NTASK (4)
-#define DllExport   __declspec( dllexport )
+#define DllExport __declspec(dllexport)
 
 struct DataChain {
   int16 *data;
@@ -54,8 +54,7 @@ struct {
   sTask *item;
 } tasks;
 
-int task_insert(TaskHandle handle)
-{
+int task_insert(TaskHandle handle) {
   int i, j, num;
 
   /* Find the next empty item */
@@ -74,8 +73,7 @@ int task_insert(TaskHandle handle)
   return i;
 }
 
-int DllExport _nidaq_open(char *name)
-{
+int DllExport _nidaq_open(char *name) {
   int id, status;
   char buf[256];
   TaskHandle handle;
@@ -108,8 +106,7 @@ int DllExport _nidaq_open(char *name)
   return id;
 }
 
-int DllExport _nidaq_close(int id)
-{
+int DllExport _nidaq_close(int id) {
   sTask *pTask;
 
   pTask = tasks.item + id;
@@ -119,13 +116,11 @@ int DllExport _nidaq_close(int id)
   return 1;
 }
 
-int DllExport _nidaq_init(int id)
-{
+int DllExport _nidaq_init(int id) {
   return DAQmxStartTask(tasks.item[id].handle);
 }
 
-int DllExport _nidaq_read(int id)
-{
+int DllExport _nidaq_read(int id) {
   int32 samplesRead;
   sTask *pTask;
   sDataChain *pData, *pNext;
@@ -145,19 +140,20 @@ int DllExport _nidaq_read(int id)
     pTask->num++;
     pData = pNext;
   }
-  DAQmxReadBinaryI16(pTask->handle, DAQmx_Val_Auto, 10.0, DAQmx_Val_GroupByScanNumber,
-		     pData->data + pData->num * pTask->numChannels,
-		     (NBUF - pData->num) * pTask->numChannels, &samplesRead, NULL);
+  DAQmxReadBinaryI16(
+      pTask->handle, DAQmx_Val_Auto, 10.0, DAQmx_Val_GroupByScanNumber,
+      pData->data + pData->num * pTask->numChannels,
+      (NBUF - pData->num) * pTask->numChannels, &samplesRead, NULL);
   pData->num += samplesRead;
 
   return pTask->num;
 }
 
-int DllExport _nidaq_store(int id, char *nodeName, int simultaneous)
-{
+int DllExport _nidaq_store(int id, char *nodeName, int simultaneous) {
   char channelName[256], pathName[256];
   int16 *data;
-  int32 stats, samplesRead, idesc, idesc1, idesc2, idesc3, idesc4, idesc5, idesc6, dtype, null = 0;
+  int32 stats, samplesRead, idesc, idesc1, idesc2, idesc3, idesc4, idesc5,
+      idesc6, dtype, null = 0;
   uInt32 i, arraySize, nPacket, packetSize;
   uInt64 numSamples;
   float64 convRate, dt, range, resolution, period;
@@ -176,7 +172,7 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous)
     pData = pTask->current;
     samplesRead = pTask->num * NBUF + pData->num;
     arraySize = pTask->numChannels * samplesRead;
-    data = (int16 *) malloc(arraySize * sizeof(int16));
+    data = (int16 *)malloc(arraySize * sizeof(int16));
     nPacket = NBUF * pTask->numChannels;
     packetSize = nPacket * sizeof(int16);
     pNext = pTask->start;
@@ -187,18 +183,22 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous)
       free(pData->data);
       free(pData);
     }
-    memcpy(data + i * nPacket, pNext->data, pNext->num * pTask->numChannels * sizeof(int16));
+    memcpy(data + i * nPacket, pNext->data,
+           pNext->num * pTask->numChannels * sizeof(int16));
     free(pNext->data);
     free(pNext);
   } else {
     /* # of samples */
-    DAQmxGetTimingAttribute(pTask->handle, DAQmx_SampQuant_SampPerChan, &numSamples);
+    DAQmxGetTimingAttribute(pTask->handle, DAQmx_SampQuant_SampPerChan,
+                            &numSamples);
     arraySize = pTask->numChannels * numSamples;
-    data = (int16 *) malloc(arraySize * sizeof(int16));
-    DAQmxReadBinaryI16(pTask->handle, DAQmx_Val_Auto, 10.0, DAQmx_Val_GroupByScanNumber, data,
-		       arraySize, &samplesRead, NULL);
+    data = (int16 *)malloc(arraySize * sizeof(int16));
+    DAQmxReadBinaryI16(pTask->handle, DAQmx_Val_Auto, 10.0,
+                       DAQmx_Val_GroupByScanNumber, data, arraySize,
+                       &samplesRead, NULL);
   }
-  /* Get the ADC resolution 12bits=NI6071,NI6115, 16bits=NI6143, 14bits but packed from bit 15=NI6133 */
+  /* Get the ADC resolution 12bits=NI6071,NI6115, 16bits=NI6143, 14bits but
+   * packed from bit 15=NI6133 */
   DAQmxGetChanAttribute(pTask->handle, NULL, DAQmx_AI_Resolution, &resolution);
   if (resolution == 14.)
     resolution = 16.;
@@ -206,7 +206,7 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous)
 
   /* Sampling time */
   DAQmxGetTimingAttribute(pTask->handle, DAQmx_SampClk_Rate, &period);
-  period = 1.0 / period;	//Rate -> Time
+  period = 1.0 / period; // Rate -> Time
 
   dtype = DTYPE_SHORT;
   idesc1 = descr(&dtype, data, &arraySize, &null);
@@ -233,10 +233,11 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous)
     range /= resolution;
 
     convRate = i * dt;
-    stats =
-	MdsPut(pathName,
-	       "BUILD_SIGNAL(BUILD_WITH_UNITS($*$VALUE,'V'),(`$[$:*:($)]),MAKE_DIM(MAKE_WINDOW(0,$,$),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))",
-	       &idesc, &idesc1, &idesc2, &idesc3, &idesc4, &idesc5, &idesc6, &null);
+    stats = MdsPut(
+        pathName,
+        "BUILD_SIGNAL(BUILD_WITH_UNITS($*$VALUE,'V'),(`$[$:*:($)]),MAKE_DIM("
+        "MAKE_WINDOW(0,$,$),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))",
+        &idesc, &idesc1, &idesc2, &idesc3, &idesc4, &idesc5, &idesc6, &null);
   }
   free(data);
 
@@ -244,12 +245,11 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous)
   return 1;
 }
 
-int __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
-{
+int __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
   switch (fdwReason) {
   case DLL_PROCESS_ATTACH:
     if (InitCVIRTE(hinstDLL, 0, 0) == 0)
-      return 0;			/* out of memory */
+      return 0; /* out of memory */
     break;
   case DLL_PROCESS_DETACH:
     free(tasks.item);
@@ -260,8 +260,8 @@ int __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
   return 1;
 }
 
-int __stdcall DllEntryPoint(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
-{
+int __stdcall DllEntryPoint(HINSTANCE hinstDLL, DWORD fdwReason,
+                            LPVOID lpvReserved) {
   /* Included for compatibility with Borland */
 
   return DllMain(hinstDLL, fdwReason, lpvReserved);

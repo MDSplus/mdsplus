@@ -22,8 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
 #include <mdsshr.h>
@@ -32,21 +32,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tcl_p.h"
 
 /**********************************************************************
-* TCL_SET_DEFAULT.C --
-*
-* TclSetDefault:  Set default
-* TclShowDefault:  Show default
-*
-* History:
-*  15-Jan-1998  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
+ * TCL_SET_DEFAULT.C --
+ *
+ * TclSetDefault:  Set default
+ * TclShowDefault:  Show default
+ *
+ * History:
+ *  15-Jan-1998  TRG  Create.  Ported from original mds code.
+ *
+ ************************************************************************/
 
-	/****************************************************************
-	 * TclSetDefault:
-	 ****************************************************************/
-EXPORT int TclSetDefault(void *ctx, char **error, char **output __attribute__ ((unused)))
-{
+/****************************************************************
+ * TclSetDefault:
+ ****************************************************************/
+EXPORT int TclSetDefault(void *ctx, char **error,
+                         char **output __attribute__((unused))) {
   int nid;
   int sts;
   char *nodename;
@@ -58,19 +58,21 @@ EXPORT int TclSetDefault(void *ctx, char **error, char **output __attribute__ ((
   else {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + strlen(nodename) + 100);
-    sprintf(*error,"Error: Problem setting default to node '%s'\n"
-	    "Error message was: %s\n", nodename, msg);
+    sprintf(*error,
+            "Error: Problem setting default to node '%s'\n"
+            "Error message was: %s\n",
+            nodename, msg);
   }
   free(nodename);
   return sts;
 }
 
-	/***************************************************************
-	 * TclShowDefault:
-	 ***************************************************************/
-EXPORT int TclShowDefault(void *ctx __attribute__ ((unused)),
-			  char **error __attribute__ ((unused)), char **output)
-{				/* Returns: status                        */
+/***************************************************************
+ * TclShowDefault:
+ ***************************************************************/
+EXPORT int TclShowDefault(void *ctx __attribute__((unused)),
+                          char **error __attribute__((unused)),
+                          char **output) { /* Returns: status */
   char *p;
   int nid;
   TreeGetDefaultNid(&nid);

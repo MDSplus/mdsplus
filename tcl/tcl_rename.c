@@ -22,31 +22,31 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
+#include <mdsdcl_messages.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include <mdsdcl_messages.h>
 
 #include "tcl_p.h"
 
 /***********************************************************************
-* TCL_RENAME.C --
-*
-* Rename a node or subtree.
-* History:
-*  20-Mar-1998  TRG  Create.  Port from original mdsPlus code.
-*
-************************************************************************/
+ * TCL_RENAME.C --
+ *
+ * Rename a node or subtree.
+ * History:
+ *  20-Mar-1998  TRG  Create.  Port from original mdsPlus code.
+ *
+ ************************************************************************/
 
-	/***************************************************************
-	 * TclRename:
-	 * Rename a node or subtree.
-	 ***************************************************************/
-EXPORT int TclRename(void *ctx, char **error, char **output __attribute__ ((unused)))
-{
+/***************************************************************
+ * TclRename:
+ * Rename a node or subtree.
+ ***************************************************************/
+EXPORT int TclRename(void *ctx, char **error,
+                     char **output __attribute__((unused))) {
   int nid;
   int sts = MdsdclIVVERB;
   char *srcnam = 0;
@@ -58,18 +58,20 @@ EXPORT int TclRename(void *ctx, char **error, char **output __attribute__ ((unus
     if (destnam && (strlen(destnam) > 0)) {
       sts = TreeFindNode(srcnam, &nid);
       if (sts & 1) {
-	sts = TreeRenameNode(nid, destnam);
-	if (sts & 1)
-	  TclNodeTouched(nid, rename_node);
-	else {
-	  char *msg = MdsGetMsg(sts);
-	  *error = malloc(strlen(srcnam) + strlen(destnam) + strlen(msg) + 100);
-	  sprintf(*error, "Error: Problem renaming node %s to %s\n"
-		  "Error message was: %s\n", srcnam, destnam, msg);
-	}
+        sts = TreeRenameNode(nid, destnam);
+        if (sts & 1)
+          TclNodeTouched(nid, rename_node);
+        else {
+          char *msg = MdsGetMsg(sts);
+          *error = malloc(strlen(srcnam) + strlen(destnam) + strlen(msg) + 100);
+          sprintf(*error,
+                  "Error: Problem renaming node %s to %s\n"
+                  "Error message was: %s\n",
+                  srcnam, destnam, msg);
+        }
       } else {
-	*error = malloc(strlen(srcnam) + 100);
-	sprintf(*error, "Error: Cannot find node %s\n", srcnam);
+        *error = malloc(strlen(srcnam) + 100);
+        sprintf(*error, "Error: Cannot find node %s\n", srcnam);
       }
     } else {
       *error = strdup("Error: destination node parameter missing\n");

@@ -23,9 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "mdstcpip/mdsip_connections.h"
 
@@ -34,8 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // here to provide the main anchor to tests programs that want to launch a
 // server instance. (obviously MdsIpShr.so must be linked too..)
 
-int mdsip_main(int argc, char **argv)
-{
+int mdsip_main(int argc, char **argv) {
   IoRoutines *io;
   int extra_argc;
   char **extra_argv;

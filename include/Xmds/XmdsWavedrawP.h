@@ -9,15 +9,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSWAVEDRAWP.H */
 /*------------------------------------------------------------------------------
 
-		Name:   WAVEDRAWP.H
+                Name:   WAVEDRAWP.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   29-MAY-1990
+                Date:   29-MAY-1990
 
-		Purpose: Private declarations for WAVEDRAW widget
+                Purpose: Private declarations for WAVEDRAW widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -37,11 +37,14 @@ typedef struct _XmdsWavedrawClassPart {
   XtTranslations draw1_trans;
   XtTranslations draw2_trans;
   XtTranslations setpen_trans;
-   Boolean(*add_point_proc) (XmdsWavedrawWidget w, int idx, float *newx, float *newy,
-			     Boolean callcallbacks, enum XmdsWaveformMotionRestriction motion);
-  void (*delete_point_proc) (XmdsWavedrawWidget w, int idx, Boolean callcallbacks);
-   Boolean(*move_point_proc) (XmdsWavedrawWidget w, int idx, float *desired_x, float *desired_y,
-			      float *new_x, float *new_y, Boolean callcallbacks, XEvent * event);
+  Boolean (*add_point_proc)(XmdsWavedrawWidget w, int idx, float *newx,
+                            float *newy, Boolean callcallbacks,
+                            enum XmdsWaveformMotionRestriction motion);
+  void (*delete_point_proc)(XmdsWavedrawWidget w, int idx,
+                            Boolean callcallbacks);
+  Boolean (*move_point_proc)(XmdsWavedrawWidget w, int idx, float *desired_x,
+                             float *desired_y, float *new_x, float *new_y,
+                             Boolean callcallbacks, XEvent *event);
   caddr_t extension;
 } XmdsWavedrawClassPart;
 
@@ -87,5 +90,5 @@ typedef struct _XmdsWavedrawRec {
   XmdsWavedrawPart wavedraw;
 } XmdsWavedrawRec;
 
-#endif				/* _XmdsWaveformP_h */
+#endif /* _XmdsWaveformP_h */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

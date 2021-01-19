@@ -26,29 +26,29 @@
 //-------------------------------------------------------------------------
 struct CRATE_NAME {
   // physical CAMAC crate name
-  char prefix[2];		// 'GK'         <<-- fixed characters
+  char prefix[2]; // 'GK'         <<-- fixed characters
 
   // scsi info
-  char Adapter;			// 'A'(=scsi0), 'B'(=scsi1), ...
-  char Id;			//  0, 1, 2, ...
+  char Adapter; // 'A'(=scsi0), 'B'(=scsi1), ...
+  char Id;      //  0, 1, 2, ...
 
   // CAMAC info
-  char Crate[2];		//  01, 02, ..., 99     (NB! this field is two chars)
+  char Crate[2]; //  01, 02, ..., 99     (NB! this field is two chars)
 };
 
 struct CRATE {
-  struct CRATE_NAME Phys_Name;	// e.g. GKA109
-  char r1;			// ':'
-  char DSFname[3];		// devive special file name, eg '/dev/sg#', eg 001
-  char r2;			// ':'
-  char HwyType;			// e.g. Jorway, KineticSystems
-  char r3;			// ':'
-  char enhanced;		// '1'=enhanced '0'=not
-  char r4;			// ':'
-  char online;			// '1'=online '0'=not
-  char r5;			// room for '\n'
+  struct CRATE_NAME Phys_Name; // e.g. GKA109
+  char r1;                     // ':'
+  char DSFname[3]; // devive special file name, eg '/dev/sg#', eg 001
+  char r2;         // ':'
+  char HwyType;    // e.g. Jorway, KineticSystems
+  char r3;         // ':'
+  char enhanced;   // '1'=enhanced '0'=not
+  char r4;         // ':'
+  char online;     // '1'=online '0'=not
+  char r5;         // room for '\n'
 };
-#define	CRATE_ENTRY	sizeof(struct CRATE)
+#define CRATE_ENTRY sizeof(struct CRATE)
 
 //-------------------------------------------------------------------------
 // internal structure

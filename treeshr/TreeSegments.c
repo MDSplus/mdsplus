@@ -2527,7 +2527,7 @@ inline static int is_segment_in_range(vars_t *vars, mdsdsc_t *start,
     return B_TRUE;
   if
     IS_NOT_OK(LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute))
-    return B_FALSE;
+  return B_FALSE;
   int ans;
   EMPTYXD(segstart);
   EMPTYXD(segend);

@@ -10,11 +10,11 @@
 #ifdef COZ_PROFILER
 
 #ifndef __USE_GNU
-#  define __USE_GNU
+#define __USE_GNU
 #endif
 
 #ifndef _GNU_SOURCE
-#  define _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 
 #include <dlfcn.h>
@@ -26,32 +26,34 @@ extern "C" {
 #endif
 
 #define COZ_COUNTER_TYPE_THROUGHPUT 1
-#define COZ_COUNTER_TYPE_BEGIN      2
-#define COZ_COUNTER_TYPE_END        3
+#define COZ_COUNTER_TYPE_BEGIN 2
+#define COZ_COUNTER_TYPE_END 3
 
 // Declare dlsym as a weak reference so libdl isn't required
-void* dlsym(void* handle, const char* symbol) __attribute__((weak));
+void *dlsym(void *handle, const char *symbol) __attribute__((weak));
 
 // Counter info struct, containing both a counter and backoff size
 typedef struct {
-  size_t count;    // The actual count
-  size_t backoff;  // Used to batch updates to the shared counter. Currently unused.
+  size_t count; // The actual count
+  size_t
+      backoff; // Used to batch updates to the shared counter. Currently unused.
 } coz_counter_t;
 
 // The type of the _coz_get_counter function
-typedef coz_counter_t* (*coz_get_counter_t)(int, const char*);
+typedef coz_counter_t *(*coz_get_counter_t)(int, const char *);
 
 // Locate and invoke _coz_get_counter
-static coz_counter_t* _call_coz_get_counter(int type, const char* name) {
+static coz_counter_t *_call_coz_get_counter(int type, const char *name) {
   static unsigned char _initialized = 0;
   static coz_get_counter_t fn; // The pointer to _coz_get_counter
 
-  if(!_initialized) {
-    if(dlsym) {
+  if (!_initialized) {
+    if (dlsym) {
       // Locate the _coz_get_counter method
-      void* p = dlsym(RTLD_DEFAULT, "_coz_get_counter");
+      void *p = dlsym(RTLD_DEFAULT, "_coz_get_counter");
 
-      // Use memcpy to avoid pedantic GCC complaint about storing function pointer in void*
+      // Use memcpy to avoid pedantic GCC complaint about storing function
+      // pointer in void*
       memcpy(&fn, &p, sizeof(p));
     }
 
@@ -59,32 +61,37 @@ static coz_counter_t* _call_coz_get_counter(int type, const char* name) {
   }
 
   // Call the function, or return null if profiler is not found
-  if(fn) return fn(type, name);
-  else return 0;
+  if (fn)
+    return fn(type, name);
+  else
+    return 0;
 }
 #include <pthread.h>
 static pthread_mutex_t coz_lock = PTHREAD_MUTEX_INITIALIZER;
 // Macro to initialize and increment a counter
-#define COZ_INCREMENT_COUNTER(type, name) do{ \
-    pthread_mutex_lock(&coz_lock);\
-    static unsigned char _initialized = 0; \
-    static coz_counter_t* _counter = 0; \
-    if(!_initialized) { \
-      _counter = _call_coz_get_counter(type, name); \
-      _initialized = 1; \
-    } \
-    if(_counter) { \
-      __atomic_add_fetch(&_counter->count, 1, __ATOMIC_RELAXED); \
-    } \
-    pthread_mutex_unlock(&coz_lock); \
-  }while(0)
+#define COZ_INCREMENT_COUNTER(type, name)                                      \
+  do {                                                                         \
+    pthread_mutex_lock(&coz_lock);                                             \
+    static unsigned char _initialized = 0;                                     \
+    static coz_counter_t *_counter = 0;                                        \
+    if (!_initialized) {                                                       \
+      _counter = _call_coz_get_counter(type, name);                            \
+      _initialized = 1;                                                        \
+    }                                                                          \
+    if (_counter) {                                                            \
+      __atomic_add_fetch(&_counter->count, 1, __ATOMIC_RELAXED);               \
+    }                                                                          \
+    pthread_mutex_unlock(&coz_lock);                                           \
+  } while (0)
 
 #define STR2(x) #x
 #define STR(x) STR2(x)
 
-#define COZ_PROGRESS_NAMED(name) COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_THROUGHPUT, name)
+#define COZ_PROGRESS_NAMED(name)                                               \
+  COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_THROUGHPUT, name)
 
-#define COZ_PROGRESS COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_THROUGHPUT, __FILE__ ":" STR(__LINE__))
+#define COZ_PROGRESS                                                           \
+  COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_THROUGHPUT, __FILE__ ":" STR(__LINE__))
 #define COZ_BEGIN(name) COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_BEGIN, name)
 #define COZ_END(name) COZ_INCREMENT_COUNTER(COZ_COUNTER_TYPE_END, name)
 

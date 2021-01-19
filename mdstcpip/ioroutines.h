@@ -12,15 +12,15 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
- #include <unistd.h>
+#include <unistd.h>
 #endif
 #ifdef HAVE_SYS_FILIO_H
- #include <sys/filio.h>
+#include <sys/filio.h>
 #endif
 
 #include <STATICdef.h>
@@ -30,15 +30,15 @@
 
 static int GetHostAndPort(char *hostin, struct sockaddr_in *sin);
 
-static int io_reuseCheck(char *host, char *unique, size_t buflen){
+static int io_reuseCheck(char *host, char *unique, size_t buflen) {
   struct sockaddr_in sin;
-  if IS_OK(GetHostAndPort(host, &sin)) {
-    uint8_t *addr = (uint8_t *)&sin.sin_addr;
-    snprintf(unique, buflen,
-      "%s://%u.%u.%u.%u:%u",
-      PROT, addr[0], addr[1], addr[2], addr[3], (unsigned)ntohs(sin.sin_port));
-    return C_OK;
-  }
+  if
+    IS_OK(GetHostAndPort(host, &sin)) {
+      uint8_t *addr = (uint8_t *)&sin.sin_addr;
+      snprintf(unique, buflen, "%s://%u.%u.%u.%u:%u", PROT, addr[0], addr[1],
+               addr[2], addr[3], (unsigned)ntohs(sin.sin_port));
+      return C_OK;
+    }
   *unique = 0;
   return C_ERROR;
 }

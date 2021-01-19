@@ -21,7 +21,6 @@
 #ifndef CHECK_MSG_NEW_H
 #define CHECK_MSG_NEW_H
 
-
 /* Functions implementing messaging during test runs */
 
 void send_failure_info(const char *msg, int rtype);

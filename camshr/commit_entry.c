@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -65,12 +65,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db file type
 // output:      status
 //-------------------------------------------------------------------------
-int commit_entry(int dbType)
-{
-  void *dbptr;			// generic pointer to dbs
-  int status = SUCCESS;		// assume the best
-  extern struct MODULE *CTSdb;	// pointer to in-memory copy of data file
-  extern struct CRATE *CRATEdb;	//   "     "     "       "   "   "    "
+int commit_entry(int dbType) {
+  void *dbptr;                  // generic pointer to dbs
+  int status = SUCCESS;         // assume the best
+  extern struct MODULE *CTSdb;  // pointer to in-memory copy of data file
+  extern struct CRATE *CRATEdb; //   "     "     "       "   "   "    "
 
   if (MSGLVL(FUNCTION_NAME))
     printf("commit_entry()\n");

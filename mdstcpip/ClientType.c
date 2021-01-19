@@ -38,12 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// | CRAY_CLIENT      |   8   | - not supported anymore
 ///
 
-char ClientType(void)
-{
+char ClientType(void) {
   static const char ctype =
 #ifdef _WORDS_BIGENDIAN
-  BigEndian |
+      BigEndian |
 #endif
-    IEEE_CLIENT;
+      IEEE_CLIENT;
   return ctype;
 }

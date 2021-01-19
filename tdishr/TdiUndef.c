@@ -24,13 +24,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TDI$UNDEF.C unwritten routines
 
-	Ken Klare, LANL P-4     (c)1989,1990,1992
+        Ken Klare, LANL P-4     (c)1989,1990,1992
 */
 
 #include <tdishr_messages.h>
 
-
-#define UNDEF(x) int x() {return TdiNO_OPC;}
+#define UNDEF(x)                                                               \
+  int x() { return TdiNO_OPC; }
 /*** PERMANENT ***/
 UNDEF(Tdi1Else)
 UNDEF(Tdi2undef)

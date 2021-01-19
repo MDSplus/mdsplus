@@ -23,7 +23,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdio.h>
-#define dummy(a) int a(){printf("Routine %s not implemented yet\n",#a);return 0;}
+#define dummy(a)                                                               \
+  int a() {                                                                    \
+    printf("Routine %s not implemented yet\n", #a);                            \
+    return 0;                                                                  \
+  }
 /* dummy(LibConvertDateString) */
-dummy(LibFindVmZone)
-    dummy(LibShowVmZone)
+dummy(LibFindVmZone) dummy(LibShowVmZone)

@@ -27,24 +27,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Xm/Xm.h>
 #include <Xmds/XmdsWaveform.h>
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+_Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-void XmdsInitialize()
-{
-  xmdsWaveformWidgetClass = (WidgetClass) & xmdsWaveformClassRec;
-  MrmRegisterClass(MrmwcUnknown, "XmdsWaveformWidgetClass", "XmdsCreateWaveform",
-		   (Widget (*)(void))XmdsCreateWaveform, xmdsWaveformWidgetClass);
+    void XmdsInitialize() {
+  xmdsWaveformWidgetClass = (WidgetClass)&xmdsWaveformClassRec;
+  MrmRegisterClass(MrmwcUnknown, "XmdsWaveformWidgetClass",
+                   "XmdsCreateWaveform", (Widget(*)(void))XmdsCreateWaveform,
+                   xmdsWaveformWidgetClass);
 }
 
-void XmdsResetAllXds()
-{
-}
+void XmdsResetAllXds() {}
 
-void XmdsXdsAreValid()
-{
-}
+void XmdsXdsAreValid() {}
 
-void XmdsApplyAllXds()
-{
-}
+void XmdsApplyAllXds() {}

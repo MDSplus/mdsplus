@@ -354,7 +354,7 @@ typedef struct tree_header {
              */
   int tags; /* Number of tags defined */
   int externals; /* Number of externals/subtrees referenced */
-  int nodes;     /* Number of nodes allocated (both defined and free node)     */
+  int nodes; /* Number of nodes allocated (both defined and free node)     */
   char fill2[488];
 } TREE_HEADER;
 

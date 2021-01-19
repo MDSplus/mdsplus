@@ -24,13 +24,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #ifdef DEBUG
- #include <stdio.h>
+#include <stdio.h>
 #endif
 #include "mdsip_connections.h"
 
-
-void FlipData(Message * m)
-{
+void FlipData(Message *m) {
   int num = 1;
   int i;
   char *ptr;

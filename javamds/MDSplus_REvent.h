@@ -12,29 +12,33 @@ extern "C" {
  * Method:    setEventRaw
  * Signature: (Ljava/lang/String;[B)V
  */
-  JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRaw(JNIEnv *, jclass, jstring, jbyteArray);
+JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRaw(JNIEnv *, jclass,
+                                                       jstring, jbyteArray);
 
 /*
  * Class:     MDSplus_REvent
  * Method:    setEventRawAndWait
  * Signature: (Ljava/lang/String;[B)V
  */
-  JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRawAndWait
-      (JNIEnv *, jclass, jstring, jbyteArray);
+JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRawAndWait(JNIEnv *, jclass,
+                                                              jstring,
+                                                              jbyteArray);
 
 /*
  * Class:     MDSplus_REvent
  * Method:    registerEvent
  * Signature: (Ljava/lang/String;)J
  */
-  JNIEXPORT jlong JNICALL Java_MDSplus_REvent_registerEvent(JNIEnv *, jobject, jstring);
+JNIEXPORT jlong JNICALL Java_MDSplus_REvent_registerEvent(JNIEnv *, jobject,
+                                                          jstring);
 
 /*
  * Class:     MDSplus_REvent
  * Method:    unregisterEvent
  * Signature: (J)V
  */
-  JNIEXPORT void JNICALL Java_MDSplus_REvent_unregisterEvent(JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL Java_MDSplus_REvent_unregisterEvent(JNIEnv *, jobject,
+                                                           jlong);
 
 #ifdef __cplusplus
 }

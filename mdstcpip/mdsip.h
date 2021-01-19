@@ -1,15 +1,15 @@
 #ifdef ANET
-#include "ANETP_SOCK_ROUTINES.H"
-#include "ANETP_TYPES.H"
-#include "ANETP_SOCKET.H"
 #include "ANETP_IN.H"
 #include "ANETP_NETDB.H"
+#include "ANETP_SOCKET.H"
+#include "ANETP_SOCK_ROUTINES.H"
 #include "ANETP_TIME.H"
+#include "ANETP_TYPES.H"
 #define INVALID_SOCKET -1
-#define FD_ZERO(set) memset(set,0,sizeof(fd_set))
-#define FD_SET(s,set) lib$insv(&1,&s,&1,set)
-#define FD_CLR(s,set) lib$insv(&0,&s,&1,set)
-#define FD_ISSET(s,set) lib$extv(&s,&1,set)
+#define FD_ZERO(set) memset(set, 0, sizeof(fd_set))
+#define FD_SET(s, set) lib$insv(&1, &s, &1, set)
+#define FD_CLR(s, set) lib$insv(&0, &s, &1, set)
+#define FD_ISSET(s, set) lib$extv(&s, &1, set)
 #define FD_SETSIZE 16
 #define TCP_NODELAY 1
 #include <errno.h>
@@ -34,12 +34,12 @@
 #endif
 
 #if defined(__sgi) || defined(sun)
-#define memcpy(a,b,c) (bcopy(b,a,c),(void *)b)
+#define memcpy(a, b, c) (bcopy(b, a, c), (void *)b)
 #include <errno.h>
 #elif defined(_WIN32)
 #include <errno.h>
 #include <time.h>
-#elif defined (__QNX__)
+#elif defined(__QNX__)
 #include <errno.h>
 #else
 #include <sys/errno.h>
@@ -62,12 +62,12 @@
 #else
 #include <netinet/in.h>
 #endif
-#include <sys/socket.h>
-#include <netdb.h>
 #include "signal.h"
+#include <netdb.h>
 #include <netinet/tcp.h>
+#include <sys/socket.h>
 #endif
-#ifdef _AIX			/* IBM AIX */
+#ifdef _AIX /* IBM AIX */
 #include <sys/select.h>
 #endif
 #endif
@@ -87,19 +87,19 @@
 #endif
 #include <stdlib.h>
 
-#define VMS_CLIENT     1
-#define IEEE_CLIENT    2
-#define JAVA_CLIENT    3
-#define VMSG_CLIENT    4
+#define VMS_CLIENT 1
+#define IEEE_CLIENT 2
+#define JAVA_CLIENT 3
+#define VMSG_CLIENT 4
 #define CRAY_IEEE_CLIENT 7
-#define CRAY_CLIENT    8
-#define BigEndian      0x80
+#define CRAY_CLIENT 8
+#define BigEndian 0x80
 #define SwapEndianOnServer 0x40
-#define COMPRESSED    0x20
+#define COMPRESSED 0x20
 #define SENDCAPABILITIES 0xf
-#define LittleEndian   0
-#define Endian(c)  (c & BigEndian)
-#define CType(c)   (c & 0x0f)
+#define LittleEndian 0
+#define Endian(c) (c & BigEndian)
+#define CType(c) (c & 0x0f)
 #define IsCompressed(c) (c & COMPRESSED)
 #ifdef NOCOMPRESSION
 #define SUPPORTS_COMPRESSION 0
@@ -108,8 +108,8 @@
 #endif
 #define SupportsCompression(c) (c & SUPPORTS_COMPRESSION)
 
-#define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
-#define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
+#define EVENTASTREQUEST "---EVENTAST---REQUEST---"
+#define EVENTCANREQUEST "---EVENTCAN---REQUEST---"
 
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
@@ -119,7 +119,7 @@
 #define sigrelse(arg)
 #endif
 
-#ifdef  MULTINET
+#ifdef MULTINET
 #define close socket_close
 #define perror socket_perror
 #define ioctl socket_ioctl
@@ -137,7 +137,7 @@ int errno = 0;
 typedef struct _eventinfo {
   char data[12];
   int eventid;
-  void (*astadr) (void *, int, char *);
+  void (*astadr)(void *, int, char *);
   void *astprm;
 } MdsEventInfo;
 

@@ -38,21 +38,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSWIDGETCALLBACKS.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsWIDGETCALLBACKS
+                Name:   XmdsWIDGETCALLBACKS
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:    9-MAR-1990
+                Date:    9-MAR-1990
 
-		Purpose: Generic callbacks which take a widget as the tag
-			 Use XmdsRegisterWidgetCallback to enable widgets to be
-			 tag argument.
+                Purpose: Generic callbacks which take a widget as the tag
+                         Use XmdsRegisterWidgetCallback to enable widgets to be
+                         tag argument.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 void XmdsManageChildCallback(Widget w1,Widget *w2);
 void XmdsUnmanageChildCallback(Widget w1,Widget *w2);
@@ -69,85 +69,66 @@ void XmdsManageWindow(Widget w);
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
 #include <xmdsshr.h>
 
-static Widget FindShellChild(Widget w)
-{
+static Widget FindShellChild(Widget w) {
   Widget sc;
-  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc)) ;
+  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc))
+    ;
   return sc;
 }
 
-void XmdsRaiseWindow(Widget w)
-{
+void XmdsRaiseWindow(Widget w) {
   Widget shell;
-  for (shell = w; shell && !XtIsShell(shell); shell = XtParent(shell)) ;
+  for (shell = w; shell && !XtIsShell(shell); shell = XtParent(shell))
+    ;
   if (shell)
     XtPopup(shell, XtGrabNone);
 }
 
-void XmdsManageWindow(Widget w)
-{
+void XmdsManageWindow(Widget w) {
   if (!XtIsManaged(w))
     XtManageChild(w);
   else
     XmdsRaiseWindow(w);
 }
 
-void XmdsManageChildCallback(Widget w1, Widget * w2)
-{
-  XmdsManageWindow(*w2);
-}
+void XmdsManageChildCallback(Widget w1, Widget *w2) { XmdsManageWindow(*w2); }
 
-void XmdsUnmanageChildCallback(Widget w1, Widget * w2)
-{
-  XtUnmanageChild(*w2);
-}
+void XmdsUnmanageChildCallback(Widget w1, Widget *w2) { XtUnmanageChild(*w2); }
 
-void XmdsDestroyWidgetCallback(Widget w1, Widget * w2)
-{
-  XtDestroyWidget(*w2);
-}
+void XmdsDestroyWidgetCallback(Widget w1, Widget *w2) { XtDestroyWidget(*w2); }
 
-void XmdsRegisterWidgetCallback(Widget w1, Widget * w2)
-{
-  *w2 = w1;
-}
+void XmdsRegisterWidgetCallback(Widget w1, Widget *w2) { *w2 = w1; }
 
 #ifndef _NO_XDS
 extern void XmdsResetAllXds(Widget w);
 extern Boolean XmdsXdsAreValid(Widget w);
 extern Boolean XmdsApplyAllXds(Widget w);
 
-void XmdsResetCallback(Widget w)
-{
+void XmdsResetCallback(Widget w) {
   XmdsResetAllXds(FindShellChild(w));
   return;
 }
 
-void XmdsOkCallback(Widget w)
-{
+void XmdsOkCallback(Widget w) {
   int XmdsApplyCallback(Widget w);
   if (XmdsApplyCallback(w))
     XtDestroyWidget(FindShellChild(w));
 }
 
-int XmdsApplyCallback(Widget w)
-{
+int XmdsApplyCallback(Widget w) {
   int status;
   Widget db = FindShellChild(w);
   if ((status = XmdsXdsAreValid(db)))
     status = XmdsApplyAllXds(db);
   return status;
 }
-#endif				/* _NO_XDS */
+#endif /* _NO_XDS */
 
-void XmdsCancelCallback(Widget w)
-{
-  XtDestroyWidget(FindShellChild(w));
-}
+void XmdsCancelCallback(Widget w) { XtDestroyWidget(FindShellChild(w)); }

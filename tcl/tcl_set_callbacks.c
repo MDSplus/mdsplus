@@ -22,34 +22,33 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <sys/time.h>
 #include <pthread.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
 
-#include <mdsshr.h>
 #include <STATICdef.h>
+#include <mdsshr.h>
 
 #include "tcl_p.h"
 
-
 /*--------------------------------------------------------------------------
 
-		Name:   TclSetCallbacks
+                Name:   TclSetCallbacks
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:   10-FEB-1993
+                Date:   10-FEB-1993
 
-		Purpose: implement callbacks to applications that need to
-			 know about node operations.
+                Purpose: implement callbacks to applications that need to
+                         know about node operations.
 
 --------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 --------------------------------------------------------------------------
    Copyright (c) 1993
@@ -59,26 +58,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 -------------------------------------------------------------------------*/
 
-static void (*ErrorOut) ();
-static void (*TextOut) ();
-STATIC_ROUTINE void (*NodeTouched) ();
+static void (*ErrorOut)();
+static void (*TextOut)();
+STATIC_ROUTINE void (*NodeTouched)();
 STATIC_THREADSAFE char *saved_output = 0;
 STATIC_THREADSAFE pthread_mutex_t saved_output_mutex;
 STATIC_THREADSAFE int initialized = 0;
 
-	/***************************************************************
-	 * TclSetCallbacks:
-	 ***************************************************************/
-EXPORT void TclSetCallbacks(		/* Returns: void                        */
-		      void (*error_out) ()	/* <r> addr of error output routine */
-		      , void (*text_out) ()	/* <r> addr of normal text output routine */
-		      , void (*node_touched) ()	/* <r> addro of "node touched" routine      */
-    )
-{
+/***************************************************************
+ * TclSetCallbacks:
+ ***************************************************************/
+EXPORT void
+TclSetCallbacks(                    /* Returns: void                        */
+                void (*error_out)() /* <r> addr of error output routine */
+                ,
+                void (*text_out)() /* <r> addr of normal text output routine */
+                ,
+                void (
+                    *node_touched)() /* <r> addro of "node touched" routine */
+) {
   if (!initialized) {
     pthread_mutex_init(&saved_output_mutex, 0);
     initialized = 1;
@@ -88,28 +90,27 @@ EXPORT void TclSetCallbacks(		/* Returns: void                        */
   NodeTouched = node_touched;
 }
 
-
-	/*****************************************************************
-	 * TclNodeTouched:
-	 *****************************************************************/
-EXPORT void TclNodeTouched(		/* Returns: void                        */
-		     int nid	/* <r> node id                          */
-		     , NodeTouchType type	/* <r> type of "touch"                  */
-    )
-{
+/*****************************************************************
+ * TclNodeTouched:
+ *****************************************************************/
+EXPORT void TclNodeTouched(        /* Returns: void                        */
+                           int nid /* <r> node id                          */
+                           ,
+                           NodeTouchType type /* <r> type of "touch" */
+) {
   if (NodeTouched)
-    (*NodeTouched) (nid, type);
+    (*NodeTouched)(nid, type);
 }
 
-STATIC_ROUTINE void AppendOut(char *text)
-{
+STATIC_ROUTINE void AppendOut(char *text) {
   char *msg = text ? text : "";
   size_t len = strlen(msg);
   char *old_saved_output;
   pthread_mutex_lock(&saved_output_mutex);
   old_saved_output = saved_output;
   if (saved_output) {
-    saved_output = strcpy((char *)malloc(strlen(old_saved_output) + len + 2), old_saved_output);
+    saved_output = strcpy((char *)malloc(strlen(old_saved_output) + len + 2),
+                          old_saved_output);
     free(old_saved_output);
   } else {
     saved_output = (char *)malloc(len + 2);
@@ -120,13 +121,9 @@ STATIC_ROUTINE void AppendOut(char *text)
   pthread_mutex_unlock(&saved_output_mutex);
 }
 
-STATIC_ROUTINE void StatusOut(int status)
-{
-  AppendOut(MdsGetMsg(status));
-}
+STATIC_ROUTINE void StatusOut(int status) { AppendOut(MdsGetMsg(status)); }
 
-EXPORT void TclSaveOut()
-{
+EXPORT void TclSaveOut() {
   if (!initialized) {
     pthread_mutex_init(&saved_output_mutex, 0);
     initialized = 1;
@@ -140,8 +137,7 @@ EXPORT void TclSaveOut()
   pthread_mutex_unlock(&saved_output_mutex);
 }
 
-EXPORT int TclOutLen()
-{
+EXPORT int TclOutLen() {
   int ans;
   pthread_mutex_lock(&saved_output_mutex);
   ans = saved_output ? strlen(saved_output) : 0;
@@ -149,8 +145,7 @@ EXPORT int TclOutLen()
   return ans;
 }
 
-EXPORT int TclGetOut(int free_out, int len_out, char *out)
-{
+EXPORT int TclGetOut(int free_out, int len_out, char *out) {
   int len = 0;
   pthread_mutex_lock(&saved_output_mutex);
   if (saved_output) {

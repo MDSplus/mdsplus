@@ -23,21 +23,21 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <STATICdef.h>
 #include "mdsip_connections.h"
+#include <STATICdef.h>
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MdsSetDefault  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsSetDefault(int id, char *node)
-{
+int MdsSetDefault(int id, char *node) {
   struct descrip nodearg;
   struct descrip ansarg;
   STATIC_CONSTANT char *expression = "TreeSetDefault($)";
   int status =
-      MdsValue(id, expression, MakeDescrip(&nodearg, DTYPE_CSTRING, 0, 0, node), &ansarg, NULL);
+      MdsValue(id, expression, MakeDescrip(&nodearg, DTYPE_CSTRING, 0, 0, node),
+               &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
     status = *(int *)ansarg.ptr;
   free(ansarg.ptr);

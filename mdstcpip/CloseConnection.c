@@ -22,20 +22,21 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdlib.h>
 #include <libroutines.h>
+#include <stdlib.h>
 
 #include "mdsip_connections.h"
 
-int CloseConnection(int id)
-{
+int CloseConnection(int id) {
   INIT_STATUS_AS MDSplusERROR;
-  static int (*removeConnection) (int) = NULL;
+  static int (*removeConnection)(int) = NULL;
   Connection *c = FindConnection(id, 0);
   if (c) {
-    status = LibFindImageSymbol_C("MdsIpSrvShr", "RemoveConnection", &removeConnection);
-    if STATUS_OK
-      status = (*removeConnection) (id);
+    status = LibFindImageSymbol_C("MdsIpSrvShr", "RemoveConnection",
+                                  &removeConnection);
+    if
+      STATUS_OK
+    status = (*removeConnection)(id);
   }
   return status;
 }

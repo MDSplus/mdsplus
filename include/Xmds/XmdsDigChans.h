@@ -7,15 +7,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSDIGCHANS.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsDigChans.H
+                Name:   XmdsDigChans.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   7-JAN-1992
+                Date:   7-JAN-1992
 
-		Purpose: Public declarations for XmdsDigChans widget
+                Purpose: Public declarations for XmdsDigChans widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -34,17 +34,22 @@
 
 /* Resources */
 
-#define XmdsNchannels               "channels"	/* Number of digitizer channels */
-#define XmdsNnid		    "nid"	/* Nid of first channel */
-#define XmdsNnidOffset		    "nidOffset"	/* Nid offset */
-#define XmdsNdataNidOffset          "dataNidOffset"	/* Offset from channel head to data */
-#define XmdsNstartIdxNidOffset      "startIdxNidOffset"	/* Offset from channel head to startidx */
-#define XmdsNendIdxNidOffset        "endIdxNidOffset"	/* Offset from channel head to endidx */
-#define XmdsNnodesPerChannel        "nodesPerChannel"	/* Number of nodes per digitizer channel */
-#define XmdsNputOnApply             "putOnApply"	/* Put when a XmdsApplyAllXds is called */
+#define XmdsNchannels "channels"   /* Number of digitizer channels */
+#define XmdsNnid "nid"             /* Nid of first channel */
+#define XmdsNnidOffset "nidOffset" /* Nid offset */
+#define XmdsNdataNidOffset                                                     \
+  "dataNidOffset" /* Offset from channel head to data */
+#define XmdsNstartIdxNidOffset                                                 \
+  "startIdxNidOffset" /* Offset from channel head to startidx */
+#define XmdsNendIdxNidOffset                                                   \
+  "endIdxNidOffset" /* Offset from channel head to endidx */
+#define XmdsNnodesPerChannel                                                   \
+  "nodesPerChannel"                  /* Number of nodes per digitizer channel */
+#define XmdsNputOnApply "putOnApply" /* Put when a XmdsApplyAllXds is called   \
+                                      */
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreateDigChans();
@@ -53,14 +58,15 @@ extern int XmdsDigChansPut();
 extern int XmdsDigChansApply();
 extern Boolean XmdsIsDigChans();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardinal argcount);
+extern Widget XmdsCreateDigChans(Widget parent, String name, ArgList args,
+                                 Cardinal argcount);
 extern int XmdsDigChansApply(Widget w);
 extern int XmdsDigChansPut(Widget w);
 extern void XmdsDigChansReset(Widget w);
 extern Boolean XmdsIsDigChans(Widget w);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
-#endif				/* _XmdsDigChans */
+#endif /* _XmdsDigChans */

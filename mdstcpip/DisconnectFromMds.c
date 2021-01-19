@@ -28,8 +28,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  DisconnectiFromMds  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-int DisconnectFromMds(int id)
-{
-  return DisconnectConnection(id);
-}
+int DisconnectFromMds(int id) { return DisconnectConnection(id); }

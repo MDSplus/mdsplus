@@ -38,25 +38,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-------------------------------------------------------------------------
 // include files
 //-------------------------------------------------------------------------
+#include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <mdsdescrip.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <unistd.h>
-#include <mdsdescrip.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
-#include <errno.h>
 #include <strroutines.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "common.h"
+#include "cts_p.h"
 #include "module.h"
 #include "prototypes.h"
-#include "cts_p.h"
 
 //-------------------------------------------------------------------------
 // lookup_entry()
@@ -81,8 +81,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      pointer to the name of a logical module name
 // output:      -1 indicates not found; >= 0 is index in db file
 //-------------------------------------------------------------------------
-int lookup_entry(int dbType, char *entry_name)
-{
+int lookup_entry(int dbType, char *entry_name) {
   int numOfEntries, retval;
 
   if (MSGLVL(FUNCTION_NAME))
@@ -99,21 +98,20 @@ int lookup_entry(int dbType, char *entry_name)
   // Look it up ...
   retval = bisearch(dbType, entry_name, numOfEntries, compare_str);
 
- Lookup_Exit:
-  return retval;		// return results
+Lookup_Exit:
+  return retval; // return results
 }
 
 extern struct CRATE *CRATEdb;
 
-int find_crate(char *wild, char **crate, void **ctx)
-{
-  struct descriptor wild_d = { strlen(wild), DTYPE_T, CLASS_S, wild };
+int find_crate(char *wild, char **crate, void **ctx) {
+  struct descriptor wild_d = {strlen(wild), DTYPE_T, CLASS_S, wild};
   struct context {
     int numEntries;
     int next;
-  } *context;
+  } * context;
   int status = 0;
-  if (wild[wild_d.length-1]==':')
+  if (wild[wild_d.length - 1] == ':')
     wild_d.length--;
   if (*ctx == 0) {
     *ctx = malloc(sizeof(struct context));
@@ -122,10 +120,11 @@ int find_crate(char *wild, char **crate, void **ctx)
   }
   context = (struct context *)*ctx;
   while (context->next < context->numEntries) {
-    struct descriptor crate_d =
-	{ sizeof(struct CRATE_NAME), DTYPE_T, CLASS_S, (char *)&CRATEdb[context->next++] };
+    struct descriptor crate_d = {sizeof(struct CRATE_NAME), DTYPE_T, CLASS_S,
+                                 (char *)&CRATEdb[context->next++]};
     if (StrMatchWild(&crate_d, &wild_d) & 1) {
-      *crate = memcpy(malloc(crate_d.length + 1), crate_d.pointer, sizeof(struct CRATE_NAME));
+      *crate = memcpy(malloc(crate_d.length + 1), crate_d.pointer,
+                      sizeof(struct CRATE_NAME));
       (*crate)[crate_d.length] = 0;
       status = 1;
       break;
@@ -134,8 +133,7 @@ int find_crate(char *wild, char **crate, void **ctx)
   return status;
 }
 
-void find_crate_end(void **ctx)
-{
+void find_crate_end(void **ctx) {
   free(*ctx);
   *ctx = 0;
 }

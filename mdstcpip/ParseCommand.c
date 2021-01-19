@@ -24,62 +24,64 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #include <pthread_port.h>
 
 #include "mdsip_connections.h"
 
-void PrintHelp(char *option)
-{
+void PrintHelp(char *option) {
   if (option)
     printf("Invalid options specified: %s\n\n", option);
-  printf("mdsip - MDSplus data server\n\n"
-	 "  Format:\n\n"
-	 "    mdsip [-P protocol] [-m|-s] "
+  printf(
+      "mdsip - MDSplus data server\n\n"
+      "  Format:\n\n"
+      "    mdsip [-P protocol] [-m|-s] "
 #ifdef _WIN32
-	 "[-i|-r] "
+      "[-i|-r] "
 #endif
-	 "[-h hostfile] [-c[level]] [-p port] [protocol-specific-options]\n\n"
-	 "      -?, --help         This help message\n"
-	 "      -P protocol        Specifies server protocol, defaults to tcp\n"
-	 "        --protocol=protocal-name\n"
-	 "      -p port|service    Specifies port number or tcp service name\n"
-	 "        --port=port|service\n"
-	 "      -m, --multi        Use multi mode\n"
-	 "                         Accepts multiple connections each with own context.\n"
-	 "      -s, --server       Use server mode\n"
-	 "                         Accepts multiple connections with shared context.\n"
-         "                         Used for action servers.\n"
+      "[-h hostfile] [-c[level]] [-p port] [protocol-specific-options]\n\n"
+      "      -?, --help         This help message\n"
+      "      -P protocol        Specifies server protocol, defaults to tcp\n"
+      "        --protocol=protocal-name\n"
+      "      -p port|service    Specifies port number or tcp service name\n"
+      "        --port=port|service\n"
+      "      -m, --multi        Use multi mode\n"
+      "                         Accepts multiple connections each with own "
+      "context.\n"
+      "      -s, --server       Use server mode\n"
+      "                         Accepts multiple connections with shared "
+      "context.\n"
+      "                         Used for action servers.\n"
 #ifdef _WIN32
-	 "      -i, --install      Install service\n"
-	 "      -r, --remove       Remove service\n"
+      "      -i, --install      Install service\n"
+      "      -r, --remove       Remove service\n"
 #endif
-	 "      -h <hostfile>      Specify alternate mdsip.hosts file.\n"
-	 "                         Defaults to "
+      "      -h <hostfile>      Specify alternate mdsip.hosts file.\n"
+      "                         Defaults to "
 #ifdef _WIN32
-"C:\\mdsip.hosts"
+      "C:\\mdsip.hosts"
 #else
-"/etc/mdsip.hosts"
+      "/etc/mdsip.hosts"
 #endif
-	 ".\n"
-	 "        --hostfile=hostfile\n"
-	 "      -c[<level>]        Specify maximum zlip compression level\n"
-	 "                         0: none or 1-9: fastest/least to slowest/most\n"
-	 "                         defaults to 9 if present and 0 if absent\n"
-	 "        --compression[=<level>]\n\n");
+      ".\n"
+      "        --hostfile=hostfile\n"
+      "      -c[<level>]        Specify maximum zlip compression level\n"
+      "                         0: none or 1-9: fastest/least to slowest/most\n"
+      "                         defaults to 9 if present and 0 if absent\n"
+      "        --compression[=<level>]\n\n");
   exit(option ? 1 : 0);
 }
 
 ///
 /// Parse standard input command options.
 ///
-void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc, char ***rem_argv)
-{
-  INIT_AS_AND_FREE_ON_EXIT(char**,extra_argv,malloc(argc * sizeof(char *)));
+void ParseCommand(int argc, char **argv, Options options[], int more,
+                  int *rem_argc, char ***rem_argv) {
+  INIT_AS_AND_FREE_ON_EXIT(char **, extra_argv, malloc(argc * sizeof(char *)));
   int i;
   int extra_argc = 1;
   extra_argv[0] = argv[0];
@@ -92,60 +94,65 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
       arg++;
       arglen--;
       if ((islong = *arg == '-')) {
-	arg++;
-	arglen--;
+        arg++;
+        arglen--;
       }
       if (strcmp("help", arg) == 0)
-	PrintHelp(0);
+        PrintHelp(0);
       for (opt = 0; options[opt].short_name || options[opt].long_name; opt++) {
-	if (islong) {
-	  if (!options[opt].long_name)
-	    continue;
-	  char *long_name = options[opt].long_name;
-	  size_t optlen = strlen(long_name);
-	  if ((arglen == optlen || (arglen > optlen && arg[optlen] == '='))
-		&& strncmp(arg, long_name, optlen) == 0) {
-	    option_found = options[opt].present = TRUE;
-	    if (arglen > optlen)
-	      options[opt].value = &arg[optlen + 1];
-	    else if (options[opt].expects_value == 1) {
-	      if (++i<argc) {
-		options[opt].value = argv[i];
-	      } else {
-		fprintf(stderr,"Invalid option: --%s expects value but non given.\n",options[opt].long_name);
-		exit(1); //ERROR_INVALID_PARAMETER
-	      }
-	    } else if (options[opt].expects_value == 2) {
-	      if (i+1 < argc && argv[i+1][0] != '-')
-		options[opt].value = argv[++i];
-	    }
-	    break;
-	  }
-	} else if (options[opt].short_name && arg[0] == options[opt].short_name[0]) {
-	  option_found = options[opt].present = TRUE;
-	  if (arglen > 1) {
-	    options[opt].value = &arg[arg[1] == '=' ? 2 : 1];
-	  } else if (options[opt].expects_value == 1) {
-	    if (++i<argc)
-	      options[opt].value = argv[i];
-	    else {
-	      fprintf(stderr,"Invalid option: -%s expects value but non given.\n",options[opt].short_name);
-	      exit(1); //ERROR_INVALID_PARAMETER
-	    }
-	  } else if (options[opt].expects_value == 2) {
-	    if (i+1 < argc && argv[i+1][0] != '-')
-	      options[opt].value = argv[++i];
-	  }
-	  break;
-	}
+        if (islong) {
+          if (!options[opt].long_name)
+            continue;
+          char *long_name = options[opt].long_name;
+          size_t optlen = strlen(long_name);
+          if ((arglen == optlen || (arglen > optlen && arg[optlen] == '=')) &&
+              strncmp(arg, long_name, optlen) == 0) {
+            option_found = options[opt].present = TRUE;
+            if (arglen > optlen)
+              options[opt].value = &arg[optlen + 1];
+            else if (options[opt].expects_value == 1) {
+              if (++i < argc) {
+                options[opt].value = argv[i];
+              } else {
+                fprintf(stderr,
+                        "Invalid option: --%s expects value but non given.\n",
+                        options[opt].long_name);
+                exit(1); // ERROR_INVALID_PARAMETER
+              }
+            } else if (options[opt].expects_value == 2) {
+              if (i + 1 < argc && argv[i + 1][0] != '-')
+                options[opt].value = argv[++i];
+            }
+            break;
+          }
+        } else if (options[opt].short_name &&
+                   arg[0] == options[opt].short_name[0]) {
+          option_found = options[opt].present = TRUE;
+          if (arglen > 1) {
+            options[opt].value = &arg[arg[1] == '=' ? 2 : 1];
+          } else if (options[opt].expects_value == 1) {
+            if (++i < argc)
+              options[opt].value = argv[i];
+            else {
+              fprintf(stderr,
+                      "Invalid option: -%s expects value but non given.\n",
+                      options[opt].short_name);
+              exit(1); // ERROR_INVALID_PARAMETER
+            }
+          } else if (options[opt].expects_value == 2) {
+            if (i + 1 < argc && argv[i + 1][0] != '-')
+              options[opt].value = argv[++i];
+          }
+          break;
+        }
       }
       if (!option_found) {
-	if (!more)
-	  PrintHelp(argv[i]);
-	else {
-	  extra_argv[extra_argc] = argv[i];
-	  extra_argc++;
-	}
+        if (!more)
+          PrintHelp(argv[i]);
+        else {
+          extra_argv[extra_argc] = argv[i];
+          extra_argc++;
+        }
       }
     } else {
       extra_argv[extra_argc] = argv[i];
@@ -156,24 +163,21 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
     *rem_argc = extra_argc;
     *rem_argv = extra_argv;
   } else
-     free(extra_argv);
+    free(extra_argv);
   FREE_CANCEL();
 }
 
 ///
 /// Parse standard input command options.
 ///
-void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
-{
-  Options options[] = {
-      {"P", "protocol", 1, 0, 0},
-      {"h", "hostfile", 1, 0, 0},
-      {"s", "server", 0, 0, 0},
-      {"m", "multi", 0, 0, 0},
-      {"c", "compression", 2, 0, 0},
-      {"?", 0, 0, 0, 0},
-      {0, 0, 0, 0,0}
-  };
+void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv) {
+  Options options[] = {{"P", "protocol", 1, 0, 0},
+                       {"h", "hostfile", 1, 0, 0},
+                       {"s", "server", 0, 0, 0},
+                       {"m", "multi", 0, 0, 0},
+                       {"c", "compression", 2, 0, 0},
+                       {"?", 0, 0, 0, 0},
+                       {0, 0, 0, 0, 0}};
   ParseCommand(argc, argv, options, 1, extra_argc, extra_argv);
   if (options[0].present && options[0].value)
     SetProtocol(options[0].value);
@@ -181,7 +185,9 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
     SetHostfile(options[1].value);
   if (options[2].present) {
     if (options[3].present) {
-      fprintf(stderr, "Invalid option: Cannot select both server mode and multi mode\n\n");
+      fprintf(
+          stderr,
+          "Invalid option: Cannot select both server mode and multi mode\n\n");
       PrintHelp(0);
     } else {
       SetMulti(1);
@@ -196,10 +202,10 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
     int cmpr = 9;
     if (options[4].value) {
       char *invalid;
-      cmpr = strtol(options[4].value,&invalid,0);
+      cmpr = strtol(options[4].value, &invalid, 0);
       if (cmpr == 0 && (errno == EINVAL || options[4].value == invalid)) {
-	fprintf(stderr, "Invalid compression value: %s\n", options[4].value);
-	exit(1);
+        fprintf(stderr, "Invalid compression value: %s\n", options[4].value);
+        exit(1);
       }
     }
     SetCompressionLevel(cmpr);

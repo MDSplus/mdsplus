@@ -24,8 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdlib.h>
 
-#include <treeshr.h>
 #include "mdsip_connections.h"
+#include <treeshr.h>
 
 extern int TdiSaveContext();
 extern int TdiDeleteContext();
@@ -37,8 +37,7 @@ extern int MDSEventCan();
 /// \param conid
 /// \return
 ///
-int RemoveConnection(int conid)
-{
+int RemoveConnection(int conid) {
   int status = 0;
   Connection *c = FindConnection(conid, 0);
   if (c) {
@@ -47,12 +46,13 @@ int RemoveConnection(int conid)
     FreeDescriptors(c);
     for (e = c->event; e; e = nexte) {
       nexte = e->next;
-       /**/ MDSEventCan(e->eventid);
-       /**/ if (e->info_len > 0)
-	free(e->info);
+      /**/ MDSEventCan(e->eventid);
+      /**/ if (e->info_len > 0)
+        free(e->info);
       free(e);
     }
-    while IS_OK(_TreeClose(&c->DBID,0, 0));
+    while
+      IS_OK(_TreeClose(&c->DBID, 0, 0));
     TdiSaveContext(tdi_context);
     TdiDeleteContext(c->tdicontext);
     TdiRestoreContext(tdi_context);
