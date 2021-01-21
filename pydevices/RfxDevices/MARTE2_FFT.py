@@ -31,30 +31,33 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('FFTGAM', MC.MARTE2_COMPONENT.MODE_GAM)
 class MARTE2_FFT(MC.MARTE2_COMPONENT):
     inputs = [
-      {'name': 'In', 'type':'float64', 'dimensions': Data.compile('[256]'), 'parameters':[]}]
+        {'name': 'In', 'type': 'float64', 'dimensions': Data.compile('[256]'), 'parameters': []}]
     outputs = [
-      {'name': 'OutModule', 'type':'float64', 'dimensions': Data.compile('[256]'), 'parameters':[]},
-      {'name': 'OutPhase', 'type':'float64', 'dimensions': Data.compile('[256]'), 'parameters':[]}]
-    parameters = [{'name':'NumberOfSamples', 'type': 'int32', 'value':256}]
+        {'name': 'OutModule', 'type': 'float64',
+            'dimensions': Data.compile('[256]'), 'parameters': []},
+        {'name': 'OutPhase', 'type': 'float64', 'dimensions': Data.compile('[256]'), 'parameters': []}]
+    parameters = [{'name': 'NumberOfSamples', 'type': 'int32', 'value': 256}]
     parts = []
 
     def prepareMarteInfo(self):
-      self.outputs_outphase_seg_len.putData(self.outputs_outmodule_seg_len.getData())
-#put the same value of elements for input and outputs based on NumberOfSamples parameter
-      numSamples = self.parameters_parameter_1_value.data()
-      print('Num. Samples: '+str(numSamples))
-      self.inputs_in_dimensions.putData(Data.compile('[$]', numSamples))
-      self.outputs_outmodule_dimensions.putData(Data.compile('[$]', numSamples))
-      self.outputs_outphase_dimensions.putData(Data.compile('[$]', numSamples))
+        self.outputs_outphase_seg_len.putData(
+            self.outputs_outmodule_seg_len.getData())
+# put the same value of elements for input and outputs based on NumberOfSamples parameter
+        numSamples = self.parameters_parameter_1_value.data()
+        print('Num. Samples: '+str(numSamples))
+        self.inputs_in_dimensions.putData(Data.compile('[$]', numSamples))
+        self.outputs_outmodule_dimensions.putData(
+            Data.compile('[$]', numSamples))
+        self.outputs_outphase_dimensions.putData(
+            Data.compile('[$]', numSamples))
 
-#Specific consistency check to be implemented by MARTE2_COMPONENT subclasses
+# Specific consistency check to be implemented by MARTE2_COMPONENT subclasses
     def checkSpecific(self):
-#Check whether in field is defined and if it is a path or nid reference
-      try:
-        inSig = self.inputs_in_value.getData()
-        if not(isinstance(inSig, TreeNode) or isinstance(inSig, TreePath)):
-          return 'MARTE2_FFT IN field must be a reference to the output field of another MARTe2 device'
-      except:
-          return 'MARTE2_FFT IN field must be defined'
-      return ''
-
+        # Check whether in field is defined and if it is a path or nid reference
+        try:
+            inSig = self.inputs_in_value.getData()
+            if not(isinstance(inSig, TreeNode) or isinstance(inSig, TreePath)):
+                return 'MARTE2_FFT IN field must be a reference to the output field of another MARTe2 device'
+        except:
+            return 'MARTE2_FFT IN field must be defined'
+        return ''

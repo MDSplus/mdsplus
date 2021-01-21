@@ -29,14 +29,14 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('LoggerDataSource', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_LOGGER(MC.MARTE2_COMPONENT):
     inputs = [
-        {'name': 'In1', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
-        {'name': 'In2', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
-        {'name': 'In3', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
-        {'name': 'In4', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
-        {'name': 'In5', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
-        {'name': 'In6', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
-        {'name': 'In7', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
-        {'name': 'In8', 'type': 'uint32', 'dimensions': 0, 'parameters':[]}
+        {'name': 'In1', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'In2', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'In3', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'In4', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'In5', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'In6', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'In7', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'In8', 'type': 'uint32', 'dimensions': 0, 'parameters': []}
     ]
     parameters = []
 

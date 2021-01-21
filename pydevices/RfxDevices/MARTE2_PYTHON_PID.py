@@ -32,6 +32,7 @@ except ImportError:
 else:
     BUILDER = MP.BUILDER(pid)
 
+
 @BUILDER
 class MARTE2_PYTHON_PID(MP.MARTE2_PYTHON):
     pass

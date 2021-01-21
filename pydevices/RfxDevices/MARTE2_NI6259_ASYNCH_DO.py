@@ -30,11 +30,11 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('NI6259_DIO_M', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_NI6259_ASYNCH_DO(MC.MARTE2_COMPONENT):
     inputs = [
-	{'name': 'InBits', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
+        {'name': 'InBits', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
     ]
     parameters = [
-        {'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
-        {'name': 'BoardId', 'type': 'int32', 'value':0},
-        {'name': 'Mode', 'type': 'int32', 'value':2},
-        {'name': 'BitMask', 'type': 'int32', 'value':1}, ]
+        {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxi6259'},
+        {'name': 'BoardId', 'type': 'int32', 'value': 0},
+        {'name': 'Mode', 'type': 'int32', 'value': 2},
+        {'name': 'BitMask', 'type': 'int32', 'value': 1}, ]
     parts = []

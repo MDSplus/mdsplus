@@ -30,61 +30,64 @@ if 'pip-egg-info' in sys.argv:
     sys.exit(1)
 
 try:
-    mod_dir=os.path.dirname(os.path.abspath(__file__))
+    mod_dir = os.path.dirname(os.path.abspath(__file__))
     exec(open(mod_dir+os.sep+'_version.py').read())
-    release="%d.%d.%d"%version
+    release = "%d.%d.%d" % version
 except:
-    release='1.0.0'
-    release_tag='Unknown'
-pth_dir=os.path.abspath(__file__)
-pth_dir=os.path.abspath(os.path.dirname(pth_dir)+'/..')
+    release = '1.0.0'
+    release_tag = 'Unknown'
+pth_dir = os.path.abspath(__file__)
+pth_dir = os.path.abspath(os.path.dirname(pth_dir)+'/..')
 setupkw = {
-      'name'         : 'MDSplus',
-      'extra_path'    : ('mdsplus',pth_dir),
-      'version'      : release,
-      'description'  : 'MDSplus Python Objectsi - '+release_tag,
-      'long_description': """
+    'name': 'MDSplus',
+    'extra_path': ('mdsplus', pth_dir),
+    'version': release,
+    'description': 'MDSplus Python Objectsi - '+release_tag,
+    'long_description': """
       This module provides all of the functionality of MDSplus TDI natively in python.
       All of the MDSplus data types such as signal are represented as python classes.
       """,
-      'author'       : 'MDSplus Development Team',
-      'author_email' : 'twf@www.mdsplus.org',
-      'url'          : 'http://www.mdsplus.org/',
-      'license'      : 'MIT',
-      'classifiers'  : [
-      'Programming Language :: Python',
-      'Intended Audience :: Science/Research',
-      'Environment :: Console',
-      'Topic :: Scientific/Engineering',
-      ],
-      'keywords'     : ['physics','mdsplus',],
-    }
+    'author': 'MDSplus Development Team',
+    'author_email': 'twf@www.mdsplus.org',
+    'url': 'http://www.mdsplus.org/',
+    'license': 'MIT',
+    'classifiers': [
+        'Programming Language :: Python',
+        'Intended Audience :: Science/Research',
+        'Environment :: Console',
+        'Topic :: Scientific/Engineering',
+    ],
+    'keywords': ['physics', 'mdsplus', ],
+}
+
 
 def remove():
     import shutil
     "Remove installed MDSplus package"
     oldpath = list(sys.path)
     try:
-        pypath = os.getenv("PYTHONPATH","")
+        pypath = os.getenv("PYTHONPATH", "")
         for p in pypath.split(";"):
-            if len(p)>0 and p in sys.path:
+            if len(p) > 0 and p in sys.path:
                 sys.path.remove(p)
         if "" in sys.path:
             sys.path.remove("")
-        try: import MDSplus
+        try:
+            import MDSplus
         except:
             print("Error removing MDSplus: package not found")
             return False
-        _f=MDSplus.__file__.split(os.sep)
+        _f = MDSplus.__file__.split(os.sep)
         while len(_f) > 1 and _f[-1] != 'MDSplus':
-            _f=_f[:-1]
+            _f = _f[:-1]
         if len(_f) <= 1 and _f[-2].endswith('.egg'):
-            _f=_f[:-1]
+            _f = _f[:-1]
         if len(_f) == 0:
-            print("Error removing MDSplus: invalid package path\n '%s'"%(MDSplus.__file__,))
+            print("Error removing MDSplus: invalid package path\n '%s'" %
+                  (MDSplus.__file__,))
             return False
         packagedir = os.sep.join(_f)
-        sys.stdout.write("Removing '%s' ..."%packagedir)
+        sys.stdout.write("Removing '%s' ..." % packagedir)
         try:
             if os.path.islink(packagedir):
                 os.remove(packagedir)
@@ -105,37 +108,46 @@ def remove():
     finally:
         sys.path = oldpath
 
-if __name__=='__main__':
-  try:
-    print("use distutils.core")
-    from distutils.core import setup
-    from distutils.cmd import Command
-    class TestCommand(Command):
-        user_options = []
-        def initialize_options(self):
-            pass
-        def finalize_options(self):
-            pass
-        def run(self):
-            import sys, subprocess
-            raise SystemExit(
-                subprocess.call([sys.executable,
-                                 '-m',
-                                 'tests.__init__']))
-    class RemoveCommand(Command):
-        user_options = []
-        def initialize_options(self):
-            pass
-        def finalize_options(self):
-            pass
-        def run(self):
-            remove()
-    setupkw['cmdclass'] = {'test': TestCommand,'remove': RemoveCommand}
-  except:
-    from setuptools import setup
-    print("use setuptools")
-    setupkw['include_package_data'] = True
-    setupkw['test_suite'] = 'tests.test_all'
-    setupkw['zip_safe']   = False
-  setup(**setupkw)
 
+if __name__ == '__main__':
+    try:
+        print("use distutils.core")
+        from distutils.core import setup
+        from distutils.cmd import Command
+
+        class TestCommand(Command):
+            user_options = []
+
+            def initialize_options(self):
+                pass
+
+            def finalize_options(self):
+                pass
+
+            def run(self):
+                import sys
+                import subprocess
+                raise SystemExit(
+                    subprocess.call([sys.executable,
+                                     '-m',
+                                     'tests.__init__']))
+
+        class RemoveCommand(Command):
+            user_options = []
+
+            def initialize_options(self):
+                pass
+
+            def finalize_options(self):
+                pass
+
+            def run(self):
+                remove()
+        setupkw['cmdclass'] = {'test': TestCommand, 'remove': RemoveCommand}
+    except:
+        from setuptools import setup
+        print("use setuptools")
+        setupkw['include_package_data'] = True
+        setupkw['test_suite'] = 'tests.test_all'
+        setupkw['zip_safe'] = False
+    setup(**setupkw)

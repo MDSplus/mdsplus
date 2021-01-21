@@ -67,5 +67,5 @@ def DevHelp(arg, full=0, device_list=[None]):
                 for device in device_list[0]:
                     if device.upper() == devtype:
                         return "%s: tdi, java or shared library device" % (
-                                device,)
+                            device,)
                 return "Error obtaining help on device %s: %s" % (devtype, e)

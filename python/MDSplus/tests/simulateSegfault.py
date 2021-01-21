@@ -29,19 +29,24 @@
 import sys
 from MDSplus import Data
 
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-_UnitTest=_mimport("_UnitTest")
+
+
+_UnitTest = _mimport("_UnitTest")
+
+
 class Tests(_UnitTest.Tests):
     def generateSegFault(self):
         try:
             Data.execute('MdsShr->LibFindImageSymbol(val(0))')
         except Exception as exc:
             expected = 'exception: access violation reading 0x0000000000000000'
-            self.assertEqual(exc.__class__,WindowsError)
+            self.assertEqual(exc.__class__, WindowsError)
             self.assertEqual(exc.message, expected[0:len(exc.message)])
 
     @staticmethod
@@ -49,5 +54,6 @@ class Tests(_UnitTest.Tests):
         if sys.platform.startswith("win"):
             return ['generateSegFault']
         return []
+
 
 Tests.main(__name__)

@@ -145,107 +145,139 @@ Currently the following request-types are supported:
        example: http://mywebserver-host/mdsplusWsgi/getNid/cmod/-1?node=\ip
 
 """
+
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-from MDSplus import Tree,TreeFOPENR
-import os, sys, numpy
+
+
+from MDSplus import Tree, TreeFOPENR
+import os
+import sys
+import numpy
 from cgi import parse_qs
 for m in os.listdir(os.path.dirname(__file__)):
     if m.startswith("do") and m.endswith(".py"):
         _mimport(m[:-3])
 
-try:   glob = globals().__dict__
-except:glob = globals()
+try:
+    glob = globals().__dict__
+except:
+    glob = globals()
+
 
 class application:
-    class Exception(Exception): pass
+    class Exception(Exception):
+        pass
+
     @staticmethod
-    def html_frame(title,body):
-        return '<!DOCTYPE html>\n<title>%s</title>\n<html>\n<body>\n%s\n</body>\n</html>'%(title,body)
+    def html_frame(title, body):
+        return '<!DOCTYPE html>\n<title>%s</title>\n<html>\n<body>\n%s\n</body>\n</html>' % (title, body)
+
     @staticmethod
     def body_linebreak(input):
-        return input.replace('\n','<br/>\n')
+        return input.replace('\n', '<br/>\n')
+
     @staticmethod
     def table_header(entries):
-        return '<tr><th align="left">%s</th></tr>'%('</th><th align="left">'.join(map(str,entries)),)
+        return '<tr><th align="left">%s</th></tr>' % ('</th><th align="left">'.join(map(str, entries)),)
+
     @staticmethod
-    def table_row(entries,width=None):
+    def table_row(entries, width=None):
         if width is None:
-            return '<tr><td>%s</td></tr>'%('</td><td>'.join(map(str,entries)),)
-        return '<tr><td width=%d%% align="center">%s</td></tr>'%(width,('</td><td width=%d%% align="center">'%width).join(map(str,entries)),)
+            return '<tr><td>%s</td></tr>' % ('</td><td>'.join(map(str, entries)),)
+        return '<tr><td width=%d%% align="center">%s</td></tr>' % (width, ('</td><td width=%d%% align="center">' % width).join(map(str, entries)),)
+
     @classmethod
-    def table_frame(cls,header,rows):
+    def table_frame(cls, header, rows):
         head = cls.table_header(header)
         body = '\n'.join([cls.table_row(row) for row in rows])
-        return '<table>\n%s\n%s\n</table>'%(head,body)
+        return '<table>\n%s\n%s\n</table>' % (head, body)
+
     @classmethod
-    def table(title,header,rows):
-        return cls.html_frame(title,table_frame(header,rows))
+    def table(title, header, rows):
+        return cls.html_frame(title, table_frame(header, rows))
+
     @staticmethod
-    def link(href,text):
-        return '<a href="%s">%s</a>'%(href.replace('"',"&quot;"),text)
+    def link(href, text):
+        return '<a href="%s">%s</a>' % (href.replace('"', "&quot;"), text)
+
     def getReqURI(self):
-        return self.environ["REQUEST_URI"].split('?',2)[0]
+        return self.environ["REQUEST_URI"].split('?', 2)[0]
+
     @staticmethod
     def doIndex(self):
-        title   = "MDSplus WSGI"
+        title = "MDSplus WSGI"
         service = self.getReqURI().strip("/")
-        rows    = []
-        for k,v in glob.items():
-            if not k.startswith("do"): continue
-            try: link = v.example
+        rows = []
+        for k, v in glob.items():
+            if not k.startswith("do"):
+                continue
+            try:
+                link = v.example
             except AttributeError:
-                 link = "/"+k[2:].lower()
-            link = "/%s%s"%(service,link)
-            example = self.link(link,self.environ["HTTP_HOST"]+link)
-            rows.append((k,example))
+                link = "/"+k[2:].lower()
+            link = "/%s%s" % (service, link)
+            example = self.link(link, self.environ["HTTP_HOST"]+link)
+            rows.append((k, example))
         rows.sort()
         #body   = self.table_frame(("name","value"),self.environ.items())
-        body   = self.table_frame(("module","example"),rows)
-        output = self.html_frame(title,body)
-        return ('200 OK', [('Content-type','text/html')], output)
+        body = self.table_frame(("module", "example"), rows)
+        output = self.html_frame(title, body)
+        return ('200 OK', [('Content-type', 'text/html')], output)
+
     def __init__(self, environ, start_response):
         self.environ = environ
         self.start = start_response
-        self.args=parse_qs(self.environ['QUERY_STRING'],keep_blank_values=1)
-        self.path_parts=self.environ['PATH_INFO'].split('/')[1:]
-        if len(self.path_parts)>0 and len(self.path_parts[0])>0:
-            doername='do'+self.path_parts[0].capitalize()
-            try:   self.doer = glob[doername].__getattribute__(doername)
-            except:self.doer = None
-        else:      self.doer = self.doIndex
+        self.args = parse_qs(self.environ['QUERY_STRING'], keep_blank_values=1)
+        self.path_parts = self.environ['PATH_INFO'].split('/')[1:]
+        if len(self.path_parts) > 0 and len(self.path_parts[0]) > 0:
+            doername = 'do'+self.path_parts[0].capitalize()
+            try:
+                self.doer = glob[doername].__getattribute__(doername)
+            except:
+                self.doer = None
+        else:
+            self.doer = self.doIndex
 
     def __iter__(self):
         try:
             if self.doer is None:
-                self.start('500 BAD_REQUEST',[('Content-type','text/plain')])
-                output="Unsupported request: '%s'"%("/".join(self.path_parts),)
+                self.start('500 BAD_REQUEST', [('Content-type', 'text/plain')])
+                output = "Unsupported request: '%s'" % (
+                    "/".join(self.path_parts),)
             else:
                 status, response_headers, output = self.doer(self)
-                self.start(status,response_headers)
+                self.start(status, response_headers)
             yield output
         except self.Exception as e:
-            self.start('500 BAD_REQUEST',[('Content-Type','text/html')])
-            yield self.html_frame("ERROR",self.body_linebreak(str(e)))
+            self.start('500 BAD_REQUEST', [('Content-Type', 'text/html')])
+            yield self.html_frame("ERROR", self.body_linebreak(str(e)))
         except Exception:
             import traceback
-            self.start('500 BAD_REQUEST',[('Content-Type','text/html')])
-            yield self.html_frame("EXCEPTION",'<PRE>\n%s\n</PRE>'%traceback.format_exc())
+            self.start('500 BAD_REQUEST', [('Content-Type', 'text/html')])
+            yield self.html_frame("EXCEPTION", '<PRE>\n%s\n</PRE>' % traceback.format_exc())
 
-    def openTree(self,tree,shot):
-        try: shot=int(shot)
+    def openTree(self, tree, shot):
+        try:
+            shot = int(shot)
         except Exception:
-            raise Exception("Invalid shot specified, must be an integer value: %s<br /><br />Error: %s" % (shot,sys.exc_info()))
-        try: return Tree(tree,shot,"ReadOnly")
+            raise Exception(
+                "Invalid shot specified, must be an integer value: %s<br /><br />Error: %s" % (shot, sys.exc_info()))
+        try:
+            return Tree(tree, shot, "ReadOnly")
         except TreeFOPENR:
-            shots  = numpy.array(Tree.getShotDB(tree))
+            shots = numpy.array(Tree.getShotDB(tree))
             lshots = len(shots)
             idx = numpy.searchsorted(shots, shot, side="left")
             raise self.Exception('\n'.join(["Shot not found; Shots nearby:",
-                                 ', '.join([str(shots[i]) for i in range(idx-5,idx) if i>=0]),
-                                 ', '.join([str(shots[i]) for i in range(idx,idx+5) if i<lshots])]))
-        except: pass
-        raise self.Exception("Error opening tree named %s for shot %d\nError: %s" % (tree,shot,sys.exc_info()))
+                                            ', '.join(
+                                                [str(shots[i]) for i in range(idx-5, idx) if i >= 0]),
+                                            ', '.join([str(shots[i]) for i in range(idx, idx+5) if i < lshots])]))
+        except:
+            pass
+        raise self.Exception("Error opening tree named %s for shot %d\nError: %s" % (
+            tree, shot, sys.exc_info()))

@@ -31,48 +31,49 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('StreamIn', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
 class MARTE2_STREAM_IN(MC.MARTE2_COMPONENT):
     outputs = [
-        {'name': 'Out01', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH1'}]},
-        {'name': 'Out02', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH2'}]},
-        {'name': 'Out03', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH3'}]},
-        {'name': 'Out04', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out05', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out06', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out07', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out08', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out09', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out10', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out11', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out12', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out13', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out14', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out15', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Out16', 'type': 'float32', 'dimensions': -1, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
+        {'name': 'Out01', 'type': 'float32', 'dimensions': 0, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH1'}]},
+        {'name': 'Out02', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH2'}]},
+        {'name': 'Out03', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH3'}]},
+        {'name': 'Out04', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out05', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out06', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out07', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out08', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out09', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out10', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out11', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out12', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out13', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out14', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out15', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Out16', 'type': 'float32', 'dimensions': -1, 'parameters': [
+            {'name': 'Channel', 'type': 'string', 'value': 'CH4'}]},
+        {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
     ]
     parameters = [
-        {'name':'NumberOfBuffers', 'type': 'int32', 'value':100},
-        {'name':'CpuMask', 'type': 'int32', 'value': 127},
-        {'name':'StackSize', 'type': 'int32', 'value': 1000000},
-        {'name':'SynchronizingIdx', 'type': 'int32', 'value' : 0},
-        {'name':'Period', 'type': 'float32', 'value' : 1E-2},
+        {'name': 'NumberOfBuffers', 'type': 'int32', 'value': 100},
+        {'name': 'CpuMask', 'type': 'int32', 'value': 127},
+        {'name': 'StackSize', 'type': 'int32', 'value': 1000000},
+        {'name': 'SynchronizingIdx', 'type': 'int32', 'value': 0},
+        {'name': 'Period', 'type': 'float32', 'value': 1E-2},
     ]
     parts = []
 
     def prepareMarteInfo(self):
-        self.timebase.putData(Data.compile('0:1000000 : (build_path("\\'+self.getFullPath()+'.parameters:par_5:value"))'))
+        self.timebase.putData(Data.compile(
+            '0:1000000 : (build_path("\\'+self.getFullPath()+'.parameters:par_5:value"))'))

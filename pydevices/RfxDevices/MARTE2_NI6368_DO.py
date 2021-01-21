@@ -29,27 +29,31 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('NI6368::NI6368DIO', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_NI6368_DO(MC.MARTE2_COMPONENT):
     inputs = [
-        {'name': 'DIO0_0', 'type': 'uint32', 'dimensions': 0, 'parameters':[]}
+        {'name': 'DIO0_0', 'type': 'uint32', 'dimensions': 0, 'parameters': []}
     ]
     parameters = [
 
-        {'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxie-6368'},
-        {'name': 'BoardId', 'type': 'int32', 'value':0},
-        {'name': 'ClockSampleSource', 'type': 'string', 'value':'INTERNAL'},
-        {'name': 'ClockSamplePolarity', 'type': 'string', 'value':'ACTIVE_HIGH_OR_RISING_EDGE'},
-        {'name': 'ClockConvertSource', 'type': 'string', 'value':'INTERNAL'},
-        {'name': 'ScanIntervalCounterSource', 'type': 'string', 'value':'COUNTER_TB3'},
-        {'name': 'ScanIntervalCounterPeriod', 'type': 'int32', 'value':50},
-        {'name': 'ScanIntervalCounterDelay', 'type': 'int32', 'value':2},
-        {'name': 'StartTriggerSource', 'type': 'string', 'value':'SW_PULSE'},
-        {'name': 'UpdateCounterSource', 'type': 'string', 'value':'UI_TC'},
-        {'name': 'UpdateIntervalCounterSource', 'type': 'string', 'value':'TB3'},
-        {'name': 'UpdateIntervalCounterPolarity', 'type': 'string', 'value':'RISING_EDGE'},
-        {'name': 'UpdateCounterPolarity', 'type': 'string', 'value':'RISING_EDGE'},
-        {'name': 'UpdateIntervalCounterPeriodDivisor', 'type': 'int32', 'value':100000},
-        {'name': 'UpdateIntervalCounterDelay', 'type': 'int32', 'value':2},
-        {'name': 'InputPortMask', 'type':'int', 'value': -1},
-        {'name': 'OutputPortMask', 'type':'int', 'value': 0}
+        {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxie-6368'},
+        {'name': 'BoardId', 'type': 'int32', 'value': 0},
+        {'name': 'ClockSampleSource', 'type': 'string', 'value': 'INTERNAL'},
+        {'name': 'ClockSamplePolarity', 'type': 'string',
+            'value': 'ACTIVE_HIGH_OR_RISING_EDGE'},
+        {'name': 'ClockConvertSource', 'type': 'string', 'value': 'INTERNAL'},
+        {'name': 'ScanIntervalCounterSource',
+            'type': 'string', 'value': 'COUNTER_TB3'},
+        {'name': 'ScanIntervalCounterPeriod', 'type': 'int32', 'value': 50},
+        {'name': 'ScanIntervalCounterDelay', 'type': 'int32', 'value': 2},
+        {'name': 'StartTriggerSource', 'type': 'string', 'value': 'SW_PULSE'},
+        {'name': 'UpdateCounterSource', 'type': 'string', 'value': 'UI_TC'},
+        {'name': 'UpdateIntervalCounterSource', 'type': 'string', 'value': 'TB3'},
+        {'name': 'UpdateIntervalCounterPolarity',
+            'type': 'string', 'value': 'RISING_EDGE'},
+        {'name': 'UpdateCounterPolarity', 'type': 'string', 'value': 'RISING_EDGE'},
+        {'name': 'UpdateIntervalCounterPeriodDivisor',
+            'type': 'int32', 'value': 100000},
+        {'name': 'UpdateIntervalCounterDelay', 'type': 'int32', 'value': 2},
+        {'name': 'InputPortMask', 'type': 'int', 'value': -1},
+        {'name': 'OutputPortMask', 'type': 'int', 'value': 0}
 
-]
+    ]
     parts = []

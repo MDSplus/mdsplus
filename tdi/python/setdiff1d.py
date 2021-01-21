@@ -4,5 +4,4 @@ def setdiff1d(a, b):
     """
     from MDSplus import Data
     from numpy.lib.arraysetops import setdiff1d
-    return Data(setdiff1d(a.data(),b.data()))
-
+    return Data(setdiff1d(a.data(), b.data()))

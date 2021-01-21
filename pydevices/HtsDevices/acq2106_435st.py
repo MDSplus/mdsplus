@@ -56,43 +56,57 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     """
 
-    carrier_parts=[
-        {'path':':NODE','type':'text','value':'192.168.0.254', 'options':('no_write_shot',)},
-        {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
-        {'path':':COMMENT','type':'text', 'options':('no_write_shot',)},
-        {'path':':TRIGGER','type':'numeric', 'value': 0.0, 'options':('no_write_shot',)},
-        {'path':':TRIG_MODE','type':'text', 'value': 'master:hard', 'options':('no_write_shot',)},
-        {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot',)},
-        {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot',)},
-        {'path':':HW_FILTER','type':'numeric', 'value':0, 'options':('no_write_shot',)},
-        {'path':':DEF_DCIM','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
-        {'path':':SEG_LENGTH','type':'numeric', 'value': 8000, 'options':('no_write_shot',)},
-        {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000, 'options':('no_write_shot',)},
-        {'path':':SEG_EVENT','type':'text', 'value': 'STREAM', 'options':('no_write_shot',)},
-        {'path':':STATUS_CMDS','type':'text','value':MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']),'options':('no_write_shot',)},
-        {'path':':STATUS_OUT','type':'signal','options':('write_shot',)},
-        {'path':':TRIG_TIME','type':'numeric', 'options':('write_shot',)},
-        {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot',),'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
-        {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
-        {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model','write_once','write_shot')},
-        {'path':':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot',)},
-        {'path':':INIT_ACTION','type':'action',
-         'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
-         'options':('no_write_shot',)},
-        {'path':':STOP_ACTION','type':'action',
-         'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
-         'options':('no_write_shot',)},
-        ]
+    carrier_parts = [
+        {'path': ':NODE', 'type': 'text', 'value': '192.168.0.254',
+            'options': ('no_write_shot',)},
+        {'path': ':SITE', 'type': 'numeric',
+            'value': 1, 'options': ('no_write_shot',)},
+        {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot',)},
+        {'path': ':TRIGGER', 'type': 'numeric',
+            'value': 0.0, 'options': ('no_write_shot',)},
+        {'path': ':TRIG_MODE', 'type': 'text',
+            'value': 'master:hard', 'options': ('no_write_shot',)},
+        {'path': ':EXT_CLOCK', 'type': 'axis', 'options': ('no_write_shot',)},
+        {'path': ':FREQ', 'type': 'numeric',
+            'value': 16000, 'options': ('no_write_shot',)},
+        {'path': ':HW_FILTER', 'type': 'numeric',
+            'value': 0, 'options': ('no_write_shot',)},
+        {'path': ':DEF_DCIM', 'type': 'numeric',
+            'value': 1, 'options': ('no_write_shot',)},
+        {'path': ':SEG_LENGTH', 'type': 'numeric',
+            'value': 8000, 'options': ('no_write_shot',)},
+        {'path': ':MAX_SEGMENTS', 'type': 'numeric',
+            'value': 1000, 'options': ('no_write_shot',)},
+        {'path': ':SEG_EVENT', 'type': 'text',
+            'value': 'STREAM', 'options': ('no_write_shot',)},
+        {'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(
+            ['cat /proc/cmdline', 'get.d-tacq.release']), 'options':('no_write_shot',)},
+        {'path': ':STATUS_OUT', 'type': 'signal', 'options': ('write_shot',)},
+        {'path': ':TRIG_TIME', 'type': 'numeric', 'options': ('write_shot',)},
+        {'path': ':TRIG_STR', 'type': 'text', 'options': (
+            'nowrite_shot',), 'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
+        {'path': ':RUNNING', 'type': 'any', 'options': ('no_write_model',)},
+        {'path': ':LOG_OUTPUT', 'type': 'text', 'options': (
+            'no_write_model', 'write_once', 'write_shot')},
+        {'path': ':GIVEUP_TIME', 'type': 'numeric',
+            'value': 180.0, 'options': ('no_write_shot',)},
+        {'path': ':INIT_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
+         'options': ('no_write_shot',)},
+        {'path': ':STOP_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
+         'options': ('no_write_shot',)},
+    ]
 
     data_socket = -1
 
-    trig_types=[ 'hard', 'soft', 'automatic']
+    trig_types = ['hard', 'soft', 'automatic']
 
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
 
-        def __init__(self,dev):
-            super(_ACQ2106_435ST.MDSWorker,self).__init__(name=dev.path)
+        def __init__(self, dev):
+            super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
             self.dev = dev.copy()
 
@@ -101,15 +115,15 @@ class _ACQ2106_435ST(MDSplus.Device):
             self.nchans = self.dev.sites*32
 
             for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d'%(i+1)))
-                self.decim.append(getattr(self.dev, 'input_%3.3d_decimate' %(i+1)).data())
+                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                self.decim.append(
+                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
 
-
             self.empty_buffers = Queue()
-            self.full_buffers  = Queue()
+            self.full_buffers = Queue()
 
             for i in range(self.NUM_BUFFERS):
                 self.empty_buffers.put(bytearray(self.segment_bytes))
@@ -122,7 +136,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             import re
             uut = acq400_hapi.Acq400(self.dev.node.data(), monitor=False)
 
-            def lcm(a,b):
+            def lcm(a, b):
                 from fractions import gcd
                 return (a * b / gcd(int(a), int(b)))
 
@@ -145,7 +159,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 if nacc_str == '0,0,0':
                     nacc_sample = 1
                 else:
-                    nacc_tuple  = ast.literal_eval(nacc_str)
+                    nacc_tuple = ast.literal_eval(nacc_str)
                     nacc_sample = nacc_tuple[0]
 
             if self.dev.debug:
@@ -155,12 +169,14 @@ class _ACQ2106_435ST(MDSplus.Device):
             dt = float(1./self.dev.freq.data() * nacc_sample)
 
             if self.dev.debug:
-                print("The SR is {} and timebase delta t is {}".format(self.dev.freq.data(), dt))
+                print("The SR is {} and timebase delta t is {}".format(
+                    self.dev.freq.data(), dt))
 
             decimator = lcma(self.decim)
 
             if self.seg_length % decimator:
-                 self.seg_length = (self.seg_length // decimator + 1) * decimator
+                self.seg_length = (self.seg_length //
+                                   decimator + 1) * decimator
 
             self.device_thread.start()
 
@@ -173,16 +189,16 @@ class _ACQ2106_435ST(MDSplus.Device):
                 except Empty:
                     continue
 
-                buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
+                buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
                 for c in self.chans:
                     slength = self.seg_length/self.decim[i]
-                    deltat  = dt * self.decim[i]
+                    deltat = dt * self.decim[i]
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
                         begin = segment * slength * deltat
-                        end   = begin + (slength - 1) * deltat
-                        dim   = MDSplus.Range(begin, end, deltat)
+                        end = begin + (slength - 1) * deltat
+                        dim = MDSplus.Range(begin, end, deltat)
                         c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
@@ -190,13 +206,14 @@ class _ACQ2106_435ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
+            self.dev.trig_time.record = self.device_thread.trig_time - \
+                ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
             running = False
 
-            def __init__(self,mds):
+            def __init__(self, mds):
                 super(_ACQ2106_435ST.MDSWorker.DeviceWorker, self).__init__()
                 self.debug = mds.dev.debug
                 self.node_addr = mds.dev.node.data()
@@ -219,7 +236,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 self.running = True
 
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect((self.node_addr,4210))
+                s.connect((self.node_addr, 4210))
                 s.settimeout(6)
 
                 # trigger time out count initialization:
@@ -231,15 +248,16 @@ class _ACQ2106_435ST(MDSplus.Device):
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
 
-                    toread =self.segment_bytes
+                    toread = self.segment_bytes
                     try:
                         view = memoryview(buf)
                         while toread:
-                            nbytes = s.recv_into(view, min(self.io_buffer_size,toread))
+                            nbytes = s.recv_into(
+                                view, min(self.io_buffer_size, toread))
                             if first:
                                 self.trig_time = time.time()
                                 first = False
-                            view = view[nbytes:] # slicing views is cheap
+                            view = view[nbytes:]  # slicing views is cheap
                             toread -= nbytes
 
                     except socket.timeout as e:
@@ -278,20 +296,21 @@ class _ACQ2106_435ST(MDSplus.Device):
             raise Exception('External Clock is not supported')
 
         freq = int(self.freq.data())
-        #D-Tacq Recommendation: the minimum sample rate is 10kHz.
-        if  freq < MIN_FREQUENCY:
-            raise MDSplus.DevBAD_PARAMETER("Sample rate should be greater or equal than 10kHz")
+        # D-Tacq Recommendation: the minimum sample rate is 10kHz.
+        if freq < MIN_FREQUENCY:
+            raise MDSplus.DevBAD_PARAMETER(
+                "Sample rate should be greater or equal than 10kHz")
 
         mode = self.trig_mode.data()
         if mode == 'hard':
             role = 'master'
-            trg  = 'hard'
+            trg = 'hard'
         elif mode == 'soft':
             role = 'master'
-            trg  = 'soft'
-        else: 
+            trg = 'soft'
+        else:
             role = mode.split(":")[0]
-            trg  = mode.split(":")[1]
+            trg = mode.split(":")[1]
 
         print("Role is {} and {} trigger".format(role, trg))
 
@@ -305,18 +324,18 @@ class _ACQ2106_435ST(MDSplus.Device):
         # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
-        # modifiers [CLKDIV=div]  
+        # modifiers [CLKDIV=div]
         uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
 
-        #Fetching all calibration information from every channel.
+        # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
-        eoff   = uut.cal_eoff[1:]
+        eoff = uut.cal_eoff[1:]
 
         self.chans = []
         nchans = uut.nchan()
         for ii in range(nchans):
-            self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
+            self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
@@ -325,7 +344,8 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         # Hardware decimation:
         if self.debug:
-            print("Hardware Filter (NACC) from tree node is {}".format(int(self.hw_filter.data())))
+            print("Hardware Filter (NACC) from tree node is {}".format(
+                int(self.hw_filter.data())))
 
         # Hardware Filter: Accumulate/Decimate filter. Accumulate nacc_samp samples, then output one value.
         nacc_samp = int(self.hw_filter.data())
@@ -333,7 +353,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         # Ask UUT what are the sites that are actually being populatee with a 435ELF
         self.slots = []
-        for (site,module) in sorted(uut.modules.items()):
+        for (site, module) in sorted(uut.modules.items()):
             site_number = int(site)
             if site_number == 1:
                 self.slots.append(uut.s1)
@@ -350,52 +370,87 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         for card in range(self.sites):
             if 1 <= nacc_samp <= 32:
-                self.slots[card].nacc = ('%d'%nacc_samp).strip()
+                self.slots[card].nacc = ('%d' % nacc_samp).strip()
             else:
-                print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
+                print(
+                    "WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
                 self.slots[card].nacc = '1'
 
-        self.running.on=True
+        self.running.on = True
         thread = self.MDSWorker(self)
         thread.start()
-    INIT=init
+    INIT = init
 
     def stop(self):
         self.running.on = False
-    STOP=stop
+    STOP = stop
 
     def trig(self):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.s0.set_knob('soft_trigger','1')
-    TRIG=trig
+        uut.s0.set_knob('soft_trigger', '1')
+    TRIG = trig
 
-    def setChanScale(self,num):
-        chan=self.__getattr__('INPUT_%3.3d' % num)
-        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
+    def setChanScale(self, num):
+        chan = self.__getattr__('INPUT_%3.3d' % num)
+        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(
+            chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
 
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435ST.carrier_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path':':INPUT_%3.3d'%(i+1,),            'type':'SIGNAL', 'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),   'type':'NUMERIC','valueExpr':'head.def_dcim',            'options':('no_write_shot',)},           
-            {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC',                                            'options':('no_write_model', 'write_once',)},
-            {'path':':INPUT_%3.3d:OFFSET'%(i+1,),     'type':'NUMERIC',                                            'options':('no_write_model', 'write_once',)},
+            {'path': ':INPUT_%3.3d' % (i+1,),            'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (
+                i+1,), 'options': ('no_write_model', 'write_once',)},
+            {'path': ':INPUT_%3.3d:DECIMATE' % (
+                i+1,),   'type': 'NUMERIC', 'valueExpr': 'head.def_dcim',            'options': ('no_write_shot',)},
+            {'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 'type': 'NUMERIC',
+             'options': ('no_write_model', 'write_once',)},
+            {'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     'type': 'NUMERIC',
+             'options': ('no_write_model', 'write_once',)},
         ]
 
-class ACQ2106_435_1ST(_ACQ2106_435ST): sites=1
+
+class ACQ2106_435_1ST(_ACQ2106_435ST):
+    sites = 1
+
+
 assemble(ACQ2106_435_1ST)
-class ACQ2106_435_2ST(_ACQ2106_435ST): sites=2
+
+
+class ACQ2106_435_2ST(_ACQ2106_435ST):
+    sites = 2
+
+
 assemble(ACQ2106_435_2ST)
-class ACQ2106_435_3ST(_ACQ2106_435ST): sites=3
+
+
+class ACQ2106_435_3ST(_ACQ2106_435ST):
+    sites = 3
+
+
 assemble(ACQ2106_435_3ST)
-class ACQ2106_435_4ST(_ACQ2106_435ST): sites=4
+
+
+class ACQ2106_435_4ST(_ACQ2106_435ST):
+    sites = 4
+
+
 assemble(ACQ2106_435_4ST)
-class ACQ2106_435_5ST(_ACQ2106_435ST): sites=5
+
+
+class ACQ2106_435_5ST(_ACQ2106_435ST):
+    sites = 5
+
+
 assemble(ACQ2106_435_5ST)
-class ACQ2106_435_6ST(_ACQ2106_435ST): sites=6
+
+
+class ACQ2106_435_6ST(_ACQ2106_435ST):
+    sites = 6
+
+
 assemble(ACQ2106_435_6ST)
 
 del(assemble)

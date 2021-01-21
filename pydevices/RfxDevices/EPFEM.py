@@ -17,34 +17,34 @@ import subprocess
 
 from MDSplus import *
 
+
 class EPFEM(Device):
 
-     parts = [
-          {'path': ':COMMENT', 'type': 'text', 'value': 'Electrostatic probes front end master'},
-          {'path': ':EVT', 'type': 'text', 'value': 'EP_EVT'},
-          {'path': ':T_ON', 'type': 'numeric', 'value': 1},
-          {'path': ':T_OFF', 'type': 'numeric', 'value': 1},
-          {'path': ':N_CYCL', 'type': 'numeric', 'value': 1},
-          {'path': ':WD_TMT', 'type': 'numeric', 'value': 1}
-     ]
+    parts = [
+        {'path': ':COMMENT', 'type': 'text',
+            'value': 'Electrostatic probes front end master'},
+        {'path': ':EVT', 'type': 'text', 'value': 'EP_EVT'},
+        {'path': ':T_ON', 'type': 'numeric', 'value': 1},
+        {'path': ':T_OFF', 'type': 'numeric', 'value': 1},
+        {'path': ':N_CYCL', 'type': 'numeric', 'value': 1},
+        {'path': ':WD_TMT', 'type': 'numeric', 'value': 1}
+    ]
 
-     parts.append({'path': ':TRIG_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('ELBP_PROBE_SERVER', 'PULSE_ON', 50, None), Method(None, 'trig', head))", 'options': ('no_write_shot',)})
+    parts.append({'path': ':TRIG_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('ELBP_PROBE_SERVER', 'PULSE_ON', 50, None), Method(None, 'trig', head))", 'options': ('no_write_shot',)})
 
+    def trig(self):
 
+        try:
+            evtName = self.getNode('EVT').data()
 
-     def trig(self):
+            print (self.getPath() + " - EPFEM - trig() - Sent event " + evtName)
 
-          try:
-               evtName = self.getNode('EVT').data()
+            Event.setevent(evtName, "start")
+        except:
+            Data.execute('DevLogErr($1, $2)', self.getNid(),
+                         'Invalid event (:EVT)')
 
-               print (self.getPath() + " - EPFEM - trig() - Sent event " + evtName)
+            raise DevBAD_PARAMETER
 
-               Event.setevent(evtName, "start")
-          except:
-               Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid event (:EVT)')   
-
-               raise DevBAD_PARAMETER
-
-
-
-          return 1
+        return 1

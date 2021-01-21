@@ -37,44 +37,54 @@ class MARTE_BREAKDOWN(MARTE_GENERIC.MARTE_GENERIC):
         ('breakdownDeadOut4', 0),
     ]
     parts = MARTE_GENERIC.MARTE_GENERIC.parts + [
-        {'path':'.PARAMS', 'type':'structure'},
-        {'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(params)},
+        {'path': '.PARAMS', 'type': 'structure'},
+        {'path': '.PARAMS:NUM_ACTIVE',
+            'type': 'numeric', 'value': len(params)},
     ]
     for i, par in enumerate(params):
         parts.extend([
-            {'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'},
-            {'path':'.PARAMS:PAR_%03d:DESCRIPTION'%(i+1), 'type':'text'},
-            {'path':'.PARAMS:PAR_%03d:NAME'%(i+1), 'type':'text', 'value':par[0]},
-            {'path':'.PARAMS:PAR_%03d:TYPE'%(i+1), 'type':'text'},
-            {'path':'.PARAMS:PAR_%03d:DIMS'%(i+1), 'type':'numeric'},
-            {'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','value':par[1]},
+            {'path': '.PARAMS:PAR_%03d' % (i+1), 'type': 'structure'},
+            {'path': '.PARAMS:PAR_%03d:DESCRIPTION' % (i+1), 'type': 'text'},
+            {'path': '.PARAMS:PAR_%03d:NAME' % (
+                i+1), 'type': 'text', 'value': par[0]},
+            {'path': '.PARAMS:PAR_%03d:TYPE' % (i+1), 'type': 'text'},
+            {'path': '.PARAMS:PAR_%03d:DIMS' % (i+1), 'type': 'numeric'},
+            {'path': '.PARAMS:PAR_%03d:DATA' % (
+                i+1), 'type': 'numeric', 'value': par[1]},
         ])
     for i in range(i+1, 256):
         parts.extend([
-            {'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'},
-            {'path':'.PARAMS:PAR_%03d:DESCRIPTION'%(i+1), 'type':'text'},
-            {'path':'.PARAMS:PAR_%03d:NAME'%(i+1), 'type':'text'},
-            {'path':'.PARAMS:PAR_%03d:TYPE'%(i+1), 'type':'text'},
-            {'path':'.PARAMS:PAR_%03d:DIMS'%(i+1), 'type':'numeric'},
-            {'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric'},
+            {'path': '.PARAMS:PAR_%03d' % (i+1), 'type': 'structure'},
+            {'path': '.PARAMS:PAR_%03d:DESCRIPTION' % (i+1), 'type': 'text'},
+            {'path': '.PARAMS:PAR_%03d:NAME' % (i+1), 'type': 'text'},
+            {'path': '.PARAMS:PAR_%03d:TYPE' % (i+1), 'type': 'text'},
+            {'path': '.PARAMS:PAR_%03d:DIMS' % (i+1), 'type': 'numeric'},
+            {'path': '.PARAMS:PAR_%03d:DATA' % (i+1), 'type': 'numeric'},
         ])
-    parts.append({'path':'.WAVE_PARAMS', 'type':'structure'})
-    parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':8})
-    params = ['wave1','wave2','wave3','wave4','riseWave1','riseWave2','riseWave3','riseWave4']
+    parts.append({'path': '.WAVE_PARAMS', 'type': 'structure'})
+    parts.append({'path': '.WAVE_PARAMS:NUM_ACTIVE',
+                  'type': 'numeric', 'value': 8})
+    params = ['wave1', 'wave2', 'wave3', 'wave4',
+              'riseWave1', 'riseWave2', 'riseWave3', 'riseWave4']
     for i, par in enumerate(params):
         parts.extend([
-            {'path':'.WAVE_PARAMS:WAVE_%03d'%(i+1), 'type':'structure'},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:DESCRIPTION'%(i+1), 'type':'text'},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':par},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric', 'valueExpr':'Float32Array([0.,1.])'},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric', 'valueExpr':'Float32Array([0.,0.])'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d' % (i+1), 'type': 'structure'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:DESCRIPTION' % (
+                i+1), 'type': 'text'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:NAME' % (
+                i+1), 'type': 'text', 'value': par},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:X' % (
+                i+1), 'type': 'numeric', 'valueExpr': 'Float32Array([0.,1.])'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:Y' % (
+                i+1), 'type': 'numeric', 'valueExpr': 'Float32Array([0.,0.])'},
         ])
     for i in range(i+1, 64):
         parts.extend([
-            {'path':'.WAVE_PARAMS:WAVE_%03d'%(i+1), 'type':'structure'},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:DESCRIPTION'%(i+1), 'type':'text'},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'},
-            {'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d' % (i+1), 'type': 'structure'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:DESCRIPTION' % (
+                i+1), 'type': 'text'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:NAME' % (i+1), 'type': 'text'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:X' % (i+1), 'type': 'numeric'},
+            {'path': '.WAVE_PARAMS:WAVE_%03d:Y' % (i+1), 'type': 'numeric'},
         ])
     del(i, params, par)

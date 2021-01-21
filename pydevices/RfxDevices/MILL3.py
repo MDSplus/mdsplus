@@ -27,32 +27,32 @@ from MDSplus import mdsExceptions, Device, Data, version
 import struct
 import time
 
+
 class MILL3(Device):
-    parts=[
-        {'path':':COMMENT', 'type':'text'},
-        {'path':':IP', 'type':'text'},
-        {'path':':MOXA_COM1', 'type':'text'},
-        {'path':':MOXA_COM2', 'type':'text'},
-        {'path':':MOXA_COM3', 'type':'text'},
-        {'path':':MOXA_COM4', 'type':'text'},
-        {'path':':SHORT_TRN_SP', 'type':'numeric'},
-        {'path':':LONG_TRN_SP', 'type':'numeric'},
-        {'path':':ROTATION_SP', 'type':'numeric'},
-        {'path':':SHORT_TRN', 'type':'numeric'},
-        {'path':':LONG_TRN', 'type':'numeric'},
-        {'path':':ROTATION', 'type':'numeric'},
-        {'path':':PRESSURE', 'type':'numeric'}]
+    parts = [
+        {'path': ':COMMENT', 'type': 'text'},
+        {'path': ':IP', 'type': 'text'},
+        {'path': ':MOXA_COM1', 'type': 'text'},
+        {'path': ':MOXA_COM2', 'type': 'text'},
+        {'path': ':MOXA_COM3', 'type': 'text'},
+        {'path': ':MOXA_COM4', 'type': 'text'},
+        {'path': ':SHORT_TRN_SP', 'type': 'numeric'},
+        {'path': ':LONG_TRN_SP', 'type': 'numeric'},
+        {'path': ':ROTATION_SP', 'type': 'numeric'},
+        {'path': ':SHORT_TRN', 'type': 'numeric'},
+        {'path': ':LONG_TRN', 'type': 'numeric'},
+        {'path': ':ROTATION', 'type': 'numeric'},
+        {'path': ':PRESSURE', 'type': 'numeric'}]
 
-    parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('A_SERVER','INIT',50,None),Method(None,'INIT',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STORE_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('A_SERVER','STORE',50,None),Method(None,'STORE',head))",
-        'options':('no_write_shot',)})
+    parts.append({'path': ':INIT_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('A_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                  'options': ('no_write_shot',)})
+    parts.append({'path': ':STORE_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('A_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                  'options': ('no_write_shot',)})
 
-    ser=None
-    c=None
-
+    ser = None
+    c = None
 
     def sendCmd(self, cmd):
         from serial import SerialReadTimeoutException, SerialBadMessageException
@@ -65,18 +65,18 @@ class MILL3(Device):
 
         while remaining > 0:
             chunk = self.ser.read(remaining)
-            if 0 == len(chunk): raise SerialReadTimeoutException
+            if 0 == len(chunk):
+                raise SerialReadTimeoutException
             msg.extend(chunk)
             remaining -= len(chunk)
 
-        if ":" != chr(msg[6]): raise SerialBadMessageException
+        if ":" != chr(msg[6]):
+            raise SerialBadMessageException
 
     #    print(cmd[2:6]==msg[2:6])
         data = struct.unpack_from('>i', version.buffer(msg), 7)
 
         return data[0]
-
-
 
     def STORE(self):
         import serial
@@ -109,7 +109,8 @@ class MILL3(Device):
             longTranslationSetPoint = self.long_trn_sp.data()
             print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
-                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
+                Data.execute('DevLogErr($1, $2)', self.nid,
+                             'Invalid LONG_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
@@ -119,7 +120,8 @@ class MILL3(Device):
             shortTranslationSetPoint = self.short_trn_sp.data()
             print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
-                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
+                Data.execute('DevLogErr($1, $2)', self.nid,
+                             'Invalid SHORT_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
@@ -157,7 +159,6 @@ class MILL3(Device):
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-
         """
         try:
             master = modbus_tcp.TcpMaster(host=ip)
@@ -170,111 +171,117 @@ class MILL3(Device):
             print("Error ", str(e2)
         """
 
-
         print('OK')
 
         try:
-            port=moxaCom1
+            port = moxaCom1
 
-            self.ser=None
-            serTimeout=5
-
+            self.ser = None
+            serTimeout = 5
 
             master = modbus_tcp.TcpMaster(host=ip)
             master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=1)
 
-            #c=ModbusTcpClient(ip)
-            #time.sleep(1.0)
-            #conn=c.connect()
+            # c=ModbusTcpClient(ip)
+            # time.sleep(1.0)
+            # conn=c.connect()
             time.sleep(1.0)
             #if not conn: raise ModbusException("cannot connect to " + ip)
 
-            #c.write_register(12,1)
-            #time.sleep(0.5)
+            # c.write_register(12,1)
+            # time.sleep(0.5)
 
             self.ser = serial.Serial(
-            port = port,
-            baudrate = 9600,
-            parity = serial.PARITY_NONE,
-            stopbits = serial.STOPBITS_ONE,
-            bytesize = serial.EIGHTBITS,
-            xonxoff = False,
-            rtscts = False,
-            dsrdtr = False,
-            timeout = serTimeout
+                port=port,
+                baudrate=9600,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS,
+                xonxoff=False,
+                rtscts=False,
+                dsrdtr=False,
+                timeout=serTimeout
             )
 
-
-            position = self.sendCmd("\x7C\x00\x54\x50\x4F\x53\x00\x00\x00\x00\x00\x01\xC2\x04")
-            decimals = self.sendCmd("\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
-            preset = self.sendCmd("\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
-            offset = self.sendCmd("\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
+            position = self.sendCmd(
+                "\x7C\x00\x54\x50\x4F\x53\x00\x00\x00\x00\x00\x01\xC2\x04")
+            decimals = self.sendCmd(
+                "\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
+            preset = self.sendCmd(
+                "\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
+            offset = self.sendCmd(
+                "\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
             print("raw position: " + str(position))
             print("decimals: " + str(decimals))
             print("preset: " + str(preset))
             print("offset: " + str(offset))
-            longPosition=position / (10.0 ** decimals)
+            longPosition = position / (10.0 ** decimals)
             print("long position: " + str(longPosition))
-            setattr(self,'long_trn',longPosition)
+            setattr(self, 'long_trn', longPosition)
 
-            port=moxaCom2
-            self.ser=None
-            serTimeout=5
+            port = moxaCom2
+            self.ser = None
+            serTimeout = 5
 
             self.ser = serial.Serial(
-            port = port,
-            baudrate = 9600,
-            parity = serial.PARITY_NONE,
-            stopbits = serial.STOPBITS_ONE,
-            bytesize = serial.EIGHTBITS,
-            xonxoff = False,
-            rtscts = False,
-            dsrdtr = False,
-            timeout = serTimeout
+                port=port,
+                baudrate=9600,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS,
+                xonxoff=False,
+                rtscts=False,
+                dsrdtr=False,
+                timeout=serTimeout
             )
 
-            position = self.sendCmd("\x7C\x00\x54\x50\x4F\x53\x00\x00\x00\x00\x00\x01\xC2\x04")
-            decimals = self.sendCmd("\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
-            preset = self.sendCmd("\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
-            offset = self.sendCmd("\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
+            position = self.sendCmd(
+                "\x7C\x00\x54\x50\x4F\x53\x00\x00\x00\x00\x00\x01\xC2\x04")
+            decimals = self.sendCmd(
+                "\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
+            preset = self.sendCmd(
+                "\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
+            offset = self.sendCmd(
+                "\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
             print("raw position: " + str(position))
             print("decimals: " + str(decimals))
             print("preset: " + str(preset))
             print("offset: " + str(offset))
-            shortPosition=position / (10.0 ** decimals)
+            shortPosition = position / (10.0 ** decimals)
             print("short position: " + str(shortPosition))
-            setattr(self,'short_trn',shortPosition)
+            setattr(self, 'short_trn', shortPosition)
 
-
-
-            port=moxaCom3
-            self.ser=None
-            serTimeout=5
+            port = moxaCom3
+            self.ser = None
+            serTimeout = 5
 
             self.ser = serial.Serial(
-            port = port,
-            baudrate = 9600,
-            parity = serial.PARITY_NONE,
-            stopbits = serial.STOPBITS_ONE,
-            bytesize = serial.EIGHTBITS,
-            xonxoff = False,
-            rtscts = False,
-            dsrdtr = False,
-            timeout = serTimeout
+                port=port,
+                baudrate=9600,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS,
+                xonxoff=False,
+                rtscts=False,
+                dsrdtr=False,
+                timeout=serTimeout
             )
 
-            position = self.sendCmd("\x7C\x00\x54\x50\x4F\x53\x00\x00\x00\x00\x00\x01\xC2\x04")
-            decimals = self.sendCmd("\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
-            preset = self.sendCmd("\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
-            offset = self.sendCmd("\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
+            position = self.sendCmd(
+                "\x7C\x00\x54\x50\x4F\x53\x00\x00\x00\x00\x00\x01\xC2\x04")
+            decimals = self.sendCmd(
+                "\x7C\x00\x54\x44\x45\x43\x00\x00\x00\x00\x00\x01\x9C\x04")
+            preset = self.sendCmd(
+                "\x7C\x00\x54\x52\x45\x46\x00\x00\x00\x00\x00\x01\xAD\x04")
+            offset = self.sendCmd(
+                "\x7C\x00\x54\x45\x49\x4E\x00\x00\x00\x00\x00\x01\xAC\x04")
             print("raw position: " + str(position))
             print("decimals: " + str(decimals))
             print("preset: " + str(preset))
             print("offset: " + str(offset))
-            rotation=position / (10.0 ** decimals)
+            rotation = position / (10.0 ** decimals)
             print("rotation: " + str(rotation))
-            setattr(self,'rotation',rotation)
-
+            setattr(self, 'rotation', rotation)
 
             """
             port=moxaCom4
@@ -330,15 +337,15 @@ class MILL3(Device):
             print("Could not open port " + port)
             bad = 0
         finally:
-            if self.ser is not None: self.ser.close()
+            if self.ser is not None:
+                self.ser.close()
             master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=2)
             #if conn: c.write_register(12,2)
-            #time.sleep(1.0)
-            #self.c.close()
+            # time.sleep(1.0)
+            # self.c.close()
             #if self.c is not None: self.c.close()
             print("status: " + str(bad))
         return bad
-
 
     def INIT(self):
         import serial
@@ -371,7 +378,8 @@ class MILL3(Device):
             longTranslationSetPoint = self.long_trn_sp.data()
             print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
-                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
+                Data.execute('DevLogErr($1, $2)', self.nid,
+                             'Invalid LONG_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
@@ -381,7 +389,8 @@ class MILL3(Device):
             shortTranslationSetPoint = self.short_trn_sp.data()
             print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
-                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
+                Data.execute('DevLogErr($1, $2)', self.nid,
+                             'Invalid SHORT_TRN_SP')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
@@ -419,7 +428,6 @@ class MILL3(Device):
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-
         """
         try:
             master = modbus_tcp.TcpMaster(host=ip)
@@ -435,36 +443,35 @@ class MILL3(Device):
         print('OK')
 
         try:
-            port=moxaCom1
+            port = moxaCom1
 
-            self.ser=None
-
+            self.ser = None
 
             master = modbus_tcp.TcpMaster(host=ip)
             master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=1)
 
-            #c=ModbusTcpClient(ip)
-            #time.sleep(1.0)
-            #conn=c.connect()
+            # c=ModbusTcpClient(ip)
+            # time.sleep(1.0)
+            # conn=c.connect()
             time.sleep(1.0)
             #if not conn: raise ModbusException("cannot connect to " + ip)
 
-            #c.write_register(12,1)
-            #time.sleep(0.5)
+            # c.write_register(12,1)
+            # time.sleep(0.5)
 
-            port=moxaCom4
-            self.ser=None
+            port = moxaCom4
+            self.ser = None
 
             self.ser = serial.Serial(
-            port = port,
-            baudrate = 9600,
-            parity = serial.PARITY_NONE,
-            stopbits = serial.STOPBITS_ONE,
-            bytesize = serial.EIGHTBITS,
-            xonxoff = False,
-            rtscts = False,
-            dsrdtr = False,
-            timeout = 10
+                port=port,
+                baudrate=9600,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS,
+                xonxoff=False,
+                rtscts=False,
+                dsrdtr=False,
+                timeout=10
             )
 
             self.ser.write("\x50\x52\x31\x0D")
@@ -476,11 +483,12 @@ class MILL3(Device):
 
             data = self.ser.readline()
             print(data.encode("hex"))
-            if data[0] != '\x30': raise SerialBadMessageException
-            data=data[2:13]
-            data=data.strip()
+            if data[0] != '\x30':
+                raise SerialBadMessageException
+            data = data[2:13]
+            data = data.strip()
             print("pressure: " + data)
-            setattr(self,'pressure',float(data))
+            setattr(self, 'pressure', float(data))
         except modbus_tk.modbus.ModbusError as e:
             print("Modbus error ", e.get_exception_code())
             bad = 0
@@ -503,11 +511,13 @@ class MILL3(Device):
             print("Could not open port " + port)
             bad = 0
         finally:
-            if self.ser is not None: self.ser.close()
-            master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=2)    # da levare con l'inserzione
+            if self.ser is not None:
+                self.ser.close()
+            master.execute(1, cst.WRITE_SINGLE_REGISTER, 12,
+                           output_value=2)    # da levare con l'inserzione
             #if conn: c.write_register(12,2)
-            #time.sleep(1.0)
-            #self.c.close()
+            # time.sleep(1.0)
+            # self.c.close()
             #if self.c is not None: self.c.close()
             print("status: " + str(bad))
         return bad

@@ -23,18 +23,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+
 class Transport:
-        def connectMaster(self):
-                pass
+    def connectMaster(self):
+        pass
 
-        def connectShell(self):
-                pass
+    def connectShell(self):
+        pass
 
-        def acqcmd(self, command):
-                pass
+    def acqcmd(self, command):
+        pass
 
-        def acq2sh(self,  command):
-                pass
+    def acq2sh(self,  command):
+        pass
+
 
 def factory(uut):
     import dt100

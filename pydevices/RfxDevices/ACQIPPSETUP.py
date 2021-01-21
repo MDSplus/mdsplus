@@ -24,43 +24,44 @@
 #
 
 from MDSplus import mdsExceptions, Device, Data
-from ctypes import CDLL,c_int,c_double
+from ctypes import CDLL, c_int, c_double
 from threading import Thread
 from time import sleep
 
+
 class ACQIPPSETUP(Device):
     """IPP probe & thermocoupels acquisition setup"""
-    parts=[
-        {'path':':COMMENT', 'type':'text'},
-        {'path':'.PROBE', 'type':'structure'},
-        {'path':'.PROBE:START_TIME', 'type':'numeric', 'value':0},
-        {'path':'.PROBE:END_TIME', 'type':'numeric', 'value':0},
-        {'path':'.PROBE:CLOCK_FREQ', 'type':'numeric', 'value':1000},
-        {'path':'.PROBE:TRIG_MODE', 'type':'text','value':'EXTERNAL'},
+    parts = [
+        {'path': ':COMMENT', 'type': 'text'},
+        {'path': '.PROBE', 'type': 'structure'},
+        {'path': '.PROBE:START_TIME', 'type': 'numeric', 'value': 0},
+        {'path': '.PROBE:END_TIME', 'type': 'numeric', 'value': 0},
+        {'path': '.PROBE:CLOCK_FREQ', 'type': 'numeric', 'value': 1000},
+        {'path': '.PROBE:TRIG_MODE', 'type': 'text', 'value': 'EXTERNAL'},
 
-        {'path':'.SWEEP_WAVE', 'type':'structure'},
-        {'path':'.SWEEP_WAVE:DEV_TYPE', 'type':'text','value':'NI6368'},
-        {'path':'.SWEEP_WAVE:BOARD_ID', 'type':'numeric', 'value':0},
-        {'path':'.SWEEP_WAVE:AO_CHAN', 'type':'numeric', 'value':0},
-        {'path':'.SWEEP_WAVE:MIN', 'type':'numeric', 'value':0},
-        {'path':'.SWEEP_WAVE:MAX', 'type':'numeric', 'value':0},
-        {'path':'.SWEEP_WAVE:FREQ', 'type':'numeric', 'value':1000},
-        {'path':'.SWEEP_WAVE:TRIG_MODE', 'type':'text','value':'EXTERNAL'},
+        {'path': '.SWEEP_WAVE', 'type': 'structure'},
+        {'path': '.SWEEP_WAVE:DEV_TYPE', 'type': 'text', 'value': 'NI6368'},
+        {'path': '.SWEEP_WAVE:BOARD_ID', 'type': 'numeric', 'value': 0},
+        {'path': '.SWEEP_WAVE:AO_CHAN', 'type': 'numeric', 'value': 0},
+        {'path': '.SWEEP_WAVE:MIN', 'type': 'numeric', 'value': 0},
+        {'path': '.SWEEP_WAVE:MAX', 'type': 'numeric', 'value': 0},
+        {'path': '.SWEEP_WAVE:FREQ', 'type': 'numeric', 'value': 1000},
+        {'path': '.SWEEP_WAVE:TRIG_MODE', 'type': 'text', 'value': 'EXTERNAL'},
 
-        {'path':'.TC', 'type':'structure'},
-        {'path':'.TC:START_TIME', 'type':'numeric', 'value':0},
-        {'path':'.TC:END_TIME', 'type':'numeric', 'value':0},
-        {'path':'.TC:CLOCK_FREQ', 'type':'numeric', 'value':1000},
-        {'path':'.TC:TRIG_MODE', 'type':'text','value':'EXTERNAL'},
+        {'path': '.TC', 'type': 'structure'},
+        {'path': '.TC:START_TIME', 'type': 'numeric', 'value': 0},
+        {'path': '.TC:END_TIME', 'type': 'numeric', 'value': 0},
+        {'path': '.TC:CLOCK_FREQ', 'type': 'numeric', 'value': 1000},
+        {'path': '.TC:TRIG_MODE', 'type': 'text', 'value': 'EXTERNAL'},
 
-        {'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_wave_gen',head))",
-        'options':('no_write_shot',)},
-        {'path':':STOP_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_wave_gen',head))",
-        'options':('no_write_shot',)},
+        {'path': ':INIT_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_wave_gen',head))",
+         'options': ('no_write_shot',)},
+        {'path': ':STOP_ACTION', 'type': 'action',
+         'valueExpr': "Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_wave_gen',head))",
+         'options': ('no_write_shot',)},
 
-        {'path':'.SWEEP_WAVE:WAVE_EXPR', 'type':'numeric'},
+        {'path': '.SWEEP_WAVE:WAVE_EXPR', 'type': 'numeric'},
     ]
 
     isRunning = False
@@ -77,72 +78,77 @@ class ACQIPPSETUP(Device):
         def run(self):
 
             if ACQIPPSETUP.niInterfaceLib is None:
-                Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot load libNiInterface.so')
+                Data.execute('DevLogErr($1,$2)', self.nid,
+                             'Cannot load libNiInterface.so')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
-                board_id = self.device.sweep_wave_board_id.data();
+                board_id = self.device.sweep_wave_board_id.data()
             except:
-                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing Board Id' )
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing Board Id')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
-                channel = self.device.sweep_wave_ao_chan.data();
+                channel = self.device.sweep_wave_ao_chan.data()
             except:
-                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing output channel number 0..3' )
+                Data.execute('DevLogErr($1,$2)', self.nid,
+                             'Missing output channel number 0..3')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
-                minValue = self.device.sweep_wave_min.data();
+                minValue = self.device.sweep_wave_min.data()
             except:
-                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing min sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid,
+                             'Missing min sweep value')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
-                maxValue = self.device.sweep_wave_max.data();
+                maxValue = self.device.sweep_wave_max.data()
             except:
-                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing max sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid,
+                             'Missing max sweep value')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
-                waverate = self.device.sweep_wave_freq.data();
+                waverate = self.device.sweep_wave_freq.data()
             except:
-                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing frequency sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid,
+                             'Missing frequency sweep value')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
-                trigMode = self.device.sweep_wave_trig_mode.data();
+                trigMode = self.device.sweep_wave_trig_mode.data()
             except:
-                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing trig mode sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid,
+                             'Missing trig mode sweep value')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
-            level  = ( maxValue - minValue ) /2.;
-            offset = ( maxValue + minValue ) / 2.;
+            level = (maxValue - minValue) / 2.
+            offset = (maxValue + minValue) / 2.
 
             print("Offset  ", offset, " Vpp level ", level * 2)
 
-            offset = offset / 10.;
-            level = level / 10.;
+            offset = offset / 10.
+            level = level / 10.
 
             print("Reference Offset  ", offset, " Vpp level ", level * 2)
 
             if(trigMode == 'EXTERNAL'):
-                 softwareTrigger = 0;
+                softwareTrigger = 0
             else:
-                 softwareTrigger = 1;
+                softwareTrigger = 1
 
-            ACQIPPSETUP.niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
-
+            ACQIPPSETUP.niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(
+                channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger))
 
     def restoreInfo(self):
         if ACQIPPSETUP.niInterfaceLib is None:
             ACQIPPSETUP.niInterfaceLib = CDLL("libNiInterface.so")
 
-
     def start_wave_gen(self):
         print('======= Initialize waveform generation ========')
 
-        if ACQIPPSETUP.isRunning :
+        if ACQIPPSETUP.isRunning:
             print("Is running stop thread")
             ACQIPPSETUP.niInterfaceLib.stopWaveGeneration()
 
@@ -152,16 +158,14 @@ class ACQIPPSETUP(Device):
         self.restoreInfo()
 
         #niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(nSamples), (numTrigger))
-        #niInterfaceLib.generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel, double offset, double level, uint32_t waverate, char softwareTrigger);
+        # niInterfaceLib.generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel, double offset, double level, uint32_t waverate, char softwareTrigger);
         #niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
 
         ACQIPPSETUP.isRunning = True
-        self.worker.configure(self);
+        self.worker.configure(self)
         self.worker.start()
 
         print("===============================================")
-
-
 
     def stop_wave_gen(self):
 
@@ -171,4 +175,3 @@ class ACQIPPSETUP(Device):
         ACQIPPSETUP.niInterfaceLib.stopWaveGeneration()
         sleep(2)
         print("===============================================")
-

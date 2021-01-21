@@ -14,12 +14,16 @@ import numpy
 
 if sys.version_info < (3, ):
     import Queue as queue
+
     def b(s): return s
+
     def s(b): return b
     string = str, unicode  # analysis:ignore
 else:
     import queue
+
     def b(s): return s if isinstance(s, bytes) else s.encode()
+
     def s(b): return b if isinstance(b, str) else b.decode("UTF-8")
     string = str, bytes
 
@@ -124,9 +128,9 @@ class phantom(object):
     @classmethod
     def ph2flags(cls, ph):
         return ''.join(
-                f if flag in ph else f.lower()
-                for flag, f in cls.flags_list
-            )
+            f if flag in ph else f.lower()
+            for flag, f in cls.flags_list
+        )
 
     @staticmethod
     def find_cameras(bc='<broadcast>', src="", timeout=3):
@@ -140,7 +144,7 @@ class phantom(object):
                 else:
                     yield addr[0], s(type)
         server = socket.socket(
-                socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         server.settimeout(timeout)
         server.bind((src, 0))
@@ -190,6 +194,7 @@ class phantom(object):
         def __bytes__(self): return b(str(self))
 
         def __getattr__(self, name): return self[name.lstrip('_')]
+
         def __dir__(self): return self.keys()
 
     class Res(tuple):
@@ -219,7 +224,7 @@ class phantom(object):
             if n > self.peaked and self.sock:
                 if select.select([self.sock], [], [], .1)[0]:
                     self.peaked += self.sock.recv_into(
-                            self.view[self.pos+self.peaked:], n-self.peaked)
+                        self.view[self.pos+self.peaked:], n-self.peaked)
 
         def peak(self, n=1):
             self._peak(n)
@@ -326,9 +331,13 @@ class phantom(object):
         def get_unit(self): return phantom.Unit(self.parse())
 
     def __init__(self, host): self.__dict__['_host'] = host
+
     def __str__(self): return "%s(%s)" % (self.__class__.__name__, self._host)
+
     def __repr__(self): return str(self)
+
     def __getattr__(self, name): return self.get(name.replace("_", "."))
+
     def __setattr__(self, name, value): self.set(name.replace("_", "."), value)
 
     def new_socket(self):
@@ -396,6 +405,7 @@ class phantom(object):
             self("rtorec %d" % cine)
 
     def delete_cine(self, cine): self("del %d" % cine)  # 5.4
+
     def soft_trigger(self): self("trig")  # 5.5
 
     def get_cstats(self):  # 5.6
@@ -437,7 +447,9 @@ class phantom(object):
         return s(self('route')[1:-3].replace(b'\\', b'').strip())
 
     def alloc(self, mm): self('alloc {%s}' % (','.join(map(str, mm))))  # 5.13
+
     def white_balance(self, nframes=1): self('wbal %d' % nframes)  # 5.14
+
     def black_reference(self, nframes=8): self('bref %d' % nframes)  # 5.15
     # def update_white_reference(self): self('wupdate')  # 5.16
     # def update_black_reference(self): self('bupdate')  # 5.17
@@ -445,10 +457,14 @@ class phantom(object):
     # def erase_flash(self): self('ferase')  # 5.19
     # def save_flash(self, cine, format, first, last): self('fsave')  # 5.20
     # def save_cflash(self, cine, format, first, last): self('cfsave')  # 5.21
+
     def trigger_real_time_output(self): self('rtotrig')  # 5.22
+
     def tail(self): return s(self('tail').rstrip())  # 5.23
+
     def set_acqmode(self, new_bpp=12): self('acqmode %d' % new_bpp)  # 5.24
     # def vplay  # 5.25
+
     def clean(self): self('clean')  # 5.26
 
     def wrset(self, addr, data):  # 5.27
@@ -462,9 +478,13 @@ class phantom(object):
         return base64.decodebytes(b''.join(ans.split(b'\\\r\n')[1:-1]))
 
     def _save_settings(self): self('isave')  # 5.29
+
     def _load_settings(self): self('iload')  # 5.30
+
     def save_user_settings(self, slot): self('usave %d' % slot)  # 5.31
+
     def load_user_settings(self, slot): self('uload %d' % slot)  # 5.32
+
     def erase_user_settings(self, slot): self('uerase %d' % slot)  # 5.33
 
     def console(self, level=5):  # 5.34
@@ -486,20 +506,35 @@ class phantom(object):
 
     @cached_property
     def sock(self): return self.new_socket()
+
     def get_info(self): return self.get('info')  # 4.2
+
     def get_cam(self): return self.get('cam')  # 4.4
+
     def get_auto(self): return self.get('auto')  # 4.5
+
     def get_defc(self): return self.get('defc')  # 4.6
+
     def get_cinfo(self, cine=1): return self.get('c%d' % cine)  # 4.7
+
     def get_cstate(self, cine=1): return self.get('c%d.state' % cine)
+
     def get_irig(self): return self.get('irig')  # 4.9
+
     def get_meta(self): return self.get('meta')  # 4.10
+
     def get_hw(self): return self.get('hw')  # 4.11
+
     def get_video(self): return self.get('video')  # 4.12
+
     def get_eth(self): return self.get('eth')  # 4.13
+
     def get_mag(self): return self.get('mag')  # 4.14
+
     def get_cf(self): return self.get('cf')  # 4.15
+
     def get_usets(self): return self.get('usets')  # 4.16
+
     def get_1394(self): return self.get('1394')
 
     def cstats(self):
@@ -507,9 +542,9 @@ class phantom(object):
         del(cs['c0'])
         maxc = len(cs)
         cs = tuple(
-                self.ph2flags(cs['c%d' % c])
-                for c in range(1, maxc)
-            )
+            self.ph2flags(cs['c%d' % c])
+            for c in range(1, maxc)
+        )
         return cs
 
     def sync_time(self, secs=None):
@@ -584,10 +619,15 @@ class phantom(object):
         return num_cine
 
     def is_ready(self, cine=1): return 'ABL' in self.get_cstate(cine)
+
     def is_active(self, cine=1): return 'ACT' in self.get_cstate(cine)
+
     def is_armed(self, cine=1): return 'WTR' in self.get_cstate(cine)
+
     def is_triggered(self, cine=1): return 'TRG' in self.get_cstate(cine)
+
     def is_stored(self, cine=1): return 'STR' in self.get_cstate(cine)
+
     def is_invalid(self, cine=1): return 'INV' in self.get_cstate(cine)
 
     def wait_armed(self, cine=1, timeout=3):
@@ -666,341 +706,347 @@ except ImportError:
     MDSplus = None
 else:
 
- @MDSplus.with_mdsrecords  # analysis:ignore
- class PHANTOM(MDSplus.Device):  # analysis:ignore
-    class Stream(threading.Thread):
-        class Writer(threading.Thread):
-            def __init__(self, strm, queue):
-                super(PHANTOM.Stream.Writer, self).__init__(
+    @MDSplus.with_mdsrecords  # analysis:ignore
+    class PHANTOM(MDSplus.Device):  # analysis:ignore
+        class Stream(threading.Thread):
+            class Writer(threading.Thread):
+                def __init__(self, strm, queue):
+                    super(PHANTOM.Stream.Writer, self).__init__(
                         name="%s.Writer" % strm.name)
-                self.strm = strm
-                self.queue = queue
-                self.fsttrig = None
-                self.frames = strm.dev.frames
-                self.frames_max = strm.dev.frames_max
-                self.frame_rate = strm.dev.frame_rate
-                self.trigger = strm.dev.trigger
+                    self.strm = strm
+                    self.queue = queue
+                    self.fsttrig = None
+                    self.frames = strm.dev.frames
+                    self.frames_max = strm.dev.frames_max
+                    self.frame_rate = strm.dev.frame_rate
+                    self.trigger = strm.dev.trigger
+
+                def run(self):
+                    def time_rel(ns=1e9):
+                        return MDSplus.DIVIDE(MDSplus.Int64(ns), self.frame_rate)
+                    try:
+                        cur_frame = 0
+                        rng = MDSplus.Range(None, None, time_rel())
+                        while True:
+                            try:
+                                queued = self.queue.get(True, 1)
+                            except queue.Empty:
+                                if self.strm.on:
+                                    continue
+                                break  # measurement done
+                            if queued is None:
+                                break
+                            trigger, frames = queued
+                            if self.fsttrig is None:
+                                self.fsttrig = trigger
+                            trigger = MDSplus.Int64(trigger-self.fsttrig)
+                            trg = MDSplus.ADD(self.trigger, trigger)
+                            first_frame = cur_frame
+                            for ic in range(frames.shape[0]):
+                                dim = MDSplus.ADD(
+                                    trg, time_rel([cur_frame*1e9]))
+                                limit = MDSplus.ADD(
+                                    trg, time_rel(cur_frame*1e9))
+                                data = frames[ic:ic+1]
+                                self.frames.makeSegment(
+                                    limit, limit, dim, data)
+                                cur_frame += 1
+                            last_frame = cur_frame - 1
+                            win = MDSplus.Window(first_frame, last_frame, trg)
+                            start = MDSplus.ADD(trg, time_rel(first_frame*1e9))
+                            end = MDSplus.ADD(trg, time_rel(last_frame*1e9))
+                            dim = MDSplus.Dimension(win, rng)
+                            frames = frames.reshape(
+                                (frames.shape[0], -1)).max(1)
+                            self.frames_max.makeSegment(
+                                start, end, dim, frames)
+                            self.queue.task_done()
+                    except Exception as e:
+                        self.exception = e
+                        traceback.print_exc()
+
+            @staticmethod
+            def update(node, value):
+                value.validation = node.record.data()
+                node.no_write_shot = False
+                node.no_write_model = True
+                node.record = value
+                node.write_once = True
+
+            def __init__(self, dev):
+                super(PHANTOM.Stream, self).__init__(name="%s.Stream" % dev)
+                self.dev = dev.copy()
+                self.lib = phantom(dev.lib._host)
+                self.stopped = threading.Event()
+
+            def stop(self): self.stopped.set()
+
+            @property
+            def on(self): return not self.stopped.is_set()
 
             def run(self):
-                def time_rel(ns=1e9):
-                    return MDSplus.DIVIDE(MDSplus.Int64(ns), self.frame_rate)
                 try:
-                    cur_frame = 0
-                    rng = MDSplus.Range(None, None, time_rel())
-                    while True:
-                        try:
-                            queued = self.queue.get(True, 1)
-                        except queue.Empty:
-                            if self.strm.on:
-                                continue
-                            break  # measurement done
-                        if queued is None:
-                            break
-                        trigger, frames = queued
-                        if self.fsttrig is None:
-                            self.fsttrig = trigger
-                        trigger = MDSplus.Int64(trigger-self.fsttrig)
-                        trg = MDSplus.ADD(self.trigger, trigger)
-                        first_frame = cur_frame
-                        for ic in range(frames.shape[0]):
-                            dim = MDSplus.ADD(trg, time_rel([cur_frame*1e9]))
-                            limit = MDSplus.ADD(trg, time_rel(cur_frame*1e9))
-                            data = frames[ic:ic+1]
-                            self.frames.makeSegment(limit, limit, dim, data)
-                            cur_frame += 1
-                        last_frame = cur_frame - 1
-                        win = MDSplus.Window(first_frame, last_frame, trg)
-                        start = MDSplus.ADD(trg, time_rel(first_frame*1e9))
-                        end = MDSplus.ADD(trg, time_rel(last_frame*1e9))
-                        dim = MDSplus.Dimension(win, rng)
-                        frames = frames.reshape((frames.shape[0], -1)).max(1)
-                        self.frames_max.makeSegment(start, end, dim, frames)
-                        self.queue.task_done()
+                    self.dev.tree.open()
+                    while not self.lib.is_stored(1):
+                        if not self.on:
+                            return
+                        time.sleep(.1)
+                    cinfo = self.lib.get_cinfo()
+                    self.dev.store_cinfo(cinfo)
+                    rate = float(cinfo['rate'])
+                    self.update(self.dev.frame_rate,
+                                (MDSplus.Float64(rate).setUnits('Hz')))
+                    self.update(self.dev.exposure,
+                                (MDSplus.Int32(cinfo['exp']).setUnits('ns')))
+                    num_cine = len(self.lib.cstats())
+                    Q = queue.Queue(30)
+                    writer = self.Writer(self, Q)
+                    writer.start()
+                    try:
+                        for c in range(1, num_cine+1):
+                            while not self.lib.is_triggered(c):
+                                if not self.on:
+                                    return  # end of measurement
+                                time.sleep(.1)
+                            self.lib.wait_stored(c)
+                            for trig, imgs in self.lib.read_images(
+                                    0, cine=c, debug=self.dev.debug,
+                                    port=self.dev._host_port):
+                                while writer.is_alive():
+                                    try:
+                                        Q.put((trig, imgs), True, 1)
+                                    except queue.Full:
+                                        continue
+                                    else:
+                                        break
+                                else:
+                                    break
+                    finally:
+                        Q.put(None)  # indicate last frame to end thread
+                        writer.join()
+                        if hasattr(writer, "exception"):
+                            self.exception = writer.exception
                 except Exception as e:
                     self.exception = e
                     traceback.print_exc()
 
-        @staticmethod
-        def update(node, value):
-            value.validation = node.record.data()
-            node.no_write_shot = False
-            node.no_write_model = True
-            node.record = value
-            node.write_once = True
+        parts = [  # Prepare init action collection structure
+            dict(
+                path=':ACTIONSERVER',
+                type='TEXT',
+                options=('no_write_shot', 'write_once'),
+            ),
+            # Init-phase action: configure Phantom camera
+            dict(
+                path=':ACTIONSERVER:INIT',
+                type='ACTION',
+                options=('no_write_shot', 'write_once'),
+                valueExpr=('Action('
+                           'Dispatch(head.ACTIONSERVER, "INIT", 50),'
+                           'Method(None, "init", head))'),
+            ),
+            dict(
+                path=':ACTIONSERVER:ARM',
+                type='ACTION',
+                options=('no_write_shot', 'write_once'),
+                valueExpr=('Action('
+                           'Dispatch(head.ACTIONSERVER, "ARM", 50),'
+                           'Method(None, "arm", head))'),
+            ),
+            dict(
+                path=':ACTIONSERVER:SOFT_TRIGGER',
+                type='ACTION',
+                options=('no_write_shot', 'write_once', 'disabled'),
+                valueExpr=('Action('
+                           'Dispatch(head.ACTIONSERVER, "PULSE", 1),'
+                           'Method(None, "soft_trigger", head))'),
+            ),
+            # Store-phase action: save video to local tree
+            dict(
+                path=':ACTIONSERVER:STORE',
+                type='ACTION',
+                options=('no_write_shot', 'write_once'),
+                valueExpr=('Action('
+                           'Dispatch(head.ACTIONSERVER, "STORE", 50),'
+                           'Method(None, "store", head))'),
+            ),
+            dict(
+                path=':ACTIONSERVER:DEINIT',
+                type='ACTION',
+                options=('no_write_shot', 'write_once'),
+                valueExpr=('Action('
+                           'Dispatch(head.ACTIONSERVER, "DEINIT", 50),'
+                           'Method(None, "deinit", head))'),
+            ),
+            # Create rest of nodes
+            dict(
+                path=':FRAMES',
+                type='SIGNAL',
+                options=('no_write_model', 'write_once', 'compress_segments'),
+            ),
+            dict(
+                path=':FRAMES:MAX',
+                type='SIGNAL',
+                options=('no_write_model', 'write_once', 'compress_segments'),
+            ),
+            dict(
+                path=':FRAMES:META',
+                type='TEXT',
+                options=('no_write_model', 'write_once'),
+                filter=json.loads,
+            ),
+            dict(
+                path=':HOST',
+                type='TEXT',
+                options=('no_write_shot', ),
+                filter=str,
+                default=None,
+            ),
+            dict(
+                path=':HOST:PORT',
+                type='NUMERIC',
+                options=('no_write_shot', ),
+                filter=int,
+                default=0,
+            ),
+            dict(
+                path=':TRIGGER',
+                type='NUMERIC',
+                valueExpr='Int64(0).setUnits("ns")',
+                options=('no_write_shot', ),
+                filter=int,
+            ),
+            dict(
+                path=':RESOLUTION',
+                type='NUMERIC',
+                valueExpr='Uint16Array([256, 128])',
+                options=('no_write_shot', ),
+                help='frame dimension in [W, H]',
+                filter=[int],
+            ),
+            dict(
+                path=':NUM_FRAMES',
+                type='NUMERIC',
+                value=1000,
+                options=('no_write_shot', ),
+                filter=int,
+            ),
+            dict(
+                path=':FRAME_RATE',
+                type='NUMERIC',
+                valueExpr='Int32(10000).setUnits("Hz")',
+                options=('no_write_shot', ),
+                filter=int,
+            ),
+            dict(
+                path=':EXPOSURE',
+                type='NUMERIC',
+                valueExpr='Int32(100000).setUnits("ns")',
+                options=('no_write_shot', ),
+                help='Exposure time in ns caps automatically based on frame_rate',
+                filter=int,
+            ),
+        ]
 
-        def __init__(self, dev):
-            super(PHANTOM.Stream, self).__init__(name="%s.Stream" % dev)
-            self.dev = dev.copy()
-            self.lib = phantom(dev.lib._host)
-            self.stopped = threading.Event()
+        def store_cinfo(self, cinfo):
+            """Store cinfo in tree. as method so it can be redirected."""
+            self.frames_meta = json.dumps(cinfo)
 
-        def stop(self): self.stopped.set()
         @property
-        def on(self): return not self.stopped.is_set()
+        def lib(self):
+            """Cache phantom interface. Clears on deinit."""
+            pers = self.persistent
+            if pers is None:
+                pers = self.persistent = dict(
+                    lib=phantom(self._host),
+                )
+            return pers['lib']
 
-        def run(self):
+        def init(self):
+            """Run the INIT action."""
+            if self.debug:
+                dprint("started init")
+            w, h = self._resolution
             try:
-                self.dev.tree.open()
-                while not self.lib.is_stored(1):
-                    if not self.on:
-                        return
-                    time.sleep(.1)
-                cinfo = self.lib.get_cinfo()
-                self.dev.store_cinfo(cinfo)
-                rate = float(cinfo['rate'])
-                self.update(self.dev.frame_rate,
-                            (MDSplus.Float64(rate).setUnits('Hz')))
-                self.update(self.dev.exposure,
-                            (MDSplus.Int32(cinfo['exp']).setUnits('ns')))
-                num_cine = len(self.lib.cstats())
-                Q = queue.Queue(30)
-                writer = self.Writer(self, Q)
-                writer.start()
-                try:
-                    for c in range(1, num_cine+1):
-                        while not self.lib.is_triggered(c):
-                            if not self.on:
-                                return  # end of measurement
-                            time.sleep(.1)
-                        self.lib.wait_stored(c)
-                        for trig, imgs in self.lib.read_images(
-                                0, cine=c, debug=self.dev.debug,
-                                port=self.dev._host_port):
-                            while writer.is_alive():
-                                try:
-                                    Q.put((trig, imgs), True, 1)
-                                except queue.Full:
-                                    continue
-                                else:
-                                    break
-                            else:
-                                break
-                finally:
-                    Q.put(None)  # indicate last frame to end thread
-                    writer.join()
-                    if hasattr(writer, "exception"):
-                        self.exception = writer.exception
-            except Exception as e:
-                self.exception = e
-                traceback.print_exc()
-
-    parts = [  # Prepare init action collection structure
-        dict(
-            path=':ACTIONSERVER',
-            type='TEXT',
-            options=('no_write_shot', 'write_once'),
-        ),
-        # Init-phase action: configure Phantom camera
-        dict(
-            path=':ACTIONSERVER:INIT',
-            type='ACTION',
-            options=('no_write_shot', 'write_once'),
-            valueExpr=('Action('
-                       'Dispatch(head.ACTIONSERVER, "INIT", 50),'
-                       'Method(None, "init", head))'),
-        ),
-        dict(
-            path=':ACTIONSERVER:ARM',
-            type='ACTION',
-            options=('no_write_shot', 'write_once'),
-            valueExpr=('Action('
-                       'Dispatch(head.ACTIONSERVER, "ARM", 50),'
-                       'Method(None, "arm", head))'),
-        ),
-        dict(
-            path=':ACTIONSERVER:SOFT_TRIGGER',
-            type='ACTION',
-            options=('no_write_shot', 'write_once', 'disabled'),
-            valueExpr=('Action('
-                       'Dispatch(head.ACTIONSERVER, "PULSE", 1),'
-                       'Method(None, "soft_trigger", head))'),
-        ),
-        # Store-phase action: save video to local tree
-        dict(
-            path=':ACTIONSERVER:STORE',
-            type='ACTION',
-            options=('no_write_shot', 'write_once'),
-            valueExpr=('Action('
-                       'Dispatch(head.ACTIONSERVER, "STORE", 50),'
-                       'Method(None, "store", head))'),
-        ),
-        dict(
-            path=':ACTIONSERVER:DEINIT',
-            type='ACTION',
-            options=('no_write_shot', 'write_once'),
-            valueExpr=('Action('
-                       'Dispatch(head.ACTIONSERVER, "DEINIT", 50),'
-                       'Method(None, "deinit", head))'),
-        ),
-        # Create rest of nodes
-        dict(
-            path=':FRAMES',
-            type='SIGNAL',
-            options=('no_write_model', 'write_once', 'compress_segments'),
-        ),
-        dict(
-            path=':FRAMES:MAX',
-            type='SIGNAL',
-            options=('no_write_model', 'write_once', 'compress_segments'),
-        ),
-        dict(
-            path=':FRAMES:META',
-            type='TEXT',
-            options=('no_write_model', 'write_once'),
-            filter=json.loads,
-        ),
-        dict(
-            path=':HOST',
-            type='TEXT',
-            options=('no_write_shot', ),
-            filter=str,
-            default=None,
-        ),
-        dict(
-            path=':HOST:PORT',
-            type='NUMERIC',
-            options=('no_write_shot', ),
-            filter=int,
-            default=0,
-        ),
-        dict(
-            path=':TRIGGER',
-            type='NUMERIC',
-            valueExpr='Int64(0).setUnits("ns")',
-            options=('no_write_shot', ),
-            filter=int,
-        ),
-        dict(
-            path=':RESOLUTION',
-            type='NUMERIC',
-            valueExpr='Uint16Array([256, 128])',
-            options=('no_write_shot', ),
-            help='frame dimension in [W, H]',
-            filter=[int],
-        ),
-        dict(
-            path=':NUM_FRAMES',
-            type='NUMERIC',
-            value=1000,
-            options=('no_write_shot', ),
-            filter=int,
-        ),
-        dict(
-            path=':FRAME_RATE',
-            type='NUMERIC',
-            valueExpr='Int32(10000).setUnits("Hz")',
-            options=('no_write_shot', ),
-            filter=int,
-        ),
-        dict(
-            path=':EXPOSURE',
-            type='NUMERIC',
-            valueExpr='Int32(100000).setUnits("ns")',
-            options=('no_write_shot', ),
-            help='Exposure time in ns caps automatically based on frame_rate',
-            filter=int,
-        ),
-    ]
-
-    def store_cinfo(self, cinfo):
-        """Store cinfo in tree. as method so it can be redirected."""
-        self.frames_meta = json.dumps(cinfo)
-
-    @property
-    def lib(self):
-        """Cache phantom interface. Clears on deinit."""
-        pers = self.persistent
-        if pers is None:
-            pers = self.persistent = dict(
-                lib=phantom(self._host),
-            )
-        return pers['lib']
-
-    def init(self):
-        """Run the INIT action."""
-        if self.debug:
-            dprint("started init")
-        w, h = self._resolution
-        try:
-            self.lib.init(
+                self.lib.init(
                     self._num_frames, self._frame_rate, self._exposure, w, h)
-        except PhantomExcConnect:
-            raise MDSplus.DevOFFLINE
-        except PhantomExcTimeout:
-            raise MDSplus.DevCOMM_ERROR
-        except PhantomExc:
-            raise MDSplus.DevERROR_DOING_INIT
+            except PhantomExcConnect:
+                raise MDSplus.DevOFFLINE
+            except PhantomExcTimeout:
+                raise MDSplus.DevCOMM_ERROR
+            except PhantomExc:
+                raise MDSplus.DevERROR_DOING_INIT
 
-    def arm(self):
-        """Run the ARM action."""
-        if self.debug:
-            print("started arm")
-        pers = self.persistent
-        if pers is not None:
-            stream = pers.get('stream', None)
-            if stream is not None:
-                raise MDSplus.DevUNKOWN_STATE
-        try:
-            self.lib.arm()
-            pers['stream'] = stream = self.Stream(self)
-            stream.start()
-        except PhantomExcConnect:
-            raise MDSplus.DevOFFLINE
-        except PhantomExcTimeout:
-            raise MDSplus.DevCOMM_ERROR
-        except PhantomExc:
-            raise MDSplus.DevINV_SETUP
-
-    def soft_trigger(self):
-        """Run the SOFT_TRIGGER action."""
-        if self.debug:
-            dprint("started soft_trigger")
-        try:
-            self.lib.soft_trigger()
-        except PhantomExcConnect:
-            raise MDSplus.DevOFFLINE
-        except PhantomExcTimeout:
-            raise MDSplus.DevCOMM_ERROR
-        except PhantomExc:
-            raise MDSplus.DevTRIGGER_FAILED
-
-    def store(self):
-        """Run the STORE action."""
-        pers = self.persistent
-        if pers is None:
-            raise MDSplus.DevINV_SETUP
-        try:
-            stream = pers.get('stream', None)
-            if stream is not None:
-                try:
-                    stream.stop()
-                    while stream.is_alive():
-                        stream.join(1)
-                    if hasattr(stream, "exception"):
-                        raise stream.exception
-                finally:
-                    del(pers['stream'])
-        except PhantomExcConnect:
-            raise MDSplus.DevOFFLINE
-        except PhantomExcNotTriggered:
-            raise MDSplus.DevNOT_TRIGGERED
-        except PhantomExcTimeout:
-            raise MDSplus.DevTRIGGERED_NOT_STORED
-        except PhantomExc:
-            raise MDSplus.DevCOMM_ERROR
-
-    def deinit(self):
-        """Run the DEINIT action."""
-        pers = self.persistent
-        if pers is not None:
+        def arm(self):
+            """Run the ARM action."""
+            if self.debug:
+                print("started arm")
+            pers = self.persistent
+            if pers is not None:
+                stream = pers.get('stream', None)
+                if stream is not None:
+                    raise MDSplus.DevUNKOWN_STATE
             try:
+                self.lib.arm()
+                pers['stream'] = stream = self.Stream(self)
+                stream.start()
+            except PhantomExcConnect:
+                raise MDSplus.DevOFFLINE
+            except PhantomExcTimeout:
+                raise MDSplus.DevCOMM_ERROR
+            except PhantomExc:
+                raise MDSplus.DevINV_SETUP
+
+        def soft_trigger(self):
+            """Run the SOFT_TRIGGER action."""
+            if self.debug:
+                dprint("started soft_trigger")
+            try:
+                self.lib.soft_trigger()
+            except PhantomExcConnect:
+                raise MDSplus.DevOFFLINE
+            except PhantomExcTimeout:
+                raise MDSplus.DevCOMM_ERROR
+            except PhantomExc:
+                raise MDSplus.DevTRIGGER_FAILED
+
+        def store(self):
+            """Run the STORE action."""
+            pers = self.persistent
+            if pers is None:
+                raise MDSplus.DevINV_SETUP
+            try:
+                stream = pers.get('stream', None)
+                if stream is not None:
+                    try:
+                        stream.stop()
+                        while stream.is_alive():
+                            stream.join(1)
+                        if hasattr(stream, "exception"):
+                            raise stream.exception
+                    finally:
+                        del(pers['stream'])
+            except PhantomExcConnect:
+                raise MDSplus.DevOFFLINE
+            except PhantomExcNotTriggered:
+                raise MDSplus.DevNOT_TRIGGERED
+            except PhantomExcTimeout:
+                raise MDSplus.DevTRIGGERED_NOT_STORED
+            except PhantomExc:
+                raise MDSplus.DevCOMM_ERROR
+
+        def deinit(self):
+            """Run the DEINIT action."""
+            pers = self.persistent
+            if pers is not None:
                 try:
-                    self.store()
+                    try:
+                        self.store()
+                    finally:
+                        lib = pers['lib']
+                        del(lib.sock)
                 finally:
-                    lib = pers['lib']
-                    del(lib.sock)
-            finally:
-                self.persistent = None
+                    self.persistent = None
 
 
 def test_single_cine():
