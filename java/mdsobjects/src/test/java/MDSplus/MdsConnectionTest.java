@@ -19,6 +19,7 @@ public class MdsConnectionTest
 	public static void setUpBeforeClass() throws Exception
 	{
 		for (; port < 8800; port++)
+		{
 			try
 			{
 				new DatagramSocket(port).close();
@@ -40,6 +41,7 @@ public class MdsConnectionTest
 			}
 			catch (final SocketException exc)
 			{}
+		}
 		System.out.println("Cannot find free port!");
 		System.exit(6);
 	}
@@ -72,7 +74,7 @@ public class MdsConnectionTest
 			tree.createPulse(1);
 			MDSplus.Connection c = null;
 			int count = 0;
-			System.out.print("connecting ... ");
+			System.out.println("connecting to localhost:" + port + " ... ");
 			for (;;)
 			{
 				try
@@ -83,16 +85,15 @@ public class MdsConnectionTest
 				{
 					if (count > 3)
 					{
-						System.out.print("abort!");
+						System.out.println("abort!");
 					}
 					else
 					{
-						System.out.print("retry ... ");
+						System.out.println("retry ... ");
 						Thread.sleep(1000);
 						count++;
 					}
 				}
-				break;
 			}
 			Assert.assertFalse("Cannot connect to mdsip server", c == null || !c.isConnected);
 			System.out.println("connected!");
