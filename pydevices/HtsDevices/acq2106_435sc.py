@@ -62,20 +62,20 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             slot.SC32_GAIN_COMMIT = 1
             print("GAINs Committed for site {}".format(site))
 
-        # For testing purpose only. Set CLKDIV knowing the desired FREQ:
-        # mb_freq = uut.s0.SIG_CLK_MB_FREQ
-        mb_freq = 20000000.0 # 20 MHz MB clock
-        uut.s1.CLKDIV = "{}".format(mb_freq / self.freq.data())
+        # For testing purpose only. Set CLKDIV knowing that:
+        # a special config in /mnt/local/rc.user gives a SR=40KHz at bootime:
+        # WR additions for WRCLK 20M
+        # cp /mnt/local/si5326_31M25-20M48.txt /etc/si5326.d/
+        # /usr/local/CARE/WR/set_clk_WR 20M48
+        # 20.48MHz / 512 => 40.0kHz
+        # To get a SR=20KHz, then:
+
+        uut.s1.CLKDIV = '2'
         
         super(_ACQ2106_435SC, self).init()
 
         # For testing purpose only. Set trigger source to external hard trigger:
         uut.s0.SIG_SRC_TRG_0 = 'EXT'
-
-        # For testing purpose only. Checking the final SR of the device
-        clkdiv  = uut.s1.CLKDIV
-        s1_freq = uut.s0.SIG_CLK_S1_FREQ
-        print("SR = {}".format(s1_freq))
 
     def store(self):
         uut = self.getUUT()
