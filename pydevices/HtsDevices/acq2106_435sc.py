@@ -68,8 +68,9 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         # cp /mnt/local/si5326_31M25-20M48.txt /etc/si5326.d/
         # /usr/local/CARE/WR/set_clk_WR 20M48
         # 20.48MHz / 512 => 40.0kHz
+        # => uut.s1.CLKDIV = '1'
+        
         # To get a SR=20KHz, then:
-
         uut.s1.CLKDIV = '2'
         
         super(_ACQ2106_435SC, self).init()
