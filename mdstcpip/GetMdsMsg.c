@@ -101,7 +101,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec) {
         *status = SsINTERNAL;
         return NULL;
       }
-      unsigned long dlen = msglen - sizeof(MsgHdr);
+      unsigned long dlen;
       msg = malloc(msglen);
       msg->h = header;
       *status = GetBytesTO(c, msg->bytes, msglen - sizeof(MsgHdr), 1000);
