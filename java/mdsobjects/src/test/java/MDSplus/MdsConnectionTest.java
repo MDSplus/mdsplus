@@ -86,6 +86,7 @@ public class MdsConnectionTest
 					if (count > 3)
 					{
 						System.out.println("abort!");
+						break;
 					}
 					else
 					{
