@@ -62,6 +62,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             slot.SC32_GAIN_COMMIT = 1
             print("GAINs Committed for site {}".format(site))
 
+        # TODO: Choose between possible SR
         # For testing purpose only. Set CLKDIV knowing that:
         # a special config in /mnt/local/rc.user gives a SR=40KHz at bootime:
         # WR additions for WRCLK 20M
@@ -69,14 +70,16 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         # /usr/local/CARE/WR/set_clk_WR 20M48
         # 20.48MHz / 512 => 40.0kHz
         # => uut.s1.CLKDIV = '1'
-        
+        # To get a SR=40KHz, then:
+        #uut.s1.CLKDIV = '1'
         # To get a SR=20KHz, then:
-        uut.s1.CLKDIV = '2'
+        #uut.s1.CLKDIV = '2'
         
         super(_ACQ2106_435SC, self).init()
 
         # For testing purpose only. Set trigger source to external hard trigger:
         uut.s0.SIG_SRC_TRG_0 = 'EXT'
+    INIT=init
 
     def store(self):
         uut = self.getUUT()
