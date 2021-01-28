@@ -73,31 +73,29 @@ public class MdsConnectionTest
 			tree = new MDSplus.Tree("java_test", -1);
 			tree.createPulse(1);
 			MDSplus.Connection c = null;
-			int count = 0;
 			System.out.println("connecting to localhost:" + port + " ... ");
-			for (;;)
+			for (int count = 0; count < 3; ++count)
 			{
 				try
 				{
 					c = new MDSplus.Connection("localhost:" + port);
+					System.out.println("connected!");
+					
+					// Success, stop trying
+					break;
 				}
 				catch (final Exception exc)
 				{
-					if (count > 3)
-					{
-						System.out.println("abort!");
-						break;
-					}
-					else
-					{
-						System.out.println("retry ... ");
-						Thread.sleep(1000);
-						count++;
-					}
+					exc.printStackTrace();
+					
+					System.out.println("retry ... ");
+					Thread.sleep(1000);
+					
+					// Failure, keep trying
+					continue;
 				}
 			}
 			Assert.assertFalse("Cannot connect to mdsip server", c == null || !c.isConnected);
-			System.out.println("connected!");
 			MDSplus.Data data = c.get("zero([1,1,1,1,1,1,1,1],1)");
 			Assert.assertEquals("[[[[[[[[0]]]]]]]]", data.toString());
 			c.openTree("java_test", 1);
