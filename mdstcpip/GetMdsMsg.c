@@ -101,13 +101,14 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec) {
         *status = SsINTERNAL;
         return NULL;
       }
-      unsigned long dlen = msglen - sizeof(MsgHdr);
+      unsigned long dlen;
       msg = malloc(msglen);
       msg->h = header;
       *status = GetBytesTO(c, msg->bytes, msglen - sizeof(MsgHdr), 1000);
       if (IS_OK(*status) && IsCompressed(header.client_type)) {
         Message *m;
         memcpy(&msglen, msg->bytes, 4);
+        dlen = msglen - sizeof(MsgHdr);
         if (Endian(header.client_type) != Endian(ClientType()))
           FlipBytes(4, (char *)&msglen);
         m = malloc(msglen);
