@@ -1,16 +1,27 @@
+Table of Content
+
+A) Introduction
+B) Installing MDSplus using packages/kits
+C) Building MDSplus using Docker
+D) Building MDSplus using configure and make
+E) Special Notes
+
+-----------------------------------------------------------------------------------
+A) Introduction
+
 To install or build/install MDSplus on unix systems, you will need to obtain the
-MDSplus distribution from the MDSplus Github repository (see Section C), or you 
-can download the package manually (see Section A).
+MDSplus distribution from the MDSplus Github repository (see Section D), or you 
+can download the package manually (see Section B).
 
 We recommend downloading the kit as a way to install MDSplus. 
 
 If building from source is required, then, we recommend:
-1- building MDsplus using a Docker image (see Section B).
-2- or, using bootstrap/configure/make (see Section C-2)
+1- building MDsplus using a Docker image (see Section C).
+2- or, using bootstrap/configure/make (see Section D-2)
 
 
----------------------------------------------------------------------------
-A) Installing MDSplus using the corresponding packages/kits
+-----------------------------------------------------------------------------------
+B) Installing MDSplus using packages/kits
 
 This is the prefer option when installing MDSplus. In Section B and C, MDSplus 
 can be build and installed from source.
@@ -22,18 +33,20 @@ Select the desire OS type, e.g for Ubuntu 18 or RHEL8:
 http://www.mdsplus.org/dist/Ubuntu18/
 http://www.mdsplus.org/dist/rhel8/
 
-Select the branch, i.e. stable or alpha and its architecture:
+Select the branch, i.e. stable or alpha and your system architecture:
 http://www.mdsplus.org/dist/Ubuntu18/alpha/DEBS/amd64/
 http://www.mdsplus.org/dist/rhel8/alpha/
 
----------------------------------------------------------------------------
-B) Building MDSplus using Docker
+
+-----------------------------------------------------------------------------------
+C) Building MDSplus using Docker
 
 The recommended way for building MDSplus from source is to use a Docker container.
 On Linux systems that support docker you have the ability to build from MDSplus 
 sources for all the supported platforms except for MacOSX. 
-Once you have the sources you can execute the following command to build a installer 
-for the operating system of your choice:
+
+Once you have the sources (see Section D-1) you can execute the following command to 
+build a installer for the operating system of your choice:
 
 $ mkdir ~/build
 $ cd ~/build
@@ -51,17 +64,17 @@ to build MDSplus for that platform. The build results should be in
 subdirectories of the build directory and will include a full buildroot used 
 for constructing installers and the new package installers. 
 You do not need anything else installed on your system beside docker using 
-this method as all the libraries, compilers etc are provided in the docker images 
+this method as all the libraries, compilers etc, are provided in the docker images 
 which are used to build MDSplus.
 
 
----------------------------------------------------------------------------
-C) Building MDSplus using configure and make
+-----------------------------------------------------------------------------------
+D) Building MDSplus using configure and make
 
 The MDSplus source code is maintained on Github. 
 If you are interested in building MDSplus from the sources we recommend 
 downloading a tarball, or a zip file from there, or clonning the Github
-repository.
+repository:
 
 1) Downloading the tarball/zip file:
 
@@ -83,8 +96,8 @@ $ git clone https://github.com/MDSplus/mdsplus.git
 
 2) Building MDSplus
 
--> Make a build directory in your system:
-$ mkdir build
+-> Make a build directory in your system, e.g:
+$ mkdir ~/build
 
 -> Confirm that you have installed the following software in your system:
 Automake:
@@ -115,14 +128,15 @@ $ sudo apt-get install -y libreadline-dev
 $ sudo apt-get install libmotif-dev
 
 -> cd to the MDSplus directory and execute:
+$ cd ~/build
 $ ./bootstrap
 
 -> cd to the build directory and execute:
-$ ../mdsplus/configure
+$ ~/mdsplus-src-dir/configure
 $ make
 
----------------------------------------------------------------------------
-Special Notes
+-----------------------------------------------------------------------------------
+E) Special Notes
 
 For D3D sites that want to build the MDSplus/d3d ptdata interface you must
 first define an envionment variable D3DLIB_PATH set to the directory
@@ -166,6 +180,7 @@ replacing the text inside the brackets (and the brackets) with the
 location of the real Motif files.
 
 SYBASE Open/CLient - IDL database connection
+
 Sites with IDL, SYBASE Open/CLient libraries and Microsoft SQLSERVER
 databases can use idlsql library for database connectivity.  The idl
 procedure in idl/Logbook/dbinfo.pro should be edited to reflect the
