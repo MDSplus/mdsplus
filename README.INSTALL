@@ -52,8 +52,8 @@ $ mkdir ~/build
 $ cd ~/build
 $ ~/mdsplus-src-dir/deploy/build.sh --os=os-name --release
 
-where os-name would be something like fc25 or ubuntu16 etc. Please, see the comments at 
-the top of that script for details.
+where os-name would be something like fc25 or ubuntu16 etc. Please, see the comments 
+at the top of that script for details.
 
 The available choices can be found by doing:
 
@@ -90,7 +90,7 @@ wget https://github.com/MDSplus/mdsplus/archive/stable.tar.gz
 
 -> expand the zip or tar.
 
-Or MDSplus repository can also be cloned from Github using:
+Or, MDSplus repository can also be cloned from Github using:
 
 $ git clone https://github.com/MDSplus/mdsplus.git
 
@@ -134,6 +134,7 @@ $ ./bootstrap
 -> cd to the build directory and execute:
 $ ~/mdsplus-src-dir/configure
 $ make
+
 
 -----------------------------------------------------------------------------------
 E) Special Notes
