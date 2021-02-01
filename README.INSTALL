@@ -48,16 +48,16 @@ sources for all the supported platforms except for MacOSX.
 Once you have the sources (see Section D-1) you can execute the following command to 
 build an installer for the operating system of your choice:
 
-$ mkdir ~/build
-$ cd ~/build
-$ ~/mdsplus/deploy/build.sh --os=os-name --release
+$ mkdir build
+$ cd build
+$ ../mdsplus/deploy/build.sh --os=os-name --release
 
 where os-name would be for example fc25 or ubuntu16. Please, see the comments 
 at the top of that script for details.
 
 The available choices can be found by doing:
 
-$ ls ~/mdsplus/deploy/os/*.opts
+$ ls mdsplus/deploy/os/*.opts
 
 This build.sh script will pull the necessary docker image from dockerhub.com 
 to build MDSplus for that platform. The build results should be in 
