@@ -46,18 +46,18 @@ On Linux systems that support docker you have the ability to build from MDSplus
 sources for all the supported platforms except for MacOSX. 
 
 Once you have the sources (see Section D-1) you can execute the following command to 
-build a installer for the operating system of your choice:
+build an installer for the operating system of your choice:
 
 $ mkdir ~/build
 $ cd ~/build
-$ ~/mdsplus-src-dir/deploy/build.sh --os=os-name --release
+$ ~/mdsplus/deploy/build.sh --os=os-name --release
 
-where os-name would be something like fc25 or ubuntu16 etc. Please, see the comments 
+where os-name would be for example fc25 or ubuntu16. Please, see the comments 
 at the top of that script for details.
 
 The available choices can be found by doing:
 
-$ ls ~/mdsplus-src-dir/deploy/os/*.opts
+$ ls ~/mdsplus/deploy/os/*.opts
 
 This build.sh script will pull the necessary docker image from dockerhub.com 
 to build MDSplus for that platform. The build results should be in 
@@ -96,10 +96,8 @@ $ git clone https://github.com/MDSplus/mdsplus.git
 
 2) Building MDSplus
 
--> Make a build directory in your system, e.g:
-$ mkdir ~/build
+-> Firstly, confirm that you have installed the following softwares in your system:
 
--> Confirm that you have installed the following software in your system:
 Automake:
 $ sudo apt install automake
 
@@ -127,12 +125,18 @@ $ sudo apt-get install -y libxml2-dev
 $ sudo apt-get install -y libreadline-dev
 $ sudo apt-get install libmotif-dev
 
--> cd to the MDSplus directory and execute:
-$ cd ~/build
+-> Then, cd to the MDSplus directory just cloned or untared:
+$ cd mdsplus
+
+-> Execute the following script:
 $ ./bootstrap
 
--> cd to the build directory and execute:
-$ ~/mdsplus-src-dir/configure
+-> Make a build directory, e.g:
+$ mkdir ../build
+
+-> cd to the build directory and execute the MDSplus configure script, followed by make:
+$ cd ../build
+$ ../mdsplus/configure
 $ make
 
 
@@ -171,7 +175,6 @@ and the MDSplus X applications will not build or run using LessTif package.
 
 To build on a system with LessTif installed do the following:
 
-
 setenv LD_LIBRARY_PATH [motif-lib-directory]\:$LD_LIBRARY_PATH
 setenv UILPATH [motif-bin-directory-where-uil-image-is]
 ./configure --x-libraries=[motif-library-directory]  \
@@ -192,8 +195,10 @@ file $HOME/xxx.sybase_login, where xxx is the name of the sybase host,
 if it finds it and can read it, it sends the first line as the username
 and the second for the password, if not it sends $USER and a default
 password.
+
 NOTE - the environment variable SYBASE must point at the sybase distribution
 in order for their libraries to function.
+
 NOTE - if the sybase distribution is not /usr/local/sybase, configure
 will not find the distribution unless you first set the environment
 variable SYBASE to point the the distribution directory.
