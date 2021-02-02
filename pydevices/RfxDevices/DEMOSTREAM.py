@@ -1,8 +1,8 @@
-from MDSplus import Device, Int16Array, Float64, Range, Event
+from MDSplus import Device, Int16Array, Float64, Range, Event, Float32
 from threading import Thread
-from ctypes import CDLL, c_int, c_char_p, c_short, byref
+from ctypes import CDLL, c_int, c_char_p, c_short, byref, c_float
 from datetime import datetime
-
+import time
 
 class DEMOSTREAM(Device):
     """A Demo 1 Channel, 16 bit stream digitizer"""
@@ -40,8 +40,7 @@ class DEMOSTREAM(Device):
 
 # AsynchStore class
     class AsynchStore(Thread):
-
-        def configure(self, deviceLib, addr, period, dataNode, triggerTime, event=None):
+        def configure(self, deviceLib, addr, period, dataNode, numChunkSamples,triggerTime, event=None):
             self.deviceLib = deviceLib
             self.addr = addr
             self.dataNode = dataNode
@@ -49,6 +48,7 @@ class DEMOSTREAM(Device):
             self.currTime = triggerTime
             self.stopped = False
             self.prevSecond = 0
+            self.NUM_CHUNK_SAMPLES = numChunkSamples
 
         def run(self):
             DataArray = c_short * self.NUM_CHUNK_SAMPLES
@@ -61,6 +61,8 @@ class DEMOSTREAM(Device):
                 if status == -1:
                     print ('Acquisition Failed')
                     return
+
+                Event.stream(0, 'demostream_chan', Float32(self.currTime), Float32(rawChan[0]))
                 dataArr = Int16Array(rawChan)
                 startTime = Float64(self.currTime)
                 endTime = Float64(
@@ -69,7 +71,7 @@ class DEMOSTREAM(Device):
                 self.dataNode.makeSegment(startTime, endTime, dim, dataArr)
                 self.currTime += self.period * self.NUM_CHUNK_SAMPLES
 
-                currSecond = datetime.now().second
+                currSecond = time.time()
                 if currSecond > self.prevSecond + 2:
                     Event.setevent('DEMOSTREAM_READY')
                     self.prevSecond = currSecond
@@ -108,8 +110,10 @@ class DEMOSTREAM(Device):
 
         self.worker = self.AsynchStore()
         self.worker.daemon = True
-        self.worker.configure(deviceLib, addr, period, self.sig, trigTime)
+        self.worker.configure(deviceLib, addr, period, self.sig, self.NUM_CHUNK_SAMPLES, trigTime)
         self.saveWorker()
+        
+        status = deviceLib.initializeStream(c_char_p(addr), c_float(frequency), c_float(trigTime))
         self.worker.start()
         return 1
 
