@@ -1,0 +1,91 @@
+*******************Installation of MDSplus grafana plugings*****************
+
+Two MDSPlus aware data plugings are available for grafana: 
+
+- mdsip  - For displaying MDSplus signals *********with absolute time*********
+- stream - For displaying signals send via MDSplus streaming
+
+Required steps for plugins installation:
+
+1) Install grafana on a system that can receive MDSplus streams. Only mdsplus/nodejs is required on such system.
+    see https://grafana.com/docs/grafana/latest/installation/rpm/
+    
+2) Install nodeJS 12.x 
+    see https://nodejs.org/en/blog/release/v12.13.0/
+    
+3) Install yarn
+    npm install --global yarn
+    
+    
+4) Create a directory named grafana-plugins
+
+5) Set the 'plugins' property in the grafana configuration file (/etc/grafana/grafana.ini) to the 
+   path of the newly created grafana-plugins directory
+   
+   [paths]
+   plugins = "/path/to/grafana-plugins"
+   
+   
+6) In the plugin directory create mdsip and streams plugins from template with the following commands:
+
+    npx @grafana/toolkit plugin:create mdsip
+    npx @grafana/toolkit plugin:create streams
+    
+7)  In each created directory (mdsip and streams), download necessary dependencies
+    
+    yarn install
+    
+    when prompted during installation:
+    1) select 'Datasource Plugin'
+    2) Use default value (mdsip/streams) as Plugin name
+    3) type mds for Organization
+    4) type return for all the other requested fields
+    
+    
+8) copy files from MDSplus distribution 
+    
+    cp /opt/mdsplus/nodejs/grafana-support/mdsip/*     <grafana-plugins-path>/mdsip/src
+    cp /opt/mdsplus/nodejs/grafana-support/streams/*   <grafana-plugins-path>/streams/src
+    
+9) In each created directory (mdsip and streams), build the plugin
+
+    yarn dev
+    
+10) Restart grafana
+
+   /bin/systemctl restart grafana-server.service
+
+    
+11) In /opt/mdsplus/nodejs launch Node js program mds-bridge
+
+    node mds-bridge
+    
+    This program starts a WebSocket server that is used by the grafana pugins (running at the web 
+    browser side) to access MDSplus data and streams. By defaulti, the WebSocket server listens at port 8020, but 
+    the port number can be changed in fil mds-bridge.json. Currently, the following configuration parameters can 
+    be defined in mds-bridge.json:
+      - port : the port at which the WebServer is listening
+      - refresh : the refresh interval (in ms) for the stream data source. The default is 2000 (2 secs) 
+                  Shorter intervals may overload the web server especially when several signals are displayed.
+      - debug : the debug level (0: no messages, except errors, 1: connection and request messages shown, 2: exchanged 
+                messages shown)
+      
+    
+
+mdsip and streams should now be visible in the data sorces list in the grafana interface, and can be selected 
+when building a panel. In both mdsip and stream data source configurations field 'WS port' specifies the port
+at which the WebSocket is listening. This value (defaut 8020) must be consistent with the "port" field of mds-bridge.json.
+Clicking 'Save & Test' button, a connection is established with the WebSocket server.
+In addition, for the mdsip plugin the 'Save & Test' button establishes a mdsip connection with the 
+mdsip server listed in 'Mdsip address' field. 
+
+
+When the corresponding data plugin has been select in the panel configuration, the setup fields will be shown, namely:
+- for mdsip plugin: Experiment, Shot, Signal
+- for streams plugin: Signal, Label (shown in the plots) 
+In both cases the configuration is entered by hitting the Apply button.
+
+
+
+    
+    
