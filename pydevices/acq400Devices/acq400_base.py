@@ -345,6 +345,253 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                         else:
                             self.full_buffers.put(buf)
 
+class _ACQ400_ST_BASE_24bit(_ACQ400_BASE):
+
+    """
+    A sub-class of _ACQ400_BASE that includes classes for streaming data
+    and the extra nodes for streaming devices.
+    """
+
+    st_base_parts = [
+        {'path':':RUNNING',     'type':'numeric',                  'options':('no_write_model',)},
+        {'path':':SEG_LENGTH',  'type':'numeric', 'value': 8000,   'options':('no_write_shot',)},
+        {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000,   'options':('no_write_shot',)},
+        {'path':':SEG_EVENT',   'type':'text',    'value': 'STREAM','options':('no_write_shot',)},
+        {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)},
+        {'path':':DEF_DECIMATE','type':'numeric', 'value': 1,      'options':('no_write_shot',)},
+        #Trigger sources
+        {'path':':TRIG_SRC',   'type':'text',      'value': 'NONE', 'options':('write_shot',)},
+        ]
+
+    def init(self):
+        import acq400_hapi
+        # Needs the initialization given in the superclass:
+        super(_ACQ400_ST_BASE_24bit, self).init()
+
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
+        
+        # Initializing Sources to NONE:
+        # D0 signal:
+        uut.s0.SIG_SRC_TRG_0   = 'NONE'
+        # D1 signal:
+        uut.s0.SIG_SRC_TRG_1   = 'NONE'
+
+        #Trigger sources choices:
+        # d0:
+        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'nc', 'NONE']
+        # d1:
+        srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'NONE']
+        
+        #Setting the signal (dX) to use for ACQ2106 stream control
+        if str(self.trig_src.data()) in srcs_1:
+            uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+        elif str(self.trig_src.data()) == 'WRTT1':
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = 'd1'
+            uut.s1.TRG_SENSE = 'rising'
+            uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+
+        elif str(self.trig_src.data()) in srcs_0:
+            uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+        elif str(self.trig_src.data()) == 'WRTT0':
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = 'd0'
+            uut.s1.TRG_SENSE = 'rising'
+            uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+
+
+    def arm(self):
+        self.running.on=True
+        thread = self.MDSWorker(self)
+        thread.start()
+    ARM=arm
+
+    def stop(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
+        
+        self.running.on = False
+        
+        # Initializing Sources back to NONE:
+        # D0 signal:
+        uut.s0.SIG_SRC_TRG_0   = 'NONE'
+        # D1 signal:
+        uut.s0.SIG_SRC_TRG_1   = 'NONE'
+    STOP = stop
+
+    class MDSWorker(threading.Thread):
+        NUM_BUFFERS = 20
+
+        def __init__(self,dev):
+            super(_ACQ400_ST_BASE_24bit.MDSWorker,self).__init__(name=dev.path)
+            
+            threading.Thread.__init__(self)
+            self.dev = dev.copy()
+
+            self.chans = []
+            self.decim = []
+            # self.nchans = self.dev.sites*32
+            uut = acq400_hapi.Acq400(self.dev.node.data())
+            self.nchans = uut.nchan()
+            print("Number of Channels {}".format(self.nchans))
+
+            for i in range(self.nchans):
+                self.chans.append(getattr(self.dev, 'INPUT_%3.3d'%(i+1)))
+                self.decim.append(getattr(self.dev, 'INPUT_%3.3d:DECIMATE' %(i+1)).data())
+            self.seg_length = self.dev.seg_length.data()
+            self.segment_bytes = self.seg_length*self.nchans*numpy.int32(0).nbytes
+
+            #Fetching all calibration information from every channel. Save it in INPUT_XXX:CAL_INPUT
+            uut.fetch_all_calibration()
+            eslo = uut.cal_eslo[1:]
+            eoff = uut.cal_eoff[1:]
+            channel_data = uut.read_channels()
+
+            for ic, ch in enumerate(self.chans):
+                if ch.on:
+                    ch.EOFF.putData(float(eoff[ic]))
+                    ch.ESLO.putData(float(eslo[ic]))
+                    expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+
+                    ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
+
+            self.empty_buffers = Queue()
+            self.full_buffers  = Queue()
+
+            for i in range(self.NUM_BUFFERS):
+                self.empty_buffers.put(bytearray(self.segment_bytes))
+            self.device_thread = self.DeviceWorker(self)
+
+        def run(self):
+            def lcm(a,b):
+                from fractions import gcd
+                return (a * b / gcd(int(a), int(b)))
+
+            def lcma(arr):
+                ans = 1.
+                for e in arr:
+                    ans = lcm(ans, e)
+                return int(ans)
+
+            self.dev.dprint(1, "DeviceWorker running")
+
+            event_name = self.dev.seg_event.data()
+
+            dt = 1./self.dev.freq.data()
+
+            decimator = lcma(self.decim)
+
+            if self.seg_length % decimator:
+                 self.seg_length = (self.seg_length // decimator + 1) * decimator
+
+            self.device_thread.start()
+
+            segment = 0
+            running = self.dev.running
+            max_segments = self.dev.max_segments.data()
+            while running.on and segment < max_segments:
+                try:
+                    buf = self.full_buffers.get(block=True, timeout=1)
+                except Empty:
+                    continue
+
+                buffer = numpy.right_shift(numpy.frombuffer(buf, dtype='int32') , 8)
+                i = 0
+                for c in self.chans:
+                    slength = self.seg_length/self.decim[i]
+                    deltat  = dt * self.decim[i]
+                    if c.on:
+                        b = buffer[i::self.nchans*self.decim[i]]
+                        begin = segment * slength * deltat
+                        end   = begin + (slength - 1) * deltat
+                        dim   = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)
+                    i += 1
+                segment += 1
+                MDSplus.Event.setevent(event_name)
+
+                self.empty_buffers.put(buf)
+
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / numpy.int32(0).nbytes) * dt)
+            self.device_thread.stop()
+
+        class DeviceWorker(threading.Thread):
+            running = False
+
+            def __init__(self,mds):
+                threading.Thread.__init__(self)
+                self.dprint = mds.dev.dprint
+                self.node_addr = mds.dev.node.data()
+                self.seg_length = mds.dev.seg_length.data()
+                self.segment_bytes = mds.segment_bytes
+                self.freq = mds.dev.freq.data()
+                self.nchans = mds.nchans
+                self.empty_buffers = mds.empty_buffers
+                self.full_buffers = mds.full_buffers
+                self.trig_time = 0
+                #self.io_buffer_size = 4096
+                self.io_buffer_size = self.segment_bytes # Improves streaming when run from each box
+
+            def stop(self):
+                self.running = False
+
+            def run(self):
+
+                self.dprint(1, "DeviceWorker running")
+
+                self.running = True
+
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((self.node_addr,4210))
+                s.settimeout(6)
+
+                # trigger time out count initialization:
+                first = True
+                while self.running:
+                    try:
+                        buf = self.empty_buffers.get(block=False)
+                    except Empty:
+                        print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
+                        buf = bytearray(self.segment_bytes)
+
+                    toread =self.segment_bytes
+                    try:
+                        view = memoryview(buf)
+                        while toread:
+                            nbytes = s.recv_into(view, min(self.io_buffer_size,toread))
+                            if first:
+                                self.trig_time = time.time()
+                                first = False
+                            view = view[nbytes:] # slicing views is cheap
+                            toread -= nbytes
+
+                    except socket.timeout as e:
+                        # print("Got a timeout.")
+                        err = e.args[0]
+                        # this next if/else is a bit redundant, but illustrates how the
+                        # timeout exception is setup
+
+                        if err == 'timed out':
+                            time.sleep(1)
+                            # print (' recv timed out, retry later')
+                            continue
+                        else:
+                            self.dprint(0, "error: %s", e)
+                            break
+                    except socket.error as e:
+                        # Something else happened, handle error, exit, etc.
+                        self.dprint(0, "socket error: %s", e)
+                        self.full_buffers.put(buf[:self.segment_bytes-toread])
+                        break
+                    else:
+                        if toread != 0:
+                            self.dprint(1, 'orderly shutdown on server end')
+
+                            break
+                        else:
+                            self.full_buffers.put(buf)
+
+
 
 class _ACQ400_TR_BASE(_ACQ400_BASE):
     """
