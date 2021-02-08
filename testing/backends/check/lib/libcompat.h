@@ -34,7 +34,7 @@
 
 //#if _MSC_VER
 //#include <WinSock2.h>           /* struct timeval, API used in gettimeofday
-//implementation */ #include <io.h>                 /* read, write */ #include
+// implementation */ #include <io.h>                 /* read, write */ #include
 //<process.h>            /* getpid */ #endif /* _MSC_VER */
 
 /* defines size_t */

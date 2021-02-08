@@ -22,9 +22,8 @@ extern "C" {
 ///	Each block of information has a header and two data blocks.
 ///	Each block is independent, it has its own starting value.
 ///	The header has the number of bits (y) and the count (x) of each data
-///block. 	Think of the data histogrammed by its significance (y) vs. index (x).
-///	Header block: yn & xn-1 & ye-1 & xe
-///	Normal block: xn fields of yn each.
+/// block. 	Think of the data histogrammed by its significance (y) vs. index
+/// (x). 	Header block: yn & xn-1 & ye-1 & xe 	Normal block: xn fields of yn each.
 ///	Exception block: xe fields of ye each.
 ///	The exception block is absent if there are no exceptions.
 ///	The normal block is absent if all items are zero.

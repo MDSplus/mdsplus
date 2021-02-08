@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "testing.h"
 
 #ifdef _WIN32
-#define setenv(name,val,extra) _putenv_s(name,val)
+#define setenv(name, val, extra) _putenv_s(name, val)
 #endif
 
 //
@@ -47,68 +47,72 @@ using namespace MDSplus;
 using namespace testing;
 static char test[256];
 
-inline static Data* cnx_get(Connection* cnx,const char*cmd) {
-  strcpy(test,cmd);
+inline static Data *cnx_get(Connection *cnx, const char *cmd) {
+  strcpy(test, cmd);
   return cnx->get(test);
 }
 
-void _test_tree_open(const char *prot, const unsigned short port, const char* mode){
-    MdsIpInstancer mdsip(prot,port,mode);
-    std::string addr = mdsip.getAddress();
-    std::cout << "attempt to connect to: " << addr;
-    if (mode) std::cout << " (" << mode <<")";
-    std::cout << "\n" << std::flush;
-    unique_ptr<Connection> cnx = NULL;
-    int retry = 3;
-    for (;!cnx; retry--) try {
-      cnx = new Connection(const_cast<char*>(addr.c_str()));
+void _test_tree_open(const char *prot, const unsigned short port,
+                     const char *mode) {
+  MdsIpInstancer mdsip(prot, port, mode);
+  std::string addr = mdsip.getAddress();
+  std::cout << "attempt to connect to: " << addr;
+  if (mode)
+    std::cout << " (" << mode << ")";
+  std::cout << "\n" << std::flush;
+  unique_ptr<Connection> cnx = NULL;
+  int retry = 3;
+  for (; !cnx; retry--)
+    try {
+      cnx = new Connection(const_cast<char *>(addr.c_str()));
     } catch (...) {
-      if (retry<=1) TEST0("could not connect");
+      if (retry <= 1)
+        TEST0("could not connect");
       std::cout << "retry\n" << std::flush;
       usleep(500000);
     }
-    std::cout << "success: starting test\n" << std::flush;
-    // test client-server communication with max 8 dims//
-    unique_ptr<Data> data = cnx_get(cnx,"zero([1,1,1,1,1,1,1,1],1)");
-    TEST1( AutoString(data->getString()).string == "[[[[[[[[0]]]]]]]]");
+  std::cout << "success: starting test\n" << std::flush;
+  // test client-server communication with max 8 dims//
+  unique_ptr<Data> data = cnx_get(cnx, "zero([1,1,1,1,1,1,1,1],1)");
+  TEST1(AutoString(data->getString()).string == "[[[[[[[[0]]]]]]]]");
 
-    data = cnx_get(cnx,"DECOMPILE(`TreeShr->TreeDbid:P())");
-    TEST0( AutoString(data->getString()).string == "Pointer(0)");
+  data = cnx_get(cnx, "DECOMPILE(`TreeShr->TreeDbid:P())");
+  TEST0(AutoString(data->getString()).string == "Pointer(0)");
 
-    data = cnx_get(cnx,"setTimeContext()");
-    TEST1(data->getInt() == 1 && "setTimeContext()");
+  data = cnx_get(cnx, "setTimeContext()");
+  TEST1(data->getInt() == 1 && "setTimeContext()");
 
-    // test tree opening //
-    data = cnx_get(cnx,"setenv('t_connect_path=.')");
+  // test tree opening //
+  data = cnx_get(cnx, "setenv('t_connect_path=.')");
 
-    strcpy(test,"t_connect");
-    cnx->openTree(test,1);
+  strcpy(test, "t_connect");
+  cnx->openTree(test, 1);
 
-    Data *args[] = { new Int32(5552368),
-	             new Float64(111.234) };
-    cnx->put("test_cnx",(char*)"$+10",args,1);
-    data = cnx->get("test_cnx");
-    TEST1( data->getInt() == 5552378 && "$+10");
+  Data *args[] = {new Int32(5552368), new Float64(111.234)};
+  cnx->put("test_cnx", (char *)"$+10", args, 1);
+  data = cnx->get("test_cnx");
+  TEST1(data->getInt() == 5552378 && "$+10");
 
-    cnx->put("test_cnx",(char*)"[$1+10, $2]",args,2);
-    data = cnx->get("test_cnx");
-    TEST1( AutoString(data->getString()).string == "[5552378D0,111.234D0]" );
+  cnx->put("test_cnx", (char *)"[$1+10, $2]", args, 2);
+  data = cnx->get("test_cnx");
+  TEST1(AutoString(data->getString()).string == "[5552378D0,111.234D0]");
 
-    cnx->put("test_cnx",(char*)"5552368",NULL,0);
-    data = cnx->get("test_cnx");
-    TEST1( data->getInt() == 5552368 && "5552368" );
+  cnx->put("test_cnx", (char *)"5552368", NULL, 0);
+  data = cnx->get("test_cnx");
+  TEST1(data->getInt() == 5552368 && "5552368");
 
-    deleteData(args[0]);
-    deleteData(args[1]);
+  deleteData(args[0]);
+  deleteData(args[1]);
 
-    // closing tree //
-    cnx->closeTree((char*)"t_connect",1);
+  // closing tree //
+  cnx->closeTree((char *)"t_connect", 1);
 }
 
-void test_tree_open(const char *prot, const unsigned short port, const char* mode){
+void test_tree_open(const char *prot, const unsigned short port,
+                    const char *mode) {
   try {
     _test_tree_open(prot, port, mode);
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     std::cout << "ERROR: " << test << '\n' << e.what() << '\n' << std::flush;
     TEST0("exception");
   }
@@ -118,99 +122,99 @@ void test_tree_open(const char *prot, const unsigned short port, const char* mod
 //  main  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
-int main(int argc, char *argv[])
-{
-    int ipv6 = (argc>1 && !strcmp(argv[1],"ipv6"));
-    TEST_TIMEOUT(30);
-    setenv("t_connect_path",".",1);
+int main(int argc, char *argv[]) {
+  int ipv6 = (argc > 1 && !strcmp(argv[1], "ipv6"));
+  TEST_TIMEOUT(30);
+  setenv("t_connect_path", ".", 1);
 
 #ifdef _WIN32
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
+  WSADATA wsaData;
+  WORD wVersionRequested;
+  wVersionRequested = MAKEWORD(1, 1);
+  WSAStartup(wVersionRequested, &wsaData);
 #endif
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //  Generate Tree  /////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
+  //  Generate Tree
+  //  /////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
 
-    // this makes the t_connect in a separate process so that all static
-    // variables instanced are destroied when the child ends.
-    try {
-      unique_ptr<Tree> tree = new Tree("t_connect",-1,"NEW");
-      unique_ptr<TreeNode>(tree->addNode("test_cnx","NUMERIC"));
-      tree->write();
-      tree->edit(false);
-      tree->createPulse(1);
-    } catch (...) {
-      std::cerr << "Error creating model tree";
-    }
+  // this makes the t_connect in a separate process so that all static
+  // variables instanced are destroied when the child ends.
+  try {
+    unique_ptr<Tree> tree = new Tree("t_connect", -1, "NEW");
+    unique_ptr<TreeNode>(tree->addNode("test_cnx", "NUMERIC"));
+    tree->write();
+    tree->edit(false);
+    tree->createPulse(1);
+  } catch (...) {
+    std::cerr << "Error creating model tree";
+  }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //  TEST CONNECTION TO REMOTE TREE  ////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
+  //  TEST CONNECTION TO REMOTE TREE
+  //  ////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
 
-    // thread //
-    BEGIN_TESTING(Connection thread);
-    test_tree_open("thread",0,NULL);
+  // thread //
+  BEGIN_TESTING(Connection thread);
+  test_tree_open("thread", 0, NULL);
+  END_TESTING;
+
+  // local  (includes: ssh, html) //
+  BEGIN_TESTING(Connection local);
+  test_tree_open("local", 0, NULL);
+  END_TESTING;
+
+  // tcp //
+  BEGIN_TESTING(Connection tcp - s);
+  test_tree_open("tcp", 8600, "-s");
+  END_TESTING;
+  BEGIN_TESTING(Connection tcp - m);
+  test_tree_open("tcp", 8601, "-m");
+  END_TESTING;
+
+  if (ipv6) {
+    // tcpv6 //
+    BEGIN_TESTING(Connection tcpv6 - s);
+    test_tree_open("tcpv6", 8602, "-s");
     END_TESTING;
-
-    // local  (includes: ssh, html) //
-    BEGIN_TESTING(Connection local);
-    test_tree_open("local",0,NULL);
+    BEGIN_TESTING(Connection tcpv6 - m);
+    test_tree_open("tcpv6", 8603, "-m");
     END_TESTING;
-
-    // tcp //
-    BEGIN_TESTING(Connection tcp -s);
-    test_tree_open("tcp",8600,"-s");
-    END_TESTING;
-    BEGIN_TESTING(Connection tcp -m);
-    test_tree_open("tcp",8601,"-m");
-    END_TESTING;
-
-    if (ipv6) {
-      // tcpv6 //
-      BEGIN_TESTING(Connection tcpv6 -s);
-      test_tree_open("tcpv6",8602,"-s");
-      END_TESTING;
-      BEGIN_TESTING(Connection tcpv6 -m);
-      test_tree_open("tcpv6",8603,"-m");
-      END_TESTING;
-    }
+  }
 #ifndef _WIN32
-    // udt //
-    BEGIN_TESTING(Connection udt -s);
-    test_tree_open("udt",8604,"-s");
-    END_TESTING;
-    BEGIN_TESTING(Connection udt -m);
-    test_tree_open("udt",8605,"-m");
-    END_TESTING;
+  // udt //
+  BEGIN_TESTING(Connection udt - s);
+  test_tree_open("udt", 8604, "-s");
+  END_TESTING;
+  BEGIN_TESTING(Connection udt - m);
+  test_tree_open("udt", 8605, "-m");
+  END_TESTING;
 
-    if (ipv6) {
-      // udtv6 //
-      BEGIN_TESTING(Connection udtv6 -s);
-      test_tree_open("udtv6",8606,"-s");
-      END_TESTING;
-      BEGIN_TESTING(Connection udtv6 -m);
-      test_tree_open("udtv6",8607,"-m");
-      END_TESTING;
-    }
+  if (ipv6) {
+    // udtv6 //
+    BEGIN_TESTING(Connection udtv6 - s);
+    test_tree_open("udtv6", 8606, "-s");
+    END_TESTING;
+    BEGIN_TESTING(Connection udtv6 - m);
+    test_tree_open("udtv6", 8607, "-m");
+    END_TESTING;
+  }
 #endif
-/*
-// TODO: gsi test does not work (gsi setup?)
-// ERROR:Error connecting ---
-//       globus_xio_gsi: gss_init_sec_context failed.
-//
-// ERROR:mdsip_accept_cp, open ---
-//       globus_xio: The GSI XIO driver failed to establish a secure connection. The failure occured during a handshake read.
+  /*
+  // TODO: gsi test does not work (gsi setup?)
+  // ERROR:Error connecting ---
+  //       globus_xio_gsi: gss_init_sec_context failed.
+  //
+  // ERROR:mdsip_accept_cp, open ---
+  //       globus_xio: The GSI XIO driver failed to establish a secure
+  connection. The failure occured during a handshake read.
 
-    // gsi //
-    BEGIN_TESTING(Connection gsi);
-    test_tree_open("gsi",8608,"-s");
-    test_tree_open("gsi",8608,"-m");
-    END_TESTING;
-*/
+      // gsi //
+      BEGIN_TESTING(Connection gsi);
+      test_tree_open("gsi",8608,"-s");
+      test_tree_open("gsi",8608,"-m");
+      END_TESTING;
+  */
 }

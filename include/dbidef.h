@@ -11,8 +11,9 @@
 #define DbiEND_OF_LIST 0 /* End of list */
 #define DbiNAME 1        /* Experiment name used for open - text string */
 #define DbiSHOTID 2      /* Shot identification - longword */
-#define DbiMODIFIED 3 /* True if tree has been modified during edit - boolean  \
-                       */
+#define DbiMODIFIED                                                            \
+  3 /* True if tree has been modified during edit - boolean                    \
+     */
 #define DbiOPEN_FOR_EDIT 4 /* True if tree is open for edit - boolean */
 #define DbiINDEX                                                               \
   5 /* Index of tree to use for subsequent information requests */
