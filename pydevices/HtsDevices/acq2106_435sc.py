@@ -62,19 +62,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
             slots[card].SC32_GAIN_COMMIT = 1
             print("GAINs Committed for site {}".format(card))
-
-        # TODO: Choose between possible SR
-        # For testing purpose only. Set CLKDIV knowing that:
-        # a special config in /mnt/local/rc.user gives a SR=40KHz at bootime:
-        # WR additions for WRCLK 20M
-        # cp /mnt/local/si5326_31M25-20M48.txt /etc/si5326.d/
-        # /usr/local/CARE/WR/set_clk_WR 20M48
-        # 20.48MHz / 512 => 40.0kHz
-        # => uut.s1.CLKDIV = '1'
-        # To get a SR=40KHz, then:
-        #uut.s1.CLKDIV = '1'
-        # To get a SR=20KHz, then:
-        #uut.s1.CLKDIV = '2'
         
         super(_ACQ2106_435SC, self).init()
 
@@ -82,6 +69,8 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         uut.s0.SIG_SRC_TRG_0 = 'EXT'
     INIT=init
 
+    # The following STORE method will UN-conditioned the signal so as to have in the tree node "NC_INPUT"
+    # the original input signal.
     def store(self):
         uut = self.getUUT()
 
@@ -117,32 +106,68 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 setattr(uut.s5, 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
                 setattr(uut.s5, 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
-    # TODO: a function to smooth/filter data while being adquired
-    # def setSmooth(self,num):
-    #     chan = self.__getattr__('INPUT_%3.3d' % num)
-    #     chan_nonsc =self.__getattr__('INPUT_%3.3d:LR_INPUT' % num)
-    #     chan_nonsc.setSegmentScale(MDSplus.SMOOTH(MDSplus.dVALUE(),100))
-
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path':':INPUT_%3.3d'%(i+1,),             'type':'SIGNAL',  'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)}, 
-            {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_dcim',                'options':('no_write_shot',)},           
-            {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,), 'type':'NUMERIC',                                             'options':('no_write_model', 'write_once',)},
-            {'path':':INPUT_%3.3d:OFFSET'%(i+1,),      'type':'NUMERIC',                                             'options':('no_write_model', 'write_once',)},
-            {'path':':INPUT_%3.3d:SC_GAIN1'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain1',               'options':('no_write_shot',)},
-            {'path':':INPUT_%3.3d:SC_GAIN2'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain2',               'options':('no_write_shot',)},
-            {'path':':INPUT_%3.3d:SC_OFFSET'%(i+1,),   'type':'NUMERIC', 'valueExpr':'head.def_offset',              'options':('no_write_shot',)},   
-            {'path':':INPUT_%3.3d:NC_INPUT'%(i+1,),    'type':'SIGNAL',                                              'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:LR_INPUT'%(i+1,),    'type':'SIGNAL'},
+            {
+                'path': ':INPUT_%3.3d'%(i+1,),
+                'type':'SIGNAL',  
+                'valueExpr':'head.setChanScale(%d)' %(i+1,),
+                'options':('no_write_model','write_once',)}, 
+            {
+                'path': ':INPUT_%3.3d:DECIMATE'%(i+1,),
+                'type':'NUMERIC', 
+                'valueExpr':'head.def_dcim',
+                'options':('no_write_shot',)},           
+            {
+                'path': ':INPUT_%3.3d:COEFFICIENT'%(i+1,), 
+                'type':'NUMERIC',
+                'options':('no_write_model', 
+                'write_once',)},
+            {
+                'path': ':INPUT_%3.3d:OFFSET'%(i+1,),
+                'type':'NUMERIC',
+                'options':('no_write_model', 'write_once',)},
+            {
+                'path': ':INPUT_%3.3d:SC_GAIN1'%(i+1,),
+                'type':'NUMERIC', 
+                'valueExpr':'head.def_gain1',
+                'options':('no_write_shot',)},
+            {
+                'path': ':INPUT_%3.3d:SC_GAIN2'%(i+1,),
+                'type':'NUMERIC', 
+                'valueExpr':'head.def_gain2',
+                'options':('no_write_shot',)},
+            {
+                'path': ':INPUT_%3.3d:SC_OFFSET'%(i+1,),
+                'type':'NUMERIC', 
+                'valueExpr':'head.def_offset',
+                'options':('no_write_shot',)},   
+            {
+                 # Non-Conditioned signal
+                'path': ':INPUT_%3.3d:NC_INPUT'%(i+1,),
+                'type':'SIGNAL',
+                'options':('no_write_model','write_once',)},
+            {
+                # Low-Resolution signal
+                'path': ':INPUT_%3.3d:LR_INPUT'%(i+1,),
+                'type':'SIGNAL'},
         ]
 
-class ACQ2106_435SC_1ST(_ACQ2106_435SC): sites=1
+class ACQ2106_435SC_1ST(_ACQ2106_435SC): 
+    sites=1
+
 assemble(ACQ2106_435SC_1ST)
-class ACQ2106_435SC_2ST(_ACQ2106_435SC): sites=2
+
+class ACQ2106_435SC_2ST(_ACQ2106_435SC): 
+    sites=2
+
 assemble(ACQ2106_435SC_2ST)
-class ACQ2106_435SC_3ST(_ACQ2106_435SC): sites=3
+
+class ACQ2106_435SC_3ST(_ACQ2106_435SC): 
+    sites=3
+
 assemble(ACQ2106_435SC_3ST)
 
 del(assemble)
