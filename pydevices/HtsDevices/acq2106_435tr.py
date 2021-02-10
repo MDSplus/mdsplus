@@ -44,98 +44,10 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         ]
 
     def init(self):
-        import acq400_hapi
 
-        MIN_FREQUENCY = 10000
-
-        uut = self.getUUT()
-
-        uut.s0.set_knob('set_abort', '1')
-
-        if self.ext_clock.length > 0:
-            raise Exception('External Clock is not supported')
-
-        freq = int(self.freq.data())
-        # D-Tacq Recommendation: the minimum sample rate is 10kHz.
-        if freq < MIN_FREQUENCY:
-            raise MDSplus.DevBAD_PARAMETER(
-                "Sample rate should be greater or equal than 10kHz")
-
-        mode = self.trig_mode.data()
-        if mode == 'hard':
-            role = 'master'
-            trg = 'hard'
-        elif mode == 'soft':
-            role = 'master'
-            trg = 'soft'
-        else:
-            role = mode.split(":")[0]
-            trg = mode.split(":")[1]
-
-        print("Role is {} and {} trigger".format(role, trg))
-
-        if trg == 'hard':
-            trg_dx = 'd0'
-        elif trg == 'automatic':
-            trg_dx = 'd1'
-        elif trg == 'soft':
-            trg_dx = 'd1'
-
-        # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
-        # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
-        # modifiers [TRG=int|ext]
-        # modifiers [CLKDIV=div]
-        uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
-
-        # Fetching all calibration information from every channel.
-        uut.fetch_all_calibration()
-        coeffs = uut.cal_eslo[1:]
-        eoff = uut.cal_eoff[1:]
-
-        self.chans = []
-        nchans = uut.nchan()
-        for ii in range(nchans):
-            self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
-
-        for ic, ch in enumerate(self.chans):
-            if ch.on:
-                ch.OFFSET.putData(float(eoff[ic]))
-                ch.COEFFICIENT.putData(float(coeffs[ic]))
-
-        # Hardware decimation:
-        if self.debug:
-            print("Hardware Filter (NACC) from tree node is {}".format(
-                int(self.hw_filter.data())))
-
-        # Hardware Filter: Accumulate/Decimate filter. Accumulate nacc_samp samples, then output one value.
-        nacc_samp = int(self.hw_filter.data())
-        print("Number of sites in use {}".format(self.sites))
-
-        # Ask UUT what are the sites that are actually being populatee with a 435ELF
-        self.slots = []
-        for (site, module) in sorted(uut.modules.items()):
-            site_number = int(site)
-            if site_number == 1:
-                self.slots.append(uut.s1)
-            elif site_number == 2:
-                self.slots.append(uut.s2)
-            elif site_number == 3:
-                self.slots.append(uut.s3)
-            elif site_number == 4:
-                self.slots.append(uut.s4)
-            elif site_number == 5:
-                self.slots.append(uut.s5)
-            elif site_number == 6:
-                self.slots.append(uut.s6)
-
-        for card in range(self.sites):
-            if 1 <= nacc_samp <= 32:
-                self.slots[card].nacc = ('%d' % nacc_samp).strip()
-            else:
-                print(
-                    "WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
-                self.slots[card].nacc = '1'
-
+        # Here, the argument to the init of the superclass, i.e. the value 0, means that it will not
+        # start a MDSWorker thread, and therefore, it will not arm the digitizer at this stage.
+        super(_ACQ2106_435TR, self).init(0)
 
         # Transient capture may be configured programmatically as follows, where
         # PRE, POST are pre-trigger, post-trigger capture lengths in samples.
@@ -150,6 +62,7 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         # With PRE > 0:
         # set.site 1 trg=1,1,1 - local (SOFT) TRG
         # set.site 1 event0=1,0,1 - external rising edge causes PRE - > POST
+        uut = self.getUUT()
 
         uut.s0.transient = 'SOFT_TRIGGER=1'
 
@@ -279,10 +192,9 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
                 mdsrange  = MDSplus.Range(None, None, clock_period)
                 dim       = MDSplus.Dimension(mdswindow, mdsrange)
 
-                # Calibrarted signal
                 signal = MDSplus.Signal(channel_data[ic], None, dim)
 
-                ch.putData(signal)
+                ch.RAW_INPUT.putData(signal)
 
     STORE=store
 
@@ -299,7 +211,7 @@ def assemble(cls):
             {
                 'path': ':INPUT_%3.3d' % (i+1,),             
                 'type': 'SIGNAL',  
-                'valueExpr': 'head.setChanScale(%d)' % (i+1,),
+                'valueExpr': '_coeff = \COEFFICIENT, _y = \RAW_INPUT,  _offset = \OFFSET, Build_With_Units(_coeff * _y + _offset, "V"))',
                 'options': ('no_write_model','write_once',)
             }, 
 
@@ -310,15 +222,21 @@ def assemble(cls):
             },  
                      
             {
-                'path': ':INPUT_%3.3d:COEFFICIENT'%(i+1,), 
+                'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 
                 'type': 'NUMERIC',  
                 'options': ('no_write_model', 'write_once',)
             },
 
             {
-                'path': ':INPUT_%3.3d:OFFSET'%(i+1,),
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),
                 'type': 'NUMERIC', 
                 'options': ('no_write_model', 'write_once',)
+            },
+
+            {
+                'path': ':INPUT_%3.3d:RAW_INPUT' % (i+1,),
+                'type': 'SIGNAL',  
+                'options': ('no_write_model','write_once',)
             },
         ]
 
