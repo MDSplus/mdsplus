@@ -43,24 +43,25 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
     def init(self):
         uut = self.getUUT()
+        slots = super(_ACQ2106_435SC, self).getSlots()
 
-        for site in range(1,6,2):
-            slot = self.getSlot(site)
+        for card in range(self.sites):
+
             if self.is_global.data() == 1:
                 # Global controls for GAINS and OFFSETS
-                slot.SC32_OFFSET_ALL = self.def_offset.data()
-                print("Site {} OFFSET ALL {}".format(site, self.def_offset.data()))
+                slots[card].SC32_OFFSET_ALL = self.def_offset.data()
+                print("Site {} OFFSET ALL {}".format(card, self.def_offset.data()))
 
-                slot.SC32_G1_ALL     = self.def_gain1.data()
-                print("Site {} GAIN 1 ALL {}".format(site, self.def_gain1.data()))
+                slots[card].SC32_G1_ALL     = self.def_gain1.data()
+                print("Site {} GAIN 1 ALL {}".format(card, self.def_gain1.data()))
 
-                slot.SC32_G2_ALL     = self.def_gain2.data()
-                print("Site {} GAIN 2 ALL {}".format(site, self.def_gain2.data()))
+                slots[card].SC32_G2_ALL     = self.def_gain2.data()
+                print("Site {} GAIN 2 ALL {}".format(card, self.def_gain2.data()))
             else:
-                self.setGainsOffsets(site)
+                self.setGainsOffsets(card)
 
-            slot.SC32_GAIN_COMMIT = 1
-            print("GAINs Committed for site {}".format(site))
+            slots[card].SC32_GAIN_COMMIT = 1
+            print("GAINs Committed for site {}".format(card))
 
         # TODO: Choose between possible SR
         # For testing purpose only. Set CLKDIV knowing that:
@@ -95,29 +96,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 chan_unsc.record = MDSplus.BUILD_SIGNAL(ch.data() * (1.0/(ch.SC_GAIN1 * ch.SC_GAIN2)) - ch.SC_OFFSET, MDSplus.RAW_OF(ch), MDSplus.DIM_OF(ch))
     STORE=store
     
-    def getSlot(self, site_number):
-        uut = self.getUUT()
-
-        try:
-            if site_number   == 0: 
-                slot = uut.s0
-            elif site_number == 1:
-                slot = uut.s1
-            elif site_number == 2:
-                slot = uut.s2
-            elif site_number == 3:
-                slot = uut.s3
-            elif site_number == 4:
-                slot = uut.s4
-            elif site_number == 5:
-                slot = uut.s5
-            elif site_number == 6:
-                slot = uut.s6
-        except:
-            pass
-        
-        return slot
-    
     def getUUT(self):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
@@ -139,7 +117,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 setattr(uut.s5, 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
                 setattr(uut.s5, 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
-    # TODO: a function to smooth data while being adquired
+    # TODO: a function to smooth/filter data while being adquired
     # def setSmooth(self,num):
     #     chan = self.__getattr__('INPUT_%3.3d' % num)
     #     chan_nonsc =self.__getattr__('INPUT_%3.3d:LR_INPUT' % num)
