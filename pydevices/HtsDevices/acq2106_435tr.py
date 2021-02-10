@@ -38,9 +38,9 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         {'path':':PRESAMPLES','type':'numeric',   'value': int(1e5), 'options':('no_write_shot',)},
         {'path':':POSTSAMPLES','type':'numeric',  'value': int(1e5), 'options':('no_write_shot',)},
         #Trigger sources
-        {'path':':TRIG_SRC',   'type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':TRIG_SRC',   'type':'text',      'value': 'STRIG', 'options':('no_write_shot',)},
         #Event sources
-        {'path':':EVENT0_SRC', 'type': 'text',     'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':EVENT0_SRC', 'type': 'text',     'value': 'EXT', 'options':('no_write_shot',)},
         ]
 
     def init(self):
@@ -170,8 +170,6 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         # d1:
         srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1']
 
-        # event_src = ['TRG', 'GPG', 'FP_GPIO', 'MOD']
-
         if str(self.trig_src.data()) in srcs_1:
             uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
             #Setting the signal (dX) to use for ACQ2106 stream control
@@ -226,7 +224,7 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         import acq400_hapi
 
         # State of the Transient recorder NOW (when this method was run)
-        uut = self.getUUT400()
+        uut = self.getUUT()
 
         _status = [int(x) for x in uut.s0.state.split(" ")]
 
@@ -271,11 +269,13 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
 
                 clock_period  = 1./self.freq.data()
 
+                # When White Rabbit is used, we can get the trigger time from it:
                 # self.wr_wrtd_t0 is the reference to the node in the WRTD device. (secs)
                 # self.wr_wrtd_tai  is the reference to the node in WRTD device. (TAI time)
+                #mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)   
+                #mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
 
-                mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)   
-                # mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
+                mdswindow = MDSplus.Window(start_idx, end_idx, 0)
                 mdsrange  = MDSplus.Range(None, None, clock_period)
                 dim       = MDSplus.Dimension(mdswindow, mdsrange)
 
@@ -286,43 +286,40 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
 
     STORE=store
 
-    
-    def getSlot(self, site_number):
-        uut = self.getUUT()
-
-        try:
-            if site_number   == 0: 
-                slot = uut.s0
-            elif site_number == 1:
-                slot = uut.s1
-            elif site_number == 2:
-                slot = uut.s2
-            elif site_number == 3:
-                slot = uut.s3
-            elif site_number == 4:
-                slot = uut.s4
-            elif site_number == 5:
-                slot = uut.s5
-            elif site_number == 6:
-                slot = uut.s6
-        except:
-            pass
         
-        return slot
-    
     def getUUT(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
+        uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
         return uut
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435TR.carrier_parts + _ACQ2106_435TR.tr_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path':':INPUT_%3.3d'%(i+1,),             'type':'SIGNAL',  'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)}, 
-            {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_dcim',                'options':('no_write_shot',)},           
-            {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,), 'type':'NUMERIC',                                             'options':('no_write_model', 'write_once',)},
-            {'path':':INPUT_%3.3d:OFFSET'%(i+1,),      'type':'NUMERIC',                                             'options':('no_write_model', 'write_once',)},
+            {
+                'path': ':INPUT_%3.3d' % (i+1,),             
+                'type': 'SIGNAL',  
+                'valueExpr': 'head.setChanScale(%d)' % (i+1,),
+                'options': ('no_write_model','write_once',)
+            }, 
+
+            {
+                'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),
+                'type': 'NUMERIC', 'valueExpr':'head.def_dcim',                
+                'options': ('no_write_shot',)
+            },  
+                     
+            {
+                'path': ':INPUT_%3.3d:COEFFICIENT'%(i+1,), 
+                'type': 'NUMERIC',  
+                'options': ('no_write_model', 'write_once',)
+            },
+
+            {
+                'path': ':INPUT_%3.3d:OFFSET'%(i+1,),
+                'type': 'NUMERIC', 
+                'options': ('no_write_model', 'write_once',)
+            },
         ]
 
 
