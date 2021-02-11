@@ -192,12 +192,14 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
                 mdsrange  = MDSplus.Range(None, None, clock_period)
                 dim       = MDSplus.Dimension(mdswindow, mdsrange)
 
-                signal = MDSplus.Signal(channel_data[ic], None, dim)
+                raw_signal = MDSplus.Signal(channel_data[ic], None, dim)
+                ch.RAW_INPUT.putData(raw_signal)
 
-                ch.RAW_INPUT.putData(signal)
+                expr = "%s * %f + %f" % (ch.RAW_INPUT, ch.ESLO, ch.EOFF)
+                signal =  MDSplus.Signal(MDSplus.Data.compile(expr), None, dim)
+                ch.putData(signal)
 
     STORE=store
-
         
     def getUUT(self):
         import acq400_hapi
