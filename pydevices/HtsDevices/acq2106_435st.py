@@ -180,7 +180,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {
             'path': ':RES_FACTOR',
             'type': 'numeric',
-            'value': 100.0,
+            'value': 100,
             'options': ('write_shot',)
         },
     ]
@@ -421,7 +421,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
-        eoff = uut.cal_eoff[1:]
+        eoff   = uut.cal_eoff[1:]
 
         self.chans = []
         nchans = uut.nchan()
@@ -491,7 +491,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     def setChanScale(self, node, num):
         chan     = self.__getattr__('INPUT_%3.3d' % num)
-        #Channel to be calibrated:
+        #cal_chan: channel to be calibrated
         cal_chan = self.__getattr__(node)
         cal_chan.setSegmentScale(
             MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET)
@@ -505,25 +505,30 @@ def assemble(cls):
             {
                 'path': ':INPUT_%3.3d' % (i+1,),
                 'type': 'SIGNAL', 
-                'valueExpr': 'head.setChanScale("INPUT_%3.3d", %d)' % (i+1,i+1),
-                'options': ('no_write_model', 'write_once',)},
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d", %d)' % (i+1, i+1),
+                'options': ('no_write_model', 'write_once',)
+            },
             {
                 'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),
                 'type': 'NUMERIC', 
-                'valueExpr': 'head.def_dcim','options': ('no_write_shot',)},
+                'valueExpr': 'head.def_dcim','options': ('no_write_shot',)
+            },
             {
                 'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,),
                 'type': 'NUMERIC',
-                'options': ('no_write_model', 'write_once',)},
+                'options': ('no_write_model', 'write_once',)
+            },
             {
                 'path': ':INPUT_%3.3d:OFFSET' % (i+1,),
                 'type': 'NUMERIC',
-                'options': ('no_write_model', 'write_once',)},
+                'options': ('no_write_model', 'write_once',)
+            },
             {
                 'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),
                 'type': 'SIGNAL', 
-                'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1,i+1),
-                'options': ('no_write_model', 'write_once',)},
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1, i+1),
+                'options': ('no_write_model', 'write_once',)
+            },
         ]
 
 
