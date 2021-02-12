@@ -149,10 +149,13 @@ def assemble(cls):
                 'path': ':INPUT_%3.3d:NC_INPUT'%(i+1,),
                 'type':'SIGNAL',
                 'options':('no_write_model','write_once',)},
+
             {
-                # Low-Resolution signal
-                'path': ':INPUT_%3.3d:LR_INPUT'%(i+1,),
-                'type':'SIGNAL'},
+                # Re-sampling streaming data:
+                'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),
+                'type': 'SIGNAL', 
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1,i+1),
+                'options': ('no_write_model', 'write_once',)},
         ]
 
 class ACQ2106_435SC_1ST(_ACQ2106_435SC): 
