@@ -35,10 +35,30 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     
     sc_parts = [
         # IS_GLOBAL controls if the GAINS and OFFSETS are set globally or per channel
-        {'path':':IS_GLOBAL',  'type':'numeric', 'value': 0, 'options':('no_write_shot',)},
-        {'path':':DEF_GAIN1',  'type':'numeric', 'value': 1, 'options':('no_write_shot',)},
-        {'path':':DEF_GAIN2',  'type':'numeric', 'value': 1, 'options':('no_write_shot',)},
-        {'path':':DEF_OFFSET', 'type':'numeric', 'value': 0, 'options':('no_write_shot',)},
+        {
+            'path': ':IS_GLOBAL',
+            'type': 'numeric', 
+            'value': 0,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':DEF_GAIN1',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':DEF_GAIN2',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':DEF_OFFSET',
+            'type': 'numeric',
+            'value': 0,
+            'options': ('no_write_shot',)
+        },
     ]
 
     def init(self):
@@ -114,48 +134,57 @@ def assemble(cls):
                 'path': ':INPUT_%3.3d'%(i+1,),
                 'type':'SIGNAL',  
                 'valueExpr':'head.setChanScale(%d)' %(i+1,),
-                'options':('no_write_model','write_once',)}, 
+                'options':('no_write_model','write_once',)
+            }, 
             {
                 'path': ':INPUT_%3.3d:DECIMATE'%(i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_dcim',
-                'options':('no_write_shot',)},           
+                'options':('no_write_shot',)
+            },           
             {
                 'path': ':INPUT_%3.3d:COEFFICIENT'%(i+1,), 
                 'type':'NUMERIC',
                 'options':('no_write_model', 
-                'write_once',)},
+                'write_once',)
+            },
             {
                 'path': ':INPUT_%3.3d:OFFSET'%(i+1,),
                 'type':'NUMERIC',
-                'options':('no_write_model', 'write_once',)},
+                'options':('no_write_model', 'write_once',)
+            },
             {
                 'path': ':INPUT_%3.3d:SC_GAIN1'%(i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_gain1',
-                'options':('no_write_shot',)},
+                'options':('no_write_shot',)
+            },
             {
                 'path': ':INPUT_%3.3d:SC_GAIN2'%(i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_gain2',
-                'options':('no_write_shot',)},
+                'options':('no_write_shot',)
+            },
             {
                 'path': ':INPUT_%3.3d:SC_OFFSET'%(i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_offset',
-                'options':('no_write_shot',)},   
+                'options':('no_write_shot',)
+            },   
             {
                  # Non-Conditioned signal
                 'path': ':INPUT_%3.3d:NC_INPUT'%(i+1,),
                 'type':'SIGNAL',
-                'options':('no_write_model','write_once',)},
+                'options':('no_write_model','write_once',)
+            },
 
             {
                 # Re-sampling streaming data:
                 'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),
                 'type': 'SIGNAL', 
                 'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1,i+1),
-                'options': ('no_write_model', 'write_once',)},
+                'options': ('no_write_model', 'write_once',)
+            },
         ]
 
 class ACQ2106_435SC_1ST(_ACQ2106_435SC): 
