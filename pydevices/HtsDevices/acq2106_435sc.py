@@ -59,6 +59,12 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             'value': 0,
             'options': ('no_write_shot',)
         },
+        {
+            'path': ':RES_FACTOR',
+            'type': 'numeric',
+            'value': 100,
+            'options': ('write_shot',)
+        },
     ]
 
     def init(self):
@@ -126,16 +132,24 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 setattr(uut.s5, 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
                 setattr(uut.s5, 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
+    def setChanScale(self, node, num):
+        chan     = self.__getattr__('INPUT_%3.3d' % num)
+        #cal_chan: channel to be calibrated
+        cal_chan = self.__getattr__(node)
+        cal_chan.setSegmentScale(
+            MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET)
+            )
+
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
     for i in range(cls.sites*32):
         cls.parts += [
             {
-                'path': ':INPUT_%3.3d'%(i+1,),
-                'type':'SIGNAL',  
-                'valueExpr':'head.setChanScale(%d)' %(i+1,),
-                'options':('no_write_model','write_once',)
-            }, 
+                'path': ':INPUT_%3.3d' % (i+1,),
+                'type': 'SIGNAL', 
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d", %d)' % (i+1, i+1),
+                'options': ('no_write_model', 'write_once',)
+            },
             {
                 'path': ':INPUT_%3.3d:DECIMATE'%(i+1,),
                 'type':'NUMERIC', 
@@ -177,7 +191,6 @@ def assemble(cls):
                 'type':'SIGNAL',
                 'options':('no_write_model','write_once',)
             },
-
             {
                 # Re-sampling streaming data:
                 'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),

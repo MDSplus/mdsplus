@@ -183,6 +183,11 @@ class _ACQ2106_435ST(MDSplus.Device):
             segment = 0
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
+            try: 
+                res_factor = self.dev.res_factor.data() is not None
+            except:
+                pass
+
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -192,14 +197,21 @@ class _ACQ2106_435ST(MDSplus.Device):
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
                 for c in self.chans:
-                    slength = self.seg_length/self.decim[i]
-                    deltat = dt * self.decim[i]
-                    if c.on:
+                    resampled = getattr(self.dev, str(c) + ':RESAMPLED')
+                    slength   = self.seg_length/self.decim[i]
+                    deltat    = dt * self.decim[i]
+                    if c.on and resampled is not None:
                         b = buffer[i::self.nchans*self.decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
-                        c.makeSegment(begin, end, dim, b)
+                        c.makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
+                    elif c.on:
+                        b = buffer[i::self.nchans*self.decim[i]]
+                        begin = segment * slength * deltat
+                        end = begin + (slength - 1) * deltat
+                        dim = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)                     
                     i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)
@@ -408,14 +420,26 @@ def assemble(cls):
     cls.parts = list(_ACQ2106_435ST.carrier_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path': ':INPUT_%3.3d' % (i+1,),            'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (
-                i+1,), 'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:DECIMATE' % (
-                i+1,),   'type': 'NUMERIC', 'valueExpr': 'head.def_dcim',            'options': ('no_write_shot',)},
-            {'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
+            {
+                'path': ':INPUT_%3.3d' % (i+1,),
+                'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (i+1,),
+                'options': ('no_write_model', 'write_once',)
+            },
+            {
+                'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),
+                'type': 'NUMERIC', 'valueExpr': 'head.def_dcim',
+                'options': ('no_write_shot',)
+            },
+            {
+                'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,),
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
+            {
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
         ]
 
 
