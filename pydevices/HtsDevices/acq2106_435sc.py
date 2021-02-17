@@ -88,8 +88,10 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
             slots[card].SC32_GAIN_COMMIT = 1
             print("GAINs Committed for site {}".format(card))
-        
-        super(_ACQ2106_435SC, self).init()
+        # Here, the argument to the init of the superclass:
+        # - init(1) => use resampling function:
+        # makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
+        super(_ACQ2106_435SC, self).init(1)
 
         # For testing purpose only. Set trigger source to external hard trigger:
         uut.s0.SIG_SRC_TRG_0 = 'EXT'

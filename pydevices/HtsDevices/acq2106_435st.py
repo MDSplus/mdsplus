@@ -112,7 +112,8 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             self.chans = []
             self.decim = []
-            self.nchans = self.dev.sites*32
+            self.nchans     = self.dev.sites*32
+            self.resampling = self.dev.resampling
 
             for i in range(self.nchans):
                 self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
@@ -183,10 +184,10 @@ class _ACQ2106_435ST(MDSplus.Device):
             segment = 0
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
-            try: 
-                res_factor = self.dev.res_factor.data() is not None
-            except:
-                pass
+
+            # If resampling is choosen, then the res_factor is read from the tree node:
+            if self.resampling: 
+                res_factor = self.dev.res_factor.data()
 
             while running.on and segment < max_segments:
                 try:
@@ -197,10 +198,11 @@ class _ACQ2106_435ST(MDSplus.Device):
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
                 for c in self.chans:
-                    resampled = getattr(self.dev, str(c) + ':RESAMPLED')
                     slength   = self.seg_length/self.decim[i]
                     deltat    = dt * self.decim[i]
-                    if c.on and resampled is not None:
+                    #Choice between executing resampling or not:
+                    if c.on and self.resampling:
+                        resampled = getattr(self.dev, str(c) + ':RESAMPLED')
                         b = buffer[i::self.nchans*self.decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
@@ -297,7 +299,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                         else:
                             self.full_buffers.put(buf)
 
-    def init(self):
+    def init(self, resampling=0):
         import acq400_hapi
         MIN_FREQUENCY = 10000
 
@@ -375,6 +377,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 self.slots[card].nacc = '1'
 
         self.running.on = True
+        self.resampling = resampling
         thread = self.MDSWorker(self)
         thread.start()
     INIT = init
