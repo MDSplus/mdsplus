@@ -291,6 +291,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                         dim = MDSplus.Range(begin, end, deltat)
                         # Begin a resampled record segment, using an average     
                         c.makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
+                        #c.makeSegmentMinMax(begin, end, dim, b, resampled, res_factor)
                     i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)
