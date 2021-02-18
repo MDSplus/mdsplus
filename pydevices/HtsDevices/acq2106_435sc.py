@@ -69,10 +69,9 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
     def init(self):
         uut = self.getUUT()
-        slots = super(_ACQ2106_435SC, self).getSlots()
-
-        for card in range(self.sites):
-
+        self.slots = super(_ACQ2106_435SC, self).getSlots()
+        
+        for card in self.slots:
             if self.is_global.data() == 1:
                 # Global controls for GAINS and OFFSETS
                 slots[card].SC32_OFFSET_ALL = self.def_offset.data()
@@ -86,7 +85,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             else:
                 self.setGainsOffsets(card)
 
-            slots[card].SC32_GAIN_COMMIT = 1
+            self.slots[card].SC32_GAIN_COMMIT = 1
             print("GAINs Committed for site {}".format(card))
         # Here, the argument to the init of the superclass:
         # - init(1) => use resampling function:
@@ -118,21 +117,21 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
         return uut
 
-    def setGainsOffsets(self, site):
+    def setGainsOffsets(self, card):
         uut = self.getUUT()
         for ic in range(1,32+1):
-            if site == 1:
-                setattr(uut.s1, 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
-                setattr(uut.s1, 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
-                setattr(uut.s1, 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
-            elif site == 3:
-                setattr(uut.s3, 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
-                setattr(uut.s3, 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
-                setattr(uut.s3, 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
-            elif site == 5:
-                setattr(uut.s5, 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
-                setattr(uut.s5, 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
-                setattr(uut.s5, 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
+            if card == 1:
+                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
+                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
+                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+            elif card == 3:
+                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
+                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
+                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+            elif card == 5:
+                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
+                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
+                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
     def setChanScale(self, node, num):
         chan     = self.__getattr__('INPUT_%3.3d' % num)

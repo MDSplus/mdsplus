@@ -152,7 +152,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             event_name = self.dev.seg_event.data()
 
-            for card in range(self.dev.sites):
+            for card in self.dev.slots:
                 # Retrive the actual value of NACC (samples) already set in the ACQ box
                 # nacc_str = uut.s1.get_knob('nacc')
                 nacc_str = self.dev.slots[card].nacc
@@ -368,7 +368,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         # Get the slots (aka sites, or cards) that are physically active in the chassis of the ACQ
         self.slots = self.getSlots()
 
-        for card in range(self.sites):
+        for card in self.slots:
             if 1 <= nacc_samp <= 32:
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
             else:
@@ -386,21 +386,21 @@ class _ACQ2106_435ST(MDSplus.Device):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         # Ask UUT what are the sites that are actually being populatee with a 435ELF
-        slot_list = []
+        slot_list = {}
         for (site, module) in sorted(uut.modules.items()):
             site_number = int(site)
             if site_number == 1:
-                slot_list.append(uut.s1)
+                slot_list[site_number]=uut.s1
             elif site_number == 2:
-                slot_list.append(uut.s2)
+                slot_list[site_number]=uut.s2
             elif site_number == 3:
-                slot_list.append(uut.s3)
+                slot_list[site_number]=uut.s3
             elif site_number == 4:
-                slot_list.append(uut.s4)
+                slot_list[site_number]=uut.s4
             elif site_number == 5:
-                slot_list.append(uut.s5)
+                slot_list[site_number]=uut.s5
             elif site_number == 6:
-                slot_list.append(uut.s6)
+                slot_list[site_number]=uut.s6
         return slot_list
 
     def stop(self):
