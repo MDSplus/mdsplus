@@ -57,45 +57,127 @@ class _ACQ2106_435ST(MDSplus.Device):
     """
 
     carrier_parts = [
-        {'path': ':NODE', 'type': 'text', 'value': '192.168.0.254',
-            'options': ('no_write_shot',)},
-        {'path': ':SITE', 'type': 'numeric',
-            'value': 1, 'options': ('no_write_shot',)},
-        {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot',)},
-        {'path': ':TRIGGER', 'type': 'numeric',
-            'value': 0.0, 'options': ('no_write_shot',)},
-        {'path': ':TRIG_MODE', 'type': 'text',
-            'value': 'master:hard', 'options': ('no_write_shot',)},
-        {'path': ':EXT_CLOCK', 'type': 'axis', 'options': ('no_write_shot',)},
-        {'path': ':FREQ', 'type': 'numeric',
-            'value': 16000, 'options': ('no_write_shot',)},
-        {'path': ':HW_FILTER', 'type': 'numeric',
-            'value': 0, 'options': ('no_write_shot',)},
-        {'path': ':DEF_DCIM', 'type': 'numeric',
-            'value': 1, 'options': ('no_write_shot',)},
-        {'path': ':SEG_LENGTH', 'type': 'numeric',
-            'value': 8000, 'options': ('no_write_shot',)},
-        {'path': ':MAX_SEGMENTS', 'type': 'numeric',
-            'value': 1000, 'options': ('no_write_shot',)},
-        {'path': ':SEG_EVENT', 'type': 'text',
-            'value': 'STREAM', 'options': ('no_write_shot',)},
-        {'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(
-            ['cat /proc/cmdline', 'get.d-tacq.release']), 'options':('no_write_shot',)},
-        {'path': ':STATUS_OUT', 'type': 'signal', 'options': ('write_shot',)},
-        {'path': ':TRIG_TIME', 'type': 'numeric', 'options': ('write_shot',)},
-        {'path': ':TRIG_STR', 'type': 'text', 'options': (
-            'nowrite_shot',), 'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
-        {'path': ':RUNNING', 'type': 'any', 'options': ('no_write_model',)},
-        {'path': ':LOG_OUTPUT', 'type': 'text', 'options': (
-            'no_write_model', 'write_once', 'write_shot')},
-        {'path': ':GIVEUP_TIME', 'type': 'numeric',
-            'value': 180.0, 'options': ('no_write_shot',)},
-        {'path': ':INIT_ACTION', 'type': 'action',
-         'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
-         'options': ('no_write_shot',)},
-        {'path': ':STOP_ACTION', 'type': 'action',
-         'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
-         'options': ('no_write_shot',)},
+        {
+            'path': ':NODE',
+            'type': 'text',
+            'value': '192.168.0.254',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SITE',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':COMMENT', 
+            'type': 'text', 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIGGER',
+            'type': 'numeric',
+            'value': 0.0,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_MODE',
+            'type': 'text',
+            'value': 'master:hard',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':EXT_CLOCK',
+            'type': 'axis',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':FREQ',
+            'type': 'numeric',
+            'value': 16000,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':HW_FILTER',
+            'type': 'numeric',
+            'value': 0,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':DEF_DCIM',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_LENGTH',
+            'type': 'numeric',
+            'value': 8000,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':MAX_SEGMENTS',
+            'type': 'numeric',
+            'value': 1000,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_EVENT', 
+            'type': 'text',
+            'value': 'STREAM',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':STATUS_CMDS',
+            'type': 'text', 
+            'value': MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']), 
+            'options':('no_write_shot',)
+        },
+        {
+            'path': ':STATUS_OUT',
+            'type': 'signal',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_TIME',
+            'type': 'numeric',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_STR',
+            'type': 'text',
+            'options': ('nowrite_shot',), 
+            'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"
+        },
+        {
+            'path': ':RUNNING',
+            'type': 'any',
+            'options': ('no_write_model',)
+        },
+        {
+            'path': ':LOG_OUTPUT',
+            'type': 'text',
+            'options': (
+            'no_write_model', 'write_once', 'write_shot')
+        },
+        {
+            'path': ':GIVEUP_TIME',
+            'type': 'numeric',
+            'value': 180.0,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':INIT_ACTION',
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':STOP_ACTION',
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
+            'options': ('no_write_shot',)
+        },
     ]
 
     data_socket = -1
