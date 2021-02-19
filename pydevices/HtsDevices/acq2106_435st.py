@@ -459,7 +459,9 @@ class _ACQ2106_435ST(MDSplus.Device):
                 self.slots[card].nacc = '1'
 
         self.running.on = True
+        # If resampling=1, then resampling is used during streaming:
         self.resampling = resampling
+        
         thread = self.MDSWorker(self)
         thread.start()
     INIT = init
