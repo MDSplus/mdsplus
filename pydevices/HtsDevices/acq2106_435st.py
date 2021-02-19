@@ -267,7 +267,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
 
-            # If resampling is choosen, then the res_factor is read from the tree node:
+            # If resampling is choosen, i.e. self.resampling=1, then the res_factor is read from the tree node:
             if self.resampling: 
                 res_factor = self.dev.res_factor.data()
 
@@ -461,7 +461,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         self.running.on = True
         # If resampling=1, then resampling is used during streaming:
         self.resampling = resampling
-        
+
         thread = self.MDSWorker(self)
         thread.start()
     INIT = init

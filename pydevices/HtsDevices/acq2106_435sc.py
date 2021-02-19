@@ -34,32 +34,36 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     """
     
     sc_parts = [
-        # IS_GLOBAL controls if the GAINS and OFFSETS are set globally or per channel
         {
+            # IS_GLOBAL controls if the GAINS and OFFSETS are set globally or per channel
             'path': ':IS_GLOBAL',
             'type': 'numeric', 
-            'value': 1,
+            'value': 1, # mean, global settings are used in the D-Tacq SC device.
             'options': ('no_write_shot',)
         },
-        {
+        { 
+            # Global D-Tacq SC GAIN1
             'path': ':DEF_GAIN1',
             'type': 'numeric',
             'value': 1,
             'options': ('no_write_shot',)
         },
         {
+            # Global D-Tacq SC GAIN2
             'path': ':DEF_GAIN2',
             'type': 'numeric',
             'value': 1,
             'options': ('no_write_shot',)
         },
         {
+            # Global D-Tacq SC OFFSET
             'path': ':DEF_OFFSET',
             'type': 'numeric',
             'value': 0,
             'options': ('no_write_shot',)
         },
         {
+            # Resampling factor. This is used during streaming by makeSegmentResampled()
             'path': ':RES_FACTOR',
             'type': 'numeric',
             'value': 100,
@@ -156,25 +160,28 @@ def assemble(cls):
                 'options':('no_write_model', 'write_once',)
             },
             {
+                # Local (per channel) SC gains
                 'path': ':INPUT_%3.3d:SC_GAIN1'%(i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_gain1',
                 'options':('no_write_shot',)
             },
             {
+                # Local (per channel) SC gains
                 'path': ':INPUT_%3.3d:SC_GAIN2'%(i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_gain2',
                 'options':('no_write_shot',)
             },
             {
+                # Local (per channel) SC offsets
                 'path': ':INPUT_%3.3d:SC_OFFSET'%(i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_offset',
                 'options':('no_write_shot',)
             },   
             {
-                 # Conditioned signal
+                 # Conditioned signal goes here:
                 'path': ':INPUT_%3.3d:SC_INPUT'%(i+1,),
                 'type': 'SIGNAL',
                 'valueExpr': 
@@ -183,7 +190,7 @@ def assemble(cls):
                 'options': ('no_write_model','write_once',)
             },
             {
-                # Re-sampling streaming data:
+                # Re-sampling streaming data goes here:
                 'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),
                 'type': 'SIGNAL', 
                 'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1, i+1),
