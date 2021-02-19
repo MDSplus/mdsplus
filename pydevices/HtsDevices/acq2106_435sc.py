@@ -38,7 +38,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         {
             'path': ':IS_GLOBAL',
             'type': 'numeric', 
-            'value': 0,
+            'value': 1,
             'options': ('no_write_shot',)
         },
         {
@@ -74,13 +74,13 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         for card in self.slots:
             if self.is_global.data() == 1:
                 # Global controls for GAINS and OFFSETS
-                slots[card].SC32_OFFSET_ALL = self.def_offset.data()
+                self.slots[card].SC32_OFFSET_ALL = self.def_offset.data()
                 print("Site {} OFFSET ALL {}".format(card, self.def_offset.data()))
 
-                slots[card].SC32_G1_ALL     = self.def_gain1.data()
+                self.slots[card].SC32_G1_ALL     = self.def_gain1.data()
                 print("Site {} GAIN 1 ALL {}".format(card, self.def_gain1.data()))
 
-                slots[card].SC32_G2_ALL     = self.def_gain2.data()
+                self.slots[card].SC32_G2_ALL     = self.def_gain2.data()
                 print("Site {} GAIN 2 ALL {}".format(card, self.def_gain2.data()))
             else:
                 self.setGainsOffsets(card)
@@ -107,9 +107,9 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             chans_sc.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
         for ic, ch in enumerate(chans_sc):
-            chan_unsc = self.__getattr__('INPUT_%3.3d:NC_INPUT' %(ic+1))
+            chan_unsc = self.__getattr__('INPUT_%3.3d:SC_INPUT' %(ic+1))
             if ch.on:
-                chan_unsc.record = MDSplus.BUILD_SIGNAL(ch.data() * (1.0/(ch.SC_GAIN1 * ch.SC_GAIN2)) - ch.SC_OFFSET, MDSplus.RAW_OF(ch), MDSplus.DIM_OF(ch))
+                chan_unsc.record = MDSplus.BUILD_SIGNAL(ch.data(), MDSplus.RAW_OF(ch), MDSplus.DIM_OF(ch))
     STORE=store
     
     def getUUT(self):
@@ -134,11 +134,14 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
     def setChanScale(self, node, num):
-        chan     = self.__getattr__('INPUT_%3.3d' % num)
-        #cal_chan: channel to be calibrated
-        cal_chan = self.__getattr__(node)
-        cal_chan.setSegmentScale(
-            MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET)
+        #Raw input channel, where the conditioning has been applied:
+        input_chan = self.__getattr__('INPUT_%3.3d' % num)
+        chan       = self.__getattr__(node)
+        #Un-conditioning the signal:
+        chan.setSegmentScale(
+            MDSplus.ADD(MDSplus.DIVIDE(MDSplus.MULTIPLY(input_chan.COEFFICIENT, MDSplus.dVALUE()), 
+                                       MDSplus.MULTIPLY(input_chan.SC_GAIN1, input_chan.SC_GAIN2)), 
+                                       MDSplus.SUBTRACT(input_chan.OFFSET, input_chan.SC_OFFSET))
             )
 
 def assemble(cls):
@@ -187,16 +190,19 @@ def assemble(cls):
                 'options':('no_write_shot',)
             },   
             {
-                 # Non-Conditioned signal
-                'path': ':INPUT_%3.3d:NC_INPUT'%(i+1,),
-                'type':'SIGNAL',
-                'options':('no_write_model','write_once',)
+                 # Conditioned signal
+                'path': ':INPUT_%3.3d:SC_INPUT'%(i+1,),
+                'type': 'SIGNAL',
+                'valueExpr': 
+                     'ADD(MULTIPLY(head.INPUT_%3.3d, MULTIPLY(head.INPUT_%3.3d.SC_GAIN1, head.INPUT_%3.3d.SC_GAIN2)), head.INPUT_%3.3d.SC_OFFSET)'
+                      % (i+1,i+1,i+1,i+1),
+                'options': ('no_write_model','write_once',)
             },
             {
                 # Re-sampling streaming data:
                 'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),
                 'type': 'SIGNAL', 
-                'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1,i+1),
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1, i+1),
                 'options': ('no_write_model', 'write_once',)
             },
         ]
