@@ -95,22 +95,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         # For testing purpose only. Set trigger source to external hard trigger:
         uut.s0.SIG_SRC_TRG_0 = 'EXT'
     INIT=init
-
-    # The following STORE method will UN-conditioned the signal so as to have in the tree node "NC_INPUT"
-    # the original input signal.
-    def store(self):
-        uut = self.getUUT()
-
-        chans_sc  = []
-        nchannels = uut.nchan()
-        for ii in range(nchannels):
-            chans_sc.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
-
-        for ic, ch in enumerate(chans_sc):
-            chan_unsc = self.__getattr__('INPUT_%3.3d:SC_INPUT' %(ic+1))
-            if ch.on:
-                chan_unsc.record = MDSplus.BUILD_SIGNAL(ch.data(), MDSplus.RAW_OF(ch), MDSplus.DIM_OF(ch))
-    STORE=store
     
     def getUUT(self):
         import acq400_hapi
