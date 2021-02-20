@@ -9,8 +9,7 @@ TclSetCallbacks(                    /* Returns: void                        */
                 ,
                 void (*text_out)() /* <r> addr of normal text output routine */
                 ,
-                void (
-                    *node_touched)() /* <r> addro of "node touched" routine */
+                void (*node_touched)() /* <r> addro of "node touched" routine */
 );
 extern void TclNodeTouched(        /* Returns: void                        */
                            int nid /* <r> node id                          */
