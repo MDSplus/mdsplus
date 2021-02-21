@@ -32,7 +32,7 @@ export class DataSourceStream extends DataSourceApi<StreamQuery, StreamDataSourc
       return new Observable<DataQueryResponse>(subscriber => {
         const frame = new CircularDataFrame({
           append: 'tail',
-          capacity: 20000,
+          capacity: 40000,
         });
 
         frame.refId = query.refId;
