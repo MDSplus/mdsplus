@@ -50,7 +50,7 @@ AC_DEFUN([AX_DOCKER_BUILD],[
    AC_PUSH_LOCAL([m4_ax_docker_build])
 
    AS_VAR_SET_IF([HAVE_DOCKER],,
-      AC_CHECK_PROG([HAVE_DOCKER],[docker],[yes],[no]))
+      [AC_CHECK_PROG([HAVE_DOCKER],[docker],[yes],[no])])
 
    AC_ARG_WITH(docker-image,
                [AS_HELP_STRING([--with-docker-image],[specify docker images])],
