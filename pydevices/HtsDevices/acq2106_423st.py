@@ -341,8 +341,8 @@ class _ACQ2106_423ST(MDSplus.Device):
         'fp_sync',      # Front Panel SYNC
         'wrtt1'         # White Rabbit Trigger
     ]
-
-    def init(self):
+    
+    def init(self, is_arm=1):
         uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
@@ -417,8 +417,13 @@ class _ACQ2106_423ST(MDSplus.Device):
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
 
         self.running.on = True
-        thread = self.MDSWorker(self)
-        thread.start()
+        if is_arm:
+            # The following will arm the ACQ by this super class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            if self.debug:
+                print('Skipping streaming from MDSWorker thread. ACQ will be armed by a sub-class')
     INIT = init
 
     def stop(self):
