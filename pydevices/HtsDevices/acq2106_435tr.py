@@ -195,9 +195,9 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
                 raw_signal = MDSplus.Signal(channel_data[ic], None, dim)
                 ch.RAW_INPUT.putData(raw_signal)
 
-                expr = "%s * %f + %f" % (ch.RAW_INPUT, ch.ESLO, ch.EOFF)
-                signal =  MDSplus.Signal(MDSplus.Data.compile(expr), None, dim)
-                ch.putData(signal)
+                # expr = "%s * %f + %f" % (ch.RAW_INPUT, ch.ESLO, ch.EOFF)
+                # signal =  MDSplus.Signal(MDSplus.Data.compile(expr), None, dim)
+                # ch.putData(signal)
 
     STORE=store
         
@@ -213,13 +213,16 @@ def assemble(cls):
             {
                 'path': ':INPUT_%3.3d' % (i+1,),             
                 'type': 'SIGNAL',  
-                'valueExpr': '_coeff = \COEFFICIENT, _y = \RAW_INPUT,  _offset = \OFFSET, Build_With_Units(_coeff * _y + _offset, "V"))',
+                'valueExpr': 
+                     'ADD(MULTIPLY(head.INPUT_%3.3d.RAW_INPUT, head.INPUT_%3.3d.COEFFICIENT), head.INPUT_%3.3d.OFFSET)'
+                      % (i+1,i+1,i+1),
                 'options': ('no_write_model','write_once',)
             }, 
 
             {
                 'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),
-                'type': 'NUMERIC', 'valueExpr':'head.def_dcim',                
+                'type': 'NUMERIC',
+                'valueExpr': 'head.def_dcim',
                 'options': ('no_write_shot',)
             },  
                      

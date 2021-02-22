@@ -465,7 +465,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
-        eoff = uut.cal_eoff[1:]
+        eoff   = uut.cal_eoff[1:]
 
         self.chans = []
         nchans = uut.nchan()
