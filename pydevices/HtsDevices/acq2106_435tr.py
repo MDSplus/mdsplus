@@ -25,6 +25,7 @@
 
 import MDSplus
 import importlib
+import numpy
 
 acq2106_435st = importlib.import_module('acq2106_435st')
 
@@ -168,7 +169,7 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
-        channel_data = uut.read_channels()
+        channel_data = numpy.right_shift(uut.read_channels(), 8)
 
         # print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
         # print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
