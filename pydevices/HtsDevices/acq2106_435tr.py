@@ -196,10 +196,6 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
                 raw_signal = MDSplus.Signal(channel_data[ic], None, dim)
                 ch.RAW_INPUT.putData(raw_signal)
 
-                # expr = "%s * %f + %f" % (ch.RAW_INPUT, ch.ESLO, ch.EOFF)
-                # signal =  MDSplus.Signal(MDSplus.Data.compile(expr), None, dim)
-                # ch.putData(signal)
-
     STORE=store
         
     def getUUT(self):
