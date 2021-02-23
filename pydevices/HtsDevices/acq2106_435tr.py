@@ -169,6 +169,7 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
+        # See D-Tacq 4G User Guide: For 24 bit ADC, Section 11.1, normalise the raw value first by dividing by 256 ( >> 8 ).
         channel_data = numpy.right_shift(uut.read_channels(), 8)
 
         # print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
