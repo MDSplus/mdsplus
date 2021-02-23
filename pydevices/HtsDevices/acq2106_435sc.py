@@ -96,8 +96,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         # makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
         super(_ACQ2106_435SC, self).init(1)
 
-        # For testing purpose only. Set trigger source to external hard trigger:
-        uut.s0.SIG_SRC_TRG_0 = 'EXT'
     INIT=init
     
     def getUUT(self):
