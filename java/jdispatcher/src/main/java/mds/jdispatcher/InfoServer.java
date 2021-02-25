@@ -6,7 +6,29 @@ import mds.connection.MdsConnection;
 
 class InfoServer implements Server
 {
-	static MDSplus.Tree model_database;
+      static class TreeRepo
+      {
+        static Hashtable<Integer, MDSplus.Tree> treeHash = new Hashtable<Integer, MDSplus.Tree>();
+        
+        static public MDSplus.Tree getTree(String name, int shot)
+        {
+          MDSplus.Tree retTree = treeHash.get(new Integer(shot));
+          if(retTree == null)
+          {
+            try {
+                retTree = new MDSplus.Tree(name, shot);
+                treeHash.put(shot, retTree);
+            } catch(Exception exc){System.out.println("Error opening tree " + name + " shot " + shot+": "+exc);} 
+          }
+          return retTree;
+        }
+        static void discardTree(int shot)
+        {
+          treeHash.remove(new Integer(shot));
+        }
+      }
+
+        static MDSplus.Tree model_database;
 
 	public static MDSplus.Tree getDatabase()
 	{ return model_database; }
@@ -44,7 +66,8 @@ class InfoServer implements Server
 		System.out.println("InfoServer: beginSequence...");
 		try
 		{
-			model_database = new MDSplus.Tree(tree, -1);
+			//model_database = new MDSplus.Tree(tree, -1);
+			model_database = TreeRepo.getTree(tree, -1);
 			model_database.createPulse(shot);
 		}
 		catch (final Exception exc)
@@ -68,7 +91,8 @@ class InfoServer implements Server
 				return null;
 			try
 			{
-				model_database = new MDSplus.Tree(tree, shot);
+                               // model_database = new MDSplus.Tree(tree, shot);
+                                model_database = TreeRepo.getTree(tree, shot);
 			}
 			catch (final Exception exc)
 			{
@@ -132,7 +156,8 @@ class InfoServer implements Server
 		{
 			try
 			{
-				model_database = new MDSplus.Tree(tree, shot);
+ //                               model_database = new MDSplus.Tree(tree, shot);
+                                model_database = TreeRepo.getTree(tree, shot);
 			}
 			catch (final Exception exc)
 			{
@@ -158,7 +183,17 @@ class InfoServer implements Server
 	public void endSequence(final int shot)
 	{
 		if (model_database != null)
-			MdsConnection.tryClose(model_database);
+		{
+                       // MdsConnection.tryClose(model_database);
+                  model_database = TreeRepo.getTree(tree, shot);
+                  try {
+                      model_database.close();
+                  }catch(Exception exc)
+                  {
+                    System.out.println("Cannot close tree "+tree+" Shot " + shot+": "+exc);
+                  }
+                  TreeRepo.discardTree(shot);
+                }
 		model_database = null;
 	}
 
