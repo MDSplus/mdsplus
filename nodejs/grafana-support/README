@@ -10,8 +10,8 @@ Required steps for plugins installation:
 1) Install grafana on a system that can receive MDSplus streams. Only mdsplus/nodejs is required on such system.
     see https://grafana.com/docs/grafana/latest/installation/rpm/
     
-2) Install nodeJS 12.x 
-    see https://nodejs.org/en/blog/release/v12.13.0/
+2) Install nodeJS 14
+    
     
 3) Install yarn
     npm install --global yarn
@@ -24,39 +24,52 @@ Required steps for plugins installation:
    
    [paths]
    plugins = "/path/to/grafana-plugins"
+
+6) In grafana-plugins install Websocket 
+
+  npm install websocket
+
    
-   
-6) In the plugin directory create mdsip and streams plugins from template with the following commands:
+7) In grafana-plugins directory create mdsip and streams plugins from template with the following commands:
 
     npx @grafana/toolkit plugin:create mdsip
     npx @grafana/toolkit plugin:create streams
-    
-7)  In each created directory (mdsip and streams), download necessary dependencies
-    
-    yarn install
     
     when prompted during installation:
     1) select 'Datasource Plugin'
     2) Use default value (mdsip/streams) as Plugin name
     3) type mds for Organization
     4) type return for all the other requested fields
+
+    
+8)  In each created directory (mdsip and streams), download necessary dependencies
+    
+    yarn install
     
     
-8) copy files from MDSplus distribution 
+    
+9) copy files from MDSplus distribution 
     
     cp /opt/mdsplus/nodejs/grafana-support/mdsip/*     <grafana-plugins-path>/mdsip/src
     cp /opt/mdsplus/nodejs/grafana-support/streams/*   <grafana-plugins-path>/streams/src
+
+10) PATCH: the latest grafana distribution introduced an incompatibility between rxjs libraries
+   It can be solved with the following command, issued within  <grafana-plugins-path>/mdsip
+   and <grafana-plugins-path>/streams
+   
+  cp -r node_modules/@grafana/data/node_modules/rxjs node_modules/
     
-9) In each created directory (mdsip and streams), build the plugin
+    
+11) In each created directory (mdsip and streams), build the plugin
 
     yarn dev
     
-10) Restart grafana
+12) Restart grafana
 
    /bin/systemctl restart grafana-server.service
 
     
-11) In /opt/mdsplus/nodejs launch Node js program mds-bridge
+13) In /opt/mdsplus/nodejs launch Node js program mds-bridge
 
     node mds-bridge
     
@@ -84,6 +97,20 @@ When the corresponding data plugin has been select in the panel configuration, t
 - for mdsip plugin: Experiment, Shot, Signal
 - for streams plugin: Signal, Label (shown in the plots) 
 In both cases the configuration is entered by hitting the Apply button.
+
+
+HACKS for latest version
+for Marte DataSource add in marte/package.json
+    "@grafana/runtime": "latest",
+and then yarn install
+
+remove rxjs library  
+rm -rf /opt/mdsplus/nodejs/grafana-plugins/marte/node_modules/rxjs
+and replace it with 
+cp -r /opt/mdsplus/nodejs/grafana-plugins/marte/node_modules/@grafana/data/node_modules/rxjs /opt/mdsplus/nodejs/grafana-plugins/marte/node_modules/
+
+then yarn dev
+
 
 
 
