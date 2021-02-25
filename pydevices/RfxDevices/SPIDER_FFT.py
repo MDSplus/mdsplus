@@ -8,7 +8,6 @@ class SPIDER_FFT(Device):
         {'path': ':COMMENT', 'type': 'text'},
         {'path': ':BURST_SIZE', 'type': 'numeric'},
         {'path': ':ACQ_FREQ', 'type': 'numeric'},
-        {'path': ':IN_RANGE', 'type': 'numeric'},
         {'path': ':TRIG_FREQ', 'type': 'numeric'},
         {'path': ':TRIG_TIME', 'type': 'numeric'},
     ]
@@ -16,6 +15,9 @@ class SPIDER_FFT(Device):
         parts.extend([
             {'path': '.SIGNAL_%d' % (i+1), 'type': 'structure'},
             {'path': '.SIGNAL_%d:IN_SIGNAL' % (i+1), 'type': 'numeric'},
+            {'path': '.SIGNAL_%d:IN_RANGE' % (i+1), 'type': 'numeric','value': 1.},
+            {'path': '.SIGNAL_%d:IN_GAIN' % (i+1), 'type': 'numeric','value': 1.},
+            {'path': '.SIGNAL_%d:IN_OFFSET' % (i+1), 'type': 'numeric','value': 0.},
         ])
         for j in range(5):
             parts.extend([
@@ -43,19 +45,14 @@ class SPIDER_FFT(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'No Sampling Frequency specified ')
             raise DevBAD_PARAMETER
         try:
-            trigTime = self.trig_time.data()
+            trigTime = float(self.trig_time.data())
         except: 
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'No Trigger Time specified ')
             raise DevBAD_PARAMETER
         try:
-            trigFreq = self.trig_freq.data()
+            trigFreq = float(self.trig_freq.data())
         except: 
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'No Trigger Frequency specified ')
-            raise DevBAD_PARAMETER
-        try:
-            inRange = self.in_range.data()
-        except: 
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'No Input Range specified ')
             raise DevBAD_PARAMETER
           
         for sigIdx in range(8):
@@ -68,6 +65,22 @@ class SPIDER_FFT(Device):
             if(not isinstance(inNode, TreeNode)):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'In Signal must be a tree node reference')
                 raise DevBAD_PARAMETER
+            try:
+                inRange = getattr(self, 'signal_%d_in_range' % (sigIdx+1)).data()
+            except: 
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'No Input Range specified for signal '+str(sigIdx + 1))
+                raise DevBAD_PARAMETER
+            try:
+                inGain = getattr(self, 'signal_%d_in_gain' % (sigIdx+1)).data()
+            except: 
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'No Input Gain specified for signal '+str(sigIdx + 1))
+                raise DevBAD_PARAMETER
+            try:
+                inOffset = getattr(self, 'signal_%d_in_offset' % (sigIdx+1)).data()
+            except: 
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'No Input Offset specified for signal '+str(sigIdx + 1))
+                raise DevBAD_PARAMETER
+
             nSegments = inNode.getNumSegments()
             if(nSegments == 0):
                 print('No Data Available for signal '+str(sigIdx+1))
@@ -89,6 +102,7 @@ class SPIDER_FFT(Device):
             outSegCount = 0
             for segIdx in range(nSegments):
                 segData = inNode.getSegment(segIdx).data()
+                segData = segData * inRange*inGain/8192. + inOffset
                 numBursts = int(round(len(segData)/burstSize))
                 outFreqSegs = []
                 outAmplSegs = []
@@ -112,7 +126,7 @@ class SPIDER_FFT(Device):
                                 origOffset = origOffset + 1  #keep trak of the shift that may occur removing the index
                         maxIdxs.append(maxIdx)
                         outFreqSegs[hIdx].append(acqFreq * np.float(maxIdx + origOffset) / burstSize)
-                        outAmplSegs[hIdx].append(fftAmp[maxIdx] * inRange/8192. )
+                        outAmplSegs[hIdx].append(fftAmp[maxIdx])
                         outPhaseSegs[hIdx].append(fftPhs[maxIdx])
                         np.delete(fftAmp, maxIdx)
                         np.delete(fftPhs, maxIdx)
