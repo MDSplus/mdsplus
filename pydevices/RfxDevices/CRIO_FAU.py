@@ -4,7 +4,7 @@ from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_ui
 import os
 from time import sleep
 import sys, traceback
-import exceptions
+
 
 class CRIO_FAU(Device):
     """NI Compact RIO SPIDER Interlock Fast Acquisition Units"""
