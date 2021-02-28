@@ -4187,19 +4187,24 @@ class EXPORT EventStream : public Event {
   std::vector<DataStreamListener *> listeners;
   std::vector<std::string> names;
 
+  void handleJSONPayload(char *);
 public:
   virtual void run();
   EventStream() : Event("STREAMING") {
     listeners.clear();
     names.clear();
   }
+  static void send(int shot, const char *name, bool isAbsTime, int nTimes, void *times, 
+                              int nSamples, float *samples);
   static void send(int shot, const char *name, float time, float sample);
   static void send(int shot, const char *name, uint64_t time, float sample);
   static void send(int shot, const char *name, int numSamples, float *times,
-                   float *samples, bool oscilloscopeMode = false);
+                   float *samples);
   static void send(int shot, const char *name, int numSamples, uint64_t *times,
                    float *samples);
-  static void send(int shot, const char *name, Data *timeData, Data *valueData);
+  static void send(int shot, const char *name, int numTimes, uint64_t *times,
+                   int numSamples, float *samples);
+  static void send(int shot, const char *name, Data *timesD, Data *samplesD);
   void registerListener(DataStreamListener *listener, const char *name);
 };
 #endif
