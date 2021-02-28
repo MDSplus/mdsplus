@@ -147,6 +147,10 @@ def BUILDER(cls):
             ctypes.POINTER(None), ctypes.c_int]
         WrapperLib.WCAPI_GetDataTypeSLId.restype = ctypes.c_uint
 
+        WrapperLib.WCAPI_GetDataEnumStorageType.argtypes = [
+            ctypes.POINTER(None), ctypes.c_int]
+        WrapperLib.WCAPI_GetDataEnumStorageType.restype = ctypes.c_uint
+
         WrapperLib.WCAPI_GetDataTypeCName.argtypes = [
             ctypes.POINTER(None), ctypes.c_int]
         WrapperLib.WCAPI_GetDataTypeCName.restype = ctypes.c_char_p
@@ -235,6 +239,27 @@ def BUILDER(cls):
                     MARTe2Typename = 'uint32'
                 elif retrievedSLIdType == 8:
                     MARTe2Typename = 'bool'
+                elif retrievedSLIdType == 254:
+                    fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, retrievedTypeIdx)
+                    if fieldEnumType == 0:
+                        MARTe2Typename = 'float64'
+                    elif fieldEnumType == 1:
+                        MARTe2Typename = 'float32'
+                    elif fieldEnumType == 2:
+                        MARTe2Typename = 'int8'
+                    elif fieldEnumType == 3:
+                        MARTe2Typename = 'uint8'
+                    elif fieldEnumType == 4:
+                        MARTe2Typename = 'int16'
+                    elif fieldEnumType == 5:
+                        MARTe2Typename = 'uint16'
+                    elif fieldEnumType == 6:
+                        MARTe2Typename = 'int32'
+                    elif fieldEnumType == 7:
+                        MARTe2Typename = 'uint32'
+                    else:
+                        print('type '+str(fieldEnumType))
+                        raise Exception('Unsupported Enum datatype.')
                 elif retrievedSLIdType == 255:
                     MARTe2Typename = WrapperLib.WCAPI_GetDataTypeMWName(
                         DataTypeMap, retrievedTypeIdx)
@@ -305,7 +330,29 @@ def BUILDER(cls):
                             fieldMARTe2Typename = 'uint32'
                         elif fieldSLIdType == 8:
                             fieldMARTe2Typename = 'bool'
+                        elif fieldSLIdType == 254:
+                            fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, fieldTypeIdx)
+                            if fieldEnumType == 0:
+                                fieldMARTe2Typename = 'float64'
+                            elif fieldEnumType == 1:
+                                fieldMARTe2Typename = 'float32'
+                            elif fieldEnumType == 2:
+                                fieldMARTe2Typename = 'int8'
+                            elif fieldEnumType == 3:
+                                fieldMARTe2Typename = 'uint8'
+                            elif fieldEnumType == 4:
+                                fieldMARTe2Typename = 'int16'
+                            elif fieldEnumType == 5:
+                                fieldMARTe2Typename = 'uint16'
+                            elif fieldEnumType == 6:
+                                fieldMARTe2Typename = 'int32'
+                            elif fieldEnumType == 7:
+                                fieldMARTe2Typename = 'uint32'
+                            else:
+                                print('type '+str(fieldEnumType))
+                                raise Exception('Unsupported Enum datatype.')
                         else:
+                            print('type '+str(fieldEnumType))
                             raise Exception('Unsupported datatype.')
                 # field dimensions
                        # dimensions are retrieved
@@ -418,6 +465,35 @@ def BUILDER(cls):
                 elif retrievedSLIdType == 8:
                     MARTe2Typename = 'bool'
                     pythonTypename = ctypes.c_bool
+                elif retrievedSLIdType == 254:
+                    fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, retrievedTypeIdx)
+                    if fieldEnumType == 0:
+                        MARTe2Typename = 'float64'
+                        pythonTypename = ctypes.c_double
+                    elif fieldEnumType == 1:
+                        MARTe2Typename = 'float32'
+                        pythonTypename = ctypes.c_float
+                    elif fieldEnumType == 2:
+                        MARTe2Typename = 'int8'
+                        pythonTypename = ctypes.c_int8
+                    elif fieldEnumType == 3:
+                        pythonTypename = ctypes.c_uint8
+                        MARTe2Typename = 'uint8'
+                    elif fieldEnumType == 4:
+                        MARTe2Typename = 'int16'
+                        pythonTypename = ctypes.c_int16
+                    elif fieldEnumType == 5:
+                        pythonTypename = ctypes.c_uint16
+                        MARTe2Typename = 'uint16'
+                    elif fieldEnumType == 6:
+                        pythonTypename = ctypes.c_int32
+                        MARTe2Typename = 'int32'
+                    elif fieldEnumType == 7:
+                        pythonTypename = ctypes.c_uint32
+                        MARTe2Typename = 'uint32'
+                    else:
+                        print('type '+str(fieldEnumType))
+                        raise Exception('Unsupported Enum datatype.')
                 else:
                     raise Exception('Unsupported parameter datatype.')
 

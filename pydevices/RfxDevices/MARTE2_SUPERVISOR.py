@@ -317,7 +317,7 @@ class MARTE2_SUPERVISOR(Device):
                 else:
                     numberOfDimensions = len(fieldDict['dimensions'])
                     numberOfElements = 1
-                    for currDim in inputDict['dimensions']:
+                    for currDim in fieldDict['dimensions']:
                         numberOfElements *= currDim
                 typeDecl += '      NumberOfDimensions = ' + \
                     str(numberOfDimensions)+'\n'
@@ -340,6 +340,126 @@ class MARTE2_SUPERVISOR(Device):
         confText += '  CPUs = 0x1\n'
         confText += '  Name = '+info['name']+'\n'
         confText += '}\n'
+        confText += '+WebRoot = {\n'
+        confText += '    Class = HttpObjectBrowser\n'
+        confText += '    Root = "."\n'
+        confText += '    +ObjectBrowse = {\n'
+        confText += '        Class = HttpObjectBrowser\n'
+        confText += '        Root = "/"\n'
+        confText += '    }\n'
+        confText += '    +ResourcesHtml = {\n'
+        confText += '        Class = HttpDirectoryResource\n'
+        confText += '        BaseDir = "/opt/MARTe2/MARTe2/Resources/HTTP/"\n'
+        confText += '    } \n'
+        confText += '}\n'
+        confText += '+WebServer = {\n'
+        confText += '    Class = HttpService\n'
+        confText += '    Port = 8085\n'
+        confText += '    WebRoot = WebRoot\n'
+        confText += '    Timeout = 0\n'
+        confText += '    ListenMaxConnections = 255\n'
+        confText += '    AcceptTimeout = 1000\n'
+        confText += '    MaxNumberOfThreads = 8\n'
+        confText += '    MinNumberOfThreads = 1\n'
+        confText += '}    \n'
+    
+        confText += ' +StateMachine = {\n'
+        confText += '    Class = StateMachine\n'
+        confText += '    +INITIAL = {\n'
+        confText += '        Class = ReferenceContainer    \n'  
+        confText += '        +START = {\n'
+        confText += '            Class = StateMachineEvent\n'
+        confText += '            NextState = "IDLE"\n'
+        confText += '            NextStateError = "IDLE"\n'
+        confText += '            Timeout = 0\n'
+        confText += '            +StartHttpServer = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = "WebServer"\n'
+        confText += '                Function = "Start"\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }            \n'
+        confText += '            +ChangeToStateIdleMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '                Function = PrepareNextState\n'
+        confText += '                +Parameters = {\n'
+        confText += '                    Class = ConfigurationDatabase\n'
+        confText += '                    param1 = Idle\n'
+        confText += '                }\n'
+        confText += '            }\n'
+        confText += '            +StartNextStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StartNextStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '        }\n'
+        confText += '    }\n'
+        confText += '    +IDLE = {\n'
+        confText += '        Class = ReferenceContainer\n'
+        confText += '        +GOTORUN = {\n'
+        confText += '            Class = StateMachineEvent\n'
+        confText += '            NextState = "RUN"\n'
+        confText += '            NextStateError = "IDLE"\n'
+        confText += '            Timeout = 0 \n'
+        confText += '            +ChangeToRunMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '               Destination = '+info['name']+'\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '                Function = PrepareNextState\n'
+        confText += '                +Parameters = {\n'
+        confText += '                   Class = ConfigurationDatabase\n'
+        confText += '                    param1 = '+info['states'][0]['name']+'\n'
+        confText += '                }\n'
+        confText += '           }\n'
+        confText += '            +StopCurrentStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '               Function = StopCurrentStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '            +StartNextStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StartNextStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '        }\n'
+        confText += '    }\n'
+        confText += '    +RUN = {\n'
+        confText += '        Class = ReferenceContainer\n'
+        confText += '        +GOTOIDLE = {\n'
+        confText += '           Class = StateMachineEvent\n'
+        confText += '           NextState = "IDLE"\n'
+        confText += '            NextStateError = "IDLE"\n'
+        confText += '            Timeout = 0         \n'
+        confText += '            +ChangeToIdleMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '                Function = PrepareNextState\n'
+        confText += '                +Parameters = {\n'
+        confText += '                    Class = ConfigurationDatabase\n'
+        confText += '                    param1 = Idle\n'
+        confText += '                }\n'
+        confText += '           }\n'
+        confText += '            +StopCurrentStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StopCurrentStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '           +StartNextStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StartNextStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '        }   \n'
+        confText += '    }\n'
+        confText += '}   \n'
+
         confText += '$'+info['name']+' = {\n'
         confText += ' Class = RealTimeApplication\n'
         confText += ' +Functions = {\n'
@@ -402,7 +522,7 @@ class MARTE2_SUPERVISOR(Device):
 
         confText += ' +States = {\n'
         confText += '  Class = ReferenceContainer\n'
-        confText += '  +IDLE = {\n'
+        confText += '  +Idle = {\n'
         confText += '    Class = RealTimeState\n'
         confText += '    +Threads = {\n'
         confText += '      Class = ReferenceContainer\n'
@@ -446,15 +566,31 @@ class MARTE2_SUPERVISOR(Device):
     def startMarteIdle(self):
         self.buildConfiguration()
         subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
-            'name').data()+'_marte_configuration.cfg -s IDLE'], shell=True)
+            'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
         return 1
 
     def startMarte(self):
         self.buildConfiguration()
         stateName = self.state_1_name.data()
         subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
-            'name').data()+'_marte_configuration.cfg -s '+stateName], shell=True)
+            'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
+        time.sleep(2)
+        self.gotorun()
         return 1
+
+    def gotorun(self):
+        marteName = self.getNode('name').data()
+        eventString1 = 'StateMachine:GOTORUN'
+        Event.seteventRaw(marteName, np.frombuffer(
+            eventString1, dtype=np.uint8))
+
+    def gotoidle(self):
+        marteName = self.getNode('name').data()
+        eventString1 = 'StateMachine:GOTOIDLE'
+        Event.seteventRaw(marteName, np.frombuffer(
+            eventString1, dtype=np.uint8))
+
+
 
     def doState(self, state):
         marteName = self.getNode('name').data()

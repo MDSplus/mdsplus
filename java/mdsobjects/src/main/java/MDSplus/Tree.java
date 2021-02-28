@@ -170,7 +170,7 @@ public class Tree
 
 	private static native void setTreeTimeContext(long ctx, Data start, Data end, Data delta);
 
-	private static native void setCurrent(java.lang.String name, int shot) throws MdsException;
+	public static native void setCurrent(java.lang.String name, int shot) throws MdsException;
 
 	private static native int getCurrent(java.lang.String treename) throws MdsException;
 

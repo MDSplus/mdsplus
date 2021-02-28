@@ -1,7 +1,7 @@
 {
     "debug" :  3,
     "port" : 8020,
-    "refresh" : 2000
+    "refresh" : 500
 }
 
     

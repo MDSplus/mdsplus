@@ -129,44 +129,55 @@ class RFX_RPADC(Device):
                 trigFromChanA = 1
             else:
                 trigFromChanA = 0
+            print('MODE')
             modeDict = {'STREAMING': 0, 'EVENT_STREAMING': 1,
                         'EVENT_SINGLE': 2, 'TRIGGER_STREAMING': 3, 'TRIGGER_SINGLE': 4}
             try:
                 mode = modeDict[self.mode.data()]
             except:
                 print('Invalid mode: ' + self.mode.data())
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             if mode == 2 or mode == 4:  # force segment composted of a single block
                 isSingle = 1
             else:
                 isSingle = 0
             clockModeDict = {'INTERNAL': 0, 'TRIG_EXTERNAL': 1,
                              'EXTERNAL': 2, 'TRIG_EVENT': 3, 'EXT_EVENT': 4, 'HIGHWAY': 5}
+            print('CLOCK MODE XXX')
+            print(self.clock_mode.data())
+            print('ccc')
             try:
                 clockMode = clockModeDict[self.clock_mode.data()]
+                print(clockMode)
             except:
                 print('Invalid clock mode: ' + self.clock_mode.data())
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+            print(self.mode.data)
             if self.mode.data() == 'STREAMING':
                 preSamples = 0
                 postSamples = 0
             else:
                 preSamples = self.pre_samples.data()
                 postSamples = self.post_samples.data()
+            print('EV_MODE')
             if (self.ev_mode.data() == 'UPPER'):
                 trigAboveThreshold = 1
             else:
                 trigAboveThreshold = 0
-            evLevel = self.ev_level.data()
-            evSamples = self.ev_samples.data()
+            print('EVENT')
+            try:
+                evLevel = self.ev_level.data()
+                evSamples = self.ev_samples.data()
+            except:
+                print('Cannot get evLevel/evSamples')
             try:
                 decimation = self.decimation.data()
                 frequency = 125E6/decimation
                 frequency1 = frequency
             except:
                 print('Cannot get decimation')
-                return 0
-
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+            print('CLOCK')
             if self.clock_mode.data() != 'INTERNAL':
                 try:
                     if self.clock_mode.data() == 'HIGHWAY':
@@ -179,14 +190,15 @@ class RFX_RPADC(Device):
                         frequency1 = frequency
                 except:
                     print('Cannot resolve external clock')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             segSize = self.seg_size.data()
+            print('HIGHWAY')
             if self.clock_mode.data() == 'HIGHWAY':
                 try:
                     event_code = self.event_code.data()
                 except:
                     print('Cannot resolve event code')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 event_code = 0
 
@@ -195,19 +207,25 @@ class RFX_RPADC(Device):
                                          c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation), c_int(event_code))
             if self.fd < 0:
                 print("Error opening device")
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             print('device opened')
             self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
                                 self.trigger.getNid(), self.start_time.getNid(
             ), preSamples, postSamples, segSize, frequency,
                 frequency1, isSingle)
-            self.chan_a.putData(Data.compile(
+            print('configured')
+            aChan = self.getTree().tdiCompile(
+                '($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a)
+            print('compilato')
+            print(aChan)
+            self.chan_a.putData(self.getTree().tdiCompile(
                 '($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a))
-            self.chan_b.putData(Data.compile(
+            print('scritto1')
+            self.chan_b.putData(self.getTree().tdiCompile(
                 '($1*$2/8192.)*$3 + $4', self.raw_b, self.range_b, self.gain_b, self.offset_b))
+            print('scritto')
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        return -1
 
     def start_store(self):
         try:
@@ -224,7 +242,6 @@ class RFX_RPADC(Device):
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        return -1
 
     def stop_store(self):
         try:
@@ -235,7 +252,6 @@ class RFX_RPADC(Device):
                 pass
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        return -1
 
     def do_trigger(self):
         import time
@@ -246,4 +262,3 @@ class RFX_RPADC(Device):
             self.start_time = int(round(time.time() * 1000))
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        return -1
