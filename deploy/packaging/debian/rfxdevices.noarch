@@ -104,6 +104,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/SOFT_TRIGGER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPECTRO_CFG.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER.py
+./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_FFT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_PARAMS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SM.py

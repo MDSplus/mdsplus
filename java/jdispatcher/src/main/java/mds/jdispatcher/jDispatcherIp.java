@@ -417,14 +417,14 @@ class jDispatcherIp extends MdsIp
 	{
 		try
 		{
-			final MDSplus.Tree tree = new MDSplus.Tree(currTreeName, shot, Tree.OPEN_READONLY);
+			//final MDSplus.Tree tree = new MDSplus.Tree(currTreeName, shot, Tree.OPEN_READONLY);
 			try
 			{
-				tree.setCurrent();
+				MDSplus.Tree.setCurrent(currTreeName, shot);
 			}
 			finally
 			{
-				tree.close();
+				//tree.close();
 			}
 		}
 		catch (final Exception exc)

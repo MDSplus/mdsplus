@@ -9,7 +9,7 @@ import mds.connection.ConnectionEvent;
 import mds.connection.Descriptor;
 import mds.connection.MdsConnection;
 
-class MdsServer extends MdsConnection
+class MdsServer extends AsyncMdsConnection
 {
 	class ListenServerConnection extends Thread
 	{
