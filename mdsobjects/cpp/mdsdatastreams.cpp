@@ -189,6 +189,7 @@ EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *sa
     }
     catch(MdsException &exc)
     {
+        time = timesD->getFloat();
         times = &time;
         nTimes = 1;
         isTimesScalar = true;
@@ -206,12 +207,15 @@ EXPORT void EventStream::run() {
     return; // Should neve return
   size_t bufSize;
   const char *buf = getRaw(&bufSize); // Get raw data
+ 
+  
   if(bufSize == 0) return;
   if(buf[0] == '{')  //JSON payload
   {
     char *newPayload = new char[bufSize+1];
     memcpy(newPayload, buf, bufSize);
     newPayload[bufSize] = 0;
+//    std::cout << newPayload << std::endl;
     handleJSONPayload(newPayload);
     delete[] newPayload;
     return;
@@ -341,21 +345,31 @@ EXPORT void EventStream::handleJSONPayload(char *payload)
       uint64_t *times = new uint64_t[timesVal.Size()];
       for(size_t i = 0; i < timesVal.Size(); i++)
         times[i] = timesVal[i].GetInt();
-      timesD = new Uint64Array(times, timesVal.Size());
+      if(timesVal.Size() == 1)
+        timesD = new Uint64(times[0]);
+      else
+        timesD = new Uint64Array(times, timesVal.Size());
   }
   else
   {
       float *times = new float[timesVal.Size()];
       for(size_t i = 0; i < timesVal.Size(); i++)
         times[i] = timesVal[i].GetFloat();
-      timesD = new Float32Array(times, timesVal.Size());
+      if(timesVal.Size() == 1)
+        timesD = new Float32(times[0]);
+      else
+        timesD = new Float32Array(times, timesVal.Size());
       delete[] times;
   }
   const Value &samplesVal = d["samples"];
   float *samples = new float[samplesVal.Size()];
   for(size_t i = 0; i < samplesVal.Size(); i++)
     samples[i] = samplesVal[i].GetFloat();
-  Data *samplesD = new Float32Array(samples, samplesVal.Size());
+  Data *samplesD;
+  if(samplesVal.Size() == 1)
+    samplesD = new Float32(samples[0]);
+  else
+    samplesD = new Float32Array(samples, samplesVal.Size());
   delete [] samples;
   for (size_t i = 0; i < listeners.size(); i++) {
     if (names[i] == nameStr)

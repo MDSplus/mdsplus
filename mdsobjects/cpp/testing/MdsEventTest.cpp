@@ -36,6 +36,54 @@ using namespace MDSplus;
 using namespace testing;
 namespace mds = MDSplus;
 
+static void *sendStream(void *streamName) {
+  sleep(1);
+  Data *timeD = new Float32(1.0);
+  Data *sampleD = new Float32(123.);
+  EventStream::send(1, (char *)streamName, timeD, sampleD);
+  deleteData(timeD);
+  deleteData(sampleD);
+  pthread_exit(0);
+  return NULL;
+}
+
+static void *sendStreamAbs(void *streamName) {
+  sleep(1);
+  Data *timeD = new Uint64(1);
+  Data *sampleD = new Float32(123.);
+  EventStream::send(1, (char *)streamName, timeD, sampleD);
+  deleteData(timeD);
+  deleteData(sampleD);
+  pthread_exit(0);
+  return NULL;
+}
+
+static void *sendStreamArr(void *streamName) {
+  sleep(1);
+  float times[] = {1.,2,3,4};
+  float samples[] = {10,11,12,13};
+  Data *timesD = new Float32Array(times, 4);
+  Data *samplesD = new Float32Array(samples, 4);
+  EventStream::send(1, (char *)streamName, timesD, samplesD);
+  deleteData(timesD);
+  deleteData(samplesD);
+  pthread_exit(0);
+  return NULL;
+}
+
+static void *sendStreamAbsArr(void *streamName) {
+  sleep(1);
+  uint64_t times[] = {1,2,3,4};
+  float samples[] = {10,11,12,13};
+  Data *timesD = new Uint64Array(times, 4);
+  Data *samplesD = new Float32Array(samples, 4);
+  EventStream::send(1, (char *)streamName, timesD, samplesD);
+  deleteData(timesD);
+  deleteData(samplesD);
+  pthread_exit(0);
+  return NULL;
+}
+
 static void *setevent(void *evname) {
   sleep(1);
   Event::setEvent((char *)evname);
@@ -118,6 +166,9 @@ int main(int argc __attribute__((unused)),
       TEST1(AutoString(data->getString()).string ==
             AutoString(str->getString()).string);
     }
+    
+    
+    
   } catch (...) {
     if (attrp)
       pthread_attr_destroy(attrp);
