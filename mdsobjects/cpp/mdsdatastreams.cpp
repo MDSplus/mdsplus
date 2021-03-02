@@ -116,7 +116,8 @@ EXPORT void EventStream::send(int shot, const char *name, bool isAbsTime, int nT
   PrettyWriter<StringBuffer> writer(sb);
   d.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
   const char *msgBuf = sb.GetString();
-  Event::setEventRaw("STREAMING", strlen(msgBuf), (char *)msgBuf);
+ // Event::setEventRaw("STREAMING", strlen(msgBuf), (char *)msgBuf);
+  Event::setEventRaw(name, strlen(msgBuf), (char *)msgBuf);
 }
 
 EXPORT void EventStream::send(int shot, const char *name, float time,
@@ -202,9 +203,9 @@ EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *sa
 
 
 EXPORT void EventStream::run() {
-  const char *eventName = getName(); // Get the name of the event
-  if (strcmp(eventName, "STREAMING"))
-    return; // Should neve return
+//  const char *eventName = getName(); // Get the name of the event
+ // if (strcmp(eventName, "STREAMING"))
+ //   return; // Should neve return
   size_t bufSize;
   const char *buf = getRaw(&bufSize); // Get raw data
  
@@ -379,8 +380,13 @@ EXPORT void EventStream::handleJSONPayload(char *payload)
   deleteData(timesD);
 }  
 
-EXPORT void EventStream::registerListener(DataStreamListener *listener,
-                                          const char *name) {
+EXPORT void EventStream::registerListener(DataStreamListener *listener,  
+                                          const char *inName) {
+  listeners.push_back(listener);
+  names.push_back(std::string(inName));
+}
+EXPORT void EventStream::registerListener(DataStreamListener *listener) 
+{
   listeners.push_back(listener);
   names.push_back(std::string(name));
 }

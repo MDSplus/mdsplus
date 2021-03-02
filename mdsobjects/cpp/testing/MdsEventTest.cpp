@@ -282,22 +282,29 @@ int main(int argc __attribute__((unused)),
             AutoString(str->getString()).string);
     }
     
-    MDSplus::EventStream evStream;
+    MDSplus::EventStream evStreamScalarRelative("SCALAR_RELATIVE");
+    MDSplus::EventStream evStreamScalarAbsolute("SCALAR_ABSOLUTE");
+    MDSplus::EventStream evStreamArrayRelative("ARRAY_RELATIVE");
+    MDSplus::EventStream evStreamArrayAbsolute("ARRAY_ABSOLUTE");
     TestListenerScalarRelative testListenerScalarRelative;
     TestListenerScalarAbsolute testListenerScalarAbsolute;
     TestListenerArrayRelative testListenerArrayRelative;
     TestListenerArrayAbsolute testListenerArrayAbsolute;
-    evStream.registerListener(&testListenerScalarRelative, "TEST_STREAM_SCALAR_RELATIVE");
-    evStream.registerListener(&testListenerScalarAbsolute, "TEST_STREAM_SCALAR_ABSOLUTE");
-    evStream.registerListener(&testListenerArrayRelative, "TEST_STREAM_ARRAY_RELATIVE");
-    evStream.registerListener(&testListenerArrayAbsolute, "TEST_STREAM_ARRAY_ABSOLUTE");
-    evStream.start();
+    evStreamScalarRelative.registerListener(&testListenerScalarRelative);
+    evStreamScalarAbsolute.registerListener(&testListenerScalarAbsolute);
+    evStreamArrayRelative.registerListener(&testListenerArrayRelative);
+    evStreamArrayAbsolute.registerListener(&testListenerArrayAbsolute);
+    evStreamScalarRelative.start();
+    evStreamScalarAbsolute.start();
+    evStreamArrayRelative.start();
+    evStreamArrayAbsolute.start();
     { // STREAM SCALAR RELATIVE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStream, (void *)"TEST_STREAM_SCALAR_RELATIVE"))
+      if (pthread_create(&thread, attrp, sendStream, (void *)"SCALAR_RELATIVE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
+      std::cout << "Waiting for stream\n" << std::flush;
       testListenerScalarRelative.waitStream();
       float retTime = testListenerScalarRelative.getTime();
       float retSample = testListenerScalarRelative.getSample();
@@ -308,10 +315,11 @@ int main(int argc __attribute__((unused)),
     }
     { // STREAM SCALAR ABSOLUTE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStreamAbs, (void *)"TEST_STREAM_SCALAR_ABSOLUTE"))
+      if (pthread_create(&thread, attrp, sendStreamAbs, (void *)"SCALAR_ABSOLUTE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
+      std::cout << "Waiting for stream\n" << std::flush;
       testListenerScalarAbsolute.waitStream();
       uint64_t retTime = testListenerScalarAbsolute.getTime();
       float retSample = testListenerScalarAbsolute.getSample();
@@ -322,10 +330,11 @@ int main(int argc __attribute__((unused)),
     }
     { // STREAM ARRAY RELATIVE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStreamArr, (void *)"TEST_STREAM_ARRAY_RELATIVE"))
+      if (pthread_create(&thread, attrp, sendStreamArr, (void *)"ARRAY_RELATIVE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
+      std::cout << "Waiting for stream\n" << std::flush;
       testListenerArrayRelative.waitStream();
       int retTimesSize, retSamplesSize;
       float  *retTimes = testListenerArrayRelative.getTimes(&retTimesSize);
@@ -341,10 +350,11 @@ int main(int argc __attribute__((unused)),
     }
     { // STREAM ARRAY ABSOLUTE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStreamAbsArr, (void *)"TEST_STREAM_ARRAY_ABSOLUTE"))
+      if (pthread_create(&thread, attrp, sendStreamAbsArr, (void *)"ARRAY_ABSOLUTE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
+      std::cout << "Waiting for stream\n" << std::flush;
       testListenerArrayAbsolute.waitStream();
       int retTimesSize, retSamplesSize;
       uint64_t  *retTimes = testListenerArrayAbsolute.getTimes(&retTimesSize);

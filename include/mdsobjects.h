@@ -4186,13 +4186,19 @@ public:
 class EXPORT EventStream : public Event {
   std::vector<DataStreamListener *> listeners;
   std::vector<std::string> names;
-
+  std::string name;
   void handleJSONPayload(char *);
 public:
   virtual void run();
   EventStream() : Event("STREAMING") {
     listeners.clear();
     names.clear();
+    name = "STREAMING";
+  }
+  EventStream(const char *streamName) : Event(streamName) {
+    listeners.clear();
+    names.clear();
+    name = streamName;
   }
   static void send(int shot, const char *name, bool isAbsTime, int nTimes, void *times, 
                               int nSamples, float *samples);
@@ -4206,6 +4212,7 @@ public:
                    int numSamples, float *samples);
   static void send(int shot, const char *name, Data *timesD, Data *samplesD);
   void registerListener(DataStreamListener *listener, const char *name);
+  void registerListener(DataStreamListener *listener);
 };
 #endif
 
