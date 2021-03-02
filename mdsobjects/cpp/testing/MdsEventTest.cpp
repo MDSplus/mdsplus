@@ -60,10 +60,10 @@ static void *sendStreamAbs(void *streamName) {
 
 static void *sendStreamArr(void *streamName) {
   sleep(1);
-  float times[] = {1.,2,3,4};
-  float samples[] = {10,11,12,13};
-  Data *timesD = new Float32Array(times, 4);
-  Data *samplesD = new Float32Array(samples, 4);
+  float times[] = {1.,2};
+  float samples[] = {10,11};
+  Data *timesD = new Float32Array(times, 2);
+  Data *samplesD = new Float32Array(samples, 2);
   EventStream::send(1, (char *)streamName, timesD, samplesD);
   deleteData(timesD);
   deleteData(samplesD);
@@ -73,10 +73,10 @@ static void *sendStreamArr(void *streamName) {
 
 static void *sendStreamAbsArr(void *streamName) {
   sleep(1);
-  uint64_t times[] = {1,2,3,4};
-  float samples[] = {10,11,12,13};
-  Data *timesD = new Uint64Array(times, 4);
-  Data *samplesD = new Float32Array(samples, 4);
+  uint64_t times[] = {1,2};
+  float samples[] = {10,11};
+  Data *timesD = new Uint64Array(times, 2);
+  Data *samplesD = new Float32Array(samples, 2);
   EventStream::send(1, (char *)streamName, timesD, samplesD);
   deleteData(timesD);
   deleteData(samplesD);
@@ -108,6 +108,121 @@ static void *seteventdata(void *args) {
   pthread_exit(0);
   return NULL;
 }
+
+class TestListenerScalarRelative: public MDSplus::DataStreamListener
+{
+    ConditionVar condition;
+    float retTime;
+    float retSample;
+    int retShot;
+public:
+    TestListenerScalarRelative()
+    {
+    }
+    void dataReceived(MDSplus::Data *samples, MDSplus::Data *times, int shot)
+    {
+        retTime = times->getFloat();
+        retSample = samples->getFloat();
+        retShot = shot;
+        condition.notify();
+    }
+    void waitStream()
+    {
+
+        if (condition.waitTimeout(10 * 1000) == false)
+          throw MdsException("Timeout Occurred");
+    }
+    float getTime() {return retTime;}
+    float getSample() {return retSample;}
+    int getShot() {return retShot;}
+};
+class TestListenerScalarAbsolute: public MDSplus::DataStreamListener
+{
+    ConditionVar condition;
+    uint64_t retTime;
+    float retSample;
+    int retShot;
+public:
+    TestListenerScalarAbsolute()
+    {
+    }
+    void dataReceived(MDSplus::Data *samples, MDSplus::Data *times, int shot)
+    {
+        retTime = (uint64_t)times->getLong();
+        retSample = samples->getFloat();
+        retShot = shot;
+        condition.notify();
+    }
+    void waitStream()
+    {
+
+        if (condition.waitTimeout(10 * 1000) == false)
+          throw MdsException("Timeout Occurred");
+    }
+    uint64_t getTime() {return retTime;}
+    float getSample() {return retSample;}
+    int getShot() {return retShot;}
+};
+class TestListenerArrayRelative: public MDSplus::DataStreamListener
+{
+    ConditionVar condition;
+    float *retTimes;
+    float *retSamples;
+    int retShot, retTimesLen, retSamplesLen;
+public:
+    TestListenerArrayRelative()
+    {
+    }
+    void dataReceived(MDSplus::Data *samples, MDSplus::Data *times, int shot)
+    {
+        retTimes = times->getFloatArray(&retTimesLen);
+        retSamples= samples->getFloatArray(&retSamplesLen);
+        retShot = shot;
+        condition.notify();
+    }
+    void waitStream()
+    {
+
+        if (condition.waitTimeout(10 * 1000) == false)
+          throw MdsException("Timeout Occurred");
+    }
+    float *getTimes(int *retTimeLen) {*retTimeLen = retTimesLen; return retTimes;}
+    float *getSamples(int *retSampleLen) {*retSampleLen = retSamplesLen; return retSamples;}
+    int getShot() {return retShot;}
+};
+
+class TestListenerArrayAbsolute: public MDSplus::DataStreamListener
+{
+    ConditionVar condition;
+    uint64_t *retTimes;
+    float *retSamples;
+    int retShot, retTimesLen, retSamplesLen;
+public:
+    TestListenerArrayAbsolute()
+    {
+    }
+    void dataReceived(MDSplus::Data *samples, MDSplus::Data *times, int shot)
+    {
+        retTimes = (uint64_t *)times->getLongArray(&retTimesLen);
+        retSamples= samples->getFloatArray(&retSamplesLen);
+        retShot = shot;
+        condition.notify();
+    }
+    void waitStream()
+    {
+
+        if (condition.waitTimeout(10 * 1000) == false)
+          throw MdsException("Timeout Occurred");
+    }
+    uint64_t *getTimes(int *retTimeLen) {*retTimeLen = retTimesLen; return retTimes;}
+    float *getSamples(int *retSampleLen) {*retSampleLen = retSamplesLen; return retSamples;}
+    int getShot() {return retShot;}
+};
+
+
+
+
+
 
 int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused))) {
@@ -167,8 +282,82 @@ int main(int argc __attribute__((unused)),
             AutoString(str->getString()).string);
     }
     
-    
-    
+    MDSplus::EventStream evStream;
+    TestListenerScalarRelative testListenerScalarRelative;
+    TestListenerScalarAbsolute testListenerScalarAbsolute;
+    TestListenerArrayRelative testListenerArrayRelative;
+    TestListenerArrayAbsolute testListenerArrayAbsolute;
+    evStream.registerListener(&testListenerScalarRelative, "TEST_STREAM_SCALAR_RELATIVE");
+    evStream.registerListener(&testListenerScalarAbsolute, "TEST_STREAM_SCALAR_ABSOLUTE");
+    evStream.registerListener(&testListenerArrayRelative, "TEST_STREAM_ARRAY_RELATIVE");
+    evStream.registerListener(&testListenerArrayAbsolute, "TEST_STREAM_ARRAY_ABSOLUTE");
+    evStream.start();
+    { // STREAM SCALAR RELATIVE TIME
+      pthread_t thread;
+      if (pthread_create(&thread, attrp, sendStream, (void *)"TEST_STREAM_SCALAR_RELATIVE"))
+        throw std::runtime_error(
+            "ERROR: Could not create thread for sendStream");
+
+      testListenerScalarRelative.waitStream();
+      float retTime = testListenerScalarRelative.getTime();
+      float retSample = testListenerScalarRelative.getSample();
+      int retShot = testListenerScalarRelative.getShot();
+      TEST1(retTime == 1.0);
+      TEST1(retSample == 123.0);
+      TEST1(retShot == 1);
+    }
+    { // STREAM SCALAR ABSOLUTE TIME
+      pthread_t thread;
+      if (pthread_create(&thread, attrp, sendStreamAbs, (void *)"TEST_STREAM_SCALAR_ABSOLUTE"))
+        throw std::runtime_error(
+            "ERROR: Could not create thread for sendStream");
+
+      testListenerScalarAbsolute.waitStream();
+      uint64_t retTime = testListenerScalarAbsolute.getTime();
+      float retSample = testListenerScalarAbsolute.getSample();
+      int retShot = testListenerScalarAbsolute.getShot();
+      TEST1(retTime == 1);
+      TEST1(retSample == 123.0);
+      TEST1(retShot == 1);
+    }
+    { // STREAM ARRAY RELATIVE TIME
+      pthread_t thread;
+      if (pthread_create(&thread, attrp, sendStreamArr, (void *)"TEST_STREAM_ARRAY_RELATIVE"))
+        throw std::runtime_error(
+            "ERROR: Could not create thread for sendStream");
+
+      testListenerArrayRelative.waitStream();
+      int retTimesSize, retSamplesSize;
+      float  *retTimes = testListenerArrayRelative.getTimes(&retTimesSize);
+      float *retSamples = testListenerArrayRelative.getSamples(&retSamplesSize);
+      int retShot = testListenerArrayRelative.getShot();
+      TEST1(retTimesSize == 2);
+      TEST1(retSamplesSize == 2);
+      TEST1(retTimes[0] == 1. && retTimes[1] == 2.)
+      TEST1(retSamples[0] == 10. && retSamples[1] == 11.)
+      TEST1(retShot == 1);
+      delete[] retTimes;
+      delete [] retSamples;
+    }
+    { // STREAM ARRAY ABSOLUTE TIME
+      pthread_t thread;
+      if (pthread_create(&thread, attrp, sendStreamAbsArr, (void *)"TEST_STREAM_ARRAY_ABSOLUTE"))
+        throw std::runtime_error(
+            "ERROR: Could not create thread for sendStream");
+
+      testListenerArrayAbsolute.waitStream();
+      int retTimesSize, retSamplesSize;
+      uint64_t  *retTimes = testListenerArrayAbsolute.getTimes(&retTimesSize);
+      float *retSamples = testListenerArrayAbsolute.getSamples(&retSamplesSize);
+      int retShot = testListenerArrayAbsolute.getShot();
+      TEST1(retTimesSize == 2);
+      TEST1(retSamplesSize == 2);
+      TEST1(retTimes[0] == 1 && retTimes[1] == 2)
+      TEST1(retSamples[0] == 10. && retSamples[1] == 11.)
+      TEST1(retShot == 1);
+      delete[] retTimes;
+      delete [] retSamples;
+    }
   } catch (...) {
     if (attrp)
       pthread_attr_destroy(attrp);
