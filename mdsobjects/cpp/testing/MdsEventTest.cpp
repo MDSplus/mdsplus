@@ -282,10 +282,10 @@ int main(int argc __attribute__((unused)),
             AutoString(str->getString()).string);
     }
     
-    MDSplus::EventStream evStreamScalarRelative("SCALAR_RELATIVE");
-    MDSplus::EventStream evStreamScalarAbsolute("SCALAR_ABSOLUTE");
-    MDSplus::EventStream evStreamArrayRelative("ARRAY_RELATIVE");
-    MDSplus::EventStream evStreamArrayAbsolute("ARRAY_ABSOLUTE");
+    MDSplus::EventStream evStreamScalarRelative("EVENT_TEST:[]SCALAR_RELATIVE");
+    MDSplus::EventStream evStreamScalarAbsolute("EVENT_TEST:[]SCALAR_ABSOLUTE");
+    MDSplus::EventStream evStreamArrayRelative("EVENT_TEST:[]ARRAY_RELATIVE");
+    MDSplus::EventStream evStreamArrayAbsolute("EVENT_TEST:[]ARRAY_ABSOLUTE");
     TestListenerScalarRelative testListenerScalarRelative;
     TestListenerScalarAbsolute testListenerScalarAbsolute;
     TestListenerArrayRelative testListenerArrayRelative;
@@ -300,7 +300,7 @@ int main(int argc __attribute__((unused)),
     evStreamArrayAbsolute.start();
     { // STREAM SCALAR RELATIVE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStream, (void *)"SCALAR_RELATIVE"))
+      if (pthread_create(&thread, attrp, sendStream, (void *)"EVENT_TEST:[]SCALAR_RELATIVE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
@@ -315,7 +315,7 @@ int main(int argc __attribute__((unused)),
     }
     { // STREAM SCALAR ABSOLUTE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStreamAbs, (void *)"SCALAR_ABSOLUTE"))
+      if (pthread_create(&thread, attrp, sendStreamAbs, (void *)"EVENT_TEST:[]SCALAR_ABSOLUTE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
@@ -330,7 +330,7 @@ int main(int argc __attribute__((unused)),
     }
     { // STREAM ARRAY RELATIVE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStreamArr, (void *)"ARRAY_RELATIVE"))
+      if (pthread_create(&thread, attrp, sendStreamArr, (void *)"EVENT_TEST:[]ARRAY_RELATIVE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
@@ -350,7 +350,7 @@ int main(int argc __attribute__((unused)),
     }
     { // STREAM ARRAY ABSOLUTE TIME
       pthread_t thread;
-      if (pthread_create(&thread, attrp, sendStreamAbsArr, (void *)"ARRAY_ABSOLUTE"))
+      if (pthread_create(&thread, attrp, sendStreamAbsArr, (void *)"EVENT_TEST:[]ARRAY_ABSOLUTE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
