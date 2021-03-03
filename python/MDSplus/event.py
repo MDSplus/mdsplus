@@ -35,6 +35,7 @@ import time as _time
 import threading as _threading
 import ctypes as _C
 import numpy as _N
+import json
 
 _dat = _mimport('mdsdata')
 _arr = _mimport('mdsarray')
@@ -234,32 +235,30 @@ the e.join() would return exiting the problem.
         @param sampleData: Data samples 
         @type sampleData: Data
         """
-        payload = str(shot) + ' ' + signal
-        if isinstance(timeData, _sca.Int64) or isinstance(timeData, _sca.Uint64) or isinstance(timeData, _arr.Int64Array) or isinstance(timeData, _arr.Uint64Array):
-            payload += ' L '
+        if isinstance(timeData, _sca.Uint64) or isinstance(timeData, _arr.Uint64Array) or isinstance(timeData, _sca.Int64) or isinstance(timeData, _arr.Int64Array):
+            times = timeData.data()
+            if _N.isscalar(times):
+                times = [int(times)]
+            else:
+                times = times.astype(int).tolist()
+            isAbsoluteTime = 1
         else:
-            payload += ' F '
-        times = timeData.data()
+            times = timeData.data()
+            if _N.isscalar(times):
+                times = [times.astype(float)]
+            else:
+                times = times.astype(float).tolist()
+            isAbsoluteTime = 0
         samples = sampleData.data()
-        if isinstance(timeData, _arr.Array):
-            nTimes = len(times)
+        if _N.isscalar(samples):
+            samples = [samples.astype(float)]
         else:
-            nTimes = 1
-        if isinstance(sampleData, _arr.Array):
-            nSamples = len(samples)
-        else:
-            nSamples = 1
-        if(nTimes < nSamples):
-            nSamples = nTimes
-        payload += str(nSamples)
-        if nSamples == 1:
-            payload += ' ' + str(times) + ' ' + str(samples)
-        else:
-            for i in range(0, nSamples):
-                payload += ' '+str(times[i])
-            for i in range(0, nSamples):
-                payload += ' '+str(samples[i])
-        Event.seteventRaw('STREAMING', _N.uint8(bytearray(payload, 'utf8')))
+            samples = samples.astype(float).tolist()
+        payloadDict = {'name': signal, 'shot':shot, 'samples': samples, 'times': times,
+            'timestamp':0, 'absolute_time': isAbsoluteTime}
+
+        payload = json.dumps(payloadDict)
+        Event.seteventRaw(signal, _N.uint8(bytearray(payload, 'utf8')))
 
     def getQueue(self):
         """Retrieve event occurrence.
