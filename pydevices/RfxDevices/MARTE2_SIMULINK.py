@@ -437,10 +437,10 @@ def BUILDER(cls):
                     ParameterStruct, paramIdx)
                 retrievedSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
                     DataTypeMap, retrievedTypeIdx)
-
-                retrievedCTypename = WrapperLib.WCAPI_GetDataTypeCName(
-                    DataTypeMap, retrievedTypeIdx)
-                retrievedCTypename = retrievedCTypename.decode("utf-8")
+                #retrievedCTypename = WrapperLib.WCAPI_GetDataTypeCName(
+                #    DataTypeMap, retrievedTypeIdx)
+                #retrievedCTypename = retrievedCTypename.decode("utf-8")
+                #print('retrievedCTypename: '+retrievedCTypename)
 
                 if retrievedSLIdType == 0:
                     MARTe2Typename = 'float64'
@@ -574,161 +574,331 @@ def BUILDER(cls):
                     # dictionary is appended to the MDSplus-style list
                     paramList.append(paramDict)
                 else: #retrievedSLIdType == 255  SRUCTURED PARAMETERS
-                    numFields = WrapperLib.WCAPI_GetDataTypeNumElements(
-                        DataTypeMap, retrievedTypeIdx)
-                    elementMapIndex = WrapperLib.WCAPI_GetDataTypeElemMapIndex(
-                        DataTypeMap, retrievedTypeIdx)
-                  # actual parameter value is retrieved
-                    paramAddrIdx = WrapperLib.WCAPI_GetModelParameterAddrIdx(
-                        ParameterStruct, paramIdx)
-                    paramDataAddr = WrapperLib.WCAPI_GetDataAddress(
-                        DataAddrMap, paramAddrIdx)
-                    for fieldIdx in range(numFields):
-                        fieldName = WrapperLib.WCAPI_GetElementName(
-                            ElementMap, elementMapIndex + fieldIdx)
-                        fieldName = fieldName.decode("utf-8")
-                        fieldOffset = WrapperLib.WCAPI_GetElementOffset(
-                            ElementMap, elementMapIndex + fieldIdx)
+                    GetModelParameterFields(retrievedTypeIdx, ParameterStruct, paramIdx, 'Parameters.'+retrievedName, paramList, 1)  
+                  
+                    #numFields = WrapperLib.WCAPI_GetDataTypeNumElements(
+                        #DataTypeMap, retrievedTypeIdx)
+                    #elementMapIndex = WrapperLib.WCAPI_GetDataTypeElemMapIndex(
+                        #DataTypeMap, retrievedTypeIdx)
+                  ## actual parameter value is retrieved
+                    #paramAddrIdx = WrapperLib.WCAPI_GetModelParameterAddrIdx(
+                        #ParameterStruct, paramIdx)
+                    #paramDataAddr = WrapperLib.WCAPI_GetDataAddress(
+                        #DataAddrMap, paramAddrIdx)
+                    #print('NUM FIELDS: '+str(numFields))
+                    #for fieldIdx in range(numFields):
+                        #fieldName = WrapperLib.WCAPI_GetElementName(
+                            #ElementMap, elementMapIndex + fieldIdx)
+                        #fieldName = fieldName.decode("utf-8")
+                        #print('FIELD: '+fieldName)
+                        #fieldOffset = WrapperLib.WCAPI_GetElementOffset(
+                            #ElementMap, elementMapIndex + fieldIdx)
                          
-                        fieldTypeIdx = WrapperLib.WCAPI_GetElementDataTypeIdx(
-                            ElementMap, elementMapIndex + fieldIdx)
-                        fieldSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
-                            DataTypeMap, fieldTypeIdx)
-                        if fieldSLIdType == 0:
-                            fieldMARTe2Typename = 'float64'
-                            fieldPythonTypename = ctypes.c_double
-                        elif fieldSLIdType == 1:
-                            fieldMARTe2Typename = 'float32'
-                            fieldPythonTypename = ctypes.c_float
-                        elif fieldSLIdType == 2:
-                            fieldMARTe2Typename = 'int8'
-                            fieldPythonTypename = ctypes.c_int8
-                        elif fieldSLIdType == 3:
-                            fieldMARTe2Typename = 'uint8'
-                            fieldPythonTypename = ctypes.c_uint8
-                        elif fieldSLIdType == 4:
-                            fieldMARTe2Typename = 'int16'
-                            fieldPythonTypename = ctypes.c_int16
-                        elif fieldSLIdType == 5:
-                            fieldMARTe2Typename = 'uint16'
-                            fieldPythonTypename = ctypes.c_uint16
-                        elif fieldSLIdType == 6:
-                            fieldMARTe2Typename = 'int32'
-                            fieldPythonTypename = ctypes.c_int32
-                        elif fieldSLIdType == 7:
-                            fieldMARTe2Typename = 'uint32'
-                            fieldPythonTypename = ctypes.c_uint32
-                        elif fieldSLIdType == 8:
-                            fieldMARTe2Typename = 'bool'
-                            fieldPythonTypename = ctypes.c_int8
-                        elif fieldSLIdType == 254:
-                            fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, fieldTypeIdx)
-                            if fieldEnumType == 0:
-                                fieldMARTe2Typename = 'float64'
-                                fieldPythonTypename = ctypes.c_double
-                            elif fieldEnumType == 1:
-                                fieldMARTe2Typename = 'float32'
-                                fieldPythonTypename = ctypes.c_float
-                            elif fieldEnumType == 2:
-                                fieldMARTe2Typename = 'int8'
-                                fieldPythonTypename = ctypes.c_int8
-                            elif fieldEnumType == 3:
-                                fieldMARTe2Typename = 'uint8'
-                                fieldPythonTypename = ctypes.c_uint8
-                            elif fieldEnumType == 4:
-                                fieldMARTe2Typename = 'int16'
-                                fieldPythonTypename = ctypes.c_int16
-                            elif fieldEnumType == 5:
-                                fieldMARTe2Typename = 'uint16'
-                                fieldPythonTypename = ctypes.c_uint16
-                            elif fieldEnumType == 6:
-                                fieldMARTe2Typename = 'int32'
-                                fieldPythonTypename = ctypes.c_int32
-                            elif fieldEnumType == 7:
-                                fieldMARTe2Typename = 'uint32'
-                                fieldPythonTypename = ctypes.c_uint32
-                            else:
-                                print('type '+str(fieldEnumType))
-                                raise Exception('Unsupported Enum datatype.')
-                        else:
-                            print('type '+str(fieldEnumType))
-                            raise Exception('Unsupported nested structures.')
-                # field dimensions
-                       # dimensions are retrieved
-                        fieldDimIdx = WrapperLib.WCAPI_GetElementDimensionIdx(
-                            ElementMap, elementMapIndex + fieldIdx)
+                        #fieldTypeIdx = WrapperLib.WCAPI_GetElementDataTypeIdx(
+                            #ElementMap, elementMapIndex + fieldIdx)
+                        #fieldSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
+                            #DataTypeMap, fieldTypeIdx)
+                        #if fieldSLIdType == 0:
+                            #fieldMARTe2Typename = 'float64'
+                            #fieldPythonTypename = ctypes.c_double
+                        #elif fieldSLIdType == 1:
+                            #fieldMARTe2Typename = 'float32'
+                            #fieldPythonTypename = ctypes.c_float
+                        #elif fieldSLIdType == 2:
+                            #fieldMARTe2Typename = 'int8'
+                            #fieldPythonTypename = ctypes.c_int8
+                        #elif fieldSLIdType == 3:
+                            #fieldMARTe2Typename = 'uint8'
+                            #fieldPythonTypename = ctypes.c_uint8
+                        #elif fieldSLIdType == 4:
+                            #fieldMARTe2Typename = 'int16'
+                            #fieldPythonTypename = ctypes.c_int16
+                        #elif fieldSLIdType == 5:
+                            #fieldMARTe2Typename = 'uint16'
+                            #fieldPythonTypename = ctypes.c_uint16
+                        #elif fieldSLIdType == 6:
+                            #fieldMARTe2Typename = 'int32'
+                            #fieldPythonTypename = ctypes.c_int32
+                        #elif fieldSLIdType == 7:
+                            #fieldMARTe2Typename = 'uint32'
+                            #fieldPythonTypename = ctypes.c_uint32
+                        #elif fieldSLIdType == 8:
+                            #fieldMARTe2Typename = 'bool'
+                            #fieldPythonTypename = ctypes.c_int8
+                        #elif fieldSLIdType == 254:
+                            #fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, fieldTypeIdx)
+                            #if fieldEnumType == 0:
+                                #fieldMARTe2Typename = 'float64'
+                                #fieldPythonTypename = ctypes.c_double
+                            #elif fieldEnumType == 1:
+                                #fieldMARTe2Typename = 'float32'
+                                #fieldPythonTypename = ctypes.c_float
+                            #elif fieldEnumType == 2:
+                                #fieldMARTe2Typename = 'int8'
+                                #fieldPythonTypename = ctypes.c_int8
+                            #elif fieldEnumType == 3:
+                                #fieldMARTe2Typename = 'uint8'
+                                #fieldPythonTypename = ctypes.c_uint8
+                            #elif fieldEnumType == 4:
+                                #fieldMARTe2Typename = 'int16'
+                                #fieldPythonTypename = ctypes.c_int16
+                            #elif fieldEnumType == 5:
+                                #fieldMARTe2Typename = 'uint16'
+                                #fieldPythonTypename = ctypes.c_uint16
+                            #elif fieldEnumType == 6:
+                                #fieldMARTe2Typename = 'int32'
+                                #fieldPythonTypename = ctypes.c_int32
+                            #elif fieldEnumType == 7:
+                                #fieldMARTe2Typename = 'uint32'
+                                #fieldPythonTypename = ctypes.c_uint32
+                            #else:
+                                #print('type '+str(fieldEnumType))
+                                #raise Exception('Unsupported Enum datatype.')
+                        #else:
+                            #print('type '+str(fieldSLIdType))
+                            #raise Exception('Unsupported nested structures.')
+                ## field dimensions
+                       ## dimensions are retrieved
+                        #fieldDimIdx = WrapperLib.WCAPI_GetElementDimensionIdx(
+                            #ElementMap, elementMapIndex + fieldIdx)
 
-                        fieldDimArrayIdx = WrapperLib.WCAPI_GetDimArrayIndex(
-                            DimensionMap, fieldDimIdx)  # Starting position in the dimensionArray
-                        # Number of elements in the dimensionArray referring to this signal
-                        fieldDimNum = WrapperLib.WCAPI_GetNumDims(
-                            DimensionMap, fieldDimIdx)
+                        #fieldDimArrayIdx = WrapperLib.WCAPI_GetDimArrayIndex(
+                            #DimensionMap, fieldDimIdx)  # Starting position in the dimensionArray
+                        ## Number of elements in the dimensionArray referring to this signal
+                        #fieldDimNum = WrapperLib.WCAPI_GetNumDims(
+                            #DimensionMap, fieldDimIdx)
 
-                        currDimension = []
-                        for currIdx in range(fieldDimNum):
-                            currDimension.append(
-                                DimensionArray[fieldDimArrayIdx + currIdx])
-                        if currDimension[0] == 1 and currDimension[1] == 1:
-                            fieldDimension = 0
-                        elif currDimension[0] == 1 or currDimension[1] == 1:
-                            fieldDimension = [
-                                currDimension[0]*currDimension[1]]
-                        else:
-                            fieldDimension = currDimension
+                        #currDimension = []
+                        #for currIdx in range(fieldDimNum):
+                            #currDimension.append(
+                                #DimensionArray[fieldDimArrayIdx + currIdx])
+                        #if currDimension[0] == 1 and currDimension[1] == 1:
+                            #fieldDimension = 0
+                        #elif currDimension[0] == 1 or currDimension[1] == 1:
+                            #fieldDimension = [
+                                #currDimension[0]*currDimension[1]]
+                        #else:
+                            #fieldDimension = currDimension
 
-                        currParAddress = paramDataAddr + fieldOffset
-                        paramPointer = ctypes.cast(
-                          currParAddress, ctypes.POINTER(fieldPythonTypename))
+                        #currParAddress = paramDataAddr + fieldOffset
+                        #paramPointer = ctypes.cast(
+                          #currParAddress, ctypes.POINTER(fieldPythonTypename))
 
  
-                        if currDimension[0] == 1 and currDimension[1] == 1:  # scalar
-                            dimension = 0
-                            mdsplusValue = paramPointer[0]
-                        elif currDimension[0] == 1:  # vector
-                            dimension = currDimension[0]*currDimension[1]
-                            valueList = []
-                            for idx in range(dimension):
-                                valueList.append(paramPointer[idx])
-                        else:
-                            # matrix or column vector (MARTe2 sees column vectors as matrices)
-                            dimension = currDimension
-                            idx = 0
-                            valueList = []
-                            valueRow = []
-                            for nRow in range(currDimension[0]):
-                                for nCol in range(currDimension[1]):
-                                    valueRow.append(paramPointer[idx])
-                                    idx = idx + 1
-                                valueList.append(valueRow)
-                                valueRow = []
+                        #if currDimension[0] == 1 and currDimension[1] == 1:  # scalar
+                            #dimension = 0
+                            #mdsplusValue = paramPointer[0]
+                        #elif currDimension[0] == 1:  # vector
+                            #dimension = currDimension[0]*currDimension[1]
+                            #valueList = []
+                            #for idx in range(dimension):
+                                #valueList.append(paramPointer[idx])
+                        #else:
+                            ## matrix or column vector (MARTe2 sees column vectors as matrices)
+                            #dimension = currDimension
+                            #idx = 0
+                            #valueList = []
+                            #valueRow = []
+                            #for nRow in range(currDimension[0]):
+                                #for nCol in range(currDimension[1]):
+                                    #valueRow.append(paramPointer[idx])
+                                    #idx = idx + 1
+                                #valueList.append(valueRow)
+                                #valueRow = []
                                 
-                        if currDimension[0] != 1 or currDimension[1] != 1:
-                            if retrievedSLIdType == 0:
-                                mdsplusValue = MDSplus.Float32Array(valueList)
-                            elif retrievedSLIdType == 1:
-                                mdsplusValue = MDSplus.Float64Array(valueList)
-                            elif retrievedSLIdType == 2:
-                                mdsplusValue = MDSplus.Int8Array(valueList)
-                            elif retrievedSLIdType == 3:
-                                mdsplusValue = MDSplus.Uint8Array(valueList)
-                            elif retrievedSLIdType == 4:
-                                mdsplusValue = MDSplus.Int16Array(valueList)
-                            elif retrievedSLIdType == 5:
-                                mdsplusValue = MDSplus.Uint16Array(valueList)
-                            elif retrievedSLIdType == 6:
-                                mdsplusValue = MDSplus.Int32Array(valueList)
-                            elif retrievedSLIdType == 7:
-                                mdsplusValue = MDSplus.Uint32Array(valueList)
-                            else:
-                                raise Exception('Unsupported parameter datatype.')
+                        #if currDimension[0] != 1 or currDimension[1] != 1:
+                            #if fieldSLIdType == 0:
+                                #mdsplusValue = MDSplus.Float32Array(valueList)
+                            #elif fieldSLIdType == 1:
+                                #mdsplusValue = MDSplus.Float64Array(valueList)
+                            #elif fieldSLIdType == 2:
+                                #mdsplusValue = MDSplus.Int8Array(valueList)
+                            #elif fieldSLIdType == 3:
+                                #mdsplusValue = MDSplus.Uint8Array(valueList)
+                            #elif fieldSLIdType == 4:
+                                #mdsplusValue = MDSplus.Int16Array(valueList)
+                            #elif fieldSLIdType == 5:
+                                #mdsplusValue = MDSplus.Uint16Array(valueList)
+                            #elif fieldSLIdType == 6:
+                                #mdsplusValue = MDSplus.Int32Array(valueList)
+                            #elif fieldSLIdType == 7:
+                                #mdsplusValue = MDSplus.Uint32Array(valueList)
+                            #else:
+                                #raise Exception('Unsupported parameter datatype.')
                               
-                        paramDict = dict(name='Parameters.'+retrievedName+'-'+fieldName,
-                                    type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
-                     # dictionary is appended to the MDSplus-style list
-                        paramList.append(paramDict)
+                        #paramDict = dict(name='Parameters.'+retrievedName+'-'+fieldName,
+                                    #type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
+                     ## dictionary is appended to the MDSplus-style list
+                        #paramList.append(paramDict)
                  #endif STRUCTURED PARAMETER
             #endfor parameters
+            print('PARAMETRI FATTI')
             return paramList
+
+#################################################################
+#Recursive method for parameter structures
+##################################################################          
+        def GetModelParameterFields(structTypeIdx, ParameterStruct, paramIdx, baseParName, paramList, recLev  ):
+            if recLev == 10:
+              raise Exception
+            
+            numFields = WrapperLib.WCAPI_GetDataTypeNumElements(
+                DataTypeMap, structTypeIdx)
+            elementMapIndex = WrapperLib.WCAPI_GetDataTypeElemMapIndex(
+                DataTypeMap, structTypeIdx)
+          # actual parameter value is retrieved
+            paramAddrIdx = WrapperLib.WCAPI_GetModelParameterAddrIdx(
+                ParameterStruct, paramIdx)
+            paramDataAddr = WrapperLib.WCAPI_GetDataAddress(
+                DataAddrMap, paramAddrIdx)
+            print('NUM FIELDS: '+str(numFields))
+            for fieldIdx in range(numFields):
+                fieldName = WrapperLib.WCAPI_GetElementName(
+                    ElementMap, elementMapIndex + fieldIdx)
+                fieldName = fieldName.decode("utf-8")
+                print('FIELD: '+baseParName+'-'+fieldName)
+                fieldOffset = WrapperLib.WCAPI_GetElementOffset(
+                    ElementMap, elementMapIndex + fieldIdx)
+                  
+                fieldTypeIdx = WrapperLib.WCAPI_GetElementDataTypeIdx(
+                    ElementMap, elementMapIndex + fieldIdx)
+                fieldSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
+                    DataTypeMap, fieldTypeIdx)
+                print('fieldSLIdType: '+str(fieldSLIdType))
+                if fieldSLIdType == 0:
+                    fieldMARTe2Typename = 'float64'
+                    fieldPythonTypename = ctypes.c_double
+                elif fieldSLIdType == 1:
+                    fieldMARTe2Typename = 'float32'
+                    fieldPythonTypename = ctypes.c_float
+                elif fieldSLIdType == 2:
+                    fieldMARTe2Typename = 'int8'
+                    fieldPythonTypename = ctypes.c_int8
+                elif fieldSLIdType == 3:
+                    fieldMARTe2Typename = 'uint8'
+                    fieldPythonTypename = ctypes.c_uint8
+                elif fieldSLIdType == 4:
+                    fieldMARTe2Typename = 'int16'
+                    fieldPythonTypename = ctypes.c_int16
+                elif fieldSLIdType == 5:
+                    fieldMARTe2Typename = 'uint16'
+                    fieldPythonTypename = ctypes.c_uint16
+                elif fieldSLIdType == 6:
+                    fieldMARTe2Typename = 'int32'
+                    fieldPythonTypename = ctypes.c_int32
+                elif fieldSLIdType == 7:
+                    fieldMARTe2Typename = 'uint32'
+                    fieldPythonTypename = ctypes.c_uint32
+                elif fieldSLIdType == 8:
+                    fieldMARTe2Typename = 'bool'
+                    fieldPythonTypename = ctypes.c_int8
+                elif fieldSLIdType == 254:
+                    fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, fieldTypeIdx)
+                    if fieldEnumType == 0:
+                        fieldMARTe2Typename = 'float64'
+                        fieldPythonTypename = ctypes.c_double
+                    elif fieldEnumType == 1:
+                        fieldMARTe2Typename = 'float32'
+                        fieldPythonTypename = ctypes.c_float
+                    elif fieldEnumType == 2:
+                        fieldMARTe2Typename = 'int8'
+                        fieldPythonTypename = ctypes.c_int8
+                    elif fieldEnumType == 3:
+                        fieldMARTe2Typename = 'uint8'
+                        fieldPythonTypename = ctypes.c_uint8
+                    elif fieldEnumType == 4:
+                        fieldMARTe2Typename = 'int16'
+                        fieldPythonTypename = ctypes.c_int16
+                    elif fieldEnumType == 5:
+                        fieldMARTe2Typename = 'uint16'
+                        fieldPythonTypename = ctypes.c_uint16
+                    elif fieldEnumType == 6:
+                        fieldMARTe2Typename = 'int32'
+                        fieldPythonTypename = ctypes.c_int32
+                    elif fieldEnumType == 7:
+                        fieldMARTe2Typename = 'uint32'
+                        fieldPythonTypename = ctypes.c_uint32
+                    else:
+                        print('type '+str(fieldEnumType))
+                        raise Exception('Unsupported Enum datatype.')
+                else: #NESTED STRUCTURES!!!!!!!!!!!!!!!!
+                    print('TYPE '+str(fieldSLIdType) + '   '+str(fieldTypeIdx))
+                    GetModelParameterFields(fieldTypeIdx, ParameterStruct, paramIdx, baseParName + '-'+fieldName, paramList, recLev+1)
+                    continue #no direct data associated
+        # field dimensions
+                # dimensions are retrieved
+                fieldDimIdx = WrapperLib.WCAPI_GetElementDimensionIdx(
+                    ElementMap, elementMapIndex + fieldIdx)
+
+                fieldDimArrayIdx = WrapperLib.WCAPI_GetDimArrayIndex(
+                    DimensionMap, fieldDimIdx)  # Starting position in the dimensionArray
+                # Number of elements in the dimensionArray referring to this signal
+                fieldDimNum = WrapperLib.WCAPI_GetNumDims(
+                    DimensionMap, fieldDimIdx)
+
+                currDimension = []
+                for currIdx in range(fieldDimNum):
+                    currDimension.append(
+                        DimensionArray[fieldDimArrayIdx + currIdx])
+                if currDimension[0] == 1 and currDimension[1] == 1:
+                    fieldDimension = 0
+                elif currDimension[0] == 1 or currDimension[1] == 1:
+                    fieldDimension = [
+                        currDimension[0]*currDimension[1]]
+                else:
+                    fieldDimension = currDimension
+
+                currParAddress = paramDataAddr + fieldOffset
+                paramPointer = ctypes.cast(
+                  currParAddress, ctypes.POINTER(fieldPythonTypename))
+
+
+                if currDimension[0] == 1 and currDimension[1] == 1:  # scalar
+                    dimension = 0
+                    mdsplusValue = paramPointer[0]
+                elif currDimension[0] == 1:  # vector
+                    dimension = currDimension[0]*currDimension[1]
+                    valueList = []
+                    for idx in range(dimension):
+                        valueList.append(paramPointer[idx])
+                else:
+                    # matrix or column vector (MARTe2 sees column vectors as matrices)
+                    dimension = currDimension
+                    idx = 0
+                    valueList = []
+                    valueRow = []
+                    for nRow in range(currDimension[0]):
+                        for nCol in range(currDimension[1]):
+                            valueRow.append(paramPointer[idx])
+                            idx = idx + 1
+                        valueList.append(valueRow)
+                        valueRow = []
+                        
+                if currDimension[0] != 1 or currDimension[1] != 1:
+                    if fieldSLIdType == 0:
+                        mdsplusValue = MDSplus.Float32Array(valueList)
+                    elif fieldSLIdType == 1:
+                        mdsplusValue = MDSplus.Float64Array(valueList)
+                    elif fieldSLIdType == 2:
+                        mdsplusValue = MDSplus.Int8Array(valueList)
+                    elif fieldSLIdType == 3:
+                        mdsplusValue = MDSplus.Uint8Array(valueList)
+                    elif fieldSLIdType == 4:
+                        mdsplusValue = MDSplus.Int16Array(valueList)
+                    elif fieldSLIdType == 5:
+                        mdsplusValue = MDSplus.Uint16Array(valueList)
+                    elif fieldSLIdType == 6:
+                        mdsplusValue = MDSplus.Int32Array(valueList)
+                    elif fieldSLIdType == 7:
+                        mdsplusValue = MDSplus.Uint32Array(valueList)
+                    else:
+                        raise Exception('Unsupported parameter datatype.')
+                      
+                paramDict = dict(name=baseParName+'-'+fieldName,
+                            type=fieldMARTe2Typename, dimensions=fieldDimension, value=mdsplusValue)
+              # dictionary is appended to the MDSplus-style list
+                paramList.append(paramDict)
+          #end GetModelParameterFields
 
         # First parameter should be the model name
 #      modelNameDict = dict(name = 'ModelName', type = 'string', dimensions = 0, value = cls.lib_name)
