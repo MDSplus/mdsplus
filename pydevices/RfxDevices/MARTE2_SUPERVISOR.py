@@ -640,6 +640,8 @@ class MARTE2_SUPERVISOR(Device):
 
     def stopMarte(self):
         marteName = self.getNode('name').data()
+        self.suspendMarte()
+        time.sleep(2)
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         time.sleep(2)
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
