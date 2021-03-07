@@ -211,12 +211,15 @@ EXPORT void EventStream::run() {
  
   
   if(bufSize == 0) return;
+  
   if(buf[0] == '{')  //JSON payload
   {
     char *newPayload = new char[bufSize+1];
     memcpy(newPayload, buf, bufSize);
     newPayload[bufSize] = 0;
-//    std::cout << newPayload << std::endl;
+    //std::cout << newPayload << std::endl;
+    
+    
     handleJSONPayload(newPayload);
     delete[] newPayload;
     return;
@@ -337,6 +340,7 @@ EXPORT void EventStream::handleJSONPayload(char *payload)
   }
   int shot = d["shot"].GetInt();
   int absTime = d["absolute_time"].GetInt();
+  
   bool isAbsTime = (absTime == 1);
   const Value &timesVal = d["times"];
   const char *nameStr = d["name"].GetString();

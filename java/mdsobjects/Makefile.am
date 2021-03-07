@@ -1,9 +1,10 @@
 JAVASOURCE = 6
+DEPENDENCIES = $(srcdir)/src/main/resources/javax.json-1.0.4.jar
 include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
+java_resdir = $(srcdir)/src/main/resources
 java_DATA = mdsobjects.jar
-DEPENDENCIES =
 
 if USE_JARS_DIR
 
@@ -14,7 +15,9 @@ else
 
 $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
+	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cf $@ -C $(JAVAROOT) .
+	cp $(java_resdir)/*.jar $(javadir)
 
 endif
 
