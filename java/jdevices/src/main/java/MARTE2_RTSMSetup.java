@@ -34,6 +34,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel475 = new javax.swing.JPanel();
         deviceField39 = new DeviceField();
         deviceField4 = new DeviceField();
+        deviceField3 = new DeviceField();
         jPanel219 = new javax.swing.JPanel();
         deviceField41 = new DeviceField();
         deviceField50 = new DeviceField();
@@ -865,7 +866,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField49 = new DeviceField();
         deviceChoice16 = new DeviceChoice();
 
-        setDeviceProvider("spilds.rfx.local:8200");
+        setDeviceProvider("spilds.rfx.local:8100");
         setDeviceTitle("MARTE2 RealTimeStateMachine");
         setDeviceType("MARTE2_RTSM");
         setHeight(800);
@@ -891,7 +892,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField39.setIdentifier("");
         deviceField39.setLabelString("Digital Inputs: ");
         deviceField39.setNumCols(25);
-        deviceField39.setOffsetNid(3622);
+        deviceField39.setOffsetNid(3625);
         jPanel475.add(deviceField39);
 
         deviceField4.setIdentifier("");
@@ -899,6 +900,11 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField4.setNumCols(4);
         deviceField4.setOffsetNid(16);
         jPanel475.add(deviceField4);
+
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("Out Bit Mask: ");
+        deviceField3.setOffsetNid(3619);
+        jPanel475.add(deviceField3);
 
         jPanel2.add(jPanel475, java.awt.BorderLayout.CENTER);
 
@@ -911,7 +917,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField50.setIdentifier("");
         deviceField50.setLabelString("Timebase div.:");
         deviceField50.setNumCols(4);
-        deviceField50.setOffsetNid(3704);
+        deviceField50.setOffsetNid(3707);
         jPanel219.add(deviceField50);
 
         jPanel2.add(jPanel219, java.awt.BorderLayout.PAGE_END);
@@ -4731,9 +4737,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel220.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 1"));
 
         deviceField42.setIdentifier("");
-        deviceField42.setLabelString("Segent Len.:");
+        deviceField42.setLabelString("Segment Len.:");
         deviceField42.setNumCols(6);
-        deviceField42.setOffsetNid(3645);
+        deviceField42.setOffsetNid(3648);
         jPanel220.add(deviceField42);
 
         deviceChoice9.setChoiceIntValues(new int[] {0, -1});
@@ -4741,7 +4747,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice9.setConvert(true);
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Output: ");
-        deviceChoice9.setOffsetNid(3644);
+        deviceChoice9.setOffsetNid(3647);
         deviceChoice9.setUpdateIdentifier("");
         jPanel220.add(deviceChoice9);
 
@@ -4750,9 +4756,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel222.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 2"));
 
         deviceField43.setIdentifier("");
-        deviceField43.setLabelString("Segent Len.:");
+        deviceField43.setLabelString("Segment Len.:");
         deviceField43.setNumCols(6);
-        deviceField43.setOffsetNid(3653);
+        deviceField43.setOffsetNid(3657);
         jPanel222.add(deviceField43);
 
         deviceChoice10.setChoiceIntValues(new int[] {0, -1});
@@ -4760,7 +4766,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice10.setConvert(true);
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Output: ");
-        deviceChoice10.setOffsetNid(3652);
+        deviceChoice10.setOffsetNid(3655);
         deviceChoice10.setUpdateIdentifier("");
         jPanel222.add(deviceChoice10);
 
@@ -4769,9 +4775,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel223.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 3"));
 
         deviceField44.setIdentifier("");
-        deviceField44.setLabelString("Segent Len.:");
+        deviceField44.setLabelString("Segment Len.:");
         deviceField44.setNumCols(6);
-        deviceField44.setOffsetNid(3661);
+        deviceField44.setOffsetNid(3664);
         jPanel223.add(deviceField44);
 
         deviceChoice11.setChoiceIntValues(new int[] {0, -1});
@@ -4779,7 +4785,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice11.setConvert(true);
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Output: ");
-        deviceChoice11.setOffsetNid(3660);
+        deviceChoice11.setOffsetNid(3663);
         deviceChoice11.setUpdateIdentifier("");
         jPanel223.add(deviceChoice11);
 
@@ -4788,9 +4794,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel224.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 4"));
 
         deviceField45.setIdentifier("");
-        deviceField45.setLabelString("Segent Len.:");
+        deviceField45.setLabelString("Segment Len.:");
         deviceField45.setNumCols(6);
-        deviceField45.setOffsetNid(3669);
+        deviceField45.setOffsetNid(3672);
         jPanel224.add(deviceField45);
 
         deviceChoice12.setChoiceIntValues(new int[] {0, -1});
@@ -4798,7 +4804,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice12.setConvert(true);
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Output: ");
-        deviceChoice12.setOffsetNid(3668);
+        deviceChoice12.setOffsetNid(3671);
         deviceChoice12.setUpdateIdentifier("");
         jPanel224.add(deviceChoice12);
 
@@ -4807,9 +4813,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel225.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 5"));
 
         deviceField46.setIdentifier("");
-        deviceField46.setLabelString("Segent Len.:");
+        deviceField46.setLabelString("Segment Len.:");
         deviceField46.setNumCols(6);
-        deviceField46.setOffsetNid(3677);
+        deviceField46.setOffsetNid(3680);
         jPanel225.add(deviceField46);
 
         deviceChoice13.setChoiceIntValues(new int[] {0, -1});
@@ -4817,7 +4823,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice13.setConvert(true);
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Output: ");
-        deviceChoice13.setOffsetNid(3676);
+        deviceChoice13.setOffsetNid(3679);
         deviceChoice13.setUpdateIdentifier("");
         jPanel225.add(deviceChoice13);
 
@@ -4826,9 +4832,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel226.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 6"));
 
         deviceField47.setIdentifier("");
-        deviceField47.setLabelString("Segent Len.:");
+        deviceField47.setLabelString("Segment Len.:");
         deviceField47.setNumCols(6);
-        deviceField47.setOffsetNid(3685);
+        deviceField47.setOffsetNid(3688);
         jPanel226.add(deviceField47);
 
         deviceChoice14.setChoiceIntValues(new int[] {0, -1});
@@ -4836,7 +4842,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice14.setConvert(true);
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Output: ");
-        deviceChoice14.setOffsetNid(3685);
+        deviceChoice14.setOffsetNid(3687);
         deviceChoice14.setUpdateIdentifier("");
         jPanel226.add(deviceChoice14);
 
@@ -4845,9 +4851,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel227.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 7"));
 
         deviceField48.setIdentifier("");
-        deviceField48.setLabelString("Segent Len.:");
+        deviceField48.setLabelString("Segment Len.:");
         deviceField48.setNumCols(6);
-        deviceField48.setOffsetNid(3693);
+        deviceField48.setOffsetNid(3696);
         jPanel227.add(deviceField48);
 
         deviceChoice15.setChoiceIntValues(new int[] {0, -1});
@@ -4855,7 +4861,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice15.setConvert(true);
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Output: ");
-        deviceChoice15.setOffsetNid(3692);
+        deviceChoice15.setOffsetNid(3695);
         deviceChoice15.setUpdateIdentifier("");
         jPanel227.add(deviceChoice15);
 
@@ -4864,9 +4870,9 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         jPanel228.setBorder(javax.swing.BorderFactory.createTitledBorder("Out Wave 8"));
 
         deviceField49.setIdentifier("");
-        deviceField49.setLabelString("Segent Len.:");
+        deviceField49.setLabelString("Segment Len.:");
         deviceField49.setNumCols(6);
-        deviceField49.setOffsetNid(3701);
+        deviceField49.setOffsetNid(3704);
         jPanel228.add(deviceField49);
 
         deviceChoice16.setChoiceIntValues(new int[] {0, -1});
@@ -4874,7 +4880,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice16.setConvert(true);
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Output: ");
-        deviceChoice16.setOffsetNid(3700);
+        deviceChoice16.setOffsetNid(3703);
         deviceChoice16.setUpdateIdentifier("");
         jPanel228.add(deviceChoice16);
 
@@ -5062,6 +5068,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
     private DeviceField deviceField297;
     private DeviceField deviceField298;
     private DeviceField deviceField299;
+    private DeviceField deviceField3;
     private DeviceField deviceField30;
     private DeviceField deviceField300;
     private DeviceField deviceField301;

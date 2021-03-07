@@ -5,7 +5,6 @@ import os
 from time import sleep
 import sys, traceback
 
-
 class CRIO_FAU(Device):
     """NI Compact RIO SPIDER Interlock Fast Acquisition Units"""
     parts=[{'path':':COMMENT', 'type':'text'},
