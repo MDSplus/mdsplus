@@ -21,10 +21,9 @@ var ips = {};
 var experiments = {};
 var shots = {};
 var wsConnections=[];
-var registeredEvents = [];
 var busy = {};
 var pendingReqs = {};
-
+var registeredStreams = [];
 var clientIds = {};
 
 
@@ -460,13 +459,23 @@ var lastTimes={};
 
 function handleNewConnection(clientId, name, connection, from, to)
 {
+    var index = 0;
+     //Handle indexing
+    if(name.indexOf('[') != -1)
+    {   try {
+          index = parseInt(name.substring(name.indexOf('[')+1, name.indexOf(']')));
+        } catch(err){index = 0;}
+        name = name.substring(0,name.indexOf('['));
+    }
+    if(!(name.toUpperCase in registeredStreams))
+      registeredStreams.push(name.toUpperCase());
     if(lastTimes[name] == undefined)
         lastTimes[name] = 0;
     if(connections[name] == undefined)
-        connections[name] = [{connection: connection, clientId: clientId,}];
+        connections[name] = [{connection: connection, clientId: clientId, index: index}];
     else
     {
-        connections[name].push({connection: connection, clientId: clientId});
+        connections[name].push({connection: connection, clientId: clientId, index: index});
     }
     if(history[name] != undefined)
     {
@@ -474,13 +483,16 @@ function handleNewConnection(clientId, name, connection, from, to)
       var resObj = {};
       resObj['operation'] = 'stream';
       resObj['clientId'] = clientId;
-      retSamples = [];
-      retTimes = [];
+      var retSamples = [];
+      var retTimes = [];
+      var sampleDim = history[name].samples.length/history[name].times.length;
+      if(index >= sampleDim) //Wrong index
+        index = 0;
       for(var i = 0; i < history[name].samples.length && history[name].times[i] <= lastTimes[name]; i++)
       {
           if(history[name].times[i] >= from) // && history[name].times[i] <= to)
           {
-              retSamples.push(history[name].samples[i]);
+              retSamples.push(history[name].samples[i*sampleDim + index]);
               retTimes.push(history[name].times[i]);
           }
       }
@@ -501,6 +513,9 @@ function addSamples(name, times, samples)
         for(var i = 0; i < times.length; i++)
         {
             history[name].times.push(times[i]);
+        }
+        for(var i = 0; i < samples.length; i++)  //There may be a larger number of samples for arrays
+        {
             history[name].samples.push(samples[i]);
         }
     }
@@ -508,6 +523,40 @@ function addSamples(name, times, samples)
 
 var startAbsTime = 0;
 var startRelTime = 0;
+
+function handleEventJSONReception(evMessage)
+{
+    var configObj = JSON.parse(evMessage);
+    console.log(configObj);
+    var shot = configObj.shot;
+    var name = configObj.name;
+    var samples = configObj.samples;
+    var times = configObj.times;
+    var isAbsoluteTime = configObj.absolute_time == 1;
+    if(!isAbsoluteTime)    
+    {
+        if(lastRelativeTimes[name] == undefined || (lastRelativeTimes[name] > times[0])) 
+        {
+            startAbsTime =  new Date().getTime();
+            startRelTime = times[0]*1000;
+        }
+        lastRelativeTimes[name] = times[times.length - 1];
+    }
+    var newTimes = [];
+    for(var i = 0; i < times.length; i++)
+    {
+        if(isAbsoluteTime)
+        {
+            newTimes.push(times[i]);
+        }
+        else
+        {
+            newTimes.push(Math.round(startAbsTime - startRelTime + times[i]*1000));
+        }
+    }
+    addSamples(name, newTimes, samples);
+}
+
 
 function handleEventReception(evMessage)
 {
@@ -545,24 +594,6 @@ function handleEventReception(evMessage)
       }
       //if(debug) console.log('Received ' + name, numSamples);
       addSamples(name, times, samples);
-      //console.log('NAME: '+name);
-      //console.log(connections[name]);
-/*      if(connections[name] != undefined)
-      {
-          for(var i = 0; i < connections[name].length; i++)
-          {
-              var resObj = {};
-              resObj['operation'] = 'stream';
-              resObj['clientId'] = connections[name][i].clientId;
-              resObj['samples']= samples;
-              resObj['times']= times;
-             console.log('sending: ')
-             console.log(resObj);
-              //console.log('Sent');
-              connections[name][i].connection.sendUTF(JSON.stringify(resObj)); 
-          }
-      }
-*/
     }
     catch(err)
     {
@@ -590,10 +621,12 @@ function updateConnection(name)
     if(idx < history[name].times.length)
     {
 	lastTimes[name] = history[name].times[history[name].times.length - 1];
+        var sampleDim = history[name].samples.length/history[name].times.length; //Shall be > 1 for vector samples
 	for(; idx < history[name].times.length; idx++)
 	{
 	    updateTimes.push(history[name].times[idx]);
-	    updateSamples.push(history[name].samples[idx]);
+            for(var j= 0; j < sampleDim; j++)
+                updateSamples.push(history[name].samples[sampleDim*idx+j]);
 	}
 	
         for(var i = 0; i < connections[name].length; i++)
@@ -601,7 +634,13 @@ function updateConnection(name)
             var resObj = {};
             resObj['operation'] = 'stream';
             resObj['clientId'] = connections[name][i].clientId;
-            resObj['samples']= updateSamples;
+            var selectedSamples = [];
+            var idx = connections[name][i].index;
+            if(idx >= sampleDim) //Wrong index
+              idx = 0; 
+            for(var j = 0; j < updateTimes.length; j++)
+              selectedSamples.push(updateSamples[j*sampleDim + idx]);
+            resObj['samples']= selectedSamples;
             resObj['times']= updateTimes;
             if(debug >= 2)
             {
@@ -696,12 +735,12 @@ function handleEvent(msg, rinfo)
 //  if(dataLen > 0)
 //      console.log(eventData);
   
-  if(eventName == 'STREAMING')
+  if(eventName == 'STREAMING'  || registeredStreams.indexOf(eventName.toUpperCase()) >= 0)
   {
-    
-    //console.log(eventData);
-    
-      handleEventReception(eventData);
+      if(eventData[0] == '{')
+        handleEventJSONReception(eventData)
+      else
+        handleEventReception(eventData);
   }
   else if(eventName == 'STREAMING_FREEZE')
   {
