@@ -127,3 +127,5 @@ in order for their libraries to function.
 NOTE - if the sybase distribution is not /usr/local/sybase, configure
 will not find the distribution unless you first set the environment
 variable SYBASE to point the the distribution directory.
+
+This extra line added to force a build
