@@ -11,7 +11,9 @@
 	<packaging>jar</packaging>
         <dependencies>
           <dependency>
-            <artifactId>mdsobjects</artifactId>
+            <groupId>org.mdsplus</groupId>
+            <artifactId>javax-json</artifactId>
+            <scope>system</scope>
             <systemPath>${basedir}/src/main/resources/javax.json-1.0.4.jar</systemPath>
           </dependency>
         </dependencies>
