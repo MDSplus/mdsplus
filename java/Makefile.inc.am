@@ -14,7 +14,7 @@ DEVICEBEANS_JAR = $(abs_top_builddir)/java/devicebeans/DeviceBeans.jar
 n :=
 s := $(n) #
 c := :
-CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(DEPENDENCIES)))
+CLASSPATH = $(JAVAROOT):$(strip $(subst $(s),$(c),$(strip $(DEPENDENCIES))))
 CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 
 JAVAROOT = $(builddir)/classes
