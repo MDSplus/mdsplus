@@ -354,6 +354,7 @@ EXPORT void EventStream::handleJSONPayload(char *payload)
         timesD = new Uint64(times[0]);
       else
         timesD = new Uint64Array(times, timesVal.Size());
+      delete[] times;
   }
   else
   {
