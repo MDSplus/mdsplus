@@ -306,6 +306,7 @@ int main(int argc __attribute__((unused)),
 
    //   std::cout << "Waiting for stream\n" << std::flush;
       testListenerScalarRelative.waitStream();
+      pthread_join(thread, NULL);
       float retTime = testListenerScalarRelative.getTime();
       float retSample = testListenerScalarRelative.getSample();
       int retShot = testListenerScalarRelative.getShot();
@@ -321,6 +322,7 @@ int main(int argc __attribute__((unused)),
 
  //     std::cout << "Waiting for stream\n" << std::flush;
       testListenerScalarAbsolute.waitStream();
+      pthread_join(thread, NULL);
       uint64_t retTime = testListenerScalarAbsolute.getTime();
       float retSample = testListenerScalarAbsolute.getSample();
       int retShot = testListenerScalarAbsolute.getShot();
@@ -336,6 +338,7 @@ int main(int argc __attribute__((unused)),
 
      // std::cout << "Waiting for stream\n" << std::flush;
       testListenerArrayRelative.waitStream();
+      pthread_join(thread, NULL);
       int retTimesSize, retSamplesSize;
       float  *retTimes = testListenerArrayRelative.getTimes(&retTimesSize);
       float *retSamples = testListenerArrayRelative.getSamples(&retSamplesSize);
@@ -356,6 +359,7 @@ int main(int argc __attribute__((unused)),
 
   //    std::cout << "Waiting for stream\n" << std::flush;
       testListenerArrayAbsolute.waitStream();
+      pthread_join(thread, NULL);
       int retTimesSize, retSamplesSize;
       uint64_t  *retTimes = testListenerArrayAbsolute.getTimes(&retTimesSize);
       float *retSamples = testListenerArrayAbsolute.getSamples(&retSamplesSize);
