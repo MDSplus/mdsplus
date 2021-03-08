@@ -22,7 +22,6 @@ $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif
-	cp $(java_resdir)/*.jar $(javadir)
 
 SOURCE =\
  MDSplus/*.java\
