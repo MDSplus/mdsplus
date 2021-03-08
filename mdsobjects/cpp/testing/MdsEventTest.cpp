@@ -36,7 +36,7 @@ using namespace MDSplus;
 using namespace testing;
 namespace mds = MDSplus;
 
-/*static void *sendStream(void *streamName) {
+static void *sendStream(void *streamName) {
   sleep(1);
   Data *timeD = new Float32(1.0);
   Data *sampleD = new Float32(123.);
@@ -46,7 +46,7 @@ namespace mds = MDSplus;
   pthread_exit(0);
   return NULL;
 }
-
+/*
 static void *sendStreamAbs(void *streamName) {
   sleep(1);
   Data *timeD = new Uint64(1);
@@ -281,7 +281,7 @@ int main(int argc __attribute__((unused)),
       TEST1(AutoString(data->getString()).string ==
             AutoString(str->getString()).string);
     }
- /*   
+    
     MDSplus::EventStream evStreamScalarRelative("EVENT_TEST:[]SCALAR_RELATIVE");
     MDSplus::EventStream evStreamScalarAbsolute("EVENT_TEST:[]SCALAR_ABSOLUTE");
     MDSplus::EventStream evStreamArrayRelative("EVENT_TEST:[]ARRAY_RELATIVE");
@@ -304,7 +304,7 @@ int main(int argc __attribute__((unused)),
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
-      std::cout << "Waiting for stream\n" << std::flush;
+   //   std::cout << "Waiting for stream\n" << std::flush;
       testListenerScalarRelative.waitStream();
       float retTime = testListenerScalarRelative.getTime();
       float retSample = testListenerScalarRelative.getSample();
@@ -313,7 +313,7 @@ int main(int argc __attribute__((unused)),
       TEST1(retSample == 123.0);
       TEST1(retShot == 1);
     }
-    { // STREAM SCALAR ABSOLUTE TIME
+/*    { // STREAM SCALAR ABSOLUTE TIME
       pthread_t thread;
       if (pthread_create(&thread, attrp, sendStreamAbs, (void *)"EVENT_TEST:[]SCALAR_ABSOLUTE"))
         throw std::runtime_error(
