@@ -94,7 +94,7 @@ EXPORT void EventStream::send(int shot, const char *name, bool isAbsTime, int nT
   for(int i  = 0; i < nTimes; i++)
   {
     if(isAbsTime)
-      timesVal.PushBack(((unsigned long *)times)[i], allocator);
+      timesVal.PushBack(((uint64_t *)times)[i], allocator);
     else
       timesVal.PushBack(((float *)times)[i], allocator);
   }
