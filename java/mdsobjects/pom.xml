@@ -9,8 +9,15 @@
 	</parent>
 	<artifactId>mdsobjects</artifactId>
 	<packaging>jar</packaging>
+        <dependencies>
+          <dependency>
+            <artifactId>mdsobjects</artifactId>
+            <systemPath>${basedir}/src/main/resources/javax.json-1.0.4.jar</systemPath>
+          </dependency>
+        </dependencies>
 	<name>MDSplus mdsobjects</name>
 	<description>
 		MDSplus mdsobjects interface
 	</description>
+        
 </project>
