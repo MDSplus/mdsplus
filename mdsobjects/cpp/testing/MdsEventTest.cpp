@@ -46,7 +46,7 @@ static void *sendStream(void *streamName) {
   pthread_exit(0);
   return NULL;
 }
-/*
+
 static void *sendStreamAbs(void *streamName) {
   sleep(1);
   Data *timeD = new Uint64(1);
@@ -83,7 +83,7 @@ static void *sendStreamAbsArr(void *streamName) {
   pthread_exit(0);
   return NULL;
 }
-*/
+
 static void *setevent(void *evname) {
   sleep(1);
   Event::setEvent((char *)evname);
@@ -313,13 +313,13 @@ int main(int argc __attribute__((unused)),
       TEST1(retSample == 123.0);
       TEST1(retShot == 1);
     }
-/*    { // STREAM SCALAR ABSOLUTE TIME
+    { // STREAM SCALAR ABSOLUTE TIME
       pthread_t thread;
       if (pthread_create(&thread, attrp, sendStreamAbs, (void *)"EVENT_TEST:[]SCALAR_ABSOLUTE"))
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
-      std::cout << "Waiting for stream\n" << std::flush;
+ //     std::cout << "Waiting for stream\n" << std::flush;
       testListenerScalarAbsolute.waitStream();
       uint64_t retTime = testListenerScalarAbsolute.getTime();
       float retSample = testListenerScalarAbsolute.getSample();
@@ -334,7 +334,7 @@ int main(int argc __attribute__((unused)),
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
-      std::cout << "Waiting for stream\n" << std::flush;
+     // std::cout << "Waiting for stream\n" << std::flush;
       testListenerArrayRelative.waitStream();
       int retTimesSize, retSamplesSize;
       float  *retTimes = testListenerArrayRelative.getTimes(&retTimesSize);
@@ -354,7 +354,7 @@ int main(int argc __attribute__((unused)),
         throw std::runtime_error(
             "ERROR: Could not create thread for sendStream");
 
-      std::cout << "Waiting for stream\n" << std::flush;
+  //    std::cout << "Waiting for stream\n" << std::flush;
       testListenerArrayAbsolute.waitStream();
       int retTimesSize, retSamplesSize;
       uint64_t  *retTimes = testListenerArrayAbsolute.getTimes(&retTimesSize);
@@ -369,7 +369,7 @@ int main(int argc __attribute__((unused)),
       delete [] retSamples;
     }
     
-   */
+   
   } catch (...) {
     if (attrp)
       pthread_attr_destroy(attrp);
