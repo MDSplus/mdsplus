@@ -510,8 +510,13 @@ Data *Data::getData(int classType, int dataType) {
   Data *retData = (Data *)convertFromDsc(retDsc);
   freeDsc(dscPtr);
   freeDsc(retDsc);
-  if (!retData || retData->clazz != classType)
+  if (!retData)
+    throw MdsException("Cannot get data");
+  if(retData->clazz != classType)
+  {
+    deleteData(retData);
     throw MdsException("Cannot convert to desired type");
+  }
 
   return retData;
 }
