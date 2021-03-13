@@ -20,7 +20,7 @@ static IoRoutines io_routines = {
     io_connect,   io_send,       io_recv,       io_flush,   io_listen,
     io_authorize, io_reuseCheck, io_disconnect, io_recv_to, io_check};
 #include <mdsshr.h>
-
+#include <signal.h>
 #include <inttypes.h>
 
 #define IP(addr) ((uint8_t *)&addr)
