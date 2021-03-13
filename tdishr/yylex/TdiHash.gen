@@ -42,7 +42,5 @@ int tdi_hash(const int len, const char *const pstring)
 }
 EOF_AFTER
 ) > $SRC
-${GPERF:-gperf} $SRC | (
 # remove '#line' decorators to simplify debugging
-sed '/^#line/d' -
-) > $OUT
+${GPERF:-gperf} $SRC | sed '/^#line/d' > $OUT
