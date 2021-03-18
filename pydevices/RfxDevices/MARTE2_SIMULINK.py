@@ -144,7 +144,7 @@ def BUILDER(cls):
         WrapperLib.WCAPI_GetSignalDataTypeIdx.restype = ctypes.c_uint
 
         WrapperLib.WCAPI_GetDataTypeSLId.argtypes = [
-            ctypes.POINTER(None), ctypes.c_int]
+            ctypes.POINTER(None), ctypes.c_uint]
         WrapperLib.WCAPI_GetDataTypeSLId.restype = ctypes.c_uint
 
         WrapperLib.WCAPI_GetDataEnumStorageType.argtypes = [
@@ -213,6 +213,7 @@ def BUILDER(cls):
                 retrievedName = WrapperLib.WCAPI_GetSignalName(
                     SignalStruct, signalIdx)
                 retrievedName = retrievedName.decode("utf-8")
+                print('SIGNAL NAME: ' + retrievedName);
                # retrievedName = removeAngular(retrievedName)
 
                 # type is retrieved
@@ -242,7 +243,7 @@ def BUILDER(cls):
                 elif retrievedSLIdType == 7:
                     MARTe2Typename = 'uint32'
                 elif retrievedSLIdType == 8:
-                    MARTe2Typename = 'bool'
+                    MARTe2Typename = 'uint8'
                 elif retrievedSLIdType == 254:
                     fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, retrievedTypeIdx)
                     if fieldEnumType == 0:
@@ -333,7 +334,7 @@ def BUILDER(cls):
                         elif fieldSLIdType == 7:
                             fieldMARTe2Typename = 'uint32'
                         elif fieldSLIdType == 8:
-                            fieldMARTe2Typename = 'bool'
+                            fieldMARTe2Typename = 'uint8'
                         elif fieldSLIdType == 254:
                             fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, fieldTypeIdx)
                             if fieldEnumType == 0:
@@ -431,12 +432,15 @@ def BUILDER(cls):
                 retrievedName = WrapperLib.WCAPI_GetModelParameterName(
                     ParameterStruct, paramIdx)
                 retrievedName = retrievedName.decode("utf-8")
+                print('retrievedname: ', retrievedName)
 
                 # type is retrieved
                 retrievedTypeIdx = WrapperLib.WCAPI_GetModelParameterDataTypeIdx(
                     ParameterStruct, paramIdx)
+                print('retrievedTypeIdx: ', str(retrievedTypeIdx))
                 retrievedSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
                     DataTypeMap, retrievedTypeIdx)
+                print('retrievedSLIdType: ', str(retrievedSLIdType))
                 #retrievedCTypename = WrapperLib.WCAPI_GetDataTypeCName(
                 #    DataTypeMap, retrievedTypeIdx)
                 #retrievedCTypename = retrievedCTypename.decode("utf-8")
@@ -467,7 +471,7 @@ def BUILDER(cls):
                     MARTe2Typename = 'uint32'
                     pythonTypename = ctypes.c_uint32
                 elif retrievedSLIdType == 8:
-                    MARTe2Typename = 'bool'
+                    MARTe2Typename = 'uint8'
                     pythonTypename = ctypes.c_bool
                 elif retrievedSLIdType == 254:
                     fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, retrievedTypeIdx)
@@ -762,6 +766,7 @@ def BUILDER(cls):
                   
                 fieldTypeIdx = WrapperLib.WCAPI_GetElementDataTypeIdx(
                     ElementMap, elementMapIndex + fieldIdx)
+                print('fieldTypeIdx: '+str(fieldTypeIdx))
                 fieldSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
                     DataTypeMap, fieldTypeIdx)
                 print('fieldSLIdType: '+str(fieldSLIdType))
@@ -790,7 +795,7 @@ def BUILDER(cls):
                     fieldMARTe2Typename = 'uint32'
                     fieldPythonTypename = ctypes.c_uint32
                 elif fieldSLIdType == 8:
-                    fieldMARTe2Typename = 'bool'
+                    fieldMARTe2Typename = 'uint8'
                     fieldPythonTypename = ctypes.c_int8
                 elif fieldSLIdType == 254:
                     fieldEnumType =  WrapperLib.WCAPI_GetDataEnumStorageType(DataTypeMap, fieldTypeIdx)
@@ -835,7 +840,7 @@ def BUILDER(cls):
                 # Number of elements in the dimensionArray referring to this signal
                 fieldDimNum = WrapperLib.WCAPI_GetNumDims(
                     DimensionMap, fieldDimIdx)
-
+                print('fieldDimNum: '+ str(fieldDimNum))
                 currDimension = []
                 for currIdx in range(fieldDimNum):
                     currDimension.append(
@@ -891,6 +896,8 @@ def BUILDER(cls):
                         mdsplusValue = MDSplus.Int32Array(valueList)
                     elif fieldSLIdType == 7:
                         mdsplusValue = MDSplus.Uint32Array(valueList)
+                    elif fieldSLIdType == 8:
+                        mdsplusValue = MDSplus.Uint8Array(valueList)
                     else:
                         raise Exception('Unsupported parameter datatype.')
                       

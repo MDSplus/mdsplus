@@ -276,6 +276,13 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
   *dMin =
       xMin ? to_doublex(xMin->pointer, xMin->dtype, -INFINITY, TRUE) : *sMin;
   *dMax = xMax ? to_doublex(xMax->pointer, xMax->dtype, INFINITY, TRUE) : *sMax;
+  if(numActSegments == 1 && xMin && xMax) //Handle the case of a single (likely large) segment
+  {
+      double givenTimeSpan = to_doublex(xMax->pointer, xMax->dtype, -INFINITY, TRUE) - to_doublex(xMin->pointer, xMin->dtype, -INFINITY, TRUE);
+      double segmentTimeSpan = *sMax - *sMin;
+      if(segmentTimeSpan > 0 && segmentTimeSpan > givenTimeSpan)
+        return (int64_t)(segmentSamples * givenTimeSpan / segmentTimeSpan);
+  }
   *estimatedSegmentSamples = segmentSamples;
   return segmentSamples * (int64_t)numActSegments;
 return_neg1:;
@@ -800,8 +807,8 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
   xMaxP = (xmax < INFINITY) ? inXMax : NULL;
 
-  // printf("ESTIMATED SAMPLES: %d  THRESHOLD: %d\n", estimatedSamples,
-  // NUM_SAMPLES_THRESHOLD);
+   //printf("ESTIMATED SAMPLES: %d  THRESHOLD: %d\n", estimatedSamples,
+   //NUM_SAMPLES_THRESHOLD);
 
   if (estimatedSamples > NUM_SAMPLES_THRESHOLD) {
     delta = estimatedSamples / reqNSamples;
@@ -819,10 +826,16 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
     if (isLong)
       delta /= 1e9; // quick compensation of xtreeshr conversion
 
+      
+    //printf("DELTA: %e\n", delta);  
+      
     deltaP = (delta > 1e-9) ? &deltaD : NULL;
   } else
     deltaP = NULL;
   // Set limits if any
+  
+  
+  
   int status = TreeSetTimeContext(xMinP, xMaxP, deltaP);
 
   if

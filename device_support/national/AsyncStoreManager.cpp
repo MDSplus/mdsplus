@@ -440,8 +440,10 @@ void SaveList::executeItems() {
     */
     pthread_mutex_unlock(&mutex);
 
+#ifdef DEBUG_QUEUE
     reportQueueLen(currItem->getDataNid(), currItem->getTree(), getQueueLen(),
                    currItem->getShot());
+#endif
 
     currItem->save();
     delete currItem;

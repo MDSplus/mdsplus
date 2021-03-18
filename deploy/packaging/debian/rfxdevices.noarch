@@ -55,6 +55,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_LEV_CTRLR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_MAGNET.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_RAPTOR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_TANK.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SPIDER_CAL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_STREAM.py
@@ -772,6 +773,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/bRadMax.fun
 ./usr/local/mdsplus/tdi/RfxDevices/baseline_segmented.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bfm_ftheta.fun
+./usr/local/mdsplus/tdi/RfxDevices/caesiumSwitch.py
 ./usr/local/mdsplus/tdi/RfxDevices/calcrms.fun
 ./usr/local/mdsplus/tdi/RfxDevices/calibTCN_0_600.fun
 ./usr/local/mdsplus/tdi/RfxDevices/check_init.fun
@@ -825,6 +827,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/shotsDate.fun
 ./usr/local/mdsplus/tdi/RfxDevices/sigBit.fun
 ./usr/local/mdsplus/tdi/RfxDevices/sigMean.fun
+./usr/local/mdsplus/tdi/RfxDevices/sigSlopeTimes.py
 ./usr/local/mdsplus/tdi/RfxDevices/spiderBurstClock.fun
 ./usr/local/mdsplus/tdi/RfxDevices/spiderClockSegment.fun
 ./usr/local/mdsplus/tdi/RfxDevices/spider_finish_pulse.fun
