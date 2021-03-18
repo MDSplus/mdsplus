@@ -15,11 +15,26 @@ then
 fi
 }
 
+test2prog() {
+# $1 prog1, $2 prog2, package
+
+
+if ! which $1 >/dev/null 2>&1 && ! which $2 >/dev/null 2>&1
+then
+        export abort=$?
+        echo "Please install package providing '$1' or '$2' in order to bootstrap"
+        shift
+        echo "The required package may be named $@."
+        echo "We recommend using docker if available:"
+        echo "  deploy/build.sh --os=bootstrap"
+fi
+}
+
 testprog aclocal	automake
 testprog autoheader	autoconf
 testprog automake	automake
 testprog autoconf	autoconf
-testprog python		python2 or python3
+testprog2 python2 python3 python2 or python3
 testprog bison		bison
 testprog flex		flex
 
