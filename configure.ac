@@ -528,38 +528,32 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-missing-field-initializers -Wno-parentheses-equality";
-       FCFLAGS="$FCFLAGS -fno-range-check"
-       FORLD="gfortran"
-       FOR_LDFLAGS="-shared"
+       CFLAGS="$CFLAGS -dynamic -fno-strict-aliasing";
+       FCFLAGS="$FCFLAGS -fno-range-check";
+       FORLD="gfortran";
+       FOR_LDFLAGS="-shared";
        FEXECLIBDIR="-L";
-       LD="$CC"
-       LDSHARE="";
+       LD="$CC";
+       LDSHARE="-rpath @loader_path/.. @executable_path/.. $exec_prefix";
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
        UILPATH=${OPENMOTIF-/usr}/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
-       dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
-	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
-           FOR_LINKSHARED="$LDFLAGS -shared";
-	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib";
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib";
+       LINKSHARED="$LDFLAGS -shared -install_name @rpath/lib/\$(@F) -headerpad_max_install_names";
+       FOR_LINKSHARED="$LDFLAGS -shared";
+       LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
        LINKJNI="$LINKSHARED";
+       jni_inc_dir="$JAVA_HOME/include";
+       jni_md_inc_dir="$JAVA_HOME/include/darwin";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
        SHARETYPEMOD=".dylib";
        TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home
-       jni_inc_dir="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers";
-       jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
-       java_enable="yes"
-       LIBPATH="DYLD_LIBRARY_PATH"
-       dnl HDF5_LIBS="-lz -lsz";
-       dnl HDF5_DIR="/usr/local";
+       java_enable="yes";
+       LIBPATH="DYLD_LIBRARY_PATH";
        X_EXTRA_LIBS="-lXmu";;
 esac
 
