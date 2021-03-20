@@ -25,6 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pthread.h>
 #include <mdsobjects.h>
 #include <time.h>
+#include <sys/time.h>
 #include <string.h>
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
 #include "rapidjson/prettywriter.h" // for stringify JSON
@@ -80,17 +81,36 @@ static uint64_t getAndIncrementTimestamp(const char *stream)
   return 0;
 }
 
+static void makeSampleArray(Value &samplesVal, float * samples, int nDims, int *dims, Document::AllocatorType &allocator)
+{
+  if(nDims > 1)
+  {
+    int sampleSize = 1;
+    for(int i = 1; i < nDims; i++)
+      sampleSize *= dims[i];
+    for(int i = 0; i < dims[0]; i++)
+    {
+      Value v(kArrayType);
+      makeSampleArray(v, &samples[i * sampleSize], nDims - 1, &dims[1],allocator);
+      samplesVal.PushBack(v, allocator);
+    }
+  }
+  else
+  {
+    for(int i = 0; i < dims[0]; i++)
+      samplesVal.PushBack(samples[i], allocator);
+  }
+ }
 
 EXPORT void EventStream::send(int shot, const char *name, bool isAbsTime, int nTimes, void *times, 
-                              int nSamples, float *samples)
+                              int nDim, int *dims, float *samples)
 {
   Document d;
   d.SetObject();
   Document::AllocatorType& allocator = d.GetAllocator(); 
   Value timesVal(kArrayType);
   Value samplesVal(kArrayType);
-  for(int i = 0; i < nSamples; i++)
-    samplesVal.PushBack(samples[i], allocator);
+  makeSampleArray(samplesVal, samples, nDim, dims, allocator);
   for(int i  = 0; i < nTimes; i++)
   {
     if(isAbsTime)
@@ -98,18 +118,24 @@ EXPORT void EventStream::send(int shot, const char *name, bool isAbsTime, int nT
     else
       timesVal.PushBack(((float *)times)[i], allocator);
   }
-  Value timestampVal;
-  timestampVal.SetInt(getAndIncrementTimestamp(name));
+  Value seqNumberVal;
+  seqNumberVal.SetInt(getAndIncrementTimestamp(name));
   Value absTimeVal;
   absTimeVal.SetInt(isAbsTime?1:0);
   Value shotVal;
   shotVal.SetInt(shot);
   Value nameVal;
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  uint64_t ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+  Value timestampVal;
+  timestampVal.SetUint64(ms);
   nameVal.SetString(name, strlen(name));
   d.AddMember("name", nameVal, allocator);
   d.AddMember("shot", shotVal, allocator);
   d.AddMember("samples", samplesVal, allocator);
   d.AddMember("times", timesVal, allocator);
+  d.AddMember("seq_number", seqNumberVal, allocator);
   d.AddMember("timestamp", timestampVal, allocator);
   d.AddMember("absolute_time", absTimeVal, allocator);
   StringBuffer sb;
@@ -123,41 +149,48 @@ EXPORT void EventStream::send(int shot, const char *name, bool isAbsTime, int nT
 EXPORT void EventStream::send(int shot, const char *name, float time,
                               float sample) 
 {
-  EventStream::send(shot, name, false, 1, &time, 1, &sample);
+  int dim = 1;
+  EventStream::send(shot, name, false, 1, &time, 1, &dim, &sample);
 }
 
 EXPORT void EventStream::send(int shot, const char *name, uint64_t time,
                               float sample) 
 {
-  EventStream::send(shot, name, true, 1, &time, 1, &sample);
+  int dim = 1;
+  EventStream::send(shot, name, true, 1, &time, 1, &dim, &sample);
 }
 
 EXPORT void EventStream::send(int shot, const char *name, int numSamples,
                               float *times, float *samples) 
 {
-  EventStream::send(shot, name, false, numSamples, times, numSamples, samples);
+  
+ EventStream::send(shot, name, false, numSamples, times, 1, &numSamples, samples);
 }
 
 EXPORT void EventStream::send(int shot, const char *name, int numSamples,
                               uint64_t *times, float *samples) 
 {
-  EventStream::send(shot, name, true, numSamples, times, numSamples, samples);
+  EventStream::send(shot, name, true, numSamples, times, 1, &numSamples, samples);
 }
 
 EXPORT void EventStream::send(int shot, const char *name, int numTimes,
                               uint64_t *times, int numSamples, float *samples) 
 {
-  EventStream::send(shot, name, true, numTimes, times, numSamples, samples);
+  EventStream::send(shot, name, true, numTimes, times, 1, &numSamples, samples);
 }
 
 EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *samplesD) 
 {
   bool isAbsTime = (timesD->dtype == DTYPE_Q || timesD->dtype == DTYPE_QU);
   int nTimes, nSamples;
+  int *dims;
   float *samples, sample;
+  int nDims = 1;
+  
   bool isTimesScalar = false, isSamplesScalar = false;
   try {
     samples = samplesD->getFloatArray(&nSamples);
+    dims = samplesD->getShape(&nDims);
   }
   catch(MdsException &exc)
   {
@@ -179,8 +212,14 @@ EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *sa
       nTimes = 1;
       isTimesScalar = true;
     }
-    EventStream::send(shot, name, true, nTimes, times, nSamples, samples);
-    if(!isTimesScalar) delete[] times;
+    if(isSamplesScalar)
+      EventStream::send(shot, name, true, nTimes, times, 1, &nSamples, samples);
+    else
+    {
+       EventStream::send(shot, name, true, nTimes, times, nDims, dims, samples);
+       delete [] dims;
+    }
+   if(!isTimesScalar) delete[] times;
   }
   else
   {
@@ -195,7 +234,13 @@ EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *sa
         nTimes = 1;
         isTimesScalar = true;
     }
-    EventStream::send(shot, name, false, nTimes, times, nSamples, samples);
+    if(isSamplesScalar)
+      EventStream::send(shot, name, false, nTimes, times, 1, &nSamples, samples);
+    else
+    {
+       EventStream::send(shot, name, false, nTimes, times, nDims, dims, samples);
+       delete [] dims;
+    }
     if(!isTimesScalar) delete[] times;
   }
   if(!isSamplesScalar) delete[] samples;
@@ -330,6 +375,49 @@ EXPORT void EventStream::run() {
   deleteData(samplesD);
   deleteData(timesD);
 }
+
+static int countSampleArray(const Value &samplesVal)
+{
+  int size = samplesVal.Size();
+  if(size == 0)
+    return 0;
+  if (samplesVal[0].IsArray())
+  {
+    int retSize = 0;
+    for(int i = 0; i< size; i++)
+      retSize += countSampleArray(samplesVal[i]);
+    return retSize;
+  }
+  return size;
+}
+static int readSampleArray(const Value &samplesVal, float *samples, int *dimensions, int depth) //Return number of dimensions
+{
+  if(depth >= 64) return 0; //Avoid core dumps in case of wrong payload
+  int dimCount;
+  int size = samplesVal.Size();
+  if(size == 0)
+    return 0;
+  dimensions[0] = size;
+  if (samplesVal[0].IsArray())
+  {
+    int currIndex = 0;
+    for(int i = 0; i < size; i++)
+    {
+      dimCount = readSampleArray(samplesVal[i], &samples[currIndex], &dimensions[1], depth + 1);
+      currIndex += countSampleArray(samplesVal[i]);
+    }
+    return dimCount + 1;
+  }
+  else 
+  {
+    for(int i = 0; i < size; i++)
+    {
+      samples[i] = samplesVal[i].GetFloat();
+    }
+    return 1;
+  }
+}
+
 EXPORT void EventStream::handleJSONPayload(char *payload)
 {
   Document d;
@@ -368,14 +456,15 @@ EXPORT void EventStream::handleJSONPayload(char *payload)
       delete[] times;
   }
   const Value &samplesVal = d["samples"];
-  float *samples = new float[samplesVal.Size()];
-  for(size_t i = 0; i < samplesVal.Size(); i++)
-    samples[i] = samplesVal[i].GetFloat();
+  int numSamples = countSampleArray(samplesVal);
+  float *samples = new float[numSamples];
+  int dims[64];
+  int numDims = readSampleArray(samplesVal, samples, dims, 0);
   Data *samplesD;
-  if(samplesVal.Size() == 1)
+  if(numSamples == 1)
     samplesD = new Float32(samples[0]);
   else
-    samplesD = new Float32Array(samples, samplesVal.Size());
+    samplesD = new Float32Array(samples, numDims, dims);
   delete [] samples;
   for (size_t i = 0; i < listeners.size(); i++) {
     if (names[i] == nameStr)
