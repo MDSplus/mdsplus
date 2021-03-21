@@ -528,7 +528,7 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -dynamic -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fsigned-char -fno-strict-aliasing -Wl,-rpath,@loader_path/..,-rpath,@executable_path/..,-rpath,$exec_prefix";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="gfortran";
        FOR_LDFLAGS="-shared";
@@ -541,7 +541,7 @@ case "$host" in
        UILPATH=${OPENMOTIF-/usr}/bin;
        MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib";
        MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib";
-       LINKSHARED="$LDFLAGS -shared -install_name @rpath/lib/\$(@F) -headerpad_max_install_names";
+       LINKSHARED="$LDFLAGS -dynamiclib -install_name @rpath/lib/\$(@F) -headerpad_max_install_names";
        FOR_LINKSHARED="$LDFLAGS -shared";
        LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
