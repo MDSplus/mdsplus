@@ -56,7 +56,7 @@ static int next = 0;
 
 #include <pthread.h>
 
-static inline chkptr(int *ptr) {
+static inline int chkptr(int *ptr) {
   int ans = 1;
   if (ptr) {
     if (*ptr == 1) {
