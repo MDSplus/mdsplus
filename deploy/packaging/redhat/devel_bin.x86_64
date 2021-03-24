@@ -1,5 +1,6 @@
 ./usr/local/mdsplus/lib64/libIdlMdsEvent.a
 ./usr/local/mdsplus/lib64/libIdlMdsWidgets.a
+./usr/local/mdsplus/lib64/libMdsFLib.a
 ./usr/local/mdsplus/lib64/libMdsIpShr.a
 ./usr/local/mdsplus/lib64/libMdsLib.a
 ./usr/local/mdsplus/lib64/libMdsLib_client.a
