@@ -21,7 +21,7 @@
       real    resultarr(20)
       real    array2d(nx,ny)
       character cresult*12
-
+      size = 0
       do i=1,nx
          do j=1,ny
             array2d(i,j) = i*10 + j
@@ -35,9 +35,9 @@
       end if
 
       dsc = descr(IDTYPE_FLOAT,result,0,0)
-      sts= MdsValueR(con, "1.23"//CHAR(0),dsc,0,size)
+      sts= MdsValueR(con, "1.23"//CHAR(0),dsc,0,1)
       if (abs(result-1.23) .gt. 1e-5) then
-        write (6,*) "MdsValue('1.23') : ",result,sts,size
+        write (6,*) "MdsValue('1.23') : ",result,sts
         stop 1
       end if
 
@@ -47,33 +47,38 @@
         write (6,*) "MdsValue('2. : 40. : 2.') : ",resultarr,sts,size
         stop 1
       end if
-
+      size = 0
       dsc = descr(IDTYPE_LONG,iresult,0)
       sts= MdsValueR(con,"_=SetEnv('test_path=.')"//CHAR(0),dsc,0,size)
       if (and(and(sts, iresult), 1) .ne. 1) then
         write (6,*) "setenv(): ",iresult,sts,size
         stop 1
       end if
+      size = 0
       sts= MdsValueR(con,"TreeOpenNew('test',1)"//CHAR(0),dsc,0,size)
       if (and(and(sts, iresult), 1) .ne. 1) then
         write (6,*) "TreeOpenNew(): ",iresult,sts,size
         stop 1
       end if
+      size = 0
       sts= MdsValueR(con,"TreeAddNode('A',_,'ANY')"//CHAR(0),dsc,0,size)
       if (and(and(sts, iresult), 1) .ne. 1) then
         write (6,*) "TreeAddNode: ",iresult,sts,size
         stop 1
       end if
+      size = 0
       sts= MdsValueR(con,"TreeWrite()"//CHAR(0),dsc,0,size)
       if (and(and(sts, iresult), 1) .ne. 1) then
         write (6,*) "TreeWrite(): ",iresult,sts,size
         stop 1
       end if
+      size = 0
       sts= MdsValueR(con,"TreeClose()"//CHAR(0),dsc,0,size)
       if (and(and(sts, iresult), 1) .ne. 1) then
         write (6,*) "TreeClose(): ",iresult,sts,size
         stop 1
       end if
+      size = 0
 
       dsc = descr(IDTYPE_CSTRING,cresult,0,12)
       sts= MdsValueR(con,"$EXPT"//CHAR(0),dsc,0,size)
@@ -81,6 +86,7 @@
         write (6,*) "MdsValue($EXPT)/*before*/: ",cresult,sts,size
         stop 1
       end if
+      size = 0
 
       sts= MdsOpenR(con,"test"//CHAR(0),1)
       if (and(sts, 1) .ne. 1) then
@@ -94,6 +100,7 @@
         write (6,*) "MdsValue($EXPT)/*after*/: ",cresult,sts,size
         stop 1
       end if
+      size = 0
 
       dsc = descr(IDTYPE_LONG,42042,0)
       sts= MdsPutR(con,"A"//CHAR(0),"$"//CHAR(0),dsc,0)
@@ -108,6 +115,7 @@
         write (6,*) "MdsValue('A')/*i*/: ",iresult,sts
         stop 1
       end if
+      size = 0
 
       dsc = descr(IDTYPE_FLOAT,resultarr,20,0)
       do i=1,20
@@ -124,6 +132,7 @@
         write (6,*) "MdsValue('A')/*/array*/: ",resultarr,sts,size
         stop 1
       end if
+      size = 0
 
       dsc = descr(IDTYPE_FLOAT,array2d,nx,ny,0)
       sts= MdsPutR(con,"A"//CHAR(0),"$"//CHAR(0),dsc,0)
@@ -137,6 +146,7 @@
         write (6,*) "MdsValue('A')/*/array2d*/: ",resultarr,sts,size
         stop 1
       end if
+      size = 0
 
       sts= MdsDisconnectR(con)
       if (sts.lt. 0) then
