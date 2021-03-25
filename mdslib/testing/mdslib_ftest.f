@@ -27,9 +27,9 @@
       enddo
 
       dsc = descr(IDTYPE_FLOAT,result,0,0)
-      sts = MdsValue("1.23"//CHAR(0),dsc,0,size)
+      sts = MdsValue("1.23"//CHAR(0),dsc,0,1)
       if (abs(result-1.23) .gt. 1e-5) then
-        write (6,*) "MdsValue('1.23') : ",result,sts,size
+        write (6,*) "MdsValue('1.23') : ",result,sts
         stop 1
       end if
 

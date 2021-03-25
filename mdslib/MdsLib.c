@@ -23,7 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <stdio.h>
 #include <mdsdescrip.h>
 #include <pthread_port.h>
 #define MDSLIB_NO_PROTOS
@@ -48,6 +47,7 @@ extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
 extern int TdiDebug();
+
 short ArgLen(struct descrip *d);
 
 static int next = 0;
@@ -55,23 +55,6 @@ static int next = 0;
 #define MAXARGS 32
 
 #include <pthread.h>
-
-static inline int chkptr(int *ptr) {
-  int ans = 1;
-  if (ptr) {
-#ifdef OLD_FORTRAN_API
-    if (*ptr == 1) {
-      fprintf(stderr, "MdsValue deprecated behvior, Passing 1 by reference to signal missing arguement is deprecated, please update source to pass a NULL by value instead\n");
-      ans = 0;
-    }
-#endif
-  } 
-  else 
-  {
-    ans = 0;
-  }
-  return ans;
-}
 
 static char *mds_value_remote_expression(char *expression,
                                          struct descriptor *dsc);
@@ -427,7 +410,11 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
   a_count--; /* subtract one for terminator of argument list */
 
   length = va_arg(incrmtr, int *);
-  if (chkptr(length)) {
+#ifdef OLD_FORTRAN_API
+  if (length && (*length != 1)) {
+#else
+  if (length) {
+#endif
     *length = 0;
   }
 
@@ -654,7 +641,11 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
   a_count--; /* subtract one for terminator of argument list */
 
   length = va_arg(incrmtr, int *);
-  if (chkptr(length)) {
+#ifdef OLD_FORTRAN_API
+  if (length && (*length != 1)) {
+#else
+  if (length) {
+#endif
     *length = 0;
   }
 
@@ -1412,8 +1403,13 @@ static void mds_value_set(struct descriptor *outdsc, struct descriptor *indsc,
                           int *length) {
   char fill;
   if (indsc == 0) {
-    if (chkptr(length))
+#ifdef OLD_FORTRAN_API
+    if (length && (*length != 1)) {
+#else
+    if (length) {
+#endif
       *length = 0;
+    }
     return;
   }
   fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
@@ -1431,7 +1427,11 @@ static void mds_value_set(struct descriptor *outdsc, struct descriptor *indsc,
                    mds_value_length(outdsc), outdsc->pointer);
   }
 
-  if (chkptr(length)) {
+#ifdef OLD_FORTRAN_API
+  if (length && (*length != 1)) {
+#else
+  if (length) {
+#endif
     if (indsc->class == CLASS_A)
       *length = MIN(((struct descriptor_a *)outdsc)->arsize / outdsc->length,
                     ((struct descriptor_a *)indsc)->arsize / indsc->length);
