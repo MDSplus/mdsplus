@@ -393,7 +393,7 @@ static int countSampleArray(const Value &samplesVal)
 static int readSampleArray(const Value &samplesVal, float *samples, int *dimensions, int depth) //Return number of dimensions
 {
   if(depth >= 64) return 0; //Avoid core dumps in case of wrong payload
-  int dimCount;
+  int dimCount = 0;
   int size = samplesVal.Size();
   if(size == 0)
     return 0;
