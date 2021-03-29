@@ -4201,7 +4201,7 @@ public:
     name = streamName;
   }
   static void send(int shot, const char *name, bool isAbsTime, int nTimes, void *times, 
-                              int nSamples, float *samples);
+                              int nDims, int *dims, float *samples);
   static void send(int shot, const char *name, float time, float sample);
   static void send(int shot, const char *name, uint64_t time, float sample);
   static void send(int shot, const char *name, int numSamples, float *times,
