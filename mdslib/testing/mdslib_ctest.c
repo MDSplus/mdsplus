@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <mdslib.h>
 #include <treeshr.h>
-
+#include <stdio.h>
 #define BUFFLEN 10
 
 int status;
@@ -64,9 +64,11 @@ int testScalarString(char *expression, char *expected) {
   char *string = malloc(lenalloc);
   int dsc = descr(&dtype_cstring, string, &null, &lenalloc);
   status = MdsValue(expression, &dsc, &null, &returnlength);
-  if (status & 1)
+  if (status & 1) {
+    fprintf(stderr, "testScalarString(%.*s -- %s  %d)\n", returnlength, string, expected, returnlength);
     status =
         (returnlength == length) && (strncmp(string, expected, length) == 0);
+  }
   free(string);
   return (status);
 }
