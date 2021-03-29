@@ -64,6 +64,7 @@ int testScalarString(char *expression, char *expected) {
   int lenalloc = length + 32;
   char *string = calloc(lenalloc, 1);
   int dsc = descr(&dtype_cstring, string, &null, &lenalloc);
+  returnlength = 0;
   status = MdsValue(expression, &dsc, &null, &returnlength);
   if (status & 1) {
     fprintf(stderr, "testScalarString(%.*s -- %s  %d)\n", returnlength, string, expected, returnlength);
