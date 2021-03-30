@@ -1711,7 +1711,63 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                        _dat.Data.byref(array),
                                        _C.c_int32(int(idx))))
 
-    def beginTimestampedSegment(self, array, idx=-1):
+    def beginSegmentResampled(self,start,end,dim,array,resNode,resFactor,idx=-1):
+        """Begin a resampled record segment, using an average, rows_filled = 0
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Initial data array. Defines shape of segment
+        @type array: Array
+        @param resNode: TreeNode of the node to write the resampled data into
+        @type resNode: TreeNode
+        @param resFactor: Number of samples to resample together
+        @type resFactor: Data
+        @rtype: None
+        """
+        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
+        _exc.checkStatus(
+            _TreeShr._TreeBeginSegmentResampled(self.ctx,
+                                                self._nid,
+                                                _dat.Data.byref(start),
+                                                _dat.Data.byref(end),
+                                                _dat.Data.byref(dim),
+                                                _dat.Data.byref(array),
+                                                _C.c_int32(int(idx)),
+                                                resNode._nid,
+                                                _C.c_int32(int(resFactor))))
+
+    def beginSegmentMinMax(self,start,end,dim,array,resNode,resFactor,idx=-1):
+        """Begin a resampled record segment, using the min and max values
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Initial data array. Defines shape of segment
+        @type array: Array
+        @param resNode: TreeNode of the node to write the resampled data into
+        @type resNode: TreeNode
+        @param resFactor: Number of samples to resample together
+        @type resFactor: Data
+        @rtype: None
+        """
+        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
+        _exc.checkStatus(
+            _TreeShr._TreeBeginSegmentMinMax(self.ctx,
+                                             self._nid,
+                                             _dat.Data.byref(start),
+                                             _dat.Data.byref(end),
+                                             _dat.Data.byref(dim),
+                                             _dat.Data.byref(array),
+                                             _C.c_int32(int(idx)),
+                                             resNode._nid,
+                                             _C.c_int32(int(resFactor))))
+
+    def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment
         @param array: Initial data array to define shape of segment
         @type array: Array
@@ -2487,16 +2543,88 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             rows_filled = 1 if isinstance(
                 array, _cmp.Compound) else array.shape[0]
         _exc.checkStatus(
-            _TreeShr._TreeMakeSegment(self.ctx,
-                                      self._nid,
-                                      _dat.Data.byref(start),
-                                      _dat.Data.byref(end),
-                                      _dat.Data.byref(dim),
-                                      _dat.Data.byref(array),
-                                      _C.c_int32(int(idx)),
-                                      _C.c_int32(int(rows_filled))))
+                _TreeShr._TreeMakeSegment(self.ctx,
+                                          self._nid,
+                                          _dat.Data.byref(start),
+                                          _dat.Data.byref(end),
+                                          _dat.Data.byref(dim),
+                                          _dat.Data.byref(array),
+                                          _C.c_int32(int(idx)),
+                                          _C.c_int32(int(rows_filled))))
 
-    def move(self, parent, newname=None):
+
+    def makeSegmentResampled(self,start,end,dim,array,resNode,resFactor,idx=-1,rows_filled=-1):
+        """Make a resampled record segment, using an average
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Contents of segment
+        @type array: Array
+        @param resNode: TreeNode of the node to write the resampled data into
+        @type resNode: TreeNode
+        @param resFactor: Number of samples to resample together
+        @type resFactor: Data
+        @param idx: Target segment index, defaults to -1, i.e. append
+        @type idx: int
+        @param rows_filled: Rows filled, defaults to array.shape[0], i.e. full
+        @type rows_filled: int
+        @rtype: None
+        """
+        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
+        if rows_filled<0:
+            rows_filled = 1 if isinstance(array,_cmp.Compound) else array.shape[0]
+        _exc.checkStatus(
+                _TreeShr._TreeMakeSegmentResampled(self.ctx,
+                                                   self._nid,
+                                                   _dat.Data.byref(start),
+                                                   _dat.Data.byref(end),
+                                                   _dat.Data.byref(dim),
+                                                   _dat.Data.byref(array),
+                                                   _C.c_int32(int(idx)),
+                                                   _C.c_int32(int(rows_filled)),
+                                                   resNode._nid,
+                                                   _C.c_int32(int(resFactor))))
+
+
+    def makeSegmentMinMax(self,start,end,dim,array,resNode,resFactor,idx=-1,rows_filled=-1):
+        """Make a resampled record segment, using the min and max values
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dim: Dimension information of segment
+        @type dim: Dimension
+        @param array: Contents of segment
+        @type array: Array
+        @param resNode: TreeNode of the node to write the resampled data into
+        @type resNode: TreeNode
+        @param resFactor: Number of samples to resample together
+        @type resFactor: Data
+        @param idx: Target segment index, defaults to -1, i.e. append
+        @type idx: int
+        @param rows_filled: Rows filled, defaults to array.shape[0], i.e. full
+        @type rows_filled: int
+        @rtype: None
+        """
+        start,end,dim,array = map(_dat.Data,(start,end,dim,array))
+        if rows_filled<0:
+            rows_filled = 1 if isinstance(array,_cmp.Compound) else array.shape[0]
+        _exc.checkStatus(
+                _TreeShr._TreeMakeSegmentMinMax(self.ctx,
+                                                self._nid,
+                                                _dat.Data.byref(start),
+                                                _dat.Data.byref(end),
+                                                _dat.Data.byref(dim),
+                                                _dat.Data.byref(array),
+                                                _C.c_int32(int(idx)),
+                                                _C.c_int32(int(rows_filled)),
+                                                resNode._nid,
+                                                _C.c_int32(int(resFactor))))
+
+    def move(self,parent,newname=None):
         """Move node to another location in the tree and optionally rename the node
         @param parent: New parent of this node
         @type parent: TreeNode
