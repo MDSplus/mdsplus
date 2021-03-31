@@ -34,6 +34,7 @@
 ./usr/local/mdsplus/lib/libMdsIpUDTV6.so
 ./usr/local/mdsplus/lib/libMdsLib.so
 ./usr/local/mdsplus/lib/libMdsLib_client.so
+./usr/local/mdsplus/lib/libMdsLib_fortran.so
 ./usr/local/mdsplus/lib/libMdsMath.so
 ./usr/local/mdsplus/lib/libMdsMisc.so
 ./usr/local/mdsplus/lib/libMdsObjectsCppShr.so

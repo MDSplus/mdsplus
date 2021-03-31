@@ -3,6 +3,7 @@
 ./usr/local/mdsplus/lib64/libMdsIpShr.a
 ./usr/local/mdsplus/lib64/libMdsLib.a
 ./usr/local/mdsplus/lib64/libMdsLib_client.a
+./usr/local/mdsplus/lib64/libMdsLib_fortran.a
 ./usr/local/mdsplus/lib64/libMdsMisc.a
 ./usr/local/mdsplus/lib64/libMdsObjectsCppShr.a
 ./usr/local/mdsplus/lib64/libMdsServerShr.a
