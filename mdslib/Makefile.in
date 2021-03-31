@@ -10,7 +10,7 @@ MKDIR_P=@MKDIR_P@
 
 @MINGW_TRUE@ IMPLIB_MdsLib=@MAKELIBDIR@MdsLib.dll.a
 @MINGW_TRUE@ IMPLIB_MdsLib_client=@MAKELIBDIR@MdsLib_client.dll.a
-@MINGW_TRUE@ IMPLIB_MdsLib_client=@MAKELIBDIR@MdsLib_client.dll.a
+@MINGW_TRUE@ IMPLIB_MdsLib_fortran=@MAKELIBDIR@MdsLib_fortran.dll.a
 
 LIBS = @LIBS@ @GLOBUS_LIBS@ $(LIBSOCKET) @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
@@ -28,7 +28,7 @@ all: \
  @MAKEBINDIR@ @MAKELIBDIR@\
  @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib_Client)\
  @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)\
- @MAKESHLIBDIR@@LIBPRE@MdsLib_fortran@SHARETYPE@ $(IMPLIB_MdsLib_Fortran)\
+ @MAKESHLIBDIR@@LIBPRE@MdsLib_fortran@SHARETYPE@ $(IMPLIB_MdsLib_fortran)\
  @MAKELIBDIR@@LIBPRE@MdsLib_client.a\
  @MAKELIBDIR@@LIBPRE@MdsLib_fortran.a\
  @MAKELIBDIR@@LIBPRE@MdsLib.a
