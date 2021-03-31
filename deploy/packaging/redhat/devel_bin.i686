@@ -1,9 +1,9 @@
 ./usr/local/mdsplus/lib32/libIdlMdsEvent.a
 ./usr/local/mdsplus/lib32/libIdlMdsWidgets.a
-./usr/local/mdsplus/lib32/libMdsFLib.a
 ./usr/local/mdsplus/lib32/libMdsIpShr.a
 ./usr/local/mdsplus/lib32/libMdsLib.a
 ./usr/local/mdsplus/lib32/libMdsLib_client.a
+./usr/local/mdsplus/lib32/libMdsLib_fortran.a
 ./usr/local/mdsplus/lib32/libMdsMisc.a
 ./usr/local/mdsplus/lib32/libMdsObjectsCppShr.a
 ./usr/local/mdsplus/lib32/libMdsServerShr.a

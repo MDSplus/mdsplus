@@ -28,7 +28,6 @@
 ./usr/local/mdsplus/bin32/unix_submit
 ./usr/local/mdsplus/bin32/wfevent
 ./usr/local/mdsplus/lib32
-./usr/local/mdsplus/lib32/libMdsFLib.so
 ./usr/local/mdsplus/lib32/libMdsIpShr.so
 ./usr/local/mdsplus/lib32/libMdsIpSrvShr.so
 ./usr/local/mdsplus/lib32/libMdsIpTCP.so
@@ -37,6 +36,7 @@
 ./usr/local/mdsplus/lib32/libMdsIpUDTV6.so
 ./usr/local/mdsplus/lib32/libMdsLib.so
 ./usr/local/mdsplus/lib32/libMdsLib_client.so
+./usr/local/mdsplus/lib32/libMdsLib_fortran.so
 ./usr/local/mdsplus/lib32/libMdsMath.so
 ./usr/local/mdsplus/lib32/libMdsMisc.so
 ./usr/local/mdsplus/lib32/libMdsObjectsCppShr.so

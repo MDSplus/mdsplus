@@ -5,7 +5,7 @@ include ../../testing/testing.am
 
 AM_CFLAGS = $(TARGET_ARCH) $(WARNFLAGS) $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ @LIBS@
-LDADD = -lMdsFLib -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(TEST_LIBS)
+LDADD = -lMdsLib -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(TEST_LIBS)
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
