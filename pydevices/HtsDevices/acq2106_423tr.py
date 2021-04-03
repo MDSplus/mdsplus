@@ -35,19 +35,40 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
     tr_parts = [
         # PRE and POST samples
-        {'path':':PRESAMPLES','type':'numeric',   'value': int(1e5), 'options':('no_write_shot',)},
-        {'path':':POSTSAMPLES','type':'numeric',  'value': int(1e5), 'options':('no_write_shot',)},
+        {
+            'path':':PRESAMPLES','type':'numeric',   
+            'value': int(1e5), 
+            'options':('no_write_shot',)
+        },
+        {
+            'path':':POSTSAMPLES','type':'numeric',  
+            'value': int(1e5), 
+            'options':('no_write_shot',)
+        },
         #Trigger sources
-        {'path':':TRIG_SRC',   'type':'text',      'value': 'STRIG', 'options':('no_write_shot',)},
+        {
+            'path':':TRIG_SRC',   
+            'type':'text',      
+            'value': 'STRIG', 
+            'options':('no_write_shot',)
+        },
         #Event sources
-        {'path':':EVENT0_SRC', 'type': 'text',     'value': 'EXT', 'options':('no_write_shot',)},
+        {
+            'path':':EVENT0_SRC', 
+            'type': 'text',     
+            'value': 'EXT', 
+            'options':('no_write_shot',)
+        },
         ]
 
     def init(self):
 
-        # Here, the argument to the init of the superclass, i.e. the value 0, means that it will not
-        # start a MDSWorker thread, and therefore, it will not arm the digitizer at this stage.
-        super(_ACQ2106_423TR, self).init(0)
+        # Here, the argument to the init of the superclass, i.e. the value True, means that the 
+        # arming will be donw in this sub-class. In other words, cvalue True will not
+        # start a MDSWorker thread of the super-class, with the purpose of letting the sub-class 
+        # to arm the digitazer:
+        # True ==> the transient recording will arm the digitazer.
+        super(_ACQ2106_423TR, self).init(True)
 
         # Transient capture may be configured programmatically as follows, where
         # PRE, POST are pre-trigger, post-trigger capture lengths in samples.
@@ -77,7 +98,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
         # D1 signal:
         uut.s0.SIG_SRC_TRG_1   = 'NONE'
 
-        #Trigger sources choices:
+        # Trigger sources choices:
         # d0:
         srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'WRTT0', 'nc']
         # d1:
@@ -85,12 +106,12 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
         if str(self.trig_src.data()) in srcs_1:
             uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
-            #Setting the signal (dX) to use for ACQ2106 stream control
+            # Setting the signal (dX) to use for ACQ2106 stream control
             uut.s1.TRG       = 'enable'
             uut.s1.TRG_DX    = 'd1'
             uut.s1.TRG_SENSE = 'rising'
 
-            #EVENT0 setting in d0:
+            # EVENT0 setting in d0:
             if str(self.event0_src.data()) in srcs_0:
                 uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
                 uut.s1.EVENT0       = 'enable'
@@ -102,12 +123,12 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
         elif str(self.trig_src.data()) in srcs_0:
             uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
-            #Setting the signal (dX) to use for ACQ2106 stream control
+            # Setting the signal (dX) to use for ACQ2106 stream control
             uut.s1.TRG       = 'enable'
             uut.s1.TRG_DX    = 'd0'
             uut.s1.TRG_SENSE = 'rising'
 
-            #EVENT0 setting in d1:
+            # EVENT0 setting in d1:
             if str(self.event0_src.data()) in srcs_1:
                 uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
                 uut.s1.EVENT0       = 'enable'
@@ -117,7 +138,8 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
             else:
                print("EVENT0 source should be one of {}".format(srcs_1))
         else:
-            print("TRG source was set to {}".format(str(self.trig_src.data())))
+            if self.debug:
+                print("TRG source was set to {}".format(str(self.trig_src.data())))
 
     INIT=init
 
@@ -127,7 +149,8 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
         uut = acq400_hapi.Acq400(self.node.data())
 
         shot_controller = acq400_hapi.ShotController([uut])
-        print("Using HAPI ShotController to run the shot.")
+        if self.debug:
+            print("Using HAPI ShotController to run the shot.")
         shot_controller.run_shot()
 
     ARM=arm
@@ -185,8 +208,8 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
                 # When White Rabbit is used, we can get the trigger time from it:
                 # self.wr_wrtd_t0 is the reference to the node in the WRTD device. (secs)
                 # self.wr_wrtd_tai  is the reference to the node in WRTD device. (TAI time)
-                #mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)   
-                #mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
+                # mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)   
+                # mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
 
                 mdswindow = MDSplus.Window(start_idx, end_idx, 0)
                 mdsrange  = MDSplus.Range(None, None, clock_period)

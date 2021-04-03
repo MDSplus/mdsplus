@@ -341,9 +341,11 @@ class _ACQ2106_423ST(MDSplus.Device):
         'fp_sync',      # Front Panel SYNC
         'wrtt1'         # White Rabbit Trigger
     ]
-    
-    def init(self, is_arm=1):
+
+    def init(self, armed_by_transient = False):
         uut = self.getUUT()
+
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
         if self.ext_clock.length > 0:
@@ -417,13 +419,13 @@ class _ACQ2106_423ST(MDSplus.Device):
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
 
         self.running.on = True
-        if is_arm:
-            # The following will arm the ACQ by this super class
+
+        if armed_by_transient is False:
+            # Then, the following will armed by this super-class
             thread = self.MDSWorker(self)
             thread.start()
         else:
-            if self.debug:
-                print('Skipping streaming from MDSWorker thread. ACQ will be armed by a sub-class')
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
     INIT = init
 
     def stop(self):
@@ -465,8 +467,9 @@ def assemble(cls):
                 'type': 'NUMERIC',
                 'options': ('no_write_model', 'write_once',)
             },
+
             {
-                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),    
                 'type': 'NUMERIC',
                 'options': ('no_write_model', 'write_once',)
             },
