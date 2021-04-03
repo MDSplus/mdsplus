@@ -58,15 +58,15 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     carrier_parts = [
         {
-            'path': ':NODE',
-            'type': 'text',
+            'path': ':NODE', 
+            'type': 'text', 
             'value': '192.168.0.254',
             'options': ('no_write_shot',)
         },
         {
-            'path': ':SITE',
+            'path': ':SITE', 
             'type': 'numeric',
-            'value': 1,
+            'value': 1, 
             'options': ('no_write_shot',)
         },
         {
@@ -75,60 +75,60 @@ class _ACQ2106_435ST(MDSplus.Device):
             'options': ('no_write_shot',)
         },
         {
-            'path': ':TRIGGER',
+            'path': ':TRIGGER', 
             'type': 'numeric',
-            'value': 0.0,
+            'value': 0.0, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':TRIG_MODE',
+            'path': ':TRIG_MODE', 
             'type': 'text',
-            'value': 'master:hard',
+            'value': 'master:hard', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':EXT_CLOCK',
-            'type': 'axis',
+            'path': ':EXT_CLOCK', 
+            'type': 'axis', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':FREQ',
+            'path': ':FREQ', 
             'type': 'numeric',
-            'value': 16000,
+            'value': 16000, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':HW_FILTER',
+            'path': ':HW_FILTER', 
             'type': 'numeric',
-            'value': 0,
+            'value': 0, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':DEF_DCIM',
+            'path': ':DEF_DCIM', 
             'type': 'numeric',
-            'value': 1,
+            'value': 1, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':SEG_LENGTH',
+            'path': ':SEG_LENGTH', 
             'type': 'numeric',
-            'value': 8000,
+            'value': 8000, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':MAX_SEGMENTS',
+            'path': ':MAX_SEGMENTS', 
             'type': 'numeric',
-            'value': 1000,
+            'value': 1000, 
             'options': ('no_write_shot',)
         },
         {
             'path': ':SEG_EVENT', 
             'type': 'text',
-            'value': 'STREAM',
+            'value': 'STREAM', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':STATUS_CMDS',
+            'path': ':STATUS_CMDS', 
             'type': 'text', 
             'value': MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']), 
             'options':('no_write_shot',)
@@ -402,7 +402,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         'wrtt1'         # White Rabbit Trigger
     ]
 
-    def init(self, resampling=False):
+    def init(self, resampling=False, armed_by_transient=False):
         uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
