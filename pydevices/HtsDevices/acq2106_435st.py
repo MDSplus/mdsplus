@@ -437,11 +437,10 @@ class _ACQ2106_435ST(MDSplus.Device):
         # modifiers [CLKDIV=div]
         uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
 
-        # The following allows for WR sources to be chosen.
-        # Non-WR sources:
-        # d0:
+        # The following allows for any source to be chosen, amount others the WR source.
+        # Signal highway d0:
         srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'nc', 'WRTT0', 'NONE']
-        # d1:
+        # Signal highway d1:
         srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
 
         if trg_dx == 'd0':
