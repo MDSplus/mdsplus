@@ -27,7 +27,7 @@ def influxSignal(dbname, measurement, field_value):
     client = InfluxDBClient(host, port, user, password, dbname)
     # example influxDB query:
     # dbname      = 'NOAA_water_database' 
-    # measurement = h2o_feet
+    # measurement = h2o_feet == Table
     # field_value = water_level
     # 'SELECT "water_level" FROM "h2o_feet" WHERE time >= 1568745000000000000 AND time <= 1568750760000000000;'
     query = 'SELECT "%s" AS value FROM "%s" WHERE time >= %s AND time <= %s;' % (field_value, measurement, start_time, end_time)
