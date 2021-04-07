@@ -22,10 +22,11 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <stdlib.h>
 #include <math.h>
 #include <mdslib.h>
 #include <treeshr.h>
-
+#include <stdio.h>
 #define BUFFLEN 10
 
 int status;
@@ -61,12 +62,15 @@ int testClose(char *tree, int shot) { return MdsClose(tree, &shot); }
 int testScalarString(char *expression, char *expected) {
   int length = strlen(expected);
   int lenalloc = length + 32;
-  char *string = malloc(lenalloc);
+  char *string = calloc(lenalloc, 1);
   int dsc = descr(&dtype_cstring, string, &null, &lenalloc);
+  returnlength = 0;
   status = MdsValue(expression, &dsc, &null, &returnlength);
-  if (status & 1)
+  if (status & 1) {
+    fprintf(stderr, "testScalarString(%.*s -- %s  %d)\n", returnlength, string, expected, returnlength);
     status =
         (returnlength == length) && (strncmp(string, expected, length) == 0);
+  }
   free(string);
   return (status);
 }

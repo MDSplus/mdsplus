@@ -57,45 +57,127 @@ class _ACQ2106_435ST(MDSplus.Device):
     """
 
     carrier_parts = [
-        {'path': ':NODE', 'type': 'text', 'value': '192.168.0.254',
-            'options': ('no_write_shot',)},
-        {'path': ':SITE', 'type': 'numeric',
-            'value': 1, 'options': ('no_write_shot',)},
-        {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot',)},
-        {'path': ':TRIGGER', 'type': 'numeric',
-            'value': 0.0, 'options': ('no_write_shot',)},
-        {'path': ':TRIG_MODE', 'type': 'text',
-            'value': 'master:hard', 'options': ('no_write_shot',)},
-        {'path': ':EXT_CLOCK', 'type': 'axis', 'options': ('no_write_shot',)},
-        {'path': ':FREQ', 'type': 'numeric',
-            'value': 16000, 'options': ('no_write_shot',)},
-        {'path': ':HW_FILTER', 'type': 'numeric',
-            'value': 0, 'options': ('no_write_shot',)},
-        {'path': ':DEF_DCIM', 'type': 'numeric',
-            'value': 1, 'options': ('no_write_shot',)},
-        {'path': ':SEG_LENGTH', 'type': 'numeric',
-            'value': 8000, 'options': ('no_write_shot',)},
-        {'path': ':MAX_SEGMENTS', 'type': 'numeric',
-            'value': 1000, 'options': ('no_write_shot',)},
-        {'path': ':SEG_EVENT', 'type': 'text',
-            'value': 'STREAM', 'options': ('no_write_shot',)},
-        {'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(
-            ['cat /proc/cmdline', 'get.d-tacq.release']), 'options':('no_write_shot',)},
-        {'path': ':STATUS_OUT', 'type': 'signal', 'options': ('write_shot',)},
-        {'path': ':TRIG_TIME', 'type': 'numeric', 'options': ('write_shot',)},
-        {'path': ':TRIG_STR', 'type': 'text', 'options': (
-            'nowrite_shot',), 'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
-        {'path': ':RUNNING', 'type': 'any', 'options': ('no_write_model',)},
-        {'path': ':LOG_OUTPUT', 'type': 'text', 'options': (
-            'no_write_model', 'write_once', 'write_shot')},
-        {'path': ':GIVEUP_TIME', 'type': 'numeric',
-            'value': 180.0, 'options': ('no_write_shot',)},
-        {'path': ':INIT_ACTION', 'type': 'action',
-         'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
-         'options': ('no_write_shot',)},
-        {'path': ':STOP_ACTION', 'type': 'action',
-         'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
-         'options': ('no_write_shot',)},
+        {
+            'path': ':NODE',
+            'type': 'text',
+            'value': '192.168.0.254',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SITE',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':COMMENT', 
+            'type': 'text', 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIGGER',
+            'type': 'numeric',
+            'value': 0.0,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_MODE',
+            'type': 'text',
+            'value': 'master:hard',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':EXT_CLOCK',
+            'type': 'axis',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':FREQ',
+            'type': 'numeric',
+            'value': 16000,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':HW_FILTER',
+            'type': 'numeric',
+            'value': 0,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':DEF_DCIM',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_LENGTH',
+            'type': 'numeric',
+            'value': 8000,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':MAX_SEGMENTS',
+            'type': 'numeric',
+            'value': 1000,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_EVENT', 
+            'type': 'text',
+            'value': 'STREAM',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':STATUS_CMDS',
+            'type': 'text', 
+            'value': MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']), 
+            'options':('no_write_shot',)
+        },
+        {
+            'path': ':STATUS_OUT',
+            'type': 'signal',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_TIME',
+            'type': 'numeric',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_STR',
+            'type': 'text',
+            'options': ('nowrite_shot',), 
+            'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"
+        },
+        {
+            'path': ':RUNNING',
+            'type': 'any',
+            'options': ('no_write_model',)
+        },
+        {
+            'path': ':LOG_OUTPUT',
+            'type': 'text',
+            'options': (
+            'no_write_model', 'write_once', 'write_shot')
+        },
+        {
+            'path': ':GIVEUP_TIME',
+            'type': 'numeric',
+            'value': 180.0,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':INIT_ACTION',
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':STOP_ACTION',
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
+            'options': ('no_write_shot',)
+        },
     ]
 
     data_socket = -1
@@ -112,7 +194,8 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             self.chans = []
             self.decim = []
-            self.nchans = self.dev.sites*32
+            self.nchans     = self.dev.sites*32
+            self.resampling = self.dev.resampling
 
             for i in range(self.nchans):
                 self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
@@ -151,7 +234,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             event_name = self.dev.seg_event.data()
 
-            for card in range(self.dev.sites):
+            for card in self.dev.slots:
                 # Retrive the actual value of NACC (samples) already set in the ACQ box
                 # nacc_str = uut.s1.get_knob('nacc')
                 nacc_str = self.dev.slots[card].nacc
@@ -183,6 +266,11 @@ class _ACQ2106_435ST(MDSplus.Device):
             segment = 0
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
+
+            # If resampling is choosen, i.e. self.resampling=1, then the res_factor is read from the tree node:
+            if self.resampling: 
+                res_factor = self.dev.res_factor.data()
+
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -192,14 +280,22 @@ class _ACQ2106_435ST(MDSplus.Device):
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
                 for c in self.chans:
-                    slength = self.seg_length/self.decim[i]
-                    deltat = dt * self.decim[i]
-                    if c.on:
+                    slength   = self.seg_length/self.decim[i]
+                    deltat    = dt * self.decim[i]
+                    #Choice between executing resampling or not:
+                    if c.on and self.resampling:
+                        resampled = getattr(self.dev, str(c) + ':RESAMPLED')
                         b = buffer[i::self.nchans*self.decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
-                        c.makeSegment(begin, end, dim, b)
+                        c.makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
+                    elif c.on:
+                        b = buffer[i::self.nchans*self.decim[i]]
+                        begin = segment * slength * deltat
+                        end = begin + (slength - 1) * deltat
+                        dim = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)                     
                     i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)
@@ -285,7 +381,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                         else:
                             self.full_buffers.put(buf)
 
-    def init(self):
+    def init(self, resampling=0):
         import acq400_hapi
         MIN_FREQUENCY = 10000
 
@@ -351,24 +447,10 @@ class _ACQ2106_435ST(MDSplus.Device):
         nacc_samp = int(self.hw_filter.data())
         print("Number of sites in use {}".format(self.sites))
 
-        # Ask UUT what are the sites that are actually being populatee with a 435ELF
-        self.slots = []
-        for (site, module) in sorted(uut.modules.items()):
-            site_number = int(site)
-            if site_number == 1:
-                self.slots.append(uut.s1)
-            elif site_number == 2:
-                self.slots.append(uut.s2)
-            elif site_number == 3:
-                self.slots.append(uut.s3)
-            elif site_number == 4:
-                self.slots.append(uut.s4)
-            elif site_number == 5:
-                self.slots.append(uut.s5)
-            elif site_number == 6:
-                self.slots.append(uut.s6)
+        # Get the slots (aka sites, or cards) that are physically active in the chassis of the ACQ
+        self.slots = self.getSlots()
 
-        for card in range(self.sites):
+        for card in self.slots:
             if 1 <= nacc_samp <= 32:
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
             else:
@@ -377,9 +459,33 @@ class _ACQ2106_435ST(MDSplus.Device):
                 self.slots[card].nacc = '1'
 
         self.running.on = True
+        # If resampling=1, then resampling is used during streaming:
+        self.resampling = resampling
+
         thread = self.MDSWorker(self)
         thread.start()
     INIT = init
+
+    def getSlots(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        # Ask UUT what are the sites that are actually being populatee with a 435ELF
+        slot_list = {}
+        for (site, module) in sorted(uut.modules.items()):
+            site_number = int(site)
+            if site_number == 1:
+                slot_list[site_number]=uut.s1
+            elif site_number == 2:
+                slot_list[site_number]=uut.s2
+            elif site_number == 3:
+                slot_list[site_number]=uut.s3
+            elif site_number == 4:
+                slot_list[site_number]=uut.s4
+            elif site_number == 5:
+                slot_list[site_number]=uut.s5
+            elif site_number == 6:
+                slot_list[site_number]=uut.s6
+        return slot_list
 
     def stop(self):
         self.running.on = False
@@ -401,14 +507,26 @@ def assemble(cls):
     cls.parts = list(_ACQ2106_435ST.carrier_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path': ':INPUT_%3.3d' % (i+1,),            'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (
-                i+1,), 'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:DECIMATE' % (
-                i+1,),   'type': 'NUMERIC', 'valueExpr': 'head.def_dcim',            'options': ('no_write_shot',)},
-            {'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
+            {
+                'path': ':INPUT_%3.3d' % (i+1,),
+                'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (i+1,),
+                'options': ('no_write_model', 'write_once',)
+            },
+            {
+                'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),
+                'type': 'NUMERIC', 'valueExpr': 'head.def_dcim',
+                'options': ('no_write_shot',)
+            },
+            {
+                'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,),
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
+            {
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
         ]
 
 

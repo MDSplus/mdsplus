@@ -410,7 +410,11 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
   a_count--; /* subtract one for terminator of argument list */
 
   length = va_arg(incrmtr, int *);
+#ifdef OLD_FORTRAN_API
+  if (length && (*length != 1)) {
+#else
   if (length) {
+#endif
     *length = 0;
   }
 
@@ -637,7 +641,11 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
   a_count--; /* subtract one for terminator of argument list */
 
   length = va_arg(incrmtr, int *);
+#ifdef OLD_FORTRAN_API
+  if (length && (*length != 1)) {
+#else
   if (length) {
+#endif
     *length = 0;
   }
 
@@ -1395,8 +1403,13 @@ static void mds_value_set(struct descriptor *outdsc, struct descriptor *indsc,
                           int *length) {
   char fill;
   if (indsc == 0) {
-    if (length)
+#ifdef OLD_FORTRAN_API
+    if (length && (*length != 1)) {
+#else
+    if (length) {
+#endif
       *length = 0;
+    }
     return;
   }
   fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
@@ -1414,7 +1427,11 @@ static void mds_value_set(struct descriptor *outdsc, struct descriptor *indsc,
                    mds_value_length(outdsc), outdsc->pointer);
   }
 
+#ifdef OLD_FORTRAN_API
+  if (length && (*length != 1)) {
+#else
   if (length) {
+#endif
     if (indsc->class == CLASS_A)
       *length = MIN(((struct descriptor_a *)outdsc)->arsize / outdsc->length,
                     ((struct descriptor_a *)indsc)->arsize / indsc->length);
