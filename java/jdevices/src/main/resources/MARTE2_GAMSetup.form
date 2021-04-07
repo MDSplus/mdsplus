@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdev6vl.nbtf:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 Generic GAM"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_GAM"/>
     <Property name="height" type="int" value="500"/>

@@ -170,7 +170,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
   return 0;
 }
 
-#define NUM_SEGMENTS_THRESHOLD 10
+#define NUM_SEGMENTS_THRESHOLD 2
 #define NUM_SAMPLES_THRESHOLD 500000
 
 /**

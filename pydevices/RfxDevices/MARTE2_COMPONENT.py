@@ -99,6 +99,12 @@ class MARTE2_COMPONENT(Device):
             else:
                 parts.append({'path': '.OUTPUTS.'+sigName +
                               ':SEG_LEN', 'type': 'numeric', 'value': 0})
+            if 'stream' in output:
+                parts.append({'path': '.OUTPUTS.'+sigName+':STREAM',
+                              'type': 'text', 'value': output['stream']})
+            else:
+                parts.append({'path': '.OUTPUTS.'+sigName +
+                              ':STREAM', 'type': 'text'})
 
             if(output['type'] == 'string'):
                 parts.append(
@@ -150,6 +156,12 @@ class MARTE2_COMPONENT(Device):
                     else:
                         parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.' +
                                       fieldName+':SEG_LEN', 'type': 'numeric', 'value': 0})
+                    if 'stream' in field:
+                        parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.'+fieldName +
+                                      ':STREAM', 'type': 'text', 'value': field['stream']})
+                    else:
+                        parts.append({'path': '.OUTPUTS.'+sigName+'.FIELDS.' +
+                                      fieldName+':STREAM', 'type': 'text'})
 
                     if(field['type'] == 'string'):
                         parts.append(
@@ -320,6 +332,7 @@ class MARTE2_COMPONENT(Device):
         return text
 
     def reportParameters(self, paramDicts, outText, nTabs=1):
+        np.set_printoptions(threshold=np.inf)
         rootParDict = {}
         for paramDict in paramDicts:
             currName = paramDict['name']
@@ -489,6 +502,7 @@ class MARTE2_COMPONENT(Device):
         outputDicts = []
         if mode != MARTE2_COMPONENT.MODE_OUTPUT:
             storeSignals = False
+            streamSignals = False
             outputNids = np.sort(self.getNode('outputs').getChildren())
             for outputNid in outputNids:
                 output = TreeNode(outputNid, self.getTree())
@@ -505,6 +519,15 @@ class MARTE2_COMPONENT(Device):
                     if outputDict['seg_len'] > 0:
                         storeSignals = True
                     outputDict['samples'] = output.getNode(':samples').data()
+                    try:
+                      streamName = output.getNode(':stream').data()
+                      if len(streamName) > 0:
+                        outputDict['stream'] = streamName
+                        streamSignals = True
+                      else:
+                        outputDict['stream'] = None  
+                    except:
+                      outputDict['stream'] = None 
 
 # Handle possibly structured data. In this case node 'fields' will contain a list of fields
                     fields = []
@@ -523,6 +546,15 @@ class MARTE2_COMPONENT(Device):
                                 ':seg_len').data()
                             if fieldDict['seg_len'] > 0:
                                 storeSignals = True
+                            try:
+                              streamName = field.getNode(':stream').data()
+                              if len(streamName) > 0:
+                                fieldDict['stream'] = field.getNode(':stream').data()
+                                streamSignals = True
+                              else:
+                                fieldDict['stream'] = None
+                            except:
+                              fieldDict['stream'] = None
                             fields.append(fieldDict)
                     except:
                         pass
@@ -553,7 +585,7 @@ class MARTE2_COMPONENT(Device):
             return {'gamName': gamName, 'gamClass': gamClass, 'gamMode': gamMode,
                     'timebase': timebase, 'paramDicts': paramDicts, 'inputDicts': inputDicts, 'outputDicts': outputDicts,
                     'outputTrigger': outputTrigger, 'outTimeNid': outTimeNid, 'outTimeIdx': outTimeIdx, 'preTrigger': preTrigger,
-                    'postTrigger': postTrigger, 'storeSignals': storeSignals, 'cpuMask': cpuMask, 'debug': isDebug}
+                    'postTrigger': postTrigger, 'storeSignals': storeSignals, 'streamSignals': streamSignals, 'cpuMask': cpuMask, 'debug': isDebug}
         else:
             return {'gamName': gamName, 'gamClass': gamClass, 'gamMode': gamMode,
                     'timebase': timebase, 'paramDicts': paramDicts, 'inputDicts': inputDicts, 'outputDicts': outputDicts}
@@ -1101,7 +1133,7 @@ class MARTE2_COMPONENT(Device):
         if len(inputDicts) > 0:
             gamText += '    }\n'
 
-         # Output Signals
+        ######################################################### Output Signals
         outputSignals = []  # For debug printout
 
         synchThreadSignals = []
@@ -1459,7 +1491,137 @@ class MARTE2_COMPONENT(Device):
                 dataSourceText += '  }\n'
                 dataSources.append(dataSourceText)
 
-# endif configDict['storeSignals']
+        # endif configDict['storeSignals']
+        ###########Handle possible data streaming: declare IOGAM and StreamOut DataStream
+        if configDict['streamSignals']:
+            dataSourceText = '  +'+gamName+'_StreamOutput = {\n'
+            dataSourceText += '    Class = StreamOut\n'
+            dataSourceText += '    TimeIdx = 0\n'
+            dataSourceText += '    TimeStreaming = 1\n'
+            dataSourceText += '    CpuMask = ' + str(configDict['cpuMask'])+'\n'
+            dataSourceText += '    StackSize = 10000000\n'
+            dataSourceText += '    NumberOfBuffers = 10\n'
+            dataSourceText += '    Signals = {\n'
+            dataSourceText += '      Time = {\n'
+            dataSourceText += '        NumberOfDimensions = 0\n'
+            dataSourceText += '        NumberOfElements = 1\n'
+            dataSourceText += '        Channel = "'+gamName+'_Time"\n'
+            dataSourceText += '      }\n'
+            for outputDict in outputDicts:
+                if outputDict['stream']  != None:
+                    dataSourceText += '      '+outputDict['name']+' = {\n'
+                    dataSourceText += '        Channel = "' + outputDict['stream']+'"\n'
+                    dataSourceText += '      }\n'
+ # Check if the output is a struct and seglen is > 0 for one o more fields
+                for fieldDict in outputDict['fields']:
+                    if fieldDict['stream'] != None:
+                        dataSourceText += '      ' +  outputDict['name']+'_'+fieldDict['name']+' = {\n'
+                        dataSourceText += '        Channel = "' + fieldDict['stream']+'"\n'
+                        dataSourceText += '      }\n'
+            # end for fieldDict in outputDict['fields']:
+            dataSourceText += '    }\n'
+            dataSourceText += '  }\n'
+            dataSources.append(dataSourceText)
+
+            gamList.append(gamName+'_StreamOutIOGAM')
+            gamText = '  +'+gamName+'_StreamOutIOGAM = {\n'
+            gamText += '    Class = IOGAM\n'
+            gamText += '    InputSignals = {\n'
+# Time signal management
+            gamText += '      Time = {\n'
+            gamText += '        DataSource = ' + timerDDB+'\n'
+            gamText += '        Type = uint32\n'
+            gamText += '      }\n'
+# first non struct outputs
+            for outputDict in outputDicts:
+                if outputDict['stream'] != None and len(outputDict['fields']) == 0:
+                    gamText += '      '+outputDict['name'] + ' = {\n'
+                    gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+                    gamText += '        Type = ' + outputDict['type']+'\n'
+                    gamText += '      }\n'
+# then struct outputs for which at least one field has stream != None
+            for outputDict in outputDicts:
+                fieldsToStream = False
+                for fieldDict in outputDict['fields']:
+                    if fieldDict['stream'] != None:
+                        fieldsToStream = True
+                if fieldsToStream:
+                    gamText += '      '+outputDict['name'] + ' = {\n'
+                    gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+                    gamText += '        Type = ' + outputDict['type']+'\n'
+                    gamText += '      }\n'
+               # end for outputDict in outputDicts:
+
+            gamText += '    }\n'
+            gamText += '    OutputSignals = {\n'
+            gamText += '      Time = {\n'
+            gamText += '        DataSource = '+gamName+'_StreamOutput\n'
+            gamText += '        Type = uint32\n'
+            gamText += '      }\n'
+# Other signals
+            for outputDict in outputDicts:
+                # first non struct outputs
+                if outputDict['stream'] != None and len(outputDict['fields']) == 0:
+                    gamText += '      '+outputDict['name'] + ' = {\n'
+                    gamText += '        DataSource = '+gamName+'_StreamOutput\n'
+                    gamText += '        Type = '+outputDict['type']+'\n'
+                    if outputDict['dimensions'] == 0:
+                        numberOfElements = 1
+                        numberOfDimensions = 0
+                    else:
+                        numberOfDimensions = len(outputDict['dimensions'])
+                        numberOfElements = 1
+                        for currDim in outputDict['dimensions']:
+                            numberOfElements *= currDim
+                    gamText += '        NumberOfDimensions = ' + \
+                            str(numberOfDimensions)+'\n'
+                    gamText += '        NumberOfElements = ' + \
+                            str(numberOfElements)+'\n'
+
+                    gamText += '      }\n'
+
+            needsOutStream_Bus_DDB = False
+            for outputDict in outputDicts:  # split fileds of structured outputs for which at least one field has seg_len > 0
+                fieldsToStream = False
+                for fieldDict in outputDict['fields']:
+                    if fieldDict['stream'] != None:
+                        fieldsToStream = True
+                if fieldsToStream:
+                    for fieldDict in outputDict['fields']:
+                        gamText += '      ' + \
+                            outputDict['name']+'_'+fieldDict['name']+' = {\n'
+                        gamText += '        Type = ' + fieldDict['type']+'\n'
+                        if fieldDict['dimensions'] == 0:
+                            numberOfElements = 1
+                            numberOfDimensions = 0
+                        else:
+                            numberOfDimensions = len(fieldDict['dimensions'])
+                            numberOfElements = 1
+                            for currDim in fieldDict['dimensions']:
+                                numberOfElements *= currDim
+                        gamText += '        NumberOfDimensions = ' + \
+                            str(numberOfDimensions)+'\n'
+                        gamText += '        NumberOfElements = ' + \
+                            str(numberOfElements)+'\n'
+                        if fieldDict['stream'] != None:
+                            gamText += '        DataSource = '+gamName+'_StreamOutput\n'
+                        else:
+                            needsOutStream_Bus_DDB = True
+                            gamText += '        DataSource = '+gamName+'_OutStream_Bus_DDB\n'
+                        gamText += '      }\n'
+                # end if fieldsToStore
+            # end for outputDict in outputDicts:
+            gamText += '    }\n'
+            gamText += '  }\n'
+            gams.append(gamText)
+
+            if needsOutStream_Bus_DDB:
+                dataSourceText = '  +'+gamName+'_OutStream_Bus_DDB = {\n'
+                dataSourceText += '    Class = GAMDataSource\n'
+                dataSourceText += '  }\n'
+                dataSources.append(dataSourceText)
+
+        # endif configDict['streamSignals']
 
 # Check now if there are structured input signals not directly linked. For these signals, all their fields must be linked. In thic case a new
 # IOGAM and DDB DDB will be created

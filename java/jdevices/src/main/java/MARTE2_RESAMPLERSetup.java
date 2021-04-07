@@ -137,7 +137,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         jPanel37 = new javax.swing.JPanel();
         deviceField52 = new DeviceField();
 
-        setDeviceProvider("scdevail:8100");
+        setDeviceProvider("spilds:8100");
         setDeviceTitle("MARTe2 Resampler ");
         setDeviceType("MARTE2_RESAMPLER");
         setHeight(400);
@@ -576,7 +576,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField38.setIdentifier("");
         deviceField38.setLabelString("Segment Len (0 to disable write):");
         deviceField38.setNumCols(6);
-        deviceField38.setOffsetNid(147);
+        deviceField38.setOffsetNid(148);
         jPanel23.add(deviceField38);
 
         jPanel21.add(jPanel23);
@@ -586,7 +586,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField39.setIdentifier("");
         deviceField39.setLabelString("Segment Len (0 to disable write):");
         deviceField39.setNumCols(6);
-        deviceField39.setOffsetNid(155);
+        deviceField39.setOffsetNid(157);
         jPanel24.add(deviceField39);
 
         jPanel21.add(jPanel24);
@@ -596,7 +596,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField40.setIdentifier("");
         deviceField40.setLabelString("Segment Len (0 to disable write):");
         deviceField40.setNumCols(6);
-        deviceField40.setOffsetNid(163);
+        deviceField40.setOffsetNid(166);
         jPanel25.add(deviceField40);
 
         jPanel21.add(jPanel25);
@@ -606,7 +606,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField41.setIdentifier("");
         deviceField41.setLabelString("Segment Len (0 to disable write):");
         deviceField41.setNumCols(6);
-        deviceField41.setOffsetNid(171);
+        deviceField41.setOffsetNid(175);
         jPanel26.add(deviceField41);
 
         jPanel21.add(jPanel26);
@@ -616,7 +616,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField42.setIdentifier("");
         deviceField42.setLabelString("Segment Len (0 to disable write):");
         deviceField42.setNumCols(6);
-        deviceField42.setOffsetNid(179);
+        deviceField42.setOffsetNid(184);
         jPanel27.add(deviceField42);
 
         jPanel21.add(jPanel27);
@@ -626,7 +626,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField43.setIdentifier("");
         deviceField43.setLabelString("Segment Len (0 to disable write):");
         deviceField43.setNumCols(6);
-        deviceField43.setOffsetNid(187);
+        deviceField43.setOffsetNid(193);
         jPanel28.add(deviceField43);
 
         jPanel21.add(jPanel28);
@@ -636,7 +636,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField44.setIdentifier("");
         deviceField44.setLabelString("Segment Len (0 to disable write):");
         deviceField44.setNumCols(6);
-        deviceField44.setOffsetNid(195);
+        deviceField44.setOffsetNid(202);
         jPanel29.add(deviceField44);
 
         jPanel21.add(jPanel29);
@@ -646,7 +646,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField45.setIdentifier("");
         deviceField45.setLabelString("Segment Len (0 to disable write):");
         deviceField45.setNumCols(6);
-        deviceField45.setOffsetNid(203);
+        deviceField45.setOffsetNid(211);
         jPanel30.add(deviceField45);
 
         jPanel21.add(jPanel30);
@@ -656,7 +656,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField46.setIdentifier("");
         deviceField46.setLabelString("Segment Len (0 to disable write):");
         deviceField46.setNumCols(6);
-        deviceField46.setOffsetNid(211);
+        deviceField46.setOffsetNid(220);
         jPanel31.add(deviceField46);
 
         jPanel21.add(jPanel31);
@@ -666,7 +666,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField47.setIdentifier("");
         deviceField47.setLabelString("Segment Len (0 to disable write):");
         deviceField47.setNumCols(6);
-        deviceField47.setOffsetNid(219);
+        deviceField47.setOffsetNid(229);
         jPanel32.add(deviceField47);
 
         jPanel21.add(jPanel32);
@@ -676,7 +676,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField48.setIdentifier("");
         deviceField48.setLabelString("Segment Len (0 to disable write):");
         deviceField48.setNumCols(6);
-        deviceField48.setOffsetNid(227);
+        deviceField48.setOffsetNid(238);
         jPanel33.add(deviceField48);
 
         jPanel21.add(jPanel33);
@@ -686,7 +686,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField49.setIdentifier("");
         deviceField49.setLabelString("Segment Len (0 to disable write):");
         deviceField49.setNumCols(6);
-        deviceField49.setOffsetNid(235);
+        deviceField49.setOffsetNid(247);
         jPanel34.add(deviceField49);
 
         jPanel21.add(jPanel34);
@@ -696,7 +696,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField50.setIdentifier("");
         deviceField50.setLabelString("Segment Len (0 to disable write):");
         deviceField50.setNumCols(6);
-        deviceField50.setOffsetNid(243);
+        deviceField50.setOffsetNid(256);
         jPanel35.add(deviceField50);
 
         jPanel21.add(jPanel35);
@@ -706,7 +706,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField51.setIdentifier("");
         deviceField51.setLabelString("Segment Len (0 to disable write):");
         deviceField51.setNumCols(6);
-        deviceField51.setOffsetNid(251);
+        deviceField51.setOffsetNid(265);
         jPanel36.add(deviceField51);
 
         jPanel21.add(jPanel36);
@@ -716,7 +716,7 @@ public class MARTE2_RESAMPLERSetup extends DeviceSetup {
         deviceField52.setIdentifier("");
         deviceField52.setLabelString("Segment Len (0 to disable write):");
         deviceField52.setNumCols(6);
-        deviceField52.setOffsetNid(259);
+        deviceField52.setOffsetNid(274);
         jPanel37.add(deviceField52);
 
         jPanel21.add(jPanel37);

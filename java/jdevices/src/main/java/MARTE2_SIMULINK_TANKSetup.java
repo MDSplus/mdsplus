@@ -42,6 +42,7 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
+        deviceField6 = new DeviceField();
 
         setDeviceProvider("spilds:8100");
         setDeviceTitle("MARTe2 Simulink Tank");
@@ -61,7 +62,7 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Timebase Div: ");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(43);
+        deviceField2.setOffsetNid(44);
         jPanel2.add(deviceField2);
 
         jPanel1.add(jPanel2);
@@ -86,6 +87,12 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
         deviceField5.setOffsetNid(34);
         jPanel4.add(deviceField5);
 
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Stream:");
+        deviceField6.setOffsetNid(41);
+        deviceField6.setTextOnly(true);
+        jPanel4.add(deviceField6);
+
         jPanel1.add(jPanel4);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -98,6 +105,7 @@ public class MARTE2_SIMULINK_TANKSetup extends DeviceSetup
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
+    private DeviceField deviceField6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

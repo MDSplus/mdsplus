@@ -66,7 +66,7 @@ public class DeviceParameters extends DeviceComponent
       
         public void apply() throws Exception
         {
-            int currNid = baseNid + offsetNid + 2 + 3 * parameterOffset;
+            int currNid = baseNid + offsetNid + 3 + 3 * parameterOffset;
             for(int parIdx = 0; parIdx < numParameters; parIdx++)
             {
                 try {
