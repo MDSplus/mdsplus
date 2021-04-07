@@ -477,10 +477,10 @@ EXPORT void EventStream::handleJSONPayload(char *payload)
 EXPORT void EventStream::registerListener(DataStreamListener *listener,  
                                           const char *inName) {
   listeners.push_back(listener);
-  names.push_back(std::string(inName));
+  names.push_back(inName);
 }
 EXPORT void EventStream::registerListener(DataStreamListener *listener) 
 {
   listeners.push_back(listener);
-  names.push_back(std::string(name));
+  names.push_back(name);
 }

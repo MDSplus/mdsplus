@@ -4186,7 +4186,7 @@ public:
 class EXPORT EventStream : public Event {
   std::vector<DataStreamListener *> listeners;
   std::vector<std::string> names;
-  std::string name;
+  const char *name;
   void handleJSONPayload(char *);
 public:
   virtual void run();
