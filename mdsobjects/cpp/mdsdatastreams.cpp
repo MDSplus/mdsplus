@@ -349,7 +349,7 @@ EXPORT void EventStream::handleJSONPayload(char *payload)
   {
       uint64_t *times = new uint64_t[timesVal.Size()];
       for(size_t i = 0; i < timesVal.Size(); i++)
-        times[i] = timesVal[i].GetInt();
+        times[i] = timesVal[i].GetInt64();
       if(timesVal.Size() == 1)
         timesD = new Uint64(times[0]);
       else
