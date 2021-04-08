@@ -502,8 +502,13 @@ class _ACQ2106_435ST(MDSplus.Device):
         # If resampling == 1, then resampling is used during streaming:
         self.resampling = resampling
 
-        thread = self.MDSWorker(self)
-        thread.start()
+        if not armed_by_transient:
+            # Then, the following will be armed by this super-class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
+
     INIT = init
 
     def getSlots(self):
