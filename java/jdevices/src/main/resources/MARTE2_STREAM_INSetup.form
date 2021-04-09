@@ -8,9 +8,9 @@
     </Container>
   </NonVisualComponents>
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdevail.rfx.local:8200"/>
+    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 Input Stream"/>
-    <Property name="deviceType" type="java.lang.String" value="MARTE2_STREAM:IN"/>
+    <Property name="deviceType" type="java.lang.String" value="MARTE2_STREAM_IN"/>
     <Property name="height" type="int" value="400"/>
     <Property name="width" type="int" value="700"/>
   </Properties>
@@ -30,7 +30,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,2,97"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,3,23"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -188,7 +188,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions:"/>
-                        <Property name="offsetNid" type="int" value="42"/>
+                        <Property name="offsetNid" type="int" value="43"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice2">
@@ -205,7 +205,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="40"/>
+                        <Property name="offsetNid" type="int" value="41"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -214,7 +214,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Channel: "/>
                         <Property name="numCols" type="int" value="12"/>
-                        <Property name="offsetNid" type="int" value="48"/>
+                        <Property name="offsetNid" type="int" value="50"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -223,7 +223,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. len: "/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="43"/>
+                        <Property name="offsetNid" type="int" value="44"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -236,7 +236,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions:"/>
-                        <Property name="offsetNid" type="int" value="53"/>
+                        <Property name="offsetNid" type="int" value="55"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice3">
@@ -253,7 +253,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="51"/>
+                        <Property name="offsetNid" type="int" value="53"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -262,7 +262,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Channel: "/>
                         <Property name="numCols" type="int" value="12"/>
-                        <Property name="offsetNid" type="int" value="59"/>
+                        <Property name="offsetNid" type="int" value="62"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -271,7 +271,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. len: "/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="54"/>
+                        <Property name="offsetNid" type="int" value="56"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -284,7 +284,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimensions:"/>
-                        <Property name="offsetNid" type="int" value="64"/>
+                        <Property name="offsetNid" type="int" value="67"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice4">
@@ -301,7 +301,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="62"/>
+                        <Property name="offsetNid" type="int" value="65"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -310,7 +310,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Channel: "/>
                         <Property name="numCols" type="int" value="12"/>
-                        <Property name="offsetNid" type="int" value="70"/>
+                        <Property name="offsetNid" type="int" value="74"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -319,7 +319,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. len: "/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="65"/>
+                        <Property name="offsetNid" type="int" value="68"/>
                       </Properties>
                     </Component>
                   </SubComponents>
