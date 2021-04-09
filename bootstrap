@@ -19,7 +19,7 @@ testprog aclocal	automake
 testprog autoheader	autoconf
 testprog automake	automake
 testprog autoconf	autoconf
-testprog python		python2 or python3
+testprog python3	python3
 testprog bison		bison
 testprog flex		flex
 
@@ -40,8 +40,8 @@ automake --add-missing
 
 autoconf
 
-python deploy/gen_messages.py
-python deploy/gen_compound_opcbuiltins.py
+python3 deploy/gen_messages.py
+python3 deploy/gen_compound_opcbuiltins.py
 
 deploy/yylex.gen tdishr
 deploy/yylex.gen mdsdcl
