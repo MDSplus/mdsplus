@@ -129,7 +129,7 @@ public class MARTE2_STREAM_INSetup extends DeviceSetup
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Channel: ");
         deviceField7.setNumCols(12);
-        deviceField7.setOffsetNid(37);
+        deviceField7.setOffsetNid(38);
         deviceField7.setTextOnly(true);
         jPanel6.add(deviceField7);
 
