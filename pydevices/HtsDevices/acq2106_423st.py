@@ -420,7 +420,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
         self.running.on = True
 
-        if armed_by_transient is False:
+        if not armed_by_transient:
             # Then, the following will armed by this super-class
             thread = self.MDSWorker(self)
             thread.start()
