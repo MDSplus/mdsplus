@@ -107,7 +107,7 @@ if version_check:
   The MDSplus python module version (%s) does not match
   the version of the installed MDSplus libraries (%s).
   Upgrade the module using the mdsplus/python/MDSplus directory of the
-  MDSplus installation or set PYTHONPATH=/usr/local/mdsplus/python/MDSplus.
+  MDSplus installation or set PYTHONPATH=/usr/local/mdsplus/python.
 ''' % (__version__, verchk))
     version_check()
 del version_check
