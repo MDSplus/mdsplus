@@ -213,7 +213,7 @@ def BUILDER(cls):
                 retrievedName = WrapperLib.WCAPI_GetSignalName(
                     SignalStruct, signalIdx)
                 retrievedName = retrievedName.decode("utf-8")
-                print('SIGNAL NAME: ' + retrievedName);
+                #print('SIGNAL NAME: ' + retrievedName);
                # retrievedName = removeAngular(retrievedName)
 
                 # type is retrieved
@@ -432,15 +432,15 @@ def BUILDER(cls):
                 retrievedName = WrapperLib.WCAPI_GetModelParameterName(
                     ParameterStruct, paramIdx)
                 retrievedName = retrievedName.decode("utf-8")
-                print('retrievedname: ', retrievedName)
+                #print('retrievedname: ', retrievedName)
 
                 # type is retrieved
                 retrievedTypeIdx = WrapperLib.WCAPI_GetModelParameterDataTypeIdx(
                     ParameterStruct, paramIdx)
-                print('retrievedTypeIdx: ', str(retrievedTypeIdx))
+                #print('retrievedTypeIdx: ', str(retrievedTypeIdx))
                 retrievedSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
                     DataTypeMap, retrievedTypeIdx)
-                print('retrievedSLIdType: ', str(retrievedSLIdType))
+                #print('retrievedSLIdType: ', str(retrievedSLIdType))
                 #retrievedCTypename = WrapperLib.WCAPI_GetDataTypeCName(
                 #    DataTypeMap, retrievedTypeIdx)
                 #retrievedCTypename = retrievedCTypename.decode("utf-8")
@@ -736,7 +736,7 @@ def BUILDER(cls):
                         #paramList.append(paramDict)
                  #endif STRUCTURED PARAMETER
             #endfor parameters
-            print('PARAMETRI FATTI')
+            #print('PARAMETRI FATTI')
             return paramList
 
 #################################################################
@@ -755,21 +755,21 @@ def BUILDER(cls):
                 ParameterStruct, paramIdx)
             paramDataAddr = WrapperLib.WCAPI_GetDataAddress(
                 DataAddrMap, paramAddrIdx)
-            print('NUM FIELDS: '+str(numFields))
+            #print('NUM FIELDS: '+str(numFields))
             for fieldIdx in range(numFields):
                 fieldName = WrapperLib.WCAPI_GetElementName(
                     ElementMap, elementMapIndex + fieldIdx)
                 fieldName = fieldName.decode("utf-8")
-                print('FIELD: '+baseParName+'-'+fieldName)
+                #print('FIELD: '+baseParName+'-'+fieldName)
                 fieldOffset = WrapperLib.WCAPI_GetElementOffset(
                     ElementMap, elementMapIndex + fieldIdx)
                   
                 fieldTypeIdx = WrapperLib.WCAPI_GetElementDataTypeIdx(
                     ElementMap, elementMapIndex + fieldIdx)
-                print('fieldTypeIdx: '+str(fieldTypeIdx))
+                #print('fieldTypeIdx: '+str(fieldTypeIdx))
                 fieldSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(
                     DataTypeMap, fieldTypeIdx)
-                print('fieldSLIdType: '+str(fieldSLIdType))
+                #print('fieldSLIdType: '+str(fieldSLIdType))
                 if fieldSLIdType == 0:
                     fieldMARTe2Typename = 'float64'
                     fieldPythonTypename = ctypes.c_double
@@ -827,7 +827,7 @@ def BUILDER(cls):
                         print('type '+str(fieldEnumType))
                         raise Exception('Unsupported Enum datatype.')
                 else: #NESTED STRUCTURES!!!!!!!!!!!!!!!!
-                    print('TYPE '+str(fieldSLIdType) + '   '+str(fieldTypeIdx))
+                    #print('TYPE '+str(fieldSLIdType) + '   '+str(fieldTypeIdx))
                     GetModelParameterFields(fieldTypeIdx, ParameterStruct, paramIdx, baseParName + '-'+fieldName, paramList, recLev+1)
                     continue #no direct data associated
         # field dimensions
@@ -840,7 +840,7 @@ def BUILDER(cls):
                 # Number of elements in the dimensionArray referring to this signal
                 fieldDimNum = WrapperLib.WCAPI_GetNumDims(
                     DimensionMap, fieldDimIdx)
-                print('fieldDimNum: '+ str(fieldDimNum))
+                #print('fieldDimNum: '+ str(fieldDimNum))
                 currDimension = []
                 for currIdx in range(fieldDimNum):
                     currDimension.append(
