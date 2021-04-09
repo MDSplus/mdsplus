@@ -381,7 +381,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                         else:
                             self.full_buffers.put(buf)
 
-    def init(self, resampling=0):
+    def init(self, resampling = False, armed_by_transient = False):
         import acq400_hapi
         MIN_FREQUENCY = 10000
 
@@ -426,7 +426,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
-        eoff = uut.cal_eoff[1:]
+        eoff   = uut.cal_eoff[1:]
 
         self.chans = []
         nchans = uut.nchan()
@@ -462,8 +462,13 @@ class _ACQ2106_435ST(MDSplus.Device):
         # If resampling=1, then resampling is used during streaming:
         self.resampling = resampling
 
-        thread = self.MDSWorker(self)
-        thread.start()
+        if not armed_by_transient:
+            # Then, the following will be armed by this super-class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
+
     INIT = init
 
     def getSlots(self):

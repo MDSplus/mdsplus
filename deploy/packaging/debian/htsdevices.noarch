@@ -1,6 +1,7 @@
 ./usr/local/mdsplus/pydevices/HtsDevices/_version.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423st.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_435st.py
+./usr/local/mdsplus/pydevices/HtsDevices/acq2106_435tr.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_WRPG.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_435sc.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq2106_WRTD.py
