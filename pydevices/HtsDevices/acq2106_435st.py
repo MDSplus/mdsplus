@@ -389,7 +389,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                         else:
                             self.full_buffers.put(buf)
 
-    def init(self, resampling=0):
+    def init(self, resampling = False):
         import acq400_hapi
         MIN_FREQUENCY = 10000
 
@@ -437,7 +437,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         # modifiers [CLKDIV=div]
         uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
 
-        # The following allows for any source to be chosen, amount others the WR source.
+        # The following allows for any source to be chosen, among other things the WR source.
         # Signal highway d0:
         srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'nc', 'WRTT0', 'NONE']
         # Signal highway d1:
