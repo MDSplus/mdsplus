@@ -877,8 +877,8 @@ fi
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
     <!-- requires external="true" package="setuptools"/ -->
-    <requires external="true" package="python2"/>
-    <requires external="true" package="python2-numpy"/>
+    <requires external="true" package="python3"/>
+    <requires external="true" package="python3-numpy"/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
 
