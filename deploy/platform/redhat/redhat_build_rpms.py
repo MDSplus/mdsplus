@@ -32,18 +32,21 @@ import xml.etree.ElementTree as ET
 import fnmatch
 import tempfile
 
-srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
+srcdir = os.path.realpath(os.path.dirname(
+    os.path.realpath(__file__))+'/../../..')
 
-def doWrite(out,string):
+
+def doWrite(out, string):
     try:
-      os.write(out,string.encode())
+        os.write(out, string.encode())
     except Exception:
-      os.write(out,string)
+        os.write(out, string)
+
 
 def externalPackage(info, root, package):
     ans = None
     for extpackages in root.getiterator('external_packages'):
-        platform=extpackages.attrib['platform']
+        platform = extpackages.attrib['platform']
         if platform == info['platform']:
             pkg = extpackages.find(package)
             if pkg is not None:
@@ -53,91 +56,97 @@ def externalPackage(info, root, package):
                     ans = package
     return ans
 
-def fixFilename(info,filename):
+
+def fixFilename(info, filename):
     """For binary packages we need to refer to /libnn, /binnn and /uidnn where nn is 32 or 64. For
     noarch packages we need to use /lib??, /bin?? to get the no arch dependent scripts and files"""
     try:
-        if info['arch']=='noarch':
-            filename=filename.replace("/lib/","/lib??/")
-            filename=filename.replace("/bin/","/bin??/")
-            if filename[len(filename)-4:] in ('/lib','/bin'):
-                filename=filename+"??"
+        if info['arch'] == 'noarch':
+            filename = filename.replace("/lib/", "/lib??/")
+            filename = filename.replace("/bin/", "/bin??/")
+            if filename[len(filename)-4:] in ('/lib', '/bin'):
+                filename = filename+"??"
         else:
-            filename=filename.replace("/lib/","/lib%(bits)d/")
-            filename=filename.replace("/bin/","/bin%(bits)d/")
-            filename=filename.replace("/uid/","/uid%(bits)d/")
-            if filename[len(filename)-4:] in ('/lib','/bin','/uid'):
-                filename=filename+"%(bits)d"
-        ans=filename % info
+            filename = filename.replace("/lib/", "/lib%(bits)d/")
+            filename = filename.replace("/bin/", "/bin%(bits)d/")
+            filename = filename.replace("/uid/", "/uid%(bits)d/")
+            if filename[len(filename)-4:] in ('/lib', '/bin', '/uid'):
+                filename = filename+"%(bits)d"
+        ans = filename % info
     except Exception:
         traceback.print_exc()
         raise Exception("Error fixing filename %s:" % (filename,))
     return ans
 
+
 def doRequire(info, out, root, require):
     if 'external' in require.attrib:
-        pkg=externalPackage(info,root,require.attrib['package'])
+        pkg = externalPackage(info, root, require.attrib['package'])
         if pkg is not None:
-            print('***************** REQUIRES ***********',pkg,'*******************')
-            doWrite(out,"Requires: %s\n" % pkg)
+            print('***************** REQUIRES ***********',
+                  pkg, '*******************')
+            doWrite(out, "Requires: %s\n" % pkg)
     else:
-        info['reqpkg']=require.attrib['package']
-        doWrite(out,"Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(distname)s\n" % info)
+        info['reqpkg'] = require.attrib['package']
+        doWrite(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(distname)s\n" % info)
+
 
 def buildRpms():
-    info=dict()
-    info['branch']=os.environ['BRANCH']
-    version=os.environ['RELEASE_VERSION'].split('.')
-    info['major']=int(version[0])
-    info['minor']=int(version[1])
-    info['release']=int(version[2])
-    info['distname']=os.environ['DISTNAME']
-    info['buildroot']=os.environ['BUILDROOT']
-    info['bname']=os.environ['BNAME']
-    info['platform']=os.environ['PLATFORM']
+    info = dict()
+    info['branch'] = os.environ['BRANCH']
+    version = os.environ['RELEASE_VERSION'].split('.')
+    info['major'] = int(version[0])
+    info['minor'] = int(version[1])
+    info['release'] = int(version[2])
+    info['distname'] = os.environ['DISTNAME']
+    info['buildroot'] = os.environ['BUILDROOT']
+    info['bname'] = os.environ['BNAME']
+    info['platform'] = os.environ['PLATFORM']
     print('******** DISTNAME is *************', info['distname'])
     if info['distname'] != 'el8':
-      tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
+        tree = ET.parse(srcdir+'/deploy/packaging/linux.xml')
     else:
-      tree=ET.parse(srcdir+'/deploy/packaging/linux-rhel8.xml')
-    root=tree.getroot()
-    rpmspec=root.find('rpm').find('spec_start').text
-    s=rpmspec.split('\n')
+        tree = ET.parse(srcdir+'/deploy/packaging/linux-rhel8.xml')
+    root = tree.getroot()
+    rpmspec = root.find('rpm').find('spec_start').text
+    s = rpmspec.split('\n')
     for idx in range(len(s)):
         if len(s[idx].strip()) == 0:
-            s[idx]=""
-    rpmspec='\n'.join(s)
+            s[idx] = ""
+    rpmspec = '\n'.join(s)
 
-    bin_packages=list()
-    noarch_packages=list()
+    bin_packages = list()
+    noarch_packages = list()
     for package in root.getiterator('package'):
-        attr=package.attrib
-        if attr["arch"]=="noarch":
+        attr = package.attrib
+        if attr["arch"] == "noarch":
             noarch_packages.append(package)
         else:
             bin_packages.append(package)
-    architectures = [{"target":"x86_64-linux","bits":64,"arch_t":".x86_64"}]
+    architectures = [{"target": "x86_64-linux",
+                      "bits": 64, "arch_t": ".x86_64"}]
     if os.environ['DISTNAME'] != 'el8':
-        architectures.append({"target":"i686-linux","bits":32,"arch_t":".i686"})
-      
+        architectures.append(
+            {"target": "i686-linux", "bits": 32, "arch_t": ".i686"})
+
     for arch in architectures:
-        info['target']=arch['target']
-        info['bits']=arch['bits']
-        info['arch']="bin"
-        info['arch_t']=arch['arch_t']
+        info['target'] = arch['target']
+        info['bits'] = arch['bits']
+        info['arch'] = "bin"
+        info['arch_t'] = arch['arch_t']
         for package in bin_packages:
             if package.attrib['name'] != "MDSplus":
-                info["packagename"]="-%s" % package.attrib["name"]
+                info["packagename"] = "-%s" % package.attrib["name"]
             else:
-                info["packagename"]=""
-            info['summary']=package.attrib['summary']
-            info['description']=package.attrib['description']
-            out,specfilename=tempfile.mkstemp()
-            print (info,rpmspec)
-            doWrite(out,rpmspec % info)
+                info["packagename"] = ""
+            info['summary'] = package.attrib['summary']
+            info['description'] = package.attrib['description']
+            out, specfilename = tempfile.mkstemp()
+            print (info, rpmspec)
+            doWrite(out, rpmspec % info)
             for require in package.getiterator("requires"):
-                doRequire(info,out,root,require)
-            doWrite(out,"""
+                doRequire(info, out, root, require)
+            doWrite(out, """
 %%description
 %(description)s
 %%clean
@@ -146,60 +155,65 @@ def buildRpms():
 """ % info)
             for inc in package.getiterator('include'):
                 for inctype in inc.attrib:
-                    include=fixFilename(info, inc.attrib[inctype])
+                    include = fixFilename(info, inc.attrib[inctype])
                     if inctype == "dironly":
-                        doWrite(out,"%%dir %s\n" % include)
+                        doWrite(out, "%%dir %s\n" % include)
                     else:
-                        doWrite(out,"%s\n" % include)
+                        doWrite(out, "%s\n" % include)
             for exc in package.getiterator('exclude'):
                 for exctype in exc.attrib:
-                    exclude=fixFilename(info, exc.attrib[exctype])
-                    doWrite(out,"%%exclude %s\n" % exclude)
+                    exclude = fixFilename(info, exc.attrib[exctype])
+                    doWrite(out, "%%exclude %s\n" % exclude)
             if package.find("exclude_staticlibs") is not None:
-                doWrite(out,"%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
+                doWrite(out, "%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
             if package.find("include_staticlibs") is not None:
-                doWrite(out,"/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
-            for s in ("pre","post","preun","postun"):
-                script=package.find(s)
+                doWrite(out, "/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
+            for s in ("pre", "post", "preun", "postun"):
+                script = package.find(s)
                 if script is not None:
-                    doWrite(out,"%%%s\n%s\n" % (s,script.text))
+                    doWrite(out, "%%%s\n%s\n" % (s, script.text))
             os.close(out)
-            info['specfilename']=specfilename
+            info['specfilename'] = specfilename
             print("Building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
 
             sys.stdout.flush()
-            subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
-            for s in ('BUILD','RPMS','SOURCES','SPECS','SRPMS'):
+            subprocess.Popen("/bin/cat %(specfilename)s" %
+                             info, shell=True).wait()
+            for s in ('BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
                 try:
-                    os.mkdir('/release/%(branch)s/'%info +s)
-                except OSError: pass  # if exists
-            p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" % info,stdout=subprocess.PIPE,shell=True)
-            messages=p.stdout.readlines()
-            status=p.wait()
+                    os.mkdir('/release/%(branch)s/' % info + s)
+                except OSError:
+                    pass  # if exists
+            p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
+                                 info, stdout=subprocess.PIPE, shell=True)
+            messages = p.stdout.readlines()
+            status = p.wait()
             os.remove(specfilename)
             if status != 0:
                 for msg in messages:
-                    if isinstance(msg,str):
+                    if isinstance(msg, str):
                         sys.stdout.write(msg)
                     else:
                         sys.stdout.write(msg.decode())
                 sys.stdout.flush()
-                raise Exception("Error building rpm for package mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
-            print("Done building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
+                raise Exception(
+                    "Error building rpm for package mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
+            print(
+                "Done building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
             sys.stdout.flush()
     for package in noarch_packages:
-        info['arch']="noarch"
+        info['arch'] = "noarch"
         if package.attrib['name'] != "MDSplus":
-            info["packagename"]="-%s" % package.attrib["name"]
+            info["packagename"] = "-%s" % package.attrib["name"]
         else:
-            info["packagename"]=""
-        info['summary']=package.attrib['summary']
-        info['description']=package.attrib['description']
-        out,specfilename=tempfile.mkstemp()
-        doWrite(out,rpmspec % info)
+            info["packagename"] = ""
+        info['summary'] = package.attrib['summary']
+        info['description'] = package.attrib['description']
+        out, specfilename = tempfile.mkstemp()
+        doWrite(out, rpmspec % info)
         for require in package.getiterator("requires"):
             doRequire(info, out, root, require)
-        doWrite(out,"""
+        doWrite(out, """
 Buildarch: noarch
 %%description
 %(description)s
@@ -209,41 +223,43 @@ Buildarch: noarch
 """ % info)
         for inc in package.getiterator('include'):
             for inctype in inc.attrib:
-                include=fixFilename(info, inc.attrib[inctype])
+                include = fixFilename(info, inc.attrib[inctype])
                 if inctype == "dironly":
-                    doWrite(out,"%%dir %s\n" % include)
+                    doWrite(out, "%%dir %s\n" % include)
                 else:
-                    doWrite(out,"%s\n" % include)
+                    doWrite(out, "%s\n" % include)
         for exc in package.getiterator('exclude'):
             for exctype in exc.attrib:
-                exclude=fixFilename(info, exc.attrib[exctype])
-                doWrite(out,"%%exclude %s\n" % exclude)
+                exclude = fixFilename(info, exc.attrib[exctype])
+                doWrite(out, "%%exclude %s\n" % exclude)
         if package.find("exclude_staticlibs") is not None:
-            doWrite(out,"%%exclude /usr/local/mdsplus/lib??/*.a\n" % info)
-        for s in ("pre","post","preun","postun"):
-            script=package.find(s)
+            doWrite(out, "%%exclude /usr/local/mdsplus/lib??/*.a\n" % info)
+        for s in ("pre", "post", "preun", "postun"):
+            script = package.find(s)
             if script is not None:
-                doWrite(out,"%%%s\n%s\n" % (s,script.text))
+                doWrite(out, "%%%s\n%s\n" % (s, script.text))
         os.close(out)
-        info['specfilename']=specfilename
+        info['specfilename'] = specfilename
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
-        subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
-        p=subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" % info,stdout=subprocess.PIPE,shell=True)
-        messages=p.stdout.readlines()
+        subprocess.Popen("/bin/cat %(specfilename)s" % info, shell=True).wait()
+        p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
+                             info, stdout=subprocess.PIPE, shell=True)
+        messages = p.stdout.readlines()
         status = p.wait()
         os.remove(specfilename)
         if status != 0:
             print(''.join(messages))
-            raise Exception("Error building rpm for package mdsplus%(bname)s%(packagename)s.noarch" % info)
+            raise Exception(
+                "Error building rpm for package mdsplus%(bname)s%(packagename)s.noarch" % info)
         print("Done building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
     try:
         os.stat('/sign_keys/.gnupg')
         try:
-            cmd="/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
-            child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
-            index = child.expect(["Enter pass phrase: ",pexpect.EOF])
+            cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            child = pexpect.spawn(cmd, timeout=60, logfile=sys.stdout)
+            index = child.expect(["Enter pass phrase: ", pexpect.EOF])
             if index == 0:
                 child.sendline("")
                 child.expect(pexpect.EOF)
@@ -256,5 +272,6 @@ Buildarch: noarch
             traceback.print_exc()
     except:
         print("Sign keys unavailable. Not signing packages.")
+
 
 buildRpms()
