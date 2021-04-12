@@ -1,11 +1,23 @@
 import MDSplus
 import threading
 import socket
-import string
 import time
 import datetime
 import numpy as np
-import copy
+
+if MDSplus.version.ispy2:
+    def tostr(x):
+        return x
+
+    def tobytes(x):
+        return x
+else:
+    def tostr(x):
+        return b if isinstance(b, str) else b.decode('utf-8')
+
+    def tobytes(x):
+        return s if isinstance(s, bytes) else s.encode('utf-8')
+
 
 class CRYOCON24C(MDSplus.Device):
     """
@@ -29,37 +41,40 @@ class CRYOCON24C(MDSplus.Device):
 
      """
 
-    @staticmethod
-    def inputs():
-        return range(ord('a'), ord('d')+1)
-
-    @staticmethod
-    def loops():
-        return range(0, 4)
+    inputs = "abcd"
+    loops = range(1, 4+1)
 
     parts = [
         {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot')},
-        {'path': ':INIT_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','INIT',50,None),Method(None,'INIT',head))",'options': ('no_write_shot',)},
-        {'path': ':STOP_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','STOP',50,None),Method(None,'STORE',head))",'options': ('no_write_shot',)},
+        {'path': ':INIT_ACTION', 'type': 'action',
+            'valueExpr': "Action(Dispatch('S','INIT',50,None),Method(None,'INIT',head))", 'options': ('no_write_shot',)},
+        {'path': ':STOP_ACTION', 'type': 'action',
+            'valueExpr': "Action(Dispatch('S','STOP',50,None),Method(None,'STORE',head))", 'options': ('no_write_shot',)},
         {'path': ':RUNNING', 'type': 'numeric', 'options': ('no_write_model')},
-        ]
-
-    for c in inputs.__func__():
-        parts.append({'path': ':INPUT_%c' %(string.upper(chr(c)),), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-        parts.append({'path': ':INPUT_%c:SERIAL_NO' %(string.upper(chr(c)),), 'type': 'TEXT', 'options': ('no_write_shot')})
-        parts.append({'path': ':INPUT_%c:CALIBRATION' %(string.upper(chr(c)),), 'type': 'TEXT', 'options': ('no_write_model', 'write_once',)})
-        parts.append({'path': ':INPUT_%c:RESISTENCE' %(string.upper(chr(c)),), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-         
-    for i in loops.__func__():
-        parts.append({'path': ':LOOP_%c' %(str(i+1),), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-            
-    del c
+    ]
+    for i in inputs.upper():
+        parts.extend([
+            {'path': ':INPUT_%c' % (i,), 'type': 'signal', 'options': (
+                'no_write_model', 'write_once',)},
+            {'path': ':INPUT_%c:SERIAL_NO' % (
+                i,), 'type': 'TEXT', 'options': ('no_write_shot')},
+            {'path': ':INPUT_%c:CALIBRATION' % (i,), 'type': 'TEXT', 'options': (
+                'no_write_model', 'write_once',)},
+            {'path': ':INPUT_%c:RESISTENCE' % (i,), 'type': 'signal', 'options': (
+                'no_write_model', 'write_once',)},
+        ])
+    for i in loops:
+        parts.extend([
+            {'path': ':LOOP_%d' % (i,), 'type': 'signal', 'options': (
+                'no_write_model', 'write_once',)},
+        ])
+    del(i)
     debug = None
 
     def debugging(self):
         import os
         if self.debug == None:
-            self.debug=os.getenv("DEBUG_DEVICES")
+            self.debug = os.getenv("DEBUG_DEVICES")
         return(self.debug)
 
 
@@ -70,30 +85,42 @@ class CRYOCON24C_TREND(CRYOCON24C):
     Store one sample for each of the channels that is on using
     putRow.  The timestamp will be time since the unix EPOCH in msec
     '''
-    parts = copy.copy(CRYOCON24C.parts)
-    
-    for c in CRYOCON24C.loops():
-        parts.append({'path': ':LOOP_%c:PROPOR_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
-        parts.append({'path': ':LOOP_%c:INTEGR_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
-        parts.append({'path': ':LOOP_%c:DERIVA_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
-        parts.append({'path': ':LOOP_%c:SETPOINT' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_shot')})
+    parts = list(CRYOCON24C.parts)
 
-    parts.append({'path': ':DATA_EVENT', 'type': 'text', 'value': 'CRYOCON24C_TREND', 'options': ('no_write_shot')})
-    parts.append({'path': ':NODE', 'type': 'text', 'value': '192.168.0.254', 'options': ('no_write_shot')})
-    # *IDN = The identification string of the device
-    # SYSTEM:HWREV = The hardware revision number
-    # SYSTEM:FWREV = The firmware revision number
-    # SYSTEM:AMBIENT = 
-    parts.append({'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(['*IDN?','SYSTem:HWRev?','SYSTem:FWREV?','SYSTem:AMBient?']),'options': ('no_write_shot')})
-    parts.append({'path': ':STATUS_OUT', 'type': 'any','options': ('write_shot', 'write_once', 'no_write_model')})
+    for i in CRYOCON24C.loops:
+        parts.extend([
+            {'path': ':LOOP_%d:PROPOR_GAIN' % (
+                i,), 'type': 'NUMERIC', 'options': ('no_write_model')},
+            {'path': ':LOOP_%d:INTEGR_GAIN' % (
+                i,), 'type': 'NUMERIC', 'options': ('no_write_model')},
+            {'path': ':LOOP_%d:DERIVA_GAIN' % (
+                i,), 'type': 'NUMERIC', 'options': ('no_write_model')},
+            {'path': ':LOOP_%d:SETPOINT' % (
+                i,), 'type': 'NUMERIC', 'options': ('no_write_shot')},
+        ])
+    del(i)
+    parts.extend([
+        {'path': ':DATA_EVENT', 'type': 'text',
+            'value': 'CRYOCON24C_TREND', 'options': ('no_write_shot')},
+        {'path': ':NODE', 'type': 'text', 'value': '192.168.0.254',
+            'options': ('no_write_shot')},
+        # *IDN = The identification string of the device
+        # SYSTEM:HWREV = The hardware revision number
+        # SYSTEM:FWREV = The firmware revision number
+        # SYSTEM:AMBIENT =
+        {'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(
+            ['*IDN?', 'SYSTem:HWRev?', 'SYSTem:FWREV?', 'SYSTem:AMBient?']), 'options': ('no_write_shot')},
+        {'path': ':STATUS_OUT', 'type': 'any', 'options': (
+            'write_shot', 'write_once', 'no_write_model')},
+    ])
 
-    def sendCommand(self,s,cmd):
-        s.send(cmd + "\r\n")
+    def sendCommand(self, s, cmd):
+        s.send(tobytes(cmd + "\r\n"))
 
-    def recvResponse(self,s):
+    def recvResponse(self, s):
         msg = ""
         while True:
-            c = s.recv(1)
+            c = tostr(s.recv(1))
             if c == "\r":
                 continue
             if c == "\n":
@@ -101,8 +128,8 @@ class CRYOCON24C_TREND(CRYOCON24C):
             msg += c
         return msg
 
-    def queryCommand(self,s,cmd):
-        self.sendCommand(s,cmd)
+    def queryCommand(self, s, cmd):
+        self.sendCommand(s, cmd)
         return self.recvResponse(s)
 
     def init(self):
@@ -113,11 +140,10 @@ class CRYOCON24C_TREND(CRYOCON24C):
         return 1
     INIT = init
 
-
     def trend(self):
         # start it trending
-        self.running.on=True
-        
+        self.running.on = True
+
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((str(self.node.data()), 5000))
 
@@ -133,7 +159,7 @@ class CRYOCON24C_TREND(CRYOCON24C):
             if self.debugging():
                 print("Status_Out tree node is empty. Lets write the data now.")
             # read and save the status commands
-            status_out={}
+            status_out = {}
 
             for cmd in self.status_cmds:
                 if self.debugging():
@@ -147,7 +173,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
             self.status_out.record = status_out
 
-
         # Control Loop PID values Numeric Entry The Pgain, Igain and Dgain lines correspond to the Proportional,
         # Integral and Derivative coefficients of the control loop. Pman is the output power that will be applied
         # to the load if the manual control mode is selected.
@@ -158,27 +183,27 @@ class CRYOCON24C_TREND(CRYOCON24C):
         # Derivative gain values have units of inverse Seconds and may have values from zero to 1000. A value of
         # zero turns the Derivative control function off.
 
-        for i in self.loops():
+        for i in self.loops:
             # Proportional gain, or P term for PID control.
             # This is a numeric field that is a percent of full scale.
-            pgain_chan = self.__getattr__('loop_%c_propor_gain' % (str(i+1)))
-            pgain_query_cmd = 'LOOP %c:PGA?' % (str(i+1),)
+            pgain_chan = self.__getattr__('loop_%d_propor_gain' % (i,))
+            pgain_query_cmd = 'LOOP %d:PGA?' % (i,)
 
             # Integrator gain term, in Seconds, for PID control.
             # This is a numeric field that is a percent of full scale.
-            igain_chan = self.__getattr__('loop_%c_integr_gain' % (str(i+1)))
-            igain_query_cmd = 'LOOP %c:IGA?' % (str(i+1),)
+            igain_chan = self.__getattr__('loop_%d_integr_gain' % (i,))
+            igain_query_cmd = 'LOOP %d:IGA?' % (i,)
 
             # Derivative gain term, in inverse-Seconds, for PID control.
             # This is a numeric field that is a percent of full scale.
-            dgain_chan = self.__getattr__('loop_%c_deriva_gain' % (str(i+1)))
-            dgain_query_cmd = 'LOOP %c:DGA?' % (str(i+1),)
+            dgain_chan = self.__getattr__('loop_%d_deriva_gain' % (i,))
+            dgain_query_cmd = 'LOOP %d:DGA?' % (i,)
 
-            spoint_chan = self.__getattr__('loop_%c_setpoint' % (str(i+1)))
-            spoint_query_cmd = 'LOOP %c:SETP?' % (str(i+1),)
+            spoint_chan = self.__getattr__('loop_%d_setpoint' % (i,))
+            spoint_query_cmd = 'LOOP %d:SETP?' % (i,)
 
             ansQuery = self.queryCommand(s, pgain_query_cmd)
-            
+
             try:
                 pgain_chan.getData()
                 igain_chan.getData()
@@ -189,7 +214,8 @@ class CRYOCON24C_TREND(CRYOCON24C):
                     pgain = float(ansQuery)
                 except:
                     if self.debugging():
-                        print("Could not parse Proportional Gain /%s/" % ansQuery)
+                        print("Could not parse Proportional Gain /%s/" %
+                              ansQuery)
                     pgain = 0.0
 
                 pgain_chan.record = MDSplus.Float32(pgain)
@@ -230,68 +256,72 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
                 spoint_chan.record = MDSplus.Float32(spoint)
 
-
-        for i in self.inputs():
-            t_chans = self.__getattr__('input_%c' % (chr(i)))
-            r_chans = self.__getattr__('input_%c_resistence' % (chr(i)))
+        for i in self.inputs:
+            t_chans = self.__getattr__('input_%c' % (i,))
+            r_chans = self.__getattr__('input_%c_resistence' % (i,))
             if t_chans.on:
-                query_cmd_temp = 'INP %c:TEMP?;SENP?' % (chr(i),)
+                query_cmd_temp = 'INP %c:TEMP?;SENP?' % (i,)
                 ansQuery = self.queryCommand(s, query_cmd_temp)
 
-                t_time=time.time()
+                t_time = time.time()
 
                 # Temperature reading
                 try:
                     temps = float(ansQuery.split(';')[0])
                     is_digit = True
                 except ValueError:
-                    is_digit= False
+                    is_digit = False
                     if self.debugging():
-                        print("Could not parse temperature /%s/" % ansQuery.split(';')[0])
+                        print("Could not parse temperature /%s/" %
+                              ansQuery.split(';')[0])
                 if not is_digit:
                     temps = -9999.0
-                
-                t_chans.putRow(1000, MDSplus.Float32(temps), MDSplus.Int64(t_time*1000.))
+
+                t_chans.putRow(1000, MDSplus.Float32(temps),
+                               MDSplus.Int64(t_time*1000.))
 
                 # Resistence reading
                 try:
                     resists = float(ansQuery.split(';')[1])
-                    is_digit=True                                
+                    is_digit = True
                 except ValueError:
-                    is_digit=False
+                    is_digit = False
                     if self.debugging():
-                        print("Could not parse resist /%s/" % ansQuery.split(';')[1])
+                        print("Could not parse resist /%s/" %
+                              ansQuery.split(';')[1])
                 if not is_digit:
-                    resists  = -9999.0
-                
-                r_chans.putRow(1000, MDSplus.Float32(resists), MDSplus.Int64(t_time*1000.))
+                    resists = -9999.0
 
-        
-        for i in self.loops():
-            p_chans        = self.__getattr__('loop_%c' % (str(i+1)))
-            query_cmd_outp = 'LOOP %c:HTRRead?' % (str(i+1),) 
+                r_chans.putRow(1000, MDSplus.Float32(resists),
+                               MDSplus.Int64(t_time*1000.))
+
+        for i in self.loops:
+            p_chans = self.__getattr__('loop_%d' % (i,))
+            query_cmd_outp = 'LOOP %d:HTRRead?' % (i,)
             ansQuery = self.queryCommand(s, query_cmd_outp)
-            answerOutp = ansQuery[:-1] #remove the '%' at the end of the number
+            # remove the '%' at the end of the number
+            answerOutp = ansQuery[:-1]
 
             if p_chans.on:
-                t_time=time.time()
+                t_time = time.time()
                 # Output Power reading: Queries the output power of the selected control loop.
                 # This is a numeric field that is a percent of full scale.
                 try:
                     print("Parsing output power /%s/" % ansQuery)
                     if 'NAK' not in ansQuery:
-                        outpower  = float(answerOutp)
+                        outpower = float(answerOutp)
                     else:
-                        outpower  = float(-9999.0)
+                        outpower = float(-9999.0)
                 except ValueError:
                     if self.debugging():
                         print("Could not parse output power /%s/" % ansQuery)
-                
-                p_chans.putRow(1000, MDSplus.Float32(outpower), MDSplus.Int64(t_time*1000.))
-        
+
+                p_chans.putRow(1000, MDSplus.Float32(outpower),
+                               MDSplus.Int64(t_time*1000.))
+
         MDSplus.Event.setevent(event_name)
         s.close()
-    TREND=trend
+    TREND = trend
 
     def stop(self):
         '''
@@ -302,26 +332,33 @@ class CRYOCON24C_TREND(CRYOCON24C):
         return 1
     STOP = stop
 
-class CRYOCON24C_SHOT(CRYOCON24C):
-    parts = copy.copy(CRYOCON24C.parts)
-    parts.append({'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON24C_DATA','options':('no_write_shot')})
-    parts.append({'path': ':T1', 'type': 'numeric', 'options': ('no_write_shot'), 'help': 'The time in seconds that the shot began taking data'})
-    parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('write_shot')})
 
-    parts.append({'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')})
-    parts.append({'path': ':TREND_DEVICE', 'type': 'text', 'options': ('no_write_shot')})
-    parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the trend this data came from'})
+class CRYOCON24C_SHOT(CRYOCON24C):
+    parts = CRYOCON24C.parts + [
+        {'path': ':DATA_EVENT', 'type': 'text',
+            'value': 'CRYOCON24C_DATA', 'options': ('no_write_shot')},
+        {'path': ':T1', 'type': 'numeric', 'options': (
+            'no_write_shot'), 'help': 'The time in seconds that the shot began taking data'},
+        {'path': ':T2', 'type': 'numeric',
+            'value': 0, 'options': ('write_shot')},
+
+        {'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')},
+        {'path': ':TREND_DEVICE', 'type': 'text',
+            'options': ('no_write_shot')},
+        {'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0, 'options': (
+            'write_shot'), 'help': 'The record of the shot number of the trend this data came from'},
+    ]
 
     def getTrendTree(self):
-        tree_name    = self.trend_tree.data()
-        shot_number  = self.trend_shot.data()
-        trend_tree   = MDSplus.Tree(tree_name, shot_number, 'NORMAL')
+        tree_name = self.trend_tree.data()
+        shot_number = self.trend_shot.data()
+        trend_tree = MDSplus.Tree(tree_name, shot_number, 'NORMAL')
         return trend_tree
 
     def init(self):
         # Place holder
         pass
-    INIT=init
+    INIT = init
 
     def store(self):
         event_name = self.data_event.data()
@@ -333,47 +370,45 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         # Getting T1 from TREND:
         t1 = MDSplus.Int64(self.t1.data()*1000.)
 
-        #Saving TREND shot number information into the tree:
+        # Saving TREND shot number information into the tree:
         self.trend_shot.record = trend_tree.getCurrent(self.trend_tree.data())
-        
-        #Set Time Context
+
+        # Set Time Context
         trend_tree.setTimeContext(t1, self.t2.data())
-        
+
         print('Writing data into shot node')
-        for i in self.inputs():
-            trend_temp     = trend_dev.__getattr__('input_%c'% (chr(i)))
-            trend_resis    = trend_dev.__getattr__('input_%c_resistence'%  (chr(i)))
-                        
-            times    = trend_temp.dim_of().data()
-            temps    = trend_temp.data()
-            resists  = trend_resis.data()
-            
+        for i in self.inputs:
+            trend_temp = trend_dev.__getattr__('input_%c' % (i,))
+            trend_resis = trend_dev.__getattr__('input_%c_resistence' % (i,))
+
+            times = trend_temp.dim_of().data()
+            temps = trend_temp.data()
+            resists = trend_resis.data()
+
             # Might be able to improve
             start_time = times[0]
             for j in range(len(times)):
                 times[j] -= start_time
                 times[j] = float(times[j]) / 1000.
-            
-            shot_temp     = self.__getattr__('input_%c' % (chr(i)))
-            shot_resis    = self.__getattr__('input_%c_resistence' % (chr(i)))
-            
-            shot_temp.record     = MDSplus.Signal(temps, None, times)
-            shot_resis.record    = MDSplus.Signal(resists, None, times)
-                    
-        for i in self.loops():
-                trend_outpower = trend_dev.__getattr__('loop_%c'% (str(i+1)))
-                times    = trend_outpower.dim_of().data()
-                outpower = trend_outpower.data()
 
-                start_time = times[0]
-                for j in range(len(times)):
-                    times[j] -= start_time
-                    times[j] = float(times[j]) / 1000.
+            shot_temp = self.__getattr__('input_%c' % (i,))
+            shot_resis = self.__getattr__('input_%c_resistence' % (i,))
 
-                shot_outpower = self.__getattr__('loop_%c' % (str(i+1)))
-                shot_outpower.record = MDSplus.Signal(outpower, None, times)
+            shot_temp.record = MDSplus.Signal(temps, None, times)
+            shot_resis.record = MDSplus.Signal(resists, None, times)
 
+        for i in self.loops:
+            trend_outpower = trend_dev.__getattr__('loop_%d' % (i,))
+            times = trend_outpower.dim_of().data()
+            outpower = trend_outpower.data()
+
+            start_time = times[0]
+            for j in range(len(times)):
+                times[j] -= start_time
+                times[j] = float(times[j]) / 1000.
+
+            shot_outpower = self.__getattr__('loop_%d' % (i,))
+            shot_outpower.record = MDSplus.Signal(outpower, None, times)
 
         MDSplus.Event.setevent(event_name)
-    STORE=store
-
+    STORE = store

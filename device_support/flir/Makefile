@@ -10,14 +10,14 @@
 # 5) compile and install
 
 
-DRIVER_INCLUDE=/opt/pleora/ebus_sdk/RHEL-CentOS-6-x86_64/include
-DRIVER_LIB=/opt/pleora/ebus_sdk/RHEL-CentOS-6-x86_64/lib
+DRIVER_INCLUDE=${PUREGEV_ROOT}/include
+DRIVER_LIB=/${PUREGEV_ROOT}/lib
 
 
 CC=g++
 CFLAGS=-o3 -c -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I$(MDSPLUS_DIR)/include -I$(DRIVER_INCLUDE) -I../camera_utils
 
-LDFLAGS= -shared -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr -lMdsIpShr -lcammdsutils -lcamstreamutils -L$(DRIVER_LIB) -lPvDevice -lPvStream
+LDFLAGS= -shared -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr -lMdsIpShr -lcammdsutils -lcamstreamutils -L$(DRIVER_LIB) -lPvDevice -lPvStream -L. -lflirutils
 LDFLAGSexe= -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr -lMdsIpShr -lcammdsutils -lcamstreamutils -L$(DRIVER_LIB) -lPvDevice -lPvStream -L. -lflirsc65x -lflirutils
 
 

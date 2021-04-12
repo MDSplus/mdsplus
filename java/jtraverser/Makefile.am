@@ -1,44 +1,48 @@
-JAVASOURCE = 6
-JAVABOOTCLASSPATH = -bootclasspath $(RT6JAR)
+JAVASOURCE = 8
 include ../Makefile.inc.am
 
-EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
+EXTRA_DIST =
 
 
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
-dist_java_DATA = jTraverser.jar DeviceBeans.jar
-java_DATA = jTraverser.jar DeviceBeans.jar
-DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR) 
+java_DATA = jTraverser.jar
+DEPENDENCIES = $(MDSOBJECTS_JAR) $(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
-jTraverser.jar : @JARS_DIR@/java/jtraverser/jTraverser.jar
-	cp $< $@
-
-DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
+jTraverser.jar: @JARS_DIR@/java/jtraverser/jTraverser.jar
 	cp $< $@
 
 else
 
-jTraverser.jar: $(DEPENDENCIES) classjava.stamp $(srcdir)/DeviceBeansManifest.mf
+jTraverser.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	cp -f $(JAVA_RES) $(JAVAROOT)/ &&\
-	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
+	echo "Main-Class: mds.jtraverser.jTraverser" >> $(MANIFEST) &&\
+	echo "Class-Path: mdsobjects.jar DeviceBeans.jar jScope.jar jDevices.jar" >> $(MANIFEST) &&\
+	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
 
-DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
-	@ echo "Creating JAR: $@ ...";\
-	${LN_R} -sfT ./jTraverser.jar $@
 endif
 
 if MINGW
-bin_SCRIPTS += traverser.bat
+bin_SCRIPTS += jTraverser.bat
 else
 bin_SCRIPTS += jTraverser
+bin_SCRIPTS += CompileTree
+bin_SCRIPTS += DecompileTree
 EXTRA_DIST += jTraverser.template
+EXTRA_DIST += CompileTree.template
+EXTRA_DIST += DecompileTree.template
 jTraverser: $(srcdir)/jTraverser.template
+	cp $< $@
+CompileTree: $(srcdir)/CompileTree.template
+	cp $< $@
+DecompileTree: $(srcdir)/DecompileTree.template
 	cp $< $@
 endif
 
-SOURCE = *.java
-RESOURCES = *.gif
+SOURCE = \
+ mds/jtraverser/*.java\
+ mds/devices/*.java
+RESOURCES = mds/jtraverser/*.gif

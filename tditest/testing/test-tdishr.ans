@@ -1,3 +1,26 @@
+EXTRACT(len(_$0)-16,16,_$0)
+"/test-tdishr.tdi"
+deallocate(_$0)
+1
+_a=1
+1
+allocated(_a)
+1BU
+show_private(_a)
+Private _A	= 1
+1
+show_private()
+Private _$1	= "1"
+Private _$2	= "2"
+Private _$3	= "3"
+Private _A	= 1
+4
+deallocate()
+*
+allocated(_a)
+0BU
+show_private()
+0
 abs(255bu)
 255BU
 abs([255bu,1bu,254bu])
@@ -2445,71 +2468,71 @@ VERIFY("ABBA","A")
 VERIFY("ABBA","A",$TRUE)
 2
 $2PI
-6.28319
+6.283185307179586D0
 $A0
-Build_With_Units(Build_With_Error(52.9177E-12, 2400E-21), "m")
+Build_With_Units(Build_With_Error(52.9177E-12, 1168.02E-21), "m")
 $Alpha
-Build_With_Error(.00729735, 330E-12)
+Build_With_Error(.00729735, 143.276E-12)
 $Amu
-Build_With_Units(Build_With_Error(1660.54E-30, 1000E-36), "kg")
+Build_With_Units(Build_With_Error(1660.54E-30, 43.0666E-36), "kg")
 $Atm
 Build_With_Units(101325., "Pa")
 $C
-Build_With_Units(299.792E6, "m/s")
+Build_With_Units(299792458D0, "m/s")
 $Cal
 Build_With_Units(4.1868, "J")
 $Degree
-.0174533
+.0174532925199433D0
 $Epsilon0
-Build_With_Units(8854.19E-15, "F/m")
+Build_With_Units(8854.187817620389D-15, "F/m")
 $Ev
-Build_With_Units(Build_With_Error(160.218E-21, 49E-27), "J/eV")
+Build_With_Units(Build_With_Error(160.218E-21, 3654.14E-30), "J/eV")
 $False
 0BU
 $Faraday
-Build_With_Units(Build_With_Error(96485.3, .029), "C/mol")
+Build_With_Units(Build_With_Error(96485.3, .00381419), "C/mol")
 $G
-Build_With_Units(Build_With_Error(66.7259E-12, .00085), "m^3/s^2/kg")
+Build_With_Units(Build_With_Error(66.743E-12, 1500.02E-18), "m^3/s^2/kg")
 $Gas
-Build_With_Units(Build_With_Error(8.31451, 70E-6), "J/K/mol")
+Build_With_Units(Build_With_Error(8.31446, 43.5899E-9), "J/K/mol")
 $Gn
 Build_With_Units(9.80665, "m/s^2")
 $H
-Build_With_Units(Build_With_Error(662.608E-36, 4000E-9), "J*s")
+Build_With_Units(Build_With_Error(662.607E-36, 2857.25E-45), "J*s")
 $Hbar
-Build_With_Units(Build_With_Error(105.457E-36, 630E-9), "J*s")
+Build_With_Units(Build_With_Error(105.457E-36, 1967.42E-45), "J*s")
 $I
 Cmplx(0.,1.)
 $K
-Build_With_Units(Build_With_Error(13.8066E-24, 120E-30), "J/K")
+Build_With_Units(Build_With_Error(13.8065E-24, 276.341E-33), "J/K")
 $Me
-Build_With_Units(Build_With_Error(910.939E-33, 540E-39), "kg")
+Build_With_Units(Build_With_Error(910.938E-33, 25.8874E-39), "kg")
 $Missing
 $Missing
 $Mp
-Build_With_Units(Build_With_Error(1672.62E-30, 1000E-36), "kg")
+Build_With_Units(Build_With_Error(1672.62E-30, 85.2717E-36), "kg")
 $Mu0
-Build_With_Units(1256.64E-9, "N/A^2")
+Build_With_Units(1256.637061435917D-9, "N/A^2")
 $N0
-Build_With_Units(Build_With_Error(26.8676E24, 230E18), "/m^3")
+Build_With_Units(Build_With_Error(26.8678E24, 743.623E15), "/m^3")
 $Na
-Build_With_Units(Build_With_Error(602.214E21, 360E15), "/mol")
+Build_With_Units(Build_With_Error(602.214E21, 11.645E15), "/mol")
 $P0
 Build_With_Units(101325., "Pa")
 $Pi
-3.14159
+3.141592653589793D0
 $Qe
-Build_With_Units(Build_With_Error(160.218E-21, 49.3E-27), "C")
+Build_With_Units(Build_With_Error(160.218E-21, 3654.14E-30), "C")
 $Re
-Build_With_Units(Build_With_Error(2817.94E-18, 380E-24), "m")
+Build_With_Units(Build_With_Error(2817.94E-18, 12.7156E-24), "m")
 $Roprand
 $ROPRAND
 $Rydberg
-Build_With_Units(Build_With_Error(10.9737E6, .013), "/m")
+Build_With_Units(Build_With_Error(10.9737E6, .443876), "/m")
 $T0
-Build_With_Units(273.16, "K")
+Build_With_Units(273.15, "K")
 $Torr
-Build_With_Units(133.32, "Pa")
+Build_With_Units(133.3223684210526D0, "Pa")
 $True
 1BU
 byte_unsigned(42ub)
@@ -5564,7 +5587,7 @@ Fun PUBLIC myfun (IN _in, INOUT _inout, OUT _out) {
 		_inout = "Ok";
 	}
 	Return (_J);
-	Label _do_abor : ABORT();
+	Label _do_abort : ABORT();
 }
 (_a=42,myfun(1,_a,_b),_a)
 "Ok"
@@ -5582,30 +5605,6 @@ ceiling(1.:3:.1)
 [1.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,3.,3.,3.,3.,3.,3.,3.,3.,3.,3.]
 ceiling(-1.:-3:-.1)
 [-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-3.]
-_a=1
-1
-allocated(_a)
-1BU
-show_private(_a)
-Private _A	= 1
-1
-show_private()
-Private _A	= 1
-Private _ARRAY	= Set_Range(-5:4,0:4,[[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]])
-Private _B	= "case 2"
-Private _C	= [[0,3,5], [7,4,8]]
-Private _FSOURCE	= [[0,3,2], [7,4,8]]
-Private _M	= [0,0,0,9,0,0,7]
-Private _MASK	= [[1,0,1], [0,0,1]]
-Private _SIGNAL	= Build_Signal(_array, *, -9 : 0, 1 : 5)
-Private _TSOURCE	= [[1,6,5], [2,4,6]]
-9
-deallocate()
-*
-allocated(_a)
-0BU
-show_private()
-0
 _a=1
 1
 _b=42
@@ -6152,6 +6151,8 @@ MAKE_OPAQUE   OPC$MAKE_OPAQUE           455
 DICT   OPC$DICT           456
 TUPLE   OPC$TUPLE           457
 LIST   OPC$LIST           458
+SQUEEZE   OPC$SQUEEZE           459
+FLATTEN   OPC$FLATTEN           460
 *
 kind(_u=fopen('tditst.tmp','w'))
 51BU
@@ -6298,3 +6299,30 @@ x_to_i(["def4","abc"],["d"]) /** bsearch returns -1 mapping to nearest, i.e. 0-t
 [1]
 build_signal([1,2,3],*,["a","b","c"])["d"] /** empty signal **/
 Build_Signal([], *, [])
+TreeShr->MaskReplace:C(ref("/trees/~j~i/~h~g/~f~e/~d~c/~t"), ref("test"), val(123456789))
+"/trees/01/23/45/67/test"
+_=*;switch(3){case(0:2,4:6,8:10)_=$TRUE;break;case default _=$FALSE;break;};_
+0BU
+_=*;switch(5){case(0:2,4:6,8:10)_=$TRUE;break;case default _=$FALSE;break;};_
+1BU
+_=*;switch(3,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),statement(_=$TRUE,break()))));_
+0BU
+_=*;switch(5,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),statement(_=$TRUE,break()))));_
+1BU
+<syntax error at '<'
+%TDI-E-SYNTAX, Bad punctuation or misspelled word or number
+%TDI Error compiling region marked by ^
+<syntax error at '<'
+^
+%TDI Error in EXECUTE("<syntax error at '<'")
+
+_d=2W;zero(shape(_d),_d[0])
+0W
+_d=[[2LU]];zero(shape(_d),_d[0])
+Long_Unsigned([[0LU]])
+[[[[[1],[2]]],[[[3],[4]]]]][:]
+[1,2,3,4]
+[[[[[1],[2]]],[[[3],[4]]]]][::]
+[[1,2], [3,4]]
+Set_Range(1:2,1:1,1:3,1:6)[::]
+Set_Range(1:2,1:3,[[1,2], [3,4], [5,6]])

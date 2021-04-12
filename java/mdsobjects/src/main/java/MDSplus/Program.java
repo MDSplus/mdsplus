@@ -2,49 +2,55 @@ package MDSplus;
 
 /**
  * Class for DTYPE_PROGRAM
+ *
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.41
  */
 public class Program extends Compound
 {
-	public Program(Data timeout, Data program,
-	        Data help, Data units, Data error, Data validation)
+	public Program(Data timeout, Data program, Data help, Data units, Data error, Data validation)
 	{
-	    super(help, units, error, validation);
-	    clazz = CLASS_R;
-	    dtype = DTYPE_PROGRAM;
-	    descs = new Data[]{timeout, program};
+		super(help, units, error, validation);
+		clazz = CLASS_R;
+		dtype = DTYPE_PROGRAM;
+		descs = new Data[]
+		{ timeout, program };
 	}
+
 	public Program(Data timeout, Data program)
 	{
-	    this(timeout, program, null, null, null, null);
+		this(timeout, program, null, null, null, null);
 	}
+
 	public Program(Data help, Data units, Data error, Data validation)
 	{
-	    super(help, units, error, validation);
-	    clazz = CLASS_R;
-	    dtype = DTYPE_PROGRAM;
-	    descs = new Data[2];
+		super(help, units, error, validation);
+		clazz = CLASS_R;
+		dtype = DTYPE_PROGRAM;
+		descs = new Data[2];
 	}
+
 	public Program()
 	{
-	    this(null, null, null, null);
+		this(null, null, null, null);
 	}
 
 	public static Program getData(Data help, Data units, Data error, Data validation)
 	{
-	    return new Program(help, units, error, validation);
+		return new Program(help, units, error, validation);
 	}
 
 	public Data getProgram()
 	{
-	    return descs[1];
+		resizeDescs(2);
+		return descs[1];
 	}
 
 	public Data getTimeout()
 	{
-	    return descs[0];
+		resizeDescs(1);
+		return descs[0];
 	}
 
 	/**
@@ -53,7 +59,8 @@ public class Program extends Compound
 	 */
 	public void setProgram(Data data)
 	{
-	    descs[1] = data;
+		resizeDescs(2);
+		descs[1] = data;
 	}
 
 	/**
@@ -62,7 +69,7 @@ public class Program extends Compound
 	 */
 	public void setTimeout(Data data)
 	{
-	    descs[0] = data;
+		resizeDescs(1);
+		descs[0] = data;
 	}
-
 }

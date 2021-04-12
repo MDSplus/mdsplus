@@ -1,25 +1,147 @@
-To build and install MDSplus on unix systems, you will need to obtain the
-MDSplus distribution either in a compressed tar file or via the cvs
-repository.
-To access the cvs repository do the following:
+Table of Content
 
-1) set the environment variable CVSROOT to the following:
-	:pserver:MDSguest@www.mdsplus.org:/mdsplus/repos
-2) login to cvs using the password MDSguest
-    # cvs login
-    (Logging in to MDSguest@www.mdsplus.org)
-    CVS password: MDSguest
-3) checkout the mdsplus system
-    # cvs checkout mdsplus
+A) Introduction
+B) Installing MDSplus using packages/kits
+C) Building MDSplus using Docker
+D) Building MDSplus using configure and make
+E) Special Notes
 
-To build the software do the following (See special notes below):
+-----------------------------------------------------------------------------------
+A) Introduction
 
-    # cd mdsplus
-    # ./configure
-    # make all
+To install or build/install MDSplus on unix systems, you will need to obtain the
+MDSplus distribution from the MDSplus Github repository (see Section D), or you 
+can download the package manually (see Section B).
 
----------------------------------------------------------------------------
-Special Notes
+We recommend downloading the kit as a way to install MDSplus. 
+
+If building from source is required, then, we recommend:
+1- building MDsplus using a Docker image (see Section C).
+2- or, using bootstrap/configure/make (see Section D-2)
+
+
+-----------------------------------------------------------------------------------
+B) Installing MDSplus using packages/kits
+
+This is the prefer option when installing MDSplus. In Section B and C, MDSplus 
+can be build and installed from source.
+
+To download packages manually browse to 
+http://www.mdsplus.org/dist/
+
+Select the desire OS type, e.g for Ubuntu 18 or RHEL8:
+http://www.mdsplus.org/dist/Ubuntu18/
+http://www.mdsplus.org/dist/rhel8/
+
+Select the branch, i.e. stable or alpha and your system architecture:
+http://www.mdsplus.org/dist/Ubuntu18/alpha/DEBS/amd64/
+http://www.mdsplus.org/dist/rhel8/alpha/
+
+
+-----------------------------------------------------------------------------------
+C) Building MDSplus using Docker
+
+The recommended way for building MDSplus from source is to use a Docker container.
+On Linux systems that support docker you have the ability to build from MDSplus 
+sources for all the supported platforms except for MacOSX. 
+
+Once you have the sources (see Section D-1) you can execute the following command to 
+build an installer for the operating system of your choice:
+
+$ mkdir build
+$ cd build
+$ ../mdsplus/deploy/build.sh --os=os-name --release
+
+where os-name would be for example fc25 or ubuntu16. Please, see the comments 
+at the top of that script for details.
+
+The available choices can be found by doing:
+
+$ ls mdsplus/deploy/os/*.opts
+
+This build.sh script will pull the necessary docker image from dockerhub.com 
+to build MDSplus for that platform. The build results should be in 
+subdirectories of the build directory and will include a full buildroot used 
+for constructing installers and the new package installers. 
+You do not need anything else installed on your system beside docker using 
+this method as all the libraries, compilers etc, are provided in the docker images 
+which are used to build MDSplus.
+
+
+-----------------------------------------------------------------------------------
+D) Building MDSplus using configure and make
+
+The MDSplus source code is maintained on Github. 
+If you are interested in building MDSplus from the sources we recommend 
+downloading a tarball, or a zip file from there, or clonning the Github
+repository:
+
+1) Downloading the tarball/zip file:
+
+-> choose 'stable' or 'alpha' - ""note alpha is the active development branch 
+and may contain untested code.""
+-> choose 'zip' or 'tar.gz'
+-> download the sources (choose one of):
+
+wget https://github.com/MDSplus/mdsplus/archive/alpha.zip 
+wget https://github.com/MDSplus/mdsplus/archive/alpha.tar.gz
+wget https://github.com/MDSplus/mdsplus/archive/stable.zip
+wget https://github.com/MDSplus/mdsplus/archive/stable.tar.gz
+
+-> expand the zip or tar.
+
+Or, MDSplus repository can also be cloned from Github using:
+
+$ git clone https://github.com/MDSplus/mdsplus.git
+
+2) Building MDSplus
+
+-> Firstly, confirm that you have installed the following softwares in your system:
+
+Automake:
+$ sudo apt install automake
+
+Python:
+$ sudo apt install python
+
+Flex and Bison:
+$ sudo apt install flex
+$ sudo apt install bison
+
+GPerf:
+$ sudo apt install gperf
+
+C++ compiler, GCC:
+$ sudo apt update
+$ sudo apt install build-essential
+$ sudo apt-get install manpages-dev
+
+JAVA JDK/JRE:
+$ sudo apt install default-jre
+$ sudo apt install default-jdk
+
+Some extra libraries:
+$ sudo apt-get install -y libxml2-dev
+$ sudo apt-get install -y libreadline-dev
+$ sudo apt-get install libmotif-dev
+
+-> Then, cd to the MDSplus directory just cloned or untared:
+$ cd mdsplus
+
+-> Execute the following script:
+$ ./bootstrap
+
+-> Make a build directory, e.g:
+$ mkdir ../build
+
+-> cd to the build directory and execute the MDSplus configure script, followed by make:
+$ cd ../build
+$ ../mdsplus/configure
+$ make
+
+
+-----------------------------------------------------------------------------------
+E) Special Notes
 
 For D3D sites that want to build the MDSplus/d3d ptdata interface you must
 first define an envionment variable D3DLIB_PATH set to the directory
@@ -53,7 +175,6 @@ and the MDSplus X applications will not build or run using LessTif package.
 
 To build on a system with LessTif installed do the following:
 
-
 setenv LD_LIBRARY_PATH [motif-lib-directory]\:$LD_LIBRARY_PATH
 setenv UILPATH [motif-bin-directory-where-uil-image-is]
 ./configure --x-libraries=[motif-library-directory]  \
@@ -63,6 +184,7 @@ replacing the text inside the brackets (and the brackets) with the
 location of the real Motif files.
 
 SYBASE Open/CLient - IDL database connection
+
 Sites with IDL, SYBASE Open/CLient libraries and Microsoft SQLSERVER
 databases can use idlsql library for database connectivity.  The idl
 procedure in idl/Logbook/dbinfo.pro should be edited to reflect the
@@ -73,8 +195,10 @@ file $HOME/xxx.sybase_login, where xxx is the name of the sybase host,
 if it finds it and can read it, it sends the first line as the username
 and the second for the password, if not it sends $USER and a default
 password.
+
 NOTE - the environment variable SYBASE must point at the sybase distribution
 in order for their libraries to function.
+
 NOTE - if the sybase distribution is not /usr/local/sybase, configure
 will not find the distribution unless you first set the environment
 variable SYBASE to point the the distribution directory.

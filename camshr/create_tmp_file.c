@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -67,8 +67,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db type, number of place holders
 // output:      status
 //-------------------------------------------------------------------------
-int create_tmp_file(int dbType, int count, char *filename)
-{
+int create_tmp_file(int dbType, int count, char *filename) {
   char fmt[10];
   int entrySize, fd, i, status = SUCCESS;
 
@@ -111,18 +110,18 @@ int create_tmp_file(int dbType, int count, char *filename)
 
     for (i = 0; i < count; ++i) {
       if (write(fd, line, entrySize) != entrySize) {
-	if (MSGLVL(ALWAYS))
-	  perror("write()");
+        if (MSGLVL(ALWAYS))
+          perror("write()");
 
-	status = EXPAND_ERROR;
-	goto CreateTmpFile_Exit;
+        status = EXPAND_ERROR;
+        goto CreateTmpFile_Exit;
       }
     }
   }
 
-  close(fd);			// only get here if all is OK
+  close(fd); // only get here if all is OK
 
- CreateTmpFile_Exit:
+CreateTmpFile_Exit:
   if (MSGLVL(DETAILS)) {
     printf("create_tmp_file(): ");
     ShowStatus(status);

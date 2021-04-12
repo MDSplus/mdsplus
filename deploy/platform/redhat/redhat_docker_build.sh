@@ -30,12 +30,22 @@ do_createrepo() {
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
-if [ $OS = rhel8 ]; then
-  test32="32 i686-linux   bin32 lib32 --with-valgrind-lib=/usr/lib32/valgrind"
-else
-  test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32 --with-valgrind-lib=/usr/lib32/valgrind"
-fi
+test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32 --with-valgrind-lib=/usr/lib32/valgrind"
 
+runtests() {
+    # run tests with the platform specific params read from test32 and test64
+    testarch ${test64}
+    if [ "${ARCHES}" != "amd64" ]
+    then
+      if [ -f /usr/bin/python-i686 ]
+      then
+        PYTHON=/usr/bin/python-i686 testarch ${test32};
+      else
+        testarch ${test32};
+      fi
+    fi
+    checktests;
+}
 makelist(){
     rpm2cpio $1 | \
         cpio --list --quiet | \
@@ -65,7 +75,7 @@ buildrelease(){
       $MAKE install
     fi
     popd;
-    if [ $OS != rhel8 ]; then
+    if [ "${ARCHES}" != "amd64" ]; then
       mkdir -p /workspace/releasebld/32;
       pushd /workspace/releasebld/32;
       config ${test32} ${ALPHA_DEBUG_INFO}

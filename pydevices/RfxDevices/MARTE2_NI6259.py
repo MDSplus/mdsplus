@@ -23,71 +23,90 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_NI6259(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.outputs = [
-      {'name': 'Counter', 'type':'uint32', 'dimensions': 0, 'parameters':[]},
-      {'name': 'Time', 'type':'uint32', 'dimensions': 0, 'parameters':[]},
-      {'name': 'ADC0_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':0},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
-      {'name': 'ADC1_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':1},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
-     {'name': 'ADC2_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':2},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
-      {'name': 'ADC3_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':3},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
-      {'name': 'ADC4_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':4},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
-      {'name': 'ADC5_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':5},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
-      {'name': 'ADC6_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':6},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
-      {'name': 'ADC7_0', 'type': 'int16', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
-												    {'name':'ChannelId', 'type': 'int', 'value':7},
-												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
-												    {'name': 'InputMode', 'type':'string','value':'RSE'}]}]
-    MARTE2_COMPONENT.parameters = [{'name':'SamplingFrequency', 'type': 'int32', 'value':1000000},
-				   {'name':'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
-				   {'name':'BoardId', 'type': 'int32', 'value':0},
-				   {'name': 'DelayDivisor', 'type': 'int32', 'value':3},
-				   {'name': 'ClockSampleSource', 'type': 'string', 'value': 'SI_TC'},
-				   {'name': 'ClockSamplePolarity', 'type': 'string', 'value': 'ACTIVE_HIGH_OR_RISING_EDGE'},
-				   {'name': 'ClockConvertSource', 'type': 'string', 'value': 'SI2TC'},
-				   {'name': 'ClockConvertPolarity', 'type': 'string', 'value': 'RISING_EDGE'},
-				   {'name': 'CPUs', 'type':'int32', 'value': 0xf}]
+from MDSplus import Data
+MC = __import__('MARTE2_COMPONENT', globals())
 
+
+@MC.BUILDER('NI6259::NI6259ADC', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT,
+            'build_range(0, 1000000, 1./(build_path(".parameters:par_1:value")*build_path(".outputs.adc0_0:samples")))')
+class MARTE2_NI6259(MC.MARTE2_COMPONENT):
+    outputs = [
+        {'name': 'Counter', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters': []},
+        {'name': 'ADC0_0', 'type': 'int16', 'dimensions': 0, 'parameters': [
+            {'name': 'InputRange', 'type': 'float32', 'value': 10},
+            {'name': 'ChannelId', 'type': 'int', 'value': 0},
+            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+        ]},
+        {'name': 'ADC1_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
+                                                                            {'name': 'ChannelId',
+                                                                                'type': 'int', 'value': 1},
+                                                                            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+                                                                            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+                                                                            ]},
+        {'name': 'ADC2_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
+                                                                            {'name': 'ChannelId',
+                                                                                'type': 'int', 'value': 2},
+                                                                            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+                                                                            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+                                                                            ]},
+        {'name': 'ADC3_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
+                                                                            {'name': 'ChannelId',
+                                                                                'type': 'int', 'value': 3},
+                                                                            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+                                                                            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+                                                                            ]},
+        {'name': 'ADC4_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
+                                                                            {'name': 'ChannelId',
+                                                                                'type': 'int', 'value': 4},
+                                                                            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+                                                                            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+                                                                            ]},
+        {'name': 'ADC5_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
+                                                                            {'name': 'ChannelId',
+                                                                                'type': 'int', 'value': 5},
+                                                                            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+                                                                            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+                                                                            ]},
+        {'name': 'ADC6_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
+                                                                            {'name': 'ChannelId',
+                                                                                'type': 'int', 'value': 6},
+                                                                            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+                                                                            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+                                                                            ]},
+        {'name': 'ADC7_0', 'type': 'int16', 'dimensions': 0, 'parameters': [{'name': 'InputRange', 'type': 'float32', 'value': 10},
+                                                                            {'name': 'ChannelId',
+                                                                                'type': 'int', 'value': 7},
+                                                                            {'name': 'InputPolarity', 'type': 'string', 'value': 'Bipolar'},
+                                                                            {'name': 'InputMode', 'type': 'string', 'value': 'RSE'},
+                                                                            ]},
+    ]
+    parameters = [
+        {'name': 'SamplingFrequency', 'type': 'int32', 'value': 1000000},
+        {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxi6259'},
+        {'name': 'BoardId', 'type': 'int32', 'value': 0},
+        {'name': 'DelayDivisor', 'type': 'int32', 'value': 3},
+        {'name': 'ClockSampleSource', 'type': 'string', 'value': 'SI_TC'},
+        {'name': 'ClockSamplePolarity', 'type': 'string',
+            'value': 'ACTIVE_HIGH_OR_RISING_EDGE'},
+        {'name': 'ClockConvertSource', 'type': 'string', 'value': 'SI2TC'},
+        {'name': 'ClockConvertPolarity', 'type': 'string', 'value': 'RISING_EDGE'},
+        {'name': 'CPUs', 'type': 'int32', 'value': 0xf},
+    ]
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'NI6259::NI6259ADC', MARTE2_COMPONENT.MODE_SYNCH_INPUT, 
-	'build_range(0, 1000000, 1./(build_path(".parameters:parameter_1:value")*build_path(".outputs.adc0_0:samples")))')
 
     def prepareMarteInfo(self):
-      print('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value"))')
-      self.timebase.putData(Data.compile('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value"))'))
-      self.outputs_time_idx = 1  #The second produced signal is time
-#put the same value of Samples and segment lengthin all output nodes
-      self.outputs_adc1_0_samples.putData(self.outputs_adc0_0_samples.data())
-      self.outputs_adc2_0_samples.putData(self.outputs_adc0_0_samples.data())
-      self.outputs_adc3_0_samples.putData(self.outputs_adc0_0_samples.data())
-      self.outputs_adc4_0_samples.putData(self.outputs_adc0_0_samples.data())
-      self.outputs_adc5_0_samples.putData(self.outputs_adc0_0_samples.data())
-      self.outputs_adc6_0_samples.putData(self.outputs_adc0_0_samples.data())
-      self.outputs_adc7_0_samples.putData(self.outputs_adc0_0_samples.data())
- 
-
-
-
+        print('0:1000000 : 8.*build_path("\\'+self.getFullPath() +
+              '.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:par_1:value"))')
+        self.timebase.putData(Data.compile('0:1000000 : 8.*build_path("\\'+self.getFullPath(
+        )+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:par_1:value"))'))
+        self.outputs_time_idx = 1  # The second produced signal is time
+# put the same value of Samples and segment lengthin all output nodes
+        self.outputs_adc1_0_samples.putData(self.outputs_adc0_0_samples.data())
+        self.outputs_adc2_0_samples.putData(self.outputs_adc0_0_samples.data())
+        self.outputs_adc3_0_samples.putData(self.outputs_adc0_0_samples.data())
+        self.outputs_adc4_0_samples.putData(self.outputs_adc0_0_samples.data())
+        self.outputs_adc5_0_samples.putData(self.outputs_adc0_0_samples.data())
+        self.outputs_adc6_0_samples.putData(self.outputs_adc0_0_samples.data())
+        self.outputs_adc7_0_samples.putData(self.outputs_adc0_0_samples.data())

@@ -112,80 +112,75 @@ extern "C" {
  * Method:    compile
  * Signature: (Ljava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
  */
-JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile
-  (JNIEnv *, jclass, jstring, jobjectArray);
+JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile(JNIEnv *, jclass, jstring,
+                                                    jobjectArray);
 
 /*
  * Class:     MDSplus_Data
  * Method:    execute
  * Signature: (Ljava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
  */
-JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute
-  (JNIEnv *, jclass, jstring, jobjectArray);
+JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute(JNIEnv *, jclass, jstring,
+                                                    jobjectArray);
 
 /*
  * Class:     MDSplus_Data
  * Method:    decompile
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv *, jobject, jlong);
 
 /*
  * Class:     MDSplus_Data
  * Method:    cloneData
  * Signature: ()LMDSplus/Data;
  */
-JNIEXPORT jobject JNICALL Java_MDSplus_Data_cloneData
-  (JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL Java_MDSplus_Data_cloneData(JNIEnv *, jobject);
 
 /*
  * Class:     MDSplus_Data
  * Method:    dataData
  * Signature: ()LMDSplus/Data;
  */
-JNIEXPORT jobject JNICALL Java_MDSplus_Data_dataData
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_MDSplus_Data_dataData(JNIEnv *, jobject, jlong);
 
 /*
  * Class:     MDSplus_Data
  * Method:    evaluateData
  * Signature: (J)LMDSplus/String;
  */
-JNIEXPORT jobject JNICALL Java_MDSplus_Data_evaluateData
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_MDSplus_Data_evaluateData(JNIEnv *, jobject,
+                                                         jlong);
 
 /*
  * Class:     MDSplus_Data
  * Method:    serialize
  * Signature: ()[B
  */
-JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize
-  (JNIEnv *, jobject);
+JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize(JNIEnv *, jobject);
 
 /*
  * Class:     MDSplus_Data
  * Method:    deserialize
  * Signature: ([B)LMDSplus/Data;
  */
-JNIEXPORT jobject JNICALL Java_MDSplus_Data_deserialize
-  (JNIEnv *, jclass, jbyteArray);
+JNIEXPORT jobject JNICALL Java_MDSplus_Data_deserialize(JNIEnv *, jclass,
+                                                        jbyteArray);
 
 /*
  * Class:     MDSplus_Data
  * Method:    convertToDate
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate
-  (JNIEnv *, jclass, jlong);
+JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate(JNIEnv *, jclass,
+                                                          jlong);
 
 /*
  * Class:     MDSplus_Data
  * Method:    getTime
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
-  (JNIEnv *, jclass);
+JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime(JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }

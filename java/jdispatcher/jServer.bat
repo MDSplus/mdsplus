@@ -1,1 +1,4 @@
-javaw -cp  "%HOMEDRIVE%%HOMEPATH%";"%MDSPLUS_DIR%\java\classes\jScope.jar";"%MDSPLUS_DIR%\java\classes\jTraverser.jar";"%MDSPLUS_DIR%/java/classes/jDispatcher.jar";"%MDSPLUS_DIR%\java\classes" -Xss10M jServer %1
+java -Xss10M -cp ^
+"%MDSPLUS_DIR%\java\classes\jDispatcher.jar^
+;%MDSPLUS_DIR%\java\classes\mdsobjects.jar^
+" mds.jdispatcher.jServer %*

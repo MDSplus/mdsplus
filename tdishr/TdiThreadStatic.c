@@ -34,6 +34,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tdithreadstatic.h"
 
+#define YYLTYPE TDITHREADSTATIC_TYPE
+#include "tdiyacc.h"
+#include "tdilex.h"
+#include "../mdsshr/version.h"
+
 static inline TDITHREADSTATIC_TYPE *buffer_alloc() {
   TDITHREADSTATIC_ARG = (TDITHREADSTATIC_TYPE *) calloc(1,sizeof(TDITHREADSTATIC_TYPE));
   LibCreateVmZone(&TDI_VAR_PRIVATE.head_zone);
@@ -49,6 +54,7 @@ static inline TDITHREADSTATIC_TYPE *buffer_alloc() {
     TDI_INDENT = 1;
     TDI_DECOMPILE_MAX = 0xffff;
   }
+  tdilex_init(&TDI_SCANNER);
   TDI_STACK_IDX = 0;
   TDI_VAR_REC = 0;
   return TDITHREADSTATIC_VAR;
@@ -57,6 +63,7 @@ static void buffer_free(TDITHREADSTATIC_ARG) {
   LibResetVmZone(&TDI_VAR_PRIVATE.head_zone);
   LibResetVmZone(&TDI_VAR_PRIVATE.data_zone);
   StrFree1Dx(&TDI_INTRINSIC_MSG);
+  tdilex_destroy(TDI_SCANNER);
   free(TDITHREADSTATIC_VAR);
 }
 

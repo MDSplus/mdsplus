@@ -22,34 +22,33 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include <ncidef.h>
 #include <dcl.h>
 #include <mdsshr.h>
+#include <ncidef.h>
 #include <treeshr.h>
 
 #include "tcl_p.h"
 
-
 /**********************************************************************
-* TCL_DIRECTORY_TAG.C --
-*
-* TclDirectoryTag:  Perform directory of all of the tags
-*
-* History:
-*  16-Jan-1998  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
+ * TCL_DIRECTORY_TAG.C --
+ *
+ * TclDirectoryTag:  Perform directory of all of the tags
+ *
+ * History:
+ *  16-Jan-1998  TRG  Create.  Ported from original mds code.
+ *
+ ************************************************************************/
 
-	/****************************************************************
-	 * TclDirectoryTag:
-	 * Perform directory of all of the tags
-	 ****************************************************************/
-EXPORT int TclDirectoryTag(void *ctx, char **error __attribute__ ((unused)), char **output)
-{
+/****************************************************************
+ * TclDirectoryTag:
+ * Perform directory of all of the tags
+ ****************************************************************/
+EXPORT int TclDirectoryTag(void *ctx, char **error __attribute__((unused)),
+                           char **output) {
   int sub_total;
   int grand_total;
   char *nodename;
@@ -67,23 +66,23 @@ EXPORT int TclDirectoryTag(void *ctx, char **error __attribute__ ((unused)), cha
     tclAppend(output, text);
     while ((nodename = TreeFindTagWild(tagnam, 0, &ctx1))) {
       if (path) {
-	NCI_ITM itmlist[] = { {0, NciFULLPATH, 0, 0}
-	, {0, 0, 0, 0}
-	};
-	int nid;
-	TreeFindNode(nodename, &nid);
-	TreeGetNci(nid, itmlist);
-	if (itmlist[0].pointer) {
-	  char *info = malloc(strlen(nodename) + strlen(itmlist[0].pointer) + 100);
-sprintf(info, "%s%.*s = %s\n", nodename, (int)(40 - strlen(nodename)),
-	  "                                               ", (char *)itmlist[0].pointer);
-	  tclAppend(output, info);
-	  free(info);
-	  free(itmlist[0].pointer);
-	}
+        NCI_ITM itmlist[] = {{0, NciFULLPATH, 0, 0}, {0, 0, 0, 0}};
+        int nid;
+        TreeFindNode(nodename, &nid);
+        TreeGetNci(nid, itmlist);
+        if (itmlist[0].pointer) {
+          char *info =
+              malloc(strlen(nodename) + strlen(itmlist[0].pointer) + 100);
+          sprintf(info, "%s%.*s = %s\n", nodename, (int)(40 - strlen(nodename)),
+                  "                                               ",
+                  (char *)itmlist[0].pointer);
+          tclAppend(output, info);
+          free(info);
+          free(itmlist[0].pointer);
+        }
       } else {
-	sprintf(text, "%s\n", nodename);
-	tclAppend(output, text);
+        sprintf(text, "%s\n", nodename);
+        tclAppend(output, text);
       }
       sub_total++;
       mdsdclFlushOutput(*output);

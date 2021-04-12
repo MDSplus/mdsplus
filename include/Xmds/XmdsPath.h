@@ -4,15 +4,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSPATH.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsPath.H
+                Name:   XmdsPath.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   6-MAY-1992
+                Date:   6-MAY-1992
 
-		Purpose: Public declarations for XmdsPath widget
+                Purpose: Public declarations for XmdsPath widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -32,22 +32,23 @@
 typedef enum pathType { NciABSOLUTE_PATH, NciRELATIVE_PATH } XmdsPathType;
 /* Resources */
 
-#define XmdsNnid		    "nid"	/* Nid of first channel */
-#define XmdsNnidOffset		    "nidOffset"	/* Nid offset */
-#define XmdsNpathType               "pathType"	/* TreeABS_PATH or TreeREL_PATH */
+#define XmdsNnid "nid"             /* Nid of first channel */
+#define XmdsNnidOffset "nidOffset" /* Nid offset */
+#define XmdsNpathType "pathType"   /* TreeABS_PATH or TreeREL_PATH */
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreatePath();
 extern Boolean XmdsIsPath();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount);
+extern Widget XmdsCreatePath(Widget parent, String name, ArgList args,
+                             Cardinal argcount);
 extern Boolean XmdsIsPath(Widget w);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
-#endif				/* _XmdsPath */
+#endif /* _XmdsPath */

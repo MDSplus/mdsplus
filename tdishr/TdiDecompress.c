@@ -23,90 +23,94 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Decompress.C
-	Decompress using standard (MdsXpand) or user routine in an image.
-	Compressed data has pointers to
-	1       descriptor of image logical name.
-	2       descriptor of routine name.
-	3       descriptor of shape. Signality and units.
-	4       descriptor of compressed data. Signality and units.
-	TDI:    result = image->routine(shape, compressed)
+        Decompress using standard (MdsXpand) or user routine in an image.
+        Compressed data has pointers to
+        1       descriptor of image logical name.
+        2       descriptor of routine name.
+        3       descriptor of shape. Signality and units.
+        4       descriptor of compressed data. Signality and units.
+        TDI:    result = image->routine(shape, compressed)
 
-	See MDS$COMPRESS.C and MdsCmprs.C for more info on expansion routine arguments.
-	Fortran image:  routine(nitems, %descr(packed), %descr(result), bit)
+        See MDS$COMPRESS.C and MdsCmprs.C for more info on expansion routine
+   arguments. Fortran image:  routine(nitems, %descr(packed), %descr(result),
+   bit)
 
-	Ken Klare, LANL P-4     (c)1989,1990,1992
+        Ken Klare, LANL P-4     (c)1989,1990,1992
 */
-#include <stdlib.h>
-#include "tdirefstandard.h"
 #include "tdirefcat.h"
-#include <tdishr_messages.h>
+#include "tdirefstandard.h"
 #include <mdsshr.h>
-
-
+#include <stdlib.h>
+#include <tdishr_messages.h>
 
 extern int TdiGetArgs();
 extern int Tdi2Vector();
 extern int TdiFindImageSymbol();
 extern int TdiMasterData();
 
-int Tdi1Decompress(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
-{
+int Tdi1Decompress(opcode_t opcode, int narg, struct descriptor *list[],
+                   struct descriptor_xd *out_ptr) {
   INIT_STATUS;
-  struct descriptor_xd sig[4] = {EMPTY_XD}, uni[4] = {EMPTY_XD}, dat[4] = {EMPTY_XD};
+  struct descriptor_xd sig[4] = {EMPTY_XD}, uni[4] = {EMPTY_XD},
+                       dat[4] = {EMPTY_XD};
   struct TdiCatStruct cats[5];
-  int cmode = -1, j, (*symbol) ();
+  int cmode = -1, j, (*symbol)();
   int bit = 0;
 
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
-  if STATUS_OK
-    status = Tdi2Vector(narg - 2, &uni[2], &dat[2], &cats[2]);
-  if STATUS_OK {
-    struct descriptor_a *pa = (struct descriptor_a *)dat[2].pointer;
-    int nitems;
-    if (pa->length <= 0) {
-      switch (pa->dtype) {
-      case DTYPE_B:
-      case DTYPE_BU:
-	pa->length = 1;
-	break;
-      case DTYPE_W:
-      case DTYPE_WU:
-	pa->length = 2;
-	break;
-      case DTYPE_L:
-      case DTYPE_LU:
-      case DTYPE_F:
-      case DTYPE_FS:
-	pa->length = 4;
-	break;
-      case DTYPE_D:
-      case DTYPE_G:
-      case DTYPE_FT:
-      case DTYPE_Q:
-      case DTYPE_QU:
-	pa->length = 8;
-	break;
-      case DTYPE_O:
-      case DTYPE_OU:
-	pa->length = 16;
-	break;
-      default:
-	return TdiINVDTYDSC;
+  if
+    STATUS_OK
+  status = Tdi2Vector(narg - 2, &uni[2], &dat[2], &cats[2]);
+  if
+    STATUS_OK {
+      struct descriptor_a *pa = (struct descriptor_a *)dat[2].pointer;
+      int nitems;
+      if (pa->length <= 0) {
+        switch (pa->dtype) {
+        case DTYPE_B:
+        case DTYPE_BU:
+          pa->length = 1;
+          break;
+        case DTYPE_W:
+        case DTYPE_WU:
+          pa->length = 2;
+          break;
+        case DTYPE_L:
+        case DTYPE_LU:
+        case DTYPE_F:
+        case DTYPE_FS:
+          pa->length = 4;
+          break;
+        case DTYPE_D:
+        case DTYPE_G:
+        case DTYPE_FT:
+        case DTYPE_Q:
+        case DTYPE_QU:
+          pa->length = 8;
+          break;
+        case DTYPE_O:
+        case DTYPE_OU:
+          pa->length = 16;
+          break;
+        default:
+          return TdiINVDTYDSC;
+        }
       }
-    }
-    nitems = (int)pa->arsize / (int)pa->length;
+      nitems = (int)pa->arsize / (int)pa->length;
 
-    if (cats[1].in_dtype == DTYPE_MISSING)
-      symbol = MdsXpand;
-    else
-      status = TdiFindImageSymbol(dat[0].pointer, dat[1].pointer, &symbol);
-    if STATUS_OK
+      if (cats[1].in_dtype == DTYPE_MISSING)
+        symbol = MdsXpand;
+      else
+        status = TdiFindImageSymbol(dat[0].pointer, dat[1].pointer, &symbol);
+      if
+        STATUS_OK
       status = MdsGet1DxA(pa, &pa->length, &pa->dtype, out_ptr);
-    if STATUS_OK {
-      out_ptr->pointer->class = CLASS_A;
-      status = (*symbol) (&nitems, dat[3].pointer, out_ptr->pointer, &bit);
+      if
+        STATUS_OK {
+          out_ptr->pointer->class = CLASS_A;
+          status = (*symbol)(&nitems, dat[3].pointer, out_ptr->pointer, &bit);
+        }
     }
-  }
   status = TdiMasterData(narg - 2, &sig[2], &uni[2], &cmode, out_ptr);
   for (j = narg; --j >= 0;) {
     if (sig[j].pointer)

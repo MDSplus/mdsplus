@@ -3,8 +3,8 @@ TMP_LD_PRELOAD="$LD_PRELOAD"
 unset LD_PRELOAD
 test=$(basename "$1")
 test=${test%.tdi}
-if [[ "$TMP_LD_PRELOAD" == *"libtsan.so"* ]] && [[ "$DISTNAME" == "fc27" ]] && [[ "$test" == "test-dev-py" ]]
-then echo "test-dev-py hangs in Tcl('add node a12/model=a12') @ fc27 tsan" ;exit 77
+if [[ "$TMP_LD_PRELOAD" == *"libtsan.so"* ]] && [[ "$test" == "test-dev-py" ]]
+then echo "test-dev-py hangs in Tcl('add node a12/model=a12') @ tsan" ;exit 77
 fi
 srcdir=$(readlink -f $(dirname ${0}))
 if [ "$OS" == "windows" ]
@@ -31,7 +31,7 @@ then
  # fixes [?1034h for old readline verisons, rhel5/6/7, fc17/18/20
  export TERM=vt100
 else
- cmd="$TDITEST $zdrv$srcdir/$test.tdi"
+ cmd="$TDITEST $zdrv$srcdir/$test.tdi 1 2 3"
 fi
 
 if [ -z ${MDSPLUS_DIR} ]

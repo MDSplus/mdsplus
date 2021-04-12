@@ -1,0 +1,46 @@
+#!/bin/bash
+# generates TdiHash.c
+#	Use hashing method to lookup a function name with fewest string compares.
+# int tdi_hash(const int len, const char *const pstring)
+cd $(realpath $(dirname $0))/../..
+SRC=tdishr/TdiHash.c~
+OUT=tdishr/TdiHash.c
+(
+cat << EOF_BEFORE
+%language=C
+%ignore-case
+%compare-strncmp
+%7bit
+%pic
+%includes
+%readonly-tables
+%struct-type
+%define slot-name name
+%define initializer-suffix ,-1
+%{
+#include "tdirefcat.h"
+#include "tdireffunction.h"
+#ifdef _WIN32
+// Windows uses long to cast position and cause a compiler warning
+#define long size_t
+#endif
+%}
+struct fun { int name; int idx; };
+%%
+EOF_BEFORE
+gcc -Iinclude -E -x c - << EOF_LIST |sed 's/#.*$//;/^$/d'
+#define COM
+#define OPC(name, cmd,...) cmd,__LINE__-25
+#include <opcbuiltins.h>
+EOF_LIST
+cat << EOF_AFTER
+%%
+int tdi_hash(const int len, const char *const pstring)
+{
+	const struct fun *fun = in_word_set(pstring, len);
+	return fun ? fun->idx : -1;
+}
+EOF_AFTER
+) > $SRC
+# remove '#line' decorators to simplify debugging
+${GPERF:-gperf} $SRC | sed '/^#line/d' > $OUT

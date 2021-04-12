@@ -13,10 +13,6 @@ volume() {
   fi
 }
 
-if [ -n "$PUBLISHDIR" ]
-then mkdir -p "$PUBLISHDIR"
-fi
-
 MVN="mvn -B -Dmaven.repo.local=/release/maven/repository -DsourceDirectory=/maven"
 if [ ! -z $KEYS ]
 then MVN="$MVN -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml"
@@ -32,13 +28,24 @@ then MVNGOAL="$MVNGOAL -Dgpg.skip"
 fi
 if   [ "$PUBLISH" = "yes" ]
 then
+ if [ -n "$PUBLISHDIR" ]
+ then mkdir -p "$PUBLISHDIR"
+ fi
  if [ -z $KEYS ]
  then MVNGOAL="$MVNGOAL install"
  else MVNGOAL="$MVNGOAL deploy"
  fi
 elif [ "$RELEASE" = "yes" ]
-then MVNGOAL="$MVNGOAL package"
-else MVNGOAL="$MVNGOAL test"
+then
+ echo "RELEASEDIR=$RELEASEDIR"
+ if [ -n "$RELEASEDIR" ]
+ then mkdir -p "$RELEASEDIR"
+ fi
+ MVNGOAL="$MVNGOAL package"
+else
+ RELEASEDIR=$WORKSPACE/tests
+ mkdir -p $RELEASEDIR
+ MVNGOAL="$MVNGOAL test"
 fi
 
 if [ -n "$INTERACTIVE" ]

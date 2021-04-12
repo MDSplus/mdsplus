@@ -1,3 +1,0 @@
-race:libMdsIpUDT
-race:test_handleMessage
-deadlock:AnnotateRWLockAcquired

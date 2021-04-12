@@ -34,15 +34,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *2    19-OCT-1994 18:24:08 MDSPLUS "Proceede" */
 /*  *1    18-OCT-1994 16:53:53 MDSPLUS "Complex operations" */
 /*  DEC/CMS REPLACEMENT HISTORY, Element COMPLEX.C */
+#include "complex.h"
 #include <math.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "complex.h"
-#include <mdsplus/mdsconfig.h>
 
-EXPORT Complex AddC(Complex c1, Complex c2)
-{
-  //This ckeck is required to avoid floating point underflow!!
+EXPORT Complex AddC(Complex c1, Complex c2) {
+  // This ckeck is required to avoid floating point underflow!!
   if (fabs(c1.re) < 1E-30)
     c1.re = 0;
   if (fabs(c2.re) < 1E-30)
@@ -57,10 +56,9 @@ EXPORT Complex AddC(Complex c1, Complex c2)
   return ris;
 }
 
-EXPORT Complex SubC(Complex c1, Complex c2)
-{
+EXPORT Complex SubC(Complex c1, Complex c2) {
   Complex ris;
-//This ckeck is required to avoid floating point underflow!!
+  // This ckeck is required to avoid floating point underflow!!
   if (fabs(c1.re) < 1E-30)
     c1.re = 0;
   if (fabs(c2.re) < 1E-30)
@@ -74,11 +72,10 @@ EXPORT Complex SubC(Complex c1, Complex c2)
   return ris;
 }
 
-EXPORT Complex MulC(Complex c1, Complex c2)
-{
+EXPORT Complex MulC(Complex c1, Complex c2) {
   Complex ris;
 
-//This ckeck is required to avoid floating point underflow!!
+  // This ckeck is required to avoid floating point underflow!!
   if (fabs(c1.re) < 1E-30)
     c1.re = 0;
   if (fabs(c2.re) < 1E-30)
@@ -93,11 +90,10 @@ EXPORT Complex MulC(Complex c1, Complex c2)
   return ris;
 }
 
-EXPORT Complex DivC(Complex c1, Complex c2)
-{
+EXPORT Complex DivC(Complex c1, Complex c2) {
   Complex ris;
   double den;
-  //This ckeck is required to avoid floating point underflow!!
+  // This ckeck is required to avoid floating point underflow!!
   if (fabs(c1.re) < 1E-30)
     c1.re = 0;
   if (fabs(c2.re) < 1E-30)
@@ -111,15 +107,15 @@ EXPORT Complex DivC(Complex c1, Complex c2)
     printf("DivC: division by Zero\n");
     exit(1);
   }
-  ris.re = (c1.re * c2.re + c1.im * c2.im) / den;;
+  ris.re = (c1.re * c2.re + c1.im * c2.im) / den;
+  ;
   ris.im = (c1.im * c2.re - c1.re * c2.im) / den;
   return ris;
 }
 
-EXPORT Complex ExpC(Complex c)
-{
+EXPORT Complex ExpC(Complex c) {
   Complex ris;
-  //This ckeck is required to avoid floating point underflow!!
+  // This ckeck is required to avoid floating point underflow!!
   if (fabs(c.re) < 1E-30)
     c.re = 0;
   if (fabs(c.im) < 1E-30)
@@ -129,9 +125,8 @@ EXPORT Complex ExpC(Complex c)
   return ris;
 }
 
-EXPORT double Mod2(Complex c)
-{
-  //This ckeck is required to avoid floating point underflow!!
+EXPORT double Mod2(Complex c) {
+  // This ckeck is required to avoid floating point underflow!!
   if (fabs(c.re) < 1E-30)
     c.re = 0;
   if (fabs(c.im) < 1E-30)

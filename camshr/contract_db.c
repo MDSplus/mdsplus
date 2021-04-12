@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -64,11 +64,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      current number of entries in CTS data file
 // output:      status
 //-------------------------------------------------------------------------
-int contract_db(int dbType, int numOfEntries)
-{
+int contract_db(int dbType, int numOfEntries) {
   char *FileName;
   int FileIncr, newCount;
-  int status = SUCCESS;		// optimistic, aren't we ... :>
+  int status = SUCCESS; // optimistic, aren't we ... :>
   char tmpfile[1024];
   strcpy(tmpfile, get_file_name("mdscts_temp_file_XXXXXX"));
 
@@ -102,18 +101,18 @@ int contract_db(int dbType, int numOfEntries)
     goto ContractDB_Exit;
   }
   // only need to copy old data if there is any
-  if (numOfEntries) {		// copy current db file to TMP file
+  if (numOfEntries) { // copy current db file to TMP file
     if ((status = copy(dbType, FileName, tmpfile, numOfEntries)) != SUCCESS) {
       if (MSGLVL(ALWAYS))
-	fprintf(stderr, "error copying db to TMP file\n");
+        fprintf(stderr, "error copying db to TMP file\n");
 
       goto ContractDB_Exit;
     }
     // remove old db file
-    if (Remove(FileName)) {	// non-zero is an error
+    if (Remove(FileName)) { // non-zero is an error
       if (MSGLVL(ALWAYS)) {
-	fprintf(stderr, "error removing old db file\n");
-	perror("remove()");
+        fprintf(stderr, "error removing old db file\n");
+        perror("remove()");
       }
 
       status = CONTRACT_ERROR;
@@ -121,7 +120,7 @@ int contract_db(int dbType, int numOfEntries)
     }
   }
 
-  if (rename(tmpfile, get_file_name(FileName))) {	// non-zero is an error
+  if (rename(tmpfile, get_file_name(FileName))) { // non-zero is an error
     if (MSGLVL(ALWAYS)) {
       fprintf(stderr, "error renaming temp db file\n");
       perror("rename()");
@@ -140,7 +139,7 @@ int contract_db(int dbType, int numOfEntries)
     goto ContractDB_Exit;
   }
 
- ContractDB_Exit:
+ContractDB_Exit:
   if (MSGLVL(DETAILS)) {
     printf("contract_db('%s'): ", get_file_name(FileName));
     ShowStatus(status);

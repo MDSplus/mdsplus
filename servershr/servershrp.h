@@ -3,58 +3,58 @@
 #include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #ifdef _WIN32
- #include <time.h>
+#include <time.h>
 #else
- #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
-  extern void pthread_lock_global_np();
-  extern void pthread_unlock_global_np();
- #endif
+#ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
+extern void pthread_lock_global_np();
+extern void pthread_unlock_global_np();
+#endif
 #endif
 
 #ifdef MDSOBJECTSCPPSHRVS_EXPORTS
 // visual studio uses int types for typedef
-# define TYPEDEF(bytes) enum
-# define ENDDEF(type,name) ;typedef type name
+#define TYPEDEF(bytes) enum
+#define ENDDEF(type, name)                                                     \
+  ;                                                                            \
+  typedef type name
 #else
-# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
-# define ENDDEF(type,name) name
+#define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+#define ENDDEF(type, name) name
 #endif
 
-TYPEDEF(4) {
-SrvNoop        =0,	   /**** Used to start server ****/
-SrvAbort       =1,	   /**** Abort current action or mdsdcl command ***/
-SrvAction      =2,	   /**** Execute an action nid in a tree ***/
-SrvClose       =3,	   /**** Close open trees ***/
-SrvCreatePulse =4,	   /**** Create pulse files for single tree (no subtrees) ***/
-SrvSetLogging  =5,	   /**** Turn logging on/off ***/
-SrvCommand     =6,	   /**** Execute MDSDCL command ***/
-SrvMonitor     =7,	   /**** Broadcast messages to action monitors ***/
-SrvShow        =8,	   /**** Request current status of server ***/
-SrvStop        =9,	   /**** Stop server ***/
-SrvRemoveLast  =10,	   /**** Remove last entry in the queue if jobs pending ***/
-} ENDDEF(int,srv_t);
+TYPEDEF(4){
+    SrvNoop = 0,   /**** Used to start server ****/
+    SrvAbort = 1,  /**** Abort current action or mdsdcl command ***/
+    SrvAction = 2, /**** Execute an action nid in a tree ***/
+    SrvClose = 3,  /**** Close open trees ***/
+    SrvCreatePulse =
+        4, /**** Create pulse files for single tree (no subtrees) ***/
+    SrvSetLogging = 5, /**** Turn logging on/off ***/
+    SrvCommand = 6,    /**** Execute MDSDCL command ***/
+    SrvMonitor = 7,    /**** Broadcast messages to action monitors ***/
+    SrvShow = 8,       /**** Request current status of server ***/
+    SrvStop = 9,       /**** Stop server ***/
+    SrvRemoveLast =
+        10, /**** Remove last entry in the queue if jobs pending ***/
+} ENDDEF(int, srv_t);
 
-TYPEDEF(4) {
-MonitorBuildBegin =1,
-MonitorBuild      =2,
-MonitorBuildEnd   =3,
-MonitorCheckin    =4,
-MonitorDispatched =5,
-MonitorDoing      =6,
-MonitorDone       =7,
-} ENDDEF(int,monitor_t);
+TYPEDEF(4){
+    MonitorBuildBegin = 1, MonitorBuild = 2,      MonitorBuildEnd = 3,
+    MonitorCheckin = 4,    MonitorDispatched = 5, MonitorDoing = 6,
+    MonitorDone = 7,
+} ENDDEF(int, monitor_t);
 
-TYPEDEF(4) {
-SrvJobABORTED     =1,
-SrvJobSTARTING    =2,
-SrvJobFINISHED    =3,
-SrvJobCHECKEDIN   =4,
-} ENDDEF(int,srvjob_t);
+TYPEDEF(4){
+    SrvJobABORTED = 1,
+    SrvJobSTARTING = 2,
+    SrvJobFINISHED = 3,
+    SrvJobCHECKEDIN = 4,
+} ENDDEF(int, srvjob_t);
 
-TYPEDEF(4) {
-SrvJobBEFORE_NOTIFY =1,
-SrvJobAFTER_NOTIFY  =2,
-} ENDDEF(int,srvjobnotify_t);
+TYPEDEF(4){
+    SrvJobBEFORE_NOTIFY = 1,
+    SrvJobAFTER_NOTIFY = 2,
+} ENDDEF(int, srvjobnotify_t);
 #undef TYPEDEF
 #undef ENDDEF
 
@@ -119,12 +119,12 @@ typedef struct {
   struct descriptor *condition;
   int status;
   int netid;
-  unsigned on:1;
-  unsigned done:1;
-  unsigned closed:1;
-  unsigned dispatched:1;
-  unsigned doing:1;
-  unsigned recorded:1;
+  unsigned on : 1;
+  unsigned done : 1;
+  unsigned closed : 1;
+  unsigned dispatched : 1;
+  unsigned doing : 1;
+  unsigned recorded : 1;
   char *path;
   char *event;
   pthread_rwlock_t lock;
@@ -147,12 +147,14 @@ typedef struct {
   int status;
 } DispatchEvent;
 
-# ifndef _NO_SERVER_SEND_MESSAGE_PROTO
-extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *socket,
-			     void (*ast) (), void *astparam, void (*before_ast) (),
-			     int numargs_in, ...);
-# endif
+#ifndef _NO_SERVER_SEND_MESSAGE_PROTO
+extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
+                             pthread_rwlock_t *lock, int *socket, void (*ast)(),
+                             void *astparam, void (*before_ast)(),
+                             int numargs_in, ...);
+#endif
 extern int ServerConnect(char *);
-extern int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid, int on,
-			     int mode, char *server, int actstatus);
+extern int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
+                             int nid, int on, int mode, char *server,
+                             int actstatus);
 #endif

@@ -23,29 +23,39 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile,shutil
+import subprocess
+import os
+import sys
+import xml.etree.ElementTree as ET
+import fnmatch
+import tempfile
+import shutil
 
-srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
+srcdir = os.path.realpath(os.path.dirname(
+    os.path.realpath(__file__))+'/../../..')
 
-def getPackageFiles(buildroot,includes,excludes):
-    files=list()
+
+def getPackageFiles(buildroot, includes, excludes):
+    files = list()
     for f in includes:
         f = buildroot+f
         if os.path.isdir(f):
             for root, dirs, filenams in os.walk(f):
                 for filenam in filenams:
-                    files.append(os.path.join(root,filenam))
+                    files.append(os.path.join(root, filenam))
         elif ('?' in f) or ('*' in f):
-            dirnam=f
+            dirnam = f
             while ('?' in dirnam) or ('*' in dirnam):
-                dirnam=os.path.dirname(dirnam)
+                dirnam = os.path.dirname(dirnam)
             for root, dirs, filenams in os.walk(dirnam):
-                if fnmatch.fnmatch(root,f):
-                    files=files+getPackageFiles(buildroot,[root[len(buildroot):],],excludes)
+                if fnmatch.fnmatch(root, f):
+                    files = files + \
+                        getPackageFiles(
+                            buildroot, [root[len(buildroot):], ], excludes)
                 else:
                     for filenam in filenams:
-                        filenam=os.path.join(root,filenam)
-                        if fnmatch.fnmatch(filenam,f):
+                        filenam = os.path.join(root, filenam)
+                        if fnmatch.fnmatch(filenam, f):
                             files.append(filenam)
         else:
             try:
@@ -54,12 +64,12 @@ def getPackageFiles(buildroot,includes,excludes):
             except:
                 pass
     if len(excludes) > 0:
-        hasuid=False
+        hasuid = False
         for exclude in excludes:
             if '/xuid' in exclude:
                 print("excluding: %s" % exclude)
-                hasuid=True
-        excludefiles=getPackageFiles(buildroot,excludes,[])
+                hasuid = True
+        excludefiles = getPackageFiles(buildroot, excludes, [])
         if hasuid:
             print("Found %d" % len(excludefiles))
             for exclude in excludefiles:
@@ -69,11 +79,12 @@ def getPackageFiles(buildroot,includes,excludes):
                 files.remove(exclude)
     return files
 
+
 def externalPackage(info, root, package):
     ans = None
     for extpackages in root.getiterator('external_packages'):
-        platform=extpackages.attrib['platform']
-        if info['platform']==platform:
+        platform = extpackages.attrib['platform']
+        if info['platform'] == platform:
             pkg = extpackages.find(package)
             if pkg is not None:
                 if 'package' in pkg.attrib:
@@ -82,49 +93,52 @@ def externalPackage(info, root, package):
                     ans = package
     return ans
 
+
 def doRequire(info, out, root, require):
     if 'external' in require.attrib:
-        pkg=externalPackage(info,root,require.attrib['package'])
+        pkg = externalPackage(info, root, require.attrib['package'])
         if pkg is not None:
-            os.write(out,"Requires: %s\n" % pkg)
+            os.write(out, "Requires: %s\n" % pkg)
     else:
-        info['reqpkg']=require.attrib['package']
-    os.write(out,"Depends: mdsplus%(BNAME)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
+        info['reqpkg'] = require.attrib['package']
+    os.write(
+        out, "Depends: mdsplus%(BNAME)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
+
 
 def buildDebs():
-    info=dict()
-    info['buildroot']=os.environ['BUILDROOT']
-    info['BRANCH']=os.environ['BRANCH']
-    version=os.environ['RELEASE_VERSION'].split('.')
-    info['dist']=os.environ['DISTNAME']
-    info['platform']=os.environ['PLATFORM']
-    info['arch']=os.environ['ARCH']
-    info['flavor']=info['BRANCH']
-    info['major']=int(version[0])
-    info['minor']=int(version[1])
-    info['release']=int(version[2])
-    info['BNAME']=os.environ['BNAME']
-    info['rflavor']=info['BNAME']
-    tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
-    root=tree.getroot()
-    debs=list()
+    info = dict()
+    info['buildroot'] = os.environ['BUILDROOT']
+    info['BRANCH'] = os.environ['BRANCH']
+    version = os.environ['RELEASE_VERSION'].split('.')
+    info['dist'] = os.environ['DISTNAME']
+    info['platform'] = os.environ['PLATFORM']
+    info['arch'] = os.environ['ARCH']
+    info['flavor'] = info['BRANCH']
+    info['major'] = int(version[0])
+    info['minor'] = int(version[1])
+    info['release'] = int(version[2])
+    info['BNAME'] = os.environ['BNAME']
+    info['rflavor'] = info['BNAME']
+    tree = ET.parse(srcdir+'/deploy/packaging/linux.xml')
+    root = tree.getroot()
+    debs = list()
     for package in root.getiterator('package'):
         pkg = package.attrib['name']
-        if pkg=='MDSplus':
-            info['packagename']=""
+        if pkg == 'MDSplus':
+            info['packagename'] = ""
         else:
-            info['packagename']="-%s" % pkg
-        info['description']=package.attrib['description']
-        info['tmpdir']=tempfile.mkdtemp()
+            info['packagename'] = "-%s" % pkg
+        info['description'] = package.attrib['description']
+        info['tmpdir'] = tempfile.mkdtemp()
         try:
             os.mkdir("%(tmpdir)s/DEBIAN" % info)
-            includes=list()
+            includes = list()
             for inc in package.getiterator('include'):
                 for inctype in inc.attrib:
-                    include=inc.attrib[inctype]
+                    include = inc.attrib[inctype]
                     if inctype != "dironly":
                         includes.append(include)
-            excludes=list()
+            excludes = list()
             for exc in package.getiterator('exclude'):
                 for exctype in exc.attrib:
                     excludes.append(exc.attrib[exctype])
@@ -132,31 +146,34 @@ def buildDebs():
                 excludes.append("/usr/local/mdsplus/lib/*.a")
             if package.find("include_staticlibs") is not None:
                 includes.append("/usr/local/mdsplus/lib/*.a")
-            files=getPackageFiles(info['buildroot'],includes,excludes)
+            files = getPackageFiles(info['buildroot'], includes, excludes)
             for f in files:
-                filepath= f.replace('\\','\\\\').replace("'","\\'")
+                filepath = f.replace('\\', '\\\\').replace("'", "\\'")
                 relpath = filepath[len(info['buildroot'])+1:]
-                target  = "%s/%s/"%(info['tmpdir'],os.path.dirname(relpath))
-                if subprocess.Popen("mkdir -p '%s'&&cp -a '%s' '%s'"%(target,filepath,target),shell=True).wait() != 0:
-                    for k,v in info.items(): print("%s=%s"%(k,v))
-                    print("filepath="%filepath)
-                    print("target="%target)
+                target = "%s/%s/" % (info['tmpdir'], os.path.dirname(relpath))
+                if subprocess.Popen("mkdir -p '%s'&&cp -a '%s' '%s'" % (target, filepath, target), shell=True).wait() != 0:
+                    for k, v in info.items():
+                        print("%s=%s" % (k, v))
+                    print("filepath=" % filepath)
+                    print("target=" % target)
                     raise Exception("Error building deb")
                 sys.stdout.flush()
-            depends=list()
+            depends = list()
             for require in package.getiterator("requires"):
                 if 'external' in require.attrib:
-                    pkg=externalPackage(info,root,require.attrib['package'])
+                    pkg = externalPackage(
+                        info, root, require.attrib['package'])
                     if pkg is not None:
                         depends.append(pkg)
                 else:
-                    depends.append("mdsplus%s-%s" % (info['rflavor'],require.attrib['package'].replace('_','-')))
-            if len(depends)==0:
-                info['depends']=''
+                    depends.append(
+                        "mdsplus%s-%s" % (info['rflavor'], require.attrib['package'].replace('_', '-')))
+            if len(depends) == 0:
+                info['depends'] = ''
             else:
-                info['depends']="\nDepends: %s" % ','.join(depends)
-            info['name']=info['packagename'].replace('_','-')
-            f=open("%(tmpdir)s/DEBIAN/control" % info,"w")
+                info['depends'] = "\nDepends: %s" % ','.join(depends)
+            info['name'] = info['packagename'].replace('_', '-')
+            f = open("%(tmpdir)s/DEBIAN/control" % info, "w")
             f.write("""Package: mdsplus%(rflavor)s%(name)s
 Version: %(major)d.%(minor)d.%(release)d
 Section: admin
@@ -166,22 +183,25 @@ Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: %(description)s
 """ % info)
             f.close()
-            for s in ("preinst","postinst","prerm","postrm"):
-                script=package.find(s)
-                if script is not None and ("type" not in script.attrib or script.attrib["type"]!="rpm"):
-                    info['script']=s
-                    f=open("%(tmpdir)s/DEBIAN/%(script)s" % info,"w")
+            for s in ("preinst", "postinst", "prerm", "postrm"):
+                script = package.find(s)
+                if script is not None and ("type" not in script.attrib or script.attrib["type"] != "rpm"):
+                    info['script'] = s
+                    f = open("%(tmpdir)s/DEBIAN/%(script)s" % info, "w")
                     f.write("#!/bin/bash\n")
-                    f.write("%s" % (script.text.replace("__INSTALL_PREFIX__","/usr/local")))
+                    f.write("%s" % (script.text.replace(
+                        "__INSTALL_PREFIX__", "/usr/local")))
                     f.close()
                     os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info, 0o775)
-            info['debfile']="/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
-            if subprocess.Popen("dpkg-deb --build %(tmpdir)s %(debfile)s"%info,shell=True).wait() != 0:
-                for k,v in info.items(): print("%s=%s"%(k,v))
+            info['debfile'] = "/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
+            if subprocess.Popen("dpkg-deb --build %(tmpdir)s %(debfile)s" % info, shell=True).wait() != 0:
+                for k, v in info.items():
+                    print("%s=%s" % (k, v))
                 raise Exception("Problem building package")
             sys.stdout.flush()
-            debs.append({"deb":info["debfile"],"arch":info["arch"]})
+            debs.append({"deb": info["debfile"], "arch": info["arch"]})
         finally:
             shutil.rmtree("%(tmpdir)s" % info)
+
 
 buildDebs()

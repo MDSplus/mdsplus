@@ -23,136 +23,208 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Constant.C
-	Get descriptor of a constant value.
-	Note $NARG (number of arguments) is in Tdi1Var.
-	Note $VALUE (raw of signal, data of param) is in tdi_get_data.
-	They are not constants, but context values.
+        Get descriptor of a constant value.
+        Note $NARG (number of arguments) is in Tdi1Var.
+        Note $VALUE (raw of signal, data of param) is in tdi_get_data.
+        They are not constants, but context values.
 
-	Ken Klare, LANL P-4     (c)1989,1990,1992
+        Ken Klare, LANL P-4     (c)1989,1990,1992
 */
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
+#include <math.h>
 #include <mdsshr.h>
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+_Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-int Tdi1Constant(opcode_t opcode, int narg __attribute__ ((unused)),
-		 mdsdsc_t *list[] __attribute__ ((unused)), mdsdsc_xd_t *out_ptr)
-{
+    int Tdi1Constant(opcode_t opcode, int narg __attribute__((unused)),
+                     mdsdsc_t *list[] __attribute__((unused)),
+                     mdsdsc_xd_t *out_ptr) {
 
-  return MdsCopyDxXd(((mdsdsc_t * (*)())*TdiRefFunction[opcode].f3) (), out_ptr);
+  return MdsCopyDxXd(((mdsdsc_t * (*)()) * TdiRefFunction[opcode].f3)(),
+                     out_ptr);
 }
 
 /*------------------------------------------------
-	Descriptor definitions of constants, MKS.
+        Descriptor definitions of constants, MKS.
 
-	Valid units (*=basic +=supplementary):
-	m       meter*
-	kg      kilogram*
-	s       second*
-	A       ampere*
-	K       kelvin*
-	mol     mole*
-	cd      candela*
-	rad     radian+
-	sr      steradian+
-	Hz      hertz
-	J       joule
-	N       newton
-	Pa      pascal
-	W       watt
-	C       coulomb
-	V       volt
-	(omega) ohm
-	S       siemens
-	F       farad
-	Wb      weber
-	H       henry
-	T       tesla
-	lm      lumen
-	lx      lux
-	Bq      becquerel
-	Gy      gray
+        Valid units (*=basic +=supplementary):
+        m       meter*
+        kg      kilogram*
+        s       second*
+        A       ampere*
+        K       kelvin*
+        mol     mole*
+        cd      candela*
+        rad     radian+
+        sr      steradian+
+        Hz      hertz
+        J       joule
+        N       newton
+        Pa      pascal
+        W       watt
+        C       coulomb
+        V       volt
+        (omega) ohm
+        S       siemens
+        F       farad
+        Wb      weber
+        H       henry
+        T       tesla
+        lm      lumen
+        lx      lux
+        Bq      becquerel
+        Gy      gray
 
 Major sources:
-"The 1986 Adjustment of the Fundamental Physical Constants..." by Cohen and Taylor
-"1980 Revised NRL Plasma Formulary" by Book.
-	NEED to remove / ** / when ANSI C permits sharp-sharp
+"The 1986 Adjustment of the Fundamental Physical Constants..." by Cohen and
+Taylor "1980 Revised NRL Plasma Formulary" by Book. NEED to remove / ** / when
+ANSI C permits sharp-sharp
 */
-typedef void (*MISSING) ();
-typedef unsigned char BU;
-typedef float FLOAT;
+typedef void *MISSING;
+typedef uint8_t BU;
+typedef float FS;
+typedef double FT;
 typedef struct {
   float x, y;
-} FLOAT_COMPLEX;
+} FSC;
 typedef unsigned int FROP;
 
-#define DTYPE_FROP      DTYPE_F
+#define DTYPE_FROP DTYPE_F
 
-#define DATUM(type, x, data) \
-	static const type     d##x = data;\
-	static const mdsdsc_t Tdi##x##Constant = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-	mdsdsc_t *Tdi3##x(){return (mdsdsc_t *)&Tdi##x##Constant;}
+#define DATUM(type, x, data)                                                   \
+  mdsdsc_t *Tdi3##x() {                                                        \
+    static const type val = data;                                              \
+    static const mdsdsc_t constant = {sizeof(type), DTYPE_##type, CLASS_S,     \
+                                      (char *)&val};                           \
+    return (mdsdsc_t *)&constant;                                              \
+  }
 
-#define DERR(type, x, data, error) \
-	static const type     d##x = data;\
-	static const type     e##x = error;\
-	static const mdsdsc_t dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-	static const mdsdsc_t de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
-	static const DESCRIPTOR_WITH_ERROR(Tdi##x##Constant,&dd##x,&de##x);\
-	mdsdsc_t *Tdi3##x(){return (mdsdsc_t *)&Tdi##x##Constant;}
+#define UNITS(type, x, data, units)                                            \
+  mdsdsc_t *Tdi3##x() {                                                        \
+    static const type val = data;                                              \
+    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
+                                   (char *)&val};                              \
+    static const DESCRIPTOR(units_d, units);                                   \
+    static const DESCRIPTOR_WITH_UNITS(constant, &val_d, &units_d);            \
+    return (mdsdsc_t *)&constant;                                              \
+  }
 
-#define UNITS(type, x, data, units) \
-	static const type     d##x = data;\
-	static const mdsdsc_t dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-	static const DESCRIPTOR(du##x, units);\
-	static const DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dd##x,&du##x);\
-	mdsdsc_t *Tdi3##x(){return (mdsdsc_t *)&Tdi##x##Constant;}
+#define CAST_ERROR(type, x)                                                    \
+  (((x) - (double)(type)(x)) < 0 ? ((double)(type)(x) - (x))                   \
+                                 : ((x) - (double)(type)(x)))
 
-#define UERR(type, x, data, error, units) \
-	static const type     d##x = data;\
-	static const type     e##x = error;\
-	static const mdsdsc_t dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-	static const mdsdsc_t de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
-	static const DESCRIPTOR(du##x, units);\
-	static const DESCRIPTOR_WITH_ERROR(dwe##x,&dd##x,&de##x);\
-	static const DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dwe##x,&du##x);\
-	mdsdsc_t *Tdi3##x(){return (mdsdsc_t *)&Tdi##x##Constant;}
+#define DERR(type, x, data, error)                                             \
+  mdsdsc_t *Tdi3##x() {                                                        \
+    static const type val = data;                                              \
+    static const type err = CAST_ERROR(type, data) + error;                    \
+    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
+                                   (char *)&val};                              \
+    static const mdsdsc_t err_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
+                                   (char *)&err};                              \
+    static const DESCRIPTOR_WITH_ERROR(constant, &val_d, &err_d);              \
+    return (mdsdsc_t *)&constant;                                              \
+  }
 
-#define II {(float)0., (float)1.}
-#define RR 0x8000
+#define UERR(type, x, data, error, units)                                      \
+  mdsdsc_t *Tdi3##x() {                                                        \
+    static const type val = data;                                              \
+    static const type err = CAST_ERROR(type, data) + error;                    \
+    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
+                                   (char *)&val};                              \
+    static const mdsdsc_t err_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
+                                   (char *)&err};                              \
+    static const DESCRIPTOR(units_d, units);                                   \
+    static const DESCRIPTOR_WITH_ERROR(werr_d, &val_d, &err_d);                \
+    static const DESCRIPTOR_WITH_UNITS(constant, &werr_d, &units_d);           \
+    return (mdsdsc_t *)&constant;                                              \
+  }
 
-DATUM(FLOAT, 2Pi, (float)6.2831853072)	/* circumference/radius    */
-UERR(FLOAT, A0, (float)5.29177249e-11, (float)0.00000024e-11, "m")	/*a0       Bohr radius             */
-DERR(FLOAT, Alpha, (float)7.29735308e-3, (float)0.00000033e-3)	/* fine-structure constant */
-UERR(FLOAT, Amu, (float)1.6605402e-27, (float)0.0000010e-27, "kg")	/* u atomic mass unit, unified */
-UNITS(FLOAT, C, (float)299792458., "m/s")	/* c speed of light(exact) */
-UNITS(FLOAT, Cal, (float)4.1868, "J")	/* calorie                 */
-DATUM(FLOAT, Degree, (float).01745329252)	/* pi/180                  */
-UNITS(FLOAT, Epsilon0, (float)8.854187817e-12, "F/m")	/* permitivity of vacuum(exact) */
-UERR(FLOAT, Ev, (float)1.60217733e-19, (float)0.00000049e-19, "J/eV")	/* eV electron volt        */
-DATUM(BU, False, 0)		/* logically false         */
-UERR(FLOAT, Faraday, (float)9.6485309e4, (float)0.0000029e4, "C/mol")	/*F        Faraday constant        */
-UERR(FLOAT, G, (float)6.67259e-11, (float)0.00085, "m^3/s^2/kg")	/*G gravitational constant */
-UERR(FLOAT, Gas, (float)8.314510, (float)0.000070, "J/K/mol")	/*R       gas constant            */
-UNITS(FLOAT, Gn, (float)9.80665, "m/s^2")	/*gn       acceleration of gravity(exact) */
-UERR(FLOAT, H, (float)6.6260755e-34, (float)0.0000040, "J*s")	/*h        Planck constant         */
-UERR(FLOAT, Hbar, (float)1.05457266e-34, (float)0.00000063, "J*s")	/*hbar h/(2pi)             */
-DATUM(FLOAT_COMPLEX, I, II)	/*i        imaginary               */
-UERR(FLOAT, K, (float)1.380658e-23, (float)0.000012e-23, "J/K")	/*k        Boltzmann constant      */
-UERR(FLOAT, Me, (float)9.1093897e-31, (float)0.0000054e-31, "kg")	/*me       mass of electron        */
-DATUM(MISSING, Missing, 0)	/* missing argument        */
-UERR(FLOAT, Mp, (float)1.6726231e-27, (float)0.0000010e-27, "kg")	/*mp       mass of proton          */
-UNITS(FLOAT, Mu0, (float)12.566370614e-7, "N/A^2")	/* permeability of vacuum(exact) */
-UERR(FLOAT, N0, (float)2.686763e25, (float)0.000023e25, "/m^3")	/*n0       Loschmidt's number (STP) */
-UERR(FLOAT, Na, (float)6.0221367e23, (float)0.0000036e23, "/mol")	/*NA or L Avogadro number  */
-UNITS(FLOAT, P0, (float)1.01325e5, "Pa")	/*atm      atmospheric pressure(exact) */
-DATUM(FLOAT, Pi, (float)3.1415926536)	/* circumference/diameter  */
-UERR(FLOAT, Qe, (float)1.60217733e-19, (float)0.000000493e-19, "C")	/*e        charge on electron      */
-UERR(FLOAT, Re, (float)2.81794092e-15, (float)0.00000038e-15, "m")	/*re       classical electron radius */
-DATUM(FROP, Roprand, RR)	/* reserved operand        */
-UERR(FLOAT, Rydberg, (float)1.0973731534e7, (float)0.0000000013e7, "/m")	/*Rinf Rydberg constant    */
-UNITS(FLOAT, T0, (float)273.16, "K")	/*?        standard temperature    */
-UNITS(FLOAT, Torr, (float)1.3332e2, "Pa")	/*?torr 1mm Hg pressure    */
-DATUM(BU, True, 1)
+#ifdef M_PI
+#define PI_DATA M_PI
+#else
+#define PI_DATA 3.14159265358979323846
+#endif
+
+// values by definition
+#define BY_DEFINITION 0
+#define C_DATA 299792458.
+#define E_DATA 1.602176634e-19
+#define GAS_DATA 8.31446261815324
+#define GN_DATA 9.80665
+#define H_DATA 6.62607015e-34
+#define I_DATA                                                                 \
+  { 0., 1. }
+#define K_DATA 1.3806505e-23
+#define MU0_DATA (4e-7 * PI_DATA)
+#define NA_DATA 6.02214076e23
+#define P0_DATA 101325
+#define T0_DATA 273.15
+// values by relation
+#define ALPHA_DATA ((MU0_DATA * C_DATA * E_DATA * E_DATA) / (2 * H_DATA))
+#define EPS0_DATA (1. / (MU0_DATA * C_DATA * C_DATA))
+#define HBAR_DATA (H_DATA / (2 * PI_DATA))
+#define FARADAY_DATA (E_DATA * NA_DATA)
+#define N0_DATA (P0_DATA / (K_DATA * T0_DATA))
+#define TORR_DATA (P0_DATA / 760.)
+// empirical
+#define CAL_DATA 4.1868
+#define G_DATA 6.67430e-11
+#define G_ERROR 15e-16
+#define MU_DATA 1.66053906660e-27
+#define MU_ERROR 50e-38 /*negligible*/
+#define ME_DATA 9.1093837015e-31
+#define ME_ERROR 28e-41 /*negligible*/
+#define MP_DATA 1.67262192369e-27
+#define MP_ERROR 51e-38 /*negligible*/
+// values by relation
+#define NEGLIGIBLE 0
+#define A0_DATA                                                                \
+  ((EPS0_DATA * H_DATA * H_DATA) / (PI_DATA * E_DATA * E_DATA * ME_DATA))
+#define RE_DATA                                                                \
+  ((MU0_DATA * C_DATA * C_DATA * E_DATA * E_DATA) /                            \
+   (4 * PI_DATA * ME_DATA * C_DATA * C_DATA))
+#define RYDBERG_DATA                                                           \
+  ((ALPHA_DATA * ALPHA_DATA * ME_DATA * C_DATA) / (2 * H_DATA))
+
+DATUM(BU, False, 0)          /*	logically false		*/
+DATUM(MISSING, Missing, 0)   /*	missing argument	*/
+DATUM(FROP, Roprand, 0x8000) /*	reserved operand        */
+DATUM(BU, True, 1)           /*	logically true		*/
+
+DATUM(FT, 2Pi, 2 * PI_DATA)                 /*2pi	circumference/radius	*/
+UERR(FS, A0, A0_DATA, NEGLIGIBLE, "m")      /*a0	Bohr radius		*/
+DERR(FS, Alpha, ALPHA_DATA, BY_DEFINITION)  /*	fine-structure constant	*/
+UERR(FS, Amu, MU_DATA, MU_ERROR, "kg")      /*u	atomic mass unit, dalton*/
+UNITS(FT, C, C_DATA, "m/s")                 /*c	speed of light		*/
+UNITS(FS, Cal, CAL_DATA, "J")               /*calIT int. steam tab. calorie*/
+DATUM(FT, Degree, PI_DATA / 180)            /*pi/180			*/
+UNITS(FT, Epsilon0, EPS0_DATA, "F/m")       /*eps0 permitivity of vacuum	*/
+UERR(FS, Ev, E_DATA, BY_DEFINITION, "J/eV") /*eV	electron volt
+                                             */
+UERR(FS, Faraday, FARADAY_DATA, BY_DEFINITION,
+     "C/mol")                              /*F	Faraday constant	*/
+UERR(FS, G, G_DATA, G_ERROR, "m^3/s^2/kg") /*G	gravitational constant	*/
+UERR(FS, Gas, GAS_DATA, BY_DEFINITION,
+     "J/K/mol")                                 /*R	gas constant		*/
+UNITS(FS, Gn, GN_DATA, "m/s^2")                 /*gn	acceleration of gravity	*/
+UERR(FS, H, H_DATA, BY_DEFINITION, "J*s")       /*h	Planck constant		*/
+UERR(FS, Hbar, HBAR_DATA, BY_DEFINITION, "J*s") /*hbar =h/(2pi)		*/
+DATUM(FSC, I, I_DATA)                           /*i	imaginary		*/
+UERR(FS, K, K_DATA, BY_DEFINITION, "J/K")       /*k	Boltzmann constant	*/
+UERR(FS, Me, ME_DATA, ME_ERROR, "kg")           /*me	mass of electron	*/
+UERR(FS, Mp, MP_DATA, MP_ERROR, "kg")           /*mp	mass of proton		*/
+UNITS(FT, Mu0, MU0_DATA, "N/A^2")               /*mu0	permeability of vacuum	*/
+UERR(FS, N0, N0_DATA, BY_DEFINITION, "/m^3")    /*n0	Loschmidt's number
+                                                   (STP)*/
+UERR(FS, Na, NA_DATA, BY_DEFINITION, "/mol")    /*NA	Avogadro number
+                                                 */
+UNITS(FS, P0, P0_DATA, "Pa")                    /*atm	atmospheric pressure	*/
+DATUM(FT, Pi, PI_DATA)                          /*pi	circumference/diameter  */
+UERR(FS, Qe, E_DATA, BY_DEFINITION, "C")        /*e	charge on electron      */
+UERR(FS, Re, RE_DATA, NEGLIGIBLE, "m")          /*re	class. electron radius  */
+UERR(FS, Rydberg, RYDBERG_DATA, NEGLIGIBLE,
+     "/m")                       /*Rinf	Rydberg constant	*/
+UNITS(FS, T0, T0_DATA, "K")      /*	0 degC in Kelvin	*/
+UNITS(FT, Torr, TORR_DATA, "Pa") /*	torr 1mm Hg pressure    */

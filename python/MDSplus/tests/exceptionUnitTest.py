@@ -26,20 +26,27 @@
 
 from MDSplus import DevNOT_TRIGGERED, TclNORMAL
 
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-_UnitTest=_mimport("_UnitTest")
+
+
+_UnitTest = _mimport("_UnitTest")
+
+
 class Tests(_UnitTest.Tests):
     def defaultErrorValues(self):
         err = DevNOT_TRIGGERED()
         self.assertEqual(err.status, 662470754)
         self.assertEqual(err.severity, 'E')
         self.assertEqual(err.fac, 'Dev')
-        self.assertEqual(err.message, 'device was not triggered,  check wires and triggering device')
-        self.assertEqual(str(err), '%DEV-E-NOT_TRIGGERED, device was not triggered,  check wires and triggering device')
+        self.assertEqual(
+            err.message, 'device was not triggered,  check wires and triggering device')
+        self.assertEqual(str(
+            err), '%DEV-E-NOT_TRIGGERED, device was not triggered,  check wires and triggering device')
 
     def customErrorString(self):
         err = DevNOT_TRIGGERED('This is a custom error string')
@@ -47,7 +54,8 @@ class Tests(_UnitTest.Tests):
         self.assertEqual(err.severity, 'E')
         self.assertEqual(err.fac, 'Dev')
         self.assertEqual(err.message, 'This is a custom error string')
-        self.assertEqual(str(err), '%DEV-E-NOT_TRIGGERED, This is a custom error string')
+        self.assertEqual(
+            str(err), '%DEV-E-NOT_TRIGGERED, This is a custom error string')
 
     def tclErrors(self):
         err = TclNORMAL()
@@ -57,6 +65,7 @@ class Tests(_UnitTest.Tests):
 
     @staticmethod
     def getTests():
-        return ['defaultErrorValues','customErrorString','tclErrors']
+        return ['defaultErrorValues', 'customErrorString', 'tclErrors']
+
 
 Tests.main(__name__)

@@ -91,7 +91,7 @@ EXPORT int GenDeviceCvtStringCode(short *code_ptr, char *string_ptr, struct _tab
   for (current = 0; table[current].string && strcmp(table[current].string, string_ptr); current++) ;
   if (table[current].string) {
     *code_ptr = table[current].code;
-    return TreeNORMAL;
+    return TreeSUCCESS;
   }
   return LibKEYNOTFOU;
 }

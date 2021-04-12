@@ -1,5 +1,7 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=Mds
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
@@ -38,7 +40,6 @@ SOURCES = \
         MdsSerialize.c \
         MdsThreadStatic.c \
         MdsXdRoutines.c \
-        MdsVersionInfo.c \
         mds_dsc_string.c \
         UdpEvents.c \
         UdpEventSettings.c

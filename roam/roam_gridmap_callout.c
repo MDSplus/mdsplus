@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <globus_common.h>
-#include <gssapi.h>
-#include <globus_gss_assist.h>
 #include <globus_gridmap_callout_error.h>
+#include <globus_gss_assist.h>
+#include <gssapi.h>
 #include <stdlib.h>
 
 #ifdef HAVE_STDARG_H
@@ -41,8 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef SIZEOF_LONG
 #endif
 
-#include <mdsdescrip.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
 
 extern int TdiExecute();
 extern int MdsFree1Dx();
@@ -93,8 +93,7 @@ extern int MdsFree1Dx();
 
 int roam_check_access();
 
-EXPORT globus_result_t roam_gridmap_callout(va_list ap)
-{
+EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
   gss_ctx_id_t context;
   char *service;
   char *desired_identity;
@@ -127,31 +126,27 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap)
 
   /* check rc */
 
-  major_status = gss_inquire_context(&minor_status,
-				     context,
-				     GLOBUS_NULL,
-				     GLOBUS_NULL,
-				     GLOBUS_NULL,
-				     GLOBUS_NULL, GLOBUS_NULL, &initiator, GLOBUS_NULL);
+  major_status = gss_inquire_context(&minor_status, context, GLOBUS_NULL,
+                                     GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL,
+                                     GLOBUS_NULL, &initiator, GLOBUS_NULL);
 
   if (GSS_ERROR(major_status)) {
     GLOBUS_GRIDMAP_CALLOUT_GSS_ERROR(result, major_status, minor_status);
     goto error;
   }
 
-  major_status = gss_inquire_context(&minor_status,
-				     context,
-				     initiator ? GLOBUS_NULL : &peer,
-				     initiator ? &peer : GLOBUS_NULL,
-				     GLOBUS_NULL,
-				     GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL);
+  major_status = gss_inquire_context(
+      &minor_status, context, initiator ? GLOBUS_NULL : &peer,
+      initiator ? &peer : GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL,
+      GLOBUS_NULL, GLOBUS_NULL);
 
   if (GSS_ERROR(major_status)) {
     GLOBUS_GRIDMAP_CALLOUT_GSS_ERROR(result, major_status, minor_status);
     goto error;
   }
 
-  major_status = gss_display_name(&minor_status, peer, &peer_name_buffer, GLOBUS_NULL);
+  major_status =
+      gss_display_name(&minor_status, peer, &peer_name_buffer, GLOBUS_NULL);
 
   if (GSS_ERROR(major_status)) {
     GLOBUS_GRIDMAP_CALLOUT_GSS_ERROR(result, major_status, minor_status);
@@ -162,51 +157,52 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap)
   gss_release_name(&minor_status, &peer);
 
   if (desired_identity == NULL) {
-    struct descriptor expression_d = { 0, DTYPE_T, CLASS_S, 0 };
-    struct descriptor local_user_d = { 0, DTYPE_T, CLASS_D, 0 };
+    struct descriptor expression_d = {0, DTYPE_T, CLASS_S, 0};
+    struct descriptor local_user_d = {0, DTYPE_T, CLASS_D, 0};
     int status;
-    char *expression = malloc(strlen(service) + strlen(peer_name_buffer.value) + 23);
-    if (expression) sprintf(expression, "_who=check_access_%s(\"%s\")", service, (char *)peer_name_buffer.value);
+    char *expression =
+        malloc(strlen(service) + strlen(peer_name_buffer.value) + 23);
+    if (expression)
+      sprintf(expression, "_who=check_access_%s(\"%s\")", service,
+              (char *)peer_name_buffer.value);
     expression_d.length = strlen(expression);
     expression_d.pointer = expression;
     status = TdiExecute(&expression_d, &local_user_d MDS_END_ARG);
     if (status & 1) {
       rc = GLOBUS_SUCCESS;
-      local_identity =
-	  strncpy((char *)malloc(local_user_d.length + 1), local_user_d.pointer,
-		  local_user_d.length);
+      local_identity = strncpy((char *)malloc(local_user_d.length + 1),
+                               local_user_d.pointer, local_user_d.length);
       local_identity[local_user_d.length] = 0;
       MdsFree1Dx(&local_user_d, 0);
     } else {
       rc = globus_gss_assist_gridmap(peer_name_buffer.value, &local_identity);
     }
     if (rc != 0) {
-      GLOBUS_GRIDMAP_CALLOUT_ERROR(result,
-				   GLOBUS_GRIDMAP_CALLOUT_LOOKUP_FAILED,
-				   ("Could not map %s\n", peer_name_buffer.value));
+      GLOBUS_GRIDMAP_CALLOUT_ERROR(
+          result, GLOBUS_GRIDMAP_CALLOUT_LOOKUP_FAILED,
+          ("Could not map %s\n", peer_name_buffer.value));
       gss_release_buffer(&minor_status, &peer_name_buffer);
       goto error;
     }
 
     if (strlen(local_identity) + 1 > buffer_length) {
-      GLOBUS_GRIDMAP_CALLOUT_ERROR(result,
-				   GLOBUS_GRIDMAP_CALLOUT_BUFFER_TOO_SMALL,
-				   ("Local identity length: %d Buffer length: %d\n",
-				    strlen(local_identity), buffer_length));
+      GLOBUS_GRIDMAP_CALLOUT_ERROR(
+          result, GLOBUS_GRIDMAP_CALLOUT_BUFFER_TOO_SMALL,
+          ("Local identity length: %d Buffer length: %d\n",
+           strlen(local_identity), buffer_length));
     } else {
       strcpy(identity_buffer, local_identity);
     }
     free(local_identity);
   } else {
-    GLOBUS_GRIDMAP_CALLOUT_ERROR(result,
-				 GLOBUS_GRIDMAP_CALLOUT_LOOKUP_FAILED,
-				 ("Could not map %s to %s\n",
-				  peer_name_buffer.value, desired_identity));
+    GLOBUS_GRIDMAP_CALLOUT_ERROR(
+        result, GLOBUS_GRIDMAP_CALLOUT_LOOKUP_FAILED,
+        ("Could not map %s to %s\n", peer_name_buffer.value, desired_identity));
   }
 
   gss_release_buffer(&minor_status, &peer_name_buffer);
 
- error:
+error:
 
   globus_module_deactivate(GLOBUS_GSI_GSSAPI_MODULE);
   globus_module_deactivate(GLOBUS_GSI_GSS_ASSIST_MODULE);

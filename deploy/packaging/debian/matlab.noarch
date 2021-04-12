@@ -1,4 +1,5 @@
 ./usr/local/mdsplus/matlab/MDSarg.m
+./usr/local/mdsplus/matlab/MDSplusAPI.m
 ./usr/local/mdsplus/matlab/NATIVEvalue.m
 ./usr/local/mdsplus/matlab/mdsFromMatlab.m
 ./usr/local/mdsplus/matlab/mdsInfo.m

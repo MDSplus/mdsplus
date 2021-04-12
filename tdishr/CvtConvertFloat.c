@@ -22,10 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
+#include <inttypes.h>
 #include <mdsdescrip.h>
 #include <mdsplus/mdsplus.h>
-#include <inttypes.h>
+#include <string.h>
 
 /** Adapted from VMS V7.0 sources CvtConvertFloat.lis                      **/
 /******************************************************************************/
@@ -160,16 +160,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **=============================================================================
 */
 
-#define VAX_F DTYPE_F		/* VAX F     Floating point data    */
-#define VAX_D DTYPE_D		/* VAX D     Floating point data    */
-#define VAX_G DTYPE_G		/* VAX G     Floating point data    */
-#define VAX_H DTYPE_H		/* VAX H     Floating point data    */
-#define IEEE_S DTYPE_FS		/* IEEE S    Floating point data    */
-#define IEEE_T DTYPE_FT		/* IEEE T    Floating point data    */
-#define IBM_LONG 6		/* IBM Long  Floating point data    */
-#define IBM_SHORT 7		/* IBM Short Floating point data    */
-#define CRAY 8			/* Cray      Floating point data    */
-#define IEEE_X 9		/* IEEE X    Floating point data    */
+#define VAX_F DTYPE_F   /* VAX F     Floating point data    */
+#define VAX_D DTYPE_D   /* VAX D     Floating point data    */
+#define VAX_G DTYPE_G   /* VAX G     Floating point data    */
+#define VAX_H DTYPE_H   /* VAX H     Floating point data    */
+#define IEEE_S DTYPE_FS /* IEEE S    Floating point data    */
+#define IEEE_T DTYPE_FT /* IEEE T    Floating point data    */
+#define IBM_LONG 6      /* IBM Long  Floating point data    */
+#define IBM_SHORT 7     /* IBM Short Floating point data    */
+#define CRAY 8          /* Cray      Floating point data    */
+#define IEEE_X 9        /* IEEE X    Floating point data    */
 #define CVT_M_ROUND_TO_NEAREST 0x1
 #define CVT_M_TRUNCATE 0x2
 #define CVT_M_ROUND_TO_POS 0x4
@@ -179,14 +179,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CVT_M_ERR_UNDERFLOW 0x40
 #define CVT_M_SPARE2 0xFFFFFF80
 struct cvt_r_conversion_options {
-  unsigned cvt_v_round_to_nearest:1;
-  unsigned cvt_v_truncate:1;
-  unsigned cvt_v_round_to_pos:1;
-  unsigned cvt_v_round_to_neg:1;
-  unsigned cvt_v_vax_rounding:1;
-  unsigned cvt_v_big_endian:1;
-  unsigned cvt_v_err_underflow:1;
-  unsigned cvt_v_spare2:25;
+  unsigned cvt_v_round_to_nearest : 1;
+  unsigned cvt_v_truncate : 1;
+  unsigned cvt_v_round_to_pos : 1;
+  unsigned cvt_v_round_to_neg : 1;
+  unsigned cvt_v_vax_rounding : 1;
+  unsigned cvt_v_big_endian : 1;
+  unsigned cvt_v_err_underflow : 1;
+  unsigned cvt_v_spare2 : 25;
 };
 
 #define CvtFACILITY 1530
@@ -215,38 +215,41 @@ typedef CVT_BYTE CVT_IBM_LONG[8];
 typedef CVT_BYTE CVT_CRAY[8];
 typedef uint32_t CVT_STATUS;
 /*
-typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned sign : 1; unsigned low : 16;} f_float;
-typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned sign : 1; unsigned low : 16; unsigned int low2;} d_float;
-typedef struct {unsigned hi : 4; unsigned exp : 11; unsigned sign : 1; unsigned low : 16; unsigned int low2;} g_float;
-typedef struct {                 unsigned exp : 15; unsigned sign : 1; unsigned low : 16; unsigned int low2[3];} h_float;
-typedef struct {unsigned low:16; unsigned hi : 7;   unsigned exp:8;    unsigned sign :1;} s_float;
-typedef struct {unsigned int low2; unsigned low:16; unsigned hi : 4; unsigned exp:11; unsigned sign :1;} t_float;
+typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned sign : 1; unsigned
+low : 16;} f_float; typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned
+sign : 1; unsigned low : 16; unsigned int low2;} d_float; typedef struct
+{unsigned hi : 4; unsigned exp : 11; unsigned sign : 1; unsigned low : 16;
+unsigned int low2;} g_float; typedef struct {                 unsigned exp : 15;
+unsigned sign : 1; unsigned low : 16; unsigned int low2[3];} h_float; typedef
+struct {unsigned low:16; unsigned hi : 7;   unsigned exp:8;    unsigned sign
+:1;} s_float; typedef struct {unsigned int low2; unsigned low:16; unsigned hi :
+4; unsigned exp:11; unsigned sign :1;} t_float;
 */
 
 #define f_float_exp(val) ((*(int *)val >> 7) & 0xff)
-#define f_float_sign(val) ((*(int *)val >> 15) &0x1)
+#define f_float_sign(val) ((*(int *)val >> 15) & 0x1)
 #define IsRoprandF(val) ((f_float_exp(val) == 0) && (f_float_sign(val) == 1))
 #define s_float_exp(val) ((*(int *)val >> 23) & 0xff)
 #define IsRoprandS(val) (s_float_exp(val) == 255)
 #define IsRoprandD(val) IsRoprandF(val)
 #define g_float_exp(val) ((*(int *)val >> 4) & 0x7ff)
-#define g_float_sign(val) ((*(int *)val >> 15) &0x1)
+#define g_float_sign(val) ((*(int *)val >> 15) & 0x1)
 #define IsRoprandG(val) ((g_float_exp(val) == 0) && (g_float_sign(val) == 1))
 #define t_float_exp(val) ((((int *)val)[1] >> 20) & 0x7ff)
 #define IsRoprandT(val) (t_float_exp(val) == 2047)
 
-#define cvt_s_normal                    CvtNORMAL
-#define cvt_s_input_conversion_error    CvtINPCONERR
-#define cvt_s_invalid_input_type        CvtINVINPTYP
-#define cvt_s_invalid_option            CvtINVOPT
-#define cvt_s_invalid_output_type       CvtINVOUTTYP
-#define cvt_s_invalid_value             CvtINVVAL
-#define cvt_s_neg_infinity              CvtNEGINF
-#define cvt_s_output_conversion_error   CvtOUTCONERR
-#define cvt_s_overflow                  CvtOVERFLOW
-#define cvt_s_pos_infinity              CvtPOSINF
-#define cvt_s_underflow                 CvtUNDERFLOW
-#define RAISE(COND)                     return(COND)
+#define cvt_s_normal CvtNORMAL
+#define cvt_s_input_conversion_error CvtINPCONERR
+#define cvt_s_invalid_input_type CvtINVINPTYP
+#define cvt_s_invalid_option CvtINVOPT
+#define cvt_s_invalid_output_type CvtINVOUTTYP
+#define cvt_s_invalid_value CvtINVVAL
+#define cvt_s_neg_infinity CvtNEGINF
+#define cvt_s_output_conversion_error CvtOUTCONERR
+#define cvt_s_overflow CvtOVERFLOW
+#define cvt_s_pos_infinity CvtPOSINF
+#define cvt_s_underflow CvtUNDERFLOW
+#define RAISE(COND) return (COND)
 
 /*
 **=============================================================================
@@ -272,16 +275,16 @@ typedef UNPACKED_REAL *UNPACKED_REAL_PTR;
 ** Flags and flag patterns for use with the UNPACKED_REAL type.
 **-----------------------------------------------------------------------------
 */
-#define U_R_EXP         0
-#define U_R_FLAGS       5
+#define U_R_EXP 0
+#define U_R_FLAGS 5
 
-#define U_R_NEGATIVE    1
-#define U_R_ZERO        2
-#define U_R_INFINITY    4
-#define U_R_INVALID     8
+#define U_R_NEGATIVE 1
+#define U_R_ZERO 2
+#define U_R_INFINITY 4
+#define U_R_INVALID 8
 #define U_R_UNUSUAL (U_R_ZERO | U_R_INFINITY | U_R_INVALID)
 
-#define U_R_BIAS        2147483648LU
+#define U_R_BIAS 2147483648LU
 
 /*
 ** Special floating point constant definitions
@@ -289,99 +292,99 @@ typedef UNPACKED_REAL *UNPACKED_REAL_PTR;
 */
 static const uint32_t vax_c[] = {
 
-  0x00008000, 0x00000000, 0x00000000, 0x00000000,	/* ROPs */
-  0x00000000, 0x00000000, 0x00000000, 0x00000000,	/* zeros */
-  0xffff7fff, 0xffffffff, 0xffffffff, 0xffffffff,	/* +huge */
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,	/* -huge */
+    0x00008000, 0x00000000, 0x00000000, 0x00000000, /* ROPs */
+    0x00000000, 0x00000000, 0x00000000, 0x00000000, /* zeros */
+    0xffff7fff, 0xffffffff, 0xffffffff, 0xffffffff, /* +huge */
+    0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, /* -huge */
 };
 
 static const uint32_t ieee_s[] = {
 
-  0x7fbfffff,			/* little endian ieee s nan */
-  0xffffbf7f,			/* big endian ieee s nan */
-  0x00000000,			/* le ieee s +zero */
-  0x00000000,			/* be ieee s +zero */
-  0x80000000,			/* le ieee s -zero */
-  0x00000080,			/* be ieee s -zero */
-  0x7f7fffff,			/* le ieee s +huge */
-  0xffff7f7f,			/* be ieee s +huge */
-  0xff7fffff,			/* le ieee s -huge */
-  0xffff7fff,			/* be ieee s -huge */
-  0x7f800000,			/* le ieee s +infinity */
-  0x0000807f,			/* be ieee s +infinity */
-  0xff800000,			/* le ieee s -infinity */
-  0x000080ff,			/* be ieee s -infinity */
+    0x7fbfffff, /* little endian ieee s nan */
+    0xffffbf7f, /* big endian ieee s nan */
+    0x00000000, /* le ieee s +zero */
+    0x00000000, /* be ieee s +zero */
+    0x80000000, /* le ieee s -zero */
+    0x00000080, /* be ieee s -zero */
+    0x7f7fffff, /* le ieee s +huge */
+    0xffff7f7f, /* be ieee s +huge */
+    0xff7fffff, /* le ieee s -huge */
+    0xffff7fff, /* be ieee s -huge */
+    0x7f800000, /* le ieee s +infinity */
+    0x0000807f, /* be ieee s +infinity */
+    0xff800000, /* le ieee s -infinity */
+    0x000080ff, /* be ieee s -infinity */
 };
 
 static const uint32_t ieee_t[] = {
 
-  0xffffffff, 0x7ff7ffff,	/* le ieee t nan */
-  0xfffff77f, 0xffffffff,	/* be ieee t nan */
-  0x00000000, 0x00000000,	/* le ieee t +zero */
-  0x00000000, 0x00000000,	/* be ieee t +zero */
-  0x00000000, 0x80000000,	/* le ieee t -zero */
-  0x00000080, 0x00000000,	/* be ieee t -zero */
-  0xffffffff, 0x7fefffff,	/* le ieee t +huge */
-  0xffffef7f, 0xffffffff,	/* be ieee t +huge */
-  0xffffffff, 0xffefffff,	/* le ieee t -huge */
-  0xffffefff, 0xffffffff,	/* be ieee t -huge */
-  0x00000000, 0x7ff00000,	/* le ieee t +infinity */
-  0x0000f07f, 0x00000000,	/* be ieee t +infinity */
-  0x00000000, 0xfff00000,	/* le ieee t -infinity */
-  0x0000f0ff, 0x00000000,	/* be ieee t -infinity */
+    0xffffffff, 0x7ff7ffff, /* le ieee t nan */
+    0xfffff77f, 0xffffffff, /* be ieee t nan */
+    0x00000000, 0x00000000, /* le ieee t +zero */
+    0x00000000, 0x00000000, /* be ieee t +zero */
+    0x00000000, 0x80000000, /* le ieee t -zero */
+    0x00000080, 0x00000000, /* be ieee t -zero */
+    0xffffffff, 0x7fefffff, /* le ieee t +huge */
+    0xffffef7f, 0xffffffff, /* be ieee t +huge */
+    0xffffffff, 0xffefffff, /* le ieee t -huge */
+    0xffffefff, 0xffffffff, /* be ieee t -huge */
+    0x00000000, 0x7ff00000, /* le ieee t +infinity */
+    0x0000f07f, 0x00000000, /* be ieee t +infinity */
+    0x00000000, 0xfff00000, /* le ieee t -infinity */
+    0x0000f0ff, 0x00000000, /* be ieee t -infinity */
 };
 
 static const uint32_t ieee_x[] = {
 
-  0xffffffff, 0xffffffff, 0xffffffff, 0x7fff7fff,	/* le ieee x nan */
-  0xff7fff7f, 0xffffffff, 0xffffffff, 0xffffffff,	/* be ieee x nan */
-  0x00000000, 0x00000000, 0x00000000, 0x00000000,	/* le ieee x +zero */
-  0x00000000, 0x00000000, 0x00000000, 0x00000000,	/* be ieee x +zero */
-  0x00000000, 0x00000000, 0x00000000, 0x80000000,	/* le ieee x -zero */
-  0x00000080, 0x00000000, 0x00000000, 0x00000000,	/* be ieee x -zero */
-  0xffffffff, 0xffffffff, 0xffffffff, 0x7ffeffff,	/* le ieee x +huge */
-  0xfffffe7f, 0xffffffff, 0xffffffff, 0xffffffff,	/* be ieee x +huge */
-  0xffffffff, 0xffffffff, 0xffffffff, 0xfffeffff,	/* le ieee x -huge */
-  0xfffffeff, 0xffffffff, 0xffffffff, 0xffffffff,	/* be ieee x -huge */
-  0x00000000, 0x00000000, 0x00000000, 0x7fff0000,	/* le ieee x +infinity */
-  0x0000ff7f, 0x00000000, 0x00000000, 0x00000000,	/* be ieee x +infinity */
-  0x00000000, 0x00000000, 0x00000000, 0xffff0000,	/* le ieee x -infinity */
-  0x0000ffff, 0x00000000, 0x00000000, 0x00000000,	/* be ieee x -infinity */
+    0xffffffff, 0xffffffff, 0xffffffff, 0x7fff7fff, /* le ieee x nan */
+    0xff7fff7f, 0xffffffff, 0xffffffff, 0xffffffff, /* be ieee x nan */
+    0x00000000, 0x00000000, 0x00000000, 0x00000000, /* le ieee x +zero */
+    0x00000000, 0x00000000, 0x00000000, 0x00000000, /* be ieee x +zero */
+    0x00000000, 0x00000000, 0x00000000, 0x80000000, /* le ieee x -zero */
+    0x00000080, 0x00000000, 0x00000000, 0x00000000, /* be ieee x -zero */
+    0xffffffff, 0xffffffff, 0xffffffff, 0x7ffeffff, /* le ieee x +huge */
+    0xfffffe7f, 0xffffffff, 0xffffffff, 0xffffffff, /* be ieee x +huge */
+    0xffffffff, 0xffffffff, 0xffffffff, 0xfffeffff, /* le ieee x -huge */
+    0xfffffeff, 0xffffffff, 0xffffffff, 0xffffffff, /* be ieee x -huge */
+    0x00000000, 0x00000000, 0x00000000, 0x7fff0000, /* le ieee x +infinity */
+    0x0000ff7f, 0x00000000, 0x00000000, 0x00000000, /* be ieee x +infinity */
+    0x00000000, 0x00000000, 0x00000000, 0xffff0000, /* le ieee x -infinity */
+    0x0000ffff, 0x00000000, 0x00000000, 0x00000000, /* be ieee x -infinity */
 };
 
 static const uint32_t ibm_s[] = {
 
-  0x000000ff,			/* ibm s invalid */
-  0x00000000,			/* ibm s +zero */
-  0x00000080,			/* ibm s -zero */
-  0xffffff7f,			/* ibm s +huge */
-  0xffffffff,			/* ibm s -huge */
-  0xffffff7f,			/* ibm s +infinity */
-  0xffffffff,			/* ibm s -infinity */
+    0x000000ff, /* ibm s invalid */
+    0x00000000, /* ibm s +zero */
+    0x00000080, /* ibm s -zero */
+    0xffffff7f, /* ibm s +huge */
+    0xffffffff, /* ibm s -huge */
+    0xffffff7f, /* ibm s +infinity */
+    0xffffffff, /* ibm s -infinity */
 
 };
 
 static const uint32_t ibm_l[] = {
 
-  0x000000ff, 0x00000000,	/* ibm t invalid */
-  0x00000000, 0x00000000,	/* ibm t +zero */
-  0x00000080, 0x00000000,	/* ibm t -zero */
-  0xffffff7f, 0xffffffff,	/* ibm t +huge */
-  0xffffffff, 0xffffffff,	/* ibm t -huge */
-  0xffffff7f, 0xffffffff,	/* ibm t +infinity */
-  0xffffffff, 0xffffffff,	/* ibm t -infinity */
+    0x000000ff, 0x00000000, /* ibm t invalid */
+    0x00000000, 0x00000000, /* ibm t +zero */
+    0x00000080, 0x00000000, /* ibm t -zero */
+    0xffffff7f, 0xffffffff, /* ibm t +huge */
+    0xffffffff, 0xffffffff, /* ibm t -huge */
+    0xffffff7f, 0xffffffff, /* ibm t +infinity */
+    0xffffffff, 0xffffffff, /* ibm t -infinity */
 
 };
 
 static const uint32_t cray[] = {
 
-  0x00000060, 0x00000000,	/* cray invalid */
-  0x00000000, 0x00000000,	/* cray +zero */
-  0x00000080, 0x00000000,	/* cray -zero */
-  0xffffff5f, 0xffffffff,	/* cray +huge */
-  0xffffffdf, 0xffffffff,	/* cray -huge */
-  0x00000060, 0x00000000,	/* cray +infinity */
-  0x000000e0, 0x00000000,	/* cray -infinity */
+    0x00000060, 0x00000000, /* cray invalid */
+    0x00000000, 0x00000000, /* cray +zero */
+    0x00000080, 0x00000000, /* cray -zero */
+    0xffffff5f, 0xffffffff, /* cray +huge */
+    0xffffffdf, 0xffffffff, /* cray -huge */
+    0x00000060, 0x00000000, /* cray +infinity */
+    0x000000e0, 0x00000000, /* cray -infinity */
 
 };
 
@@ -409,151 +412,163 @@ static const uint32_t cray[] = {
 #define VAX_G_NEG_HUGE &vax_c[12]
 #define VAX_H_NEG_HUGE &vax_c[12]
 
-#define IEEE_S_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_s[1] : &ieee_s[0])
-#define IEEE_S_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_s[3] : &ieee_s[2])
-#define IEEE_S_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_s[5] : &ieee_s[4])
-#define IEEE_S_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_s[7] : &ieee_s[6])
-#define IEEE_S_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_s[9] : &ieee_s[8])
-#define IEEE_S_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_s[11] : &ieee_s[10])
-#define IEEE_S_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_s[13] : &ieee_s[12])
+#define IEEE_S_INVALID ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[1] : &ieee_s[0])
+#define IEEE_S_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[3] : &ieee_s[2])
+#define IEEE_S_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[5] : &ieee_s[4])
+#define IEEE_S_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[7] : &ieee_s[6])
+#define IEEE_S_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[9] : &ieee_s[8])
+#define IEEE_S_POS_INFINITY                                                    \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[11] : &ieee_s[10])
+#define IEEE_S_NEG_INFINITY                                                    \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[13] : &ieee_s[12])
 
-#define IEEE_T_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_t[2] : &ieee_t[0])
-#define IEEE_T_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_t[6] : &ieee_t[4])
-#define IEEE_T_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_t[10] : &ieee_t[8])
-#define IEEE_T_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_t[14] : &ieee_t[12])
-#define IEEE_T_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_t[18] : &ieee_t[16])
-#define IEEE_T_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_t[22] : &ieee_t[20])
-#define IEEE_T_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_t[26] : &ieee_t[24])
+#define IEEE_T_INVALID ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[2] : &ieee_t[0])
+#define IEEE_T_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[6] : &ieee_t[4])
+#define IEEE_T_NEG_ZERO                                                        \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[10] : &ieee_t[8])
+#define IEEE_T_POS_HUGE                                                        \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[14] : &ieee_t[12])
+#define IEEE_T_NEG_HUGE                                                        \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[18] : &ieee_t[16])
+#define IEEE_T_POS_INFINITY                                                    \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[22] : &ieee_t[20])
+#define IEEE_T_NEG_INFINITY                                                    \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[26] : &ieee_t[24])
 
-#define IEEE_X_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_x[4] : &ieee_x[0])
-#define IEEE_X_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_x[12] : &ieee_x[8])
-#define IEEE_X_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_x[20] : &ieee_x[16])
-#define IEEE_X_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_x[28] : &ieee_x[24])
-#define IEEE_X_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_x[36] : &ieee_x[32])
-#define IEEE_X_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_x[44] : &ieee_x[40])
-#define IEEE_X_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-	&ieee_x[52] : &ieee_x[48])
+#define IEEE_X_INVALID ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[4] : &ieee_x[0])
+#define IEEE_X_POS_ZERO                                                        \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[12] : &ieee_x[8])
+#define IEEE_X_NEG_ZERO                                                        \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[20] : &ieee_x[16])
+#define IEEE_X_POS_HUGE                                                        \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[28] : &ieee_x[24])
+#define IEEE_X_NEG_HUGE                                                        \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[36] : &ieee_x[32])
+#define IEEE_X_POS_INFINITY                                                    \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[44] : &ieee_x[40])
+#define IEEE_X_NEG_INFINITY                                                    \
+  ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[52] : &ieee_x[48])
 
-#define IBM_S_INVALID   &ibm_s[0]
-#define IBM_S_POS_ZERO  &ibm_s[1]
-#define IBM_S_NEG_ZERO  &ibm_s[2]
-#define IBM_S_POS_HUGE  &ibm_s[3]
-#define IBM_S_NEG_HUGE  &ibm_s[4]
-#define IBM_S_POS_INFINITY  &ibm_s[5]
-#define IBM_S_NEG_INFINITY  &ibm_s[6]
+#define IBM_S_INVALID &ibm_s[0]
+#define IBM_S_POS_ZERO &ibm_s[1]
+#define IBM_S_NEG_ZERO &ibm_s[2]
+#define IBM_S_POS_HUGE &ibm_s[3]
+#define IBM_S_NEG_HUGE &ibm_s[4]
+#define IBM_S_POS_INFINITY &ibm_s[5]
+#define IBM_S_NEG_INFINITY &ibm_s[6]
 
-#define IBM_L_INVALID   &ibm_l[0]
-#define IBM_L_POS_ZERO  &ibm_l[2]
-#define IBM_L_NEG_ZERO  &ibm_l[4]
-#define IBM_L_POS_HUGE  &ibm_l[6]
-#define IBM_L_NEG_HUGE  &ibm_l[8]
-#define IBM_L_POS_INFINITY  &ibm_l[10]
-#define IBM_L_NEG_INFINITY  &ibm_l[12]
+#define IBM_L_INVALID &ibm_l[0]
+#define IBM_L_POS_ZERO &ibm_l[2]
+#define IBM_L_NEG_ZERO &ibm_l[4]
+#define IBM_L_POS_HUGE &ibm_l[6]
+#define IBM_L_NEG_HUGE &ibm_l[8]
+#define IBM_L_POS_INFINITY &ibm_l[10]
+#define IBM_L_NEG_INFINITY &ibm_l[12]
 
-#define CRAY_INVALID    &cray[0]
-#define CRAY_POS_ZERO   &cray[2]
-#define CRAY_NEG_ZERO   &cray[4]
-#define CRAY_POS_HUGE   &cray[6]
-#define CRAY_NEG_HUGE   &cray[8]
-#define CRAY_POS_INFINITY  &cray[10]
-#define CRAY_NEG_INFINITY  &cray[12]
+#define CRAY_INVALID &cray[0]
+#define CRAY_POS_ZERO &cray[2]
+#define CRAY_NEG_ZERO &cray[4]
+#define CRAY_POS_HUGE &cray[6]
+#define CRAY_NEG_HUGE &cray[8]
+#define CRAY_POS_INFINITY &cray[10]
+#define CRAY_NEG_INFINITY &cray[12]
 
 /*
 ** Constant definitions
 **-----------------------------------------------------------------------------
 */
-#define False                   0
-#define True                    1
+#define False 0
+#define True 1
 
 /*
 ** Function Prototypes
 **-----------------------------------------------------------------------------
 */
 static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, uint32_t options __attribute__ ((unused)));
+                             CVT_VAX_F output_value,
+                             uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, uint32_t options __attribute__ ((unused)));
+                             CVT_VAX_D output_value,
+                             uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, uint32_t options __attribute__ ((unused)));
+                             CVT_VAX_G output_value,
+                             uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, uint32_t options __attribute__ ((unused)));
+                             CVT_VAX_H output_value,
+                             uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, uint32_t options __attribute__ ((unused)));
+                              CVT_IEEE_S output_value,
+                              uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, uint32_t options __attribute__ ((unused)));
+                              CVT_IEEE_T output_value,
+                              uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, uint32_t options __attribute__ ((unused)));
+                              CVT_IEEE_X output_value,
+                              uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, uint32_t options __attribute__ ((unused)));
+                             CVT_IBM_LONG output_value,
+                             uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, uint32_t options __attribute__ ((unused)));
+                             CVT_IBM_SHORT output_value,
+                             uint32_t options __attribute__((unused)));
 
 static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, uint32_t options __attribute__ ((unused)));
+                            CVT_CRAY output_value,
+                            uint32_t options __attribute__((unused)));
 
 static void _round(UNPACKED_REAL intermediate_value,
-			   uint32_t round_bit_position, uint32_t options __attribute__ ((unused)));
+                   uint32_t round_bit_position,
+                   uint32_t options __attribute__((unused)));
 
 static void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                         UNPACKED_REAL intermediate_value,
+                         uint32_t options __attribute__((unused)));
 
 static void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                         UNPACKED_REAL intermediate_value,
+                         uint32_t options __attribute__((unused)));
 
-static void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)));
+static void unpack_vax_g(CVT_VAX_G input_value, UNPACKED_REAL output_value,
+                         uint32_t options __attribute__((unused)));
 
 static void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                         UNPACKED_REAL intermediate_value,
+                         uint32_t options __attribute__((unused)));
 
 static void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                          UNPACKED_REAL intermediate_value,
+                          uint32_t options __attribute__((unused)));
 
 static void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                          UNPACKED_REAL intermediate_value,
+                          uint32_t options __attribute__((unused)));
 
 static void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                          UNPACKED_REAL intermediate_value,
+                          uint32_t options __attribute__((unused)));
 
 static void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                         UNPACKED_REAL intermediate_value,
+                         uint32_t options __attribute__((unused)));
 
 static void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+                         UNPACKED_REAL intermediate_value,
+                         uint32_t options __attribute__((unused)));
 
-static void unpack_cray(CVT_CRAY input_value,
-				UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL intermediate_value,
+                        uint32_t options __attribute__((unused)));
 
-extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
-			   uint32_t input_type, void *output_value, uint32_t output_type)
+extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
+                                         void *output_value,
+                                         uint32_t output_type)
 
 /*
 **=============================================================================
@@ -819,15 +834,15 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
   return return_status;
 }
 
-static void FlipDouble(int *in)
-{
+static void FlipDouble(int *in) {
   int tmp = in[0];
   in[0] = in[1];
   in[1] = tmp;
 }
 
 static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, uint32_t options __attribute__ ((unused)))
+                             CVT_VAX_F output_value,
+                             uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -899,9 +914,9 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
     } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       memcpy(output_value, VAX_F_INVALID, 4);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
-	RAISE(cvt_s_neg_infinity);
+        RAISE(cvt_s_neg_infinity);
       else
-	RAISE(cvt_s_pos_infinity);
+        RAISE(cvt_s_pos_infinity);
     } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
       memcpy(output_value, VAX_F_INVALID, 4);
       RAISE(cvt_s_invalid_value);
@@ -922,7 +937,7 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127)) {
       memcpy(output_value, VAX_F_ZERO, 4);
       if (options & CVT_M_ERR_UNDERFLOW)
-	RAISE(cvt_s_underflow);
+        RAISE(cvt_s_underflow);
     }
 
     /*
@@ -931,23 +946,25 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, VAX_F_NEG_HUGE, 4);
-	} else {
-	  memcpy(output_value, VAX_F_POS_HUGE, 4);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, VAX_F_NEG_HUGE, 4);
+        } else {
+          memcpy(output_value, VAX_F_POS_HUGE, 4);
+        }
       }
 
-      else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_F_NEG_HUGE, 4);
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_F_NEG_HUGE, 4);
       }
 
-      else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_F_POS_HUGE, 4);
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_F_POS_HUGE, 4);
       }
 
       else {
-	memcpy(output_value, VAX_F_INVALID, 4);
+        memcpy(output_value, VAX_F_INVALID, 4);
       }
 
       RAISE(cvt_s_overflow);
@@ -987,10 +1004,10 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
        ** Adjust for VAX 16 bit floating format.
        **-----------------------------------------------------------------------
        */
-      intermediate_value[1] = ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
+      intermediate_value[1] =
+          ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
 
       memcpy(output_value, &intermediate_value[1], 4);
-
     }
   }
 
@@ -999,11 +1016,11 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, uint32_t options __attribute__ ((unused)))
+                             CVT_VAX_D output_value,
+                             uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -1077,9 +1094,9 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
     } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       memcpy(output_value, VAX_D_INVALID, 8);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
-	RAISE(cvt_s_neg_infinity);
+        RAISE(cvt_s_neg_infinity);
       else
-	RAISE(cvt_s_pos_infinity);
+        RAISE(cvt_s_pos_infinity);
     }
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
@@ -1102,7 +1119,7 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127)) {
       memcpy(output_value, VAX_D_ZERO, 8);
       if (options & CVT_M_ERR_UNDERFLOW)
-	RAISE(cvt_s_underflow);
+        RAISE(cvt_s_underflow);
     }
 
     /*
@@ -1111,23 +1128,25 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, VAX_D_NEG_HUGE, 8);
-	} else {
-	  memcpy(output_value, VAX_D_POS_HUGE, 8);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, VAX_D_NEG_HUGE, 8);
+        } else {
+          memcpy(output_value, VAX_D_POS_HUGE, 8);
+        }
       }
 
-      else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_D_NEG_HUGE, 8);
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_D_NEG_HUGE, 8);
       }
 
-      else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_D_POS_HUGE, 8);
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_D_POS_HUGE, 8);
       }
 
       else {
-	memcpy(output_value, VAX_D_INVALID, 8);
+        memcpy(output_value, VAX_D_INVALID, 8);
       }
       RAISE(cvt_s_overflow);
     }
@@ -1168,8 +1187,10 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
        ** Adjust for VAX 16 bit floating format.
        ** ----------------------------------------------------------------------
        */
-      intermediate_value[1] = ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
-      intermediate_value[2] = ((intermediate_value[2] << 16) | (intermediate_value[2] >> 16));
+      intermediate_value[1] =
+          ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
+      intermediate_value[2] =
+          ((intermediate_value[2] << 16) | (intermediate_value[2] >> 16));
 
       memcpy(output_value, &intermediate_value[1], 8);
     }
@@ -1187,11 +1208,11 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, uint32_t options __attribute__ ((unused)))
+                             CVT_VAX_G output_value,
+                             uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -1265,9 +1286,9 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
     } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       memcpy(output_value, VAX_G_INVALID, 8);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
-	RAISE(cvt_s_neg_infinity);
+        RAISE(cvt_s_neg_infinity);
       else
-	RAISE(cvt_s_pos_infinity);
+        RAISE(cvt_s_pos_infinity);
     } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
       memcpy(output_value, VAX_G_INVALID, 8);
       RAISE(cvt_s_invalid_value);
@@ -1288,7 +1309,7 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 1023)) {
       memcpy(output_value, VAX_G_ZERO, 8);
       if (options & CVT_M_ERR_UNDERFLOW)
-	RAISE(cvt_s_underflow);
+        RAISE(cvt_s_underflow);
     }
 
     /*
@@ -1297,17 +1318,19 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1023)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, VAX_G_NEG_HUGE, 8);
-	} else {
-	  memcpy(output_value, VAX_G_POS_HUGE, 8);
-	}
-      } else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_G_NEG_HUGE, 8);
-      } else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_G_POS_HUGE, 8);
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, VAX_G_NEG_HUGE, 8);
+        } else {
+          memcpy(output_value, VAX_G_POS_HUGE, 8);
+        }
+      } else if ((options & CVT_M_ROUND_TO_POS) &&
+                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_G_NEG_HUGE, 8);
+      } else if ((options & CVT_M_ROUND_TO_NEG) &&
+                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_G_POS_HUGE, 8);
       } else {
-	memcpy(output_value, VAX_G_INVALID, 8);
+        memcpy(output_value, VAX_G_INVALID, 8);
       }
       RAISE(cvt_s_overflow);
     }
@@ -1348,8 +1371,10 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
        ** Adjust for VAX 16 bit floating format.
        ** ----------------------------------------------------------------------
        */
-      intermediate_value[1] = ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
-      intermediate_value[2] = ((intermediate_value[2] << 16) | (intermediate_value[2] >> 16));
+      intermediate_value[1] =
+          ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
+      intermediate_value[2] =
+          ((intermediate_value[2] << 16) | (intermediate_value[2] >> 16));
 
       memcpy(output_value, &intermediate_value[1], 8);
     }
@@ -1368,11 +1393,11 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, uint32_t options __attribute__ ((unused)))
+                             CVT_VAX_H output_value,
+                             uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -1450,9 +1475,9 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
     } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       memcpy(output_value, VAX_H_INVALID, 16);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
-	RAISE(cvt_s_neg_infinity);
+        RAISE(cvt_s_neg_infinity);
       else
-	RAISE(cvt_s_pos_infinity);
+        RAISE(cvt_s_pos_infinity);
     } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
       memcpy(output_value, VAX_H_INVALID, 16);
       RAISE(cvt_s_invalid_value);
@@ -1473,7 +1498,7 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 16383)) {
       memcpy(output_value, VAX_H_ZERO, 16);
       if (options & CVT_M_ERR_UNDERFLOW)
-	RAISE(cvt_s_underflow);
+        RAISE(cvt_s_underflow);
     }
 
     /*
@@ -1482,17 +1507,19 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16383)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, VAX_H_NEG_HUGE, 16);
-	} else {
-	  memcpy(output_value, VAX_H_POS_HUGE, 16);
-	}
-      } else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_H_NEG_HUGE, 16);
-      } else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, VAX_H_POS_HUGE, 16);
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, VAX_H_NEG_HUGE, 16);
+        } else {
+          memcpy(output_value, VAX_H_POS_HUGE, 16);
+        }
+      } else if ((options & CVT_M_ROUND_TO_POS) &&
+                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_H_NEG_HUGE, 16);
+      } else if ((options & CVT_M_ROUND_TO_NEG) &&
+                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, VAX_H_POS_HUGE, 16);
       } else {
-	memcpy(output_value, VAX_H_INVALID, 16);
+        memcpy(output_value, VAX_H_INVALID, 16);
       }
       RAISE(cvt_s_overflow);
     }
@@ -1537,10 +1564,14 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
        ** Adjust for VAX 16 bit floating format.
        ** ----------------------------------------------------------------------
        */
-      intermediate_value[1] = ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
-      intermediate_value[2] = ((intermediate_value[2] << 16) | (intermediate_value[2] >> 16));
-      intermediate_value[3] = ((intermediate_value[3] << 16) | (intermediate_value[3] >> 16));
-      intermediate_value[4] = ((intermediate_value[4] << 16) | (intermediate_value[4] >> 16));
+      intermediate_value[1] =
+          ((intermediate_value[1] << 16) | (intermediate_value[1] >> 16));
+      intermediate_value[2] =
+          ((intermediate_value[2] << 16) | (intermediate_value[2] >> 16));
+      intermediate_value[3] =
+          ((intermediate_value[3] << 16) | (intermediate_value[3] >> 16));
+      intermediate_value[4] =
+          ((intermediate_value[4] << 16) | (intermediate_value[4] >> 16));
 
       memcpy(output_value, &intermediate_value[1], 16);
     }
@@ -1551,11 +1582,11 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, uint32_t options __attribute__ ((unused)))
+                              CVT_IEEE_S output_value,
+                              uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -1627,16 +1658,16 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
   if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IEEE_S_NEG_ZERO, 4);
+        memcpy(output_value, IEEE_S_NEG_ZERO, 4);
       } else {
-	memcpy(output_value, IEEE_S_POS_ZERO, 4);
+        memcpy(output_value, IEEE_S_POS_ZERO, 4);
       }
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IEEE_S_NEG_INFINITY, 4);
+        memcpy(output_value, IEEE_S_NEG_INFINITY, 4);
       } else {
-	memcpy(output_value, IEEE_S_POS_INFINITY, 4);
+        memcpy(output_value, IEEE_S_POS_INFINITY, 4);
       }
     }
 
@@ -1670,14 +1701,14 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 125) - 23)) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_S_NEG_ZERO, 4);
-	} else {
-	  memcpy(output_value, IEEE_S_POS_ZERO, 4);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_S_NEG_ZERO, 4);
+        } else {
+          memcpy(output_value, IEEE_S_POS_ZERO, 4);
+        }
 
-	if (options & CVT_M_ERR_UNDERFLOW)
-	  RAISE(cvt_s_underflow);
+        if (options & CVT_M_ERR_UNDERFLOW)
+          RAISE(cvt_s_underflow);
       }
 
       /*
@@ -1685,23 +1716,24 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       else {
-	i = 32 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 126) - 23));
-	intermediate_value[1] >>= i;
+        i = 32 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 126) - 23));
+        intermediate_value[1] >>= i;
 
-	/*
-	 ** Set sign bit.
-	 ** --------------------------------------------------------------------
-	 */
-	intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
+        /*
+         ** Set sign bit.
+         ** --------------------------------------------------------------------
+         */
+        intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-	if (options & CVT_M_BIG_ENDIAN) {
-	  intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
-	  intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
-	  intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
-	  memcpy(output_value, intermediate_value, 4);
-	} else {
-	  memcpy(output_value, &intermediate_value[1], 4);
-	}
+        if (options & CVT_M_BIG_ENDIAN) {
+          intermediate_value[0] =
+              ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+          intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
+          intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
+          memcpy(output_value, intermediate_value, 4);
+        } else {
+          memcpy(output_value, &intermediate_value[1], 4);
+        }
       }
     }
 
@@ -1711,21 +1743,23 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 128)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_S_NEG_HUGE, 4);
-	} else {
-	  memcpy(output_value, IEEE_S_POS_HUGE, 4);
-	}
-      } else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IEEE_S_NEG_HUGE, 4);
-      } else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IEEE_S_POS_HUGE, 4);
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_S_NEG_HUGE, 4);
+        } else {
+          memcpy(output_value, IEEE_S_POS_HUGE, 4);
+        }
+      } else if ((options & CVT_M_ROUND_TO_POS) &&
+                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IEEE_S_NEG_HUGE, 4);
+      } else if ((options & CVT_M_ROUND_TO_NEG) &&
+                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IEEE_S_POS_HUGE, 4);
       } else {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_S_NEG_INFINITY, 4);
-	} else {
-	  memcpy(output_value, IEEE_S_POS_INFINITY, 4);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_S_NEG_INFINITY, 4);
+        } else {
+          memcpy(output_value, IEEE_S_POS_INFINITY, 4);
+        }
       }
       RAISE(cvt_s_overflow);
     }
@@ -1761,12 +1795,13 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
       if (options & CVT_M_BIG_ENDIAN) {
-	intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
-	intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
-	intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
-	memcpy(output_value, intermediate_value, 4);
+        intermediate_value[0] =
+            ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+        intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
+        intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
+        memcpy(output_value, intermediate_value, 4);
       } else {
-	memcpy(output_value, &intermediate_value[1], 4);
+        memcpy(output_value, &intermediate_value[1], 4);
       }
     }
   }
@@ -1776,11 +1811,11 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, uint32_t options __attribute__ ((unused)))
+                              CVT_IEEE_T output_value,
+                              uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -1854,31 +1889,31 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
   if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IEEE_T_NEG_ZERO, 8);
-	if (flip)
-	  FlipDouble((int *)output_value);
+        memcpy(output_value, IEEE_T_NEG_ZERO, 8);
+        if (flip)
+          FlipDouble((int *)output_value);
       } else {
-	memcpy(output_value, IEEE_T_POS_ZERO, 8);
-	if (flip)
-	  FlipDouble((int *)output_value);
+        memcpy(output_value, IEEE_T_POS_ZERO, 8);
+        if (flip)
+          FlipDouble((int *)output_value);
       }
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
-	if (flip)
-	  FlipDouble((int *)output_value);
+        memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
+        if (flip)
+          FlipDouble((int *)output_value);
       } else {
-	memcpy(output_value, IEEE_T_POS_INFINITY, 8);
-	if (flip)
-	  FlipDouble((int *)output_value);
+        memcpy(output_value, IEEE_T_POS_INFINITY, 8);
+        if (flip)
+          FlipDouble((int *)output_value);
       }
     }
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
       memcpy(output_value, IEEE_T_INVALID, 8);
       if (flip)
-	FlipDouble((int *)output_value);
+        FlipDouble((int *)output_value);
       RAISE(cvt_s_invalid_value);
     }
   }
@@ -1907,18 +1942,18 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 1021) - 52)) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_T_NEG_ZERO, 8);
-	  if (flip)
-	    FlipDouble((int *)output_value);
-	} else {
-	  memcpy(output_value, IEEE_T_POS_ZERO, 8);
-	  if (flip)
-	    FlipDouble((int *)output_value);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_T_NEG_ZERO, 8);
+          if (flip)
+            FlipDouble((int *)output_value);
+        } else {
+          memcpy(output_value, IEEE_T_POS_ZERO, 8);
+          if (flip)
+            FlipDouble((int *)output_value);
+        }
 
-	if (options & CVT_M_ERR_UNDERFLOW)
-	  RAISE(cvt_s_underflow);
+        if (options & CVT_M_ERR_UNDERFLOW)
+          RAISE(cvt_s_underflow);
       }
 
       /*
@@ -1926,35 +1961,37 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       else {
-	i = 64 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 1022) - 52));
-	if (i > 31) {
-	  i -= 32;
-	  intermediate_value[2] = (intermediate_value[1] >> i);
-	  intermediate_value[1] = 0;
-	} else {
-	  intermediate_value[2] >>= i;
-	  intermediate_value[2] |= (intermediate_value[1] << (32 - i));
-	  intermediate_value[1] >>= i;
-	}
+        i = 64 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 1022) - 52));
+        if (i > 31) {
+          i -= 32;
+          intermediate_value[2] = (intermediate_value[1] >> i);
+          intermediate_value[1] = 0;
+        } else {
+          intermediate_value[2] >>= i;
+          intermediate_value[2] |= (intermediate_value[1] << (32 - i));
+          intermediate_value[1] >>= i;
+        }
 
-	/*
-	 ** OR in sign bit.
-	 ** --------------------------------------------------------------------
-	 */
-	intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
-	if (options & CVT_M_BIG_ENDIAN) {
-	  intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
-	  intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
-	  intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
-	  intermediate_value[1] = ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
-	  intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
-	  intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
-	} else {
-	  intermediate_value[0] = intermediate_value[2];
-	}
-	memcpy(output_value, intermediate_value, 8);
-	if (flip)
-	  FlipDouble((int *)output_value);
+        /*
+         ** OR in sign bit.
+         ** --------------------------------------------------------------------
+         */
+        intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
+        if (options & CVT_M_BIG_ENDIAN) {
+          intermediate_value[0] =
+              ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+          intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
+          intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
+          intermediate_value[1] =
+              ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
+          intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
+          intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
+        } else {
+          intermediate_value[0] = intermediate_value[2];
+        }
+        memcpy(output_value, intermediate_value, 8);
+        if (flip)
+          FlipDouble((int *)output_value);
       }
     }
 
@@ -1964,39 +2001,41 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1024)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_T_NEG_HUGE, 8);
-	  if (flip)
-	    FlipDouble((int *)output_value);
-	} else {
-	  memcpy(output_value, IEEE_T_POS_HUGE, 8);
-	  if (flip)
-	    FlipDouble((int *)output_value);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_T_NEG_HUGE, 8);
+          if (flip)
+            FlipDouble((int *)output_value);
+        } else {
+          memcpy(output_value, IEEE_T_POS_HUGE, 8);
+          if (flip)
+            FlipDouble((int *)output_value);
+        }
       }
 
-      else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IEEE_T_NEG_HUGE, 8);
-	if (flip)
-	  FlipDouble((int *)output_value);
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IEEE_T_NEG_HUGE, 8);
+        if (flip)
+          FlipDouble((int *)output_value);
       }
 
-      else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IEEE_T_POS_HUGE, 8);
-	if (flip)
-	  FlipDouble((int *)output_value);
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IEEE_T_POS_HUGE, 8);
+        if (flip)
+          FlipDouble((int *)output_value);
       }
 
       else {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
-	  if (flip)
-	    FlipDouble((int *)output_value);
-	} else {
-	  memcpy(output_value, IEEE_T_POS_INFINITY, 8);
-	  if (flip)
-	    FlipDouble((int *)output_value);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
+          if (flip)
+            FlipDouble((int *)output_value);
+        } else {
+          memcpy(output_value, IEEE_T_POS_INFINITY, 8);
+          if (flip)
+            FlipDouble((int *)output_value);
+        }
       }
       RAISE(cvt_s_overflow);
     }
@@ -2034,18 +2073,20 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
       if (options & CVT_M_BIG_ENDIAN) {
-	intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
-	intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
-	intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
-	intermediate_value[1] = ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
-	intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
-	intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
+        intermediate_value[0] =
+            ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+        intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
+        intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
+        intermediate_value[1] =
+            ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
+        intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
+        intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
       } else {
-	intermediate_value[0] = intermediate_value[2];
+        intermediate_value[0] = intermediate_value[2];
       }
       memcpy(output_value, &intermediate_value[0], 8);
       if (flip)
-	FlipDouble((int *)output_value);
+        FlipDouble((int *)output_value);
     }
   }
 
@@ -2054,11 +2095,11 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, uint32_t options __attribute__ ((unused)))
+                              CVT_IEEE_X output_value,
+                              uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -2132,16 +2173,16 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
   if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IEEE_X_NEG_ZERO, 16);
+        memcpy(output_value, IEEE_X_NEG_ZERO, 16);
       } else {
-	memcpy(output_value, IEEE_X_POS_ZERO, 16);
+        memcpy(output_value, IEEE_X_POS_ZERO, 16);
       }
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IEEE_X_NEG_INFINITY, 16);
+        memcpy(output_value, IEEE_X_NEG_INFINITY, 16);
       } else {
-	memcpy(output_value, IEEE_X_POS_INFINITY, 16);
+        memcpy(output_value, IEEE_X_POS_INFINITY, 16);
       }
     }
 
@@ -2157,7 +2198,8 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   else {
-    round_bit_position = intermediate_value[U_R_EXP] - ((U_R_BIAS - 16382) - 112);
+    round_bit_position =
+        intermediate_value[U_R_EXP] - ((U_R_BIAS - 16382) - 112);
     if (round_bit_position < 0)
       round_bit_position = 0;
     else if (round_bit_position > 113)
@@ -2175,14 +2217,14 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 16381) - 112)) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_X_NEG_ZERO, 16);
-	} else {
-	  memcpy(output_value, IEEE_X_POS_ZERO, 16);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_X_NEG_ZERO, 16);
+        } else {
+          memcpy(output_value, IEEE_X_POS_ZERO, 16);
+        }
 
-	if (options & CVT_M_ERR_UNDERFLOW)
-	  RAISE(cvt_s_underflow);
+        if (options & CVT_M_ERR_UNDERFLOW)
+          RAISE(cvt_s_underflow);
       }
 
       /*
@@ -2190,66 +2232,70 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       else {
-	i = 128 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 16382) - 112));
-	if (i > 95) {
-	  i -= 96;
-	  intermediate_value[4] = (intermediate_value[1] >> i);
-	  intermediate_value[3] = 0;
-	  intermediate_value[2] = 0;
-	  intermediate_value[1] = 0;
-	} else if (i > 63) {
-	  i -= 64;
-	  intermediate_value[4] = (intermediate_value[2] >> i);
-	  intermediate_value[4] |= (intermediate_value[1] << (32 - i));
-	  intermediate_value[3] = (intermediate_value[1] >> i);
-	  intermediate_value[2] = 0;
-	  intermediate_value[1] = 0;
-	} else if (i > 31) {
-	  i -= 32;
-	  intermediate_value[4] = (intermediate_value[3] >> i);
-	  intermediate_value[4] |= (intermediate_value[2] << (32 - i));
-	  intermediate_value[3] = (intermediate_value[2] >> i);
-	  intermediate_value[3] |= (intermediate_value[1] << (32 - i));
-	  intermediate_value[2] = (intermediate_value[1] >> i);
-	  intermediate_value[1] = 0;
-	} else {
-	  intermediate_value[4] >>= i;
-	  intermediate_value[4] |= (intermediate_value[3] << (32 - i));
-	  intermediate_value[3] >>= i;
-	  intermediate_value[3] |= (intermediate_value[2] << (32 - i));
-	  intermediate_value[2] >>= i;
-	  intermediate_value[2] |= (intermediate_value[1] << (32 - i));
-	  intermediate_value[1] >>= i;
-	}
+        i = 128 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 16382) - 112));
+        if (i > 95) {
+          i -= 96;
+          intermediate_value[4] = (intermediate_value[1] >> i);
+          intermediate_value[3] = 0;
+          intermediate_value[2] = 0;
+          intermediate_value[1] = 0;
+        } else if (i > 63) {
+          i -= 64;
+          intermediate_value[4] = (intermediate_value[2] >> i);
+          intermediate_value[4] |= (intermediate_value[1] << (32 - i));
+          intermediate_value[3] = (intermediate_value[1] >> i);
+          intermediate_value[2] = 0;
+          intermediate_value[1] = 0;
+        } else if (i > 31) {
+          i -= 32;
+          intermediate_value[4] = (intermediate_value[3] >> i);
+          intermediate_value[4] |= (intermediate_value[2] << (32 - i));
+          intermediate_value[3] = (intermediate_value[2] >> i);
+          intermediate_value[3] |= (intermediate_value[1] << (32 - i));
+          intermediate_value[2] = (intermediate_value[1] >> i);
+          intermediate_value[1] = 0;
+        } else {
+          intermediate_value[4] >>= i;
+          intermediate_value[4] |= (intermediate_value[3] << (32 - i));
+          intermediate_value[3] >>= i;
+          intermediate_value[3] |= (intermediate_value[2] << (32 - i));
+          intermediate_value[2] >>= i;
+          intermediate_value[2] |= (intermediate_value[1] << (32 - i));
+          intermediate_value[1] >>= i;
+        }
 
-	/*
-	 ** OR in sign bit.
-	 ** --------------------------------------------------------------------
-	 */
-	intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
-	if (options & CVT_M_BIG_ENDIAN) {
-	  intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
-	  intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
-	  intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
+        /*
+         ** OR in sign bit.
+         ** --------------------------------------------------------------------
+         */
+        intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
+        if (options & CVT_M_BIG_ENDIAN) {
+          intermediate_value[0] =
+              ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+          intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
+          intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
 
-	  intermediate_value[1] = ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
-	  intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
-	  intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
+          intermediate_value[1] =
+              ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
+          intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
+          intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
 
-	  intermediate_value[2] = ((intermediate_value[3] << 24) | (intermediate_value[3] >> 24));
-	  intermediate_value[2] |= ((intermediate_value[3] << 8) & 0x00FF0000L);
-	  intermediate_value[2] |= ((intermediate_value[3] >> 8) & 0x0000FF00L);
+          intermediate_value[2] =
+              ((intermediate_value[3] << 24) | (intermediate_value[3] >> 24));
+          intermediate_value[2] |= ((intermediate_value[3] << 8) & 0x00FF0000L);
+          intermediate_value[2] |= ((intermediate_value[3] >> 8) & 0x0000FF00L);
 
-	  intermediate_value[3] = ((intermediate_value[4] << 24) | (intermediate_value[4] >> 24));
-	  intermediate_value[3] |= ((intermediate_value[4] << 8) & 0x00FF0000L);
-	  intermediate_value[3] |= ((intermediate_value[4] >> 8) & 0x0000FF00L);
-	} else {
-	  intermediate_value[0] = intermediate_value[3];
-	  intermediate_value[3] = intermediate_value[1];
-	  intermediate_value[1] = intermediate_value[0];
-	  intermediate_value[0] = intermediate_value[4];
-	}
-	memcpy(output_value, intermediate_value, 16);
+          intermediate_value[3] =
+              ((intermediate_value[4] << 24) | (intermediate_value[4] >> 24));
+          intermediate_value[3] |= ((intermediate_value[4] << 8) & 0x00FF0000L);
+          intermediate_value[3] |= ((intermediate_value[4] >> 8) & 0x0000FF00L);
+        } else {
+          intermediate_value[0] = intermediate_value[3];
+          intermediate_value[3] = intermediate_value[1];
+          intermediate_value[1] = intermediate_value[0];
+          intermediate_value[0] = intermediate_value[4];
+        }
+        memcpy(output_value, intermediate_value, 16);
       }
     }
 
@@ -2259,27 +2305,29 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16384)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_X_NEG_HUGE, 16);
-	} else {
-	  memcpy(output_value, IEEE_X_POS_HUGE, 16);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_X_NEG_HUGE, 16);
+        } else {
+          memcpy(output_value, IEEE_X_POS_HUGE, 16);
+        }
       }
 
-      else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IEEE_X_NEG_HUGE, 16);
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IEEE_X_NEG_HUGE, 16);
       }
 
-      else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IEEE_X_POS_HUGE, 16);
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IEEE_X_POS_HUGE, 16);
       }
 
       else {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IEEE_X_NEG_INFINITY, 16);
-	} else {
-	  memcpy(output_value, IEEE_X_POS_INFINITY, 16);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IEEE_X_NEG_INFINITY, 16);
+        } else {
+          memcpy(output_value, IEEE_X_POS_INFINITY, 16);
+        }
       }
       RAISE(cvt_s_overflow);
     }
@@ -2321,26 +2369,30 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
       if (options & CVT_M_BIG_ENDIAN) {
-	intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
-	intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
-	intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
+        intermediate_value[0] =
+            ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+        intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
+        intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
 
-	intermediate_value[1] = ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
-	intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
-	intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
+        intermediate_value[1] =
+            ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
+        intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
+        intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
 
-	intermediate_value[2] = ((intermediate_value[3] << 24) | (intermediate_value[3] >> 24));
-	intermediate_value[2] |= ((intermediate_value[3] << 8) & 0x00FF0000L);
-	intermediate_value[2] |= ((intermediate_value[3] >> 8) & 0x0000FF00L);
+        intermediate_value[2] =
+            ((intermediate_value[3] << 24) | (intermediate_value[3] >> 24));
+        intermediate_value[2] |= ((intermediate_value[3] << 8) & 0x00FF0000L);
+        intermediate_value[2] |= ((intermediate_value[3] >> 8) & 0x0000FF00L);
 
-	intermediate_value[3] = ((intermediate_value[4] << 24) | (intermediate_value[4] >> 24));
-	intermediate_value[3] |= ((intermediate_value[4] << 8) & 0x00FF0000L);
-	intermediate_value[3] |= ((intermediate_value[4] >> 8) & 0x0000FF00L);
+        intermediate_value[3] =
+            ((intermediate_value[4] << 24) | (intermediate_value[4] >> 24));
+        intermediate_value[3] |= ((intermediate_value[4] << 8) & 0x00FF0000L);
+        intermediate_value[3] |= ((intermediate_value[4] >> 8) & 0x0000FF00L);
       } else {
-	intermediate_value[0] = intermediate_value[3];
-	intermediate_value[3] = intermediate_value[1];
-	intermediate_value[1] = intermediate_value[0];
-	intermediate_value[0] = intermediate_value[4];
+        intermediate_value[0] = intermediate_value[3];
+        intermediate_value[3] = intermediate_value[1];
+        intermediate_value[1] = intermediate_value[0];
+        intermediate_value[0] = intermediate_value[4];
       }
       memcpy(output_value, &intermediate_value[0], 16);
     }
@@ -2351,11 +2403,11 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, uint32_t options __attribute__ ((unused)))
+                             CVT_IBM_LONG output_value,
+                             uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -2427,16 +2479,16 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
   if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IBM_L_NEG_ZERO, 8);
+        memcpy(output_value, IBM_L_NEG_ZERO, 8);
       } else {
-	memcpy(output_value, IBM_L_POS_ZERO, 8);
+        memcpy(output_value, IBM_L_POS_ZERO, 8);
       }
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IBM_L_NEG_INFINITY, 8);
+        memcpy(output_value, IBM_L_NEG_INFINITY, 8);
       } else {
-	memcpy(output_value, IBM_L_POS_INFINITY, 8);
+        memcpy(output_value, IBM_L_POS_INFINITY, 8);
       }
     } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
       memcpy(output_value, IBM_L_INVALID, 8);
@@ -2469,13 +2521,13 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IBM_L_NEG_ZERO, 8);
+        memcpy(output_value, IBM_L_NEG_ZERO, 8);
       } else {
-	memcpy(output_value, IBM_L_POS_ZERO, 8);
+        memcpy(output_value, IBM_L_POS_ZERO, 8);
       }
 
       if (options & CVT_M_ERR_UNDERFLOW)
-	RAISE(cvt_s_underflow);
+        RAISE(cvt_s_underflow);
     }
     /*
      ** Check for overflow.
@@ -2487,21 +2539,23 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IBM_L_NEG_HUGE, 8);
-	} else {
-	  memcpy(output_value, IBM_L_POS_HUGE, 8);
-	}
-      } else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IBM_L_NEG_HUGE, 8);
-      } else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IBM_L_POS_HUGE, 8);
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IBM_L_NEG_HUGE, 8);
+        } else {
+          memcpy(output_value, IBM_L_POS_HUGE, 8);
+        }
+      } else if ((options & CVT_M_ROUND_TO_POS) &&
+                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IBM_L_NEG_HUGE, 8);
+      } else if ((options & CVT_M_ROUND_TO_NEG) &&
+                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IBM_L_POS_HUGE, 8);
       } else {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IBM_L_NEG_INFINITY, 8);
-	} else {
-	  memcpy(output_value, IBM_L_POS_INFINITY, 8);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IBM_L_NEG_INFINITY, 8);
+        } else {
+          memcpy(output_value, IBM_L_POS_INFINITY, 8);
+        }
       }
       RAISE(cvt_s_overflow);
     }
@@ -2519,11 +2573,11 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
       j = ((int)(intermediate_value[U_R_EXP] - U_R_BIAS) / 4) + 64;
 
       if (i) {
-	if (intermediate_value[U_R_EXP] > U_R_BIAS)
-	  j += 1;
-	i = 12 - i;
+        if (intermediate_value[U_R_EXP] > U_R_BIAS)
+          j += 1;
+        i = 12 - i;
       } else {
-	i = 8;
+        i = 8;
       }
 
       /*
@@ -2545,10 +2599,12 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
        ** Shuffle bytes to big endian format
        ** ----------------------------------------------------------------------
        */
-      intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+      intermediate_value[0] =
+          ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
       intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
       intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
-      intermediate_value[1] = ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
+      intermediate_value[1] =
+          ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
       intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
       intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
 
@@ -2561,11 +2617,11 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, uint32_t options __attribute__ ((unused)))
+                             CVT_IBM_SHORT output_value,
+                             uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -2636,14 +2692,15 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
   if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IBM_S_NEG_ZERO, 4);
+        memcpy(output_value, IBM_S_NEG_ZERO, 4);
       } else {
-	memcpy(output_value, IBM_S_POS_ZERO, 4);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
+        memcpy(output_value, IBM_S_POS_ZERO, 4);
+      }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IBM_S_NEG_INFINITY, 4);
+        memcpy(output_value, IBM_S_NEG_INFINITY, 4);
       } else {
-	memcpy(output_value, IBM_S_POS_INFINITY, 4);
+        memcpy(output_value, IBM_S_POS_INFINITY, 4);
       }
 
     } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
@@ -2673,13 +2730,13 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
      */
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 255)) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, IBM_S_NEG_ZERO, 4);
+        memcpy(output_value, IBM_S_NEG_ZERO, 4);
       } else {
-	memcpy(output_value, IBM_S_POS_ZERO, 4);
+        memcpy(output_value, IBM_S_POS_ZERO, 4);
       }
 
       if (options & CVT_M_ERR_UNDERFLOW) {
-	RAISE(cvt_s_underflow);
+        RAISE(cvt_s_underflow);
       }
     }
 
@@ -2689,21 +2746,23 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 252)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IBM_S_NEG_HUGE, 4);
-	} else {
-	  memcpy(output_value, IBM_S_POS_HUGE, 4);
-	}
-      } else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IBM_S_NEG_HUGE, 4);
-      } else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, IBM_S_POS_HUGE, 4);
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IBM_S_NEG_HUGE, 4);
+        } else {
+          memcpy(output_value, IBM_S_POS_HUGE, 4);
+        }
+      } else if ((options & CVT_M_ROUND_TO_POS) &&
+                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IBM_S_NEG_HUGE, 4);
+      } else if ((options & CVT_M_ROUND_TO_NEG) &&
+                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, IBM_S_POS_HUGE, 4);
       } else {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, IBM_S_NEG_INFINITY, 4);
-	} else {
-	  memcpy(output_value, IBM_S_POS_INFINITY, 4);
-	}
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, IBM_S_NEG_INFINITY, 4);
+        } else {
+          memcpy(output_value, IBM_S_POS_INFINITY, 4);
+        }
       }
       RAISE(cvt_s_overflow);
     }
@@ -2721,11 +2780,11 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
       j = ((int)(intermediate_value[U_R_EXP] - U_R_BIAS) / 4) + 64;
 
       if (i) {
-	if (intermediate_value[U_R_EXP] > U_R_BIAS)
-	  j += 1;
-	i = 12 - i;
+        if (intermediate_value[U_R_EXP] > U_R_BIAS)
+          j += 1;
+        i = 12 - i;
       } else {
-	i = 8;
+        i = 8;
       }
 
       /*
@@ -2745,12 +2804,12 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
        ** Shuffle bytes to big endian format
        ** ----------------------------------------------------------------------
        */
-      intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+      intermediate_value[0] =
+          ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
       intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
       intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
 
       memcpy(output_value, &intermediate_value[0], 4);
-
     }
   }
 
@@ -2759,11 +2818,11 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, uint32_t options __attribute__ ((unused)))
+                            CVT_CRAY output_value,
+                            uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -2840,18 +2899,18 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
   if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, CRAY_NEG_ZERO, 8);
+        memcpy(output_value, CRAY_NEG_ZERO, 8);
       } else {
-	memcpy(output_value, CRAY_POS_ZERO, 8);
+        memcpy(output_value, CRAY_POS_ZERO, 8);
       }
     }
     if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, CRAY_NEG_INFINITY, 8);
-	RAISE(cvt_s_neg_infinity);
+        memcpy(output_value, CRAY_NEG_INFINITY, 8);
+        RAISE(cvt_s_neg_infinity);
       } else {
-	memcpy(output_value, CRAY_POS_INFINITY, 8);
-	RAISE(cvt_s_pos_infinity);
+        memcpy(output_value, CRAY_POS_INFINITY, 8);
+        RAISE(cvt_s_pos_infinity);
       }
     } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
       memcpy(output_value, CRAY_INVALID, 8);
@@ -2874,13 +2933,13 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
      */
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 8192)) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	memcpy(output_value, CRAY_NEG_ZERO, 8);
+        memcpy(output_value, CRAY_NEG_ZERO, 8);
       } else {
-	memcpy(output_value, CRAY_POS_ZERO, 8);
+        memcpy(output_value, CRAY_POS_ZERO, 8);
       }
 
       if (options & CVT_M_ERR_UNDERFLOW) {
-	RAISE(cvt_s_underflow);
+        RAISE(cvt_s_underflow);
       }
     }
 
@@ -2890,17 +2949,19 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
      */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 8191)) {
       if (options & CVT_M_TRUNCATE) {
-	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
-	  memcpy(output_value, CRAY_NEG_HUGE, 8);
-	} else {
-	  memcpy(output_value, CRAY_POS_HUGE, 8);
-	}
-      } else if ((options & CVT_M_ROUND_TO_POS) && (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, CRAY_NEG_HUGE, 8);
-      } else if ((options & CVT_M_ROUND_TO_NEG) && !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
-	memcpy(output_value, CRAY_POS_HUGE, 8);
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+          memcpy(output_value, CRAY_NEG_HUGE, 8);
+        } else {
+          memcpy(output_value, CRAY_POS_HUGE, 8);
+        }
+      } else if ((options & CVT_M_ROUND_TO_POS) &&
+                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, CRAY_NEG_HUGE, 8);
+      } else if ((options & CVT_M_ROUND_TO_NEG) &&
+                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+        memcpy(output_value, CRAY_POS_HUGE, 8);
       } else {
-	memcpy(output_value, CRAY_INVALID, 8);
+        memcpy(output_value, CRAY_INVALID, 8);
       }
       RAISE(cvt_s_overflow);
     }
@@ -2935,11 +2996,13 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
        ** Shuffle bytes to big endian format
        ** ----------------------------------------------------------------------
        */
-      intermediate_value[0] = ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
+      intermediate_value[0] =
+          ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
       intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
       intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
 
-      intermediate_value[1] = ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
+      intermediate_value[1] =
+          ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
       intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
       intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
 
@@ -2952,11 +3015,11 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return return_status;
-
 }
 
 static void _round(UNPACKED_REAL intermediate_value,
-			   uint32_t round_bit_position, uint32_t options __attribute__ ((unused)))
+                   uint32_t round_bit_position,
+                   uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -3097,69 +3160,69 @@ static void _round(UNPACKED_REAL intermediate_value,
       roundup = 0;
       switch (intermediate_value[i] & bit_mask) {
 
-	/*
-	 ** If round bit is clear, and ROUND TO NEAREST option is selected we
-	 ** truncate.
-	 ** --------------------------------------------------------------------
-	 */
+        /*
+         ** If round bit is clear, and ROUND TO NEAREST option is selected we
+         ** truncate.
+         ** --------------------------------------------------------------------
+         */
       case 0:
-	if (options & CVT_M_ROUND_TO_NEAREST)
-	  break;
-	MDS_ATTR_FALLTHROUGH
+        if (options & CVT_M_ROUND_TO_NEAREST)
+          break;
+        MDS_ATTR_FALLTHROUGH
 
-	/*
-	 ** Otherwise, make note of wheather there are any bits set after the
-	 ** round bit, and then check the remaining cases.
-	 ** --------------------------------------------------------------------
-	 */
+        /*
+         ** Otherwise, make note of wheather there are any bits set after the
+         ** round bit, and then check the remaining cases.
+         ** --------------------------------------------------------------------
+         */
       default:
-	if (!(more_bits = intermediate_value[i] & (bit_mask - 1)))
-	  switch (i) {
-	  case 1:
-	    more_bits = intermediate_value[2];
-	    MDS_ATTR_FALLTHROUGH
-	  case 2:
-	    more_bits |= intermediate_value[3];
-	    MDS_ATTR_FALLTHROUGH
-	  case 3:
-	    more_bits |= intermediate_value[4];
-	    break;
-	  default:
-	    break;
-	  }
+        if (!(more_bits = intermediate_value[i] & (bit_mask - 1)))
+          switch (i) {
+          case 1:
+            more_bits = intermediate_value[2];
+            MDS_ATTR_FALLTHROUGH
+          case 2:
+            more_bits |= intermediate_value[3];
+            MDS_ATTR_FALLTHROUGH
+          case 3:
+            more_bits |= intermediate_value[4];
+            break;
+          default:
+            break;
+          }
 
-	/*
-	 ** Re-check ROUND TO NEAREST option.  NOTE: if we've reached
-	 ** this point and ROUND TO NEAREST has been selected, the
-	 ** round bit is set.
-	 ** ----------------------------------------------------------
-	 */
-	if (options & CVT_M_ROUND_TO_NEAREST) {
-	  if (!(roundup = more_bits)) {
-	    if (bit_mask << 1) {
-	      roundup = intermediate_value[i] & (bit_mask << 1);
-	    } else {
-	      if (i != 1)
-		roundup = intermediate_value[i - 1] & 1;
-	    }
-	  }
-	}
+        /*
+         ** Re-check ROUND TO NEAREST option.  NOTE: if we've reached
+         ** this point and ROUND TO NEAREST has been selected, the
+         ** round bit is set.
+         ** ----------------------------------------------------------
+         */
+        if (options & CVT_M_ROUND_TO_NEAREST) {
+          if (!(roundup = more_bits)) {
+            if (bit_mask << 1) {
+              roundup = intermediate_value[i] & (bit_mask << 1);
+            } else {
+              if (i != 1)
+                roundup = intermediate_value[i - 1] & 1;
+            }
+          }
+        }
 
-	/*
-	 ** Check ROUND TO POSITIVE INFINITY option.
-	 ** ----------------------------------------------------------
-	 */
-	else if (options & CVT_M_ROUND_TO_POS) {
-	  if (!(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
-	    roundup = (intermediate_value[i] & bit_mask) | more_bits;
-	}
+        /*
+         ** Check ROUND TO POSITIVE INFINITY option.
+         ** ----------------------------------------------------------
+         */
+        else if (options & CVT_M_ROUND_TO_POS) {
+          if (!(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+            roundup = (intermediate_value[i] & bit_mask) | more_bits;
+        }
 
-	/*
-	 ** Check ROUND TO NEGATIVE INFINITY option.
-	 ** ----------------------------------------------------------
-	 */
-	else if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
-	  roundup = (intermediate_value[i] & bit_mask) | more_bits;
+        /*
+         ** Check ROUND TO NEGATIVE INFINITY option.
+         ** ----------------------------------------------------------
+         */
+        else if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+          roundup = (intermediate_value[i] & bit_mask) | more_bits;
       }
     }
 
@@ -3174,21 +3237,22 @@ static void _round(UNPACKED_REAL intermediate_value,
        ** ----------------------------------------------------------------------
        */
       bit_mask <<= 1;
-      intermediate_value[i] = (intermediate_value[i] & ~(bit_mask - 1)) + bit_mask;
+      intermediate_value[i] =
+          (intermediate_value[i] & ~(bit_mask - 1)) + bit_mask;
 
       /*
        ** Propagate any carry.
        ** ----------------------------------------------------------------------
        */
       while (!intermediate_value[i])
-	intermediate_value[--i] += 1;
+        intermediate_value[--i] += 1;
 
       /*
        ** If carry reaches exponent MSB gets zeroed and must be reset.
        ** ----------------------------------------------------------------------
        */
       if (i == 0)
-	intermediate_value[1] = 0x80000000L;
+        intermediate_value[1] = 0x80000000L;
     }
   }
 
@@ -3197,11 +3261,10 @@ static void _round(UNPACKED_REAL intermediate_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_vax_f(CVT_VAX_F input_value, UNPACKED_REAL output_value,
+                         uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -3315,11 +3378,10 @@ static void unpack_vax_f(CVT_VAX_F input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_vax_d(CVT_VAX_D input_value, UNPACKED_REAL output_value,
+                         uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -3445,11 +3507,10 @@ static void unpack_vax_d(CVT_VAX_D input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_vax_g(CVT_VAX_G input_value, UNPACKED_REAL output_value,
+                         uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -3576,11 +3637,10 @@ static void unpack_vax_g(CVT_VAX_G input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_vax_h(CVT_VAX_H input_value, UNPACKED_REAL output_value,
+                         uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -3705,11 +3765,10 @@ static void unpack_vax_h(CVT_VAX_H input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
+                          uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -3815,8 +3874,8 @@ static void unpack_ieee_s(CVT_IEEE_S input_value,
        */
       i = 0;
       while (!(output_value[1] & 0x00400000L)) {
-	output_value[1] <<= 1;
-	i += 1;
+        output_value[1] <<= 1;
+        i += 1;
       }
 
       /*
@@ -3893,11 +3952,10 @@ static void unpack_ieee_s(CVT_IEEE_S input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
+                          uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -4010,8 +4068,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value,
        */
       i = 0;
       while (!(output_value[1] & 0x00080000L)) {
-	output_value[1] <<= 1;
-	i += 1;
+        output_value[1] <<= 1;
+        i += 1;
       }
 
       /*
@@ -4041,8 +4099,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value,
        */
       i = 20;
       while (!(output_value[1] & 0x80000000L)) {
-	output_value[1] <<= 1;
-	i += 1;
+        output_value[1] <<= 1;
+        i += 1;
       }
 
       /*
@@ -4117,11 +4175,10 @@ static void unpack_ieee_t(CVT_IEEE_T input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
+                          uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -4244,8 +4301,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value,
        */
       i = 0;
       while (!(output_value[1] & 0x00008000L)) {
-	output_value[1] <<= 1;
-	i += 1;
+        output_value[1] <<= 1;
+        i += 1;
       }
 
       /*
@@ -4279,8 +4336,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value,
        */
       i = 0;
       while (!(output_value[1] & 0x80000000L)) {
-	output_value[1] <<= 1;
-	i += 1;
+        output_value[1] <<= 1;
+        i += 1;
       }
 
       /*
@@ -4315,8 +4372,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value,
        */
       i = 0;
       while (!(output_value[1] & 0x80000000L)) {
-	output_value[1] <<= 1;
-	i += 1;
+        output_value[1] <<= 1;
+        i += 1;
       }
 
       /*
@@ -4349,8 +4406,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value,
        */
       i = 0;
       while (!(output_value[1] & 0x80000000L)) {
-	output_value[1] <<= 1;
-	i += 1;
+        output_value[1] <<= 1;
+        i += 1;
       }
 
       /*
@@ -4429,11 +4486,10 @@ static void unpack_ieee_x(CVT_IEEE_X input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_ibm_l(CVT_IBM_LONG input_value, UNPACKED_REAL output_value,
+                         uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -4544,7 +4600,7 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value,
     while (!(output_value[1] & 0x00800000L)) {
       i += 1;
       if (i > 3)
-	break;
+        break;
       output_value[1] <<= 1;
     }
 
@@ -4591,11 +4647,10 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_ibm_s(CVT_IBM_SHORT input_value, UNPACKED_REAL output_value,
+                         uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -4702,7 +4757,7 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value,
     while (!(output_value[1] & 0x00800000L)) {
       i += 1;
       if (i > 3)
-	break;
+        break;
       output_value[1] <<= 1;
     }
 
@@ -4747,10 +4802,10 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value,
    ** ==========================================================================
    */
   return;
-
 }
 
-static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value,
+                        uint32_t options __attribute__((unused)))
 /*
 **=============================================================================
 **
@@ -4847,7 +4902,8 @@ static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, uint32
   if ((output_value[1] == 0) && (output_value[2] == 0)) {
     output_value[U_R_FLAGS] |= U_R_ZERO;
   } else if ((output_value[U_R_EXP] < 0x2000) ||
-	     (output_value[U_R_EXP] >= 0x6000) || (!(output_value[1] & 0x00008000L))) {
+             (output_value[U_R_EXP] >= 0x6000) ||
+             (!(output_value[1] & 0x00008000L))) {
     output_value[U_R_FLAGS] |= U_R_INVALID;
   }
 
@@ -4883,5 +4939,4 @@ static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, uint32
    ** ==========================================================================
    */
   return;
-
 }

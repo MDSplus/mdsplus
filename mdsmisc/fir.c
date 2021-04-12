@@ -40,73 +40,68 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element FIR.C */
 /*------------------------------------------------------------------------------
 
-	Name:	FIR
+        Name:	FIR
 
-	Type:   C function
+        Type:   C function
 
-	Author:	Gabriele Manduchi
-		Istituto Gas Ionizzati del CNR - Padova (Italy)
+        Author:	Gabriele Manduchi
+                Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-	Date:    2-NOV-1994
+        Date:    2-NOV-1994
 
-	Purpose: Compute FIR coefficients using the following windows:
+        Purpose: Compute FIR coefficients using the following windows:
 
-	Rectangular;
-	Bartlett;
-	Hanning;
-	Hamming;
-	Blackmann.
+        Rectangular;
+        Bartlett;
+        Hanning;
+        Hamming;
+        Blackmann.
 
 ------------------------------------------------------------------------------*/
-#include <math.h>
-#include <stdlib.h>
-#include "filter.h"
 #include "complex.h"
+#include "filter.h"
+#include <math.h>
 #include <mdsplus/mdsconfig.h>
+#include <stdlib.h>
 
-static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int));
+static Filter *Fir(double fc, double s_f, int n, void (*Window)(double *, int));
 static void Rectangular(double *w, int n);
 static void Bartlett(double *w, int n);
 static void Hanning(double *w, int n);
 static void Hamming(double *w, int n);
 static void Blackmann(double *w, int n);
 
-EXPORT Filter *FirRectangular(float *fc, float *s_f, int *n)
-{
+EXPORT Filter *FirRectangular(float *fc, float *s_f, int *n) {
   return Fir(*fc, *s_f, *n, Rectangular);
 }
 
-EXPORT Filter *FirBartlett(float *fc, float *s_f, int *n)
-{
+EXPORT Filter *FirBartlett(float *fc, float *s_f, int *n) {
   return Fir(*fc, *s_f, *n, Bartlett);
 }
 
-EXPORT Filter *FirHanning(float *fc, float *s_f, int *n)
-{
+EXPORT Filter *FirHanning(float *fc, float *s_f, int *n) {
   return Fir(*fc, *s_f, *n, Hanning);
 }
 
-EXPORT Filter *FirHamming(float *fc, float *s_f, int *n)
-{
+EXPORT Filter *FirHamming(float *fc, float *s_f, int *n) {
   return Fir(*fc, *s_f, *n, Hamming);
 }
 
-EXPORT Filter *FirBlackmann(float *fc, float *s_f, int *n)
-{
+EXPORT Filter *FirBlackmann(float *fc, float *s_f, int *n) {
   return Fir(*fc, *s_f, *n, Blackmann);
 }
 
-static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int))
-{
+static Filter *Fir(double fc, double s_f, int n,
+                   void (*Window)(double *, int)) {
   int i;
   Filter *filter;
   double *w, wc, alpha;
 
   wc = 2 * PI * fc / s_f;
 
-  filter = (Filter *) malloc(sizeof(Filter));
+  filter = (Filter *)malloc(sizeof(Filter));
   filter->num_parallels = 1;
-  filter->units = (FilterUnit *) malloc(sizeof(FilterUnit));
+  filter->units = (FilterUnit *)malloc(sizeof(FilterUnit));
   filter->units[0].num_degree = n;
   filter->units[0].den_degree = 0;
   filter->units[0].num = (double *)malloc(n * sizeof(double));
@@ -115,22 +110,21 @@ static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int))
   alpha = (n - 1) * 0.5;
   for (i = 0; i < n; i++)
     if (fabs(i - alpha) > 1E-6)
-      filter->units[0].num[i] = w[i] * sin(wc * (i - alpha)) / (PI * (i - alpha));
+      filter->units[0].num[i] =
+          w[i] * sin(wc * (i - alpha)) / (PI * (i - alpha));
     else
       filter->units[0].num[i] = wc / PI;
   free(w);
   return filter;
 }
 
-static void Rectangular(double *w, int n)
-{
+static void Rectangular(double *w, int n) {
   int i;
   for (i = 0; i < n; i++)
     w[i] = 1;
 }
 
-static void Bartlett(double *w, int n)
-{
+static void Bartlett(double *w, int n) {
   int i;
   for (i = 0; i <= (n - 1) / 2; i++)
     w[i] = 2 * i / (double)(n - 1);
@@ -138,24 +132,21 @@ static void Bartlett(double *w, int n)
     w[i] = 2 - 2 * i / (double)(n - 1);
 }
 
-static void Hanning(double *w, int n)
-{
+static void Hanning(double *w, int n) {
   int i;
   for (i = 0; i < n; i++)
     w[i] = 0.5 * (1 - cos(2 * PI * i / (double)(n - 1)));
 }
 
-static void Hamming(double *w, int n)
-{
+static void Hamming(double *w, int n) {
   int i;
   for (i = 0; i < n; i++)
     w[i] = 0.54 - 0.46 * cos(2 * PI * i / (double)(n - 1));
 }
 
-static void Blackmann(double *w, int n)
-{
+static void Blackmann(double *w, int n) {
   int i;
   for (i = 0; i < n; i++)
-    w[i] =
-	0.42 - 0.5 * cos(2 * PI * i / (double)(n - 1)) + 0.08 * cos(4 * PI * i / (double)(n - 1));
+    w[i] = 0.42 - 0.5 * cos(2 * PI * i / (double)(n - 1)) +
+           0.08 * cos(4 * PI * i / (double)(n - 1));
 }

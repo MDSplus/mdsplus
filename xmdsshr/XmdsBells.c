@@ -28,19 +28,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSBELLS.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsBells
+                Name:   XmdsBells
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:    5-MAY-1992
+                Date:    5-MAY-1992
 
-		Purpose: Ring Bells
+                Purpose: Ring Bells
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int XmdsBells(int *number_of_bells )
 
@@ -52,15 +52,14 @@ int XmdsBells(int *number_of_bells )
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
 #include <X11/Xlib.h>
 #include <mdsplus/mdsconfig.h>
 
-EXPORT int XmdsBells(int *num_bells)
-{
+EXPORT int XmdsBells(int *num_bells) {
   static Display *display = 0;
   int i;
   if (!display)

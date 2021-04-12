@@ -18,6 +18,13 @@ test64="64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64 --with-winebottle=/workspace
 mkdir -p /workspace/winebottle32
 test32="32 i686-w64-mingw32   bin_x86    bin_x86    --with-winebottle=/workspace/winebottle32"
 
+runtests() {
+    # run tests with the platform specific params read from test32 and test64
+    testarch ${test64}
+    testarch ${test32};
+    checktests;
+}
+
 buildrelease() {
     abort=0
     ### Clean up workspace
@@ -45,7 +52,8 @@ buildrelease() {
     if [ -z "$NOMAKE" ]; then
       pushd /workspace/releasebld/64/mdsobjects/cpp
       $MAKE defs
-      HOME=/workspace/winebottle64 WINEARCH=win64 wine cmd /C ${srcdir}/mdsobjects/cpp/visual-studio-build.bat
+      HOME=/workspace/winebottle64 WINEARCH=win64\
+	wine cmd /C ${srcdir}/deploy/platform/windows/visual-studio-build.bat
       cp /workspace/releasebld/64/bin_x86_64/MdsObjectsCppShr-VS.dll ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/64/bin_x86_64/*.lib ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/32/bin_x86/*.lib ${MDSPLUS_DIR}/bin_x86/

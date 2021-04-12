@@ -75,15 +75,15 @@ rebuild-tests:
 if ENABLE_SANITIZE
   # // sanitizer options specific (overload this in your Makefile.am) //
   LSAN_OPTIONS       ?=
-  ASAN_OPTIONS       ?=
+  ASAN_OPTIONS       ?= use_sigaltstack=0
   TSAN_OPTIONS       ?= second_deadlock_stack=1
   UBSAN_OPTIONS      ?=
 
   # // suppressions files (overload this in your Makefile.am) //
-  LSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-lsan.supp
-  ASAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-asan.supp
-  TSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-tsan.supp
-  UBSAN_OPTIONS_SUPP ?= suppressions=$(top_srcdir)/conf/gcc-ubsan.supp
+  LSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/sanitizer.supp/leak.supp
+  ASAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/sanitizer.supp/address.supp
+  TSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/sanitizer.supp/thread.supp
+  UBSAN_OPTIONS_SUPP ?= suppressions=$(top_srcdir)/conf/sanitizer.supp/undefined.supp
 
   # Preloaded libraries to be exported within the test-driver script. This was
   # done to avoid having libraries for 32bit preloaded when we trigger the
@@ -100,7 +100,7 @@ if ENABLE_SANITIZE
 endif
 
 # // check if libpath is correct or skip python tests
-if ENABLE_SANITIZE 
+if ENABLE_SANITIZE
   _check_sanitize_ldd = \
    ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
      ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
@@ -150,7 +150,7 @@ $(TEST_BUILD_TAP):
 	 echo "TAP version 13" > $@; \
 	 count=0; \
 	 for i in $(check_PROGRAMS); do \
-	  if ! $(MAKE) -q $$i; then \
+	  if ! $(MAKE) -s -q $$i; then \
 	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
 	    { ((count++)); \
 	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
@@ -195,7 +195,7 @@ endif
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 ## test suite log is already provided by automake
-## $(TEST_SUITE_LOG): 
+## $(TEST_SUITE_LOG):
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -205,7 +205,7 @@ endif
 ## TODO: add xml output
 $(TEST_SUITE_XML):
 
-$(TEST_LOGS:.log=.xml): 
+$(TEST_LOGS:.log=.xml):
 	@ \
 	f=$(@:.xml=.log); rm -f $$f; \
 	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_XMLFILE=$@ ||:s
@@ -234,7 +234,7 @@ clean-local-tests:
 
 .PHONY: tests-envdump
 tests-envdump: ##@tests enter a new shell with all tests enviroment set
-tests-envdump: 
+tests-envdump:
 	@echo; \
 	echo ----------------------------------------------------------------; \
 	echo TESTS_ENVIRONMENT = ;\
@@ -244,7 +244,7 @@ tests-envdump:
 
 
 tests-env: ##@tests enter a new shell with all tests enviroment set
-tests-env: 
+tests-env:
 	@ echo; echo "    [ RUNNING A TESTS ENV BASH ]"; \
 	echo ----------------------------------------------------------------; \
 	for _i in ${TESTS_ENVIRONMENT}; do \
@@ -255,7 +255,7 @@ tests-env:
 	export srcdir=$(srcdir); \
 	echo ----------------------------------------------------------------; \
 	echo ""; \
-	bash --rcfile $(top_srcdir)/testing/bashrc -i 
+	bash --rcfile $(top_srcdir)/testing/bashrc -i
 
 
 

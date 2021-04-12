@@ -87,55 +87,56 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *2    18-OCT-1994 17:08:24 MDSPLUS "Proceede" */
 /*  *1    17-OCT-1994 18:57:46 MDSPLUS "Butterwoth low pass filter" */
 /*  DEC/CMS REPLACEMENT HISTORY, Element BUTTERWORTH.C */
-  /*------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
 
-	Name:	BUTTERWORTH
+      Name:	BUTTERWORTH
 
-	Type:   C function
+      Type:   C function
 
-	Author:	Gabriele Manduchi
-		Istituto Gas Ionizzati del CNR - Padova (Italy)
+      Author:	Gabriele Manduchi
+              Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-	Date:   17-OCT-1994
+      Date:   17-OCT-1994
 
-	Purpose: Low pass filtering using digitalization of Butterworth filter.
+      Purpose: Low pass filtering using digitalization of Butterworth filter.
 
--------------------------------------------------------------------------------- */
+--------------------------------------------------------------------------------
+*/
 #include "complex.h"
 #include "filter.h"
 #include <math.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mdsplus/mdsconfig.h>
 
-static Complex *FindChebPoles(double fp, double fs, double ap, double as, double fc, int *N,
-			      double *gain);
-static Complex *FindButtwPoles(double fp, double fs, double ap, double as, double fc, int *N,
-			       double *gain);
+static Complex *FindChebPoles(double fp, double fs, double ap, double as,
+                              double fc, int *N, double *gain);
+static Complex *FindButtwPoles(double fp, double fs, double ap, double as,
+                               double fc, int *N, double *gain);
 
-Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
-{
+Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc,
+                   int *out_n) {
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindButtwPoles);
 }
 
-EXPORT Filter *ButtwBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
-{
+EXPORT Filter *ButtwBilinear(float *fp, float *fs, float *ap, float *as,
+                             float *fc, int *out_n) {
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindButtwPoles);
 }
 
-EXPORT Filter *ChebInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
-{
+EXPORT Filter *ChebInvar(float *fp, float *fs, float *ap, float *as, float *fc,
+                         int *out_n) {
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
 
-EXPORT Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
-{
+EXPORT Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as,
+                            float *fc, int *out_n) {
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
 
-static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
-			       double *gain)
-{
+static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as,
+                               double fc __attribute__((unused)), int *N,
+                               double *gain) {
   double n_real, Wc, l10;
   int n, j, i;
   Complex *poles;
@@ -144,11 +145,11 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
 
   if (*N == 0) {
     *gain = 1;
-    n_real =
-	0.5 * (log10(exp(l10 * as / 10) - 1) - log10(exp(l10 * ap / 10) - 1)) / (log10(Ws) -
-										 log10(Wp));
-    if (n_real - (int)n_real)	/* if not integer */
-      n = (int)(n_real + 1);	/* immediate following integer */
+    n_real = 0.5 *
+             (log10(exp(l10 * as / 10) - 1) - log10(exp(l10 * ap / 10) - 1)) /
+             (log10(Ws) - log10(Wp));
+    if (n_real - (int)n_real) /* if not integer */
+      n = (int)(n_real + 1);  /* immediate following integer */
     else
       n = n_real;
     Wc = exp(l10 * (log10(Wp) - log10(exp(l10 * ap / 10) - 1) / (2. * n)));
@@ -156,10 +157,10 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
     n = *N;
     Wc = Wp;
   }
-/* Find poles */
-  poles = (Complex *) malloc(n * sizeof(Complex));
+  /* Find poles */
+  poles = (Complex *)malloc(n * sizeof(Complex));
   j = 0;
-  if (n % 2) {			/* odd N */
+  if (n % 2) { /* odd N */
     poles[j].re = -Wc;
     poles[j++].im = 0;
     for (i = 1; i < (n + 1) / 2; i++) {
@@ -168,7 +169,7 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
       poles[j].re = -Wc * cos(PI * i / n);
       poles[j++].im = -Wc * sin(PI * i / n);
     }
-  } else			/* even N */
+  } else /* even N */
     for (i = 0; i < n / 2; i++) {
       poles[j].re = -Wc * cos(PI * (i + 0.5) / n);
       poles[j++].im = Wc * sin(PI * (i + 0.5) / n);
@@ -180,9 +181,9 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
   return poles;
 }
 
-static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
-			      double *gain)
-{
+static Complex *FindChebPoles(double Wp, double Ws, double ap, double as,
+                              double fc __attribute__((unused)), int *N,
+                              double *gain) {
   double eps, Wc, alpha, a, b, l10, treshold, curr_val, angle, V, Vprev, Vnew;
   int n, i, j;
   Complex *poles;
@@ -213,7 +214,7 @@ static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double
   a = 0.5 * Wc * (exp(log(alpha) / n) - exp(-log(alpha) / n));
   b = 0.5 * Wc * (exp(log(alpha) / n) + exp(-log(alpha) / n));
 
-  poles = (Complex *) malloc(n * sizeof(Complex));
+  poles = (Complex *)malloc(n * sizeof(Complex));
   if (n % 2) {
     poles[0].re = -a;
     poles[0].im = 0;
@@ -242,4 +243,3 @@ static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double
   *gain = 1 / (1 - eps);
   return poles;
 }
-

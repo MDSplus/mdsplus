@@ -1,5 +1,7 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=Tree
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@

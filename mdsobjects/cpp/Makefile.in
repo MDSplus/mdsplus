@@ -13,7 +13,7 @@ CXXFLAGS += -Wno-deprecated $(CFLAGS) @CXXFLAGS@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @SRBLIB@
 
 CXXSOURCES = \
-	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp datastreams.cpp
+	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp mdsdatastreams.cpp
 
 SOURCES = mdsdata.c mdstree.c
 
@@ -58,7 +58,8 @@ defs:
 ifneq "$(VSDLL)" ""
 
 $(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
-	@for i in $(top_builddir)/defs/*.def; do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}"; done
-	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
+@HAVE_WINE_TRUE@	@for i in $(top_builddir)/defs/*.def; do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}"; done
+@HAVE_WINE_TRUE@	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
+@HAVE_WINE_FALSE@	@echo VSDLL defined but no wine: at this point we would have built VSDLLs
 
 endif

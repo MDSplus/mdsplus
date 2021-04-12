@@ -5,10 +5,11 @@ import java.nio.ByteBuffer;
 import mds.MdsException;
 import mds.data.descriptor.Descriptor;
 
-public interface DATA<T extends Object>{
-	public static final MdsException	dataerror		= new MdsException("DATA: Cannot convert to data.");
-	public static final MdsException	tdierror		= new MdsException("Error evaluating data.");
-	public static final MdsException	notimplemented	= new MdsException("Not yet implemented.");
+public interface DATA<T extends Object>
+{
+	public static final MdsException dataerror = new MdsException("DATA: Cannot convert to data.");
+	public static final MdsException tdierror = new MdsException("Error evaluating data.");
+	public static final MdsException notimplemented = new MdsException("Not yet implemented.");
 
 	/**
 	 * returns the absolute value of the data
@@ -94,7 +95,8 @@ public interface DATA<T extends Object>{
 	public ByteBuffer getBuffer();
 
 	/**
-	 * returns the rank of the data to determine the return dtype of a binary operation
+	 * returns the rank of the data to determine the return dtype of a binary
+	 * operation
 	 *
 	 * @return byte: 0bEACCBBBS Error,Array,Class,Bits,Signed
 	 */

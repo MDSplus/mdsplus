@@ -77,7 +77,9 @@ rm -f /usr/share/applications/mdsplus/java 2&gt;&amp;1
     <include file="/usr/local/mdsplus/bin/jDispatch*"/>
     <include file="/usr/local/mdsplus/bin/jScope"/>
     <include file="/usr/local/mdsplus/bin/jServer"/>
-    <include file="/usr/local/mdsplus/bin/jTraverser"/>
+    <include file="/usr/local/mdsplus/bin/*ompileTree"/>
+    <include file="/usr/local/mdsplus/bin/jTraverser*"/>
+    <include file="/usr/local/mdsplus/bin/setupDevice"/>
     <include file="/usr/local/mdsplus/lib/libJava*"/>
 
     <!-- rpm scripts -->
@@ -616,15 +618,17 @@ rm -f /etc/profile.d/mdsplus.csh
     <exclude file="/usr/local/mdsplus/bin/actmon"/>
     <exclude file="/usr/local/mdsplus/bin/actions"/>
     <exclude file="/usr/local/mdsplus/bin/traverser*"/>
+    <exclude file="/usr/local/mdsplus/bin/*ompileTree"/>
+    <exclude file="/usr/local/mdsplus/bin/jDispatch*"/>
     <exclude file="/usr/local/mdsplus/bin/jScope"/>
     <exclude file="/usr/local/mdsplus/bin/jServer"/>
-    <exclude file="/usr/local/mdsplus/bin/jTraverser"/>
+    <exclude file="/usr/local/mdsplus/bin/jTraverser*"/>
+    <exclude file="/usr/local/mdsplus/bin/setupDevice"/>
     <exclude file="/usr/local/mdsplus/bin/mdsccl"/>
     <exclude file="/usr/local/mdsplus/bin/mdscts"/>
     <exclude file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
     <exclude file="/usr/local/mdsplus/bin/hdf5*"/>
     <exclude file="/usr/local/mdsplus/bin/*HDF5"/>
-    <exclude file="/usr/local/mdsplus/bin/jDispatch*"/>
     <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
     <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
     <exclude file="/usr/local/mdsplus/bin/roam_check_access"/>
@@ -877,8 +881,8 @@ fi
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
     <!-- requires external="true" package="setuptools"/ -->
-    <requires external="true" package="python3"/>
-    <requires external="true" package="python3-numpy"/>
+    <requires external="true" package="python2"/>
+    <requires external="true" package="python2-numpy"/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
 
@@ -1000,7 +1004,7 @@ AutoReqProv: yes
  <external_packages platform="redhat">
    <setuptools package="python2-setuptools"/>
    <python package="python2"/>
-   <numpy/>
+   <python2-numpy/>
    <xinetd/>
    <java/>
  </external_packages>

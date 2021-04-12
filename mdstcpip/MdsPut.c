@@ -23,48 +23,50 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <STATICdef.h>
 #include "mdsip_connections.h"
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <string.h>
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MdsPut  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
 int MdsPut(int id, char *node, char *expression, ...) {
-/**** NOTE: NULL terminated argument list expected ****/
+  /**** NOTE: NULL terminated argument list expected ****/
   int i;
   int status = 1;
   int nargs;
-  struct descrip  dsc[3];
-  struct descrip* arglist[265];
-  VA_LIST_NULL(arglist,nargs,3,-1,expression); // -1: dont count putexpr
+  struct descrip dsc[3];
+  struct descrip *arglist[265];
+  VA_LIST_NULL(arglist, nargs, 3, -1, expression); // -1: dont count putexpr
   char *putexpr = malloc(8 + nargs * 2 + 1);
   strcpy(putexpr, "TreePut(");
-  for (i = 0; i < nargs-1; i++) strcat(putexpr, "$,");
+  for (i = 0; i < nargs - 1; i++)
+    strcat(putexpr, "$,");
   strcat(putexpr, "$)");
   arglist[0] = MakeDescrip(&dsc[0], DTYPE_CSTRING, 0, 0, putexpr);
   arglist[1] = MakeDescrip(&dsc[1], DTYPE_CSTRING, 0, 0, node);
   arglist[2] = MakeDescrip(&dsc[2], DTYPE_CSTRING, 0, 0, expression);
   for (i = 0; i <= nargs && STATUS_OK; i++)
-    status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]), arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
+    status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]),
+                     arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
   free(putexpr);
-  if STATUS_OK {
-    char dtype;
-    int dims[MAX_DIMS];
-    char ndims;
-    short len;
-    int numbytes;
-    void *dptr;
-    void *mem = 0;
-    status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
-    if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
-      memcpy(&status, dptr, numbytes);
-    free(mem);
-  }
+  if
+    STATUS_OK {
+      char dtype;
+      int dims[MAX_DIMS];
+      char ndims;
+      short len;
+      int numbytes;
+      void *dptr;
+      void *mem = 0;
+      status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr,
+                               &mem);
+      if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 &&
+          numbytes == sizeof(int))
+        memcpy(&status, dptr, numbytes);
+      free(mem);
+    }
   return status;
 }

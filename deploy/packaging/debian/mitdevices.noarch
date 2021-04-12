@@ -30,7 +30,6 @@
 ./usr/local/mdsplus/pydevices/MitDevices/dt216b.py
 ./usr/local/mdsplus/pydevices/MitDevices/dtao32.py
 ./usr/local/mdsplus/pydevices/MitDevices/dtdo32.py
-./usr/local/mdsplus/pydevices/MitDevices/idl.py
 ./usr/local/mdsplus/pydevices/MitDevices/picam.py
 ./usr/local/mdsplus/pydevices/MitDevices/raspi_rgb.py
 ./usr/local/mdsplus/pydevices/MitDevices/raspicam.py

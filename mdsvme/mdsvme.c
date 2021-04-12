@@ -22,42 +22,39 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <standards.h>
-#include <sys/types.h>
-#include <sys/errno.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
+#include "dmaexreg.h"
+#include "vmp_reg.h"
 #include <c_asm.h>
-#include <mach/alpha/boolean.h>
-#include <time.h>
-#include <stdio.h>
-#include <sys/resource.h>
-#include <sched.h>
+#include <fcntl.h>
 #include <io/common/devdriver.h>
 #include <io/common/handler.h>
 #include <io/dec/vme/vbareg.h>
-#include <unistd.h>
+#include <mach/alpha/boolean.h>
+#include <sched.h>
 #include <signal.h>
-#include "dmaexreg.h"
-#include "vmp_reg.h"
+#include <standards.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/errno.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 
 extern int VmeWaitForInterrupt(char *device, int irq, int vector);
-extern int VmePioRead(char *device, unsigned long addr, unsigned long mode, int bufsize,
-		      void *buffer, int *bytes_read);
-extern int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int bufsize,
-		       void *buffer, int *bytes_written);
+extern int VmePioRead(char *device, unsigned long addr, unsigned long mode,
+                      int bufsize, void *buffer, int *bytes_read);
+extern int VmePioWrite(char *device, unsigned long addr, unsigned long mode,
+                       int bufsize, void *buffer, int *bytes_written);
 
-static void SigCatcher(int signo)
-{
-}
+static void SigCatcher(int signo) {}
 
 static int fd1 = 0, fd2 = 0;
 
-int VmeWaitForInterrupt(char *device, int irq, int vector)
-{
+int VmeWaitForInterrupt(char *device, int irq, int vector) {
   struct dmaex_ioctl_data data;
   int fd = open("/dev/dmaex0", O_RDWR);
   int status = 0;
@@ -80,9 +77,9 @@ int VmeWaitForInterrupt(char *device, int irq, int vector)
     else {
       sigsuspend(&empty_set);
       if (ioctl(fd, CLR_INT_HANDLER, data.data) != 0)
-	perror("error in ioctl CLR_INT_HANDLER");
+        perror("error in ioctl CLR_INT_HANDLER");
       else
-	status = 0;
+        status = 0;
     }
     close(fd);
   } else
@@ -90,9 +87,8 @@ int VmeWaitForInterrupt(char *device, int irq, int vector)
   return status;
 }
 
-int VmePioRead(char *device, unsigned long addr, unsigned long mode, int bufsize, void *buffer,
-	       int *bytes_read)
-{
+int VmePioRead(char *device, unsigned long addr, unsigned long mode,
+               int bufsize, void *buffer, int *bytes_read) {
   struct dmaex_ioctl_data data;
   int fd = open(device, O_RDWR);
   int status = 0;
@@ -106,16 +102,16 @@ int VmePioRead(char *device, unsigned long addr, unsigned long mode, int bufsize
     else {
       data.data[0] = PIO_XFER_MODE;
       if (ioctl(fd, SET_STRATEGY_XFER_MODE, data.data) != 0)
-	perror("error in ioctl SET_STRATEGY_XFER_MODE");
+        perror("error in ioctl SET_STRATEGY_XFER_MODE");
       else {
-	memset(buffer, 0, bufsize);
-	*bytes_read = read(fd, buffer, bufsize);
-	if (*bytes_read < 0) {
-	  perror("PIO_XFER_MODE read error");
-	  status = 0;
-	} else
-	  status = 1;
-	ioctl(fd, UNMAP_VME_FOR_STRATEGY_PIO, data.data);
+        memset(buffer, 0, bufsize);
+        *bytes_read = read(fd, buffer, bufsize);
+        if (*bytes_read < 0) {
+          perror("PIO_XFER_MODE read error");
+          status = 0;
+        } else
+          status = 1;
+        ioctl(fd, UNMAP_VME_FOR_STRATEGY_PIO, data.data);
       }
     }
     close(fd);
@@ -124,9 +120,8 @@ int VmePioRead(char *device, unsigned long addr, unsigned long mode, int bufsize
   return status;
 }
 
-int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int bufsize, void *buffer,
-		int *bytes_written)
-{
+int VmePioWrite(char *device, unsigned long addr, unsigned long mode,
+                int bufsize, void *buffer, int *bytes_written) {
   struct dmaex_ioctl_data data;
   int fd = open(device, O_RDWR);
   int status = 0;
@@ -140,15 +135,15 @@ int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int bufsiz
     else {
       data.data[0] = PIO_XFER_MODE;
       if (ioctl(fd, SET_STRATEGY_XFER_MODE, data.data) != 0)
-	perror("error in ioctl SET_STRATEGY_XFER_MODE");
+        perror("error in ioctl SET_STRATEGY_XFER_MODE");
       else {
-	*bytes_written = write(fd, buffer, bufsize);
-	if (*bytes_written < 0) {
-	  perror("PIO_XFER_MODE write error");
-	  status = 0;
-	} else
-	  status = 1;
-	ioctl(fd, UNMAP_VME_FOR_STRATEGY_PIO, data.data);
+        *bytes_written = write(fd, buffer, bufsize);
+        if (*bytes_written < 0) {
+          perror("PIO_XFER_MODE write error");
+          status = 0;
+        } else
+          status = 1;
+        ioctl(fd, UNMAP_VME_FOR_STRATEGY_PIO, data.data);
       }
     }
     close(fd);
@@ -157,8 +152,8 @@ int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int bufsiz
   return status;
 }
 
-int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, void *buffer)
-{
+int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize,
+            void *buffer) {
   struct pio_info setVme, getVme;
   int fd = open(device, O_RDWR);
   int status = 0;
@@ -172,17 +167,17 @@ int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, voi
       perror("error in ioctl VMP_MAP_PIO_ADDR");
     else {
       memset(buffer, 0, bufsize);
-      pMapAdr =
-	  (int *)mmap((caddr_t) 0, setVme.pio_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      pMapAdr = (int *)mmap((caddr_t)0, setVme.pio_size, PROT_READ | PROT_WRITE,
+                            MAP_SHARED, fd, 0);
       if (pMapAdr == (int *)-1) {
-	printf("### error in mmap\n");
+        printf("### error in mmap\n");
       } else {
-	memcpy(buffer, pMapAdr, bufsize);
-	if (ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0)
-	  printf("### error in ioctl-UNMAP\n");
-	if (munmap((caddr_t) pMapAdr, setVme.pio_size) < 0)
-	  printf("### error in munmap\n");
-	status = 1;
+        memcpy(buffer, pMapAdr, bufsize);
+        if (ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0)
+          printf("### error in ioctl-UNMAP\n");
+        if (munmap((caddr_t)pMapAdr, setVme.pio_size) < 0)
+          printf("### error in munmap\n");
+        status = 1;
       }
     }
     close(fd);
@@ -191,8 +186,8 @@ int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, voi
   return status;
 }
 
-int PioWrite(char *device, unsigned int addr, unsigned int mode, int bufsize, void *buffer)
-{
+int PioWrite(char *device, unsigned int addr, unsigned int mode, int bufsize,
+             void *buffer) {
   struct pio_info setVme, getVme;
   int fd = open(device, O_RDWR);
   int status = 0;
@@ -205,17 +200,17 @@ int PioWrite(char *device, unsigned int addr, unsigned int mode, int bufsize, vo
     if (ioctl(fd, VMP_MAP_PIO_ADDR, &setVme) < 0)
       perror("error in ioctl VMP_MAP_PIO_ADDR");
     else {
-      pMapAdr =
-	  (int *)mmap((caddr_t) 0, setVme.pio_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      pMapAdr = (int *)mmap((caddr_t)0, setVme.pio_size, PROT_READ | PROT_WRITE,
+                            MAP_SHARED, fd, 0);
       if (pMapAdr == (int *)-1) {
-	printf("### error in mmap\n");
+        printf("### error in mmap\n");
       } else {
-	memcpy(pMapAdr, buffer, bufsize);
-	if (ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0)
-	  printf("### error in ioctl-UNMAP\n");
-	if (munmap((caddr_t) pMapAdr, setVme.pio_size) < 0)
-	  printf("### error in munmap\n");
-	status = 1;
+        memcpy(pMapAdr, buffer, bufsize);
+        if (ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0)
+          printf("### error in ioctl-UNMAP\n");
+        if (munmap((caddr_t)pMapAdr, setVme.pio_size) < 0)
+          printf("### error in munmap\n");
+        status = 1;
       }
     }
     close(fd);
@@ -224,8 +219,7 @@ int PioWrite(char *device, unsigned int addr, unsigned int mode, int bufsize, vo
   return status;
 }
 
-void termfunc(int dummy)
-{
+void termfunc(int dummy) {
   if (fd1 != 0) {
     ioctl(fd1, VMP_DEL_INTR);
     close(fd1);
@@ -237,9 +231,8 @@ void termfunc(int dummy)
   exit(1);
 }
 
-int WaitForInterrupt(char *device1, int priority1, int vector1, char *device2, int priority2,
-		     int vector2)
-{
+int WaitForInterrupt(char *device1, int priority1, int vector1, char *device2,
+                     int priority2, int vector2) {
   struct vmpintr_info setIntr;
   fd_set mask;
   int status = 0;

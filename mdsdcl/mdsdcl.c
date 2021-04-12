@@ -22,12 +22,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/readline.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
 #include <mdsdcl_messages.h>
@@ -51,15 +51,13 @@ be added using the "SET COMMAND table-name" command.
  \param argv [in] An array of command line option strings.
 */
 
-static void flushOut(char *output)
-{
+static void flushOut(char *output) {
   fprintf(stdout, "%s", output);
   fflush(stdout);
   output[0] = 0;
 }
 
-static void flushError(char *error)
-{
+static void flushError(char *error) {
   fprintf(stderr, "%s", error);
   fflush(stderr);
   error[0] = 0;
@@ -67,38 +65,35 @@ static void flushError(char *error)
 
 static char *prompt = NULL;
 static void keyboard_interrupt(int signo __attribute__((__unused__))) {
-  fprintf(stderr,"KeyboardInterrupt\n");
+  fprintf(stderr, "KeyboardInterrupt\n");
 }
 #ifdef _WIN32
-static inline void set_readline_handlers() {
-  signal(SIGINT, SIG_IGN);
-}
+static inline void set_readline_handlers() { signal(SIGINT, SIG_IGN); }
 static inline void set_execute_handlers() {
   signal(SIGINT, keyboard_interrupt);
 }
 #else // _WIN32
 static struct sigaction act;
-# ifdef HAVE_RL_SET_SIGNALS
+#ifdef HAVE_RL_SET_SIGNALS
 static inline void set_readline_handlers() {
   rl_catch_signals = 1;
   rl_set_signals();
 }
-static inline void set_execute_handlers() {
-  rl_clear_signals();
-}
-# else // HAVE_RL_SET_SIGNALS
-#  ifdef _MACOSX
-#   define _rl_sigint SIG_IGN
-#  else // _MACOSX
+static inline void set_execute_handlers() { rl_clear_signals(); }
+#else // HAVE_RL_SET_SIGNALS
+#ifdef _MACOSX
+#define _rl_sigint SIG_IGN
+#else  // _MACOSX
 static void _rl_sigint(int signo __attribute__((__unused__))) {
   // reset readline line buffer and state before printing new prompt
-  rl_free_line_state ();
-  rl_cleanup_after_signal ();
-  RL_UNSETSTATE(RL_STATE_ISEARCH|RL_STATE_NSEARCH|RL_STATE_VIMOTION|RL_STATE_NUMERICARG|RL_STATE_MULTIKEY);
+  rl_free_line_state();
+  rl_cleanup_after_signal();
+  RL_UNSETSTATE(RL_STATE_ISEARCH | RL_STATE_NSEARCH | RL_STATE_VIMOTION |
+                RL_STATE_NUMERICARG | RL_STATE_MULTIKEY);
   rl_line_buffer[rl_point = rl_end = rl_mark = 0] = 0;
-  printf("\n%s",prompt);
+  printf("\n%s", prompt);
 }
-#  endif // !_MACOSX
+#endif // !_MACOSX
 static inline void set_readline_handlers() {
   act.sa_handler = _rl_sigint;
   sigaction(SIGINT, &act, NULL);
@@ -107,11 +102,10 @@ static inline void set_execute_handlers() {
   act.sa_handler = keyboard_interrupt;
   sigaction(SIGINT, &act, NULL);
 }
-# endif // !HAVE_RL_SET_SIGNALS
+#endif // !HAVE_RL_SET_SIGNALS
 #endif // !_WIN32
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
   char *history_file = NULL;
   char *command = NULL;
   int notDone = 1;
@@ -138,7 +132,7 @@ int main(int argc, char const *argv[])
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
   act.sa_handler = keyboard_interrupt;
-  sigaction (SIGINT, &act, NULL);
+  sigaction(SIGINT, &act, NULL);
 #endif
   if ((argc > 2) && (strcmp("-prep", argv[1]) == 0)) {
     char *prep_cmd = strdup(argv[2]);
@@ -152,9 +146,9 @@ int main(int argc, char const *argv[])
 
     for (k = 0; k < strlen(prep_cmd); k++) {
       if (prep_cmd[k] == '"')
-	inquote = !inquote;
+        inquote = !inquote;
       else if ((!inquote) && (prep_cmd[k] == '-'))
-	prep_cmd[k] = '/';
+        prep_cmd[k] = '/';
     }
 
     /* Execute the prep command */
@@ -172,18 +166,20 @@ int main(int argc, char const *argv[])
   /* If other options on command line */
 
   if ((argc > 2) && (strcmp("-f", argv[1]) == 0)) {
-    FILE * fp = fopen(argv[2],"r");
+    FILE *fp = fopen(argv[2], "r");
     if (fp == NULL) {
       perror("Error opening file");
       exit(EXIT_FAILURE);
     }
     char line[1024];
     while (fgets(line, sizeof(line), fp)) {
-	size_t len = strlen(line);
-	while(len>0 && (line[len-1]=='\n' || line[len-1]=='\r')) line[--len] = '\0';
-	if (len==0) continue;
-	if (mdsdcl_do_command(line) == MdsdclEXIT)
-	  break;
+      size_t len = strlen(line);
+      while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+        line[--len] = '\0';
+      if (len == 0)
+        continue;
+      if (mdsdcl_do_command(line) == MdsdclEXIT)
+        break;
     }
     fclose(fp);
     exit(EXIT_SUCCESS);
@@ -203,7 +199,6 @@ int main(int argc, char const *argv[])
     add_history(cmd);
     free(cmd);
     goto done;
-
   }
 
   /* Get the command prompt */
@@ -227,72 +222,74 @@ int main(int argc, char const *argv[])
 
     if (cmd) {
       /* If command continued from previous line or command need more input,
-	 append line to previous command portion */
+         append line to previous command portion */
       if (command) {
-	if (strlen(cmd) > 0) {
-	  command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
-	  strcat(command, cmd);
-	  free(cmd);
-	} else {
-	  free(cmd);
-	  free(command);
-	  command = 0;
-	  free(prompt);
-	  prompt = 0;
-	  continue;
-	}
+        if (strlen(cmd) > 0) {
+          command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
+          strcat(command, cmd);
+          free(cmd);
+        } else {
+          free(cmd);
+          free(command);
+          command = 0;
+          free(prompt);
+          prompt = 0;
+          continue;
+        }
       } else
-	command = cmd;
+        command = cmd;
 
       /* If line ends in hyphen it is a continuation. Go get rest of line */
-      if ( strlen(command)>1 ) if (command[strlen(command) - 1] == '-') {
-	command[strlen(command) - 1] = '\0';
-	free(prompt);
-	prompt = strdup("Continue: ");
-	continue;
-      }
+      if (strlen(command) > 1)
+        if (command[strlen(command) - 1] == '-') {
+          command[strlen(command) - 1] = '\0';
+          free(prompt);
+          prompt = strdup("Continue: ");
+          continue;
+        }
 
       /* If not an empty command line */
 
       if (strlen(command) > 0) {
-	char *prompt_more = 0;
-	add_history(command);
-	if (output) {
-	  free(output);
-	  output = 0;
-	}
-	set_execute_handlers();
-	status = mdsdcl_do_command_extra_args(command, &prompt_more, &error, &output, 0, 0);
-	if (prompt_more != NULL) {
-	  HIST_ENTRY *hist;
-	  hist = remove_history(where_history());
-	  if (hist) {
-	    if (hist->line)
-	      free((void *)hist->line);
-	    free(hist);
-	  }
+        char *prompt_more = 0;
+        add_history(command);
+        if (output) {
+          free(output);
+          output = 0;
+        }
+        set_execute_handlers();
+        status = mdsdcl_do_command_extra_args(command, &prompt_more, &error,
+                                              &output, 0, 0);
+        if (prompt_more != NULL) {
+          HIST_ENTRY *hist;
+          hist = remove_history(where_history());
+          if (hist) {
+            if (hist->line)
+              free((void *)hist->line);
+            free(hist);
+          }
 
-	  command = strcat(realloc(command, strlen(command) + 2), " ");
-	  free(prompt);
-	  prompt = strcpy(malloc(strlen(prompt_more) + 10), "_");
-	  strcat(prompt, prompt_more);
-	  strcat(prompt, ": ");
-	  free(prompt_more);
-	  continue;
-	}
-	if (error != NULL) {
-	  fprintf(stderr, "%s", error);
-	  fflush(stderr);
-	  free(error);
-	  error = 0;
-	}
-	free(prompt);
-	prompt = 0;
-	if (status == MdsdclEXIT) {
-	  free(command);
-	  status=0;
-	  goto done;
-	}
+          command = strcat(realloc(command, strlen(command) + 2), " ");
+          free(prompt);
+          prompt = strcpy(malloc(strlen(prompt_more) + 10), "_");
+          strcat(prompt, prompt_more);
+          strcat(prompt, ": ");
+          free(prompt_more);
+          continue;
+        }
+        if (error != NULL) {
+          fprintf(stderr, "%s", error);
+          fflush(stderr);
+          free(error);
+          error = 0;
+        }
+        free(prompt);
+        prompt = 0;
+        if (status == MdsdclEXIT) {
+          free(command);
+          status = 0;
+          goto done;
+        }
       }
       free(command);
       command = 0;
@@ -301,7 +298,7 @@ int main(int argc, char const *argv[])
       printf("\n");
     }
   }
- done:
+done:
   free(output);
   free(prompt);
   free(error);

@@ -1,17 +1,20 @@
 # common makefile for java packages
 
-RT6JAR = $(top_srcdir)/java/rt6.jar
+JSCH = $(top_srcdir)/java/jsch-0.1.54.jar
+$(JSCH):
+        wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
 MDSPLUS_API_JAR = $(abs_top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(abs_top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(abs_top_builddir)/java/jtraverser2/jTraverser2.jar
 MDSOBJECTS_JAR = $(abs_top_builddir)/java/mdsobjects/mdsobjects.jar
 JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
+DEVICEBEANS_JAR = $(abs_top_builddir)/java/devicebeans/DeviceBeans.jar
 
 n :=
 s := $(n) #
 c := :
-CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH = $(JAVAROOT):$(strip $(subst $(s),$(c),$(strip $(DEPENDENCIES))))
 CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 
 JAVAROOT = $(builddir)/classes
@@ -39,9 +42,9 @@ $(JAVAROOT):
 	mkdir -p $@
 
 $(MANIFEST):
-	echo "Specification-Version: $(RELEASE_VERSION)"	 >$@
-	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
-	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+	@ echo "Specification-Version: $(RELEASE_VERSION)"	 >$@
+	@ echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
+	@ echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
 
 $(DEPENDENCIES):
 	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)

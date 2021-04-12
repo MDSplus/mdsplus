@@ -26,7 +26,8 @@
 from MDSplus import *
 import numpy
 
-def timeSignatureAnalyze(y, start) :
+
+def timeSignatureAnalyze(y, start):
     """
     JAS  1/27/11
     From TWF translation of IDL
@@ -50,10 +51,10 @@ def timeSignatureAnalyze(y, start) :
     """
     first round the data up and down so that it is all 0 or max value
     """
-    max=y.max()
-    yytest=y > max/2
-    yy=y*0
-    yy.put(yytest.nonzero()[0],max)
+    max = y.max()
+    yytest = y > max/2
+    yy = y*0
+    yy.put(yytest.nonzero()[0], max)
     """
     find all the times at wiich the data rises or falls
     """
@@ -73,14 +74,14 @@ def timeSignatureAnalyze(y, start) :
     """
     starts = rising[(bit_width > max_bitwidth-5).nonzero()[0]+1]
     times = numpy.float64(numpy.array(starts*0))
-    rising = rising[(rising>=starts[0]).nonzero()]
-    falling = falling[(falling>starts[0]).nonzero()]
+    rising = rising[(rising >= starts[0]).nonzero()]
+    falling = falling[(falling > starts[0]).nonzero()]
     """
     get all of the pulse widths and classifiers for
     narrow - 0
     wide - 1
     """
-    num=numpy.array((len(falling),len(rising))).min()
+    num = numpy.array((len(falling), len(rising))).min()
     widths = falling[:num-1]-rising[:num-1]
     zero_width = widths.min()+5
     one_width = widths.max()-5
@@ -92,14 +93,15 @@ def timeSignatureAnalyze(y, start) :
     scale the answer by the rate the patterns are generated
     """
     for i in range(len(starts)-1):
-       ans = numpy.int32(0)
-       for bit in range(19):
-         if (falling[i*19+bit] - rising[i*19+bit] > one_width):
-           ans = ans | numpy.int32(1) << (18-bit)
-       times[i] = numpy.float64(ans)*20E-3+start
+        ans = numpy.int32(0)
+        for bit in range(19):
+            if (falling[i*19+bit] - rising[i*19+bit] > one_width):
+                ans = ans | numpy.int32(1) << (18-bit)
+        times[i] = numpy.float64(ans)*20E-3+start
     return (times[0:-1], starts[0:-1])
 
-def timeSignature(parent) :
+
+def timeSignature(parent):
     '''
       timeSignature
         Routine returns a Dim after analyzing a recorded timing signature
@@ -124,16 +126,16 @@ def timeSignature(parent) :
     '''
     y = data(parent.getNode('t_sig_chan').record)
     try:
-        start = data( parent.getNode('t_sig_start').record)
+        start = data(parent.getNode('t_sig_start').record)
     except:
         start = -3.0
     try:
-        gates = data( parent.getNode('t_sig_gates').record)
+        gates = data(parent.getNode('t_sig_gates').record)
     except:
         gates = None
-    if gates and gates.length==4 :
+    if gates and gates.length == 4:
         gate_times = gates.record
-        (times1,idxs1) = timeSigAnal(y[gate_times[0]:gate_times[1]], start)
+        (times1, idxs1) = timeSigAnal(y[gate_times[0]:gate_times[1]], start)
         (times2, idxs2) = timeSigAnal(y[gate_times[2]:gate_times[3]], start)
         times = (times1, times2)
         idxs = (idxs1, idxs2)
@@ -151,9 +153,4 @@ def timeSignature(parent) :
     last_idx = len(y)-1
     dt = (times[-1]-times[0]) / (idxs[-1] - idxs[0])
     time_of_zero = times[0] - dt*idxs[0]
-    return (Dimension(Window(0, last_idx, time_of_zero), Range( None, None, dt)), Signal(idxs, None, times))
-
-
-
-
-
+    return (Dimension(Window(0, last_idx, time_of_zero), Range(None, None, dt)), Signal(idxs, None, times))

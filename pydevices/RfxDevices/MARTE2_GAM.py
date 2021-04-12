@@ -23,58 +23,63 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_GAM(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.inputs = [{'name': 'Input1', 'type': 'int32', 'dimensions': 0, 'parameters':{}}, 
-        {'name': 'Input2', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input3', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input4', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input5', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input6', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input7', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input8', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input9', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input10', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input11', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input12', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input13', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input14', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input15', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Input16', 'type': 'int32', 'dimensions': 0, 'parameters':{}}]
-    MARTE2_COMPONENT.outputs = [{'name': 'Output1', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-        {'name': 'Output2', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output3', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output4', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output5', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output6', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output7', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output8', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output9', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output10', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output11', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output12', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output13', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output14', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output15', 'type': 'int32', 'dimensions': -1, 'parameters':{}},
-        {'name': 'Output16', 'type': 'int32', 'dimensions': -1, 'parameters':{}}]
+MC = __import__('MARTE2_COMPONENT', globals())
 
-    MARTE2_COMPONENT.parameters = [{'name':'Parameter1', 'type': 'int32'}, 
-                                   {'name':'Parameter2', 'type': 'int32'},
-                                   {'name':'Parameter3', 'type': 'int32'},
-                                   {'name':'Parameter4', 'type': 'int32'},
-                                   {'name':'Parameter5', 'type': 'int32'},
-                                   {'name':'Parameter6', 'type': 'int32'},
-                                   {'name':'Parameter7', 'type': 'int32'},
-                                   {'name':'Parameter8', 'type': 'int32'},
-                                   {'name':'Parameter9', 'type': 'int32'},
-                                   {'name':'Parameter10', 'type': 'int32'},
-                                   {'name':'Parameter11', 'type': 'int32'},
-                                   {'name':'Parameter12', 'type': 'int32'},
-                                   {'name':'Parameter13', 'type': 'int32'},
-                                   {'name':'Parameter14', 'type': 'int32'},
-                                   {'name':'Parameter15', 'type': 'int32'},
-                                   {'name':'Parameter16', 'type': 'int32'}]
 
+@MC.BUILDER('TestGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+class MARTE2_GAM(MC.MARTE2_COMPONENT):
+    inputs = [
+        {'name': 'Input1', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input2', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input3', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input4', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input5', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input6', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input7', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input8', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input9', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input10', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input11', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input12', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input13', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input14', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input15', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Input16', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+    ]
+    outputs = [
+        {'name': 'Output1', 'type': 'int32', 'dimensions': 0, 'parameters': {}},
+        {'name': 'Output2', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output3', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output4', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output5', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output6', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output7', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output8', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output9', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output10', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output11', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output12', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output13', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output14', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output15', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+        {'name': 'Output16', 'type': 'int32', 'dimensions': -1, 'parameters': {}},
+    ]
+    parameters = [
+        {'name': 'Parameter1', 'type': 'int32'},
+        {'name': 'Parameter2', 'type': 'int32'},
+        {'name': 'Parameter3', 'type': 'int32'},
+        {'name': 'Parameter4', 'type': 'int32'},
+        {'name': 'Parameter5', 'type': 'int32'},
+        {'name': 'Parameter6', 'type': 'int32'},
+        {'name': 'Parameter7', 'type': 'int32'},
+        {'name': 'Parameter8', 'type': 'int32'},
+        {'name': 'Parameter9', 'type': 'int32'},
+        {'name': 'Parameter10', 'type': 'int32'},
+        {'name': 'Parameter11', 'type': 'int32'},
+        {'name': 'Parameter12', 'type': 'int32'},
+        {'name': 'Parameter13', 'type': 'int32'},
+        {'name': 'Parameter14', 'type': 'int32'},
+        {'name': 'Parameter15', 'type': 'int32'},
+        {'name': 'Parameter16', 'type': 'int32'},
+    ]
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'TestGAM', MARTE2_COMPONENT.MODE_GAM)

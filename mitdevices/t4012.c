@@ -243,12 +243,12 @@ EXPORT int t4012___store(int *niddsc __attribute__ ((unused)), InStoreStruct * s
   static int _roprand = 32768;
   static DESCRIPTOR_FLOAT(roprand, &_roprand);
   static FUNCTION(1) value = {
-    2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, {0}};
-  static DESCRIPTOR_FUNCTION_2(subtract_exp, (unsigned char *)&OpcSubtract, &value, &offset_d);
-  static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &subtract_exp);
+    sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcValue, 0, {0}};
+  static DESCRIPTOR_FUNCTION_2(subtract_exp, &OpcSubtract, &value, &offset_d);
+  static DESCRIPTOR_FUNCTION_2(mult_exp, &OpcMultiply, &coef_d, &subtract_exp);
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
   static DESCRIPTOR_WITH_UNITS(volts, &mult_exp, &volts_str);
-  static DESCRIPTOR_FUNCTION_2(rangesub, (unsigned char *)&OpcSubtract, 0, &f1_d);
+  static DESCRIPTOR_FUNCTION_2(rangesub, &OpcSubtract, 0, &f1_d);
   static DESCRIPTOR_WINDOW(window, &start_d, &end_d, &stop_d);
   static struct descriptor *begin_ptrs[] = { &roprand, 0 };
   static struct descriptor *end_ptrs[] = { (struct descriptor *)&rangesub, &roprand };

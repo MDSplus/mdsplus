@@ -6,7 +6,7 @@ struct _id {
   struct linkage link;
   long status;
   char *name;
-  void (*astadr) ();
+  void (*astadr)();
   void *astprm;
   void *data;
   unsigned int dlen;

@@ -28,13 +28,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *4    18-OCT-1995 11:58:53 TWF "make all includes the same case" */
 /*  *3     2-NOV-1994 08:51:05 TWF "Change extern model" */
 /*  *2    28-OCT-1994 16:23:53 TWF "split out opc$_xx and opc$xx" */
-/*  *1    25-OCT-1994 08:22:42 TWF "Define Opc_function and Opcfunction symbols" */
+/*  *1    25-OCT-1994 08:22:42 TWF "Define Opc_function and Opcfunction symbols"
+ */
 /*  CMS REPLACEMENT HISTORY, Element TDI$$OPC_DEF.C */
 #include <mdsplus/mdsconfig.h>
 #include <tdishr.h>
 
 #define COM
-#define OPC(name,NAME, ...) EXPORT const opcode_t Opc##name = OPC_##NAME;
+#define OPC(name, NAME, ...) EXPORT const opcode_t Opc##name = OPC_##NAME;
 #include "opcbuiltins.h"
 #undef OPC
 #undef COM

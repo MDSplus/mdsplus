@@ -1,6 +1,7 @@
 package mds.data;
 
-public enum DTYPE {
+public enum DTYPE
+{
 	Z("$Missing"), // 0
 	V, // 1 aligned bit string
 	BU("Byte_Unsigned", "BU"), // 2
@@ -95,43 +96,52 @@ public enum DTYPE {
 	d240, d241, d242, d243, d244, d245, d246, d247, d248, d249, //
 	d250, d251, d252, d253, d254, d255, //
 	;
-	public static final DTYPE	FLOAT			= DTYPE.FS;
-	public static final DTYPE	DOUBLE			= DTYPE.FT;
-	public static final DTYPE	COMPLEX_FLOAT	= DTYPE.FSC;
-	public static final DTYPE	COMPLEX_DOUBLE	= DTYPE.FTC;
+	public static final DTYPE FLOAT = DTYPE.FS;
+	public static final DTYPE DOUBLE = DTYPE.FT;
+	public static final DTYPE COMPLEX_FLOAT = DTYPE.FSC;
+	public static final DTYPE COMPLEX_DOUBLE = DTYPE.FTC;
 
-	public static DTYPE get(final byte c) {
+	public static DTYPE get(final byte c)
+	{
 		return DTYPE.values()[c & 0xFF];
 	}
 
-	public static final String getName(final byte dtype) {
+	public static final String getName(final byte dtype)
+	{
 		final String ans = DTYPE.values()[dtype & 0xFF].label;
-		if(ans != null) return ans;
+		if (ans != null)
+			return ans;
 		return new StringBuffer(9).append("DTYPE_").append(dtype & 0xFF).toString();
 	}
 
-	public static final String getSuffix(final byte dtype) {
+	public static final String getSuffix(final byte dtype)
+	{
 		return DTYPE.values()[dtype & 0xFF].suffix;
 	}
-	public final String	suffix;
-	public final String	label;
 
-	private DTYPE(){
+	public final String suffix;
+	public final String label;
+
+	private DTYPE()
+	{
 		this.label = null;
 		this.suffix = null;
 	}
 
-	private DTYPE(final String label){
+	private DTYPE(final String label)
+	{
 		this.label = label;
 		this.suffix = null;
 	}
 
-	private DTYPE(final String label, final String suffix){
+	private DTYPE(final String label, final String suffix)
+	{
 		this.label = label;
 		this.suffix = suffix;
 	}
 
-	public final byte toByte() {
-		return (byte)this.ordinal();
+	public final byte toByte()
+	{
+		return (byte) this.ordinal();
 	}
 }

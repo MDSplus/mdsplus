@@ -5,15 +5,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSXDBOXDIALOG.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsXdBoxDialog.H
+                Name:   XmdsXdBoxDialog.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   24-FEB-1993
+                Date:   24-FEB-1993
 
-		Purpose: Public declarations for  XdBox Widgets.
+                Purpose: Public declarations for  XdBox Widgets.
 
 
 ------------------------------------------------------------------------------
@@ -30,6 +30,7 @@
 #ifdef _NO_PROTO
 Widget XmdsCreateXdBoxDialog();
 #else
-Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Cardinal argcount);
+Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args,
+                             Cardinal argcount);
 #endif
 #endif

@@ -6,27 +6,31 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_APD;
 
 /** List (214 : -42) **/
-public class List extends Descriptor_APD{
+public class List extends Descriptor_APD
+{
 	public static final String prefix = "List";
 
-	public List(final ByteBuffer b){
+	public List(final ByteBuffer b)
+	{
 		super(b);
 	}
 
-	public List(final Descriptor<?>... descs){
+	public List(final Descriptor<?>... descs)
+	{
 		super(DTYPE.LIST, descs);
 	}
 
-	public final Descriptor<?> get(final int idx) {
+	public final Descriptor<?> get(final int idx)
+	{
 		return this.getScalar(idx);
 	}
 
-	public final Descriptor<?>[] toArray() {
-		return this.getAtomic();
-	}
-
 	@Override
-	protected final String getPrefix() {
-		return List.prefix;
+	protected final String getPrefix()
+	{ return List.prefix; }
+
+	public final Descriptor<?>[] toArray()
+	{
+		return this.getAtomic();
 	}
 }

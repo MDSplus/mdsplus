@@ -13,10 +13,6 @@
 	<description>
 		MDSplus interface (via lib or mdsip).
 	</description>
-	<build>
-		<sourceDirectory>${sourceDirectory}/mdsplus-api/src/main/java</sourceDirectory>
-		<testSourceDirectory>${sourceDirectory}/mdsplus-api/src/test/java</testSourceDirectory>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>com.jcraft</groupId>

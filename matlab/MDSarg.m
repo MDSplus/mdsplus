@@ -1,10 +1,8 @@
 function obj = MDSarg( value )
-%MDSarg deprecated function. New function is mdsFromMatlab.
+% MDSARG  deprecated in favour of mdsFromMatlab.
 %   This function is deprecated. please use mdsFromMatlab instead
-  info=mdsInfo();
-  if ~info.useLegacy
-    display('The MDSarg function is deprecated. Please use mdsFromMatlab instead')
-  end
-  obj = mdsFromMatlab(value);
+    warning('MDSplus:Legacy',...
+        'The MDSarg function is deprecated. Please use mdsFromMatlab instead')
+    obj = mdsFromMatlab(value);
 end
 

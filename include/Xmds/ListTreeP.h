@@ -26,33 +26,32 @@
 #define _ListTreeP_H
 
 #include <Xm/DrawP.h>
-#include <Xm/Xm.h>
-#include <Xm/XmP.h>
 #include <Xm/PrimitiveP.h>
 #include <Xm/ScrollBar.h>
 #include <Xm/ScrolledW.h>
+#include <Xm/Xm.h>
+#include <Xm/XmP.h>
 
 #include "ListTree.h"
 
 /* LessTif definitions that are convenient for Motif */
 #ifndef Prim_HighlightThickness
-#define Prim_HighlightThickness(w) \
-    (((XmPrimitiveWidget)(w))->primitive.highlight_thickness)
+#define Prim_HighlightThickness(w)                                             \
+  (((XmPrimitiveWidget)(w))->primitive.highlight_thickness)
 #endif
 
 #ifndef Prim_ShadowThickness
-#define Prim_ShadowThickness(w) \
-    (((XmPrimitiveWidget)(w))->primitive.shadow_thickness)
+#define Prim_ShadowThickness(w)                                                \
+  (((XmPrimitiveWidget)(w))->primitive.shadow_thickness)
 #endif
 
 #ifndef Prim_TopShadowGC
-#define Prim_TopShadowGC(w) \
-    (((XmPrimitiveWidget)(w))->primitive.top_shadow_GC)
+#define Prim_TopShadowGC(w) (((XmPrimitiveWidget)(w))->primitive.top_shadow_GC)
 #endif
 
 #ifndef Prim_BottomShadowGC
-#define Prim_BottomShadowGC(w) \
-    (((XmPrimitiveWidget)(w))->primitive.bottom_shadow_GC)
+#define Prim_BottomShadowGC(w)                                                 \
+  (((XmPrimitiveWidget)(w))->primitive.bottom_shadow_GC)
 #endif
 
 #define ListTreeRET_ALLOC 10
@@ -63,7 +62,7 @@
 #define TIMER_WAITING 3
 
 typedef struct {
-  int dummy;			/* keep compiler happy with dummy field */
+  int dummy; /* keep compiler happy with dummy field */
 } ListTreeClassPart;
 
 typedef struct _ListTreeClassRec {
@@ -88,7 +87,7 @@ typedef struct {
   int NumItems;
   Dimension HSpacing;
   Dimension VSpacing;
-/*      Dimension       LabelSpacing; */
+  /*      Dimension       LabelSpacing; */
   Dimension Margin;
   Dimension Indent;
   Pixinfo Open;
@@ -110,17 +109,17 @@ typedef struct {
   GC eraseGC;
   GC eorGC;
   GC highlightGC;
-  Pixinfo ItemPix;		/* temporary storage for GetItemPix */
+  Pixinfo ItemPix; /* temporary storage for GetItemPix */
   int exposeTop, exposeBot;
   int pixWidth;
   int preferredWidth, preferredHeight;
-  ListTreeItem *first,		/* always points to a top level entry */
-  *highlighted, *drop_highlighted;
+  ListTreeItem *first, /* always points to a top level entry */
+      *highlighted, *drop_highlighted;
 
-  XtIntervalId timer_id;	/* timer for double click test */
-  ListTreeItem *timer_item;	/* item to make sure both clicks */
+  XtIntervalId timer_id;    /* timer for double click test */
+  ListTreeItem *timer_item; /* item to make sure both clicks */
   /* occurred on the same item */
-  int timer_type;		/* flag for type of click that just happened */
+  int timer_type; /* flag for type of click that just happened */
   int timer_y;
   int timer_x;
   int multi_click_time;
@@ -132,9 +131,9 @@ typedef struct {
   Boolean HasFocus;
 
   /* New stuff for maintaining its own scrolling state */
-  Widget mom;			/* scrolled window */
-  Widget hsb;			/* horizontal scrollbar */
-  Widget vsb;			/* vertical scrollbar */
+  Widget mom; /* scrolled window */
+  Widget hsb; /* horizontal scrollbar */
+  Widget vsb; /* vertical scrollbar */
   Dimension viewX;
   Dimension viewY;
   Dimension viewWidth;
@@ -144,14 +143,14 @@ typedef struct {
   int hsbMax;
 
   int lastXOffset;
-  int topItemPos;		/* position of topItem in itemCount */
-  int bottomItemPos;		/* last position drawn in window */
-  int lastItemPos;		/* last value of topItempos */
-  ListTreeItem *topItem;	/* first visible item on screen */
-  int itemCount;		/* total number of open ListTreeItems */
+  int topItemPos;        /* position of topItem in itemCount */
+  int bottomItemPos;     /* last position drawn in window */
+  int lastItemPos;       /* last value of topItempos */
+  ListTreeItem *topItem; /* first visible item on screen */
+  int itemCount;         /* total number of open ListTreeItems */
   Dimension itemHeight;
   Dimension maxPixHeight;
-  int visibleCount;		/* number currently visible on screen */
+  int visibleCount; /* number currently visible on screen */
   Boolean recount;
 
 } ListTreePart;
@@ -162,4 +161,4 @@ typedef struct _ListTreeRec {
   ListTreePart list;
 } ListTreeRec;
 
-#endif				/* _ListTreeP_H */
+#endif /* _ListTreeP_H */

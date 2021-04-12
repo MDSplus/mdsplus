@@ -33,19 +33,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element BOXSMOOTH.C */
 /*------------------------------------------------------------------------------
 
-		Name:   BOXSMOOTH
+                Name:   BOXSMOOTH
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   15-AUG-1990
+                Date:   15-AUG-1990
 
-		Purpose: Smooth a signal using boxcar smoothing
+                Purpose: Smooth a signal using boxcar smoothing
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int boxsmooth(int *num, float *in, int *width, float *out)
 
@@ -57,15 +57,14 @@ int boxsmooth(int *num, float *in, int *width, float *out)
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
-#include <string.h>
 #include <mdsplus/mdsconfig.h>
+#include <string.h>
 
-EXPORT int boxsmooth(int *num, float *in, int *width, float *out)
-{
+EXPORT int boxsmooth(int *num, float *in, int *width, float *out) {
   int i;
   int j;
   int w = *width;
@@ -86,8 +85,8 @@ EXPORT int boxsmooth(int *num, float *in, int *width, float *out)
     for (div = 0, j = 0; j < w; j++) {
       int idx = i + j - w / 2;
       if (in_int[idx] != 32768) {
-	total += in[i + j - w / 2];
-	div++;
+        total += in[i + j - w / 2];
+        div++;
       }
     }
     if (div > 0)

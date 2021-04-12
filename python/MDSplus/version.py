@@ -32,53 +32,68 @@ from numpy import generic as npscalar
 from numpy import ndarray as nparray
 from numpy import string_ as npbytes
 from numpy import unicode_ as npunicode
+from numpy import version as npver
 from sys import version_info as pyver
 import os
-ispy3 = pyver>(3,)
-ispy2 = pyver<(3,)
+ispy3 = pyver > (3,)
+ispy2 = pyver < (3,)
 iswin = os.sys.platform.startswith('win')
 isdarwin = os.sys.platform.startswith('darwin')
 npstr = npunicode if ispy3 else npbytes
-# __builtins__ is dict
-has_long      = 'long'       in __builtins__
-has_unicode   = 'unicode'    in __builtins__
-has_basestring= 'basestring' in __builtins__
-has_bytes     = 'bytes'      in __builtins__
-has_buffer    = 'buffer'     in __builtins__
-has_xrange    = 'xrange'     in __builtins__
-has_mapclass  = isinstance(map,(type,))
+npver = tuple(int(v) for v in npver.version.split('.'))
+if isinstance(__builtins__, dict):
+    has_long = 'long' in __builtins__
+    has_unicode = 'unicode' in __builtins__
+    has_basestring = 'basestring' in __builtins__
+    has_bytes = 'bytes' in __builtins__
+    has_buffer = 'buffer' in __builtins__
+    has_xrange = 'xrange' in __builtins__
+else:
+    has_long = has_unicode = has_basestring = has_bytes = has_xrange = ispy2
+    has_buffer = True
+has_mapclass = isinstance(map, (type,))
 
-if pyver<(2,7):
+if pyver < (2, 7):
     def bit_length(val):
-        return len(bin(val)) - (3 if val<0 else 2)
+        return len(bin(val)) - (3 if val < 0 else 2)
 else:
     def bit_length(val):
         return val.bit_length()
+
 
 def load_library(name):
     import ctypes as C
     if isdarwin and not os.getenv('DYLD_LIBRARY_PATH'):
         if os.getenv('MDSPLUS_DIR'):
-            os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
+            os.environ['DYLD_LIBRARY_PATH'] = os.path.join(
+                os.getenv('MDSPLUS_DIR'), 'lib')
         else:
             os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
     try:
         if iswin:
             return C.CDLL(name)
         if isdarwin:
-            return C.CDLL('lib%s.dylib'%name)
-        return C.CDLL('lib%s.so'%name)
-    except: pass
-    print("Issues loading %s, trying find_library"%name)
+            return C.CDLL('lib%s.dylib' % name)
+        return C.CDLL('lib%s.so' % name)
+    except:
+        pass
+    print("Issues loading %s, trying find_library" % name)
     from ctypes.util import find_library
-    try:    libnam = find_library(name)
-    except: raise Exception("Could not find library: %s"%(name,))
+    try:
+        libnam = find_library(name)
+    except:
+        raise Exception("Could not find library: %s" % (name,))
     if libnam is None:
-            raise Exception("Could not find library: %s"%(name,))
-    try:   return C.CDLL(libnam)
-    except:pass
-    try:   return C.CDLL(os.path.basename(libnam))
-    except:raise Exception('Could not load library: %s'%(name,))
+        raise Exception("Could not find library: %s" % (name,))
+    try:
+        return C.CDLL(libnam)
+    except:
+        pass
+    try:
+        return C.CDLL(os.path.basename(libnam))
+    except:
+        raise Exception('Could not load library: %s' % (name,))
+
 
 from types import GeneratorType as generator  # analysis:ignore
 
@@ -110,18 +125,20 @@ if has_mapclass:
 else:
     mapclass = tuple
 
-if  ispy3:
-    def superdir(cls,self):
+if ispy3:
+    def superdir(cls, self):
         return super(cls, self).__dir__()
 else:
     # http://www.quora.com/How-dir-is-implemented-Is-there-any-PEP-related-to-that
-    def superdir(cls,self=None):
+    def superdir(cls, self=None):
         def get_attrs(obj):
-            try:    return obj.__dict__.keys()
-            except: return []
+            try:
+                return obj.__dict__.keys()
+            except:
+                return []
         attrs = set()
         attrs.update(get_attrs(cls))
-        if hasattr(cls,'__bases__'):
+        if hasattr(cls, '__bases__'):
             for cls in cls.__bases__:
                 attrs.update(get_attrs(cls))
                 attrs.update(superdir(cls))
@@ -144,19 +161,23 @@ if has_xrange:
 else:
     xrange = range
 
+
 def _decode(string):
     try:
         return string.decode('utf-8', 'backslashreplace')
     except:
         return string.decode('CP1252', 'backslashreplace')
 
+
 def _encode(string):
     return string.encode('utf-8', 'backslashreplace')
+
 
 def hash64(bytes):
     import hashlib
     import numpy
-    return numpy.frombuffer(hashlib.md5(bytes.tostring()).digest(),numpy.uint64).sum()
+    return numpy.frombuffer(hashlib.md5(bytes.tostring()).digest(), numpy.uint64).sum()
+
 
 def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
@@ -173,13 +194,14 @@ def _tostring(string, targ, nptarg, conv, lstres):
 
 
 def tostr(string):
-    if isinstance(string,(list, tuple)):
+    if isinstance(string, (list, tuple)):
         return string.__class__(tostr(item) for item in string)
     return _tostring(string, str, npstr, _decode, str)
 
 
 if ispy2:
     _bytes = bytes
+
     def _unicode(string):
         return _decode(str(string))
 else:
@@ -187,19 +209,21 @@ else:
         return _encode(str(string))
     _unicode = unicode
 
+
 def tobytes(string):
-    if isinstance(string,(list, tuple)):
+    if isinstance(string, (list, tuple)):
         return string.__class__(tobytes(item) for item in string)
     return _tostring(string, bytes, npbytes, _encode, _bytes)
 
 
 def tounicode(string):
-    if isinstance(string,(list, tuple)):
+    if isinstance(string, (list, tuple)):
         return string.__class__(tounicode(item) for item in string)
     return _tostring(string, unicode, npunicode, _decode, _unicode)
 
 # Extract the code attribute of a function. Different implementations
 # are for Python 2/3 compatibility.
+
 
 if ispy2:
     def func_code(f):

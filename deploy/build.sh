@@ -39,7 +39,7 @@ SYNOPSIS
                [--distname=dir] [--dockerpull]
                [--valgrind=test-list] [--sanitize=test-list]
                [--distname=name] [--updatepkg] [--eventport=number]
-               [--arch=name] [--color] 
+               [--arch=name] [--color]
                [--jars] [--jars-dir=dir] [--make-jars] [--docker-srcdir=dir]
 
 DESCRIPTION
@@ -445,7 +445,8 @@ BRANCH=${BRANCH-$(echo $TAG | cut -d- -f1 | cut -d_ -f1)}
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
+    LAST_RELEASE_INFO=$PUBLISHDIR/${DISTNAME}/${BRANCH}_${OS}
+    if [ -r ${LAST_RELEASE_INFO} ] && [ "$(cat ${LAST_RELEASE_INFO})" == "${RELEASE_VERSION}" ]
     then
 	GREEN
 	cat <<EOF
@@ -478,9 +479,11 @@ echo "${SANITIZE}"
 if [ "${TEST}"            != "yes"  \
  -a  "${MAKE_JARS}"       != "yes"  \
  -a  "${RELEASE}"         != "yes"  \
- -a  "${PUBLISH}"         != "yes"  ]
+ -a  "${PUBLISH}"         != "yes"  \
+ -a  "${SANITIZE}"         = ""     \
+ -a  "${VALGRIND_TOOLS}"   = ""     ]
 then
-    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command or skipped. Nothing to do!"
+    >&2 echo "None of --test --make-jars --release=version --publish=version --sanitize --valgrind options specified on the command or skipped. Nothing to do!"
     exit 0
 fi
 #
@@ -668,6 +671,10 @@ EOF
     NORMAL
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}
+	# /publish/$OS/ will contain one file per branch and arch containing the latest release
+	# The previous version is captured in *_old
+	# This is supposed to make it easier to fixup repos while keeping the number of files low
+	[ -r ${LAST_RELEASE_INFO} ]&&cp ${LAST_RELEASE_INFO} ${LAST_RELEASE_INFO}_old
+	[ -z "${PUBLISHDIR}" -o -z "${DISTNAME}" ]||echo "${RELEASE_VERSION}" > ${LAST_RELEASE_INFO}
     fi
 fi

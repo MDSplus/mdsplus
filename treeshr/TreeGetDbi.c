@@ -22,27 +22,36 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "treeshrp.h"
+#include <dbidef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <treeshr.h>
-#include "treeshrp.h"
-#include <dbidef.h>
 
 extern void **TreeCtx();
-static inline int minInt(int a, int b) { return a < b ? a : b;}
+static inline int minInt(int a, int b) { return a < b ? a : b; }
 
-int TreeGetDbi(struct dbi_itm *itmlst)
-{
+int TreeGetDbi(struct dbi_itm *itmlst) {
   return _TreeGetDbi(*TreeCtx(), itmlst);
 }
 
-#define set_retlen(length) if ((unsigned int)lst->buffer_length < length) { status = TreeBUFFEROVF; break; } else retlen=length
-#define CheckOpen(db) if (!db || !db->open) {status=TreeNOT_OPEN;break;}
-#define set_ret_char(val) memset(lst->pointer, 0, (size_t)lst->buffer_length); *((char *)lst->pointer) = val
+#define set_retlen(length)                                                     \
+  if ((unsigned int)lst->buffer_length < length) {                             \
+    status = TreeBUFFEROVF;                                                    \
+    break;                                                                     \
+  } else                                                                       \
+    retlen = length
+#define CheckOpen(db)                                                          \
+  if (!db || !db->open) {                                                      \
+    status = TreeNOT_OPEN;                                                     \
+    break;                                                                     \
+  }
+#define set_ret_char(val)                                                      \
+  memset(lst->pointer, 0, (size_t)lst->buffer_length);                         \
+  *((char *)lst->pointer) = val
 
-int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
-{
-  PINO_DATABASE *db = (PINO_DATABASE *) dbid;
+int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst) {
+  PINO_DATABASE *db = (PINO_DATABASE *)dbid;
   struct dbi_itm *lst = itmlst;
   int status = TreeSUCCESS;
   while ((lst->code != 0) && (status & 1)) {
@@ -82,105 +91,102 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 
     case DbiINDEX:
 
-      {
-	int idx;
-	for (idx = 0, db = (PINO_DATABASE *) dbid; db && (idx < (*(int *)(lst->pointer) & 0xff));
-	     idx++, db = db->next) ;
-	break;
-      }
+    {
+      int idx;
+      for (idx = 0, db = (PINO_DATABASE *)dbid;
+           db && (idx < (*(int *)(lst->pointer) & 0xff)); idx++, db = db->next)
+        ;
+      break;
+    }
 
     case DbiNUMBER_OPENED:
 
-      {
-	int count;
-	PINO_DATABASE *db_tmp;
-	for (count = 0, db_tmp = (PINO_DATABASE *) dbid; db_tmp ? db_tmp->open : 0;
-	     count++, db_tmp = db_tmp->next) ;
-	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	int length = minInt(lst->buffer_length, sizeof(int));
-	memcpy(lst->pointer, &count, (size_t)length);
-	if (lst->return_length_address)
-	  *lst->return_length_address = length;
-	break;
-      }
+    {
+      int count;
+      PINO_DATABASE *db_tmp;
+      for (count = 0, db_tmp = (PINO_DATABASE *)dbid; db_tmp ? db_tmp->open : 0;
+           count++, db_tmp = db_tmp->next)
+        ;
+      memset(lst->pointer, 0, (size_t)lst->buffer_length);
+      int length = minInt(lst->buffer_length, sizeof(int));
+      memcpy(lst->pointer, &count, (size_t)length);
+      if (lst->return_length_address)
+        *lst->return_length_address = length;
+      break;
+    }
 
     case DbiMAX_OPEN:
 
-      {
-	int count = db->stack_size;
-	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	int length = minInt(lst->buffer_length, sizeof(int));
-	memcpy(lst->pointer, &count, (size_t)length);
-	if (lst->return_length_address)
-	  *lst->return_length_address = length;
-	break;
-      }
+    {
+      int count = db->stack_size;
+      memset(lst->pointer, 0, (size_t)lst->buffer_length);
+      int length = minInt(lst->buffer_length, sizeof(int));
+      memcpy(lst->pointer, &count, (size_t)length);
+      if (lst->return_length_address)
+        *lst->return_length_address = length;
+      break;
+    }
 
     case DbiDEFAULT:
 
       CheckOpen(db);
       {
-	int nid;
-	_TreeGetDefaultNid(db, &nid);
-	string = _TreeGetPath(db, nid);
+        int nid;
+        _TreeGetDefaultNid(db, &nid);
+        string = _TreeGetPath(db, nid);
       }
       break;
 
     case DbiVERSIONS_IN_MODEL:
       CheckOpen(db);
       {
-	int value = db->tree_info->header->versions_in_model;
-	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	int length = minInt(lst->buffer_length, sizeof(int));
-	memcpy(lst->pointer, &value, (size_t)length);
-	if (lst->return_length_address)
-	  *lst->return_length_address = length;
-	break;
+        int value = db->tree_info->header->versions_in_model;
+        memset(lst->pointer, 0, (size_t)lst->buffer_length);
+        int length = minInt(lst->buffer_length, sizeof(int));
+        memcpy(lst->pointer, &value, (size_t)length);
+        if (lst->return_length_address)
+          *lst->return_length_address = length;
+        break;
       }
 
     case DbiVERSIONS_IN_PULSE:
       CheckOpen(db);
       {
-	int value = db->tree_info->header->versions_in_pulse;
-	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	int length = minInt(lst->buffer_length, sizeof(int));
-	memcpy(lst->pointer, &value, (size_t)length);
-	if (lst->return_length_address)
-	  *lst->return_length_address = length;
-	break;
+        int value = db->tree_info->header->versions_in_pulse;
+        memset(lst->pointer, 0, (size_t)lst->buffer_length);
+        int length = minInt(lst->buffer_length, sizeof(int));
+        memcpy(lst->pointer, &value, (size_t)length);
+        if (lst->return_length_address)
+          *lst->return_length_address = length;
+        break;
       }
 
     case DbiDISPATCH_TABLE:
       CheckOpen(db);
       {
-	int value = db->dispatch_table != NULL;
-	memset(lst->pointer, 0, (size_t)lst->buffer_length);
-	int length = minInt(lst->buffer_length, sizeof(int));
-	memcpy(lst->pointer, &value, (size_t)length);
-	if (lst->return_length_address)
-	  *lst->return_length_address = length;
-	break;
+        int value = db->dispatch_table != NULL;
+        memset(lst->pointer, 0, (size_t)lst->buffer_length);
+        int length = minInt(lst->buffer_length, sizeof(int));
+        memcpy(lst->pointer, &value, (size_t)length);
+        if (lst->return_length_address)
+          *lst->return_length_address = length;
+        break;
       }
 
     default:
       status = TreeILLEGAL_ITEM;
-
     }
     if (string) {
       if (lst->buffer_length && lst->pointer) {
-	retlen = (unsigned short)minInt((int)strlen(string), lst->buffer_length);
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-#endif
-	strncpy((char *)lst->pointer, string, (size_t)retlen);
-#pragma GCC diagnostic pop
-	if (retlen < lst->buffer_length)
-	  ((char *)lst->pointer)[retlen] = '\0';
-	free(string);
+        retlen =
+            (unsigned short)minInt((int)strlen(string), lst->buffer_length);
+        memcpy((char *)lst->pointer, string, (size_t)retlen);
+        if (retlen < lst->buffer_length)
+          ((char *)lst->pointer)[retlen] = '\0';
+        free(string);
       } else {
-	lst->pointer = (unsigned char *)string;
-	retlen = (unsigned short)strlen(string);
+        lst->pointer = (unsigned char *)string;
+        retlen = (unsigned short)strlen(string);
       }
     }
     if (lst->return_length_address)

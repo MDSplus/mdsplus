@@ -25,12 +25,17 @@
 
 from MDSplus import Tree, Device, tdi
 
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-_UnitTest=_mimport("_UnitTest")
+
+
+_UnitTest = _mimport("_UnitTest")
+
+
 class Tests(_UnitTest.TreeTests):
     tree = 'devtree'
 
@@ -39,56 +44,63 @@ class Tests(_UnitTest.TreeTests):
         """produces a generic path fitting with the 12 char limit of node names"""
         pathparts = model.split('_')
         node = t.top
-        if len(model)>9:
-            if len(pathparts)>1:
-                base,name = pathparts[0]+'_','_'.join(pathparts[1:])
-            elif len(model)>12:
-                base,name = model[:10]+'_','_'+model[10:]
+        if len(model) > 9:
+            if len(pathparts) > 1:
+                base, name = pathparts[0]+'_', '_'.join(pathparts[1:])
+            elif len(model) > 12:
+                base, name = model[:10]+'_', '_'+model[10:]
             else:
-                return node,model
+                return node, model
             try:
                 node = node.getNode(base)
             except:
-                node = node.addNode(base,'STRUCTURE')
+                node = node.addNode(base, 'STRUCTURE')
         else:
             name = model
-        return node,name
+        return node, name
 
-    def DevicesTests(self,package):
-        with Tree(self.tree,self.shot,'new') as t:
+    def DevicesTests(self, package):
+        with Tree(self.tree, self.shot, 'new') as t:
             devices = __import__(package).__dict__
             for model in sorted(devices.keys()):
                 cls = devices[model]
                 if isinstance(cls, type) and issubclass(cls, Device):
-                    node,name = self.getNodeName(t,model)
-                    cls.Add(node,name)
+                    node, name = self.getNodeName(t, model)
+                    cls.Add(node, name)
 
-    def XyzDevices(self,package,expected=None):
+    def XyzDevices(self, package, expected=None):
         if expected is None:
-            expected = [s for s in (str(s).strip() for s,p in tdi('%s()'%package))]
+            expected = [s for s in (str(s).strip()
+                                    for s, p in tdi('%s()' % package))]
         expected.sort()
         passed = []
-        with Tree(self.tree,self.shot,'new') as t:
+        with Tree(self.tree, self.shot, 'new') as t:
             for model in expected:
-                node,name = self.getNodeName(t,model)
+                node, name = self.getNodeName(t, model)
                 try:
-                    node.addDevice(name,model)
+                    node.addDevice(name, model)
                     passed.append(model)
-                    if Device.debug: print('PASSED %s'%model)
+                    if Device.debug:
+                        print('PASSED %s' % model)
                 except:
-                    if Device.debug: print('FAILED %s'%model)
-        self.assertEqual(passed,expected)
+                    if Device.debug:
+                        print('FAILED %s' % model)
+        self.assertEqual(passed, expected)
         self.DevicesTests(package)
 
     def MitDevices(self):
-        self.XyzDevices('MitDevices',['CHS_A14', 'DC1394', 'DC1394A', 'DIO2', 'DT196AO', 'DT200', 'DT_ACQ16', 'INCAA_TR10', 'JRG_ADC32A', 'JRG_TR1612', 'L6810', 'MATROX'])
+        self.XyzDevices('MitDevices', ['CHS_A14', 'DC1394', 'DC1394A', 'DIO2', 'DT196AO',
+                                       'DT200', 'DT_ACQ16', 'INCAA_TR10', 'JRG_ADC32A', 'JRG_TR1612', 'L6810', 'MATROX'])
+
     def RfxDevices(self):
         self.XyzDevices('RfxDevices')  # check them all
+
     def W7xDevices(self):
-        self.XyzDevices('W7xDevices',[])  # no tdi devices to check
+        self.XyzDevices('W7xDevices', [])  # no tdi devices to check
 
     @staticmethod
     def getTests():
-        return ['MitDevices','RfxDevices','W7xDevices']
+        return ['MitDevices', 'RfxDevices', 'W7xDevices']
+
 
 Tests.main(__name__)

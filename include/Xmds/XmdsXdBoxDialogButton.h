@@ -6,15 +6,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSXDBOXDIALOGBUTTON.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsXdBoxDialogButton.H
+                Name:   XmdsXdBoxDialogButton.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   15-JAN-1992
+                Date:   15-JAN-1992
 
-		Purpose: Public declarations for XmdsXdBoxDialogButton widget
+                Purpose: Public declarations for XmdsXdBoxDialogButton widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -33,12 +33,14 @@
 
 /* Resources */
 
-#define XmdsNnid               "nid"	/* Nid */
-#define XmdsNnidOffset         "nidOffset"	/* Nid offset */
-#define XmdsNputOnApply        "putOnApply"	/* Put when a XmdsApplyAllXds is called */
+#define XmdsNnid "nid"             /* Nid */
+#define XmdsNnidOffset "nidOffset" /* Nid offset */
+#define XmdsNputOnApply                                                        \
+  "putOnApply" /* Put when a XmdsApplyAllXds is called                         \
+                */
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreateXdBoxDialogButton();
@@ -48,16 +50,16 @@ extern Widget XmdsXdBoxDialogButtonGetXdBox();
 extern int XmdsXdBoxDialogButtonPut();
 extern void XmdsXdBoxDialogButtonReset();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateXdBoxDialogButton(Widget parent, String name, ArgList args,
-					  Cardinal argcount);
+extern Widget XmdsCreateXdBoxDialogButton(Widget parent, String name,
+                                          ArgList args, Cardinal argcount);
 extern Boolean XmdsIsXdBoxDialogButton(Widget w);
 extern int XmdsXdBoxDialogButtonApply(Widget w);
 extern Widget XmdsXdBoxDialogButtonGetXdBox(Widget w);
 extern int XmdsXdBoxDialogButtonPut(Widget w);
 extern void XmdsXdBoxDialogButtonReset(Widget w);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
-#endif				/* _XmdsXdBoxDialogButton */
+#endif /* _XmdsXdBoxDialogButton */

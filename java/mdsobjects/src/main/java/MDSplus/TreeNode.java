@@ -2,90 +2,32 @@ package MDSplus;
 
 /**
  * Class TreeNode holds all the node-specific information.
+ *
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.50
  */
 public class TreeNode extends Data
 {
-
-	protected Tree tree;
+	// protected Tree tree;
 	protected int nid;
-
-
-	static final int NciM_STATE = 0x00000001,
-			NciM_PARENT_STATE = 0x00000002,
-			NciM_ESSENTIAL = 0x00000004,
-			NciM_CACHED = 0x00000008,
-			NciM_VERSIONS = 0x00000010,
-			NciM_SEGMENTED = 0x00000020,
-			NciM_SETUP_INFORMATION = 0x00000040,
-			NciM_WRITE_ONCE = 0x00000080,
-			NciM_COMPRESSIBLE = 0x00000100,
-			NciM_DO_NOT_COMPRESS = 0x00000200,
-			NciM_COMPRESS_ON_PUT = 0x00000400,
-			NciM_NO_WRITE_MODEL = 0x00000800,
-			NciM_NO_WRITE_SHOT = 0x00001000,
-			NciM_PATH_REFERENCE = 0x00002000,
-			NciM_NID_REFERENCE = 0x00004000,
-			NciM_INCLUDE_IN_PULSE = 0x00008000;
-
-
-	static final int  NciTIME_INSERTED = 4,
-			NciOWNER_ID = 5,
-			NciCLASS = 6,
-			NciDTYPE = 7,
-			NciLENGTH = 8,
-			NciSTATUS = 9,
-			NciCONGLOMERATE_ELT = 10,
-			NciGET_FLAGS = 12,
-			NciNODE_NAME =  13,
-			NciPATH = 14,
-			NciDEPTH =  15,
-			NciPARENT = 16,
-			NciBROTHER = 17,
-			NciMEMBER = 18,
-			NciCHILD =  19,
-			NciPARENT_RELATIONSHIP = 20,
-			NciK_IS_CHILD = 1,
-			NciK_IS_MEMBER = 2,
-			NciCONGLOMERATE_NIDS = 21,
-			NciORIGINAL_PART_NAME = 22,
-			NciNUMBER_OF_MEMBERS = 23,
-			NciNUMBER_OF_CHILDREN = 24,
-			NciMEMBER_NIDS = 25,
-			NciCHILDREN_NIDS = 26,
-			NciFULLPATH = 27,
-			NciMINPATH = 28,
-			NciUSAGE = 29,
-			NciPARENT_TREE = 30,
-			NciRLENGTH = 31,
-			NciNUMBER_OF_ELTS = 32,
-			NciDATA_IN_NCI = 33,
-			NciERROR_ON_PUT = 34,
-			NciRFA = 35,
-			NciIO_STATUS = 36,
-			NciIO_STV = 37,
-			NciDTYPE_STR = 38,
-			NciUSAGE_STR = 39,
-			NciCLASS_STR = 40,
-			NciVERSION = 41;
-
-	static final int TreeUSAGE_ANY = 0,
-			TreeUSAGE_STRUCTURE  = 1,
-			TreeUSAGE_ACTION   =   2,
-			TreeUSAGE_DEVICE    =  3,
-			TreeUSAGE_DISPATCH  =  4,
-			TreeUSAGE_NUMERIC  =   5,
-			TreeUSAGE_SIGNAL   =   6,
-			TreeUSAGE_TASK     =   7,
-			TreeUSAGE_TEXT     =   8,
-			TreeUSAGE_WINDOW   =   9,
-			TreeUSAGE_AXIS    =   10,
-			TreeUSAGE_SUBTREE  =  11,
-			TreeUSAGE_COMPOUND_DATA =  12;
-
-
+	static final int NciM_STATE = 0x00000001, NciM_PARENT_STATE = 0x00000002, NciM_ESSENTIAL = 0x00000004,
+			NciM_CACHED = 0x00000008, NciM_VERSIONS = 0x00000010, NciM_SEGMENTED = 0x00000020,
+			NciM_SETUP_INFORMATION = 0x00000040, NciM_WRITE_ONCE = 0x00000080, NciM_COMPRESSIBLE = 0x00000100,
+			NciM_DO_NOT_COMPRESS = 0x00000200, NciM_COMPRESS_ON_PUT = 0x00000400, NciM_NO_WRITE_MODEL = 0x00000800,
+			NciM_NO_WRITE_SHOT = 0x00001000, NciM_PATH_REFERENCE = 0x00002000, NciM_NID_REFERENCE = 0x00004000,
+			NciM_INCLUDE_IN_PULSE = 0x00008000, NciM_COMPRESS_SEGMENTS = 0x00010000;
+	static final int NciTIME_INSERTED = 4, NciOWNER_ID = 5, NciCLASS = 6, NciDTYPE = 7, NciLENGTH = 8, NciSTATUS = 9,
+			NciCONGLOMERATE_ELT = 10, NciGET_FLAGS = 12, NciNODE_NAME = 13, NciPATH = 14, NciDEPTH = 15, NciPARENT = 16,
+			NciBROTHER = 17, NciMEMBER = 18, NciCHILD = 19, NciPARENT_RELATIONSHIP = 20, NciK_IS_CHILD = 1,
+			NciK_IS_MEMBER = 2, NciCONGLOMERATE_NIDS = 21, NciORIGINAL_PART_NAME = 22, NciNUMBER_OF_MEMBERS = 23,
+			NciNUMBER_OF_CHILDREN = 24, NciMEMBER_NIDS = 25, NciCHILDREN_NIDS = 26, NciFULLPATH = 27, NciMINPATH = 28,
+			NciUSAGE = 29, NciPARENT_TREE = 30, NciRLENGTH = 31, NciNUMBER_OF_ELTS = 32, NciDATA_IN_NCI = 33,
+			NciERROR_ON_PUT = 34, NciRFA = 35, NciIO_STATUS = 36, NciIO_STV = 37, NciDTYPE_STR = 38, NciUSAGE_STR = 39,
+			NciCLASS_STR = 40, NciVERSION = 41;
+	static final int TreeUSAGE_ANY = 0, TreeUSAGE_STRUCTURE = 1, TreeUSAGE_ACTION = 2, TreeUSAGE_DEVICE = 3,
+			TreeUSAGE_DISPATCH = 4, TreeUSAGE_NUMERIC = 5, TreeUSAGE_SIGNAL = 6, TreeUSAGE_TASK = 7, TreeUSAGE_TEXT = 8,
+			TreeUSAGE_WINDOW = 9, TreeUSAGE_AXIS = 10, TreeUSAGE_SUBTREE = 11, TreeUSAGE_COMPOUND_DATA = 12;
 
 	public TreeNode(int nid, Data help, Data units, Data error, Data validation) throws MdsException
 	{
@@ -93,29 +35,32 @@ public class TreeNode extends Data
 		clazz = CLASS_S;
 		dtype = DTYPE_NID;
 		this.nid = nid;
-		tree = Tree.getActiveTree();
+		ctxTree = Tree.getActiveTree();
 	}
+
 	public TreeNode(Data help, Data units, Data error, Data validation) throws MdsException
 	{
 		super(help, units, error, validation);
 		clazz = CLASS_S;
 		dtype = DTYPE_NID;
-		tree = Tree.getActiveTree();
+		ctxTree = Tree.getActiveTree();
 	}
+
 	public TreeNode(int nid, Tree tree, Data help, Data units, Data error, Data validation)
 	{
 		super(help, units, error, validation);
 		clazz = CLASS_S;
 		dtype = DTYPE_NID;
 		this.nid = nid;
-		this.tree = tree;
+		ctxTree = tree;
 	}
 
 	public TreeNode(int nid, Tree tree) throws MdsException
 	{
 		this(nid, tree, null, null, null, null);
 	}
-	public TreeNode(int nid)  throws MdsException
+
+	public TreeNode(int nid) throws MdsException
 	{
 		this(nid, null, null, null, null);
 	}
@@ -124,50 +69,102 @@ public class TreeNode extends Data
 	{
 		return getData(nid, null, null, null, null);
 	}
-	public static TreeNode getData(int nid,  Data help, Data units, Data error, Data validation) throws MdsException
+
+	public static TreeNode getData(int nid, Data help, Data units, Data error, Data validation) throws MdsException
 	{
-		return new TreeNode(nid,  help,  units, error, validation);
+		return new TreeNode(nid, help, units, error, validation);
 	}
 
-	protected void resolveNid() throws MdsException {}
+	protected void resolveNid() throws MdsException
+	{}
+
 	private static native int getNci(int nid, long ctx, int nciType) throws MdsException;
+
 	private static native long getNciLong(int nid, long ctx, int nciType) throws MdsException;
+
 	private static native java.lang.String getNciString(int nid, long ctx, int nciType) throws MdsException;
+
 	private static native void setNciFlag(int nid, long ctx, int flagType, boolean flag) throws MdsException;
+
+	private static native void setNciFlags(int nid, long ctx, int flags) throws MdsException;
+
 	private static native boolean getNciFlag(int nid, long ctx, int flagType) throws MdsException;
-	private static native int[]getNciNids(int nid, long ctx, int nciNumType, int nciType) throws MdsException;
+
+	private static native int getNciFlags(int nid, long ctx) throws MdsException;
+
+	private static native int[] getNciNids(int nid, long ctx, int nciNumType, int nciType) throws MdsException;
+
 	private static native void turnOn(int nid, long ctx, boolean on) throws MdsException;
+
 	private static native boolean isOn(int nid, long ctx) throws MdsException;
+
+	private static native boolean isParentOff(int nid, long ctx) throws MdsException;
+
 	private static native Data getExtendedAttribute(int nid, long ctx, java.lang.String name) throws MdsException;
-	private static native void setExtendedAttribute(int nid, long ctx, java.lang.String name, Data data) throws MdsException;
+
+	private static native void setExtendedAttribute(int nid, long ctx, java.lang.String name, Data data)
+			throws MdsException;
+
 	private static native Data getData(int nid, long ctx) throws MdsException;
+
 	private static native void putData(int nid, long ctx, Data data) throws MdsException;
+
 	private static native void deleteData(int nid, long ctx) throws MdsException;
+
 	private static native void doMethod(int nid, long ctx, java.lang.String method) throws MdsException;
+
 	private static native java.lang.String[] getTags(int nid, long ctx) throws MdsException;
-	private static native void beginSegment(int nid, long ctx, Data start, Data end, Data dim, Data initData)throws MdsException;
-	private static native void makeSegment(int nid, long ctx, Data start, Data end, Data dim, Data initData, int filledRows)throws MdsException;
-	private static native void putSegment(int nid, long ctx, Data data, int  offset)throws MdsException;
-	private static native void updateSegment(int nid, long ctx, int segmentOffset, Data start, Data end, Data dim)throws MdsException;
-	private static native void beginTimestampedSegment(int nid, long ctx,Data initData)throws MdsException;
-	private static native void putTimestampedSegment(int nid, long ctx,Data data, long times[])throws MdsException;
-	private static native void makeTimestampedSegment(int nid, long ctx,Data data, long times[])throws MdsException;
-	private static native void putRow(int nid, long ctx, Data row, long time, int size)throws MdsException;
-	private static native int getNumSegments(int nid, long ctx)throws MdsException;
-	private static native void acceptSegment(int nid, long ctx, Data seg, Data time)throws MdsException;
-	private static native void acceptRow(int nid, long ctx, Data seg, long time)throws MdsException;
-	private static native Data getSegmentStart(int nid, long ctx, int idx)throws MdsException;
-	private static native Data getSegmentEnd(int nid, long ctx, int idx)throws MdsException;
-	private static native Data getSegmentDim(int nid, long ctx, int idx)throws MdsException;
-	private static native Data getSegment(int nid, long ctx, int idx)throws MdsException;
-	private static native int addNode(int nid, long ctx, java.lang.String name,  int usage)throws MdsException;
-	private static native void deleteNode(int nid, long ctx,  java.lang.String name)throws MdsException;
-	private static native void renameNode(int nid, long ctx,  java.lang.String newName)throws MdsException;
-	private static native void addTag(int nid, long ctx,  java.lang.String tagname)throws MdsException;
-	private static native void removeTag(int nid, long ctx,  java.lang.String tagname)throws MdsException;
-	private static native int addDevice(int nid, long ctx,  java.lang.String name,  java.lang.String usage)throws MdsException;
+
+	private static native void beginSegment(int nid, long ctx, Data start, Data end, Data dim, Data initData)
+			throws MdsException;
+
+	private static native void makeSegment(int nid, long ctx, Data start, Data end, Data dim, Data initData,
+			int filledRows) throws MdsException;
+
+	private static native void putSegment(int nid, long ctx, Data data, int offset) throws MdsException;
+
+	private static native void updateSegment(int nid, long ctx, int segmentOffset, Data start, Data end, Data dim)
+			throws MdsException;
+
+	private static native void beginTimestampedSegment(int nid, long ctx, Data initData) throws MdsException;
+
+	private static native void putTimestampedSegment(int nid, long ctx, Data data, long times[]) throws MdsException;
+
+	private static native void makeTimestampedSegment(int nid, long ctx, Data data, long times[]) throws MdsException;
+
+	private static native void putRow(int nid, long ctx, Data row, long time, int size) throws MdsException;
+
+	private static native int getNumSegments(int nid, long ctx) throws MdsException;
+
+	private static native void acceptSegment(int nid, long ctx, Data seg, Data time) throws MdsException;
+
+	private static native void acceptRow(int nid, long ctx, Data seg, long time) throws MdsException;
+
+	private static native Data getSegmentStart(int nid, long ctx, int idx) throws MdsException;
+
+	private static native Data getSegmentEnd(int nid, long ctx, int idx) throws MdsException;
+
+	private static native Data getSegmentDim(int nid, long ctx, int idx) throws MdsException;
+
+	private static native Data getSegment(int nid, long ctx, int idx) throws MdsException;
+
+	private static native int addNode(int nid, long ctx, java.lang.String name, int usage) throws MdsException;
+
+	private static native void deleteNode(int nid, long ctx, java.lang.String name) throws MdsException;
+
+	private static native void renameNode(int nid, long ctx, java.lang.String newName) throws MdsException;
+
+	private static native void addTag(int nid, long ctx, java.lang.String tagname) throws MdsException;
+
+	private static native void removeTag(int nid, long ctx, java.lang.String tagname) throws MdsException;
+
+	private static native int addDevice(int nid, long ctx, java.lang.String name, java.lang.String usage)
+			throws MdsException;
+
 	private static native void setSubtree(int nid, long ctx, boolean isSubtree);
+
 	private static native void moveNode(int nid, long ctx, int parentNid, java.lang.String newName);
+
 	private static native int doAction(int nid, long ctx);
 
 	/**
@@ -176,18 +173,58 @@ public class TreeNode extends Data
 	public boolean isCompressOnPut() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciM_COMPRESS_ON_PUT);
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_COMPRESS_ON_PUT);
 	}
 
 	/**
-	 * Enable compression then writing data
+	 * Return true if node is compressible.
+	 */
+	public boolean isCompressible() throws MdsException
+	{
+		resolveNid();
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_COMPRESSIBLE);
+	}
+
+	/**
+	 * Return true if segmented node is compressible.
+	 */
+	public boolean isCompressSegments() throws MdsException
+	{
+		resolveNid();
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_COMPRESS_SEGMENTS);
+	}
+
+	/**
+	 * Node is compressible
+	 *
+	 * @param flag
+	 */
+	public void setCompressible(boolean flag) throws MdsException
+	{
+		resolveNid();
+		setNciFlag(nid, ctxTree.getCtx(), NciM_COMPRESSIBLE, flag);
+	}
+
+	/**
+	 * Node is compressible
 	 *
 	 * @param flag
 	 */
 	public void setCompressOnPut(boolean flag) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, tree.getCtx(), NciM_COMPRESS_ON_PUT, flag);
+		setNciFlag(nid, ctxTree.getCtx(), NciM_COMPRESS_ON_PUT, flag);
+	}
+
+	/**
+	 * Segmented Node is compressible
+	 *
+	 * @param flag
+	 */
+	public void setCompressSegments(boolean flag) throws MdsException
+	{
+		resolveNid();
+		setNciFlag(nid, ctxTree.getCtx(), NciM_COMPRESS_SEGMENTS, flag);
 	}
 
 	/**
@@ -196,16 +233,26 @@ public class TreeNode extends Data
 	public int getConglomerateElt() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciCONGLOMERATE_ELT);
+		return getNci(nid, ctxTree.getCtx(), NciCONGLOMERATE_ELT);
 	}
 
 	/**
-	 * Return the number of the elements for the conglomerate to which the node belongs
+	 * Return the number of the elements for the conglomerate to which the node
+	 * belongs
 	 */
 	public int getNumElts() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciNUMBER_OF_ELTS);
+		return getNci(nid, ctxTree.getCtx(), NciNUMBER_OF_ELTS);
+	}
+
+	/**
+	 * Return the flag word
+	 */
+	public int getFlags() throws MdsException
+	{
+		resolveNid();
+		return getNci(nid, ctxTree.getCtx(), NciGET_FLAGS);
 	}
 
 	/**
@@ -215,7 +262,7 @@ public class TreeNode extends Data
 	public TreeNodeArray getConglomerateNodes() throws MdsException
 	{
 		resolveNid();
-		return new TreeNodeArray(getNciNids(nid, tree.getCtx(), NciNUMBER_OF_ELTS, NciCONGLOMERATE_ELT), tree);
+		return new TreeNodeArray(getNciNids(nid, ctxTree.getCtx(), NciNUMBER_OF_ELTS, NciCONGLOMERATE_NIDS), ctxTree);
 	}
 
 	/**
@@ -224,16 +271,25 @@ public class TreeNode extends Data
 	public java.lang.String getOriginalPartName() throws MdsException
 	{
 		resolveNid();
-		return getNciString(nid, tree.getCtx(), NciORIGINAL_PART_NAME);
+		return getNciString(nid, ctxTree.getCtx(), NciORIGINAL_PART_NAME);
 	}
 
 	/**
-	 * eeturn data type as a java.lang.String
+	 * return data type as a java.lang.String
 	 */
 	public java.lang.String getDtype() throws MdsException
 	{
 		resolveNid();
-		return getNciString(nid, tree.getCtx(), NciDTYPE_STR);
+		return getNciString(nid, ctxTree.getCtx(), NciDTYPE_STR);
+	}
+
+	/**
+	 * return data class as a java.lang.String
+	 */
+	public java.lang.String getDclass() throws MdsException
+	{
+		resolveNid();
+		return getNciString(nid, ctxTree.getCtx(), NciCLASS_STR);
 	}
 
 	/**
@@ -242,7 +298,7 @@ public class TreeNode extends Data
 	public boolean isEssential() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciM_ESSENTIAL);
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_ESSENTIAL);
 	}
 
 	/**
@@ -253,7 +309,7 @@ public class TreeNode extends Data
 	public void setEssential(boolean flag) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, tree.getCtx(), NciM_ESSENTIAL, flag);
+		setNciFlag(nid, ctxTree.getCtx(), NciM_ESSENTIAL, flag);
 	}
 
 	/**
@@ -262,7 +318,7 @@ public class TreeNode extends Data
 	public java.lang.String getFullPath() throws MdsException
 	{
 		resolveNid();
-		return getNciString(nid, tree.getCtx(), NciFULLPATH);
+		return getNciString(nid, ctxTree.getCtx(), NciFULLPATH);
 	}
 
 	/**
@@ -271,7 +327,7 @@ public class TreeNode extends Data
 	public java.lang.String getMinPath() throws MdsException
 	{
 		resolveNid();
-		return getNciString(nid, tree.getCtx(), NciMINPATH);
+		return getNciString(nid, ctxTree.getCtx(), NciMINPATH);
 	}
 
 	/**
@@ -280,7 +336,7 @@ public class TreeNode extends Data
 	public java.lang.String getPath() throws MdsException
 	{
 		resolveNid();
-		return getNciString(nid, tree.getCtx(), NciPATH);
+		return getNciString(nid, ctxTree.getCtx(), NciPATH);
 	}
 
 	/**
@@ -289,20 +345,19 @@ public class TreeNode extends Data
 	public java.lang.String getNodeName() throws MdsException
 	{
 		resolveNid();
-		return getNciString(nid, tree.getCtx(), NciNODE_NAME).trim();
+		return getNciString(nid, ctxTree.getCtx(), NciNODE_NAME).trim();
 	}
 
 	/**
 	 * Return true if the underlying subtree is included in the pulse file
 	 */
 	public boolean isIncludedInPulse() throws MdsException
-	{
-		return isIncludeInPulse();
-	}
+	{ return isIncludeInPulse(); }
+
 	public boolean isIncludeInPulse() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciM_INCLUDE_IN_PULSE);
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_INCLUDE_IN_PULSE);
 	}
 
 	/**
@@ -314,10 +369,11 @@ public class TreeNode extends Data
 	{
 		setIncludeInPulse(flag);
 	}
+
 	public void setIncludeInPulse(boolean flag) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, tree.getCtx(), NciM_INCLUDE_IN_PULSE, flag);
+		setNciFlag(nid, ctxTree.getCtx(), NciM_INCLUDE_IN_PULSE, flag);
 	}
 
 	/**
@@ -326,7 +382,7 @@ public class TreeNode extends Data
 	public int getDepth() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciDEPTH);
+		return getNci(nid, ctxTree.getCtx(), NciDEPTH);
 	}
 
 	/**
@@ -335,7 +391,7 @@ public class TreeNode extends Data
 	public boolean isChild() throws MdsException
 	{
 		resolveNid();
-		int flags = getNci(nid, tree.getCtx(), NciPARENT_RELATIONSHIP);
+		final int flags = getNci(nid, ctxTree.getCtx(), NciPARENT_RELATIONSHIP);
 		return (flags & NciK_IS_CHILD) != 0;
 	}
 
@@ -345,7 +401,7 @@ public class TreeNode extends Data
 	public TreeNode getChild() throws MdsException
 	{
 		resolveNid();
-		return new TreeNode(getNci(nid, tree.getCtx(), NciCHILD), tree);
+		return new TreeNode(getNci(nid, ctxTree.getCtx(), NciCHILD), ctxTree);
 	}
 
 	/**
@@ -354,7 +410,7 @@ public class TreeNode extends Data
 	public int getNumChildren() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciNUMBER_OF_CHILDREN);
+		return getNci(nid, ctxTree.getCtx(), NciNUMBER_OF_CHILDREN);
 	}
 
 	/**
@@ -363,7 +419,7 @@ public class TreeNode extends Data
 	public TreeNodeArray getChildren() throws MdsException
 	{
 		resolveNid();
-		return new TreeNodeArray(getNciNids(nid, tree.getCtx(), NciNUMBER_OF_CHILDREN, NciCHILDREN_NIDS), tree);
+		return new TreeNodeArray(getNciNids(nid, ctxTree.getCtx(), NciNUMBER_OF_CHILDREN, NciCHILDREN_NIDS), ctxTree);
 	}
 
 	/**
@@ -372,7 +428,7 @@ public class TreeNode extends Data
 	public boolean isMember() throws MdsException
 	{
 		resolveNid();
-		int flags = getNci(nid, tree.getCtx(), NciPARENT_RELATIONSHIP);
+		final int flags = getNci(nid, ctxTree.getCtx(), NciPARENT_RELATIONSHIP);
 		return (flags & NciK_IS_MEMBER) != 0;
 	}
 
@@ -382,7 +438,7 @@ public class TreeNode extends Data
 	public TreeNode getMember() throws MdsException
 	{
 		resolveNid();
-		return new TreeNode(getNci(nid, tree.getCtx(), NciMEMBER), tree);
+		return new TreeNode(getNci(nid, ctxTree.getCtx(), NciMEMBER), ctxTree);
 	}
 
 	/**
@@ -391,25 +447,23 @@ public class TreeNode extends Data
 	public int getNumMembers() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciNUMBER_OF_MEMBERS);
+		return getNci(nid, ctxTree.getCtx(), NciNUMBER_OF_MEMBERS);
 	}
 
 	/**
-	 * Return  all the members of this node
+	 * Return all the members of this node
 	 */
 	public TreeNodeArray getMembers() throws MdsException
 	{
 		resolveNid();
-		return new TreeNodeArray(getNciNids(nid, tree.getCtx(), NciNUMBER_OF_MEMBERS, NciMEMBER_NIDS), tree);
+		return new TreeNodeArray(getNciNids(nid, ctxTree.getCtx(), NciNUMBER_OF_MEMBERS, NciMEMBER_NIDS), ctxTree);
 	}
 
 	/**
 	 * Get the number of all descendants (members + children)fir this node
 	 */
 	public int getNumDescendants() throws MdsException
-	{
-		return getNumMembers() + getNumChildren();
-	}
+	{ return getNumMembers() + getNumChildren(); }
 
 	/**
 	 * Get all the descendant (members + children)for this node
@@ -417,14 +471,14 @@ public class TreeNode extends Data
 	public TreeNodeArray getDescendants() throws MdsException
 	{
 		resolveNid();
-		int [] memberNids = getNciNids(nid, tree.getCtx(), NciNUMBER_OF_MEMBERS, NciMEMBER_NIDS);
-		int [] childrenNids = getNciNids(nid, tree.getCtx(), NciNUMBER_OF_CHILDREN, NciCHILDREN_NIDS);
-		int descendantNids[] = new int[memberNids.length + childrenNids.length];
-		for(int i = 0; i < memberNids.length; i++)
+		final int[] memberNids = getNciNids(nid, ctxTree.getCtx(), NciNUMBER_OF_MEMBERS, NciMEMBER_NIDS);
+		final int[] childrenNids = getNciNids(nid, ctxTree.getCtx(), NciNUMBER_OF_CHILDREN, NciCHILDREN_NIDS);
+		final int descendantNids[] = new int[memberNids.length + childrenNids.length];
+		for (int i = 0; i < memberNids.length; i++)
 			descendantNids[i] = memberNids[i];
-		for(int i = 0; i < childrenNids.length; i++)
-			descendantNids[memberNids.length+i] = childrenNids[i];
-		return new TreeNodeArray(descendantNids, tree);
+		for (int i = 0; i < childrenNids.length; i++)
+			descendantNids[memberNids.length + i] = childrenNids[i];
+		return new TreeNodeArray(descendantNids, ctxTree);
 	}
 
 	/**
@@ -433,7 +487,7 @@ public class TreeNode extends Data
 	public TreeNode getParent() throws MdsException
 	{
 		resolveNid();
-		return new TreeNode(getNci(nid, tree.getCtx(), NciPARENT), tree);
+		return new TreeNode(getNci(nid, ctxTree.getCtx(), NciPARENT), ctxTree);
 	}
 
 	/**
@@ -442,7 +496,7 @@ public class TreeNode extends Data
 	public TreeNode getBrother() throws MdsException
 	{
 		resolveNid();
-		return new TreeNode(getNci(nid, tree.getCtx(), NciBROTHER), tree);
+		return new TreeNode(getNci(nid, ctxTree.getCtx(), NciBROTHER), ctxTree);
 	}
 
 	/**
@@ -451,16 +505,16 @@ public class TreeNode extends Data
 	public int getLength() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciLENGTH);
+		return getNci(nid, ctxTree.getCtx(), NciLENGTH);
 	}
 
 	/**
-	 * Return the size in bytes of  (possibly compressed) associated data
+	 * Return the size in bytes of (possibly compressed) associated data
 	 */
 	public int getCompressedLength() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciRLENGTH);
+		return getNci(nid, ctxTree.getCtx(), NciRLENGTH);
 	}
 
 	/**
@@ -478,7 +532,7 @@ public class TreeNode extends Data
 	public boolean isNoWriteModel() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciM_NO_WRITE_MODEL);
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_NO_WRITE_MODEL);
 	}
 
 	/**
@@ -489,7 +543,7 @@ public class TreeNode extends Data
 	public void setNoWriteModel(boolean noWriteModel) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, tree.getCtx(), NciM_NO_WRITE_MODEL, noWriteModel);
+		setNciFlag(nid, ctxTree.getCtx(), NciM_NO_WRITE_MODEL, noWriteModel);
 	}
 
 	/**
@@ -498,7 +552,7 @@ public class TreeNode extends Data
 	public boolean isNoWriteShot() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciM_NO_WRITE_SHOT);
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_NO_WRITE_SHOT);
 	}
 
 	/**
@@ -508,7 +562,7 @@ public class TreeNode extends Data
 	public void setNoWriteShot(boolean noWriteShot) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, tree.getCtx(), NciM_NO_WRITE_SHOT, noWriteShot);
+		setNciFlag(nid, ctxTree.getCtx(), NciM_NO_WRITE_SHOT, noWriteShot);
 	}
 
 	/**
@@ -517,7 +571,7 @@ public class TreeNode extends Data
 	public boolean isWriteOnce() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciM_WRITE_ONCE);
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_WRITE_ONCE);
 	}
 
 	/**
@@ -528,7 +582,37 @@ public class TreeNode extends Data
 	public void setWriteOnce(boolean writeOnce) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, tree.getCtx(), NciM_WRITE_ONCE, writeOnce);
+		setNciFlag(nid, ctxTree.getCtx(), NciM_WRITE_ONCE, writeOnce);
+	}
+
+	public int getNciFlags() throws MdsException
+	{
+		resolveNid();
+		return getNciFlags(nid, ctxTree.getCtx());
+	}
+
+	public void setNciFlags(int flags) throws MdsException
+	{
+		resolveNid();
+		setNciFlags(nid, ctxTree.getCtx(), flags);
+	}
+
+	public boolean getNciFlag(int flagId) throws MdsException
+	{
+		resolveNid();
+		return getNciFlag(nid, ctxTree.getCtx(), 1 << flagId);
+	}
+
+	public void setNciFlag(int flagId) throws MdsException
+	{
+		resolveNid();
+		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, true);
+	}
+
+	public void clearNciFlag(int flagId) throws MdsException
+	{
+		resolveNid();
+		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, false);
 	}
 
 	/**
@@ -537,7 +621,16 @@ public class TreeNode extends Data
 	public boolean isOn() throws MdsException
 	{
 		resolveNid();
-		return isOn(nid, tree.getCtx());
+		return isOn(nid, ctxTree.getCtx());
+	}
+
+	/**
+	 * Return true if node parent is off
+	 **/
+	public boolean isParentOff() throws MdsException
+	{
+		resolveNid();
+		return isParentOff(nid, ctxTree.getCtx());
 	}
 
 	/**
@@ -546,7 +639,7 @@ public class TreeNode extends Data
 	public void setExtendedAttribute(java.lang.String name, Data val) throws MdsException
 	{
 		resolveNid();
-		setExtendedAttribute(nid, tree.getCtx(), name, val);
+		setExtendedAttribute(nid, ctxTree.getCtx(), name, val);
 	}
 
 	/**
@@ -555,7 +648,7 @@ public class TreeNode extends Data
 	public Data getExtendedAttribute(java.lang.String name) throws MdsException
 	{
 		resolveNid();
-		return getExtendedAttribute(nid, tree.getCtx(), name);
+		return getExtendedAttribute(nid, ctxTree.getCtx(), name);
 	}
 
 	/**
@@ -566,7 +659,7 @@ public class TreeNode extends Data
 	public void setOn(boolean on) throws MdsException
 	{
 		resolveNid();
-		turnOn(nid, tree.getCtx(), on);
+		turnOn(nid, ctxTree.getCtx(), on);
 	}
 
 	/**
@@ -575,7 +668,7 @@ public class TreeNode extends Data
 	public int getOwnerId() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciOWNER_ID);
+		return getNci(nid, ctxTree.getCtx(), NciOWNER_ID);
 	}
 
 	/**
@@ -584,8 +677,8 @@ public class TreeNode extends Data
 	public Data getData() throws MdsException
 	{
 		resolveNid();
-		Data  data = getData(nid, tree.getCtx());
-		data.setCtxTree(tree);
+		final Data data = getData(nid, ctxTree.getCtx());
+		data.setCtxTree(ctxTree);
 		return data;
 	}
 
@@ -597,7 +690,7 @@ public class TreeNode extends Data
 	public void putData(Data data) throws MdsException
 	{
 		resolveNid();
-		putData(nid, tree.getCtx(), data);
+		putData(nid, ctxTree.getCtx(), data);
 	}
 
 	/**
@@ -606,7 +699,7 @@ public class TreeNode extends Data
 	public void deleteData() throws MdsException
 	{
 		resolveNid();
-		deleteData(nid, tree.getCtx());
+		deleteData(nid, ctxTree.getCtx());
 	}
 
 	/**
@@ -615,7 +708,7 @@ public class TreeNode extends Data
 	public long getTimeInserted() throws MdsException
 	{
 		resolveNid();
-		return getNciLong(nid, tree.getCtx(), NciTIME_INSERTED);
+		return getNciLong(nid, ctxTree.getCtx(), NciTIME_INSERTED);
 	}
 
 	/**
@@ -626,7 +719,7 @@ public class TreeNode extends Data
 	public void doMethod(java.lang.String method) throws MdsException
 	{
 		resolveNid();
-		doMethod(nid, tree.getCtx(), method);
+		doMethod(nid, ctxTree.getCtx(), method);
 	}
 
 	/**
@@ -635,7 +728,7 @@ public class TreeNode extends Data
 	public boolean isSetup() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciM_SETUP_INFORMATION);
+		return getNciFlag(nid, ctxTree.getCtx(), NciM_SETUP_INFORMATION);
 	}
 
 	/**
@@ -644,7 +737,7 @@ public class TreeNode extends Data
 	public int getStatus() throws MdsException
 	{
 		resolveNid();
-		return getNci(nid, tree.getCtx(), NciSTATUS);
+		return getNci(nid, ctxTree.getCtx(), NciSTATUS);
 	}
 
 	/**
@@ -653,25 +746,38 @@ public class TreeNode extends Data
 	public java.lang.String getUsage() throws MdsException
 	{
 		resolveNid();
-		int usage = getNci(nid, tree.getCtx(), NciUSAGE);
-		switch(usage)  {
-			case TreeUSAGE_ACTION: return "ACTION";
-			case TreeUSAGE_ANY: return "ANY";
-			case TreeUSAGE_AXIS: return "AXIS";
-			case TreeUSAGE_COMPOUND_DATA: return "COMPOUND_DATA";
-			case TreeUSAGE_DEVICE: return "DEVICE";
-			case TreeUSAGE_DISPATCH: return "DISPATCH";
-			case TreeUSAGE_STRUCTURE: return "STRUCTURE";
-			case TreeUSAGE_NUMERIC: return "NUMERIC";
-			case TreeUSAGE_SIGNAL: return "SIGNAL";
-			case TreeUSAGE_SUBTREE: return "SUBTREE";
-			case TreeUSAGE_TASK: return "TASK";
-			case TreeUSAGE_TEXT: return "TEXT";
-			case TreeUSAGE_WINDOW: return "WINDOW";
+		final int usage = getNci(nid, ctxTree.getCtx(), NciUSAGE);
+		switch (usage)
+		{
+		case TreeUSAGE_ACTION:
+			return "ACTION";
+		case TreeUSAGE_ANY:
+			return "ANY";
+		case TreeUSAGE_AXIS:
+			return "AXIS";
+		case TreeUSAGE_COMPOUND_DATA:
+			return "COMPOUND_DATA";
+		case TreeUSAGE_DEVICE:
+			return "DEVICE";
+		case TreeUSAGE_DISPATCH:
+			return "DISPATCH";
+		case TreeUSAGE_STRUCTURE:
+			return "STRUCTURE";
+		case TreeUSAGE_NUMERIC:
+			return "NUMERIC";
+		case TreeUSAGE_SIGNAL:
+			return "SIGNAL";
+		case TreeUSAGE_SUBTREE:
+			return "SUBTREE";
+		case TreeUSAGE_TASK:
+			return "TASK";
+		case TreeUSAGE_TEXT:
+			return "TEXT";
+		case TreeUSAGE_WINDOW:
+			return "WINDOW";
 		}
 		return "";
 	}
-
 
 	/**
 	 * Get the (list of) tags for this node
@@ -679,7 +785,7 @@ public class TreeNode extends Data
 	public java.lang.String[] findTags() throws MdsException
 	{
 		resolveNid();
-		return getTags(nid, tree.getCtx());
+		return getTags(nid, ctxTree.getCtx());
 	}
 
 	/**
@@ -688,16 +794,14 @@ public class TreeNode extends Data
 	public boolean containsVersions() throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, tree.getCtx(), NciVERSION);
+		return getNciFlag(nid, ctxTree.getCtx(), NciVERSION);
 	}
 
 	/**
 	 * Return true if the node contains segmented data
 	 */
 	public boolean isSegmented() throws MdsException
-	{
-		return getNumSegments() == 0;
-	}
+	{ return getNumSegments() == 0; }
 
 	/**
 	 * Begin a new data segment
@@ -710,13 +814,14 @@ public class TreeNode extends Data
 	public void beginSegment(Data start, Data end, Data dim, Array initData) throws MdsException
 	{
 		resolveNid();
-		beginSegment(nid, tree.getCtx(), start, end, dim, initData);
+		beginSegment(nid, ctxTree.getCtx(), start, end, dim, initData);
 	}
+
 	public void makeSegment(Data start, Data end, Data dim, Array initData) throws MdsException
 	{
 		resolveNid();
-		int []shape = initData.getShape();
-		makeSegment(nid, tree.getCtx(), start, end, dim, initData, shape[shape.length - 1]);
+		final int[] shape = initData.getShape();
+		makeSegment(nid, ctxTree.getCtx(), start, end, dim, initData, shape[shape.length - 1]);
 	}
 
 	/**
@@ -728,9 +833,8 @@ public class TreeNode extends Data
 	public void putSegment(Array data, int offset) throws MdsException
 	{
 		resolveNid();
-		putSegment(nid, tree.getCtx(), data, offset);
+		putSegment(nid, ctxTree.getCtx(), data, offset);
 	}
-
 
 	/**
 	 * Update start, end time and dimension for the specified segment
@@ -743,7 +847,7 @@ public class TreeNode extends Data
 	public void updateSegment(int segmentOffset, Data start, Data end, Data dim) throws MdsException
 	{
 		resolveNid();
-		updateSegment(nid, tree.getCtx(), segmentOffset, start, end, dim);
+		updateSegment(nid, ctxTree.getCtx(), segmentOffset, start, end, dim);
 	}
 
 	/**
@@ -754,7 +858,7 @@ public class TreeNode extends Data
 	public void beginTimestampedSegment(Array initData) throws MdsException
 	{
 		resolveNid();
-		beginTimestampedSegment(nid, tree.getCtx(),initData);
+		beginTimestampedSegment(nid, ctxTree.getCtx(), initData);
 	}
 
 	/**
@@ -766,12 +870,13 @@ public class TreeNode extends Data
 	public void putTimestampedSegment(Data data, long times[]) throws MdsException
 	{
 		resolveNid();
-		putTimestampedSegment(nid, tree.getCtx(),data, times);
+		putTimestampedSegment(nid, ctxTree.getCtx(), data, times);
 	}
+
 	public void makeTimestampedSegment(Data data, long times[]) throws MdsException
 	{
 		resolveNid();
-		makeTimestampedSegment(nid, tree.getCtx(),data, times);
+		makeTimestampedSegment(nid, ctxTree.getCtx(), data, times);
 	}
 
 	/**
@@ -780,11 +885,10 @@ public class TreeNode extends Data
 	 * @param row
 	 * @param time
 	 */
-
 	public void putRow(Data row, long time, int size) throws MdsException
 	{
 		resolveNid();
-		putRow(nid, tree.getCtx(), row, time, size);
+		putRow(nid, ctxTree.getCtx(), row, time, size);
 	}
 
 	public void putRow(Data row, long time) throws MdsException
@@ -792,14 +896,13 @@ public class TreeNode extends Data
 		putRow(row, time, 1024);
 	}
 
-
 	/**
 	 * Get the num,ber of segments
 	 */
 	public int getNumSegments() throws MdsException
 	{
 		resolveNid();
-		return getNumSegments(nid, tree.getCtx());
+		return getNumSegments(nid, ctxTree.getCtx());
 	}
 
 	/**
@@ -810,7 +913,7 @@ public class TreeNode extends Data
 	public Data getSegmentStart(int idx) throws MdsException
 	{
 		resolveNid();
-		return getSegmentStart(nid, tree.getCtx(), idx);
+		return getSegmentStart(nid, ctxTree.getCtx(), idx);
 	}
 
 	/**
@@ -821,7 +924,7 @@ public class TreeNode extends Data
 	public Data getSegmentEnd(int idx) throws MdsException
 	{
 		resolveNid();
-		return getSegmentEnd(nid, tree.getCtx(), idx);
+		return getSegmentEnd(nid, ctxTree.getCtx(), idx);
 	}
 
 	/**
@@ -831,7 +934,7 @@ public class TreeNode extends Data
 	public Data getSegmentDim(int idx) throws MdsException
 	{
 		resolveNid();
-		return getSegmentDim(nid, tree.getCtx(), idx);
+		return getSegmentDim(nid, ctxTree.getCtx(), idx);
 	}
 
 	/**
@@ -842,16 +945,14 @@ public class TreeNode extends Data
 	public Array getSegment(int idx) throws MdsException
 	{
 		resolveNid();
-		return (Array)getSegment(nid, tree.getCtx(), idx);
+		return (Array) getSegment(nid, ctxTree.getCtx(), idx);
 	}
 
 	/**
 	 * Get the associated tree instance
 	 */
 	public Tree getTree()
-	{
-		return tree;
-	}
+	{ return ctxTree; }
 
 	/**
 	 * set the associated Tree instance
@@ -859,9 +960,7 @@ public class TreeNode extends Data
 	 * @param tree
 	 */
 	public void setTree(Tree tree)
-	{
-		this.tree = tree;
-	}
+	{ this.ctxTree = tree; }
 
 	/**
 	 * Add a node to the tree open for edit. The name is relative to this node
@@ -873,8 +972,8 @@ public class TreeNode extends Data
 	public TreeNode addNode(java.lang.String name, java.lang.String usage) throws MdsException
 	{
 		resolveNid();
-		int newNid = addNode(nid, tree.getCtx(), name, Tree.convertUsage(usage));
-		return new TreeNode(newNid, tree);
+		final int newNid = addNode(nid, ctxTree.getCtx(), name, Tree.convertUsage(usage));
+		return new TreeNode(newNid, ctxTree);
 	}
 
 	/**
@@ -886,10 +985,10 @@ public class TreeNode extends Data
 	public void remove(java.lang.String name) throws MdsException
 	{
 		resolveNid();
-		TreeNode defNode = tree.getDefault();
-		tree.setDefault(this);
-		deleteNode(nid, tree.getCtx(), name);
-		tree.setDefault(defNode);
+		final TreeNode defNode = ctxTree.getDefault();
+		ctxTree.setDefault(this);
+		deleteNode(nid, ctxTree.getCtx(), name);
+		ctxTree.setDefault(defNode);
 	}
 
 	/**
@@ -901,24 +1000,25 @@ public class TreeNode extends Data
 	public void rename(java.lang.String newName) throws MdsException
 	{
 		resolveNid();
-		renameNode(nid, tree.getCtx(), newName);
+		renameNode(nid, ctxTree.getCtx(), newName);
 	}
 
 	public void move(TreeNode parent, java.lang.String newName) throws MdsException
 	{
 		resolveNid();
-		TreeNode defNode = tree.getDefault();
-		tree.setDefault(parent);
-		moveNode(nid, tree.getCtx(), parent.nid, newName);
-		tree.setDefault(defNode);
+		final TreeNode defNode = ctxTree.getDefault();
+		ctxTree.setDefault(parent);
+		moveNode(nid, ctxTree.getCtx(), parent.nid, newName);
+		ctxTree.setDefault(defNode);
 	}
+
 	public void move(TreeNode parent) throws MdsException
 	{
 		resolveNid();
-		TreeNode defNode = tree.getDefault();
-		tree.setDefault(parent);
-		moveNode(nid, tree.getCtx(), parent.nid, getNodeName());
-		tree.setDefault(defNode);
+		final TreeNode defNode = ctxTree.getDefault();
+		ctxTree.setDefault(parent);
+		moveNode(nid, ctxTree.getCtx(), parent.nid, getNodeName());
+		ctxTree.setDefault(defNode);
 	}
 
 	/**
@@ -929,8 +1029,7 @@ public class TreeNode extends Data
 	public void addTag(java.lang.String tagName) throws MdsException
 	{
 		resolveNid();
-		addTag(nid, tree.getCtx(), tagName);
-
+		addTag(nid, ctxTree.getCtx(), tagName);
 	}
 
 	/**
@@ -941,7 +1040,7 @@ public class TreeNode extends Data
 	public void removeTag(java.lang.String tagName) throws MdsException
 	{
 		resolveNid();
-		removeTag(nid, tree.getCtx(), tagName);
+		removeTag(nid, ctxTree.getCtx(), tagName);
 	}
 
 	/**
@@ -954,8 +1053,8 @@ public class TreeNode extends Data
 	public TreeNode addDevice(java.lang.String name, java.lang.String type) throws MdsException
 	{
 		resolveNid();
-		int devNid = addDevice(nid, tree.getCtx(), name, type);
-		return new TreeNode(devNid, tree);
+		final int devNid = addDevice(nid, ctxTree.getCtx(), name, type);
+		return new TreeNode(devNid, ctxTree);
 	}
 
 	/**
@@ -967,27 +1066,82 @@ public class TreeNode extends Data
 	public void setSubtree(boolean isSubtree) throws MdsException
 	{
 		resolveNid();
-		setSubtree(nid, tree.getCtx(), isSubtree);
+		setSubtree(nid, ctxTree.getCtx(), isSubtree);
 	}
 
 	public int doAction() throws MdsException
 	{
 		resolveNid();
-		return doAction(nid, tree.getCtx());
+		return doAction(nid, ctxTree.getCtx());
 	}
 
-	public void putData(byte d) throws MdsException {putData(new Int8(d));}
-	public void putData(short d) throws MdsException {putData(new Int16(d));}
-	public void putData(int d) throws MdsException {putData(new Int32(d));}
-	public void putData(long d) throws MdsException {putData(new Int64(d));}
-	public void putData(float d) throws MdsException {putData(new Float32(d));}
-	public void putData(double d) throws MdsException {putData(new Float64(d));}
-	public void putData(java.lang.String d) throws MdsException {putData(new MDSplus.String(d));}
-	public void putData(byte []d) throws MdsException {putData(new Int8Array(d));}
-	public void putData(short [] d) throws MdsException {putData(new Int16Array(d));}
-	public void putData(int []d) throws MdsException {putData(new Int32Array(d));}
-	public void putData(long []d) throws MdsException {putData(new Int64Array(d));}
-	public void putData(float []d) throws MdsException {putData(new Float32Array(d));}
-	public void putData(double []d) throws MdsException {putData(new Float64Array(d));}
-	public void putData(java.lang.String []d) throws MdsException {putData(new MDSplus.StringArray(d));}
+	public void putData(byte d) throws MdsException
+	{
+		putData(new Int8(d));
+	}
+
+	public void putData(short d) throws MdsException
+	{
+		putData(new Int16(d));
+	}
+
+	public void putData(int d) throws MdsException
+	{
+		putData(new Int32(d));
+	}
+
+	public void putData(long d) throws MdsException
+	{
+		putData(new Int64(d));
+	}
+
+	public void putData(float d) throws MdsException
+	{
+		putData(new Float32(d));
+	}
+
+	public void putData(double d) throws MdsException
+	{
+		putData(new Float64(d));
+	}
+
+	public void putData(java.lang.String d) throws MdsException
+	{
+		putData(new MDSplus.String(d));
+	}
+
+	public void putData(byte[] d) throws MdsException
+	{
+		putData(new Int8Array(d));
+	}
+
+	public void putData(short[] d) throws MdsException
+	{
+		putData(new Int16Array(d));
+	}
+
+	public void putData(int[] d) throws MdsException
+	{
+		putData(new Int32Array(d));
+	}
+
+	public void putData(long[] d) throws MdsException
+	{
+		putData(new Int64Array(d));
+	}
+
+	public void putData(float[] d) throws MdsException
+	{
+		putData(new Float32Array(d));
+	}
+
+	public void putData(double[] d) throws MdsException
+	{
+		putData(new Float64Array(d));
+	}
+
+	public void putData(java.lang.String[] d) throws MdsException
+	{
+		putData(new MDSplus.StringArray(d));
+	}
 }

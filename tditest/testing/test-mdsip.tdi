@@ -1,13 +1,55 @@
 mdsconnect("local://1")
-! 0 dims ; TODO: locks up next mdsvalue: CONNECTIONLIST_LOCK
-!mdsvalue("$",[])
-! 1 dim
+# 0 dims ; TODO: locks up next mdsvalue: CONNECTIONLIST_LOCK
+#mdsvalue("$",[])
+# 1 dim
 mdsvalue("$",[1,2,3])
-! 2 dims; deco
+# 2 dims; deco
 mdsvalue("DECOMPILE($)",[[1,2],[3,4]])
-! 7 dims
+# 7 dims
 mdsvalue("$",[[[[[[[1]]]]]]])
-! 8 dims dim[i] == 1 for all i<8
+# 8 dims dim[i] == 1 for all i<8
 mdsvalue("$",[[[[[[[[1]]]]]]]])
-! 8 dims dim[i] != 1 for first and last
+# 8 dims dim[i] != 1 for first and last
 mdsvalue("$",[[[[[[[[1,2]]]]]]],[[[[[[[3,4]]]]]]]])
+# test CheckClient
+@public _hostfile = "/tmp/test-mdsip.hosts";\
+fun set_hostfile(in _lines) {\
+	WRITE(,"cat - > "//_hostfile//" << EOF");\
+	_f = FOPEN(_hostfile,"w+");\
+	_s = SIZE(_lines);\
+	for(_i=0;_i<_s;_i++) {\
+		WRITE(_f,_lines[_i]);\
+		WRITE(,_lines[_i]);\
+	}\
+	FCLOSE(_f);\
+	WRITE(,"EOF");\
+};\
+/*workaround to get persistent pointer to string*/\
+public fun strdup(in _str) {setenv("_="//_str);MdsShr->TranslateLogical:P(ref("_"));};\
+public fun free(in _ptr) MdsShr->MdsFree:MISSING(val(_ptr));\
+fun check_user(in _user, in _host, in _ip) {\
+	_match = [strdup(_user//"@"//_host),strdup(_user//"@"//_ip)];\
+	_res = MdsIpShr->CheckClient(ref(_user),val(2),ref(_match));\
+	free(_match[0]);free(_match[1]);return(_res);\
+};\
+MdsIpShr->SetHostfile(val(strdup(_hostfile)));\
+_hostfiles = LIST(\
+,LIST(,"unknown@* | MAP_TO_LOCAL","known@1.* | SELF")\
+,LIST(,"!known@2.*.*.7","unknown@* | MAP_TO_LOCAL","unknown@* | SELF","known@*","!*@*","*")\
+,LIST(,"!known@*.*.*.7","*","multi | SELF")\
+);\
+_multi = [strdup("multi")];\
+_hs = SIZE(_hostfiles);\
+for(_h=0;_h<_hs;_h++) {\
+set_hostfile(execute("(`_hostfiles)[_h]"));\
+for(_m=0;_m<=1;_m++) {\
+MdsIpShr->SetMulti(val(_m));WRITE(,[\
+check_user("unknown","anywhere","1.2.3.4"),\
+check_user("known","anywhere","1.2.3.4"),\
+check_user("known","badserver","1.2.3.7"),\
+MdsIpShr->CheckClient(ref(0),val(1),ref(_multi)),\
+*]);};\
+};\
+_hostfile = MdsIpShr->GetHostfile:T();\
+free(MdsIpShr->SetHostfile:P(val(0)));\
+free(_multi);_hostfile

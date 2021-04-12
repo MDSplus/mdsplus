@@ -186,9 +186,9 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   //static int mode;
   unsigned short lam;
   int status=1;
-  static DESCRIPTOR_FUNCTION_2(dt1, (unsigned char *)&OpcDivide, &one_thousandth, &freq1);
-  static DESCRIPTOR_FUNCTION_2(dt2, (unsigned char *)&OpcDivide, &one_thousandth, &freq2);
-  static DESCRIPTOR_FUNCTION_2(dt3, (unsigned char *)&OpcDivide, &one_thousandth, &freq3);
+  static DESCRIPTOR_FUNCTION_2(dt1, &OpcDivide, &one_thousandth, &freq1);
+  static DESCRIPTOR_FUNCTION_2(dt2, &OpcDivide, &one_thousandth, &freq2);
+  static DESCRIPTOR_FUNCTION_2(dt3, &OpcDivide, &one_thousandth, &freq3);
   static float past_val = -1.E30;
   static DESCRIPTOR_FLOAT(past, &past_val);
   static float future_val = 1.E30;
@@ -220,18 +220,18 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   ****************************************/
   case 0:
     if (TreeIsOn(clock_out_nid) & 1) {
-      static DESCRIPTOR_FUNCTION_2(mult, (unsigned char *)&OpcMultiply, &dt2, &f2_count);
-      static DESCRIPTOR_FUNCTION_2(fswitch, (unsigned char *)&OpcAdd, &mult, &trigger1);
+      static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt2, &f2_count);
+      static DESCRIPTOR_FUNCTION_2(fswitch, &OpcAdd, &mult, &trigger1);
       static FUNCTION(3) r_start = {
-      sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+      sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
       { __fill_name__(struct descriptor *) & past, (struct descriptor *)&trigger1,
 	(struct descriptor *)&fswitch}};
       static FUNCTION(3) r_end = {
-      sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+      sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
       {__fill_name__(struct descriptor *) & trigger1, (struct descriptor *)&fswitch,
        (struct descriptor *)&future}};
       static FUNCTION(3) r_delta = {
-      sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+      sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
       {__fill_name__(struct descriptor *) & dt1, (struct descriptor *)&dt2,
        (struct descriptor *)&dt3}};
       static DESCRIPTOR_RANGE(range, &r_start, &r_end, &r_delta);
@@ -244,8 +244,8 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	 write it out.
 	******************************/
       if (status & 1 && TreeIsOn(stop_out_nid) & 1) {
-	static DESCRIPTOR_FUNCTION_2(trig_mult_exp, (unsigned char *)&OpcMultiply, &dt3, &f3_count);
-	static DESCRIPTOR_FUNCTION_2(trig_add_exp, (unsigned char *)&OpcAdd, &fswitch,
+	static DESCRIPTOR_FUNCTION_2(trig_mult_exp, &OpcMultiply, &dt3, &f3_count);
+	static DESCRIPTOR_FUNCTION_2(trig_add_exp, &OpcAdd, &fswitch,
 				     &trig_mult_exp);
 	static DESCRIPTOR_WITH_UNITS(stop, &trig_add_exp, &seconds);
 	return_on_error(TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
@@ -271,15 +271,15 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
       pio(2, 0, &lam);
       if (lam & 6) {
 	static FUNCTION(3) r_start = {
-	sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
 	{__fill_name__(struct descriptor *) & past, (struct descriptor *)&trigger1,
 	 (struct descriptor *)&trigger2}};
 	static FUNCTION(3) r_end = {
-	sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
 	{__fill_name__(struct descriptor *) & trigger1, (struct descriptor *)&trigger2,
 	 (struct descriptor *)&future}};
 	static FUNCTION(3) r_delta = {
-	sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
 	{__fill_name__(struct descriptor *) & dt1, (struct descriptor *)&dt2,
 	 (struct descriptor *)&dt3}};
 	static DESCRIPTOR_RANGE(range, &r_start, &r_end, &r_delta);
@@ -303,18 +303,18 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	static short f2_count_act;
 	//static struct descriptor f2_count_actual =
 	//    { sizeof(f2_count_act), DTYPE_W, CLASS_S, (char *)&f2_count_act };
-	static DESCRIPTOR_FUNCTION_2(mult, (unsigned char *)&OpcMultiply, &dt2, &f2_count_act);
-	static DESCRIPTOR_FUNCTION_2(fswitch, (unsigned char *)&OpcAdd, &mult, &trigger1);
+	static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt2, &f2_count_act);
+	static DESCRIPTOR_FUNCTION_2(fswitch, &OpcAdd, &mult, &trigger1);
 	static FUNCTION(3) r_start = {
-	sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
 	{ __fill_name__(struct descriptor *) & past, (struct descriptor *)&trigger1,
 	  (struct descriptor *)&fswitch}};
 	static FUNCTION(3) r_end = {
-	sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
 	{__fill_name__(struct descriptor *) & trigger1, (struct descriptor *)&fswitch,
 	 (struct descriptor *)&future}};
 	static FUNCTION(3) r_delta = {
-	sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcVector, 3,
+	sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcVector, 3,
 	{__fill_name__(struct descriptor *) & dt1, (struct descriptor *)&dt2,
 	 (struct descriptor *)&dt3}};
 	static DESCRIPTOR_RANGE(range, (struct descriptor *)&r_start, (struct descriptor *)&r_end,
@@ -333,8 +333,8 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	  static short f3_count_act;
 	  //static struct descriptor f3_count_actual =
 	  //    { sizeof(f3_count_act), DTYPE_W, CLASS_S, (char *)&f3_count_act };
-	  static DESCRIPTOR_FUNCTION_2(mult, (unsigned char *)&OpcMultiply, &dt3, &f3_count_act);
-	  static DESCRIPTOR_FUNCTION_2(fswitch2, (unsigned char *)&OpcAdd, &mult, &fswitch);
+	  static DESCRIPTOR_FUNCTION_2(mult, &OpcMultiply, &dt3, &f3_count_act);
+	  static DESCRIPTOR_FUNCTION_2(fswitch2, &OpcAdd, &mult, &fswitch);
 	  static DESCRIPTOR_WITH_UNITS(stop, &fswitch2, &seconds);
 	  pio(1, 0, &f3_count);
 	  return_on_error(TreePutRecord(stop_out_nid, (struct descriptor *)&stop, 0), status);
@@ -360,10 +360,10 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
     if (TreeIsOn(clock_out_nid) & 1) {
       static float one = 1.0;
       static DESCRIPTOR_FLOAT(one_dsc, &one);
-      static DESCRIPTOR_FUNCTION_1(double_dt, (unsigned char *)&OpcDble, &dt2);
-      static DESCRIPTOR_FUNCTION_2(counts, (unsigned char *)&OpcSubtract, &f2_count, &one_dsc);
-      static DESCRIPTOR_FUNCTION_2(duration, (unsigned char *)&OpcMultiply, &counts, &double_dt);
-      static DESCRIPTOR_FUNCTION_2(r_end, (unsigned char *)&OpcAdd, &duration, &trigger2);
+      static DESCRIPTOR_FUNCTION_1(double_dt, &OpcDble, &dt2);
+      static DESCRIPTOR_FUNCTION_2(counts, &OpcSubtract, &f2_count, &one_dsc);
+      static DESCRIPTOR_FUNCTION_2(duration, &OpcMultiply, &counts, &double_dt);
+      static DESCRIPTOR_FUNCTION_2(r_end, &OpcAdd, &duration, &trigger2);
       static DESCRIPTOR_RANGE(range, &trigger2, &r_end, &double_dt);
       static DESCRIPTOR_WITH_UNITS(clock, &range, &seconds);
       return_on_error(TreePutRecord(clock_out_nid, (struct descriptor *)&clock, 0), status);

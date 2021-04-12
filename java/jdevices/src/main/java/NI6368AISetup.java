@@ -162,14 +162,14 @@ public class NI6368AISetup extends DeviceSetup {
 
 	deviceField2.setIdentifier("");
 	deviceField2.setLabelString("Comment: ");
-	deviceField2.setNumCols(40);
+	deviceField2.setNumCols(30);
 	deviceField2.setOffsetNid(2);
 	deviceField2.setTextOnly(true);
 	jPanel2.add(deviceField2);
 
 	deviceField1.setIdentifier("");
 	deviceField1.setLabelString("Board Id: ");
-	deviceField1.setNumCols(4);
+	deviceField1.setNumCols(20);
 	deviceField1.setOffsetNid(1);
 	jPanel2.add(deviceField1);
 	jPanel2.add(deviceDispatch1);

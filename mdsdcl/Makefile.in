@@ -1,9 +1,13 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=Mdsdcl
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
+
+CFLAGS += -I$(srcdir)
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
 @MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz @LIBLZMA@ -Wl,-Bdynamic -liconv @LIBDL@ $(LIBSOCKET)
@@ -14,9 +18,10 @@ mdsdclThreadStatic.c     	\
 cmdExecute.c         	\
 cmdHelp.c               \
 cmdParseLex.c           \
-cmdParse.tab.c          \
+cmdParse.c          \
 mdsdclDeltatimeToSeconds.c \
 mdsdcl_commands.c \
+mdsdclVersionInfo.c \
 mdsdcl_show_version.c
 
 
@@ -58,20 +63,23 @@ cmdParseLex.o: cmdParseLex.c
 @MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) 
 	$(LINK.c) $(OUTPUT_OPTION) $<  -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lTreeShr $(LIBS) @LIBREADLINE@
 
-#cmdParse.tab.c: cmdParse.y
+mdsdclDeltatimeToSeconds.o :
+	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/mdsdclDeltatimeToSeconds.c -Wno-sign-compare
+
+#cmdParse.c: cmdParse.y
 #        bison cmdParse.y
 
-#cmdParseLex.c: cmdParse.x
-#	lex -P cmdParse_ cmdParse.x
+#cmdParseLex.c: cmdParse.l
+#	lex -P cmdParse_ cmdParse.l
 
 #ocldToXml: ocldToXml.c
 #	$(LINK.c) $(OUTPUT_OPTION) $<
 
-#ocldToXml.c: ocldToXml.x
-#       lex -P ocldToXml_ ocldToXml.x
+#ocldToXml.c: ocldToXml.l
+#       lex -P ocldToXml_ ocldToXml.l
 
 #mdsdcl_commands.xml: mdsdcl_tables.ocld
 #	./ocldToXml mdsdcl_tables.ocld mdsdcl_commands
 
-#mdsdclDeltatimeToSeconds.c: mdsdclDeltatimeToSeconds.x
-#	lex -P mdsdclDelta_ mdsdclDeltatimeToSeconds.x
+#mdsdclDeltatimeToSeconds.c: mdsdclDeltatimeToSeconds.l
+#	lex -P mdsdclDelta_ mdsdclDeltatimeToSeconds.l

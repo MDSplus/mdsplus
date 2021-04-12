@@ -2,7 +2,6 @@
 ./usr/local/mdsplus/bin64/SetMdsplusFileProtection
 ./usr/local/mdsplus/bin64/actlog
 ./usr/local/mdsplus/bin64/build_test
-./usr/local/mdsplus/bin64/jTraverser2
 ./usr/local/mdsplus/bin64/job_finish
 ./usr/local/mdsplus/bin64/job_functions
 ./usr/local/mdsplus/bin64/job_output
@@ -37,6 +36,7 @@
 ./usr/local/mdsplus/lib64/libMdsIpUDTV6.so
 ./usr/local/mdsplus/lib64/libMdsLib.so
 ./usr/local/mdsplus/lib64/libMdsLib_client.so
+./usr/local/mdsplus/lib64/libMdsLib_fortran.so
 ./usr/local/mdsplus/lib64/libMdsMath.so
 ./usr/local/mdsplus/lib64/libMdsMisc.so
 ./usr/local/mdsplus/lib64/libMdsObjectsCppShr.so

@@ -3,42 +3,43 @@ include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
-dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
 DEPENDENCIES = $(MDSPLUS_API_JAR)
 
+LAUNCHER = jTraverser2 setupDevice
+
+
 if USE_JARS_DIR
 
-jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
+$(java_DATA): @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 	cp $< $@
 
 else
 
-jTraverser2.jar: $(DEPENDENCIES) classjava.stamp
+$(java_DATA): $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	mkdir -p $(JAVAROOT)/jtraverser &&\
-	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\
-	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
-	cp -f $(MDSPLUS_API_JAR) $@ &&\
-	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .
+	echo "Main-Class: mds.jtraverser.jTraverser" >> $(MANIFEST) &&\
+	echo "Class-Path: mdsplus-api.jar DeviceBeans.jar WaveDisplay.jar mdsobjects.jar jDevices.jar" >> $(MANIFEST) &&\
+	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
 
 endif
 
 if MINGW
-bin_SCRIPTS += traverser2.bat
+bin_SCRIPTS += $(LAUNCHER:=.bat)
 else
-bin_SCRIPTS += jTraverser2
-EXTRA_DIST = jTraverser2.template
-jTraverser2: $(srcdir)/jTraverser2.template
+bin_SCRIPTS += $(LAUNCHER)
+EXTRA_DIST = $(LAUNCHER:=.template)
+$(LAUNCHER): % : $(srcdir)/%.template
 	cp $< $@
 endif
 
 SOURCE =\
- jtraverser/*.java\
- jtraverser/dialogs/*.java\
- jtraverser/editor/*.java\
- jtraverser/editor/usage/*.java\
- jtraverser/tools/*.java\
- devices/*.java\
- jTraverser.java
-RESOURCES = jtraverser/*.gif
+ mds/jtraverser/*.java\
+ mds/jtraverser/dialogs/*.java\
+ mds/jtraverser/editor/*.java\
+ mds/jtraverser/editor/usage/*.java\
+ mds/jtraverser/tools/*.java\
+ mds/devices/*.java\
+ mds/devices/acq4xx/*.java
+RESOURCES = mds/jtraverser/*.gif

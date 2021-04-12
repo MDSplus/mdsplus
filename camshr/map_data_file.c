@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -70,14 +70,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db type
 // output:      status
 //-------------------------------------------------------------------------
-int map_data_file(int dbType)
-{
-  char *FileName=0;
-  int db_size, fd=ERROR, *FileIsMapped = FALSE;
+int map_data_file(int dbType) {
+  char *FileName = 0;
+  int db_size, fd = ERROR, *FileIsMapped = FALSE;
   int status = SUCCESS;
   extern int CTSdbFileIsMapped;
   extern int CRATEdbFileIsMapped;
-  extern struct MODULE *CTSdb;	// pointer to in-memory copy of data file
+  extern struct MODULE *CTSdb; // pointer to in-memory copy of data file
   extern struct CRATE *CRATEdb;
 
   // set db specific parameters
@@ -99,7 +98,7 @@ int map_data_file(int dbType)
   // check to see if db file exists
   if (check_for_file(FileName) != SUCCESS) {
     status = FILE_ERROR;
-    goto MapData_Exit;		// no file, so we're out'a here
+    goto MapData_Exit; // no file, so we're out'a here
   }
   // get file size
   if ((db_size = get_db_file_size(FileName)) == ERROR) {
@@ -109,19 +108,19 @@ int map_data_file(int dbType)
   // get a file descriptor -- NB! special version of 'Open()'
   if ((fd = Open(FileName, O_RDWR)) == ERROR) {
     perror("open()");
-    status = FILE_ERROR;	// error flag
+    status = FILE_ERROR; // error flag
     goto MapData_Exit;
   }
   // now, memory map database file
   switch (dbType) {
   case CTS_DB:
-    if ((CTSdb =
-	 (struct MODULE *)mmap((caddr_t) 0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
-			       fd, 0)) == MAP_FAILED) {
+    if ((CTSdb = (struct MODULE *)mmap(
+             (caddr_t)0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
+             fd, 0)) == MAP_FAILED) {
       if (MSGLVL(ALWAYS))
-	perror("mmap(CTS)");
+        perror("mmap(CTS)");
 
-      status = MAP_ERROR;	// error flag -- could not map file
+      status = MAP_ERROR; // error flag -- could not map file
       *FileIsMapped = FALSE;
       goto MapData_Exit;
     }
@@ -129,13 +128,13 @@ int map_data_file(int dbType)
     break;
 
   case CRATE_DB:
-    if ((CRATEdb =
-	 (struct CRATE *)mmap((caddr_t) 0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
-			      fd, 0)) == MAP_FAILED) {
+    if ((CRATEdb = (struct CRATE *)mmap(
+             (caddr_t)0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
+             fd, 0)) == MAP_FAILED) {
       if (MSGLVL(ALWAYS))
-	perror("mmap(CRATE)");
+        perror("mmap(CRATE)");
 
-      status = MAP_ERROR;	// error flag -- could not map file
+      status = MAP_ERROR; // error flag -- could not map file
       *FileIsMapped = FALSE;
       goto MapData_Exit;
     }
@@ -148,12 +147,12 @@ int map_data_file(int dbType)
   }
 
   // if we get this far, all is OK
-  status = SUCCESS;		// success !!!
+  status = SUCCESS; // success !!!
   *FileIsMapped = TRUE;
 
- MapData_Exit:
-  if (fd != ERROR)		// still open ...
-    close(fd);			// ... finished with file descriptor
+MapData_Exit:
+  if (fd != ERROR) // still open ...
+    close(fd);     // ... finished with file descriptor
 
   if (FileName == NULL)
     return status;
@@ -164,5 +163,5 @@ int map_data_file(int dbType)
     ShowStatus(status);
   }
 
-  return status;		// return results
+  return status; // return results
 }

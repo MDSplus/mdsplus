@@ -26,20 +26,25 @@
 import numpy as _N
 import ctypes as _C
 
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
-_ver=_mimport('version')
-_dat=_mimport('mdsdata')
-_exc=_mimport('mdsExceptions')
-_mds=_ver.load_library('MdsShr')
 
-class MdsshrException(_exc.MDSplusException): pass
+_ver = _mimport('version')
+_dat = _mimport('mdsdata')
+_exc = _mimport('mdsExceptions')
+_mds = _ver.load_library('MdsShr')
 
-def getenv(name,*default):
+
+class MdsshrException(_exc.MDSplusException):
+    pass
+
+
+def getenv(name, *default):
     """get environment variable value
     @param name: name of environment variable
     @type name: str
@@ -47,40 +52,43 @@ def getenv(name,*default):
     @rtype: str or None
     """
     tl = _mds.TranslateLogical
-    tl.restype=_C.c_void_p
+    tl.restype = _C.c_void_p
     ptr = tl(_ver.tobytes(name))
     if ptr is None:
-        if len(default)>0:
+        if len(default) > 0:
             return default[0]
         return None
     ptr = _C.c_void_p(ptr)
     try:
-        return _ver.tostr(_C.cast(ptr,_C.c_char_p).value)
+        return _ver.tostr(_C.cast(ptr, _C.c_char_p).value)
     finally:
         _mds.TranslateLogicalFree(ptr)
 
-def setenv(name,value):
+
+def setenv(name, value):
     """set environment variable
     @param name: name of the environment variable
     @type name: str
     @param value: value of the environment variable
     @type value: str
     """
-    pe=_mds.MdsPutEnv
-    pe(_ver.tobytes("=".join([str(name),str(value)])))
+    pe = _mds.MdsPutEnv
+    pe(_ver.tobytes("=".join([str(name), str(value)])))
+
 
 def set_default_resample_mode(mode):
     """set MDSPLUS_DEFAULT_RESAMPLE_MODE environment variable
     @param mode: name of resample mode: 'Average', 'MinMax', 'Interpolation', 'Closest', or 'Previous'
     @type mode: str
     """
-    setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE",mode)
+    setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE", mode)
+
 
 def DateToQuad(date):
-    ans=_C.c_ulonglong(0)
-    status = _mds.LibConvertDateString(_C.c_char_p(_ver.tobytes(date)),_C.pointer(ans))
+    ans = _C.c_ulonglong(0)
+    status = _mds.LibConvertDateString(
+        _C.c_char_p(_ver.tobytes(date)), _C.pointer(ans))
     if not (status & 1):
-        raise MdsshrException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
+        raise MdsshrException(
+            "Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
     return _dat.Data(_N.uint64(ans.value))
-
-

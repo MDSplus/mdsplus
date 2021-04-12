@@ -22,7 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-//static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+// static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 /*
  * README: Portions of this file are merged at file generation
  * time. Edits can be made *only* in between specified code blocks, look
@@ -42,8 +42,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
  * Motif and X required Header Files
  */
-#include <X11/Xlib.h>
 #include <Mrm/MrmAppl.h>
+#include <X11/Xlib.h>
 /*
  * Digital widgets
  #include <DXm/DecSpecific.h>
@@ -119,42 +119,41 @@ extern void BxStoreWidgetId(Widget, XtPointer, XtPointer);
 #include <xmdsshr.h>
 
 static XrmOptionDescRec options[] = {
-  {"-background", "*background", XrmoptionSepArg, NULL},
-  {"-bd", "*borderColor", XrmoptionSepArg, NULL},
-  {"-bg", "*background", XrmoptionSepArg, NULL},
-  {"-borderwidth", "*borderWidth", XrmoptionSepArg, NULL},
-  {"-bordercolor", "*borderColor", XrmoptionSepArg, NULL},
-  {"-buttonfont", "*buttonFontList", XrmoptionSepArg, NULL},
-  {"-bw", "*borderWidth", XrmoptionSepArg, NULL},
-  {"-display", ".display", XrmoptionSepArg, NULL},
-  {"-fg", "*foreground", XrmoptionSepArg, NULL},
-  {"-fn", "*font", XrmoptionSepArg, NULL},
-  {"-font", "*font", XrmoptionSepArg, NULL},
-  {"-foreground", "*foreground", XrmoptionSepArg, NULL},
-  {"-geometry", "*geometry", XrmoptionSepArg, "485x405+250+300"},
-  {"-iconic", "*iconic", XrmoptionNoArg, "on"},
-  {"-name", ".name", XrmoptionSepArg, NULL},
-  {"-reverse", "*reverseVideo", XrmoptionNoArg, "on"},
-  {"-rv", "*reverseVideo", XrmoptionNoArg, "on"},
-  {"-synchronous", ".synchronous", XrmoptionNoArg, "on"},
-  {"-title", ".title", XrmoptionSepArg, NULL},
-  {"-x", ".x", XrmoptionSepArg, NULL},
-  {"-y", ".y", XrmoptionSepArg, NULL},
-  {"-xrm", NULL, XrmoptionResArg, NULL},
-  {"-tree", ".tree", XrmoptionSepArg, NULL},
-  {"-shot", ".shot", XrmoptionSepArg, NULL},
-  {"-command", ".showCommand", XrmoptionNoArg, "True"},
-  {"-nocommand", ".showCommand", XrmoptionNoArg, "False"},
-  {"-read_only", ".read_only", XrmoptionNoArg, "True"},
-  {"-edit", ".edit", XrmoptionNoArg, "True"}
-};
+    {"-background", "*background", XrmoptionSepArg, NULL},
+    {"-bd", "*borderColor", XrmoptionSepArg, NULL},
+    {"-bg", "*background", XrmoptionSepArg, NULL},
+    {"-borderwidth", "*borderWidth", XrmoptionSepArg, NULL},
+    {"-bordercolor", "*borderColor", XrmoptionSepArg, NULL},
+    {"-buttonfont", "*buttonFontList", XrmoptionSepArg, NULL},
+    {"-bw", "*borderWidth", XrmoptionSepArg, NULL},
+    {"-display", ".display", XrmoptionSepArg, NULL},
+    {"-fg", "*foreground", XrmoptionSepArg, NULL},
+    {"-fn", "*font", XrmoptionSepArg, NULL},
+    {"-font", "*font", XrmoptionSepArg, NULL},
+    {"-foreground", "*foreground", XrmoptionSepArg, NULL},
+    {"-geometry", "*geometry", XrmoptionSepArg, "485x405+250+300"},
+    {"-iconic", "*iconic", XrmoptionNoArg, "on"},
+    {"-name", ".name", XrmoptionSepArg, NULL},
+    {"-reverse", "*reverseVideo", XrmoptionNoArg, "on"},
+    {"-rv", "*reverseVideo", XrmoptionNoArg, "on"},
+    {"-synchronous", ".synchronous", XrmoptionNoArg, "on"},
+    {"-title", ".title", XrmoptionSepArg, NULL},
+    {"-x", ".x", XrmoptionSepArg, NULL},
+    {"-y", ".y", XrmoptionSepArg, NULL},
+    {"-xrm", NULL, XrmoptionResArg, NULL},
+    {"-tree", ".tree", XrmoptionSepArg, NULL},
+    {"-shot", ".shot", XrmoptionSepArg, NULL},
+    {"-command", ".showCommand", XrmoptionNoArg, "True"},
+    {"-nocommand", ".showCommand", XrmoptionNoArg, "False"},
+    {"-read_only", ".read_only", XrmoptionNoArg, "True"},
+    {"-edit", ".edit", XrmoptionNoArg, "True"}};
 
 /* End user code block <globals> */
 
 /*
  * Widget variable declarations
  */
-Widget AppShell;		/* The Main Application Shell */
+Widget AppShell; /* The Main Application Shell */
 Widget TopLevelShell;
 Widget MainWindow;
 Widget WriteDialog;
@@ -162,8 +161,7 @@ Widget AddDialog;
 Widget AddDeviceDialog;
 Widget OpenDialog;
 int ClosingWindow = 0;
-void CloseWindow(Widget w, caddr_t client_data, caddr_t call_data)
-{
+void CloseWindow(Widget w, caddr_t client_data, caddr_t call_data) {
   ClosingWindow = 1;
   CloseTree(w, client_data, call_data);
   ClosingWindow = 0;
@@ -172,15 +170,14 @@ void CloseWindow(Widget w, caddr_t client_data, caddr_t call_data)
 /*
  * Main Program
  */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   Display *display;
   Arg args[256];
   Cardinal ac;
   /*SUPPRESS 591 */
-  //Boolean argok;
+  // Boolean argok;
   XtAppContext context;
-  //Widget w;
+  // Widget w;
   Widget parent;
 
   /* Begin user code block <declarations> */
@@ -193,96 +190,96 @@ int main(int argc, char **argv)
 
   MrmHierarchy HierarchyID;
   MrmType MrmWClass;
-  static char *UidFile[] = { BX_UID_FILE_NAME };
+  static char *UidFile[] = {BX_UID_FILE_NAME};
   MRMRegisterArg NamesList[49];
   Cardinal Nlac;
   Nlac = 0;
   NamesList[Nlac].name = "CloseTree";
-  NamesList[Nlac++].value = (XtPointer) CloseTree;
+  NamesList[Nlac++].value = (XtPointer)CloseTree;
   NamesList[Nlac].name = "CommandEntered";
-  NamesList[Nlac++].value = (XtPointer) CommandEntered;
+  NamesList[Nlac++].value = (XtPointer)CommandEntered;
   NamesList[Nlac].name = "CreateTree";
-  NamesList[Nlac++].value = (XtPointer) CreateTree;
+  NamesList[Nlac++].value = (XtPointer)CreateTree;
   NamesList[Nlac].name = "MDisplayData";
-  NamesList[Nlac++].value = (XtPointer) MDisplayData;
+  NamesList[Nlac++].value = (XtPointer)MDisplayData;
   NamesList[Nlac].name = "MDoAction";
-  NamesList[Nlac++].value = (XtPointer) MDoAction;
+  NamesList[Nlac++].value = (XtPointer)MDoAction;
   NamesList[Nlac].name = "MessageClear";
-  NamesList[Nlac++].value = (XtPointer) MessageClear;
+  NamesList[Nlac++].value = (XtPointer)MessageClear;
   NamesList[Nlac].name = "MessageDismiss";
-  NamesList[Nlac++].value = (XtPointer) MessageDismiss;
+  NamesList[Nlac++].value = (XtPointer)MessageDismiss;
   NamesList[Nlac].name = "ModifyData";
-  NamesList[Nlac++].value = (XtPointer) ModifyData;
+  NamesList[Nlac++].value = (XtPointer)ModifyData;
   NamesList[Nlac].name = "MenuUnmap";
-  NamesList[Nlac++].value = (XtPointer) MenuUnmap;
+  NamesList[Nlac++].value = (XtPointer)MenuUnmap;
   NamesList[Nlac].name = "BxManageCB";
-  NamesList[Nlac++].value = (XtPointer) BxManageCB;
+  NamesList[Nlac++].value = (XtPointer)BxManageCB;
   NamesList[Nlac].name = "MSetupDevice";
-  NamesList[Nlac++].value = (XtPointer) MSetupDevice;
+  NamesList[Nlac++].value = (XtPointer)MSetupDevice;
   NamesList[Nlac].name = "SetDefault";
-  NamesList[Nlac++].value = (XtPointer) SetDefault;
+  NamesList[Nlac++].value = (XtPointer)SetDefault;
   NamesList[Nlac].name = "MModifyData";
-  NamesList[Nlac++].value = (XtPointer) MModifyData;
+  NamesList[Nlac++].value = (XtPointer)MModifyData;
   NamesList[Nlac].name = "DisplayNci";
-  NamesList[Nlac++].value = (XtPointer) DisplayNci;
+  NamesList[Nlac++].value = (XtPointer)DisplayNci;
   NamesList[Nlac].name = "BxExitCB";
-  NamesList[Nlac++].value = (XtPointer) BxExitCB;
+  NamesList[Nlac++].value = (XtPointer)BxExitCB;
   NamesList[Nlac].name = "MTurnOnOff";
-  NamesList[Nlac++].value = (XtPointer) MTurnOnOff;
+  NamesList[Nlac++].value = (XtPointer)MTurnOnOff;
   NamesList[Nlac].name = "DisplayData";
-  NamesList[Nlac++].value = (XtPointer) DisplayData;
+  NamesList[Nlac++].value = (XtPointer)DisplayData;
   NamesList[Nlac].name = "MSetDefault";
-  NamesList[Nlac++].value = (XtPointer) MSetDefault;
+  NamesList[Nlac++].value = (XtPointer)MSetDefault;
   NamesList[Nlac].name = "MDisplayNci";
-  NamesList[Nlac++].value = (XtPointer) MDisplayNci;
+  NamesList[Nlac++].value = (XtPointer)MDisplayNci;
   NamesList[Nlac].name = "TurnOnOff";
-  NamesList[Nlac++].value = (XtPointer) TurnOnOff;
+  NamesList[Nlac++].value = (XtPointer)TurnOnOff;
   NamesList[Nlac].name = "DoAction";
-  NamesList[Nlac++].value = (XtPointer) DoAction;
+  NamesList[Nlac++].value = (XtPointer)DoAction;
   NamesList[Nlac].name = "OpenTree";
-  NamesList[Nlac++].value = (XtPointer) OpenTree;
+  NamesList[Nlac++].value = (XtPointer)OpenTree;
   NamesList[Nlac].name = "AddListTree";
-  NamesList[Nlac++].value = (XtPointer) AddListTree;
+  NamesList[Nlac++].value = (XtPointer)AddListTree;
   NamesList[Nlac].name = "SetupDevice";
-  NamesList[Nlac++].value = (XtPointer) SetupDevice;
+  NamesList[Nlac++].value = (XtPointer)SetupDevice;
   NamesList[Nlac].name = "AddNode";
-  NamesList[Nlac++].value = (XtPointer) AddNode;
+  NamesList[Nlac++].value = (XtPointer)AddNode;
 #ifdef __hpux
   NamesList[Nlac].name = "AddListTree";
-  NamesList[Nlac++].value = (XtPointer) AddListTree;
+  NamesList[Nlac++].value = (XtPointer)AddListTree;
 #endif
   NamesList[Nlac].name = "AddNodeApply";
-  NamesList[Nlac++].value = (XtPointer) AddNodeApply;
+  NamesList[Nlac++].value = (XtPointer)AddNodeApply;
   NamesList[Nlac].name = "AddNodeDismiss";
-  NamesList[Nlac++].value = (XtPointer) AddNodeDismiss;
+  NamesList[Nlac++].value = (XtPointer)AddNodeDismiss;
   NamesList[Nlac].name = "SetUsage";
-  NamesList[Nlac++].value = (XtPointer) SetUsage;
+  NamesList[Nlac++].value = (XtPointer)SetUsage;
   NamesList[Nlac].name = "AddDeviceDismiss";
-  NamesList[Nlac++].value = (XtPointer) AddDeviceDismiss;
+  NamesList[Nlac++].value = (XtPointer)AddDeviceDismiss;
   NamesList[Nlac].name = "CreateAddDevice";
-  NamesList[Nlac++].value = (XtPointer) CreateAddDevice;
+  NamesList[Nlac++].value = (XtPointer)CreateAddDevice;
   NamesList[Nlac].name = "AddDevice";
-  NamesList[Nlac++].value = (XtPointer) AddDevice;
+  NamesList[Nlac++].value = (XtPointer)AddDevice;
   NamesList[Nlac].name = "WriteTree";
-  NamesList[Nlac++].value = (XtPointer) WriteTree;
+  NamesList[Nlac++].value = (XtPointer)WriteTree;
   NamesList[Nlac].name = "ModifyTags";
-  NamesList[Nlac++].value = (XtPointer) ModifyTags;
+  NamesList[Nlac++].value = (XtPointer)ModifyTags;
   NamesList[Nlac].name = "tag_button_proc";
-  NamesList[Nlac++].value = (XtPointer) tag_button_proc;
+  NamesList[Nlac++].value = (XtPointer)tag_button_proc;
   NamesList[Nlac].name = "tag_selection_proc";
-  NamesList[Nlac++].value = (XtPointer) tag_selection_proc;
+  NamesList[Nlac++].value = (XtPointer)tag_selection_proc;
 #ifdef __hpux
   NamesList[Nlac].name = "WriteTree";
-  NamesList[Nlac++].value = (XtPointer) WriteTree;
+  NamesList[Nlac++].value = (XtPointer)WriteTree;
 #endif
   NamesList[Nlac].name = "DeleteNode";
-  NamesList[Nlac++].value = (XtPointer) DeleteNode;
+  NamesList[Nlac++].value = (XtPointer)DeleteNode;
   NamesList[Nlac].name = "DeleteNodeNow";
-  NamesList[Nlac++].value = (XtPointer) DeleteNodeNow;
+  NamesList[Nlac++].value = (XtPointer)DeleteNodeNow;
   NamesList[Nlac].name = "RenameNode";
-  NamesList[Nlac++].value = (XtPointer) RenameNode;
+  NamesList[Nlac++].value = (XtPointer)RenameNode;
   NamesList[Nlac].name = "AddNodeStart";
-  NamesList[Nlac++].value = (XtPointer) AddNodeStart;
+  NamesList[Nlac++].value = (XtPointer)AddNodeStart;
 
   NamesList[Nlac].name = NULL;
   NamesList[Nlac].value = NULL;
@@ -292,12 +289,12 @@ int main(int argc, char **argv)
   context = XtCreateApplicationContext();
   display = XtOpenDisplay(context, 0, BX_APP_NAME, BX_APP_CLASS,
 #ifndef XtSpecificationRelease
-			  options, XtNumber(options), (Cardinal *) & argc, argv);
+                          options, XtNumber(options), (Cardinal *)&argc, argv);
 #else
 #if XtSpecificationRelease == 4
-			  options, XtNumber(options), (Cardinal *) & argc, argv);
+                          options, XtNumber(options), (Cardinal *)&argc, argv);
 #else
-			  options, XtNumber(options), &argc, argv);
+                          options, XtNumber(options), &argc, argv);
 #endif
 #endif
   if (display == NULL) {
@@ -333,13 +330,14 @@ int main(int argc, char **argv)
    * _X_Window_System_Toolkit_ p. 677.
    */
   ac = 0;
-  AppShell = parent = XtAppCreateShell(BX_APP_NAME, BX_APP_CLASS,
-				       applicationShellWidgetClass, display, args, ac);
+  AppShell = parent =
+      XtAppCreateShell(BX_APP_NAME, BX_APP_CLASS, applicationShellWidgetClass,
+                       display, args, ac);
 
   MrmRegisterNames(NamesList, Nlac);
 
   HierarchyID = 0;
-  MrmOpenHierarchy((MrmCount) (1), UidFile, 0, &HierarchyID);
+  MrmOpenHierarchy((MrmCount)(1), UidFile, 0, &HierarchyID);
   XtInitializeWidgetClass(topLevelShellWidgetClass);
   ac = 0;
   XtSetArg(args[ac], XmNtitle, "Traverser");
@@ -354,21 +352,26 @@ int main(int argc, char **argv)
   ac++;
   XtSetArg(args[ac], XmNheight, 672);
   ac++;
-  TopLevelShell = XtCreatePopupShell("topLevelShell", topLevelShellWidgetClass, AppShell, args, ac);
+  TopLevelShell = XtCreatePopupShell("topLevelShell", topLevelShellWidgetClass,
+                                     AppShell, args, ac);
   MainWindow = NULL;
-  MrmFetchWidget(HierarchyID, "mainWindow", TopLevelShell, &MainWindow, &MrmWClass);
+  MrmFetchWidget(HierarchyID, "mainWindow", TopLevelShell, &MainWindow,
+                 &MrmWClass);
 
   WriteDialog = NULL;
-  MrmFetchWidget(HierarchyID, "writeDialog", MainWindow, &WriteDialog, &MrmWClass);
+  MrmFetchWidget(HierarchyID, "writeDialog", MainWindow, &WriteDialog,
+                 &MrmWClass);
 
   AddDialog = NULL;
   MrmFetchWidget(HierarchyID, "addDialog", MainWindow, &AddDialog, &MrmWClass);
 
   AddDeviceDialog = NULL;
-  MrmFetchWidget(HierarchyID, "addDeviceDialog", MainWindow, &AddDeviceDialog, &MrmWClass);
+  MrmFetchWidget(HierarchyID, "addDeviceDialog", MainWindow, &AddDeviceDialog,
+                 &MrmWClass);
 
   OpenDialog = NULL;
-  MrmFetchWidget(HierarchyID, "openDialog", MainWindow, &OpenDialog, &MrmWClass);
+  MrmFetchWidget(HierarchyID, "openDialog", MainWindow, &OpenDialog,
+                 &MrmWClass);
 
   MrmCloseHierarchy(HierarchyID);
 
@@ -381,9 +384,10 @@ int main(int argc, char **argv)
   /* Begin user code block <main_loop> */
   /* End user code block <main_loop> */
   XtVaSetValues(TopLevelShell, XmNdeleteResponse, XmDO_NOTHING, NULL);
-  XmAddWMProtocolCallback(TopLevelShell,
-			  XmInternAtom(XtDisplay(TopLevelShell), "WM_DELETE_WINDOW", True),
-			  (XtCallbackProc) CloseWindow, NULL);
+  XmAddWMProtocolCallback(
+      TopLevelShell,
+      XmInternAtom(XtDisplay(TopLevelShell), "WM_DELETE_WINDOW", True),
+      (XtCallbackProc)CloseWindow, NULL);
 
   XtAppMainLoop(context);
 

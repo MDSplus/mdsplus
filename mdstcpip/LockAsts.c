@@ -22,9 +22,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "mdsip_connections.h"
 #include <mdsplus/mdsconfig.h>
 #include <mdsshr.h>
-#include "mdsip_connections.h"
 
 static pthread_mutex_t ast_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -32,13 +32,9 @@ static pthread_mutex_t ast_mutex = PTHREAD_MUTEX_INITIALIZER;
 //  LockAsts  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void LockAsts(){
-  pthread_mutex_lock(&ast_mutex);
-}
+void LockAsts() { pthread_mutex_lock(&ast_mutex); }
 
 ///
 /// Unlocks AST mutex
 ///
-void UnlockAsts(){
-  pthread_mutex_unlock(&ast_mutex);
-}
+void UnlockAsts() { pthread_mutex_unlock(&ast_mutex); }

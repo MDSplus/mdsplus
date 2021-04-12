@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -59,10 +59,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 // according to X/OPEN we have to define it ourselves
 union semun {
-  int val;			// value for SETVAL
-  struct semid_ds *buf;		// buffer for IPC_STAT, IPC_SET
-  unsigned short int *array;	// array for GET_ALL, SET_ALL
-  struct seminfo *__buf;	// buffer for IPC_INFO
+  int val;                   // value for SETVAL
+  struct semid_ds *buf;      // buffer for IPC_STAT, IPC_SET
+  unsigned short int *array; // array for GET_ALL, SET_ALL
+  struct seminfo *__buf;     // buffer for IPC_INFO
 };
 #endif
 
@@ -76,8 +76,7 @@ union semun {
 // output:      semaphore count
 //      NB! count should be zero for success (ie binary semaphore)
 //-------------------------------------------------------------------------
-int check_sema4()
-{
+int check_sema4() {
   int count;
   union semun u;
 

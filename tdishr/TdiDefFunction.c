@@ -23,35 +23,41 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TDI$$DEF_FUNCTION.C
-	Internal/intrinsic function table definition.
-	Yacc tokens are put into TdiRefFunction table here.
-	Precedence is associated with a token.
+        Internal/intrinsic function table definition.
+        Yacc tokens are put into TdiRefFunction table here.
+        Precedence is associated with a token.
 
-	Ken Klare, LANL CTR-7   (c)1989,1990
+        Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#include <mds_stdarg.h>
 #include <libroutines.h>
+#include <mds_stdarg.h>
 #include <tdishr.h>
 
 #define COM
-#define OPC(name,NAME, ...) \
-extern EXPORT int Tdi##name ( struct descriptor *first, ... ){\
-  if (first==MdsEND_ARG) return TdiNO_OUTPTR;\
-  int nargs;\
-  struct descriptor* arglist[256];\
-  arglist[0] = (void*)first;\
-  VA_LIST_MDS_END_ARG(arglist,nargs,1,0,first);\
-  if (nargs>255) return TdiNO_OUTPTR;\
-  return TdiIntrinsic(OPC_##NAME,nargs-1,arglist,(struct descriptor_xd*)arglist[nargs-1]);\
-}\
-extern EXPORT int _Tdi##name ( void** ctx, struct descriptor *first, ... ){\
-   if (first==MdsEND_ARG) return TdiNO_OUTPTR;\
-  int nargs;\
-  struct descriptor* arglist[256];\
-  arglist[0] = (void*)first;\
-  VA_LIST_MDS_END_ARG(arglist,nargs,1,0,first);\
-  if (nargs>255) return TdiNO_OUTPTR;\
-  return _TdiIntrinsic(ctx, OPC_##NAME, nargs-1, arglist, (struct descriptor_xd*)arglist[nargs-1]);\
-}
+#define OPC(name, NAME, ...)                                                   \
+  extern EXPORT int Tdi##name(struct descriptor *first, ...) {                 \
+    if (first == MdsEND_ARG)                                                   \
+      return TdiNO_OUTPTR;                                                     \
+    int nargs;                                                                 \
+    struct descriptor *arglist[256];                                           \
+    arglist[0] = (void *)first;                                                \
+    VA_LIST_MDS_END_ARG(arglist, nargs, 1, 0, first);                          \
+    if (nargs > 255)                                                           \
+      return TdiNO_OUTPTR;                                                     \
+    return TdiIntrinsic(OPC_##NAME, nargs - 1, arglist,                        \
+                        (struct descriptor_xd *)arglist[nargs - 1]);           \
+  }                                                                            \
+  extern EXPORT int _Tdi##name(void **ctx, struct descriptor *first, ...) {    \
+    if (first == MdsEND_ARG)                                                   \
+      return TdiNO_OUTPTR;                                                     \
+    int nargs;                                                                 \
+    struct descriptor *arglist[256];                                           \
+    arglist[0] = (void *)first;                                                \
+    VA_LIST_MDS_END_ARG(arglist, nargs, 1, 0, first);                          \
+    if (nargs > 255)                                                           \
+      return TdiNO_OUTPTR;                                                     \
+    return _TdiIntrinsic(ctx, OPC_##NAME, nargs - 1, arglist,                  \
+                         (struct descriptor_xd *)arglist[nargs - 1]);          \
+  }
 
 #include <opcbuiltins.h>

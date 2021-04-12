@@ -22,26 +22,24 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <STATICdef.h>
 #include "mdsip_connections.h"
+#include <STATICdef.h>
 #include <ipdesc.h>
 #include <stdlib.h>
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MdsOpen  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-int MdsOpen(int id, char *tree, int shot)
-{
+int MdsOpen(int id, char *tree, int shot) {
   struct descrip treearg;
   struct descrip shotarg;
   struct descrip ansarg;
-  int status =
-      MdsValue(id, "TreeOpen($,$)", MakeDescrip((struct descrip *)&treearg, DTYPE_CSTRING, 0, 0, tree),
-	       MakeDescrip((struct descrip *)&shotarg, DTYPE_LONG, 0, 0, &shot),
-	       (struct descrip *)&ansarg, (struct descrip *)NULL);
+  int status = MdsValue(
+      id, "TreeOpen($,$)",
+      MakeDescrip((struct descrip *)&treearg, DTYPE_CSTRING, 0, 0, tree),
+      MakeDescrip((struct descrip *)&shotarg, DTYPE_LONG, 0, 0, &shot),
+      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
     status = *(int *)ansarg.ptr;
   free(ansarg.ptr);

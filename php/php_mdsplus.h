@@ -49,12 +49,12 @@ PHP_FUNCTION(mdsplus_disconnect);
 PHP_FUNCTION(mdsplus_error);
 
 /*
-	Declare any global variables you may need between the BEGIN
-	and END macros here:
+        Declare any global variables you may need between the BEGIN
+        and END macros here:
 
 ZEND_BEGIN_MODULE_GLOBALS(mdsplus)
-	long  global_value;
-	char *global_string;
+        long  global_value;
+        char *global_string;
 ZEND_END_MODULE_GLOBALS(mdsplus)
 */
 
@@ -74,7 +74,7 @@ ZEND_END_MODULE_GLOBALS(mdsplus)
 #define MDSPLUS_G(v) (mdsplus_globals.v)
 #endif
 
-#endif				/* PHP_MDSPLUS_H */
+#endif /* PHP_MDSPLUS_H */
 
 /*
  * Local variables:

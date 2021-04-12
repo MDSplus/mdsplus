@@ -24,7 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*****************************
  * Simulation of a Transient Recorder for the MDSplus Tutorial
- * This code simulates the interface of a Generic transient recorder with the following characteristics:
+ * This code simulates the interface of a Generic transient recorder with the
+ * following characteristics:
  *  - 4 Channels
  *  - 16 bit samples, two's complement, input range 10Vpp
  *  - 64 KSamples for each channel
@@ -39,14 +40,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  - 5 -> clock freq. = 100KHz
  * trigger(char *name)
  * acquire(char *name, short *c1, short *c2 short *c3, short *c4)
- * the routine acquire returns 4  simulated sinusoidal waveform signals at the following frequencies:
- * Channel 1: 10Hz
- * Channel 2: 50 Hz
- * Channel 3: 100 Hz
+ * the routine acquire returns 4  simulated sinusoidal waveform signals at the
+ * following frequencies: Channel 1: 10Hz Channel 2: 50 Hz Channel 3: 100 Hz
  * Channel 4: 200Hz
  *
- * The name argument passed to all device routines is not used and simulates the device identifier
- * used in real devices
+ * The name argument passed to all device routines is not used and simulates the
+ * device identifier used in real devices
  */
 #include <math.h>
 #include <stdio.h>
@@ -55,9 +54,8 @@ static int totSamples = 65536;
 static double frequency;
 static int pts;
 static int confOk;
-//Return 0 if succesful, -1 if any argument is not correct
-int initialize(char *name, int clockFreq, int postTriggerSamples)
-{
+// Return 0 if succesful, -1 if any argument is not correct
+int initialize(char *name, int clockFreq, int postTriggerSamples) {
   printf("INITIALIZE: %s\t%d\t%d\n", name, clockFreq, postTriggerSamples);
   if (postTriggerSamples < 0 || postTriggerSamples >= totSamples) {
     confOk = 0;
@@ -87,10 +85,9 @@ int initialize(char *name, int clockFreq, int postTriggerSamples)
   return 1;
 }
 
-int acquire(char *name, short *c1, short *c2, short *c3, short *c4)
-{
+int acquire(char *name, short *c1, short *c2, short *c3, short *c4) {
   int i;
-//      it is assumed that c1,c2,c3,c4 arrays have totSamples elements
+  //      it is assumed that c1,c2,c3,c4 arrays have totSamples elements
   if (!confOk)
     return -1;
   for (i = 0; i < totSamples; i++) {

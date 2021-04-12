@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -64,16 +64,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       none
 // output:      status
 //-------------------------------------------------------------------------
-int unlock_file()
-{
-  int status = SUCCESS;		// assume the best case
-  struct sembuf sb = { 0, P_SEMA4, 0 };
+int unlock_file() {
+  int status = SUCCESS; // assume the best case
+  struct sembuf sb = {0, P_SEMA4, 0};
   extern int semid;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("unlock_file()\n");
 
-  sb.sem_op = V_SEMA4;		// prepare to 'vend' a semaphore
+  sb.sem_op = V_SEMA4; // prepare to 'vend' a semaphore
   if (semop(semid, &sb, 1) == ERROR) {
     if (MSGLVL(ALWAYS))
       perror("semop()");

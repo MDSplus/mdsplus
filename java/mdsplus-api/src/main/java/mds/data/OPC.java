@@ -1,6 +1,7 @@
 package mds.data;
 
-public enum OPC {
+public enum OPC
+{
 	Opcdollar("$"), // 0
 	OpcA0("$A0"), // 1
 	OpcAlpha("$ALPHA"), // 2
@@ -461,16 +462,20 @@ public enum OPC {
 	OpcTuple("TUPLE"), // 457
 	OpcList("LIST"), // 458
 	;
-	public static OPC get(final short opc) {
+	public static OPC get(final short opc)
+	{
 		return OPC.values()[opc & 0xFFFF];
 	}
+
 	public final String label;
 
-	private OPC(final String label){
+	private OPC(final String label)
+	{
 		this.label = label;
 	}
 
-	public short toShort() {
-		return (short)this.ordinal();
+	public short toShort()
+	{
+		return (short) this.ordinal();
 	}
 }

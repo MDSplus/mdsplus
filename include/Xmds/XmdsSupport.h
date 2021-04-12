@@ -6,15 +6,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSSUPPORT.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSSUPPORT.H
+                Name:   XMDSSUPPORT.H
 
-		Type:   C Include file
+                Type:   C Include file
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:   16-JAN-1992
+                Date:   16-JAN-1992
 
-		Purpose: Include file for XmdsSupport routines
+                Purpose: Include file for XmdsSupport routines
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -24,12 +24,12 @@
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 #ifndef XmdsSupport_h
-#include <mdsdescrip.h>
 #include <X11/Intrinsic.h>
+#include <mdsdescrip.h>
 extern Boolean ConglomerateElt(int nid);
 extern int ConglomerateHead(int nid);
 extern int DefaultNid(int nid);
@@ -38,4 +38,4 @@ extern void ResetErrors();
 extern void TdiComplain(Widget w);
 extern struct descriptor *TdiGet(int nid);
 extern Boolean PutIfChanged(int nid, struct descriptor_xd *xd);
-#endif				/* XmdsSupport_h */
+#endif /* XmdsSupport_h */

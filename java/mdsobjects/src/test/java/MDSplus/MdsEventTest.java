@@ -1,68 +1,77 @@
 package MDSplus;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import java.util.Random;
 
-@SuppressWarnings("static-method")
-public class MdsEventTest{
+public class MdsEventTest
+{
+	class EventReceiver extends MDSplus.Event
+	{
+		EventReceiver(java.lang.String name) throws Exception
+		{
+			super(name);
+		}
+
+		@Override
+		public synchronized void run()
+		{
+			System.out.println("Event " + getName() + " received");
+			eventReceived = true;
+		}
+	}
 
 	static boolean eventReceived = false;
 	
-	class EventReceiver extends MDSplus.Event
+	private static java.lang.String getRandomID(int length) throws Exception
 	{
-	    EventReceiver(java.lang.String name) throws Exception
-	    {
-		  super(name);
-	    }
-	    public synchronized void run()
-	    {	
-		System.out.println("Event " + getName() + " received");
-		eventReceived = true;
-	    }
+		java.lang.String chars = new java.lang.String("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+		java.lang.StringBuilder builder = new java.lang.StringBuilder();
+		Random rnd = new Random();
+		while (builder.length() < length) {
+			int index = (int)(rnd.nextFloat() * chars.length());
+			builder.append(chars.charAt(index));
+		}
+		return builder.toString();
 	}
+
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception 
-	{
-	}
-		
+	public static void setUpBeforeClass() throws Exception
+	{}
+
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {}
-		
-// 	@Before
-	public void setUp() throws Exception {}
+	public static void tearDownAfterClass() throws Exception
+	{}
+
+	@Before
+	public void setUp() throws Exception
+	{}
 
 	@After
-	public void tearDown() throws Exception {}
+	public void tearDown() throws Exception
+	{}
 
 	@Test
-	public void testData() 
+	public void testData() throws Exception
 	{
-	    try {
-		EventReceiver eventRec = new EventReceiver("TEST_EVENT");
+		final java.lang.String eventName = new java.lang.String("TEST_EVENT_") + getRandomID(8);
+		
+		final EventReceiver eventRec = new EventReceiver(eventName);
 		eventReceived = false;
-		MDSplus.Event.setEvent("TEST_EVENT");
-		Thread.currentThread().sleep(1000);
+		MDSplus.Event.setEvent(eventName);
+		Thread.sleep(1000);
 		Assert.assertEquals("Event not received", eventReceived, true);
-		byte[] rawMsg = "raw message".getBytes();
+		final byte[] rawMsg = "raw message".getBytes();
 		eventReceived = false;
-		MDSplus.Event.setEventRaw("TEST_EVENT", rawMsg);
-		Thread.currentThread().sleep(1000);
+		MDSplus.Event.setEventRaw(eventName, rawMsg);
+		Thread.sleep(1000);
 		Assert.assertEquals("Raw Event not received", eventReceived, true);
-		java.lang.String rawStr = new java.lang.String(eventRec.getRaw());
+		final java.lang.String rawStr = new java.lang.String(eventRec.getRaw());
 		Assert.assertEquals("raw message", rawStr);
-		MDSplus.Data dataMsg = new MDSplus.String("data message");
+		final MDSplus.Data dataMsg = new MDSplus.String("data message");
 		eventReceived = false;
-		MDSplus.Event.setEvent("TEST_EVENT", dataMsg);
-		Thread.currentThread().sleep(1000);
+		MDSplus.Event.setEvent(eventName, dataMsg);
+		Thread.sleep(1000);
 		Assert.assertEquals("Data Event not received", eventReceived, true);
 		Assert.assertEquals("data message", eventRec.getData().getString());
-
-	   } catch(Exception exc){Assert.fail(exc.toString());}
 	}
 }
-
-

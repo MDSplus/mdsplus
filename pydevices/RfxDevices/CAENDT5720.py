@@ -23,693 +23,952 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import mdsExceptions, Device, Data, Window, Range, Dimension, TreePath, Signal
-from MDSplus import mdsExceptions, Int32, Float32, Float64, Int16Array, Float64Array
-from numpy import ndarray
+
+from MDSplus import Device, Data, Window, Range, Dimension, TreePath
+from MDSplus import Int32, Float32, Float64
 from threading import Thread, Condition
-from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
+from ctypes import CDLL, c_int, c_short, c_long, byref, Structure, c_void_p, c_char_p
 from time import sleep
+
 
 class CAENDT5720(Device):
     """CAEN DT5720 4 Channels 12 Bit 250MS/S Digitizer"""
-    parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
-      {'path':':COMMENT', 'type':'text'},
-      {'path':':TRIG_MODE', 'type':'text', 'value':'OVER THRESHOLD'},
-      {'path':':TRIG_SOFT', 'type':'text', 'value':'ENABLED'},
-      {'path':':TRIG_EXT', 'type':'text', 'value':'ENABLED'},
-      {'path':':TRIG_SOURCE', 'type':'numeric'},
-      {'path':':CLOCK_MODE', 'type':'text', 'value':'250 MHz'},
-      {'path':':CLOCK_SOURCE', 'type':'numeric'},
-      {'path':':NUM_SEGMENTS', 'type':'numeric','value':1024},
-      {'path':':USE_TIME', 'type':'text', 'value':'YES'},
-      {'path':':PTS', 'type':'numeric','value':1024},
-      {'path':':START_IDX', 'type':'numeric','value':0},
-      {'path':':END_IDX', 'type':'numeric','value':1024},
-      {'path':':START_TIME', 'type':'numeric','value':0},
-      {'path':':END_TIME', 'type':'numeric','value':1E-6},
-      {'path':':ACQ_MODE', 'type':'text','value':'TRANSIENT RECORDER'},
-      {'path':':IRQ_EVENTS', 'type':'numeric','value':0}]
-    for i in range(0,4):
-        parts.append({'path':'.CHANNEL_%d'%(i+1), 'type':'structure'})
-        parts.append({'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'ENABLED'})
-        parts.append({'path':'.CHANNEL_%d:TRIG_STATE'%(i+1), 'type':'text', 'value':'DISABLED'})
-        parts.append({'path':'.CHANNEL_%d:OFFSET'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:DAC_OFFSET'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:THRESH_LEVEL'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:THRESH_SAMPL'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal'})
-        parts.append({'path':'.CHANNEL_%d:SEG_RAW'%(i+1), 'type':'signal'})
+    parts = [
+        {'path': ':BOARD_ID', 'type': 'numeric', 'value': 0},
+        {'path': ':COMMENT', 'type': 'text'},
+        {'path': ':TRIG_MODE', 'type': 'text', 'value': 'OVER THRESHOLD'},
+        {'path': ':TRIG_SOFT', 'type': 'text', 'value': 'ENABLED'},
+        {'path': ':TRIG_EXT', 'type': 'text', 'value': 'ENABLED'},
+        {'path': ':TRIG_SOURCE', 'type': 'numeric'},
+        {'path': ':CLOCK_MODE', 'type': 'text', 'value': '250 MHz'},
+        {'path': ':CLOCK_SOURCE', 'type': 'numeric'},
+        {'path': ':NUM_SEGMENTS', 'type': 'numeric', 'value': 1024},
+        {'path': ':USE_TIME', 'type': 'text', 'value': 'YES'},
+        {'path': ':PTS', 'type': 'numeric', 'value': 1024},
+        {'path': ':START_IDX', 'type': 'numeric', 'value': 0},
+        {'path': ':END_IDX', 'type': 'numeric', 'value': 1024},
+        {'path': ':START_TIME', 'type': 'numeric', 'value': 0},
+        {'path': ':END_TIME', 'type': 'numeric', 'value': 1E-6},
+        {'path': ':ACQ_MODE', 'type': 'text', 'value': 'TRANSIENT RECORDER'},
+        {'path': ':IRQ_EVENTS', 'type': 'numeric', 'value': 0},
+    ]
+    for i in range(4):
+        parts.extend([
+            {'path': '.CHANNEL_%d' % (i+1), 'type': 'structure'},
+            {'path': '.CHANNEL_%d:STATE' % (
+                i+1), 'type': 'text', 'value': 'ENABLED'},
+            {'path': '.CHANNEL_%d:TRIG_STATE' % (i+1), 'type': 'text',
+             'value': 'DISABLED'},
+            {'path': '.CHANNEL_%d:OFFSET' % (i+1), 'type': 'numeric',
+             'value': 0},
+            {'path': '.CHANNEL_%d:DAC_OFFSET' % (i+1), 'type': 'numeric',
+             'value': 0},
+            {'path': '.CHANNEL_%d:THRESH_LEVEL' % (i+1), 'type': 'numeric',
+             'value': 0},
+            {'path': '.CHANNEL_%d:THRESH_SAMPL' % (i+1), 'type': 'numeric',
+             'value': 0},
+            {'path': '.CHANNEL_%d:DATA' % (i+1), 'type': 'signal'},
+            {'path': '.CHANNEL_%d:SEG_RAW' % (i+1), 'type': 'signal'},
+        ])
     del(i)
-    parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STORE_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'store',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':NUM_CHANNELS', 'type':'numeric','value':0})
-    cvV1718 = 0          # CAEN V1718 USB-VME bridge
-    cvV2718 = 1          # V2718 PCI-VME bridge with optical link
-    cvA2818 = 2          # PCI board with optical link
-    cvA2719 = 3          # Optical link piggy-back
-    cvA32_S_DATA = 0x0D  # A32 supervisory data access
-    cvD32 = 0x04		  # D32
-    cvD64 = 0x08
-    IRQw = 0
-    cv = 0
-    readCv = 0
-    worker = 0
-    handle = 0
-    caenLib = None
-    workers = {}
+    parts.extend([
+        {'path': ':INIT_ACTION', 'type': 'action',
+         'valueExpr': ("Action(Dispatch('PXI_SERVER','INIT',50,None),"
+                       "Method(None,'init',head))"),
+         'options': ('no_write_shot',)},
+        {'path': ':START_ACTION', 'type': 'action',
+         'valueExpr': ("Action(Dispatch('PXI_SERVER','STORE',50,None),"
+                       "Method(None,'start_store',head))"),
+         'options': ('no_write_shot',)},
+        {'path': ':STOP_ACTION', 'type': 'action',
+         'valueExpr': ("Action(Dispatch('PXI_SERVER','STORE',50,None),"
+                       "Method(None,'stop_store',head))"),
+         'options': ('no_write_shot',)},
+        {'path': ':NUM_CHANNELS', 'type': 'numeric', 'value': 0},
+    ])
 
+    cvV1718 = 0                    # CAEN V1718 USB-VME bridge
+    cvV2718 = 1                    # V2718 PCI-VME bridge with optical link
+    cvA2818 = 2                    # PCI board with optical link
+    cvA2719 = 3                    # Optical link piggy-back
+    cvA32_S_DATA = 0x0D             # A32 supervisory data access
+    cvD32 = 0x04                    # D32
+    cvD64 = 0x08
+
+    MEM_512kS = 524288
+    MEM_4MS = 4194304
+    MEM_1_25MS = 1310720
+    MEM_10MS = 10485760
+    MEM_1MS = 1048576
+
+    InternalFrequency = 250.E6
+
+    HANDLE_RESTORE = 1
+    HANDLE_OPEN = 2
+
+    caenLib = None
+    caenInterfaceLib = None
+
+    caenHandles = {}
+    caenCvs = {}
+    caenReadCvs = {}
+    caenWorkers = {}
+    caenNids = {}
+
+# Support Class for IRQ Wait
     class IRQWait(Thread):
-        def configure(self, handle, cv, readCv):
+        def configure(self, handle, cv, readCv, usbLink):
             self.handle = handle
             self.cv = cv
             self.readCv = readCv
+            self.usbLink = usbLink
+
         def run(self):
             while 0 == 0:
                 self.readCv.acquire()
                 self.readCv.wait()
                 self.readCv.release()
-                CAENDT5720.caenLib.CAENVME_IRQWait(self.handle, c_long(0x01), c_long(1000000))
+
+                vmeAddress = 0
+                acqStatus = c_int(0)
+
+                if not self.usbLink:
+                    print ('waiting IRQ')
+                    CAENDT5720.caenLib.CAENVME_IRQWait(
+                        self.handle, c_long(0x01), c_long(1000000))
+                    print ('IRQ Received')
+                else:
+                    print ('waiting spinlock')
+                    #status = CAENDT5720.caenLib.CAENVME_IRQWait(self.handle, c_long(0x0), c_long(1000000))
+
+                    while True:
+                        CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(
+                            vmeAddress + 0x8104), byref(acqStatus), c_int(CAENDT5720.cvA32_S_DATA), c_int(CAENDT5720.cvD32))
+                        if (acqStatus.value) & (1 << 4):
+                            print ('Data available ')
+                            break
+                        else:
+                            sleep(1e-4)  # 100us
+
                 self.cv.acquire()
                 self.cv.notify()
                 self.cv.release()
+    # end class IRQWait
 
-
-#Support class for continuous store
+# Support class for continuous store
     class AsynchStore(Thread):
-      stopReq = False
-      startIdx = 0
-      endIdx = 0;
-      pts = 0
-      actChannels = 0
-      trigTime = 0
-      dt = 0
-      boardId = 0
-      cvV1718 = 0          # CAEN V1718 USB-VME bridge
-      cvV2718 = 1          # V2718 PCI-VME bridge with optical link
-      cvA2818 = 2          # PCI board with optical link
-      cvA2719 = 3          # Optical link piggy-back
-      cvA32_S_DATA = 0x0D  # A32 supervisory data access
-      cvD32 = 0x04	    # D32
-      cvD64 = 0x08
 
-      def configure(self, handle, startIdx, endIdx, pts, actChans, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, nid, device, cv, readCv, useCounter, irqEvents):
-        self.handle = handle
-        self.startIdx = startIdx
-        self.endIdx = endIdx
-        self.pts = pts
-        self.actChans = actChans
-        self.nActChans = nActChans
-        self.dt = dt
+        cvV1718 = 0                    # CAEN V1718 USB-VME bridge
+        cvV2718 = 1                    # V2718 PCI-VME bridge with optical link
+        cvA2818 = 2                    # PCI board with optical link
+        cvA2719 = 3                    # Optical link piggy-back
+        cvA32_S_DATA = 0x0D            # A32 supervisory data access
+        cvD32 = 0x04                   # D32
+        cvD64 = 0x08
+
+        # def configure(self, handle, acqMode, startIdx, endIdx, pts, actChans, nActChans, dt, trigTime, triggerSourceNid, segmentSamples, segmentSize, chanMask, nid, device, cv, readCv, useCounter, irqEvents):
+        def configure(self, handle, acqMode, startIdx, endIdx, pts, actChans, nActChans, dt, triggerSourceNid, segmentSamples, segmentSize, chanMask, nid, device, cv, readCv, useCounter, irqEvents):
+
+            self.handle = handle
+            self.startIdx = startIdx
+            self.endIdx = endIdx
+            self.acqMode = acqMode
+            self.pts = pts
+            self.actChans = actChans
+            self.nActChans = nActChans
+            self.dt = dt
+            """
         self.trigTime = trigTime
-        self.segmentSamples = segmentSamples
-        self.segmentSize = segmentSize
-        self.chanMask = chanMask
-        self.nid = nid
-        self.device = device
-        self.cv = cv
-        self.readCv = readCv
-        self.useCounter = useCounter
-        self.irqEvents = irqEvents
+        """
+            self.segmentSamples = segmentSamples
+            self.segmentSize = segmentSize
+            self.chanMask = chanMask
+            self.nid = nid
+            self.device = device
+            self.cv = cv
+            self.readCv = readCv
+            self.useCounter = useCounter
+            self.irqEvents = irqEvents
+            self.triggerSourceNid = triggerSourceNid
+            self.saveList = c_void_p(0)
 
-      def run(self):
-        class DT5720Data(Structure):
-          _fields_ = [("eventSize", c_int), ("boardGroup", c_int), ("counter", c_int), ("time", c_int), ("data", c_short * (self.segmentSamples * self.nActChans))]
+        def run(self):
 
-        vmeAddress = 0
+            class DT5720Data(Structure):
+                _fields_ = [("eventSize", c_int), ("boardGroup", c_int), ("counter", c_int), (
+                    "time", c_int), ("data", c_short * (self.segmentSamples * self.nActChans))]
 
-        currStartIdx = self.segmentSamples - self.pts + self.startIdx
-        currEndIdx = self.segmentSamples - self.pts + self.endIdx
-        currChanSamples = currEndIdx - currStartIdx
-        numChannels = self.device.num_channels.data()
-        channels = [None]*numChannels
-        segmentCounter = 0
-        while not self.stopReq:
-          self.readCv.acquire()
-          self.readCv.notify()
-          self.readCv.release()
-          self.cv.acquire()
-          self.cv.wait()
-          self.cv.release()
-# Read number of buffers
-          actSegments = c_int(0)
-          status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-          if status != 0:
-            Data.execute('DevLogErr($1,$2)', self.nid, 'Error reading number of acquired segments' )
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-          actSegments = actSegments.value
-          for chan in range(numChannels):
-            channels[chan] = ndarray(currChanSamples * actSegments)
-          for segmentIdx in range(0,actSegments):
-            segment= DT5720Data()
-            retLen = c_int(0)
-            status = CAENDT5720.caenLib.CAENVME_FIFOBLTReadCycle(self.handle, c_int(vmeAddress), byref(segment), c_int(self.segmentSize),  c_int(self.cvA32_S_DATA), c_int(self.cvD64), byref(retLen))
+            treePtr = c_void_p(0)
+            status = CAENDT5720.caenInterfaceLib.openTree(c_char_p(
+                self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
 
-            if status != 0:
-              Data.execute('DevLogErr($1,$2)', self.nid, 'ASYNCH: Error reading data segment')
-              raise mdsExceptions.TclFAILED_ESSENTIAL
+            CAENDT5720.caenInterfaceLib.startSave(byref(self.saveList))
 
-            #actSize = 4 * (segment.eventSize & 0x0fffffff)
-            #counter = segment.time/2
-            sizeInInts = (segment.eventSize & 0x0fffffff) - 4;
-            chanSizeInInts = sizeInInts/self.nActChans
-            chanSizeInShorts = chanSizeInInts * 2
-            #startTime = self.trigTime + (counter + self.startIdx) * self.dt
-            #endTime = startTime + currChanSamples * self.dt
-            for chan in range(0,numChannels):
-              if (self.chanMask & (1 << chan)) != 0:
-                channels[chan][segmentIdx*currChanSamples : segmentIdx*currChanSamples + currEndIdx - currStartIdx] = segment.data[chan*chanSizeInShorts+currStartIdx:chan*chanSizeInShorts+currEndIdx]
-            #endfor  chan in range(0,numChannels)
-          #endfor segmentIdx in range(0,actSegments):
-##############################################
-          if actSegments > 0:
-            dim = Range(Float64(segmentCounter * currChanSamples), Float64((segmentCounter + actSegments) * currChanSamples - 1), Float64(1.))
-#            print 'DIM: ', dim
-            for chan in range(0,numChannels):
-              if (self.chanMask & (1 << chan)) != 0:
-                data = Int16Array(channels[chan])
-                try:
-                  getattr(self.device, 'channel_%d_seg_raw'%(chan+1)).makeSegment(Float64(segmentCounter * currChanSamples), Float64((segmentCounter+actSegments) * currChanSamples), dim, data)
-                except:
-                  Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot write Segment in tree')
-                  raise mdsExceptions.TclFAILED_ESSENTIAL
-            #endif actSegments > 0
-          #endfor chan in range(0,numChannels)
-          segmentCounter = segmentCounter + actSegments
-###################################################
-          if(self.stopReq):
-            print('ASYNCH STORE EXITED!!!!')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-          status = CAENDT5720.caenLib.CAENVME_IRQEnable(self.handle, c_int(0x01));
+            vmeAddress = 0
 
-        #endwhile self.stopReq == 0:
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+            self.endIdx -= 10
 
-      def stop(self):
-        self.stopReq = True
-        self.cv.acquire()
-        self.cv.notify()
-        self.cv.release()
+            # currStartIdx    = self.segmentSamples - self.pts + self.startIdx
+            # currEndIdx      = self.segmentSamples - self.pts + self.endIdx
+            # currChanSamples = currEndIdx - currStartIdx
+            numChannels = self.device.num_channels.data()
+            clockNid = self.device.clock_source.getNid()
+            triggNid = self.device.trig_source.getNid()
+            numTrigger = 0
 
-    #end class AsynchStore
+            channels = []
+            chanNid = []
+
+            if self.acqMode == "TRANSIENT RECORDER":
+                numTrigger = len(self.device.trig_source.getData())
+            else:
+                # continuous
+                numTrigger = -1
+
+            for chan in range(0, numChannels):
+                channels.append([])
+                chanNid.append(
+                    getattr(self.device, 'channel_%d_seg_raw' % (chan+1)).getNid())
+
+            chanNid_c = (c_int * len(chanNid))(*chanNid)
+
+            # currSegmentIdx = 0
+            segmentCounter = 0
+            self.dtArray = []
+
+            while not self.stopReq:
+                self.readCv.acquire()
+                self.readCv.notify()
+                self.readCv.release()
+                self.cv.acquire()
+                #print 'WAIT CONDITION'
+                self.cv.wait()
+                self.cv.release()
+                #print 'CONDITION ISSUED'
+
+                # Read number of buffers
+                actSegments = c_int(0)
+                status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(
+                    vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+                print('Number of buffer ', actSegments)
+                if status != 0:
+                    print ('Error reading number of acquired segments')
+                    continue
+
+                segmentCounter = CAENDT5720.caenInterfaceLib.readAndSaveSegments(self.handle, c_int(vmeAddress), c_int(numChannels), c_int(self.nActChans), c_int(self.segmentSamples), c_int(self.segmentSize),
+                                                                                 c_int(self.startIdx), c_int(self.endIdx), c_int(self.pts),  c_int(
+                                                                                     self.useCounter),  c_int(self.chanMask), c_int(segmentCounter),
+                                                                                 c_int(numTrigger), chanNid_c, clockNid, triggNid, treePtr, self.saveList)
+
+                if self.acqMode == "TRANSIENT RECORDER" and segmentCounter == numTrigger:
+                    print ('Transient Recoder acquisition completed!!!!')
+                    return 0
+
+                if self.stopReq:
+                    print ('ASYNCH STORE EXITED!!!!')
+                    return 0
+                status = CAENDT5720.caenLib.CAENVME_IRQEnable(
+                    self.handle, c_int(0x01))
+            # endwhile self.stopReq == 0:
+
+            return 0
+
+        def stop(self):
+
+            self.stopReq = True
+            self.cv.acquire()
+            self.cv.notify()
+            self.cv.release()
+
+            # need to wait a while
+            sleep(0.5)
+
+            CAENDT5720.caenInterfaceLib.stopSave(self.saveList)
+            self.saveList = c_void_p(0)
+
+    # end class AsynchStore
 
     def saveInfo(self):
-      if self.getNid() in CAENDT5720.workers.keys():
-        oldworker = CAENDT5720.workers[self.nid][0]
-        if oldworker != 0:
-          oldworker.stop()
-          oldworker.stopReq = True
-        CAENDT5720.workers[self.nid] = (self.worker,self.handle,self.cv,self.readCv)
+
+        # CAENDT5720.caenNids
+        CAENDT5720.caenHandles[self.getNid()] = self.handle
+        CAENDT5720.caenCvs[self.getNid()] = self.cv
+        CAENDT5720.caenReadCvs[self.getNid()] = self.readCv
+        # If worker is running stop it
+        # Worker is saved by saveWorker
+        try:
+            CAENDT5720.caenWorkers[self.getNid()].stop()
+            CAENDT5720.caenWorkers[self.getNid()].stopReq = True
+        except:
+            pass
 
     def restoreInfo(self):
-      if CAENDT5720.caenLib is None:
-        CAENDT5720.caenLib = CDLL("libCAENVME.so")
-      if self.getNid() in CAENDT5720.workers.keys():
-        self.worker,self.handle,self.cvself.readCv = CAENDT5720.workers[self.nid]
-      else:
+        #global caenHandles
+        #global caenCvs
+        #global caenWorkers
+        #global nids
+
+        if CAENDT5720.caenLib is None:
+            CAENDT5720.caenLib = CDLL("libCAENVME.so")
+
         try:
-          boardId = self.board_id.data()
+            CAENDT5720.caenLib
         except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Board ID specification')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-        self.handle = c_long(0)
-        print('HANDLE NON TROVATO ADESSO INIZIA:IZZO DRIVER')
-        status = CAENDT5720.caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(boardId), byref(self.handle))
-        if status != 0:
-          print('Error initializing CAENVME')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-        self.cv = Condition()
-        self.readCv = Condition()
-        IRQw = self.IRQWait()
-        IRQw.daemon = True
-        IRQw.configure(self.handle, self.cv, self.readCv)
-        IRQw.start()
-      return
+            print ('Error loading library libCAENVME.so')
+            return 0
 
-    def start_store(self):
-      try:
-        self.board_id.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Board ID specification')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      vmeAddress = 0
-      try:
-        clock = self.clock_source.evaluate()
-        dt = clock.getDelta().data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating clock source' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      try:
-        trigTime = self.trig_source.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating trigger source' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      try:
-        startIdx = self.start_idx.data()
-        endIdx = self.end_idx.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating start or end idx')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      try:
-        pts = self.pts.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating Post Trigger Samples' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+        if CAENDT5720.caenInterfaceLib is None:
+            CAENDT5720.caenInterfaceLib = CDLL("libCaenInterface.so")
 
-    #Compute Segment Size
-      try:
-        nSegments = self.num_segments.data()
-        segmentSamples = 1048576/nSegments
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading max number of segments' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+        try:
+            CAENDT5720.caenInterfaceLib
+        except:
+            print ('Error loading library libCaenInterface.so')
+            return 0
 
-    # Get Active channels
-      chanMask = c_int(0)
-      CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x8120), byref(chanMask), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      nActChans = 0
-      chanMask = chanMask.value
-      numChannels = self.num_channels.data()
-      for chan in range(0,numChannels):
-        if (chanMask & (1 << chan)) != 0:
-          nActChans = nActChans + 1
-      if nActChans == 0:
-        print('No active groups')
-        return
-      segmentSize = 16 + 2*segmentSamples * nActChans
-      acqMode = self.acq_mode.data()
+        try:
+            #idx = caenNids.index(self.getNid())
+            self.handle = CAENDT5720.caenHandles[self.getNid()]
+            self.cv = CAENDT5720.caenCvs[self.getNid()]
+            self.readCv = CAENDT5720.caenReadCvs[self.getNid()]
+            #self.worker = CAENDT5720.caenWorkers[self.getNid()]
+            return self.HANDLE_RESTORE
+        except:
+            try:
+                boardId = self.board_id.data()
+            except:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Invalid Board ID specification')
+                return 0
+            self.handle = c_long(0)
+            print ('HANDLE NOT FOUND INITIALIZE CAEN MODULE')
+            #status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(boardId), byref(self.handle))
+            # Device VMEDevice (V3718 card ) is 0, BOARID is istead  VMELink from 0 to 3 for the V3718 4 link card
+            ##status = CAENDT5720.caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(boardId), c_int(0), byref(self.handle))
+            # boardId < 10 fiber optic link
+            # boardId > 10 USB link board identifier = boardId - 10
+
+            if boardId < 10:
+                status = CAENDT5720.caenLib.CAENVME_Init(
+                    c_int(self.cvV2718), c_int(boardId), c_int(0), byref(self.handle))
+            else:
+                status = CAENDT5720.caenLib.CAENVME_Init(
+                    c_int(self.cvV1718), c_int(boardId-10), c_int(0), byref(self.handle))
+
+            if status != 0:
+                print ('Error initializing CAENVME')
+                return 0
+
+            self.cv = Condition()
+            self.readCv = Condition()
+            IRQw = self.IRQWait()
+            IRQw.daemon = True
+            IRQw.configure(self.handle, self.cv, self.readCv, (boardId >= 10))
+            IRQw.start()
+            print ('CAEN MODULE OPENED')
+
+        return self.HANDLE_OPEN
 
 
-      for chan in range(0,numChannels):
-        if (chanMask & (1 << chan)) != 0:
-          try:
-            offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()
-          except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading channel offset')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-          if acqMode == 'CONTINUOUS WITH COUNTER':
-            useCounter = True
-            data = Data.compile("2*($1 - 2048)/4096.+$2", TreePath(getattr(self, 'channel_%d_seg_raw'%(chan+1)).getFullPath()), offset);
-          else:
-            useCounter = False
-            startTime = startIdx * dt
-            endTime = (endIdx-1) * dt
-            segRawPath = TreePath(getattr(self, 'channel_%d_seg_raw'%(chan+1)).getFullPath())
-            trigPath = TreePath(self.trig_source.getFullPath())
-            data = Data.compile("BUILD_SIGNAL(2*($VALUE - 2048)/4096.+$1, DATA($2), MAKE_RANGE($3+$4, $3+$5, REPLICATE($6,0,SIZE($3))))", Float32(offset), segRawPath, trigPath, Float64(startTime), Float64(endTime), Float64(dt))
-          try:
-            getattr(self, 'channel_%d_data'%(chan+1)).putData(data)
-          except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error Writing data' )
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-      #endfor chan in range(0,numChannels):
+# Worker Management
+    def saveWorker(self):
+        CAENDT5720.caenWorkers[self.getNid()] = self.worker
 
+    def restoreWorker(self):
+        try:
+            if self.getNid() in CAENDT5720.caenWorkers.keys():
+                self.worker = CAENDT5720.caenWorkers[self.getNid()]
+        except:
+            print('Cannot restore worker!!')
 
-      self.worker = self.AsynchStore()
-      self.worker.daemon = True
-      self.worker.stopReq = False
-      self.worker.configure(self.handle, startIdx, endIdx, pts, chanMask, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, self.getNid(), self, self.cv, self.readCv, useCounter, self.irq_events.data() + 1)
-      self.worker.start()
-      return
-
-
-    def stop_store(self):
-      self.worker.stop()
-      return
 
 ################################# INIT ###############################
     def init(self):
-      self.restoreInfo()
-      vmeAddress = 0
-#Module Reset
-      data = c_int(0)
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0xEF24), byref(data), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetting V1740 Device' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
 
-    #give some time
-      sleep(0.1)
+        if self.restoreInfo() == 0:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Cannot open DT5720 Device')
+            return 0
 
-#Module type
-      devType = c_int(0)
-      status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x8140), byref(devType), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing group configuration')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      numChannels = devType.value >> 16
-      print('NUM CHANNELS: ', numChannels)
-      self.num_channels.putData(numChannels)
+        vmeAddress = 0
 
-#number of segments
-      segmentDict = {1:0, 2:1, 4:2, 8:3, 16:4, 32:5, 64:6, 128:7, 256:8, 512:9, 1024:10}
-      try:
-        nSegments=self.num_segments.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Number of Segments')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      segmentCode = segmentDict[nSegments]
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x800c), byref(c_int(segmentCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing number of segments' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-#Global Channel Configuration
-      trigModeDict = {'OVER THRESHOLD':0, 'UNDER THRESHOLD':1}
-      try:
-        trigMode = self.trig_mode.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Trigger mode')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      trigModeCode = trigModeDict[trigMode]
-      conf = trigModeCode << 6
-      conf = conf | 0x00000010
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8000), byref(c_int(conf)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing group configuration')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-
-#Channel configurations
-      trigEnableCode = 0
-      chanEnableCode = 0
-      enabledDict = {'ENABLED':1, 'DISABLED':0}
-      numChannels = self.num_channels.data()
-      for chan in range(0,numChannels):
-#threshold level
-        threshold = getattr(self, 'channel_%d_thresh_level'%(chan+1)).data()
-        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1080 + chan * 0x100), byref(c_int(threshold)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        # Module Reset
+        data = c_int(0)
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0xEF24), byref(data), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing threshold level')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-#threshold samples
-        threshSamples = getattr(self, 'channel_%d_thresh_sampl'%(chan+1)).data()
-        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1084 + chan * 0x100), byref(c_int(threshSamples)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error resetting DT5720 Device')
+            CAENDT5720.caenLib.CAENVME_End(self.handle)
+            return 0
+
+        # give some time
+        sleep(0.1)
+
+        # Module type
+        devType = c_int(0)
+        status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(
+            vmeAddress + 0x8140), byref(devType), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing threshold samples')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-#offset
-        offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()
-        if(offset > 1):
-          offset = 1.
-        if(offset < -1):
-          offset = -1
-        offset = (offset / 1.) * 32767
-        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1098 + chan * 0x100), byref(c_int(int(offset + 0x08000))), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error reading board info')
+            CAENDT5720.caenLib.CAENVME_End(self.handle)
+            return 0
+
+        if (devType.value & 0x000000FF) != 0 and (devType.value & 0x000000FF) != 0x3:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Invalid board type. Device must be DT5720 model')
+            return 0
+
+        if (devType.value & 0x000000FF) == 0:
+            if (devType.value & 0x0000FF00) >> 8 == 0x01:
+                self.chanMemory = self.MEM_512kS
+            else:
+                self.chanMemory = self.MEM_4MS
+
+        if (devType.value & 0x000000FF) == 0x3:
+            if (devType.value & 0x0000FF00) >> 8 == 0x2:
+                #self.chanMemory = self.MEM_1_25MS
+                self.chanMemory = self.MEM_1MS
+            else:
+                self.chanMemory = self.MEM_10MS
+
+        print ('Channel Memory: ', self.chanMemory)
+
+        numChannels = devType.value >> 16
+        print ('DevType code: ', devType.value)
+        print ('NUM CHANNELS: ', numChannels)
+        print ('Channel Memory: ', self.chanMemory)
+        self.num_channels.putData(numChannels)
+
+        """
+      print "write decimation factor. Not Yet implemented"
+      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8044), byref(c_int(0x2)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+      if status != 0:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing decimation' )
+        return 0
+      """
+
+        # Number of segments
+        segmentDict = {1: 0, 2: 1, 4: 2, 8: 3, 16: 4,
+                       32: 5, 64: 6, 128: 7, 256: 8, 512: 9, 1024: 10}
+        try:
+            nSegments = self.num_segments.data()
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Invalid Number of Segments')
+            return 0
+        segmentCode = segmentDict[nSegments]
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x800c), byref(c_int(segmentCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        #print "Buffer Organization 0x800C ", segmentCode
         if status != 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing DAC offset')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-#states
-        state = getattr(self, 'channel_%d_state'%(chan+1)).data()
-        chanEnableCode = chanEnableCode | (enabledDict[state] << chan)
-        trigState = getattr(self, 'channel_%d_trig_state'%(chan+1)).data()
-        trigEnableCode = trigEnableCode | (enabledDict[trigState] << chan)
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error writing number of segments')
+            return 0
 
-#endfor chan in range(0,numChannels)
+        # Global Channel Configuration
+        trigModeDict = {'OVER THRESHOLD': 0, 'UNDER THRESHOLD': 1}
+        try:
+            trigMode = self.trig_mode.data()
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Invalid Trigger mode')
+            return 0
+        trigModeCode = trigModeDict[trigMode]
+        conf = trigModeCode << 6
+        conf = conf | 0x00000010
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x8000), byref(c_int(conf)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        if status != 0:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error writing group configuration')
+            return 0
 
-#Set channel enabled mask
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8120), byref(c_int(chanEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing Channel enable register')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x810C), byref(c_int(trigEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing Channel trigger enable register')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+        # Channel configurations
+        trigEnableCode = 0
+        chanEnableCode = 0
+        enabledDict = {'ENABLED': 1, 'DISABLED': 0}
+        numChannels = self.num_channels.data()
+        for chan in range(0, numChannels):
 
-#Set trigger enabling
-      trigExt = self.trig_ext.data()
-      trigEnableCode = trigEnableCode | (enabledDict[trigExt] << 30)
-      trigSoft = self.trig_soft.data()
-      trigEnableCode = trigEnableCode | (enabledDict[trigSoft] << 31)
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x810C), byref(c_int(trigEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing trigger configuration')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+            # Empy the node which will contain  the segmented data
+            getattr(self, 'channel_%d_seg_raw' % (chan+1)).deleteData()
 
-#Front Panel trigger out setting set TRIG/CLK to TTL
-      data = 1
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x811C), byref(c_int(data)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            # Set threshold level
+            threshold = getattr(
+                self, 'channel_%d_thresh_level' % (chan+1)).data()
+            status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+                vmeAddress + 0x1080 + chan * 0x100), byref(c_int(threshold)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error writing threshold level')
+                return 0
 
-#trigger source
+            # Set threshold samples
+            threshSamples = getattr(
+                self, 'channel_%d_thresh_sampl' % (chan+1)).data()
+            status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+                vmeAddress + 0x1084 + chan * 0x100), byref(c_int(threshSamples)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error writing threshold samples')
+                return 0
+
+            # Read FIRMWARE info
+            """
+        firmware = c_uint(0)
+        status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x108C + chan * 0x100), byref(firmware), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        print "firmware  AMC FPGA Addr ", hex(vmeAddress + 0x108C + chan * 0x100), hex((firmware.value >> 16) & 0x0000ffff), " Version ", hex((firmware.value >> 8) & 0x000000ff), ".", hex((firmware.value ) & 0x000000ff)
+        """
+            dac_offset = getattr(
+                self, 'channel_%d_dac_offset' % (chan+1)).data()
+
+            # Channel offset compensation
+            try:
+                offset = getattr(self, 'channel_%d_offset' % (chan+1)).data()
+            except:
+                offset = 0
+
+            # Set offset
+            offset = offset + dac_offset
+            print ('Ch ', chan, 'Offset Volt = ', offset)
+            if(offset > 1.125):
+                offset = 1.125
+            if(offset < -1.125):
+                offset = -1.125
+            offset = (offset / 1.125) * 32767
+            print ('Ch ', chan, 'Offset Val. =', int(offset))
+
+            status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+                vmeAddress + 0x1098 + chan * 0x100), byref(c_int(int(offset + 0x08000))), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error writing DAC offset')
+                return 0
+
+            # Enable channel
+            state = getattr(self, 'channel_%d_state' % (chan+1)).data()
+            chanEnableCode = chanEnableCode | (enabledDict[state] << chan)
+
+            # Enable Trigger
+            trigState = getattr(self, 'channel_%d_trig_state' %
+                                (chan+1)).data()
+            trigEnableCode = trigEnableCode | (enabledDict[trigState] << chan)
+
+            # END channel configuration loop
+
+        # Set channel enabled mask
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x8120), byref(c_int(chanEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        if status != 0:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error writing Channel enable register')
+            return 0
+
+        # Set channel trigger mask
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x810C), byref(c_int(trigEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        if status != 0:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error writing Channel trigger enable register')
+            return 0
+
+        # Set trigger enabling
+        trigExt = self.trig_ext.data()
+        trigEnableCode = trigEnableCode | (enabledDict[trigExt] << 30)
+        trigSoft = self.trig_soft.data()
+        trigEnableCode = trigEnableCode | (enabledDict[trigSoft] << 31)
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x810C), byref(c_int(trigEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        if status != 0:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error writing trigger configuration')
+            return 0
+
+        # Front Panel trigger out setting set TRIG/CLK to TTL
+        data = 1
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x811C), byref(c_int(data)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+
+        # Configure trigger source
+        """
       try:
         trigSource = self.trig_source.data()
-#if trigger is expressed as an array, consider only the first element
+        #Trigger source must be an array, consider only the first element as triggerSource time
         if len(self.trig_source.getShape()) > 0:
           trigSource = trigSource[0]
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+        return 0
+      """
 
-#Clock source
-      clockMode = self.clock_mode.data()
-      if clockMode == 'EXTERNAL':
-        try:
-          clockSource = self.clock_source()
-        except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Clock source')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-      else:
-        clockSource = Range(None, None, Float64(1/250E6))
-        self.clock_source.putData(clockSource)
-
-#Post Trigger Samples
-      try:
-        pts = self.pts.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve PTS Samples')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      segmentSize = 1048576/nSegments
-      if pts > segmentSize:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'PTS Larger than segmentSize')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8114), byref(c_int(pts>>2)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-
-#Time management
-      useTime=self.use_time.data()
-      if useTime == 'YES':
-        try:
-          startTime = self.start_time.data()
-          endTime = self.end_time.data()
-        except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-        if endTime > 0:
-          endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, segmentSize, trigSource), clockSource), Float64(endTime + trigSource))
+        # Configure clock source
+        # The clock source can be only INTERNAL
+        clockMode = self.clock_mode.data()
+        if clockMode == 'EXTERNAL':
+            try:
+                clockSource = self.clock_source()
+            except:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Cannot resolve Clock source')
+                return 0
         else:
-          endIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, segmentSize, trigSource + endTime), clockSource), Float64(trigSource))
-        self.end_idx.putData(Int32(endIdx + 0.5))
-        if startTime > 0:
-          startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, segmentSize, trigSource), clockSource), startTime + trigSource)
-        else:
-          startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, segmentSize, trigSource + startTime), clockSource), trigSource)
-        self.start_idx.putData(Int32(startIdx + 0.5))
-#Internal/External clock
-#      print 'startIdx: ', startIdx
-#      print 'endIdx: ', endIdx
-#      print 'SEGMENT SIZE: ', segmentSize, pts
-#      print 'PTS: ', pts
-      currStartIdx = segmentSize - pts + startIdx.data()
-#      print 'currStartIdx: ', currStartIdx
-      if currStartIdx < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/pre-trigger samples')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
+            clockSource = Range(None, None, Float64(1/self.InternalFrequency))
+            self.clock_source.putData(clockSource)
 
-      currEndIdx = segmentSize - pts + endIdx.data()
-#      print 'segmentSize: ', segmentSize
-#      print 'PTS: ', pts
-#      print 'endIdx: ', endIdx
-#      print 'currEndIdx: ', currEndIdx
-      if currEndIdx >= segmentSize:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/post-trigger samples')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
+        # Configure Post Trigger Samples
+        try:
+            pts = int(self.pts.data())
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Cannot resolve PTS Samples')
+            return 0
+        segmentSize = self.chanMemory/nSegments
+        if pts > segmentSize:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'PTS Larger than segmentSize')
+            return 0
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x8114), byref(c_int(pts >> 1)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
 
-      acqMode = self.acq_mode.data()
-      if acqMode == 'CONTINUOUS' or acqMode == 'CONTINUOUS WITH COUNTER':
-        irqEvents = self.irq_events.data()
-        irqEvents = irqEvents - 1
-        if irqEvents < 1:
-          irqEvents = 1
-        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0xEF18), byref(c_int(irqEvents)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-        if status != 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error setting IRQ events')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0xEF00), byref(c_int(0x09)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-        if status != 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error setting IRQ line')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-        status = CAENDT5720.caenLib.CAENVME_IRQEnable(self.handle, c_int(0x01))
-        if status != 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error Enabling IRQ')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-#Start asynchronous readout
-        self.start_store()
-      #endif acqMode == 'CONTINUOUS SAMPLING'
-# Run device
-      runCommand = 4
-      if clockMode == 'EXTERNAL':
-        runCommand = runCommand | 0x00000040
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8100), byref(c_int(4)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      self.saveInfo()
-      return
+        # Time management compute endIdx and startIdx
+        useTime = self.use_time.data()
+        if useTime == 'YES':
+            try:
+                # Start and End Index acquisition burst calculation is prfomend with trigger time set to 0
+                trigSource = 0.
+                startTime = self.start_time.data()
+                endTime = self.end_time.data()
+            except:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Cannot Read Start or End time')
+                return 0
+            if endTime > 0:
+                endIdx = Data.execute('x_to_i($1, $2)', Dimension(
+                    Window(0, segmentSize, trigSource), clockSource), Float64(endTime + trigSource))
+            else:
+                endIdx = -Data.execute('x_to_i($1,$2)', Dimension(
+                    Window(0, segmentSize, trigSource + endTime), clockSource), Float64(trigSource))
+            self.end_idx.putData(Int32(int(endIdx + 0.5)))
+            if startTime > 0:
+                startIdx = Data.execute('x_to_i($1, $2)', Dimension(
+                    Window(0, segmentSize, trigSource), clockSource), startTime + trigSource)
+            else:
+                startIdx = -Data.execute('x_to_i($1,$2)', Dimension(
+                    Window(0, segmentSize, trigSource + startTime), clockSource), trigSource)
+            self.start_idx.putData(Int32(int(startIdx + 0.5)))
+
+        currStartIdx = int(segmentSize - pts + startIdx.data())
+        if currStartIdx < 0:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Invalid segment size/pre-trigger samples')
+            return 0
+
+        currEndIdx = int(segmentSize - pts + endIdx.data())
+        if currEndIdx >= segmentSize:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Invalid segment size/post-trigger samples')
+            return 0
+
+        print ('startIdx      : ', int(startIdx))
+        print ('endIdx        : ', int(endIdx))
+        print ('SEGMENT SIZE  : ', int(segmentSize))
+        print ('PTS           : ', pts)
+        print ('currStartIdx  : ', currStartIdx)
+        print ('currEndIdx    : ', currEndIdx)
+
+        usbLink = (self.board_id.data() >= 10)
+        acqMode = self.acq_mode.data()
+        if not usbLink and (acqMode == 'CONTINUOUS' or acqMode == 'CONTINUOUS WITH COUNTER' or acqMode == 'TRANSIENT RECORDER'):
+
+            irqEvents = self.irq_events.data()
+            irqEvents = irqEvents - 1
+            if irqEvents < 1:
+                irqEvents = 1
+
+            status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+                vmeAddress + 0xEF18), byref(c_int(irqEvents)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error setting IRQ events')
+                return 0
+
+            status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+                vmeAddress + 0xEF00), byref(c_int(0x09)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error setting IRQ line')
+                return 0
+
+            status = CAENDT5720.caenLib.CAENVME_IRQEnable(
+                self.handle, c_int(0x01))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error Enabling IRQ')
+                return 0
+            # Start asynchronous readout thread
+            # self.start_store()
+            # endif acqMode == 'CONTINUOUS SAMPLING'
+
+        self.saveInfo()
+
+        return 1
 
 
-################################TRIGGER###################################
+################################ TRIGGER ###################################
 
     def trigger(self):
-      self.restoreInfo()
-      try:
+
+        if (self.restoreInfo() != self.HANDLE_RESTORE and self.worker.stopReq == True):
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'DT5720 Device not initialized')
+            return 0
+
+        try:
+            vmeAddress = 0
+            # Module SW trigger
+            # data = c_int(0)
+            status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+                vmeAddress + 0x8108), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error in sofware trigger DT5720 Device')
+                return 0
+            return 1
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Generic SW trigger Error')
+            return 0
+
+
+################################# START STORE ###############################
+    def start_store(self):
+
+        if (self.restoreInfo() != self.HANDLE_RESTORE):
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'DT5720 Device not initialized')
+            return 0
+
         vmeAddress = 0
-  #Module SW trigger
-        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+
+        # Module type
+        devType = c_int(0)
+        status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(
+            vmeAddress + 0x8140), byref(devType), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
-          print('Error resetting V1740 Device')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
-      except:
-        print('Generic SW trigger Error')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error reading board info')
+            return 0
 
-####################################STORE###################################
+        """
+      if (devType.value & 0x000000FF) != 0 :
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid board type. Device must be DT5720 model')
+        return 0
 
-    def store(self):
-      self.restoreInfo()
-      vmeAddress = 0
-# Stop device
-      status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8100), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error stopping device')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-    #need to wait a while
-      sleep(0.1)
-      acqMode = self.acq_mode.data()
-      if acqMode == 'CONTINUOUS' or acqMode == 'CONTINUOUS WITH COUNTER':
-        self.stop_store(0)
-        return
-
-
-      try:
-        clock = self.clock_source.evaluate()
-        dt = clock.getDelta().data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating clock source' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      try:
-        trig = self.trig_source.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating trigger source' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      try:
-        startIdx = self.start_idx.data()
-        endIdx = self.end_idx.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating start or end idx')
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-      try:
-        pts = self.pts.data()
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating Post Trigger Samples' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-
-
-
-    # Read number of buffers
-      actSegments = c_int(0)
-      status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading number of acquired segments' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-
-      if actSegments.value == 0:
-        return
-
-
-    #Compute Segment Size
-      try:
-        nSegments = self.num_segments.data()
-        segmentSamples = 1048576/nSegments
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading max number of segments' )
-        raise mdsExceptions.TclFAILED_ESSENTIAL
-
-
-    # Get Active channels
-      chanMask = c_int(0)
-      status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x8120), byref(chanMask), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      nActChans = 0
-      chanMask = chanMask.value
-      numChannels = self.num_channels.data()
-      for chan in range(0,numChannels):
-        if (chanMask & (1 << chan)) != 0:
-          nActChans = nActChans + 1
-      if nActChans == 0:
-        print('No active groups')
-        return
-
-      segmentSize = 16 + 2*segmentSamples * nActChans
-
-      class DT5720Data(Structure):
-        _fields_ = [("eventSize", c_int), ("boardGroup", c_int), ("counter", c_int), ("time", c_int), ("data", c_short * (segmentSize / 2))]
-
-      actSegments = actSegments.value
-
-      currStartIdx = segmentSamples - pts + startIdx
-      currEndIdx = segmentSamples - pts + endIdx
-      currChanSamples = Int32(currEndIdx - currStartIdx + 0.5).data()
-      triggers = []
-      deltas = []
-      channels = [None]*numChannels
-      for chan in range(numChannels):
-        channels[chan] = ndarray(currChanSamples * actSegments)
-      for segmentIdx in range(0,actSegments):
-        segment= DT5720Data()
-        retLen = c_int(0)
-        status = CAENDT5720.caenLib.CAENVME_FIFOBLTReadCycle(self.handle, c_int(vmeAddress), byref(segment), c_int(segmentSize),  c_int(self.cvA32_S_DATA), c_int(self.cvD64), byref(retLen))
-        if status != 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading data segment')
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-
-        actSize = 4 * (segment.eventSize & 0x0fffffff)
-        if actSize != segmentSize:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Expected event size different from expected size' )
-          raise mdsExceptions.TclFAILED_ESSENTIAL
-        counter = segment.time/2
-        triggers.append(counter*dt)
-        deltas.append(dt)
-        sizeInInts = (segment.eventSize & 0x0fffffff) - 4;
-        chanSizeInInts = sizeInInts/nActChans
-        chanSizeInShorts = chanSizeInInts * 2
-        #chanOffset = 0
-        for chan in range(numChannels):
-          if (chanMask & (1 << chan)) != 0:
-            channels[chan][segmentIdx * currChanSamples : segmentIdx * currChanSamples + currEndIdx - currStartIdx] = segment.data[chan*chanSizeInShorts+currStartIdx:chan*chanSizeInShorts+currEndIdx]
-        #endfor  chan in range(numChannels)
-      #endfor segmentIdx in range(actSegments):
-      if len(self.trig_source.getShape()) > 0:
-        dim = Dimension(Window(startIdx,endIdx+(actSegments - 1) * (endIdx - startIdx), trig[0]),Range(Float64Array(trig) + Float64(startIdx * dt),  Float64Array(trig) + Float64(endIdx * dt), Float64Array(deltas)))
+      if (devType.value & 0x0000FF00) >> 8 == 0x01 :
+        self.chanMemory = self.MEM_512kS
       else:
-        dim = Dimension(Window(startIdx,endIdx+(actSegments - 1) * (endIdx - startIdx), trig),Range(Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(startIdx * dt),  Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(endIdx * dt), Float64Array(deltas)))
-      dim.setUnits("s");
-      for chan in range(numChannels):
-        if (chanMask & (1 << chan)) != 0:
-          try:
-            offset = getattr(self, 'channel_%d_offset'%(chan+1))
-          except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading channel offset')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-          raw = Int16Array(channels[chan])
-          raw.setUnits("counts")
-          data = Data.compile("2*($VALUE - 2048)/4096.+$1", offset);
-          data.setUnits("Volts")
-          signal = Signal(data, raw, dim)
-          try:
-            getattr(self, 'channel_%d_data'%(chan+1)).putData(signal)
-          except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot write Signal in tree')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-      #endfor chan in range(numChannels)
-      return
+        self.chanMemory = self.MEM_4MS
+      """
+
+        if (devType.value & 0x000000FF) != 0 and (devType.value & 0x000000FF) != 0x3:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Invalid board type. Device must be DT5720 model')
+            return 0
+
+        if (devType.value & 0x000000FF) == 0:
+            if (devType.value & 0x0000FF00) >> 8 == 0x01:
+                self.chanMemory = self.MEM_512kS
+            else:
+                self.chanMemory = self.MEM_4MS
+
+        if (devType.value & 0x000000FF) == 0x3:
+            if (devType.value & 0x0000FF00) >> 8 == 0x2:
+                #self.chanMemory = self.MEM_1_25MS
+                self.chanMemory = self.MEM_1MS
+            else:
+                self.chanMemory = self.MEM_10MS
+
+        try:
+            self.board_id.data()
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Invalid Board ID specification')
+            return 0
+        try:
+            clock = self.clock_source.evaluate()
+            dt = clock.getDelta().data()
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error evaluating clock source')
+            return 0
+        try:
+            triggerSourceNid = TreePath(self.trig_source.getFullPath())
+            #trigTime = self.trig_source.data()
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error evaluating trigger source')
+            return 0
+        try:
+            startIdx = self.start_idx.data()
+            endIdx = self.end_idx.data()
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error evaluating start or end idx')
+            return 0
+        try:
+            pts = self.pts.data()
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error evaluating Post Trigger Samples')
+            return 0
+
+        # Compute Segment Size
+        try:
+            nSegments = self.num_segments.data()
+            segmentSamples = self.chanMemory/nSegments
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error reading max number of segments')
+            return 0
+        # currStartIdx = segmentSamples - pts + startIdx
+        # currEndIdx = segmentSamples - pts + endIdx
+
+        # Get Active channels
+        chanMask = c_int(0)
+        status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(
+            vmeAddress + 0x8120), byref(chanMask), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        nActChans = 0
+        chanMask = chanMask.value
+        numChannels = self.num_channels.data()
+        for chan in range(0, numChannels):
+            if (chanMask & (1 << chan)) != 0:
+                nActChans = nActChans + 1
+        if nActChans == 0:
+            print ('No active groups')
+            return 1
+        segmentSize = 16 + 2 * segmentSamples * nActChans
+        acqMode = self.acq_mode.data()
+
+        for chan in range(0, numChannels):
+            if (chanMask & (1 << chan)) != 0:
+                try:
+                    dac_offset = getattr(
+                        self, 'channel_%d_dac_offset' % (chan+1)).data()
+                except:
+                    Data.execute('DevLogErr($1,$2)', self.getNid(),
+                                 'Error reading channel DAC offset')
+                    return 0
+                if acqMode == 'CONTINUOUS WITH COUNTER':
+                    useCounter = True
+                    data = Data.compile("2.25*($1 - 2048)/4096.+$2", TreePath(
+                        getattr(self, 'channel_%d_seg_raw' % (chan+1)).getFullPath()), dac_offset)
+                else:
+                    useCounter = False
+                    segRawPath = TreePath(
+                        getattr(self, 'channel_%d_seg_raw' % (chan+1)).getFullPath())
+                    data = Data.compile(
+                        "(2.25*( $ - 2048)/4096. + $ )", segRawPath, Float32(dac_offset))
+                try:
+                    getattr(self, 'channel_%d_data' % (chan+1)).putData(data)
+                except:
+                    Data.execute('DevLogErr($1,$2)',
+                                 self.getNid(), 'Error Writing data')
+                    return 0
+        # endfor chan in range(0,numChannels):
+
+        self.worker = self.AsynchStore()
+        self.worker.daemon = True
+        self.worker.stopReq = False
+
+        #self.worker.configure(self.handle, acqMode, startIdx, endIdx, pts, chanMask, nActChans, dt, trigTime, triggerSourceNid, segmentSamples, segmentSize, chanMask, self.getNid(), self, self.cv, self.readCv, useCounter, self.irq_events.data() + 1)
+
+        self.worker.configure(self.handle, acqMode, startIdx, endIdx, pts, chanMask, nActChans, dt, triggerSourceNid, segmentSamples,
+                              segmentSize, chanMask, self.getNid(), self, self.cv, self.readCv, useCounter, self.irq_events.data() + 1)
+
+        try:
+            runCommand = 4
+            """
+          #External cllock not yet implemented
+          if clockMode == 'EXTERNAL':
+          runCommand = runCommand | 0x00000040
+        """
+            # Module SW trigger
+            data = c_int(0)
+            status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+                vmeAddress + 0x8100), byref(c_int(runCommand)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+            if status != 0:
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                             'Error starting acquisition on DT5720 Device')
+                return 0
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(
+            ), 'Cannot starting acquisition on DT5720 Device SW exception')
+            return 0
+
+        self.saveWorker()
+        self.worker.start()
+        """
+      try:
+        if  acqMode == 'TRANSIENT RECORDER':
+          trigSoft = self.trig_soft.data()
+          if trigSoft == 'ENABLED':
+             trigSource = self.trig_source.data()
+             t0 = trigSource[0]
+             sleep(t0)
+             print "SW Trigger ", trigSource[0]
+             status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+             if status != 0:
+               Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error in sofware trigger DT5720 Device'  )
+               return 0
+
+             if len(trigSource) == 1 :
+               sleep( 1 )
+               status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+               if status != 0:
+                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error in sofware trigger(1) DT5720 Device'  )
+                 return 0
+
+             for delay in trigSource[1 : ] :
+               sleep( delay - t0 )
+               t0 = delay
+               print "SW Trigger ", delay
+               status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+               if status != 0:
+                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error in sofware trigger DT5720 Device'  )
+                 return 0
+      except:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot starting acquisition on DT5720 Device SW exception'  )
+        return 0
+      """
+
+        return 1
 
 
+#################################### STOP STORE ###################################
+    def stop_store(self):
 
+        if self.restoreInfo() != self.HANDLE_RESTORE:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'DT5720 Device not initialized')
+            return 0
+
+        vmeAddress = 0
+        # Stop device
+        status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(
+            vmeAddress + 0x8100), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        if status != 0:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Error stopping device')
+            return 0
+        # need to wait a while
+        sleep(0.5)
+
+        self.restoreWorker()
+        if self.worker.isAlive():
+            print ("PXI CAENDT5720 stop_worker")
+            self.worker.stop()
+        del self.worker
+
+        return 1

@@ -46,36 +46,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Type:    C function
 
        Author:  Mark London
-	       MIT Plasma Fusion Center
+               MIT Plasma Fusion Center
 
        Date:    7-SEP-1993
 
        Purpose:
-	To test major VMS data types and classes.
-	        out = in1 OP in2
-	or      out = LLT(in1, in2)
+        To test major VMS data types and classes.
+                out = in1 OP in2
+        or      out = LLT(in1, in2)
 
-	Test OP may be EQ GE GT LE LT NE.
-	F77 functions LGE LGT LLE LLT also.
-	Unsigned compares for unsigned types.
-	Only EQ or NE are allowed for COMPLEX types.
-	Input and output memory overlap produces UNDEFINED results.
-	Coincidence of input and output, however, will work here.
+        Test OP may be EQ GE GT LE LT NE.
+        F77 functions LGE LGT LLE LLT also.
+        Unsigned compares for unsigned types.
+        Only EQ or NE are allowed for COMPLEX types.
+        Input and output memory overlap produces UNDEFINED results.
+        Coincidence of input and output, however, will work here.
 
        Call sequence:
-	       struct descriptor *in1_ptr;
-	       struct descriptor *in2_ptr;
-	       struct descriptor *out_ptr;
+               struct descriptor *in1_ptr;
+               struct descriptor *in2_ptr;
+               struct descriptor *out_ptr;
 
-	       status = Tdi3Eq(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Ge(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Gt(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Le(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Lt(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Ne(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Eq(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Ge(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Gt(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Le(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Lt(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Ne(in1_ptr,in2_ptr,out_ptr);
        returns:
-	        TdiINVDTYDSC - if unsupported data type
-	        1 - if supported data type
+                TdiINVDTYDSC - if unsupported data type
+                1 - if supported data type
 
 ------------------------------------------------------------------------------
        Copyright (c) 1993
@@ -84,12 +84,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        use without specific written approval of MIT Plasma Fusion Center
        Management.
 ------------------------------------------------------------------------------*/
+#include <mdsdescrip.h>
 #include <stdint.h>
-#include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include <tdishr_messages.h>
-
-
 
 #define OP_EQ 0
 #define OP_GE 1
@@ -102,93 +99,99 @@ extern int CvtConvertFloat();
 extern int TdiBinary();
 extern int Tdi3Not();
 
-#define min(a,b) ((a)<(b)) ? (a) : (b)
-#define max(a,b) ((a)<(b)) ? (b) : (a)
+#define min(a, b) ((a) < (b)) ? (a) : (b)
+#define max(a, b) ((a) < (b)) ? (b) : (a)
 
-#define compare(type,op) \
-  if (s1) \
-     for (i=0;i<out_count;i++) out[i] = (char)(in1[0] op in2[i]); \
-  else if (s2) \
-     for (i=0;i<out_count;i++) out[i] = (char)(in1[i] op in2[0]); \
-  else \
-     for (i=0;i<out_count;i++) out[i] = (char)(in1[i] op in2[i]); \
+#define compare(type, op)                                                      \
+  if (s1)                                                                      \
+    for (i = 0; i < out_count; i++)                                            \
+      out[i] = (char)(in1[0] op in2[i]);                                       \
+  else if (s2)                                                                 \
+    for (i = 0; i < out_count; i++)                                            \
+      out[i] = (char)(in1[i] op in2[0]);                                       \
+  else                                                                         \
+    for (i = 0; i < out_count; i++)                                            \
+      out[i] = (char)(in1[i] op in2[i]);                                       \
   break;
 
-#define test(type) {\
-  type *in1=(type *)(in1_ptr->pointer), \
-       *in2=(type *)(in2_ptr->pointer); \
-  char *out=out_ptr->pointer; \
-  switch (op) \
-  { \
-   case OP_EQ: compare(type,==) \
-   case OP_GE: compare(type,>=) \
-   case OP_GT: compare(type,>) \
-   case OP_LE: compare(type,<=) \
-   case OP_LT: compare(type,<) \
-   case OP_NE: compare(type,!=) \
-  } \
-} \
-break;
-
-#define comparef(type,dtype,native,op) \
-  for (i=0;i<out_count;i++,in1 += in1_inc, in2 += in2_inc)\
-    if (CvtConvertFloat(in1,dtype,&a,native,0) && CvtConvertFloat(in2,dtype,&b,native,0))\
-      out[i] = (char)(a op b);\
-    else\
-      out[i] = (char)0;\
+#define test(type)                                                             \
+  {                                                                            \
+    type *in1 = (type *)(in1_ptr->pointer), *in2 = (type *)(in2_ptr->pointer); \
+    char *out = out_ptr->pointer;                                              \
+    switch (op) {                                                              \
+    case OP_EQ:                                                                \
+      compare(type, ==) case OP_GE : compare(type, >=) case OP_GT              \
+          : compare(type, >) case OP_LE : compare(type, <=) case OP_LT         \
+          : compare(type, <) case OP_NE : compare(type, !=)                    \
+    }                                                                          \
+  }                                                                            \
   break;
 
-#define testf(type,dtype,native) {\
-  type *in1=(type *)(in1_ptr->pointer), \
-       *in2=(type *)(in2_ptr->pointer); \
-  type a,b;\
-  char *out=out_ptr->pointer; \
-  int in1_inc = s1 ? 0 : 1;\
-  int in2_inc = s2 ? 0 : 1;\
-  switch (op) \
-  { \
-   case OP_EQ: comparef(type,dtype,native,==) \
-   case OP_GE: comparef(type,dtype,native,>=) \
-   case OP_GT: comparef(type,dtype,native,>) \
-   case OP_LE: comparef(type,dtype,native,<=) \
-   case OP_LT: comparef(type,dtype,native,<) \
-   case OP_NE: comparef(type,dtype,native,!=) \
-  } \
-  break;\
-}
+#define comparef(type, dtype, native, op)                                      \
+  for (i = 0; i < out_count; i++, in1 += in1_inc, in2 += in2_inc)              \
+    if (CvtConvertFloat(in1, dtype, &a, native, 0) &&                          \
+        CvtConvertFloat(in2, dtype, &b, native, 0))                            \
+      out[i] = (char)(a op b);                                                 \
+    else                                                                       \
+      out[i] = (char)0;                                                        \
+  break;
+
+#define testf(type, dtype, native)                                             \
+  {                                                                            \
+    type *in1 = (type *)(in1_ptr->pointer), *in2 = (type *)(in2_ptr->pointer); \
+    type a, b;                                                                 \
+    char *out = out_ptr->pointer;                                              \
+    int in1_inc = s1 ? 0 : 1;                                                  \
+    int in2_inc = s2 ? 0 : 1;                                                  \
+    switch (op) {                                                              \
+    case OP_EQ:                                                                \
+      comparef(type, dtype, native, ==) case OP_GE                             \
+          : comparef(type, dtype, native, >=) case OP_GT                       \
+          : comparef(type, dtype, native, >) case OP_LE                        \
+          : comparef(type, dtype, native, <=) case OP_LT                       \
+          : comparef(type, dtype, native, <) case OP_NE                        \
+          : comparef(type, dtype, native, !=)                                  \
+    }                                                                          \
+    break;                                                                     \
+  }
 
 /*
   compare_n compares multi-longword data types.  For signed integer,
   all long words are compared using unsigned except for top longword.
 */
-#define compare_n(type,op,longwords,signed) \
-  for (i=0;i<out_count;i++) {               \
-    l = longwords*i; \
-    for (j=longwords-1;j>=0;j--) \
-      if (!j || in1[s1 ? j : l+j] != in2[s2 ? j : l+j]) {       \
-	if (!(signed) || !(j != longwords-1)) \
-	  {out[i] = (char)(in1[s1 ? j : l+j] op in2[s2 ? j : l+j]); break;} \
-	else {i1 = (int *)(in1+(s1 ? j : l+j)), \
-	      i2 = (int *)(in2+(s2 ? j : l+j)); \
-	  out[i] = (char)(*i1 op *i2); break;} \
-      }}                                       \
-   break;
+#define compare_n(type, op, longwords, signed)                                 \
+  for (i = 0; i < out_count; i++) {                                            \
+    l = longwords * i;                                                         \
+    for (j = longwords - 1; j >= 0; j--)                                       \
+      if (!j || in1[s1 ? j : l + j] != in2[s2 ? j : l + j]) {                  \
+        if (!(signed) || !(j != longwords - 1)) {                              \
+          out[i] = (char)(in1[s1 ? j : l + j] op in2[s2 ? j : l + j]);         \
+          break;                                                               \
+        } else {                                                               \
+          i1 = (int *)(in1 + (s1 ? j : l + j)),                                \
+          i2 = (int *)(in2 + (s2 ? j : l + j));                                \
+          out[i] = (char)(*i1 op * i2);                                        \
+          break;                                                               \
+        }                                                                      \
+      }                                                                        \
+  }                                                                            \
+  break;
 
-#define testn(type,longwords,signed) {\
-  type *in1=(type *)(in1_ptr->pointer), \
-       *in2=(type *)(in2_ptr->pointer); \
-  char *out=out_ptr->pointer; \
-  switch (op) \
-  { \
-   case OP_EQ: compare_n(type,==,longwords,signed) \
-   case OP_GE: compare_n(type,>=,longwords,signed) \
-   case OP_GT: compare_n(type,>,longwords,signed) \
-   case OP_LE: compare_n(type,<=,longwords,signed) \
-   case OP_LT: compare_n(type,<,longwords,signed) \
-   case OP_NE: compare_n(type,!=,longwords,signed) \
-  } \
-} \
-break;
+#define testn(type, longwords, signed)                                         \
+  {                                                                            \
+    type *in1 = (type *)(in1_ptr->pointer), *in2 = (type *)(in2_ptr->pointer); \
+    char *out = out_ptr->pointer;                                              \
+    switch (op) {                                                              \
+    case OP_EQ:                                                                \
+      compare_n(type, ==, longwords, signed) case OP_GE                        \
+          : compare_n(type, >=, longwords, signed) case OP_GT                  \
+          : compare_n(type, >, longwords, signed) case OP_LE                   \
+          : compare_n(type, <=, longwords, signed) case OP_LT                  \
+          : compare_n(type, <, longwords, signed) case OP_NE                   \
+          : compare_n(type, !=, longwords, signed)                             \
+    }                                                                          \
+  }                                                                            \
+  break;
 
 /*
    compare_c is used for strings compares.  Characters are compared one by
@@ -198,52 +201,58 @@ break;
    Unequal strings are compared by using spaces to fill the smaller string.
    (All this emulates the CMPC macro instruction.)
 */
-#define compare_c(type,op,breakout,equal_until_last,not_op) \
-  for (i=0;i<out_count;i++) { \
-    minlen = min(in1_ptr->length,in2_ptr->length); \
-    maxlen = max(in1_ptr->length,in2_ptr->length); \
-    k = 0; \
-    out[i] = not_op 1; \
-    while (k < maxlen) { \
-      if (k >= minlen) { \
-	type *in = (type *)((k >= in1_ptr->length) ? in2 : in1); \
-	if (!(equal_until_last & (k < maxlen-1 && ' ' == in[k]))) {\
-	  if (!((in == in2) ? (' ' op in[k]) : (in[k] op ' '))) \
-	    {out[i] = not_op 0; break;} \
-	  else {breakout}		\
-	} \
-      } else \
-	if (!(equal_until_last & (k < maxlen-1 && in1[k] == in2[k]))) {\
-	  if (!(in1[k] op in2[k])) \
-	    {out[i] = not_op 0; break;} \
-	  else {breakout}		\
-	} \
-      k++; \
-    } \
-    if (!s1) in1=(type *)((char *)(in1)+in1_ptr->length); \
-    if (!s2) in2=(type *)((char *)(in2)+in2_ptr->length); \
-  }\
+#define compare_c(type, op, breakout, equal_until_last, not_op)                \
+  for (i = 0; i < out_count; i++) {                                            \
+    minlen = min(in1_ptr->length, in2_ptr->length);                            \
+    maxlen = max(in1_ptr->length, in2_ptr->length);                            \
+    k = 0;                                                                     \
+    out[i] = not_op 1;                                                         \
+    while (k < maxlen) {                                                       \
+      if (k >= minlen) {                                                       \
+        type *in = (type *)((k >= in1_ptr->length) ? in2 : in1);               \
+        if (!(equal_until_last & (k < maxlen - 1 && ' ' == in[k]))) {          \
+          if (!((in == in2) ? (' ' op in[k]) : (in[k] op ' '))) {              \
+            out[i] = not_op 0;                                                 \
+            break;                                                             \
+          } else {                                                             \
+            breakout                                                           \
+          }                                                                    \
+        }                                                                      \
+      } else if (!(equal_until_last & (k < maxlen - 1 && in1[k] == in2[k]))) { \
+        if (!(in1[k] op in2[k])) {                                             \
+          out[i] = not_op 0;                                                   \
+          break;                                                               \
+        } else {                                                               \
+          breakout                                                             \
+        }                                                                      \
+      }                                                                        \
+      k++;                                                                     \
+    }                                                                          \
+    if (!s1)                                                                   \
+      in1 = (type *)((char *)(in1) + in1_ptr->length);                         \
+    if (!s2)                                                                   \
+      in2 = (type *)((char *)(in2) + in2_ptr->length);                         \
+  }                                                                            \
   break;
 
-#define testc(type) {\
-  type *in1=(type *)(in1_ptr->pointer), \
-       *in2=(type *)(in2_ptr->pointer); \
-  char *out=out_ptr->pointer; \
-  switch (op) \
-  { \
-   case OP_EQ: compare_c(type,==,;,0,(char))\
-   case OP_GE: compare_c(type,<,break;,1,(char)!) \
-   case OP_GT: compare_c(type,>,break;,1,(char)) \
-   case OP_LE: compare_c(type,>,break;,1,(char)!) \
-   case OP_LT: compare_c(type,<,break;,1,(char)) \
-   case OP_NE: compare_c(type,!=,;,1,(char)) \
-  } \
-} \
-break;
+#define testc(type)                                                            \
+  {                                                                            \
+    type *in1 = (type *)(in1_ptr->pointer), *in2 = (type *)(in2_ptr->pointer); \
+    char *out = out_ptr->pointer;                                              \
+    switch (op) {                                                              \
+    case OP_EQ:                                                                \
+      compare_c(type, ==, ;, 0, (char)) case OP_GE                             \
+          : compare_c(type, <, break;, 1, (char)!) case OP_GT                  \
+          : compare_c(type, >, break;, 1, (char)) case OP_LE                   \
+          : compare_c(type, >, break;, 1, (char)!) case OP_LT                  \
+          : compare_c(type, <, break;, 1, (char)) case OP_NE                   \
+          : compare_c(type, !=, ;, 1, (char))                                  \
+    }                                                                          \
+  }                                                                            \
+  break;
 
-int Tdi3_Eq(struct descriptor *in1_ptr,
-	    struct descriptor *in2_ptr, struct descriptor *out_ptr, int op)
-{
+int Tdi3_Eq(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+            struct descriptor *out_ptr, int op) {
   INIT_STATUS;
   int out_count = 1;
   register int i, j, k;
@@ -252,71 +261,67 @@ int Tdi3_Eq(struct descriptor *in1_ptr,
   int s2 = (in2_ptr->class != CLASS_A);
 
   status = TdiBinary(in1_ptr, in2_ptr, out_ptr, &out_count);
-  if STATUS_NOT_OK
-    return status;
+  if
+    STATUS_NOT_OK
+  return status;
 
   switch (in1_ptr->dtype) {
   case DTYPE_T:
-    testc(unsigned char)
-    case DTYPE_BU:test(uint8_t)
-    case DTYPE_WU:test(uint16_t)
-    case DTYPE_LU:test(uint32_t)
-    case DTYPE_QU:test(uint64_t)
-    case DTYPE_OU:testn(unsigned int, 4, 0)
-    case DTYPE_B:test(int8_t)
-    case DTYPE_W:test(int16_t)
-    case DTYPE_L:test(int32_t)
-    case DTYPE_Q:test(int64_t)
-    case DTYPE_O:testn(int, 4, 1)
-    case DTYPE_F:testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-    case DTYPE_FS:testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-    case DTYPE_G:testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_D:testf(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FT:testf(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FC:case DTYPE_FSC:if (op != OP_EQ && op != OP_NE) {
+    testc(unsigned char) case DTYPE_BU : test(uint8_t) case DTYPE_WU
+        : test(uint16_t) case DTYPE_LU : test(uint32_t) case DTYPE_QU
+        : test(uint64_t) case DTYPE_OU : testn(unsigned int, 4, 0) case DTYPE_B
+        : test(int8_t) case DTYPE_W : test(int16_t) case DTYPE_L
+        : test(int32_t) case DTYPE_Q : test(int64_t) case DTYPE_O
+        : testn(int, 4, 1) case DTYPE_F
+        : testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT) case DTYPE_FS
+        : testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT) case DTYPE_G
+        : testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE) case DTYPE_D
+        : testf(double, DTYPE_D, DTYPE_NATIVE_DOUBLE) case DTYPE_FT
+        : testf(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE) case DTYPE_FC
+        : case DTYPE_FSC : if (op != OP_EQ && op != OP_NE) {
       status = TdiINVDTYDSC;
       break;
     }
-    testn(int, 2, 0)
-    case DTYPE_GC:case DTYPE_DC:case DTYPE_FTC:if (op != OP_EQ && op != OP_NE) {
+    testn(int, 2, 0) case DTYPE_GC : case DTYPE_DC : case DTYPE_FTC
+        : if (op != OP_EQ && op != OP_NE) {
       status = TdiINVDTYDSC;
       break;
     }
-    testn(int, 4, 0)
-    default:status = TdiINVDTYDSC;
+    testn(int, 4, 0) default : status = TdiINVDTYDSC;
   }
   return status;
 }
 
-int Tdi3Eq(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
-{
+int Tdi3Eq(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+           struct descriptor *out_ptr) {
   return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
 }
 
-int Tdi3Ge(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
-{
+int Tdi3Ge(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+           struct descriptor *out_ptr) {
   return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_GE);
 }
 
-int Tdi3Gt(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
-{
+int Tdi3Gt(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+           struct descriptor *out_ptr) {
   return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_GT);
 }
 
-int Tdi3Le(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
-{
+int Tdi3Le(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+           struct descriptor *out_ptr) {
   return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_LE);
 }
 
-int Tdi3Lt(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
-{
+int Tdi3Lt(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+           struct descriptor *out_ptr) {
   return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_LT);
 }
 
-int Tdi3Ne(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
-{
+int Tdi3Ne(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+           struct descriptor *out_ptr) {
   int status = Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
-  if STATUS_OK
-    status = Tdi3Not(out_ptr, out_ptr);
+  if
+    STATUS_OK
+  status = Tdi3Not(out_ptr, out_ptr);
   return status;
 }

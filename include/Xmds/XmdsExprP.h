@@ -7,15 +7,15 @@
 /*  CMS REPLACEMENT HISTORY, Element XMDSEXPRP.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsExprP.H
+                Name:   XmdsExprP.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   23-AUG-1989
+                Date:   23-AUG-1989
 
-		Purpose: Private declarations for  Expr widget
+                Purpose: Private declarations for  Expr widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -43,8 +43,8 @@ typedef struct _XmdsExprPart {
   int nid_offset;
   int default_nid;
 
-   Boolean(*compile) ();
-   Boolean(*decompile) ();
+  Boolean (*compile)();
+  Boolean (*decompile)();
 
   Widget open_quote_widget;
   Widget text_widget;
@@ -60,11 +60,11 @@ typedef struct _XmdsExprPart {
  * now define the actual widget data struct
  */
 typedef struct _XmdsExprWidgetRec {
-  CorePart core;		/* basic widget */
+  CorePart core; /* basic widget */
   CompositePart composite;
   ConstraintPart constraint;
   XmManagerPart manager;
-  XmdsExprPart expr;		/*  Expr specific */
+  XmdsExprPart expr; /*  Expr specific */
 } XmdsExprWidgetRec;
 
 /*
@@ -72,13 +72,13 @@ typedef struct _XmdsExprWidgetRec {
  */
 
 typedef struct _XmdsExprClassPart {
-  caddr_t extension;		/* Pointer to extension record */
+  caddr_t extension; /* Pointer to extension record */
 } XmdsExprClassPart;
 
 /*
  * The Expr Class record is a Dialog box class record plus
  * the empty ExprClassPart
-*/
+ */
 typedef struct _XmdsExprClassRec {
   CoreClassPart core_class;
   CompositeClassPart composite;
@@ -89,5 +89,5 @@ typedef struct _XmdsExprClassRec {
 
 externalref XmdsExprClassRec xmdsExprClassRec;
 
-#endif				/* XmdsExprP_H */
+#endif /* XmdsExprP_H */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

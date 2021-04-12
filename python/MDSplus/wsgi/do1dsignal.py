@@ -23,32 +23,35 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import DATA,DIM_OF,tdi
-import os,sys
+from MDSplus import DATA, DIM_OF, tdi
+import os
+import sys
 
 example = '/1dsignal?expr=make_signal(sin((0:1:.01)*$2pi),*,0:1:.01)'
 
+
 def do1dsignal(self):
     if len(self.path_parts) > 2:
-        tree = self.openTree(self.path_parts[1],self.path_parts[2])
+        tree = self.openTree(self.path_parts[1], self.path_parts[2])
         _tdi = tree.tdiExecute
     else:
         tree = None
         _tdi = tdi
-    expr= self.args['expr'][-1]
+    expr = self.args['expr'][-1]
     sig = _tdi(expr)
-    y   = DATA(sig).evaluate()
-    x   = DATA(DIM_OF(sig)).evaluate()
-    response_headers=list()
-    response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
-    response_headers.append(('Pragma','no-cache'))
-    response_headers.append(('XDTYPE',x.__class__.__name__))
-    response_headers.append(('YDTYPE',y.__class__.__name__))
-    response_headers.append(('XLENGTH',str(len(x))))
-    response_headers.append(('YLENGTH',str(len(y))))
+    y = DATA(sig).evaluate()
+    x = DATA(DIM_OF(sig)).evaluate()
+    response_headers = list()
+    response_headers.append(
+        ('Cache-Control', 'no-store, no-cache, must-revalidate'))
+    response_headers.append(('Pragma', 'no-cache'))
+    response_headers.append(('XDTYPE', x.__class__.__name__))
+    response_headers.append(('YDTYPE', y.__class__.__name__))
+    response_headers.append(('XLENGTH', str(len(x))))
+    response_headers.append(('YLENGTH', str(len(y))))
     if tree is not None:
-        response_headers.append(('TREE',tree.tree))
-        response_headers.append(('SHOT',str(tree.shot)))
-    output=str(x.data().data)+str(y.data().data)
+        response_headers.append(('TREE', tree.tree))
+        response_headers.append(('SHOT', str(tree.shot)))
+    output = str(x.data().data)+str(y.data().data)
     status = '200 OK'
     return (status, response_headers, output)
