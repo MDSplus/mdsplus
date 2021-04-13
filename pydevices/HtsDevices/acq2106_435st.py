@@ -178,6 +178,14 @@ class _ACQ2106_435ST(MDSplus.Device):
             'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
             'options': ('no_write_shot',)
         },
+
+        #Trigger sources
+        {
+            'path':':TRIG_SRC',   
+            'type':'text',      
+            'value': 'NONE', 
+            'options':('no_write_shot',)
+        },
     ]
 
     data_socket = -1
@@ -381,7 +389,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                         else:
                             self.full_buffers.put(buf)
 
-    def init(self, resampling=0):
+    def init(self, resampling = False):
         import acq400_hapi
         MIN_FREQUENCY = 10000
 
@@ -390,6 +398,12 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         if self.ext_clock.length > 0:
             raise Exception('External Clock is not supported')
+
+        # Initializing Sources to NONE:
+        # D0 signal:
+        uut.s0.SIG_SRC_TRG_0   = 'NONE'
+        # D1 signal:
+        uut.s0.SIG_SRC_TRG_1   = 'NONE'
 
         freq = int(self.freq.data())
         # D-Tacq Recommendation: the minimum sample rate is 10kHz.
@@ -406,7 +420,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             trg = 'soft'
         else:
             role = mode.split(":")[0]
-            trg = mode.split(":")[1]
+            trg  = mode.split(":")[1]
 
         print("Role is {} and {} trigger".format(role, trg))
 
@@ -422,6 +436,25 @@ class _ACQ2106_435ST(MDSplus.Device):
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]
         uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
+
+        # The following allows for any source to be chosen, among other things the WR source.
+        # Signal highway d0:
+        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'nc', 'WRTT0', 'NONE']
+        # Signal highway d1:
+        srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
+
+        if trg_dx == 'd0':
+            if str(self.trig_src.data()) in srcs_0:
+                uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+            else:
+                sys.exit("TRIG_SRC should be one of {}".format(srcs_0))
+                
+        elif trg_dx == 'd1':
+            if str(self.trig_src.data()) in srcs_1:
+                uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+            else:
+                sys.exit("TRIG_SRC should be one of {}".format(srcs_1))
+
 
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
