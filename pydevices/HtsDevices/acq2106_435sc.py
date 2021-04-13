@@ -92,9 +92,9 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             self.slots[card].SC32_GAIN_COMMIT = 1
             print("GAINs Committed for site {}".format(card))
         # Here, the argument to the init of the superclass:
-        # - init(1) => use resampling function:
+        # - init(True) => use resampling function:
         # makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
-        super(_ACQ2106_435SC, self).init(1)
+        super(_ACQ2106_435SC, self).init(resampling = True)
 
     INIT=init
     
