@@ -341,9 +341,9 @@ int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *
         }
         pthread_setaffinity_np(thread, sizeof(processorCpuSet), &processorCpuSet);
     }
+#endif
   }
 
-#endif
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
