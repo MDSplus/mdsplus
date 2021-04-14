@@ -326,6 +326,7 @@ int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *
       perror("pthread_create");
       return 0;
     }
+#ifdef CPU_SET
     if(cpuMask != 0)
     {
         cpu_set_t processorCpuSet;  
@@ -342,6 +343,7 @@ int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *
     }
   }
 
+#endif
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
