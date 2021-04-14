@@ -238,7 +238,7 @@ static void getMulticastAddr(char const *eventName, char *retIp) {
 }
 
 int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *),
-                   void *astprm, int *eventid, unsigned int cpuMask) {
+                   void *astprm, int *eventid, __attribute__((unused)) unsigned int cpuMask) {
   int check_bind_in_directive;
   struct sockaddr_in serverAddr;
 
