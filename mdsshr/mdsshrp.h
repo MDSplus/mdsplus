@@ -16,6 +16,9 @@ extern void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[],
 extern int MDSUdpEventAst(char const *eventName,
                           void (*astadr)(void *, int, char *), void *astprm,
                           int *eventid);
+extern int MDSUdpEventAstMask(char const *eventName,
+                          void (*astadr)(void *, int, char *), void *astprm,
+                          int *eventid, unsigned int cpuMask);
 extern int MDSUdpEventCan(int eventid);
 extern int MDSUdpEvent(char const *eventName, int bufLen, char const *buf);
 extern int LibSFree1Dd(struct descriptor *out);

@@ -3974,6 +3974,7 @@ public:
 class EXPORT Event {
 public:
   Event(const char *name);
+  Event(const char *name, unsigned int cpuMask);
 
   virtual ~Event();
 
@@ -4025,10 +4026,10 @@ private:
   Event() {}
   Event(const Event &) {}
   friend void eventAst(void *arg, int len, char *buf);
-
   std::string eventName;
   std::string eventBuf;
   int eventId;
+  unsigned int cpuMask;
   int64_t eventTime;
   ConditionVar condition;
 };
@@ -4196,6 +4197,11 @@ public:
     name = "STREAMING";
   }
   EventStream(const char *streamName) : Event(streamName) {
+    listeners.clear();
+    names.clear();
+    name = streamName;
+  }
+  EventStream(const char *streamName, unsigned int cpuMask) : Event(streamName, cpuMask) {
     listeners.clear();
     names.clear();
     name = streamName;

@@ -22,6 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#define _GNU_SOURCE
 #include <mdsplus/mdsconfig.h>
 
 #include <errno.h>
@@ -30,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sched.h>
 
 #include <libroutines.h>
 #include <mdsshr.h>
@@ -232,10 +234,11 @@ static void getMulticastAddr(char const *eventName, char *retIp) {
   free(addr_format);
 }
 
-int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
-                   void *astprm, int *eventid) {
+int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *),
+                   void *astprm, int *eventid, unsigned int cpuMask) {
   int check_bind_in_directive;
   struct sockaddr_in serverAddr;
+
 #ifdef _WIN32
   char flag = 1;
 #else
@@ -320,10 +323,33 @@ int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
       perror("pthread_create");
       return 0;
     }
+    if(cpuMask != 0)
+    {
+        cpu_set_t processorCpuSet;  
+	unsigned int j;      
+	CPU_ZERO(&processorCpuSet);
+        for (j = 0u; (j < (sizeof(cpuMask) * 8u)) && (j < CPU_SETSIZE); j++)
+	{
+            if (((cpuMask >> j) & 0x1u) == 0x1u) 
+	    {
+                CPU_SET(j, &processorCpuSet);
+            }
+        }
+        pthread_setaffinity_np(thread, sizeof(processorCpuSet), &processorCpuSet);
+    }
   }
+
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
+
+
+int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
+                   void *astprm, int *eventid)
+{
+    return MDSUdpEventAstMask(eventName, astadr, astprm, eventid, 0);
+}
+
 
 int MDSUdpEventCan(int eventid) {
   EventList *ev = popEvent(eventid);

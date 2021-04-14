@@ -889,6 +889,26 @@ EXPORT int MDSEventAst(const char *const eventNameIn,
   return status;
 }
 
+
+EXPORT int MDSEventAstMask(const char *const eventNameIn,
+                       void (*const astadr)(void *, int, char *),
+                       void *const astprm, int *const eventid, unsigned int cpuMask) {
+  char *eventName = malloc(strlen(eventNameIn) + 1);
+  unsigned int i, j;
+  int status;
+  for (i = 0, j = 0; i < strlen(eventNameIn); i++) {
+    if (eventNameIn[i] != 32)
+      eventName[j++] = (char)toupper(eventNameIn[i]);
+  }
+  eventName[j] = 0;
+  if (getenv("mds_event_server"))
+    status = RemoteMDSEventAst(eventName, astadr, astprm, eventid);
+  else
+    status = MDSUdpEventAstMask(eventName, astadr, astprm, eventid, cpuMask);
+  free(eventName);
+  return status;
+}
+
 EXPORT int MDSEvent(const char *const eventNameIn, const int bufLen,
                     char *const buf) {
   char *eventName = alloca(strlen(eventNameIn) + 1);
