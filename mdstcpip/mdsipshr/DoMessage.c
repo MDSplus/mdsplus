@@ -28,31 +28,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../mdsip_connections.h"
 
+extern void ProcessMessage(Connection *, Message *);
 ////////////////////////////////////////////////////////////////////////////////
 //  DoMessage  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 int DoMessageC(Connection *connection)
 {
-  if (!connection)
-    return 0; // will cause tunnel to terminate
   int status = MDSplusFATAL;
+  if (!connection)
+    return status; // will cause tunnel to terminate
   Message *message = GetMdsMsgTOC(connection, &status, -1);
-  Message *ans = 0;
-  if (STATUS_OK && message)
+  if (STATUS_OK && !message)
+    status = MDSplusFATAL;
+  if (STATUS_OK)
   {
-    ans = ProcessMessage(connection, message);
-    if (ans)
-    {
-      status = SendMdsMsgC(connection, ans, 0);
-      free(ans);
-      free(message);
-    }
+    ProcessMessage(connection, message);
   }
   else
   {
     free(message);
     CloseConnectionC(connection);
-    status = 0; // will cause tunnel to terminate
   }
   return status;
 }

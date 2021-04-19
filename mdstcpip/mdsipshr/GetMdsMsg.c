@@ -32,8 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <tdishr_messages.h>
 #include <unistd.h>
-static int GetBytesTO(Connection *c, void *buffer, size_t bytes_to_recv,
-                      int to_msec)
+
+static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
+                        int to_msec)
 {
   char *bptr = (char *)buffer;
   if (c && c->io)
@@ -81,7 +82,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
 {
   MsgHdr header;
   Message *msg = NULL;
-  *status = GetBytesTO(c, (void *)&header, sizeof(MsgHdr), to_msec);
+  *status = get_bytes_to(c, (void *)&header, sizeof(MsgHdr), to_msec);
   if (*status == SsINTERNAL)
     return NULL;
   if (IS_OK(*status))
@@ -110,7 +111,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
     unsigned long dlen;
     msg = malloc(msglen);
     msg->h = header;
-    *status = GetBytesTO(c, msg->bytes, msglen - sizeof(MsgHdr), 1000);
+    *status = get_bytes_to(c, msg->bytes, msglen - sizeof(MsgHdr), 1000);
     if (IS_OK(*status) && IsCompressed(header.client_type))
     {
       Message *m;

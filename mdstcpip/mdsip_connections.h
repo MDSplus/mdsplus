@@ -789,6 +789,4 @@ EXPORT int MdsGetClientAddr();
 EXPORT void MdsSetClientAddr(int);
 EXPORT char *MdsGetServerPortname();
 
-Message *ProcessMessage(Connection *connection, Message *message);
-
 #endif
