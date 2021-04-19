@@ -24,7 +24,7 @@
 #
 
 from threading import Thread
-from MDSplus import Connection, GetMany, Float32, Range, setenv, Tree, TreeNNF, TreeNodeArray, ADD
+from MDSplus import Connection, GetMany, Float32, Range, setenv, Tree, TreeNNF, ADD
 import time
 
 
@@ -190,6 +190,79 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
         t2.start()
         t1.join()
         t2.join()
+
+    def fast_remote_write(self):
+        import os
+        import shutil
+        import subprocess
+        import tempfile
+        count = 100
+
+        def mdsip(hostfile, treepath):
+            with open(hostfile, "w") as f:
+                f.write("multi|SELF\n*")
+            process = subprocess.Popen((
+                'mdsip', '-m',
+                '-p', '8000',
+                '-P', 'TCP',
+                '-h', hostfile,
+            ))
+            time.sleep(.1)
+            return process
+
+        def setup_mdsip(treepath):
+            con = Connection('127.0.0.1')
+            def check(line, *args):
+                sts = con.get(line, *args)
+                self.assertTrue(sts & 1, "error %d in '%s'" % (sts, line))
+            check("setenv('test_path='//$)", treepath)
+            for line in (
+                "TreeOpenNew('test', 1)",
+                "TreeAddNode('EV1', _, 6)",
+                "TreeAddNode('EV2', _, 6)",
+                "TreeWrite()",
+                "TreeClose()",
+            ):
+                check(line)
+        class thread(Thread):
+            def __init__(self, name, node):
+                super(thread, self).__init__(name=name)
+                self.node = node.copy()
+                self.count = 0
+
+            def run(self):
+                node = self.node
+                start = time.time()
+                for i in range(count):
+                    data = Float32([i*10+1])
+                    now = Float32([time.time()])
+                    node.makeSegment(now[0], now[0], data, now)
+                    self.count = i+1
+                end = time.time()
+                print("%s: rate %f" % (self.name, count / (end-start)))
+
+        tempdir = tempfile.mkdtemp()
+        try:
+            server = mdsip(os.path.join(tempdir, "mdsip.hosts"), tempdir)
+            try:
+                setup_mdsip(tempdir)
+                setenv("test_path", "127.0.0.1::" + tempdir)
+                tree = Tree("test", 1)
+                threads = (
+                    thread('EV1', tree.EV1),
+                    thread('EV2', tree.EV2),
+                )
+                for t in threads:
+                    t.start()
+                for t in threads:
+                    t.join()
+                    self.assertEqual(t.count, count)
+            finally:
+                if server:
+                    server.kill()
+                    server.wait()
+        finally:
+            shutil.rmtree(tempdir, ignore_errors=False, onerror=None)
 
     @staticmethod
     def getTests():
