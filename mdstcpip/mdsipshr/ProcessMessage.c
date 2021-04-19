@@ -487,9 +487,8 @@ static void GetErrorText(int status, mdsdsc_xd_t *xd)
     MdsCopyDxXd((mdsdsc_t *)&unknown, xd);
 }
 
-static void ClientEventAst(MdsEventList *e, int data_len, char *data)
+static void client_event_ast(MdsEventList *e, int data_len, char *data)
 {
-  int conid = e->conid;
   Connection *c = FindConnection(e->conid, 0);
   int i;
   char client_type;
@@ -533,27 +532,51 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
       e->info->data[i] = 0;
     memcpy(m->bytes, e->info, e->info_len);
   }
-  SendMdsMsg(conid, m, MSG_DONTWAIT);
+  SendMdsMsg(e->conid, m, MSG_DONTWAIT);
   free(m);
   UnlockAsts();
 }
 
-static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd)
+typedef struct
+{
+  void *tdicontext[6];
+  Connection *connection;
+  mdsdsc_xd_t *xdp;
+  int cs;
+} cleanup_command_t;
+
+static void cleanup_command(void *args)
+{
+  cleanup_command_t *p = (cleanup_command_t *)args;
+  MdsFree1Dx(p->xdp, NULL);
+  if (p->cs)
+  {
+    TdiSaveContext(p->connection->tdicontext);
+    TdiRestoreContext(p->tdicontext);
+  }
+}
+
+static inline int execute_command(Connection *connection, mdsdsc_xd_t *ans_xd)
 {
   int status;
-  const int cs = !!GetContextSwitching();
-  if (cs)
+  cleanup_command_t p;
+  p.cs = !!GetContextSwitching();
+  if (p.cs)
+  {
+    TdiSaveContext(p.tdicontext);
     TdiRestoreContext(connection->tdicontext);
-  pthread_cleanup_push((void (*)(void *))(void *)TdiSaveContext, (void *)connection->tdicontext);
-  INIT_AND_FREEXD_ON_EXIT(xd);
+  }
+  p.connection = connection;
+  EMPTYXD(xd);
+  p.xdp = &xd;
+  pthread_cleanup_push(cleanup_command, (void *)&p);
   TDITHREADSTATIC_INIT;
   --TDI_INTRINSIC_REC;
   status = TdiIntrinsic(OPC_EXECUTE, connection->nargs, connection->descrip, &xd);
   ++TDI_INTRINSIC_REC;
   if (STATUS_OK)
     status = TdiData(xd.pointer, ans_xd MDS_END_ARG);
-  FREEXD_NOW(xd);
-  pthread_cleanup_pop(cs);
+  pthread_cleanup_pop(1);
   return status;
 }
 
@@ -579,18 +602,14 @@ static void execute_message(Connection *connection, Message *message)
   int status = 1; // return status           //
 
   char *evname;
-  static DESCRIPTOR(eventastreq, EVENTASTREQUEST); // AST request descriptor //
-  static DESCRIPTOR(eventcanreq, EVENTCANREQUEST); // Can request descriptor //
+  DESCRIPTOR(eventastreq, EVENTASTREQUEST); // AST request descriptor //
+  DESCRIPTOR(eventcanreq, EVENTCANREQUEST); // Can request descriptor //
+  const int java = CType(connection->client_type) == JAVA_CLIENT;
 
-  int java = CType(connection->client_type) == JAVA_CLIENT;
-
-  // AST REQUEST //
-
-  if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventastreq) ==
-      0)
-  {
-    static int eventid = -1;
-    static DESCRIPTOR_LONG(eventiddsc, &eventid);
+  if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventastreq) == 0)
+  { // AST REQUEST //
+    int eventid = -1;
+    DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *newe = (MdsEventList *)malloc(sizeof(MdsEventList));
     struct descriptor_a *info = (struct descriptor_a *)connection->descrip[2];
     newe->conid = connection->id;
@@ -599,11 +618,9 @@ static void execute_message(Connection *connection, Message *message)
     memcpy(evname, connection->descrip[1]->pointer,
            connection->descrip[1]->length);
     evname[connection->descrip[1]->length] = 0;
-
     // Manage AST Event //
-    status = MDSEventAst(evname, (void (*)(void *, int, char *))ClientEventAst,
+    status = MDSEventAst(evname, (void (*)(void *, int, char *))client_event_ast,
                          newe, &newe->eventid);
-
     free(evname);
     if (java)
     {
@@ -619,7 +636,7 @@ static void execute_message(Connection *connection, Message *message)
       newe->info->eventid = newe->eventid;
     }
     newe->next = 0;
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       eventiddsc.pointer = (void *)&eventid;
       free(newe->info);
@@ -640,14 +657,13 @@ static void execute_message(Connection *connection, Message *message)
     }
     if (!java)
       send_response(connection, message, status, &eventiddsc);
+    else
+      free(message);
   }
-  // CAN REQUEST //
-  else if (StrCompare(connection->descrip[0],
-
-                      (mdsdsc_t *)&eventcanreq) == 0)
-  {
-    static int eventid;
-    static DESCRIPTOR_LONG(eventiddsc, &eventid);
+  else if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventcanreq) == 0)
+  { // CAN REQUEST //
+    int eventid;
+    DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *e;
     MdsEventList **p;
     if (!java)
@@ -668,12 +684,13 @@ static void execute_message(Connection *connection, Message *message)
     }
     if (!java)
       send_response(connection, message, status, &eventiddsc);
+    else
+      free(message);
   }
-  // NORMAL TDI COMMAND //
-  else
+  else // NORMAL TDI COMMAND //
   {
     INIT_AND_FREEXD_ON_EXIT(ans_xd);
-    status = executeCommand(connection, &ans_xd);
+    status = execute_command(connection, &ans_xd);
     if (STATUS_NOT_OK)
       GetErrorText(status, &ans_xd);
     if (GetCompressionLevel() != connection->compression_level)
@@ -713,6 +730,7 @@ static void standard_command(Connection *connection, Message *message)
     }
     COPY_DESC(d, EMPTYXD, tmp);
     connection->descrip[message->h.descriptor_idx] = d;
+    free(message);
     return;
   }
   if (!d)
@@ -862,12 +880,14 @@ static void standard_command(Connection *connection, Message *message)
       d->dtype = DTYPE_FTC;
       break;
     }
-
     // CALL EXECUTE MESSAGE //
-
     if (message->h.descriptor_idx == (message->h.nargs - 1))
     {
       execute_message(connection, message);
+    }
+    else
+    {
+      free(message);
     }
   }
 }
