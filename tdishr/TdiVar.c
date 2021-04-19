@@ -158,9 +158,8 @@ int tdi_put_logical(uint8_t data, mdsdsc_xd_t *const out_ptr) {
   if (!out_ptr)
     return TdiNULL_PTR;
   status = MdsGet1DxS(&len, &dtype, out_ptr);
-  if
-    STATUS_OK
-  *(uint8_t *)out_ptr->pointer->pointer = data;
+  if (STATUS_OK)
+    *(uint8_t *)out_ptr->pointer->pointer = data;
   return status;
 }
 
@@ -191,8 +190,8 @@ static int allocate(const mdsdsc_t *const key_ptr,
     LibCreateVmZone(&block_ptr->data_zone);
   }
   status = LibGetVm(&len, (void *)node_ptr_ptr, &block_ptr->head_zone);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       node_type *node_ptr = *node_ptr_ptr;
       node_ptr->xd = EMPTY_XD;
       node_ptr->name_dsc = *key_ptr;
@@ -237,8 +236,8 @@ static int find_ident(const int search, const mdsdsc_r_t *const ident_ptr,
           if (search & 4) {
             status = LibLookupTree((void *)&_private.head, (void *)&key_dsc,
                                    compare, (void **)&node_ptr);
-            if
-              STATUS_OK {
+            if (STATUS_OK)
+              {
                 if (node_ptr->xd.class != 0) {
                   if (block_ptr_ptr)
                     *block_ptr_ptr = &_private;
@@ -258,8 +257,8 @@ static int find_ident(const int search, const mdsdsc_r_t *const ident_ptr,
             LOCK_PUBLIC_PUSH;
             status = LibLookupTree((void *)&_public.head, (void *)&key_dsc,
                                    compare, (void **)&node_ptr);
-            if
-              STATUS_OK {
+            if (STATUS_OK)
+              {
                 if (node_ptr->xd.class != 0) {
                   if (block_ptr_ptr)
                     *block_ptr_ptr = &_public;
@@ -308,18 +307,16 @@ static int find_ident(const int search, const mdsdsc_r_t *const ident_ptr,
                code == OPC_POST_INC || code == OPC_PRE_INC) {
         INIT_AND_FREEXD_ON_EXIT(tmp);
         status = TdiEvaluate(ident_ptr, &tmp MDS_END_ARG);
-        if
-          STATUS_OK
-        status =
+        if (STATUS_OK)
+          status =
             find_ident(search, (mdsdsc_r_t *)ident_ptr->dscptrs[0], &key_dsc,
                        &node_ptr, block_ptr_ptr, TDITHREADSTATIC_VAR);
         FREEXD_NOW(tmp);
       } else if (code == OPC_VAR) {
         name_dsc = EMPTY_D;
         status = TdiData(ident_ptr->dscptrs[0], &name_dsc MDS_END_ARG);
-        if
-          STATUS_OK
-        status = find_ident(search, (mdsdsc_r_t *)&name_dsc, &key_dsc,
+        if (STATUS_OK)
+          status = find_ident(search, (mdsdsc_r_t *)&name_dsc, &key_dsc,
                             &node_ptr, block_ptr_ptr, TDITHREADSTATIC_VAR);
         StrFree1Dx((mdsdsc_d_t *)&name_dsc);
       } else
@@ -364,9 +361,8 @@ static int get_ident(const mdsdsc_t *const ident_ptr,
           block_ptr == &_public ? "public" : STATUS_OK ? "private" : "new",
           string, block_ptr);
 #endif
-  if
-    STATUS_OK
-  status = MdsCopyDxXd(node_ptr->xd.pointer, data_ptr);
+  if (STATUS_OK)
+    status = MdsCopyDxXd(node_ptr->xd.pointer, data_ptr);
   else MdsFree1Dx(data_ptr, NULL);
   UNLOCK_IF_PUBLIC(block_ptr);
   return status;
@@ -404,15 +400,15 @@ static inline int put_ident_inner(const mdsdsc_r_t *const ident_ptr,
           block_ptr == &_public ? "public" : STATUS_OK ? "private" : "new",
           string, block_ptr);
 #endif
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       int zero = 0;
       status = LibInsertTree((void **)&block_ptr->head, &upstr, &zero, compare,
                              allocate, (void *)&node_ptr, block_ptr);
     }
   StrFree1Dx(&upstr);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (node_ptr->xd.class == 0)
         node_ptr->xd = EMPTY_XD;
       if (data_ptr)
@@ -450,11 +446,10 @@ static int wild_loop(int (*const doit)(), const mdsdsc_t *const arg,
   UNLOCK_PUBLIC_PUSH;
   status = find_ident(3, (mdsdsc_r_t *)arg, &user_p->match, 0,
                       &user_p->block_ptr, TDITHREADSTATIC_VAR);
-  if
-    STATUS_OK
-  status = StrUpcase(&user_p->match, &user_p->match);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    status = StrUpcase(&user_p->match, &user_p->match);
+  if (STATUS_OK)
+    {
       if (StrPosition(&user_p->match, (mdsdsc_t *)&star, 0) ||
           StrPosition(&user_p->match, (mdsdsc_t *)&percent, 0)) {
         status =
@@ -464,9 +459,8 @@ static int wild_loop(int (*const doit)(), const mdsdsc_t *const arg,
         status =
             LibLookupTree((void **)&user_p->block_ptr->head,
                           (void *)&user_p->match, compare, (void **)&node_ptr);
-        if
-          STATUS_OK
-        status = (*doit)(node_ptr, user_p);
+        if (STATUS_OK)
+          status = (*doit)(node_ptr, user_p);
         else if (status == LibKEYNOTFOU) status = MDSplusSUCCESS;
       }
     }
@@ -488,9 +482,8 @@ static int wild(int (*const doit)(), const int narg, mdsdsc_t *const list[],
   }
   if (user.match.class == CLASS_D)
     StrFree1Dx((mdsdsc_d_t *)&user.match);
-  if
-    STATUS_OK
-  status = TdiPutLong(&user.count, out_ptr);
+  if (STATUS_OK)
+    status = TdiPutLong(&user.count, out_ptr);
   return status;
 }
 
@@ -510,8 +503,8 @@ static int free_one(node_type *const node_ptr, user_type *const user_ptr) {
     status = MDSplusSUCCESS;
   else
     status = StrMatchWild(&node_ptr->name_dsc, &user_ptr->match);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (node_ptr->xd.l_length)
         status =
             LibFreeVm(&node_ptr->xd.l_length, (void *)&node_ptr->xd.pointer,
@@ -536,22 +529,19 @@ static int free_all(node_type **const pnode, TDITHREADSTATIC_ARG) {
                        &_private.data_zone);
   if ((*pnode)->left) {
     stat2 = free_all(&((*pnode)->left), TDITHREADSTATIC_VAR);
-    if
-      STATUS_OK
-    status = stat2;
+    if (STATUS_OK)
+      status = stat2;
   }
   if ((*pnode)->right) {
     stat2 = free_all(&((*pnode)->right), TDITHREADSTATIC_VAR);
-    if
-      STATUS_OK
-    status = stat2;
+    if (STATUS_OK)
+      status = stat2;
   }
   len = sizeof(struct link) - 1 + (*pnode)->name_dsc.length;
   stat2 = LibFreeVm(&len, (void *)pnode, &_private.head_zone);
   *pnode = 0;
-  if
-    STATUS_OK
-  status = stat2;
+  if (STATUS_OK)
+    status = stat2;
   return status;
 }
 
@@ -587,17 +577,15 @@ int Tdi1Allocated(opcode_t opcode __attribute__((unused)),
   UNLOCK_PUBLIC_PUSH;
   status = find_ident(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr,
                       TDITHREADSTATIC_VAR);
-  if
-    STATUS_OK
-  status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare,
+  if (STATUS_OK)
+    status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare,
                          (void **)&node_ptr);
   found = STATUS_OK && (node_ptr->xd.class != 0);
   UNLOCK_IF_PUBLIC(block_ptr);
   if ((status == LibKEYNOTFOU) || (status == TdiUNKNOWN_VAR))
     status = MDSplusSUCCESS;
-  if
-    STATUS_OK
-  status = tdi_put_logical(found, out_ptr);
+  if (STATUS_OK)
+    status = tdi_put_logical(found, out_ptr);
   return status;
 }
 
@@ -616,9 +604,8 @@ int Tdi1Present(opcode_t opcode __attribute__((unused)),
   UNLOCK_PUBLIC_PUSH;
   status = find_ident(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr,
                       TDITHREADSTATIC_VAR);
-  if
-    STATUS_OK
-  status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare,
+  if (STATUS_OK)
+    status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare,
                          (void **)&node_ptr);
   UNLOCK_IF_PUBLIC(block_ptr);
   found = STATUS_OK;
@@ -626,9 +613,8 @@ int Tdi1Present(opcode_t opcode __attribute__((unused)),
     ;
   else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR)
     status = MDSplusSUCCESS;
-  if
-    STATUS_OK
-  status = tdi_put_logical((unsigned char)found, out_ptr);
+  if (STATUS_OK)
+    status = tdi_put_logical((unsigned char)found, out_ptr);
   return status;
 }
 
@@ -671,8 +657,8 @@ static inline int findfile_fun(const mdsdsc_t *const entry,
         LibFindFileRecurseCaseBlind((mdsdsc_t *)&bufd, (mdsdsc_t *)&bufd, &ctx);
   } while (STATUS_OK && (isext = matchext(&bufd)) == EXT_NONE);
   LibFindFileEnd(&ctx);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       char *file = memcpy(malloc(bufd.length + 1), bufd.pointer, bufd.length);
       file[bufd.length] = '\0';
       if (isext == EXT_PY) {
@@ -729,8 +715,8 @@ static int compile_fun(const mdsdsc_t *const entry, const char *const file) {
     }
   } else
     status = TdiUNKNOWN_VAR;
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       mds_function_t *pfun = (mds_function_t *)tmp.pointer;
       if (pfun->dtype == DTYPE_FUNCTION) {
         unsigned short code = *(unsigned short *)pfun->pointer;
@@ -768,28 +754,28 @@ static int find_fun(const mdsdsc_t *const ident_ptr, node_type **const node_ptr,
     if (pyfile) {
       char *funname;
       status = tdi_load_python_fun(pyfile, &funname);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           mdsdsc_t function = {strlen(funname), DTYPE_T, CLASS_S, funname};
           mdsdsc_xd_t tmp = EMPTY_XD;
           status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
           free(funname);
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               status =
                   put_ident((mdsdsc_r_t *)ident_ptr, &tmp, TDITHREADSTATIC_VAR);
               MdsFree1Dx(&tmp, NULL);
             }
         }
-      if
-        STATUS_NOT_OK // unable to load python method try tdi alternative
+      if (STATUS_NOT_OK)
+        // unable to load python method try tdi alternative
             status = compile_fun(ident_ptr, funfile);
     } else // not a python method, load tdi fun
       status = compile_fun(ident_ptr, funfile);
     FREE_NOW(funfile);
     FREE_NOW(pyfile);
-    if
-      STATUS_OK status = find_ident(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0,
+    if (STATUS_OK)
+      status = find_ident(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0,
                                     TDITHREADSTATIC_VAR);
   }
   return status;
@@ -819,8 +805,8 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
     status = find_fun(ident_ptr, &node_ptr, TDITHREADSTATIC_VAR);
     pthread_cleanup_pop(1);
   }
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   const mdsdsc_r_t *formal_ptr = 0, *formal_arg_ptr, *actual_ptr;
   if ((formal_ptr = (mdsdsc_r_t *)node_ptr->xd.pointer) == 0)
     return TdiUNKNOWN_VAR;
@@ -918,9 +904,8 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
       **************************/
       old_head = _private.head;
       _private.head = new_head;
-      if
-        STATUS_OK
-      status = put_ident(formal_arg_ptr, &tmp, TDITHREADSTATIC_VAR);
+      if (STATUS_OK)
+        status = put_ident(formal_arg_ptr, &tmp, TDITHREADSTATIC_VAR);
       new_head = _private.head;
       _private.head = old_head;
     }
@@ -931,8 +916,8 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
   old_head = _private.head;
   _private.head = new_head;
   TDI_VAR_NEW_NARG = nactual;
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       status = TdiEvaluate(formal_ptr->dscptrs[1], out_ptr MDS_END_ARG);
       if (status == TdiRETURN)
         status = MDSplusSUCCESS;
@@ -960,9 +945,8 @@ int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual,
         **************************/
         new_head = _private.head;
         _private.head = old_head;
-        if
-          STATUS_OK
-        status =
+        if (STATUS_OK)
+          status =
             put_ident(actual_arg_ptr[j], &node_ptr->xd, TDITHREADSTATIC_VAR);
         old_head = _private.head;
         _private.head = new_head;
@@ -988,9 +972,8 @@ int Tdi1Equals(opcode_t opcode __attribute__((unused)),
   /************************************
   Place the data or clear the variable.
   ************************************/
-  if
-    STATUS_OK
-  status = put_ident((mdsdsc_r_t *)list[0], out_ptr, TDITHREADSTATIC_VAR);
+  if (STATUS_OK)
+    status = put_ident((mdsdsc_r_t *)list[0], out_ptr, TDITHREADSTATIC_VAR);
   else put_ident((mdsdsc_r_t *)list[0], NULL, TDITHREADSTATIC_VAR);
   return status;
 }
@@ -1020,9 +1003,8 @@ int Tdi1PreDec(opcode_t opcode __attribute__((unused)),
                mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
   status = TdiSubtract(list[0], &true_dsc, out_ptr MDS_END_ARG);
-  if
-    STATUS_OK
-  status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
+  if (STATUS_OK)
+    status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
@@ -1033,9 +1015,8 @@ int Tdi1PreInc(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), mdsdsc_t *list[],
                mdsdsc_xd_t *out_ptr) {
   int status = TdiAdd(list[0], &true_dsc, out_ptr MDS_END_ARG);
-  if
-    STATUS_OK
-  status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
+  if (STATUS_OK)
+    status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
@@ -1048,12 +1029,10 @@ int Tdi1PostDec(opcode_t opcode __attribute__((unused)),
   TDITHREADSTATIC_INIT;
   EMPTYXD(tmp);
   int status = get_ident(list[0], out_ptr, TDITHREADSTATIC_VAR);
-  if
-    STATUS_OK
-  status = TdiSubtract(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
-  if
-    STATUS_OK
-  status = put_ident((mdsdsc_r_t *)list[0], &tmp, TDITHREADSTATIC_VAR);
+  if (STATUS_OK)
+    status = TdiSubtract(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
+  if (STATUS_OK)
+    status = put_ident((mdsdsc_r_t *)list[0], &tmp, TDITHREADSTATIC_VAR);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1067,12 +1046,10 @@ int Tdi1PostInc(opcode_t opcode __attribute__((unused)),
   TDITHREADSTATIC_INIT;
   EMPTYXD(tmp);
   int status = get_ident(list[0], out_ptr, TDITHREADSTATIC_VAR);
-  if
-    STATUS_OK
-  status = TdiAdd(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
-  if
-    STATUS_OK
-  status = put_ident((mdsdsc_r_t *)list[0], &tmp, TDITHREADSTATIC_VAR);
+  if (STATUS_OK)
+    status = TdiAdd(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
+  if (STATUS_OK)
+    status = put_ident((mdsdsc_r_t *)list[0], &tmp, TDITHREADSTATIC_VAR);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1089,9 +1066,8 @@ int Tdi1Private(opcode_t opcode __attribute__((unused)),
   node_type *node_ptr;
   int status = LibLookupTree((void **)&_private.head, (void *)list[0], compare,
                              (void **)&node_ptr);
-  if
-    STATUS_OK
-  status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
+  if (STATUS_OK)
+    status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
   else if (status == LibKEYNOTFOU) status = TdiUNKNOWN_VAR;
   return status;
 }
@@ -1108,9 +1084,8 @@ int Tdi1Public(opcode_t opcode __attribute__((unused)),
   node_type *node_ptr;
   status = LibLookupTree((void **)&_public.head, (void *)list[0], compare,
                          (void **)&node_ptr);
-  if
-    STATUS_OK
-  status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
+  if (STATUS_OK)
+    status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
   else if (status == LibKEYNOTFOU) status = TdiUNKNOWN_VAR;
   UNLOCK_PUBLIC;
   return status;
@@ -1124,8 +1099,8 @@ int Tdi1Var(opcode_t opcode __attribute__((unused)), int narg, mdsdsc_t *list[],
   int status;
   INIT_AND_FREEXD_ON_EXIT(tmp);
   status = TdiData(list[0], &tmp MDS_END_ARG);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (narg < 2 || list[1] == 0)
         status = tdi_get_ident(tmp.pointer, out_ptr);
       else
@@ -1148,9 +1123,8 @@ int Tdi1Fun(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
     if ((hold.arguments[j] = list[j]) == 0)
       return TdiNULL_PTR;
   int status = MdsCopyDxXd((mdsdsc_t *)&hold, out_ptr);
-  if
-    STATUS_OK
-  status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
+  if (STATUS_OK)
+    status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
@@ -1200,12 +1174,12 @@ static int show_one(const node_type *const node_ptr,
     status = MDSplusSUCCESS;
   else
     status = StrMatchWild(&node_ptr->name_dsc, &user_ptr->match);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (rptr)
         status = TdiDecompile(rptr, &tmp MDS_END_ARG);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           if (rptr && rptr->dtype == DTYPE_FUNCTION &&
               *(unsigned short *)rptr->pointer == OPC_FUN)
             printf("%.*s\n", tmp.length, tmp.pointer);

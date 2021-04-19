@@ -76,8 +76,8 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[],
   ************************************/
 
   status = (psig = malloc(virt)) != NULL;
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       puni = (struct descriptor_xd(*)[]) & (*psig)[narg];
       pdat = (struct descriptor_xd(*)[]) & (*puni)[narg];
       pnelem = (int(*)[]) & (*pdat)[narg];
@@ -88,16 +88,14 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[],
   /******************************************
   Fetch signals and data and data's category.
   ******************************************/
-  if
-    STATUS_OK
-  status = TdiGetArgs(opcode, narg, list, (*psig), (*puni), (*pdat), (*pcats));
+  if (STATUS_OK)
+    status = TdiGetArgs(opcode, narg, list, (*psig), (*puni), (*pdat), (*pcats));
 
   /*****************************************
   Save and accumulate lengths of all inputs.
   *****************************************/
-  if
-    STATUS_OK
-  for (j = narg; --j >= 0;) {
+  if (STATUS_OK)
+    for (j = narg; --j >= 0;) {
     array_coeff *pnew = (array_coeff *)(*pdat)[j].pointer;
     if ((*pcats)[j].digits > (*pcats)[narg].digits)
       (*pcats)[narg].digits = (*pcats)[j].digits;
@@ -163,24 +161,21 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[],
       arr.aflags.coeff = 0;
     }
   }
-  if
-    STATUS_OK
-  status = Tdi2Vector(narg, (*puni), (*pdat), (*pcats), 0);
+  if (STATUS_OK)
+    status = Tdi2Vector(narg, (*puni), (*pdat), (*pcats), 0);
 
   /*********************
   Find type conversions.
   *********************/
-  if
-    STATUS_OK
-  status = TdiCvtArgs(0, (*pdat), &(*pcats)[narg]);
+  if (STATUS_OK)
+    status = TdiCvtArgs(0, (*pdat), &(*pcats)[narg]);
 
   /***************************
   Get an array to hold it all.
   Size is 1 so arsize = nelem.
   ***************************/
-  if
-    STATUS_OK
-  status = MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits,
+  if (STATUS_OK)
+    status = MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits,
                       &(*pcats)[narg].out_dtype, out_ptr);
 
   /*********************************
@@ -188,8 +183,8 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[],
   Recycle arr as temporary pointer.
   Class and flags are the same.
   *********************************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       struct descriptor *pout = out_ptr->pointer;
       arr.length = pout->length;
       arr.dtype = pout->dtype;
@@ -210,9 +205,8 @@ int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[],
   /*************************
   Remove signal, keep units.
   *************************/
-  if
-    STATUS_OK
-  status = TdiMasterData(0, (*psig), (*puni), &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(0, (*psig), (*puni), &cmode, out_ptr);
 
   /********************
   Free all temporaries.

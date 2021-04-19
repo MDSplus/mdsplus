@@ -523,8 +523,8 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     user_p = user ? user : "?";
     status = authorizeClient(c, user_p);
     // SET COMPRESSION //
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         c->compression_level = m_user->h.status & 0xf;
         c->client_type = m_user->h.client_type;
         *usr = strdup(user_p);
@@ -533,9 +533,8 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       }
     else
       *usr = NULL;
-    if
-      STATUS_NOT_OK
-    fprintf(stderr, "Access denied: %s\n", user_p);
+    if (STATUS_NOT_OK)
+      fprintf(stderr, "Access denied: %s\n", user_p);
     else fprintf(stderr, "Connected: %s\n", user_p);
     m.h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
@@ -544,8 +543,8 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     MdsIpFree(m_user);
     // reply to client //
     SendMdsMsgC(c, &m, 0);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         // all good add connection
         *id = AddConnection(c);
       }

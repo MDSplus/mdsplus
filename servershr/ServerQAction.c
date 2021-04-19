@@ -440,12 +440,12 @@ static int DoSrvAction(SrvJob *job_in) {
   current_job_text = job_text;
   void *dbid = NULL;
   status = _TreeNewDbid(&dbid);
-  if
-    STATUS_NOT_OK goto end;
+  if (STATUS_NOT_OK)
+    goto end;
   void *pc = TreeCtxPush(&dbid);
   status = TreeOpen(job->tree, job->shot, 0);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       int retstatus;
       DESCRIPTOR_NID(nid_dsc, 0);
       DESCRIPTOR_LONG(ans_dsc, 0);
@@ -483,9 +483,8 @@ static int DoSrvAction(SrvJob *job_in) {
         printf("%s, %s\n", now, current_job_text);
         fflush(stdout);
       }
-      if
-        STATUS_OK
-      status = retstatus;
+      if (STATUS_OK)
+        status = retstatus;
     }
   TreeCtxPop(pc);
 end:;
@@ -538,8 +537,8 @@ static int DoSrvCommand(SrvJob *job_in) {
   ProgLoc = 65;
   free(set_table);
   ProgLoc = 66;
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       ProgLoc = 67;
       status = mdsdcl_do_command(job->command);
       // ProgLoc = 68;
@@ -576,13 +575,13 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in) {
   DESCRIPTOR_NID(niddsc, 0);
   char *status_text = MdsGetMsg(job->status);
   status = TreeOpen(job->tree, job->shot, 0);
-  if
-    STATUS_NOT_OK // try to open model instead
+  if (STATUS_NOT_OK)
+    // try to open model instead
         status = TreeOpen(job->tree, -1, 0);
   char now[32];
   Now32(now);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       niddsc.pointer = (char *)&job->nid;
       status = TdiGetNci(&niddsc, &fullpath_d, &fullpath MDS_END_ARG);
       StrAppend(&fullpath, (struct descriptor *)&nullstr);
@@ -605,8 +604,8 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in) {
   }
   status = SendReply(job_in, SrvJobFINISHED, 1, strlen(msg), msg);
   free(msg);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       if (prev)
         prev->next = m->next;
       else
@@ -704,8 +703,8 @@ static void WorkerThread(void *arg __attribute__((unused))) {
 static int StartWorker() {
   INIT_STATUS;
   CONDITION_START_THREAD(&WorkerRunning, Worker, / 4, WorkerThread, NULL);
-  if
-    STATUS_NOT_OK exit(-1);
+  if (STATUS_NOT_OK)
+    exit(-1);
   return status;
 }
 // main
@@ -804,8 +803,8 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length,
         break;
       }
     }
-    if
-      STATUS_NOT_OK {
+    if (STATUS_NOT_OK)
+      {
         try_again = errno == EPIPE;
         if (Debug) {
           uint8_t *ip = (uint8_t *)&job->h.addr;

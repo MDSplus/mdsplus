@@ -372,8 +372,8 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...) {
   }
   va_end(incrmtr);
   /* Get the reply ================================================== */
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr,
                                &mem);
 #ifdef DEBUG
@@ -381,8 +381,8 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...) {
           "Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n",
           status, dtype, len, ndims, numbytes, *(int *)dptr);
 #endif
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           /* Remap the descriptor types */
           dtype = IpToMds(dtype);
           /* Copy the Josh way ( see his example in MdsRemote.c ) */

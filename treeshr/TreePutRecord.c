@@ -166,8 +166,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         extended = 1;
       }
     }
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         if (utility_update) {
           TREETHREADSTATIC_INIT;
           local_nci.flags = TREE_TEMPNCI.flags;
@@ -416,8 +416,8 @@ int _TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile) {
     df_ptr = TreeGetVmDatafile();
     status = (df_ptr == NULL) ? TreeFAILURE : TreeSUCCESS;
   }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       int old_get = df_ptr->get;
       char *filename = tree_to_datafile(info->filespec, tmpfile);
       df_ptr->get = MDS_IO_OPEN(
@@ -428,15 +428,14 @@ int _TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile) {
         df_ptr->get = old_get;
       else if (df_ptr->get > 0)
         MDS_IO_CLOSE(old_get);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           df_ptr->put = MDS_IO_OPEN(filename, O_RDWR, 0);
           status = (df_ptr->put == -1) ? TreeFAILURE : TreeSUCCESS;
           if (df_ptr->put == -1)
             df_ptr->put = 0;
-          if
-            STATUS_OK
-          df_ptr->open_for_write = 1;
+          if (STATUS_OK)
+            df_ptr->open_for_write = 1;
         }
       free(filename);
     }
@@ -445,8 +444,8 @@ int _TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile) {
     df_ptr = NULL;
   }
   info->data_file = df_ptr;
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       TreeCallHookFun("TreeHook", "OpenDataFileWrite", info->treenam,
                       info->shot, NULL);
       TreeCallHook(OpenDataFileWrite, info, 0);
@@ -487,8 +486,8 @@ static int put_datafile(TREE_INFO *info, int nodenum, NCI *nci_ptr,
       bitassign_c(0, nci_ptr->flags2, NciM_NON_VMS);
       memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
       status = TreeLockDatafile(info, 0, 0);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
           while (bytes_to_put) {
             const int bytes_this_time =
@@ -518,8 +517,8 @@ static int put_datafile(TREE_INFO *info, int nodenum, NCI *nci_ptr,
     bptr = buffer;
     eof = -1;
   }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (bptr == buffer || MDS_IO_WRITE(info->data_file->put, (void *)buffer,
                                          bptr - buffer) == (bptr - buffer)) {
         bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
@@ -546,8 +545,8 @@ static int put_datafile(TREE_INFO *info, int nodenum, NCI *nci_ptr,
         nci_ptr->length = 0;
       }
       TreeUnLockDatafile(info, 0, 0);
-      if
-        STATUS_OK // unless put_datafile writing old nci incomplete
+      if (STATUS_OK)
+        // unless put_datafile writing old nci incomplete
             status = tree_put_nci(info, nodenum, nci_ptr, ncilocked);
     }
   if (buffer && (!nonvms_compatible))
@@ -567,8 +566,8 @@ static int update_datafile(TREE_INFO *info, int nodenum, NCI *nci_ptr,
     uint16_t rlength = bytes_this_time + 10;
     loadint16(&info->data_file->record_header->rlength, &rlength);
     status = TreeLockDatafile(info, 0, rfa_l);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         MDS_IO_LSEEK(info->data_file->put, rfa_l, SEEK_SET);
         if (MDS_IO_WRITE(info->data_file->put,
                          (void *)info->data_file->record_header,
@@ -587,9 +586,8 @@ static int update_datafile(TREE_INFO *info, int nodenum, NCI *nci_ptr,
       }
   }
   bitassign(0, nci_ptr->flags, NciM_SEGMENTED);
-  if
-    STATUS_OK
-  bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+  if (STATUS_OK)
+    bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
   else {
     bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
     nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;

@@ -58,11 +58,9 @@ int Tdi3Ceiling(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   INIT_STATUS;
 
   status = Tdi3UnaryMinus(in_ptr, out_ptr);
-  if
-    STATUS_OK
-  status = Tdi3Floor(out_ptr, out_ptr);
-  if
-    STATUS_OK
-  status = Tdi3UnaryMinus(out_ptr, out_ptr);
+  if (STATUS_OK)
+    status = Tdi3Floor(out_ptr, out_ptr);
+  if (STATUS_OK)
+    status = Tdi3UnaryMinus(out_ptr, out_ptr);
   return status;
 }

@@ -131,8 +131,8 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
                       char *host) {
   struct SOCKADDR_IN sin;
   SOCKET sock;
-  if
-    IS_NOT_OK(GetHostAndPort(host, &sin)) {
+  if (IS_NOT_OK(GetHostAndPort(host, &sin)))
+    {
       fprintf(stderr, "Connect failed to host: %s\n", host);
       return C_ERROR;
     }

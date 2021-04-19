@@ -383,9 +383,8 @@ static void readCallback(globus_xio_handle_t xio_handle __attribute__((unused)),
       globus_result_t res __attribute__((unused));
       globus_byte_t buff[1];
       int status = DoMessage(id);
-      if
-        STATUS_OK
-      res = globus_xio_register_read(info->xio_handle, buff, 0, 0, 0,
+      if (STATUS_OK)
+        res = globus_xio_register_read(info->xio_handle, buff, 0, 0, 0,
                                      readCallback, userarg);
     }
   }
@@ -411,8 +410,8 @@ static void acceptCallback(globus_xio_server_t server,
     if (res == GLOBUS_SUCCESS) {
       status = AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id,
                                 &username);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           globus_byte_t buff[1];
           doit(res,
                globus_xio_register_read(
@@ -518,8 +517,8 @@ static int gsi_listen(int argc, char **argv) {
     testStatus(res, "get handle to connection");
     status =
         AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-    if
-      STATUS_OK while (DoMessage(id));
+    if (STATUS_OK)
+      while (DoMessage(id));
   }
   return C_OK;
 }

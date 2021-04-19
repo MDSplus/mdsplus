@@ -63,12 +63,10 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
       status = Tdi3Log(z, z);
     } else
       status = Tdi3Log(x, z);
-    if
-      STATUS_OK
-    status = Tdi3Multiply(y, z, z);
-    if
-      STATUS_OK
-    status = Tdi3Exp(z, z);
+    if (STATUS_OK)
+      status = Tdi3Multiply(y, z, z);
+    if (STATUS_OK)
+      status = Tdi3Exp(z, z);
   }
   /******************************************
   Scalar integer exponent, look once at bits.
@@ -82,9 +80,8 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
       duno = *x;
       duno.pointer = uno;
       status = TdiConvert(&one_dsc, &duno);
-      if
-        STATUS_OK
-      status = Tdi3Divide(&duno, x, x);
+      if (STATUS_OK)
+        status = Tdi3Divide(&duno, x, x);
     }
     for (; !(yy & 1) && STATUS_OK; yy >>= 1)
       status = Tdi3Multiply(x, x, x);
@@ -119,9 +116,8 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
     dz.class = CLASS_S;
     duno = dx;
     duno.pointer = uno;
-    if
-      STATUS_OK
-    status = TdiConvert(&one_dsc, &duno);
+    if (STATUS_OK)
+      status = TdiConvert(&one_dsc, &duno);
     for (; --n >= 0 && STATUS_OK; px += incx, dz.pointer += incz) {
       _MOVC3(dx.length, px, xx);
       if ((int)(yy = *py++) <= 0) {
@@ -177,9 +173,8 @@ int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse,
   lquad *pq;
 
   N_ELEMENTS(pdout, n);
-  if
-    STATUS_OK
-  switch (len) {
+  if (STATUS_OK)
+    switch (len) {
   case 1:
     for (pc = (char *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
       if (*pm & 1)

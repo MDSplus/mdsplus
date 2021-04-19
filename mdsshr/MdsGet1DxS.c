@@ -82,8 +82,8 @@ EXPORT int MdsGet1DxS(const length_t *const length_ptr,
   dsc_size = align(dsc_size, align_size);
   length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       out_dsc_ptr->pointer->length = *length_ptr;
       out_dsc_ptr->pointer->dtype = *dtype_ptr;
       out_dsc_ptr->pointer->class = CLASS_S;

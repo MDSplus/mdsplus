@@ -747,8 +747,8 @@ EXPORT int StrCaseBlindCompare(const mdsdsc_t *const str1,
 
 EXPORT int StrUpcase(mdsdsc_t *const out, const mdsdsc_t *const in) {
   int status = StrCopyDx(out, in);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   const int outlength =
       (out->class == CLASS_A) ? ((mdsdsc_a_t *)out)->arsize : out->length;
   int i;
@@ -1328,17 +1328,17 @@ inline static int MdsTraverseTree(int (*const user_rtn)(),
     return MDSplusSUCCESS;
   if (left_of(currentnode)) {
     status = MdsTraverseTree(user_rtn, user_data, left_of(currentnode));
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
   }
   right_subtree = right_of(currentnode);
   status = user_rtn(currentnode, user_data);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   if (right_subtree) {
     status = MdsTraverseTree(user_rtn, user_data, right_subtree);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
   }
   return MDSplusSUCCESS;
 }

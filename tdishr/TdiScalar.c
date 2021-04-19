@@ -77,30 +77,26 @@ int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[],
   /******************************************
   Adjust category needed to match data types.
   ******************************************/
-  if
-    STATUS_OK
-  status = (*fun_ptr->f2)(narg, uni, dat, cats, &routine);
+  if (STATUS_OK)
+    status = (*fun_ptr->f2)(narg, uni, dat, cats, &routine);
 
   /******************************
   Do the needed type conversions.
   ******************************/
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
 
   /******************
   Find correct shape.
   ******************/
-  if
-    STATUS_OK
-  status = TdiGetShape(0, dat, 0, cats[narg].out_dtype, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiGetShape(0, dat, 0, cats[narg].out_dtype, &cmode, out_ptr);
 
   /*****************************
   Act on data, linear arguments.
   *****************************/
-  if
-    STATUS_OK
-  switch (fun_ptr->m2) {
+  if (STATUS_OK)
+    switch (fun_ptr->m2) {
   case 1:
     status = (*routine)(dat[0].pointer, out_ptr->pointer);
     break;
@@ -219,8 +215,8 @@ int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr) {
                               0};
   digits.pointer = (char *)&digits_d;
   status = TdiDigits(x_ptr, &digits MDS_END_ARG);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       static const double two_d = 2.;
       static const struct descriptor two = {sizeof(two_d), DTYPE_NATIVE_DOUBLE,
                                             CLASS_S, (char *)&two_d};
@@ -523,8 +519,8 @@ int Tdi3SelectedIntKind(struct descriptor *pdr, struct descriptor *pout) {
   float frange;
 
   status = TdiGetLong(pdr, &range);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       frange = range / _factor;
       if (frange <= 07)
         range = DTYPE_B;
@@ -553,11 +549,10 @@ int Tdi3SelectedRealKind(struct descriptor *pdp, struct descriptor *pdr,
   float fprec, frange;
 
   status = TdiGetLong(pdp, &prec);
-  if
-    STATUS_OK
-  status = TdiGetLong(pdr, &range);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    status = TdiGetLong(pdr, &range);
+  if (STATUS_OK)
+    {
       fprec = prec / _factor;
       frange = range / _factor;
       if (fprec <= 23 && frange <= 127)
@@ -688,18 +683,15 @@ int Tdi3DotProduct(struct descriptor_a *in1_ptr, struct descriptor_a *in2_ptr,
   default:
     if (inc1) {
       status = Tdi3Multiply(in1_ptr, in2_ptr, in1_ptr);
-      if
-        STATUS_OK
-      status = TdiSum(in1_ptr, &tmp MDS_END_ARG);
+      if (STATUS_OK)
+        status = TdiSum(in1_ptr, &tmp MDS_END_ARG);
     } else {
       status = Tdi3Multiply(in1_ptr, in2_ptr, in2_ptr);
-      if
-        STATUS_OK
-      status = TdiSum(in2_ptr, &tmp MDS_END_ARG);
+      if (STATUS_OK)
+        status = TdiSum(in2_ptr, &tmp MDS_END_ARG);
     }
-    if
-      STATUS_OK
-    _MOVC3(out_ptr->length, tmp.pointer->pointer, out_ptr->pointer);
+    if (STATUS_OK)
+      _MOVC3(out_ptr->length, tmp.pointer->pointer, out_ptr->pointer);
     break;
   }
   MdsFree1Dx(&tmp, 0);

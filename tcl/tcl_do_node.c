@@ -55,15 +55,14 @@ EXPORT int TclDoNode(void *ctx, char **error,
   DESCRIPTOR_LONG(retstatus_d, &retstatus);
   cli_get_value(ctx, "NODE", &nodnam);
   status = TreeFindNode(nodnam, &nid);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       status = TdiDoTask(&niddsc, &retstatus_d MDS_END_ARG);
-      if
-        STATUS_OK
-      status = retstatus;
+      if (STATUS_OK)
+        status = retstatus;
     }
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       char *msg = MdsGetMsg(status);
       *error = malloc(strlen(msg) + strlen(nodnam) + 100);
       sprintf(*error,

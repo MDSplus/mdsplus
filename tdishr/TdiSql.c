@@ -159,9 +159,8 @@ static int TDISQL_LINK(char *name, int (**routine)()) {
   DESCRIPTOR_FROM_CSTRING(dname, name);
   int status = TdiFindImageSymbol(&dimage, &dname, routine);
 #ifdef __APPLE__
-  if
-    STATUS_NOT_OK
-  status = TdiFindImageSymbol(&dimage2, &dname, routine);
+  if (STATUS_NOT_OK)
+    status = TdiFindImageSymbol(&dimage2, &dname, routine);
 #endif
   return status;
 }
@@ -303,9 +302,8 @@ static void StoreAnswer(int idx, struct descriptor *dst, int type) {
   default:
     status = MDSplusERROR;
   }
-  if
-    STATUS_OK
-  status = tdi_put_ident(dst, &xs);
+  if (STATUS_OK)
+    status = tdi_put_ident(dst, &xs);
   else status = tdi_put_ident(dst, &xd);
   free(bufs[idx].vptr);
   bufs[idx].vptr = 0;
@@ -361,9 +359,8 @@ ARGLIST *arg;
           status =
               StrConcat(dst = (struct descriptor *)&madeup,
                         (struct descriptor *)&dunderscore, &name MDS_END_ARG);
-          if
-            STATUS_NOT_OK
-          break;
+          if (STATUS_NOT_OK)
+            break;
           dst->dtype = DTYPE_IDENT;
         }
         StoreAnswer(j, dst, bufs[j].syb_type);
@@ -635,15 +632,14 @@ int Tdi1Dsql(opcode_t opcode __attribute__((unused)), int narg,
     if (STATUS_OK && (SYB_dbdata == 0))
       TDISQL_LINKCPTR("dbdata", &SYB_dbdata);
   }
-  if
-    STATUS_OK
-  status = TdiData(list[0], &dtext MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiData(list[0], &dtext MDS_END_ARG);
   status = StrConcat((struct descriptor *)&dtext, (struct descriptor *)&dtext,
                      &zero MDS_END_ARG);
 
   /* see if the last argument is "/date" */
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       int ss = TdiData(list[narg - 1], &dq_text MDS_END_ARG);
       if (ss) {
         if (dq_text.length == 5)
@@ -669,17 +665,16 @@ int Tdi1Dsql(opcode_t opcode __attribute__((unused)), int narg,
   } else
     NaN = 0;
 
-  if
-    STATUS_OK
-  status = SQL_DYNAMIC(Gets,          /*routine to fill markers       */
+  if (STATUS_OK)
+    status = SQL_DYNAMIC(Gets,          /*routine to fill markers       */
                        Puts,          /*routine to store selctions    */
                        dtext.pointer, /*text string descriptor        */
                        &user_args,    /*value passed to GETS and PUTS */
                        &rows);        /*output, number of rows        */
 
   StrFree1Dx(&dtext);
-  if
-    STATUS_OK { status = MdsCopyDxXd(&drows, out_ptr); }
+  if (STATUS_OK)
+    { status = MdsCopyDxXd(&drows, out_ptr); }
   else {
     struct descriptor msg = {0, DTYPE_T, CLASS_S, 0};
     msg.pointer = SQL_GETDBMSGTEXT();

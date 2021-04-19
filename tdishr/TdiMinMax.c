@@ -70,8 +70,8 @@ int Tdi1Conditional(opcode_t opcode, int narg, struct descriptor *list[],
   INIT_STATUS;
 
   status = TdiData(list[2], out_ptr MDS_END_ARG);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (out_ptr->pointer && out_ptr->pointer->class == CLASS_A) {
         struct descriptor_xd tmp = *out_ptr;
         struct descriptor *new[3];
@@ -84,8 +84,8 @@ int Tdi1Conditional(opcode_t opcode, int narg, struct descriptor *list[],
       } else {
         int truth;
         status = TdiGetLong(out_ptr, &truth);
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             if (truth & 1)
               status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
             else

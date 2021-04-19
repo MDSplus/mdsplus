@@ -94,8 +94,8 @@ EXPORT int TclDispatch_build(void *ctx, char **error,
   INIT_AND_FREE_ON_EXIT(char *, monitor);
   cli_get_value(ctx, "MONITOR", &monitor);
   status = ServerBuildDispatchTable(0, monitor, &DBID_TABLE);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       char *msg = MdsGetMsg(status);
       *error = malloc(strlen(msg) + 100);
       sprintf(*error,
@@ -141,8 +141,8 @@ EXPORT int TclDispatch(void *ctx, char **error,
   status = TclNORMAL;
   sync = cli_present(ctx, "WAIT") != MdsdclNEGATED;
   IOS = SsINTERNAL;
-  if
-    IS_NOT_OK(cli_get_value(ctx, "NODE", &c.treenode)) {
+  if (IS_NOT_OK(cli_get_value(ctx, "NODE", &c.treenode)))
+    {
       status = MdsdclERROR;
       *error = strdup("Error: Missing node path.\n");
       goto cleanup;
@@ -153,15 +153,14 @@ EXPORT int TclDispatch(void *ctx, char **error,
   c.svr = &svr;
   int nid;
   status = TreeFindNode(c.treenode, &nid);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, (char *)&nid};
       status = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
-      if
-        STATUS_OK
-      status = TdiData(&xd, &svr MDS_END_ARG);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        status = TdiData(&xd, &svr MDS_END_ARG);
+      if (STATUS_OK)
+        {
           static char treename[13];
           static DESCRIPTOR(nullstr, "\0");
           static int shot;
@@ -181,8 +180,8 @@ EXPORT int TclDispatch(void *ctx, char **error,
                                         NULL, NULL, iostatusp, NULL, NULL, 0);
         }
     }
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       char *msg = MdsGetMsg(status);
       *error = malloc(strlen(msg) + strlen(c.treenode) + 100);
       sprintf(*error,
@@ -273,8 +272,8 @@ static inline int setLogging(void *ctx, int logging, char **error) {
   while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVER", &ident))) {
     FREE_ON_EXIT(ident);
     status = ServerSetLogging(ident, logging);
-    if
-      STATUS_NOT_OK {
+    if (STATUS_NOT_OK)
+      {
         char *msg = MdsGetMsg(status);
         if (*error)
           *error = realloc(*error,
@@ -387,8 +386,8 @@ EXPORT int TclDispatch_phase(void *ctx, char **error,
                                  output_rtn, monitor);
   else
     status = TclNO_DISPATCH_TABLE;
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       char *msg = MdsGetMsg(status);
       *error = malloc(strlen(msg) + 100);
       sprintf(*error,
@@ -411,8 +410,8 @@ typedef struct {
 } DispatchedCommand;
 
 static void CommandDone(DispatchedCommand *command) {
-  if
-    IS_NOT_OK(command->status) {
+  if (IS_NOT_OK(command->status))
+    {
       char *msg = MdsGetMsg(command->status);
       fprintf(stderr,
               "Error: Command failed - '%s'\n"
@@ -450,8 +449,8 @@ EXPORT int TclDispatch_command(void *ctx, char **error,
   status = TclNORMAL;
   sync = 0;
   IOS = SsINTERNAL;
-  if
-    IS_NOT_OK(cli_get_value(ctx, "SERVER", &c.svr)) {
+  if (IS_NOT_OK(cli_get_value(ctx, "SERVER", &c.svr)))
+    {
       status = MdsdclERROR;
       *error = strdup("Error: Missing server ident.\n");
       goto cleanup;
@@ -472,8 +471,8 @@ EXPORT int TclDispatch_command(void *ctx, char **error,
     }
     status = ServerDispatchCommand(c.sid, c.svr, c.tab, c.cmd->command,
                                    CommandDone, c.cmd, iostatusp, NULL, 0);
-    if
-      STATUS_NOT_OK {
+    if (STATUS_NOT_OK)
+      {
         char *msg = MdsGetMsg(status);
         *error = malloc(100 + strlen(msg));
         sprintf(*error,

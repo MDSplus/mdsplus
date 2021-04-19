@@ -255,8 +255,8 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
   }
   strcat(cmd, ")");
   status = SendArg(conid, 0, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       perror("Error sending message to server");
       CleanupJob(status, jobid);
       return status;
@@ -264,8 +264,8 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
   status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes,
                            (void **)&dptr, &mem);
   if (op == SrvStop) {
-    if
-      STATUS_NOT_OK {
+    if (STATUS_NOT_OK)
+      {
         status = MDSplusSUCCESS;
         CleanupJob(status, jobid);
       }
@@ -274,8 +274,8 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
       CleanupJob(status, jobid);
     }
   } else {
-    if
-      STATUS_NOT_OK {
+    if (STATUS_NOT_OK)
+      {
         perror("Error: no response from server");
         CleanupJob(status, jobid);
         return status;

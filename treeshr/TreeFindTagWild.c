@@ -114,8 +114,8 @@ static int findtag(PINO_DATABASE *dblist, TAG_SEARCH **ctx) {
    **************************************/
     if ((*ctx)->next_tag >= (*ctx)->this_tree_info->header->tags) {
       status = nextTagTree(dblist, *ctx);
-      if
-        STATUS_OK(*ctx)->next_tag = -1;
+      if (STATUS_OK)
+        (*ctx)->next_tag = -1;
       else {
         done = 1;
         break;
@@ -304,9 +304,8 @@ static int nextTagTree(PINO_DATABASE *dblist, TAG_SEARCH *ctx) {
   for (; ctx->this_tree_info;
        ctx->this_tree_info = ctx->this_tree_info->next_info) {
     DESCRIPTOR_FROM_CSTRING(treenam, ctx->this_tree_info->treenam);
-    if
-      IS_OK(StrMatchWild(&treenam, (mdsdsc_t *)&ctx->search_tree))
-    return TreeSUCCESS;
+    if (IS_OK(StrMatchWild(&treenam, (mdsdsc_t *)&ctx->search_tree)))
+      return TreeSUCCESS;
   }
   return TreeNMT;
 }

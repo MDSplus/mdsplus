@@ -91,9 +91,8 @@ static int Doit(struct descriptor_routine *ptask,
     FREED_ON_EXIT(&method_d);
     arglist[2] = (void *)&method_d;
     status = TdiData(pmethod->method, &method_d MDS_END_ARG);
-    if
-      STATUS_OK
-    status = TdiGetNid(pmethod->object, &nid);
+    if (STATUS_OK)
+      status = TdiGetNid(pmethod->object, &nid);
     status = (int)(intptr_t)LibCallg(arglist, TreeDoMethod);
     FREED_NOW(&method_d);
     status = TdiPutLong(&status, out_ptr);
@@ -156,8 +155,8 @@ static int WorkerThread(void *args) {
   struct descriptor_routine *ptask =
       (struct descriptor_routine *)wc.wa->task_xd->pointer;
   wc.wa->status = Doit(ptask, wc.xdp);
-  if
-    IS_OK(wc.wa->status) wc.wa->status = *(int *)xd.pointer->pointer;
+  if (IS_OK(wc.wa->status))
+    wc.wa->status = *(int *)xd.pointer->pointer;
   pthread_cleanup_pop(1);
   return wc.wa->status;
 }
@@ -250,9 +249,8 @@ int Tdi1DoTask(opcode_t opcode __attribute__((unused)),
   freetask = 1;
   struct descriptor_routine *ptask;
   status = TdiTaskOf(list[0], &task_xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK
-  goto cleanup;
+  if (STATUS_NOT_OK)
+    goto cleanup;
   ptask = (struct descriptor_routine *)task_xd.pointer;
   if (!ptask) {
     status = TdiNULL_PTR;
@@ -288,11 +286,10 @@ int Tdi1DoTask(opcode_t opcode __attribute__((unused)),
   }
 
   float timeout = (float)0.;
-  if
-    STATUS_OK
-  status = TdiGetFloat(ptask->time_out, &timeout);
-  if
-    STATUS_NOT_OK goto cleanup;
+  if (STATUS_OK)
+    status = TdiGetFloat(ptask->time_out, &timeout);
+  if (STATUS_NOT_OK)
+    goto cleanup;
   if (timeout > 0.) {
     freetask = 0;
     status = StartWorker(&task_xd, out_ptr, timeout);

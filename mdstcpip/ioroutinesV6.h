@@ -32,8 +32,8 @@ static int GetHostAndPort(char *hostin, struct sockaddr_in6 *sin);
 
 static int io_reuseCheck(char *host, char *unique, size_t buflen) {
   struct sockaddr_in6 sin;
-  if
-    IS_OK(GetHostAndPort(host, &sin)) {
+  if (IS_OK(GetHostAndPort(host, &sin)))
+    {
       uint16_t *addr = (uint16_t *)&sin.sin6_addr;
       snprintf(unique, buflen,
                "%s://%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x#%u", PROT, addr[0],

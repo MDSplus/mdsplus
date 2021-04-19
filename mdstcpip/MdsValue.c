@@ -76,15 +76,14 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
     for (i = 2; i < nargs && STATUS_OK; i++) {
       status = MdsSerializeDscOut(arglist_in[i - 2], &xd);
       arr = (struct descriptor_a *)xd.pointer;
-      if
-        STATUS_OK
-      status = SendArg(id, i, arr->dtype, nargs, arr->length, 1,
+      if (STATUS_OK)
+        status = SendArg(id, i, arr->dtype, nargs, arr->length, 1,
                        (int *)&arr->arsize, arr->pointer);
     }
     MdsFree1Dx(&xd, NULL);
   }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       char ndims;
       void *mem = 0;
       int dims[MAX_DIMS] = {0};
@@ -109,8 +108,8 @@ EXPORT int _MdsValue(int id, int nargs, struct descrip **arglist,
   for (i = 0; i < nargs && STATUS_OK; i++)
     status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]),
                      arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       short len;
       int numbytes;
       void *dptr;

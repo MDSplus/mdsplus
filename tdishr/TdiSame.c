@@ -75,24 +75,21 @@ int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[],
   /******************************************
   Adjust category needed to match data types.
   ******************************************/
-  if
-    STATUS_OK
-  status =
+  if (STATUS_OK)
+    status =
       (*fun_ptr->f2)(narg, uni, dat, cats, &routine, fun_ptr->o1, fun_ptr->o2);
 
   /******************************
   Do the needed type conversions.
   ******************************/
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
 
   /******************
   Find correct shape.
   ******************/
-  if
-    STATUS_OK
-  status = TdiGetShape(narg, dat, cats[narg].digits, cats[narg].out_dtype,
+  if (STATUS_OK)
+    status = TdiGetShape(narg, dat, cats[narg].digits, cats[narg].out_dtype,
                        &cmode, out_ptr);
 
   /********************************
@@ -100,8 +97,8 @@ int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[],
   No action for simple conversions.
   Default is for MIN/MAX pairwise.
   ********************************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (routine == &Tdi3undef || routine == 0) {
         MdsFree1Dx(out_ptr, NULL);
         *out_ptr = dat[0];
@@ -125,9 +122,8 @@ int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[],
   /********************
     Embed data in signal.
    ********************/
-  if
-    STATUS_OK
-  status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
 
   /********************
   Free all temporaries.

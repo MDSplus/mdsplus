@@ -79,8 +79,8 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec) {
   *status = GetBytesTO(c, (void *)&header, sizeof(MsgHdr), to_msec);
   if (*status == SsINTERNAL)
     return NULL;
-  if
-    IS_OK(*status) {
+  if (IS_OK(*status))
+    {
       if (Endian(header.client_type) != Endian(ClientType()))
         FlipHeader(&header);
 #ifdef DEBUG
@@ -115,8 +115,8 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec) {
         m->h = header;
         *status = uncompress((unsigned char *)m->bytes, &dlen,
                              (unsigned char *)msg->bytes + 4, dlen - 4) == 0;
-        if
-          IS_OK(*status) {
+        if (IS_OK(*status))
+          {
             m->h.msglen = msglen;
             free(msg);
             msg = m;

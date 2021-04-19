@@ -64,9 +64,8 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
   TDITHREADSTATIC_INIT;
   MdsFree1Dx(signal_ptr, NULL);
   status = tdi_get_data(omitsu, in_ptr, data_ptr);
-  if
-    STATUS_OK
-  switch (data_ptr->pointer->dtype) {
+  if (STATUS_OK)
+    switch (data_ptr->pointer->dtype) {
   case DTYPE_SIGNAL:
     *signal_ptr = *data_ptr;
     *data_ptr = EMPTY_XD;
@@ -75,17 +74,15 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
     status = tdi_get_data(
         omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data,
         data_ptr);
-    if
-      STATUS_OK
-    switch (data_ptr->pointer->dtype) {
+    if (STATUS_OK)
+      switch (data_ptr->pointer->dtype) {
     case DTYPE_WITH_UNITS:
       tmp = *data_ptr;
       *data_ptr = EMPTY_XD;
       status = TdiData(((struct descriptor_with_units *)tmp.pointer)->units,
                        units_ptr MDS_END_ARG);
-      if
-        STATUS_OK
-      status = TdiData(((struct descriptor_with_units *)tmp.pointer)->data,
+      if (STATUS_OK)
+        status = TdiData(((struct descriptor_with_units *)tmp.pointer)->data,
                        data_ptr MDS_END_ARG);
       MdsFree1Dx(&tmp, NULL);
       break;
@@ -99,12 +96,10 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
     tmp = *data_ptr;
     *data_ptr = EMPTY_XD;
     status = TdiUnits(tmp.pointer, units_ptr MDS_END_ARG);
-    if
-      STATUS_OK
-    status = tdi_get_data(omits, tmp.pointer, data_ptr);
-    if
-      STATUS_OK
-    switch (data_ptr->pointer->dtype) {
+    if (STATUS_OK)
+      status = tdi_get_data(omits, tmp.pointer, data_ptr);
+    if (STATUS_OK)
+      switch (data_ptr->pointer->dtype) {
     case DTYPE_SIGNAL:
       *signal_ptr = *data_ptr;
       *data_ptr = EMPTY_XD;
@@ -159,9 +154,8 @@ int TdiGetArgs(opcode_t opcode, int narg, struct descriptor *list[],
   ***************************/
   for (j = 0; j < narg; ++j) {
     sig[j] = uni[j] = dat[j] = EMPTY_XD;
-    if
-      STATUS_OK
-    status = TdiGetSignalUnitsData(list[j], &sig[j], &uni[j], &dat[j]);
+    if (STATUS_OK)
+      status = TdiGetSignalUnitsData(list[j], &sig[j], &uni[j], &dat[j]);
   }
 
   /******************************
@@ -169,9 +163,8 @@ int TdiGetArgs(opcode_t opcode, int narg, struct descriptor *list[],
   Adjust out in f2 routine.
   Make in into out in CVT_ARGS.
   ******************************/
-  if
-    STATUS_OK
-  for (nd = 0, nc = 0, j = 0; j < narg; ++j) {
+  if (STATUS_OK)
+    for (nd = 0, nc = 0, j = 0; j < narg; ++j) {
     struct descriptor *dat_ptr = dat[j].pointer;
 
     cptr = &cats[j];
@@ -187,9 +180,8 @@ int TdiGetArgs(opcode_t opcode, int narg, struct descriptor *list[],
     if ((cptr->digits = TdiREF_CAT[jd].digits) == 0)
       cptr->digits = dat_ptr->length;
   }
-  if
-    STATUS_OK
-  for (j = 0; j < narg; j++) {
+  if (STATUS_OK)
+    for (j = 0; j < narg; j++) {
     if (fun_ptr->i1 == fun_ptr->i2) {
       cats[j].out_dtype = fun_ptr->i2;
       cats[j].out_cat = i2;
@@ -200,8 +192,8 @@ int TdiGetArgs(opcode_t opcode, int narg, struct descriptor *list[],
   /***********************************************
   Output cat and dtype are guesses, checked later.
   ***********************************************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       cptr = &cats[narg];
       cptr->in_dtype = nd;
       cptr->out_dtype = nd;

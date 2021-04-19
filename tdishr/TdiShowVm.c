@@ -48,7 +48,7 @@ int Tdi1ShowVm() {
     status = TdiGetLong(list[1], &mask);
   else
     mask = -1;
-  while STATUS_OK {
+  while (STATUS_OK) {
     status = LibFindVmZone(&contex, &zone_id);
     if (STATUS_OK && zone_id && j & mask)
       status = LibShowVmZone(&zone_id, &code);

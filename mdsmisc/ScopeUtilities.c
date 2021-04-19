@@ -129,8 +129,8 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
       path[dsc->length] = 0;
       status = TreeFindNode(path, &nid);
       free(path);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           status = TreeGetNumSegments(nid, &numSegments);
           if (STATUS_OK) {
             if (numSegments > 0) {
@@ -198,14 +198,14 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
   if (!nid)
     goto return_neg1;
   int status = TreeGetNumSegments(nid, &numSegments);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   status = TreeGetSegmentLimits(nid, 0, NULL, &xd);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   status = TdiData(xd.pointer, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   *dIsLong = xd.pointer &&
              (xd.pointer->dtype == DTYPE_Q || xd.pointer->dtype == DTYPE_QU);
   if (xMin != NULL || xMax != NULL) {
@@ -219,11 +219,11 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
     if (xMin) {
       while (startIdx < numSegments) {
         status = TreeGetSegmentLimits(nid, startIdx, NULL, &xd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         status = XTreeConvertToLongTime(xd.pointer, &currEnd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         if (currEnd >= startTime) // First overlapping segment
           break;
         startIdx++;
@@ -237,11 +237,11 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
       segmentIdx = startIdx;
       while (segmentIdx < numSegments) {
         status = TreeGetSegmentLimits(nid, segmentIdx, NULL, &xd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         status = XTreeConvertToLongTime(xd.pointer, &currEnd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         if (currEnd >= endTime) // Last overlapping segment
           break;
         segmentIdx++;
@@ -256,21 +256,21 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
     endIdx = numSegments - 1;
   }
   status = TreeGetSegmentInfo(nid, startIdx, &dtype, &dimct, dims, &nextRow);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   segmentSamples = nextRow;
   // Compute duration
   status = TreeGetSegmentLimits(nid, startIdx, &xd, NULL);
-  if
-    STATUS_OK status = TdiData(xd.pointer, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_OK)
+    status = TdiData(xd.pointer, &xd MDS_END_ARG);
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   *sMin = to_doublex(xd.pointer->pointer, xd.pointer->dtype, -INFINITY, TRUE);
   status = TreeGetSegmentLimits(nid, endIdx, NULL, &xd);
-  if
-    STATUS_OK status = TdiData((mdsdsc_t *)&xd, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_OK)
+    status = TdiData((mdsdsc_t *)&xd, &xd MDS_END_ARG);
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   *sMax = to_doublex(xd.pointer->pointer, xd.pointer->dtype, INFINITY, TRUE);
   MdsFree1Dx(&xd, NULL);
   *dMin =
@@ -438,8 +438,8 @@ again:;
         path[dsc->length] = 0;
         status = TreeFindNode(path, &nid);
         free(path);
-        if
-          STATUS_NOT_OK goto status_not_ok_out;
+        if (STATUS_NOT_OK)
+          goto status_not_ok_out;
       }
       int numSegments;
       status = TreeGetNumSegments(nid, &numSegments);
@@ -447,8 +447,8 @@ again:;
         goto error_out;
       EMPTYXD(xd);
       status = TreeGetRecord(nid, &xd);
-      if
-        STATUS_OK status = recGetXxxx(xd.pointer, xd_out, getHelp);
+      if (STATUS_OK)
+        status = recGetXxxx(xd.pointer, xd_out, getHelp);
       MdsFree1Dx(&xd, NULL);
       goto status_out;
     }
@@ -466,8 +466,8 @@ again:;
         mds_param_t *pDsc = (mds_param_t *)dsc;
         if (pDsc->help) {
           status = TdiData(pDsc->help, xd_out MDS_END_ARG);
-          if
-            STATUS_NOT_OK goto status_not_ok_out;
+          if (STATUS_NOT_OK)
+            goto status_not_ok_out;
           if (xd_out->pointer && xd_out->pointer->class == CLASS_S &&
               xd_out->pointer->dtype == DTYPE_T)
             goto status_out;
@@ -478,16 +478,16 @@ again:;
       int i;
       for (i = 0; i < rDsc->ndesc; i++) {
         status = recGetXxxx(rDsc->dscptrs[i], xd_out, getHelp);
-        if
-          STATUS_OK goto status_out;
+        if (STATUS_OK)
+          goto status_out;
       }
     } else {
       if (dsc->dtype == DTYPE_WITH_UNITS) {
         mds_with_units_t *uDsc = (mds_with_units_t *)dsc;
         if (uDsc->units) {
           status = TdiData(uDsc->units, xd_out MDS_END_ARG);
-          if
-            STATUS_NOT_OK goto status_not_ok_out;
+          if (STATUS_NOT_OK)
+            goto status_not_ok_out;
           if (xd_out->pointer && xd_out->pointer->class == CLASS_S &&
               xd_out->pointer->dtype == DTYPE_T)
             goto status_out;
@@ -513,8 +513,8 @@ again:;
         if (*(opcode_t *)rDsc->pointer == OPC_ADD ||
             *(opcode_t *)rDsc->pointer == OPC_SUBTRACT) {
           status = recGetXxxx(rDsc->dscptrs[0], xd_out, getHelp);
-          if
-            STATUS_NOT_OK goto status_not_ok_out;
+          if (STATUS_NOT_OK)
+            goto status_not_ok_out;
           EMPTYXD(xd);
           for (i = 1; i < rDsc->ndesc; i++) {
             status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
@@ -538,12 +538,12 @@ again:;
           EMPTYXD(xd);
           for (i = 0; i < rDsc->ndesc; i++) {
             status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
-            if
-              STATUS_OK {
+            if (STATUS_OK)
+              {
                 if (da.pointer) {
                   status = StrConcat(&da, &da, &mulDiv, xd.pointer MDS_END_ARG);
-                  if
-                    STATUS_NOT_OK {
+                  if (STATUS_NOT_OK)
+                    {
                       MdsFree1Dx(&xd, NULL);
                       goto status_not_ok_out;
                     }
@@ -591,8 +591,8 @@ static inline int recGetUnits(const mdsdsc_t *const dsc,
 EXPORT int IsSegmented(char *const expr) {
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-  if
-    IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
+  if (IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)))
+    return FALSE;
   int segNid = recIsSegmented(xd.pointer);
   MdsFree1Dx(&xd, NULL);
   return segNid;
@@ -615,8 +615,8 @@ EXPORT struct descriptor_xd *GetPathOf(int *nid) {
 EXPORT int TestGetHelp(char *const expr) {
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-  if
-    IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
+  if (IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)))
+    return FALSE;
   MdsFree1Dx(&xd, 0);
   return TRUE;
 }
@@ -624,8 +624,8 @@ EXPORT int TestGetHelp(char *const expr) {
 EXPORT int TestGetUnits(char *const expr) {
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-  if
-    IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
+  if (IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)))
+    return FALSE;
   MdsFree1Dx(&xd, 0);
   return TRUE;
 }
@@ -680,13 +680,13 @@ inline static int getNSamples(const mdsdsc_xd_t *const yXd,
     return TdiINVCLADSC;
   if (yXd->pointer->dtype == DTYPE_F) {
     const int status = TdiFloat(yXd->pointer, yXd MDS_END_ARG);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
   }
   if (xXd->pointer->dtype == DTYPE_F) {
     const int status = TdiFloat(xXd->pointer, xXd MDS_END_ARG);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
   }
   // Number of samples set to minimum between X and Y
   const int ySamples =
@@ -826,22 +826,22 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
     if (isLong)
       delta /= 1e9; // quick compensation of xtreeshr conversion
 
-      
-    //printf("DELTA: %e\n", delta);  
-      
+
+    //printf("DELTA: %e\n", delta);
+
     deltaP = (delta > 1e-9) ? &deltaD : NULL;
   } else
     deltaP = NULL;
   // Set limits if any
-  
-  
-  
+
+
+
   int status = TreeSetTimeContext(xMinP, xMaxP, deltaP);
 
-  if
-    STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_err;
+  if (STATUS_OK)
+    status = TdiEvaluate(inY, &yXd MDS_END_ARG);
+  if (STATUS_NOT_OK)
+    goto return_err;
   // Get Y, title, and yLabel, if any
   EMPTYXD(title);
   EMPTYXD(xLabel);
@@ -853,20 +853,20 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
     status = TdiDimOf(yXd.pointer, &xXd MDS_END_ARG);
   else // Get xLabel, if any
     status = TdiEvaluate(inX, &xXd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_err;
+  if (STATUS_NOT_OK)
+    goto return_err;
 
   recGetUnits(xXd.pointer, &xLabel);
-  if
-    STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
-  if
-    STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
 
   int nSamples = 0;
-  if
-    STATUS_OK status = getNSamples(&yXd, &xXd, &nSamples);
-  if
-    STATUS_NOT_OK goto return_err;
+  if (STATUS_OK)
+    status = getNSamples(&yXd, &xXd, &nSamples);
+  if (STATUS_NOT_OK)
+    goto return_err;
   mdsdsc_a_t *xArrD = (mdsdsc_a_t *)xXd.pointer;
   mdsdsc_a_t *yArrD = (mdsdsc_a_t *)yXd.pointer;
   float *y = getFloatArray(yArrD, nSamples);
@@ -1031,14 +1031,14 @@ EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
     status = TdiCompile(&expX, &xXd MDS_END_ARG);
   }
-  if
-    STATUS_OK status =
+  if (STATUS_OK)
+    status =
         GetXYSignalXd(yXd.pointer, xXd.pointer, inXMin ? &xMinD : NULL,
                       inXMax ? &xMaxD : NULL, *reqNSamples, &retXd);
   MdsFree1Dx(&yXd, NULL);
   MdsFree1Dx(&xXd, NULL);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &retXd));
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &retXd));
   return getPackedDsc(&retXd);
 }
 
@@ -1061,13 +1061,13 @@ EXPORT mdsdsc_xd_t *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin,
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
     status = TdiCompile(&expX, &xd MDS_END_ARG);
   }
-  if
-    STATUS_OK status =
+  if (STATUS_OK)
+    status =
         GetXYSignalXd(yXd.pointer, xd.pointer, inXMin ? &xMinD : NULL,
                       inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
   MdsFree1Dx(&yXd, NULL);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
   return getPackedDsc(&xd);
 }
 
@@ -1084,11 +1084,11 @@ EXPORT mdsdsc_xd_t *GetXYWave(char *inY, float *inXMin, float *inXMax,
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &xd MDS_END_ARG);
   }
-  if
-    STATUS_OK status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
+  if (STATUS_OK)
+    status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
                                      inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
   return &xd;
 }
 
@@ -1105,10 +1105,10 @@ EXPORT mdsdsc_xd_t *GetXYWaveLongTimes(char *inY, int64_t *inXMin,
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &xd MDS_END_ARG);
   }
-  if
-    STATUS_OK status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
+  if (STATUS_OK)
+    status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
                                      inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
   return &xd;
 }

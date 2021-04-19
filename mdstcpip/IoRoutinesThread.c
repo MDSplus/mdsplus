@@ -73,8 +73,8 @@ static void io_listen(void *pp) {
   status = AcceptConnection("thread", "thread", 0, pp, sizeof(io_pipes_t), &id,
                             &username);
   FREE_NOW(username);
-  if
-    STATUS_OK while (DoMessage(id));
+  while (STATUS_OK)
+    status = DoMessage(id);
   close_pipe(((io_pipes_t *)pp)->in);
   close_pipe(((io_pipes_t *)pp)->out);
   pthread_cleanup_pop(1);

@@ -106,8 +106,8 @@ int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr,
     return TreeNOMETHOD;
   head_nid = 0;
   status = _TreeGetNci(dbid, *(int *)nid_dsc->pointer, itmlst);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   if (!conglomerate_elt && (data_type != DTYPE_CONGLOM))
     return TreeNOMETHOD;
   struct descriptor_conglom *conglom_ptr;
@@ -117,8 +117,8 @@ int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr,
   FREED_ON_EXIT(&method);
   status = _TreeGetRecord(
       dbid, head_nid ? head_nid : *((int *)nid_dsc->pointer), &xd);
-  if
-    STATUS_NOT_OK goto end;
+  if (STATUS_NOT_OK)
+    goto end;
   conglom_ptr = (struct descriptor_conglom *)xd.pointer;
   if (conglom_ptr->dtype != DTYPE_CONGLOM) {
     status = TreeNOT_CONGLOM;
@@ -137,8 +137,8 @@ int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr,
   /**** Try python class ***/
   if (strdcmp(conglom_ptr->image, "__python__")) {
     status = LibFindImageSymbol_C("TdiShr", "_TdiIntrinsic", &_TdiIntrinsic);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         if (nargs == 4 && strdcmp(method_ptr, "DW_SETUP"))
           nargs--;
         char exp[1024];
@@ -166,8 +166,8 @@ int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr,
     }
     void (*addr)();
     status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         arglist[nargs] = out_ptr;
         status = (int)(intptr_t)_LibCallg(&dbid, arglist, addr);
         goto end;
@@ -175,8 +175,8 @@ int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr,
   }
   /**** Try tdi fun ***/
   status = LibFindImageSymbol_C("TdiShr", "_TdiIntrinsic", &_TdiIntrinsic);
-  if
-    STATUS_NOT_OK goto end;
+  if (STATUS_NOT_OK)
+    goto end;
   void *funarglist[] = {(void *)&fun};
   fun.ndesc = nargs > 254 ? 255 : (unsigned char)(nargs + 1); // add NULL
   fun.arguments[0] = NULL;

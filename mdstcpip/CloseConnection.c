@@ -34,9 +34,8 @@ int CloseConnection(int id) {
   if (c) {
     status = LibFindImageSymbol_C("MdsIpSrvShr", "RemoveConnection",
                                   &removeConnection);
-    if
-      STATUS_OK
-    status = (*removeConnection)(id);
+    if (STATUS_OK)
+      status = (*removeConnection)(id);
   }
   return status;
 }

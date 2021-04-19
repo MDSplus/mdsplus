@@ -75,8 +75,8 @@ EXPORT char *ServerGetInfo(int full __attribute__((unused)), char *server) {
   if (sock != INVALID_SOCKET) {
     int status = SendArg(sock, (unsigned char)0, (char)DTYPE_CSTRING,
                          (unsigned char)1, (short)strlen(cmd), 0, 0, cmd);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         char dtype;
         char ndims;
         int dims[8];

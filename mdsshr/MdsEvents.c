@@ -77,8 +77,8 @@ static int ConnectToMds_(const char *const host) {
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "ConnectToMds",
                                                  (void **)&rtn)
                           : 1;
-  if
-    STATUS_OK { return rtn(host); }
+  if (STATUS_OK)
+    { return rtn(host); }
   return -1;
 }
 
@@ -88,8 +88,8 @@ static int DisconnectFromMds_(const int id) {
       (rtn == 0)
           ? LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", (void **)&rtn)
           : 1;
-  if
-    STATUS_OK { return rtn(id); }
+  if (STATUS_OK)
+    { return rtn(id); }
   return -1;
 }
 
@@ -100,8 +100,8 @@ static void *GetConnectionInfo_(const int id, char **const name,
       (rtn == 0)
           ? LibFindImageSymbol_C("MdsIpShr", "GetConnectionInfo", (void **)&rtn)
           : 1;
-  if
-    STATUS_OK { return rtn(id, name, readfd, len); }
+  if (STATUS_OK)
+    { return rtn(id, name, readfd, len); }
   return 0;
 }
 
@@ -112,8 +112,8 @@ static int MdsEventAst_(const int conid, char const *const eventnam,
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst",
                                                  (void **)&rtn)
                           : 1;
-  if
-    STATUS_OK { return rtn(conid, eventnam, astadr, astprm, eventid); }
+  if (STATUS_OK)
+    { return rtn(conid, eventnam, astadr, astprm, eventid); }
   return 0;
 }
 
@@ -122,8 +122,8 @@ static Message *GetMdsMsg_(const int id, const int *const stat) {
   int status =
       (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsg", (void **)&rtn)
                  : 1;
-  if
-    STATUS_OK { return rtn(id, stat); }
+  if (STATUS_OK)
+    { return rtn(id, stat); }
   return 0;
 }
 
@@ -132,8 +132,8 @@ static int MdsEventCan_(const int id, const int eid) {
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventCan",
                                                  (void **)&rtn)
                           : 1;
-  if
-    STATUS_OK { return rtn(id, eid); }
+  if (STATUS_OK)
+    { return rtn(id, eid); }
   return 0;
 }
 
@@ -144,8 +144,8 @@ static int MdsValue_(const int id, const char *const exp,
   int status = (rtn == 0)
                    ? LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&rtn)
                    : 1;
-  if
-    STATUS_OK { return rtn(id, exp, d1, d2, d3); }
+  if (STATUS_OK)
+    { return rtn(id, exp, d1, d2, d3); }
   return 0;
 }
 
@@ -155,8 +155,8 @@ static int RegisterRead_(const int conid) {
   static int (*rtn)(int) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol_C("MdsIpShr", "RegisterRead", (void **)&rtn);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       printf("%s\n", MdsGetMsg(status));
       return status;
     }
@@ -449,8 +449,8 @@ static void initializeRemote(int receive_events) {
     num_send_servers = num_servers;
   }
   if (num_servers > 0) {
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         if (external_thread_created)
           KillHandler();
         for (i = 0; i < num_servers; i++) {
@@ -495,8 +495,8 @@ static int eventAstRemote(char const *eventnam, void (*astadr)(), void *astprm,
                           int *eventid) {
   int status = 1, i;
   int curr_eventid;
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       /* if external_thread running, it must be killed before sending messages
        * over socket */
       if (external_thread_created)
@@ -509,23 +509,21 @@ static int eventAstRemote(char const *eventnam, void (*astadr)(), void *astprm,
           status = MdsEventAst_(receive_ids[i], eventnam, astadr, astprm,
                                 &curr_eventid);
 #ifdef GLOBUS
-          if
-            STATUS_OK
-          RegisterRead_(receive_ids[i]);
+          if (STATUS_OK)
+            RegisterRead_(receive_ids[i]);
 #endif
           setRemoteId(*eventid, i, curr_eventid);
         }
       }
       /* now external thread must be created in any case */
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           startRemoteAstHandler();
           external_count++;
         }
     }
-  if
-    STATUS_NOT_OK
-  printf("%s\n", MdsGetMsg(status));
+  if (STATUS_NOT_OK)
+    printf("%s\n", MdsGetMsg(status));
   return status;
 }
 
@@ -683,8 +681,8 @@ EXPORT int MDSQueueEvent(const char *const evname, int *const eventid) {
   EVENT_QUEUE_LOCK;
   struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
   status = MDSEventAst(evname, MDSEventQueue_ast, (void *)thisEventH, eventid);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       struct eventQueueHeader *qh;
       thisEventH->eventid = *eventid;
       thisEventH->event = 0;
@@ -780,8 +778,8 @@ int RemoteMDSEventAst(const char *const eventnam_in, void (*const astadr)(),
 static int canEventRemote(const int eventid) {
   int status = 1, i;
   /* kill external thread before sending messages over the socket */
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       KillHandler();
       for (i = 0; i < num_receive_servers; i++) {
         if (receive_ids[i] > 0)
@@ -821,8 +819,8 @@ static int sendRemoteEvent(const char *const evname, const int data_len,
   desc.dims[0] = data_len;
   ansarg.ptr = 0;
   sprintf(expression, "setevent(\"%s\"%s)", evname, data_len > 0 ? ",$" : "");
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       int reconnects = 0;
       tmp_status = 0;
       for (i = 0; i < num_send_servers; i++) {

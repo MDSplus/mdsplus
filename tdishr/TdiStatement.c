@@ -125,8 +125,7 @@ int Tdi1For(opcode_t opcode __attribute__((unused)), int narg, mdsdsc_t *list[],
 
   if (list[0])
     status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
-  while
-    STATUS_OK {
+  while (STATUS_OK) {
       if (list[1]) {
         status = TdiGetLong(list[1], &test);
         if (STATUS_NOT_OK || IS_NOT_OK(test))
@@ -150,8 +149,8 @@ int Tdi1Goto(opcode_t opcode __attribute__((unused)),
              mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (out_ptr->pointer->class != CLASS_S)
         status = TdiINVCLADSC;
       else if (out_ptr->pointer->dtype != DTYPE_T)
@@ -172,18 +171,16 @@ int Tdi1If(opcode_t opcode __attribute__((unused)), int narg, mdsdsc_t *list[],
   int test = 0;
 
   status = TdiGetLong(list[0], &test);
-  if
-    IS_OK(test) {
-      if
-        STATUS_OK
-      status = TdiEvaluate(list[1], out_ptr MDS_END_ARG);
+  if (IS_OK(test))
+    {
+      if (STATUS_OK)
+        status = TdiEvaluate(list[1], out_ptr MDS_END_ARG);
       while (status == TdiGOTO)
         status = goto1(1, &list[1], out_ptr);
     }
   else if (narg > 2) {
-    if
-      STATUS_OK
-    status = TdiEvaluate(list[2], out_ptr MDS_END_ARG);
+    if (STATUS_OK)
+      status = TdiEvaluate(list[2], out_ptr MDS_END_ARG);
     while (status == TdiGOTO)
       status = goto1(1, &list[2], out_ptr);
   }
@@ -203,13 +200,11 @@ int Tdi1IfError(opcode_t opcode __attribute__((unused)), int narg,
   int j;
   for (j = 0; j < narg; ++j) {
     status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
-    if
-      STATUS_OK
-    break;
+    if (STATUS_OK)
+      break;
   }
-  if
-    STATUS_NOT_OK
-  MdsFree1Dx(out_ptr, NULL);
+  if (STATUS_NOT_OK)
+    MdsFree1Dx(out_ptr, NULL);
   return status;
 }
 
@@ -242,9 +237,8 @@ int Tdi1Return(opcode_t opcode __attribute__((unused)), int narg,
     status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
   else
     status = MdsFree1Dx(out_ptr, NULL);
-  if
-    STATUS_OK
-  status = TdiRETURN;
+  if (STATUS_OK)
+    status = TdiRETURN;
   return status;
 }
 
@@ -354,15 +348,14 @@ static int switch_case(const mdsdsc_t *ptest, const mdsdsc_t *arg,
   } else {
     mdsdsc_xd_t xd = EMPTY_XD;
     status = TdiEvaluate(arg, &xd MDS_END_ARG);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         mds_range_t *pr = (mds_range_t *)xd.pointer;
         if (pr && pr->dtype == DTYPE_RANGE) {
           if (pr->begin) {
             status = TdiGe(ptest, pr->begin, out_ptr MDS_END_ARG);
-            if
-              STATUS_OK
-            status = TdiGetLong(out_ptr, test_ptr);
+            if (STATUS_OK)
+              status = TdiGetLong(out_ptr, test_ptr);
           } else
             *test_ptr = 1;
           if (STATUS_OK && IS_OK(*test_ptr) && pr->ending)
@@ -370,9 +363,8 @@ static int switch_case(const mdsdsc_t *ptest, const mdsdsc_t *arg,
         } else
           status = TdiEq(ptest, pr, out_ptr MDS_END_ARG);
         MdsFree1Dx(&xd, NULL);
-        if
-          STATUS_OK
-        status = TdiGetLong(out_ptr, test_ptr);
+        if (STATUS_OK)
+          status = TdiGetLong(out_ptr, test_ptr);
       }
   }
   return status;
@@ -411,8 +403,8 @@ static int switch1(const mdsdsc_t *ptest, int *jdefault,
       if (off >= 0 && STATUS_OK) {
         status = switch1(ptest, jdefault, pdefault, list[j]->ndesc - off,
                          (mds_function_t **)&list[j]->arguments[off], out_ptr);
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             ++j;
             break;
           }
@@ -445,9 +437,8 @@ int Tdi1Switch(opcode_t opcode __attribute__((unused)), int narg,
     narg = fun->ndesc;
   }
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
-  if
-    STATUS_OK
-  status = switch1(tmp.pointer, &jdefault, &pdefault, narg - 1,
+  if (STATUS_OK)
+    status = switch1(tmp.pointer, &jdefault, &pdefault, narg - 1,
                    (mds_function_t **)&list[1], out_ptr);
   MdsFree1Dx(&tmp, NULL);
   if (status == TdiCASE) {

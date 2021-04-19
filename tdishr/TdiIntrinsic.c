@@ -158,8 +158,8 @@ static inline void trace(opcode_t opcode, int narg, mdsdsc_t *list[],
     ADD("%TDI Unknown opcode ");
   ADD("(");
   for (j = 0; j < narg;) {
-    if
-      IS_OK(Tdi0Decompile(list[j], PREC_COMMA, &text, 5)) {
+    if (IS_OK(Tdi0Decompile(list[j], PREC_COMMA, &text, 5)))
+      {
         if (TDI_INTRINSIC_MSG.length - now + text.length < MAXLINE - 2)
           StrAppend(&TDI_INTRINSIC_MSG, (mdsdsc_t *)&text);
         else {
@@ -280,8 +280,8 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
           if (out_ptr->length != dsc_ptr->length) {
             stat1 = StrGet1Dx(&dsc_ptr->length, (mdsdsc_d_t *)out_ptr);
           }
-          if
-            IS_OK(stat1) {
+          if (IS_OK(stat1))
+            {
               out_ptr->dtype = dsc_ptr->dtype;
               if ((out_ptr->length > 0) && (dsc_ptr != NULL))
                 _MOVC3(out_ptr->length, dsc_ptr->pointer,
@@ -323,9 +323,8 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
       free(fixed_out_ptr);
     } break;
     }
-    if
-      IS_OK(stat1)
-    goto done;
+    if (IS_OK(stat1))
+      goto done;
     status = stat1;
   }
   if (TDI_INTRINSIC_REC >= 0)

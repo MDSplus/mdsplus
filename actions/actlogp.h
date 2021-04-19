@@ -255,9 +255,8 @@ inline static void _Doing(LinkedEvent *event) {
 inline static void _Done(LinkedEvent *event) {
   PutLog(event->time, "DONE", IS_OK(event->status) ? " " : event->status_text,
          event->server, event->fullpath);
-  if
-    IS_NOT_OK(event->status)
-  PutError(event->time, "DONE", event->status_text, event->server,
+  if (IS_NOT_OK(event->status))
+    PutError(event->time, "DONE", event->status_text, event->server,
            event->fullpath);
 }
 
@@ -273,8 +272,8 @@ static void CheckIn(char *monitor_in) {
     monitor = monitor_in;
   for (;;) {
     status = ServerMonitorCheckin(monitor, MessageAst, 0);
-    if
-      STATUS_OK return;
+    if (STATUS_OK)
+      return;
     printf("Error %d connecting to monitor: %s, will try again shortly\n",
            status, monitor);
     sleep(2);

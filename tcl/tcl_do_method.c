@@ -67,8 +67,8 @@ EXPORT int TclDoMethod(void *ctx, char **error,
 
   cli_get_value(ctx, "OBJECT", &object);
   status = TreeFindNode(object, &nid);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       do_it = (TreeIsOn(nid) | cli_present(ctx, "OVERRIDE")) & 1;
       if (IS_OK(cli_present(ctx, "IF"))) {
         struct descriptor if_clause_dsc = {0, DTYPE_T, CLASS_S, 0};
@@ -78,9 +78,8 @@ EXPORT int TclDoMethod(void *ctx, char **error,
         if_clause_dsc.pointer = if_clause;
         status = TdiIntrinsic(OPC_EXECUTE, 1, &args, &bool_dsc);
         free(if_clause);
-        if
-          STATUS_OK
-        do_it = do_it && boolVal;
+        if (STATUS_OK)
+          do_it = do_it && boolVal;
         else do_it = 0;
       }
       if (do_it) {
@@ -98,8 +97,8 @@ EXPORT int TclDoMethod(void *ctx, char **error,
             xdarg[argc] = xd; // empty_xd
             status = TdiIntrinsic(OPC_COMPILE, 1, &arg_dsc_ptr, &xdarg[argc]);
             free(arg);
-            if
-              STATUS_OK {
+            if (STATUS_OK)
+              {
                 arglist[argc] = xdarg[argc].pointer;
                 argc++;
               }
@@ -107,11 +106,11 @@ EXPORT int TclDoMethod(void *ctx, char **error,
               break;
           }
         }
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             status = TreeDoMethodA(&nid_dsc, &method_dsc, argc, arglist, &xd);
-            if
-              STATUS_OK {
+            if (STATUS_OK)
+              {
                 if (xd.pointer) {
                   TdiGetLong(&xd, &status);
                   MdsFree1Dx(&xd, NULL);
@@ -125,8 +124,8 @@ EXPORT int TclDoMethod(void *ctx, char **error,
       }
     }
   free(object);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       char *msg = MdsGetMsg(status);
       *error = malloc(strlen(msg) + 100);
       sprintf(*error,

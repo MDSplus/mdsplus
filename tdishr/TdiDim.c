@@ -649,9 +649,8 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2,
     return TdiINVDTYDSC;
   }
   status = Tdi3Subtract(in1, in2, out);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
   switch (in1->dtype) {
   default:
     break;

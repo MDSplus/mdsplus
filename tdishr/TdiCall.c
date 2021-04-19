@@ -120,15 +120,12 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
     status = TdiNDIM_OVER;
   else
     status = TdiData(list[0], &image MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiData(list[1], &entry MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiFindImageSymbol(image.pointer, entry.pointer, &routine);
-  if
-    STATUS_NOT_OK
-  printf("%s\n", LibFindImageSymbolErrString());
+  if (STATUS_OK)
+    status = TdiData(list[1], &entry MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiFindImageSymbol(image.pointer, entry.pointer, &routine);
+  if (STATUS_NOT_OK)
+    printf("%s\n", LibFindImageSymbolErrString());
   MdsFree1Dx(&entry, NULL);
   MdsFree1Dx(&image, NULL);
   *(int *)&newdsc[0] = narg - 2;
@@ -195,14 +192,12 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
       origin[ntmp++] = (unsigned char)j;
     }
   }
-  if
-    STATUS_OK
-  status = interlude(rtype, newdsc, routine, (void **)result, &max);
+  if (STATUS_OK)
+    status = interlude(rtype, newdsc, routine, (void **)result, &max);
   if (!out_ptr)
     goto skip;
-  if
-    STATUS_OK
-  switch (rtype) {
+  if (STATUS_OK)
+    switch (rtype) {
   case DTYPE_MISSING:
     break;
   case DTYPE_DSC:
@@ -246,9 +241,8 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
       status = TdiINVDTYDSC;
   }
   }
-  if
-    STATUS_OK
-  status = MdsCopyDxXd(&dx, out_ptr);
+  if (STATUS_OK)
+    status = MdsCopyDxXd(&dx, out_ptr);
   if (rtype == DTYPE_C)
     free(*(char **)result); // free result
 skip:

@@ -74,8 +74,8 @@ int TdiGetShape(int narg, struct descriptor_xd dat[1], length_t length,
   /*****************************
   Get array or scalar as needed.
   *****************************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if ((len = length) == 0 && dtype < TdiCAT_MAX)
         len = TdiREF_CAT[dtype].length;
       ulen = (length_t)len;

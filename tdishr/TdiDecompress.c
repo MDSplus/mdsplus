@@ -58,11 +58,10 @@ int Tdi1Decompress(opcode_t opcode, int narg, struct descriptor *list[],
   int bit = 0;
 
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
-  if
-    STATUS_OK
-  status = Tdi2Vector(narg - 2, &uni[2], &dat[2], &cats[2]);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    status = Tdi2Vector(narg - 2, &uni[2], &dat[2], &cats[2]);
+  if (STATUS_OK)
+    {
       struct descriptor_a *pa = (struct descriptor_a *)dat[2].pointer;
       int nitems;
       if (pa->length <= 0) {
@@ -102,11 +101,10 @@ int Tdi1Decompress(opcode_t opcode, int narg, struct descriptor *list[],
         symbol = MdsXpand;
       else
         status = TdiFindImageSymbol(dat[0].pointer, dat[1].pointer, &symbol);
-      if
-        STATUS_OK
-      status = MdsGet1DxA(pa, &pa->length, &pa->dtype, out_ptr);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        status = MdsGet1DxA(pa, &pa->length, &pa->dtype, out_ptr);
+      if (STATUS_OK)
+        {
           out_ptr->pointer->class = CLASS_A;
           status = (*symbol)(&nitems, dat[3].pointer, out_ptr->pointer, &bit);
         }

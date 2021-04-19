@@ -131,7 +131,7 @@ static inline int compile(mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsds
  /************************
   Move from temporary zone.
   ************************/
-  if STATUS_OK {
+  if (STATUS_OK) {
     if (TDI_REFZONE.a_result == 0)
       MdsFree1Dx(out_ptr, NULL);
     else
@@ -157,7 +157,8 @@ int Tdi1Compile(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_pt
   else if (STATUS_OK && text_ptr->length > 0)
     status = compile(text_ptr,narg,list,out_ptr,TDITHREADSTATIC_VAR);
   FREEXD_NOW(&tmp);
-  if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
+  if (STATUS_NOT_OK)
+    MdsFree1Dx(out_ptr, NULL);
   return status;
 }
 
@@ -170,10 +171,11 @@ int Tdi1Execute(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_pt
   FREEXD_ON_EXIT(out_ptr);
   INIT_AND_FREEXD_ON_EXIT(tmp);
   status = Tdi1Compile(opcode, narg, list, &tmp);
-  if STATUS_OK
+  if (STATUS_OK)
     status = Tdi1Evaluate(opcode, 1, &tmp.pointer, out_ptr);
   FREEXD_NOW(&tmp);
-  if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
+  if (STATUS_NOT_OK)
+    MdsFree1Dx(out_ptr, NULL);
   FREE_CANCEL(out_ptr);
   return status;
 }

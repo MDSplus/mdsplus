@@ -71,8 +71,8 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
   ******************/
   status = TdiGetArgs(opcode, 1, &list[narg - 1], sig, uni, dat, cats);
 
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       memcpy(&arr, &arr0, sizeof(arr0));
       arr.a0 = NULL;
       pa = (array_bounds *)dat[0].pointer;
@@ -120,9 +120,8 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
     *****************/
     else {
       unsigned char omits[] = {(unsigned char)DTYPE_RANGE, 0};
-      if
-        STATUS_OK
-      status = tdi_get_data(omits, list[j], &tmp);
+      if (STATUS_OK)
+        status = tdi_get_data(omits, list[j], &tmp);
       if (STATUS_NOT_OK)
         break;
       prange = (struct descriptor_range *)tmp.pointer;
@@ -186,8 +185,8 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
   }
   MdsFree1Dx(&tmp, NULL);
 
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       arr.aflags.coeff = (unsigned char)(dimct > 1 || arr.aflags.bounds);
       status = MdsGet1DxA((struct descriptor_a *)&arr, &pa->length, &pa->dtype,
                           out_ptr);
@@ -195,17 +194,15 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
   /***********************
   Copy/expand data to new.
   ***********************/
-  if
-    STATUS_OK
-  status = TdiConvert(pa, out_ptr->pointer MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiConvert(pa, out_ptr->pointer MDS_END_ARG);
 
   /******************************
   Embed result in signal, if any.
   Then free input.
   ******************************/
-  if
-    STATUS_OK
-  status = TdiMasterData(1, sig, uni, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(1, sig, uni, &cmode, out_ptr);
   if (sig[0].pointer)
     MdsFree1Dx(&sig[0], NULL);
   if (uni[0].pointer)

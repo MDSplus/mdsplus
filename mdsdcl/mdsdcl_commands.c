@@ -234,15 +234,15 @@ EXPORT int mdsdcl_define_symbol(void *ctx, char **error,
                                 char **output __attribute__((unused))) {
   char *name = NULL, *value = NULL;
   int status = cli_get_value(ctx, "SYMBOL", &name);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       *error = malloc(100);
       sprintf(*error, "Error: problem getting symbol name");
       goto done;
     }
   status = cli_get_value(ctx, "VALUE", &value);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       *error = malloc(100);
       sprintf(*error, "Error:  problem getting value for symbol");
       goto done;
@@ -356,8 +356,8 @@ EXPORT int mdsdcl_set_command(void *ctx, char **error,
     *error = strdup("Error: command table not specified\n");
     status = MdsdclERROR;
   }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       /*------------------------------------------------------
        * Check for other qualifiers ...
        *-----------------------------------------------------*/

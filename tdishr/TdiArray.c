@@ -120,11 +120,10 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
     arr.class = CLASS_S;
   else {
     status = TdiData(list[0], &tmp MDS_END_ARG);
-    if
-      STATUS_OK
-    ndim = tdi_n_elements(tmp.pointer, &status);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      ndim = tdi_n_elements(tmp.pointer, &status);
+    if (STATUS_OK)
+      {
         if (ndim > MAX_DIMS)
           status = TdiNDIM_OVER;
         else {
@@ -145,8 +144,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
   /*****************************
   Data type from opcode or mold.
   *****************************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (narg <= 1 || list[1] == 0) {
         dtype = fun_ptr->o1;
         length = TdiREF_CAT[dtype].length;
@@ -161,8 +160,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
         } break;
         default: {
           status = TdiData(list[1], &tmp MDS_END_ARG);
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               dtype = tmp.pointer->dtype;
               length = tmp.pointer->length;
             }
@@ -175,8 +174,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
   /*****************************
   Size is product of dimensions.
   *****************************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (arr.class == CLASS_A) {
         for (arr.arsize = 1, j = ndim; --j >= 0;)
           arr.arsize *= arr.m[j];
@@ -189,9 +188,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
   /*********************
   Put some data into it.
   *********************/
-  if
-    STATUS_OK
-  status = (*fun_ptr->f3)(out_ptr->pointer);
+  if (STATUS_OK)
+    status = (*fun_ptr->f3)(out_ptr->pointer);
   return status;
 }
 
@@ -259,16 +257,14 @@ int Tdi3Ramp(struct descriptor *out_ptr) {
       if (n > 1) {
         int step = new.length;
         new.pointer += step;
-        if
-          STATUS_OK
-        status = TdiConvert(&con1, &new);
+        if (STATUS_OK)
+          status = TdiConvert(&con1, &new);
         if (n > 2) {
           struct descriptor_a modify = *(struct descriptor_a *)out_ptr;
           modify.pointer += step;
           modify.arsize -= step;
-          if
-            STATUS_OK
-          status = Tdi3Add(out_ptr, &new, &modify);
+          if (STATUS_OK)
+            status = Tdi3Add(out_ptr, &new, &modify);
         }
       }
     }

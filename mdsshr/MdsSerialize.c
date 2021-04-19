@@ -497,9 +497,8 @@ EXPORT int MdsSerializeDscIn(char const *in, mdsdsc_xd_t *out) {
   int status = copy_rec_dx(in, 0, &size_out, &size_in);
   if (STATUS_OK && size_out) {
     status = MdsGet1Dx(&size_out, &dsc_dtype, out, 0);
-    if
-      STATUS_OK
-    status = copy_rec_dx(in, (mdsdsc_xd_t *)out->pointer, &size_out, &size_in);
+    if (STATUS_OK)
+      status = copy_rec_dx(in, (mdsdsc_xd_t *)out->pointer, &size_out, &size_in);
   } else
     MdsFree1Dx(out, 0);
   return status;
@@ -865,8 +864,8 @@ STATIC_ROUTINE int Dsc2Rec(const mdsdsc_t *inp, mdsdsc_xd_t *out_ptr,
     array out_template = {1, DTYPE_B, CLASS_A, 0, 0, 0, {0, 1, 1, 0, 0}, 1, 0};
     out_template.arsize = *reclen = size_out;
     status = MdsGet1DxA((mdsdsc_a_t *)&out_template, &nlen, &b_dtype, out_ptr);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         memset(out_ptr->pointer->pointer, 0, size_out);
         status = copy_dx_rec((mdsdsc_t *)inp, out_ptr->pointer->pointer,
                              &size_out, &size_in);
@@ -881,8 +880,8 @@ STATIC_CONSTANT int PointerToOffset(mdsdsc_t *dsc_ptr, l_length_t *length) {
   if ((dsc_ptr->dtype == DTYPE_DSC) && (dsc_ptr->class != CLASS_A) &&
       (dsc_ptr->class != CLASS_APD))
     status = PointerToOffset((mdsdsc_t *)dsc_ptr->pointer, length);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       switch (dsc_ptr->class) {
       case CLASS_S:
       case CLASS_D:
@@ -947,8 +946,8 @@ STATIC_CONSTANT int PointerToOffset(mdsdsc_t *dsc_ptr, l_length_t *length) {
             *dsc_ptr = 0;
           }
         }
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             a_ptr->pointer =
                 (void *)((uintptr_t)a_ptr->pointer - (uintptr_t)a_ptr);
             if (a_ptr->aflags.coeff) {
@@ -1009,8 +1008,8 @@ EXPORT int MdsSerializeDscOutZ(
       compressible = 1;
   } else
     compressible = 0;
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (out->pointer && out->dtype == DTYPE_DSC) {
         out_ptr = out->pointer;
         dtype = (dtype_t)out_ptr->dtype;
@@ -1044,8 +1043,8 @@ EXPORT int MdsSerializeDscOutZ(
           class = (out_ptr->class == CLASS_XD) ? CLASS_XS : out_ptr->class;
           length = 0;
           status = PointerToOffset(out->pointer, &length);
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               tempxd = *out;
               out->l_length = 0;
               out->pointer = 0;

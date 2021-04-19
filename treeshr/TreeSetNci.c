@@ -69,8 +69,8 @@ static int set_node_parent_state(PINO_DATABASE *db, NODE *node, NCI *nci,
   node_num = (int)(node - info->node);
   int locked = 0;
   status = tree_get_and_lock_nci(info, node_num, nci, &locked);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       bitassign(state, nci->flags, NciM_PARENT_STATE);
       status = tree_put_nci(info, node_num, nci, &locked);
     }
@@ -101,8 +101,8 @@ int tree_lock_nci(TREE_INFO *info, int readonly, int nodenum, int *deleted,
       status = MDS_IO_LOCK(
           readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42,
           42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted_ptr);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           if (!*deleted_ptr)
             *locked = 3; // lock acquired and increment
           else if (!deleted)
@@ -312,15 +312,14 @@ int tree_get_and_lock_nci(TREE_INFO *info, int node_num, NCI *nci,
     char nci_bytes[42];
     if ((info->nci_file == 0) || (info->nci_file->put == 0))
       RETURN_IF_NOT_OK(TreeOpenNciW(info, 0));
-    while
-      STATUS_OK {
+    while (STATUS_OK) {
         RETURN_IF_NOT_OK(tree_lock_nci(info, 0, node_num, &deleted, locked));
         if (!deleted)
           break;
         status = TreeReopenNci(info);
       }
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         MDS_IO_LSEEK(info->nci_file->put, node_num * sizeof(nci_bytes),
                      SEEK_SET);
         if (MDS_IO_READ(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==
@@ -330,9 +329,8 @@ int tree_get_and_lock_nci(TREE_INFO *info, int node_num, NCI *nci,
         } else
           status = TreeNCIREAD;
       }
-    if
-      STATUS_NOT_OK
-    tree_unlock_nci(info, 0, node_num, locked);
+    if (STATUS_NOT_OK)
+      tree_unlock_nci(info, 0, node_num, locked);
   } else {
     /********************************************
      Otherwise the tree is open for edit so
@@ -399,8 +397,8 @@ int _TreeOpenNciW(TREE_INFO *info, int tmpfile) {
         ((info->nci_file = (struct nci_file *)malloc(sizeof(NCI_FILE))) != NULL)
             ? TreeSUCCESS
             : TreeFAILURE;
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         char *filename = tree_to_characteristic(info->filespec, tmpfile);
         memset(info->nci_file, 0, sizeof(NCI_FILE));
         info->nci_file->get = MDS_IO_OPEN(
@@ -409,8 +407,8 @@ int _TreeOpenNciW(TREE_INFO *info, int tmpfile) {
         status = (info->nci_file->get == -1) ? TreeFAILURE : TreeSUCCESS;
         if (info->nci_file->get == -1)
           info->nci_file->get = 0;
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             info->nci_file->put = MDS_IO_OPEN(filename, O_RDWR, 0);
             status = (info->nci_file->put == -1) ? TreeFAILURE : TreeSUCCESS;
             if (info->nci_file->put == -1)
@@ -434,16 +432,15 @@ int _TreeOpenNciW(TREE_INFO *info, int tmpfile) {
       info->nci_file->put = 0;
     free(filename);
   }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (info->edit) {
         info->edit->first_in_mem =
             (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / 42;
       }
     }
-  if
-    STATUS_OK
-  TreeCallHook(OpenNCIFileWrite, info, 0);
+  if (STATUS_OK)
+    TreeCallHook(OpenNCIFileWrite, info, 0);
   return status;
 }
 

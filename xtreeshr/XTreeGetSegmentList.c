@@ -133,9 +133,8 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid,
 
   status = (dbid) ? _TreeGetNumSegments(dbid, nid, &numSegments)
                   : TreeGetNumSegments(nid, &numSegments);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   startTimeXds = (struct descriptor_xd *)malloc(numSegments *
                                                 sizeof(struct descriptor_xd));
@@ -151,8 +150,8 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid,
                                             &endTimeXds[currIdx])
                     : TreeGetSegmentLimits(nid, currIdx, &startTimeXds[currIdx],
                                            &endTimeXds[currIdx]);
-    if
-      STATUS_NOT_OK {
+    if (STATUS_NOT_OK)
+      {
         freeResources(startTimeXds, endTimeXds, numSegments);
         return status;
       }
@@ -167,8 +166,8 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid,
       // if(currEnd > start) //First overlapping segment
       status = checkGreaterOrEqual((struct descriptor *)&endTimeXds[startIdx],
                                    startDsc, &isGreater);
-      if
-        STATUS_NOT_OK {
+      if (STATUS_NOT_OK)
+        {
           freeResources(startTimeXds, endTimeXds, numSegments);
           return status;
         }
@@ -192,8 +191,8 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid,
     while (segmentIdx < numSegments) {
       status = checkGreaterOrEqual((struct descriptor *)&endTimeXds[segmentIdx],
                                    endDsc, &isGreater);
-      if
-        STATUS_NOT_OK {
+      if (STATUS_NOT_OK)
+        {
           freeResources(startTimeXds, endTimeXds, numSegments);
           return status;
         }
@@ -201,8 +200,8 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid,
       if (isGreater) {
         status = checkGreater((struct descriptor *)&startTimeXds[segmentIdx],
                               endDsc, &isGreater);
-        if
-          STATUS_NOT_OK {
+        if (STATUS_NOT_OK)
+          {
             freeResources(startTimeXds, endTimeXds, numSegments);
             return status;
           }

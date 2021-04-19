@@ -164,16 +164,14 @@ int CheckClient(const char *const username, int num,
                     (length_t)filter_string(&match->d.pointer, TRUE);
               }
               if (deny) {
-                if
-                  IS_OK(StrMatchWild(&match->d, &access_d))
-                access = ACCESS_DENIED;
+                if (IS_OK(StrMatchWild(&match->d, &access_d)))
+                  access = ACCESS_DENIED;
               } else {
                 if (strcmp(match->d.pointer, "MULTI") == 0 &&
                     strcmp(access_id, "MULTI") == 0)
                   access = become_user(NULL, local_user);
-                else if
-                  IS_OK(StrMatchWild(&match->d, &access_d))
-                access = GetMulti() ? ACCESS_GRANTED
+                else if (IS_OK(StrMatchWild(&match->d, &access_d)))
+                  access = GetMulti() ? ACCESS_GRANTED
                                     : become_user(username, local_user);
               }
             }
@@ -220,8 +218,8 @@ int CheckClient(const char *const username, int num,
     mdsdsc_t ans_d = {0, DTYPE_T, CLASS_D, 0};
     int status = TdiExecute(&cmd_d, &ans_d MDS_END_ARG);
     free(cmd);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         access = ACCESS_GRANTED;
         if (ans_d.pointer && ans_d.length > 0) {
           if (!GetMulti()) {

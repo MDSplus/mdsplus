@@ -166,12 +166,10 @@ static int OneStatement(struct descriptor_r *pin, struct descriptor_d *pout) {
 
   if (pin)
     status = Tdi0Decompile(pin, P_STMT, pout);
-  if
-    STATUS_OK
-  TdiDecompileDeindent(pout);
-  if
-    STATUS_OK
-  switch (pout->pointer[pout->length - 1]) {
+  if (STATUS_OK)
+    TdiDecompileDeindent(pout);
+  if (STATUS_OK)
+    switch (pout->pointer[pout->length - 1]) {
   default:
     status = Append(";", pout);
     break;
@@ -179,9 +177,8 @@ static int OneStatement(struct descriptor_r *pin, struct descriptor_d *pout) {
   case '}':
     break;
   }
-  if
-    STATUS_OK
-  status = Indent(0, pout);
+  if (STATUS_OK)
+    status = Indent(0, pout);
   return status;
 }
 
@@ -191,9 +188,8 @@ static int MultiStatement(int nstmt, struct descriptor_r *pin[],
 
   if (nstmt == 0) {
     status = Append(";", pout);
-    if
-      STATUS_OK
-    status = Indent(0, pout);
+    if (STATUS_OK)
+      status = Indent(0, pout);
   } else
     for (j = 0; j < nstmt && STATUS_OK; j++)
       status = OneStatement(pin[j], pout);
@@ -206,22 +202,17 @@ static int CompoundStatement(int nstmt, struct descriptor_r *pin[],
 
   status = Append("{", pout);
   if (nstmt > 0) {
-    if
-      STATUS_OK
-    status = Indent(1, pout);
-    if
-      STATUS_OK
-    status = MultiStatement(nstmt, pin, pout);
-    if
-      STATUS_OK
-    TdiDecompileDeindent(pout);
-    if
-      STATUS_OK
-    status = Indent(-1, pout);
+    if (STATUS_OK)
+      status = Indent(1, pout);
+    if (STATUS_OK)
+      status = MultiStatement(nstmt, pin, pout);
+    if (STATUS_OK)
+      TdiDecompileDeindent(pout);
+    if (STATUS_OK)
+      status = Indent(-1, pout);
   }
-  if
-    STATUS_OK
-  status = Append("}", pout);
+  if (STATUS_OK)
+    status = Append("}", pout);
   return status;
 }
 
@@ -238,9 +229,8 @@ static int Arguments(int first, char *left, char *right,
     if (STATUS_OK && j < last)
       status = Append(", ", pout);
   }
-  if
-    STATUS_OK
-  status = Append(right, pout);
+  if (STATUS_OK)
+    status = Append(right, pout);
   return status;
 }
 
@@ -280,12 +270,10 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
   case DTYPE_OPAQUE:
   build:
     status = Append("Build_", pout);
-    if
-      STATUS_OK
-    status = Append(bname[pin->dtype - DTYPE_PARAM], pout);
-    if
-      STATUS_OK
-    status = Append("(", pout);
+    if (STATUS_OK)
+      status = Append(bname[pin->dtype - DTYPE_PARAM], pout);
+    if (STATUS_OK)
+      status = Append("(", pout);
     if (pin->length) {
       if (pin->length == 1)
         opcode = (opcode_t)(*(unsigned char *)pin->pointer);
@@ -295,16 +283,13 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
         opcode = (opcode_t)(*(unsigned int *)pin->pointer);
       else
         opcode = (opcode_t)-1;
-      if
-        STATUS_OK
-      status = TdiSingle(opcode, pout);
-      if
-        STATUS_OK
-      status = Append(", ", pout);
+      if (STATUS_OK)
+        status = TdiSingle(opcode, pout);
+      if (STATUS_OK)
+        status = Append(", ", pout);
     }
-    if
-      STATUS_OK
-    status = Arguments(0, 0, ")", pin, pout);
+    if (STATUS_OK)
+      status = Arguments(0, 0, ")", pin, pout);
     break;
 
   case DTYPE_RANGE:
@@ -331,16 +316,14 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       default: /*intrinsic(arg, ...) */
       cannot:
         status = Append(fun_ptr->name, pout);
-        if
-          STATUS_OK
-        status = Arguments(0, "(", ")", pin, pout);
+        if (STATUS_OK)
+          status = Arguments(0, "(", ")", pin, pout);
         break;
       case OPC_FUN: /*fun ident(arg, ...) stmt */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("Fun ", pout);
+        if (STATUS_OK)
+          status = Append("Fun ", pout);
         if (STATUS_NOT_OK)
           break;
         r_ptr = (struct descriptor_r *)pin->dscptrs[0];
@@ -348,12 +331,10 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
           status = StrAppend(pout, (struct descriptor *)r_ptr);
         else
           status = Tdi0Decompile(r_ptr, P_SUBS, pout);
-        if
-          STATUS_OK
-        status = Arguments(2, " (", ") ", pin, pout);
-        if
-          STATUS_OK
-        status = CompoundStatement(1, (struct descriptor_r **)&pin->dscptrs[1],
+        if (STATUS_OK)
+          status = Arguments(2, " (", ") ", pin, pout);
+        if (STATUS_OK)
+          status = CompoundStatement(1, (struct descriptor_r **)&pin->dscptrs[1],
                                    pout);
         if (STATUS_OK && prec < P_STMT)
           status = Append(")", pout);
@@ -365,12 +346,11 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_PRIVATE:  /*private ident */
       case OPC_PUBLIC:   /*public ident */
         status = Append(fun_ptr->name, pout);
-        if
-          STATUS_OK
-        status = Append(" ", pout);
+        if (STATUS_OK)
+          status = Append(" ", pout);
         r_ptr = (struct descriptor_r *)pin->dscptrs[0];
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             if (r_ptr->dtype == DTYPE_T)
               status = StrAppend(pout, (struct descriptor *)r_ptr);
             else
@@ -382,15 +362,13 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
             pin->dscptrs[1]->dtype != DTYPE_T)
           goto cannot;
         status = StrAppend(pout, pin->dscptrs[1]);
-        if
-          STATUS_OK
-        status = Arguments(2, "(", ")", pin, pout);
+        if (STATUS_OK)
+          status = Arguments(2, "(", ")", pin, pout);
         break;
       case OPC_SUBSCRIPT: /*postfix[subscript, ...] */
         status = Tdi0Decompile(pin->dscptrs[0], P_SUBS, pout);
-        if
-          STATUS_OK
-        status = Arguments(1, "[", "]", pin, pout);
+        if (STATUS_OK)
+          status = Arguments(1, "[", "]", pin, pout);
         break;
       case OPC_VECTOR: /*[elem, ...] */
         status = Arguments(0, "[", "]", pin, pout);
@@ -415,9 +393,8 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
           status = Append(pop->symbol, pout);
         if (STATUS_OK && prec <= newone)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[0], newone + lorr, pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[0], newone + lorr, pout);
         if (STATUS_OK && prec <= newone)
           status = Append(")", pout);
         if (STATUS_OK && lorr < 0)
@@ -475,34 +452,26 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
         if (prec <= newone)
           status = Append("(", pout);
         if (opcode == OPC_CONDITIONAL) {
-          if
-            STATUS_OK
-          status = Tdi0Decompile(r_ptr->dscptrs[2], newone - lorr, pout);
-          if
-            STATUS_OK
-          status = Append(pop->symbol, pout);
-          if
-            STATUS_OK
-          status = Tdi0Decompile(r_ptr->dscptrs[0], newone, pout);
-          if
-            STATUS_OK
-          status = Append(" : ", pout);
-          if
-            STATUS_OK
-          status = Tdi0Decompile(r_ptr->dscptrs[1], newone + lorr, pout);
-        } else {
-          if
-            STATUS_OK
-          status = Tdi0Decompile(r_ptr->dscptrs[0], newone - lorr, pout);
-          for (m = 1; m < narg; m++) {
-            if
-              STATUS_OK
+          if (STATUS_OK)
+            status = Tdi0Decompile(r_ptr->dscptrs[2], newone - lorr, pout);
+          if (STATUS_OK)
             status = Append(pop->symbol, pout);
+          if (STATUS_OK)
+            status = Tdi0Decompile(r_ptr->dscptrs[0], newone, pout);
+          if (STATUS_OK)
+            status = Append(" : ", pout);
+          if (STATUS_OK)
+            status = Tdi0Decompile(r_ptr->dscptrs[1], newone + lorr, pout);
+        } else {
+          if (STATUS_OK)
+            status = Tdi0Decompile(r_ptr->dscptrs[0], newone - lorr, pout);
+          for (m = 1; m < narg; m++) {
+            if (STATUS_OK)
+              status = Append(pop->symbol, pout);
             if (STATUS_OK && pin != r_ptr)
               status = Append("= ", pout);
-            if
-              STATUS_OK
-            status = Tdi0Decompile(r_ptr->dscptrs[m], newone + lorr, pout);
+            if (STATUS_OK)
+              status = Tdi0Decompile(r_ptr->dscptrs[m], newone + lorr, pout);
           }
         }
         if (STATUS_OK && prec <= newone)
@@ -517,30 +486,24 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_CONTINUE: /*continue; */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append(fun_ptr->name, pout);
-        if
-          STATUS_OK
-        status = OneStatement(0, pout);
+        if (STATUS_OK)
+          status = Append(fun_ptr->name, pout);
+        if (STATUS_OK)
+          status = OneStatement(0, pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
         break;
       case OPC_CASE: /*case (xxx) stmt ... */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("Case (", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
-        if
-          STATUS_OK
-        status = Append(") ", pout);
-        if
-          STATUS_OK
-        status = MultiStatement(narg - 1,
+        if (STATUS_OK)
+          status = Append("Case (", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
+        if (STATUS_OK)
+          status = Append(") ", pout);
+        if (STATUS_OK)
+          status = MultiStatement(narg - 1,
                                 (struct descriptor_r **)&pin->dscptrs[1], pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
@@ -548,12 +511,10 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_DEFAULT: /*case default stmt ... */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("Case Default ", pout);
-        if
-          STATUS_OK
-        status = MultiStatement(narg, (struct descriptor_r **)&pin->dscptrs[0],
+        if (STATUS_OK)
+          status = Append("Case Default ", pout);
+        if (STATUS_OK)
+          status = MultiStatement(narg, (struct descriptor_r **)&pin->dscptrs[0],
                                 pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
@@ -562,52 +523,39 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
                       (exp,stmt,...) */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("DO {", pout);
-        if
-          STATUS_OK
-        status = MultiStatement(narg - 1,
+        if (STATUS_OK)
+          status = Append("DO {", pout);
+        if (STATUS_OK)
+          status = MultiStatement(narg - 1,
                                 (struct descriptor_r **)&pin->dscptrs[1], pout);
-        if
-          STATUS_OK
-        status = Append("} While ", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
-        if
-          STATUS_OK
-        status = MultiStatement(0, (struct descriptor_r **)0, pout);
+        if (STATUS_OK)
+          status = Append("} While ", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
+        if (STATUS_OK)
+          status = MultiStatement(0, (struct descriptor_r **)0, pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
         break;
       case OPC_FOR: /*for (init;test;step) stmt */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("For (", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
-        if
-          STATUS_OK
-        status = Append("; ", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[1], P_STMT, pout);
-        if
-          STATUS_OK
-        status = Append("; ", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[2], P_STMT, pout);
-        if
-          STATUS_OK
-        status = Append(") ", pout);
-        if
-          STATUS_OK
-        status = CompoundStatement(
+        if (STATUS_OK)
+          status = Append("For (", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
+        if (STATUS_OK)
+          status = Append("; ", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[1], P_STMT, pout);
+        if (STATUS_OK)
+          status = Append("; ", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[2], P_STMT, pout);
+        if (STATUS_OK)
+          status = Append(") ", pout);
+        if (STATUS_OK)
+          status = CompoundStatement(
             narg - 3, (struct descriptor_r **)&pin->dscptrs[3], pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
@@ -615,15 +563,12 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_GOTO: /*goto xxx; */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("GoTo ", pout);
-        if
-          STATUS_OK
-        status = StrAppend(pout, pin->dscptrs[0]);
-        if
-          STATUS_OK
-        status = OneStatement(0, pout);
+        if (STATUS_OK)
+          status = Append("GoTo ", pout);
+        if (STATUS_OK)
+          status = StrAppend(pout, pin->dscptrs[0]);
+        if (STATUS_OK)
+          status = OneStatement(0, pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
         break;
@@ -631,24 +576,19 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_WHERE: /*where (exp) stmt elsewhere stmt */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append((opcode == OPC_IF) ? "If (" : "Where (", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
-        if
-          STATUS_OK
-        status = Append(") ", pout);
-        if
-          STATUS_OK
-        status = CompoundStatement(1, (struct descriptor_r **)&pin->dscptrs[1],
+        if (STATUS_OK)
+          status = Append((opcode == OPC_IF) ? "If (" : "Where (", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
+        if (STATUS_OK)
+          status = Append(") ", pout);
+        if (STATUS_OK)
+          status = CompoundStatement(1, (struct descriptor_r **)&pin->dscptrs[1],
                                    pout);
         if (STATUS_OK && narg >= 3) {
           status = Append((opcode == OPC_IF) ? " Else " : " ElseWhere ", pout);
-          if
-            STATUS_OK
-          status = CompoundStatement(
+          if (STATUS_OK)
+            status = CompoundStatement(
               1, (struct descriptor_r **)&pin->dscptrs[2], pout);
         }
         if (prec < P_STMT && STATUS_OK)
@@ -657,18 +597,14 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_LABEL: /*xxx : stmt ... */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("Label ", pout);
-        if
-          STATUS_OK
-        status = StrAppend(pout, pin->dscptrs[0]);
-        if
-          STATUS_OK
-        status = Append(" : ", pout);
-        if
-          STATUS_OK
-        status = MultiStatement(narg - 1,
+        if (STATUS_OK)
+          status = Append("Label ", pout);
+        if (STATUS_OK)
+          status = StrAppend(pout, pin->dscptrs[0]);
+        if (STATUS_OK)
+          status = Append(" : ", pout);
+        if (STATUS_OK)
+          status = MultiStatement(narg - 1,
                                 (struct descriptor_r **)&pin->dscptrs[1], pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
@@ -676,27 +612,22 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_RETURN: /*return (optional-exp); */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append("Return (", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->ndesc ? pin->dscptrs[0] : 0, P_STMT, pout);
-        if
-          STATUS_OK
-        status = Append(")", pout);
-        if
-          STATUS_OK
-        status = OneStatement(0, pout);
+        if (STATUS_OK)
+          status = Append("Return (", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->ndesc ? pin->dscptrs[0] : 0, P_STMT, pout);
+        if (STATUS_OK)
+          status = Append(")", pout);
+        if (STATUS_OK)
+          status = OneStatement(0, pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
         break;
       case OPC_STATEMENT: /*{stmt ...} */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = MultiStatement(narg, (struct descriptor_r **)&pin->dscptrs[0],
+        if (STATUS_OK)
+          status = MultiStatement(narg, (struct descriptor_r **)&pin->dscptrs[0],
                                 pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
@@ -705,18 +636,14 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       case OPC_WHILE:  /*while (exp) stmt */
         if (prec < P_STMT)
           status = Append("(", pout);
-        if
-          STATUS_OK
-        status = Append((opcode == OPC_SWITCH) ? "Switch (" : "While (", pout);
-        if
-          STATUS_OK
-        status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
-        if
-          STATUS_OK
-        status = Append(") ", pout);
-        if
-          STATUS_OK
-        status = CompoundStatement(
+        if (STATUS_OK)
+          status = Append((opcode == OPC_SWITCH) ? "Switch (" : "While (", pout);
+        if (STATUS_OK)
+          status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
+        if (STATUS_OK)
+          status = Append(") ", pout);
+        if (STATUS_OK)
+          status = CompoundStatement(
             narg - 1, (struct descriptor_r **)&pin->dscptrs[1], pout);
         if (prec < P_STMT && STATUS_OK)
           status = Append(")", pout);
@@ -744,13 +671,11 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec,
       else
         ptext = "%Unknown%";
       status = Append(":", pout);
-      if
-        STATUS_OK
-      status = Append(ptext, pout);
+      if (STATUS_OK)
+        status = Append(ptext, pout);
     }
-    if
-      STATUS_OK
-    status = Arguments(2, "(", ")", pin, pout);
+    if (STATUS_OK)
+      status = Arguments(2, "(", ")", pin, pout);
     break;
   }
   /*******************

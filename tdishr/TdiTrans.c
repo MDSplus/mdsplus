@@ -135,16 +135,14 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   /******************************************
   Adjust categories need to match data types.
   ******************************************/
-  if
-    STATUS_OK
-  status = (*pfun->f2)(narg, uni, dat, cats, 0);
+  if (STATUS_OK)
+    status = (*pfun->f2)(narg, uni, dat, cats, 0);
 
   /******************************
   Do the needed type conversions.
   ******************************/
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
 
   /********************
   Get dimension number.
@@ -154,9 +152,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
     if (narg > 1 && cats[1].in_dtype != DTYPE_MISSING)
       pmask = dat[1].pointer;
   } else if (narg > 1 && cats[1].in_dtype != DTYPE_MISSING) {
-    if
-      STATUS_OK
-    status = TdiGetLong(dat[1].pointer, &dim);
+    if (STATUS_OK)
+      status = TdiGetLong(dat[1].pointer, &dim);
     if (STATUS_OK && dim < 0)
       status = TdiBAD_INDEX;
   } else if (pfun->f2 == Tdi2Sign)
@@ -166,9 +163,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
     if (narg > 2 && cats[2].in_dtype != DTYPE_MISSING)
       pmask = dat[2].pointer;
   } else if (opcode == OPC_REPLICATE || opcode == OPC_SPREAD) {
-    if
-      STATUS_OK
-    status = TdiGetLong(dat[2].pointer, &ncopies);
+    if (STATUS_OK)
+      status = TdiGetLong(dat[2].pointer, &ncopies);
     if (ncopies < 0)
       ncopies = 0;
   }
@@ -177,9 +173,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   Get rank,counts, and steps.
   **************************/
   pa = (array_bounds *)dat[0].pointer;
-  if
-    STATUS_OK
-  switch (pa->class) {
+  if (STATUS_OK)
+    switch (pa->class) {
   case CLASS_A:
     rank = pa->aflags.coeff ? pa->dimct : 1;
     if (rank > MAX_DIMS)
@@ -223,10 +218,10 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
     break;
   }
 
-  if
-    STATUS_OK { N_ELEMENTS(pmask, mul); }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    { N_ELEMENTS(pmask, mul); }
+  if (STATUS_OK)
+    {
       if (pmask->class == CLASS_A && mul < count_bef * count_dim * count_aft)
         status = TdiMISMATCH;
       step_dim = count_bef;
@@ -265,9 +260,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
     ndim = -1;
   if (opcode == OPC_FIRSTLOC || opcode == OPC_LASTLOC) {
     status = MdsGet1DxA((mdsdsc_a_t *)pa, &digits, &out_dtype, out_ptr);
-    if
-      STATUS_OK
-    status = TdiConvert(&zero, out_ptr->pointer MDS_END_ARG);
+    if (STATUS_OK)
+      status = TdiConvert(&zero, out_ptr->pointer MDS_END_ARG);
   }
   /***************************
   Shape multiplied for DIM-th.
@@ -337,9 +331,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
       arr.m[dim] = ncopies;
     }
     arr.arsize *= ncopies;
-    if
-      STATUS_OK
-    status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
+    if (STATUS_OK)
+      status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
   }
   /***************
   Overwrite input.

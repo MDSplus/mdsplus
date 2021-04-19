@@ -159,14 +159,12 @@ int Tdi1ItoX(opcode_t opcode, int narg, mdsdsc_t *list[],
 
     if (STATUS_OK && dimen.pointer->dtype == DTYPE_WITH_UNITS) {
       status = TdiUnits(dimen.pointer, &units MDS_END_ARG);
-      if
-        STATUS_OK
-      status = tdi_get_data(&omits[1], &dimen, &dimen);
+      if (STATUS_OK)
+        status = tdi_get_data(&omits[1], &dimen, &dimen);
     }
   }
-  if
-    STATUS_OK
-  switch (dimen.pointer->dtype) {
+  if (STATUS_OK)
+    switch (dimen.pointer->dtype) {
     /*********************
 They just have a list.
      *********************/
@@ -184,19 +182,16 @@ They just have a list.
     pwin = (mds_window_t *)window.pointer;
     if (STATUS_OK && pwin && pwin->dtype == DTYPE_WITH_UNITS) {
       status = TdiEvaluate(((mds_with_units_t *)pwin)->data, &tmp MDS_END_ARG);
-      if
-        STATUS_OK
-      status = MdsCopyDxXd((mdsdsc_t *)&tmp, &window);
+      if (STATUS_OK)
+        status = MdsCopyDxXd((mdsdsc_t *)&tmp, &window);
     }
-    if
-      STATUS_OK
-    status = TdiEvaluate(pdim->axis, &axis MDS_END_ARG);
+    if (STATUS_OK)
+      status = TdiEvaluate(pdim->axis, &axis MDS_END_ARG);
     paxis = (mds_range_t *)axis.pointer;
     if (STATUS_OK && paxis && paxis->dtype == DTYPE_WITH_UNITS) {
       status = TdiEvaluate(((mds_with_units_t *)paxis)->data, &tmp MDS_END_ARG);
-      if
-        STATUS_OK
-      status = MdsCopyDxXd((mdsdsc_t *)&tmp, &axis);
+      if (STATUS_OK)
+        status = MdsCopyDxXd((mdsdsc_t *)&tmp, &axis);
     }
     paxis = (mds_range_t *)axis.pointer;
     pwin = (mds_window_t *)window.pointer;
@@ -214,16 +209,16 @@ They just have a list.
     status = TdiGetLong(pwin->endingidx, &k1);
   else
     k1 = HUGE;
-  if
-    STATUS_OK { /*bug 2/26/91 include status test both ways */
+  if (STATUS_OK)
+    { /*bug 2/26/91 include status test both ways */
       if (pwin && pwin->value_at_idx0)
         status = TdiData(pwin->value_at_idx0, &xat0 MDS_END_ARG);
       else
         status = TdiData(0, &xat0 MDS_END_ARG);
     }
 
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       switch (paxis->dtype) {
       case DTYPE_SLOPE:
         pslope = (mds_slope_t *)paxis;
@@ -271,8 +266,8 @@ WARNING falls through.
         status = TdiGetArgs(opcode, nran = paxis->ndesc, &paxis->begin, sig,
                             uni, dat, cats);
         nseg = HUGE;
-        if
-          STATUS_OK { /*bug 2/26/91 include status set in bracket */
+        if (STATUS_OK)
+          { /*bug 2/26/91 include status set in bracket */
             for (j1 = nran; --j1 >= 0;)
               if (dat[j1].pointer->class == CLASS_A) {
                 jseg = ((mdsdsc_a_t *)dat[j1].pointer)->arsize /
@@ -290,9 +285,8 @@ WARNING falls through.
          * I_TO_X: combined units.
          * X_TO_I: no units.
          ************************/
-        if
-          STATUS_OK
-        status = Tdi2Range(nran, uni, dat, cats, 0);
+        if (STATUS_OK)
+          status = Tdi2Range(nran, uni, dat, cats, 0);
         if (flag && units.pointer == 0 && uni[0].pointer && STATUS_OK)
           status = MdsCopyDxXd((mdsdsc_t *)&uni[0], &units);
         if (STATUS_NOT_OK)
@@ -334,20 +328,17 @@ WARNING falls through.
         }
         status = TdiCvtArgs(nran, dat, cats);
         TdiFaultClear(0);
-        if
-          STATUS_OK
-        status =
+        if (STATUS_OK)
+          status =
             TdiSubtract(dat[end].pointer, dat[beg].pointer, &cnt MDS_END_ARG);
         if (tslo && STATUS_OK)
           status = TdiDivide(&cnt, dat[delta].pointer, &cnt MDS_END_ARG);
         if (!(TdiFaultClear(0) & 1) && STATUS_OK)
           status = TdiFixRoprand(&cnt, &dhuge, &cnt);
-        if
-          STATUS_OK
-        status = TdiDim(&cnt, &dmone, &cnt MDS_END_ARG);
-        if
-          STATUS_OK
-        status = TdiMin(&cnt, &dhuge, &cnt MDS_END_ARG);
+        if (STATUS_OK)
+          status = TdiDim(&cnt, &dmone, &cnt MDS_END_ARG);
+        if (STATUS_OK)
+          status = TdiMin(&cnt, &dhuge, &cnt MDS_END_ARG);
         if (STATUS_OK && cnt.pointer->dtype != DTYPE_L)
           status = TdiNint(&cnt, &cnt MDS_END_ARG);
 
@@ -361,9 +352,8 @@ WARNING falls through.
       counted:
         kseg = 0;
         if (nseg > 1 || !big_beg) {
-          if
-            STATUS_OK
-          status =
+          if (STATUS_OK)
+            status =
               TdiSubtract(dat[beg].pointer, xat0.pointer, &tmp MDS_END_ARG);
           if (tslo && STATUS_OK)
             status = TdiDivide(&tmp, dat[delta].pointer, &tmp MDS_END_ARG);
@@ -374,11 +364,10 @@ WARNING falls through.
         if (!pwin)
           left = 0; /*bug 2/26/91 missing window */
         else if (nseg > 1) {
-          if
-            STATUS_OK
-          status = TdiGt(tmp.pointer, 0, out_ptr MDS_END_ARG);
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            status = TdiGt(tmp.pointer, 0, out_ptr MDS_END_ARG);
+          if (STATUS_OK)
+            {
               plogical = out_ptr->pointer->pointer;
               for (; kseg < nseg - 1 && !*++plogical; ++kseg)
                 ;
@@ -400,16 +389,13 @@ WARNING falls through.
               tst1.class = CLASS_S;
               tst1.pointer += tst1.length * kseg;
               status = TdiFloor(&tst1, &uni1 MDS_END_ARG);
-              if
-                STATUS_OK
-              status = TdiMax(&uni1, &dmhuge, &tmp MDS_END_ARG);
+              if (STATUS_OK)
+                status = TdiMax(&uni1, &dmhuge, &tmp MDS_END_ARG);
               MdsFree1Dx(&uni1, NULL);
-              if
-                STATUS_OK
-              status = TdiMin(&tmp, &dhuge, &tmp MDS_END_ARG);
-              if
-                STATUS_OK
-              status = TdiGetLong(tmp.pointer, &left);
+              if (STATUS_OK)
+                status = TdiMin(&tmp, &dhuge, &tmp MDS_END_ARG);
+              if (STATUS_OK)
+                status = TdiGetLong(tmp.pointer, &left);
             }
           }
           if (kseg == 0 && left > 0)
@@ -422,15 +408,13 @@ WARNING falls through.
             else {
               int1 = dk0;
               int1.pointer = (char *)&left;
-              if
-                STATUS_OK
-              status = MdsCopyDxXd(&int1, &tmp);
+              if (STATUS_OK)
+                status = MdsCopyDxXd(&int1, &tmp);
               if (tslo && STATUS_OK)
                 status =
                     TdiMultiply(&tmp, dat[delta].pointer, &tmp MDS_END_ARG);
-              if
-                STATUS_OK
-              status = TdiSubtract(&dat[beg], &tmp, &xat0 MDS_END_ARG);
+              if (STATUS_OK)
+                status = TdiSubtract(&dat[beg], &tmp, &xat0 MDS_END_ARG);
               if (!big_end)
                 right = left + *(int *)cnt.pointer->pointer;
             }
@@ -463,8 +447,8 @@ WARNING falls through.
 When we can't get left side, use right of first segment for limit.
          *****************************************************************/
         if (kseg == 0 && big_beg && (nseg > 1 || !big_end)) {
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               tst1 = *dat[end].pointer;
               tst1.class = CLASS_S;
               status = TdiSubtract(&tst1, xat0.pointer, &tmp MDS_END_ARG);
@@ -474,38 +458,32 @@ When we can't get left side, use right of first segment for limit.
             del1.class = CLASS_S;
             status = TdiDivide(&tmp, &del1, &tmp MDS_END_ARG);
           }
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               if (tmp.pointer->dtype == DTYPE_L)
                 right = *(int *)tmp.pointer->pointer;
               else {
                 if (!(TdiFaultClear(0) & 1))
                   status = TdiFixRoprand(&tmp, &dhuge, &tmp);
-                if
-                  STATUS_OK
-                status = TdiFloor(&tmp, &tmp MDS_END_ARG);
-                if
-                  STATUS_OK
-                status = TdiMax(&tmp, &dmhuge, &tmp MDS_END_ARG);
-                if
-                  STATUS_OK
-                status = TdiMin(&tmp, &dhuge, &tmp MDS_END_ARG);
-                if
-                  STATUS_OK
-                status = TdiGetLong(&tmp, &right);
+                if (STATUS_OK)
+                  status = TdiFloor(&tmp, &tmp MDS_END_ARG);
+                if (STATUS_OK)
+                  status = TdiMax(&tmp, &dmhuge, &tmp MDS_END_ARG);
+                if (STATUS_OK)
+                  status = TdiMin(&tmp, &dhuge, &tmp MDS_END_ARG);
+                if (STATUS_OK)
+                  status = TdiGetLong(&tmp, &right);
               }
             }
           if (nseg == 1 && right < HUGE) {
             int1 = dk0;
             int1.pointer = (char *)&right;
-            if
-              STATUS_OK
-            status = MdsCopyDxXd(&int1, &tmp);
+            if (STATUS_OK)
+              status = MdsCopyDxXd(&int1, &tmp);
             if (tslo && STATUS_OK)
               status = TdiMultiply(&tmp, &del1, &tmp MDS_END_ARG);
-            if
-              STATUS_OK
-            status = TdiSubtract(&tst1, &tmp, &xat0 MDS_END_ARG);
+            if (STATUS_OK)
+              status = TdiSubtract(&tst1, &tmp, &xat0 MDS_END_ARG);
           }
           ++right;
         }
@@ -528,8 +506,8 @@ When we can't get left side, use right of first segment for limit.
          * GET_ARGS does not free.
          *******************************/
       select:
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             if (special) {
               int limits[2];
               array_int dlimits = *(array_int *)&duo;
@@ -592,9 +570,8 @@ When we can't get left side, use right of first segment for limit.
              ******************************************************************/
           }
         if (nseg > 1 && (flag || arg1)) {
-          if
-            STATUS_OK
-          status = TdiBsearch(out_ptr->pointer,
+          if (STATUS_OK)
+            status = TdiBsearch(out_ptr->pointer,
                               flag ? cnt.pointer : dat[beg].pointer, &done,
                               &tmp MDS_END_ARG);
           if (STATUS_OK && dat[beg].pointer->class == CLASS_A)
@@ -607,25 +584,22 @@ When we can't get left side, use right of first segment for limit.
             status = TdiMap(&dat[delta], &tmp, &dat[delta] MDS_END_ARG);
           if (tslo && STATUS_OK)
             status = TdiMultiply(&cnt, dat[delta].pointer, &cnt MDS_END_ARG);
-          if
-            STATUS_OK
-          status = TdiSubtract(&dat[beg], &cnt, &xat0 MDS_END_ARG);
+          if (STATUS_OK)
+            status = TdiSubtract(&dat[beg], &cnt, &xat0 MDS_END_ARG);
         }
 
         if (flag) {
           if (tslo && STATUS_OK)
             status = TdiMultiply(out_ptr, &dat[delta], out_ptr MDS_END_ARG);
-          if
-            STATUS_OK
-          status = TdiAdd(out_ptr, &xat0, out_ptr MDS_END_ARG);
+          if (STATUS_OK)
+            status = TdiAdd(out_ptr, &xat0, out_ptr MDS_END_ARG);
           /*      if (nseg > 1 && STATUS_OK) status = TdiMin(out_ptr, &dat[end],
            * out_ptr MDS_END_ARG); */
         } else if (arg1) {
           /*      if (nseg > 1 && STATUS_OK) status = TdiMin(out_ptr, &dat[end],
            * out_ptr MDS_END_ARG); */
-          if
-            STATUS_OK
-          status = TdiSubtract(out_ptr, &xat0, out_ptr MDS_END_ARG);
+          if (STATUS_OK)
+            status = TdiSubtract(out_ptr, &xat0, out_ptr MDS_END_ARG);
           if (tslo && STATUS_OK)
             status = TdiDivide(out_ptr, &dat[delta], out_ptr MDS_END_ARG);
         }
@@ -648,9 +622,8 @@ MAP preserves shape of second arg and single segment uses scalars.
         /********************************
 Embed result in units and signal.
          ********************************/
-        if
-          STATUS_OK
-        status = TdiMasterData(narg > 1, &sig1, &units, &cmode, out_ptr);
+        if (STATUS_OK)
+          status = TdiMasterData(narg > 1, &sig1, &units, &cmode, out_ptr);
         MdsFree1Dx(&sig1, NULL);
       firstbad:
         for (; --nran >= 0;) {
@@ -674,21 +647,18 @@ because it generates range.
         paxis = (mds_range_t *)axis.pointer;
         pmode = paxis->dtype == DTYPE_T ? NULL : &dmone;
         j1 = paxis->length;
-        if
-          STATUS_OK
-        status = TdiSort(paxis, &tmp MDS_END_ARG);
+        if (STATUS_OK)
+          status = TdiSort(paxis, &tmp MDS_END_ARG);
         if ((pwin || flag || arg1) && STATUS_OK) {
           status = TdiMap(paxis, tmp.pointer, &window MDS_END_ARG);
         }
         if (pwin) {
-          if
-            STATUS_OK
-          status = TdiBsearch(&xat0, paxis, pmode, &xat0 MDS_END_ARG);
-          if
-            STATUS_OK
-          status = TdiGetLong(&xat0, &left);
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            status = TdiBsearch(&xat0, paxis, pmode, &xat0 MDS_END_ARG);
+          if (STATUS_OK)
+            status = TdiGetLong(&xat0, &left);
+          if (STATUS_OK)
+            {
               N_ELEMENTS(paxis, right);
               left = -left;
               right += left - 1;
@@ -698,22 +668,20 @@ because it generates range.
                 k1 = right;
             }
         } else {
-          if
-            STATUS_OK
-          status = TdiLbound(axis.pointer, &dk0 MDS_END_ARG);
-          if
-            STATUS_OK
-          status = TdiUbound(axis.pointer, &dk1 MDS_END_ARG);
+          if (STATUS_OK)
+            status = TdiLbound(axis.pointer, &dk0 MDS_END_ARG);
+          if (STATUS_OK)
+            status = TdiUbound(axis.pointer, &dk1 MDS_END_ARG);
         }
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             if (special) {
               if (flag) {
                 unsigned short num = (unsigned short)j1;
                 status = MdsGet1DxA((mdsdsc_a_t *)&duo, &num, &paxis->dtype,
                                     out_ptr);
-                if
-                  STATUS_OK {
+                if (STATUS_OK)
+                  {
                     memcpy(out_ptr->pointer->pointer,
                            (char *)window.pointer->pointer, j1);
                     memcpy(out_ptr->pointer->pointer + j1,
@@ -752,9 +720,8 @@ because it generates range.
                 if (k0 != 0 && STATUS_OK)
                   status =
                       TdiAdd(out_ptr, &dk0, out_ptr MDS_END_ARG); /*offset */
-                if
-                  STATUS_OK
-                status =
+                if (STATUS_OK)
+                  status =
                     TdiMap(&tmp, out_ptr, out_ptr MDS_END_ARG); /*unorder */
               }
             }
@@ -764,9 +731,8 @@ because it generates range.
           DESCRIPTOR_RANGE(range, 0, 0, 0);
           status = TdiSetRange(&range, out_ptr, out_ptr MDS_END_ARG);
         }
-        if
-          STATUS_OK
-        status = TdiMasterData(0, &sig1, &units, &cmode, out_ptr);
+        if (STATUS_OK)
+          status = TdiMasterData(0, &sig1, &units, &cmode, out_ptr);
         break;
       }
     }

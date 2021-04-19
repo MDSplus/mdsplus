@@ -90,8 +90,8 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes,
         if (shapes[i][j] != shapes[0][j])
           status = InvalidShapeInSegments;
 
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       // Shapes Ok, build definitive shapes array for this signal;
       for (i = 0; i < minNumShapes; i++)
         outShape[i] = shapes[0][i];
@@ -252,9 +252,8 @@ static inline int mergeArrays(struct descriptor_a *signalsApd,
       extern int TdiData();
       status =
           TdiData(currSignalD->dimensions[0], &(*dimensionsXd)[i] MDS_END_ARG);
-      if
-        STATUS_NOT_OK
-      break;
+      if (STATUS_NOT_OK)
+        break;
       arraysD[i] = arrayD = (struct descriptor_a *)(*dimensionsXd)[i].pointer;
       if (!arrayD ||
           arrayD->class !=
@@ -265,8 +264,8 @@ static inline int mergeArrays(struct descriptor_a *signalsApd,
     }
     totSize += arrayD->arsize;
   }
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   // Merge first dimension in outDim array. It is assumed that the first
   // dimension has been evaluaed to a 1D array
   memcpy(outDimD, arraysD[0], sizeof(struct descriptor_a));
@@ -300,13 +299,13 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   int totShapes;
   int outShape[MAX_DIMS];
   int status = checkShapes(signalsApd, &totShapes, outShape);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   // Check that the number of dimensions in signals is the same
   int numDimensions = 0;
   status = checkNumDimensions(signalsApd, &numDimensions);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   DESCRIPTOR_SIGNAL(outSignalD, MAX_DIMS, 0, 0);
 
   // Check whether all dimensions are expressed as a range.
@@ -328,9 +327,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
     status =
         mergeArrays(signalsApd, &dimensionsXd, (struct descriptor_a *)&outDimD,
                     &arraysBuf, &outDimBuf);
-    if
-      STATUS_OK
-    outSignalD.dimensions[0] = (struct descriptor *)&outDimD;
+    if (STATUS_OK)
+      outSignalD.dimensions[0] = (struct descriptor *)&outDimD;
     else {
       numDimensions = 0;
     }

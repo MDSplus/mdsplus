@@ -122,20 +122,17 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
     case DTYPE_NID:
       pnid = (int *)list[0]->pointer;
       status = TdiGetRecord(*pnid, out_ptr);
-      if
-        STATUS_OK
-      status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
+      if (STATUS_OK)
+        status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
       break;
     case DTYPE_PATH: {
       char *path = MdsDescrToCstring(list[0]);
       status = TreeFindNode(path, &nid);
       MdsFree(path);
-      if
-        STATUS_OK
-      status = TdiGetRecord(nid, out_ptr);
-      if
-        STATUS_OK
-      status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
+      if (STATUS_OK)
+        status = TdiGetRecord(nid, out_ptr);
+      if (STATUS_OK)
+        status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
     } break;
     default:
       if (list[0]->dtype < 160)
@@ -192,9 +189,8 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
     Must expand compressed data. 24-Apr-1991
     ***************************************/
     status = TdiEvaluate(list[0]->pointer, out_ptr MDS_END_ARG);
-    if
-      STATUS_OK
-    status = TdiImpose(list[0], out_ptr);
+    if (STATUS_OK)
+      status = TdiImpose(list[0], out_ptr);
     break;
   case CLASS_A:
     /*************************
@@ -212,9 +208,8 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
                           (int)((struct descriptor_a *)list[0])->arsize /
                               (int)list[0]->length,
                           list[0]->pointer, out_ptr);
-      if
-        STATUS_OK
-      status = TdiImpose(list[0], out_ptr);
+      if (STATUS_OK)
+        status = TdiImpose(list[0], out_ptr);
     }
     break;
   default:

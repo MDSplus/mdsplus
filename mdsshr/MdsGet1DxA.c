@@ -107,8 +107,8 @@ EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr,
   dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       out_dsc = (array_coeff *)out_xd->pointer;
       *(mdsdsc_a_t *)out_dsc = *(mdsdsc_a_t *)in_dsc;
       out_dsc->length = *length_ptr;

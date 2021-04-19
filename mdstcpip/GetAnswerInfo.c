@@ -69,8 +69,8 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims,
     DisconnectConnection(id);
     status = MDSplusERROR;
   }
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       free(m);
       *mout = NULL;
       *dtype = 0;

@@ -34,8 +34,8 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
                       char *host) {
   struct SOCKADDR_IN sin;
   UDTSOCKET sock;
-  if
-    IS_OK(GetHostAndPort(host, &sin)) {
+  if (IS_OK(GetHostAndPort(host, &sin)))
+    {
       sock = udt_socket(PF_T, SOCK_STREAM, 0);
       if (!sock) {
         perror("Error in (udt) connect");
@@ -155,8 +155,8 @@ static int io_listen(int argc, char **argv) {
             UDTSOCKET sock = udt_accept(ssock, (struct sockaddr *)&sin, &len);
             status =
                 AcceptConnection(PROT, PROT, sock, NULL, 0, &id, &username);
-            if
-              STATUS_OK {
+            if (STATUS_OK)
+              {
                 Client *client =
                     memset(malloc(sizeof(Client)), 0, sizeof(Client));
                 client->id = id;

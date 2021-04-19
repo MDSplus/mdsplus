@@ -106,8 +106,8 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
     if (new[0] == 0 && new[1] == 0)
       return TdiItoX(TDI_RANGE_PTRS[2], out_ptr MDS_END_ARG);
     status = TdiXtoI(TDI_RANGE_PTRS[2], TdiItoXSpecial, &limits MDS_END_ARG);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         dx0 = *limits.pointer;
         dx0.class = CLASS_S;
         dx1 = dx0;
@@ -123,9 +123,8 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
       status = TdiXtoI(TDI_RANGE_PTRS[2], new[1], &dat[1] MDS_END_ARG);
       range.ending = dat[1].pointer;
     }
-    if
-      STATUS_OK
-    status = TdiItoX(TDI_RANGE_PTRS[2], &range, out_ptr MDS_END_ARG);
+    if (STATUS_OK)
+      status = TdiItoX(TDI_RANGE_PTRS[2], &range, out_ptr MDS_END_ARG);
     MdsFree1Dx(&dat[1], NULL);
     MdsFree1Dx(&dat[0], NULL);
     MdsFree1Dx(&limits, NULL);
@@ -141,12 +140,10 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
   /******************************************
   Fetch signals and data and data's category.
   ******************************************/
-  if
-    STATUS_OK
-  status = TdiGetArgs(opcode, nnew, new, sig, uni, dat, cats);
-  if
-    STATUS_OK
-  for (j = nnew; --j >= 0;)
+  if (STATUS_OK)
+    status = TdiGetArgs(opcode, nnew, new, sig, uni, dat, cats);
+  if (STATUS_OK)
+    for (j = nnew; --j >= 0;)
     if (dat[j].pointer->dtype == DTYPE_MISSING)
       status = TdiNULL_PTR;
 
@@ -154,12 +151,10 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
   Adjust category needed to match data types.
   Do any conversions to match types.
   ******************************************/
-  if
-    STATUS_OK
-  status = Tdi2Range(nnew, uni, dat, cats, 0);
-  if
-    STATUS_OK
-  status = TdiCvtArgs(nnew, dat, cats);
+  if (STATUS_OK)
+    status = Tdi2Range(nnew, uni, dat, cats, 0);
+  if (STATUS_OK)
+    status = TdiCvtArgs(nnew, dat, cats);
   dtype = cats[nnew].out_dtype;
   len = cats[nnew].digits;
 
@@ -169,24 +164,21 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
   Total number of elements is sum of above.
   WARNING 3$ routines require type match.
   ********************************************/
-  if
-    STATUS_OK
-  status = TdiSubtract(&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiSubtract(&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
   if (new[2] && STATUS_OK)
     status = TdiDivide(&nelem, dat[2].pointer, &nelem MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiDim(&nelem, &minus_one, &nelem MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiDim(&nelem, &minus_one, &nelem MDS_END_ARG);
   if (STATUS_OK && nelem.pointer->dtype != DTYPE_L) {
     status = TdiNint(&nelem, &nelem MDS_END_ARG);
     if (STATUS_OK && nelem.pointer->dtype != DTYPE_L)
       status = TdiLong(&nelem, &nelem MDS_END_ARG);
   }
-  if
-    STATUS_OK { N_ELEMENTS(nelem.pointer, nseg); }
-  if
-    STATUS_OK
-  for (j = nseg, pl = (int *)nelem.pointer->pointer, tot = 0; --j >= 0;)
+  if (STATUS_OK)
+    { N_ELEMENTS(nelem.pointer, nseg); }
+  if (STATUS_OK)
+    for (j = nseg, pl = (int *)nelem.pointer->pointer, tot = 0; --j >= 0;)
     tot += *pl++;
 
   /**************************
@@ -194,11 +186,10 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
   Get the array and stuff it.
   **************************/
   arr.arsize = tot;
-  if
-    STATUS_OK
-  status = MdsGet1DxA((struct descriptor_a *)&arr, &len, &dtype, out_ptr);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    status = MdsGet1DxA((struct descriptor_a *)&arr, &len, &dtype, out_ptr);
+  if (STATUS_OK)
+    {
       DESCRIPTOR_A(x_dsc, 0, 0, 0, 0);
       struct descriptor begin = {0, 0, CLASS_S, 0};
       struct descriptor delta = {0, 0, CLASS_S, 0};
@@ -216,14 +207,12 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
       delta.pointer = new[2] ? dat[2].pointer->pointer : 0;
       for (j = nseg, pl = (int *)nelem.pointer->pointer; --j >= 0;) {
         x_dsc.arsize = *pl * len;
-        if
-          STATUS_OK
-        status = Tdi3Ramp(&x_dsc);
+        if (STATUS_OK)
+          status = Tdi3Ramp(&x_dsc);
         if (new[2] && STATUS_OK)
           status = Tdi3Multiply(&x_dsc, &delta, &x_dsc);
-        if
-          STATUS_OK
-        status = Tdi3Add(&x_dsc, &begin, &x_dsc);
+        if (STATUS_OK)
+          status = Tdi3Add(&x_dsc, &begin, &x_dsc);
         if (incb)
           begin.pointer += len;
         if (incs)
@@ -236,9 +225,8 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[],
   MdsFree1Dx(&nelem, NULL);
   MdsFree1Dx(&limits, NULL);
 
-  if
-    STATUS_OK
-  status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
 
   for (j = nnew; --j >= 0;) {
     if (sig[j].pointer)

@@ -142,9 +142,8 @@ static int fixup_path(struct descriptor *path_in, int idx,
   int nid;
   int flag = B_FALSE;
   path[path_in->length] = 0;
-  if
-    IS_OK(TreeFindNode(path, &nid))
-  flag = fixup_nid(&nid, idx, path_out);
+  if (IS_OK(TreeFindNode(path, &nid)))
+    flag = fixup_nid(&nid, idx, path_out);
   free(path);
   return flag;
 }
@@ -297,8 +296,8 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
   ServerSendMonitor(monitor_name, tree, (*table_ptr)->shot, actions[i].phase,  \
                     actions[i].nid, actions[i].on, mode, server,               \
                     actions[i].status)
-      if
-        IS_OK(SEND(0, MonitorBuildBegin)) { // send begin
+      if (IS_OK(SEND(0, MonitorBuildBegin)))
+        { // send begin
 #ifdef SKIP_OTHERS
           if (num_actions > 1)
 #else

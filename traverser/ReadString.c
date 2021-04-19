@@ -57,11 +57,11 @@ char *ReadString(char *expr, ...) {
   default:
     return 0;
   }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       /*    status = TdiData(&ans_xd, &ans_xd); */
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           struct descriptor *d_ptr;
           for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
                d_ptr = (struct descriptor *)d_ptr->pointer)

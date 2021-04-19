@@ -51,9 +51,8 @@ int Tdi3Adjustl(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   int step = out_ptr->length, n;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  for (; --n >= 0;) {
+  if (STATUS_OK)
+    for (; --n >= 0;) {
     pe1 += step;
     pe2 += step;
     while (ps1 < pe1 && (*ps1 == ' ' || *ps1 == '\t'))
@@ -77,9 +76,8 @@ int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   int step = out_ptr->length, n, last;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  for (last = n * step - 1, pe1 = ps1 += last, pe2 = ps2 += last; --n >= 0;) {
+  if (STATUS_OK)
+    for (last = n * step - 1, pe1 = ps1 += last, pe2 = ps2 += last; --n >= 0;) {
     ps1 -= step;
     ps2 -= step;
     while (ps1 < pe1 && (*pe1 == ' ' || *pe1 == '\t'))
@@ -129,9 +127,8 @@ int Tdi3Concat(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
   int status = MDSplusSUCCESS, n;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  for (; --n >= 0; p1 += step1, p2 += step2) {
+  if (STATUS_OK)
+    for (; --n >= 0; p1 += step1, p2 += step2) {
     for (j1 = size1, pt1 = p1; --j1 >= 0;)
       *p3++ = *pt1++;
     for (j2 = size2, pt2 = p2; --j2 >= 0;)
@@ -166,9 +163,8 @@ int Tdi3Element(struct descriptor *number_ptr, struct descriptor *delim_ptr,
     static const unsigned short zero = 0;
     number = *(int *)pnumber, pnumber += number_step;
     status = StrElement(&out_dsc, &number, &delim_dsc, &source_dsc);
-    if
-      STATUS_NOT_OK
-    status = StrCopyR(&out_dsc, &zero, "");
+    if (STATUS_NOT_OK)
+      status = StrCopyR(&out_dsc, &zero, "");
     source_dsc.pointer += source_step;
     delim_dsc.pointer += delim_step;
     out_dsc.pointer += out_dsc.length;
@@ -359,13 +355,11 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr) {
     ****************************************************/
     status =
         StrUpcase((struct descriptor *)&one_dsc, (struct descriptor *)&tmp_dsc);
-    if
-      STATUS_OK
-    status = StrTrim((struct descriptor *)&one_dsc,
+    if (STATUS_OK)
+      status = StrTrim((struct descriptor *)&one_dsc,
                      (struct descriptor *)&one_dsc, 0);
-    if
-      STATUS_NOT_OK
-    break;
+    if (STATUS_NOT_OK)
+      break;
     /******************************
     Ignore leading Opc designator.
     ******************************/

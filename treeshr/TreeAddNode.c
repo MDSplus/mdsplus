@@ -112,15 +112,14 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage) {
      if not it is an error.
   ******************************************************/
   status = TreeFindParent(dblist, upcase_name, &parent, &node_name, &is_child);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       /****************************************************
         make sure that the node is not already there
       *****************************************************/
       status = _TreeFindNode(dbid, upcase_name, &nid);
-      if
-        STATUS_OK
-      status = TreeALREADY_THERE;
+      if (STATUS_OK)
+        status = TreeALREADY_THERE;
       else if (status == TreeNNF) {
         /***********************************************
           If a conglomerate is being built make sure that
@@ -141,8 +140,8 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage) {
         *************************************************/
         if (STATUS_OK) {
           status = TreeNewNode(dblist, &new_ptr, &parent);
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               size_t i;
               short idx = *conglom_index;
 #pragma GCC diagnostic push
@@ -172,8 +171,8 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage) {
               }
               *nid_out = node_to_nid(dblist, new_ptr, 0);
             }
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               NCI new_nci;
               NCI scratch_nci;
               NID nid;
@@ -184,8 +183,8 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage) {
               node_to_nid(dblist, new_ptr, &nid);
               status = tree_get_and_lock_nci(dblist->tree_info, nid.node,
                                              &scratch_nci, &ncilocked);
-              if
-                STATUS_OK {
+              if (STATUS_OK)
+                {
                   if (_TreeIsOn(dblist, *(int *)&parent_nid) & 1)
                     new_nci.flags &= (unsigned)~NciM_PARENT_STATE;
                   else
@@ -200,9 +199,8 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage) {
       }
       free(node_name);
     }
-  if
-    STATUS_OK
-  dblist->modified = 1;
+  if (STATUS_OK)
+    dblist->modified = 1;
   FREE_NOW(upcase_name);
   return status;
 }
@@ -315,8 +313,8 @@ STATIC_ROUTINE int TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr,
   *********************************/
   if (header_ptr->free == -1)
     status = TreeExpandNodes(db_ptr, 1, &trn_node_ptrptr);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
 
       /**************************************
         Use the first node on the free list.
@@ -515,15 +513,15 @@ static void get_add_rtn_c(void *in) {
 static inline int get_add_rtn(char const *congtype, int (**add)()) {
   static int (*TdiExecute)() = NULL;
   int status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   // find image name by MdsDevices() array
   char exp[] = "MdsDevices()";
   struct descriptor expdsc = {strlen(exp), DTYPE_T, CLASS_S, (char *)exp};
   EMPTYXD(xd);
   status = TdiExecute(&expdsc, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   get_add_rtn_t c = {&xd, NULL, NULL, NULL};
   uint32_t j, i = (uint32_t)strlen(congtype);
   c.rtn = malloc(i + 6);
@@ -563,8 +561,8 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype,
     return TreeNOEDIT;
   static int (*_TdiExecute)() = NULL;
   int status = LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   struct descriptor pathdsc = {strlen(path), DTYPE_T, CLASS_S, (char *)path};
   struct descriptor typedsc = {strlen(congtype), DTYPE_T, CLASS_S,
                                (char *)congtype};
@@ -576,12 +574,11 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype,
     struct descriptor expdsc = {strlen(exp), DTYPE_T, CLASS_S, (char *)exp};
     status =
         _TdiExecute(&dbid, &expdsc, &pathdsc, &typedsc, &statdsc MDS_END_ARG);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         status = addstatus;
-        if
-          STATUS_OK
-        status = _TreeFindNode(dbid, path, nid);
+        if (STATUS_OK)
+          status = _TreeFindNode(dbid, path, nid);
       }
     FREE_NOW(exp);
   }
@@ -590,8 +587,8 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype,
   /*try shared device*/ {
     int (*add)() = NULL;
     status = get_add_rtn(congtype, &add);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         CTX_PUSH(&dbid);
         status = add(&pathdsc, &typedsc, nid);
         CTX_POP(&dbid);
@@ -604,13 +601,12 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype,
     struct descriptor expdsc = {strlen(exp), DTYPE_T, CLASS_S, (char *)exp};
     INIT_AND_FREEXD_ON_EXIT(xd);
     status = _TdiExecute(&dbid, &expdsc, &pathdsc, &typedsc, &xd MDS_END_ARG);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         int *arr = (int *)xd.pointer->pointer;
         status = arr[0];
-        if
-          STATUS_OK
-        *nid = arr[1];
+        if (STATUS_OK)
+          *nid = arr[1];
       }
     FREEXD_NOW(xd);
   }
@@ -680,8 +676,8 @@ int _TreeStartConglomerate(void *dbid, int size) {
     pointer points to this block of nodes.  If
     nessesary move the pointers around to  make it so.
   ****************************************************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (starting_node_ptr && starting_node_ptr->child != 0) {
         if (parent_of(0, this_node_ptr)) {
           set_parent(child_of(0, starting_node_ptr),
@@ -754,9 +750,8 @@ int64_t _TreeGetDatafileSize(void *dbid) {
   if (!info)
     return -1;
   if ((!info->data_file) || info->data_file->get == 0) {
-    if
-      IS_NOT_OK(TreeOpenDatafileR(info))
-    return -1;
+    if (IS_NOT_OK(TreeOpenDatafileR(info)))
+      return -1;
   }
   return MDS_IO_LSEEK(info->data_file->get, 0, SEEK_END);
 }
@@ -796,8 +791,8 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid) {
       }
     } else
       status = IS_OPEN_FOR_EDIT(*dblist) ? TreeSUCCESS : TreeNOT_OPEN;
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         /**************************************
         Compute number of pages to allocate for
         each part of the tree file.
@@ -847,9 +842,8 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid) {
           if (num != (ssize_t)(external_pages * 512))
             goto error_exit;
           status = TreeWriteNci(info_ptr);
-          if
-            STATUS_NOT_OK
-          goto error_exit;
+          if (STATUS_NOT_OK)
+            goto error_exit;
           status = TreeSUCCESS;
           if (info_ptr->channel > -1)
             status = MDS_IO_CLOSE(info_ptr->channel);
@@ -946,9 +940,8 @@ STATIC_ROUTINE int TreeWriteNci(TREE_INFO *info) {
                 nbytes)
                    ? TreeSUCCESS
                    : TreeNCIWRITE;
-      if
-        STATUS_OK
-      info->edit->first_in_mem++;
+      if (STATUS_OK)
+        info->edit->first_in_mem++;
     }
   }
   return status;
@@ -1013,8 +1006,8 @@ int _TreeSetSubtree(void *dbid, int nid) {
   if (pages_needed > pages_allocated) {
     new_external_ptr = malloc((size_t)pages_needed * 512u);
     status = new_external_ptr == 0 ? TreeMEMERR : TreeSUCCESS;
-    if
-      STATUS_NOT_OK { return status; }
+    if (STATUS_NOT_OK)
+      { return status; }
     memcpy(new_external_ptr, dblist->tree_info->external,
            (size_t)((numext - 1) * 4));
     if (dblist->tree_info->edit->external_pages > 0)

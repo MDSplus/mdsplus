@@ -84,8 +84,8 @@ static inline int TreeDeleteTreeFilesOne(char *tree, int shot, char *treepath) {
   char *tmp[3] = {0};
   status = TreeSUCCESS;
   for (i = 0; i < 3; i++) {
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         status = MDS_IO_OPEN_ONE(treepath, tree, shot, i + TREE_TREEFILE_TYPE,
                                  0, 0, &tmp[i], NULL, &src[i]);
         if (STATUS_OK && tmp[i])
@@ -98,8 +98,8 @@ static inline int TreeDeleteTreeFilesOne(char *tree, int shot, char *treepath) {
   for (i = 0; i < 3; i++) {
     if (src[i] >= 0)
       MDS_IO_CLOSE(src[i]);
-    if
-      STATUS_OK retstatus = MDS_IO_REMOVE(tmp[i]);
+    if (STATUS_OK)
+      retstatus = MDS_IO_REMOVE(tmp[i]);
     free(tmp[i]);
   }
   return retstatus ? TreeFAILURE : status;
@@ -109,8 +109,8 @@ static inline int _TreeDeletePulseFiles(PINO_DATABASE *dblist, int shotid,
                                         char *treepath) {
   void *dbid_tmp = NULL;
   int status = _TreeOpen(&dbid_tmp, dblist->experiment, shotid, 0);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   void *ctx = 0;
   // push cleanup of ctx and dbid_tmp
   status = TreeSUCCESS;
@@ -135,11 +135,10 @@ static inline int _TreeDeletePulseFiles(PINO_DATABASE *dblist, int shotid,
       strcpy(name, dblist->experiment);
       sts = 1;
     }
-    if
-      IS_OK(sts)
-    sts = TreeDeleteTreeFilesOne(name, shot, treepath);
-    if
-      IS_NOT_OK(sts) {
+    if (IS_OK(sts))
+      sts = TreeDeleteTreeFilesOne(name, shot, treepath);
+    if (IS_NOT_OK(sts))
+      {
         status = sts;
         break;
       }

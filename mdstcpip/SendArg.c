@@ -34,8 +34,8 @@ int SendDsc(int id, unsigned char idx, unsigned char nargs,
   int status;
   INIT_AND_FREEXD_ON_EXIT(out);
   status = MdsSerializeDscOut(dsc, &out);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       struct descriptor_a *array = (struct descriptor_a *)out.pointer;
       int dims[MAX_DIMS] = {0};
       dims[0] = array->arsize;
@@ -99,7 +99,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
                                              : c->message_id;
   int status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
   free(m);
-  if
-    STATUS_NOT_OK UnlockConnection(c);
+  if (STATUS_NOT_OK)
+    UnlockConnection(c);
   return status;
 }

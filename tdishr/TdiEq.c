@@ -261,9 +261,8 @@ int Tdi3_Eq(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
   int s2 = (in2_ptr->class != CLASS_A);
 
   status = TdiBinary(in1_ptr, in2_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   switch (in1_ptr->dtype) {
   case DTYPE_T:
@@ -320,8 +319,7 @@ int Tdi3Lt(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
 int Tdi3Ne(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
            struct descriptor *out_ptr) {
   int status = Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
-  if
-    STATUS_OK
-  status = Tdi3Not(out_ptr, out_ptr);
+  if (STATUS_OK)
+    status = Tdi3Not(out_ptr, out_ptr);
   return status;
 }

@@ -56,8 +56,8 @@ STATIC_ROUTINE int RewriteDatafile(char const *tree, int shot, int compress) {
   strcat(tree_list, ",\"\"");
   status = _TreeOpen(&dbid1, tree_list, shot, 1);
   free(tree_list);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       move_t move = {0};
       pthread_cleanup_push(freemove, &move);
       pthread_cleanup_push(treeclose, &dbid1);
@@ -65,25 +65,25 @@ STATIC_ROUTINE int RewriteDatafile(char const *tree, int shot, int compress) {
       PINO_DATABASE *dblist1 = (PINO_DATABASE *)dbid1;
       TREE_INFO *info1 = dblist1->tree_info;
       status = TreeOpenNciW(dblist1->tree_info, 0);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           status = TreeOpenDatafileW(dblist1->tree_info, &stv, 0);
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               status = _TreeOpenEdit(&dbid2, tree, shot);
-              if
-                STATUS_OK {
+              if (STATUS_OK)
+                {
                   pthread_cleanup_push(treeclose, &dbid2);
                   PINO_DATABASE *dblist2 = (PINO_DATABASE *)dbid2;
                   TREE_INFO *info2 = dblist2->tree_info;
                   status = TreeOpenNciW(dblist2->tree_info, 1);
-                  if
-                    STATUS_OK {
+                  if (STATUS_OK)
+                    {
                       dblist2->tree_info->edit->first_in_mem =
                           dblist2->tree_info->header->nodes;
                       status = TreeOpenDatafileW(dblist2->tree_info, &stv, 1);
-                      if
-                        STATUS_OK {
+                      if (STATUS_OK)
+                        {
                           int i;
                           for (i = 0; i < info1->header->nodes; i++) {
                             EMPTYXD(xd);
@@ -126,8 +126,8 @@ STATIC_ROUTINE int RewriteDatafile(char const *tree, int shot, int compress) {
                               } else {
                                 stat1 = _TreeGetRecord(dbid1, i, &xd);
                                 TreeSetViewDate(&now);
-                                if
-                                  IS_OK(stat1) {
+                                if (IS_OK(stat1))
+                                  {
                                     TreeSetTemplateNci(&list->nci);
                                     stat1 = _TreePutRecord(
                                         dbid2, i, (struct descriptor *)&xd,
@@ -175,15 +175,13 @@ STATIC_ROUTINE int RewriteDatafile(char const *tree, int shot, int compress) {
             }
         }
       pthread_cleanup_pop(1); // treeclose(&dbid1)
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           status = MDS_IO_REMOVE(move.to_c) == 0 ? TreeSUCCESS : TreeDELFAIL;
-          if
-            STATUS_OK
-          status = MDS_IO_REMOVE(move.to_d) == 0 ? TreeSUCCESS : TreeDELFAIL;
-          if
-            STATUS_OK
-          status = ((MDS_IO_RENAME(move.from_c, move.to_c) == 0) &&
+          if (STATUS_OK)
+            status = MDS_IO_REMOVE(move.to_d) == 0 ? TreeSUCCESS : TreeDELFAIL;
+          if (STATUS_OK)
+            status = ((MDS_IO_RENAME(move.from_c, move.to_c) == 0) &&
                     (MDS_IO_RENAME(move.from_d, move.to_d) == 0))
                        ? TreeSUCCESS
                        : TreeRENFAIL;

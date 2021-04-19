@@ -545,8 +545,8 @@ static inline int call_python_fun(const char *const filename, const int nargs,
       PyObject *status_obj = PyObject_GetAttrString(exc, "status");
       int status = (int)PyLong_AsLong(status_obj);
       Py_DecRef(status_obj);
-      if
-        STATUS_NOT_OK {
+      if (STATUS_NOT_OK)
+        {
           char *fac_out = NULL, *msgnam_out = NULL, *text_out = NULL;
           const char *f = "WSEIF???";
           MdsGetStdMsg(status, (const char **)&fac_out,

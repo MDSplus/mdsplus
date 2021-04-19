@@ -163,9 +163,8 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
         struct descriptor_xd xd = EMPTY_XD;
         status =
             TdiGetShape(1, &dat[j], cptr->digits, cptr->out_dtype, &cmode, &xd);
-        if
-          STATUS_OK
-        status = TdiConvert(aptr, xd.pointer MDS_END_ARG);
+        if (STATUS_OK)
+          status = TdiConvert(aptr, xd.pointer MDS_END_ARG);
         MdsFree1Dx(&dat[j], NULL);
         dat[j] = xd;
       }

@@ -79,8 +79,8 @@ EXPORT char *ServerFindServers(void **ctx, char *wild_match) {
           struct descriptor ans_d = {strlen(ans_c), DTYPE_T, CLASS_S, ans_c};
           struct descriptor wild_d = {strlen(wild_match), DTYPE_T, CLASS_S,
                                       wild_match};
-          if
-            IS_OK(StrMatchWild(&ans_d, &wild_d)) {
+          if (IS_OK(StrMatchWild(&ans_d, &wild_d)))
+            {
               ans = ans_c;
               break;
             }

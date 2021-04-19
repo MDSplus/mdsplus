@@ -60,8 +60,8 @@ int UnwrapCommaDesc(int ndesc, struct descriptor *list[], int *nout,
                              list_out);
   else {
     status = TdiData(list[0], &xd MDS_END_ARG);
-    if
-      STATUS_OK list_out[(*nout)++] = xd.pointer;
+    if (STATUS_OK)
+      list_out[(*nout)++] = xd.pointer;
   }
   int i;
   for (i = 1; STATUS_OK && i < ndesc; i++) {
@@ -78,8 +78,8 @@ int UnwrapComma(int narg, struct descriptor *list[], int *nout_p,
   int nout = 0;
   *list_ptr = malloc(*nout_p * sizeof(void *));
   int status = UnwrapCommaDesc(narg, list, &nout, *list_ptr);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       int i;
       for (i = 0; i < nout; i++)
         free((*list_ptr)[i]);
@@ -104,8 +104,8 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[],
   struct descriptor **alist, **olist;
   int osize, asize, alen;
   int status = UnwrapComma(narg, list, &alen, &alist);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   asize = (alen - 1) * sizeof(void *);
   struct descriptor_a *oarr = (struct descriptor_a *)alist[0];
   if (oarr && oarr->dtype) {

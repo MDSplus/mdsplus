@@ -41,8 +41,7 @@ int DoMessage(int id) {
     return 0; // will cause tunnel to terminate
   Message *msgptr = GetMdsMsg(id, &status);
   Message *ans = 0;
-  if
-    STATUS_OK {
+  if (STATUS_OK) {
       ans = processMessage(c, msgptr);
       if (ans) {
         status = SendMdsMsg(id, ans, 0);

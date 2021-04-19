@@ -41,8 +41,8 @@ EXPORT int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t *retTime) {
   EMPTYXD(xd);
   FREEXD_ON_EXIT(&xd);
   status = TdiData(timeD, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   if (!xd.pointer || xd.pointer->class != CLASS_S)
     status = MDSplusERROR; // InvalidTimeFormat
   else
@@ -77,8 +77,8 @@ EXPORT int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t *retTime) {
     default: {
       // Not a 64 bit integer, try to convert it via float or double * 1e9
       status = TdiFloat((mdsdsc_t *)&xd, &xd MDS_END_ARG);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           double dbl;
           if (xd.pointer->dtype == DTYPE_DOUBLE)
             dbl = *(double *)xd.pointer->pointer;
@@ -102,8 +102,8 @@ EXPORT int XTreeConvertToDouble(mdsdsc_t *const timeD, double *const retTime) {
   EMPTYXD(xd);
   FREEXD_ON_EXIT(&xd);
   status = TdiData(timeD, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   if (!xd.pointer || xd.pointer->class != CLASS_S)
     status = MDSplusERROR; // InvalidTimeFormat
   else
@@ -140,8 +140,8 @@ EXPORT int XTreeConvertToDouble(mdsdsc_t *const timeD, double *const retTime) {
       break;
     default: {
       status = TdiFloat((mdsdsc_t *)&xd, &xd MDS_END_ARG);
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           if (xd.pointer->dtype == DTYPE_DOUBLE)
             *retTime = *(double *)xd.pointer->pointer;
           else

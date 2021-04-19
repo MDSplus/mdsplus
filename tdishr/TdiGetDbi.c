@@ -107,11 +107,10 @@ int Tdi1GetDbi(opcode_t opcode __attribute__((unused)), int narg,
   String of item to find.
   **********************/
   status = TdiData(list[0], &tmp MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiUpcase(&tmp, &string MDS_END_ARG);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    status = TdiUpcase(&tmp, &string MDS_END_ARG);
+  if (STATUS_OK)
+    {
       key_ptr =
           (struct item *)bsearch(&string, table, numtab, siztab,
                                  (int (*)(const void *, const void *))compare);
@@ -131,14 +130,14 @@ int Tdi1GetDbi(opcode_t opcode __attribute__((unused)), int narg,
   Get the item asked for.
   Fixed length or varying.
   ***********************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       lst[1].code = key_ptr->item_code;
       if ((lst[1].buffer_length = key_ptr->item_length) != 0) {
         status = MdsGet1DxS((length_t *)&lst[1].buffer_length,
                             &key_ptr->item_dtype, out_ptr);
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             lst[1].pointer = (unsigned char *)out_ptr->pointer->pointer;
             status = TreeGetDbi(lst);
           }
@@ -146,8 +145,8 @@ int Tdi1GetDbi(opcode_t opcode __attribute__((unused)), int narg,
         lst[1].buffer_length = 0;
         lst[1].pointer = NULL;
         status = TreeGetDbi(lst);
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             struct descriptor ans = {0, DTYPE_T, CLASS_S, 0};
             if (lst[1].pointer) {
               ans.length = strlen((char *)lst[1].pointer);
@@ -235,17 +234,16 @@ int Tdi1Using(opcode_t opcode __attribute__((unused)), int narg,
         StrCopyR((struct descriptor *)&def, &len, def_itm[0].pointer);
         TreeFree(def_itm[0].pointer);
       }
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           stat1 = StrPosition((struct descriptor *)&def,
                               (struct descriptor *)&coloncolon, 0) +
                   1;
           status = StrRight((struct descriptor *)&def,
                             (struct descriptor *)&def, &stat1);
         }
-      if
-        STATUS_OK
-      *def.pointer = '\\';
+      if (STATUS_OK)
+        *def.pointer = '\\';
     }
   }
   void *dbid = NULL, **ctx = TreeCtx();
@@ -259,8 +257,8 @@ int Tdi1Using(opcode_t opcode __attribute__((unused)), int narg,
       status = TreeGetDbi(shot_itm);
     }
 
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         if (narg > 3 && list[3])
           status = TdiData(list[3], &expt MDS_END_ARG);
         else {
@@ -278,8 +276,8 @@ int Tdi1Using(opcode_t opcode __attribute__((unused)), int narg,
     Set new tree and path.
     Allow some rel paths.
     *********************/
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         char *tree = MdsDescrToCstring((struct descriptor *)&expt);
         ctx = &dbid;
         status = _TreeOpen(ctx, tree, shot, 1);
@@ -288,9 +286,8 @@ int Tdi1Using(opcode_t opcode __attribute__((unused)), int narg,
   }
   if (narg > 1) {
     char *path = MdsDescrToCstring((struct descriptor *)&def);
-    if
-      STATUS_OK
-    status = _TreeSetDefault(*ctx, path, &nid);
+    if (STATUS_OK)
+      status = _TreeSetDefault(*ctx, path, &nid);
     MdsFree(path);
     if (narg > 2)
       StrFree1Dx(&expt);
@@ -299,13 +296,12 @@ int Tdi1Using(opcode_t opcode __attribute__((unused)), int narg,
   /***********************
   Evaluate with temporary.
   ***********************/
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       struct descriptor_xd tmp = EMPTY_XD;
       status = _TdiEvaluate(ctx, list[0], &tmp MDS_END_ARG);
-      if
-        STATUS_OK
-      status = MdsCopyDxXdZ((struct descriptor *)&tmp, out_ptr, NULL, fixup_nid,
+      if (STATUS_OK)
+        status = MdsCopyDxXdZ((struct descriptor *)&tmp, out_ptr, NULL, fixup_nid,
                             NULL, fixup_path, NULL);
       MdsFree1Dx(&tmp, NULL);
     }

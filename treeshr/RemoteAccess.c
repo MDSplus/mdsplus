@@ -111,9 +111,8 @@ static pthread_cond_t host_list_sig = PTHREAD_COND_INITIALIZER;
  */
 static void host_list_cleanup(const int conid) {
   static int (*disconnectFromMds)(int) = NULL;
-  if
-    IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds",
-                                   &disconnectFromMds))
+  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds",
+                                   &disconnectFromMds)))
   perror("Error loading MdsIpShr->DisconnectFromMds in host_list_cleanup");
   host_list_t *host, *prev = NULL;
   for (host = host_list; host;) {
@@ -190,8 +189,8 @@ static int remote_access_connect(char *server, int inc_count,
                                  void *dbid __attribute__((unused))) {
   static int (*ReuseCheck)(char *, char *, int) = NULL;
   char unique[128] = "\0";
-  if
-    IS_OK(LibFindImageSymbol_C("MdsIpShr", "ReuseCheck", &ReuseCheck)) {
+  if (IS_OK(LibFindImageSymbol_C("MdsIpShr", "ReuseCheck", &ReuseCheck)))
+    {
       if (ReuseCheck(server, unique, 128) < 0)
         return -1; // TODO: check if this is required / desired
     }
@@ -216,8 +215,8 @@ static int remote_access_connect(char *server, int inc_count,
   }
   static int (*ConnectToMds)(char *) = NULL;
   if (!host) {
-    if
-      IS_OK(LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &ConnectToMds)) {
+    if (IS_OK(LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &ConnectToMds)))
+      {
         conid = ConnectToMds(unique);
         if (conid > 0) {
           DBG("New connection %d> %s\n", conid, unique);
@@ -290,8 +289,8 @@ static int MdsValue(int conid, char *exp, ...) {
   static int (*_mds_value)() = NULL;
   int status =
       LibFindImageSymbol_C("MdsIpShr", "_MdsValue", (void **)&_mds_value);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       fprintf(stderr, "Error loadig symbol MdsIpShr->_MdsValue: %d\n", status);
       return status;
     }
@@ -307,8 +306,8 @@ static int MdsValueDsc(int conid, char *exp, ...) {
   static int (*_mds_value_dsc)() = NULL;
   int status = LibFindImageSymbol_C("MdsIpShr", "MdsIpGetDescriptor",
                                     (void **)&_mds_value_dsc);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       fprintf(stderr, "Error loadig symbol MdsIpShr->MdsIpGetDescriptor: %d\n",
               status);
       return status;
@@ -322,17 +321,15 @@ static int MdsValueDsc(int conid, char *exp, ...) {
 inline static void MdsIpFree(void *ptr) {
   // used to free ans.ptr returned by MdsValue
   static void (*mdsIpFree)(void *) = NULL;
-  if
-    IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", &mdsIpFree)) return;
+  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", &mdsIpFree)))
+    return;
   mdsIpFree(ptr);
 }
 
 inline static void MdsIpFreeDsc(struct descriptor_xd *xd) {
   // used to free ans.ptr returned by MdsValueDsc
   static void (*mdsIpFreeDsc)(struct descriptor_xd *) = NULL;
-  if
-    IS_NOT_OK(
-        LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", (void **)&mdsIpFreeDsc))
+  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", (void **)&mdsIpFreeDsc)))
     return;
   mdsIpFreeDsc(xd);
 }
@@ -346,9 +343,8 @@ inline static int tree_open(PINO_DATABASE *dblist, int conid,
   struct descrip tree = STR2DESCRIP(treearg);
   status = MdsValue(conid, exp, &tree, &ans, NULL);
   if (ans.ptr) {
-    if
-      STATUS_OK
-    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : TreeFAILURE;
+    if (STATUS_OK)
+      status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : TreeFAILURE;
     MdsIpFree(ans.ptr);
   }
   return status;
@@ -362,8 +358,8 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char const *tree,
   conid = remote_access_connect(logname, 1, (void *)dblist);
   if (conid != -1) {
     status = tree_open(dblist, conid, subtree_list ? subtree_list : tree);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         TREE_INFO *info;
         /***********************************************
          Get virtual memory for the tree
@@ -454,9 +450,8 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in,
 #ifdef STRICT_MDSIPFREE
   EMPTYXD(ans);
   status = MdsValueDsc(dblist->tree_info->channel, exp, &ans, NULL);
-  if
-    STATUS_OK
-  MdsCopyDxXd(&ans, dsc);
+  if (STATUS_OK)
+    MdsCopyDxXd(&ans, dsc);
   MdsIpFreeDsc(&ans);
 #else
   status = MdsValueDsc(dblist->tree_info->channel, exp, dsc, NULL);
@@ -488,8 +483,8 @@ int FindNodeRemote(PINO_DATABASE *dblist, char const *path, int *outnid) {
   sprintf(exp, "getnci(%s%s,'nid_number')", path[0] == '-' ? "." : "", path);
   status = MdsValue(dblist->tree_info->channel, exp, &ans, NULL);
   FREE_NOW(exp);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (ans.ptr)
         *outnid = *(int *)ans.ptr;
       else
@@ -527,8 +522,8 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char const *patharg, int *nid_out,
     char exp[80];
     sprintf(exp, "TreeFindNodeWild($,%d)", usage_mask);
     status = MdsValue(dblist->tree_info->channel, exp, &path, &ans, NULL);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         if (ans.ptr) {
           ctx = malloc(sizeof(struct _FindNodeStruct));
           ctx->nids = ctx->ptr = (int *)ans.ptr;
@@ -538,8 +533,8 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char const *patharg, int *nid_out,
           status = TreeNNF;
       }
   }
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (ctx->num > 0) {
         *nid_out = *ctx->nids;
         ctx->num--;
@@ -600,9 +595,8 @@ int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid) {
   if (ans.ptr) {
     if (ans.dtype == DTYPE_L)
       *nid = *(int *)ans.ptr;
-    else if
-      STATUS_OK
-    status = 0;
+    else if (STATUS_OK)
+      status = 0;
     MdsIpFree(ans.ptr);
   }
   return status;
@@ -638,8 +632,8 @@ char *FindTagWildRemote(PINO_DATABASE *dblist, const char *wildarg, int *nidout,
           "xd(__c));execute('deallocate(\"__*\");`list(*,___,__a,__b,__c)')",
           (*ctx)->ctx);
   int status = MdsValueDsc(dblist->tree_info->channel, exp, &wild, &ans, NULL);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       struct descriptor **list = (struct descriptor **)ans.pointer->pointer;
       status = *(int *)list[0]->pointer;
       if (nidout)
@@ -794,13 +788,13 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm) {
       status = TreeILLEGAL_ITEM;
       break;
     }
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         char exp[1024];
         sprintf(exp, getnci_str, nid_in);
         status = MdsValue(dblist->tree_info->channel, exp, &ans, NULL);
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             if (ans.ptr && ans.length) {
               int length = ans.length * (ans.ndims ? ans.dims[0] : 1);
               if (itm->return_length_address)
@@ -839,9 +833,8 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc,
   if (ans.pointer) {
     if (ans.pointer->dtype == DTYPE_L)
       status = *(int *)ans.pointer->pointer;
-    else if
-      STATUS_OK
-    status = 0;
+    else if (STATUS_OK)
+      status = 0;
     MdsFree1Dx(&ans, NULL);
   }
   MdsIpFreeDsc(&ans);
@@ -1133,8 +1126,8 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size,
   pthread_cleanup_push((void *)pthread_mutex_unlock, &io_lock);
   char nargs = size / sizeof(int);
   status = SendArg(conid, (int)idx, 0, 0, 0, nargs, mdsio->dims, din);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       if (idx != MDS_IO_CLOSE_K)
         fprintf(stderr, "Error in SendArg: mode = %d, status = %d\n", idx,
                 status);
@@ -1144,8 +1137,8 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size,
     int d[MAX_DIMS];
     status = GetAnswerInfoTS(conid, (char *)d, (short *)d, (char *)d, d, bytes,
                              (void **)dout, m);
-    if
-      STATUS_NOT_OK {
+    if (STATUS_NOT_OK)
+      {
         if (idx != MDS_IO_CLOSE_K)
           fprintf(stderr, "Error in GetAnswerInfoTS: mode = %d, status = %d\n",
                   idx, status);
@@ -1159,12 +1152,12 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size,
 EXPORT int MdsIoRequest(int conid, mds_io_mode idx, size_t size, mdsio_t *mdsio,
                         char *din, int *bytes, char **dout, void **m) {
   int status = LibFindImageSymbol_C("MdsIpShr", "SendArg", &SendArg);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   status =
       LibFindImageSymbol_C("MdsIpShr", "GetAnswerInfoTS", &GetAnswerInfoTS);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   return mds_io_request(conid, idx, size, mdsio, din, bytes, dout, m);
 }
 
@@ -1330,8 +1323,8 @@ inline static ssize_t io_write_remote(int conid, int fd, void *buff,
   char *dout;
   int status = MdsIoRequest(conid, MDS_IO_WRITE_K, sizeof(mdsio.write), &mdsio,
                             buff, &len, &dout, &msg);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (len == sizeof(int32_t))
         ret = (ssize_t) * (int32_t *)dout;
       else if (len == sizeof(int64_t))
@@ -1368,8 +1361,8 @@ inline static ssize_t io_read_remote(int conid, int fd, void *buff,
   char *dout;
   int status = MdsIoRequest(conid, MDS_IO_READ_K, sizeof(mdsio.read), &mdsio,
                             NULL, &len, &dout, &msg);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       ret = (ssize_t)len;
       memcpy(buff, dout, ret);
     }
@@ -1403,8 +1396,8 @@ inline static ssize_t io_read_x_remote(int conid, int fd, off_t offset,
   char *dout;
   int status = MdsIoRequest(conid, MDS_IO_READ_X_K, sizeof(mdsio.read_x),
                             &mdsio, NULL, &len, &dout, &msg);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (deleted)
         *deleted = status == 3;
       ret = (ssize_t)len;
@@ -1765,13 +1758,13 @@ inline static int io_open_one_remote(char *host, char *filepath,
           *fd = io_open_remote(host, tmp, options, mode, conid, enhanced);
           status = *fd == -1 ? TreeFAILURE : TreeSUCCESS;
           if ((*fd >= 0) && edit && (type == TREE_TREEFILE_TYPE)) {
-            if
-              IS_NOT_OK(io_lock_remote((fdinfo_t){*conid, *fd, *enhanced}, 1, 1,
+            if (IS_NOT_OK(io_lock_remote((fdinfo_t){*conid, *fd, *enhanced}, 1, 1,
                                        MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,
-                                       0)) {
-                status = TreeEDITTING;
-                *fd = -2;
-              }
+                                       0)))
+            {
+              status = TreeEDITTING;
+              *fd = -2;
+            }
           }
           if (*fd >= 0) {
             *fullpath = malloc(strlen(host) + 3 + strlen(tmp));
@@ -1876,12 +1869,12 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
             set_mdsplus_file_protection(fullpath);
 #endif
           if ((fd != -1) && edit && (type == TREE_TREEFILE_TYPE)) {
-            if
-              IS_NOT_OK(io_lock_local((fdinfo_t){conid, fd, enhanced}, 1, 1,
-                                      MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
-                status = TreeEDITTING;
-                fd = -2;
-              }
+            if (IS_NOT_OK(io_lock_local((fdinfo_t){conid, fd, enhanced}, 1, 1,
+                                      MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)))
+            {
+              status = TreeEDITTING;
+              fd = -2;
+            }
           }
         }
       }

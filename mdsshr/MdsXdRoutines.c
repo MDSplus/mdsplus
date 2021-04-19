@@ -77,14 +77,13 @@ EXPORT int MdsGet1Dx(const l_length_t *const length_ptr,
         status = LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
       else
         status = 1;
-      if
-        STATUS_OK
-      status =
+      if (STATUS_OK)
+        status =
           LibGetVm((uint32_t *)length_ptr, (void *)&dsc_ptr->pointer, zone);
     } else
       status = 1;
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         dsc_ptr->length = 0;
         dsc_ptr->l_length = *length_ptr;
         dsc_ptr->class = CLASS_XD;
@@ -102,8 +101,8 @@ EXPORT int MdsFree1Dx(mdsdsc_xd_t *const dsc_ptr, void **const zone) {
       status = LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
     else
       status = 1;
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         dsc_ptr->pointer = 0;
         dsc_ptr->l_length = 0;
       }
@@ -367,9 +366,8 @@ EXPORT int MdsCopyDxXdZ(const mdsdsc_t *const in_dsc_ptr,
               fixup_path, fixup_path_arg, &compressible);
   if (STATUS_OK && size) {
     status = MdsGet1Dx(&size, &dsc_dtype, out_dsc_ptr, zone);
-    if
-      STATUS_OK
-    status = copy_dx((mdsdsc_xd_t *)in_dsc_ptr,
+    if (STATUS_OK)
+      status = copy_dx((mdsdsc_xd_t *)in_dsc_ptr,
                      (mdsdsc_xd_t *)out_dsc_ptr->pointer, &size, fixup_nid,
                      fixup_nid_arg, fixup_path, fixup_path_arg, &compressible);
     if (STATUS_OK && compressible)

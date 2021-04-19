@@ -55,9 +55,8 @@ int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[],
 
   uni[0] = EMPTY_XD;
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
   if (STATUS_OK && narg > 0) {
     N_ELEMENTS(dat[0].pointer, j);
     if (STATUS_OK && j != 1)
@@ -66,12 +65,10 @@ int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[],
   /***********************
   Go off and do something.
   ***********************/
-  if
-    STATUS_OK
-  status = (*fun_ptr->f3)(dat[0].pointer, out_ptr);
-  if
-    STATUS_OK
-  status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = (*fun_ptr->f3)(dat[0].pointer, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
   if (narg > 0) {
     if (sig[0].pointer)
       MdsFree1Dx(&sig[0], NULL);
@@ -112,12 +109,10 @@ int Tdi3OpcodeBuiltin(struct descriptor *in_ptr,
     str2.length = (length_t)strlen(name_ptr);
     str2.pointer = name_ptr;
     status = MdsGet1DxS(&str2.length, &dtype, out_ptr);
-    if
-      STATUS_OK
-    status = StrCopyDx(out_ptr->pointer, &str2);
-  } else if
-    STATUS_OK
-  status = TdiINV_OPC;
+    if (STATUS_OK)
+      status = StrCopyDx(out_ptr->pointer, &str2);
+  } else if (STATUS_OK)
+    status = TdiINV_OPC;
   return status;
 }
 
@@ -139,12 +134,10 @@ int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr) {
     str2.pointer = name_ptr;
     total = (length_t)(str1.length + str2.length);
     status = MdsGet1DxS(&total, &dtype, out_ptr);
-    if
-      STATUS_OK
-    status = StrConcat((struct descriptor *)out_ptr->pointer,
+    if (STATUS_OK)
+      status = StrConcat((struct descriptor *)out_ptr->pointer,
                        (struct descriptor *)&str1, &str2 MDS_END_ARG);
-  } else if
-    STATUS_OK
-  status = TdiINV_OPC;
+  } else if (STATUS_OK)
+    status = TdiINV_OPC;
   return status;
 }

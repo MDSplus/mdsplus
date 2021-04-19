@@ -104,8 +104,8 @@ static void divide(struct descriptor_xd *left_ptr,
     /*NEED to fix up leading / or * */
     status = TdiTranslate(right_ptr, &star_slash, &slash_star,
                           right_ptr MDS_END_ARG);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         if (left_ptr->pointer)
           status = TdiConcat(left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
         else
@@ -923,8 +923,8 @@ int Tdi2Repeat(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
   unsigned int ncopies, status;
 
   status = TdiGetLong(dat[1].pointer, &ncopies);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if ((ncopies *= cats[0].digits) < 65535)
         cats[narg].digits = (unsigned short)ncopies;
       else
@@ -994,8 +994,8 @@ int Tdi2String(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
   cats[1].out_cat = cats[1].in_cat;
   cats[1].digits = dat[1].length;
   status = TdiGetLong(dat[1].pointer, &length);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (length > 65535)
         status = TdiTOO_BIG;
       else if (length > 0)
@@ -1017,8 +1017,8 @@ int Tdi2Text(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
   cats[1].out_cat = cats[1].in_cat;
   cats[1].digits = dat[1].length;
   status = TdiGetLong(dat[1].pointer, &length);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       if (length > 65535)
         status = TdiTOO_BIG;
       else if (length > 0)

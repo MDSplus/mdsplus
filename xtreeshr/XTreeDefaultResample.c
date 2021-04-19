@@ -70,9 +70,8 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
   int numSamples, i;
   mdsdsc_a_t *currDim = (mdsdsc_a_t *)inSignalD->dimensions[0];
   if (currDim->class != CLASS_A) {
-    if
-      IS_NOT_OK(TdiData(currDim, &currXd MDS_END_ARG))
-    goto return_out;
+    if (IS_NOT_OK(TdiData(currDim, &currXd MDS_END_ARG)))
+      goto return_out;
     currDim = (mdsdsc_a_t *)currXd.pointer;
   }
   if (currDim->class != CLASS_A || currDim->arsize == 0)
@@ -94,9 +93,8 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
     goto return_out;
   }
   if (currDim->dtype != DTYPE_FLOAT) {
-    if
-      IS_NOT_OK(TdiFloat(currDim, &currXd MDS_END_ARG))
-    goto return_out;
+    if (IS_NOT_OK(TdiFloat(currDim, &currXd MDS_END_ARG)))
+      goto return_out;
     currDim = (mdsdsc_a_t *)currXd.pointer;
   }
   if (currDim->class != CLASS_A ||
@@ -198,15 +196,15 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
     dataD = (mdsdsc_a_t *)inSignalD->data;
   } else {
     status = TdiData(inSignalD->data, &dataXd MDS_END_ARG);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
     dataD = (mdsdsc_a_t *)dataXd.pointer;
   }
   int dims[MAX_DIMS];
   int numDims;
   status = getShape((mdsdsc_t *)dataD, dims, &numDims);
-  if
-    STATUS_NOT_OK {
+  if (STATUS_NOT_OK)
+    {
       MdsFree1Dx(&dataXd, 0);
       return status;
     }
@@ -231,8 +229,8 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
   int startIdx = 0;
   if (startD) {
     status = XTreeConvertToDouble(startD, &start);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
     if (start < fulltimebase[0])
       start = fulltimebase[0];
     for (; startIdx < numTimebase && fulltimebase[startIdx] < start; startIdx++)
@@ -241,16 +239,16 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
     start = fulltimebase[0];
   if (endD) {
     status = XTreeConvertToDouble(endD, &end);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
     if (end > fulltimebase[numTimebase - 1])
       end = fulltimebase[numTimebase - 1];
   } else
     end = fulltimebase[numTimebase - 1];
   if (deltaD) {
     status = XTreeConvertToDouble(deltaD, &delta);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
   } else
     delta = 0;
 

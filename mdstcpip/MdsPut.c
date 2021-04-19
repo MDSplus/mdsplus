@@ -52,8 +52,8 @@ int MdsPut(int id, char *node, char *expression, ...) {
     status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]),
                      arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
   free(putexpr);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       char dtype;
       int dims[MAX_DIMS];
       char ndims;

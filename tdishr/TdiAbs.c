@@ -221,9 +221,8 @@ int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   switch (in_ptr->dtype) {
   case DTYPE_BU:
@@ -265,9 +264,8 @@ int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   switch (in_ptr->dtype) {
   case DTYPE_BU:
@@ -309,9 +307,8 @@ int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   switch (in_ptr->dtype) {
   case DTYPE_BU:
@@ -349,9 +346,8 @@ int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   switch (in_ptr->dtype) {
   case DTYPE_B:
@@ -391,9 +387,8 @@ int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
   switch (in_ptr->dtype) {
   case DTYPE_BU:
   case DTYPE_B:
@@ -426,9 +421,8 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
   switch (in_ptr->dtype) {
   case DTYPE_B:
   case DTYPE_BU:
@@ -454,9 +448,8 @@ int Tdi3Logical(struct descriptor *in_ptr,
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
   switch (in_ptr->dtype) {
   case DTYPE_B:
   case DTYPE_BU:
@@ -479,9 +472,8 @@ int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
   switch (in_ptr->dtype) {
   case DTYPE_B:
   case DTYPE_BU:
@@ -509,9 +501,8 @@ int Tdi3Nint(struct descriptor *in_ptr,
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   switch (in_ptr->dtype) {
   case DTYPE_BU:
@@ -553,9 +544,8 @@ int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if
-    STATUS_NOT_OK
-  return status;
+  if (STATUS_NOT_OK)
+    return status;
 
   switch (in_ptr->dtype) {
   case DTYPE_BU:

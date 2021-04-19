@@ -67,14 +67,12 @@ int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[],
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
   if (STATUS_OK && dat[0].pointer->class != CLASS_A)
     status = TdiINVCLADSC;
-  if
-    STATUS_OK
-  status = Tdi2Pack(narg, uni, dat, cats, 0);
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    status = Tdi2Pack(narg, uni, dat, cats, 0);
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK)
+    {
       struct descriptor_a *parr = (struct descriptor_a *)dat[0].pointer;
       bytes = parr->arsize;
       lena = parr->length;
@@ -143,9 +141,8 @@ int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[],
         dat[0] = EMPTY_XD;
       }
     }
-  if
-    STATUS_OK
-  status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
   for (j = narg; --j >= 0;) {
     MdsFree1Dx(&sig[j], NULL);
     MdsFree1Dx(&uni[j], NULL);

@@ -242,9 +242,8 @@ STATIC_ROUTINE void ActionDone(int idx) {
       if (Output) {
         char now[32];
         Now32(now);
-        if
-          IS_OK(actions[idx].status)
-        sprintf(logmsg, "%s, Action %s completed", now, actions[idx].path);
+        if (IS_OK(actions[idx].status))
+          sprintf(logmsg, "%s, Action %s completed", now, actions[idx].path);
         else {
           char *emsg = MdsGetMsg(actions[idx].status);
           sprintf(logmsg, "%s, Action %s failed, %s", now, actions[idx].path,
@@ -267,8 +266,8 @@ STATIC_ROUTINE void ActionDone(int idx) {
           int cidx = actions[idx].referenced_by[i];
           RDLOCK_ACTION(cidx, adl);
           if (!actions[cidx].done) {
-            if
-              IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)) {
+            if (IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)))
+              {
                 UNLOCK_ACTION(cidx, ad_ftt);
                 if (doit)
                   Dispatch(cidx);
@@ -681,13 +680,12 @@ STATIC_ROUTINE void Dispatch(int i) {
             &actions[i].lock, &actions[i].netid, Before);
         WRLOCK_ACTION(i, d_w);
         // ProgLoc = 7003;
-        if
-          STATUS_OK
-        actions[i].dispatched = 1;
+        if (STATUS_OK)
+          actions[i].dispatched = 1;
       }
       // ProgLoc = 7004;
-      if
-        STATUS_NOT_OK {
+      if (STATUS_NOT_OK)
+        {
           actions[i].status = status;
           DoActionDone(i);
         }
@@ -759,8 +757,8 @@ STATIC_ROUTINE void DoActionDone(int i) {
   pthread_t thread;
   QueueCompletedAction(i); /***** must be done before starting thread ****/
   CONDITION_START_THREAD(&ActionDoneRunningC, thread, , ActionDoneThread, NULL);
-  if
-    STATUS_NOT_OK perror("DoActionDone: pthread creation failed");
+  if (STATUS_NOT_OK)
+    perror("DoActionDone: pthread creation failed");
 }
 
 STATIC_THREADSAFE Condition SendMonitorRunningC = CONDITION_INITIALIZER;
@@ -834,8 +832,8 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx) {
   QueueSendMonitor(mode, idx); /***** must be done before starting thread ****/
   CONDITION_START_THREAD(&SendMonitorRunningC, thread, , SendMonitorThread,
                          NULL);
-  if
-    STATUS_NOT_OK perror("DoSendMonitor: pthread creation failed");
+  if (STATUS_NOT_OK)
+    perror("DoSendMonitor: pthread creation failed");
 }
 
 void serverDisarmDispatchTable(void *vtable) {

@@ -67,8 +67,8 @@ static void get_msg(int sts, MDSTHREADSTATIC_ARG) {
   static const char *severity[] = {"W", "S", "E", "I", "F", "?", "?", "?"};
   int (*getmsg)(int, const char **, const char **, const char **);
   status = MdsGetStdMsg(sts, &facnam, &msgnam, &msgtext);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       sprintf(MDS_MDSGETMSG_CSTR, "%%%s-%s-%s, %s", facnam, severity[sts & 0x7],
               msgnam, msgtext);
       return;
@@ -77,19 +77,17 @@ static void get_msg(int sts, MDSTHREADSTATIC_ARG) {
                                        (struct descriptor *)&filnam, &ctx) &
                            1)) {
     status = LibFindImageSymbol(&filnam, &getmsg_nam, &getmsg);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         status = (*getmsg)(sts, &facnam, &msgnam, &msgtext);
-        if
-          STATUS_OK
-        sprintf(MDS_MDSGETMSG_CSTR, "%%%s-%s-%s, %s", facnam,
+        if (STATUS_OK)
+          sprintf(MDS_MDSGETMSG_CSTR, "%%%s-%s-%s, %s", facnam,
                 severity[sts & 0x7], msgnam, msgtext);
       }
   }
   LibFindFileEnd(&ctx);
-  if
-    STATUS_NOT_OK
-  sprintf(MDS_MDSGETMSG_CSTR, "%%NONAME-%s-NOMSG, Message number 0x%08X",
+  if (STATUS_NOT_OK)
+    sprintf(MDS_MDSGETMSG_CSTR, "%%NONAME-%s-NOMSG, Message number 0x%08X",
           severity[sts & 0x7], sts);
 }
 

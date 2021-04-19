@@ -79,12 +79,12 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {
     if (status && STATUS_NOT_OK)
       return 0;
     status = TreeOpenDatafileR(info);
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         int locked = 0;
         status = tree_get_nci(info, nidx, &nci, 0, &locked);
-        if
-          STATUS_OK {
+        if (STATUS_OK)
+          {
             if (nci.length) {
               TreeCallHookFun("TreeNidHook", "GetData", info->treenam,
                               info->shot, nid, NULL);
@@ -103,8 +103,8 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {
                 MDS_ATTR_FALLTHROUGH
               case CLASS_S:
               case CLASS_XS:
-                if
-                  STATUS_OK {
+                if (STATUS_OK)
+                  {
                     if (nci.flags2 & NciM_EXTENDED_NCI) {
                       EXTENDED_ATTRIBUTES attributes;
                       status = TreeGetExtendedAttributes(
@@ -164,9 +164,8 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {
                           status = TreeGetDatafile(
                               info, nci.DATA_INFO.DATA_LOCATION.rfa, &length,
                               data, &retsize, &nodenum, nci.flags2);
-                          if
-                            STATUS_NOT_OK
-                          status = TreeBADRECORD;
+                          if (STATUS_NOT_OK)
+                            status = TreeBADRECORD;
                           else if (!(nci.flags2 & NciM_NON_VMS) &&
                                    ((retsize != length) || (nodenum != nidx)))
                               status = TreeBADRECORD;
@@ -190,9 +189,8 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {
       }
   } else
     status = TreeINVTREE;
-  if
-    STATUS_OK
-  status = TreeMakeNidsLocal((struct descriptor *)dsc, nid_in);
+  if (STATUS_OK)
+    status = TreeMakeNidsLocal((struct descriptor *)dsc, nid_in);
   return status;
 }
 
@@ -341,8 +339,8 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
         if (STATUS_OK && deleted)
           status = TreeReopenDatafile(info);
       }
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           unsigned int partlen =
               min(swapint16(&hdr.rlength) - 10, buffer_space);
           int nidx = swapint32(&hdr.node_number);
@@ -362,8 +360,8 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
             if (STATUS_OK && deleted)
               status = TreeReopenDatafile(info);
           }
-          if
-            STATUS_OK {
+          if (STATUS_OK)
+            {
               bptr += partlen;
               buffer_space -= partlen;
               *retsize = *retsize + partlen;
@@ -453,8 +451,8 @@ int TreeGetViewDate(int64_t *date) {
 int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci) {
   char nci_bytes[42];
   int status = TreeOpenDatafileR(info);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       int deleted = 1;
       int64_t rfa_l = RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa);
       rfa_l += ((nci->DATA_INFO.DATA_LOCATION.record_length ==
@@ -471,8 +469,8 @@ int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci) {
         if (STATUS_OK && deleted)
           status = TreeReopenDatafile(info);
       }
-      if
-        STATUS_OK { TreeSerializeNciIn(nci_bytes, v_nci); }
+      if (STATUS_OK)
+        { TreeSerializeNciIn(nci_bytes, v_nci); }
     }
   return status;
 }

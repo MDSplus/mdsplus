@@ -137,7 +137,7 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
   /*
   if (SupportsCompression(client_type)) {
     INIT_AND_FREEXD_ON_EXIT(out);
-    if IS_OK(MdsSerializeDscOut(d, &out)) {
+    if (IS_OK(MdsSerializeDscOut(d, &out))) {
       struct descriptor_a* array = (struct descriptor_a*)out.pointer;
       m = malloc(sizeof(MsgHdr) + array->arsize);
       memset(&m->h,0,sizeof(MsgHdr));
@@ -580,9 +580,8 @@ static int WorkerThread(void *args) {
   wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs,
                                wc.wa->connection->descrip, &xd);
   ++TDI_INTRINSIC_REC;
-  if
-    IS_OK(wc.wa->status)
-  wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
+  if (IS_OK(wc.wa->status))
+    wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
   return wc.wa->status;
 }
@@ -787,9 +786,8 @@ static Message *ExecuteMessage(Connection *connection) {
   else {
     INIT_AND_FREEXD_ON_EXIT(ans_xd);
     status = executeCommand(connection, &ans_xd);
-    if
-      STATUS_NOT_OK
-    GetErrorText(status, &ans_xd);
+    if (STATUS_NOT_OK)
+      GetErrorText(status, &ans_xd);
     if (GetCompressionLevel() != connection->compression_level) {
       connection->compression_level = GetCompressionLevel();
       if (connection->compression_level > GetMaxCompressionLevel())

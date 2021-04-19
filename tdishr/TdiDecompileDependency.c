@@ -99,16 +99,13 @@ static int DependencyGet(int prec, struct descriptor_r *pin,
     }
     if (STATUS_OK && now < prec)
       status = StrAppend(pout, (struct descriptor *)&LEFT_PAREN);
-    if
-      STATUS_OK
-    status =
+    if (STATUS_OK)
+      status =
         DependencyGet(now - 1, (struct descriptor_r *)pin->dscptrs[0], pout);
-    if
-      STATUS_OK
-    status = StrAppend(pout, pwhich);
-    if
-      STATUS_OK
-    status =
+    if (STATUS_OK)
+      status = StrAppend(pout, pwhich);
+    if (STATUS_OK)
+      status =
         DependencyGet(now + 1, (struct descriptor_r *)pin->dscptrs[1], pout);
     if (STATUS_OK && now < prec)
       status = StrAppend(pout, (struct descriptor *)&RIGHT_PAREN);
@@ -128,12 +125,10 @@ static int DependencyGet(int prec, struct descriptor_r *pin,
       status = TdiINV_OPC;
       break;
     }
-    if
-      STATUS_OK
-    status = StrAppend(pout, pwhich);
-    if
-      STATUS_OK
-    status =
+    if (STATUS_OK)
+      status = StrAppend(pout, pwhich);
+    if (STATUS_OK)
+      status =
         DependencyGet(P_UNARY, (struct descriptor_r *)pin->dscptrs[0], pout);
     break;
   default:
@@ -156,9 +151,8 @@ int Tdi1DecompileDependency(opcode_t opcode __attribute__((unused)),
     pdep = (struct descriptor *)pdep->pointer;
   if (pdep)
     status = DependencyGet(P_WEAK, (struct descriptor_r *)pdep, &answer);
-  if
-    STATUS_OK
-  status = MdsCopyDxXd((struct descriptor *)&answer, out_ptr);
+  if (STATUS_OK)
+    status = MdsCopyDxXd((struct descriptor *)&answer, out_ptr);
   StrFree1Dx(&answer);
   return status;
 }

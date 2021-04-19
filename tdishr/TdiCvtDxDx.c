@@ -63,9 +63,8 @@ int TdiCvtDxDx(struct descriptor *in_ptr, unsigned char *dtype_ptr,
     struct descriptor_xd xs = {0, DTYPE_DSC, CLASS_XS, 0, 0};
     xs.pointer = in_ptr;
     status = TdiGetShape(1, &xs, 0, *dtype_ptr, &mode, out_ptr);
-    if
-      STATUS_OK
-    status = TdiConvert(in_ptr, out_ptr->pointer);
+    if (STATUS_OK)
+      status = TdiConvert(in_ptr, out_ptr->pointer);
   }
   return status;
 }

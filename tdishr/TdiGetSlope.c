@@ -88,9 +88,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
     k1 = HUGE;
   if (STATUS_OK && window_ptr)
     status = TdiData(window_ptr->value_at_idx0, &xat0);
-  else if
-    STATUS_OK
-  status = TdiData(window_ptr, &xat0);
+  else if (STATUS_OK)
+    status = TdiData(window_ptr, &xat0);
 
   /********************************************
   Single slope with no begin or end.
@@ -98,12 +97,10 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
   ********************************************/
   if ((ndesc < 2 || !slope_ptr->segment[0].begin) &&
       (ndesc < 3 || !slope_ptr->segment[0].ending)) {
-    if
-      STATUS_OK
-    status = TdiRange(&k0_dsc, &k1_dsc, out_ptr);
-    if
-      STATUS_OK
-    status = TdiMultiply(slope_ptr->segment[0].slope, out_ptr, out_ptr);
+    if (STATUS_OK)
+      status = TdiRange(&k0_dsc, &k1_dsc, out_ptr);
+    if (STATUS_OK)
+      status = TdiMultiply(slope_ptr->segment[0].slope, out_ptr, out_ptr);
     if (STATUS_OK && xat0.pointer)
       status = TdiAdd(&xat0, out_ptr, out_ptr);
   }
@@ -113,8 +110,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
   Get each slope, begin, and end.
   May omit first begin and last end.
   *********************************/
-  else if
-    STATUS_OK {
+  else if (STATUS_OK)
+    {
       struct descriptor left_dsc = {sizeof(left), DTYPE_L, CLASS_S, 0};
       struct descriptor right_dsc = {sizeof(right), DTYPE_L, CLASS_S, 0};
       DESCRIPTOR_RANGE(ramp, 0, 0, 0);
@@ -136,8 +133,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
       slope[nseg], *vlist[nseg], cnt[nseg+1].
       **************************************/
       status = (pbegin = malloc(virt)) != NULL;
-      if
-        STATUS_OK {
+      if (STATUS_OK)
+        {
           pend = (struct descriptor_xd(*)[]) & (*pbegin)[nseg];
           pslope = (struct descriptor_xd(*)[]) & (*pend)[nseg];
           pvlist = (struct descriptor_xd * (*)[]) & (*pslope)[nseg];
@@ -156,9 +153,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
       tmp1 = EMPTY_XD;
       for (jseg = 0; jseg < nseg; ++jseg) {
         (*pslope)[jseg] = (*pbegin)[jseg] = (*pend)[jseg] = EMPTY_XD;
-        if
-          STATUS_OK
-        status = TdiEvaluate(slope_ptr->segment[jseg].slope, &(*pslope)[jseg]);
+        if (STATUS_OK)
+          status = TdiEvaluate(slope_ptr->segment[jseg].slope, &(*pslope)[jseg]);
         if (STATUS_OK && jseg * 3 + 1 < ndesc)
           status =
               TdiEvaluate(slope_ptr->segment[jseg].begin, &(*pbegin)[jseg]);
@@ -174,19 +170,15 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
           continue;
         }
 
-        if
-          STATUS_OK
-        status =
+        if (STATUS_OK)
+          status =
             TdiSubtract((*pend)[jseg].pointer, (*pbegin)[jseg].pointer, &tmp1);
-        if
-          STATUS_OK
-        status = TdiDivide(&tmp1, (*pslope)[jseg].pointer, &tmp1);
-        if
-          STATUS_OK
-        status = TdiNint(&tmp1, &tmp1);
-        if
-          STATUS_OK
-        status = TdiGetLong(&tmp1, &left);
+        if (STATUS_OK)
+          status = TdiDivide(&tmp1, (*pslope)[jseg].pointer, &tmp1);
+        if (STATUS_OK)
+          status = TdiNint(&tmp1, &tmp1);
+        if (STATUS_OK)
+          status = TdiGetLong(&tmp1, &left);
         (*pcnt)[jseg + 1] = MAX(left + 1, 0);
       }
 
@@ -196,17 +188,14 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
       (0 LE slope[0]) EQV (x[0] LT begin[kseg+1]]).
       WARNING use .pointer to not free it.
       ********************************************/
-      if
-        STATUS_OK
-      status = TdiLe(0, (*pslope)[0].pointer, &tmp1);
-      if
-        STATUS_OK
-      status = TdiGetLong(&tmp1, &left);
+      if (STATUS_OK)
+        status = TdiLe(0, (*pslope)[0].pointer, &tmp1);
+      if (STATUS_OK)
+        status = TdiGetLong(&tmp1, &left);
       for (kseg = 0; STATUS_OK && kseg < nseg - 1; ++kseg) {
         status = TdiLt(xat0.pointer, (*pbegin)[kseg + 1].pointer, &tmp1);
-        if
-          STATUS_OK
-        status = TdiGetLong(&tmp1, &right);
+        if (STATUS_OK)
+          status = TdiGetLong(&tmp1, &right);
         if (left == right)
           break;
       }
@@ -220,36 +209,28 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
       Then adjust and accumulate counts.
       ********************************************/
       if (kseg == 0 && !slope_ptr->segment[0].begin) {
-        if
-          STATUS_OK
-        status = TdiSubtract((*pend)[0].pointer, &xat0, &tmp1);
-        if
-          STATUS_OK
-        status = TdiDivide(&tmp1, (*pslope)[0].pointer, &tmp1);
-        if
-          STATUS_OK
-        status = TdiGetLong(&tmp1, &right);
+        if (STATUS_OK)
+          status = TdiSubtract((*pend)[0].pointer, &xat0, &tmp1);
+        if (STATUS_OK)
+          status = TdiDivide(&tmp1, (*pslope)[0].pointer, &tmp1);
+        if (STATUS_OK)
+          status = TdiGetLong(&tmp1, &right);
         (*pcnt)[0] = MAX(right + 1, 0) - (*pcnt)[1];
       } else {
         /*******************************************
         To make FLOOR work, must be floating divide.
         Generally, result is a negative number.
         *******************************************/
-        if
-          STATUS_OK
-        status = TdiSubtract((*pbegin)[kseg].pointer, &xat0, &tmp1);
-        if
-          STATUS_OK
-        status = TdiFloat(&tmp1, &tmp1);
-        if
-          STATUS_OK
-        status = TdiDivide(&tmp1, (*pslope)[kseg].pointer, &tmp1);
-        if
-          STATUS_OK
-        status = TdiFloor(&tmp1, &tmp1);
-        if
-          STATUS_OK
-        status = TdiGetLong(&tmp1, &left);
+        if (STATUS_OK)
+          status = TdiSubtract((*pbegin)[kseg].pointer, &xat0, &tmp1);
+        if (STATUS_OK)
+          status = TdiFloat(&tmp1, &tmp1);
+        if (STATUS_OK)
+          status = TdiDivide(&tmp1, (*pslope)[kseg].pointer, &tmp1);
+        if (STATUS_OK)
+          status = TdiFloor(&tmp1, &tmp1);
+        if (STATUS_OK)
+          status = TdiGetLong(&tmp1, &left);
 
         /***************************************
         Definition of kseg gives cnt[kseg] <= 0.
@@ -282,20 +263,16 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
         else if (jseg == 0 && !slope_ptr->segment[0].begin) {
           left -= (*pcnt)[1] - (*pcnt)[0] - 1;
           right -= (*pcnt)[1] - (*pcnt)[0] - 1;
-          if
-            STATUS_OK
-          status = TdiMultiply(&ramp, &(*pslope)[0], &tmp1);
-          if
-            STATUS_OK
-          status = TdiAdd(&tmp1, &(*pend)[0], &(*pslope)[0]);
+          if (STATUS_OK)
+            status = TdiMultiply(&ramp, &(*pslope)[0], &tmp1);
+          if (STATUS_OK)
+            status = TdiAdd(&tmp1, &(*pend)[0], &(*pslope)[0]);
           (*pvlist)[0] = &(*pslope)[0];
         } else {
-          if
-            STATUS_OK
-          status = TdiMultiply(&ramp, &(*pslope)[jseg], &tmp1);
-          if
-            STATUS_OK
-          status = TdiAdd(&tmp1, &(*pbegin)[jseg], &(*pslope)[jseg]);
+          if (STATUS_OK)
+            status = TdiMultiply(&ramp, &(*pslope)[jseg], &tmp1);
+          if (STATUS_OK)
+            status = TdiAdd(&tmp1, &(*pbegin)[jseg], &(*pslope)[jseg]);
           (*pvlist)[jseg] = &(*pslope)[jseg];
         }
       }
@@ -303,9 +280,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
       /************************
       Make segments into whole.
       ************************/
-      if
-        STATUS_OK
-      status = Tdi1Vector(0, nseg, (*pvlist), out_ptr);
+      if (STATUS_OK)
+        status = Tdi1Vector(0, nseg, (*pvlist), out_ptr);
 
       MdsFree1Dx(&tmp1, NULL);
       for (jseg = nseg; --jseg >= 0;) {

@@ -332,10 +332,10 @@ int main(int argc, char **argv) {
     set_execute_handlers();
     status = TdiExecute((mdsdsc_t *)&mdsconnect, (mdsdsc_t *)&server_dsc,
                         &ans MDS_END_ARG);
-    if
-      STATUS_OK status = *(int *)ans.pointer->pointer;
-    if
-      STATUS_NOT_OK {
+    if (STATUS_OK)
+      status = *(int *)ans.pointer->pointer;
+    if (STATUS_NOT_OK)
+      {
         fprintf(stderr, "Error connecting to server '%s'\n", server);
         exit(1);
       }
@@ -422,9 +422,8 @@ int main(int argc, char **argv) {
       } else
         status = TdiExecute((mdsdsc_t *)&expr_dsc, &ans MDS_END_ARG);
       if (!quiet) {
-        if
-          STATUS_OK
-        TdiExecute((mdsdsc_t *)&clear_errors, &output_unit, &ans,
+        if (STATUS_OK)
+          TdiExecute((mdsdsc_t *)&clear_errors, &output_unit, &ans,
                    &ans MDS_END_ARG);
         else TdiExecute((mdsdsc_t *)&error_out, &output_unit, &ans MDS_END_ARG);
         fflush(f_out);

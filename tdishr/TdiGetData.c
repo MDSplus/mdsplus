@@ -218,9 +218,8 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
                             TDITHREADSTATIC_VAR);
           /********************* Why is this needed?????????????
            * *************************************/
-          if
-            STATUS_OK
-          status = TdiImpose((mdsdsc_a_t *)pin, &hold);
+          if (STATUS_OK)
+            status = TdiImpose((mdsdsc_a_t *)pin, &hold);
           /***************************************************************************************/
         } else
           status = MdsCopyDxXd((mdsdsc_t *)pin, &hold);
@@ -238,9 +237,8 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
         case DTYPE_IDENT:
           status = tdi_get_ident(pin, &hold);
         redo:
-          if
-            STATUS_OK
-          status =
+          if (STATUS_OK)
+            status =
               get_data(omits, (mdsdsc_t *)&hold, &hold, TDITHREADSTATIC_VAR);
           break;
         case DTYPE_NID:
@@ -251,9 +249,8 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
           char *path = MdsDescrToCstring((mdsdsc_t *)pin);
           status = TreeFindNode(path, &nid);
           MdsFree(path);
-          if
-            STATUS_OK
-          status = TdiGetRecord(nid, &hold);
+          if (STATUS_OK)
+            status = TdiGetRecord(nid, &hold);
         }
           goto redo;
         /**************************************
@@ -306,8 +303,8 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
                                 *(pin->dscptrs + (seg * 3 + 2)),
                                 *(pin->dscptrs + (seg * 3))};
             status = TdiIntrinsic(OPC_DTYPE_RANGE, 3, &args, &times);
-            if
-              STATUS_OK {
+            if (STATUS_OK)
+              {
                 args[0] = (mdsdsc_t *)&hold;
                 args[1] = (mdsdsc_t *)&times;
                 status = TdiIntrinsic(OPC_VECTOR, 2, &args, &hold);
@@ -351,9 +348,8 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
   Watch out for input same as output.
   **********************************/
   MdsFree1Dx(out_ptr, NULL);
-  if
-    STATUS_OK
-  *out_ptr = hold;
+  if (STATUS_OK)
+    *out_ptr = hold;
   else MdsFree1Dx(&hold, NULL);
 end:;
   TDI_GETDATA_REC = 0;
@@ -419,9 +415,8 @@ extern EXPORT int TdiGetFloat(mdsdsc_t *in_ptr, float *val_ptr) {
   else {
     mdsdsc_xd_t tmp = EMPTY_XD;
     status = TdiData(in_ptr, &tmp MDS_END_ARG);
-    if
-      STATUS_OK
-    switch (tmp.pointer->class) {
+    if (STATUS_OK)
+      switch (tmp.pointer->class) {
     case CLASS_S:
     case CLASS_D:
     case CLASS_A:
@@ -488,9 +483,8 @@ extern EXPORT int TdiGetLong(mdsdsc_t *in_ptr, int *val_ptr) {
   else {
     mdsdsc_xd_t tmp = EMPTY_XD;
     status = TdiData(in_ptr, &tmp MDS_END_ARG);
-    if
-      STATUS_OK
-    switch (tmp.pointer->class) {
+    if (STATUS_OK)
+      switch (tmp.pointer->class) {
     case CLASS_S:
     case CLASS_D:
     case CLASS_A:
@@ -514,8 +508,8 @@ extern EXPORT int TdiGetNid(mdsdsc_t *in_ptr, int *nid_ptr) {
   mdsdsc_xd_t tmp = EMPTY_XD;
   dtype_t omits[] = {DTYPE_NID, DTYPE_PATH, 0};
   int status = tdi_get_data(omits, in_ptr, &tmp);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       switch (tmp.pointer->dtype) {
       case DTYPE_T:
       case DTYPE_PATH: {
@@ -611,9 +605,8 @@ int Tdi1Units(opcode_t opcode __attribute__((unused)), int narg,
                                   DTYPE_WITH_UNITS, 0};
   int status = tdi_get_data(omits, list[0], &tmp);
   rptr = (mdsdsc_r_t *)tmp.pointer;
-  if
-    STATUS_OK
-  switch (rptr->dtype) {
+  if (STATUS_OK)
+    switch (rptr->dtype) {
   case DTYPE_DIMENSION:
     status = TdiUnits(((mds_dimension_t *)rptr)->axis, out_ptr MDS_END_ARG);
     break;
@@ -630,9 +623,8 @@ int Tdi1Units(opcode_t opcode __attribute__((unused)), int narg,
     if (uni[0].pointer) {
       MdsFree1Dx(out_ptr, NULL);
       *out_ptr = uni[0];
-    } else if
-      STATUS_OK
-    status = MdsCopyDxXd((mdsdsc_t *)&blank_dsc, out_ptr);
+    } else if (STATUS_OK)
+      status = MdsCopyDxXd((mdsdsc_t *)&blank_dsc, out_ptr);
     break;
   case DTYPE_WINDOW:
     status = TdiUnits(((struct descriptor_window *)rptr)->value_at_idx0,
@@ -666,16 +658,15 @@ int Tdi1DataWithUnits(opcode_t opcode __attribute__((unused)),
   DESCRIPTOR_WITH_UNITS(dwu, &missing_dsc, 0);
   mdsdsc_xd_t data = EMPTY_XD, units = EMPTY_XD;
   int status = tdi_get_data(omits, list[0], out_ptr);
-  if
-    STATUS_OK {
+  if (STATUS_OK)
+    {
       struct descriptor_with_units *pwu =
           (struct descriptor_with_units *)out_ptr->pointer;
       if (pwu) {
         if (pwu->dtype == DTYPE_WITH_UNITS) {
           status = TdiData(pwu->data, &data MDS_END_ARG);
-          if
-            STATUS_OK
-          status = TdiData(pwu->units, &units MDS_END_ARG);
+          if (STATUS_OK)
+            status = TdiData(pwu->units, &units MDS_END_ARG);
           dwu.data = data.pointer;
           dwu.units = units.pointer;
         } else {
@@ -709,9 +700,8 @@ int Tdi1Validation(opcode_t opcode __attribute__((unused)),
 
   int status = get_data(omits, list[0], out_ptr, TDITHREADSTATIC_VAR);
   rptr = (mdsdsc_r_t *)out_ptr->pointer;
-  if
-    STATUS_OK
-  switch (rptr->dtype) {
+  if (STATUS_OK)
+    switch (rptr->dtype) {
   case DTYPE_PARAM:
     /******************************************
      We must set up for reference to our $VALUE.
@@ -732,8 +722,7 @@ int Tdi1Validation(opcode_t opcode __attribute__((unused)),
 EXPORT int TdiGetRecord(int nid, mdsdsc_xd_t *out) {
   INIT_STATUS;
   status = TreeGetRecord(nid, (mdsdsc_xd_t *)out);
-  if
-    STATUS_OK
-  fixup_dollar_nodes(nid, (mdsdsc_t *)out);
+  if (STATUS_OK)
+    fixup_dollar_nodes(nid, (mdsdsc_t *)out);
   return status;
 }

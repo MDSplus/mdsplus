@@ -173,14 +173,14 @@ static int TreeCreateTreeFilesOne(char const *tree, int shot, int source_shot,
   INIT_AND_FREE_ON_EXIT(char *, tmp);
   status = TreeSUCCESS;
   for (i = 0; i < 3; i++) {
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         status =
             MDS_IO_OPEN_ONE(treepath, tree, source_shot, i + TREE_TREEFILE_TYPE,
                             0, 0, &tmp, NULL, &src[i]);
         if (tmp) {
-          if
-            STATUS_OK DBG("%s ->\n", tmp);
+          if (STATUS_OK)
+            DBG("%s ->\n", tmp);
           free(tmp);
           tmp = NULL;
         }
@@ -189,13 +189,13 @@ static int TreeCreateTreeFilesOne(char const *tree, int shot, int source_shot,
       src[i] = -1;
   }
   for (i = 0; i < 3; i++) {
-    if
-      STATUS_OK {
+    if (STATUS_OK)
+      {
         status = MDS_IO_OPEN_ONE(treepath, tree, shot, i + TREE_TREEFILE_TYPE,
                                  1, 0, &tmp, NULL, &dst[i]);
         if (tmp) {
-          if
-            STATUS_OK DBG("%s <-\n", tmp);
+          if (STATUS_OK)
+            DBG("%s <-\n", tmp);
           free(tmp);
           tmp = NULL;
         }
@@ -205,8 +205,8 @@ static int TreeCreateTreeFilesOne(char const *tree, int shot, int source_shot,
   }
   FREE_NOW(tmp);
   for (i = 0; i < 3; i++) {
-    if
-      STATUS_OK status = _CopyFile(src[i], dst[i], i > 0);
+    if (STATUS_OK)
+      status = _CopyFile(src[i], dst[i], i > 0);
     if (src[i] >= 0)
       MDS_IO_CLOSE(src[i]);
     if (dst[i] >= 0)

@@ -162,9 +162,8 @@ EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid,
     not_first_time = 0;
     ctx = (SEARCH_CTX *)calloc(1, sizeof(SEARCH_CTX));
     status = WildParse(path, ctx, &wild);
-    if
-      STATUS_NOT_OK
-    return (status);
+    if (STATUS_NOT_OK)
+      return (status);
     *ctx_inout = ctx;
     NODELIST *tail = NULL;
     ctx->default_node = dblist->default_node;
@@ -222,9 +221,8 @@ EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid,
   }
 
   status = WildParse(path, &ctx, &wild);
-  if
-    STATUS_NOT_OK
-  goto done;
+  if (STATUS_NOT_OK)
+    goto done;
   if (wild) {
     status = TreeNOWILD;
     goto done;

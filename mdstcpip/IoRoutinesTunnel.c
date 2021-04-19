@@ -262,8 +262,8 @@ static int io_listen(int argc __attribute__((unused)),
   status = AcceptConnection(GetProtocol(), PROTOCOL, 0, &p, sizeof(p), &id,
                             &username);
   FREE_NOW(username);
-  if
-    STATUS_OK while (DoMessage(id));
+  while (STATUS_OK)
+    status = DoMessage(id);
   return C_OK;
 }
 
