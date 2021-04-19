@@ -65,8 +65,8 @@ typedef uint8_t con_t;
 
 typedef struct _connection
 {
-  int id; // unique connection id
   struct _connection *next;
+  int id; // unique connection id
   pthread_cond_t cond;
   con_t state;
   char *protocol;
@@ -77,8 +77,7 @@ typedef struct _connection
   unsigned char message_id;
   int client_type;
   int nargs;
-  struct descriptor
-      *descrip[MDSIP_MAX_ARGS]; // list of descriptors for the message arguments
+  struct descriptor *descrip[MDSIP_MAX_ARGS]; // list for message arguments
   MdsEventList *event;
   void *tdicontext[6];
   int addr;
@@ -257,6 +256,7 @@ EXPORT char ClientType(void);
 /// the server "MdsIpSrvShr" library.
 ///
 EXPORT int CloseConnection(int conid);
+int CloseConnectionC(Connection *connection); // internal use
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -789,9 +789,6 @@ EXPORT int MdsGetClientAddr();
 EXPORT void MdsSetClientAddr(int);
 EXPORT char *MdsGetServerPortname();
 
-/* MdsIpSrvShr routines */
-
-EXPORT Message *ProcessMessage(Connection *connection, Message *message);
-EXPORT int RemoveConnection(int id);
+Message *ProcessMessage(Connection *connection, Message *message);
 
 #endif
