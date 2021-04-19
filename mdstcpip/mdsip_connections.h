@@ -455,8 +455,6 @@ EXPORT Message *GetMdsMsgTO(int id, int *status, int timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
 Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec);
 
-EXPORT unsigned char GetMode();
-
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// Get multi mode active in this scope. Mutiple connection mode (accepts
@@ -468,11 +466,7 @@ EXPORT char *GetPortname();
 
 EXPORT char *GetProtocol();
 
-EXPORT int GetService();
-
 EXPORT SOCKET GetSocketHandle();
-
-EXPORT int GetWorker();
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -625,8 +619,6 @@ EXPORT void ParseCommand(int argc, char **argv, Options options[], int more,
 EXPORT void ParseStdArgs(int argc, char **argv, int *extra_argc,
                          char ***extra_argv);
 
-EXPORT void PrintHelp(char *);
-
 EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -716,19 +708,13 @@ EXPORT int SetMaxCompressionLevel(int setting);
 
 EXPORT int SetMdsConnectTimeout(int sec);
 
-EXPORT unsigned char SetMode(unsigned char newmode);
-
 EXPORT unsigned char SetMulti(unsigned char setting);
 
 EXPORT char *SetPortname(char *);
 
 EXPORT char *SetProtocol(char *);
 
-EXPORT int SetService(int setting);
-
 EXPORT SOCKET SetSocketHandle(SOCKET handle);
-
-EXPORT int SetWorker(int setting);
 
 EXPORT void UnlockAsts();
 

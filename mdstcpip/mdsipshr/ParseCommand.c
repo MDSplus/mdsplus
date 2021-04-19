@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../mdsip_connections.h"
 
-void PrintHelp(char *option)
+static void print_help(char *option)
 {
   if (option)
     printf("Invalid options specified: %s\n\n", option);
@@ -103,7 +103,7 @@ void ParseCommand(int argc, char **argv, Options options[], int more,
         arglen--;
       }
       if (strcmp("help", arg) == 0)
-        PrintHelp(0);
+        print_help(0);
       for (opt = 0; options[opt].short_name || options[opt].long_name; opt++)
       {
         if (islong)
@@ -171,7 +171,7 @@ void ParseCommand(int argc, char **argv, Options options[], int more,
       if (!option_found)
       {
         if (!more)
-          PrintHelp(argv[i]);
+          print_help(argv[i]);
         else
         {
           extra_argv[extra_argc] = argv[i];
@@ -219,7 +219,8 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
       fprintf(
           stderr,
           "Invalid option: Cannot select both server mode and multi mode\n\n");
-      PrintHelp(0);
+
+      print_help(0);
     }
     else
     {
@@ -248,5 +249,5 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
     SetCompressionLevel(cmpr);
   }
   if (options[5].present)
-    PrintHelp(0);
+    print_help(0);
 }
