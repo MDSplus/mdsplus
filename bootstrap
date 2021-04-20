@@ -53,4 +53,5 @@ $PYTHON deploy/gen_messages.py
 $PYTHON deploy/gen_compound_opcbuiltins.py
 
 deploy/yylex.gen tdishr
+deploy/yylex.gen treeshr
 deploy/yylex.gen mdsdcl
