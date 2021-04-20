@@ -44,6 +44,8 @@ extern "C" {
 int64_t convertAsciiToTime(const char *ascTime);
 int MDSEventAst(const char *eventNameIn, void (*astadr)(void *, int, char *),
                 void *astprm, int *eventid);
+int MDSEventAstMask(const char *eventNameIn, void (*astadr)(void *, int, char *),
+                void *astprm, int *eventid, unsigned int cpuMask);
 int MDSEventCan(int id);
 int MDSEvent(const char *eventNameIn, int bufLen, char *buf);
 void *MdsEventAddListener(char *name,
@@ -91,7 +93,7 @@ void Event::connectToEvents() {
     InitializeCriticalSection(&critSect);
   }
 #endif
-  if (!MDSEventAst(this->getName(), MDSplus::eventAst, this, &eventId))
+  if (!MDSEventAstMask(this->getName(), MDSplus::eventAst, this, &eventId, cpuMask))
     throw MdsException("failed to connect to event listener");
 }
 
@@ -102,8 +104,11 @@ void Event::disconnectFromEvents() {
 
 void Event::run() {}
 
+Event::Event(const char *name, unsigned int cpuMask)
+    : eventName(name), eventId(-1), cpuMask(cpuMask), eventTime(convertAsciiToTime("now")){}
+
 Event::Event(const char *name)
-    : eventName(name), eventId(-1), eventTime(convertAsciiToTime("now")) {}
+    : eventName(name), eventId(-1), cpuMask(0), eventTime(convertAsciiToTime("now")){}
 
 Event::~Event() { stop(); }
 

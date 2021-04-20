@@ -113,6 +113,9 @@ extern int MDSEvent(const char *eventName, int num_bytes, char *data);
 extern int MDSEventAst(const char *eventName,
                        void (*astadr)(void *, int, char *), void *astprm,
                        int *eventid);
+extern int MDSEventAstMask(const char *eventName,
+                       void (*astadr)(void *, int, char *), void *astprm,
+                       int *eventid, unsigned int cpuMask);
 extern int MDSEventCan(const int eventid);
 extern int MDSWfevent(const char *const evname, const int buflen,
                       char *const data, int *const datlen);

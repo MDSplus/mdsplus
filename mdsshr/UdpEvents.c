@@ -22,6 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#define _GNU_SOURCE
+#include <sched.h>
+#include <pthread.h>
+
 #include <mdsplus/mdsconfig.h>
 
 #include <errno.h>
@@ -34,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <mdsshr.h>
 #include <socket_port.h>
+
 
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);
@@ -232,10 +237,11 @@ static void getMulticastAddr(char const *eventName, char *retIp) {
   free(addr_format);
 }
 
-int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
-                   void *astprm, int *eventid) {
+int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *),
+                   void *astprm, int *eventid, __attribute__((unused)) unsigned int cpuMask) {
   int check_bind_in_directive;
   struct sockaddr_in serverAddr;
+
 #ifdef _WIN32
   char flag = 1;
 #else
@@ -320,10 +326,35 @@ int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
       perror("pthread_create");
       return 0;
     }
+#ifdef CPU_SET
+    if(cpuMask != 0)
+    {
+        cpu_set_t processorCpuSet;  
+	unsigned int j;      
+	CPU_ZERO(&processorCpuSet);
+        for (j = 0u; (j < (sizeof(cpuMask) * 8u)) && (j < CPU_SETSIZE); j++)
+	{
+            if (((cpuMask >> j) & 0x1u) == 0x1u) 
+	    {
+                CPU_SET(j, &processorCpuSet);
+            }
+        }
+        pthread_setaffinity_np(thread, sizeof(processorCpuSet), &processorCpuSet);
+    }
+#endif
   }
+
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
+
+
+int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
+                   void *astprm, int *eventid)
+{
+    return MDSUdpEventAstMask(eventName, astadr, astprm, eventid, 0);
+}
+
 
 int MDSUdpEventCan(int eventid) {
   EventList *ev = popEvent(eventid);
@@ -353,34 +384,33 @@ int MDSUdpEventCan(int eventid) {
 }
 
 static SOCKET send_socket = INVALID_SOCKET;
+static unsigned short sendPort = 0;
 static pthread_once_t send_socket_once = PTHREAD_ONCE_INIT;
 static void send_socket_get() {
   if ((send_socket = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
     print_error("Error creating socket");
+  UdpEventGetPort(&sendPort);
 }
 
 int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf) {
   char multiIp[64];
   uint32_t buflen_net_order = (uint32_t)htonl(bufLen);
   SOCKET udpSocket;
-  struct sockaddr_in sin;
+  static struct sockaddr_in sin;
   char *msg = 0, *currPtr;
   unsigned int msgLen, nameLen = (unsigned int)strlen(eventName), actBufLen;
   uint32_t namelen_net_order = (uint32_t)htonl(nameLen);
   int status;
-  unsigned short port;
   char ttl, loop;
   struct in_addr *interface_addr = 0;
 
   getMulticastAddr(eventName, multiIp);
   pthread_once(&send_socket_once, &send_socket_get);
   udpSocket = send_socket;
-
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
   *(int *)&sin.sin_addr = LibGetHostAddr(multiIp);
-  UdpEventGetPort(&port);
-  sin.sin_port = htons(port);
+  sin.sin_port = htons(sendPort);
   nameLen = (unsigned int)strlen(eventName);
   if (bufLen < MAX_MSG_LEN - (4u + 4u + nameLen))
     actBufLen = bufLen;
@@ -403,6 +433,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf) {
     memcpy(currPtr, buf, bufLen);
 
   pthread_mutex_lock(&sendEventMutex);
+
   if (UdpEventGetTtl(&ttl))
     setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
   if (UdpEventGetLoop(&loop))
@@ -412,6 +443,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf) {
                         (char *)interface_addr, sizeof(*interface_addr));
     free(interface_addr);
   }
+
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) ==
       -1) {
     print_error("Error sending UDP message");
