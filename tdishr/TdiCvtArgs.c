@@ -43,7 +43,8 @@ extern int TdiGetShape();
 extern void UseNativeFloat();
 
 int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
-               struct TdiCatStruct cats[1]) {
+               struct TdiCatStruct cats[1])
+{
   INIT_STATUS;
   int j, cmode = -1;
   unsigned char jd;
@@ -56,13 +57,20 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
   Get length from table.
   Keep old text length.
   *************************/
-  for (j = 0, cptr = cats; STATUS_OK && j <= narg; ++j, ++cptr) {
-    if (cptr->out_cat != cptr->in_cat) {
-      if (cptr->out_cat != TdiREF_CAT[DTYPE_T].cat) {
-        if (TdiREF_CAT[cptr->out_dtype].cat != cptr->out_cat) {
-          if (cats[j].out_cat & 0x400) {
-            if (cats[j].out_cat & TdiCAT_COMPLEX) {
-              switch (cats[j].out_dtype) {
+  for (j = 0, cptr = cats; STATUS_OK && j <= narg; ++j, ++cptr)
+  {
+    if (cptr->out_cat != cptr->in_cat)
+    {
+      if (cptr->out_cat != TdiREF_CAT[DTYPE_T].cat)
+      {
+        if (TdiREF_CAT[cptr->out_dtype].cat != cptr->out_cat)
+        {
+          if (cats[j].out_cat & 0x400)
+          {
+            if (cats[j].out_cat & TdiCAT_COMPLEX)
+            {
+              switch (cats[j].out_dtype)
+              {
               case DTYPE_F:
                 cats[j].out_dtype = DTYPE_FC;
                 break;
@@ -81,8 +89,11 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
               default:
                 UseNativeFloat(cptr);
               }
-            } else {
-              switch (cats[j].out_dtype) {
+            }
+            else
+            {
+              switch (cats[j].out_dtype)
+              {
               case DTYPE_FC:
                 cats[j].out_dtype = DTYPE_F;
                 break;
@@ -102,9 +113,12 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
                 UseNativeFloat(cptr);
               }
             }
-          } else {
+          }
+          else
+          {
             for (jd = 0; jd < TdiCAT_MAX && TdiREF_CAT[jd].cat != cptr->out_cat;
-                 ++jd) {
+                 ++jd)
+            {
               ;
             }
             if (jd >= TdiCAT_MAX)
@@ -114,19 +128,23 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
           }
         }
         cptr->digits = TdiREF_CAT[cptr->out_dtype].length;
-      } else
+      }
+      else
         cptr->out_dtype = DTYPE_T;
-    } else if (cptr->out_cat != TdiREF_CAT[DTYPE_T].cat)
+    }
+    else if (cptr->out_cat != TdiREF_CAT[DTYPE_T].cat)
       cptr->digits = TDIREF_CAT(cptr->out_dtype).length;
   }
 
   /********************
   Do input conversions.
   ********************/
-  for (j = 0, cptr = cats; STATUS_OK && j < narg; ++j, ++cptr) {
+  for (j = 0, cptr = cats; STATUS_OK && j < narg; ++j, ++cptr)
+  {
     struct descriptor_a *aptr = (struct descriptor_a *)dat[j].pointer;
 
-    if (cptr->in_dtype == cptr->out_dtype && cptr->digits == aptr->length) {
+    if (cptr->in_dtype == cptr->out_dtype && cptr->digits == aptr->length)
+    {
       ;
     }
 
@@ -136,7 +154,8 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
     else if ((cptr->in_cat ^ cptr->out_cat) == SIGNEDNESS)
       aptr->dtype = cptr->out_dtype;
 
-    else {
+    else
+    {
       /*****************************************
       Convert overlay for same length.
       For example: L into F.
@@ -144,12 +163,16 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
       NEED to revise if other array classes.
       ASSUMES array-descriptor sized readable.
       *****************************************/
-      if (aptr->length == cptr->digits) {
-        if (aptr->class == CLASS_A) {
+      if (aptr->length == cptr->digits)
+      {
+        if (aptr->class == CLASS_A)
+        {
           struct descriptor_a arr = *aptr;
           aptr->dtype = cptr->out_dtype;
           status = TdiConvert(&arr, aptr MDS_END_ARG);
-        } else {
+        }
+        else
+        {
           struct descriptor d = *(struct descriptor *)aptr;
           aptr->dtype = cptr->out_dtype;
           status = TdiConvert(&d, aptr MDS_END_ARG);
@@ -159,7 +182,8 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1],
       /**************************
       Make new space and convert.
       **************************/
-      else {
+      else
+      {
         struct descriptor_xd xd = EMPTY_XD;
         status =
             TdiGetShape(1, &dat[j], cptr->digits, cptr->out_dtype, &cmode, &xd);

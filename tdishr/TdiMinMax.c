@@ -39,14 +39,16 @@ extern int TdiData();
 extern int TdiGetLong();
 
 int Tdi1MinMax(opcode_t opcode, int narg, struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp, *newlist[2];
   int j;
 
   newlist[0] = &tmp;
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
-  for (j = 1; STATUS_OK && j < narg; j++) {
+  for (j = 1; STATUS_OK && j < narg; j++)
+  {
     tmp = *out_ptr;
     *out_ptr = EMPTY_XD;
     newlist[1] = (struct descriptor_xd *)list[j];
@@ -66,32 +68,36 @@ int Tdi1MinMax(opcode_t opcode, int narg, struct descriptor *list[],
    conformed.
 */
 int Tdi1Conditional(opcode_t opcode, int narg, struct descriptor *list[],
-                    struct descriptor_xd *out_ptr) {
+                    struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
 
   status = TdiData(list[2], out_ptr MDS_END_ARG);
   if (STATUS_OK)
+  {
+    if (out_ptr->pointer && out_ptr->pointer->class == CLASS_A)
     {
-      if (out_ptr->pointer && out_ptr->pointer->class == CLASS_A) {
-        struct descriptor_xd tmp = *out_ptr;
-        struct descriptor *new[3];
-        new[0] = list[0];
-        new[1] = list[1];
-        new[2] = (struct descriptor *)&tmp;
-        *out_ptr = EMPTY_XD;
-        status = Tdi1Same(opcode, narg, new, out_ptr);
-        MdsFree1Dx(&tmp, NULL);
-      } else {
-        int truth;
-        status = TdiGetLong(out_ptr, &truth);
-        if (STATUS_OK)
-          {
-            if (truth & 1)
-              status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
-            else
-              status = TdiEvaluate(list[1], out_ptr MDS_END_ARG);
-          }
+      struct descriptor_xd tmp = *out_ptr;
+      struct descriptor *new[3];
+      new[0] = list[0];
+      new[1] = list[1];
+      new[2] = (struct descriptor *)&tmp;
+      *out_ptr = EMPTY_XD;
+      status = Tdi1Same(opcode, narg, new, out_ptr);
+      MdsFree1Dx(&tmp, NULL);
+    }
+    else
+    {
+      int truth;
+      status = TdiGetLong(out_ptr, &truth);
+      if (STATUS_OK)
+      {
+        if (truth & 1)
+          status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
+        else
+          status = TdiEvaluate(list[1], out_ptr MDS_END_ARG);
       }
     }
+  }
   return status;
 }

@@ -48,16 +48,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TclSetView:
  ****************************************************************/
 EXPORT int TclSetView(void *ctx, char **error,
-                      char **output __attribute__((unused))) {
+                      char **output __attribute__((unused)))
+{
   int status;
   int64_t viewDate = -1;
   char *viewDateStr = 0;
   cli_get_value(ctx, "DATE", &viewDateStr);
   if ((strcasecmp(viewDateStr, "NOW") == 0) ||
-      ((status = LibConvertDateString(viewDateStr, &viewDate)) & 1)) {
+      ((status = LibConvertDateString(viewDateStr, &viewDate)) & 1))
+  {
     status = TreeSetViewDate(&viewDate);
   }
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 200);
     sprintf(*error,

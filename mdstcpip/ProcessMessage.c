@@ -73,13 +73,15 @@ extern int TdiSaveContext();
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 
 static void ConvertBinary(int num, int sign_extend, short in_length,
-                          char *in_ptr, short out_length, char *out_ptr) {
+                          char *in_ptr, short out_length, char *out_ptr)
+{
   int i;
   int j;
   signed char *in_p = (signed char *)in_ptr;
   signed char *out_p = (signed char *)out_ptr;
   short min_len = min(out_length, in_length);
-  for (i = 0; i < num; i++, in_p += in_length, out_p += out_length) {
+  for (i = 0; i < num; i++, in_p += in_length, out_p += out_length)
+  {
     for (j = 0; j < min_len; j++)
       out_p[j] = in_p[j];
     for (; j < out_length; j++)
@@ -88,15 +90,18 @@ static void ConvertBinary(int num, int sign_extend, short in_length,
 }
 
 static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
-                         int out_type, char out_length, char *out_ptr) {
+                         int out_type, char out_length, char *out_ptr)
+{
   int i;
   char *in_p;
   char *out_p;
   for (i = 0, in_p = in_ptr, out_p = out_ptr; i < num;
-       i++, in_p += in_length, out_p += out_length) {
+       i++, in_p += in_length, out_p += out_length)
+  {
     char *ptr = in_p;
     char cray_f[8];
-    if (in_type == CvtCRAY) {
+    if (in_type == CvtCRAY)
+    {
       int j, k;
       for (j = 0; j < 2; j++)
         for (k = 0; k < 4; k++)
@@ -109,7 +114,8 @@ static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
     }
     CvtConvertFloat(ptr, in_type, out_p, out_type, 0);
 #ifdef WORDS_BIGENDIAN
-    if (out_type == CvtCRAY) {
+    if (out_type == CvtCRAY)
+    {
       int j, k;
       ptr = out_p;
       for (j = 0; j < 2; j++)
@@ -132,7 +138,8 @@ static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
 ///
 
 static Message *BuildResponse(int client_type, unsigned char message_id,
-                              int status, struct descriptor *d) {
+                              int status, struct descriptor *d)
+{
   Message *m = NULL;
   /*
   if (SupportsCompression(client_type)) {
@@ -156,8 +163,10 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
   int nbytes = (d->class == CLASS_S) ? d->length : ((array_coeff *)d)->arsize;
   int num = nbytes / ((d->length < 1) ? 1 : d->length);
   short length = d->length;
-  if (CType(client_type) == CRAY_CLIENT) {
-    switch (d->dtype) {
+  if (CType(client_type) == CRAY_CLIENT)
+  {
+    switch (d->dtype)
+    {
     case DTYPE_USHORT:
     case DTYPE_ULONG:
     case DTYPE_SHORT:
@@ -178,8 +187,11 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
       break;
     }
     nbytes = num * length;
-  } else if (CType(client_type) == CRAY_IEEE_CLIENT) {
-    switch (d->dtype) {
+  }
+  else if (CType(client_type) == CRAY_IEEE_CLIENT)
+  {
+    switch (d->dtype)
+    {
     case DTYPE_USHORT:
     case DTYPE_SHORT:
       length = 4;
@@ -204,7 +216,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
   m->h.length = length;
   if (d->class == CLASS_S)
     m->h.ndims = 0;
-  else {
+  else
+  {
     int i;
     array_coeff *a = (array_coeff *)d;
     m->h.ndims = a->dimct;
@@ -216,10 +229,12 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
     for (i = m->h.ndims; i < MAX_DIMS; i++)
       m->h.dims[i] = 0;
   }
-  switch (CType(client_type)) {
+  switch (CType(client_type))
+  {
   case IEEE_CLIENT:
   case JAVA_CLIENT:
-    switch (d->dtype) {
+    switch (d->dtype)
+    {
     case DTYPE_F:
       ConvertFloat(num, CvtVAX_F, (char)d->length, d->pointer, CvtIEEE_S,
                    (char)m->h.length, m->bytes);
@@ -272,7 +287,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
     }
     break;
   case CRAY_CLIENT:
-    switch (d->dtype) {
+    switch (d->dtype)
+    {
     case DTYPE_USHORT:
     case DTYPE_ULONG:
       ConvertBinary(num, 0, d->length, d->pointer, m->h.length, m->bytes);
@@ -316,7 +332,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
     }
     break;
   case CRAY_IEEE_CLIENT:
-    switch (d->dtype) {
+    switch (d->dtype)
+    {
     case DTYPE_USHORT:
     case DTYPE_ULONG:
       ConvertBinary(num, 0, d->length, d->pointer, m->h.length, m->bytes);
@@ -378,7 +395,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
     }
     break;
   case VMSG_CLIENT:
-    switch (d->dtype) {
+    switch (d->dtype)
+    {
     case DTYPE_F:
       memcpy(m->bytes, d->pointer, nbytes);
       m->h.dtype = DTYPE_FLOAT;
@@ -431,7 +449,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
     }
     break;
   default:
-    switch (d->dtype) {
+    switch (d->dtype)
+    {
     case DTYPE_F:
       memcpy(m->bytes, d->pointer, nbytes);
       m->h.dtype = DTYPE_FLOAT;
@@ -487,17 +506,21 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
   return m;
 }
 
-static void GetErrorText(int status, mdsdsc_xd_t *xd) {
+static void GetErrorText(int status, mdsdsc_xd_t *xd)
+{
   static DESCRIPTOR(unknown, "unknown error occured");
   struct descriptor message = {0, DTYPE_T, CLASS_S, 0};
-  if ((message.pointer = MdsGetMsg(status)) != NULL) {
+  if ((message.pointer = MdsGetMsg(status)) != NULL)
+  {
     message.length = strlen(message.pointer);
     MdsCopyDxXd(&message, xd);
-  } else
+  }
+  else
     MdsCopyDxXd((struct descriptor *)&unknown, xd);
 }
 
-static void ClientEventAst(MdsEventList *e, int data_len, char *data) {
+static void ClientEventAst(MdsEventList *e, int data_len, char *data)
+{
   int conid = e->conid;
   Connection *c = FindConnection(e->conid, 0);
   int i;
@@ -506,13 +529,15 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data) {
   JMdsEventInfo *info;
   int len;
   // Check Connection: if down, cancel the event and return
-  if (!c) {
+  if (!c)
+  {
     MDSEventCan(e->eventid);
     return;
   }
   client_type = c->client_type;
   LockAsts();
-  if (CType(client_type) == JAVA_CLIENT) {
+  if (CType(client_type) == JAVA_CLIENT)
+  {
     len = sizeof(MsgHdr) + sizeof(JMdsEventInfo);
     m = memset(malloc(len), 0, len);
     m->h.ndims = 0;
@@ -525,7 +550,9 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data) {
     for (i = data_len; i < 12; i++)
       info->data[i] = 0;
     info->eventid = e->jeventid;
-  } else {
+  }
+  else
+  {
     m = memset(malloc(sizeof(MsgHdr) + e->info_len), 0,
                sizeof(MsgHdr) + e->info_len);
     m->h.ndims = 0;
@@ -548,7 +575,8 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data) {
  * mdstcpip/ProcessMessage.c
  * Problems with the implementation are likely to be fixed in all locations.
  */
-typedef struct {
+typedef struct
+{
   void **ctx;
   int status;
 #ifndef _WIN32
@@ -559,19 +587,22 @@ typedef struct {
   mdsdsc_xd_t *const xd_out;
 } worker_args_t;
 
-typedef struct {
+typedef struct
+{
   worker_args_t *const wa;
   mdsdsc_xd_t *const xdp;
 } worker_cleanup_t;
 
-static void WorkerCleanup(worker_cleanup_t *const wc) {
+static void WorkerCleanup(worker_cleanup_t *const wc)
+{
 #ifndef _WIN32
   CONDITION_SET(wc->wa->condition);
 #endif
   free_xd(wc->xdp);
 }
 
-static int WorkerThread(void *args) {
+static int WorkerThread(void *args)
+{
   EMPTYXD(xd);
   worker_cleanup_t wc = {(worker_args_t *)args, &xd};
   pthread_cleanup_push((void *)WorkerCleanup, (void *)&wc);
@@ -586,7 +617,8 @@ static int WorkerThread(void *args) {
   return wc.wa->status;
 }
 
-static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
+static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd)
+{
   // fprintf(stderr,"starting task for connection %d\n",connection->id);
   void *tdicontext[6], *pc = NULL;
   MDSplusThreadStatic_t *mts = MDSplusThreadStatic(NULL);
@@ -601,7 +633,8 @@ static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
     .connection = connection,
     .xd_out = ans_xd
   };
-  if (GetContextSwitching()) {
+  if (GetContextSwitching())
+  {
     pc = TreeCtxPush(&connection->DBID);
     TdiSaveContext(tdicontext);
     TdiRestoreContext(connection->tdicontext);
@@ -609,7 +642,8 @@ static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
 #ifdef _WIN32
   HANDLE hWorker = CreateThread(NULL, DEFAULT_STACKSIZE * 16,
                                 (void *)WorkerThread, &wa, 0, NULL);
-  if (!hWorker) {
+  if (!hWorker)
+  {
     errno = GetLastError();
     perror("ERROR CreateThread");
     wa.status = MDSplusFATAL;
@@ -617,7 +651,8 @@ static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
   }
   int canceled = B_FALSE;
   if (connection->io->check)
-    while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT) {
+    while (WaitForSingleObject(hWorker, 100) == WAIT_TIMEOUT)
+    {
       if (!connection->io->check(connection))
         continue;
       fflush(stdout);
@@ -633,7 +668,8 @@ static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
   pthread_t Worker;
   _CONDITION_LOCK(wa.condition);
   CREATE_THREAD(Worker, *16, WorkerThread, &wa);
-  if (c_status) {
+  if (c_status)
+  {
     perror("ERROR pthread_create");
     _CONDITION_UNLOCK(wa.condition);
     pthread_cond_destroy(&WorkerRunning.cond);
@@ -642,7 +678,8 @@ static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
     goto end;
   }
   int canceled = B_FALSE;
-  for (;;) {
+  for (;;)
+  {
     _CONDITION_WAIT_1SEC(wa.condition, );
     if (WorkerRunning.value)
       break;
@@ -660,7 +697,8 @@ static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
     fflush(stdout);
     if (WorkerRunning.value)
       fprintf(stderr, " ok\n");
-    else {
+    else
+    {
       fprintf(stderr, " failed - sending SIGCHLD\n");
       pthread_kill(Worker, SIGCHLD);
     }
@@ -675,7 +713,8 @@ static inline int executeCommand(Connection *connection, mdsdsc_xd_t *ans_xd) {
     wa.status = TdiABORT;
 #endif
 end:;
-  if (pc) {
+  if (pc)
+  {
     TdiSaveContext(connection->tdicontext);
     TdiRestoreContext(tdicontext);
     TreeCtxPop(pc);
@@ -699,7 +738,8 @@ end:;
 /// \param connection the Connection instance filled with proper descriptor
 /// arguments \return the execute message answer built using BuildAnswer()
 ///
-static Message *ExecuteMessage(Connection *connection) {
+static Message *ExecuteMessage(Connection *connection)
+{
   Message *ans = 0; // return message instance //
   int status = 1;   // return status           //
 
@@ -713,7 +753,8 @@ static Message *ExecuteMessage(Connection *connection) {
 
   // AST REQUEST //
   if (StrCompare(connection->descrip[0], (struct descriptor *)&eventastreq) ==
-      0) {
+      0)
+  {
     static int eventid = -1;
     static DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *newe = (MdsEventList *)malloc(sizeof(MdsEventList));
@@ -730,29 +771,37 @@ static Message *ExecuteMessage(Connection *connection) {
                          newe, &newe->eventid);
 
     free(evname);
-    if (java) {
+    if (java)
+    {
       newe->info = 0;
       newe->info_len = 0;
       newe->jeventid = *connection->descrip[2]->pointer;
-    } else {
+    }
+    else
+    {
       newe->info = (MdsEventInfo *)memcpy(malloc(info->arsize), info->pointer,
                                           info->arsize);
       newe->info_len = info->arsize;
       newe->info->eventid = newe->eventid;
     }
     newe->next = 0;
-    if (!(status & 1)) {
+    if (!(status & 1))
+    {
       eventiddsc.pointer = (void *)&eventid;
       free(newe->info);
       free(newe);
-    } else {
+    }
+    else
+    {
       MdsEventList *e;
       eventiddsc.pointer = (void *)&newe->eventid;
-      if (connection->event) {
+      if (connection->event)
+      {
         for (e = connection->event; e->next; e = e->next)
           ;
         e->next = newe;
-      } else
+      }
+      else
         connection->event = newe;
     }
     if (!java)
@@ -760,7 +809,8 @@ static Message *ExecuteMessage(Connection *connection) {
   }
   // CAN REQUEST //
   else if (StrCompare(connection->descrip[0],
-                      (struct descriptor *)&eventcanreq) == 0) {
+                      (struct descriptor *)&eventcanreq) == 0)
+  {
     static int eventid;
     static DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *e;
@@ -769,11 +819,13 @@ static Message *ExecuteMessage(Connection *connection) {
       eventid = *(int *)connection->descrip[1]->pointer;
     else
       eventid = (int)*connection->descrip[1]->pointer;
-    if (connection->event) {
+    if (connection->event)
+    {
       for (p = &connection->event, e = connection->event;
            e && (e->eventid != eventid); p = &e->next, e = e->next)
         ;
-      if (e) {
+      if (e)
+      {
         /**/ MDSEventCan(e->eventid);
         /**/ *p = e->next;
         free(e);
@@ -783,12 +835,14 @@ static Message *ExecuteMessage(Connection *connection) {
       ans = BuildResponse(client_type, message_id, status, &eventiddsc);
   }
   // NORMAL TDI COMMAND //
-  else {
+  else
+  {
     INIT_AND_FREEXD_ON_EXIT(ans_xd);
     status = executeCommand(connection, &ans_xd);
     if (STATUS_NOT_OK)
       GetErrorText(status, &ans_xd);
-    if (GetCompressionLevel() != connection->compression_level) {
+    if (GetCompressionLevel() != connection->compression_level)
+    {
       connection->compression_level = GetCompressionLevel();
       if (connection->compression_level > GetMaxCompressionLevel())
         connection->compression_level = GetMaxCompressionLevel();
@@ -802,7 +856,8 @@ static Message *ExecuteMessage(Connection *connection) {
   return ans;
 }
 
-static inline char *replaceBackslashes(char *filename) {
+static inline char *replaceBackslashes(char *filename)
+{
   char *ptr;
   while ((ptr = strchr(filename, '\\')) != NULL)
     *ptr = '/';
@@ -819,18 +874,23 @@ static inline char *replaceBackslashes(char *filename) {
 /// \param message the message to process
 /// \return message answer
 ///
-Message *ProcessMessage(Connection *connection, Message *message) {
+Message *ProcessMessage(Connection *connection, Message *message)
+{
 
   Message *ans = 0;
 
   // COMING NEW MESSAGE  //
   // reset connection id //
-  if (connection->message_id != message->h.message_id) {
+  if (connection->message_id != message->h.message_id)
+  {
     FreeDescriptors(connection);
-    if (message->h.nargs < MDSIP_MAX_ARGS - 1) {
+    if (message->h.nargs < MDSIP_MAX_ARGS - 1)
+    {
       connection->message_id = message->h.message_id;
       connection->nargs = message->h.nargs;
-    } else {
+    }
+    else
+    {
       DESCRIPTOR_LONG(status_d, 0);
       int status = 0;
       status_d.pointer = (char *)&status;
@@ -842,21 +902,25 @@ Message *ProcessMessage(Connection *connection, Message *message) {
 
   // STANADARD COMMANDS ////////////////////////////////////////////////////////
   // idx < nargs        ////////////////////////////////////////////////////////
-  if (message->h.descriptor_idx < connection->nargs) {
+  if (message->h.descriptor_idx < connection->nargs)
+  {
 
     // set connection to the message client_type  //
     connection->client_type = message->h.client_type;
 
-#define COPY_DESC(name, GENERATOR, ...)                                        \
-  do {                                                                         \
-    const GENERATOR(__VA_ARGS__);                                              \
-    *(void **)&d = memcpy(malloc(sizeof(tmp)), &tmp, sizeof(tmp));             \
+#define COPY_DESC(name, GENERATOR, ...)                            \
+  do                                                               \
+  {                                                                \
+    const GENERATOR(__VA_ARGS__);                                  \
+    *(void **)&d = memcpy(malloc(sizeof(tmp)), &tmp, sizeof(tmp)); \
   } while (0)
 
     // d -> reference to curent idx argument desctriptor  //
     struct descriptor *d = connection->descrip[message->h.descriptor_idx];
-    if (message->h.dtype == DTYPE_SERIAL) {
-      if (d && d->class != CLASS_XD) {
+    if (message->h.dtype == DTYPE_SERIAL)
+    {
+      if (d && d->class != CLASS_XD)
+      {
         if (d->class == CLASS_D && d->pointer)
           free(d->pointer);
         free(d);
@@ -865,34 +929,41 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       connection->descrip[message->h.descriptor_idx] = d;
       return ans;
     }
-    if (!d) {
+    if (!d)
+    {
       // instance the connection descriptor field //
       const short lengths[] = {0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0};
-      if (message->h.ndims == 0) {
+      if (message->h.ndims == 0)
+      {
         d = calloc(1, sizeof(struct descriptor_s));
         d->class = CLASS_S;
-      } else
+      }
+      else
         COPY_DESC(d, DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
       d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype]
                                                    : message->h.length;
       d->dtype = message->h.dtype;
-      if (d->class == CLASS_A) {
+      if (d->class == CLASS_A)
+      {
         array_coeff *a = (array_coeff *)d;
         int num = 1;
         int i;
         a->dimct = message->h.ndims;
-        for (i = 0; i < a->dimct; i++) {
+        for (i = 0; i < a->dimct; i++)
+        {
           a->m[i] = message->h.dims[i];
           num *= a->m[i];
         }
         a->arsize = a->length * num;
         a->pointer = a->a0 = malloc(a->arsize);
-      } else
+      }
+      else
         d->pointer = d->length ? malloc(d->length) : 0;
       // set new instance //
       connection->descrip[message->h.descriptor_idx] = d;
     }
-    if (d) {
+    if (d)
+    {
       // have valid connection descriptor instance     //
       // copy the message buffer into the descriptor   //
 
@@ -900,13 +971,15 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                                        : (int)((array_coeff *)d)->arsize;
       int num = dbytes / max(1, d->length);
 
-      switch (CType(connection->client_type)) {
+      switch (CType(connection->client_type))
+      {
       case IEEE_CLIENT:
       case JAVA_CLIENT:
         memcpy(d->pointer, message->bytes, dbytes);
         break;
       case CRAY_IEEE_CLIENT:
-        switch (d->dtype) {
+        switch (d->dtype)
+        {
         case DTYPE_USHORT:
         case DTYPE_ULONG:
           ConvertBinary(num, 0, message->h.length, message->bytes, d->length,
@@ -923,7 +996,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
         }
         break;
       case CRAY_CLIENT:
-        switch (d->dtype) {
+        switch (d->dtype)
+        {
         case DTYPE_USHORT:
         case DTYPE_ULONG:
           ConvertBinary(num, 0, message->h.length, message->bytes, d->length,
@@ -953,7 +1027,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
         }
         break;
       default:
-        switch (d->dtype) {
+        switch (d->dtype)
+        {
         case DTYPE_FLOAT:
           ConvertFloat(num, CvtVAX_F, (char)message->h.length, message->bytes,
                        CvtIEEE_S, sizeof(float), d->pointer);
@@ -984,7 +1059,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
           break;
         }
       }
-      switch (d->dtype) {
+      switch (d->dtype)
+      {
       default:
         break;
       case DTYPE_FLOAT:
@@ -1002,7 +1078,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       }
 
       // CALL EXECUTE MESSAGE //
-      if (message->h.descriptor_idx == (message->h.nargs - 1)) {
+      if (message->h.descriptor_idx == (message->h.nargs - 1))
+      {
         ans = ExecuteMessage(connection);
       }
     }
@@ -1010,12 +1087,15 @@ Message *ProcessMessage(Connection *connection, Message *message) {
 
   // SPECIAL I/O MESSAGES //////////////////////////////////////////////////////
   // idx >= nargs         //////////////////////////////////////////////////////
-  else {
+  else
+  {
 
     connection->client_type = message->h.client_type;
     const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
-    switch (message->h.descriptor_idx) {
-    case MDS_IO_OPEN_K: {
+    switch (message->h.descriptor_idx)
+    {
+    case MDS_IO_OPEN_K:
+    {
       char *filename = (char *)message->bytes;
       int options = mdsio->open.options;
       mode_t mode = mdsio->open.mode;
@@ -1038,7 +1118,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                           &ans_d);
       break;
     }
-    case MDS_IO_CLOSE_K: {
+    case MDS_IO_CLOSE_K:
+    {
       int fd = mdsio->close.fd;
       int ans_o = MDS_IO_CLOSE(fd);
       struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
@@ -1046,7 +1127,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                           &ans_d);
       break;
     }
-    case MDS_IO_LSEEK_K: {
+    case MDS_IO_LSEEK_K:
+    {
       int fd = mdsio->lseek.fd;
       int64_t offset = mdsio->lseek.offset;
       SWAP_INT_IF_BIGENDIAN(&offset);
@@ -1059,7 +1141,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
       break;
     }
-    case MDS_IO_READ_K: {
+    case MDS_IO_READ_K:
+    {
       int fd = mdsio->read.fd;
       size_t count = mdsio->read.count;
       void *buf = malloc(count);
@@ -1067,13 +1150,16 @@ Message *ProcessMessage(Connection *connection, Message *message) {
 #ifdef USE_PERF
       TreePerfRead(nbytes);
 #endif
-      if (nbytes > 0) {
+      if (nbytes > 0)
+      {
         DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
         if ((size_t)nbytes != count)
           perror("READ_K wrong byte count");
         ans = BuildResponse(connection->client_type, connection->message_id, 1,
                             (struct descriptor *)&ans_d);
-      } else {
+      }
+      else
+      {
         DESCRIPTOR(ans_d, "");
         ans = BuildResponse(connection->client_type, connection->message_id, 1,
                             (struct descriptor *)&ans_d);
@@ -1081,7 +1167,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       free(buf);
       break;
     }
-    case MDS_IO_WRITE_K: {
+    case MDS_IO_WRITE_K:
+    {
       /* from http://man7.org/linux/man-pages/man2/write.2.html
        * On Linux, write() (and similar system calls) will transfer at most
        * 0x7ffff000 (2,147,479,552) bytes, returning the number of bytes
@@ -1101,7 +1188,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                           &ans_d);
       break;
     }
-    case MDS_IO_LOCK_K: {
+    case MDS_IO_LOCK_K:
+    {
       int fd = mdsio->lock.fd;
       off_t offset = mdsio->lock.offset;
       SWAP_INT_IF_BIGENDIAN(&offset);
@@ -1116,7 +1204,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                           deleted ? 3 : 1, &ans_d);
       break;
     }
-    case MDS_IO_EXISTS_K: {
+    case MDS_IO_EXISTS_K:
+    {
       char *filename = message->bytes;
       int ans_o = MDS_IO_EXISTS(filename);
       struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
@@ -1124,7 +1213,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                           &ans_d);
       break;
     }
-    case MDS_IO_REMOVE_K: {
+    case MDS_IO_REMOVE_K:
+    {
       char *filename = message->bytes;
       int ans_o = MDS_IO_REMOVE(filename);
       struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
@@ -1132,7 +1222,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                           &ans_d);
       break;
     }
-    case MDS_IO_RENAME_K: {
+    case MDS_IO_RENAME_K:
+    {
       char *old = message->bytes;
       char *new = message->bytes + strlen(old) + 1;
       int ans_o = MDS_IO_RENAME(old, new);
@@ -1141,7 +1232,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
                           &ans_d);
       break;
     }
-    case MDS_IO_READ_X_K: {
+    case MDS_IO_READ_X_K:
+    {
       int fd = mdsio->read_x.fd;
       off_t offset = mdsio->read_x.offset;
       SWAP_INT_IF_BIGENDIAN(&offset);
@@ -1149,13 +1241,16 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       void *buf = malloc(count);
       int deleted;
       size_t nbytes = MDS_IO_READ_X(fd, offset, buf, count, &deleted);
-      if (nbytes > 0) {
+      if (nbytes > 0)
+      {
         DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
         if ((size_t)nbytes != count)
           perror("READ_X_K wrong byte count");
         ans = BuildResponse(connection->client_type, connection->message_id,
                             deleted ? 3 : 1, (struct descriptor *)&ans_d);
-      } else {
+      }
+      else
+      {
         DESCRIPTOR(ans_d, "");
         ans = BuildResponse(connection->client_type, connection->message_id,
                             deleted ? 3 : 1, (struct descriptor *)&ans_d);
@@ -1163,7 +1258,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       free(buf);
       break;
     }
-    case MDS_IO_OPEN_ONE_K: {
+    case MDS_IO_OPEN_ONE_K:
+    {
       char *treename = message->bytes;
       char *filepath = message->bytes + strlen(treename) + 1;
       int shot = mdsio->open_one.shot;
@@ -1179,7 +1275,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       DESCRIPTOR_A(ans_d, sizeof(char), DTYPE_B, msg, msglen);
       memcpy(msg, &status, 4);
       memcpy(msg + 4, &fd, 4);
-      if (fullpath) {
+      if (fullpath)
+      {
         memcpy(msg + 8, fullpath, msglen - 8);
         free(fullpath);
       }
@@ -1188,7 +1285,8 @@ Message *ProcessMessage(Connection *connection, Message *message) {
       free(msg);
       break;
     }
-    default: {
+    default:
+    {
       int ans_o = 0;
       struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
       ans = BuildResponse(connection->client_type, connection->message_id, 1,

@@ -55,8 +55,7 @@ static LOGINREC *loginrec = 0;
 static DBPROCESS *dbproc = 0;
 
 /*------------------------------FATAL ERROR----------------------------------*/
-static void Fatal(msg, arg)
-char *msg;
+static void Fatal(msg, arg) char *msg;
 char *arg;
 {
   fprintf(stderr, msg, arg);
@@ -66,11 +65,11 @@ char *arg;
 #define MAXMSG 1024
 static int DBSTATUS;
 static char DBMSGTEXT[MAXMSG];
-static struct descriptor DBMSGTEXT_DSC = {0,DTYPE_T,CLASS_S,DBMSGTEXT};
+static struct descriptor DBMSGTEXT_DSC = {0, DTYPE_T, CLASS_S, DBMSGTEXT};
 
 static void strcatn(char *dst, const char *src, int max)
 {
-  strncat(dst,src,max-strlen(dst));
+  strncat(dst, src, max - strlen(dst));
 }
 
 /*
@@ -88,21 +87,25 @@ static void strcatn(char *dst, const char *src, int max)
 
 /*------------------------------ERROR HANDLER--------------------------------*/
 
-static void SetMsgLen() {
-  DBMSGTEXT_DSC.length=strlen(DBMSGTEXT);
+static void SetMsgLen()
+{
+  DBMSGTEXT_DSC.length = strlen(DBMSGTEXT);
 }
 
-static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused)), int dberr, int oserr,
-		       cnst char *dberrstr, cnst char *oserrstr)
+static int Err_Handler(DBPROCESS *dbproc, int severity __attribute__((unused)), int dberr, int oserr,
+                       cnst char *dberrstr, cnst char *oserrstr)
 {
 #ifdef WIN32
-  if (dberr != SQLEPWD) {
+  if (dberr != SQLEPWD)
+  {
 #else
-  if (dberr != SYBERDNR) {
+  if (dberr != SYBERDNR)
+  {
 #endif
     strcatn(DBMSGTEXT, dberrstr, MAXMSG);
     strcatn(DBMSGTEXT, "\n", MAXMSG);
-    if (oserr != DBNOERR && oserrstr) {
+    if (oserr != DBNOERR && oserrstr)
+    {
       strcatn(DBMSGTEXT, oserrstr, MAXMSG);
       strcatn(DBMSGTEXT, "\n", MAXMSG);
     }
@@ -110,7 +113,8 @@ static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused))
   }
   /* if we have run out of licences then return cancel
      so we can wait and try again */
-  if (DBSTATUS == 18460) {
+  if (DBSTATUS == 18460)
+  {
     return INT_CANCEL;
   }
   if (!dbproc)
@@ -121,31 +125,35 @@ static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused))
 }
 
 /*------------------------------MESSAGE HANDLER------------------------------*/
-  static int Msg_Handler(DBPROCESS * dbproc __attribute__ ((unused)), DBINT msgno, int msgstate, int severity,
-		       cnst char *msgtext, cnst char *servername, cnst char *procname,
-		       DBUSMALLINT line)
+static int Msg_Handler(DBPROCESS *dbproc __attribute__((unused)), DBINT msgno, int msgstate, int severity,
+                       cnst char *msgtext, cnst char *servername, cnst char *procname,
+                       DBUSMALLINT line)
 {
   char msg[512];
   DBSTATUS = 1;
   if (msgno == 5701)
-    return 0;			/*just a USE DATABASE notice */
-  if (severity) {
+    return 0; /*just a USE DATABASE notice */
+  if (severity)
+  {
     if (sizeof(msgno) == 8)
-	sprintf(msg,"\nMsg %ld, Level %d, State %d\n", (long)msgno, severity, msgstate);
+      sprintf(msg, "\nMsg %ld, Level %d, State %d\n", (long)msgno, severity, msgstate);
     else
-	sprintf(msg,"\nMsg %d, Level %d, State %d\n", (int)msgno, severity, msgstate);
+      sprintf(msg, "\nMsg %d, Level %d, State %d\n", (int)msgno, severity, msgstate);
     strcatn(DBMSGTEXT, msg, MAXMSG);
     if (servername)
-      if (strlen(servername)) {
-	sprintf(msg, "Server '%s', ", servername);
-	strcatn(DBMSGTEXT, msg, MAXMSG);
+      if (strlen(servername))
+      {
+        sprintf(msg, "Server '%s', ", servername);
+        strcatn(DBMSGTEXT, msg, MAXMSG);
       }
     if (procname)
-      if (strlen(procname)) {
-	sprintf(msg, "Procedure '%s', ", procname);
-	strcatn(DBMSGTEXT, msg, MAXMSG);
+      if (strlen(procname))
+      {
+        sprintf(msg, "Procedure '%s', ", procname);
+        strcatn(DBMSGTEXT, msg, MAXMSG);
       }
-    if (line) {
+    if (line)
+    {
       sprintf(msg, "Line %d", line);
       strcatn(DBMSGTEXT, msg, MAXMSG);
     }
@@ -153,7 +161,7 @@ static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused))
   strcatn(DBMSGTEXT, msgtext, MAXMSG);
   SetMsgLen();
   DBSTATUS = msgno;
-  return 0;			/* try to continue */
+  return 0; /* try to continue */
 }
 
 EXPORT int GetDBStatus()
@@ -161,7 +169,8 @@ EXPORT int GetDBStatus()
   return DBSTATUS;
 }
 
-EXPORT struct descriptor *GetDBMsgText_dsc() {
+EXPORT struct descriptor *GetDBMsgText_dsc()
+{
   return &DBMSGTEXT_DSC;
 }
 
@@ -184,25 +193,30 @@ EXPORT int Login_Sybase(char *host, char *user, char *pass)
 {
 
 #ifdef RETRY_CONNECTS
-  int try;
+  int try
+    ;
 #endif
 
   if (dbproc)
     Logout_Sybase();
 
-  if (loginrec) {
+  if (loginrec)
+  {
     dbloginfree(loginrec);
     loginrec = 0;
   }
   if (dbinit() == FAIL)
-    Fatal("%s","Login_Sybase: Can't init DB-library\n");
+    Fatal("%s", "Login_Sybase: Can't init DB-library\n");
   dbmsghandle(Msg_Handler);
   dberrhandle(Err_Handler);
   loginrec = dblogin();
 #ifdef Win32
-  if (user == 0) {
+  if (user == 0)
+  {
     DBSETLSECURE(loginrec);
-  } else {
+  }
+  else
+  {
 #endif
     DBSETLUSER(loginrec, user);
     DBSETLPWD(loginrec, pass);
@@ -215,11 +229,13 @@ EXPORT int Login_Sybase(char *host, char *user, char *pass)
    */
 
 #ifdef RETRY_CONNECTS
-  for (try = 0; ((dbproc == 0) && (try < 10)); try++) {
+  for (try = 0; ((dbproc == 0) && (try < 10)); try ++)
+  {
     DBMSGTEXT[0] = 0;
     SetMsgLen();
     dbproc = dbopen(loginrec, host);
-    if (!dbproc) {
+    if (!dbproc)
+    {
       Sleep(100);
     }
   }
@@ -237,18 +253,18 @@ EXPORT int Login_Sybase(char *host, char *user, char *pass)
 }
 
 /*------------------------------DYNAMIC--------------------------------------*/
-EXPORT int SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
-int (*USER_GETS) ();		/*routine to fill markers       */
-int (*USER_PUTS) ();		/*routine to store selctions    */
-char *ptext;			/*text string address           */
-int *user_args;			/*value passed to GETS and PUTS */
+EXPORT int SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows) int (*USER_GETS)(); /*routine to fill markers       */
+int (*USER_PUTS)();                                                                       /*routine to store selctions    */
+char *ptext;                                                                              /*text string address           */
+int *user_args;                                                                           /*value passed to GETS and PUTS */
 int *prows;
-{				/*output, number of rows        */
+{ /*output, number of rows        */
 
   int status = 1, nmarks = 0;
   char parsed[MAXPARSE];
 
-  if (dbproc == 0) {
+  if (dbproc == 0)
+  {
     DBSTATUS = 0;
     strcpy(DBMSGTEXT, "SET_DATABASE must preceed any DSQL calls");
     SetMsgLen();
@@ -259,7 +275,8 @@ int *prows;
   DBMSGTEXT[0] = 0;
   SetMsgLen();
   *prows = -1;
-  if (strchr(ptext, '?')) {
+  if (strchr(ptext, '?'))
+  {
     parsed[0] = '\0';
     status = USER_GETS(ptext, parsed, &nmarks, user_args);
   }
@@ -269,26 +286,30 @@ int *prows;
   if (status != SUCCEED)
     goto close;
   status = dbsqlexec(dbproc);
-  if (status == SUCCEED) {
+  if (status == SUCCEED)
+  {
     int rowcount = 0, rblob = strncmp("sElEcT", nmarks ? parsed : ptext, 6);
-    while ((status = dbresults(dbproc)) == SUCCEED) {
+    while ((status = dbresults(dbproc)) == SUCCEED)
+    {
       status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
       if (STATUS_OK)
-	while ((status = dbnextrow(dbproc)) != NO_MORE_ROWS) {
-	  ++rowcount;
-	  status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
-	  if (STATUS_NOT_OK)
-	    goto close;
-	}
+        while ((status = dbnextrow(dbproc)) != NO_MORE_ROWS)
+        {
+          ++rowcount;
+          status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
+          if (STATUS_NOT_OK)
+            goto close;
+        }
     }
-    if (status == NO_MORE_ROWS || status == NO_MORE_RESULTS) {
+    if (status == NO_MORE_ROWS || status == NO_MORE_RESULTS)
+    {
       *prows = rowcount;
       rowcount = -(rowcount + 1);
       status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
     }
     dbcancel(dbproc);
   }
- close:
+close:
   DBSTATUS = status;
   return status;
 }

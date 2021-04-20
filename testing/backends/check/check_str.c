@@ -56,7 +56,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static const char *tr_type_str(TestResult *tr);
 static int percent_passed(TestStats *t);
 
-char *tr_str(TestResult *tr) {
+char *tr_str(TestResult *tr)
+{
   const char *exact_msg;
   char *rstr;
 
@@ -69,7 +70,8 @@ char *tr_str(TestResult *tr) {
   return rstr;
 }
 
-char *tr_short_str(TestResult *tr) {
+char *tr_short_str(TestResult *tr)
+{
   const char *exact_msg;
   char *rstr;
 
@@ -81,7 +83,8 @@ char *tr_short_str(TestResult *tr) {
   return rstr;
 }
 
-char *sr_stat_str(SRunner *sr) {
+char *sr_stat_str(SRunner *sr)
+{
   char *str;
   TestStats *ts;
 
@@ -94,7 +97,8 @@ char *sr_stat_str(SRunner *sr) {
   return str;
 }
 
-char *ck_strdup_printf(const char *fmt, ...) {
+char *ck_strdup_printf(const char *fmt, ...)
+{
   /* Guess we need no more than 100 bytes. */
   int n;
   size_t size = 100;
@@ -103,7 +107,8 @@ char *ck_strdup_printf(const char *fmt, ...) {
 
   p = (char *)emalloc(size);
 
-  while (1) {
+  while (1)
+  {
     /* Try to print in the allocated space. */
     va_start(ap, fmt);
     n = vsnprintf(p, size, fmt, ap);
@@ -122,23 +127,27 @@ char *ck_strdup_printf(const char *fmt, ...) {
   }
 }
 
-static const char *tr_type_str(TestResult *tr) {
+static const char *tr_type_str(TestResult *tr)
+{
   const char *str = NULL;
 
-  if (tr->ctx == CK_CTX_TEST) {
+  if (tr->ctx == CK_CTX_TEST)
+  {
     if (tr->rtype == CK_PASS)
       str = "P";
     else if (tr->rtype == CK_FAILURE)
       str = "F";
     else if (tr->rtype == CK_ERROR)
       str = "E";
-  } else
+  }
+  else
     str = "S";
 
   return str;
 }
 
-static int percent_passed(TestStats *t) {
+static int percent_passed(TestStats *t)
+{
   if (t->n_failed == 0 && t->n_errors == 0)
     return 100;
   else if (t->n_checked == 0)

@@ -7,31 +7,35 @@
 // THREAD BASE  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace testing {
-class Thread {
-public:
-  Thread() {}
-  virtual ~Thread() {}
+namespace testing
+{
+  class Thread
+  {
+  public:
+    Thread() {}
+    virtual ~Thread() {}
 
-  bool StartThread() {
-    return (pthread_create(&_thread, NULL, InternalThreadEntryFunc, this) == 0);
-  }
+    bool StartThread()
+    {
+      return (pthread_create(&_thread, NULL, InternalThreadEntryFunc, this) == 0);
+    }
 
-  void StopThread() { pthread_cancel(_thread); }
+    void StopThread() { pthread_cancel(_thread); }
 
-  void WaitForThreadToExit() { (void)pthread_join(_thread, NULL); }
+    void WaitForThreadToExit() { (void)pthread_join(_thread, NULL); }
 
-protected:
-  virtual void InternalThreadEntry() = 0;
+  protected:
+    virtual void InternalThreadEntry() = 0;
 
-private:
-  static void *InternalThreadEntryFunc(void *This) {
-    ((Thread *)This)->InternalThreadEntry();
-    return NULL;
-  }
+  private:
+    static void *InternalThreadEntryFunc(void *This)
+    {
+      ((Thread *)This)->InternalThreadEntry();
+      return NULL;
+    }
 
-  pthread_t _thread;
-};
+    pthread_t _thread;
+  };
 } // namespace testing
 
 #endif // THREADS_H

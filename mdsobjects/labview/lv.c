@@ -45,14 +45,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma pack(1)
 
-EXPORT extern void MoveBlock(const void *src, void *dest, size_t siz) {
+EXPORT extern void MoveBlock(const void *src, void *dest, size_t siz)
+{
   void (*LVMoveBlock)() = NULL;
   LibFindImageSymbol_C("LVRT_10", "MoveBlock", &LVMoveBlock);
   if (LVMoveBlock)
     LVMoveBlock(src, dest, siz);
 }
 
-EXPORT extern UHandle DSNewHandle(size_t siz) {
+EXPORT extern UHandle DSNewHandle(size_t siz)
+{
   static UHandle (*LVDSNewHandle)() = NULL;
   LibFindImageSymbol_C("LVMemoryManager_10", "DSNewHandle", &LVDSNewHandle);
   if (LVDSNewHandle)
@@ -60,7 +62,8 @@ EXPORT extern UHandle DSNewHandle(size_t siz) {
   return (UHandle)-1;
 }
 
-EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle *h, size_t siz) {
+EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle *h, size_t siz)
+{
   static MgErr (*LVNumericArrayResize)() = NULL;
   LibFindImageSymbol_C("LVRT_10", "NumericArrayResize", &LVNumericArrayResize);
   if (LVNumericArrayResize)
@@ -68,6 +71,7 @@ EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle *h, size_t siz) {
   return -1;
 }
 
-EXPORT MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle *h, size_t siz) {
+EXPORT MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle *h, size_t siz)
+{
   return NumericArrayResize(a, b, h, siz);
 }

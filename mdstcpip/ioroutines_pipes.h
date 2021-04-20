@@ -44,7 +44,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define close_pipe(p) close(p)
 #endif
 
-typedef struct {
+typedef struct
+{
 #ifdef _WIN32
   HANDLE out;
   HANDLE in;
@@ -61,7 +62,8 @@ typedef struct {
 #endif
 } io_pipes_t;
 
-static io_pipes_t *get_pipes(Connection *c) {
+static io_pipes_t *get_pipes(Connection *c)
+{
   size_t len;
   char *info_name;
   io_pipes_t *p = (io_pipes_t *)GetConnectionInfoC(c, &info_name, 0, &len);
@@ -72,7 +74,8 @@ static io_pipes_t *get_pipes(Connection *c) {
 }
 
 static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
-                       int nowait __attribute__((unused))) {
+                       int nowait __attribute__((unused)))
+{
   io_pipes_t *p = get_pipes(c);
   if (!p)
     return -1;
@@ -85,7 +88,8 @@ static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
 }
 
 static ssize_t io_recv_to(Connection *c, void *buffer, size_t buflen,
-                          int to_msec) {
+                          int to_msec)
+{
   io_pipes_t *p = get_pipes(c);
   if (!p)
     return -1;
@@ -103,10 +107,13 @@ static ssize_t io_recv_to(Connection *c, void *buffer, size_t buflen,
   return ReadFile(p->in, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
 #else
   struct timeval to, timeout;
-  if (to_msec < 0) {
+  if (to_msec < 0)
+  {
     timeout.tv_sec = 1;
     timeout.tv_usec = 0;
-  } else {
+  }
+  else
+  {
     timeout.tv_sec = to_msec / 1000;
     timeout.tv_usec = (to_msec % 1000) * 1000;
   }
@@ -114,7 +121,8 @@ static ssize_t io_recv_to(Connection *c, void *buffer, size_t buflen,
   fd_set rf, readfds;
   FD_ZERO(&readfds);
   FD_SET(fd, &readfds);
-  do { // loop even for nowait for responsiveness
+  do
+  { // loop even for nowait for responsiveness
     to = timeout;
     rf = readfds;
     sel = select(fd + 1, &rf, NULL, NULL, &to);
@@ -129,6 +137,7 @@ static ssize_t io_recv_to(Connection *c, void *buffer, size_t buflen,
 #endif
 }
 
-static ssize_t io_recv(Connection *c, void *buffer, size_t buflen) {
+static ssize_t io_recv(Connection *c, void *buffer, size_t buflen)
+{
   return io_recv_to(c, buffer, buflen, -1);
 }

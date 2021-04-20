@@ -68,7 +68,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void srunner_send_evt(SRunner *sr, void *obj, enum cl_event evt);
 
-void srunner_set_log(SRunner *sr, const char *fname) {
+void srunner_set_log(SRunner *sr, const char *fname)
+{
   if (sr->log_fname)
     return;
   sr->log_fname = fname;
@@ -76,7 +77,8 @@ void srunner_set_log(SRunner *sr, const char *fname) {
 
 int srunner_has_log(SRunner *sr) { return srunner_log_fname(sr) != NULL; }
 
-const char *srunner_log_fname(SRunner *sr) {
+const char *srunner_log_fname(SRunner *sr)
+{
   /* check if log filename have been set explicitly */
   if (sr->log_fname != NULL)
     return sr->log_fname;
@@ -84,7 +86,8 @@ const char *srunner_log_fname(SRunner *sr) {
   return getenv("CK_LOG_FILE_NAME");
 }
 
-void srunner_set_xml(SRunner *sr, const char *fname) {
+void srunner_set_xml(SRunner *sr, const char *fname)
+{
   if (sr->xml_fname)
     return;
   sr->xml_fname = fname;
@@ -92,16 +95,19 @@ void srunner_set_xml(SRunner *sr, const char *fname) {
 
 int srunner_has_xml(SRunner *sr) { return srunner_xml_fname(sr) != NULL; }
 
-const char *srunner_xml_fname(SRunner *sr) {
+const char *srunner_xml_fname(SRunner *sr)
+{
   /* check if XML log filename have been set explicitly */
-  if (sr->xml_fname != NULL) {
+  if (sr->xml_fname != NULL)
+  {
     return sr->xml_fname;
   }
 
   return getenv("CK_XML_LOG_FILE_NAME");
 }
 
-void srunner_set_tap(SRunner *sr, const char *fname) {
+void srunner_set_tap(SRunner *sr, const char *fname)
+{
   if (sr->tap_fname)
     return;
   sr->tap_fname = fname;
@@ -109,9 +115,11 @@ void srunner_set_tap(SRunner *sr, const char *fname) {
 
 int srunner_has_tap(SRunner *sr) { return srunner_tap_fname(sr) != NULL; }
 
-const char *srunner_tap_fname(SRunner *sr) {
+const char *srunner_tap_fname(SRunner *sr)
+{
   /* check if tap log filename have been set explicitly */
-  if (sr->tap_fname != NULL) {
+  if (sr->tap_fname != NULL)
+  {
     return sr->tap_fname;
   }
 
@@ -119,10 +127,12 @@ const char *srunner_tap_fname(SRunner *sr) {
 }
 
 void srunner_register_lfun(SRunner *sr, FILE *lfile, int close, LFun lfun,
-                           enum print_output printmode) {
+                           enum print_output printmode)
+{
   Log *l = (Log *)emalloc(sizeof(Log));
 
-  if (printmode == CK_ENV) {
+  if (printmode == CK_ENV)
+  {
     printmode = get_env_printmode();
   }
 
@@ -138,29 +148,34 @@ void log_srunner_start(SRunner *sr) { srunner_send_evt(sr, NULL, CLSTART_SR); }
 
 void log_srunner_end(SRunner *sr) { srunner_send_evt(sr, NULL, CLEND_SR); }
 
-void log_suite_start(SRunner *sr, Suite *s) {
+void log_suite_start(SRunner *sr, Suite *s)
+{
   srunner_send_evt(sr, s, CLSTART_S);
 }
 
 void log_suite_end(SRunner *sr, Suite *s) { srunner_send_evt(sr, s, CLEND_S); }
 
-void log_test_start(SRunner *sr, TCase *tc, TF *tfun) {
+void log_test_start(SRunner *sr, TCase *tc, TF *tfun)
+{
   char buffer[100];
 
   snprintf(buffer, 99, "%s:%s", tc->name, tfun->name);
   srunner_send_evt(sr, buffer, CLSTART_T);
 }
 
-void log_test_end(SRunner *sr, TestResult *tr) {
+void log_test_end(SRunner *sr, TestResult *tr)
+{
   srunner_send_evt(sr, tr, CLEND_T);
 }
 
-static void srunner_send_evt(SRunner *sr, void *obj, enum cl_event evt) {
+static void srunner_send_evt(SRunner *sr, void *obj, enum cl_event evt)
+{
   List *l;
   Log *lg;
 
   l = sr->loglst;
-  for (check_list_front(l); !check_list_at_end(l); check_list_advance(l)) {
+  for (check_list_front(l); !check_list_at_end(l); check_list_advance(l))
+  {
     lg = (Log *)check_list_val(l);
     fflush(lg->lfile);
     lg->lfun(sr, lg->lfile, lg->mode, obj, evt);
@@ -169,16 +184,19 @@ static void srunner_send_evt(SRunner *sr, void *obj, enum cl_event evt) {
 }
 
 void stdout_lfun(SRunner *sr, FILE *file, enum print_output printmode,
-                 void *obj, enum cl_event evt) {
+                 void *obj, enum cl_event evt)
+{
   Suite *s;
 
-  switch (evt) {
+  switch (evt)
+  {
   case CLINITLOG_SR:
     break;
   case CLENDLOG_SR:
     break;
   case CLSTART_SR:
-    if (printmode > CK_SILENT) {
+    if (printmode > CK_SILENT)
+    {
       fprintf(file, " ,---------------------------------------. \n"
                     " |     MDSplus unit testing...           | \n"
                     " '---------------------------------------' \n"
@@ -187,7 +205,8 @@ void stdout_lfun(SRunner *sr, FILE *file, enum print_output printmode,
     break;
   case CLSTART_S:
     s = (Suite *)obj;
-    if (printmode > CK_SILENT) {
+    if (printmode > CK_SILENT)
+    {
       fprintf(file, "    Running in suite: %s\n", s->name);
       fprintf(file,
               "\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n"
@@ -195,7 +214,8 @@ void stdout_lfun(SRunner *sr, FILE *file, enum print_output printmode,
     }
     break;
   case CLEND_SR:
-    if (printmode > CK_SILENT) {
+    if (printmode > CK_SILENT)
+    {
       /* we don't want a newline before printing here, newlines should
              come after printing a string, not before.  it's better to add
              the newline above in CLSTART_S.
@@ -210,7 +230,8 @@ void stdout_lfun(SRunner *sr, FILE *file, enum print_output printmode,
   case CLEND_S:
     break;
   case CLSTART_T:
-    if (printmode > CK_SILENT) {
+    if (printmode > CK_SILENT)
+    {
       TCase *t = (TCase *)obj;
       fprintf(file, " -- [%s] -- \n", t->name);
     }
@@ -224,11 +245,13 @@ void stdout_lfun(SRunner *sr, FILE *file, enum print_output printmode,
 
 void lfile_lfun(SRunner *sr, FILE *file,
                 enum print_output printmode CK_ATTRIBUTE_UNUSED, void *obj,
-                enum cl_event evt) {
+                enum cl_event evt)
+{
   TestResult *tr;
   Suite *s;
 
-  switch (evt) {
+  switch (evt)
+  {
   case CLINITLOG_SR:
     break;
   case CLENDLOG_SR:
@@ -258,13 +281,15 @@ void lfile_lfun(SRunner *sr, FILE *file,
 
 void xml_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
               enum print_output printmode CK_ATTRIBUTE_UNUSED, void *obj,
-              enum cl_event evt) {
+              enum cl_event evt)
+{
   TestResult *tr;
   Suite *s;
   static struct timespec ts_start = {0, 0};
   static char t[sizeof "yyyy-mm-dd hh:mm:ss"] = {0};
 
-  if (t[0] == 0) {
+  if (t[0] == 0)
+  {
     struct timeval inittv;
     // struct tm now;
 
@@ -279,7 +304,8 @@ void xml_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
     //        }
   }
 
-  switch (evt) {
+  switch (evt)
+  {
   case CLINITLOG_SR:
     fprintf(file, "<?xml version=\"1.0\"?>\n");
     fprintf(
@@ -289,7 +315,8 @@ void xml_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
     fprintf(file, "<testsuites xmlns=\"http://check.sourceforge.net/ns\">\n");
     fprintf(file, "  <datetime>%s</datetime>\n", t);
     break;
-  case CLENDLOG_SR: {
+  case CLENDLOG_SR:
+  {
     struct timespec ts_end = {0, 0};
     unsigned long duration;
 
@@ -299,7 +326,8 @@ void xml_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
     fprintf(file, "  <duration>%lu.%06lu</duration>\n", duration / US_PER_SEC,
             duration % US_PER_SEC);
     fprintf(file, "</testsuites>\n");
-  } break;
+  }
+  break;
   case CLSTART_SR:
     break;
   case CLSTART_S:
@@ -327,12 +355,14 @@ void xml_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
 
 void tap_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
               enum print_output printmode CK_ATTRIBUTE_UNUSED, void *obj,
-              enum cl_event evt) {
+              enum cl_event evt)
+{
   TestResult *tr;
 
   static int num_tests_run = 0;
 
-  switch (evt) {
+  switch (evt)
+  {
   case CLINITLOG_SR:
     /* As this is a new log file, reset the number of tests executed */
     num_tests_run = 0;
@@ -356,7 +386,8 @@ void tap_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
     /* Print the test result to the tap file */
     num_tests_run += 1;
     tr = (TestResult *)obj;
-    switch (tr->rtype) {
+    switch (tr->rtype)
+    {
     case CK_PASS:
       fprintf(file, "ok %d - %s:%s:%d: %s\n", num_tests_run, tr->tcname,
               tr->file, tr->line, tr->msg);
@@ -379,13 +410,15 @@ void tap_lfun(SRunner *sr CK_ATTRIBUTE_UNUSED, FILE *file,
 
 #if ENABLE_SUBUNIT
 void subunit_lfun(SRunner *sr, FILE *file, enum print_output printmode,
-                  void *obj, enum cl_event evt) {
+                  void *obj, enum cl_event evt)
+{
   TestResult *tr;
   char const *name;
 
   /* assert(printmode == CK_SUBUNIT); */
 
-  switch (evt) {
+  switch (evt)
+  {
   case CLINITLOG_SR:
     break;
   case CLENDLOG_SR:
@@ -395,7 +428,8 @@ void subunit_lfun(SRunner *sr, FILE *file, enum print_output printmode,
   case CLSTART_S:
     break;
   case CLEND_SR:
-    if (printmode > CK_SILENT) {
+    if (printmode > CK_SILENT)
+    {
       fprintf(file, "\n");
       srunner_fprint(file, sr, printmode);
     }
@@ -412,7 +446,8 @@ void subunit_lfun(SRunner *sr, FILE *file, enum print_output printmode,
       char *name = ck_strdup_printf("%s:%s", tr->tcname, tr->tname);
       char *msg = tr_short_str(tr);
 
-      switch (tr->rtype) {
+      switch (tr->rtype)
+      {
       case CK_PASS:
         subunit_test_pass(name);
         break;
@@ -436,14 +471,19 @@ void subunit_lfun(SRunner *sr, FILE *file, enum print_output printmode,
 }
 #endif
 
-static FILE *srunner_open_file(const char *filename) {
+static FILE *srunner_open_file(const char *filename)
+{
   FILE *f = NULL;
 
-  if (strcmp(filename, STDOUT_OVERRIDE_LOG_FILE_NAME) == 0) {
+  if (strcmp(filename, STDOUT_OVERRIDE_LOG_FILE_NAME) == 0)
+  {
     f = stdout;
-  } else {
+  }
+  else
+  {
     f = fopen(filename, "w");
-    if (f == NULL) {
+    if (f == NULL)
+    {
       eprintf("Error in call to fopen while opening file %s:", __FILE__,
               __LINE__ - 2, filename);
     }
@@ -451,34 +491,41 @@ static FILE *srunner_open_file(const char *filename) {
   return f;
 }
 
-FILE *srunner_open_lfile(SRunner *sr) {
+FILE *srunner_open_lfile(SRunner *sr)
+{
   FILE *f = NULL;
 
-  if (srunner_has_log(sr)) {
+  if (srunner_has_log(sr))
+  {
     f = srunner_open_file(srunner_log_fname(sr));
   }
   return f;
 }
 
-FILE *srunner_open_xmlfile(SRunner *sr) {
+FILE *srunner_open_xmlfile(SRunner *sr)
+{
   FILE *f = NULL;
 
-  if (srunner_has_xml(sr)) {
+  if (srunner_has_xml(sr))
+  {
     f = srunner_open_file(srunner_xml_fname(sr));
   }
   return f;
 }
 
-FILE *srunner_open_tapfile(SRunner *sr) {
+FILE *srunner_open_tapfile(SRunner *sr)
+{
   FILE *f = NULL;
 
-  if (srunner_has_tap(sr)) {
+  if (srunner_has_tap(sr))
+  {
     f = srunner_open_file(srunner_tap_fname(sr));
   }
   return f;
 }
 
-void srunner_init_logging(SRunner *sr, enum print_output print_mode) {
+void srunner_init_logging(SRunner *sr, enum print_output print_mode)
+{
   FILE *f;
 
   sr->loglst = check_list_create();
@@ -491,31 +538,37 @@ void srunner_init_logging(SRunner *sr, enum print_output print_mode) {
     else srunner_register_lfun(sr, stdout, 0, subunit_lfun, print_mode);
 #endif
   f = srunner_open_lfile(sr);
-  if (f) {
+  if (f)
+  {
     srunner_register_lfun(sr, f, f != stdout, lfile_lfun, print_mode);
   }
   f = srunner_open_xmlfile(sr);
-  if (f) {
+  if (f)
+  {
     srunner_register_lfun(sr, f, f != stdout, xml_lfun, print_mode);
   }
   f = srunner_open_tapfile(sr);
-  if (f) {
+  if (f)
+  {
     srunner_register_lfun(sr, f, f != stdout, tap_lfun, print_mode);
   }
   srunner_send_evt(sr, NULL, CLINITLOG_SR);
 }
 
-void srunner_end_logging(SRunner *sr) {
+void srunner_end_logging(SRunner *sr)
+{
   List *l;
   int rval;
 
   srunner_send_evt(sr, NULL, CLENDLOG_SR);
 
   l = sr->loglst;
-  for (check_list_front(l); !check_list_at_end(l); check_list_advance(l)) {
+  for (check_list_front(l); !check_list_at_end(l); check_list_advance(l))
+  {
     Log *lg = (Log *)check_list_val(l);
 
-    if (lg->close) {
+    if (lg->close)
+    {
       rval = fclose(lg->lfile);
       if (rval != 0)
         eprintf("Error in call to fclose while closing log file:", __FILE__,

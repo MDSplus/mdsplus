@@ -35,7 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <usagedef.h>
 
-typedef struct _h5item {
+typedef struct _h5item
+{
   int item_type;
   char *name;
   hid_t obj;
@@ -48,21 +49,25 @@ typedef struct _h5item {
 static h5item *current = 0;
 
 static void PutArray(char dtype, int size, int n_dims, hsize_t *dims, void *ptr,
-                     struct descriptor_xd *xd) {
+                     struct descriptor_xd *xd)
+{
   /***************************************************
   Store array of data into MDSplus descriptor. Use simple
   array descriptor for one dimensional arrays and a
   coefficient array descriptor for multi-dimensional
   arrays.
   ***************************************************/
-  if (n_dims == 1) {
+  if (n_dims == 1)
+  {
     DESCRIPTOR_A(dsc, 0, 0, 0, 0);
     dsc.length = size;
     dsc.dtype = dtype;
     dsc.pointer = ptr;
     dsc.arsize = (int)dims[0] * size;
     MdsCopyDxXd((struct descriptor const *)&dsc, xd);
-  } else {
+  }
+  else
+  {
     int i;
     DESCRIPTOR_A_COEFF(dsc, 0, 0, 0, 8, 0);
     dsc.length = size;
@@ -71,7 +76,8 @@ static void PutArray(char dtype, int size, int n_dims, hsize_t *dims, void *ptr,
     dsc.arsize = size;
     dsc.dimct = n_dims;
     dsc.a0 = ptr;
-    for (i = 0; i < n_dims; i++) {
+    for (i = 0; i < n_dims; i++)
+    {
       dsc.m[i] = (int)dims[i];
       dsc.arsize *= (int)dims[i];
     }
@@ -80,7 +86,8 @@ static void PutArray(char dtype, int size, int n_dims, hsize_t *dims, void *ptr,
 }
 
 static void PutScalar(char dtype, int size, void *ptr,
-                      struct descriptor_xd *xd) {
+                      struct descriptor_xd *xd)
+{
   /**********************************************
   Store scalar data in MDSplus descriptor
   **********************************************/
@@ -92,13 +99,15 @@ static void PutScalar(char dtype, int size, void *ptr,
 }
 
 static void PutData(hid_t obj, char dtype, int htype, int size, int n_dims,
-                    hsize_t *dims, int is_attr, struct descriptor_xd *xd) {
+                    hsize_t *dims, int is_attr, struct descriptor_xd *xd)
+{
   /*********************************************
   Read data from HDF5 file using H5Aread for
   attributes and H5Dread for datasets. Load the
   data into MDSplus nodes.
   *********************************************/
-  if (dtype) {
+  if (dtype)
+  {
     char *mem;
     /*     if (dtype == DTYPE_T) { */
     /*       hid_t type = H5Aget_type(obj); */
@@ -136,7 +145,8 @@ static void PutData(hid_t obj, char dtype, int htype, int size, int n_dims,
   }
 }
 
-static int find_attr(hid_t attr_id, const char *name, void *op_data) {
+static int find_attr(hid_t attr_id, const char *name, void *op_data)
+{
   hid_t obj;
   h5item *parent = (h5item *)op_data;
   h5item *item = (h5item *)malloc(sizeof(h5item));
@@ -148,16 +158,21 @@ static int find_attr(hid_t attr_id, const char *name, void *op_data) {
   item->parent = parent;
   item->obj = 0;
   item->attribute = 0;
-  if (parent) {
-    if (parent->attribute == NULL) {
+  if (parent)
+  {
+    if (parent->attribute == NULL)
+    {
       parent->attribute = item;
-    } else {
+    }
+    else
+    {
       for (itm = parent->attribute; itm->brother; itm = itm->brother)
         ;
       itm->brother = item;
     }
   }
-  if ((obj = H5Aopen_name(attr_id, name)) >= 0) {
+  if ((obj = H5Aopen_name(attr_id, name)) >= 0)
+  {
     hid_t space = H5Aget_space(obj);
     H5Sclose(space);
     item->obj = obj;
@@ -165,7 +180,8 @@ static int find_attr(hid_t attr_id, const char *name, void *op_data) {
   return 0;
 }
 
-static int find_objs(hid_t group, const char *name, void *op_data) {
+static int find_objs(hid_t group, const char *name, void *op_data)
+{
   hid_t obj;
   H5G_stat_t statbuf;
   unsigned int idx = 0;
@@ -179,9 +195,12 @@ static int find_objs(hid_t group, const char *name, void *op_data) {
   item->parent = parent;
   item->obj = 0;
   item->attribute = 0;
-  if (parent->child == NULL) {
+  if (parent->child == NULL)
+  {
     parent->child = item;
-  } else {
+  }
+  else
+  {
     for (itm = parent->child; itm->brother; itm = itm->brother)
       ;
     itm->brother = item;
@@ -192,15 +211,18 @@ static int find_objs(hid_t group, const char *name, void *op_data) {
   //    H5Aiterate(group,&idx,find_attr,(void *)0);
   H5Gget_objinfo(group, name, 1, &statbuf);
   item->item_type = statbuf.type;
-  switch (statbuf.type) {
+  switch (statbuf.type)
+  {
   case H5G_GROUP:
-    if ((obj = H5Gopen(group, name)) >= 0) {
+    if ((obj = H5Gopen(group, name)) >= 0)
+    {
       H5Giterate(obj, ".", NULL, find_objs, (void *)item);
       H5Gclose(obj);
     }
     break;
   case H5G_DATASET:
-    if ((obj = H5Dopen(group, name)) >= 0) {
+    if ((obj = H5Dopen(group, name)) >= 0)
+    {
       item->obj = obj;
       /*       H5Aiterate(obj,&idx,find_attr,(void *)item); */
       H5Aiterate(obj, &idx, find_attr, (void *)item);
@@ -234,11 +256,13 @@ static void ListItem(h5item * item)
     ListItem(item->brother);
 }
 */
-static void list_one(h5item *item, struct descriptor *xd) {
+static void list_one(h5item *item, struct descriptor *xd)
+{
   char *name = strcpy(malloc(strlen(item->name) + 1), item->name);
   char *tmp;
   h5item *itm;
-  for (itm = item->parent; itm; itm = itm->parent) {
+  for (itm = item->parent; itm; itm = itm->parent)
+  {
     tmp = malloc(strlen(name) + strlen(itm->name) + 2);
     strcpy(tmp, itm->name);
     strcat(tmp, "/");
@@ -246,7 +270,8 @@ static void list_one(h5item *item, struct descriptor *xd) {
     free(name);
     name = tmp;
   }
-  if (item->item_type == H5G_DATASET || item->item_type == -1) {
+  if (item->item_type == H5G_DATASET || item->item_type == -1)
+  {
     struct descriptor name_d = {0, DTYPE_T, CLASS_S, 0};
     name_d.length = strlen(name);
     name_d.pointer = name;
@@ -261,18 +286,21 @@ static void list_one(h5item *item, struct descriptor *xd) {
     list_one(item->brother, xd);
 }
 
-EXPORT void hdf5list(struct descriptor *xd) {
+EXPORT void hdf5list(struct descriptor *xd)
+{
   MdsFree1Dx((struct descriptor_xd *)xd, 0);
   if (current)
     list_one(current, xd);
 }
 
-static int find_one(h5item *item, char *findname, hid_t *obj, int *item_type) {
+static int find_one(h5item *item, char *findname, hid_t *obj, int *item_type)
+{
   int status = 0;
   char *name = strcpy(malloc(strlen(item->name) + 1), item->name);
   char *tmp;
   h5item *itm;
-  for (itm = item->parent; itm; itm = itm->parent) {
+  for (itm = item->parent; itm; itm = itm->parent)
+  {
     tmp = malloc(strlen(name) + strlen(itm->name) + 2);
     strcpy(tmp, itm->name);
     strcat(tmp, "/");
@@ -280,8 +308,10 @@ static int find_one(h5item *item, char *findname, hid_t *obj, int *item_type) {
     free(name);
     name = tmp;
   }
-  if (item->item_type == H5G_DATASET || item->item_type == -1) {
-    if (strcmp(findname, name) == 0) {
+  if (item->item_type == H5G_DATASET || item->item_type == -1)
+  {
+    if (strcmp(findname, name) == 0)
+    {
       *obj = item->obj;
       *item_type = item->item_type;
       status = 1;
@@ -297,7 +327,8 @@ static int find_one(h5item *item, char *findname, hid_t *obj, int *item_type) {
   return status;
 }
 
-static int FindItem(char *namein, hid_t *obj, int *item_type) {
+static int FindItem(char *namein, hid_t *obj, int *item_type)
+{
   int status;
   int i;
   char *name = strcpy(malloc(strlen(namein) + 1), namein);
@@ -311,12 +342,15 @@ static int FindItem(char *namein, hid_t *obj, int *item_type) {
   return status;
 }
 
-EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
+EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
+{
   hid_t obj, type;
   int item_type;
   int status = FindItem(name, &obj, &item_type);
-  if (status & 1) {
-    if (item_type == H5G_DATASET) {
+  if (status & 1)
+  {
+    if (item_type == H5G_DATASET)
+    {
       int size;
       char dtype;
       int htype = 42;
@@ -327,8 +361,10 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
       size_t precision;
       H5Sclose(space);
       type = H5Dget_type(obj);
-      switch (H5Tget_class(type)) {
-      case H5T_COMPOUND: {
+      switch (H5Tget_class(type))
+      {
+      case H5T_COMPOUND:
+      {
         printf("Compound data is not supported, skipping\n");
         break;
       }
@@ -336,7 +372,8 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
         precision = H5Tget_precision(type);
         is_signed = (H5Tget_sign(type) != H5T_SGN_NONE);
         size = precision / 8;
-        switch (precision) {
+        switch (precision)
+        {
         case 8:
           dtype = is_signed ? DTYPE_B : DTYPE_BU;
           htype = is_signed ? H5T_NATIVE_CHAR : H5T_NATIVE_UCHAR;
@@ -362,7 +399,8 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
       case H5T_FLOAT:
         precision = H5Tget_precision(type);
         size = precision / 8;
-        switch (precision) {
+        switch (precision)
+        {
         case 32:
           dtype = DTYPE_NATIVE_FLOAT;
           htype = H5T_NATIVE_FLOAT;
@@ -380,25 +418,31 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
       case H5T_TIME:
         printf("dataset is time ---- UNSUPPORTED\n");
         break;
-      case H5T_STRING: {
+      case H5T_STRING:
+      {
         int slen = H5Tget_size(type);
         hid_t st_id;
-        if (slen < 0) {
+        if (slen < 0)
+        {
           printf("Badly formed string attribute\n");
           return 0;
         }
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
-        if (H5Tis_variable_str(type)) {
+        if (H5Tis_variable_str(type))
+        {
           st_id = H5Tcopy(H5T_C_S1);
           H5Tset_size(st_id, H5T_VARIABLE);
-        } else {
+        }
+        else
+        {
 #endif
           st_id = H5Tcopy(type);
           H5Tset_cset(st_id, H5T_CSET_ASCII);
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
         }
 #endif
-        if ((int)H5Tget_size(st_id) > slen) {
+        if ((int)H5Tget_size(st_id) > slen)
+        {
           slen = H5Tget_size(st_id);
         }
         H5Tset_size(st_id, slen);
@@ -425,7 +469,9 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
         break;
       }
       H5Tclose(type);
-    } else {
+    }
+    else
+    {
       int size;
       char dtype;
       int htype = 42;
@@ -436,8 +482,10 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
       size_t precision;
       H5Sclose(space);
       type = H5Aget_type(obj);
-      switch (H5Tget_class(type)) {
-      case H5T_COMPOUND: {
+      switch (H5Tget_class(type))
+      {
+      case H5T_COMPOUND:
+      {
         printf("Compound data is not supported, skipping\n");
         break;
       }
@@ -445,7 +493,8 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
         precision = H5Tget_precision(type);
         is_signed = (H5Tget_sign(type) != H5T_SGN_NONE);
         size = precision / 8;
-        switch (precision) {
+        switch (precision)
+        {
         case 8:
           dtype = is_signed ? DTYPE_B : DTYPE_BU;
           htype = is_signed ? H5T_NATIVE_CHAR : H5T_NATIVE_UCHAR;
@@ -471,7 +520,8 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
       case H5T_FLOAT:
         precision = H5Tget_precision(type);
         size = precision / 8;
-        switch (precision) {
+        switch (precision)
+        {
         case 32:
           dtype = DTYPE_NATIVE_FLOAT;
           htype = H5T_NATIVE_FLOAT;
@@ -489,25 +539,31 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
       case H5T_TIME:
         printf("dataset is time ---- UNSUPPORTED\n");
         break;
-      case H5T_STRING: {
+      case H5T_STRING:
+      {
         int slen = H5Tget_size(type);
         hid_t st_id;
-        if (slen < 0) {
+        if (slen < 0)
+        {
           printf("Badly formed string attribute\n");
           return 0;
         }
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
-        if (H5Tis_variable_str(type)) {
+        if (H5Tis_variable_str(type))
+        {
           st_id = H5Tcopy(H5T_C_S1);
           H5Tset_size(st_id, H5T_VARIABLE);
-        } else {
+        }
+        else
+        {
 #endif
           st_id = H5Tcopy(type);
           H5Tset_cset(st_id, H5T_CSET_ASCII);
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
         }
 #endif
-        if ((int)H5Tget_size(st_id) > slen) {
+        if ((int)H5Tget_size(st_id) > slen)
+        {
           slen = H5Tget_size(st_id);
         }
         H5Tset_size(st_id, slen);
@@ -538,7 +594,8 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd) {
   return status;
 }
 
-static void FreeObj(h5item *item) {
+static void FreeObj(h5item *item)
+{
   free(item->name);
   if (item->item_type == H5G_DATASET && item->obj != 0)
     H5Dclose(item->obj);
@@ -555,13 +612,15 @@ static void FreeObj(h5item *item) {
   free(item);
 }
 
-EXPORT void hdf5close() {
+EXPORT void hdf5close()
+{
   if (current)
     FreeObj(current);
   current = 0;
 }
 
-EXPORT int hdf5open(char *fname) {
+EXPORT int hdf5open(char *fname)
+{
   hid_t fid;
 
   /* Disable error reporting */
@@ -571,7 +630,8 @@ EXPORT int hdf5open(char *fname) {
    */
   fid = H5Fopen(fname, 0, H5P_DEFAULT);
 
-  if (fid < 0) {
+  if (fid < 0)
+  {
     fprintf(stderr, "hdf5open, unable to open file \"%s\"\n", fname);
     return (-1);
   }

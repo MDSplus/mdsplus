@@ -37,13 +37,16 @@ static int d_status = EXIT_SUCCESS;
 static const char *tree = 0;
 static const char *shot = 0;
 
-static void usage(const char *prog) {
+static void usage(const char *prog)
+{
   fflush(stdout);
   fprintf(stdout, "usage: %s file tree shot\n", prog);
 }
 
-static void parse_command_line(int argc, const char *argv[]) {
-  if (argc < 4) {
+static void parse_command_line(int argc, const char *argv[])
+{
+  if (argc < 4)
+  {
     usage(argv[0]);
     exit(1);
   }
@@ -52,7 +55,8 @@ static void parse_command_line(int argc, const char *argv[]) {
   shot = argv[3];
 }
 
-static int AddNode(const char *h5name, int usage) {
+static int AddNode(const char *h5name, int usage)
+{
 
   /********************************************************
   HDF5 datasets do not have restrictions on names whereas
@@ -85,38 +89,53 @@ static int AddNode(const char *h5name, int usage) {
   else
     strcat(name, &h5name[i]);
   len = strlen(name);
-  if (len > 13) {
+  if (len > 13)
+  {
     name[13] = 0;
     len = 13;
   }
-  for (i = 1; i < len; i++) {
+  for (i = 1; i < len; i++)
+  {
     name[i] = toupper(name[i]);
     if ((name[i] < 'A' || name[i] > 'Z') && (name[i] < '0' || name[i] > '9') &&
         (name[i] != '_'))
       name[i] = '_';
   }
   status = TreeAddNode(name, &nid, usage);
-  while (status == TreeALREADY_THERE) {
-    if (len < 13) {
+  while (status == TreeALREADY_THERE)
+  {
+    if (len < 13)
+    {
       for (; len < 13; len++)
         name[len] = '0';
       name[len - 1] = '1';
       name[len] = 0;
-    } else if (idx < 10) {
+    }
+    else if (idx < 10)
+    {
       name[len - 1] = '0' + idx++;
-    } else if (idx < 100) {
+    }
+    else if (idx < 100)
+    {
       sprintf(&name[len - 2], "%2d", idx++);
-    } else if (idx < 1000) {
+    }
+    else if (idx < 1000)
+    {
       sprintf(&name[len - 3], "%3d", idx++);
-    } else if (idx < 10000) {
+    }
+    else if (idx < 10000)
+    {
       sprintf(&name[len - 4], "%4d", idx++);
-    } else {
+    }
+    else
+    {
       printf("Can't make unique node name\n");
       exit(EXIT_FAILURE);
     }
     status = TreeAddNode(name, &nid, usage);
   }
-  if (status & 1) {
+  if (status & 1)
+  {
     int old;
     int name_nid;
     int set_flags = NciM_COMPRESS_ON_PUT;
@@ -137,21 +156,25 @@ static int AddNode(const char *h5name, int usage) {
 }
 
 static void PutArray(int nid, char dtype, int size, int n_dims, hsize_t *dims,
-                     void *ptr) {
+                     void *ptr)
+{
   /***************************************************
   Store array of data into MDSplus node. Use simple
   array descriptor for one dimensional arrays and a
   coefficient array descriptor for multi-dimensional
   arrays.
   ***************************************************/
-  if (n_dims == 1) {
+  if (n_dims == 1)
+  {
     DESCRIPTOR_A(dsc, 0, 0, 0, 0);
     dsc.length = size;
     dsc.dtype = dtype;
     dsc.pointer = ptr;
     dsc.arsize = (int)dims[0] * size;
     TreePutRecord(nid, (struct descriptor *)&dsc, 0);
-  } else {
+  }
+  else
+  {
     int i;
     DESCRIPTOR_A_COEFF(dsc, 0, 0, 0, 8, 0);
     dsc.length = size;
@@ -160,7 +183,8 @@ static void PutArray(int nid, char dtype, int size, int n_dims, hsize_t *dims,
     dsc.arsize = size;
     dsc.dimct = n_dims;
     dsc.a0 = ptr;
-    for (i = 0; i < n_dims; i++) {
+    for (i = 0; i < n_dims; i++)
+    {
       dsc.m[i] = (int)dims[i];
       dsc.arsize *= (int)dims[i];
     }
@@ -168,7 +192,8 @@ static void PutArray(int nid, char dtype, int size, int n_dims, hsize_t *dims,
   }
 }
 
-static void PutScalar(int nid, char dtype, int size, void *ptr) {
+static void PutScalar(int nid, char dtype, int size, void *ptr)
+{
   /**********************************************
   Store scalar data in MDSplus node
   **********************************************/
@@ -180,13 +205,15 @@ static void PutScalar(int nid, char dtype, int size, void *ptr) {
 }
 
 static void PutData(hid_t obj, int nid, char dtype, int htype, int size,
-                    int n_dims, hsize_t *dims, int is_attr) {
+                    int n_dims, hsize_t *dims, int is_attr)
+{
   /*********************************************
   Read data from HDF5 file using H5Aread for
   attributes and H5Dread for datasets. Load the
   data into MDSplus nodes.
   *********************************************/
-  if (dtype) {
+  if (dtype)
+  {
     char *mem;
     int array_size = 1;
     int i;
@@ -206,13 +233,15 @@ static void PutData(hid_t obj, int nid, char dtype, int htype, int size,
 }
 
 static int mds_find_attr(hid_t attr_id, const char *name,
-                         void *op_data __attribute__((unused))) {
+                         void *op_data __attribute__((unused)))
+{
   hid_t obj, type;
   int nid;
   int oldnid;
   printf("\tmds_find_attr - %s\n", name);
   TreeGetDefaultNid(&oldnid);
-  if ((obj = H5Aopen_name(attr_id, name)) >= 0) {
+  if ((obj = H5Aopen_name(attr_id, name)) >= 0)
+  {
     int size;
     char dtype;
     int htype;
@@ -223,8 +252,10 @@ static int mds_find_attr(hid_t attr_id, const char *name,
     size_t precision;
     H5Sclose(space);
     type = H5Aget_type(obj);
-    switch (H5Tget_class(type)) {
-    case H5T_COMPOUND: {
+    switch (H5Tget_class(type))
+    {
+    case H5T_COMPOUND:
+    {
       printf("Compound data is not supported, skipping\n");
       break;
     }
@@ -233,7 +264,8 @@ static int mds_find_attr(hid_t attr_id, const char *name,
       precision = H5Tget_precision(type);
       is_signed = (H5Tget_sign(type) != H5T_SGN_NONE);
       size = precision / 8;
-      switch (precision) {
+      switch (precision)
+      {
       case 8:
         dtype = is_signed ? DTYPE_B : DTYPE_BU;
         htype = is_signed ? H5T_NATIVE_CHAR : H5T_NATIVE_UCHAR;
@@ -261,7 +293,8 @@ static int mds_find_attr(hid_t attr_id, const char *name,
       nid = AddNode(name, TreeUSAGE_NUMERIC);
       precision = H5Tget_precision(type);
       size = precision / 8;
-      switch (precision) {
+      switch (precision)
+      {
       case 32:
         dtype = DTYPE_NATIVE_FLOAT;
         htype = H5T_NATIVE_FLOAT;
@@ -285,23 +318,30 @@ static int mds_find_attr(hid_t attr_id, const char *name,
       {
         int slen = H5Tget_size(type);
         // int siz = slen;
-        if (slen < 0) {
+        if (slen < 0)
+        {
           printf("Badly formed string attribute\n");
-        } else {
+        }
+        else
+        {
           hid_t st_id;
 
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
-          if (H5Tis_variable_str(type)) {
+          if (H5Tis_variable_str(type))
+          {
             st_id = H5Tcopy(H5T_C_S1);
             H5Tset_size(st_id, H5T_VARIABLE);
-          } else {
+          }
+          else
+          {
 #endif
             st_id = H5Tcopy(type);
             H5Tset_cset(st_id, H5T_CSET_ASCII);
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
           }
 #endif
-          if ((int)H5Tget_size(st_id) > slen) {
+          if ((int)H5Tget_size(st_id) > slen)
+          {
             slen = H5Tget_size(st_id);
           }
           H5Tset_size(st_id, slen);
@@ -344,22 +384,26 @@ static int mds_find_attr(hid_t attr_id, const char *name,
   return 0;
 }
 
-static int mds_find_objs(hid_t group, const char *name, void *op_data) {
+static int mds_find_objs(hid_t group, const char *name, void *op_data)
+{
   hid_t obj, type;
   H5G_stat_t statbuf;
   int nid;
   int defnid;
   int *first_time = (int *)op_data;
   TreeGetDefaultNid(&defnid);
-  if (*first_time) {
+  if (*first_time)
+  {
     //    H5Aiterate(group,&idx,mds_find_attr,(void *)0);
     H5Aiterate(group, NULL, mds_find_attr, (void *)0);
     *first_time = 0;
   }
   H5Gget_objinfo(group, name, 1, &statbuf);
-  switch (statbuf.type) {
+  switch (statbuf.type)
+  {
   case H5G_GROUP:
-    if ((obj = H5Gopen(group, name)) >= 0) {
+    if ((obj = H5Gopen(group, name)) >= 0)
+    {
       int first_time = 1;
       nid = AddNode(name, TreeUSAGE_STRUCTURE);
       H5Giterate(obj, ".", NULL, mds_find_objs, (void *)&first_time);
@@ -367,7 +411,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data) {
     }
     break;
   case H5G_DATASET:
-    if ((obj = H5Dopen(group, name)) >= 0) {
+    if ((obj = H5Dopen(group, name)) >= 0)
+    {
       int size;
       char dtype;
       int htype;
@@ -382,8 +427,10 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data) {
       //        H5Aiterate(obj,&idx,mds_find_attr,(void *)0);
       H5Aiterate(obj, NULL, mds_find_attr, (void *)0);
       type = H5Dget_type(obj);
-      switch (H5Tget_class(type)) {
-      case H5T_COMPOUND: {
+      switch (H5Tget_class(type))
+      {
+      case H5T_COMPOUND:
+      {
         printf("Compound data is not supported, skipping\n");
         break;
       }
@@ -391,7 +438,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data) {
         precision = H5Tget_precision(type);
         is_signed = (H5Tget_sign(type) != H5T_SGN_NONE);
         size = precision / 8;
-        switch (precision) {
+        switch (precision)
+        {
         case 8:
           dtype = is_signed ? DTYPE_B : DTYPE_BU;
           htype = is_signed ? H5T_NATIVE_CHAR : H5T_NATIVE_UCHAR;
@@ -418,7 +466,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data) {
       case H5T_FLOAT:
         precision = H5Tget_precision(type);
         size = precision / 8;
-        switch (precision) {
+        switch (precision)
+        {
         case 32:
           dtype = DTYPE_NATIVE_FLOAT;
           htype = H5T_NATIVE_FLOAT;
@@ -437,30 +486,37 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data) {
       case H5T_TIME:
         printf("dataset is time ---- UNSUPPORTED\n");
         break;
-      case H5T_STRING: {
+      case H5T_STRING:
+      {
         int slen = H5Tget_size(type);
         hid_t st_id;
-        if (slen < 0) {
+        if (slen < 0)
+        {
           printf("Badly formed string attribute\n");
           return 0;
         }
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
-        if (H5Tis_variable_str(type)) {
+        if (H5Tis_variable_str(type))
+        {
           st_id = H5Tcopy(H5T_C_S1);
           H5Tset_size(st_id, H5T_VARIABLE);
-        } else {
+        }
+        else
+        {
 #endif
           st_id = H5Tcopy(type);
           H5Tset_cset(st_id, H5T_CSET_ASCII);
 #if H5_VERS_MAJOR >= 1 && H5_VERS_MINOR >= 6 && H5_VERS_RELEASE >= 1
         }
 #endif
-        if ((int)H5Tget_size(st_id) > slen) {
+        if ((int)H5Tget_size(st_id) > slen)
+        {
           slen = H5Tget_size(st_id);
         }
         H5Tset_size(st_id, slen);
         PutData(obj, nid, DTYPE_T, st_id, slen, n_ds_dims, ds_dims, 0);
-      } break;
+      }
+      break;
       case H5T_BITFIELD:
         printf("dataset is bitfield ---- UNSUPPORTED\n");
         break;
@@ -520,7 +576,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data) {
  *
  *-------------------------------------------------------------------------
  */
-int main(int argc, const char *argv[]) {
+int main(int argc, const char *argv[])
+{
   hid_t fid;
   const char *fname = NULL;
   int first_time = 1;
@@ -541,13 +598,15 @@ int main(int argc, const char *argv[]) {
 
   fid = H5Fopen(fname, 0, H5P_DEFAULT);
 
-  if (fid < 0) {
+  if (fid < 0)
+  {
     fprintf(stderr, "h5toMds, unable to open file \"%s\"\n", fname);
     exit(EXIT_FAILURE);
   }
 
   status = TreeOpenNew((char *)tree, strtol(shot, NULL, 0));
-  if (!status & 1) {
+  if (!status & 1)
+  {
     printf("Error creating new tree for treename /%s/, shot number /%s/\n",
            tree, shot);
     exit(EXIT_FAILURE);

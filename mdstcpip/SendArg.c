@@ -30,24 +30,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 int SendDsc(int id, unsigned char idx, unsigned char nargs,
-            struct descriptor *dsc) {
+            struct descriptor *dsc)
+{
   int status;
   INIT_AND_FREEXD_ON_EXIT(out);
   status = MdsSerializeDscOut(dsc, &out);
   if (STATUS_OK)
-    {
-      struct descriptor_a *array = (struct descriptor_a *)out.pointer;
-      int dims[MAX_DIMS] = {0};
-      dims[0] = array->arsize;
-      status = SendArg(id, idx, DTYPE_SERIAL, nargs, 1, 1, dims,
-                       (char *)array->pointer);
-    }
+  {
+    struct descriptor_a *array = (struct descriptor_a *)out.pointer;
+    int dims[MAX_DIMS] = {0};
+    dims[0] = array->arsize;
+    status = SendArg(id, idx, DTYPE_SERIAL, nargs, 1, 1, dims,
+                     (char *)array->pointer);
+  }
   FREEXD_NOW(out);
   return status;
 }
 
 int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
-            unsigned short length, char ndims, int *dims, char *bytes) {
+            unsigned short length, char ndims, int *dims, char *bytes)
+{
   Connection *c = (idx == 0 || idx > nargs)
                       ? FindConnectionWithLock(id, CON_SENDARG)
                       : FindConnectionSending(id);
@@ -62,14 +64,18 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
   // MESSAGE ID //
   // * if this is the first argument sent, increments connection message id   //
   // * get the connection message_id and store it inside message              //
-  if (idx > nargs) {
+  if (idx > nargs)
+  {
     /**** Special I/O message ****/
-    if (idx == MDS_IO_OPEN_ONE_K && c->version < MDSIP_VERSION_OPEN_ONE) {
+    if (idx == MDS_IO_OPEN_ONE_K && c->version < MDSIP_VERSION_OPEN_ONE)
+    {
       UnlockConnection(c);
       return MDSplusFATAL;
     }
     nbytes = dims[0];
-  } else {
+  }
+  else
+  {
     for (i = 0; i < ndims; i++)
       nbytes *= dims[i];
   }

@@ -34,9 +34,12 @@ using namespace MDSplus;
 using namespace testing;
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
 
-  { Event::setEvent((char *)"test_event"); }
+  {
+    Event::setEvent((char *)"test_event");
+  }
 
   {
     unique_ptr<String> str = new String("test event string");

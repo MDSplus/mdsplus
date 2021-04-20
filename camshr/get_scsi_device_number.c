@@ -56,7 +56,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // and return O/S specific device number, eg '/dev/sg#'
 // returns '/dev/sg#' value; if non-existant, parse_crate_db() returns -1
 //-------------------------------------------------------------------------
-int get_scsi_device_number(char *highway_name, int *enhanced, int *online) {
+int get_scsi_device_number(char *highway_name, int *enhanced, int *online)
+{
   char highway[5]; // temp copy
   int device_num, i;
   struct Crate_ crate;
@@ -67,9 +68,11 @@ int get_scsi_device_number(char *highway_name, int *enhanced, int *online) {
     printf("get_scsi_device_number('%s')\n", highway_name);
 
   // check to see if db file is memory mapped
-  if (CRATEdbFileIsMapped == FALSE) {         // not mapped so ...
-    if (map_data_file(CRATE_DB) != SUCCESS) { // ... try to map
-      device_num = MAP_ERROR;                 // bummer   :-(
+  if (CRATEdbFileIsMapped == FALSE)
+  { // not mapped so ...
+    if (map_data_file(CRATE_DB) != SUCCESS)
+    {                         // ... try to map
+      device_num = MAP_ERROR; // bummer   :-(
       goto GetScsiDeviceNumber_Exit;
     }
   }
@@ -77,7 +80,8 @@ int get_scsi_device_number(char *highway_name, int *enhanced, int *online) {
   sprintf(highway, "%.4s", highway_name); // trim to highway name, only
 
   if ((i = lookup_entry(CRATE_DB, highway_name)) <
-      0) { // lookup actual device num
+      0)
+  { // lookup actual device num
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "no such highway in 'crate.db'\n");
 
@@ -91,7 +95,8 @@ int get_scsi_device_number(char *highway_name, int *enhanced, int *online) {
   *online = crate.online;
 
 GetScsiDeviceNumber_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     if (device_num >= 0)
       printf("gsdn(): (lookup[%d]=%s) = devnum(%d)\n", i, highway, device_num);
   }

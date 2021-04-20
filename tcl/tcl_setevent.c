@@ -41,7 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TclSetevent:
  * Close tree file(s).
  ***************************************************************/
-EXPORT int TclSetEvent(void *ctx) {
+EXPORT int TclSetEvent(void *ctx)
+{
   char *event = 0;
   int status;
   cli_get_value(ctx, "EVENT", &event);

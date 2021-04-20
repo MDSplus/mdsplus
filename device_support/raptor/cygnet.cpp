@@ -66,7 +66,8 @@ static double dSecPerTick = 1E-3;
  *  In other environments, such as DOS, the operating system
  *  isn't as helpful and the driver & frame grabber would remain open.
  */
-void sigintfunc(int sig) {
+void sigintfunc(int sig)
+{
   /*
    * Some languages/environments don't allow
    * use of printf from a signal catcher.
@@ -91,7 +92,8 @@ static void videoirqfunc(int sig) { fieldirqcount++; }
 /*
  * Open the XCLIB C Library for use.
  */
-int epixOpen(char *pcConfFile) {
+int epixOpen(char *pcConfFile)
+{
   int status;
   if (isOpen)
     return 0;
@@ -104,12 +106,15 @@ int epixOpen(char *pcConfFile) {
       DRIVERPARMS, "",
       pcConfFile); // ConfFile includes exposure time which seems to take
                    // precedence over later serial commands
-  if (status >= 0) {
+  if (status >= 0)
+  {
 #ifdef DEBUG
     printf("Open OK\n");
 #endif
     isOpen = true;
-  } else {
+  }
+  else
+  {
     printf("Open Error %d\a\a\n", status);
     pxd_mesgFault(UNITSMAP);
     return status;
@@ -119,7 +124,8 @@ int epixOpen(char *pcConfFile) {
   printImageInfo();
 #endif
   uint32 ticku[2];
-  if (pxd_infoSysTicksUnits(ticku) == 0) {
+  if (pxd_infoSysTicksUnits(ticku) == 0)
+  {
     dSecPerTick = (double)ticku[0] / (double)ticku[1] * 1E-6;
 #ifdef DEBUG
     printf("Microseconds per tick: %f\n", dSecPerTick * 1E6);
@@ -128,7 +134,8 @@ int epixOpen(char *pcConfFile) {
   return status;
 }
 
-void epixClose(void) {
+void epixClose(void)
+{
   pxd_PIXCIclose();
   isOpen = false;
 }
@@ -137,7 +144,8 @@ void epixClose(void) {
 /*
  * Report image frame buffer memory size
  */
-static void printFrameInfo(void) {
+static void printFrameInfo(void)
+{
   printf("Image frame buffer memory size: %.3f Kbytes\n",
          (double)pxd_infoMemsize(UNITSMAP) / 1024);
   printf("Image frame buffers           : %d\n", pxd_imageZdim());
@@ -147,7 +155,8 @@ static void printFrameInfo(void) {
 /*
  * Report image resolution.
  */
-static void printImageInfo(void) {
+static void printImageInfo(void)
+{
   printf("Image resolution:\n");
   printf("xdim           = %d\n", pxd_imageXdim());
   printf("ydim           = %d\n", pxd_imageYdim());
@@ -159,14 +168,16 @@ static void printImageInfo(void) {
 /*
  * Capture
  */
-void epixStartVideoCapture(int iID) {
+void epixStartVideoCapture(int iID)
+{
   pxd_goLivePair(iID, 1, 2); // should iID be converted to a unitmap?
 #ifdef DEBUG
   printf("Video capture started.\n");
 #endif
 }
 
-void epixStopVideoCapture(int iID) {
+void epixStopVideoCapture(int iID)
+{
   pxd_goUnLive(iID); // should iID be converted to a unitmap?
 #ifdef DEBUG
   printf("Video capture stopped.\n");
@@ -191,7 +202,8 @@ void epixStopVideoCapture(int iID) {
 //since reference t=0
 int epixCaptureFrame(int iID, int iFramesNid, double dTriggerTime,
                      int iTimeoutMs, void *pTree, void *pList, int *piBufIdx,
-                     int *piFrameIdx, int *piBaseTicks, double *pdCurrTime) {
+                     int *piFrameIdx, int *piBaseTicks, double *pdCurrTime)
+{
   int iUnitMap = 1 << (iID - 1);
   int iLastBufIdx, iCurrTicks;
   int iPixelsRead, iPixelsToRead, iPixelsX, iPixelsY;
@@ -202,15 +214,18 @@ int epixCaptureFrame(int iID, int iFramesNid, double dTriggerTime,
   iPixelsToRead = iPixelsX * iPixelsY;
   waitTime.tv_sec = 0;
   waitTime.tv_nsec = 5000000; // 5ms delay
-  if (*piBufIdx < 0) {
+  if (*piBufIdx < 0)
+  {
     iLastBufIdx =
         pxd_capturedBuffer(iUnitMap); // The first time captureFrame is called
     *piFrameIdx = 0;
-  } else
+  }
+  else
     iLastBufIdx = *piBufIdx;
   int iMaxCount =
       iTimeoutMs / 5; // Maximum number of iterations before timing out
-  for (int i = 0; i < iMaxCount; i++) {
+  for (int i = 0; i < iMaxCount; i++)
+  {
     int iLastCaptured = pxd_capturedBuffer(iUnitMap);
     if (iLastCaptured != iLastBufIdx) // A new frame arrived
     {
@@ -226,7 +241,8 @@ int epixCaptureFrame(int iID, int iFramesNid, double dTriggerTime,
 #ifdef DEBUG
       printf("FRAME %d READ AT TIME %f\n", *piFrameIdx, *pdCurrTime);
 #endif
-      if (iPixelsRead != iPixelsToRead) {
+      if (iPixelsRead != iPixelsToRead)
+      {
         if (iPixelsRead < 0)
           printf("pxd_readushort: %s\n", pxd_mesgErrorCode(iPixelsRead));
         else
@@ -239,7 +255,8 @@ int epixCaptureFrame(int iID, int iFramesNid, double dTriggerTime,
       *piBufIdx = iLastCaptured;
       *piFrameIdx += 1;
       return 1;
-    } else // No new frame
+    }
+    else // No new frame
       nanosleep(&waitTime, NULL);
   }
   // If code arrives here timeout occurred
@@ -247,22 +264,26 @@ int epixCaptureFrame(int iID, int iFramesNid, double dTriggerTime,
 }
 
 int doTransaction(int iID, const char *pcOutBufIn, int iOutBytes,
-                  char *pcReadBuf, int iBytesToRead) {
+                  char *pcReadBuf, int iBytesToRead)
+{
   int iBytesRead;
   int iUnitMap = 1 << (iID - 1);
   struct timespec waitTime;
   static bool isInitialized = false;
   char *pcOutBuf = new char[iOutBytes + 1];
   pcOutBuf[iOutBytes] = 0;
-  for (int i = 0; i < iOutBytes; i++) {
+  for (int i = 0; i < iOutBytes; i++)
+  {
     pcOutBuf[i] = pcOutBufIn[i];
     pcOutBuf[iOutBytes] ^= pcOutBuf[i];
   }
   waitTime.tv_sec = 0;
   waitTime.tv_nsec = 20000000; // 20ms
-  if (!isInitialized) {
+  if (!isInitialized)
+  {
     iBytesRead = pxd_serialConfigure(iUnitMap, 0, 115200, 8, 0, 1, 0, 0, 0);
-    if (iBytesRead < 0) {
+    if (iBytesRead < 0)
+    {
       printf("ERROR CONFIGURING SERIAL CAMERALINK PORT\n");
       return iBytesRead; // error
     }
@@ -270,7 +291,8 @@ int doTransaction(int iID, const char *pcOutBufIn, int iOutBytes,
   }
   nanosleep(&waitTime, NULL);
   iBytesRead = pxd_serialWrite(iUnitMap, 0, pcOutBuf, iOutBytes + 1);
-  if (iBytesRead < 0) {
+  if (iBytesRead < 0)
+  {
     printf("ERROR IN SERIAL WRITE\n");
     return iBytesRead; // error
   }
@@ -284,7 +306,8 @@ int doTransaction(int iID, const char *pcOutBufIn, int iOutBytes,
   return iBytesRead;
 }
 
-short epixGetCMOSTemp(int iID) {
+short epixGetCMOSTemp(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x7E, 0x50};
   const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0x72, 0x50};
@@ -309,7 +332,8 @@ short epixGetCMOSTemp(int iID) {
   return sTemp;
 }
 
-short epixGetPCBTemp(int iID) {
+short epixGetPCBTemp(int iID)
+{
   // const char queryBuf[] = {0x4F, 0x56, 0x50};
   const char queryBuf1[] = {0x53, 0xE0, 0x02, 0x70, 0x00, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
@@ -328,7 +352,8 @@ short epixGetPCBTemp(int iID) {
   return sTemp;
 }
 
-static double getFrameRate(int iID) {
+static double getFrameRate(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xDD, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xDE, 0x50};
@@ -355,7 +380,8 @@ static double getFrameRate(int iID) {
   return (double)iFrameRate / 6E7;
 }
 
-static void setFrameRate(int iID, double dFrameRate) {
+static void setFrameRate(int iID, double dFrameRate)
+{
   int iFrameRate = fabs(6E7 * dFrameRate);
   const char queryBuf1[] = {
       0x53, 0xE0, 0x02, 0xDD, (iFrameRate & 0xFF000000) >> 24, 0x50};
@@ -373,7 +399,8 @@ static void setFrameRate(int iID, double dFrameRate) {
   doTransaction(iID, queryBuf4, 6, cRetBuf, 1);
 }
 
-static double getExposure(int iID) {
+static double getExposure(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xED, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xEE, 0x50};
@@ -405,7 +432,8 @@ static double getExposure(int iID) {
   return (double)lExposure / 6E4;
 }
 
-static void setExposure(int iID, double dExposureMs) {
+static void setExposure(int iID, double dExposureMs)
+{
   long lExposure = fabs(6E4 * dExposureMs); // 60MHz: 1E6/16.6666 = 6e4
   //    long lExposure = fabs(6E7 * dExposure);
   const char queryBuf1[] = {
@@ -426,7 +454,8 @@ static void setExposure(int iID, double dExposureMs) {
   doTransaction(iID, queryBuf4, 6, cRetBuf, 1);
 }
 
-static float getGain(int iID) {
+static float getGain(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD5, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD6, 0x50};
@@ -443,7 +472,8 @@ static float getGain(int iID) {
   return sGain / 512.;
 }
 
-static char getTrigMode(int iID) {
+static char getTrigMode(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD4, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
 
@@ -453,14 +483,16 @@ static char getTrigMode(int iID) {
   return cRetBuf[0];
 }
 
-static void setTrigMode(int iID, char cTrigMode) {
+static void setTrigMode(int iID, char cTrigMode)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xD4, cTrigMode, 0x50};
 
   char cRetBuf[1];
   doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
 }
 
-static char getBinning(int iID) {
+static char getBinning(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xDB, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
 
@@ -470,7 +502,8 @@ static char getBinning(int iID) {
   return cRetBuf[0];
 }
 
-static short getRoiXSize(int iID) {
+static short getRoiXSize(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD7, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD8, 0x50};
@@ -487,7 +520,8 @@ static short getRoiXSize(int iID) {
   return sSize;
 }
 
-static short getRoiXOffset(int iID) {
+static short getRoiXOffset(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD9, 0x50};
   const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xDA, 0x50};
@@ -504,7 +538,8 @@ static short getRoiXOffset(int iID) {
   return sOffset;
 }
 
-static short getRoiYSize(int iID) {
+static short getRoiYSize(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x01, 0x50};
   const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
@@ -529,7 +564,8 @@ static short getRoiYSize(int iID) {
   return sSize;
 }
 
-static short getRoiYOffset(int iID) {
+static short getRoiYOffset(int iID)
+{
   const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x03, 0x50};
   const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
   const char queryBuf3[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
@@ -554,14 +590,16 @@ static short getRoiYOffset(int iID) {
   return sSize;
 }
 
-void epixSetConfiguration(int iID, double dFrameRate, char cTrigMode) {
+void epixSetConfiguration(int iID, double dFrameRate, char cTrigMode)
+{
   setFrameRate(iID, dFrameRate);
   setTrigMode(iID, cTrigMode);
 }
 
 void epixGetConfiguration(int iID, char *pcBinning, short *psRoiXSize,
                           short *psRoiXOffset, short *psRoiYSize,
-                          short *psRoiYOffset) {
+                          short *psRoiYOffset)
+{
   *pcBinning = getBinning(iID);
   *psRoiXSize = getRoiXSize(iID);
   *psRoiXOffset = getRoiXOffset(iID);
@@ -572,7 +610,8 @@ void epixGetConfiguration(int iID, char *pcBinning, short *psRoiXSize,
 #endif
 }
 
-void epixGetTemp(int iID, float *pfPcbTemp, short *psCmosTemp) {
+void epixGetTemp(int iID, float *pfPcbTemp, short *psCmosTemp)
+{
   *pfPcbTemp = epixGetPCBTemp(iID) / 16.;
   *psCmosTemp = epixGetCMOSTemp(iID);
 }

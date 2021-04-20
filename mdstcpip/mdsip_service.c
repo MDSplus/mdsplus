@@ -42,7 +42,8 @@ static char **extra_argv;
 // static char *dirname = "bin_x86";
 // #endif
 
-static char *ServiceName(int generic) {
+static char *ServiceName(int generic)
+{
   char *name = strcpy((char *)malloc(512), "MDSplus ");
   if (!generic)
     strcat(name, GetMulti() ? "Action Server - Port " : "Data Server - Port ");
@@ -50,7 +51,8 @@ static char *ServiceName(int generic) {
   return name;
 }
 
-static int SpawnWorker(SOCKET sock) {
+static int SpawnWorker(SOCKET sock)
+{
   int status;
   STARTUPINFO startupinfo;
   PROCESS_INFORMATION pinfo;
@@ -83,7 +85,8 @@ static SERVICE_STATUS_HANDLE hService;
 static void ServiceMain(DWORD, CHAR **);
 static SERVICE_STATUS serviceStatus;
 
-static void SetThisServiceStatus(int state, int hint) {
+static void SetThisServiceStatus(int state, int hint)
+{
   serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
   serviceStatus.dwCurrentState = state;
   serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
@@ -94,9 +97,12 @@ static void SetThisServiceStatus(int state, int hint) {
   SetServiceStatus(hService, &serviceStatus);
 }
 
-VOID WINAPI serviceHandler(DWORD fdwControl) {
-  switch (fdwControl) {
-  case SERVICE_CONTROL_STOP: {
+VOID WINAPI serviceHandler(DWORD fdwControl)
+{
+  switch (fdwControl)
+  {
+  case SERVICE_CONTROL_STOP:
+  {
     SetThisServiceStatus(SERVICE_STOP_PENDING, 1000);
     SetThisServiceStatus(SERVICE_STOPPED, 0);
     shut = 1;
@@ -106,7 +112,8 @@ VOID WINAPI serviceHandler(DWORD fdwControl) {
   }
 }
 
-static void InitializeService() {
+static void InitializeService()
+{
   char name[120];
   hService = RegisterServiceCtrlHandler(TEXT(ServiceName(1)),
                                         (LPHANDLER_FUNCTION)serviceHandler);
@@ -115,12 +122,15 @@ static void InitializeService() {
   SetThisServiceStatus(SERVICE_START_PENDING, 1000);
 }
 
-static BOOL RemoveService() {
+static BOOL RemoveService()
+{
   BOOL status = 1;
   SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
-  if (hSCManager) {
+  if (hSCManager)
+  {
     SC_HANDLE hService = OpenService(hSCManager, TEXT(ServiceName(1)), DELETE);
-    if (hService) {
+    if (hService)
+    {
       status = DeleteService(hService);
       status = CloseServiceHandle(hService);
     }
@@ -129,12 +139,14 @@ static BOOL RemoveService() {
   return status;
 }
 
-static int InstallService() {
+static int InstallService()
+{
   int status = 1;
   SC_HANDLE hSCManager;
   RemoveService();
   hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
-  if (hSCManager) {
+  if (hSCManager)
+  {
     SC_HANDLE hService;
     char *cmd;
     static const char *multi_opt = "--multi";
@@ -144,15 +156,19 @@ static int InstallService() {
         GetMulti() ? (GetContextSwitching() ? "--multi" : "--server") : "";
     SERVICE_DESCRIPTION sd;
     LPTSTR description = (LPTSTR)malloc(4096);
-    if (GetMulti()) {
-      if (GetContextSwitching()) {
+    if (GetMulti())
+    {
+      if (GetContextSwitching())
+      {
         opts = multi_opt;
         wsprintf(
             description,
             TEXT("MDSplus data service listening on port %s.\nPermits multiple "
                  "connections each with own tdi and tree context\n"),
             GetPortname());
-      } else {
+      }
+      else
+      {
         opts = server_opt;
         wsprintf(
             description,
@@ -160,7 +176,9 @@ static int InstallService() {
                  "connections with shared tdi and tree context\n"),
             GetPortname());
       }
-    } else {
+    }
+    else
+    {
       opts = data_opt;
       wsprintf(description,
                TEXT("MDSplus data service listening on port %s.\nEach "
@@ -180,9 +198,11 @@ static int InstallService() {
                              NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
       status = GetLastError();
-    else {
+    else
+    {
       ChangeServiceConfig2(hService, SERVICE_CONFIG_DESCRIPTION, &sd);
-      if (GetMulti()) {
+      if (GetMulti())
+      {
         SERVICE_FAILURE_ACTIONS sfa;
         SC_ACTION actions[] = {{SC_ACTION_RESTART, 5000}};
         sfa.dwResetPeriod = INFINITE;
@@ -204,14 +224,17 @@ static int InstallService() {
   return status;
 }
 
-static short GetPort() {
+static short GetPort()
+{
   short port;
   char *name = GetPortname();
   struct servent *sp;
   port = htons((short)strtol(name, NULL, 0));
-  if (port == 0) {
+  if (port == 0)
+  {
     sp = getservbyname(name, "tcp");
-    if (sp == NULL) {
+    if (sp == NULL)
+    {
       fprintf(stderr, "unknown service: %s/tcp\n\n", name);
       exit(0);
     }
@@ -220,7 +243,8 @@ static short GetPort() {
   return port;
 }
 
-static void RedirectOutput() {
+static void RedirectOutput()
+{
   char *logdir = GetLogDir();
   char *portname = GetPortname();
   char *file = malloc(strlen(logdir) + strlen(portname) + 20);
@@ -231,7 +255,8 @@ static void RedirectOutput() {
   free(file);
 }
 
-static void ServiceMain(DWORD argc, CHAR **argv) {
+static void ServiceMain(DWORD argc, CHAR **argv)
+{
   SOCKET s;
   int status;
   static struct sockaddr_in sin;
@@ -243,19 +268,24 @@ static void ServiceMain(DWORD argc, CHAR **argv) {
   RedirectOutput();
   InitializeService();
   SetThisServiceStatus(SERVICE_RUNNING, 0);
-  if (GetMulti()) {
+  if (GetMulti())
+  {
     IoRoutines *io;
     io = LoadIo(GetProtocol());
     if (io && io->listen)
       io->listen(argc, argv);
-    else {
+    else
+    {
       fprintf(stderr, "Protocol %s does not support servers\n", GetProtocol());
       exit(1);
     }
     exit(0);
-  } else {
+  }
+  else
+  {
     s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s == INVALID_SOCKET) {
+    if (s == INVALID_SOCKET)
+    {
       printf("Error getting Connection Socket\n");
       exit(1);
     }
@@ -264,31 +294,39 @@ static void ServiceMain(DWORD argc, CHAR **argv) {
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = INADDR_ANY;
     status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
-    if (status < 0) {
+    if (status < 0)
+    {
       perror("Error binding to service\n");
       exit(1);
     }
     status = listen(s, 128);
-    if (status < 0) {
+    if (status < 0)
+    {
       perror("Error listen on port\n");
       exit(1);
     }
     FD_ZERO(&fdactive);
     FD_SET(s, &fdactive);
-    for (readfds = fdactive; !shut; readfds = fdactive) {
-      if (select(s + 1, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
+    for (readfds = fdactive; !shut; readfds = fdactive)
+    {
+      if (select(s + 1, &readfds, 0, 0, &timeout) != SOCKET_ERROR)
+      {
         error_count = 0;
-        if (FD_ISSET(s, &readfds)) {
+        if (FD_ISSET(s, &readfds))
+        {
           int len = sizeof(struct sockaddr_in);
           SOCKET sock = accept(s, (struct sockaddr *)&sin, &len);
           SpawnWorker(sock);
         }
-      } else {
+      }
+      else
+      {
         error_count++;
         perror("error in main select");
         fprintf(stderr, "Error count=%d\n", error_count);
         fflush(stderr);
-        if (error_count > 100) {
+        if (error_count > 100)
+        {
           fprintf(stderr, "Error count exceeded, shutting down\n");
           shut = 1;
         }
@@ -300,7 +338,8 @@ static void ServiceMain(DWORD argc, CHAR **argv) {
 }
 
 DEFINE_INITIALIZESOCKETS;
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int x_argc;
   char **x_argv;
   Options options[] = {{"i", "install", 0, 0, 0},
@@ -313,13 +352,18 @@ int main(int argc, char **argv) {
     SetPortname(options[2].value);
   else if (GetPortname() == 0)
     SetPortname("mdsip");
-  if (options[0].present) {
+  if (options[0].present)
+  {
     InstallService();
     exit(0);
-  } else if (options[1].present) {
+  }
+  else if (options[1].present)
+  {
     RemoveService();
     exit(0);
-  } else {
+  }
+  else
+  {
     SERVICE_TABLE_ENTRY srvcTable[] = {
         {ServiceName(1), (LPSERVICE_MAIN_FUNCTION)ServiceMain}, {NULL, NULL}};
     INITIALIZESOCKETS;

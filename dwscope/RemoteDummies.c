@@ -30,7 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-    void XmdsInitialize() {
+    void XmdsInitialize()
+{
   xmdsWaveformWidgetClass = (WidgetClass)&xmdsWaveformClassRec;
   MrmRegisterClass(MrmwcUnknown, "XmdsWaveformWidgetClass",
                    "XmdsCreateWaveform", (Widget(*)(void))XmdsCreateWaveform,

@@ -3,7 +3,8 @@
 int DEBUG = 0;
 
 NiFpga_Status crioMpagInitFifo(NiFpga_Session session, const char *fifoName,
-                               NiFpgaEx_DmaFifo fifoId, size_t fifoDepthSize) {
+                               NiFpgaEx_DmaFifo fifoId, size_t fifoDepthSize)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   size_t actualDepth;
 
@@ -16,7 +17,8 @@ NiFpga_Status crioMpagInitFifo(NiFpga_Session session, const char *fifoName,
 
   printf("Host %s actual size %d data resize %d status %d\n", fifoName,
          actualDepth, fifoDepthSize, status);
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Host %s data fifo depth resize error\n", fifoName);
     return status;
   }
@@ -37,7 +39,8 @@ NiFpga_Status crioMpagInitFifo(NiFpga_Session session, const char *fifoName,
 }
 
 NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName,
-                                NiFpgaEx_DmaFifo fifoId) {
+                                NiFpgaEx_DmaFifo fifoId)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   size_t nElem;
   size_t rElem;
@@ -51,7 +54,8 @@ NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName,
   NiFpga_MergeStatus(&status,
                      NiFpga_ReadFifoI16(session, fifoId, &dummy, 0, 0, &nElem));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     NiFpga_Close(session, 0);
     printf("Host %s error reading num elements in fifo\n", fifoName);
     return status;
@@ -59,14 +63,16 @@ NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName,
 
   printf("Num elements in %s %d\n", fifoName, nElem);
 
-  if (nElem > 0) {
+  if (nElem > 0)
+  {
 
     dummyElem = (int16_t *)calloc(nElem, sizeof(int16_t));
 
     NiFpga_MergeStatus(&status,
                        NiFpga_ReadFifoI16(session, fifoId, dummyElem, nElem, 0,
                                           &rElem)); // FIFO Remaining Element
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(session, 0);
       printf("Host %s error reading fifo\n", fifoName);
       return status;
@@ -81,7 +87,8 @@ NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName,
 }
 
 NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId,
-                           size_t fifoDepthSize) {
+                           size_t fifoDepthSize)
+{
   NiFpga_Status status = NiFpga_Status_Success;
 
   if (DEBUG == 1)
@@ -96,12 +103,14 @@ NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId,
                                     NiFpga_MainFPGA_9159_Signature, cRioId,
                                     NiFpga_OpenAttribute_NoRun, session));
 
-  if (NiFpga_IsNotError(status)) {
+  if (NiFpga_IsNotError(status))
+  {
 
     status = crioMpagInitFifo(
         *session, "FIFO A", NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_A,
         fifoDepthSize);
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(*session, 0);
       return -1;
     }
@@ -109,7 +118,8 @@ NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId,
     status = crioMpagInitFifo(
         *session, "FIFO B", NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_B,
         fifoDepthSize);
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(*session, 0);
       return -1;
     }
@@ -117,27 +127,31 @@ NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId,
     status = crioMpagInitFifo(
         *session, "FIFO C", NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_C,
         fifoDepthSize);
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(*session, 0);
       return -1;
     }
 
     NiFpga_MergeStatus(&status, NiFpga_Reset(*session));
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(*session, 0);
       printf("VI Reset error\n");
       return -1;
     }
-
-  } else {
+  }
+  else
+  {
     printf("FPGA Open error : %d\n", status);
     return -1;
   }
   return status;
 }
 
-NiFpga_Status closeMpagFpgaSession(NiFpga_Session session) {
+NiFpga_Status closeMpagFpgaSession(NiFpga_Session session)
+{
 
   /* CODAC NOTE: NiFpga_Initialize() is no longer necessary! */
   /* must be called before any other calls */
@@ -159,19 +173,22 @@ NiFpga_Status closeMpagFpgaSession(NiFpga_Session session) {
 
   status = NiFpga_StopFifo(session,
                            NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_A);
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Host SLAVE A stop fifo error\n");
   }
 
   status = NiFpga_StopFifo(session,
                            NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_B);
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Host SLAVE B stop fifo error\n");
   }
 
   status = NiFpga_StopFifo(session,
                            NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_C);
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Host SLAVE C stop fifo error\n");
   }
 
@@ -191,7 +208,8 @@ NiFpga_Status closeMpagFpgaSession(NiFpga_Session session) {
 
 NiFpga_Status setMpagAcqParam(NiFpga_Session session, uint8_t clockMode,
                               float freq, uint16_t highStrobeTick,
-                              const int32_t *chanAOmap) {
+                              const int32_t *chanAOmap)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   uint16_t acqPeriod;
 
@@ -207,7 +225,8 @@ NiFpga_Status setMpagAcqParam(NiFpga_Session session, uint8_t clockMode,
       NiFpga_WriteBool(session, NiFpga_MainFPGA_9159_ControlBool_ForceLocal,
                        clockMode));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error setting closk mode");
     return -1;
   }
@@ -220,7 +239,8 @@ NiFpga_Status setMpagAcqParam(NiFpga_Session session, uint8_t clockMode,
                       NiFpga_MainFPGA_9159_ControlU16_FrameStrobePerioduSec,
                       acqPeriod));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting slave acquisition frequency");
     return -1;
   }
@@ -232,7 +252,8 @@ NiFpga_Status setMpagAcqParam(NiFpga_Session session, uint8_t clockMode,
           NiFpga_MainFPGA_9159_ControlU16_HighPhaseFrameStrobeDurationTicks,
           highStrobeTick));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting high strobe Tick count");
     return -1;
   }
@@ -254,7 +275,8 @@ NiFpga_Status setMpagAcqParam(NiFpga_Session session, uint8_t clockMode,
 
 /************************* Thread Function ************************************/
 
-void *acquisitionThreadFPGA(void *args) {
+void *acquisitionThreadFPGA(void *args)
+{
 
   NiFpga_Status status = NiFpga_Status_Success;
   int currSize = 0;
@@ -277,7 +299,8 @@ void *acquisitionThreadFPGA(void *args) {
   int slaveIdx = structFpga->slaveIdx;
   struct_FPGA_ACQ *fpgaAcq = ((struct_FPGA *)args)->structFpgaAcq;
 
-  switch (slaveIdx) {
+  switch (slaveIdx)
+  {
   case SLAVE_A:
     fifoId = NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_A;
     fifoName = "SLAVE A";
@@ -317,7 +340,8 @@ void *acquisitionThreadFPGA(void *args) {
   readChanSmp = (int *)calloc(NUM_SLAVE_CHANNEL, sizeof(int));
   bufReadChanSmp = (int *)calloc(NUM_SLAVE_CHANNEL, sizeof(int));
 
-  for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++) {
+  for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++)
+  {
     bufReadChanSmp[chan] = bufSize;
     readChanSmp[chan] = 0;
     coeffs[chan] = dummyCalibCoeff;
@@ -331,9 +355,12 @@ void *acquisitionThreadFPGA(void *args) {
 
   status = crioMpagResetFifo(session, fifoName, fifoId);
 
-  if (DEBUG) {
-    for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++) {
-      for (int smp = 0; smp < bufSize; smp++) {
+  if (DEBUG)
+  {
+    for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++)
+    {
+      for (int smp = 0; smp < bufSize; smp++)
+      {
         data[chan + smp * NUM_SLAVE_CHANNEL] = (int16_t)(
             (chan + 1) * 1000 * sin(2 * 3.14 * smp / slaveDataSamples * 100.) +
             500 * slaveIdx);
@@ -344,11 +371,13 @@ void *acquisitionThreadFPGA(void *args) {
     printf("\n");
   }
 
-  while ((!*(uint8_t *)stopAcq) == 1) {
+  while ((!*(uint8_t *)stopAcq) == 1)
+  {
 
     readElem = readMpagFifoData(session, fifoName, fifoId, data,
                                 slaveDataSamples, stopAcq);
-    if (readElem == -1 || readElem != slaveDataSamples) {
+    if (readElem == -1 || readElem != slaveDataSamples)
+    {
       // Report error contition only if system in in acquisizione ande the read
       // data are less than requested
       if (readElem != slaveDataSamples && (!*(uint8_t *)stopAcq) == 1)
@@ -358,10 +387,13 @@ void *acquisitionThreadFPGA(void *args) {
     }
 
     int chanIdx = 0;
-    for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++) {
-      if (chanState[chan + slaveIdx * NUM_SLAVE_CHANNEL]) {
+    for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++)
+    {
+      if (chanState[chan + slaveIdx * NUM_SLAVE_CHANNEL])
+      {
         buffers_s[chanIdx] = new short[bufSize];
-        for (int smp = 0; smp < bufSize; smp++) {
+        for (int smp = 0; smp < bufSize; smp++)
+        {
           // if(smp == 0)printf("%s %d buffers_s[%d] = data[%d]\n",fifoName,
           // chanIdx,(chanIdx + smp * NUM_SLAVE_CHANNEL), (chan + smp *
           // NUM_SLAVE_CHANNEL));
@@ -378,7 +410,8 @@ void *acquisitionThreadFPGA(void *args) {
     // for( int chan = 0; chan <  nChan; chan++)
     {
       chan = slaveCh + slaveIdx * NUM_SLAVE_CHANNEL;
-      if (chanState[chan]) {
+      if (chanState[chan])
+      {
         /*
         for(int smp = 0; smp < 10; smp++)
            printf(" %d ", buffers_s[slaveCh][smp] );
@@ -418,7 +451,8 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
                                 int numSamples, void *dataNidPtr, int clockNid,
                                 float timeIdx0, float period, void *treePtr,
                                 void *saveListPtr, void *stopAcq, int shot,
-                                void *resampledNidPtr) {
+                                void *resampledNidPtr)
+{
 
   NiFpga_Status status = NiFpga_Status_Success;
   int currSize = 0;
@@ -433,7 +467,7 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
   int8_t slaveTimeout[NUM_SLAVE] = {0, 0, 0};
 
   SaveList *saveList = (SaveList *)
-      saveListPtr; // Class to equeu data buffer to save in pulse file
+      saveListPtr;                            // Class to equeu data buffer to save in pulse file
   int *dataNid = (int *)dataNidPtr;           // Channel node identifier
   int *resampledNid = (int *)resampledNidPtr; // Channel node identifier
 
@@ -450,40 +484,54 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
   float gains[nChan];
 
   // Delete first all data nids
-  for (int i = 0; i < nChan; i++) {
-    try {
+  for (int i = 0; i < nChan; i++)
+  {
+    try
+    {
       TreeNode *currNode = new TreeNode(dataNid[i], (Tree *)treePtr);
       currNode->deleteData();
       // Check if resampling
-      try {
+      try
+      {
         Data *streamNameData = currNode->getExtendedAttribute("STREAM_NAME");
         streamNames[i] = streamNameData->getString();
         deleteData(streamNameData);
-        try {
+        try
+        {
           Data *streamGainData = currNode->getExtendedAttribute("STREAM_GAIN");
           streamGains[i] = streamGainData->getFloat();
-        } catch (MdsException &exc) {
+        }
+        catch (MdsException &exc)
+        {
           streamGains[i] = 1;
         }
-        try {
+        try
+        {
           Data *streamOffsetData =
               currNode->getExtendedAttribute("STREAM_OFFSET");
           streamOffsets[i] = streamOffsetData->getFloat();
-        } catch (MdsException &exc) {
+        }
+        catch (MdsException &exc)
+        {
           streamOffsets[i] = 0;
         }
-      } catch (MdsException &exc) {
+      }
+      catch (MdsException &exc)
+      {
         streamNames[i] = NULL;
         streamGains[i] = 0;
         streamOffsets[i] = 0;
       }
       delete currNode;
-      if (resampledNid) {
+      if (resampledNid)
+      {
         currNode = new TreeNode(resampledNid[i], (Tree *)treePtr);
         currNode->deleteData();
         delete currNode;
       }
-    } catch (MdsException &exc) {
+    }
+    catch (MdsException &exc)
+    {
       printf("Error deleting data nodes\n");
     }
   }
@@ -501,7 +549,8 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
   int streamFactor = (int)(0.1 / period);
   if (bufSize > streamFactor)
     streamFactor = bufSize;
-  else {
+  else
+  {
     if (streamFactor % bufSize != 0)
       streamFactor = (bufSize + 1) * (streamFactor / bufSize);
   }
@@ -589,7 +638,8 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
 
 int readMpagFifoData(NiFpga_Session session, const char *fifoName,
                      NiFpgaEx_DmaFifo fifoId, int16_t *data,
-                     size_t slaveBufSize, void *stopAcq) {
+                     size_t slaveBufSize, void *stopAcq)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   size_t currSize = 0;
   uint32_t count = 0;
@@ -599,17 +649,20 @@ int readMpagFifoData(NiFpga_Session session, const char *fifoName,
 
   int16_t *elem;
 
-  if (data == NULL) {
+  if (data == NULL)
+  {
     printf("Invalid arguments\n");
     return -1;
   }
 
-  if (DEBUG == 1) {
+  if (DEBUG == 1)
+  {
     usleep(2000000);
     return slaveBufSize;
   }
 
-  while (currSize < slaveBufSize) {
+  while (currSize < slaveBufSize)
+  {
 
     count++;
 
@@ -617,7 +670,8 @@ int readMpagFifoData(NiFpga_Session session, const char *fifoName,
     NiFpga_MergeStatus(&status,
                        NiFpga_ReadFifoI16(session, fifoId, data, 0, 0, &nElem));
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       printf("Read Error\n");
       return -1;
     }
@@ -642,7 +696,8 @@ int readMpagFifoData(NiFpga_Session session, const char *fifoName,
 
     // Time out is not an error condition. Must be acquired bufSize samples per
     // channel
-    if (status != -50400 && NiFpga_IsError(status)) { // Timeout -50400
+    if (status != -50400 && NiFpga_IsError(status))
+    { // Timeout -50400
       printf("\nNiFpga_ReadFifoI16 %s Read Error data (status %d) elem %d\n",
              fifoName, status, slaveBufSize);
       return -1;
@@ -660,7 +715,8 @@ int readMpagFifoData(NiFpga_Session session, const char *fifoName,
   return currSize;
 }
 
-NiFpga_Status startMpagFpga(NiFpga_Session session) {
+NiFpga_Status startMpagFpga(NiFpga_Session session)
+{
   NiFpga_Status status = NiFpga_Status_Success;
 
   if (DEBUG == 1)
@@ -670,10 +726,12 @@ NiFpga_Status startMpagFpga(NiFpga_Session session) {
   printf("Running the FPGA...\n");
   NiFpga_MergeStatus(&status, NiFpga_Run(session, 0));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error running FPGA\n");
     return -1;
-  } else
+  }
+  else
     printf("OK running FPGA\n");
 
   printf("Start Acquisition ...\n");
@@ -701,7 +759,8 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
                                 int numSamples, void *dataNidPtr, int clockNid,
                                 float timeIdx0, float period, void *treePtr,
                                 void *saveListPtr, void *stopAcq, int shot,
-                                void *resampledNidPtr) {
+                                void *resampledNidPtr)
+{
 
   NiFpga_Status status = NiFpga_Status_Success;
   int currSize = 0;
@@ -716,7 +775,7 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
   int8_t slaveTimeout[NUM_SLAVE] = {0, 0, 0};
 
   SaveList *saveList = (SaveList *)
-      saveListPtr; // Class to equeu data buffer to save in pulse file
+      saveListPtr;                            // Class to equeu data buffer to save in pulse file
   int *dataNid = (int *)dataNidPtr;           // Channel node identifier
   int *resampledNid = (int *)resampledNidPtr; // Channel node identifier
 
@@ -733,45 +792,60 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
   float gains[nChan];
 
   // Delete first all data nids
-  for (int i = 0; i < nChan; i++) {
-    try {
+  for (int i = 0; i < nChan; i++)
+  {
+    try
+    {
       TreeNode *currNode = new TreeNode(dataNid[i], (Tree *)treePtr);
       currNode->deleteData();
       // Check if resampling
-      try {
+      try
+      {
         Data *streamNameData = currNode->getExtendedAttribute("STREAM_NAME");
         streamNames[i] = streamNameData->getString();
         deleteData(streamNameData);
-        try {
+        try
+        {
           Data *streamGainData = currNode->getExtendedAttribute("STREAM_GAIN");
           streamGains[i] = streamGainData->getFloat();
-        } catch (MdsException &exc) {
+        }
+        catch (MdsException &exc)
+        {
           streamGains[i] = 1;
         }
-        try {
+        try
+        {
           Data *streamOffsetData =
               currNode->getExtendedAttribute("STREAM_OFFSET");
           streamOffsets[i] = streamOffsetData->getFloat();
-        } catch (MdsException &exc) {
+        }
+        catch (MdsException &exc)
+        {
           streamOffsets[i] = 0;
         }
-      } catch (MdsException &exc) {
+      }
+      catch (MdsException &exc)
+      {
         streamNames[i] = NULL;
         streamGains[i] = 0;
         streamOffsets[i] = 0;
       }
       delete currNode;
-      if (resampledNid) {
+      if (resampledNid)
+      {
         currNode = new TreeNode(resampledNid[i], (Tree *)treePtr);
         currNode->deleteData();
         delete currNode;
       }
-    } catch (MdsException &exc) {
+    }
+    catch (MdsException &exc)
+    {
       printf("Error deleting data nodes\n");
     }
   }
 
-  for (int chan = 0; chan < nChan; chan++) {
+  for (int chan = 0; chan < nChan; chan++)
+  {
     buffers_s[chan] = new short[bufSize];
     bufReadChanSmp[chan] = bufSize;
     readChanSmp[chan] = 0;
@@ -786,7 +860,8 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
   int streamFactor = (int)(0.1 / period);
   if (bufSize > streamFactor)
     streamFactor = bufSize;
-  else {
+  else
+  {
     if (streamFactor % bufSize != 0)
       streamFactor = (bufSize + 1) * (streamFactor / bufSize);
   }
@@ -817,63 +892,77 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
   startMpagFpga(session);
   /**************************************************************/
 
-  while ((!*(uint8_t *)stopAcq) == 1) {
+  while ((!*(uint8_t *)stopAcq) == 1)
+  {
 
     readElem = readMpagFifoData(
         session, "SLAVE A", NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_A,
         &data[0], slaveDataSamples);
-    if (readElem != -2 && (readElem == -1 || readElem != slaveDataSamples)) {
+    if (readElem != -2 && (readElem == -1 || readElem != slaveDataSamples))
+    {
       if (readElem != slaveDataSamples)
         printf("SLAVE A Fifo reading samples requested %d read %d\n",
                slaveDataSamples, readElem);
       break;
     }
-    if (readElem == -2) { // timeout
+    if (readElem == -2)
+    { // timeout
       printf("SLAVE A Fifo reading timeout\n");
       slaveTimeout[0] = 1;
-    } else
+    }
+    else
       printf("SLAVE A Fifo reading samples requested %d read %d\n",
              slaveDataSamples, readElem);
 
     readElem = readMpagFifoData(
         session, "SLAVE B", NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_B,
         &data[slaveDataSamples], slaveDataSamples);
-    if (readElem != -2 && (readElem == -1 || readElem != slaveDataSamples)) {
+    if (readElem != -2 && (readElem == -1 || readElem != slaveDataSamples))
+    {
       if (readElem != slaveDataSamples)
         printf("SLAVE B Fifo reading samples requested %d read %d\n",
                slaveDataSamples, readElem);
       break;
     }
-    if (readElem == -2) { // timeout
+    if (readElem == -2)
+    { // timeout
       printf("SLAVE B Fifo reading timeout\n");
       slaveTimeout[1] = 1;
-    } else
+    }
+    else
       printf("SLAVE B Fifo reading samples requested %d read %d\n",
              slaveDataSamples, readElem);
 
     readElem = readMpagFifoData(
         session, "SLAVE C", NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_C,
         &data[2 * slaveDataSamples], slaveDataSamples);
-    if (readElem != -2 && (readElem == -1 || readElem != slaveDataSamples)) {
+    if (readElem != -2 && (readElem == -1 || readElem != slaveDataSamples))
+    {
       if (readElem != slaveDataSamples)
         printf("SLAVE C Fifo reading samples requested %d read %d\n",
                slaveDataSamples, readElem);
       break;
     }
-    if (readElem == -2) { // timeout
+    if (readElem == -2)
+    { // timeout
       printf("SLAVE C Fifo reading timeout\n");
       slaveTimeout[2] = 1;
-    } else
+    }
+    else
       printf("SLAVE C Fifo reading samples requested %d read %d\n",
              slaveDataSamples, readElem);
 
     int chanIdx = 0;
-    for (int slave = 0; slave < NUM_SLAVE; slave++) {
+    for (int slave = 0; slave < NUM_SLAVE; slave++)
+    {
       if (slaveTimeout[slave])
         continue;
-      for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++) {
-        if (chanState[chan + slave * NUM_SLAVE_CHANNEL]) {
-          for (int smp = 0; smp < bufSize; smp++) {
+      for (int chan = 0; chan < NUM_SLAVE_CHANNEL; chan++)
+      {
+        if (chanState[chan + slave * NUM_SLAVE_CHANNEL])
+        {
+          for (int smp = 0; smp < bufSize; smp++)
+          {
             // if(smp == 0)printf("%d %d buffers_s[%d] = data[%d]\n",slave,
             // chan,(chanIdx + slave * NUM_SLAVE_CHANNEL), (chan + smp *
             // NUM_SLAVE_CHANNEL + slave * slaveDataSamples));
@@ -887,7 +976,8 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
 
     printf("OK\n");
 
-    for (int slave = 0; slave < NUM_SLAVE; slave++) {
+    for (int slave = 0; slave < NUM_SLAVE; slave++)
+    {
       if (slaveTimeout[slave])
         continue;
       for (int slaveCh = 0; slaveCh < NUM_SLAVE_CHANNEL; slaveCh++)

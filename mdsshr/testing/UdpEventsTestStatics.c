@@ -43,9 +43,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  utils   ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#define new_unique_event_name(str)                                             \
+#define new_unique_event_name(str) \
   _new_unique_event_name("%s_%d_%d", str, __LINE__, getpid())
-static char *_new_unique_event_name(const char *prefix, ...) {
+static char *_new_unique_event_name(const char *prefix, ...)
+{
   char buffer[300];
   va_list args;
   va_start(args, prefix);
@@ -56,7 +57,8 @@ static char *_new_unique_event_name(const char *prefix, ...) {
 
 static int astCount = 0;
 void eventAst(void *arg, int len __attribute__((unused)),
-              char *buf __attribute__((unused))) {
+              char *buf __attribute__((unused)))
+{
   printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
          (char *)arg);
   astCount++;
@@ -84,7 +86,8 @@ static void getMulticastAddr(char const *eventName, char *retIp);
 /// fucntion but it doesn't detach the waiting thread, this seems to prevent
 /// memory allocation errors in valgrind.
 ///
-void test_handleMessage() {
+void test_handleMessage()
+{
   BEGIN_TESTING(UdpEvents handleMessage);
 
   char *eventName = new_unique_event_name("test_event");
@@ -155,18 +158,21 @@ void test_handleMessage() {
 //  PUSH AND POP  //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static struct _list_el {
+static struct _list_el
+{
   pthread_t thread;
   int id;
 } list[10];
 
-static void *_push_handler(void *arg) {
+static void *_push_handler(void *arg)
+{
   struct _list_el *li = (struct _list_el *)arg;
   li->id = pushEvent(li->thread, 0);
   return NULL;
 }
 
-void test_pushEvent() {
+void test_pushEvent()
+{
   BEGIN_TESTING(UpdEvents pushEvent);
   printf("pushEvent test\n");
   int i;
@@ -177,14 +183,16 @@ void test_pushEvent() {
   END_TESTING
 }
 
-static void *_pop_handler(void *arg) {
+static void *_pop_handler(void *arg)
+{
   struct _list_el *li = (struct _list_el *)arg;
   EventList *ev = popEvent(li->id);
   free(ev);
   return NULL;
 }
 
-void test_popEvent() {
+void test_popEvent()
+{
   BEGIN_TESTING(UpdEvents popEvent);
   printf("popEvent test\n");
   int i;
@@ -199,26 +207,31 @@ void test_popEvent() {
 //  Suppression  ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static void *_thread_action(void *arg) {
+static void *_thread_action(void *arg)
+{
   (void)arg;
   int status __attribute__((unused));
   status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, 0);
   status = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
-  while (1) {
+  while (1)
+  {
     // do nothing .. //
   }
   return NULL;
 }
 
-void test_pthread_cancel_Suppresstion() {
+void test_pthread_cancel_Suppresstion()
+{
   pthread_t thread[10];
   int i;
-  for (i = 0; i < 10; ++i) {
+  for (i = 0; i < 10; ++i)
+  {
     pthread_create(&thread[i], NULL, _thread_action, NULL);
     pthread_detach(thread[i]);
   }
   usleep(10000);
-  for (i = 0; i < 10; ++i) {
+  for (i = 0; i < 10; ++i)
+  {
     while (pthread_cancel(thread[i]) != 0)
       ;
   }
@@ -229,7 +242,8 @@ void test_pthread_cancel_Suppresstion() {
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   test_handleMessage();
   test_pushEvent();
   test_popEvent();

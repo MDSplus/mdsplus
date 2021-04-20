@@ -27,18 +27,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <treeshr.h>
 
-#define Dummy(name, status)                                                    \
-  int name() {                                                                 \
-    int stat = status;                                                         \
-    if (!(stat & 1))                                                           \
-      printf("%s not currently implemented\n", #name);                         \
-    return stat;                                                               \
+#define Dummy(name, status)                            \
+  int name()                                           \
+  {                                                    \
+    int stat = status;                                 \
+    if (!(stat & 1))                                   \
+      printf("%s not currently implemented\n", #name); \
+    return stat;                                       \
   }
 
-#define DummyArgs(name, ret, args, status)                                     \
-  ret name args {                                                              \
-    printf("%s not currently implemented\n", #name);                           \
-    return status;                                                             \
+#define DummyArgs(name, ret, args, status)           \
+  ret name args                                      \
+  {                                                  \
+    printf("%s not currently implemented\n", #name); \
+    return status;                                   \
   }
 
 Dummy(TreeEstablishRundownEvent, TreeSUCCESS) Dummy(TreeWait, TreeSUCCESS)

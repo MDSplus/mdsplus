@@ -30,11 +30,12 @@
 #define NANOS_PER_SECONDS 1000000000
 
 /** calculate the difference in useconds out of two "struct timespec"s */
-#define DIFF_IN_USEC(begin, end)                                               \
-  ((((end).tv_sec - (begin).tv_sec) * US_PER_SEC) + ((end).tv_nsec / 1000) -   \
+#define DIFF_IN_USEC(begin, end)                                             \
+  ((((end).tv_sec - (begin).tv_sec) * US_PER_SEC) + ((end).tv_nsec / 1000) - \
    ((begin).tv_nsec / 1000))
 
-typedef struct TF {
+typedef struct TF
+{
   TFun fn;
   int loop_start;
   int loop_end;
@@ -43,17 +44,20 @@ typedef struct TF {
   signed char allowed_exit_value;
 } TF;
 
-struct Suite {
+struct Suite
+{
   const char *name;
   List *tclst; /* List of test cases */
 };
 
-typedef struct Fixture {
+typedef struct Fixture
+{
   int ischecked;
   SFun fun;
 } Fixture;
 
-struct TCase {
+struct TCase
+{
   const char *name;
   struct timespec timeout;
   List *tflst; /* list of test functions */
@@ -63,13 +67,15 @@ struct TCase {
   List *ch_tflst;
 };
 
-typedef struct TestStats {
+typedef struct TestStats
+{
   int n_checked;
   int n_failed;
   int n_errors;
 } TestStats;
 
-struct TestResult {
+struct TestResult
+{
   enum test_result rtype; /* Type of result */
   enum ck_result_ctx ctx; /* When the result occurred */
   char *file;             /* File where the test occured */
@@ -85,7 +91,8 @@ TestResult *tr_create(void);
 void tr_reset(TestResult *tr);
 void tr_free(TestResult *tr);
 
-enum cl_event {
+enum cl_event
+{
   CLINITLOG_SR, /* Initialize log file */
   CLENDLOG_SR,  /* Tests are complete */
   CLSTART_SR,   /* Suite runner start */
@@ -99,14 +106,16 @@ enum cl_event {
 typedef void (*LFun)(SRunner *, FILE *, enum print_output, void *,
                      enum cl_event);
 
-typedef struct Log {
+typedef struct Log
+{
   FILE *lfile;
   LFun lfun;
   int close;
   enum print_output mode;
 } Log;
 
-struct SRunner {
+struct SRunner
+{
   List *slst;             /* List of Suite objects */
   TestStats *stats;       /* Run statistics */
   List *resultlst;        /* List of unit test results */

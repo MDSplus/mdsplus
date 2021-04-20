@@ -70,11 +70,13 @@ extern int tree_set_parent_state(PINO_DATABASE *db, NODE *node,
                                  unsigned int state);
 extern void **TreeCtx();
 
-int TreeRenameNode(int nid, char const *newname) {
+int TreeRenameNode(int nid, char const *newname)
+{
   return _TreeRenameNode(*TreeCtx(), nid, newname);
 }
 
-int _TreeRenameNode(void *dbid, int nid, char const *newname) {
+int _TreeRenameNode(void *dbid, int nid, char const *newname)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid_ptr = (NID *)&nid;
   NODE *pptr, *nptr, *newnode, *oldnode_ptr;
@@ -86,14 +88,16 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname) {
   /*****************************************************
     Make sure that the tree is open and OK and editable
   *****************************************************/
-  if (!(IS_OPEN_FOR_EDIT(dblist))) {
+  if (!(IS_OPEN_FOR_EDIT(dblist)))
+  {
     return TreeNOEDIT;
   }
   upcase_name = strdup(newname);
   /**************************
      Convert to upper case.
   ***************************/
-  for (i = 0; i < (int)strlen(newname); i++) {
+  for (i = 0; i < (int)strlen(newname); i++)
+  {
     upcase_name[i] = (char)toupper(newname[i]);
   }
   upcase_name[i] = 0;
@@ -101,7 +105,8 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname) {
     make sure that the new node is not already there
   ***************************************************/
   status = _TreeFindNode(dbid, upcase_name, &i);
-  if (status & 1) {
+  if (status & 1)
+  {
     status = TreeALREADY_THERE;
     goto cleanup;
   }
@@ -119,8 +124,10 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname) {
     off into space.)
   ************************************************/
   oldnode_ptr = nid_to_node(dblist, (nid_ptr));
-  for (nptr = newnode; nptr; nptr = parent_of(dblist, nptr)) {
-    if (nptr == oldnode_ptr) {
+  for (nptr = newnode; nptr; nptr = parent_of(dblist, nptr))
+  {
+    if (nptr == oldnode_ptr)
+    {
       status = TreeINVPATH;
       goto cleanup;
     }
@@ -130,8 +137,10 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname) {
     Make sure that a node with a non-STRUCTURE usage is
     not being renamed into a son.
    ************************************************/
-  if (is_child) {
-    if (oldnode_ptr->usage != TreeUSAGE_STRUCTURE) {
+  if (is_child)
+  {
+    if (oldnode_ptr->usage != TreeUSAGE_STRUCTURE)
+    {
       status = TreeINVPATH;
       goto cleanup;
     }
@@ -141,37 +150,56 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname) {
    OK so far so disconnect the old node
   *************************************************/
   pptr = parent_of(dblist, oldnode_ptr);
-  if (child_of(dblist, pptr) == oldnode_ptr) {
-    if (oldnode_ptr->brother) {
+  if (child_of(dblist, pptr) == oldnode_ptr)
+  {
+    if (oldnode_ptr->brother)
+    {
       pptr->child = node_offset(brother_of(dblist, oldnode_ptr), pptr);
-    } else
+    }
+    else
       pptr->child = 0;
-  } else {
+  }
+  else
+  {
     for (nptr = child_of(dblist, pptr);
          nptr && (brother_of(dblist, nptr) != oldnode_ptr);
          nptr = brother_of(dblist, nptr))
       ;
-    if (nptr) {
-      if (oldnode_ptr->brother) {
+    if (nptr)
+    {
+      if (oldnode_ptr->brother)
+      {
         nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
-      } else
+      }
+      else
         nptr->brother = 0;
-    } else if (member_of(pptr) == oldnode_ptr) {
-      if (oldnode_ptr->brother) {
+    }
+    else if (member_of(pptr) == oldnode_ptr)
+    {
+      if (oldnode_ptr->brother)
+      {
         pptr->member = node_offset(brother_of(dblist, oldnode_ptr), pptr);
-      } else
+      }
+      else
         pptr->member = 0;
-    } else {
+    }
+    else
+    {
       for (nptr = member_of(pptr);
            nptr && (brother_of(dblist, nptr) != oldnode_ptr);
            nptr = brother_of(dblist, nptr))
         ;
-      if (nptr) {
-        if (oldnode_ptr->brother) {
+      if (nptr)
+      {
+        if (oldnode_ptr->brother)
+        {
           nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
-        } else
+        }
+        else
           nptr->brother = 0;
-      } else {
+      }
+      else
+      {
         status = TreeINVTREE;
         goto cleanup;
       }
@@ -207,7 +235,8 @@ cleanup:
 }
 
 static int FixParentState(PINO_DATABASE *dblist, NODE *parent_ptr,
-                          NODE *child_ptr) {
+                          NODE *child_ptr)
+{
   int status = 1;
   NID parent_nid;
   NID child_nid;
@@ -229,7 +258,8 @@ static int FixParentState(PINO_DATABASE *dblist, NODE *parent_ptr,
   ****************************************************/
   parent_state = _TreeIsOn(dblist, *(int *)&parent_nid) & 1;
   status = _TreeGetNci(dblist, *(int *)&child_nid, child_itm_list);
-  if (status & 1) {
+  if (status & 1)
+  {
     child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
     if (child_parent_state != parent_state)
       status = tree_set_parent_state(dblist, child_ptr, !parent_state);

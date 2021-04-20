@@ -76,14 +76,16 @@ void XmdsManageWindow(Widget w);
 #include <Xm/Xm.h>
 #include <xmdsshr.h>
 
-static Widget FindShellChild(Widget w) {
+static Widget FindShellChild(Widget w)
+{
   Widget sc;
   for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc))
     ;
   return sc;
 }
 
-void XmdsRaiseWindow(Widget w) {
+void XmdsRaiseWindow(Widget w)
+{
   Widget shell;
   for (shell = w; shell && !XtIsShell(shell); shell = XtParent(shell))
     ;
@@ -91,7 +93,8 @@ void XmdsRaiseWindow(Widget w) {
     XtPopup(shell, XtGrabNone);
 }
 
-void XmdsManageWindow(Widget w) {
+void XmdsManageWindow(Widget w)
+{
   if (!XtIsManaged(w))
     XtManageChild(w);
   else
@@ -111,18 +114,21 @@ extern void XmdsResetAllXds(Widget w);
 extern Boolean XmdsXdsAreValid(Widget w);
 extern Boolean XmdsApplyAllXds(Widget w);
 
-void XmdsResetCallback(Widget w) {
+void XmdsResetCallback(Widget w)
+{
   XmdsResetAllXds(FindShellChild(w));
   return;
 }
 
-void XmdsOkCallback(Widget w) {
+void XmdsOkCallback(Widget w)
+{
   int XmdsApplyCallback(Widget w);
   if (XmdsApplyCallback(w))
     XtDestroyWidget(FindShellChild(w));
 }
 
-int XmdsApplyCallback(Widget w) {
+int XmdsApplyCallback(Widget w)
+{
   int status;
   Widget db = FindShellChild(w);
   if ((status = XmdsXdsAreValid(db)))
@@ -131,4 +137,7 @@ int XmdsApplyCallback(Widget w) {
 }
 #endif /* _NO_XDS */
 
-void XmdsCancelCallback(Widget w) { XtDestroyWidget(FindShellChild(w)); }
+void XmdsCancelCallback(Widget w)
+{
+  XtDestroyWidget(FindShellChild(w));
+}

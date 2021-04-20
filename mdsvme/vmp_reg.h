@@ -6,7 +6,8 @@
  * VMP_MAP_PIO_ADDR and VMP_GET_PIO_INFO.
  */
 
-struct pio_info {
+struct pio_info
+{
   unsigned int pio_addr;   /* VME address to map outbound to */
   unsigned int pio_size;   /* Size to map outbound to */
   unsigned int pio_am;     /* Address modifier for pio_addr */
@@ -14,7 +15,8 @@ struct pio_info {
   unsigned int intcount;
 };
 
-struct vmpioctl {
+struct vmpioctl
+{
   unsigned int vmp_addr;   /* VMEbus address  */
   unsigned int vmp_size;   /* Size VMEbus Window */
   unsigned int vmp_am;     /* Address modifier */
@@ -23,7 +25,8 @@ struct vmpioctl {
   unsigned int vmp_return; /* Return value */
 };
 
-struct vmpintr_info {
+struct vmpintr_info
+{
   int priority; /* Interrupt priority */
   int vector;   /* Interrupt vector */
 };

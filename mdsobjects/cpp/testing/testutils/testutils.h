@@ -6,11 +6,14 @@
 #include <limits>
 #include <stdio.h>
 
-namespace testing {
+namespace testing
+{
 
-template <typename T> bool areSame(T a, T b) {
-  return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
-}
+  template <typename T>
+  bool areSame(T a, T b)
+  {
+    return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
+  }
 
 } // namespace testing
 

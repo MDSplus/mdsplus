@@ -71,7 +71,8 @@
 
 /* Callback structures */
 
-typedef struct {
+typedef struct
+{
   int reason;
   XEvent *event;
   int idx;
@@ -85,7 +86,8 @@ typedef struct {
   Boolean *selected;
 } XmdsWavedrawValueCBStruct;
 
-typedef struct {
+typedef struct
+{
   int reason;
   XEvent *event;
   int count;

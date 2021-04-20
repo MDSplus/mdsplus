@@ -72,7 +72,8 @@ static int shot;
   trouble reading in files with an attribute called _name in them.  Hence the
   descision to put the '_' at the end.
 */
-static char *MemberMangle(char *name) {
+static char *MemberMangle(char *name)
+{
   static char ans[MAX_TREENAME + 2];
   ans[0] = 0;
   strcpy(ans, name);
@@ -89,7 +90,8 @@ static char *MemberMangle(char *name) {
   case of MDSplus complex data structures we are adding a group, so a '.' is
   more appropriate.
 */
-static char *ChildMangle(char *name) {
+static char *ChildMangle(char *name)
+{
   static char ans[MAX_TREENAME + 2];
   ans[0] = '.';
   ans[1] = 0;
@@ -107,19 +109,22 @@ static char *ChildMangle(char *name) {
 
   Will return any integer answer, and zero for all other cases.
 */
-static int GetNidNCI(int nid, char *expr) {
+static int GetNidNCI(int nid, char *expr)
+{
   int status;
   int ans = 0;
   static EMPTYXD(ans_xd);
   DESCRIPTOR_NID(nid_dsc, &nid);
   DESCRIPTOR_FROM_CSTRING(getnci, expr);
   status = TdiExecute(&getnci, &nid_dsc, &ans_xd MDS_END_ARG);
-  if (status & 1) {
+  if (status & 1)
+  {
     struct descriptor *d_ptr;
     for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
          d_ptr = (struct descriptor *)d_ptr->pointer)
       ;
-    switch (d_ptr->dtype) {
+    switch (d_ptr->dtype)
+    {
     case DTYPE_NID:
     case DTYPE_L:
       ans = *(int *)d_ptr->pointer;
@@ -143,7 +148,8 @@ static int GetNidNCI(int nid, char *expr) {
       ans = 0;
       break;
     }
-  } else
+  }
+  else
     ans = 0;
   return (ans);
 }
@@ -153,11 +159,13 @@ static int GetNidNCI(int nid, char *expr) {
 */
 static int FirstChild(int nid) { return (GetNidNCI(nid, "GETNCI($,'child')")); }
 
-static int FirstMember(int nid) {
+static int FirstMember(int nid)
+{
   return (GetNidNCI(nid, "GETNCI($,'member')"));
 }
 
-static int NextSibling(int nid) {
+static int NextSibling(int nid)
+{
   return (GetNidNCI(nid, "GETNCI($,'brother')"));
 }
 
@@ -183,55 +191,70 @@ static int GetNidInt(int nid, char *expr) { return (GetNidNCI(nid, expr)); }
         String answer from expression or "" if error or non string
         type.
 */
-static char *GetNidString(int nid, char *expr) {
+static char *GetNidString(int nid, char *expr)
+{
   DESCRIPTOR_NID(nid_dsc, &nid);
   DESCRIPTOR_FROM_CSTRING(expr_d, expr);
   static EMPTYXD(ans_xd);
   int status;
   status = TdiExecute(&expr_d, &nid_dsc, &ans_xd MDS_END_ARG);
-  if (status & 1) {
+  if (status & 1)
+  {
     struct descriptor *d_ptr;
     for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
          d_ptr = (struct descriptor *)d_ptr->pointer)
       ;
-    if (d_ptr->dtype == DTYPE_T) {
+    if (d_ptr->dtype == DTYPE_T)
+    {
       d_ptr->pointer[d_ptr->length] = 0;
       return (char *)d_ptr->pointer;
-    } else
+    }
+    else
       return ("");
-  } else
+  }
+  else
     return ("");
 }
 
-static int has_descendants(int nid) {
+static int has_descendants(int nid)
+{
   return (GetNidInt(nid, "GETNCI($, 'NUMBER_OF_CHILDREN')") +
               GetNidInt(nid, "GETNCI($, 'NUMBER_OF_MEMBERS')") !=
           0);
 }
 
-static int is_child(int nid) {
+static int is_child(int nid)
+{
   int ans;
-  if (nid == 0) {
+  if (nid == 0)
+  {
     ans = 1;
-  } else {
+  }
+  else
+  {
     ans = GetNidInt(nid, "GETNCI($, 'is_child')");
   }
   return ans;
 }
 
-void ExitOnMDSError(int status, const char *msg) {
-  if (!(status & 1)) {
+void ExitOnMDSError(int status, const char *msg)
+{
+  if (!(status & 1))
+  {
     fprintf(stderr, "MDS Error\n%s\n%s\n", msg, MdsGetMsg(status));
     exit(0);
   }
 }
 
-static void usage(const char *cmd) {
+static void usage(const char *cmd)
+{
   fprintf(stderr, "Usage %s tree shot\n", cmd);
 }
 
-static void parse_cmdline(int argc, const char *argv[]) {
-  if (argc < 3) {
+static void parse_cmdline(int argc, const char *argv[])
+{
+  if (argc < 3)
+  {
     usage(argv[0]);
     exit(0);
   }
@@ -239,21 +262,25 @@ static void parse_cmdline(int argc, const char *argv[]) {
   shot = strtol(argv[2], NULL, 0);
 }
 
-static hid_t CreateHDF5(char *tree, int shot) {
+static hid_t CreateHDF5(char *tree, int shot)
+{
 
   hid_t file_id;
   char filename[MAX_FILENAME];
   sprintf(filename, "%s_%d.h5", tree, shot);
   file_id = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-  if (file_id < 0) {
+  if (file_id < 0)
+  {
     fprintf(stderr, "error creating HDF5 file %s\n", filename);
     exit(0);
   }
   return (file_id);
 }
 
-hid_t MdsType2HDF5Type(unsigned char type) {
-  switch (type) {
+hid_t MdsType2HDF5Type(unsigned char type)
+{
+  switch (type)
+  {
   case DTYPE_FS:
     return (H5T_NATIVE_FLOAT);
   case DTYPE_FT:
@@ -276,24 +303,29 @@ hid_t MdsType2HDF5Type(unsigned char type) {
   return (0);
 }
 
-static void PutNumeric(hid_t parent, char *name, struct descriptor *dsc) {
+static void PutNumeric(hid_t parent, char *name, struct descriptor *dsc)
+{
   //  herr_t status;
   hid_t type = MdsType2HDF5Type(dsc->dtype);
-  if (type != 0) {
+  if (type != 0)
+  {
     hid_t ds_id = H5Screate(H5S_SCALAR);
     hid_t a_id = H5Acreate(parent, name, MdsType2HDF5Type(dsc->dtype), ds_id,
                            H5P_DEFAULT);
-    if (a_id < 0) {
+    if (a_id < 0)
+    {
       char *new_name = MemberMangle(name);
       a_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id,
                        H5P_DEFAULT);
     }
-    if (a_id > 0) {
+    if (a_id > 0)
+    {
       //      status = H5Awrite(a_id, MdsType2HDF5Type(dsc->dtype),
       //      dsc->pointer);
       H5Awrite(a_id, MdsType2HDF5Type(dsc->dtype), dsc->pointer);
       H5Aclose(a_id);
-    } else
+    }
+    else
       fprintf(stderr, "could not create attribute to store scalar in %s\n",
               name);
   }
@@ -301,7 +333,8 @@ static void PutNumeric(hid_t parent, char *name, struct descriptor *dsc) {
 
 typedef ARRAY_COEFF(char, MAX_DIMS) ARRAY_AC;
 
-static void PutArray(hid_t parent, char *name, struct descriptor *dsc) {
+static void PutArray(hid_t parent, char *name, struct descriptor *dsc)
+{
   int j;
   //  herr_t status;
   struct descriptor_a *adsc = (struct descriptor_a *)dsc;
@@ -311,54 +344,69 @@ static void PutArray(hid_t parent, char *name, struct descriptor *dsc) {
   int rank = adsc->dimct;
   hsize_t dim[MAX_DIMS];
   hid_t dtype = MdsType2HDF5Type(dsc->dtype);
-  if (dtype > 0) {
-    if (adsc->aflags.coeff) {
-      for (j = 0; j < rank; j++) {
+  if (dtype > 0)
+  {
+    if (adsc->aflags.coeff)
+    {
+      for (j = 0; j < rank; j++)
+      {
         dim[j] = ac_dsc->m[adsc->dimct - j - 1];
       }
-    } else {
+    }
+    else
+    {
       rank = 1;
       dim[0] = adsc->arsize / adsc->length;
     }
     space_id = H5Screate_simple(rank, dim, NULL);
     ds_id = H5Dcreate(parent, name, dtype, space_id, H5P_DEFAULT);
-    if (ds_id < 0) {
+    if (ds_id < 0)
+    {
       char *new_name = MemberMangle(name);
       ds_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id,
                         H5P_DEFAULT);
     }
-    if (ds_id > 0) {
+    if (ds_id > 0)
+    {
       //      status = H5Dwrite(ds_id, dtype, H5S_ALL, H5S_ALL, H5P_DEFAULT,
       //      dsc->pointer);
       H5Dwrite(ds_id, dtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dsc->pointer);
       H5Dclose(ds_id);
       H5Sclose(space_id);
-    } else
+    }
+    else
       fprintf(stderr, "could not create atribute to store array in %s\n", name);
   }
 }
 
-static void PutScalar(hid_t parent, char *name, struct descriptor *dsc) {
-  switch (dsc->dtype) {
+static void PutScalar(hid_t parent, char *name, struct descriptor *dsc)
+{
+  switch (dsc->dtype)
+  {
   case DTYPE_T:
-    if (dsc->length > 0) {
+    if (dsc->length > 0)
+    {
       //      herr_t status;
       hid_t ds_id = H5Screate(H5S_SCALAR);
       hsize_t size = dsc->length;
       hid_t type = H5Tcopy(H5T_C_S1);
       H5Tset_size(type, size);
       hid_t a_id = H5Acreate(parent, name, type, ds_id, H5P_DEFAULT);
-      if (a_id < 0) {
+      if (a_id < 0)
+      {
         char *new_name = MemberMangle(name);
         a_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id,
                          H5P_DEFAULT);
       }
-      if (a_id > 0) {
+      if (a_id > 0)
+      {
         //	status = H5Awrite(a_id, type, dsc->pointer);
         // status = H5Aclose(a_id);
         H5Awrite(a_id, type, dsc->pointer);
         H5Aclose(a_id);
-      } else {
+      }
+      else
+      {
         fprintf(stderr, "could not create attribute called %s\n", name);
       }
       //      status = H5Sclose(ds_id);
@@ -375,7 +423,8 @@ static void PutScalar(hid_t parent, char *name, struct descriptor *dsc) {
 
 typedef RECORD(MAX_DESCRS) RDSC;
 
-static void WriteData(hid_t parent, char *name, struct descriptor *dsc) {
+static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
+{
   struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
   int status;
 
@@ -392,7 +441,8 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc) {
   for (d_ptr = (struct descriptor *)xd; d_ptr->dtype == DTYPE_DSC;
        d_ptr = (struct descriptor *)d_ptr->pointer)
     ;
-  switch (d_ptr->class) {
+  switch (d_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     PutScalar(parent, name, d_ptr);
@@ -400,12 +450,15 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc) {
   case CLASS_A:
     PutArray(parent, name, d_ptr);
     break;
-  case CLASS_CA: {
+  case CLASS_CA:
+  {
     static EMPTYXD(xd3);
     status = TdiEvaluate(d_ptr, &xd3 MDS_END_ARG);
-    if (status & 1) {
+    if (status & 1)
+    {
       status = TdiData((struct descriptor *)&xd3, &xd3 MDS_END_ARG);
-      if (status & 1) {
+      if (status & 1)
+      {
         for (d_ptr = (struct descriptor *)&xd3; d_ptr->dtype == DTYPE_DSC;
              d_ptr = (struct descriptor *)d_ptr->pointer)
           ;
@@ -413,48 +466,61 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc) {
         PutArray(parent, name, d_ptr);
       }
     }
-  } break;
-  case CLASS_R: {
+  }
+  break;
+  case CLASS_R:
+  {
     RDSC *r_ptr = (RDSC *)d_ptr;
-    switch (d_ptr->dtype) {
-    case DTYPE_SIGNAL: {
+    switch (d_ptr->dtype)
+    {
+    case DTYPE_SIGNAL:
+    {
       int i;
       hid_t g_id;
       g_id = H5Gcreate(parent, name, 0);
-      if (g_id < 0) {
+      if (g_id < 0)
+      {
         char *new_name = ChildMangle(name);
         g_id = H5Gcreate(parent, new_name, 0);
       }
-      if (g_id > 0) {
+      if (g_id > 0)
+      {
         WriteData(g_id, "data", r_ptr->dscptrs[0]);
         WriteData(g_id, "raw", r_ptr->dscptrs[1]);
-        for (i = 2; i < r_ptr->ndesc; i++) {
+        for (i = 2; i < r_ptr->ndesc; i++)
+        {
           char name[8];
           sprintf(name, "dim%1.1d", i - 2);
           WriteData(g_id, name, r_ptr->dscptrs[i]);
         }
-      } else
+      }
+      else
         fprintf(stderr, "could not create group for signal components of %s \n",
                 name);
       break;
     }
-    case DTYPE_WITH_UNITS: {
+    case DTYPE_WITH_UNITS:
+    {
       hid_t g_id;
       g_id = H5Gcreate(parent, name, 0);
-      if (g_id < 0) {
+      if (g_id < 0)
+      {
         char *new_name = ChildMangle(name);
         g_id = H5Gcreate(parent, new_name, 0);
       }
-      if (g_id > 0) {
+      if (g_id > 0)
+      {
         WriteData(g_id, "data", r_ptr->dscptrs[0]);
         WriteData(g_id, "units", r_ptr->dscptrs[1]);
-      } else
+      }
+      else
         fprintf(stderr,
                 "could not create group for with_units components of %s \n",
                 name);
       break;
     }
-    default: {
+    default:
+    {
       //       static EMPTYXD(xd2);
       //      status = TdiData(d_ptr, &xd2);
       //      if (status & 1)
@@ -484,12 +550,14 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc) {
   recursively expanded into the HDF5 file as small groups.  (Signals and
   With_units)
 */
-static void WriteDataNID(hid_t parent, char *name, int nid) {
+static void WriteDataNID(hid_t parent, char *name, int nid)
+{
   static EMPTYXD(xd);
   DESCRIPTOR_NID(nid_dsc, &nid);
   int status;
   status = TdiEvaluate(&nid_dsc, &xd MDS_END_ARG);
-  if (status & 1) {
+  if (status & 1)
+  {
     WriteData(parent, name, (struct descriptor *)&xd);
   }
 }
@@ -511,7 +579,8 @@ static void WriteDataNID(hid_t parent, char *name, int nid) {
   the end, this may prove akward, and could be replaced by a name mangling which
   is only done when needed.
 */
-static void AddBranch(int nid, hid_t parent_id) {
+static void AddBranch(int nid, hid_t parent_id)
+{
   int mem_nid;
   int child_nid;
   hid_t g_id = 0;
@@ -526,42 +595,53 @@ static void AddBranch(int nid, hid_t parent_id) {
   _is_child = is_child(nid);
   _has_descendants = has_descendants(nid);
 
-  if (_is_child || _has_descendants) {
+  if (_is_child || _has_descendants)
+  {
     g_id = H5Gcreate(parent_id, name, 0);
     /* if it fails assume it was because
        the name was already taken.  Since the members are
        added first, tack a '.' in the front.
      */
-    if (g_id < 0) {
+    if (g_id < 0)
+    {
       char *child_name = ChildMangle(name);
       g_id = H5Gcreate(parent_id, child_name, 0);
     }
-    if (g_id >= 0) {
+    if (g_id >= 0)
+    {
       for (mem_nid = FirstMember(nid); mem_nid;
-           mem_nid = NextSibling(mem_nid)) {
+           mem_nid = NextSibling(mem_nid))
+      {
         AddBranch(mem_nid, g_id);
       }
       for (child_nid = FirstChild(nid); child_nid;
-           child_nid = NextSibling(child_nid)) {
+           child_nid = NextSibling(child_nid))
+      {
         AddBranch(child_nid, g_id);
       }
-    } else {
+    }
+    else
+    {
       fprintf(stderr, "Error adding HDF5 Group for %s\n", name);
     }
   }
 
-  if (!_is_child) {
-    if (_has_descendants) {
+  if (!_is_child)
+  {
+    if (_has_descendants)
+    {
       char *member_name = MemberMangle(name);
       WriteDataNID(parent_id, member_name, nid);
-    } else
+    }
+    else
       WriteDataNID(parent_id, name, nid);
   }
   if (_is_child || _has_descendants)
     H5Gclose(g_id);
 }
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char *argv[])
+{
   hid_t file_id;
   parse_cmdline(argc, argv);
   ExitOnMDSError(TreeOpen(tree, shot, 0), "Error opening tree");

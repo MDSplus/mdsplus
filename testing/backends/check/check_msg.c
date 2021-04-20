@@ -89,12 +89,15 @@ static void teardown_pipe(void);
 static TestResult *construct_test_result(RcvMsg *rmsg, int waserror);
 static void tr_set_loc_by_ctx(TestResult *tr, enum ck_result_ctx ctx,
                               RcvMsg *rmsg);
-static FILE *get_pipe(void) {
-  if (send_file2 != 0) {
+static FILE *get_pipe(void)
+{
+  if (send_file2 != 0)
+  {
     return send_file2;
   }
 
-  if (send_file1 != 0) {
+  if (send_file1 != 0)
+  {
     return send_file1;
   }
 
@@ -103,7 +106,8 @@ static FILE *get_pipe(void) {
   return NULL;
 }
 
-void send_failure_info(const char *msg, int rtype) {
+void send_failure_info(const char *msg, int rtype)
+{
   FailMsg fmsg;
 
   fmsg.msg = strdup(msg);
@@ -112,14 +116,16 @@ void send_failure_info(const char *msg, int rtype) {
   free(fmsg.msg);
 }
 
-void send_duration_info(int duration) {
+void send_duration_info(int duration)
+{
   DurationMsg dmsg;
 
   dmsg.duration = duration;
   ppack(get_pipe(), CK_MSG_DURATION, (CheckMsg *)&dmsg);
 }
 
-void send_loc_info(const char *file, int line) {
+void send_loc_info(const char *file, int line)
+{
   LocMsg lmsg;
 
   lmsg.file = strdup(file);
@@ -128,27 +134,31 @@ void send_loc_info(const char *file, int line) {
   free(lmsg.file);
 }
 
-void send_ctx_info(enum ck_result_ctx ctx) {
+void send_ctx_info(enum ck_result_ctx ctx)
+{
   CtxMsg cmsg;
 
   cmsg.ctx = ctx;
   ppack(get_pipe(), CK_MSG_CTX, (CheckMsg *)&cmsg);
 }
 
-TestResult *receive_test_result(int waserror) {
+TestResult *receive_test_result(int waserror)
+{
   FILE *fp;
   RcvMsg *rmsg;
   TestResult *result;
 
   fp = get_pipe();
-  if (fp == NULL) {
+  if (fp == NULL)
+  {
     eprintf("Error in call to get_pipe", __FILE__, __LINE__ - 2);
   }
 
   rewind(fp);
   rmsg = punpack(fp);
 
-  if (rmsg == NULL) {
+  if (rmsg == NULL)
+  {
     eprintf("Error in call to punpack", __FILE__, __LINE__ - 4);
   }
 
@@ -161,13 +171,17 @@ TestResult *receive_test_result(int waserror) {
 }
 
 static void tr_set_loc_by_ctx(TestResult *tr, enum ck_result_ctx ctx,
-                              RcvMsg *rmsg) {
-  if (ctx == CK_CTX_TEST) {
+                              RcvMsg *rmsg)
+{
+  if (ctx == CK_CTX_TEST)
+  {
     tr->file = rmsg->test_file;
     tr->line = rmsg->test_line;
     rmsg->test_file = NULL;
     rmsg->test_line = -1;
-  } else {
+  }
+  else
+  {
     tr->file = rmsg->fixture_file;
     tr->line = rmsg->fixture_line;
     rmsg->fixture_file = NULL;
@@ -175,7 +189,8 @@ static void tr_set_loc_by_ctx(TestResult *tr, enum ck_result_ctx ctx,
   }
 }
 
-static TestResult *construct_test_result(RcvMsg *rmsg, int waserror) {
+static TestResult *construct_test_result(RcvMsg *rmsg, int waserror)
+{
   TestResult *tr;
 
   if (rmsg == NULL)
@@ -183,23 +198,31 @@ static TestResult *construct_test_result(RcvMsg *rmsg, int waserror) {
 
   tr = tr_create();
 
-  if (rmsg->msg != NULL || waserror) {
-    if (rmsg->failctx != CK_CTX_INVALID) {
+  if (rmsg->msg != NULL || waserror)
+  {
+    if (rmsg->failctx != CK_CTX_INVALID)
+    {
       tr->ctx = rmsg->failctx;
       tr->rtype = rmsg->rtype;
-    } else {
+    }
+    else
+    {
       tr->ctx = rmsg->lastctx;
     }
 
     tr->msg = rmsg->msg;
     rmsg->msg = NULL;
     tr_set_loc_by_ctx(tr, tr->ctx, rmsg);
-  } else if (rmsg->lastctx == CK_CTX_SETUP) {
+  }
+  else if (rmsg->lastctx == CK_CTX_SETUP)
+  {
     tr->ctx = CK_CTX_SETUP;
     tr->msg = NULL;
     tr->rtype = CK_PASS;
     tr_set_loc_by_ctx(tr, CK_CTX_SETUP, rmsg);
-  } else {
+  }
+  else
+  {
     tr->ctx = CK_CTX_TEST;
     tr->msg = NULL;
     tr->rtype = CK_PASS;
@@ -223,7 +246,8 @@ void teardown_messaging(void) { teardown_pipe(); }
  * expecting the caller to both delete the file and
  * free the 'name' field after the file is closed.
  */
-FILE *open_tmp_file(char **name) {
+FILE *open_tmp_file(char **name)
+{
   FILE *file = NULL;
 
   *name = NULL;
@@ -239,7 +263,8 @@ FILE *open_tmp_file(char **name) {
   /* and finally, the "b" from "w+b" is ignored on OS X, not sure about WIN32 */
 
   file = tmpfile();
-  if (file == NULL) {
+  if (file == NULL)
+  {
     char *tmp = getenv("TEMP");
     char *tmp_file = tempnam(tmp, "check_");
 
@@ -262,15 +287,18 @@ FILE *open_tmp_file(char **name) {
 #else
   int fd = -1;
   const char *tmp_dir = getenv("TEMP");
-  if (!tmp_dir) {
+  if (!tmp_dir)
+  {
     tmp_dir = ".";
   }
 
   *name = ck_strdup_printf("%s/check_XXXXXX", tmp_dir);
 
-  if (-1 < (fd = mkstemp(*name))) {
+  if (-1 < (fd = mkstemp(*name)))
+  {
     file = fdopen(fd, "w+b");
-    if (0 == unlink(*name) || NULL == file) {
+    if (0 == unlink(*name) || NULL == file)
+    {
       free(*name);
       *name = NULL;
     }
@@ -279,36 +307,47 @@ FILE *open_tmp_file(char **name) {
   return file;
 }
 
-static void setup_pipe(void) {
-  if (send_file1 == NULL) {
+static void setup_pipe(void)
+{
+  if (send_file1 == NULL)
+  {
     send_file1 = open_tmp_file(&send_file1_name);
     return;
   }
-  if (send_file2 == NULL) {
+  if (send_file2 == NULL)
+  {
     send_file2 = open_tmp_file(&send_file2_name);
     return;
   }
   eprintf("Only one nesting of suite runs supported", __FILE__, __LINE__);
 }
 
-static void teardown_pipe(void) {
-  if (send_file2 != 0) {
+static void teardown_pipe(void)
+{
+  if (send_file2 != 0)
+  {
     fclose(send_file2);
     send_file2 = 0;
-    if (send_file2_name != NULL) {
+    if (send_file2_name != NULL)
+    {
       unlink(send_file2_name);
       free(send_file2_name);
       send_file2_name = NULL;
     }
-  } else if (send_file1 != 0) {
+  }
+  else if (send_file1 != 0)
+  {
     fclose(send_file1);
     send_file1 = 0;
-    if (send_file1_name != NULL) {
+    if (send_file1_name != NULL)
+    {
       unlink(send_file1_name);
       free(send_file1_name);
       send_file1_name = NULL;
     }
-  } else {
+  }
+  else
+  {
     eprintf("No messaging setup", __FILE__, __LINE__);
   }
 }

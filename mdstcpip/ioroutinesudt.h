@@ -1,18 +1,20 @@
 #ifdef _WIN32
 #define close closesocket
-#define PERROR(...)                                                            \
-  do {                                                                         \
-    errno = WSAGetLastError();                                                 \
-    fprintf(stderr, __VA_ARGS__);                                              \
-    fprintf(stderr, ": ");                                                     \
-    perror("");                                                                \
+#define PERROR(...)               \
+  do                              \
+  {                               \
+    errno = WSAGetLastError();    \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, ": ");        \
+    perror("");                   \
   } while (0)
 #undef INVALID_SOCKET
 #else
-#define PERROR(...)                                                            \
-  do {                                                                         \
-    fprintf(stderr, __VA_ARGS__);                                              \
-    fprintf(stderr, ": %s\n", udt_getlasterror_desc());                        \
+#define PERROR(...)                                     \
+  do                                                    \
+  {                                                     \
+    fprintf(stderr, __VA_ARGS__);                       \
+    fprintf(stderr, ": %s\n", udt_getlasterror_desc()); \
   } while (0)
 #endif
 #undef SOCKET
@@ -31,24 +33,28 @@ int server_epoll = -1;
 ////////////////////////////////////////////////////////////////////////////////
 
 static int io_connect(Connection *c, char *protocol __attribute__((unused)),
-                      char *host) {
+                      char *host)
+{
   struct SOCKADDR_IN sin;
   UDTSOCKET sock;
   if (IS_OK(GetHostAndPort(host, &sin)))
+  {
+    sock = udt_socket(PF_T, SOCK_STREAM, 0);
+    if (!sock)
     {
-      sock = udt_socket(PF_T, SOCK_STREAM, 0);
-      if (!sock) {
-        perror("Error in (udt) connect");
-        return C_ERROR;
-      }
-      if (udt_connect(sock, (struct sockaddr *)&sin, sizeof(sin))) {
-        PERROR("Error in connect to service");
-        return C_ERROR;
-      }
-      SetConnectionInfoC(c, PROT, sock, NULL, 0);
-      return C_OK;
+      perror("Error in (udt) connect");
+      return C_ERROR;
     }
-  else {
+    if (udt_connect(sock, (struct sockaddr *)&sin, sizeof(sin)))
+    {
+      PERROR("Error in connect to service");
+      return C_ERROR;
+    }
+    SetConnectionInfoC(c, PROT, sock, NULL, 0);
+    return C_OK;
+  }
+  else
+  {
     fprintf(stderr, "Connect failed to host: %s\n", host);
     fflush(stderr);
     return C_ERROR;
@@ -59,7 +65,8 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
 //  LISTEN  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_listen(int argc, char **argv) {
+static int io_listen(int argc, char **argv)
+{
   Options options[] = {{"p", "port", 1, 0, 0},
 #ifdef _WIN32
                        {"S", "sockethandle", 1, 0, 0},
@@ -75,7 +82,8 @@ static int io_listen(int argc, char **argv) {
     SetPortname("mdsip");
   INITIALIZESOCKETS;
   server_epoll = udt_epoll_create();
-  if (GetMulti()) {
+  if (GetMulti())
+  {
     //////////////////////////////////////////////////////////////////////////
     // MULTIPLE CONNECTION MODE              /////////////////////////////////
     // multiple connections with own context /////////////////////////////////
@@ -86,9 +94,10 @@ static int io_listen(int argc, char **argv) {
     int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
     int gai_stat;
     static const struct addrinfo hints = {AI_PASSIVE, AF_T, SOCK_STREAM, 0,
-                                          0,          0,    0,           0};
+                                          0, 0, 0, 0};
     gai_stat = getaddrinfo(NULL, GetPortname(), &hints, &result);
-    if (gai_stat) {
+    if (gai_stat)
+    {
       fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(gai_stat));
       exit(EXIT_FAILURE);
     }
@@ -101,7 +110,8 @@ static int io_listen(int argc, char **argv) {
 #else
       exit(EX_NOPERM);
 #endif
-    for (rp = result; rp != NULL; rp = rp->ai_next) {
+    for (rp = result; rp != NULL; rp = rp->ai_next)
+    {
       ssock = udt_socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
       if (ssock == INVALID_SOCKET)
         continue;
@@ -111,19 +121,24 @@ static int io_listen(int argc, char **argv) {
     }
     udt_epoll_add_usock(server_epoll, ssock, &events);
     memset(&sin, 0, sizeof(sin));
-    if (udt_listen(ssock, 128) < 0) {
+    if (udt_listen(ssock, 128) < 0)
+    {
       fprintf(stderr, "Error from udt_listen: %s\n", udt_getlasterror_desc());
       exit(EXIT_FAILURE);
     }
-    for (;;) {
+    for (;;)
+    {
       int i;
       int readfds_num = 1024;
       if (udt_epoll_wait2(server_epoll, readfds, &readfds_num, NULL, NULL, 5000,
-                          NULL, NULL, NULL, NULL)) {
+                          NULL, NULL, NULL, NULL))
+      {
         Client *c;
         LockAsts();
-        for (;;) {
-          for (c = ClientList; c; c = c->next) {
+        for (;;)
+        {
+          for (c = ClientList; c; c = c->next)
+          {
             int c_epoll = udt_epoll_create();
             UDTSOCKET readfds[1];
             UDTSOCKET writefds[1];
@@ -133,7 +148,8 @@ static int io_listen(int argc, char **argv) {
             int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
                                       &writenum, 0, NULL, NULL, NULL, NULL);
             udt_epoll_release(c_epoll);
-            if (err) {
+            if (err)
+            {
               CloseConnection(c->id);
               goto next;
               break;
@@ -144,9 +160,13 @@ static int io_listen(int argc, char **argv) {
           continue;
         }
         UnlockAsts();
-      } else {
-        for (i = 0; readfds_num != 1024 && i < readfds_num; i++) {
-          if (readfds[i] == ssock) {
+      }
+      else
+      {
+        for (i = 0; readfds_num != 1024 && i < readfds_num; i++)
+        {
+          if (readfds[i] == ssock)
+          {
             // int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
             int len = sizeof(sin);
             int id = -1;
@@ -156,22 +176,26 @@ static int io_listen(int argc, char **argv) {
             status =
                 AcceptConnection(PROT, PROT, sock, NULL, 0, &id, &username);
             if (STATUS_OK)
-              {
-                Client *client =
-                    memset(malloc(sizeof(Client)), 0, sizeof(Client));
-                client->id = id;
-                client->sock = sock;
-                client->next = ClientList;
-                client->username = username;
-                client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
-                client->iphost = getHostInfo(sock, &client->host);
-                ClientList = client;
-                udt_epoll_add_usock(server_epoll, sock, &events);
-              }
-          } else {
+            {
+              Client *client =
+                  memset(malloc(sizeof(Client)), 0, sizeof(Client));
+              client->id = id;
+              client->sock = sock;
+              client->next = ClientList;
+              client->username = username;
+              client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
+              client->iphost = getHostInfo(sock, &client->host);
+              ClientList = client;
+              udt_epoll_add_usock(server_epoll, sock, &events);
+            }
+          }
+          else
+          {
             Client *c;
-            for (c = ClientList; c;) {
-              if (c->sock == readfds[i]) {
+            for (c = ClientList; c;)
+            {
+              if (c->sock == readfds[i])
+              {
                 Client *c_chk;
                 int c_epoll = udt_epoll_create();
                 UDTSOCKET readfds[1];
@@ -182,7 +206,8 @@ static int io_listen(int argc, char **argv) {
                 int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
                                           &writenum, 0, NULL, NULL, NULL, NULL);
                 udt_epoll_release(c_epoll);
-                if (err) {
+                if (err)
+                {
                   CloseConnection(c->id);
                   break;
                 }
@@ -192,14 +217,16 @@ static int io_listen(int argc, char **argv) {
                      c_chk = c_chk->next)
                   ;
                 c = c_chk ? c->next : ClientList;
-              } else
+              }
+              else
                 c = c->next;
             }
           }
         }
       }
     }
-  } else
+  }
+  else
     runServerMode(&options[1]);
   return C_ERROR;
 }

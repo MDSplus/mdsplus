@@ -69,9 +69,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
-              struct descriptor *out_ptr, unsigned int *out_count) {
+              struct descriptor *out_ptr, unsigned int *out_count)
+{
   struct descriptor_a *a;
-  switch (out_ptr->class) {
+  switch (out_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     *out_count = 1;
@@ -85,7 +87,8 @@ int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
     return TdiINVCLADSC;
   }
 
-  switch (in1_ptr->class) {
+  switch (in1_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     break;
@@ -98,7 +101,8 @@ int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
     return TdiINVCLADSC;
   }
 
-  switch (in2_ptr->class) {
+  switch (in2_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     break;

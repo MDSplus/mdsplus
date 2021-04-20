@@ -60,10 +60,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr,
-             unsigned int *out_count) {
+             unsigned int *out_count)
+{
   struct descriptor_a *a;
 
-  switch (out_ptr->class) {
+  switch (out_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     *out_count = 1;
@@ -77,7 +79,8 @@ int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr,
     return TdiINVCLADSC;
   }
 
-  switch (in_ptr->class) {
+  switch (in_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     break;

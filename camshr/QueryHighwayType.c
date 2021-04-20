@@ -78,7 +78,8 @@ static char *ShowType(int type);
 // NB! 'serial_hwy_driver' must point to an array at least 7 characters long,
 //              and be of the form 'GKB5'..., ie physical name.
 //-------------------------------------------------------------------------
-int QueryHighwayType(char *serial_hwy_driver) {
+int QueryHighwayType(char *serial_hwy_driver)
+{
   char line[80];
   char tmpVendor[9], tmpModel[17], tmpRev[5];
   int foundHost, foundVendor, highwayType = TYPE_UNKNOWN, host_adapter, scsi_id,
@@ -94,7 +95,8 @@ int QueryHighwayType(char *serial_hwy_driver) {
   host_adapter = toupper(*(serial_hwy_driver + 2)) - 'A';
   scsi_id = NUMERIC(*(serial_hwy_driver + 3));
 
-  if ((fp = fopen(PROC_FILE, "r")) == NULL) {
+  if ((fp = fopen(PROC_FILE, "r")) == NULL)
+  {
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "could *NOT* open '%s' for reading\n", PROC_FILE);
 
@@ -102,22 +104,28 @@ int QueryHighwayType(char *serial_hwy_driver) {
     goto QueryHighwayType_Exit;
   }
 
-  if (channels[host_adapter][scsi_id] == UNDEFINED) { // a new one ...
+  if (channels[host_adapter][scsi_id] == UNDEFINED)
+  { // a new one ...
     if (MSGLVL(DETAILS))
       printf(" new, unknown highway type\n");
 
     foundHost = FALSE;
     foundVendor = FALSE;
-    while (!foundHost && (fgets(line, sizeof(line), fp)) != NULL) {
-      if (strstr(line, "Host:")) {
+    while (!foundHost && (fgets(line, sizeof(line), fp)) != NULL)
+    {
+      if (strstr(line, "Host:"))
+      {
         sscanf(line, "Host: scsi%1d Channel: %*2d Id: %2d", &tmpHost, &tmpId);
 
-        if (tmpHost == host_adapter && tmpId == scsi_id) {
+        if (tmpHost == host_adapter && tmpId == scsi_id)
+        {
           foundHost = TRUE;
           if (MSGLVL(DETAILS))
             printf("%s", line);
-          while (!foundVendor && fgets(line, sizeof(line), fp) != NULL) {
-            if (strstr(line, "Vendor:")) {
+          while (!foundVendor && fgets(line, sizeof(line), fp) != NULL)
+          {
+            if (strstr(line, "Vendor:"))
+            {
               sscanf(line, "  Vendor: %8s Model: %16s Rev: %5s", tmpVendor,
                      tmpModel, tmpRev);
 
@@ -132,17 +140,22 @@ int QueryHighwayType(char *serial_hwy_driver) {
 
     highwayType = TYPE_UNKNOWN; // pesimistic here :<
 
-    if (foundHost && foundVendor) {
-      if (strstr(tmpVendor, "JORWAY")) {
+    if (foundHost && foundVendor)
+    {
+      if (strstr(tmpVendor, "JORWAY"))
+      {
         if (strstr(tmpModel, "73A"))
           highwayType = JORWAY_73A;
-        else {
+        else
+        {
           if (strtol(tmpRev, NULL, 0) >= 12)
             highwayType = JORWAY;
           else
             highwayType = JORWAY_OLD;
         }
-      } else {
+      }
+      else
+      {
         if (strstr(tmpVendor, "KINSYSCO"))
           if (strncmp(tmpModel, "2145", 4) == EQUAL)
             highwayType = KINSYSCO;
@@ -150,7 +163,9 @@ int QueryHighwayType(char *serial_hwy_driver) {
     }
 
     channels[host_adapter][scsi_id] = highwayType; // save result
-  } else { // ... take a short cut, we already know the type
+  }
+  else
+  { // ... take a short cut, we already know the type
     highwayType = channels[host_adapter][scsi_id];
 
     if (MSGLVL(DETAILS))
@@ -166,7 +181,8 @@ QueryHighwayType_Exit:
   if (fp) // ... still open
     fclose(fp);
 
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("\033[01;33m%s\033[0m", ShowType(highwayType)); // '33m' == yellow
     printf(" status %d\n", status);
   }
@@ -175,8 +191,10 @@ QueryHighwayType_Exit:
 }
 
 //-------------------------------------------------------------------------
-static char *ShowType(int type) {
-  switch (type) {
+static char *ShowType(int type)
+{
+  switch (type)
+  {
   case KINSYSCO:
     return ("kinsysco");
   case JORWAY:

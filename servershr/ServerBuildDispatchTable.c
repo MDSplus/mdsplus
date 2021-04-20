@@ -76,7 +76,8 @@ extern int TdiGetNci();
 static int num_actions;
 static ActionInfo *actions;
 
-static int CompareActions(ActionInfo *a, ActionInfo *b) {
+static int CompareActions(ActionInfo *a, ActionInfo *b)
+{
   return a->on == b->on ? (a->phase == b->phase ? a->sequence - b->sequence
                                                 : a->phase - b->phase)
                         : b->on - a->on;
@@ -84,13 +85,17 @@ static int CompareActions(ActionInfo *a, ActionInfo *b) {
 
 #define MAX_ACTIONS 10000
 
-static int ifAddReference(int idx, int *nid) {
+static int ifAddReference(int idx, int *nid)
+{
   int i, j;
-  for (i = 0; i < num_actions; i++) {
-    if (actions[i].nid == *nid) {
+  for (i = 0; i < num_actions; i++)
+  {
+    if (actions[i].nid == *nid)
+    {
       if (actions[i].num_references == 0)
         actions[i].referenced_by = (int *)malloc(sizeof(int));
-      else {
+      else
+      {
         for (j = 0; j < actions[i].num_references; j++)
           if (actions[i].referenced_by[j] == idx)
             return B_TRUE;
@@ -106,7 +111,8 @@ static int ifAddReference(int idx, int *nid) {
   return B_FALSE;
 }
 
-static int fixup_nid(int *nid, int idx, struct descriptor_d *path_out) {
+static int fixup_nid(int *nid, int idx, struct descriptor_d *path_out)
+{
   INIT_STATUS;
   static DESCRIPTOR(dtype_str, "DTYPE");
   static int dtype;
@@ -114,7 +120,8 @@ static int fixup_nid(int *nid, int idx, struct descriptor_d *path_out) {
   DESCRIPTOR_NID(niddsc, 0);
   niddsc.pointer = (char *)nid;
   status = TdiGetNci(&niddsc, &dtype_str, &dtype_dsc MDS_END_ARG);
-  if (STATUS_OK && dtype == DTYPE_ACTION && ifAddReference(idx, nid)) {
+  if (STATUS_OK && dtype == DTYPE_ACTION && ifAddReference(idx, nid))
+  {
     char ident[64];
     char tmp[64];
     struct descriptor ident_dsc = {0, DTYPE_T, CLASS_S, 0};
@@ -136,7 +143,8 @@ static int fixup_nid(int *nid, int idx, struct descriptor_d *path_out) {
 }
 
 static int fixup_path(struct descriptor *path_in, int idx,
-                      struct descriptor_d *path_out) {
+                      struct descriptor_d *path_out)
+{
   char *path = strncpy((char *)malloc(path_in->length + 1), path_in->pointer,
                        path_in->length);
   int nid;
@@ -150,16 +158,20 @@ static int fixup_path(struct descriptor *path_in, int idx,
 
 static int make_idents(struct descriptor *path_in,
                        int idx __attribute__((unused)),
-                       struct descriptor *path_out __attribute__((unused))) {
+                       struct descriptor *path_out __attribute__((unused)))
+{
   if (path_in && path_in->pointer && path_in->pointer[0] == '_')
     path_in->dtype = DTYPE_IDENT;
   return B_FALSE;
 }
 
-static void LinkConditions() {
+static void LinkConditions()
+{
   int i;
-  for (i = 0; i < num_actions; i++) {
-    if (actions[i].condition) {
+  for (i = 0; i < num_actions; i++)
+  {
+    if (actions[i].condition)
+    {
       EMPTYXD(xd);
       MdsCopyDxXdZ(actions[i].condition, &xd, 0, fixup_nid, i + (char *)0,
                    fixup_path, i + (char *)0);
@@ -172,7 +184,8 @@ static void LinkConditions() {
 }
 
 EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
-                                    void **table) {
+                                    void **table)
+{
   if (*table)
     ServerFreeDispatchTable(*table);
   DispatchTable **table_ptr = (DispatchTable **)table;
@@ -212,7 +225,8 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
          (num_actions < MAX_ACTIONS))
     num_actions++;
   TreeFindNodeEnd(&ctx);
-  if (num_actions) {
+  if (num_actions)
+  {
     static int zero = 0;
     int table_size =
         sizeof(DispatchTable) + (num_actions - 1) * sizeof(ActionInfo);
@@ -220,7 +234,8 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
     actions = (*table_ptr)->actions;
     (*table_ptr)->shot = shot;
     strcpy((*table_ptr)->tree, tree);
-    for (i = 0, nidptr = nids; i < num_actions; nidptr++, i++) {
+    for (i = 0, nidptr = nids; i < num_actions; nidptr++, i++)
+    {
       struct descriptor_d event_name = {0, DTYPE_T, CLASS_D, 0};
       struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
       static EMPTYXD(xd);
@@ -233,11 +248,14 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
       actions[i].dispatched = 0;
       actions[i].closed = 0;
       actions[i].condition = 0;
-      if (actions[i].on) {
-        if (TdiDispatchOf(&niddsc, &xd MDS_END_ARG) & 1) {
+      if (actions[i].on)
+      {
+        if (TdiDispatchOf(&niddsc, &xd MDS_END_ARG) & 1)
+        {
           struct descriptor_dispatch *dispatch =
               (struct descriptor_dispatch *)xd.pointer;
-          if (dispatch->pointer && (dispatch->pointer[0] == TreeSCHED_SEQ)) {
+          if (dispatch->pointer && (dispatch->pointer[0] == TreeSCHED_SEQ))
+          {
             struct descriptor server = {sizeof(actions->server), DTYPE_T,
                                         CLASS_S, 0};
             static DESCRIPTOR(phase_lookup, "PHASE_NUMBER_LOOKUP($)");
@@ -248,7 +266,8 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
                              &phase_d MDS_END_ARG) &
                   1))
               actions[i].phase = 0x10000001;
-            if (!(TdiGetLong(dispatch->when, &actions[i].sequence) & 1)) {
+            if (!(TdiGetLong(dispatch->when, &actions[i].sequence) & 1))
+            {
               static EMPTYXD(emptyxd);
               actions[i].sequence = 0;
               actions[i].condition = (struct descriptor *)memcpy(
@@ -256,22 +275,26 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
               MdsCopyDxXd((struct descriptor *)dispatch->when,
                           (struct descriptor_xd *)actions[i].condition);
               actions[i].path = TreeGetMinimumPath(&zero, actions[i].nid);
-            } else if (actions[i].sequence <= 0)
+            }
+            else if (actions[i].sequence <= 0)
               actions[i].phase = 0x10000002;
             else
               actions[i].path = TreeGetMinimumPath(&zero, actions[i].nid);
             if (!(TdiData(dispatch->ident, &server MDS_END_ARG) & 1))
               actions[i].phase = 0x10000003;
-          } else
+          }
+          else
             actions[i].phase = 0x10000004;
           if (TdiData(dispatch->completion, &event_name MDS_END_ARG) & 1 &&
-              event_name.length) {
+              event_name.length)
+          {
             actions[i].event = strncpy((char *)malloc(event_name.length + 1),
                                        event_name.pointer, event_name.length);
             actions[i].event[event_name.length] = 0;
             StrFree1Dx(&event_name);
           }
-        } else
+        }
+        else
           actions[i].phase = 0x10000005;
       }
     }
@@ -281,7 +304,8 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
       ;
     (*table_ptr)->num = i;
     LinkConditions();
-    if (monitor_name) {
+    if (monitor_name)
+    {
       char tree[13];
       char *cptr;
       for (i = 0, cptr = (*table_ptr)->tree; i < 12; i++)
@@ -292,23 +316,25 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
       tree[i] = 0;
       char *server = "";
 #define SKIP_OTHERS
-#define SEND(i, mode)                                                          \
-  ServerSendMonitor(monitor_name, tree, (*table_ptr)->shot, actions[i].phase,  \
-                    actions[i].nid, actions[i].on, mode, server,               \
+#define SEND(i, mode)                                                         \
+  ServerSendMonitor(monitor_name, tree, (*table_ptr)->shot, actions[i].phase, \
+                    actions[i].nid, actions[i].on, mode, server,              \
                     actions[i].status)
       if (IS_OK(SEND(0, MonitorBuildBegin)))
-        { // send begin
+      { // send begin
 #ifdef SKIP_OTHERS
-          if (num_actions > 1)
+        if (num_actions > 1)
 #else
-          for (i = 1; i < num_actions - 1; i++)
-            IS_NOT_OK(SEND(i, MonitorBuild)) break; // send others
-          if (i == num_actions - 1)
+        for (i = 1; i < num_actions - 1; i++)
+          IS_NOT_OK(SEND(i, MonitorBuild))
+        break; // send others
+        if (i == num_actions - 1)
 #endif
-            SEND(num_actions - 1, MonitorBuildEnd); // send last
-        }
+          SEND(num_actions - 1, MonitorBuildEnd); // send last
+      }
     }
-  } else
+  }
+  else
     status = TreeNNF;
   free(nids);
   return status;

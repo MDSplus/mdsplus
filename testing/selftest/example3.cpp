@@ -27,7 +27,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "testing.h"
 
-class MyTestPersonalClass {
+class MyTestPersonalClass
+{
   int a, b;
 
 public:
@@ -37,7 +38,8 @@ public:
 };
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(test cpp);
   std::cout << "Hello Test!\n";
 

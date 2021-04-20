@@ -75,7 +75,8 @@ static int strncmp_nocase(const char *s, const char *t, int n);
 //                       0 for equal,
 //                      +1 for first greater than second
 //-------------------------------------------------------------------------
-int compare_str(const void *key1, const void *key2) {
+int compare_str(const void *key1, const void *key2)
+{
   int length, retval;
 
   if (MSGLVL(11)) //              v                    v                   v v
@@ -85,17 +86,22 @@ int compare_str(const void *key1, const void *key2) {
 
   length = (strlen(key1) >= strlen(key2)) ? strlen(key1) : strlen(key2);
   if ((retval = strncmp_nocase((const char *)key1, (const char *)key2,
-                               length)) > 0) {
+                               length)) > 0)
+  {
     if (MSGLVL(8))
       printf("comp(): key1 > key2\n");
 
     return 1;
-  } else if (retval < 0) {
+  }
+  else if (retval < 0)
+  {
     if (MSGLVL(8))
       printf("comp(): key1 < key2\n");
 
     return -1;
-  } else {
+  }
+  else
+  {
     if (MSGLVL(8))
       printf("comp(): key1 == key2\n");
 
@@ -107,14 +113,16 @@ int compare_str(const void *key1, const void *key2) {
 // same as 'strncmp()' but ignores case
 //              (shamelessly copied from other mdsplus code)
 //-------------------------------------------------------------------------
-static int strncmp_nocase(const char *s, const char *t, int n) {
+static int strncmp_nocase(const char *s, const char *t, int n)
+{
   int i = 0;
 
   if (MSGLVL(11))
     printf("string sizes: *s(%d)  *t(%d)  n(%d)\n", (int)strlen(s),
            (int)strlen(t), n);
 
-  for (; n; n--, s++, t++) {
+  for (; n; n--, s++, t++)
+  {
     if (MSGLVL(11))
       printf("*s='%c' *t='%c' n=%d\n", *s, *t, n);
 

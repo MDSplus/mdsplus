@@ -58,8 +58,8 @@
 
 #define _BIT_MASK(_type) (1 << (((unsigned int)(_type)) & 0x7))
 
-#define _BIT_SET(table_entry_addr, _type)                                      \
-  (_BIT_MASK(_type) &                                                          \
+#define _BIT_SET(table_entry_addr, _type) \
+  (_BIT_MASK(_type) &                     \
    (((unsigned char *)(table_entry_addr))[_BIT_INDEX(_type)]))
 
 /*******************************************************************
@@ -294,20 +294,21 @@
 #define sym_k_or_op 14
 #define sym_k_cat_op 15
 #define sym_k_last_binary_op 15
-#define sym_k_valref_op                                                        \
-  16 /* az_exp_op1 points to the value node                                    \
-        whose value is referenced by this                                      \
+#define sym_k_valref_op                     \
+  16 /* az_exp_op1 points to the value node \
+        whose value is referenced by this   \
         value node. */
-#define sym_k_coerce_op                                                        \
-  17 /* az_exp_op1 points to the value node                                    \
-        whose value is to be coerced to the                                    \
+#define sym_k_coerce_op                     \
+  17 /* az_exp_op1 points to the value node \
+        whose value is to be coerced to the \
         data type of this node. */
 #define sym_k_last_special_op 17
 
 /*
  * Structure of an enumeration set entry
  */
-typedef struct {
+typedef struct
+{
   short int values_cnt;
   /* number of values in the enuemration set descriptor           */
   unsigned short int *values;
@@ -337,7 +338,8 @@ typedef struct {
 /*
  * Keyword table entry structure
  */
-typedef struct {
+typedef struct
+{
   unsigned char b_class;
   unsigned short int b_subclass;
   unsigned char b_length;
@@ -389,7 +391,8 @@ typedef struct {
  */
 #define DB_Compiled_Version 2
 
-typedef struct _db_globals_struct {
+typedef struct _db_globals_struct
+{
   int version;
   int uil_max_arg;
   int uil_max_charset;
@@ -403,7 +406,8 @@ typedef struct _db_globals_struct {
   int uil_max_child;
 } _db_globals;
 
-typedef struct _db_header_struct {
+typedef struct _db_header_struct
+{
   int table_id;
   int num_items;
   int table_size;

@@ -64,9 +64,10 @@ static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error,
  * TclDtypeString:
  * Simply a re-formatted version of MdsDtypeString ...
  ****************************************************************/
-static char *TclDtypeString(/* Returns:  address of formatted string */
+static char *TclDtypeString(           /* Returns:  address of formatted string */
                             char dtype /* <r> data type code */
-) {
+)
+{
   char *string = malloc(100);
   if (string)
     sprintf(string, "%-30s: ", MdsDtypeString(dtype));
@@ -76,7 +77,8 @@ static char *TclDtypeString(/* Returns:  address of formatted string */
 /****************************************************************
  * CvtIdentT:
  ****************************************************************/
-static int CvtIdentT(struct descriptor *in_dsc_ptr, int depth, char **output) {
+static int CvtIdentT(struct descriptor *in_dsc_ptr, int depth, char **output)
+{
   char *ident = MdsDescrToCstring(in_dsc_ptr);
   char *dtype = TclDtypeString(in_dsc_ptr->dtype);
   char *out_str = alloca(strlen(ident) + strlen(dtype) + depth + 10);
@@ -91,31 +93,40 @@ static int CvtIdentT(struct descriptor *in_dsc_ptr, int depth, char **output) {
  * CvtNidT:
  ****************************************************************/
 static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error,
-                   char **output) {
+                   char **output)
+{
   int nid = *(int *)in_dsc_ptr->pointer;
   int sts = 0;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
 
-  if (nid == 0) {
+  if (nid == 0)
+  {
     char *out_str = alloca(strlen(dstr) + strlen("$VALUE") + depth + 10);
     sprintf(out_str, "%*s$VALUE\n", (int)(strlen(dstr) + depth), dstr);
     tclAppend(output, out_str);
     sts = 1;
-  } else {
+  }
+  else
+  {
     char *pathname = 0;
-    if ((pathname = TreeGetPath(nid))) {
+    if ((pathname = TreeGetPath(nid)))
+    {
       struct descriptor_xd lxd = {0, 0, CLASS_XD, 0, 0};
       char *out_str = alloca(strlen(dstr) + strlen(pathname) + depth + 10);
       sprintf(out_str, "%*s%s\n", (int)(strlen(dstr) + depth), dstr, pathname);
       tclAppend(output, out_str);
       TreeFree(pathname);
       sts = TreeGetRecord(nid, &lxd);
-      if (sts & 1) {
+      if (sts & 1)
+      {
         sts = CvtDxT((struct descriptor *)(&lxd), depth + 4, error, output);
         MdsFree1Dx(&lxd, NULL);
-      } else
+      }
+      else
         sts = 1;
-    } else {
+    }
+    else
+    {
       char *out_str = alloca(strlen("***** Bad Nid Reference ********") +
                              depth + strlen(dstr) + 10);
       sprintf(out_str, "%*s***** Bad Nid Reference ********\n",
@@ -132,7 +143,8 @@ static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error,
  * CvtNumericT:
  **************************************************************/
 static int CvtNumericT(struct descriptor *in_dsc_ptr, int depth,
-                       char **output) {
+                       char **output)
+{
   int sts;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
 #define STATIC_STRING_LEN 132
@@ -140,10 +152,12 @@ static int CvtNumericT(struct descriptor *in_dsc_ptr, int depth,
   struct descriptor str = {STATIC_STRING_LEN, DTYPE_T, CLASS_S, str_chars};
   str_chars[STATIC_STRING_LEN] = 0;
   sts = TdiDecompile(in_dsc_ptr, &str MDS_END_ARG);
-  if (sts & 1) {
+  if (sts & 1)
+  {
     char *out_str = alloca(strlen(dstr) + STATIC_STRING_LEN + depth + 10);
     int i;
-    for (i = STATIC_STRING_LEN; i; i--) {
+    for (i = STATIC_STRING_LEN; i; i--)
+    {
       if (str_chars[i - 1] == ' ')
         str_chars[i] = 0;
       else
@@ -151,7 +165,9 @@ static int CvtNumericT(struct descriptor *in_dsc_ptr, int depth,
     }
     sprintf(out_str, "%*s%s\n", (int)(strlen(dstr) + depth), dstr, str_chars);
     tclAppend(output, out_str);
-  } else {
+  }
+  else
+  {
     char *out_str = alloca(
         strlen(dstr) +
         strlen("There is no primative display for this datatype") + depth + 10);
@@ -167,7 +183,8 @@ static int CvtNumericT(struct descriptor *in_dsc_ptr, int depth,
  * CvtPathT:
  ***************************************************************/
 static int CvtPathT(struct descriptor *in_dsc_ptr, int depth, char **error,
-                    char **output) {
+                    char **output)
+{
   int sts;
   int nid;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
@@ -178,19 +195,25 @@ static int CvtPathT(struct descriptor *in_dsc_ptr, int depth, char **error,
   tclAppend(output, out_str);
   sts = TreeFindNode(ident, &nid);
   free(ident);
-  if (sts & 1) {
+  if (sts & 1)
+  {
     sts = TreeGetRecord(nid, &xd);
-    if (sts & 1) {
+    if (sts & 1)
+    {
       sts = CvtDxT((struct descriptor *)&xd, depth + 4, error, output);
       MdsFree1Dx(&xd, NULL);
-    } else {
+    }
+    else
+    {
       char *out_str = alloca(strlen("Error reading data record") + depth + 10);
       sprintf(out_str, "%*s\n",
               (int)(strlen("Error reading data record") + depth + 4),
               "Error reading data record");
       tclAppend(output, out_str);
     }
-  } else {
+  }
+  else
+  {
     char *out_str = alloca(strlen("Record not found") + depth + 10);
     sprintf(out_str, "%*s\n", (int)(strlen("Record not found") + depth + 4),
             "Record not found");
@@ -204,11 +227,13 @@ static int CvtPathT(struct descriptor *in_dsc_ptr, int depth, char **error,
  * CvtDdscT:
  *************************************************************/
 static int CvtDdscT(struct descriptor *in_dsc_ptr, int depth, char **error,
-                    char **output) {
+                    char **output)
+{
   int sts;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
   char *out_str;
-  switch (in_dsc_ptr->dtype) {
+  switch (in_dsc_ptr->dtype)
+  {
 
   case DTYPE_DSC:
     sts =
@@ -247,15 +272,20 @@ static int CvtDdscT(struct descriptor *in_dsc_ptr, int depth, char **error,
  * CvtGenericRT:
  ***************************************************************/
 static int CvtGenericRT(struct descriptor_r *in_dsc_ptr, int depth,
-                        char **error, char **output) {
+                        char **error, char **output)
+{
 
   int i;
   int sts = 1;
 
-  for (i = 0; sts && i < in_dsc_ptr->ndesc; i++) {
-    if (in_dsc_ptr->dscptrs[i]) {
+  for (i = 0; sts && i < in_dsc_ptr->ndesc; i++)
+  {
+    if (in_dsc_ptr->dscptrs[i])
+    {
       sts = CvtDxT(in_dsc_ptr->dscptrs[i], depth + 4, error, output);
-    } else {
+    }
+    else
+    {
       char *out_str = alloca(strlen("*** EMPTY ****") + depth + 10);
       sprintf(out_str, "%*s\n", (int)(strlen("*** EMPTY ****") + depth + 4),
               "*** EMPTY ****");
@@ -270,7 +300,8 @@ static int CvtGenericRT(struct descriptor_r *in_dsc_ptr, int depth,
  * CvtFunctionT:
  ***************************************************************/
 static int CvtFunctionT(struct descriptor *in_dsc_ptr, int depth, char **error,
-                        char **output) {
+                        char **output)
+{
   int sts;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
   static struct descriptor_xd ostr = {0, DTYPE_T, CLASS_XD, 0, 0};
@@ -278,7 +309,8 @@ static int CvtFunctionT(struct descriptor *in_dsc_ptr, int depth, char **error,
 
   opcode_dsc.pointer = (char *)in_dsc_ptr->pointer;
   sts = TdiOpcodeString(&opcode_dsc, &ostr MDS_END_ARG);
-  if (sts & 1) {
+  if (sts & 1)
+  {
     char *out_str = alloca(strlen(dstr) + depth + ostr.pointer->length + 10);
     sprintf(out_str, "%*s%.*s\n", (int)(strlen(dstr) + depth), dstr,
             ostr.pointer->length, ostr.pointer->pointer);
@@ -294,12 +326,14 @@ static int CvtFunctionT(struct descriptor *in_dsc_ptr, int depth, char **error,
  * CvtRdscT:
  ***************************************************************/
 static int CvtRdscT(struct descriptor *in_dsc_ptr, int depth, char **error,
-                    char **output) {
+                    char **output)
+{
   int sts;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
   if (in_dsc_ptr->dtype == DTYPE_FUNCTION)
     sts = CvtFunctionT(in_dsc_ptr, depth, error, output);
-  else {
+  else
+  {
     char *out_str = alloca(strlen(dstr) + depth + 10);
     sprintf(out_str, "%*s\n", (int)(strlen(dstr) + depth), dstr);
     tclAppend(output, out_str);
@@ -312,7 +346,8 @@ static int CvtRdscT(struct descriptor *in_dsc_ptr, int depth, char **error,
 /****************************************************************
  * CvtAdscT:
  ****************************************************************/
-static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output) {
+static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output)
+{
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
   int *bptr;
   int *lbptr;
@@ -322,10 +357,12 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output) {
   char bchars[BOUNDS_LENGTH];
   char *out_str = malloc(strlen(dstr) + depth + 20);
   sprintf(out_str, "%*s Array [ ", (int)(strlen(dstr) + depth), dstr);
-  if (in_dsc_ptr->aflags.bounds) {
+  if (in_dsc_ptr->aflags.bounds)
+  {
     bptr = (int *)((char *)in_dsc_ptr + sizeof(struct descriptor_a) +
                    sizeof(void *) + (in_dsc_ptr->dimct) * sizeof(int));
-    for (dim = 0; dim < in_dsc_ptr->dimct; dim++) {
+    for (dim = 0; dim < in_dsc_ptr->dimct; dim++)
+    {
       lbptr = bptr++;
       ubptr = bptr++;
       sprintf(bchars, "%d:%d%s", *lbptr, *ubptr,
@@ -333,16 +370,21 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output) {
       out_str = realloc(out_str, strlen(out_str) + strlen(bchars) + 10);
       strcat(out_str, bchars);
     }
-  } else if (in_dsc_ptr->aflags.coeff) {
+  }
+  else if (in_dsc_ptr->aflags.coeff)
+  {
     bptr = (int *)((char *)in_dsc_ptr + sizeof(struct descriptor_a) +
                    sizeof(void *));
-    for (dim = 0; dim < in_dsc_ptr->dimct; dim++) {
+    for (dim = 0; dim < in_dsc_ptr->dimct; dim++)
+    {
       sprintf(bchars, "%d%s", *bptr++,
               (dim < in_dsc_ptr->dimct - 1) ? "," : "");
       out_str = realloc(out_str, strlen(out_str) + strlen(bchars) + 10);
       strcat(out_str, bchars);
     }
-  } else {
+  }
+  else
+  {
     sprintf(bchars, "%d",
             in_dsc_ptr->arsize /
                 ((in_dsc_ptr->length) ? in_dsc_ptr->length : 1));
@@ -360,23 +402,28 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output) {
  * CvtDxT:
  ****************************************************************/
 static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error,
-                  char **output) {
+                  char **output)
+{
   int sts = 0;
-  switch (in_dsc_ptr->class) {
+  switch (in_dsc_ptr->class)
+  {
   default:
     break;
   case CLASS_XD:
-  case CLASS_XS: {
+  case CLASS_XS:
+  {
     if (in_dsc_ptr->dtype == DTYPE_DSC)
       sts = CvtDxT((struct descriptor *)in_dsc_ptr->pointer, depth, error,
                    output);
-    else {
+    else
+    {
       const char *errormsg = "Invalid Dtype for XD or XS must be DSC\n";
       char *out_str = alloca(strlen(errormsg) + depth + 10);
       sprintf(out_str, "%*s\n", (int)(strlen(errormsg) + depth), errormsg);
       tclAppend(output, out_str);
     }
-  } break;
+  }
+  break;
 
   case CLASS_D:
   case CLASS_S:
@@ -399,7 +446,8 @@ static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error,
 /****************************************************************
  * TclShowData:
  ****************************************************************/
-EXPORT int TclShowData(void *ctx, char **error, char **output) {
+EXPORT int TclShowData(void *ctx, char **error, char **output)
+{
   int nid;
   int sts;
   int usageMask;
@@ -409,8 +457,10 @@ EXPORT int TclShowData(void *ctx, char **error, char **output) {
   struct descriptor_xd data = {0, 0, CLASS_XD, 0, 0};
 
   usageMask = -1;
-  while (cli_get_value(ctx, "NODE", &nodnam) & 1) {
-    while (TreeFindNodeWild(nodnam, &nid, &ctx1, usageMask) & 1) {
+  while (cli_get_value(ctx, "NODE", &nodnam) & 1)
+  {
+    while (TreeFindNodeWild(nodnam, &nid, &ctx1, usageMask) & 1)
+    {
       char *line;
       if (*output == NULL)
         *output = strdup("");
@@ -421,12 +471,14 @@ EXPORT int TclShowData(void *ctx, char **error, char **output) {
       free(line);
       TreeFree(pathnam);
       sts = TreeGetRecord(nid, &data);
-      if (sts & 1) {
+      if (sts & 1)
+      {
         sts = CvtDxT((struct descriptor *)(&data), 1, error, output);
         MdsFree1Dx(&data, 0);
         if ((sts & 1) == 0)
           tclAppend(output, "   Error displaying data\n");
-      } else
+      }
+      else
         tclAppend(output, "   No data found\n");
     }
     TreeFindNodeEnd(&ctx1);

@@ -102,9 +102,11 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
     EXPORT Widget XmdsCreateOkButton(Widget parent, String name, ArgList args,
-                                     Cardinal numargs) {
+                                     Cardinal numargs)
+{
   Widget w = CreateButton(parent, name, args, numargs, "Ok", 1);
-  if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome) {
+  if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome)
+  {
     int num_callbacks;
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNactivateCallback, &callbacks, NULL);
@@ -115,31 +117,36 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     XtRemoveAllCallbacks(w, XmNactivateCallback);
     XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)Ok, callbacks);
     XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc)Destroy, callbacks);
-  } else
+  }
+  else
     XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsOkCallback, 0);
   return w;
 }
 
-static int CountCallbacks(XtCallbackList callbacks) {
+static int CountCallbacks(XtCallbackList callbacks)
+{
   int i;
   for (i = 0; callbacks->callback; callbacks = callbacks + 1, i++)
     ;
   return i;
 }
 
-static void Ok(Widget w, XtCallbackList callbacks) {
+static void Ok(Widget w, XtCallbackList callbacks)
+{
   if (Apply(w, callbacks))
     XtDestroyWidget(FindShellChild(w));
 }
 
-static Widget FindShellChild(Widget w) {
+static Widget FindShellChild(Widget w)
+{
   Widget sc;
   for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc))
     ;
   return sc;
 }
 
-static int Apply(Widget w, XtCallbackList callbacks) {
+static int Apply(Widget w, XtCallbackList callbacks)
+{
   int status = XmdsXdsAreValid(FindShellChild(w));
   for (; callbacks->callback && status; callbacks++)
     status = (*(int (*)())callbacks->callback)(w, callbacks->closure);
@@ -148,14 +155,17 @@ static int Apply(Widget w, XtCallbackList callbacks) {
   return status;
 }
 
-static void Destroy(Widget w, XtCallbackList callbacks) {
+static void Destroy(Widget w, XtCallbackList callbacks)
+{
   XtFree((char *)callbacks);
 }
 
 EXPORT Widget XmdsCreateApplyButton(Widget parent, String name, ArgList args,
-                                    Cardinal numargs) {
+                                    Cardinal numargs)
+{
   Widget w = CreateButton(parent, name, args, numargs, "Apply", 0);
-  if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome) {
+  if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome)
+  {
     int num_callbacks;
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNactivateCallback, &callbacks, NULL);
@@ -166,20 +176,23 @@ EXPORT Widget XmdsCreateApplyButton(Widget parent, String name, ArgList args,
     XtRemoveAllCallbacks(w, XmNactivateCallback);
     XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)Apply, callbacks);
     XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc)Destroy, callbacks);
-  } else
+  }
+  else
     XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsApplyCallback, 0);
   return w;
 }
 
 EXPORT Widget XmdsCreateResetButton(Widget parent, String name, ArgList args,
-                                    Cardinal numargs) {
+                                    Cardinal numargs)
+{
   Widget w = CreateButton(parent, name, args, numargs, "Reset", 0);
   XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsResetCallback, 0);
   return w;
 }
 
 EXPORT Widget XmdsCreateCancelButton(Widget parent, String name, ArgList args,
-                                     Cardinal numargs) {
+                                     Cardinal numargs)
+{
   Widget w = CreateButton(parent, name, args, numargs, "Cancel", 0);
   XtAddCallback(w, XmNactivateCallback, (XtCallbackProc)XmdsCancelCallback, 0);
   return w;
@@ -187,7 +200,8 @@ EXPORT Widget XmdsCreateCancelButton(Widget parent, String name, ArgList args,
 
 static Widget CreateButton(Widget parent, String name, ArgList args,
                            Cardinal numargs, String ident,
-                           Boolean set_default) {
+                           Boolean set_default)
+{
   Arg arglist[] = {{XmNlabelString, 0}};
 
   Widget w;

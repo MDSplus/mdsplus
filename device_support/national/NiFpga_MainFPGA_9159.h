@@ -20,7 +20,7 @@
  *    static const char* const Bitfile = "C:\\" NiFpga_MainFPGA_9159_Bitfile;
  */
 //#define NiFpga_MainFPGA_9159_Bitfile "NiFpga_MainFPGA_9159.lvbitx"
-#define NiFpga_MainFPGA_9159_Bitfile                                           \
+#define NiFpga_MainFPGA_9159_Bitfile \
   "/opt/mdsplus/device_support/national/NiFpga_MainFPGA_9159.lvbitx"
 
 /**
@@ -29,7 +29,8 @@
 static const char *const NiFpga_MainFPGA_9159_Signature =
     "EAB8E96CABC7B0809FBBCB198A3D7DF1";
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorBool_DeepSW0 = 0x811E,
   NiFpga_MainFPGA_9159_IndicatorBool_DeepSW1 = 0x811A,
   NiFpga_MainFPGA_9159_IndicatorBool_DeepSW2 = 0x8116,
@@ -40,18 +41,21 @@ typedef enum {
   NiFpga_MainFPGA_9159_IndicatorBool_Mod14DI4 = 0x8122,
 } NiFpga_MainFPGA_9159_IndicatorBool;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorU8_SelectSet = 0x8112,
   NiFpga_MainFPGA_9159_IndicatorU8_SelectedSetMonitorAO = 0x813E,
 } NiFpga_MainFPGA_9159_IndicatorU8;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorI16_TransmittedNum_A = 0x81C2,
   NiFpga_MainFPGA_9159_IndicatorI16_TransmittedNum_B = 0x81B2,
   NiFpga_MainFPGA_9159_IndicatorI16_TransmittedNum_C = 0x818A,
 } NiFpga_MainFPGA_9159_IndicatorI16;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorU16_PeriodToAOus = 0x8142,
   NiFpga_MainFPGA_9159_IndicatorU16_ToRT_Periodus_A = 0x81C6,
   NiFpga_MainFPGA_9159_IndicatorU16_ToRT_Periodus_B = 0x81B6,
@@ -59,7 +63,8 @@ typedef enum {
   NiFpga_MainFPGA_9159_IndicatorU16_Ver = 0x8146,
 } NiFpga_MainFPGA_9159_IndicatorU16;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorI32_Ciclo1 = 0x81E8,
   NiFpga_MainFPGA_9159_IndicatorI32_Ciclo2_A = 0x81CC,
   NiFpga_MainFPGA_9159_IndicatorI32_Ciclo2_B = 0x8194,
@@ -78,7 +83,8 @@ typedef enum {
   NiFpga_MainFPGA_9159_IndicatorI32_RoundsToGetTrigger_C = 0x8180,
 } NiFpga_MainFPGA_9159_IndicatorI32;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorU32_Period2t_A = 0x81D0,
   NiFpga_MainFPGA_9159_IndicatorU32_Period2t_B = 0x8198,
   NiFpga_MainFPGA_9159_IndicatorU32_Period2t_C = 0x8170,
@@ -93,11 +99,13 @@ typedef enum {
   NiFpga_MainFPGA_9159_IndicatorU32_Receaved2_C = 0x8190,
 } NiFpga_MainFPGA_9159_IndicatorU32;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorU64_ChannelLiving = 0x8138,
 } NiFpga_MainFPGA_9159_IndicatorU64;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_ControlBool_ForceLocal = 0x816A,
   NiFpga_MainFPGA_9159_ControlBool_ResetReader_A = 0x81DE,
   NiFpga_MainFPGA_9159_ControlBool_ResetReader_B = 0x81A6,
@@ -106,24 +114,28 @@ typedef enum {
   NiFpga_MainFPGA_9159_ControlBool_Stop = 0x81E6,
 } NiFpga_MainFPGA_9159_ControlBool;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_ControlU16_FrameStrobePerioduSec = 0x81EE,
   NiFpga_MainFPGA_9159_ControlU16_HighPhaseFrameStrobeDurationTicks = 0x81F2,
 } NiFpga_MainFPGA_9159_ControlU16;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorArrayI16_AI_A = 0x8160,
   NiFpga_MainFPGA_9159_IndicatorArrayI16_AI_B = 0x8154,
   NiFpga_MainFPGA_9159_IndicatorArrayI16_AI_C = 0x814C,
 } NiFpga_MainFPGA_9159_IndicatorArrayI16;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_IndicatorArrayI16Size_AI_A = 18,
   NiFpga_MainFPGA_9159_IndicatorArrayI16Size_AI_B = 18,
   NiFpga_MainFPGA_9159_IndicatorArrayI16Size_AI_C = 18,
 } NiFpga_MainFPGA_9159_IndicatorArrayI16Size;
 
-typedef enum {
+typedef enum
+{
   NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_A = 2,
   NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_B = 1,
   NiFpga_MainFPGA_9159_TargetToHostFifoI16_FIFOTOPC_C = 0,

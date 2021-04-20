@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsClose  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsClose(int id) {
+int MdsClose(int id)
+{
   struct descrip ansarg;
   STATIC_CONSTANT char *expression = "TreeClose()";
   int status = MdsValue(id, expression, &ansarg, NULL);

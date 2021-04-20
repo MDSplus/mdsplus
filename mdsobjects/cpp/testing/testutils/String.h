@@ -4,11 +4,13 @@
 #include <string>
 #include <algorithm>
 
-namespace testing {
-std::string toupper(std::string str) {
-  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-  return str;
-}
+namespace testing
+{
+  std::string toupper(std::string str)
+  {
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    return str;
+  }
 
 } // namespace testing
 

@@ -1,11 +1,13 @@
 EXPORT int descr_(int *dtype, void *data, int *dim1, int *dim2, int *dim3,
                   int *dim4, int *dim5, int *dim6, int *dim7, int *dim8,
-                  int *dim9) {
+                  int *dim9)
+{
   return descr(dtype, data, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8,
                dim9);
 }
 EXPORT int descr2_(int *dtype, int *dim1, int *dim2, int *dim3, int *dim4,
-                   int *dim5, int *dim6, int *dim7, int *dim8, int *dim9) {
+                   int *dim5, int *dim6, int *dim7, int *dim8, int *dim9)
+{
   return descr2(dtype, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
 }
 EXPORT int mdsconnect_(char *host) { return MdsConnect(host); }
@@ -29,7 +31,8 @@ mdsput_(char *node, char *expression, int *a00, int *a01, int *a02, int *a03,
         int *a74, int *a75, int *a76, int *a77, int *a78, int *a79, int *a80,
         int *a81, int *a82, int *a83, int *a84, int *a85, int *a86, int *a87,
         int *a88, int *a89, int *a90, int *a91, int *a92, int *a93, int *a94,
-        int *a95, int *a96, int *a97, int *a98, int *a99) {
+        int *a95, int *a96, int *a97, int *a98, int *a99)
+{
   return MdsPut(
       node, expression, a00, a01, a02, a03, a04, a05, a06, a07, a08, a09, a10,
       a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25,
@@ -54,7 +57,8 @@ mdsvalue_(char *expression, int *a00, int *a01, int *a02, int *a03, int *a04,
           int *a75, int *a76, int *a77, int *a78, int *a79, int *a80, int *a81,
           int *a82, int *a83, int *a84, int *a85, int *a86, int *a87, int *a88,
           int *a89, int *a90, int *a91, int *a92, int *a93, int *a94, int *a95,
-          int *a96, int *a97, int *a98, int *a99) {
+          int *a96, int *a97, int *a98, int *a99)
+{
   return MdsValue(
       expression, a00, a01, a02, a03, a04, a05, a06, a07, a08, a09, a10, a11,
       a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26,
@@ -80,7 +84,8 @@ mdsput2_(char *node, char *expression, int *a00, int *a01, int *a02, int *a03,
          int *a74, int *a75, int *a76, int *a77, int *a78, int *a79, int *a80,
          int *a81, int *a82, int *a83, int *a84, int *a85, int *a86, int *a87,
          int *a88, int *a89, int *a90, int *a91, int *a92, int *a93, int *a94,
-         int *a95, int *a96, int *a97, int *a98, int *a99) {
+         int *a95, int *a96, int *a97, int *a98, int *a99)
+{
   return MdsPut2(
       node, expression, a00, a01, a02, a03, a04, a05, a06, a07, a08, a09, a10,
       a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25,
@@ -106,7 +111,8 @@ mdsvalue2_(char *expression, int *a00, int *a01, int *a02, int *a03, int *a04,
            int *a75, int *a76, int *a77, int *a78, int *a79, int *a80, int *a81,
            int *a82, int *a83, int *a84, int *a85, int *a86, int *a87, int *a88,
            int *a89, int *a90, int *a91, int *a92, int *a93, int *a94, int *a95,
-           int *a96, int *a97, int *a98, int *a99) {
+           int *a96, int *a97, int *a98, int *a99)
+{
   return MdsValue2(
       expression, a00, a01, a02, a03, a04, a05, a06, a07, a08, a09, a10, a11,
       a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26,

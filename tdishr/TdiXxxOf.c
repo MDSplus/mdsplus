@@ -48,13 +48,14 @@ extern int TdiTaskOf();
         NEED to remember to use AS_IS to prevent FUNCTION evaluation.
 */
 int Tdi1ArgOf(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned int iarg = 0;
   static const dtype_t omits[] = {
-      DTYPE_CALL,   DTYPE_CONDITION, DTYPE_DEPENDENCY, DTYPE_FUNCTION,
-      DTYPE_METHOD, DTYPE_PROCEDURE, DTYPE_ROUTINE,    0};
+      DTYPE_CALL, DTYPE_CONDITION, DTYPE_DEPENDENCY, DTYPE_FUNCTION,
+      DTYPE_METHOD, DTYPE_PROCEDURE, DTYPE_ROUTINE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK && narg > 1)
@@ -64,43 +65,44 @@ int Tdi1ArgOf(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK && iarg >= ((struct descriptor_r *)tmp.pointer)->ndesc)
     status = TdiBAD_INDEX;
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_CALL:
-    if (iarg + 2 >= ((struct descriptor_r *)tmp.pointer)->ndesc)
-      status = TdiBAD_INDEX;
-    else
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_CALL:
+      if (iarg + 2 >= ((struct descriptor_r *)tmp.pointer)->ndesc)
+        status = TdiBAD_INDEX;
+      else
+        status = MdsCopyDxXd(
+            ((struct descriptor_call *)tmp.pointer)->arguments[iarg], out_ptr);
+      break;
+    case DTYPE_CONDITION:
       status = MdsCopyDxXd(
-          ((struct descriptor_call *)tmp.pointer)->arguments[iarg], out_ptr);
-    break;
-  case DTYPE_CONDITION:
-    status = MdsCopyDxXd(
-        ((struct descriptor_condition *)tmp.pointer)->condition, out_ptr);
-    break;
-  case DTYPE_DEPENDENCY:
-    status = MdsCopyDxXd(
-        ((struct descriptor_dependency *)tmp.pointer)->arguments[iarg],
-        out_ptr);
-    break;
-  case DTYPE_FUNCTION:
-    status = MdsCopyDxXd(
-        ((struct descriptor_function *)tmp.pointer)->arguments[iarg], out_ptr);
-    break;
-  case DTYPE_METHOD:
-    status = MdsCopyDxXd(
-        ((struct descriptor_method *)tmp.pointer)->arguments[iarg], out_ptr);
-    break;
-  case DTYPE_PROCEDURE:
-    status = MdsCopyDxXd(
-        ((struct descriptor_procedure *)tmp.pointer)->arguments[iarg], out_ptr);
-    break;
-  case DTYPE_ROUTINE:
-    status = MdsCopyDxXd(
-        ((struct descriptor_routine *)tmp.pointer)->arguments[iarg], out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+          ((struct descriptor_condition *)tmp.pointer)->condition, out_ptr);
+      break;
+    case DTYPE_DEPENDENCY:
+      status = MdsCopyDxXd(
+          ((struct descriptor_dependency *)tmp.pointer)->arguments[iarg],
+          out_ptr);
+      break;
+    case DTYPE_FUNCTION:
+      status = MdsCopyDxXd(
+          ((struct descriptor_function *)tmp.pointer)->arguments[iarg], out_ptr);
+      break;
+    case DTYPE_METHOD:
+      status = MdsCopyDxXd(
+          ((struct descriptor_method *)tmp.pointer)->arguments[iarg], out_ptr);
+      break;
+    case DTYPE_PROCEDURE:
+      status = MdsCopyDxXd(
+          ((struct descriptor_procedure *)tmp.pointer)->arguments[iarg], out_ptr);
+      break;
+    case DTYPE_ROUTINE:
+      status = MdsCopyDxXd(
+          ((struct descriptor_routine *)tmp.pointer)->arguments[iarg], out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -113,27 +115,29 @@ int Tdi1ArgOf(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1AxisOf(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_DIMENSION, DTYPE_SLOPE, DTYPE_RANGE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_DIMENSION:
-    status = MdsCopyDxXd(((struct descriptor_dimension *)tmp.pointer)->axis,
-                         out_ptr);
-    break;
-  case DTYPE_SLOPE:
-  case DTYPE_RANGE:
-    MdsFree1Dx(out_ptr, NULL);
-    *out_ptr = tmp;
-    return status;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_DIMENSION:
+      status = MdsCopyDxXd(((struct descriptor_dimension *)tmp.pointer)->axis,
+                           out_ptr);
+      break;
+    case DTYPE_SLOPE:
+    case DTYPE_RANGE:
+      MdsFree1Dx(out_ptr, NULL);
+      *out_ptr = tmp;
+      return status;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -145,7 +149,8 @@ int Tdi1AxisOf(opcode_t opcode __attribute__((unused)),
                 startidx_field = BEGIN_OF(window)
 */
 int Tdi1BeginOf(opcode_t opcode __attribute__((unused)), int narg,
-                struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned int n = 0;
@@ -153,35 +158,36 @@ int Tdi1BeginOf(opcode_t opcode __attribute__((unused)), int narg,
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_RANGE:
-    if (narg > 1)
-      status = TdiEXTRA_ARG;
-    else
-      status =
-          MdsCopyDxXd(((struct descriptor_range *)tmp.pointer)->begin, out_ptr);
-    break;
-  case DTYPE_SLOPE:
-    if (narg > 1)
-      status = TdiGetLong(list[1], &n);
-    if (STATUS_OK &&
-        3 * n + 2 > ((struct descriptor_slope *)tmp.pointer)->ndesc)
-      status = TdiBAD_INDEX;
-    if (STATUS_OK)
-      status = MdsCopyDxXd(
-        ((struct descriptor_slope *)tmp.pointer)->segment[n].begin, out_ptr);
-    break;
-  case DTYPE_WINDOW:
-    if (narg > 1)
-      status = TdiEXTRA_ARG;
-    else
-      status = MdsCopyDxXd(((struct descriptor_window *)tmp.pointer)->startidx,
-                           out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_RANGE:
+      if (narg > 1)
+        status = TdiEXTRA_ARG;
+      else
+        status =
+            MdsCopyDxXd(((struct descriptor_range *)tmp.pointer)->begin, out_ptr);
+      break;
+    case DTYPE_SLOPE:
+      if (narg > 1)
+        status = TdiGetLong(list[1], &n);
+      if (STATUS_OK &&
+          3 * n + 2 > ((struct descriptor_slope *)tmp.pointer)->ndesc)
+        status = TdiBAD_INDEX;
+      if (STATUS_OK)
+        status = MdsCopyDxXd(
+            ((struct descriptor_slope *)tmp.pointer)->segment[n].begin, out_ptr);
+      break;
+    case DTYPE_WINDOW:
+      if (narg > 1)
+        status = TdiEXTRA_ARG;
+      else
+        status = MdsCopyDxXd(((struct descriptor_window *)tmp.pointer)->startidx,
+                             out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -192,7 +198,8 @@ int Tdi1BeginOf(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1ClassOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor *px = list[0];
   unsigned char class;
@@ -212,7 +219,8 @@ int Tdi1ClassOf(opcode_t opcode __attribute__((unused)),
                 byte = CLASS(any)
 */
 int Tdi1Class(opcode_t opcode, int narg, struct descriptor *list[],
-              struct descriptor_xd *out_ptr) {
+              struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
 
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
@@ -227,14 +235,15 @@ int Tdi1Class(opcode_t opcode, int narg, struct descriptor *list[],
 */
 int Tdi1CompletionOf(opcode_t opcode __attribute__((unused)),
                      int narg __attribute__((unused)),
-                     struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                     struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiDispatchOf(list[0], &tmp MDS_END_ARG);
   if (STATUS_OK)
     status = MdsCopyDxXd(((struct descriptor_dispatch *)tmp.pointer)->completion,
-                       out_ptr);
+                         out_ptr);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -246,26 +255,28 @@ int Tdi1CompletionOf(opcode_t opcode __attribute__((unused)),
 int Tdi1CompletionMessageOf(opcode_t opcode __attribute__((unused)),
                             int narg __attribute__((unused)),
                             struct descriptor *list[],
-                            struct descriptor_xd *out_ptr) {
+                            struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_ACTION, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_ACTION:
-    if (((struct descriptor_action *)tmp.pointer)->ndesc < 4)
-      status = MdsFree1Dx(out_ptr, NULL);
-    else
-      status = MdsCopyDxXd(
-          ((struct descriptor_action *)tmp.pointer)->completion_message,
-          out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_ACTION:
+      if (((struct descriptor_action *)tmp.pointer)->ndesc < 4)
+        status = MdsFree1Dx(out_ptr, NULL);
+      else
+        status = MdsCopyDxXd(
+            ((struct descriptor_action *)tmp.pointer)->completion_message,
+            out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -276,22 +287,24 @@ int Tdi1CompletionMessageOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ConditionOf(opcode_t opcode __attribute__((unused)),
                     int narg __attribute__((unused)), struct descriptor *list[],
-                    struct descriptor_xd *out_ptr) {
+                    struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_CONDITION, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_CONDITION:
-    status = MdsCopyDxXd(
-        ((struct descriptor_condition *)tmp.pointer)->condition, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_CONDITION:
+      status = MdsCopyDxXd(
+          ((struct descriptor_condition *)tmp.pointer)->condition, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -304,7 +317,8 @@ int Tdi1ConditionOf(opcode_t opcode __attribute__((unused)),
                 same = DIM_OF(dimension)
 */
 int Tdi1DimOf(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   array_bounds *pa;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -322,26 +336,32 @@ int Tdi1DimOf(opcode_t opcode __attribute__((unused)), int narg,
 
   pa = (array_bounds *)tmp.pointer;
   if (STATUS_OK)
-    switch (pa->class) {
-  case CLASS_A:
-    dimct = pa->aflags.coeff ? pa->dimct : 1;
-    if (index >= dimct)
-      status = TdiBAD_INDEX;
-    /*******************************************
+    switch (pa->class)
+    {
+    case CLASS_A:
+      dimct = pa->aflags.coeff ? pa->dimct : 1;
+      if (index >= dimct)
+        status = TdiBAD_INDEX;
+      /*******************************************
     After arsize is a0, multipliers, and bounds.
     NEED we reverse for non-FORTRAN?
     *******************************************/
-    else if (pa->aflags.bounds) {
-      l = pa->m[dimct + 2 * index];
-      u = pa->m[dimct + 2 * index + 1];
-    } else if (pa->aflags.coeff) {
-      l = 0;
-      u = pa->m[index] - 1;
-    } else {
-      l = 0;
-      u = (int)pa->arsize / (int)pa->length - 1;
-    }
-    if (STATUS_OK)
+      else if (pa->aflags.bounds)
+      {
+        l = pa->m[dimct + 2 * index];
+        u = pa->m[dimct + 2 * index + 1];
+      }
+      else if (pa->aflags.coeff)
+      {
+        l = 0;
+        u = pa->m[index] - 1;
+      }
+      else
+      {
+        l = 0;
+        u = (int)pa->arsize / (int)pa->length - 1;
+      }
+      if (STATUS_OK)
       {
         struct descriptor ldsc = {sizeof(int), DTYPE_L, CLASS_S, 0};
         struct descriptor udsc = {sizeof(int), DTYPE_L, CLASS_S, 0};
@@ -349,36 +369,39 @@ int Tdi1DimOf(opcode_t opcode __attribute__((unused)), int narg,
         udsc.pointer = (char *)&u;
         status = TdiBuildRange(&ldsc, &udsc, out_ptr MDS_END_ARG);
       }
-    break;
-  case CLASS_R:
-    switch (pa->dtype) {
-    case DTYPE_DIMENSION:
-      if (index > 0)
-        status = TdiBAD_INDEX;
-      else
-        status = MdsCopyDxXd((struct descriptor *)&tmp, out_ptr);
       break;
-    case DTYPE_SIGNAL:
-      if (index > ((struct descriptor_signal *)pa)->ndesc - 3 ||
-          ((struct descriptor_signal *)pa)->dimensions[index] == 0) {
-        struct descriptor_s index_dsc = {sizeof(int), DTYPE_L, CLASS_S, 0};
-        index_dsc.pointer = (char *)&index;
-        status = tdi_get_data(&omits[1], &tmp, &tmp);
-        if (STATUS_OK)
-          status = TdiDimOf(&tmp, &index_dsc, out_ptr MDS_END_ARG);
-      } else
-        status = MdsCopyDxXd(
-            ((struct descriptor_signal *)pa)->dimensions[index], out_ptr);
+    case CLASS_R:
+      switch (pa->dtype)
+      {
+      case DTYPE_DIMENSION:
+        if (index > 0)
+          status = TdiBAD_INDEX;
+        else
+          status = MdsCopyDxXd((struct descriptor *)&tmp, out_ptr);
+        break;
+      case DTYPE_SIGNAL:
+        if (index > ((struct descriptor_signal *)pa)->ndesc - 3 ||
+            ((struct descriptor_signal *)pa)->dimensions[index] == 0)
+        {
+          struct descriptor_s index_dsc = {sizeof(int), DTYPE_L, CLASS_S, 0};
+          index_dsc.pointer = (char *)&index;
+          status = tdi_get_data(&omits[1], &tmp, &tmp);
+          if (STATUS_OK)
+            status = TdiDimOf(&tmp, &index_dsc, out_ptr MDS_END_ARG);
+        }
+        else
+          status = MdsCopyDxXd(
+              ((struct descriptor_signal *)pa)->dimensions[index], out_ptr);
+        break;
+      default:
+        status = TdiINVDTYDSC;
+        break;
+      }
       break;
     default:
-      status = TdiINVDTYDSC;
+      status = TdiINVCLADSC;
       break;
     }
-    break;
-  default:
-    status = TdiINVCLADSC;
-    break;
-  }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -390,26 +413,28 @@ int Tdi1DimOf(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1DispatchOf(opcode_t opcode __attribute__((unused)),
                    int narg __attribute__((unused)), struct descriptor *list[],
-                   struct descriptor_xd *out_ptr) {
+                   struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_ACTION, DTYPE_DISPATCH, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_ACTION:
-    status = TdiDispatchOf(((struct descriptor_action *)tmp.pointer)->dispatch,
-                           out_ptr MDS_END_ARG);
-    break;
-  case DTYPE_DISPATCH:
-    MdsFree1Dx(out_ptr, NULL);
-    *out_ptr = tmp;
-    return status;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_ACTION:
+      status = TdiDispatchOf(((struct descriptor_action *)tmp.pointer)->dispatch,
+                             out_ptr MDS_END_ARG);
+      break;
+    case DTYPE_DISPATCH:
+      MdsFree1Dx(out_ptr, NULL);
+      *out_ptr = tmp;
+      return status;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -420,35 +445,40 @@ int Tdi1DispatchOf(opcode_t opcode __attribute__((unused)),
                 descriptor = DSCPTR_OF(classAPD, [number])
 */
 int Tdi1DscptrOf(opcode_t opcode __attribute__((unused)), int narg,
-                 struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                 struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_r *pr = (struct descriptor_r *)list[0];
   unsigned int iarg = 0;
 
   while (pr && pr->dtype == DTYPE_DSC)
     pr = (struct descriptor_r *)pr->pointer;
-  if (pr) {
+  if (pr)
+  {
     if (narg > 1)
       status = TdiGetLong(list[1], &iarg);
     if (STATUS_OK)
-      switch (pr->class) {
-    case CLASS_R:
-      if (iarg >= pr->ndesc)
-        status = TdiBAD_INDEX;
-      else
-        status = MdsCopyDxXd(pr->dscptrs[iarg], out_ptr);
+      switch (pr->class)
+      {
+      case CLASS_R:
+        if (iarg >= pr->ndesc)
+          status = TdiBAD_INDEX;
+        else
+          status = MdsCopyDxXd(pr->dscptrs[iarg], out_ptr);
+        break;
+      case CLASS_APD:
+      {
+        array_desc *pa = (array_desc *)pr;
+        if (iarg >= pa->arsize / pa->length)
+          status = TdiBAD_INDEX;
+        else
+          status = MdsCopyDxXd(pa->pointer[iarg], out_ptr);
+      }
       break;
-    case CLASS_APD: {
-      array_desc *pa = (array_desc *)pr;
-      if (iarg >= pa->arsize / pa->length)
-        status = TdiBAD_INDEX;
-      else
-        status = MdsCopyDxXd(pa->pointer[iarg], out_ptr);
-    } break;
-    default:
-      status = TdiINVCLADSC;
-      break;
-    }
+      default:
+        status = TdiINVCLADSC;
+        break;
+      }
   }
   return status;
 }
@@ -458,7 +488,8 @@ int Tdi1DscptrOf(opcode_t opcode __attribute__((unused)), int narg,
                 byte = DSCPTR(any)
 */
 int Tdi1Dscptr(opcode_t opcode, int narg, struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD, *new[2];
   new[0] = &tmp;
@@ -477,7 +508,8 @@ int Tdi1Dscptr(opcode_t opcode, int narg, struct descriptor *list[],
 */
 int Tdi1KindOf(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor *px = list[0];
   unsigned char dtype;
@@ -497,7 +529,8 @@ int Tdi1KindOf(opcode_t opcode __attribute__((unused)),
                 byte = KIND(any)
 */
 int Tdi1Kind(opcode_t opcode, int narg, struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
 
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
@@ -513,7 +546,8 @@ int Tdi1Kind(opcode_t opcode, int narg, struct descriptor *list[],
                 endidx_field = END_OF(&window)
 */
 int Tdi1EndOf(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned int n = 0;
@@ -521,35 +555,36 @@ int Tdi1EndOf(opcode_t opcode __attribute__((unused)), int narg,
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_RANGE:
-    if (narg > 1)
-      status = TdiEXTRA_ARG;
-    else
-      status = MdsCopyDxXd(((struct descriptor_range *)tmp.pointer)->ending,
-                           out_ptr);
-    break;
-  case DTYPE_SLOPE:
-    if (narg > 1)
-      status = TdiGetLong(list[1], &n);
-    if (STATUS_OK &&
-        3 * n + 3 > ((struct descriptor_slope *)tmp.pointer)->ndesc)
-      status = TdiBAD_INDEX;
-    if (STATUS_OK)
-      status = MdsCopyDxXd(
-        ((struct descriptor_slope *)tmp.pointer)->segment[n].ending, out_ptr);
-    break;
-  case DTYPE_WINDOW:
-    if (narg > 1)
-      status = TdiEXTRA_ARG;
-    else
-      status = MdsCopyDxXd(((struct descriptor_window *)tmp.pointer)->endingidx,
-                           out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_RANGE:
+      if (narg > 1)
+        status = TdiEXTRA_ARG;
+      else
+        status = MdsCopyDxXd(((struct descriptor_range *)tmp.pointer)->ending,
+                             out_ptr);
+      break;
+    case DTYPE_SLOPE:
+      if (narg > 1)
+        status = TdiGetLong(list[1], &n);
+      if (STATUS_OK &&
+          3 * n + 3 > ((struct descriptor_slope *)tmp.pointer)->ndesc)
+        status = TdiBAD_INDEX;
+      if (STATUS_OK)
+        status = MdsCopyDxXd(
+            ((struct descriptor_slope *)tmp.pointer)->segment[n].ending, out_ptr);
+      break;
+    case DTYPE_WINDOW:
+      if (narg > 1)
+        status = TdiEXTRA_ARG;
+      else
+        status = MdsCopyDxXd(((struct descriptor_window *)tmp.pointer)->endingidx,
+                             out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -560,7 +595,8 @@ int Tdi1EndOf(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1ErrorOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   static const DESCRIPTOR(none, "");
   struct descriptor_xd tmp = EMPTY_XD;
@@ -568,15 +604,16 @@ int Tdi1ErrorOf(opcode_t opcode __attribute__((unused)),
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_WITH_ERROR:
-    status = MdsCopyDxXd(((struct descriptor_with_error *)tmp.pointer)->error,
-                         out_ptr);
-    break;
-  default:
-    status = MdsCopyDxXd((struct descriptor *)&none, out_ptr);
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_WITH_ERROR:
+      status = MdsCopyDxXd(((struct descriptor_with_error *)tmp.pointer)->error,
+                           out_ptr);
+      break;
+    default:
+      status = MdsCopyDxXd((struct descriptor *)&none, out_ptr);
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -587,24 +624,26 @@ int Tdi1ErrorOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ErrorlogsOf(opcode_t opcode __attribute__((unused)),
                     int narg __attribute__((unused)), struct descriptor *list[],
-                    struct descriptor_xd *out_ptr) {
+                    struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_ACTION, 0};
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_ACTION:
-    if (((struct descriptor_action *)tmp.pointer)->ndesc < 3)
-      status = MdsFree1Dx(out_ptr, NULL);
-    else
-      status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->errorlogs,
-                           out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_ACTION:
+      if (((struct descriptor_action *)tmp.pointer)->ndesc < 3)
+        status = MdsFree1Dx(out_ptr, NULL);
+      else
+        status = MdsCopyDxXd(((struct descriptor_action *)tmp.pointer)->errorlogs,
+                             out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -615,22 +654,24 @@ int Tdi1ErrorlogsOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1HelpOf(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_PARAM, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_PARAM:
-    status =
-        MdsCopyDxXd(((struct descriptor_param *)tmp.pointer)->help, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_PARAM:
+      status =
+          MdsCopyDxXd(((struct descriptor_param *)tmp.pointer)->help, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -641,14 +682,15 @@ int Tdi1HelpOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1IdentOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiDispatchOf(list[0], &tmp MDS_END_ARG);
   if (STATUS_OK)
     status =
-      MdsCopyDxXd(((struct descriptor_dispatch *)tmp.pointer)->ident, out_ptr);
+        MdsCopyDxXd(((struct descriptor_dispatch *)tmp.pointer)->ident, out_ptr);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -661,30 +703,32 @@ int Tdi1IdentOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ImageOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_CALL, DTYPE_CONGLOM, DTYPE_ROUTINE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_CALL:
-    status =
-        MdsCopyDxXd(((struct descriptor_call *)tmp.pointer)->image, out_ptr);
-    break;
-  case DTYPE_CONGLOM:
-    status =
-        MdsCopyDxXd(((struct descriptor_conglom *)tmp.pointer)->image, out_ptr);
-    break;
-  case DTYPE_ROUTINE:
-    status =
-        MdsCopyDxXd(((struct descriptor_routine *)tmp.pointer)->image, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_CALL:
+      status =
+          MdsCopyDxXd(((struct descriptor_call *)tmp.pointer)->image, out_ptr);
+      break;
+    case DTYPE_CONGLOM:
+      status =
+          MdsCopyDxXd(((struct descriptor_conglom *)tmp.pointer)->image, out_ptr);
+      break;
+    case DTYPE_ROUTINE:
+      status =
+          MdsCopyDxXd(((struct descriptor_routine *)tmp.pointer)->image, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -695,7 +739,8 @@ int Tdi1ImageOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1InterruptOf(opcode_t opcode __attribute__((unused)),
                     int narg __attribute__((unused)), struct descriptor *list[],
-                    struct descriptor_xd *out_ptr) {
+                    struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   struct descriptor_dispatch *pd;
@@ -703,18 +748,20 @@ int Tdi1InterruptOf(opcode_t opcode __attribute__((unused)),
 
   status = TdiDispatchOf(list[0], &tmp MDS_END_ARG);
   if (STATUS_OK)
+  {
+    pd = (struct descriptor_dispatch *)tmp.pointer;
+    if (*(char *)pd->pointer != TreeSCHED_ASYNC)
     {
-      pd = (struct descriptor_dispatch *)tmp.pointer;
-      if (*(char *)pd->pointer != TreeSCHED_ASYNC) {
-        status = tdi_get_data(omits, pd->when, out_ptr);
-        if (STATUS_OK)
-          {
-            if (out_ptr->pointer == 0 || out_ptr->pointer->dtype != DTYPE_T)
-              status = TdiINVDTYDSC;
-          }
-      } else
-        status = TdiINV_OPC;
+      status = tdi_get_data(omits, pd->when, out_ptr);
+      if (STATUS_OK)
+      {
+        if (out_ptr->pointer == 0 || out_ptr->pointer->dtype != DTYPE_T)
+          status = TdiINVDTYDSC;
+      }
     }
+    else
+      status = TdiINV_OPC;
+  }
   else
     status = TdiINVDTYDSC;
   MdsFree1Dx(&tmp, NULL);
@@ -727,22 +774,24 @@ int Tdi1InterruptOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1LanguageOf(opcode_t opcode __attribute__((unused)),
                    int narg __attribute__((unused)), struct descriptor *list[],
-                   struct descriptor_xd *out_ptr) {
+                   struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_PROCEDURE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_PROCEDURE:
-    status = MdsCopyDxXd(((struct descriptor_procedure *)tmp.pointer)->language,
-                         out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_PROCEDURE:
+      status = MdsCopyDxXd(((struct descriptor_procedure *)tmp.pointer)->language,
+                           out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -753,26 +802,28 @@ int Tdi1LanguageOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1MethodOf(opcode_t opcode __attribute__((unused)),
                  int narg __attribute__((unused)), struct descriptor *list[],
-                 struct descriptor_xd *out_ptr) {
+                 struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_METHOD, DTYPE_OPAQUE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_METHOD:
-    status =
-        MdsCopyDxXd(((struct descriptor_method *)tmp.pointer)->method, out_ptr);
-    break;
-  case DTYPE_OPAQUE:
-    status = MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->opaque_type,
-                         out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_METHOD:
+      status =
+          MdsCopyDxXd(((struct descriptor_method *)tmp.pointer)->method, out_ptr);
+      break;
+    case DTYPE_OPAQUE:
+      status = MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->opaque_type,
+                           out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -783,22 +834,24 @@ int Tdi1MethodOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ModelOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_CONGLOM, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_CONGLOM:
-    status =
-        MdsCopyDxXd(((struct descriptor_conglom *)tmp.pointer)->model, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_CONGLOM:
+      status =
+          MdsCopyDxXd(((struct descriptor_conglom *)tmp.pointer)->model, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -809,22 +862,24 @@ int Tdi1ModelOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1NameOf(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_CONGLOM, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_CONGLOM:
-    status =
-        MdsCopyDxXd(((struct descriptor_conglom *)tmp.pointer)->name, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_CONGLOM:
+      status =
+          MdsCopyDxXd(((struct descriptor_conglom *)tmp.pointer)->name, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -835,7 +890,8 @@ int Tdi1NameOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1NdescOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_r *pr = (struct descriptor_r *)list[0];
   unsigned char ndesc;
@@ -843,7 +899,8 @@ int Tdi1NdescOf(opcode_t opcode __attribute__((unused)),
   while (pr && pr->dtype == DTYPE_DSC)
     pr = (struct descriptor_r *)pr->pointer;
   if (pr)
-    switch (pr->class) {
+    switch (pr->class)
+    {
     case CLASS_R:
       ndesc = pr->ndesc;
       status = tdi_put_logical(ndesc, out_ptr);
@@ -863,7 +920,8 @@ int Tdi1NdescOf(opcode_t opcode __attribute__((unused)),
                 byte = NDESC(any)
 */
 int Tdi1Ndesc(opcode_t opcode, int narg, struct descriptor *list[],
-              struct descriptor_xd *out_ptr) {
+              struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
 
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
@@ -878,22 +936,24 @@ int Tdi1Ndesc(opcode_t opcode, int narg, struct descriptor *list[],
 */
 int Tdi1ObjectOf(opcode_t opcode __attribute__((unused)),
                  int narg __attribute__((unused)), struct descriptor *list[],
-                 struct descriptor_xd *out_ptr) {
+                 struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_METHOD, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_METHOD:
-    status =
-        MdsCopyDxXd(((struct descriptor_method *)tmp.pointer)->object, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_METHOD:
+      status =
+          MdsCopyDxXd(((struct descriptor_method *)tmp.pointer)->object, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -905,27 +965,29 @@ int Tdi1ObjectOf(opcode_t opcode __attribute__((unused)),
 int Tdi1PerformanceOf(opcode_t opcode __attribute__((unused)),
                       int narg __attribute__((unused)),
                       struct descriptor *list[],
-                      struct descriptor_xd *out_ptr) {
+                      struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_ACTION, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_ACTION:
-    if (((struct descriptor_action *)tmp.pointer)->ndesc < 5)
-      status = MdsFree1Dx(out_ptr, NULL);
-    else
-      status = MdsCopyDxXd(
-          (struct descriptor *)((struct descriptor_action *)tmp.pointer)
-              ->performance,
-          out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_ACTION:
+      if (((struct descriptor_action *)tmp.pointer)->ndesc < 5)
+        status = MdsFree1Dx(out_ptr, NULL);
+      else
+        status = MdsCopyDxXd(
+            (struct descriptor *)((struct descriptor_action *)tmp.pointer)
+                ->performance,
+            out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -936,14 +998,15 @@ int Tdi1PerformanceOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1PhaseOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiDispatchOf(list[0], &tmp MDS_END_ARG);
   if (STATUS_OK)
     status =
-      MdsCopyDxXd(((struct descriptor_dispatch *)tmp.pointer)->phase, out_ptr);
+        MdsCopyDxXd(((struct descriptor_dispatch *)tmp.pointer)->phase, out_ptr);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -954,22 +1017,24 @@ int Tdi1PhaseOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ProcedureOf(opcode_t opcode __attribute__((unused)),
                     int narg __attribute__((unused)), struct descriptor *list[],
-                    struct descriptor_xd *out_ptr) {
+                    struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_PROCEDURE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_PROCEDURE:
-    status = MdsCopyDxXd(
-        ((struct descriptor_procedure *)tmp.pointer)->procedure, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_PROCEDURE:
+      status = MdsCopyDxXd(
+          ((struct descriptor_procedure *)tmp.pointer)->procedure, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -980,22 +1045,24 @@ int Tdi1ProcedureOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ProgramOf(opcode_t opcode __attribute__((unused)),
                   int narg __attribute__((unused)), struct descriptor *list[],
-                  struct descriptor_xd *out_ptr) {
+                  struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_PROGRAM, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_PROGRAM:
-    status = MdsCopyDxXd(((struct descriptor_program *)tmp.pointer)->program,
-                         out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_PROGRAM:
+      status = MdsCopyDxXd(((struct descriptor_program *)tmp.pointer)->program,
+                           out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1011,7 +1078,8 @@ int Tdi1ProgramOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1QualifiersOf(opcode_t opcode __attribute__((unused)),
                      int narg __attribute__((unused)),
-                     struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                     struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   struct descriptor *pd;
@@ -1026,27 +1094,29 @@ int Tdi1QualifiersOf(opcode_t opcode __attribute__((unused)),
   status = tdi_get_data(omits, list[0], &tmp);
   pd = tmp.pointer;
   if (STATUS_OK)
-    switch (pd->dtype) {
-  case DTYPE_CONGLOM:
-    status =
-        MdsCopyDxXd(((struct descriptor_conglom *)pd)->qualifiers, out_ptr);
-    break;
-  case DTYPE_CALL:
-  case DTYPE_CONDITION:
-  case DTYPE_DEPENDENCY:
-  case DTYPE_DISPATCH:
-  case DTYPE_FUNCTION: {
-    struct descriptor x = {0, 0, CLASS_S, 0};
-    x.length = pd->length;
-    x.dtype = (char)(pd->length == 1 ? DTYPE_BU : DTYPE_WU);
-    x.pointer = pd->pointer;
-    status = MdsCopyDxXd(&x, out_ptr);
-    break;
-  }
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (pd->dtype)
+    {
+    case DTYPE_CONGLOM:
+      status =
+          MdsCopyDxXd(((struct descriptor_conglom *)pd)->qualifiers, out_ptr);
+      break;
+    case DTYPE_CALL:
+    case DTYPE_CONDITION:
+    case DTYPE_DEPENDENCY:
+    case DTYPE_DISPATCH:
+    case DTYPE_FUNCTION:
+    {
+      struct descriptor x = {0, 0, CLASS_S, 0};
+      x.length = pd->length;
+      x.dtype = (char)(pd->length == 1 ? DTYPE_BU : DTYPE_WU);
+      x.pointer = pd->pointer;
+      status = MdsCopyDxXd(&x, out_ptr);
+      break;
+    }
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1058,23 +1128,25 @@ int Tdi1QualifiersOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1RawOf(opcode_t opcode __attribute__((unused)),
               int narg __attribute__((unused)), struct descriptor *list[],
-              struct descriptor_xd *out_ptr) {
+              struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_SIGNAL, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_SIGNAL:
-    status =
-        MdsCopyDxXd(((struct descriptor_signal *)tmp.pointer)->raw, out_ptr);
-    break;
-  default:
-    MdsFree1Dx(out_ptr, NULL);
-    *out_ptr = tmp;
-    return status;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_SIGNAL:
+      status =
+          MdsCopyDxXd(((struct descriptor_signal *)tmp.pointer)->raw, out_ptr);
+      break;
+    default:
+      MdsFree1Dx(out_ptr, NULL);
+      *out_ptr = tmp;
+      return status;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1086,26 +1158,28 @@ int Tdi1RawOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1RoutineOf(opcode_t opcode __attribute__((unused)),
                   int narg __attribute__((unused)), struct descriptor *list[],
-                  struct descriptor_xd *out_ptr) {
+                  struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_CALL, DTYPE_ROUTINE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_CALL:
-    status =
-        MdsCopyDxXd(((struct descriptor_call *)tmp.pointer)->routine, out_ptr);
-    break;
-  case DTYPE_ROUTINE:
-    status = MdsCopyDxXd(((struct descriptor_routine *)tmp.pointer)->routine,
-                         out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_CALL:
+      status =
+          MdsCopyDxXd(((struct descriptor_call *)tmp.pointer)->routine, out_ptr);
+      break;
+    case DTYPE_ROUTINE:
+      status = MdsCopyDxXd(((struct descriptor_routine *)tmp.pointer)->routine,
+                           out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1116,7 +1190,8 @@ int Tdi1RoutineOf(opcode_t opcode __attribute__((unused)),
                 slope_field = SLOPE_OF(slope,[n]) !deprecated!
 */
 int Tdi1SlopeOf(opcode_t opcode __attribute__((unused)), int narg,
-                struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   static const dtype_t one_val = 1;
   static const struct descriptor one = {sizeof(unsigned char), DTYPE_BU,
@@ -1130,26 +1205,27 @@ int Tdi1SlopeOf(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK && narg > 1)
     status = TdiGetLong(list[1], &n);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_RANGE:
-    if (n > 0)
-      status = TdiBAD_INDEX;
-    if (((struct descriptor_range *)tmp.pointer)->ndesc < 3)
-      MdsCopyDxXd(&one, out_ptr);
-    else
-      MdsCopyDxXd(((struct descriptor_r *)tmp.pointer)->dscptrs[2], out_ptr);
-    break;
-  case DTYPE_SLOPE:
-    if (3 * n + 1 > ((struct descriptor_r *)tmp.pointer)->ndesc)
-      status = TdiBAD_INDEX;
-    if (STATUS_OK)
-      status = MdsCopyDxXd(
-        ((struct descriptor_slope *)tmp.pointer)->segment[n].slope, out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_RANGE:
+      if (n > 0)
+        status = TdiBAD_INDEX;
+      if (((struct descriptor_range *)tmp.pointer)->ndesc < 3)
+        MdsCopyDxXd(&one, out_ptr);
+      else
+        MdsCopyDxXd(((struct descriptor_r *)tmp.pointer)->dscptrs[2], out_ptr);
+      break;
+    case DTYPE_SLOPE:
+      if (3 * n + 1 > ((struct descriptor_r *)tmp.pointer)->ndesc)
+        status = TdiBAD_INDEX;
+      if (STATUS_OK)
+        status = MdsCopyDxXd(
+            ((struct descriptor_slope *)tmp.pointer)->segment[n].slope, out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1164,36 +1240,38 @@ int Tdi1SlopeOf(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1TaskOf(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  static const dtype_t omits[] = {DTYPE_ACTION,  DTYPE_METHOD,  DTYPE_PROCEDURE,
+  static const dtype_t omits[] = {DTYPE_ACTION, DTYPE_METHOD, DTYPE_PROCEDURE,
                                   DTYPE_PROGRAM, DTYPE_ROUTINE, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_ACTION:
-    status = TdiTaskOf(((struct descriptor_action *)tmp.pointer)->task,
-                       out_ptr MDS_END_ARG);
-    break;
-  case DTYPE_METHOD:
-  case DTYPE_PROCEDURE:
-  case DTYPE_PROGRAM:
-  case DTYPE_ROUTINE:
-  case DTYPE_L:
-  case DTYPE_LU:
-  case DTYPE_W:
-  case DTYPE_WU:
-  case DTYPE_B:
-  case DTYPE_BU:
-    MdsFree1Dx(out_ptr, NULL);
-    *out_ptr = tmp;
-    return status;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_ACTION:
+      status = TdiTaskOf(((struct descriptor_action *)tmp.pointer)->task,
+                         out_ptr MDS_END_ARG);
+      break;
+    case DTYPE_METHOD:
+    case DTYPE_PROCEDURE:
+    case DTYPE_PROGRAM:
+    case DTYPE_ROUTINE:
+    case DTYPE_L:
+    case DTYPE_LU:
+    case DTYPE_W:
+    case DTYPE_WU:
+    case DTYPE_B:
+    case DTYPE_BU:
+      MdsFree1Dx(out_ptr, NULL);
+      *out_ptr = tmp;
+      return status;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1207,7 +1285,8 @@ int Tdi1TaskOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1TimeoutOf(opcode_t opcode __attribute__((unused)),
                   int narg __attribute__((unused)), struct descriptor *list[],
-                  struct descriptor_xd *out_ptr) {
+                  struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_METHOD, DTYPE_PROCEDURE, DTYPE_PROGRAM,
@@ -1215,27 +1294,28 @@ int Tdi1TimeoutOf(opcode_t opcode __attribute__((unused)),
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_METHOD:
-    status = MdsCopyDxXd(((struct descriptor_method *)tmp.pointer)->time_out,
-                         out_ptr);
-    break;
-  case DTYPE_PROCEDURE:
-    status = MdsCopyDxXd(((struct descriptor_procedure *)tmp.pointer)->time_out,
-                         out_ptr);
-    break;
-  case DTYPE_PROGRAM:
-    status = MdsCopyDxXd(((struct descriptor_program *)tmp.pointer)->time_out,
-                         out_ptr);
-    break;
-  case DTYPE_ROUTINE:
-    status = MdsCopyDxXd(((struct descriptor_routine *)tmp.pointer)->time_out,
-                         out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_METHOD:
+      status = MdsCopyDxXd(((struct descriptor_method *)tmp.pointer)->time_out,
+                           out_ptr);
+      break;
+    case DTYPE_PROCEDURE:
+      status = MdsCopyDxXd(((struct descriptor_procedure *)tmp.pointer)->time_out,
+                           out_ptr);
+      break;
+    case DTYPE_PROGRAM:
+      status = MdsCopyDxXd(((struct descriptor_program *)tmp.pointer)->time_out,
+                           out_ptr);
+      break;
+    case DTYPE_ROUTINE:
+      status = MdsCopyDxXd(((struct descriptor_routine *)tmp.pointer)->time_out,
+                           out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1248,7 +1328,8 @@ int Tdi1TimeoutOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1UnitsOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   static const DESCRIPTOR(none, " ");
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1256,15 +1337,16 @@ int Tdi1UnitsOf(opcode_t opcode __attribute__((unused)),
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_WITH_UNITS:
-    status = MdsCopyDxXd(((struct descriptor_with_units *)tmp.pointer)->units,
-                         out_ptr);
-    break;
-  default:
-    status = MdsCopyDxXd((struct descriptor *)&none, out_ptr);
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_WITH_UNITS:
+      status = MdsCopyDxXd(((struct descriptor_with_units *)tmp.pointer)->units,
+                           out_ptr);
+      break;
+    default:
+      status = MdsCopyDxXd((struct descriptor *)&none, out_ptr);
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1275,22 +1357,24 @@ int Tdi1UnitsOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ValidationOf(opcode_t opcode __attribute__((unused)),
                      int narg __attribute__((unused)),
-                     struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                     struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_PARAM, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_PARAM:
-    status = MdsCopyDxXd(((struct descriptor_param *)tmp.pointer)->validation,
-                         out_ptr);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_PARAM:
+      status = MdsCopyDxXd(((struct descriptor_param *)tmp.pointer)->validation,
+                           out_ptr);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1305,7 +1389,8 @@ int Tdi1ValidationOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1ValueOf(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)), struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_DIMENSION,
@@ -1318,36 +1403,37 @@ int Tdi1ValueOf(opcode_t opcode __attribute__((unused)),
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_DIMENSION:
-    status = TdiValueOf(((struct descriptor_dimension *)tmp.pointer)->window,
-                        out_ptr MDS_END_ARG);
-    break;
-  case DTYPE_PARAM:
-    status =
-        MdsCopyDxXd(((struct descriptor_param *)tmp.pointer)->value, out_ptr);
-    break;
-  case DTYPE_SIGNAL:
-    status =
-        MdsCopyDxXd(((struct descriptor_signal *)tmp.pointer)->data, out_ptr);
-    break;
-  case DTYPE_WINDOW:
-    status = MdsCopyDxXd(
-        ((struct descriptor_window *)tmp.pointer)->value_at_idx0, out_ptr);
-    break;
-  case DTYPE_WITH_UNITS:
-    status = MdsCopyDxXd(((struct descriptor_with_units *)tmp.pointer)->data,
-                         out_ptr);
-    break;
-  case DTYPE_OPAQUE:
-    status =
-        MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->data, out_ptr);
-    break;
-  default:
-    MdsFree1Dx(out_ptr, NULL);
-    *out_ptr = tmp;
-    return status;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_DIMENSION:
+      status = TdiValueOf(((struct descriptor_dimension *)tmp.pointer)->window,
+                          out_ptr MDS_END_ARG);
+      break;
+    case DTYPE_PARAM:
+      status =
+          MdsCopyDxXd(((struct descriptor_param *)tmp.pointer)->value, out_ptr);
+      break;
+    case DTYPE_SIGNAL:
+      status =
+          MdsCopyDxXd(((struct descriptor_signal *)tmp.pointer)->data, out_ptr);
+      break;
+    case DTYPE_WINDOW:
+      status = MdsCopyDxXd(
+          ((struct descriptor_window *)tmp.pointer)->value_at_idx0, out_ptr);
+      break;
+    case DTYPE_WITH_UNITS:
+      status = MdsCopyDxXd(((struct descriptor_with_units *)tmp.pointer)->data,
+                           out_ptr);
+      break;
+    case DTYPE_OPAQUE:
+      status =
+          MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->data, out_ptr);
+      break;
+    default:
+      MdsFree1Dx(out_ptr, NULL);
+      *out_ptr = tmp;
+      return status;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1358,14 +1444,15 @@ int Tdi1ValueOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1WhenOf(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiDispatchOf(list[0], &tmp MDS_END_ARG);
   if (STATUS_OK)
     status =
-      MdsCopyDxXd(((struct descriptor_dispatch *)tmp.pointer)->when, out_ptr);
+        MdsCopyDxXd(((struct descriptor_dispatch *)tmp.pointer)->when, out_ptr);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -1377,26 +1464,28 @@ int Tdi1WhenOf(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1WindowOf(opcode_t opcode __attribute__((unused)),
                  int narg __attribute__((unused)), struct descriptor *list[],
-                 struct descriptor_xd *out_ptr) {
+                 struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {DTYPE_DIMENSION, DTYPE_WINDOW, 0};
 
   status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK)
-    switch (tmp.pointer->dtype) {
-  case DTYPE_DIMENSION:
-    status = MdsCopyDxXd(((struct descriptor_dimension *)tmp.pointer)->window,
-                         out_ptr);
-    break;
-  case DTYPE_WINDOW:
-    MdsFree1Dx(out_ptr, NULL);
-    *out_ptr = tmp;
-    return status;
-  default:
-    status = TdiINVDTYDSC;
-    break;
-  }
+    switch (tmp.pointer->dtype)
+    {
+    case DTYPE_DIMENSION:
+      status = MdsCopyDxXd(((struct descriptor_dimension *)tmp.pointer)->window,
+                           out_ptr);
+      break;
+    case DTYPE_WINDOW:
+      MdsFree1Dx(out_ptr, NULL);
+      *out_ptr = tmp;
+      return status;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   return status;
 }

@@ -91,7 +91,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   expression widget to the coresponding nid in the
   conglomerate.
 ***************************************************/
-void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx) {
+void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx)
+{
   XmdsExprSetNid(
       w,
       ctx->inputs_nid +
@@ -103,12 +104,14 @@ void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx) {
   XmdsResetInput - Routine to 'RESET' a channel of the digitizer.
   Called by the DW_SETUP Reset routine.
 **************************************************************/
-void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan) {
+void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
+{
   char input_name[12];
   Widget input_w;
   sprintf(input_name, "*input_%d", chan);
   input_w = XtNameToWidget(chans_dlog, input_name);
-  if (input_w) {
+  if (input_w)
+  {
     int input_nid = ctx->inputs_nid + (chan - 1) * ctx->nodes_per_input;
     char *path;
     XmString label;
@@ -127,12 +130,14 @@ void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan) {
   routines.  Writes out the information specified by the user for
   a channel.
 ******************************************************************/
-EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan) {
+EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
+{
   char input_name[12];
   Widget input_w;
   sprintf(input_name, "*input_%d", chan);
   input_w = XtNameToWidget(inputs_dlog, input_name);
-  if (input_w) {
+  if (input_w)
+  {
     int nid = ctx->inputs_nid + (chan - 1) * ctx->nodes_per_input;
     XmdsExprPut(XtNameToWidget(input_w, "start_idx"));
     XmdsExprPut(XtNameToWidget(input_w, "end_idx"));
@@ -143,16 +148,20 @@ EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan) {
   }
 }
 
-EXPORT int XmdsWidgetToNumber(Widget w, String prefix) {
+EXPORT int XmdsWidgetToNumber(Widget w, String prefix)
+{
   Widget widg;
   int number = -1;
   int length = strlen(prefix);
   char *endptr;
-  for (widg = w; widg; widg = XtParent(widg)) {
+  for (widg = w; widg; widg = XtParent(widg))
+  {
     String name = XtName(widg);
     int namelen = strlen(name);
-    if (namelen > length) {
-      if (!strncmp(prefix, name, length)) {
+    if (namelen > length)
+    {
+      if (!strncmp(prefix, name, length))
+      {
         number = strtol(name + length, &endptr, 10);
         if (endptr >= (name + namelen))
           break;

@@ -51,7 +51,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Fri Aug 24 15:59:54 EDT 2001 -- fixed powered off condition (???)
 // Mon Aug 27 11:26:10 EDT 2001 -- re-fixed (?) powered off condition
 //-----------------------------------------------------------
-int get_crate_status(char *crate_name, int *ptr_crate_status) {
+int get_crate_status(char *crate_name, int *ptr_crate_status)
+{
   char controller[11];
   short SCCdata;
   int status = SUCCESS; // optimistic ...

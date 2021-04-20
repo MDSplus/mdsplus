@@ -32,10 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  Dummy Test Funtions  ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-extern "C" {
+extern "C"
+{
 
-EXPORT int get_ghostbusters_phone() { return 5552368; }
+  EXPORT int get_ghostbusters_phone() { return 5552368; }
 
-EXPORT int test_nextint(int *x) { return ++(*x); }
-EXPORT int test_addint(int *a, int *b) { return (*a) + (*b); }
+  EXPORT int test_nextint(int *x) { return ++(*x); }
+  EXPORT int test_addint(int *a, int *b) { return (*a) + (*b); }
 }

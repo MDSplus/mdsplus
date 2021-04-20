@@ -4,7 +4,8 @@
 #define __MODULE_H
 
 // structure of CTS_DB_FILE
-struct MODULE {
+struct MODULE
+{
   //--------------------------
   // logical CAMAC module name
   //--------------------------
@@ -39,7 +40,8 @@ struct MODULE {
 #define MODULE_ENTRY sizeof(struct MODULE)
 
 // internal structure
-typedef struct Module_ {
+typedef struct Module_
+{
   char name[32]; // 2002.02.07
   int adapter;
   int id;
@@ -49,7 +51,8 @@ typedef struct Module_ {
 } Module;
 
 // linked list structure
-struct t_mod {
+struct t_mod
+{
   char mod_name[32];  // module logical name
   struct t_mod *next; // pointer to next element
 };

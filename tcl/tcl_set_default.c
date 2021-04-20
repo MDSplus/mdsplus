@@ -46,7 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TclSetDefault:
  ****************************************************************/
 EXPORT int TclSetDefault(void *ctx, char **error,
-                         char **output __attribute__((unused))) {
+                         char **output __attribute__((unused)))
+{
   int nid;
   int sts;
   char *nodename;
@@ -55,7 +56,8 @@ EXPORT int TclSetDefault(void *ctx, char **error,
   sts = TreeSetDefault(nodename, &nid);
   if (sts & 1)
     TclNodeTouched(nid, set_def);
-  else {
+  else
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + strlen(nodename) + 100);
     sprintf(*error,
@@ -72,11 +74,13 @@ EXPORT int TclSetDefault(void *ctx, char **error,
  ***************************************************************/
 EXPORT int TclShowDefault(void *ctx __attribute__((unused)),
                           char **error __attribute__((unused)),
-                          char **output) { /* Returns: status */
+                          char **output)
+{ /* Returns: status */
   char *p;
   int nid;
   TreeGetDefaultNid(&nid);
-  if ((p = TreeGetPath(nid))) {
+  if ((p = TreeGetPath(nid)))
+  {
     *output = malloc(strlen(p) + 10);
     sprintf(*output, "%s\n", p);
     TreeFree(p);

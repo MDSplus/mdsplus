@@ -26,14 +26,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <treeshr_hooks.h>
 extern char *TreeGetPath(int);
-int Notify(TreeshrHookType htype, char *tree, int shot, int nid) {
+int Notify(TreeshrHookType htype, char *tree, int shot, int nid)
+{
   char *name;
   char def_name[50];
   char *na = "N/A";
   char *path = na;
   sprintf(def_name, "Hook number %d", htype);
   name = def_name;
-  switch (htype) {
+  switch (htype)
+  {
   case OpenTree:
     name = "OpenTree";
     break;

@@ -103,7 +103,8 @@ STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 */
 STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
                             const mdsdsc_t *const pcentry, const int64_t delta,
-                            mdsdsc_t *const pwork) {
+                            mdsdsc_t *const pwork)
+{
   int j, stat1, status = 1;
   unsigned int bit = 0;
   int nitems, (*symbol)();
@@ -115,7 +116,8 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
   mdsdsc_t *pd0, *pd1, **ppd;
   size_t asize, align_size;
   if (pwork)
-    switch (pwork->class) {
+    switch (pwork->class)
+    {
     case CLASS_APD:
       //      pd1 = (mdsdsc_t *) pwork->pointer;
       ppd = (mdsdsc_t **)pwork->pointer;
@@ -189,7 +191,8 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
       pdat->arsize = (unsigned int)(plim - pcmp);
 
       nitems = (int)porig->arsize / (int)porig->length;
-      if (pcentry) {
+      if (pcentry)
+      {
         dximage = EMPTY_D;
         dxentry = EMPTY_D;
         status = LibFindImageSymbol(pcimage, pcentry, &symbol);
@@ -197,9 +200,11 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
           status = (*symbol)(&nitems, pwork, pdat, &bit, &dximage, &dxentry);
         pdat->arsize = (bit + 7) / 8;
         pd0 = (mdsdsc_t *)(pdat->pointer + pdat->arsize);
-        if (dximage.pointer) {
+        if (dximage.pointer)
+        {
           pd1 = &pd0[1] + dximage.length;
-          if ((char *)pd1 < (char *)plim) {
+          if ((char *)pd1 < (char *)plim)
+          {
             prec->dscptrs[0] = pd0;
             *pd0 = *(mdsdsc_t *)&dximage;
             _MOVC3(dximage.length, dximage.pointer,
@@ -208,9 +213,11 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
           pd0 = pd1;
           StrFree1Dx(&dximage);
         }
-        if (dxentry.pointer) {
+        if (dxentry.pointer)
+        {
           pd1 = &pd0[1] + dxentry.length;
-          if ((char *)pd1 < (char *)plim) {
+          if ((char *)pd1 < (char *)plim)
+          {
             prec->dscptrs[1] = pd0;
             *pd0 = *(mdsdsc_t *)&dxentry;
             _MOVC3(dxentry.length, dxentry.pointer,
@@ -268,13 +275,15 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
 EXPORT int MdsCompress(const mdsdsc_t *const cimage_ptr,
                        const mdsdsc_t *const centry_ptr,
                        const mdsdsc_t *const in_ptr,
-                       mdsdsc_xd_t *const out_ptr) {
+                       mdsdsc_xd_t *const out_ptr)
+{
   int status = 1;
   mdsdsc_xd_t work;
   STATIC_CONSTANT dtype_t dsc_dtype = DTYPE_DSC;
   if (in_ptr == 0)
     return MdsFree1Dx(out_ptr, NULL);
-  switch (in_ptr->class) {
+  switch (in_ptr->class)
+  {
   case CLASS_XD:
     work = *(mdsdsc_xd_t *)in_ptr;
     *(mdsdsc_xd_t *)in_ptr = EMPTY_XD;
@@ -307,7 +316,8 @@ Compact/copy from work.
 #endif
   {
     status = MdsGet1Dx(&work.l_length, &dsc_dtype, out_ptr, NULL);
-    if (status & 1) {
+    if (status & 1)
+    {
 #ifdef _RECURSIVE_COMPRESS
       int orig_len = work.l_length;
 #endif
@@ -319,11 +329,13 @@ Compact/copy from work.
         status = MdsCopyDxXd(work.pointer, out_ptr);
       MdsFree1Dx(&work, NULL);
 #ifdef _RECURSIVE_COMPRESS
-      if ((status == MdsCOMPRESSIBLE) && (orig_len / 2 > out_ptr->l_length)) {
+      if ((status == MdsCOMPRESSIBLE) && (orig_len / 2 > out_ptr->l_length))
+      {
         work = *out_ptr;
         out_ptr->pointer = 0;
         out_ptr->l_length = 0;
-      } else
+      }
+      else
         status = 1;
 #endif
     }
@@ -337,10 +349,12 @@ Compact/copy from work.
                 status = MdsDecompress(%ref(class_ca or r_function),
    %ref(output_xd))
 */
-EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr) {
+EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr)
+{
   const mdsdsc_r_t *prec = rec_ptr;
   int status, (*symbol)();
-  if (prec == 0) {
+  if (prec == 0)
+  {
     MdsFree1Dx(out_ptr, NULL);
     return 1;
   }
@@ -351,28 +365,35 @@ EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr) {
   if (prec->class != CLASS_R || prec->dtype != DTYPE_FUNCTION ||
       prec->pointer == 0 || *(unsigned short *)prec->pointer != OpcDECOMPRESS)
     status = MdsCopyDxXd((mdsdsc_t *)prec, out_ptr);
-  else {
+  else
+  {
     mdsdsc_a_t *pa = (mdsdsc_a_t *)prec->dscptrs[2];
     int nitems = (int)pa->arsize / (int)pa->length;
     int bit = 0;
-    if (prec->dscptrs[1]) {
+    if (prec->dscptrs[1])
+    {
       status = LibFindImageSymbol(prec->dscptrs[0], prec->dscptrs[1], &symbol);
       if (!(status & 1))
         return status;
-    } else {
+    }
+    else
+    {
       symbol = MdsXpand;
       status = 1;
     }
     if (status & 1)
       status = MdsGet1DxA(pa, &pa->length, &pa->dtype, out_ptr);
-    if (status & 1) {
-      if (prec->dscptrs[3]->class == CLASS_CA) {
+    if (status & 1)
+    {
+      if (prec->dscptrs[3]->class == CLASS_CA)
+      {
         EMPTYXD(tmp_xd);
         status = MdsDecompress((mdsdsc_r_t *)prec->dscptrs[3], &tmp_xd);
         if (status & 1)
           status = (*symbol)(&nitems, tmp_xd.pointer, out_ptr->pointer, &bit);
         MdsFree1Dx(&tmp_xd, 0);
-      } else
+      }
+      else
         status = (*symbol)(&nitems, prec->dscptrs[3], out_ptr->pointer, &bit);
     }
   }

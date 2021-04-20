@@ -46,11 +46,14 @@ extern int TdiMasterData();
 
 static const struct descriptor missing = {0, DTYPE_MISSING, CLASS_S, 0};
 
-typedef struct {
+typedef struct
+{
   int q[2];
 } quadw;
-static int copy(int len, int n, char *x, int incx, char *y, int incy) {
-  switch (len) {
+static int copy(int len, int n, char *x, int incx, char *y, int incy)
+{
+  switch (len)
+  {
   case 1:
     for (; --n >= 0; x += incx, y += incy)
       *(char *)y = *(char *)x;
@@ -76,7 +79,8 @@ static int copy(int len, int n, char *x, int incx, char *y, int incy) {
 }
 
 int Tdi1Diagonal(opcode_t opcode, int narg, struct descriptor *list[],
-                 struct descriptor_xd *out_ptr) {
+                 struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int cmode = -1, nside = 0;
   struct descriptor_xd fill = EMPTY_XD;
@@ -90,28 +94,32 @@ int Tdi1Diagonal(opcode_t opcode, int narg, struct descriptor *list[],
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
   pv = (struct descriptor_a *)dat[0].pointer;
   if (STATUS_OK)
-    { N_ELEMENTS(pv, nside); }
+  {
+    N_ELEMENTS(pv, nside);
+  }
   if (STATUS_OK)
+  {
+    proto.m[0] = nside;
+    proto.m[1] = nside;
+    proto.length = pv->length;
+    proto.arsize = pv->length * nside * nside;
+    if (narg > 1 && list[1])
     {
-      proto.m[0] = nside;
-      proto.m[1] = nside;
-      proto.length = pv->length;
-      proto.arsize = pv->length * nside * nside;
-      if (narg > 1 && list[1]) {
-        status = TdiData(list[1], &fill MDS_END_ARG);
-        fillptr = fill.pointer;
-      } else
-        fillptr = (struct descriptor *)&missing;
+      status = TdiData(list[1], &fill MDS_END_ARG);
+      fillptr = fill.pointer;
     }
+    else
+      fillptr = (struct descriptor *)&missing;
+  }
   if (STATUS_OK)
     status = MdsGet1DxA((struct descriptor_a *)&proto, &pv->length, &pv->dtype,
-                      out_ptr);
+                        out_ptr);
   po = (struct descriptor_a *)out_ptr->pointer;
   if (STATUS_OK)
     status = TdiConvert(fillptr, po MDS_END_ARG);
   if (STATUS_OK)
     status = copy(pv->length, nside, pv->pointer, pv->length, po->pointer,
-                pv->length * (nside + 1));
+                  pv->length * (nside + 1));
   if (STATUS_OK)
     status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
   MdsFree1Dx(&fill, NULL);

@@ -11,8 +11,8 @@
 #ifdef MDSOBJECTSCPPSHRVS_EXPORTS
 // visual studio uses int types for typedef
 #define TYPEDEF(bytes) enum
-#define ENDDEF(type, name)                                                     \
-  ;                                                                            \
+#define ENDDEF(type, name) \
+  ;                        \
   typedef type name
 #else
 #define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
@@ -86,7 +86,8 @@ TYPEDEF(4){
 } ENDDEF(int16_t, nci_t);
 #undef TYPEDEF
 #undef ENDDEF
-typedef struct nci_itm {
+typedef struct nci_itm
+{
   int16_t buffer_length;
   nci_t code;
   void *pointer;

@@ -43,8 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef DEBUG
 #define DBG(...) fprintf(stderr, __VA_ARGS__)
 #else
-#define DBG(...)                                                               \
-  { /**/                                                                       \
+#define DBG(...) \
+  { /**/         \
   }
 #endif
 
@@ -63,7 +63,8 @@ int tdi_yacc_RESOLVE();
         $nnn is nnn-th argument.
         $0 is then the compile string itself.
 */
-int tdi_yacc_ARG(struct marker *mark_ptr, TDITHREADSTATIC_ARG) {
+int tdi_yacc_ARG(struct marker *mark_ptr, TDITHREADSTATIC_ARG)
+{
   INIT_STATUS;
   mdsdsc_t *ptr;
   mdsdsc_xd_t junk = EMPTY_XD;
@@ -72,7 +73,8 @@ int tdi_yacc_ARG(struct marker *mark_ptr, TDITHREADSTATIC_ARG) {
 
   if (len == 1)
     ++TDI_REFZONE.l_iarg;
-  else {
+  else
+  {
     TDI_REFZONE.l_iarg = 0;
     c_ptr = mark_ptr->rptr->pointer;
     for (; --len > 0;)
@@ -102,7 +104,8 @@ static const DESCRIPTOR_FUNCTION_0(EMPTY_FUN, 0);
 int tdi_yacc_BUILD(int ndesc, int nused, opcode_t opcode, struct marker *out,
                    struct marker *arg1, struct marker *arg2,
                    struct marker *arg3, struct marker *arg4,
-                   TDITHREADSTATIC_ARG) {
+                   TDITHREADSTATIC_ARG)
+{
   mds_function_t *fun;
   int dsc_size = sizeof(mds_function_t) + sizeof(mdsdsc_t *) * (ndesc - 1);
   unsigned int vm_size = dsc_size + sizeof(unsigned short);
@@ -117,7 +120,8 @@ int tdi_yacc_BUILD(int ndesc, int nused, opcode_t opcode, struct marker *out,
   fun->pointer = (opcode_t *)((char *)fun + dsc_size);
   *fun->pointer = opcode;
   fun->ndesc = (unsigned char)nused;
-  switch (nused) {
+  switch (nused)
+  {
   default:
     return TdiEXTRA_ARG;
   case 4:
@@ -157,8 +161,10 @@ int tdi_yacc_BUILD(int ndesc, int nused, opcode_t opcode, struct marker *out,
         WARNING the pointer is changed.
         We do not free small stuff because we will throw it all away later.
 */
-int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG) {
-  if (TDI_STACK_IDX >= TDI_STACK_SIZE - 1) {
+int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG)
+{
+  if (TDI_STACK_IDX >= TDI_STACK_SIZE - 1)
+  {
     fprintf(stderr,
             "Error: Too many recursive calls using '`': only %d supported\n",
             TDI_STACK_SIZE);
@@ -183,7 +189,7 @@ int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG) {
   *******************/
   if (STATUS_OK)
     status = MdsCopyDxXdZ(xd.pointer, &junk, &TDI_REFZONE.l_zone, NULL, NULL,
-                        NULL, NULL);
+                          NULL, NULL);
   if (STATUS_OK)
     *dsc_ptr_ptr = (mdsdsc_xd_t *)junk.pointer;
   MdsFree1Dx(&xd, NULL);
@@ -218,7 +224,8 @@ int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG) {
         What about DTYPE_MISSING? It is generated only by evaluation.
 */
 
-int tdi_yacc_RESOLVE(mds_function_t **out_ptr_ptr, TDITHREADSTATIC_ARG) {
+int tdi_yacc_RESOLVE(mds_function_t **out_ptr_ptr, TDITHREADSTATIC_ARG)
+{
   mds_function_t *out_ptr = *out_ptr_ptr;
   struct TdiFunctionStruct *this_ptr;
   if (out_ptr == 0 || out_ptr->dtype != DTYPE_FUNCTION)
@@ -237,15 +244,19 @@ int tdi_yacc_RESOLVE(mds_function_t **out_ptr_ptr, TDITHREADSTATIC_ARG) {
   Don't expand scalars.
   ******************/
   if (this_ptr->f1 != Tdi1Build)
-    for (j = ndesc; --j >= 0;) {
+    for (j = ndesc; --j >= 0;)
+    {
       mdsdsc_t *tst = out_ptr->arguments[j];
       while (tst != 0 && tst->dtype == DTYPE_DSC)
         tst = (mdsdsc_t *)tst->pointer;
-      if (opcode == OPC_SET_RANGE) { /*Set_Range(value,range,...,array) */
-        if (j != ndesc - 1) {
+      if (opcode == OPC_SET_RANGE)
+      { /*Set_Range(value,range,...,array) */
+        if (j != ndesc - 1)
+        {
           if (tst == 0 || tst->dtype == DTYPE_RANGE)
             continue;
-        } else if (tst && tst->class != CLASS_A)
+        }
+        else if (tst && tst->class != CLASS_A)
           return MDSplusSUCCESS; /*decide at runtime */
       }
       if (tst && tst->dtype >= TdiCAT_MAX)
