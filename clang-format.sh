@@ -12,4 +12,5 @@ done
 
 find $dir/$1 \( $exclude_path \) -prune -false\
  -o \( -type f \( -regex '.*\.\(c\|h\)\(pp\|\)$' $exclude_file \) \)\
- -exec clang-format -i -style=file \{\} \;
+ -exec clang-format -i -style=file \{\} \;\
+ -exec sed -i -E '{N;s/(\/\/[^\n]*)\\\n\s*\/\//\1/g;P;D}' \{\} \;
