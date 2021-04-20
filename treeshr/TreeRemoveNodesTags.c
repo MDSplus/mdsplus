@@ -144,7 +144,7 @@ static void _RemoveTagIdx(PINO_DATABASE *dblist, int tagidx)
     for (tag_link = swapint32(&node_ptr->tag_link),
         info_ptr = dblist->tree_info->tag_info + tag_link - 1;
          (swapint32(&info_ptr->tag_link) != tagidx) &&
-         (swapint32(&info_ptr->tag_link) >= 0);
+         (swapint32(&info_ptr->tag_link) > 0);
          info_ptr =
              dblist->tree_info->tag_info + swapint32(&info_ptr->tag_link) - 1)
       ;
