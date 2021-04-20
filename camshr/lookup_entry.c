@@ -81,14 +81,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      pointer to the name of a logical module name
 // output:      -1 indicates not found; >= 0 is index in db file
 //-------------------------------------------------------------------------
-int lookup_entry(int dbType, char *entry_name) {
+int lookup_entry(int dbType, char *entry_name)
+{
   int numOfEntries, retval;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("lookup_entry('%s')\n", entry_name);
 
   // get number of entries in db file
-  if ((numOfEntries = get_file_count(dbType)) <= 0) {
+  if ((numOfEntries = get_file_count(dbType)) <= 0)
+  {
     if (MSGLVL(DETAILS))
       fprintf(stderr, "no entries in db -- lookup() failed\n");
 
@@ -104,25 +106,30 @@ Lookup_Exit:
 
 extern struct CRATE *CRATEdb;
 
-int find_crate(char *wild, char **crate, void **ctx) {
+int find_crate(char *wild, char **crate, void **ctx)
+{
   struct descriptor wild_d = {strlen(wild), DTYPE_T, CLASS_S, wild};
-  struct context {
+  struct context
+  {
     int numEntries;
     int next;
   } * context;
   int status = 0;
   if (wild[wild_d.length - 1] == ':')
     wild_d.length--;
-  if (*ctx == 0) {
+  if (*ctx == 0)
+  {
     *ctx = malloc(sizeof(struct context));
     ((struct context *)*ctx)->next = 0;
     ((struct context *)*ctx)->numEntries = get_file_count(CRATE_DB);
   }
   context = (struct context *)*ctx;
-  while (context->next < context->numEntries) {
+  while (context->next < context->numEntries)
+  {
     struct descriptor crate_d = {sizeof(struct CRATE_NAME), DTYPE_T, CLASS_S,
                                  (char *)&CRATEdb[context->next++]};
-    if (StrMatchWild(&crate_d, &wild_d) & 1) {
+    if (StrMatchWild(&crate_d, &wild_d) & 1)
+    {
       *crate = memcpy(malloc(crate_d.length + 1), crate_d.pointer,
                       sizeof(struct CRATE_NAME));
       (*crate)[crate_d.length] = 0;
@@ -133,7 +140,8 @@ int find_crate(char *wild, char **crate, void **ctx) {
   return status;
 }
 
-void find_crate_end(void **ctx) {
+void find_crate_end(void **ctx)
+{
   free(*ctx);
   *ctx = 0;
 }

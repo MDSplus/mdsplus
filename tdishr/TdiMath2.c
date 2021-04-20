@@ -74,80 +74,89 @@ extern void DoubleToWideInt();
 
 const double radians_to_degrees = 180. / M_PI;
 
-#define SetupArgs                                                              \
-  struct descriptor_a *ina1 = (struct descriptor_a *)in1;                      \
-  struct descriptor_a *ina2 = (struct descriptor_a *)in2;                      \
-  struct descriptor_a *outa = (struct descriptor_a *)out;                      \
-  int scalars = 0;                                                             \
-  int nout;                                                                    \
-  switch (out->class) {                                                        \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    nout = 1;                                                                  \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    nout = outa->arsize / outa->length;                                        \
-    if (nout == 0)                                                             \
-      return 1;                                                                \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
-  }                                                                            \
-  switch (in1->class) {                                                        \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    scalars |= 1;                                                              \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    if (ina1->arsize / ina1->length < (unsigned int)nout)                      \
-      return TdiINV_SIZE;                                                      \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
-  }                                                                            \
-  switch (in2->class) {                                                        \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    if (scalars && (nout > 1))                                                 \
-      return TdiINV_SIZE;                                                      \
-    scalars |= 2;                                                              \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    if (ina2->arsize / ina2->length < (unsigned int)nout)                      \
-      return TdiINV_SIZE;                                                      \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
+#define SetupArgs                                         \
+  struct descriptor_a *ina1 = (struct descriptor_a *)in1; \
+  struct descriptor_a *ina2 = (struct descriptor_a *)in2; \
+  struct descriptor_a *outa = (struct descriptor_a *)out; \
+  int scalars = 0;                                        \
+  int nout;                                               \
+  switch (out->class)                                     \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    nout = 1;                                             \
+    break;                                                \
+  case CLASS_A:                                           \
+    nout = outa->arsize / outa->length;                   \
+    if (nout == 0)                                        \
+      return 1;                                           \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
+  }                                                       \
+  switch (in1->class)                                     \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    scalars |= 1;                                         \
+    break;                                                \
+  case CLASS_A:                                           \
+    if (ina1->arsize / ina1->length < (unsigned int)nout) \
+      return TdiINV_SIZE;                                 \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
+  }                                                       \
+  switch (in2->class)                                     \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    if (scalars && (nout > 1))                            \
+      return TdiINV_SIZE;                                 \
+    scalars |= 2;                                         \
+    break;                                                \
+  case CLASS_A:                                           \
+    if (ina2->arsize / ina2->length < (unsigned int)nout) \
+      return TdiINV_SIZE;                                 \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
   }
 
-#define Operate(type, operator)                                                \
-  {                                                                            \
-    type *in1p = (type *)in1->pointer;                                         \
-    type *in2p = (type *)in2->pointer;                                         \
-    type *outp = (type *)out->pointer;                                         \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-    case 3:                                                                    \
-      while (nout--)                                                           \
-        *outp++ = (type)(*in1p++ operator*in2p++);                             \
-      break;                                                                   \
-    case 1: {                                                                  \
-      type scalar = *in1p;                                                     \
-      while (nout--)                                                           \
-        *outp++ = (type)(scalar operator*in2p++);                              \
-    } break;                                                                   \
-    case 2: {                                                                  \
-      type scalar = *in2p;                                                     \
-      while (nout--)                                                           \
-        *outp++ = (type)(*in1p++ operator scalar);                             \
-    } break;                                                                   \
-    }                                                                          \
-    break;                                                                     \
+#define Operate(type, operator)                    \
+  {                                                \
+    type *in1p = (type *)in1->pointer;             \
+    type *in2p = (type *)in2->pointer;             \
+    type *outp = (type *)out->pointer;             \
+    switch (scalars)                               \
+    {                                              \
+    case 0:                                        \
+    case 3:                                        \
+      while (nout--)                               \
+        *outp++ = (type)(*in1p++ operator*in2p++); \
+      break;                                       \
+    case 1:                                        \
+    {                                              \
+      type scalar = *in1p;                         \
+      while (nout--)                               \
+        *outp++ = (type)(scalar operator*in2p++);  \
+    }                                              \
+    break;                                         \
+    case 2:                                        \
+    {                                              \
+      type scalar = *in2p;                         \
+      while (nout--)                               \
+        *outp++ = (type)(*in1p++ operator scalar); \
+    }                                              \
+    break;                                         \
+    }                                              \
+    break;                                         \
   }
 
 static const int roprand = 0x8000;
 
-static inline double mod_float(double x, double m) {
+static inline double mod_float(double x, double m)
+{
   if (m == 0.0)
     return x;
   double intpart;
@@ -155,80 +164,90 @@ static inline double mod_float(double x, double m) {
   return x - intpart * m;
 }
 
-#define OperateFloatOne(dtype, routine, p1, p2)                                \
-  {                                                                            \
-    double a, b, ans;                                                          \
-    if (CvtConvertFloat(p1, dtype, &a, DTYPE_NATIVE_DOUBLE, 0) &&              \
-        CvtConvertFloat(p2, dtype, &b, DTYPE_NATIVE_DOUBLE, 0)) {              \
-      ans = routine(a, b);                                                     \
-      CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);            \
-    } else                                                                     \
-      CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                    \
+#define OperateFloatOne(dtype, routine, p1, p2)                     \
+  {                                                                 \
+    double a, b, ans;                                               \
+    if (CvtConvertFloat(p1, dtype, &a, DTYPE_NATIVE_DOUBLE, 0) &&   \
+        CvtConvertFloat(p2, dtype, &b, DTYPE_NATIVE_DOUBLE, 0))     \
+    {                                                               \
+      ans = routine(a, b);                                          \
+      CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, outp++, dtype, 0); \
+    }                                                               \
+    else                                                            \
+      CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);         \
   }
 
-#define OperateFloat(type, dtype, routine)                                     \
-  {                                                                            \
-    type *in1p = (type *)in1->pointer;                                         \
-    type *in2p = (type *)in2->pointer;                                         \
-    type *outp = (type *)out->pointer;                                         \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-    case 3:                                                                    \
-      while (nout--)                                                           \
-        OperateFloatOne(dtype, routine, in1p++, in2p++) break;                 \
-    case 1:                                                                    \
-      while (nout--)                                                           \
-        OperateFloatOne(dtype, routine, in1p, in2p++) break;                   \
-    case 2:                                                                    \
-      while (nout--)                                                           \
-        OperateFloatOne(dtype, routine, in1p++, in2p) break;                   \
-    }                                                                          \
-    break;                                                                     \
+#define OperateFloat(type, dtype, routine)                     \
+  {                                                            \
+    type *in1p = (type *)in1->pointer;                         \
+    type *in2p = (type *)in2->pointer;                         \
+    type *outp = (type *)out->pointer;                         \
+    switch (scalars)                                           \
+    {                                                          \
+    case 0:                                                    \
+    case 3:                                                    \
+      while (nout--)                                           \
+        OperateFloatOne(dtype, routine, in1p++, in2p++) break; \
+    case 1:                                                    \
+      while (nout--)                                           \
+        OperateFloatOne(dtype, routine, in1p, in2p++) break;   \
+    case 2:                                                    \
+      while (nout--)                                           \
+        OperateFloatOne(dtype, routine, in1p++, in2p) break;   \
+    }                                                          \
+    break;                                                     \
   }
 
-static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out) {
+static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
+{
   double in2_d = WideIntToDouble(in2, size / sizeof(int), is_signed);
   double in1_d = WideIntToDouble(in1, size / sizeof(int), is_signed);
   double ans = mod_float(in1_d, in2_d);
   DoubleToWideInt(&ans, size / sizeof(int), out);
 }
 
-#define OperateBin(size, is_signed, routine)                                   \
-  {                                                                            \
-    char *in1p = in1->pointer;                                                 \
-    char *in2p = in2->pointer;                                                 \
-    char *outp = out->pointer;                                                 \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-    case 3:                                                                    \
-      while (nout--) {                                                         \
-        routine(size, is_signed, in1p, in2p, outp);                            \
-        in1p += size;                                                          \
-        in2p += size;                                                          \
-        outp += size;                                                          \
-      }                                                                        \
-      break;                                                                   \
-    case 1:                                                                    \
-      while (nout--) {                                                         \
-        routine(size, is_signed, in1p, in2p, outp);                            \
-        in2p += size;                                                          \
-        outp += size;                                                          \
-      }                                                                        \
-      break;                                                                   \
-    case 2:                                                                    \
-      while (nout--) {                                                         \
-        routine(size, is_signed, in1p, in2p, outp);                            \
-        in1p += size;                                                          \
-        outp += size;                                                          \
-      }                                                                        \
-      break;                                                                   \
-    }                                                                          \
-    break;                                                                     \
+#define OperateBin(size, is_signed, routine)        \
+  {                                                 \
+    char *in1p = in1->pointer;                      \
+    char *in2p = in2->pointer;                      \
+    char *outp = out->pointer;                      \
+    switch (scalars)                                \
+    {                                               \
+    case 0:                                         \
+    case 3:                                         \
+      while (nout--)                                \
+      {                                             \
+        routine(size, is_signed, in1p, in2p, outp); \
+        in1p += size;                               \
+        in2p += size;                               \
+        outp += size;                               \
+      }                                             \
+      break;                                        \
+    case 1:                                         \
+      while (nout--)                                \
+      {                                             \
+        routine(size, is_signed, in1p, in2p, outp); \
+        in2p += size;                               \
+        outp += size;                               \
+      }                                             \
+      break;                                        \
+    case 2:                                         \
+      while (nout--)                                \
+      {                                             \
+        routine(size, is_signed, in1p, in2p, outp); \
+        in1p += size;                               \
+        outp += size;                               \
+      }                                             \
+      break;                                        \
+    }                                               \
+    break;                                          \
   }
 
 int Tdi3Mod(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+            struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_B:
     Operate(int8_t, %) case DTYPE_BU : Operate(uint8_t, %) case DTYPE_W
         : Operate(int16_t, %) case DTYPE_WU : Operate(uint16_t, %) case DTYPE_L
@@ -252,8 +271,10 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2,
-              struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+              struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_F:
     OperateFloat(float, DTYPE_F, atan2);
   case DTYPE_FS:
@@ -271,8 +292,10 @@ int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3Atan2d(struct descriptor *in1, struct descriptor *in2,
-               struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+               struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_F:
     OperateFloat(float, DTYPE_F, radians_to_degrees *atan2);
   case DTYPE_FS:

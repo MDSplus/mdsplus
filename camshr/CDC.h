@@ -3,7 +3,8 @@
 #define __CDC_H
 
 // for Linux on x86
-typedef struct {
+typedef struct
+{
   __u8 opcode;
 
   __u8 zero1;

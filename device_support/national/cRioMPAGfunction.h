@@ -27,36 +27,39 @@
 #define MAX_FPGA_READ_BUF_SIZE 40000
 static const char *simb = "|/-\\";
 
-extern "C" {
-NiFpga_Status crioMpagInitFifo(NiFpga_Session session, const char *fifoName,
-                               NiFpgaEx_DmaFifo fifoId, size_t fifoDepthSize);
-NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName,
-                                NiFpgaEx_DmaFifo fifoId);
-NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId,
-                           size_t fifoDepthSize);
-NiFpga_Status closeMpagFpgaSession(NiFpga_Session session);
-NiFpga_Status setMpagAcqParam(NiFpga_Session session, uint8_t clockMode,
-                              float freq, uint16_t highStrobeTick,
-                              const int32_t *chanAOmap);
-int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
-                                int *chanState, int bufSize, int segmentSize,
-                                int numSamples, void *dataNidPtr, int clockNid,
-                                float timeIdx0, float period, void *treePtr,
-                                void *saveListPtr, void *stopAcq, int shot,
-                                void *resampledNidPtr);
-int readMpagFifoData(NiFpga_Session session, const char *fifoName,
-                     NiFpgaEx_DmaFifo fifoId, int16_t *data,
-                     size_t slaveBufSize, void *stopAcq);
-NiFpga_Status startMpagFpga(NiFpga_Session session);
+extern "C"
+{
+  NiFpga_Status crioMpagInitFifo(NiFpga_Session session, const char *fifoName,
+                                 NiFpgaEx_DmaFifo fifoId, size_t fifoDepthSize);
+  NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName,
+                                  NiFpgaEx_DmaFifo fifoId);
+  NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId,
+                             size_t fifoDepthSize);
+  NiFpga_Status closeMpagFpgaSession(NiFpga_Session session);
+  NiFpga_Status setMpagAcqParam(NiFpga_Session session, uint8_t clockMode,
+                                float freq, uint16_t highStrobeTick,
+                                const int32_t *chanAOmap);
+  int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan,
+                                  int *chanState, int bufSize, int segmentSize,
+                                  int numSamples, void *dataNidPtr, int clockNid,
+                                  float timeIdx0, float period, void *treePtr,
+                                  void *saveListPtr, void *stopAcq, int shot,
+                                  void *resampledNidPtr);
+  int readMpagFifoData(NiFpga_Session session, const char *fifoName,
+                       NiFpgaEx_DmaFifo fifoId, int16_t *data,
+                       size_t slaveBufSize, void *stopAcq);
+  NiFpga_Status startMpagFpga(NiFpga_Session session);
 }
 
-typedef enum {
+typedef enum
+{
   SLAVE_A,
   SLAVE_B,
   SLAVE_C,
 } enum_FPGA;
 
-typedef struct t_struct_FPGA_ACQ {
+typedef struct t_struct_FPGA_ACQ
+{
   NiFpga_Session session;
   int bufSize;
   int *chanState;
@@ -78,7 +81,8 @@ typedef struct t_struct_FPGA_ACQ {
   int streamFactor;
 } struct_FPGA_ACQ;
 
-typedef struct t_struct_FPGA {
+typedef struct t_struct_FPGA
+{
   enum_FPGA slaveIdx;
   struct_FPGA_ACQ *structFpgaAcq;
   sem_t semThreadStart;

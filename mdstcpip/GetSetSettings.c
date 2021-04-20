@@ -44,7 +44,8 @@ static SOCKET socketHandle = 0;
 
 SOCKET GetSocketHandle() { return socketHandle; }
 
-SOCKET SetSocketHandle(SOCKET handle) {
+SOCKET SetSocketHandle(SOCKET handle)
+{
   SOCKET old = socketHandle;
   socketHandle = handle;
   return old;
@@ -52,7 +53,8 @@ SOCKET SetSocketHandle(SOCKET handle) {
 
 int GetFlags() { return flags; }
 
-int SetFlags(int f) {
+int SetFlags(int f)
+{
   int old = flags;
   flags = f;
   return old;
@@ -60,7 +62,8 @@ int SetFlags(int f) {
 
 char *GetProtocol() { return protocol; }
 
-char *SetProtocol(char *p) {
+char *SetProtocol(char *p)
+{
   char *old = protocol;
   protocol = p;
   return old;
@@ -70,7 +73,8 @@ char *GetPortname() { return Portname; }
 
 char *MdsGetServerPortname() { return Portname; }
 
-char *SetPortname(char *p) {
+char *SetPortname(char *p)
+{
   char *old = Portname;
   Portname = p;
   return old;
@@ -78,7 +82,8 @@ char *SetPortname(char *p) {
 
 char *GetHostfile() { return hostfile ? hostfile : DEFAULT_HOSTFILE; }
 
-char *SetHostfile(char *newhostfile) {
+char *SetHostfile(char *newhostfile)
+{
   char *old = hostfile;
   hostfile = newhostfile;
   return old;
@@ -88,15 +93,20 @@ char *SetHostfile(char *newhostfile) {
 //  CONTEXT  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-char *GetLogDir() {
+char *GetLogDir()
+{
   char *logdir = getenv("MDSIP_SERVICE_LOGDIR");
-  if (logdir && (strlen(logdir) > 0)) {
+  if (logdir && (strlen(logdir) > 0))
+  {
     logdir = strdup(logdir);
     size_t len = strlen(logdir);
-    if ((logdir[len - 1] == '\\') || (logdir[len - 1] == '/')) {
+    if ((logdir[len - 1] == '\\') || (logdir[len - 1] == '/'))
+    {
       logdir[len - 1] = '\000';
     }
-  } else {
+  }
+  else
+  {
     logdir = strdup("C:\\");
   }
   return logdir;
@@ -108,7 +118,8 @@ unsigned char GetMulti() { return multi; }
 /// Set multi mode active in this scope.
 /// Mutiple connection mode (accepts multiple connections each with own context)
 ///
-unsigned char SetMulti(unsigned char s) {
+unsigned char SetMulti(unsigned char s)
+{
   unsigned char old_multi = multi;
   multi = s;
   return old_multi;
@@ -116,7 +127,8 @@ unsigned char SetMulti(unsigned char s) {
 
 int GetContextSwitching() { return ContextSwitching; }
 
-int SetContextSwitching(int s) {
+int SetContextSwitching(int s)
+{
   int old_ctx_switching = ContextSwitching;
   ContextSwitching = s;
   return old_ctx_switching;
@@ -128,13 +140,15 @@ int SetContextSwitching(int s) {
 
 int GetMaxCompressionLevel() { return MaxCompressionLevel; }
 
-int SetMaxCompressionLevel(int s) {
+int SetMaxCompressionLevel(int s)
+{
   int old_max_compression = MaxCompressionLevel;
   MaxCompressionLevel = s;
   return old_max_compression;
 }
 
-int SetCompressionLevel(int level) {
+int SetCompressionLevel(int level)
+{
   int old_level = CompressionLevel;
   CompressionLevel = level;
   return old_level;
@@ -148,7 +162,8 @@ int GetCompressionLevel() { return CompressionLevel; }
 static int timeout_value = 0;
 static pthread_once_t timeout_once = PTHREAD_ONCE_INIT;
 static pthread_mutex_t timeout_mutex = PTHREAD_MUTEX_INITIALIZER;
-static void timeout_init() {
+static void timeout_init()
+{
   char *timeout = getenv("MDSIP_CONNECT_TIMEOUT");
   if (timeout)
     timeout_value = strtol(timeout, NULL, 0);
@@ -158,7 +173,8 @@ static void timeout_init() {
 //  GetMdsConnectTimeout  //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int GetMdsConnectTimeout() {
+int GetMdsConnectTimeout()
+{
   int connect_timeout;
   pthread_mutex_lock(&timeout_mutex);
   pthread_cleanup_push((void *)pthread_mutex_unlock, &timeout_mutex);
@@ -168,7 +184,8 @@ int GetMdsConnectTimeout() {
   return connect_timeout;
 }
 
-int SetMdsConnectTimeout(int sec) {
+int SetMdsConnectTimeout(int sec)
+{
   int old;
   pthread_mutex_lock(&timeout_mutex);
   pthread_cleanup_push((void *)pthread_mutex_unlock, &timeout_mutex);

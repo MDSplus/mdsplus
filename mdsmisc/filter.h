@@ -22,12 +22,14 @@
 /*  DEC/CMS REPLACEMENT HISTORY, Element FILTER.H */
 #include "complex.h"
 
-typedef struct {
+typedef struct
+{
   int num_degree, den_degree;
   double *num, *den;
 } FilterUnit;
 
-typedef struct {
+typedef struct
+{
   int num_parallels;
   FilterUnit *units;
 } Filter;
@@ -35,7 +37,8 @@ typedef struct {
 #define MAX_FILTER_BUF 64
 #define MAX_FILTER_UNITS 16
 
-typedef struct {
+typedef struct
+{
   double oldX[MAX_FILTER_BUF];
   double oldY[MAX_FILTER_UNITS][MAX_FILTER_BUF];
   int idx;

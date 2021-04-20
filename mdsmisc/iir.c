@@ -89,7 +89,8 @@ which actually perform digital filtering.
 #include <stdlib.h>
 
 EXPORT Complex *FindFactors(Complex *poles, double fc, int n,
-                            double gain __attribute__((unused))) {
+                            double gain __attribute__((unused)))
+{
   int i, j;
   double currA;
   Complex *Ak;
@@ -106,15 +107,19 @@ EXPORT Complex *FindFactors(Complex *poles, double fc, int n,
   /* Ak :denominators of single factors */
   Ak = (Complex *)malloc(2 * n * sizeof(Complex));
 
-  for (i = 0; i < n; i++) {
+  for (i = 0; i < n; i++)
+  {
     Ak[i].re = 1;
     Ak[i].im = 0;
-    for (j = 0; j < n; j++) {
-      if (j != i) {
+    for (j = 0; j < n; j++)
+    {
+      if (j != i)
+      {
         Ak[i] = MulC(Ak[i], SubC(poles[i], poles[j]));
       }
 
-      if ((n % 2 && (j % 2 || j == 0)) || (!(n % 2) && !(j % 2))) {
+      if ((n % 2 && (j % 2 || j == 0)) || (!(n % 2) && !(j % 2)))
+      {
         if (j == 0 && n % 2)
           currA = -poles[j].re;
         else
@@ -131,7 +136,8 @@ EXPORT Complex *FindFactors(Complex *poles, double fc, int n,
 }
 
 EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc,
-                         int *out_n, Complex *(*FindPoles)()) {
+                         int *out_n, Complex *(*FindPoles)())
+{
   Complex *poles, *Ak, cplx1, cplx2;
   Filter *filter;
   int n, i;
@@ -149,7 +155,8 @@ EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc,
 
   filter = (Filter *)malloc(sizeof(Filter));
   /* Allocate storage for output filter */
-  if (n % 2) {
+  if (n % 2)
+  {
     /* If n is odd there is a real pole */
     filter->num_parallels = (n + 1) / 2;
     filter->units = (FilterUnit *)malloc(sizeof(FilterUnit) * (n + 1) / 2);
@@ -157,18 +164,21 @@ EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc,
     filter->units[0].num = (double *)malloc(sizeof(double));
     filter->units[0].den_degree = 2;
     filter->units[0].den = (double *)malloc(sizeof(double) * 2);
-    for (i = 1; i < (n + 1) / 2; i++) { /* For each pair of coniugate poles */
+    for (i = 1; i < (n + 1) / 2; i++)
+    { /* For each pair of coniugate poles */
       filter->units[i].num_degree = 2;
       filter->units[i].num = (double *)malloc(sizeof(double) * 2);
       filter->units[i].den_degree = 3;
       filter->units[i].den = (double *)malloc(sizeof(double) * 3);
     }
-  } else
+  }
+  else
   /* In n is even there are only pairs of coniugate poles */
   {
     filter->num_parallels = n / 2;
     filter->units = (FilterUnit *)malloc(sizeof(FilterUnit) * n / 2);
-    for (i = 0; i < n / 2; i++) { /* For each pair of coniugate poles */
+    for (i = 0; i < n / 2; i++)
+    { /* For each pair of coniugate poles */
       filter->units[i].num_degree = 2;
       filter->units[i].num = (double *)malloc(sizeof(double) * 2);
       filter->units[i].den_degree = 3;
@@ -177,20 +187,24 @@ EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc,
   }
 
   /* Compute filter coefficients */
-  if (n % 2) {
+  if (n % 2)
+  {
     filter->units[0].num[0] = 1 / Ak[0].re;
     filter->units[0].den[0] = 1;
     filter->units[0].den[1] = -exp(poles[0].re * T);
-    for (i = 1; i < (n + 1) / 2; i++) {
+    for (i = 1; i < (n + 1) / 2; i++)
+    {
       cplx1 = MulC(Ak[2 * i], Ak[2 * i - 1]);
       cplx2 = AddC(Ak[2 * i], Ak[2 * i - 1]);
-      if (fabs(cplx1.im) > 1E-4 || fabs(cplx2.im) > 1E-4) { /* Must be real */
+      if (fabs(cplx1.im) > 1E-4 || fabs(cplx2.im) > 1E-4)
+      { /* Must be real */
         printf("\nInternal error in Invariant conversion");
       }
       filter->units[i].num[0] = cplx2.re / cplx1.re;
       cplx2 = AddC(MulC(Ak[2 * i], ExpC(MulC(Tc, poles[2 * i]))),
                    MulC(Ak[2 * i - 1], ExpC(MulC(Tc, poles[2 * i - 1]))));
-      if (fabs(cplx2.im) > 1E-4) { /* Must be real */
+      if (fabs(cplx2.im) > 1E-4)
+      { /* Must be real */
         printf("\nInternal error in Invariant conversion");
       }
       filter->units[i].num[1] = -cplx2.re / cplx1.re;
@@ -200,17 +214,21 @@ EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc,
           -2 * exp(poles[2 * i].re * T) * cos(poles[2 * i].im * T);
       filter->units[i].den[2] = exp(2 * poles[2 * i].re * T);
     }
-  } else /* n even */
-    for (i = 0; i < n / 2; i++) {
+  }
+  else /* n even */
+    for (i = 0; i < n / 2; i++)
+    {
       cplx1 = MulC(Ak[2 * i], Ak[2 * i + 1]);
       cplx2 = AddC(Ak[2 * i], Ak[2 * i + 1]);
-      if (fabs(cplx1.im) > 1E-4 || fabs(cplx2.im) > 1E-4) { /* Must be real */
+      if (fabs(cplx1.im) > 1E-4 || fabs(cplx2.im) > 1E-4)
+      { /* Must be real */
         printf("\nInternal error in Invariant conversion");
       }
       filter->units[i].num[0] = cplx2.re / cplx1.re;
       cplx2 = AddC(MulC(Ak[2 * i], ExpC(MulC(Tc, poles[2 * i]))),
                    MulC(Ak[2 * i + 1], ExpC(MulC(Tc, poles[2 * i + 1]))));
-      if (fabs(cplx2.im) > 1E-4) { /* Must be real */
+      if (fabs(cplx2.im) > 1E-4)
+      { /* Must be real */
         printf("\nInternal error in Invariant conversion");
       }
       filter->units[i].num[1] = -cplx2.re / cplx1.re;
@@ -226,7 +244,8 @@ EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc,
 }
 
 EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc,
-                        int *out_n, Complex *(*FindPoles)()) {
+                        int *out_n, Complex *(*FindPoles)())
+{
   Complex *poles, *Ak, cplx;
   Filter *filter;
   int n, i;
@@ -248,13 +267,15 @@ EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc,
   Ak = FindFactors(
       poles, fc, n,
       gain); /* Remind that 1/Ak are normalized such that H(0) = T */
-  for (i = 0; i < n; i++) {
+  for (i = 0; i < n; i++)
+  {
     Ak[i].re *= T;
     Ak[i].im *= T;
   }
   filter = (Filter *)malloc(sizeof(Filter));
   /* Allocate storage for output filter */
-  if (n % 2) {
+  if (n % 2)
+  {
     /* If n is odd there is a real pole */
     filter->num_parallels = (n + 1) / 2;
     filter->units = (FilterUnit *)malloc(sizeof(FilterUnit) * (n + 1) / 2);
@@ -262,18 +283,21 @@ EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc,
     filter->units[0].num = (double *)malloc(sizeof(double) * 2);
     filter->units[0].den_degree = 2;
     filter->units[0].den = (double *)malloc(sizeof(double) * 2);
-    for (i = 1; i < (n + 1) / 2; i++) { /* For each pair of coniugate poles */
+    for (i = 1; i < (n + 1) / 2; i++)
+    { /* For each pair of coniugate poles */
       filter->units[i].num_degree = 3;
       filter->units[i].num = (double *)malloc(sizeof(double) * 3);
       filter->units[i].den_degree = 3;
       filter->units[i].den = (double *)malloc(sizeof(double) * 3);
     }
-  } else
+  }
+  else
   /* In n is even there are only pairs of coniugate poles */
   {
     filter->num_parallels = n / 2;
     filter->units = (FilterUnit *)malloc(sizeof(FilterUnit) * n / 2);
-    for (i = 0; i < n / 2; i++) { /* For each pair of coniugate poles */
+    for (i = 0; i < n / 2; i++)
+    { /* For each pair of coniugate poles */
       filter->units[i].num_degree = 3;
       filter->units[i].num = (double *)malloc(sizeof(double) * 3);
       filter->units[i].den_degree = 3;
@@ -282,13 +306,15 @@ EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc,
   }
 
   /* Compute filter coefficients */
-  if (n % 2) {
+  if (n % 2)
+  {
     filter->units[0].num[0] = filter->units[0].num[1] = T2 / Ak[0].re;
     filter->units[0].den[0] = 1 - poles[0].re * T2;
     filter->units[0].den[1] = -1 - poles[0].re * T2;
     T2c.re = T2;
     T2c.im = 0;
-    for (i = 1; i < (n + 1) / 2; i++) {
+    for (i = 1; i < (n + 1) / 2; i++)
+    {
       Ac = DivC(T2c, Ak[2 * i]);
       A1c = DivC(T2c, Ak[2 * i - 1]);
       ac.re = 1 - poles[2 * i].re * T2;
@@ -300,47 +326,56 @@ EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc,
       b1c.re = 1 + poles[2 * i - 1].re * T2;
       b1c.im = poles[2 * i - 1].im * T2;
       cplx = AddC(MulC(A1c, ac), MulC(Ac, a1c));
-      if (fabs(cplx.im) > 1E-4) {
+      if (fabs(cplx.im) > 1E-4)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].num[0] = cplx.re;
 
       cplx = SubC(AddC(MulC(A1c, ac), MulC(Ac, a1c)),
                   AddC(MulC(A1c, bc), MulC(Ac, b1c)));
-      if (fabs(cplx.im) > 1E-4) {
+      if (fabs(cplx.im) > 1E-4)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].num[1] = cplx.re;
 
       cplx = AddC(MulC(A1c, bc), MulC(Ac, b1c));
-      if (fabs(cplx.im) > 1E-4) {
+      if (fabs(cplx.im) > 1E-4)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].num[2] = -cplx.re;
 
       cplx = MulC(ac, a1c);
-      if (fabs(cplx.im) > 1E-4) {
+      if (fabs(cplx.im) > 1E-4)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].den[0] = cplx.re;
 
       cplx = AddC(MulC(a1c, bc), MulC(b1c, ac));
-      if (fabs(cplx.im) > 1E-4) {
+      if (fabs(cplx.im) > 1E-4)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].den[1] = -cplx.re;
 
       cplx = MulC(bc, b1c);
-      if (fabs(cplx.im) > 1E-4) {
+      if (fabs(cplx.im) > 1E-4)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].den[2] = cplx.re;
     }
-  } else { /* n even */
+  }
+  else
+  { /* n even */
 
     T2c.re = T2;
     T2c.im = 0;
-    for (i = 0; i < n / 2; i++) {
+    for (i = 0; i < n / 2; i++)
+    {
       Ac = DivC(T2c, Ak[2 * i]);
       A1c = DivC(T2c, Ak[2 * i + 1]);
       ac.re = 1 - poles[2 * i].re * T2;
@@ -352,38 +387,44 @@ EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc,
       b1c.re = 1 + poles[2 * i + 1].re * T2;
       b1c.im = poles[2 * i + 1].im * T2;
       cplx = AddC(MulC(A1c, ac), MulC(Ac, a1c));
-      if (fabs(cplx.im) > 1E-5) {
+      if (fabs(cplx.im) > 1E-5)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].num[0] = cplx.re;
 
       cplx = SubC(AddC(MulC(A1c, ac), MulC(Ac, a1c)),
                   AddC(MulC(A1c, bc), MulC(Ac, b1c)));
-      if (fabs(cplx.im) > 1E-5) {
+      if (fabs(cplx.im) > 1E-5)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].num[1] = cplx.re;
 
       cplx = AddC(MulC(A1c, bc), MulC(Ac, b1c));
-      if (fabs(cplx.im) > 1E-5) {
+      if (fabs(cplx.im) > 1E-5)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].num[2] = -cplx.re;
 
       cplx = MulC(ac, a1c);
-      if (fabs(cplx.im) > 1E-5) {
+      if (fabs(cplx.im) > 1E-5)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].den[0] = cplx.re;
 
       cplx = AddC(MulC(a1c, bc), MulC(b1c, ac));
-      if (fabs(cplx.im) > 1E-5) {
+      if (fabs(cplx.im) > 1E-5)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].den[1] = -cplx.re;
 
       cplx = MulC(bc, b1c);
-      if (fabs(cplx.im) > 1E-5) {
+      if (fabs(cplx.im) > 1E-5)
+      {
         printf("\nInternal error in Bilinear conversion");
       }
       filter->units[i].den[2] = cplx.re;

@@ -34,13 +34,14 @@ using namespace std;
 
 #include "kappazelos.h"
 
-#define _CHECK(f)                                                              \
-  {                                                                            \
-    SDK4_ERROR err = (f);                                                      \
-    if (SDK4_ERR_SUCCESS != err) {                                             \
-      cerr << #f << " failed: " << err << endl;                                \
-      goto Exit;                                                               \
-    }                                                                          \
+#define _CHECK(f)                               \
+  {                                             \
+    SDK4_ERROR err = (f);                       \
+    if (SDK4_ERR_SUCCESS != err)                \
+    {                                           \
+      cerr << #f << " failed: " << err << endl; \
+      goto Exit;                                \
+    }                                           \
   }
 #define error -1
 #define success 0
@@ -48,8 +49,10 @@ using namespace std;
 // debug mode if defined
 #define debug
 
-const char *ExposureModeToString(SDK4_ENUM_EXPOSUREMODE eExposureMode) {
-  switch (eExposureMode) {
+const char *ExposureModeToString(SDK4_ENUM_EXPOSUREMODE eExposureMode)
+{
+  switch (eExposureMode)
+  {
   case ZELOS_ENUM_EXPOSUREMODE_FREERUNNINGPARALLEL:
     return "FreeRunningParallel";
   case ZELOS_ENUM_EXPOSUREMODE_FREERUNNINGSEQUENTIAL:
@@ -67,11 +70,12 @@ const char *ExposureModeToString(SDK4_ENUM_EXPOSUREMODE eExposureMode) {
 
 #define swapShort(data) (((data) >> 8) & 0x00ff) | (((data) << 8) & 0xff00)
 
-#define swapInt(data)                                                          \
-  ((((data) >> 24) & 0x000000ff) | (((data) >> 8) & 0x0000ff00) |              \
+#define swapInt(data)                                             \
+  ((((data) >> 24) & 0x000000ff) | (((data) >> 8) & 0x0000ff00) | \
    (((data) << 8) & 0x00ff0000) | (((data) << 24) & 0xff000000))
 
-int swapPixel(short *buf, int32_t size) {
+int swapPixel(short *buf, int32_t size)
+{
   int i;
   for (i = 0; i < size; i++)
     buf[i] = swapShort(buf[i]);
@@ -79,7 +83,8 @@ int swapPixel(short *buf, int32_t size) {
   return 0;
 }
 
-int kappaOpen(const char *cameraName, void **cameraHandle) {
+int kappaOpen(const char *cameraName, void **cameraHandle)
+{
   vector<string> devnames;
   int32_t numDevices = 0;
   DEV_HANDLE hDev;
@@ -108,7 +113,8 @@ Exit:
   return error;
 }
 
-int kappaClose(void *cameraHandle) {
+int kappaClose(void *cameraHandle)
+{
   _CHECK(SDK4CloseDevice(cameraHandle));
   _CHECK(SDK4CloseLib());
 
@@ -118,13 +124,15 @@ Exit:
 }
 
 int kappaSetColorCoding(void *cameraHandle,
-                        SDK4_ENUM_COLORCODING color_coding) {
+                        SDK4_ENUM_COLORCODING color_coding)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
   _CHECK(SDK4SetColorCoding(hCtrl, color_coding));
 
 #ifdef debug
-  switch (color_coding) {
+  switch (color_coding)
+  {
   case SDK4_ENUM_COLORCODING_Y8:
     cout << "Color Coding set to Y8" << endl;
     break;
@@ -145,7 +153,8 @@ Exit:
   return error;
 }
 
-int kappaSetExposureMode(void *cameraHandle, SDK4_ENUM_EXPOSUREMODE expmode) {
+int kappaSetExposureMode(void *cameraHandle, SDK4_ENUM_EXPOSUREMODE expmode)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
   _CHECK(SDK4SetExposureMode(hCtrl, expmode));
@@ -157,28 +166,34 @@ Exit:
   return error;
 }
 
-int kappaSetExposure(void *cameraHandle, float expTime) {
+int kappaSetExposure(void *cameraHandle, float expTime)
+{
   CTRL_HANDLE hCtrl;
   SDK4_KEXPOSURE kExposure;
   kExposure.base = SDK4_ENUM_EXPOSUREBASE_1us;
   kExposure.counter = (int)(expTime / 1E-6);
-  if (kExposure.counter > 256) {
+  if (kExposure.counter > 256)
+  {
     kExposure.base = SDK4_ENUM_EXPOSUREBASE_10us;
     kExposure.counter = (int)(expTime / 1E-5);
   }
-  if (kExposure.counter > 256) {
+  if (kExposure.counter > 256)
+  {
     kExposure.base = SDK4_ENUM_EXPOSUREBASE_100us;
     kExposure.counter = (int)(expTime / 1E-4);
   }
-  if (kExposure.counter > 256) {
+  if (kExposure.counter > 256)
+  {
     kExposure.base = SDK4_ENUM_EXPOSUREBASE_1ms;
     kExposure.counter = (int)(expTime / 1E-3);
   }
-  if (kExposure.counter > 256) {
+  if (kExposure.counter > 256)
+  {
     kExposure.base = SDK4_ENUM_EXPOSUREBASE_10ms;
     kExposure.counter = (int)(expTime / 1E-2);
   }
-  if (kExposure.counter > 256) {
+  if (kExposure.counter > 256)
+  {
     kExposure.base = SDK4_ENUM_EXPOSUREBASE_100ms;
     kExposure.counter = (int)(expTime / 1E-1);
   }
@@ -189,7 +204,8 @@ int kappaSetExposure(void *cameraHandle, float expTime) {
 #ifdef debug
   double espo;
   espo = 0;
-  switch (kExposure.base) {
+  switch (kExposure.base)
+  {
   case 0:
     espo = 0;
     break;
@@ -223,12 +239,14 @@ Exit:
   return error;
 }
 
-int kappaSetAET(void *cameraHandle, SDK4_ENUM_AET aet) {
+int kappaSetAET(void *cameraHandle, SDK4_ENUM_AET aet)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
   _CHECK(SDK4SetAET(hCtrl, aet));
 #ifdef debug
-  switch (aet) {
+  switch (aet)
+  {
   case 0:
     cout << "AET OFF" << endl;
     break;
@@ -248,15 +266,19 @@ Exit:
   return error;
 }
 
-int kappaSetAutoExposureLevel(void *cameraHandle, uint32_t lev) {
+int kappaSetAutoExposureLevel(void *cameraHandle, uint32_t lev)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-  if (lev >= 0 && lev <= 255) {
+  if (lev >= 0 && lev <= 255)
+  {
     _CHECK(SDK4SetAutoExposureLevel(hCtrl, lev));
 #ifdef debug
     cout << "Auto Exposure level set to: " << lev << endl;
 #endif
-  } else {
+  }
+  else
+  {
 #ifdef debug
     cout << "Auto Exposure level must be in range 0-255." << endl;
     return error;
@@ -268,16 +290,20 @@ Exit:
   return error;
 }
 
-int kappaSetGain(void *cameraHandle, uint32_t gain) {
+int kappaSetGain(void *cameraHandle, uint32_t gain)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 
-  if (gain >= 0 && gain <= 511) {
+  if (gain >= 0 && gain <= 511)
+  {
     _CHECK(SDK4SetGain(hCtrl, gain));
 #ifdef debug
     cout << "Gain set to: " << gain << endl;
 #endif
-  } else {
+  }
+  else
+  {
 #ifdef debug
     cout << "Gain must be in range 0-511." << endl;
     return error;
@@ -288,12 +314,14 @@ Exit:
   return error;
 }
 
-int kappaSetAGC(void *cameraHandle, SDK4_ENUM_AGC agc) {
+int kappaSetAGC(void *cameraHandle, SDK4_ENUM_AGC agc)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
   _CHECK(SDK4SetAGC(hCtrl, agc));
 #ifdef debug
-  switch (agc) {
+  switch (agc)
+  {
   case 0:
     cout << "AGC OFF" << endl;
     break;
@@ -310,12 +338,14 @@ Exit:
   return error;
 }
 
-int kappaSetSoftTrigger(void *cameraHandle, SDK4_ENUM_SWITCH uOnOff) {
+int kappaSetSoftTrigger(void *cameraHandle, SDK4_ENUM_SWITCH uOnOff)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
   _CHECK(SDK4SetSoftTrigger(hCtrl, uOnOff));
 #ifdef debug
-  switch (uOnOff) {
+  switch (uOnOff)
+  {
   case 0:
     cout << "Soft Trigger Switch OFF" << endl;
     break;
@@ -343,12 +373,14 @@ Exit:
   return error;
 }
 
-int kappaSetSlowScan(void *cameraHandle, SDK4_ENUM_SWITCH uOnOff) {
+int kappaSetSlowScan(void *cameraHandle, SDK4_ENUM_SWITCH uOnOff)
+{
   CTRL_HANDLE hCtrl;
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
   _CHECK(SDK4SetSlowScan(hCtrl, uOnOff));
 #ifdef debug
-  switch (uOnOff) {
+  switch (uOnOff)
+  {
   case 0:
     cout << "Slow Scan OFF" << endl;
     break;
@@ -363,7 +395,8 @@ Exit:
 }
 
 int kappaGetReadoutAreaLimits(void *cameraHandle, SDK4_ENUM_ROADOMAIN select,
-                              int *x, int *y, int *width, int *height) {
+                              int *x, int *y, int *width, int *height)
+{
   CTRL_HANDLE hCtrl;
   SDK4_KAREA roa;
 
@@ -376,7 +409,8 @@ int kappaGetReadoutAreaLimits(void *cameraHandle, SDK4_ENUM_ROADOMAIN select,
   *height = roa.end.yPos - *y;
 
 #ifdef debug
-  switch (select) {
+  switch (select)
+  {
   case 0:
     cout << "Readout Area MIN" << endl;
     break;
@@ -398,7 +432,8 @@ Exit:
 }
 
 int kappaSetReadoutArea(void *cameraHandle, int x, int y, int width,
-                        int height) {
+                        int height)
+{
   CTRL_HANDLE hCtrl;
   SDK4_KAREA roa;
   roa.start.xPos = x;
@@ -419,7 +454,8 @@ Exit:
   return error;
 }
 
-int kappaSetBinning(void *cameraHandle, int binHor, int binVer) {
+int kappaSetBinning(void *cameraHandle, int binHor, int binVer)
+{
   SDK4_KBINNING bin;
   CTRL_HANDLE hCtrl;
   bin.horizontal = binHor;
@@ -438,7 +474,8 @@ int kappaSetBinning(void *cameraHandle, int binHor, int binVer) {
 
 #ifdef debug
   cout << "Horizontal binning set to ";
-  switch (bin.horizontal) {
+  switch (bin.horizontal)
+  {
   case 1:
     cout << "1x" << endl;
     break;
@@ -465,7 +502,8 @@ int kappaSetBinning(void *cameraHandle, int binHor, int binVer) {
     break;
   }
   cout << "Vertical binning set to ";
-  switch (bin.vertical) {
+  switch (bin.vertical)
+  {
   case 1:
     cout << "1x" << endl;
     break;
@@ -498,7 +536,8 @@ Exit:
 }
 
 int kappaSetMeasureWindow(void *cameraHandle, int x, int y, int width,
-                          int height) {
+                          int height)
+{
   SDK4_ENUM_MEASUREWINDOWSELECT select = 0;
   SDK4_KAREA mwin;
   CTRL_HANDLE hCtrl;
@@ -509,7 +548,8 @@ int kappaSetMeasureWindow(void *cameraHandle, int x, int y, int width,
   _CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
   _CHECK(SDK4SetMeasureWindow(hCtrl, select, mwin));
 #ifdef debug
-  switch (select) {
+  switch (select)
+  {
   case 0:
     cout << "Measure Window 1" << endl;
     break;
@@ -529,7 +569,8 @@ Exit:
   return error;
 }
 
-int kappaGetIp(void *cameraHandle, char *ip) {
+int kappaGetIp(void *cameraHandle, char *ip)
+{
   int32_t size = 24;
   CTRL_HANDLE hCtrl;
 
@@ -544,7 +585,8 @@ Exit:
   return error;
 }
 
-int kappaPrintInfo(void *cameraHandle) {
+int kappaPrintInfo(void *cameraHandle)
+{
   static char sModel[256];
   int32_t sizeModel = sizeof(sModel);
 
@@ -578,7 +620,8 @@ int kappaPrintInfo(void *cameraHandle) {
   cout << "Width       = " << dec << width << endl;
   cout << "Height      = " << dec << height << endl;
   cout << "Format      = " << hex << format << endl;
-  cout << "PayloadSize = " << dec << uPayloadSize << endl << endl;
+  cout << "PayloadSize = " << dec << uPayloadSize << endl
+       << endl;
 
   return success;
 Exit:
@@ -586,7 +629,8 @@ Exit:
 }
 
 int kappaStartAcquisition(void *cameraHandle, void **buffer, int32_t *width,
-                          int32_t *height, uint32_t *payloadSize) {
+                          int32_t *height, uint32_t *payloadSize)
+{
   DS_HANDLE hDataStream;
 
   _CHECK(SDK4DevGetDataStream(cameraHandle, &hDataStream));
@@ -598,7 +642,8 @@ int kappaStartAcquisition(void *cameraHandle, void **buffer, int32_t *width,
 
   tmpBuffer = (BUFFER_HANDLE *)malloc(sizeof(BUFFER_HANDLE) * 5);
   *buffer = (void *)tmpBuffer;
-  for (uint32_t i = 0; i < 5; i++) {
+  for (uint32_t i = 0; i < 5; i++)
+  {
     _CHECK(SDK4DSAllocAndAnnounceBuffer(hDataStream, *payloadSize, NULL,
                                         &tmpBuffer[i]));
     _CHECK(SDK4DSQueueBuffer(hDataStream, tmpBuffer[i]));
@@ -610,7 +655,8 @@ Exit:
   return error;
 }
 
-int kappaStopAcquisition(void *cameraHandle, void *buffer) {
+int kappaStopAcquisition(void *cameraHandle, void *buffer)
+{
 
   _CHECK(SDK4DevStopAcquisition(cameraHandle));
 
@@ -618,7 +664,8 @@ int kappaStopAcquisition(void *cameraHandle, void *buffer) {
   _CHECK(SDK4DevGetDataStream(cameraHandle, &hDataStream));
 
   _CHECK(SDK4DSFlushQueue(hDataStream));
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++)
+  {
     _CHECK(SDK4DSRevokeBuffer(hDataStream, ((BUFFER_HANDLE *)buffer)[i], NULL,
                               NULL));
   }
@@ -629,7 +676,8 @@ Exit:
   return error;
 }
 
-int kappaGetFrame(void *cameraHandle, int32_t *status, void *frame) {
+int kappaGetFrame(void *cameraHandle, int32_t *status, void *frame)
+{
   BUFFER_HANDLE hTempBuffer;
   int32_t bComplete;
   void *pBuffer;
@@ -642,15 +690,19 @@ int kappaGetFrame(void *cameraHandle, int32_t *status, void *frame) {
 
   SDK4_ERROR err;
   err = SDK4DSWaitForBuffer(hDataStream, &hTempBuffer, 900);
-  switch (err) {
+  switch (err)
+  {
   case SDK4_ERR_SUCCESS:
     _CHECK(SDK4BufferGetPtr(hTempBuffer, &pBuffer));
     _CHECK(SDK4BufferGetSize(hTempBuffer, &size));
     _CHECK(SDK4BufferIsComplete(hTempBuffer, &bComplete));
-    if (bComplete) {
+    if (bComplete)
+    {
       *status = 1; // complete
       memcpy(frame, pBuffer, uPayloadSize);
-    } else {
+    }
+    else
+    {
       *status = 2; // incomplete
       memset(frame, 0, uPayloadSize);
     }

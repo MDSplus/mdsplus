@@ -55,7 +55,8 @@ extern int TdiConvert();
 extern int TdiMasterData();
 
 int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
-                 struct descriptor_xd *out_ptr) {
+                 struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   static const DESCRIPTOR_A(arr0, 1, DTYPE_BU, 0, 1);
   struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD},
@@ -72,41 +73,46 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
   status = TdiGetArgs(opcode, 1, &list[narg - 1], sig, uni, dat, cats);
 
   if (STATUS_OK)
-    {
-      memcpy(&arr, &arr0, sizeof(arr0));
-      arr.a0 = NULL;
-      pa = (array_bounds *)dat[0].pointer;
-      if (pa == 0)
-        status = TdiNULL_PTR;
-      /*******************
+  {
+    memcpy(&arr, &arr0, sizeof(arr0));
+    arr.a0 = NULL;
+    pa = (array_bounds *)dat[0].pointer;
+    if (pa == 0)
+      status = TdiNULL_PTR;
+    /*******************
       Accept scalars also.
       *******************/
-      else
-        switch (pa->class) {
-        case CLASS_S:
-        case CLASS_D:
-          bounds = coeff = ndim = 0;
-          break;
-        case CLASS_A:
-          if ((coeff = pa->aflags.coeff) == 1) {
-            ndim = pa->dimct;
-            bounds = pa->aflags.bounds;
-          } else {
-            bounds = 0;
-            ndim = 1;
-          }
-          break;
-        default:
-          status = TdiINVCLADSC;
-          break;
+    else
+      switch (pa->class)
+      {
+      case CLASS_S:
+      case CLASS_D:
+        bounds = coeff = ndim = 0;
+        break;
+      case CLASS_A:
+        if ((coeff = pa->aflags.coeff) == 1)
+        {
+          ndim = pa->dimct;
+          bounds = pa->aflags.bounds;
         }
-    }
+        else
+        {
+          bounds = 0;
+          ndim = 1;
+        }
+        break;
+      default:
+        status = TdiINVCLADSC;
+        break;
+      }
+  }
   arr.dimct = (unsigned char)(dimct = narg - 1);
 
   /******************************
   For each input, check defaults.
   ******************************/
-  for (j = 0; j < dimct; ++j) {
+  for (j = 0; j < dimct; ++j)
+  {
 
     /*********************
     Omitted, use original.
@@ -118,7 +124,8 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
     /*****************
     Get data or range.
     *****************/
-    else {
+    else
+    {
       unsigned char omits[] = {(unsigned char)DTYPE_RANGE, 0};
       if (STATUS_OK)
         status = tdi_get_data(omits, list[j], &tmp);
@@ -129,14 +136,17 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
       /**********************************
       Simple limit is number of elements.
       **********************************/
-      if (prange->dtype != DTYPE_RANGE) {
+      if (prange->dtype != DTYPE_RANGE)
+      {
         lo = 0;
         status = TdiGetLong(&tmp, &hi);
         --hi;
-      } else if (!(prange->ndesc == 2 ||
-                   (prange->ndesc == 3 && prange->deltaval == 0)))
+      }
+      else if (!(prange->ndesc == 2 ||
+                 (prange->ndesc == 3 && prange->deltaval == 0)))
         status = TdiINVDTYDSC;
-      else {
+      else
+      {
         if (prange->begin)
           status = TdiGetLong(prange->begin, &lo);
         else
@@ -151,11 +161,14 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
     /***************************
     Fill in defaults, if we can.
     ***************************/
-    if (STATUS_OK && (defhi || deflo)) {
+    if (STATUS_OK && (defhi || deflo))
+    {
       if (j >= ndim)
         status = TdiINVDTYDSC;
-      else if (defhi) {
-        if (deflo) {
+      else if (defhi)
+      {
+        if (deflo)
+        {
           if (bounds)
             lo = pa->m[dimct + 2 * j];
           else
@@ -165,7 +178,9 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
           hi = pa->m[j] - 1 + lo;
         else
           hi = (int)pa->arsize / (int)pa->length - 1 + lo;
-      } else {
+      }
+      else
+      {
         if (coeff)
           lo = hi + 1 - pa->m[j];
         else
@@ -173,7 +188,8 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
       }
     }
 
-    if (lo != 0) {
+    if (lo != 0)
+    {
       arr.aflags.bounds = 1;
       arr.a0 = pa->pointer;
       arr.pointer = arr.a0 + lo;
@@ -186,11 +202,11 @@ int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[],
   MdsFree1Dx(&tmp, NULL);
 
   if (STATUS_OK)
-    {
-      arr.aflags.coeff = (unsigned char)(dimct > 1 || arr.aflags.bounds);
-      status = MdsGet1DxA((struct descriptor_a *)&arr, &pa->length, &pa->dtype,
-                          out_ptr);
-    }
+  {
+    arr.aflags.coeff = (unsigned char)(dimct > 1 || arr.aflags.bounds);
+    status = MdsGet1DxA((struct descriptor_a *)&arr, &pa->length, &pa->dtype,
+                        out_ptr);
+  }
   /***********************
   Copy/expand data to new.
   ***********************/

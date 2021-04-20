@@ -38,7 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int TdiData();
 extern int TdiEvaluate();
-int unwrapCommaCount(int ndesc, struct descriptor *list[]) {
+int unwrapCommaCount(int ndesc, struct descriptor *list[])
+{
   if (list[0] && list[0]->class == CLASS_R &&
       list[0]->dtype == DTYPE_FUNCTION && list[0]->length == 2 &&
       *(short *)list[0]->pointer == OPC_COMMA)
@@ -49,7 +50,8 @@ int unwrapCommaCount(int ndesc, struct descriptor *list[]) {
 }
 
 int UnwrapCommaDesc(int ndesc, struct descriptor *list[], int *nout,
-                    struct descriptor *list_out[]) {
+                    struct descriptor *list_out[])
+{
   INIT_STATUS;
   struct descriptor_xd xd = EMPTY_XD;
   if (list[0] && list[0]->class == CLASS_R &&
@@ -58,13 +60,15 @@ int UnwrapCommaDesc(int ndesc, struct descriptor *list[], int *nout,
     status = UnwrapCommaDesc(((struct descriptor_r *)list[0])->ndesc,
                              ((struct descriptor_r *)list[0])->dscptrs, nout,
                              list_out);
-  else {
+  else
+  {
     status = TdiData(list[0], &xd MDS_END_ARG);
     if (STATUS_OK)
       list_out[(*nout)++] = xd.pointer;
   }
   int i;
-  for (i = 1; STATUS_OK && i < ndesc; i++) {
+  for (i = 1; STATUS_OK && i < ndesc; i++)
+  {
     xd.pointer = NULL;
     status = TdiEvaluate(list[i], &xd MDS_END_ARG);
     list_out[(*nout)++] = xd.pointer;
@@ -73,23 +77,25 @@ int UnwrapCommaDesc(int ndesc, struct descriptor *list[], int *nout,
 }
 
 int UnwrapComma(int narg, struct descriptor *list[], int *nout_p,
-                struct descriptor **list_ptr[]) {
+                struct descriptor **list_ptr[])
+{
   *nout_p = unwrapCommaCount(narg, list);
   int nout = 0;
   *list_ptr = malloc(*nout_p * sizeof(void *));
   int status = UnwrapCommaDesc(narg, list, &nout, *list_ptr);
   if (STATUS_NOT_OK)
-    {
-      int i;
-      for (i = 0; i < nout; i++)
-        free((*list_ptr)[i]);
-      free(*list_ptr);
-    }
+  {
+    int i;
+    for (i = 0; i < nout; i++)
+      free((*list_ptr)[i]);
+    free(*list_ptr);
+  }
   return status;
 }
 
 int Tdi1Apd(int dtype, int narg, struct descriptor *list[],
-            struct descriptor_xd *out_ptr) {
+            struct descriptor_xd *out_ptr)
+{
   struct descriptor_a arr = {sizeof(void *),
                              (unsigned char)(dtype & 0xff),
                              CLASS_APD,
@@ -108,25 +114,33 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[],
     return status;
   asize = (alen - 1) * sizeof(void *);
   struct descriptor_a *oarr = (struct descriptor_a *)alist[0];
-  if (oarr && oarr->dtype) {
-    if (oarr->class != CLASS_APD || oarr->length != sizeof(void *)) {
+  if (oarr && oarr->dtype)
+  {
+    if (oarr->class != CLASS_APD || oarr->length != sizeof(void *))
+    {
       status = ApdAPD_APPEND;
       goto free_alist;
     }
     osize = oarr->arsize;
     olist = (struct descriptor **)oarr->pointer;
-  } else {
+  }
+  else
+  {
     osize = 0;
     olist = NULL;
   }
-  if (arr.dtype == DTYPE_DICTIONARY) {
-    if (!(alen & 1 || (osize / arr.length) & 1)) {
+  if (arr.dtype == DTYPE_DICTIONARY)
+  {
+    if (!(alen & 1 || (osize / arr.length) & 1))
+    {
       status = ApdDICT_KEYVALPAIR;
       goto free_alist;
     }
     int i;
-    for (i = 1; i < alen; i += 2) {
-      if (alist[i]->class != CLASS_S) {
+    for (i = 1; i < alen; i += 2)
+    {
+      if (alist[i]->class != CLASS_S)
+      {
         status = ApdDICT_KEYCLS;
         goto free_alist;
       }
@@ -148,14 +162,17 @@ free_alist:;
 }
 
 int Tdi1List(opcode_t opcode __attribute__((unused)), int narg,
-             struct descriptor *list[], struct descriptor_xd *out_ptr) {
+             struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   return Tdi1Apd(DTYPE_LIST, narg, list, out_ptr);
 }
 int Tdi1Tuple(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   return Tdi1Apd(DTYPE_TUPLE, narg, list, out_ptr);
 }
 int Tdi1Dict(opcode_t opcode __attribute__((unused)), int narg,
-             struct descriptor *list[], struct descriptor_xd *out_ptr) {
+             struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   return Tdi1Apd(DTYPE_DICTIONARY, narg, list, out_ptr);
 }

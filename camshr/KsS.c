@@ -40,7 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------
 static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE *Data, BYTE Mem,
                       TranslatedIosb *iosb, // to be returned to caller
-                      int dmode) {
+                      int dmode)
+{
   char dev_name[12];
   BYTE Command[COMMAND_SIZE(OpCodeSingleCAMAC)];
   int scsiDevice;
@@ -61,7 +62,8 @@ static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE *Data, BYTE Mem,
   // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address);
   sprintf(dev_name, "GK%c%2d%2.2d", Key.scsi_port, Key.scsi_address, Key.crate);
 
-  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
+  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0)
+  {
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "%s(): error -- no scsi device found for '%s'\n",
               KS_ROUTINE_NAME, dev_name);
@@ -113,7 +115,8 @@ static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE *Data, BYTE Mem,
     printf("%s(): ScsiIo() returned %d\n", KS_ROUTINE_NAME, status);
 
 KsSingleIo_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("%s(): iosb->status [0x%x]\n", KS_ROUTINE_NAME, iosb->status);
     printf("%s(): iosb->bytcnt [%d]\n", KS_ROUTINE_NAME, iosb->bytcnt);
     printf("%s(): iosb->x      [0x%x]\n", KS_ROUTINE_NAME, iosb->x);

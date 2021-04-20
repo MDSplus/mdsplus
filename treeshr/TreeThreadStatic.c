@@ -40,18 +40,25 @@ extern int _TreeNewDbid(void **dblist);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 static void *DBID = NULL, *G_DBID = NULL;
 
-static void buffer_free(TREETHREADSTATIC_ARG) {
-  if (TREE_DBID) {
+static void buffer_free(TREETHREADSTATIC_ARG)
+{
+  if (TREE_DBID)
+  {
     PINO_DATABASE *g_dbid, *p_dbid;
     pthread_rwlock_rdlock(&treectx_lock);
     for (g_dbid = G_DBID; g_dbid && g_dbid != TREE_DBID; g_dbid = g_dbid->next)
       ;
-    if (g_dbid) {
+    if (g_dbid)
+    {
       pthread_rwlock_unlock(&treectx_lock);
       perror("privateCtx share globalCtx on Threadexit! -> memory leak");
-    } else {
-      for (p_dbid = TREE_DBID; p_dbid->next; p_dbid = p_dbid->next) {
-        if (p_dbid->next == G_DBID) {
+    }
+    else
+    {
+      for (p_dbid = TREE_DBID; p_dbid->next; p_dbid = p_dbid->next)
+      {
+        if (p_dbid->next == G_DBID)
+        {
           // clip private context if extension of global
           p_dbid->next = NULL;
           break;
@@ -63,7 +70,8 @@ static void buffer_free(TREETHREADSTATIC_ARG) {
   }
   free(TREETHREADSTATIC_VAR);
 }
-static inline TREETHREADSTATIC_TYPE *buffer_alloc() {
+static inline TREETHREADSTATIC_TYPE *buffer_alloc()
+{
   TREETHREADSTATIC_ARG =
       (TREETHREADSTATIC_TYPE *)calloc(1, sizeof(TREETHREADSTATIC_TYPE));
   return TREETHREADSTATIC_VAR;
@@ -72,16 +80,21 @@ static inline TREETHREADSTATIC_TYPE *buffer_alloc() {
 IMPLEMENT_GETTHREADSTATIC(TREETHREADSTATIC_TYPE, TreeGetThreadStatic,
                           THREADSTATIC_TREESHR, buffer_alloc, buffer_free)
 
-EXPORT void **TreeCtx() {
+EXPORT void **TreeCtx()
+{
   TREETHREADSTATIC_INIT;
   void **ctx;
-  if (TREE_PRIVATECTX) {
+  if (TREE_PRIVATECTX)
+  {
     if (!TREE_DBID)
       _TreeNewDbid(&TREE_DBID);
     ctx = &TREE_DBID;
-  } else {
+  }
+  else
+  {
     pthread_rwlock_wrlock(&treectx_lock);
-    if (!DBID) {
+    if (!DBID)
+    {
       if (!G_DBID)
         _TreeNewDbid(&G_DBID);
       DBID = G_DBID;
@@ -96,13 +109,17 @@ EXPORT void *TreeDbid() { return *TreeCtx(); }
 
 EXPORT void *_TreeDbid(void **dbid) { return *dbid; }
 
-EXPORT void *TreeSwitchDbid(void *dbid) {
+EXPORT void *TreeSwitchDbid(void *dbid)
+{
   TREETHREADSTATIC_INIT;
   void *old_dbid;
-  if (TREE_PRIVATECTX) {
+  if (TREE_PRIVATECTX)
+  {
     old_dbid = TREE_DBID;
     TREE_DBID = dbid;
-  } else {
+  }
+  else
+  {
     pthread_rwlock_wrlock(&treectx_lock);
     old_dbid = DBID;
     DBID = dbid;
@@ -111,24 +128,28 @@ EXPORT void *TreeSwitchDbid(void *dbid) {
   return old_dbid;
 }
 
-EXPORT int TreeUsePrivateCtx(int onoff) {
+EXPORT int TreeUsePrivateCtx(int onoff)
+{
   TREETHREADSTATIC_INIT;
   int old = TREE_PRIVATECTX;
   TREE_PRIVATECTX = onoff != 0;
   return old;
 }
 
-EXPORT int TreeUsingPrivateCtx() {
+EXPORT int TreeUsingPrivateCtx()
+{
   TREETHREADSTATIC_INIT;
   return TREE_PRIVATECTX;
 }
 
-typedef struct {
+typedef struct
+{
   void *dbid;
   void **ctx;
   int priv;
 } push_ctx_t;
-EXPORT void *TreeCtxPush(void **ctx) {
+EXPORT void *TreeCtxPush(void **ctx)
+{
   /* switch to private context and use dbid
    * SHOULD be used with pthread_cleanup or similar constucts
    * DONT USE this from tdi; will cause memory violation
@@ -143,7 +164,8 @@ EXPORT void *TreeCtxPush(void **ctx) {
   return ps;
 }
 
-EXPORT void TreeCtxPop(void *ps) {
+EXPORT void TreeCtxPop(void *ps)
+{
   /* done using dbid in private context, restore state
    */
   TREETHREADSTATIC_INIT;
@@ -153,11 +175,13 @@ EXPORT void TreeCtxPop(void *ps) {
   free(ps);
 }
 
-typedef struct {
+typedef struct
+{
   void *dbid;
   int priv;
 } push_dbid_t;
-EXPORT void *TreeDbidPush(void *dbid) {
+EXPORT void *TreeDbidPush(void *dbid)
+{
   /* switch to private context and use dbid
    * DONT USE with pthread_cleanup
    * Useful when called from tdi
@@ -171,7 +195,8 @@ EXPORT void *TreeDbidPush(void *dbid) {
   return ps;
 }
 
-EXPORT void *TreeDbidPop(void *ps) {
+EXPORT void *TreeDbidPop(void *ps)
+{
   /* done using dbid in private context, restore state
    */
   TREETHREADSTATIC_INIT;

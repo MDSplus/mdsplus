@@ -67,23 +67,27 @@ extern int TdiEvaluate();
 static const struct descriptor_d EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
 
 int TdiFindImageSymbol(struct descriptor_d *image, struct descriptor_d *entry,
-                       int (**symbol)()) {
+                       int (**symbol)())
+{
   return LibFindImageSymbol(image, entry, symbol);
 }
 
 extern int TdiFindSymbol();
 
-struct _tmp {
+struct _tmp
+{
   int n;
   struct descriptor_xd a[253];
 };
-static void tmp_cleanup(void *tmp_in) {
+static void tmp_cleanup(void *tmp_in)
+{
   struct _tmp *tmp = (struct _tmp *)tmp_in;
   for (; --tmp->n >= 0;)
     MdsFree1Dx(&tmp->a[tmp->n], NULL);
 }
 int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
-                    struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                    struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   int status;
   struct descriptor_d image = EMPTY_D, entry = EMPTY_D;
   FREED_ON_EXIT(&image);
@@ -99,7 +103,8 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
   Quickly do known functions.
   **************************/
   int (*routine)();
-  if (image.length == 0) {
+  if (image.length == 0)
+  {
     status =
         StrUpcase((struct descriptor *)&entry, (struct descriptor *)&entry);
     if (STATUS_OK)
@@ -112,66 +117,76 @@ int Tdi1ExtFunction(opcode_t opcode __attribute__((unused)), int narg,
   Requires: image found and routine symbol found.
   **********************************************/
   if (STATUS_OK)
+  {
+    int j = 0;
+    struct _tmp tmp = {0};
+    pthread_cleanup_push(tmp_cleanup, (void *)&tmp);
+    status = MDSplusSUCCESS;
+    struct descriptor_function *pfun;
+    struct descriptor *new[256];
+    *(int *)&new[0] = narg - 1;
+    new[narg - 1] = (struct descriptor *)out_ptr;
+    unsigned short code;
+    for (j = 2; j < narg && STATUS_OK; ++j)
     {
-      int j = 0;
-      struct _tmp tmp = {0};
-      pthread_cleanup_push(tmp_cleanup, (void *)&tmp);
-      status = MDSplusSUCCESS;
-      struct descriptor_function *pfun;
-      struct descriptor *new[256];
-      *(int *)&new[0] = narg - 1;
-      new[narg - 1] = (struct descriptor *)out_ptr;
-      unsigned short code;
-      for (j = 2; j < narg && STATUS_OK; ++j) {
-        pfun = (struct descriptor_function *)(new[j - 1] = list[j]);
-        if (pfun) {
-          if (pfun->dtype == DTYPE_FUNCTION) {
-            /****************************************
+      pfun = (struct descriptor_function *)(new[j - 1] = list[j]);
+      if (pfun)
+      {
+        if (pfun->dtype == DTYPE_FUNCTION)
+        {
+          /****************************************
             Special forms used for VMS and LIB calls.
             ****************************************/
-            code = *(unsigned short *)pfun->pointer;
-            if (code == OPC_DESCR) {
-              tmp.a[tmp.n] = EMPTY_XD;
-              status = TdiData(pfun->arguments[0], &tmp.a[tmp.n] MDS_END_ARG);
-              new[j - 1] = (struct descriptor *)tmp.a[tmp.n++].pointer;
-            } else if (code == OPC_REF) {
-              tmp.a[tmp.n] = EMPTY_XD;
-              status = TdiData(pfun->arguments[0], &tmp.a[tmp.n] MDS_END_ARG);
-              if (STATUS_NOT_OK)
-                break; // .pointer == NULL
-              new[j - 1] = (struct descriptor *)tmp.a[tmp.n++].pointer->pointer;
-            } else if (code == OPC_VAL)
-              status = TdiGetLong(pfun->arguments[0], &new[j - 1]);
-            else if (code == OPC_PRIVATE || code == OPC_PUBLIC)
-              goto ident;
-          } else if (pfun->dtype == DTYPE_IDENT) {
-          ident:;
-            /************************************
+          code = *(unsigned short *)pfun->pointer;
+          if (code == OPC_DESCR)
+          {
+            tmp.a[tmp.n] = EMPTY_XD;
+            status = TdiData(pfun->arguments[0], &tmp.a[tmp.n] MDS_END_ARG);
+            new[j - 1] = (struct descriptor *)tmp.a[tmp.n++].pointer;
+          }
+          else if (code == OPC_REF)
+          {
+            tmp.a[tmp.n] = EMPTY_XD;
+            status = TdiData(pfun->arguments[0], &tmp.a[tmp.n] MDS_END_ARG);
+            if (STATUS_NOT_OK)
+              break; // .pointer == NULL
+            new[j - 1] = (struct descriptor *)tmp.a[tmp.n++].pointer->pointer;
+          }
+          else if (code == OPC_VAL)
+            status = TdiGetLong(pfun->arguments[0], &new[j - 1]);
+          else if (code == OPC_PRIVATE || code == OPC_PUBLIC)
+            goto ident;
+        }
+        else if (pfun->dtype == DTYPE_IDENT)
+        {
+        ident:;
+          /************************************
              Handle multiple outputs to variables.
              So far only DSQL needs this.
              ************************************/
-            unsigned char test;
-            struct descriptor dtest = {sizeof(test), DTYPE_BU, CLASS_S, 0};
-            dtest.pointer = (char *)&test;
-            status = TdiAllocated(pfun, &dtest MDS_END_ARG);
-            if (status && !test) {
-              status = tdi_put_ident(pfun, 0);
-            }
+          unsigned char test;
+          struct descriptor dtest = {sizeof(test), DTYPE_BU, CLASS_S, 0};
+          dtest.pointer = (char *)&test;
+          status = TdiAllocated(pfun, &dtest MDS_END_ARG);
+          if (status && !test)
+          {
+            status = tdi_put_ident(pfun, 0);
           }
         }
       }
-      /*************************
+    }
+    /*************************
        Same form as system calls.
        Watch, may not be XD.
        *************************/
-      if (STATUS_OK)
-        {
-          struct descriptor_s out = {sizeof(void *), DTYPE_POINTER, CLASS_S,
-                                     LibCallg(&new[0], routine)};
-          MdsCopyDxXd((struct descriptor *)&out, out_ptr);
-        }
-      pthread_cleanup_pop(1);
+    if (STATUS_OK)
+    {
+      struct descriptor_s out = {sizeof(void *), DTYPE_POINTER, CLASS_S,
+                                 LibCallg(&new[0], routine)};
+      MdsCopyDxXd((struct descriptor *)&out, out_ptr);
     }
+    pthread_cleanup_pop(1);
+  }
   else
     printf("%s\n", LibFindImageSymbolErrString());
 done:;

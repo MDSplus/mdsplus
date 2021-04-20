@@ -44,7 +44,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int TdiMasterData(int nsig, struct descriptor_xd sig[1],
                   struct descriptor_xd uni[1], int *cmode_ptr,
-                  struct descriptor_xd *out_ptr) {
+                  struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor *pdu = uni[0].pointer;
   int cmode = -1, j;
@@ -58,8 +59,10 @@ int TdiMasterData(int nsig, struct descriptor_xd sig[1],
   cmode = unsignaled, +n for signal
   *************************************************/
   for (j = 0; j < nsig; j++)
-    if (sig[j].pointer) {
-      if (cmode >= 0) {
+    if (sig[j].pointer)
+    {
+      if (cmode >= 0)
+      {
         cmode = -1;
         break;
       }
@@ -70,7 +73,8 @@ int TdiMasterData(int nsig, struct descriptor_xd sig[1],
   /***************************************
   If we have a signal, embed units or data.
   ***************************************/
-  if (cmode >= 0 && cmode < nsig) {
+  if (cmode >= 0 && cmode < nsig)
+  {
     EMPTYXD(tmp);
     struct descriptor_signal *sig_ptr =
         (struct descriptor_signal *)sig[cmode].pointer;
@@ -81,18 +85,22 @@ int TdiMasterData(int nsig, struct descriptor_xd sig[1],
     /************************************
     If we have units, embed data in them.
     ************************************/
-    if (pdu) {
+    if (pdu)
+    {
       wu.data = out_ptr->pointer;
       wu.units = pdu;
       sig_ptr->data = (struct descriptor *)&wu;
-    } else
+    }
+    else
       sig_ptr->data = out_ptr->pointer;
     status = MdsCopyDxXd((struct descriptor *)sig_ptr, &tmp);
     sig_ptr->data = keep_ptr;
     sig_ptr->raw = raw_ptr;
     MdsFree1Dx(out_ptr, NULL);
     *out_ptr = tmp;
-  } else if (pdu) {
+  }
+  else if (pdu)
+  {
     EMPTYXD(tmp);
     DESCRIPTOR_WITH_UNITS(wu, 0, 0);
     wu.data = out_ptr->pointer;

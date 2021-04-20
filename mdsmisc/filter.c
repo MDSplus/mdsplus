@@ -109,7 +109,8 @@ structure filter. module and phase must be already allocated
 
 static void NormalizeFilter(Filter *filter);
 
-EXPORT void DoFilter(Filter *filter, float *in, float *out, int *n_s) {
+EXPORT void DoFilter(Filter *filter, float *in, float *out, int *n_s)
+{
   int start_idx = 0, delta_idx = 1, out_s;
   out_s = *n_s;
   DoFilterResample(filter, in, out, n_s, &start_idx, &delta_idx, &out_s);
@@ -117,7 +118,8 @@ EXPORT void DoFilter(Filter *filter, float *in, float *out, int *n_s) {
 
 EXPORT void DoFilterResample(Filter *filter, float *in, float *out, int *n_s,
                              int *start_idx, int *delta_idx,
-                             int *max_out_samples) {
+                             int *max_out_samples)
+{
   int i, j, curr_sample, k_num, k_den, n_samples, start, delta, *curr_idx,
       out_idx, idx;
   float **history, *curr_out;
@@ -134,8 +136,10 @@ EXPORT void DoFilterResample(Filter *filter, float *in, float *out, int *n_s,
   curr_idx = (int *)malloc(filter->num_parallels * sizeof(int));
   curr_out = (float *)malloc(filter->num_parallels * sizeof(float));
 
-  for (i = 0; i < filter->num_parallels; i++) {
-    if (filter->units[i].den_degree > 1) {
+  for (i = 0; i < filter->num_parallels; i++)
+  {
+    if (filter->units[i].den_degree > 1)
+    {
       history[i] =
           (float *)calloc(filter->units[i].den_degree * sizeof(float), 1);
       curr_idx[i] = filter->units[i].den_degree - 1;
@@ -143,8 +147,10 @@ EXPORT void DoFilterResample(Filter *filter, float *in, float *out, int *n_s,
   }
 
   for (curr_sample = 0; curr_sample < n_samples && out_idx < *max_out_samples;
-       curr_sample++) {
-    for (i = 0; i < filter->num_parallels; i++) {
+       curr_sample++)
+  {
+    for (i = 0; i < filter->num_parallels; i++)
+    {
       curr_out[i] = 0;
       if (curr_sample + 1 >= filter->units[i].num_degree)
         k_num = filter->units[i].num_degree;
@@ -156,14 +162,16 @@ EXPORT void DoFilterResample(Filter *filter, float *in, float *out, int *n_s,
         k_den = curr_sample + 1;
       for (j = 0; j < k_num; j++)
         curr_out[i] += filter->units[i].num[j] * in[curr_sample - j];
-      for (j = 1; j < k_den; j++) {
+      for (j = 1; j < k_den; j++)
+      {
         idx = (curr_idx[i] - 1 + j) % filter->units[i].den_degree;
         curr_out[i] -= filter->units[i].den[j] * history[i][idx];
       }
 
       /* Update history */
       /* move marker in circolar buffer */
-      if (filter->units[i].den_degree > 1) {
+      if (filter->units[i].den_degree > 1)
+      {
         curr_idx[i]--;
         if (curr_idx[i] < 0)
           curr_idx[i] = filter->units[i].den_degree - 1;
@@ -172,7 +180,8 @@ EXPORT void DoFilterResample(Filter *filter, float *in, float *out, int *n_s,
     }
 
     /* store sample in out if needed */
-    if (curr_sample >= start && !((curr_sample - start) % delta)) {
+    if (curr_sample >= start && !((curr_sample - start) % delta))
+    {
       for (i = 0, out[out_idx] = 0; i < filter->num_parallels; i++)
         out[out_idx] += curr_out[i];
       out_idx++;
@@ -196,7 +205,8 @@ EXPORT void DoFilterResample(Filter *filter, float *in, float *out, int *n_s,
 
 EXPORT void DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s,
                                 int *start_idx, int *delta_idx,
-                                int *max_out_samples, int step_raw) {
+                                int *max_out_samples, int step_raw)
+{
   int i, j, k, curr_sample, k_num, k_den, n_samples, start, delta, *curr_idx,
       out_idx, idx;
   float **history, *curr_out;
@@ -213,8 +223,10 @@ EXPORT void DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s,
   curr_idx = (int *)malloc(filter->num_parallels * sizeof(int));
   curr_out = (float *)malloc(filter->num_parallels * sizeof(float));
 
-  for (i = 0; i < filter->num_parallels; i++) {
-    if (filter->units[i].den_degree > 1) {
+  for (i = 0; i < filter->num_parallels; i++)
+  {
+    if (filter->units[i].den_degree > 1)
+    {
       history[i] =
           (float *)calloc(filter->units[i].den_degree * sizeof(float), 1);
       curr_idx[i] = filter->units[i].den_degree - 1;
@@ -222,8 +234,10 @@ EXPORT void DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s,
   }
 
   for (curr_sample = 0; curr_sample < n_samples && out_idx < *max_out_samples;
-       curr_sample += step_raw) {
-    for (i = 0; i < filter->num_parallels; i++) {
+       curr_sample += step_raw)
+  {
+    for (i = 0; i < filter->num_parallels; i++)
+    {
       curr_out[i] = 0;
       if (curr_sample / step_raw + 1 >= filter->units[i].num_degree)
         k_num = filter->units[i].num_degree;
@@ -235,14 +249,16 @@ EXPORT void DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s,
         k_den = curr_sample / step_raw + 1;
       for (j = k = 0; k < k_num; j += step_raw, k++)
         curr_out[i] += filter->units[i].num[k] * in[curr_sample - j];
-      for (j = 1; j < k_den; j++) {
+      for (j = 1; j < k_den; j++)
+      {
         idx = (curr_idx[i] - 1 + j) % filter->units[i].den_degree;
         curr_out[i] -= filter->units[i].den[j] * history[i][idx];
       }
 
       /* Update history */
       /* move marker in circolar buffer */
-      if (filter->units[i].den_degree > 1) {
+      if (filter->units[i].den_degree > 1)
+      {
         curr_idx[i]--;
         if (curr_idx[i] < 0)
           curr_idx[i] = filter->units[i].den_degree - 1;
@@ -251,7 +267,8 @@ EXPORT void DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s,
     }
 
     /* store sample in out if needed */
-    if (curr_sample >= start && !((curr_sample - start) % delta)) {
+    if (curr_sample >= start && !((curr_sample - start) % delta))
+    {
       for (i = 0, out[out_idx] = 0; i < filter->num_parallels; i++)
         out[out_idx] += curr_out[i];
       out_idx++;
@@ -273,7 +290,8 @@ EXPORT void DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s,
 }
 
 EXPORT void TestFilter(Filter *filter, float fc, int n_points, float *module,
-                       float *phase) {
+                       float *phase)
+{
   float curr_f, step_f;
   int i, j, k, idx;
   Complex curr_fc, curr_c, curr_fac, curr_num, curr_den, curr_z;
@@ -282,13 +300,16 @@ EXPORT void TestFilter(Filter *filter, float fc, int n_points, float *module,
   NormalizeFilter(filter);
 
   step_f = fc / (2 * (n_points + 1));
-  for (curr_f = step_f, idx = 0; idx < n_points; idx++, curr_f += step_f) {
+  for (curr_f = step_f, idx = 0; idx < n_points; idx++, curr_f += step_f)
+  {
     curr_fc.re = cos(2 * PI * curr_f / fc);
     curr_fc.im = sin(2 * PI * curr_f / fc);
     curr_z.im = curr_z.re = 0;
-    for (i = 0; i < filter->num_parallels; i++) {
+    for (i = 0; i < filter->num_parallels; i++)
+    {
       curr_num.re = curr_num.im = 0;
-      for (j = 0; j < filter->units[i].num_degree; j++) {
+      for (j = 0; j < filter->units[i].num_degree; j++)
+      {
         curr_c.re = 1;
         curr_c.im = 0;
         curr_fac.im = 0;
@@ -298,7 +319,8 @@ EXPORT void TestFilter(Filter *filter, float fc, int n_points, float *module,
         curr_num = AddC(curr_num, MulC(curr_c, curr_fac));
       }
       curr_den.re = curr_den.im = 0;
-      for (j = 0; j < filter->units[i].den_degree; j++) {
+      for (j = 0; j < filter->units[i].den_degree; j++)
+      {
         curr_c.re = 1;
         curr_c.im = 0;
         curr_fac.im = 0;
@@ -319,12 +341,14 @@ EXPORT void TestFilter(Filter *filter, float fc, int n_points, float *module,
       curr_z.re = 0;
     if (fabs(curr_z.im) < 1E-10)
       curr_z.im = 0;
-    if (curr_z.re == 0 && curr_z.im == 0) {
+    if (curr_z.re == 0 && curr_z.im == 0)
+    {
       phase[idx] = 0;
       continue;
     }
 
-    if (curr_z.re < 0) {
+    if (curr_z.re < 0)
+    {
       if (curr_z.im >= 0)
         if (fabs(curr_z.re) > fabs(curr_z.im))
           phase[idx] = PI + atan(curr_z.im / curr_z.re);
@@ -334,7 +358,9 @@ EXPORT void TestFilter(Filter *filter, float fc, int n_points, float *module,
         phase[idx] = PI + atan(curr_z.im / curr_z.re);
       else
         phase[idx] = 3 * PI / 2 - atan(curr_z.re / curr_z.im);
-    } else { /* curr_z.re > 0 */
+    }
+    else
+    { /* curr_z.re > 0 */
 
       if (curr_z.im >= 0)
         if (fabs(curr_z.re) > fabs(curr_z.im))
@@ -350,10 +376,12 @@ EXPORT void TestFilter(Filter *filter, float fc, int n_points, float *module,
   }
 }
 
-EXPORT void FreeFilter(Filter *filter) {
+EXPORT void FreeFilter(Filter *filter)
+{
   int i;
 
-  for (i = 0; i < filter->num_parallels; i++) {
+  for (i = 0; i < filter->num_parallels; i++)
+  {
     free(filter->units[i].num);
     if (filter->units[i].den_degree)
       free(filter->units[i].den);
@@ -362,11 +390,14 @@ EXPORT void FreeFilter(Filter *filter) {
   free(filter);
 }
 
-static void NormalizeFilter(Filter *filter) {
+static void NormalizeFilter(Filter *filter)
+{
   int i, j;
 
-  for (i = 0; i < filter->num_parallels; i++) {
-    if (filter->units[i].den_degree > 0) {
+  for (i = 0; i < filter->num_parallels; i++)
+  {
+    if (filter->units[i].den_degree > 0)
+    {
       for (j = 0; j < filter->units[i].num_degree; j++)
         filter->units[i].num[j] /= filter->units[i].den[0];
       for (j = 1; j < filter->units[i].den_degree; j++)
@@ -377,7 +408,8 @@ static void NormalizeFilter(Filter *filter) {
 }
 
 // Prepare the description of a butterworth
-EXPORT Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles) {
+EXPORT Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
+{
   Filter *outFilter;
   float zero = 0;
   outFilter = (Filter *)ButtwInvar(&cutFreq, &zero, &zero, &zero, &samplingFreq,
@@ -390,7 +422,8 @@ EXPORT Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles) {
 // *out_n);
 
 // Initialize then data structures whichb are required for real-time filtering
-EXPORT void initializeRunTimeFilter(RunTimeFilter *rtf) {
+EXPORT void initializeRunTimeFilter(RunTimeFilter *rtf)
+{
   RunTimeFilter *runTimeFilter = (RunTimeFilter *)rtf;
   memset(runTimeFilter->oldX, 0, MAX_FILTER_BUF * sizeof(double));
   memset(runTimeFilter->oldY, 0,
@@ -399,7 +432,8 @@ EXPORT void initializeRunTimeFilter(RunTimeFilter *rtf) {
 }
 
 /* Perform step filtering */
-EXPORT double getFiltered(double in, Filter *flt, RunTimeFilter *rtf) {
+EXPORT double getFiltered(double in, Filter *flt, RunTimeFilter *rtf)
+{
   int i, j;
   double totOut = 0, currOut;
   Filter *filter = (Filter *)flt;
@@ -411,16 +445,19 @@ EXPORT double getFiltered(double in, Filter *flt, RunTimeFilter *rtf) {
   idx = runFilter->idx;
   oldX = runFilter->oldX;
 
-  for (i = 0; i < filter->num_parallels; i++) {
+  for (i = 0; i < filter->num_parallels; i++)
+  {
 
     currOut = filter->units[i].num[0] * in;
-    for (j = 1; j < filter->units[i].num_degree; j++) {
+    for (j = 1; j < filter->units[i].num_degree; j++)
+    {
       currIdx = idx - j;
       if (currIdx < 0)
         currIdx += MAX_FILTER_BUF;
       currOut += filter->units[i].num[j] * oldX[currIdx];
     }
-    for (j = 1; j < filter->units[i].den_degree; j++) {
+    for (j = 1; j < filter->units[i].den_degree; j++)
+    {
       currIdx = idx - j;
       if (currIdx < 0)
         currIdx += MAX_FILTER_BUF;

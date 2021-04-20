@@ -11,7 +11,8 @@
 //#endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #define __unknown_params ...
 #else
 #define __unknown_params
@@ -36,8 +37,8 @@ extern "C" {
 #define CvtCRAY 8      /* Cray      Floating point data    */
 #define CvtIEEE_X 9    /* IEEE X    Floating point data    */
 
-extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue,
-                           uint32_t outdtype, uint32_t options);
+  extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue,
+                             uint32_t outdtype, uint32_t options);
 
 #ifdef __cplusplus
 }

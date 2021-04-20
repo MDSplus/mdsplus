@@ -40,7 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ************************************************************************/
 
 EXPORT int TclDeletePulse(void *ctx, char **error,
-                          char **output __attribute__((unused))) {
+                          char **output __attribute__((unused)))
+{
   char *asciiShot = 0;
   int shot;
   int sts;
@@ -50,7 +51,8 @@ EXPORT int TclDeletePulse(void *ctx, char **error,
   sscanf(asciiShot, "%d", &shot);
   free(asciiShot);
   sts = TreeDeletePulseFile(shot, delete_all);
-  if (~sts & 1) {
+  if (~sts & 1)
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error,

@@ -45,7 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // id = ih    같은 뜻이다. 여기서는 ih를 사용 했다.
 
 /* Print the error message */
-int NiScope_errorHandler(ViSession ih, ViInt32 code) {
+int NiScope_errorHandler(ViSession ih, ViInt32 code)
+{
   ViStatus status;
   ViChar source[MAX_FUNCTION_NAME_SIZE];
   ViChar desc[MAX_ERROR_DESCRIPTION];
@@ -55,7 +56,8 @@ int NiScope_errorHandler(ViSession ih, ViInt32 code) {
 }
 
 // NiScope_init  ->  NiScope_close
-int NiScope_init(char *dev, ViSession *ih) {
+int NiScope_init(char *dev, ViSession *ih)
+{
   //      printf("%s\n", dev);
   //      ViSession ih;
   ViStatus status;
@@ -65,7 +67,8 @@ int NiScope_init(char *dev, ViSession *ih) {
   return status;
 }
 
-int NiScope_initiateacquisition(ViSession ih) {
+int NiScope_initiateacquisition(ViSession ih)
+{
   ViStatus status;
   status = niScope_InitiateAcquisition(ih);
   if (status != VI_SUCCESS)
@@ -73,14 +76,16 @@ int NiScope_initiateacquisition(ViSession ih) {
   return status;
 }
 
-int NiScope_acquisitionstatus(ViSession ih) {
+int NiScope_acquisitionstatus(ViSession ih)
+{
   ViStatus status;
   ViInt32 as;
 
   status = niScope_AcquisitionStatus(ih, &as);
   if (status != VI_SUCCESS)
     NiScope_errorHandler(ih, status);
-  switch (as) {
+  switch (as)
+  {
   case NISCOPE_VAL_ACQ_IN_PROGRESS:
     printf("The acquisition is in progress.\n");
     break;
@@ -95,7 +100,8 @@ int NiScope_acquisitionstatus(ViSession ih) {
 }
 
 /* Device Setup */
-int NiScope_configuretriggerimmediate(ViSession ih) {
+int NiScope_configuretriggerimmediate(ViSession ih)
+{
   ViStatus status;
   status = niScope_ConfigureTriggerImmediate(ih);
   if (status != VI_SUCCESS)
@@ -104,7 +110,8 @@ int NiScope_configuretriggerimmediate(ViSession ih) {
 }
 
 int NiScope_ConfigureChanCharacteristics(ViSession ih, char *dev,
-                                         ViReal64 *impe) {
+                                         ViReal64 *impe)
+{
   ViStatus status;
   status = niScope_ConfigureChanCharacteristics(ih, dev, *impe, 0.00);
   if (status != VI_SUCCESS)
@@ -114,7 +121,8 @@ int NiScope_ConfigureChanCharacteristics(ViSession ih, char *dev,
 }
 
 int NiScope_ConfigureVertical(ViSession ih, char *dev, ViReal64 *range,
-                              ViReal64 *offset, ViInt32 coupl, ViReal64 *pa) {
+                              ViReal64 *offset, ViInt32 coupl, ViReal64 *pa)
+{
   // ViBoolean Enable(channel enable true,false)==value ->
   // IVI_ATTR_BASE(1000000),IVI_CLASS_PUBLIC_ATTR_BASE  (IVI_ATTR_BASE + 250000)
   // IVISCOPE_ATTR_CHANNEL_ENABLED  (IVI_CLASS_PUBLIC_ATTR_BASE  + 5L) ==>total
@@ -136,7 +144,8 @@ int NiScope_ConfigureVertical(ViSession ih, char *dev, ViReal64 *range,
 //받고 한번에 저장을 할것인지 정한다. 그럴때가 가끔 필요하다. 우리는 보통 1회에
 //한번 데이터를 받는다.
 int NiScope_ConfigureHorizontalTiming(ViSession ih, ViReal64 *msr,
-                                      ViInt32 mup) {
+                                      ViInt32 mup)
+{
   ViStatus status;
   status = niScope_ConfigureHorizontalTiming(ih, *msr, mup, 50.0, 1,
                                              NISCOPE_VAL_TRUE);
@@ -147,7 +156,8 @@ int NiScope_ConfigureHorizontalTiming(ViSession ih, ViReal64 *msr,
 
 /* Trigger */
 int NiScope_ConfigureTriggerEdge(ViSession ih, char *ts, ViReal64 *level,
-                                 ViInt32 slope, ViInt32 tc, ViReal64 *delay) {
+                                 ViInt32 slope, ViInt32 tc, ViReal64 *delay)
+{
   ViStatus status;
   status = niScope_ConfigureTriggerEdge(ih, ts, *level, slope, tc, 0.0, *delay);
   if (status != VI_SUCCESS)
@@ -156,7 +166,8 @@ int NiScope_ConfigureTriggerEdge(ViSession ih, char *ts, ViReal64 *level,
 }
 
 /* commits to hardware all the parameter settings associated with the task.*/
-int NiScope_Commit(ViSession ih) {
+int NiScope_Commit(ViSession ih)
+{
   ViStatus status;
   status = niScope_Commit(ih);
   if (status != VI_SUCCESS)
@@ -167,7 +178,8 @@ int NiScope_Commit(ViSession ih) {
 /* stored */
 // Returns the effective sample rate of the acquired waveform using the current
 // configuration in samples per second.
-int NiScope_SampleRate(ViSession ih, ViReal64 *samplerate) {
+int NiScope_SampleRate(ViSession ih, ViReal64 *samplerate)
+{
   ViStatus status;
   status = niScope_SampleRate(ih, samplerate);
   if (status != VI_SUCCESS)
@@ -180,7 +192,8 @@ int NiScope_SampleRate(ViSession ih, ViReal64 *samplerate) {
 // determine the size of the waveforms that the digitizer acquires.
 // Allocate a ViReal64 array of this size or greater to pass as the
 // waveformArray parameter of niScope_ReadWaveform and niScope_FetchWaveform
-int NiScope_ActualRecordLength(ViSession ih, ViPInt32 recordlength) {
+int NiScope_ActualRecordLength(ViSession ih, ViPInt32 recordlength)
+{
   ViStatus status;
   status = niScope_ActualRecordLength(ih, recordlength);
   if (status != VI_SUCCESS)
@@ -191,7 +204,8 @@ int NiScope_ActualRecordLength(ViSession ih, ViPInt32 recordlength) {
 // the array length can be determined by calling niScope_ActualNumWfms.
 // Allows you to declare appropriately-sized waveforms. NI-SCOPE handles the
 // channel list parsing for you.
-int NiScope_ActualNumWfms(ViSession ih, char *dev, ViPInt32 numwfms) {
+int NiScope_ActualNumWfms(ViSession ih, char *dev, ViPInt32 numwfms)
+{
   ViStatus status;
   status = niScope_ActualNumWfms(ih, dev, numwfms);
   if (status != VI_SUCCESS)
@@ -200,7 +214,8 @@ int NiScope_ActualNumWfms(ViSession ih, char *dev, ViPInt32 numwfms) {
 }
 
 // Returns the total available size of an array measurement acquisition.
-int NiScope_ActualMeasWfmSize(ViSession ih, ViPInt32 measwaveformsize) {
+int NiScope_ActualMeasWfmSize(ViSession ih, ViPInt32 measwaveformsize)
+{
   ViStatus status;
   status = niScope_ActualMeasWfmSize(ih, NISCOPE_VAL_MULTIPLY_CHANNELS,
                                      measwaveformsize);
@@ -330,7 +345,8 @@ MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_
 }
 */
 
-int NiScope_close(ViSession ih) {
+int NiScope_close(ViSession ih)
+{
   ViStatus status;
   status = niScope_close(ih);
   if (status != VI_SUCCESS)

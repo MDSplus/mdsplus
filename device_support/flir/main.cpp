@@ -34,10 +34,10 @@ using namespace MDSplus;
 #include "flirutils.h" //flir radiometric conversion
 #include "fff.h"
 
-#define USETHECAMERA // this let to use the camera or if not defined to read
-                     // data from a pulse file.
+#define USETHECAMERA // this let to use the camera or if not defined to read  data from a pulse file.
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   if ((argv[1] == NULL) || (argv[2] == NULL) ||
       (argv[3] == NULL)) // argv[4] is OPTIONAL
   {
@@ -50,7 +50,8 @@ int main(int argc, char **argv) {
   int res;
   void *treePtr;
   res = camOpenTree(argv[1], atoi(argv[2]), &treePtr);
-  if (res == -1) {
+  if (res == -1)
+  {
     printf("Error opening tree...\n");
     exit(0);
   }
@@ -60,13 +61,16 @@ int main(int argc, char **argv) {
   TreeNode *nodeMeta;
   int dataNid;
 
-  try {
+  try
+  {
     tree = (Tree *)treePtr;
     node = tree->getNode((char *)"\\CAMERATEST::TOP:POINTGRAY:FRAMES");
     nodeMeta =
         tree->getNode((char *)"\\CAMERATEST::TOP:POINTGRAY:FRAMES_METAD");
     dataNid = node->getNid(); // Node id to save the acquired frames
-  } catch (MdsException *exc) {
+  }
+  catch (MdsException *exc)
+  {
     std::cout << "ERROR reading data" << exc->what() << "\n";
   }
 
@@ -88,7 +92,8 @@ int main(int argc, char **argv) {
   short *framePtr;
   char *framePtrMeta;
 
-  try {
+  try
+  {
     frameArray = node->getSegment(0);         // idx
     frameArrayMeta = nodeMeta->getSegment(0); // idx
 
@@ -107,7 +112,9 @@ int main(int argc, char **argv) {
     int dataDimsMeta[3];
     framePtr = (frameData)->getShortArray(dataDims);
     framePtrMeta = (frameDataMeta)->getByteArray(dataDimsMeta);
-  } catch (MdsException *exc) {
+  }
+  catch (MdsException *exc)
+  {
     std::cout << "ERROR reading data" << exc->what() << "\n";
   }
 
@@ -129,7 +136,8 @@ int main(int argc, char **argv) {
   int i = 1;
   int canStream = -1;
 
-  if (argv[4] != NULL) {
+  if (argv[4] != NULL)
+  {
 
     while (canStream == -1 && i <= 5) // try 5 times to open the connection
     {
@@ -139,9 +147,12 @@ int main(int argc, char **argv) {
       sleep(1);
       i++;
     }
-    if (canStream == 0) {
+    if (canStream == 0)
+    {
       printf("Streaming OK!\n");
-    } else {
+    }
+    else
+    {
       printf("CANNOT Streaming!\n");
     }
   }
@@ -152,10 +163,13 @@ int main(int argc, char **argv) {
   FLIR_SC65X *FlirCam;
   FlirCam = new FLIR_SC65X("192.168.100.18"); // vecchia 169.254.169.249 //nuova
                                               // 169.254.76.254   //192.168.50.20
-  if (!FlirCam->checkLastOp()) {
+  if (!FlirCam->checkLastOp())
+  {
     printf("Unable to connect!!!\n");
     exit(0);
-  } else {
+  }
+  else
+  {
     printf("Successfully connected...\n");
   }
 
@@ -216,7 +230,8 @@ int main(int argc, char **argv) {
     FlirCam->getFrame(&status, frame, metaData);
     gettimeofday(&tv, NULL);
     timeStamp = ((tv.tv_sec) * 1000) + ((tv.tv_usec) / 1000); // timeStamp [ms]
-    switch (status) {
+    switch (status)
+    {
     case 1:
       printf("get frame %d complete @ %ld\n", frameNumber, timeStamp);
       break;
@@ -231,7 +246,8 @@ int main(int argc, char **argv) {
       break;
     }
 
-    if (status == 1 or status == 4) {
+    if (status == 1 or status == 4)
+    {
       // SAVE FRAME IN MDSPLUS
 
       /*	     res=camSaveFrame(frame, width, height, &timeStamp, 14,
@@ -248,7 +264,8 @@ int main(int argc, char **argv) {
       if (skipFrame == 0)
         printf("ERROR SKIPFRAME=0\n");
       int sendFrame = i % skipFrame;
-      if (canStream == 0 and sendFrame == 0) {
+      if (canStream == 0 and sendFrame == 0)
+      {
         // streaming is set to 640 x 480 in "camOpenTcpConnection".
         // It must be changed to prevent strange image transmission!
         unsigned int lowLim = 0;

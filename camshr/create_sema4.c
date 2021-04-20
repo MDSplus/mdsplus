@@ -81,7 +81,8 @@ int sema4Exists = FALSE; // initially doesn't exist
 // input:       none
 // output:      SUCCESS, otherwise fatal error
 //-------------------------------------------------------------------------
-int create_sema4() {
+int create_sema4()
+{
   key_t key;
   union semun arg;
 
@@ -91,18 +92,21 @@ int create_sema4() {
     printf("create_sema4()\n");
 
   // obtain a key
-  if ((key = ftok(SEMAPHORE_KEY_SEED, 'A')) == ERROR) {
+  if ((key = ftok(SEMAPHORE_KEY_SEED, 'A')) == ERROR)
+  {
     perror("ftok(create_sema4)");
     exit(-1); // fatal error !!!
   }
   // get a semaphore id
-  if ((semid = semget(key, 1, 0666 | IPC_CREAT)) == ERROR) {
+  if ((semid = semget(key, 1, 0666 | IPC_CREAT)) == ERROR)
+  {
     perror("semget(create_sema4)");
     exit(-2); // fatal error !!!
   }
   // create semaphore and initialize it
   arg.val = 1;
-  if (semctl(semid, 0, SETVAL, arg) == ERROR) {
+  if (semctl(semid, 0, SETVAL, arg) == ERROR)
+  {
     perror("semctl(create_asema4)");
     exit(-3); // fatal error !!!
   }

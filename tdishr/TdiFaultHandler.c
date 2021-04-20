@@ -27,7 +27,8 @@ int TdiFaultHandler() { return 1; }
 
 int TdiFaultHandlerNoFixup() { return 1; }
 
-int TdiFaultClear() {
+int TdiFaultClear()
+{
   TdiFault = 0;
   return 1;
 }

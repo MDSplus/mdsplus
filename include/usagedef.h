@@ -8,8 +8,8 @@ Node Usage definitions
 #ifdef MDSOBJECTSCPPSHRVS_EXPORTS
 // visual studio uses int types for typedef
 #define TYPEDEF(bytes) enum
-#define ENDDEF(type, name)                                                     \
-  ;                                                                            \
+#define ENDDEF(type, name) \
+  ;                        \
   typedef type name
 #else
 #define TYPEDEF(bytes) typedef enum __attribute__((__packed__))

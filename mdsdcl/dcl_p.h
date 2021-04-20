@@ -1,24 +1,27 @@
 #ifndef DCL_P_H
 #define DCL_P_H
 
-typedef struct dclValue {
+typedef struct dclValue
+{
   char *value;
   char *restOfLine;
 } dclValue, *dclValuePtr;
 
-typedef struct dclValueList {
+typedef struct dclValueList
+{
   int count;        /*!< number of values in values array */
   char *restOfLine; /*!< rest of command line */
   char **values;    /*!< array of values */
 } dclValueList, *dclValueListPtr;
 
-typedef struct dclParameter {
-  char *name;   /*!< Name of parameter for cli queries */
-  char *prompt; /*!< Prompt to present if interactive and parameter is missing
+typedef struct dclParameter
+{
+  char *name;        /*!< Name of parameter for cli queries */
+  char *prompt;      /*!< Prompt to present if interactive and parameter is missing
                    but required */
-  char *label;  /*!< Alternate name for cli queries */
-  char *type;   /*!< Used for syntax switching */
-  int required; /*!< 1 if parameter is required */
+  char *label;       /*!< Alternate name for cli queries */
+  char *type;        /*!< Used for syntax switching */
+  int required;      /*!< 1 if parameter is required */
   int value_count;   /*!< number of value string present */
   int value_idx;     /*!< index of next value to return */
   char **values;     /*!< array of values strings */
@@ -28,7 +31,8 @@ typedef struct dclParameter {
   char *help;        /*!< help string for the parameter */
 } dclParameter, *dclParameterPtr;
 
-typedef struct dclQualifier {
+typedef struct dclQualifier
+{
   char *name;         /*!< Name of qualifier for cli queries */
   int value_count;    /*!< Number of value strings present */
   int value_idx;      /*|< index of next value to return */
@@ -48,17 +52,18 @@ typedef struct dclQualifier {
   char *help;         /*!< help string for qualifier */
 } dclQualifier, *dclQualifierPtr;
 
-typedef struct dclCommand {
-  char *command_line;  /*!< full command line */
-  int rest_of_line;    /*!< command handler deals with parsing the command.
+typedef struct dclCommand
+{
+  char *command_line;          /*!< full command line */
+  int rest_of_line;            /*!< command handler deals with parsing the command.
                           Parameters and qualifiers not checked generically. */
-  char *verb;          /*!< verb name of command */
-  int parameter_count; /*!< number of parameters */
+  char *verb;                  /*!< verb name of command */
+  int parameter_count;         /*!< number of parameters */
   dclParameterPtr *parameters; /*!< array of parameters */
   int qualifier_count;         /*!< number of qualifiers */
   dclQualifierPtr *qualifiers; /*!< array of qualifiers */
-  char *routine; /*!< routine providing implementation of the command */
-  char *image;   /*!< optional image where routine can be found */
+  char *routine;               /*!< routine providing implementation of the command */
+  char *image;                 /*!< optional image where routine can be found */
 } dclCommand, *dclCommandPtr;
 
 #define YYSTYPE_IS_DECLARED
@@ -72,14 +77,16 @@ typedef union YYSTYPE { /*!< Used for types used during bison/flex parsing of
   dclValuePtr pvalue;
 } YYSTYPE;
 
-typedef struct dclNodeList {
+typedef struct dclNodeList
+{
   int count;    /*!< number of nodes in nodes array */
   void **nodes; /*!< array of xmlNodePtr's */
 } dclNodeList, *dclNodeListPtr;
 
-typedef struct dclDocList {
-  char *name; /*!< Name of xml command definition (i.e. tcl_commands) */
-  void *doc;  /*!< xml document specifying the command syntax */
+typedef struct dclDocList
+{
+  char *name;              /*!< Name of xml command definition (i.e. tcl_commands) */
+  void *doc;               /*!< xml document specifying the command syntax */
   struct dclDocList *next; /*!< Next loaded document */
 } dclDocList, *dclDocListPtr;
 
@@ -92,7 +99,8 @@ extern int mdsdclDeltatimeToSeconds(const char *deltatime);
 extern int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
                       char **output_out, char *(*getline)(), void *getlineinfo);
 
-typedef struct {
+typedef struct
+{
   const char *GIT_TAG;
   const char *GIT_BRANCH;
   const char *GIT_REMOTE;

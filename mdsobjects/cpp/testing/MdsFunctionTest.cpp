@@ -35,17 +35,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace testing;
 
-void PrintOpcodes() {
+void PrintOpcodes()
+{
   for (int i = 0; i < 456 /*std::numeric_limits<short>::max()*/; ++i)
     std::cout << "opcode: " << i << "  =  "
               << (Function *)unique_ptr<Function>(new Function(i, 0, NULL))
               << "\n";
 }
 
-int main(int argc __attribute__((unused)), char **argv) {
+int main(int argc __attribute__((unused)), char **argv)
+{
   BEGIN_TESTING(Function);
 
-  if (argc > 1 && std::string(argv[1]) == std::string("print")) {
+  if (argc > 1 && std::string(argv[1]) == std::string("print"))
+  {
     PrintOpcodes();
     exit(0);
   }

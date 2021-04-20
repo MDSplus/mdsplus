@@ -69,7 +69,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      number of items to copy
 // output:      status
 //-------------------------------------------------------------------------
-int copy(int dbType, char *inFile, char *outFile, int count) {
+int copy(int dbType, char *inFile, char *outFile, int count)
+{
   int Read_fd, Write_fd;
   int entrySize, i;
   int status = SUCCESS; // optimistic
@@ -78,7 +79,8 @@ int copy(int dbType, char *inFile, char *outFile, int count) {
     printf("copy()\n");
 
   // get a read file descriptor
-  if ((Read_fd = Open(inFile, O_RDONLY)) == -1) {
+  if ((Read_fd = Open(inFile, O_RDONLY)) == -1)
+  {
     if (MSGLVL(ALWAYS))
       perror("open(rd)");
 
@@ -86,7 +88,8 @@ int copy(int dbType, char *inFile, char *outFile, int count) {
     goto Copy_Exit_1;
   }
   // get a write file descriptor
-  if ((Write_fd = open(outFile, O_WRONLY)) == -1) {
+  if ((Write_fd = open(outFile, O_WRONLY)) == -1)
+  {
     printf("Error opening %s\n", outFile);
     perror("open(wr)");
 
@@ -94,7 +97,8 @@ int copy(int dbType, char *inFile, char *outFile, int count) {
     goto Copy_Exit_2;
   }
   // figure out size
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     entrySize = MODULE_ENTRY;
     break;
@@ -111,9 +115,11 @@ int copy(int dbType, char *inFile, char *outFile, int count) {
     char line[entrySize];
 
     // read 'n write ...
-    for (i = 0; i < count; ++i) {
+    for (i = 0; i < count; ++i)
+    {
       // read ...
-      if (read(Read_fd, line, entrySize) != entrySize) {
+      if (read(Read_fd, line, entrySize) != entrySize)
+      {
         if (MSGLVL(ALWAYS))
           perror("read()");
 
@@ -121,7 +127,8 @@ int copy(int dbType, char *inFile, char *outFile, int count) {
         goto Copy_Exit_3;
       }
       // ... then write
-      if (write(Write_fd, line, entrySize) != entrySize) {
+      if (write(Write_fd, line, entrySize) != entrySize)
+      {
         if (MSGLVL(ALWAYS))
           perror("write()");
 
@@ -140,7 +147,8 @@ Copy_Exit_2:
     close(Read_fd);
 
 Copy_Exit_1:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("copy(): ");
     ShowStatus(status);
   }

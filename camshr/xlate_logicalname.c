@@ -55,7 +55,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       logical module name
 // output:      status, and modified data referenced by pointer
 //-------------------------------------------------------------------------
-int xlate_logicalname(char *Name, CamKey *key) {
+int xlate_logicalname(char *Name, CamKey *key)
+{
   int i;
   int status = SUCCESS; // otpimistic
   struct Module_ Mod;
@@ -65,19 +66,23 @@ int xlate_logicalname(char *Name, CamKey *key) {
   if (MSGLVL(FUNCTION_NAME))
     printf("xlate_logicalname()\n");
 
-  if (strchr(Name, ':') != NULL) { // invalid logical name ...
-    status = ERROR;                // ... was passed a physical name
+  if (strchr(Name, ':') != NULL)
+  {                 // invalid logical name ...
+    status = ERROR; // ... was passed a physical name
     goto Xlate_LogicalName_Exit;
   }
   // check to see if CTS db is memory mapped
-  if (CTSdbFileIsMapped == FALSE) {
-    if (map_data_file(CTS_DB) != SUCCESS) {
+  if (CTSdbFileIsMapped == FALSE)
+  {
+    if (map_data_file(CTS_DB) != SUCCESS)
+    {
       status = MAP_ERROR; // not mapped, we're done :<
       goto Xlate_LogicalName_Exit;
     }
   }
   // look up entry in db file
-  if ((i = lookup_entry(CTS_DB, Name)) < 0) {
+  if ((i = lookup_entry(CTS_DB, Name)) < 0)
+  {
     status = NO_DEVICE;
     goto Xlate_LogicalName_Exit;
   }
@@ -91,7 +96,8 @@ int xlate_logicalname(char *Name, CamKey *key) {
   key->slot = Mod.slot;               // CAMAC slot (ie station)
 
 Xlate_LogicalName_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("xlate(): name['%s'] ==>> HA[%c] id[%d] crate[%02d] slot[%d]\n",
            Name, key->scsi_port, key->scsi_address, key->crate, key->slot);
   }

@@ -102,7 +102,8 @@ static struct descriptor_xd empty_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
-Boolean ConglomerateElt(int nid) {
+Boolean ConglomerateElt(int nid)
+{
   static unsigned short cong_elt;
   static NCI_ITM lst[] = {
       {sizeof(cong_elt), NciCONGLOMERATE_ELT, (unsigned char *)&cong_elt, 0},
@@ -114,7 +115,8 @@ Boolean ConglomerateElt(int nid) {
     return 0;
 }
 
-int ConglomerateHead(int nid) {
+int ConglomerateHead(int nid)
+{
   static unsigned int head_nid;
   static NCI_ITM lst[] = {
       {sizeof(head_nid), NciCONGLOMERATE_NIDS, (unsigned char *)&head_nid, 0},
@@ -126,7 +128,8 @@ int ConglomerateHead(int nid) {
     return 0;
 }
 
-int DefaultNid(int nid) {
+int DefaultNid(int nid)
+{
   int ans = -1;
   if (ConglomerateElt(nid))
     ans = NodeParent(ConglomerateHead(nid));
@@ -135,7 +138,8 @@ int DefaultNid(int nid) {
   return ans;
 }
 
-int NodeParent(int nid) {
+int NodeParent(int nid)
+{
   static int parent_nid;
   static NCI_ITM lst[] = {
       {sizeof(parent_nid), NciPARENT, (unsigned char *)&parent_nid, 0},
@@ -147,7 +151,8 @@ int NodeParent(int nid) {
     return 0;
 }
 
-void ResetErrors() {
+void ResetErrors()
+{
   static int four = 4;
   static struct descriptor clear_messages = {4, DTYPE_L, CLASS_S,
                                              (char *)&four};
@@ -156,41 +161,49 @@ void ResetErrors() {
   StrFree1Dx(&messages);
 }
 
-void TdiComplain(Widget w) {
+void TdiComplain(Widget w)
+{
   static struct descriptor_d messages = {0, DTYPE_T, CLASS_D, 0};
   static DESCRIPTOR(null, "\0");
   static int one = 1;
   static struct descriptor get_messages = {4, DTYPE_L, CLASS_S, (char *)&one};
   TdiDebug(&get_messages, &messages MDS_END_ARG);
-  if (messages.length) {
+  if (messages.length)
+  {
     StrAppend(&messages, (struct descriptor *)&null);
     XmdsComplain(w, messages.pointer);
     StrFree1Dx(&messages);
   }
 }
 
-struct descriptor *TdiGet(int nid) {
+struct descriptor *TdiGet(int nid)
+{
   struct descriptor_xd *answer =
       (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   int status;
   *answer = empty_xd;
   status = TreeGetRecord(nid, answer);
-  if ((status & 1) == 0) {
+  if ((status & 1) == 0)
+  {
     XtFree((char *)answer);
     answer = 0;
   }
   return (struct descriptor *)answer;
 }
 
-Boolean PutIfChanged(int nid, struct descriptor_xd *xd) {
+Boolean PutIfChanged(int nid, struct descriptor_xd *xd)
+{
   int status = 1;
-  if (nid) {
-    if (xd) {
+  if (nid)
+  {
+    if (xd)
+    {
       struct descriptor_xd *old_xd = (struct descriptor_xd *)TdiGet(nid);
       if ((!old_xd && xd->l_length) ||
           !MdsCompareXd((struct descriptor *)xd, (struct descriptor *)old_xd))
         status = TreePutRecord(nid, (struct descriptor *)xd, 0);
-      if (old_xd) {
+      if (old_xd)
+      {
         MdsFree1Dx(old_xd, 0);
         XtFree((char *)old_xd);
       }

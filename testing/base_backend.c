@@ -32,7 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pthread.h>
 
 void __assert_fail(const char *__assertion, const char *__file,
-                   ASSERT_LINE_TYPE __line, const char *__function) {
+                   ASSERT_LINE_TYPE __line, const char *__function)
+{
   printf(" .-----------------------------------. \n"
          " |  Assertion failed during test     | \n"
          " '-----------------------------------' \n"
@@ -45,7 +46,8 @@ void __assert_fail(const char *__assertion, const char *__file,
 }
 
 void __test_abort(int code, const char *__msg, const char *__file,
-                  unsigned int __line, const char *__function) {
+                  unsigned int __line, const char *__function)
+{
   printf(" .-----------------------------------. \n"
          " |  TEST ABORTED                     | \n"
          " '-----------------------------------' \n"

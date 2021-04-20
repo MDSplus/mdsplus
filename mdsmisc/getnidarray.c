@@ -60,7 +60,8 @@ int GetNidArray(struct dsc$descriptor *list, int **nids, int *num_nids)
 
 extern unsigned short OpcVector;
 
-EXPORT int GetNidArray(struct descriptor *list, int **nids, int *num_nids) {
+EXPORT int GetNidArray(struct descriptor *list, int **nids, int *num_nids)
+{
 
   struct descriptor *ptr;
   int arg;
@@ -70,12 +71,14 @@ EXPORT int GetNidArray(struct descriptor *list, int **nids, int *num_nids) {
        ptr = (struct descriptor *)ptr->pointer)
     ;
   if ((ptr->class == CLASS_R) && (ptr->dtype == DTYPE_FUNCTION) &&
-      (*(unsigned short *)ptr->pointer == OpcVector)) {
+      (*(unsigned short *)ptr->pointer == OpcVector))
+  {
     struct descriptor_r *r_ptr = (struct descriptor_r *)ptr;
     *num_nids = r_ptr->ndesc;
     *nids = (int *)malloc(sizeof(int) * *num_nids);
     nidarray = *nids;
-    for (arg = 0; arg < *num_nids; arg++) {
+    for (arg = 0; arg < *num_nids; arg++)
+    {
       struct descriptor *ptr;
       for (ptr = r_ptr->dscptrs[arg]; (ptr && (ptr->dtype == DTYPE_DSC));
            ptr = (struct descriptor *)ptr->pointer)
@@ -85,7 +88,9 @@ EXPORT int GetNidArray(struct descriptor *list, int **nids, int *num_nids) {
       else
         nidarray[arg] = 0;
     }
-  } else {
+  }
+  else
+  {
     *num_nids = 0;
     *nids = 0;
     return 0;

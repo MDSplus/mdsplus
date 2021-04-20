@@ -64,7 +64,8 @@ char *string;
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-    EXPORT void XmdsComplain(Widget parent, char *string, ...) {
+    EXPORT void XmdsComplain(Widget parent, char *string, ...)
+{
 
   /*------------------------------------------------------------------------------
 
@@ -95,7 +96,8 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
   for (new_parent = parent; new_parent && !XtIsWidget(new_parent);
        new_parent = XtParent(new_parent))
     ;
-  if (new_parent) {
+  if (new_parent)
+  {
     static XtCallbackRec ok_callback_list[] = {
         {(XtCallbackProc)XtDestroyWidget, 0}, {0, 0}};
     Arg args[] = {{XmNmessageString, (long)0},
@@ -116,7 +118,8 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
     XmStringFree((XmString)args[0].value);
     XmStringFree((XmString)args[1].value);
     XmStringFree((XmString)args[2].value);
-  } else
+  }
+  else
     printf("Error displaying dialog box\nCould not find widget to 'parent' "
            "box\nError message was:\n\t%s\n",
            string);

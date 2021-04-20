@@ -56,7 +56,8 @@ int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 #include <servershr.h>
 #include "servershrp.h"
 
-EXPORT int ServerCloseTrees(char *server) {
+EXPORT int ServerCloseTrees(char *server)
+{
   return ServerSendMessage(0, server, SrvClose, NULL, NULL, NULL, NULL, NULL,
                            NULL, 0, NULL);
 }

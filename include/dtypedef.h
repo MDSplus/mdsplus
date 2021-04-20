@@ -7,17 +7,17 @@ DEFINE(BU, 2)           /* byte (unsigned);  8-bit unsigned quantity */
 DEFINE(WU, 3)           /* word (unsigned);  16-bit unsigned quantity */
 DEFINE(LU, 4)           /* longword (unsigned);  32-bit unsigned quantity */
 DEFINE(QU, 5)           /* quadword (unsigned);  64-bit unsigned quantity */
-DEFINE(B, 6) /* byte integer (signed);  8-bit signed 2's-complement integer */
-DEFINE(W, 7) /* word integer (signed);  16-bit signed 2's-complement integer */
+DEFINE(B, 6)            /* byte integer (signed);  8-bit signed 2's-complement integer */
+DEFINE(W, 7)            /* word integer (signed);  16-bit signed 2's-complement integer */
 DEFINE(L,
        8) /* longword integer (signed);  32-bit signed 2's-complement integer */
 DEFINE(Q,
-       9) /* quadword integer (signed);  64-bit signed 2's-complement integer */
-DEFINE(F, 10)  /* F_floating;	32-bit single-precision floating point */
-DEFINE(D, 11)  /* D_floating;	64-bit double-precision floating point */
-DEFINE(FC, 12) /* F_floating complex */
-DEFINE(DC, 13) /* D_floating complex */
-DEFINE(T, 14)  /* character string;  a single 8-bit character or a sequence of
+       9)                  /* quadword integer (signed);  64-bit signed 2's-complement integer */
+DEFINE(F, 10)              /* F_floating;	32-bit single-precision floating point */
+DEFINE(D, 11)              /* D_floating;	64-bit double-precision floating point */
+DEFINE(FC, 12)             /* F_floating complex */
+DEFINE(DC, 13)             /* D_floating complex */
+DEFINE(T, 14)              /* character string;  a single 8-bit character or a sequence of
                   characters */
 DEFINE(NU_deprecated, 15)  /* numeric string) unsigned */
 DEFINE(NL_deprecated, 16)  /* numeric string) left separate sign */
@@ -32,11 +32,11 @@ DEFINE(DSC, 24)            /* descriptor */
 DEFINE(OU, 25)             /* octaword (unsigned);  128-bit unsigned quantity */
 DEFINE(
     O,
-    26) /* octaword integer (signed);  128-bit signed 2's-complement integer */
-DEFINE(G, 27)  /* G_floating;	64-bit double-precision floating point */
-DEFINE(H, 28)  /* H_floating;	128-bit quadruple-precision floating point */
-DEFINE(GC, 29) /* G_floating complex */
-DEFINE(HC, 30) /* H_floating complex */
+    26)                    /* octaword integer (signed);  128-bit signed 2's-complement integer */
+DEFINE(G, 27)              /* G_floating;	64-bit double-precision floating point */
+DEFINE(H, 28)              /* H_floating;	128-bit quadruple-precision floating point */
+DEFINE(GC, 29)             /* G_floating complex */
+DEFINE(HC, 30)             /* H_floating complex */
 DEFINE(CIT_deprecated, 31) /* COBOL Intermediate Temporary */
 DEFINE(BPV_deprecated, 32) /* bound procedure value */
 DEFINE(BLV_deprecated, 33) /* bound label value */

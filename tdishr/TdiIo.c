@@ -48,7 +48,7 @@ static const DESCRIPTOR(dBAD, "/*bad*/");
         In a shared library, cannot match extern stdout, etc.
 */
 #define kprintf(unit, ctrl) (unit ? fprintf(unit, ctrl) : printf(ctrl));
-#define kprintf2(unit, ctrl, a1, a2)                                           \
+#define kprintf2(unit, ctrl, a1, a2) \
   (unit ? fprintf(unit, ctrl, a1, a2) : printf(ctrl, a1, a2));
 
 extern int TdiData();
@@ -61,7 +61,8 @@ extern int TdiDecompile();
 /*----------------------------------------------
         Internal routine to output a long.
 */
-int TdiPutLong(int *data, struct descriptor_xd *out_ptr) {
+int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   static const dtype_t dtype = DTYPE_L;
   static const length_t len = (length_t)sizeof(int);
@@ -77,7 +78,8 @@ int TdiPutLong(int *data, struct descriptor_xd *out_ptr) {
 /*----------------------------------------------
         Internal routine to output a unit
 */
-static int TdiPutUnit(FILE *unit, struct descriptor_xd *out_ptr) {
+static int TdiPutUnit(FILE *unit, struct descriptor_xd *out_ptr)
+{
   if (!unit)
     return MdsCopyDxXd(NULL, out_ptr);
   struct descriptor unit_d = {sizeof(void *), DTYPE_POINTER, CLASS_S,
@@ -88,23 +90,28 @@ static int TdiPutUnit(FILE *unit, struct descriptor_xd *out_ptr) {
 /*----------------------------------------------
         Internal routine to input a unit
 */
-static int TdiGetOutUnit(struct descriptor *in_ptr, FILE **unit) {
+static int TdiGetOutUnit(struct descriptor *in_ptr, FILE **unit)
+{
   int status;
   INIT_AND_FREEXD_ON_EXIT(xd);
   status = TdiEvaluate(in_ptr, &xd MDS_END_ARG);
   struct descriptor *unit_d = xd.pointer;
-  if (unit_d && unit_d->class == CLASS_S) {
-    if (unit_d->dtype == DTYPE_L || unit_d->dtype == DTYPE_LU) {
+  if (unit_d && unit_d->class == CLASS_S)
+  {
+    if (unit_d->dtype == DTYPE_L || unit_d->dtype == DTYPE_LU)
+    {
       if (*(int *)unit_d->pointer == 2)
         *unit = stderr;
       else
         *unit = stdout;
-    } else if ((unit_d->dtype == DTYPE_POINTER || unit_d->dtype == DTYPE_T) &&
-               unit_d->length == sizeof(void *))
+    }
+    else if ((unit_d->dtype == DTYPE_POINTER || unit_d->dtype == DTYPE_T) &&
+             unit_d->length == sizeof(void *))
       *unit = *(FILE **)unit_d->pointer;
     else
       *unit = stdout;
-  } else
+  }
+  else
     *unit = stdout;
   FREEXD_NOW();
   return status;
@@ -113,7 +120,8 @@ static int TdiGetOutUnit(struct descriptor *in_ptr, FILE **unit) {
 /*----------------------------------------------
         Internal routine to input a unit
 */
-static int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit) {
+static int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit)
+{
   int status;
   INIT_AND_FREEXD_ON_EXIT(xd);
   status = TdiEvaluate(in_ptr, &xd MDS_END_ARG);
@@ -133,19 +141,22 @@ static int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit) {
                 string = DATE_TIME([quadword time])
 */
 int Tdi1DateTime(opcode_t opcode __attribute__((unused)), int narg,
-                 struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                 struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int time[2] = {0, 0}, *ptime;
   length_t len;
   static const dtype_t dtype = DTYPE_T;
   static const length_t length = 23;
 
-  if (narg > 0 && list[0]) {
+  if (narg > 0 && list[0])
+  {
     struct descriptor dtime = {sizeof(time), DTYPE_Q, CLASS_S, 0};
     dtime.pointer = (char *)time;
     status = TdiData(list[0], &dtime MDS_END_ARG);
     ptime = time;
-  } else
+  }
+  else
     ptime = 0;
   if (STATUS_OK)
     status = MdsGet1DxS(&length, &dtype, out_ptr);
@@ -161,7 +172,8 @@ int Tdi1DateTime(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1Fclose(opcode_t opcode __attribute__((unused)),
                int narg __attribute__((unused)), struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   FILE *unit;
   int err;
 
@@ -177,7 +189,8 @@ int Tdi1Fclose(opcode_t opcode __attribute__((unused)),
         and origin: 0=absolute 1=relative 2=relative to end.
 */
 int Tdi1Fseek(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   FILE *unit;
   int offset = 0, origin = 0, err;
@@ -188,10 +201,10 @@ int Tdi1Fseek(opcode_t opcode __attribute__((unused)), int narg,
   if (STATUS_OK && narg > 2)
     status = TdiGetLong(list[2], &origin);
   if (STATUS_OK)
-    {
-      err = fseek(unit, offset, origin);
-      status = TdiPutLong((int *)&err, out_ptr);
-    }
+  {
+    err = fseek(unit, offset, origin);
+    status = TdiPutLong((int *)&err, out_ptr);
+  }
   return status;
 }
 
@@ -201,7 +214,8 @@ int Tdi1Fseek(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1Ftell(opcode_t opcode __attribute__((unused)),
               int narg __attribute__((unused)), struct descriptor *list[],
-              struct descriptor_xd *out_ptr) {
+              struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   FILE *unit;
   int pos;
@@ -220,7 +234,8 @@ int Tdi1Ftell(opcode_t opcode __attribute__((unused)),
 */
 int Tdi1Fopen(opcode_t opcode __attribute__((unused)),
               int narg __attribute__((unused)), struct descriptor *list[],
-              struct descriptor_xd *out_ptr) {
+              struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   FILE *unit;
   struct descriptor_d dname = {0, DTYPE_T, CLASS_D, 0};
@@ -234,10 +249,10 @@ int Tdi1Fopen(opcode_t opcode __attribute__((unused)),
   if (STATUS_OK)
     status = StrAppend(&dmode, (struct descriptor *)&dNUL);
   if (STATUS_OK)
-    {
-      unit = fopen(dname.pointer, dmode.pointer);
-      status = TdiPutUnit(unit, out_ptr);
-    }
+  {
+    unit = fopen(dname.pointer, dmode.pointer);
+    status = TdiPutUnit(unit, out_ptr);
+  }
   StrFree1Dx(&dname);
   StrFree1Dx(&dmode);
   return status;
@@ -248,7 +263,8 @@ int Tdi1Fopen(opcode_t opcode __attribute__((unused)),
                 status = SPAWN([command_string],[input_file],[output_file])
 */
 int Tdi1Spawn(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int stat1;
   struct descriptor_d cmd = EMPTY_D;
@@ -262,10 +278,10 @@ int Tdi1Spawn(opcode_t opcode __attribute__((unused)), int narg,
   if (narg > 2 && list[2] && STATUS_OK)
     status = TdiText(list[2], &out MDS_END_ARG);
   if (STATUS_OK)
-    {
-      stat1 = LibSpawn((struct descriptor *)&cmd, 1, 0);
-      status = TdiPutLong(&stat1, out_ptr);
-    }
+  {
+    stat1 = LibSpawn((struct descriptor *)&cmd, 1, 0);
+    status = TdiPutLong(&stat1, out_ptr);
+  }
   return status;
 }
 
@@ -275,7 +291,8 @@ int Tdi1Spawn(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1Wait(opcode_t opcode __attribute__((unused)),
              int narg __attribute__((unused)), struct descriptor *list[],
-             struct descriptor_xd *out_ptr __attribute__((unused))) {
+             struct descriptor_xd *out_ptr __attribute__((unused)))
+{
   INIT_STATUS;
   float time;
 
@@ -298,7 +315,8 @@ int Tdi1Wait(opcode_t opcode __attribute__((unused)),
         are decompiled and start and end with a new row.
 */
 int Tdi1Write(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int j, stat1, bytes = 0, col = 0, len;
   FILE *unit = 0;
@@ -310,80 +328,85 @@ int Tdi1Write(opcode_t opcode __attribute__((unused)), int narg,
 
   status = TdiGetOutUnit(list[0], &unit);
   if (STATUS_OK)
-    for (j = 1; j < narg; ++j) {
-    stat1 = TdiEvaluate(list[j], &tmp MDS_END_ARG);
-    if (!(stat1 & 1))
-      pd = (struct descriptor *)&dBAD;
-    else if ((ptmp = tmp.pointer) == 0)
-      pd = (struct descriptor *)&dNUL;
-    else
-      switch (ptmp->dtype) {
-      case DTYPE_BU:
-      case DTYPE_B:
-      case DTYPE_WU:
-      case DTYPE_W:
-      case DTYPE_LU:
-      case DTYPE_L:
-      case DTYPE_QU:
-      case DTYPE_Q:
-      case DTYPE_OU:
-      case DTYPE_O:
-      case DTYPE_FC:
-      case DTYPE_F:
-      case DTYPE_DC:
-      case DTYPE_D:
-      case DTYPE_GC:
-      case DTYPE_G:
-      case DTYPE_HC:
-      case DTYPE_H:
-      case DTYPE_FSC:
-      case DTYPE_FS:
-      case DTYPE_FTC:
-      case DTYPE_FT:
-        stat1 = TdiText(&tmp, &tmp MDS_END_ARG);
-        if (!(stat1 & 1)) {
-          pd = (struct descriptor *)&dBAD;
-          break;
-        }
-        MDS_ATTR_FALLTHROUGH
-      case DTYPE_T:
-        ptmp = tmp.pointer;
-        len = ptmp->length;
-        pt = ptmp->pointer;
-        plim = pt + len;
-        switch (ptmp->class) {
-        case CLASS_S:
-        case CLASS_D:
-          if (col > 0 && col + len > width)
-            col = 0, bytes += kprintf(unit, "\n");
-          col += len;
-          bytes += kprintf2(unit, "%.*s", len, pt);
-          continue;
-        case CLASS_A:
-          plim = pt + ((struct descriptor_a *)ptmp)->arsize;
-          if (col > 0)
-            col = 0, bytes += kprintf(unit, "\n");
-          for (; pt < plim; pt += len) {
+    for (j = 1; j < narg; ++j)
+    {
+      stat1 = TdiEvaluate(list[j], &tmp MDS_END_ARG);
+      if (!(stat1 & 1))
+        pd = (struct descriptor *)&dBAD;
+      else if ((ptmp = tmp.pointer) == 0)
+        pd = (struct descriptor *)&dNUL;
+      else
+        switch (ptmp->dtype)
+        {
+        case DTYPE_BU:
+        case DTYPE_B:
+        case DTYPE_WU:
+        case DTYPE_W:
+        case DTYPE_LU:
+        case DTYPE_L:
+        case DTYPE_QU:
+        case DTYPE_Q:
+        case DTYPE_OU:
+        case DTYPE_O:
+        case DTYPE_FC:
+        case DTYPE_F:
+        case DTYPE_DC:
+        case DTYPE_D:
+        case DTYPE_GC:
+        case DTYPE_G:
+        case DTYPE_HC:
+        case DTYPE_H:
+        case DTYPE_FSC:
+        case DTYPE_FS:
+        case DTYPE_FTC:
+        case DTYPE_FT:
+          stat1 = TdiText(&tmp, &tmp MDS_END_ARG);
+          if (!(stat1 & 1))
+          {
+            pd = (struct descriptor *)&dBAD;
+            break;
+          }
+          MDS_ATTR_FALLTHROUGH
+        case DTYPE_T:
+          ptmp = tmp.pointer;
+          len = ptmp->length;
+          pt = ptmp->pointer;
+          plim = pt + len;
+          switch (ptmp->class)
+          {
+          case CLASS_S:
+          case CLASS_D:
             if (col > 0 && col + len > width)
               col = 0, bytes += kprintf(unit, "\n");
             col += len;
             bytes += kprintf2(unit, "%.*s", len, pt);
+            continue;
+          case CLASS_A:
+            plim = pt + ((struct descriptor_a *)ptmp)->arsize;
+            if (col > 0)
+              col = 0, bytes += kprintf(unit, "\n");
+            for (; pt < plim; pt += len)
+            {
+              if (col > 0 && col + len > width)
+                col = 0, bytes += kprintf(unit, "\n");
+              col += len;
+              bytes += kprintf2(unit, "%.*s", len, pt);
+            }
+            col = 0, bytes += kprintf(unit, "\n");
+            continue;
+          default:
+            goto none;
           }
-          col = 0, bytes += kprintf(unit, "\n");
-          continue;
         default:
-          goto none;
+        none:
+          stat1 = TdiDecompile(&tmp, &tmp MDS_END_ARG);
+          pd = (stat1 & 1) ? tmp.pointer : (struct descriptor *)&dBAD;
+          if (col > 0)
+            col = 0, bytes += kprintf(unit, "\n");
+          break;
         }
-      default:
-      none:
-        stat1 = TdiDecompile(&tmp, &tmp MDS_END_ARG);
-        pd = (stat1 & 1) ? tmp.pointer : (struct descriptor *)&dBAD;
-        if (col > 0)
-          col = 0, bytes += kprintf(unit, "\n");
-        break;
-      }
-    bytes += kprintf2(unit, "%.*s\n", pd->length, pd->pointer);
-  }
+      bytes += kprintf2(unit, "%.*s\n", pd->length, pd->pointer);
+    }
   if (col > 0)
     bytes += kprintf(unit, "\n");
   if (STATUS_OK)
@@ -400,22 +423,25 @@ int Tdi1Write(opcode_t opcode __attribute__((unused)), int narg,
 */
 int Tdi1Read(opcode_t opcode __attribute__((unused)),
              int narg __attribute__((unused)), struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   FILE *unit = 0;
   status = TdiGetInUnit(list[0], &unit);
   if (STATUS_OK)
+  {
+    char line[4096];
+    char *ans;
+    struct descriptor line_d = {0, DTYPE_T, CLASS_S, 0};
+    ans = fgets(line, sizeof(line), unit);
+    if (ans)
     {
-      char line[4096];
-      char *ans;
-      struct descriptor line_d = {0, DTYPE_T, CLASS_S, 0};
-      ans = fgets(line, sizeof(line), unit);
-      if (ans) {
-        line_d.length = strlen(line) - 1;
-        line_d.pointer = line;
-        status = MdsCopyDxXd(&line_d, out_ptr);
-      } else
-        status = MDSplusERROR;
+      line_d.length = strlen(line) - 1;
+      line_d.pointer = line;
+      status = MdsCopyDxXd(&line_d, out_ptr);
     }
+    else
+      status = MDSplusERROR;
+  }
   return status;
 }

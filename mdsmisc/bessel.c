@@ -183,7 +183,8 @@ static int ConvertCoord(float x, float y, float *out_r, float *out_theta)
 }
 */
 
-EXPORT double BessJ0(double x) {
+EXPORT double BessJ0(double x)
+{
   double result, y, ax, z, xx;
   static double p1 = 1., p2 = -0.1098628627E-2, p3 = 0.2734510407E-4,
                 p4 = -0.2073370639E-5, p5 = 0.2093887211E-6,
@@ -195,11 +196,14 @@ EXPORT double BessJ0(double x) {
                 s3 = 9494680.718, s4 = 59272.64853, s5 = 267.8532712, s6 = 1.;
 
   ax = fabs(x);
-  if (ax < 8.) {
+  if (ax < 8.)
+  {
     y = x * x;
     result = (r1 + y * (r2 + y * (r3 + y * (r4 + y * (r5 + y * r6))))) /
              (s1 + y * (s2 + y * (s3 + y * (s4 + y * (s5 + y * s6)))));
-  } else {
+  }
+  else
+  {
     z = 8 / ax;
     y = z * z;
     xx = ax - 0.785398164;
@@ -210,7 +214,8 @@ EXPORT double BessJ0(double x) {
   return result;
 }
 
-EXPORT double BessJ1(double x) {
+EXPORT double BessJ1(double x)
+{
   double result, y, ax, z, xx;
   static double r1 = 72362614232., r2 = -7895059235., r3 = 242396853.1,
                 r4 = -2972611.439, r5 = 15704.48260, r6 = -30.16036606,
@@ -221,11 +226,14 @@ EXPORT double BessJ1(double x) {
                 q3 = 0.8449199096E-5, q4 = -0.88228987E-6, q5 = 0.105787412E-6;
 
   ax = fabs(x);
-  if (ax < 8) {
+  if (ax < 8)
+  {
     y = x * x;
     result = x * (r1 + y * (r2 + y * (r3 + y * (r4 + y * (r5 + y * r6))))) /
              (s1 + y * (s2 + y * (s3 + y * (s4 + y * (s5 + y * s6)))));
-  } else {
+  }
+  else
+  {
     z = 8 / ax;
     y = z * z;
     xx = ax - 2.356194491;
@@ -238,13 +246,15 @@ EXPORT double BessJ1(double x) {
   return result;
 }
 
-EXPORT double BessJn(int n, double x) {
+EXPORT double BessJn(int n, double x)
+{
   int iacc = 40;
   static double bigno = 1E10, bigni = 1E-10;
   double ax, tox, bjm, bj, bjp, jsum, sum, bessj;
   int j, m;
 
-  if (n < 0) {
+  if (n < 0)
+  {
     printf("Bad n argument in BessJn");
     return 0;
   }
@@ -255,18 +265,23 @@ EXPORT double BessJn(int n, double x) {
   ax = fabs(x);
   if (ax == 0)
     bessj = 0;
-  else {
-    if (ax > n) {
+  else
+  {
+    if (ax > n)
+    {
       tox = 2 / ax;
       bjm = BessJ0(ax);
       bj = BessJ1(ax);
-      for (j = 1; j < n; j++) {
+      for (j = 1; j < n; j++)
+      {
         bjp = j * tox * bj - bjm;
         bjm = bj;
         bj = bjp;
       }
       bessj = bj;
-    } else {
+    }
+    else
+    {
       tox = 2 / ax;
       m = 2 * ((n + (int)sqrt(iacc * n)) / 2);
       bessj = 0;
@@ -274,11 +289,13 @@ EXPORT double BessJn(int n, double x) {
       sum = 0;
       bjp = 0;
       bj = 1;
-      for (j = m; j >= 1; j--) {
+      for (j = m; j >= 1; j--)
+      {
         bjm = j * tox * bj - bjp;
         bjp = bj;
         bj = bjm;
-        if (fabs(bj) > bigno) {
+        if (fabs(bj) > bigno)
+        {
           bj = bj * bigni;
           bjp = bjp * bigni;
           bessj = bessj * bigni;
@@ -299,7 +316,8 @@ EXPORT double BessJn(int n, double x) {
   return bessj;
 }
 
-EXPORT double BessJnD(int n, double x) {
+EXPORT double BessJnD(int n, double x)
+{
   /*  Computes Jn'(x) using relations:
           2 * Jn'(x) = Jn-1(x) - Jn+1(x)
       and
@@ -311,7 +329,8 @@ EXPORT double BessJnD(int n, double x) {
     return (BessJn(n - 1, x) - BessJn(n + 1, x)) / 2;
 }
 
-EXPORT void BessRoots() {
+EXPORT void BessRoots()
+{
   char filename[256];
   int idx, root_idx;
   FILE *fil_ptr = 0;
@@ -319,26 +338,33 @@ EXPORT void BessRoots() {
 
   printf("\nComputation of Roots for Bessel functions\n\nOut File (0 for "
          "screen):");
-  if ((scanf("%s", filename) != 1) && strcmp(filename, "0")) {
-    if ((fil_ptr = fopen(filename, "w")) == 0) {
+  if ((scanf("%s", filename) != 1) && strcmp(filename, "0"))
+  {
+    if ((fil_ptr = fopen(filename, "w")) == 0)
+    {
       printf("\nCannot open file %s\n", filename);
       return;
     }
   }
-  for (idx = 0; idx <= MAX_BESSEL_IDX; idx++) {
+  for (idx = 0; idx <= MAX_BESSEL_IDX; idx++)
+  {
     curr_x = 0;
-    for (root_idx = 0; root_idx < NUM_ROOTS; root_idx++) {
+    for (root_idx = 0; root_idx < NUM_ROOTS; root_idx++)
+    {
       if (idx > 0 && root_idx == 0)
         curr_root = 0;
       else
         curr_root = FindRoot(idx, &curr_x);
-      if (fil_ptr) {
+      if (fil_ptr)
+      {
         fprintf(fil_ptr, "%4.8f", curr_root);
         if (root_idx < NUM_ROOTS - 1)
           fprintf(fil_ptr, ", ");
         else
           fprintf(fil_ptr, "\n");
-      } else {
+      }
+      else
+      {
         printf("%4.8f", curr_root);
         if (root_idx < NUM_ROOTS - 1)
           printf(", ");
@@ -349,11 +375,13 @@ EXPORT void BessRoots() {
   }
 }
 
-static double FindRoot(int n, double *x) {
+static double FindRoot(int n, double *x)
+{
   double y1, y2, curr_x, result;
 
   curr_x = *x;
-  do {
+  do
+  {
     curr_x += STEP_ROOT;
     y1 = BessJn(n, curr_x);
     y2 = BessJn(n, curr_x + STEP_ROOT);
@@ -363,12 +391,14 @@ static double FindRoot(int n, double *x) {
   return result;
 }
 
-static double Bisection(int n, double x1, double x2, double y1, double y2) {
+static double Bisection(int n, double x1, double x2, double y1, double y2)
+{
   double x, y;
   x = (x1 + x2) / 2;
   if ((x2 - x1) < TOLERANCE)
     return x;
-  else {
+  else
+  {
     y = BessJn(n, x);
     if (SameSign(y1, y))
       return Bisection(n, x, x2, y, y2);
@@ -378,7 +408,8 @@ static double Bisection(int n, double x1, double x2, double y1, double y2) {
 }
 
 EXPORT double **Bessel(int mc_max, int ms_max, int l_max, int num_chords,
-                       double *p, double *fi) {
+                       double *p, double *fi)
+{
   int ms, mc, l, c, num_cols, curr_col, m, n, m_max;
   double **w, **w_temp, inv_cos, sum, curr_val;
 
@@ -394,13 +425,17 @@ EXPORT double **Bessel(int mc_max, int ms_max, int l_max, int num_chords,
     w_temp[c] = (double *)malloc((l_max + 1) * sizeof(double));
 
   /* Compute values */
-  for (c = 0; c < num_chords; c++) {
+  for (c = 0; c < num_chords; c++)
+  {
     /* Compute Fml(p) in temporary matrix */
     inv_cos = acos(p[c]);
-    for (m = 0; m < m_max; m++) {
-      for (l = 0; l <= l_max; l++) {
+    for (m = 0; m < m_max; m++)
+    {
+      for (l = 0; l <= l_max; l++)
+      {
         for (sum = 0, n = 0; n < MAX_BESSEL_EXPANSION; n++)
-          if (n != m) {
+          if (n != m)
+          {
             curr_val = BessJn(n, bessel_root[m][l]) *
                        sin(n * PI / 2 - bessel_root[m][l] * p[c]) *
                        (sin((m + n) * inv_cos) / (m + n) +
@@ -435,7 +470,8 @@ EXPORT double **Bessel(int mc_max, int ms_max, int l_max, int num_chords,
 }
 
 EXPORT double **BesselStartRebuild(double r, int mc_max, int ms_max,
-                                   int l_max) {
+                                   int l_max)
+{
   double **j_temp;
   int m_max, m, l;
 
@@ -455,7 +491,8 @@ EXPORT double **BesselStartRebuild(double r, int mc_max, int ms_max,
 
 EXPORT double BesselRebuildModes(double *a, int mc_max,
                                  int ms_max __attribute__((unused)), int l_max,
-                                 double **j_temp, int mode, int is_cosine) {
+                                 double **j_temp, int mode, int is_cosine)
+{
   double result = 0;
   int l, curr_idx;
 
@@ -474,17 +511,20 @@ EXPORT double BesselRebuildModes(double *a, int mc_max,
 
 EXPORT double BesselRebuild(double r __attribute__((unused)), double theta,
                             double *a, int mc_max, int ms_max, int l_max,
-                            double **j_temp) {
+                            double **j_temp)
+{
   double result = 0, sum;
   int m, l, curr_idx;
 
   /* Compute emissivity */
-  for (m = curr_idx = 0; m <= mc_max; m++) {
+  for (m = curr_idx = 0; m <= mc_max; m++)
+  {
     for (sum = 0, l = 0; l <= l_max; l++)
       sum += a[curr_idx++] * j_temp[m][l];
     result += sum * cos(m * theta);
   }
-  for (m = 1; m <= ms_max; m++) {
+  for (m = 1; m <= ms_max; m++)
+  {
     for (sum = 0, l = 0; l <= l_max; l++)
       sum += a[curr_idx++] * j_temp[m][l];
     result += sum * sin(m * theta);
@@ -506,31 +546,38 @@ EXPORT void BesselEndRebuild(double **j_temp, int mc_max, int ms_max)
 
 static double bess_delay;
 
-EXPORT Complex *BessCRoots(int n, double *g) {
+EXPORT Complex *BessCRoots(int n, double *g)
+{
   int n_poles, i, j;
   Complex *poles;
   double a, b, c;
 
   n_poles = n;
   poles = (Complex *)malloc(n_poles * sizeof(Complex));
-  if (n_poles % 2) {
+  if (n_poles % 2)
+  {
     poles[0].re = -BesselFactors[n - 1][1] / bess_delay;
     poles[0].im = 0;
     j = 2;
     i = 1;
-  } else {
+  }
+  else
+  {
     j = 0;
     i = 0;
   }
-  while (i < n_poles) {
+  while (i < n_poles)
+  {
     b = BesselFactors[n - 1][j++];
     c = BesselFactors[n - 1][j++];
-    if (n >= 5) {
+    if (n >= 5)
+    {
       c = c * c + b * b;
       b *= 2;
     }
     a = b * b - 4 * c;
-    if (a >= 0) {
+    if (a >= 0)
+    {
       printf("Internal error in BessCRoots\n");
       exit(1);
     }
@@ -555,22 +602,26 @@ EXPORT Filter *BessInvar(float *fp, float *fs, float *ap, float *as, float *fc,
 
 static Complex *FindBessPoles(double Wp, double Ws, double ap, double as,
                               double fc __attribute__((unused)), int *N,
-                              double *gain) {
+                              double *gain)
+{
   double norm_wp, norm_ws;
   int n1, n2, n, i;
 
   norm_wp = Wp * bess_delay;
   norm_ws = Ws * bess_delay;
 
-  if (*N == 0) {
-    for (n1 = 3; n1 < 10; n1++) {
+  if (*N == 0)
+  {
+    for (n1 = 3; n1 < 10; n1++)
+    {
       for (i = 1; i < NUM_STEP_MAG_ATT && (norm_wp > i * 0.5); i++)
         ;
       if (MagnitudeAtt[n1 - 3][i - 1] <= ap)
         break; /* current value of n1 satisfies attenuation requirements */
     }
 
-    for (n2 = 3; n2 < 10; n2++) {
+    for (n2 = 3; n2 < 10; n2++)
+    {
       for (i = 1; i < NUM_STEP_DEL_ERR && (norm_ws > i * 0.5); i++)
         ;
       if (DelayErr[n2 - 3][i - 1] <= as)
@@ -578,7 +629,8 @@ static Complex *FindBessPoles(double Wp, double Ws, double ap, double as,
     }
     n = (n1 > n2) ? n1 : n2;
     *N = n;
-  } else
+  }
+  else
     n = *N;
   return BessCRoots(n, gain);
 }

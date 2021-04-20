@@ -102,7 +102,8 @@ XmdsDigChansApply(Widget w) Boolean XmdsIsDigChans(Widget w)
 
 void XmdsDigChansReset(Widget w);
 
-typedef struct _DigChansPart {
+typedef struct _DigChansPart
+{
   int channels;
   int nid;
   int nid_offset;
@@ -137,7 +138,8 @@ static XtResource resources[] = {
  Executable:                                                                  */
 
 EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args,
-                                 Cardinal argcount) {
+                                 Cardinal argcount)
+{
   XmdsDigChansPart info = {4, -1, 0, 0, 1, 2, 3, 1};
   static String hierarchy_name[] = {"XmdsDigChans.uid"};
   MrmHierarchy drm_hierarchy;
@@ -159,7 +161,8 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args,
   XtVaSetValues(XtNameToWidget(channels_w, "this_is_a_DigChans_widget"),
                 XmNuserData, (char *)0 + info.put_on_apply, NULL);
   rowcol_w = XtNameToWidget(channels_w, "*c_rowcol");
-  for (i = 0; i < info.channels; i++) {
+  for (i = 0; i < info.channels; i++)
+  {
     char name_c[12];
     XmString name;
     XmString path;
@@ -206,13 +209,15 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args,
   return channels_w;
 }
 
-EXPORT void XmdsDigChansReset(Widget w) {
+EXPORT void XmdsDigChansReset(Widget w)
+{
   Widget rowcol_w = XtNameToWidget(w, "*c_rowcol");
   int i;
   int num;
   Widget *chan_w;
   XtVaGetValues(rowcol_w, XmNnumChildren, &num, XmNchildren, &chan_w, NULL);
-  for (i = 0; i < num; i++) {
+  for (i = 0; i < num; i++)
+  {
     XtPointer userdata;
     int nid;
     XtVaGetValues(chan_w[i], XmNuserData, &userdata, NULL);
@@ -223,15 +228,18 @@ EXPORT void XmdsDigChansReset(Widget w) {
   XmdsResetAllXds(rowcol_w);
 }
 
-EXPORT int XmdsDigChansPut(Widget w) {
+EXPORT int XmdsDigChansPut(Widget w)
+{
   Widget rowcol_w = XtNameToWidget(w, "*c_rowcol");
   int i;
   int num;
   int status;
   Widget *chan_w;
   XtVaGetValues(rowcol_w, XmNnumChildren, &num, XmNchildren, &chan_w, NULL);
-  if ((status = XmdsXdsAreValid(w))) {
-    for (i = 0; i < num; i++) {
+  if ((status = XmdsXdsAreValid(w)))
+  {
+    for (i = 0; i < num; i++)
+    {
       XtPointer user_data;
       int nid;
       int num_ctls;
@@ -243,7 +251,8 @@ EXPORT int XmdsDigChansPut(Widget w) {
         TreeTurnOn(nid);
       else
         TreeTurnOff(nid);
-      if (num_ctls > 3) {
+      if (num_ctls > 3)
+      {
         XmdsExprPut(children[2]);
         XmdsExprPut(children[3]);
       }
@@ -252,13 +261,15 @@ EXPORT int XmdsDigChansPut(Widget w) {
   return status;
 }
 
-EXPORT int XmdsDigChansApply(Widget w) {
+EXPORT int XmdsDigChansApply(Widget w)
+{
   XtPointer PutOnApply;
   XtVaGetValues(XtNameToWidget(w, "this_is_a_DigChans_widget"), XmNuserData,
                 &PutOnApply, NULL);
   return PutOnApply ? XmdsDigChansPut(w) : 1;
 }
 
-EXPORT Boolean XmdsIsDigChans(Widget w) {
+EXPORT Boolean XmdsIsDigChans(Widget w)
+{
   return XtNameToWidget(w, "this_is_a_DigChans_widget") != 0;
 }

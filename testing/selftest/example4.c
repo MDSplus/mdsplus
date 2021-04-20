@@ -27,9 +27,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <testing.h>
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   TEST_FORK(0);
-  BEGIN_TESTING(no fork success) {
+  BEGIN_TESTING(no fork success)
+  {
     printf("Hello successfull test\n");
     int success = 1;
     TEST1(success == 1);
@@ -37,7 +39,8 @@ int main(int argc __attribute__((unused)),
   END_TESTING;
 
   TEST_FORK(1);
-  BEGIN_TESTING(yes fork fail) {
+  BEGIN_TESTING(yes fork fail)
+  {
     printf("Hello successfull test\n");
     int success = 0;
     TEST1(success == 1);
@@ -45,7 +48,8 @@ int main(int argc __attribute__((unused)),
   END_TESTING;
 
   TEST_FORK(0);
-  BEGIN_TESTING(no fork success) {
+  BEGIN_TESTING(no fork success)
+  {
     printf("Hello successfull test\n");
     int success = 1;
     TEST1(success == 1);

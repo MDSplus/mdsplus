@@ -26,11 +26,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PROT_TUNNEL
 #include "ioroutines_pipes.h"
 
-static int io_disconnect(Connection *c) {
+static int io_disconnect(Connection *c)
+{
   io_pipes_t *p = get_pipes(c);
-  if (p) {
+  if (p)
+  {
 #ifdef _WIN32
-    if (p->pid) {
+    if (p->pid)
+    {
       DWORD exitcode;
       if (GetExitCodeProcess(p->pid, &exitcode) && exitcode == 9009)
         fprintf(stderr, "Protocol is not supported.\n");
@@ -45,7 +48,8 @@ static int io_disconnect(Connection *c) {
     close(p->out);
     int p_pid = p->pid;
     int pid = fork();
-    if (pid == 0) {
+    if (pid == 0)
+    {
       int i;
       for (i = 30; !waitpid(p_pid, NULL, WNOHANG) && i-- > 0;)
         usleep(100000);
@@ -61,12 +65,14 @@ static int io_disconnect(Connection *c) {
 }
 
 #ifndef _WIN32
-static void ChildSignalHandler(int num __attribute__((unused))) {
+static void ChildSignalHandler(int num __attribute__((unused)))
+{
   // Ensure that the handler does not spoil errno.
   int saved_errno = errno;
   pid_t pid;
   int status;
-  while ((pid = waitpid((pid_t)-1, &status, WNOHANG)) > 0) {
+  while ((pid = waitpid((pid_t)-1, &status, WNOHANG)) > 0)
+  {
 #ifdef DEBUG
     printf("pid: %d, exited: %d, stop signal: %d, term signal: %d, exit "
            "status: %d\n",
@@ -79,9 +85,11 @@ static void ChildSignalHandler(int num __attribute__((unused))) {
     void *info;
     size_t info_len = 0;
     while ((id = NextConnection(&ctx, &info_name, &info, &info_len)) !=
-           INVALID_CONNECTION_ID) {
+           INVALID_CONNECTION_ID)
+    {
       if (info_name && strcmp(info_name, PROTOCOL) == 0 &&
-          ((io_pipes_t *)info)->pid == pid) {
+          ((io_pipes_t *)info)->pid == pid)
+      {
         DisconnectConnection(id);
         break;
       }
@@ -91,7 +99,8 @@ static void ChildSignalHandler(int num __attribute__((unused))) {
 }
 #endif
 
-static int io_connect(Connection *c, char *protocol, char *host) {
+static int io_connect(Connection *c, char *protocol, char *host)
+{
 #ifdef _WIN32
   size_t len = strlen(protocol) * 2 + strlen(host) + 512;
   char *cmd = (char *)malloc(len);
@@ -102,16 +111,19 @@ static int io_connect(Connection *c, char *protocol, char *host) {
   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
   saAttr.bInheritHandle = TRUE;
   saAttr.lpSecurityDescriptor = NULL;
-  struct {
+  struct
+  {
     HANDLE rd;
     HANDLE wr;
   } pipe_p2c = {NULL, NULL}, pipe_c2p = {NULL, NULL};
   HANDLE tmp;
-  if (!CreatePipe(&pipe_c2p.rd, &pipe_c2p.wr, &saAttr, 0)) {
+  if (!CreatePipe(&pipe_c2p.rd, &pipe_c2p.wr, &saAttr, 0))
+  {
     fprintf(stderr, "pipe_c2p CreatePipe");
     goto err;
   }
-  if (!CreatePipe(&pipe_p2c.rd, &pipe_p2c.wr, &saAttr, 0)) {
+  if (!CreatePipe(&pipe_p2c.rd, &pipe_p2c.wr, &saAttr, 0))
+  {
     fprintf(stderr, "pipe_p2c CreatePipe");
     goto err;
   }
@@ -119,7 +131,8 @@ static int io_connect(Connection *c, char *protocol, char *host) {
                       GetCurrentProcess(), &pipe_p2c.wr, 0, FALSE,
                       DUPLICATE_SAME_ACCESS))
     CloseHandle(tmp);
-  if (!SetHandleInformation(pipe_p2c.wr, HANDLE_FLAG_INHERIT, 0)) {
+  if (!SetHandleInformation(pipe_p2c.wr, HANDLE_FLAG_INHERIT, 0))
+  {
     fprintf(stderr, "pipe_p2c SetHandleInformation");
     goto err;
   };
@@ -138,7 +151,8 @@ static int io_connect(Connection *c, char *protocol, char *host) {
   BOOL bSuccess = CreateProcess(NULL, cmd, NULL, NULL, TRUE, CREATE_NO_WINDOW,
                                 NULL, NULL, &siStartInfo, &piProcInfo);
   free(cmd);
-  if (bSuccess) { // parent
+  if (bSuccess)
+  { // parent
     io_pipes_t p;
     p.in = pipe_c2p.rd;
     p.out = pipe_p2c.wr;
@@ -163,26 +177,31 @@ err:;
     CloseHandle(pipe_c2p.wr);
   return C_ERROR;
 #else
-  struct {
+  struct
+  {
     int rd;
     int wr;
   } pipe_p2c, pipe_c2p;
   int err_p2c = pipe((int *)&pipe_p2c);
   int err_c2p = pipe((int *)&pipe_c2p);
-  if (err_p2c || err_c2p) {
+  if (err_p2c || err_c2p)
+  {
     perror("Error in mdsip io_connect creating pipes\n");
-    if (!err_p2c) {
+    if (!err_p2c)
+    {
       close(pipe_p2c.rd);
       close(pipe_p2c.wr);
     }
-    if (!err_c2p) {
+    if (!err_c2p)
+    {
       close(pipe_c2p.rd);
       close(pipe_c2p.wr);
     }
     return C_ERROR;
   }
   pid_t pid = fork();
-  if (pid < 0) { // error
+  if (pid < 0)
+  { // error
     fprintf(stderr, "Error %d from fork()\n", errno);
     close(pipe_c2p.rd);
     close(pipe_c2p.wr);
@@ -190,7 +209,8 @@ err:;
     close(pipe_p2c.wr);
     return C_ERROR;
   }
-  if (pid > 0) { // parent
+  if (pid > 0)
+  { // parent
     io_pipes_t p;
     p.in = pipe_c2p.rd;
     p.out = pipe_p2c.wr;
@@ -228,12 +248,14 @@ err:;
     close(pipe_c2p.rd);
     fcntl(pipe_c2p.wr, F_SETFD, FD_CLOEXEC);
     int err = execvp(localcmd, arglist) ? errno : 0;
-    if (err == 2) {
+    if (err == 2)
+    {
       char *c = protocol;
       for (; *c; c++)
         *c = toupper(*c);
       fprintf(stderr, "Protocol %s is not supported.\n", protocol);
-    } else if ((errno = err))
+    }
+    else if ((errno = err))
       perror("Client process terminated");
     exit(err);
   }
@@ -241,7 +263,8 @@ err:;
 }
 
 static int io_listen(int argc __attribute__((unused)),
-                     char **argv __attribute__((unused))) {
+                     char **argv __attribute__((unused)))
+{
   int id, status;
   INIT_AND_FREE_ON_EXIT(char *, username);
 #ifdef _WIN32
@@ -268,5 +291,5 @@ static int io_listen(int argc __attribute__((unused)),
 }
 
 const IoRoutines tunnel_routines = {io_connect, io_send, io_recv, NULL,
-                                    io_listen,  NULL,    NULL,    io_disconnect,
+                                    io_listen, NULL, NULL, io_disconnect,
                                     io_recv_to, NULL};

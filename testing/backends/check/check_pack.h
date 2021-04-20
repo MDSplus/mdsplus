@@ -21,7 +21,8 @@
 #ifndef CHECK_PACK_H
 #define CHECK_PACK_H
 
-enum ck_msg_type {
+enum ck_msg_type
+{
   CK_MSG_CTX,
   CK_MSG_FAIL,
   CK_MSG_LOC,
@@ -29,21 +30,25 @@ enum ck_msg_type {
   CK_MSG_LAST
 };
 
-typedef struct CtxMsg {
+typedef struct CtxMsg
+{
   enum ck_result_ctx ctx;
 } CtxMsg;
 
-typedef struct LocMsg {
+typedef struct LocMsg
+{
   int line;
   char *file;
 } LocMsg;
 
-typedef struct FailMsg {
+typedef struct FailMsg
+{
   int rtype;
   char *msg;
 } FailMsg;
 
-typedef struct DurationMsg {
+typedef struct DurationMsg
+{
   int duration;
 } DurationMsg;
 
@@ -54,7 +59,8 @@ typedef union {
   DurationMsg duration_msg;
 } CheckMsg;
 
-typedef struct RcvMsg {
+typedef struct RcvMsg
+{
   enum ck_result_ctx lastctx;
   enum ck_result_ctx failctx;
   char *fixture_file;

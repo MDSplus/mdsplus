@@ -30,7 +30,8 @@ extern void toms510_(float *xin, float *yin, float *err, int *n, float *xout,
 #define N 5
 #define fEQ(a, b, d) (((a > b) ? a - b : b - a) < d)
 
-int main() {
+int main()
+{
   float x[N] = {0.f, 1.f, 2.f, 3.f, 4.f};
   float y[N] = {0.f, 1.f, 4.f, 1.f, 0.f};
   float err = .02 * 4; // max(x)-min(x) = 4;
@@ -38,7 +39,8 @@ int main() {
   float xout[N];
   float yout[N];
   int i;
-  for (i = 0; i < n; i++) {
+  for (i = 0; i < n; i++)
+  {
     xout[i] = (float)i;
     yout[i] = (float)i;
   }
@@ -49,7 +51,8 @@ int main() {
   toms510_(x, y, &err, &n, xout, yout, w, &k, &p);
   float ey[N] = {-.08, 1.08, 3.99781, 1., 0.};
   float ex[N] = {0., 1., 2.0274, 3., 4.};
-  for (i = 0; i < N; i++) {
+  for (i = 0; i < N; i++)
+  {
     if (!fEQ(ex[i], xout[i], 1e-5f))
       return 1;
     if (!fEQ(ey[i], yout[i], 1e-5f))

@@ -7,10 +7,11 @@ using namespace MDSplus;
 #include <cammdsutils.h>
 #include <camstreamutils.h>
 
-#define USETHECAMERA // this let to use the camera or if not defined to read
+#define USETHECAMERA // this let to use the camera or if not defined to read \
                      // data from a pulse file.
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
   if ((argv[1] == NULL) || (argv[2] == NULL) ||
       (argv[3] == NULL)) // argv[4] is OPTIONAL
@@ -24,7 +25,8 @@ int main(int argc, char **argv) {
   int res;
   void *treePtr;
   res = camOpenTree(argv[1], atoi(argv[2]), &treePtr);
-  if (res == -1) {
+  if (res == -1)
+  {
     printf("Error opening tree...\n");
     exit(0);
   }
@@ -34,7 +36,8 @@ int main(int argc, char **argv) {
   TreeNode *nodeMeta;
   int framesNid, timebaseNid, framesMetadNid, frame0TimeNid;
 
-  try {
+  try
+  {
     tree = (Tree *)treePtr;
     node = tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAMES");
     framesNid = node->getNid();
@@ -44,7 +47,9 @@ int main(int argc, char **argv) {
     framesMetadNid = node->getNid();
     node = tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAME0_TIME");
     frame0TimeNid = node->getNid();
-  } catch (MdsException *exc) {
+  }
+  catch (MdsException *exc)
+  {
     std::cout << "ERROR reading data" << exc->what() << "\n";
   }
 

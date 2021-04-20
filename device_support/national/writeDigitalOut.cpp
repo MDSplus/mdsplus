@@ -49,7 +49,8 @@ int number_of_ports = 3;
 // int number_of_repeats = 10;
 // uint32_t update_period_divisor = 20000;
 
-int test(char *device_name, int silent) {
+int test(char *device_name, int silent)
+{
   int retval = 0;
 
   int dio_fd = 0;
@@ -80,7 +81,8 @@ int test(char *device_name, int silent) {
   /* open DIO segment file descriptor */
   sprintf(str, "%s.dio", device_name);
   dio_fd = open(str, O_RDWR);
-  if (dio_fd <= 0) {
+  if (dio_fd <= 0)
+  {
     printf("Could not open AO segment!\n");
     retval = -1;
     goto out;
@@ -113,7 +115,8 @@ int test(char *device_name, int silent) {
 
   /* reset DIO segment */
   retval = xseries_reset_dio(dio_fd);
-  if (retval) {
+  if (retval)
+  {
     printf("Error reseting DIO segment!\n");
     goto out;
   }
@@ -157,31 +160,36 @@ int test(char *device_name, int silent) {
 
   /* Load DIO configuration */
   retval = xseries_load_di_conf(dio_fd, di_conf);
-  if (retval) {
+  if (retval)
+  {
     printf("Error loading DI configuration!\n");
     goto out;
   }
   retval = xseries_load_do_conf(dio_fd, do_conf);
-  if (retval) {
+  if (retval)
+  {
     printf("Error loading DO configuration!\n");
     goto out;
   }
 
   /* start DIO*/
   retval = xseries_start_di(dio_fd);
-  if (retval) {
+  if (retval)
+  {
     printf("Error loading DI configuration!\n");
     goto out;
   }
   retval = xseries_start_do(dio_fd);
-  if (retval) {
+  if (retval)
+  {
     printf("Error loading DO configuration!\n");
     goto out;
   }
 
   /* Write values to ports */
   retval = xseries_write_do(dio_fd, &do_value, 1);
-  if (retval != 1) {
+  if (retval != 1)
+  {
     printf("Error writing DO value!\n");
     goto out;
   }
@@ -237,7 +245,8 @@ out:
   return retval;
 }
 
-void print_text(void) {
+void print_text(void)
+{
   printf("\n");
 
   printf("Test software-timed, static DIO and PFI operation using DIO and PFI "
@@ -245,31 +254,41 @@ void print_text(void) {
   printf("\n");
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
   int retval = 0;
   char *device_name;
   int silent = false;
 
-  if (argc == 2) {
+  if (argc == 2)
+  {
     device_name = argv[1];
     print_text();
-  } else if (argc == 3) {
+  }
+  else if (argc == 3)
+  {
     device_name = argv[1];
-    if (strcmp(argv[2], "-silent")) {
+    if (strcmp(argv[2], "-silent"))
+    {
       print_text();
       silent = false;
-    } else {
+    }
+    else
+    {
       silent = true;
     }
-  } else {
+  }
+  else
+  {
     printf("Usage:  %s <device name>\n", argv[0]);
     printf("Example:\n        %s /dev/pxie-6368.0\n", argv[0]);
     printf("\n");
     exit(EXIT_FAILURE);
   }
 
-  if (silent) {
+  if (silent)
+  {
     printf("%-10s%-100s", argv[0],
            "Test software-timed, static DIO and PFI operation using DIO and "
            "PFI ports.");
@@ -279,7 +298,8 @@ int main(int argc, char **argv) {
   /* run test */
   retval = test(device_name, silent);
 
-  if (!silent) {
+  if (!silent)
+  {
     printf("Test:			");
     fflush(stdout);
   }

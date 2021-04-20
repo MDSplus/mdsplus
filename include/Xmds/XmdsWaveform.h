@@ -50,36 +50,36 @@
 /* Global Resources */
 
 #define XmdsNtitle "title" /* Title string displayed at top of waveform */
-#define XmdsNpointerMode                                                       \
-  "pointerMode" /* Selects pointer mode (i.e. zoom, crosshairs, drag) */
+#define XmdsNpointerMode \
+  "pointerMode"                    /* Selects pointer mode (i.e. zoom, crosshairs, drag) */
 #define XmdsNlabelFont "labelFont" /* Font used for title and axis labels */
-#define XmdsNshowMode                                                          \
-  "showMode" /* Show lines, points, or both (box at data points) */
+#define XmdsNshowMode \
+  "showMode"                                 /* Show lines, points, or both (box at data points) */
 #define XmdsNshowSelections "showSelections" /* Show selection points */
 #define XmdsNstepPlot "stepPlot"             /* Step plot mode */
 #define XmdsNcount "count"                   /* Number of X,Y datapoints */
 #define XmdsNselections "selections"         /* Selections (char [count]) */
-#define XmdsNselectionsValStruct                                               \
+#define XmdsNselectionsValStruct \
   "selectionsValStruct"        /* Selections (using value struct mechanism) */
 #define XmdsNpenDown "penDown" /* Pen down (char [count]) */
-#define XmdsNpenDownValStruct                                                  \
+#define XmdsNpenDownValStruct \
   "penDownValStruct"           /* Pen down (using value struct mechanism) */
 #define XmdsNpanWith "panWith" /* Pan with widget */
-#define XmdsNattachCrosshairs                                                  \
+#define XmdsNattachCrosshairs \
   "attachCrosshairs" /* Attach crosshairs to curve - boolean */
-#define XmdsNdisabled                                                          \
+#define XmdsNdisabled \
   "disabled" /* True = disable drawing until disabled cleared */
-#define XmdsNclosed                                                            \
-  "closed" /* True = connect last point to first point - boolean */
+#define XmdsNclosed \
+  "closed"                         /* True = connect last point to first point - boolean */
 #define XmdsNgridStyle "gridStyle" /* Select type of grid */
 
 /* X-axis Resources */
 
 #define XmdsNxValue "xValue" /* float X-values[count] */
-#define XmdsNxValStruct                                                        \
-  "xValStruct"           /* X-values (using value struct mechanism) */
-#define XmdsNxMin "xMin" /* float *min_x */
-#define XmdsNxMax "xMax" /* float *max_x */
+#define XmdsNxValStruct \
+  "xValStruct"                       /* X-values (using value struct mechanism) */
+#define XmdsNxMin "xMin"             /* float *min_x */
+#define XmdsNxMax "xMax"             /* float *max_x */
 #define XmdsNxCrosshair "xCrosshair" /* float *x_crosshair */
 #define XmdsNxGridLines "xGridLines" /* int number of grid lines */
 #define XmdsNxLabels "xLabels"       /* boolean display labels */
@@ -96,27 +96,28 @@
 
 /* Callbacks */
 
-#define XmdsNbutton3Callback                                                   \
+#define XmdsNbutton3Callback \
   "button3Callback" /* Callback when button 3 is pressed */
 #define XmdsNcrosshairsCallback                                                \
   "crosshairsCallback" /* Callback when crosshairs change position in waveform \
                           window */
-#define XmdsNalignCallback                                                     \
-  "alignCallback" /* Callback when right button is depressed in crosshairs     \
+#define XmdsNalignCallback                                                 \
+  "alignCallback" /* Callback when right button is depressed in crosshairs \
                      pointer mode */
 #define XmdsNlimitsCallback                                                    \
   "limitsCallback" /* Callback when change in max/min axis values (after zoom, \
                       pan, etc.) */
-#define XmdsNunderlayCallback                                                  \
+#define XmdsNunderlayCallback \
   "underlayCallback" /* Callback to write to window before waveform */
-#define XmdsNoverlayCallback                                                   \
-  "overlayCallback" /* Callback to write to window after waveform */
+#define XmdsNoverlayCallback \
+  "overlayCallback"                        /* Callback to write to window after waveform */
 #define XmdsNcutCallback "cutCallback"     /* Callback when cut occurs */
 #define XmdsNpasteCallback "pasteCallback" /* Callback when paste occurs */
 
 /* Value Struct resource mechanism */
 
-typedef struct _XmdsWaveformValStruct {
+typedef struct _XmdsWaveformValStruct
+{
   unsigned int size;
   caddr_t addr;
   void (*destroy)(); /* Destroy called with widget and destroy arg */
@@ -124,14 +125,16 @@ typedef struct _XmdsWaveformValStruct {
 } XmdsWaveformValStruct, *XmdsWaveformValStructPtr;
 /* Callback structures */
 
-typedef struct {
+typedef struct
+{
   int reason;
   XEvent *event;
   float x;
   float y;
 } XmdsWaveformCrosshairsCBStruct;
 
-typedef struct {
+typedef struct
+{
   int reason;
   XEvent *event;
   float *xminval;
@@ -162,7 +165,8 @@ typedef struct {
 #define XmdsSHOW_MODE_POINTS 1
 #define XmdsSHOW_MODE_BOTH 2
 
-enum XmdsWaveformMotionRestriction {
+enum XmdsWaveformMotionRestriction
+{
   XmdsMOTION_UNSELECTED,
   XmdsMOTION_BOTH,
   XmdsMOTION_XONLY,
@@ -170,7 +174,11 @@ enum XmdsWaveformMotionRestriction {
   XmdsMOTION_NONE
 };
 
-enum XmdsWaveformGridStyle { XmdsGRID_STYLE_LINES, XmdsGRID_STYLE_TICKS };
+enum XmdsWaveformGridStyle
+{
+  XmdsGRID_STYLE_LINES,
+  XmdsGRID_STYLE_TICKS
+};
 /* Class record constants */
 
 externalref WidgetClass xmdsWaveformWidgetClass;

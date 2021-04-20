@@ -72,17 +72,20 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
   if (list[0] == 0)
     return MdsCopyDxXd(&missing, out_ptr);
 
-  switch (list[0]->class) {
+  switch (list[0]->class)
+  {
   case CLASS_XD:
     /***************************************************
     If input is an class XD and dtype DSC and points to
     real stuff, we can just copy its descriptor.
     Release any lingering output unless it is our input.
     ***************************************************/
-    if (list[0]->dtype == DTYPE_DSC) {
+    if (list[0]->dtype == DTYPE_DSC)
+    {
       if (list[0]->pointer == 0)
         return TdiNULL_PTR;
-      switch (((struct descriptor *)(list[0]->pointer))->dtype) {
+      switch (((struct descriptor *)(list[0]->pointer))->dtype)
+      {
       case DTYPE_DSC:
       case DTYPE_IDENT:
       case DTYPE_NID:
@@ -91,7 +94,8 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
       case DTYPE_CALL:
         break;
       default:
-        switch (((struct descriptor *)(list[0]->pointer))->class) {
+        switch (((struct descriptor *)(list[0]->pointer))->class)
+        {
         case CLASS_APD:
           break;
         default:
@@ -112,7 +116,8 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
   case CLASS_S:
   case CLASS_D:
   case CLASS_XS:
-    switch (list[0]->dtype) {
+    switch (list[0]->dtype)
+    {
     case DTYPE_DSC:
       status = TdiEvaluate(list[0]->pointer, out_ptr MDS_END_ARG);
       break;
@@ -125,7 +130,8 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
       if (STATUS_OK)
         status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
       break;
-    case DTYPE_PATH: {
+    case DTYPE_PATH:
+    {
       char *path = MdsDescrToCstring(list[0]);
       status = TreeFindNode(path, &nid);
       MdsFree(path);
@@ -133,7 +139,8 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
         status = TdiGetRecord(nid, out_ptr);
       if (STATUS_OK)
         status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
-    } break;
+    }
+    break;
     default:
       if (list[0]->dtype < 160)
         status = SsINTERNAL;
@@ -143,7 +150,8 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
     }
     break;
   case CLASS_R:
-    switch (list[0]->dtype) {
+    switch (list[0]->dtype)
+    {
     case DTYPE_FUNCTION:
       pfun = (struct descriptor_function *)list[0];
       status = TdiIntrinsic(*(unsigned short *)pfun->pointer, pfun->ndesc,
@@ -201,9 +209,12 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__((unused)),
     break;
   case CLASS_APD:
     if (list[0]->dtype == DTYPE_DICTIONARY || list[0]->dtype == DTYPE_TUPLE ||
-        list[0]->dtype == DTYPE_LIST || list[0]->dtype == DTYPE_OPAQUE) {
+        list[0]->dtype == DTYPE_LIST || list[0]->dtype == DTYPE_OPAQUE)
+    {
       status = SsINTERNAL;
-    } else {
+    }
+    else
+    {
       status = Tdi1Vector(0,
                           (int)((struct descriptor_a *)list[0])->arsize /
                               (int)list[0]->length,

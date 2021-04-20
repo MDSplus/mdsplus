@@ -36,7 +36,8 @@ void *cameraHandle;
 int kSockHandle = -1; // MUST BE -1 THE FIRST TIME !!!
 void *hBuffer;
 
-void signal_callback_handler(int signum) {
+void signal_callback_handler(int signum)
+{
   printf("Caught signal %d\n", signum);
   // Cleanup and close up stuff here
 
@@ -50,7 +51,8 @@ void signal_callback_handler(int signum) {
   exit(signum);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int streamingPort = 0;
   int numFrame = 100;
 
@@ -64,7 +66,8 @@ int main(int argc, char **argv) {
 
   numFrame = atoi(argv[3]);
 
-  if (argv[4]) {
+  if (argv[4])
+  {
     streamingPort = atoi(argv[4]);
   }
 
@@ -72,7 +75,8 @@ int main(int argc, char **argv) {
   int res;
   void *treePtr;
   res = camOpenTree(argv[1], atoi(argv[2]), &treePtr);
-  if (res == -1) {
+  if (res == -1)
+  {
     printf("Error opening tree...\n");
     exit(0);
   }
@@ -93,7 +97,8 @@ int main(int argc, char **argv) {
   int i = 1;
   int canStream = -1;
 
-  if (streamingPort) {
+  if (streamingPort)
+  {
 
     while (canStream == -1 && i <= 1) // try 5 times to open the connection
     {
@@ -101,9 +106,12 @@ int main(int argc, char **argv) {
       sleep(1);
       i++;
     }
-    if (canStream == 0) {
+    if (canStream == 0)
+    {
       printf("Streaming OK!\n");
-    } else {
+    }
+    else
+    {
       printf("CANNOT Streaming!\n");
     }
   }
@@ -163,19 +171,23 @@ int main(int argc, char **argv) {
 
     kappaGetFrame(cameraHandle, &status, frame); // get the frame
 
-    gettimeofday(&tv, NULL); // get the timestamp
+    gettimeofday(&tv, NULL);                                  // get the timestamp
     frameTime = ((tv.tv_sec) * 1000) + ((tv.tv_usec) / 1000); // ms
-    if (i == 1) {
+    if (i == 1)
+    {
       prevFrameTime = frameTime;
       totFrameTime = 0;
-    } else {
+    }
+    else
+    {
       deltaT = int(frameTime - prevFrameTime);
       prevFrameTime = frameTime;
       totFrameTime = totFrameTime + deltaT;
     }
     timeStamp = float(totFrameTime) / float(1000.0);
 
-    switch (status) {
+    switch (status)
+    {
     case 1:
       printf("get frame %d complete @ %.3f\n", frameNumber, timeStamp);
       break;
@@ -190,13 +202,15 @@ int main(int argc, char **argv) {
       break;
     }
 
-    if (status == 1) {
+    if (status == 1)
+    {
       // SAVE FRAME IN MDSPLUS
       // camSaveFrame(frame, width, height, timeStamp, 14, treePtr, dataNid, -1,
       // frameNumber, 0, 0, 0, void *saveListPtr);
 
       // STREAMING
-      if (canStream == 0) {
+      if (canStream == 0)
+      {
         unsigned int lowLim = 0;
         unsigned int highLim = 20000;
         camFrameTo8bit((unsigned short *)frame, 1920, 1080,

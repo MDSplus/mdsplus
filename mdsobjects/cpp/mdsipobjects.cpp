@@ -77,8 +77,10 @@ extern "C" void FreeMessage(void *m);
 #define DTYPE_DOUBLE_IP 11
 #define DTYPE_CSTRING_IP 14
 
-static int convertType(int mdsType) {
-  switch (mdsType) {
+static int convertType(int mdsType)
+{
+  switch (mdsType)
+  {
   case DTYPE_B:
     return DTYPE_CHAR_IP;
   case DTYPE_BU:
@@ -106,7 +108,8 @@ static int convertType(int mdsType) {
   }
 }
 
-void *getManyObj(char *serializedIn) throw(MdsException) {
+void *getManyObj(char *serializedIn) throw(MdsException)
+{
   AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
   if (inArgs->clazz != CLASS_APD) // || inArgs->dtype != DTYPE_LIST)
     throw MdsException(
@@ -118,7 +121,8 @@ void *getManyObj(char *serializedIn) throw(MdsException) {
   String exprKey("exp");
   String argsKey("args");
   AutoData<Dictionary> result(new Dictionary());
-  for (int idx = 0; idx < nArgs; idx++) {
+  for (int idx = 0; idx < nArgs; idx++)
+  {
     AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
     if (currArg->clazz != CLASS_APD) // || currArg->dtype != DTYPE_DICTIONARY)
       throw MdsException(
@@ -129,11 +133,14 @@ void *getManyObj(char *serializedIn) throw(MdsException) {
     AutoArray<char> expr(exprData->getString());
     AutoData<List> argsData((List *)currArg->getItem(&argsKey));
     AutoData<Dictionary> answDict(new Dictionary());
-    try {
+    try
+    {
       Data *currAnsw;
-      if (argsData.get() && argsData->len() > 0) {
+      if (argsData.get() && argsData->len() > 0)
+      {
         MDSplus::Data **args = argsData->getDscs();
-        switch (argsData->len()) {
+        switch (argsData->len())
+        {
         case 1:
           currAnsw = executeWithArgs(expr.get(), 1, args[0]);
           break;
@@ -214,12 +221,16 @@ void *getManyObj(char *serializedIn) throw(MdsException) {
                                      args[12], args[13], args[14], args[15]);
           break;
         }
-      } else {
+      }
+      else
+      {
         currAnsw = execute(expr.get());
       }
       AutoData<String> valueKey(new String("value"));
       answDict->setItem(valueKey.get(), currAnsw);
-    } catch (MdsException const &e) {
+    }
+    catch (MdsException const &e)
+    {
       AutoData<String> errorKey(new String("error"));
       AutoData<String> errorData(new String(e.what()));
       answDict->setItem(errorKey.get(), errorData.get());
@@ -230,7 +241,8 @@ void *getManyObj(char *serializedIn) throw(MdsException) {
   return result->convertToDsc();
 }
 
-void *putManyObj(char *serializedIn) throw(MdsException) {
+void *putManyObj(char *serializedIn) throw(MdsException)
+{
   AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
   if (inArgs->clazz != CLASS_APD) // || inArgs->dtype != DTYPE_LIST)
     throw MdsException(
@@ -241,7 +253,8 @@ void *putManyObj(char *serializedIn) throw(MdsException) {
   String exprKey("exp");
   String argsKey("args");
   AutoData<Dictionary> result(new Dictionary());
-  for (int idx = 0; idx < nArgs; idx++) {
+  for (int idx = 0; idx < nArgs; idx++)
+  {
     AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
     if (currArg->clazz != CLASS_APD) // || currArg->dtype != DTYPE_DICTIONARY)
       throw MdsException(
@@ -256,7 +269,8 @@ void *putManyObj(char *serializedIn) throw(MdsException) {
     if (argsData.get())
       nPutArgs = argsData->len();
 
-    try {
+    try
+    {
       AutoPointer<Tree> tree(getActiveTree());
       AutoData<Data> compiledData = (Data *)compileFromExprWithArgs(
           expr.get(), nPutArgs, (argsData.get()) ? argsData->getDscs() : 0,
@@ -265,7 +279,9 @@ void *putManyObj(char *serializedIn) throw(MdsException) {
       node->putData(compiledData.get());
       AutoData<String> successData(new String("Success"));
       result->setItem(nodeNameData.get(), successData.get());
-    } catch (MdsException const &e) {
+    }
+    catch (MdsException const &e)
+    {
       AutoData<String> errorData(new String(e.what()));
       result->setItem(nodeNameData.get(), errorData.get());
     }
@@ -285,14 +301,16 @@ Connection::Connection(char *mdsipAddr,
   SetCompressionLevel(clevel);
   sockId = ConnectToMds(mdsipAddr);
   unlockGlobal();
-  if (sockId <= 0) {
+  if (sockId <= 0)
+  {
     std::string msg("Cannot connect to ");
     msg += mdsipAddr;
     throw MdsException(msg);
   }
 }
 
-Connection::~Connection() {
+Connection::~Connection()
+{
   lockGlobal();
   DisconnectFromMds(sockId);
   unlockGlobal();
@@ -306,20 +324,23 @@ void Connection::lockGlobal() { globalMutex.lock(); }
 
 void Connection::unlockGlobal() { globalMutex.unlock(); }
 
-void Connection::openTree(char *tree, int shot) {
+void Connection::openTree(char *tree, int shot)
+{
   int status = MdsOpen(sockId, tree, shot);
   //	std::cout << "SOCK ID: " << sockId << std::endl;
   if (!(status & 1))
     throw MdsException(status);
 }
 
-void Connection::closeAllTrees() {
+void Connection::closeAllTrees()
+{
   int status = MdsClose(sockId);
   if (!(status & 1))
     throw MdsException(status);
 }
 
-Data *Connection::get(const char *expr, Data **args, int nArgs) {
+Data *Connection::get(const char *expr, Data **args, int nArgs)
+{
   char clazz, dtype, nDims;
   short length;
   int *dims;
@@ -329,7 +350,8 @@ Data *Connection::get(const char *expr, Data **args, int nArgs) {
   Data *resData;
 
   // Check whether arguments are compatible (Scalars or Arrays)
-  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
+  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
+  {
     args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
     delete[] dims;
     if (!ptr)
@@ -341,17 +363,20 @@ Data *Connection::get(const char *expr, Data **args, int nArgs) {
   //	lockGlobal();
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
                    std::string(expr).size(), 0, 0, (char *)expr);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     unlockLocal();
     throw MdsException(status);
   }
 
-  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
+  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
+  {
     args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
     status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs + 1, length,
                      nDims, dims, (char *)ptr);
     delete[] dims;
-    if (!(status & 1)) {
+    if (!(status & 1))
+    {
       unlockLocal();
       throw MdsException(status);
     }
@@ -360,12 +385,15 @@ Data *Connection::get(const char *expr, Data **args, int nArgs) {
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes,
                            &ptr, &mem);
   unlockLocal();
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     throw MdsException(status);
   }
 
-  if (nDims == 0) {
-    switch (dtype) {
+  if (nDims == 0)
+  {
+    switch (dtype)
+    {
     case DTYPE_CHAR_IP:
       resData = new Int8(*(char *)ptr);
       break;
@@ -396,7 +424,8 @@ Data *Connection::get(const char *expr, Data **args, int nArgs) {
     case DTYPE_DOUBLE_IP:
       resData = new Float64(*(double *)ptr);
       break;
-    case DTYPE_CSTRING_IP: {
+    case DTYPE_CSTRING_IP:
+    {
       std::string buf(reinterpret_cast<char *>(ptr), length);
       resData = new String(buf.c_str());
       break;
@@ -406,9 +435,12 @@ Data *Connection::get(const char *expr, Data **args, int nArgs) {
                 << std::endl;
       throw MdsException("Unexpected data type returned by mdsip");
     }
-  } else {
+  }
+  else
+  {
     // nDims > 0
-    switch (dtype) {
+    switch (dtype)
+    {
     case DTYPE_CHAR_IP:
       resData = new Int8Array((char *)ptr, nDims, retDims);
       break;
@@ -448,7 +480,8 @@ Data *Connection::get(const char *expr, Data **args, int nArgs) {
   return resData;
 }
 
-void Connection::put(const char *inPath, char *expr, Data **args, int nArgs) {
+void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
+{
   char clazz, dtype, nDims;
   short length;
   int *dims;
@@ -456,7 +489,8 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs) {
   void *ptr, *mem = 0;
 
   // Check whether arguments are compatible (Scalars or Arrays)
-  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
+  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
+  {
     args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
     if (!ptr)
       throw MdsException("Invalid argument passed to Connection::put(). Can "
@@ -480,16 +514,19 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs) {
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1, putExpr.length(), 0,
                    0, const_cast<char *>(putExpr.c_str()));
 
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     unlockLocal();
     throw MdsException(status);
   }
 
-  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
+  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
+  {
     args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
     status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs + 1, length,
                      nDims, dims, (char *)ptr);
-    if (!(status & 1)) {
+    if (!(status & 1))
+    {
       unlockLocal();
       throw MdsException(status);
     }
@@ -511,13 +548,15 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs) {
     throw MdsException(status);
 }
 
-void Connection::setDefault(char *path) {
+void Connection::setDefault(char *path)
+{
   int status = MdsSetDefault(sockId, path);
   if (!(status & 1))
     throw MdsException(status);
 }
 
-TreeNodeThinClient *Connection::getNode(char *path) {
+TreeNodeThinClient *Connection::getNode(char *path)
+{
   char expr[256];
   sprintf(expr, "GETNCI(%s, \'NID_NUMBER\')", path);
   AutoData<Data> nidData(get(expr));
@@ -529,7 +568,8 @@ TreeNodeThinClient *Connection::getNode(char *path) {
 
 #ifndef _MSC_VER
 void Connection::registerStreamListener(DataStreamListener *listener,
-                                        char *expr, char *tree, int shot) {
+                                        char *expr, char *tree, int shot)
+{
   char regExpr[64 + strlen(expr) + strlen(tree)];
   sprintf(regExpr, "MdsObjectsCppShr->registerListener(\"%s\",\"%s\",val(%d))",
           expr, tree, shot);
@@ -539,9 +579,11 @@ void Connection::registerStreamListener(DataStreamListener *listener,
   listenerV.push_back(listener);
   listenerIdV.push_back(id);
 }
-void Connection::unregisterStreamListener(DataStreamListener *listener) {
+void Connection::unregisterStreamListener(DataStreamListener *listener)
+{
   int idx;
-  for (idx = 0; idx < (int)listenerV.size(); idx++) {
+  for (idx = 0; idx < (int)listenerV.size(); idx++)
+  {
     if (listenerV[idx] == listener)
       break;
   }
@@ -555,9 +597,12 @@ void Connection::unregisterStreamListener(DataStreamListener *listener) {
   listenerIdV.erase(listenerIdV.begin() + idx);
 }
 #endif
-void Connection::checkDataAvailability() {
-  try {
-    while (true) {
+void Connection::checkDataAvailability()
+{
+  try
+  {
+    while (true)
+    {
       AutoData<Data> serData(
           get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()"));
       int numBytes;
@@ -566,15 +611,18 @@ void Connection::checkDataAvailability() {
       delete[] serialized;
       int numDescs = apdData->getDimension();
       Data **descs = apdData->getDscs();
-      for (int i = 0; i < numDescs / 2; i++) {
+      for (int i = 0; i < numDescs / 2; i++)
+      {
         int id = descs[2 * i]->getInt();
         Signal *sig = (Signal *)descs[2 * i + 1];
         int idx;
-        for (idx = 0; idx < (int)listenerIdV.size(); idx++) {
+        for (idx = 0; idx < (int)listenerIdV.size(); idx++)
+        {
           if (listenerIdV[idx] == id)
             break;
         }
-        if (idx < (int)listenerV.size()) {
+        if (idx < (int)listenerV.size())
+        {
           AutoData<Data> sigData(sig->getData());
           AutoData<Data> sigDim(sig->getDimension());
           if (((Array *)sigData.get())->getSize() > 0)
@@ -583,38 +631,45 @@ void Connection::checkDataAvailability() {
       }
       deleteData(apdData);
     }
-  } catch (MdsException &exc) {
+  }
+  catch (MdsException &exc)
+  {
   } // Likely because of a resetConnection call
 }
 
-static void *checkDataStream(void *connPtr) {
+static void *checkDataStream(void *connPtr)
+{
   Connection *conn = (Connection *)connPtr;
   conn->checkDataAvailability();
   return NULL;
 }
 
 #ifndef _MSC_VER
-void Connection::startStreaming() {
+void Connection::startStreaming()
+{
   pthread_t thread;
   pthread_create(&thread, NULL, checkDataStream, this);
 }
 #endif
 
-void Connection::resetConnection() {
+void Connection::resetConnection()
+{
   lockGlobal();
   DisconnectFromMds(sockId);
   SetCompressionLevel(clevel);
   char *mdsipAddr = (char *)mdsipAddrStr.c_str();
   sockId = ConnectToMds(mdsipAddr);
   unlockGlobal();
-  if (sockId <= 0) {
+  if (sockId <= 0)
+  {
     std::string msg("Cannot connect to ");
     msg += mdsipAddr;
     throw MdsException(msg.c_str());
   }
 }
 
-void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs) {
+void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)
+{
   // They are freed by the List descructor
   /*	AutoData<String> fieldName(new String("name"));
           AutoData<String> nameStr(new String(name));
@@ -642,17 +697,20 @@ void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs) {
     List::insert(idx, dict);
 }
 
-void GetMany::append(char *name, char *expr, Data **args, int nArgs) {
+void GetMany::append(char *name, char *expr, Data **args, int nArgs)
+{
   insert(len(), name, expr, args, nArgs);
 }
 
 void GetMany::insert(char *beforeName __attribute__((unused)), char *name,
-                     char *expr, Data **args, int nArgs) {
+                     char *expr, Data **args, int nArgs)
+{
   int nItems = len();
   int idx;
   String nameKey("name");
   String nameStr(name);
-  for (idx = 0; idx < nItems; idx++) {
+  for (idx = 0; idx < nItems; idx++)
+  {
     AutoData<Dictionary> currDict((Dictionary *)getElementAt(idx));
     AutoData<String> currName((String *)currDict->getItem(&nameKey));
     if (currName->equals(&nameStr))
@@ -662,12 +720,14 @@ void GetMany::insert(char *beforeName __attribute__((unused)), char *name,
   insert(idx, name, expr, args, nArgs);
 }
 
-void GetMany::remove(char *name) {
+void GetMany::remove(char *name)
+{
   int nItems = len();
   int idx;
   String nameKey("name");
   String nameStr(name);
-  for (idx = 0; idx < nItems; idx++) {
+  for (idx = 0; idx < nItems; idx++)
+  {
     AutoData<Dictionary> currDict((Dictionary *)getElementAt(idx));
     AutoData<String> currName((String *)currDict->getItem(&nameKey));
     if (currName->equals(&nameStr))
@@ -675,7 +735,8 @@ void GetMany::remove(char *name) {
   }
 }
 
-void GetMany::execute() {
+void GetMany::execute()
+{
   int serSize;
   AutoArray<char> ser(serialize(&serSize));
 
@@ -686,7 +747,8 @@ void GetMany::execute() {
   evalRes = (Dictionary *)deserialize(serEvalRes.get());
 }
 
-Data *GetMany::get(char *name) {
+Data *GetMany::get(char *name)
+{
   if (!evalRes)
     throw MdsException("Data not yet evaluated");
 
@@ -704,7 +766,8 @@ Data *GetMany::get(char *name) {
   AutoData<String> error((String *)dictionary->getItem(&errorKey));
   if (!error.get())
     throw MdsException("Unknown Error");
-  else {
+  else
+  {
     AutoPointer<char> errBuf(error->getString());
     throw MdsException(errBuf.get());
   }
@@ -715,7 +778,8 @@ Data *GetMany::get(char *name) {
 /////////////////
 
 void PutMany::insert(int idx, char *nodeName, char *expr, Data **args,
-                     int nArgs) {
+                     int nArgs)
+{
   AutoData<String> node(new String("node"));
   AutoData<String> nodeNameStr(new String(nodeName));
   AutoData<String> exp(new String("exp"));
@@ -737,17 +801,20 @@ void PutMany::insert(int idx, char *nodeName, char *expr, Data **args,
     List::insert(idx, dict.get());
 }
 
-void PutMany::append(char *name, char *expr, Data **args, int nArgs) {
+void PutMany::append(char *name, char *expr, Data **args, int nArgs)
+{
   insert(len(), name, expr, args, nArgs);
 }
 
 void PutMany::insert(char *beforeName __attribute__((unused)), char *nodeName,
-                     char *expr, Data **args, int nArgs) {
+                     char *expr, Data **args, int nArgs)
+{
   int nItems = len();
   int idx;
   String nameKey("node");
   String nodeNameStr(nodeName);
-  for (idx = 0; idx < nItems; idx++) {
+  for (idx = 0; idx < nItems; idx++)
+  {
     AutoData<Dictionary> currDict((Dictionary *)getElementAt(idx));
     AutoData<String> currName = (String *)currDict->getItem(&nameKey);
     if (currName->equals(&nodeNameStr))
@@ -757,11 +824,13 @@ void PutMany::insert(char *beforeName __attribute__((unused)), char *nodeName,
   insert(idx, nodeName, expr, args, nArgs);
 }
 
-void PutMany::remove(char *nodeName) {
+void PutMany::remove(char *nodeName)
+{
   std::size_t nItems = len();
   String nodeKey("node");
   String nodeNameStr(nodeName);
-  for (std::size_t idx = 0; idx < nItems; ++idx) {
+  for (std::size_t idx = 0; idx < nItems; ++idx)
+  {
     AutoData<Dictionary> currDict = (Dictionary *)getElementAt(idx);
     AutoData<String> currName = (String *)currDict->getItem(&nodeKey);
     if (currName->equals(&nodeNameStr))
@@ -769,7 +838,8 @@ void PutMany::remove(char *nodeName) {
   }
 }
 
-void PutMany::execute() {
+void PutMany::execute()
+{
   int serSize;
   AutoArray<char> ser(serialize(&serSize));
 
@@ -780,7 +850,8 @@ void PutMany::execute() {
   evalRes = (Dictionary *)deserialize(serEvalRes.get());
 }
 
-void PutMany::checkStatus(char *nodeName) {
+void PutMany::checkStatus(char *nodeName)
+{
   if (!evalRes)
     throw MdsException("Data not yet written");
 
@@ -789,7 +860,8 @@ void PutMany::checkStatus(char *nodeName) {
   if (!resItem.get())
     throw MdsException("Missing data item in evaluation list");
 
-  if (!String("Success").equals(resItem.get())) {
+  if (!String("Success").equals(resItem.get()))
+  {
     AutoArray<char> errMsg(resItem->getString());
     throw MdsException(errMsg.get());
   }

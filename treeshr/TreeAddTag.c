@@ -69,11 +69,13 @@ extern void **TreeCtx();
 #endif
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 
-int TreeAddTag(int nid, char const *tagnam) {
+int TreeAddTag(int nid, char const *tagnam)
+{
   return _TreeAddTag(*TreeCtx(), nid, tagnam);
 }
 
-int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
+int _TreeAddTag(void *dbid, int nid_in, char const *tagnam)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid_ptr = (NID *)&nid_in;
   int status;
@@ -116,7 +118,8 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
 
   if ((tag[0] < 'A') || (tag[0] > 'Z'))
     return TreeINVTAG;
-  for (i = 1; i < len; i++) {
+  for (i = 1; i < len; i++)
+  {
     if (((tag[i] < 'A') || (tag[i] > 'Z')) &&
         ((tag[i] < '0') || (tag[i] > '9')) && (tag[i] != '_'))
       return TreeINVTAG;
@@ -131,22 +134,26 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
 
   tags = dblist->tree_info->header->tags;
   old_tags_ptr = dblist->tree_info->tags;
-  if (tags > 0) {
+  if (tags > 0)
+  {
     newtag_idx = 0;
-    for (tidx = 0; tidx < tags; tidx++) {
+    for (tidx = 0; tidx < tags; tidx++)
+    {
       int idx = swapint32((old_tags_ptr + tidx));
       char *defined_tag = (char *)(dblist->tree_info->tag_info + idx)->name;
       int cmp = strncmp(tag, defined_tag, sizeof(TAG_NAME));
       if (cmp == 0)
         return TreeDUPTAG;
-      else if (cmp < 0) {
+      else if (cmp < 0)
+      {
         newtag_idx = tidx;
         break;
       }
     }
     if (newtag_idx == 0)
       newtag_idx = tidx;
-  } else
+  }
+  else
     newtag_idx = 0;
 
   /*******************************************************
@@ -158,7 +165,8 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
   pages_needed = ((tags + 1) * 4 + 511) / 512;
   pages_allocated =
       max((tags * 4 + 511) / 512, dblist->tree_info->edit->tags_pages);
-  if (pages_needed > pages_allocated) {
+  if (pages_needed > pages_allocated)
+  {
 
     /********************************************************
      If we need to allocate more pages for tag indices we
@@ -172,7 +180,8 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
     ********************************************************/
 
     new_tags_ptr = calloc(512, (size_t)pages_needed);
-    if (!(new_tags_ptr)) {
+    if (!(new_tags_ptr))
+    {
       return TreeMEMERR;
     }
     memcpy(new_tags_ptr, old_tags_ptr, (size_t)newtag_idx * sizeof(int));
@@ -183,7 +192,9 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
       free(old_tags_ptr);
     dblist->tree_info->tags = new_tags_ptr;
     dblist->tree_info->edit->tags_pages = pages_needed;
-  } else {
+  }
+  else
+  {
 
     /********************************************************
      If we don't need to allocate more pages for tag indices we
@@ -218,7 +229,8 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
   pages_needed = ((tags + 1) * (int)sizeof(TAG_INFO) + 511) / 512;
   pages_allocated = max((tags * (int)sizeof(TAG_INFO) + 511) / 512,
                         dblist->tree_info->edit->tag_info_pages);
-  if (pages_needed > pages_allocated) {
+  if (pages_needed > pages_allocated)
+  {
 
     /*******************************************************
      If we need to get more memory we should get more than
@@ -241,7 +253,9 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam) {
       free(dblist->tree_info->tag_info);
     dblist->tree_info->tag_info = new_tag_info_ptr;
     dblist->tree_info->edit->tag_info_pages = pages_needed;
-  } else {
+  }
+  else
+  {
 
     /***************************************************
      If we don't have to expand, just add the new tag

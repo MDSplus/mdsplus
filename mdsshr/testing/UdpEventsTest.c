@@ -47,7 +47,8 @@ static pthread_mutex_t second_lock;
 static int astCount = 0;
 
 void eventAst(void *arg, int len __attribute__((unused)),
-              char *buf __attribute__((unused))) {
+              char *buf __attribute__((unused)))
+{
   printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
          (char *)arg);
   pthread_mutex_lock(&astCount_lock);
@@ -58,7 +59,8 @@ void eventAst(void *arg, int len __attribute__((unused)),
 static int first = 0, second = 0;
 
 void eventAstFirst(void *arg, int len __attribute__((unused)),
-                   char *buf __attribute__((unused))) {
+                   char *buf __attribute__((unused)))
+{
   printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
          (char *)arg);
   pthread_mutex_lock(&first_lock);
@@ -67,7 +69,8 @@ void eventAstFirst(void *arg, int len __attribute__((unused)),
 }
 
 void eventAstSecond(void *arg, int len __attribute__((unused)),
-                    char *buf __attribute__((unused))) {
+                    char *buf __attribute__((unused)))
+{
   printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
          (char *)arg);
   pthread_mutex_lock(&second_lock);
@@ -75,12 +78,14 @@ void eventAstSecond(void *arg, int len __attribute__((unused)),
   pthread_mutex_unlock(&second_lock);
 }
 
-static void wait() {
+static void wait()
+{
   static const struct timespec tspec = {0, 100000000};
   nanosleep(&tspec, 0);
 }
 
-int main(int argc, char **args) {
+int main(int argc, char **args)
+{
   int status = 0;
   int i, iterations, ev_id;
   char *eventname = alloca(100);
@@ -88,14 +93,18 @@ int main(int argc, char **args) {
   pthread_mutex_init(&first_lock, NULL);
   pthread_mutex_init(&second_lock, NULL);
   BEGIN_TESTING(UdpEvents);
-  if (argc < 2) {
+  if (argc < 2)
+  {
     iterations = 3;
-  } else {
+  }
+  else
+  {
     iterations = strtol(args[1], NULL, 0);
     printf("Doing %d iterations\n", iterations);
   }
 
-  for (i = 0; i < iterations; i++) {
+  for (i = 0; i < iterations; i++)
+  {
     sprintf(eventname, "ev_test_%d_%d", i, getpid());
 
     status = MDSEventAst(eventname, eventAst, eventname, &ev_id);

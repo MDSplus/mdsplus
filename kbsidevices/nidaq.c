@@ -33,7 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NTASK (4)
 #define DllExport __declspec(dllexport)
 
-struct DataChain {
+struct DataChain
+{
   int16 *data;
   uInt32 num;
   struct DataChain *next;
@@ -41,7 +42,8 @@ struct DataChain {
 
 typedef struct DataChain sDataChain;
 
-typedef struct {
+typedef struct
+{
   TaskHandle handle;
   sDataChain *start;
   sDataChain *current;
@@ -49,12 +51,14 @@ typedef struct {
   uInt32 num, numChannels;
 } sTask;
 
-struct {
+struct
+{
   unsigned int num;
   sTask *item;
 } tasks;
 
-int task_insert(TaskHandle handle) {
+int task_insert(TaskHandle handle)
+{
   int i, j, num;
 
   /* Find the next empty item */
@@ -63,7 +67,8 @@ int task_insert(TaskHandle handle) {
     if (tasks.item[i].handle == 0)
       break;
   /* If there is no empty one, make more rooms */
-  if (i == num) {
+  if (i == num)
+  {
     tasks.num += NTASK;
     tasks.item = realloc(tasks.item, tasks.num * sizeof(sTask));
     for (j = num + 1; j < tasks.num; j++)
@@ -73,7 +78,8 @@ int task_insert(TaskHandle handle) {
   return i;
 }
 
-int DllExport _nidaq_open(char *name) {
+int DllExport _nidaq_open(char *name)
+{
   int id, status;
   char buf[256];
   TaskHandle handle;
@@ -81,7 +87,8 @@ int DllExport _nidaq_open(char *name) {
   sDataChain *pData;
 
   status = DAQmxLoadTask(name, &handle);
-  if (status) {
+  if (status)
+  {
     DAQmxGetErrorString(status, buf, 256);
     printf("%s\n", buf);
     return status;
@@ -93,7 +100,8 @@ int DllExport _nidaq_open(char *name) {
   DAQmxGetReadAttribute(handle, DAQmx_Read_NumChans, &pTask->numChannels);
 
   DAQmxGetTimingAttribute(handle, DAQmx_SampTimingType, &pTask->type);
-  if (pTask->type == DAQmx_Val_OnDemand) {
+  if (pTask->type == DAQmx_Val_OnDemand)
+  {
     pData = malloc(sizeof(sDataChain));
     pData->data = malloc(NBUF * pTask->numChannels * sizeof(short));
     pData->num = 0;
@@ -106,7 +114,8 @@ int DllExport _nidaq_open(char *name) {
   return id;
 }
 
-int DllExport _nidaq_close(int id) {
+int DllExport _nidaq_close(int id)
+{
   sTask *pTask;
 
   pTask = tasks.item + id;
@@ -116,11 +125,13 @@ int DllExport _nidaq_close(int id) {
   return 1;
 }
 
-int DllExport _nidaq_init(int id) {
+int DllExport _nidaq_init(int id)
+{
   return DAQmxStartTask(tasks.item[id].handle);
 }
 
-int DllExport _nidaq_read(int id) {
+int DllExport _nidaq_read(int id)
+{
   int32 samplesRead;
   sTask *pTask;
   sDataChain *pData, *pNext;
@@ -130,7 +141,8 @@ int DllExport _nidaq_read(int id) {
     return 0;
   pData = pTask->current;
   /* if the data is full, make another chain */
-  if (pData->num == NBUF) {
+  if (pData->num == NBUF)
+  {
     pNext = malloc(sizeof(sDataChain));
     pNext->data = malloc(NBUF * pTask->numChannels * sizeof(short));
     pNext->num = 0;
@@ -149,7 +161,8 @@ int DllExport _nidaq_read(int id) {
   return pTask->num;
 }
 
-int DllExport _nidaq_store(int id, char *nodeName, int simultaneous) {
+int DllExport _nidaq_store(int id, char *nodeName, int simultaneous)
+{
   char channelName[256], pathName[256];
   int16 *data;
   int32 stats, samplesRead, idesc, idesc1, idesc2, idesc3, idesc4, idesc5,
@@ -161,14 +174,18 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous) {
   sDataChain *pData, *pNext;
 
   pTask = tasks.item + id;
-  if (simultaneous) {
+  if (simultaneous)
+  {
     dt = 0.0;
-  } else {
+  }
+  else
+  {
     DAQmxGetTimingAttribute(pTask->handle, DAQmx_AIConv_Rate, &convRate);
     dt = 1.0 / convRate;
   }
 
-  if (pTask->type == DAQmx_Val_OnDemand) {
+  if (pTask->type == DAQmx_Val_OnDemand)
+  {
     pData = pTask->current;
     samplesRead = pTask->num * NBUF + pData->num;
     arraySize = pTask->numChannels * samplesRead;
@@ -176,7 +193,8 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous) {
     nPacket = NBUF * pTask->numChannels;
     packetSize = nPacket * sizeof(int16);
     pNext = pTask->start;
-    for (i = 0; i < pTask->num; i++) {
+    for (i = 0; i < pTask->num; i++)
+    {
       pData = pNext;
       memcpy(data + i * nPacket, pData->data, packetSize);
       pNext = pData->next;
@@ -187,7 +205,9 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous) {
            pNext->num * pTask->numChannels * sizeof(int16));
     free(pNext->data);
     free(pNext);
-  } else {
+  }
+  else
+  {
     /* # of samples */
     DAQmxGetTimingAttribute(pTask->handle, DAQmx_SampQuant_SampPerChan,
                             &numSamples);
@@ -224,7 +244,8 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous) {
   idesc = descr(&dtype, &range, &null);
   idesc5 = descr(&dtype, &convRate, &null);
   idesc6 = descr(&dtype, &period, &null);
-  for (i = 0; i < pTask->numChannels; i++) {
+  for (i = 0; i < pTask->numChannels; i++)
+  {
     /* Translate a channel name to a node name */
     DAQmxGetNthTaskChannel(pTask->handle, i + 1, channelName, 256);
     sprintf(pathName, "%s:%s:FOO", nodeName, channelName);
@@ -245,8 +266,10 @@ int DllExport _nidaq_store(int id, char *nodeName, int simultaneous) {
   return 1;
 }
 
-int __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
-  switch (fdwReason) {
+int __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+  switch (fdwReason)
+  {
   case DLL_PROCESS_ATTACH:
     if (InitCVIRTE(hinstDLL, 0, 0) == 0)
       return 0; /* out of memory */
@@ -261,7 +284,8 @@ int __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 }
 
 int __stdcall DllEntryPoint(HINSTANCE hinstDLL, DWORD fdwReason,
-                            LPVOID lpvReserved) {
+                            LPVOID lpvReserved)
+{
   /* Included for compatibility with Borland */
 
   return DllMain(hinstDLL, fdwReason, lpvReserved);

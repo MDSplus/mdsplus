@@ -56,18 +56,46 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 #include <mdsplus/mdsconfig.h>
 STATIC_CONSTANT unsigned int masks[33] = {
-    0,          0x1,        0x3,        0x7,       0xf,       0x1f,
-    0x3f,       0x7f,       0xff,       0x1ff,     0x3ff,     0x7ff,
-    0xfff,      0x1fff,     0x3fff,     0x7fff,    0xffff,    0x1ffff,
-    0x3ffff,    0x7ffff,    0xfffff,    0x1fffff,  0x3fffff,  0x7fffff,
-    0xffffff,   0x1ffffff,  0x3ffffff,  0x7ffffff, 0xfffffff, 0x1fffffff,
-    0x3fffffff, 0x7fffffff, 0xffffffff,
+    0,
+    0x1,
+    0x3,
+    0x7,
+    0xf,
+    0x1f,
+    0x3f,
+    0x7f,
+    0xff,
+    0x1ff,
+    0x3ff,
+    0x7ff,
+    0xfff,
+    0x1fff,
+    0x3fff,
+    0x7fff,
+    0xffff,
+    0x1ffff,
+    0x3ffff,
+    0x7ffff,
+    0xfffff,
+    0x1fffff,
+    0x3fffff,
+    0x7fffff,
+    0xffffff,
+    0x1ffffff,
+    0x3ffffff,
+    0x7ffffff,
+    0xfffffff,
+    0x1fffffff,
+    0x3fffffff,
+    0x7fffffff,
+    0xffffffff,
 };
 
 #include <mdsdescrip.h>
 #include <string.h>
 
-STATIC_ROUTINE int SwapBytes(char *in_c) {
+STATIC_ROUTINE int SwapBytes(char *in_c)
+{
   int out;
   char *out_c = (char *)&out;
   int i;
@@ -84,7 +112,8 @@ STATIC_ROUTINE int SwapBytes(char *in_c) {
 #define getppack SwapBytes((char *)ppack)
 
 void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
-           int *bit_ptr) {
+           int *bit_ptr)
+{
   int nbits = *nbits_ptr;
   int nitems = *nitems_ptr;
   int *ppack = &pack[*bit_ptr >> 5];
@@ -98,7 +127,8 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
   signed char *pin;
   signed char *pout;
   unsigned int hold = 0;
-  if (off) {
+  if (off)
+  {
     for (i = 0; i < 4; i++)
       ((char *)&hold)[i] = ((char *)ppack)[3 - i];
     hold = hold & masks[off];
@@ -109,8 +139,10 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
   if (size == 0 || nitems <= 0)
     return;
   *bit_ptr += size * nitems;
-  if (size == 32) {
-    if ((off & 7) == 0) {
+  if (size == 32)
+  {
+    if ((off & 7) == 0)
+    {
 #ifdef WORDS_BIGENDIAN
       for (i = 0, pout = ((signed char *)ppack) + (off >> 3),
           pin = (signed char *)pitems;
@@ -122,8 +154,10 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
              sizeof(int) * (size_t)nitems);
 #endif
       return;
-    } else
-      for (; --nitems >= 0;) {
+    }
+    else
+      for (; --nitems >= 0;)
+      {
         hold |= *(unsigned int *)pitems << off;
 #ifdef __APPLE__
         *ppack++ = SwapBytes((char *)&hold);
@@ -138,12 +172,16 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
 #endif
         hold = *(unsigned int *)pitems++ >> (32 - off);
       }
-  } else {
+  }
+  else
+  {
     mask = masks[size];
     test = 32 - size;
-    for (; --nitems >= 0; ++pitems) {
+    for (; --nitems >= 0; ++pitems)
+    {
       hold |= (mask & *(unsigned int *)pitems) << off;
-      if (off >= test) {
+      if (off >= test)
+      {
 #ifdef __APPLE__
         *ppack++ = SwapBytes((char *)&hold);
 #else
@@ -157,7 +195,8 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
 #endif
         hold = (mask & *(unsigned int *)pitems) >> (32 - off);
         off -= test;
-      } else
+      }
+      else
         off += size;
     }
   }
@@ -173,7 +212,8 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
 
 /*-------------------------------------------------------------*/
 void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
-             int *bit_ptr) {
+             int *bit_ptr)
+{
   int nbits = *nbits_ptr;
   int nitems = *nitems_ptr;
   int *ppack = &pack[*bit_ptr >> 5];
@@ -185,14 +225,18 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
   *bit_ptr += size * nitems;
   /*32-bit data*/
 
-  if (test == 0) {
-    if ((off & 7) == 0) {
+  if (test == 0)
+  {
+    if ((off & 7) == 0)
+    {
       int i;
       ppack = (int *)(((char *)ppack) + (off >> 3));
       for (i = 0; i < nitems; i++, ppack++)
         pitems[i] = getppack;
-    } else
-      for (; --nitems >= 0;) {
+    }
+    else
+      for (; --nitems >= 0;)
+      {
         hold = ((unsigned int)getppack) >> off;
         ppack++;
         hold |= ((unsigned int)getppack) << (32 - off);
@@ -200,11 +244,14 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
       }
   }
   /*sign extended*/
-  else if (nbits < 0) {
+  else if (nbits < 0)
+  {
     full = mask + 1;
     max = mask >> 1;
-    for (; --nitems >= 0;) {
-      if (off >= test) {
+    for (; --nitems >= 0;)
+    {
+      if (off >= test)
+      {
         hold = ((unsigned int)getppack) >> off;
         ppack++;
         hold |= (((unsigned int)getppack) << (32 - off)) & mask;
@@ -213,7 +260,9 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
         else
           *pitems++ = (int)hold;
         off -= test;
-      } else {
+      }
+      else
+      {
         hold = (((unsigned int)getppack) >> off) & mask;
         if (hold > max)
           *pitems++ = (int)(hold - full);
@@ -225,14 +274,18 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[],
   }
   /*zero extended*/
   else if (nbits > 0)
-    for (; --nitems >= 0;) {
-      if (off >= test) {
+    for (; --nitems >= 0;)
+    {
+      if (off >= test)
+      {
         hold = ((unsigned int)getppack) >> off;
         ppack++;
         hold |= (((unsigned int)getppack) << (32 - off)) & mask;
         *pitems++ = (int)hold;
         off -= test;
-      } else {
+      }
+      else
+      {
         hold = (((unsigned int)getppack) >> off) & mask;
         *pitems++ = (int)hold;
         off += size;

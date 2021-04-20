@@ -178,7 +178,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CVT_M_BIG_ENDIAN 0x20
 #define CVT_M_ERR_UNDERFLOW 0x40
 #define CVT_M_SPARE2 0xFFFFFF80
-struct cvt_r_conversion_options {
+struct cvt_r_conversion_options
+{
   unsigned cvt_v_round_to_nearest : 1;
   unsigned cvt_v_truncate : 1;
   unsigned cvt_v_round_to_pos : 1;
@@ -417,36 +418,36 @@ static const uint32_t cray[] = {
 #define IEEE_S_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[5] : &ieee_s[4])
 #define IEEE_S_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[7] : &ieee_s[6])
 #define IEEE_S_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[9] : &ieee_s[8])
-#define IEEE_S_POS_INFINITY                                                    \
+#define IEEE_S_POS_INFINITY \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[11] : &ieee_s[10])
-#define IEEE_S_NEG_INFINITY                                                    \
+#define IEEE_S_NEG_INFINITY \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_s[13] : &ieee_s[12])
 
 #define IEEE_T_INVALID ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[2] : &ieee_t[0])
 #define IEEE_T_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[6] : &ieee_t[4])
-#define IEEE_T_NEG_ZERO                                                        \
+#define IEEE_T_NEG_ZERO \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[10] : &ieee_t[8])
-#define IEEE_T_POS_HUGE                                                        \
+#define IEEE_T_POS_HUGE \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[14] : &ieee_t[12])
-#define IEEE_T_NEG_HUGE                                                        \
+#define IEEE_T_NEG_HUGE \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[18] : &ieee_t[16])
-#define IEEE_T_POS_INFINITY                                                    \
+#define IEEE_T_POS_INFINITY \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[22] : &ieee_t[20])
-#define IEEE_T_NEG_INFINITY                                                    \
+#define IEEE_T_NEG_INFINITY \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_t[26] : &ieee_t[24])
 
 #define IEEE_X_INVALID ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[4] : &ieee_x[0])
-#define IEEE_X_POS_ZERO                                                        \
+#define IEEE_X_POS_ZERO \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[12] : &ieee_x[8])
-#define IEEE_X_NEG_ZERO                                                        \
+#define IEEE_X_NEG_ZERO \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[20] : &ieee_x[16])
-#define IEEE_X_POS_HUGE                                                        \
+#define IEEE_X_POS_HUGE \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[28] : &ieee_x[24])
-#define IEEE_X_NEG_HUGE                                                        \
+#define IEEE_X_NEG_HUGE \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[36] : &ieee_x[32])
-#define IEEE_X_POS_INFINITY                                                    \
+#define IEEE_X_POS_INFINITY \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[44] : &ieee_x[40])
-#define IEEE_X_NEG_INFINITY                                                    \
+#define IEEE_X_NEG_INFINITY \
   ((options & CVT_M_BIG_ENDIAN) ? &ieee_x[52] : &ieee_x[48])
 
 #define IBM_S_INVALID &ibm_s[0]
@@ -652,8 +653,10 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
    ** Validate the options parameter.
    ** ==========================================================================
    */
-  if (input_type == output_type) {
-    switch (input_type) {
+  if (input_type == output_type)
+  {
+    switch (input_type)
+    {
     case VAX_F:
       *(float *)output_value = *(float *)input_value;
       return !IsRoprandF(input_value);
@@ -675,9 +678,11 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
     }
   }
 
-  switch (options & ~(CVT_M_BIG_ENDIAN | CVT_M_ERR_UNDERFLOW)) {
+  switch (options & ~(CVT_M_BIG_ENDIAN | CVT_M_ERR_UNDERFLOW))
+  {
   case 0:
-    switch (output_type) {
+    switch (output_type)
+    {
     case VAX_F:
     case VAX_D:
     case VAX_G:
@@ -730,7 +735,8 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
    **
    ** ==========================================================================
    */
-  switch (input_type) {
+  switch (input_type)
+  {
   case VAX_F:
     unpack_vax_f(input_value, intermediate_value, options);
     break;
@@ -781,7 +787,8 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
    ** specified by the output_type parameter.
    ** ==========================================================================
    */
-  switch (output_type) {
+  switch (output_type)
+  {
   case VAX_F:
     return_status = pack_vax_f(intermediate_value, output_value, options);
     break;
@@ -834,7 +841,8 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
   return return_status;
 }
 
-static void FlipDouble(int *in) {
+static void FlipDouble(int *in)
+{
   int tmp = in[0];
   in[0] = in[1];
   in[1] = tmp;
@@ -908,16 +916,22 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
-    if (intermediate_value[U_R_FLAGS] & U_R_ZERO) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
+    if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
+    {
       memcpy(output_value, VAX_F_ZERO, 4);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
       memcpy(output_value, VAX_F_INVALID, 4);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
         RAISE(cvt_s_neg_infinity);
       else
         RAISE(cvt_s_pos_infinity);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, VAX_F_INVALID, 4);
       RAISE(cvt_s_invalid_value);
     }
@@ -927,14 +941,16 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
    ** Round the intermediate value at bit position 24.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     _round(intermediate_value, 24, options);
 
     /*
      ** Check for underflow.
      ** =======================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127))
+    {
       memcpy(output_value, VAX_F_ZERO, 4);
       if (options & CVT_M_ERR_UNDERFLOW)
         RAISE(cvt_s_underflow);
@@ -944,26 +960,34 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** =======================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, VAX_F_NEG_HUGE, 4);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, VAX_F_POS_HUGE, 4);
         }
       }
 
       else if ((options & CVT_M_ROUND_TO_POS) &&
-               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_F_NEG_HUGE, 4);
       }
 
       else if ((options & CVT_M_ROUND_TO_NEG) &&
-               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_F_POS_HUGE, 4);
       }
 
-      else {
+      else
+      {
         memcpy(output_value, VAX_F_INVALID, 4);
       }
 
@@ -974,7 +998,8 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** =======================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust bias of exponent.
        **-----------------------------------------------------------------------
@@ -1088,10 +1113,14 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
-    if (intermediate_value[U_R_FLAGS] & U_R_ZERO) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
+    if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
+    {
       memcpy(output_value, VAX_D_ZERO, 8);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
       memcpy(output_value, VAX_D_INVALID, 8);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
         RAISE(cvt_s_neg_infinity);
@@ -1099,7 +1128,8 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
         RAISE(cvt_s_pos_infinity);
     }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, VAX_D_INVALID, 8);
       RAISE(cvt_s_invalid_value);
     }
@@ -1109,14 +1139,16 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
    ** Round the intermediate value at bit position 56.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     _round(intermediate_value, 56, options);
 
     /*
      ** Check for underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127))
+    {
       memcpy(output_value, VAX_D_ZERO, 8);
       if (options & CVT_M_ERR_UNDERFLOW)
         RAISE(cvt_s_underflow);
@@ -1126,26 +1158,34 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, VAX_D_NEG_HUGE, 8);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, VAX_D_POS_HUGE, 8);
         }
       }
 
       else if ((options & CVT_M_ROUND_TO_POS) &&
-               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_D_NEG_HUGE, 8);
       }
 
       else if ((options & CVT_M_ROUND_TO_NEG) &&
-               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_D_POS_HUGE, 8);
       }
 
-      else {
+      else
+      {
         memcpy(output_value, VAX_D_INVALID, 8);
       }
       RAISE(cvt_s_overflow);
@@ -1155,7 +1195,8 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
@@ -1280,16 +1321,22 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
-    if (intermediate_value[U_R_FLAGS] & U_R_ZERO) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
+    if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
+    {
       memcpy(output_value, VAX_G_ZERO, 8);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
       memcpy(output_value, VAX_G_INVALID, 8);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
         RAISE(cvt_s_neg_infinity);
       else
         RAISE(cvt_s_pos_infinity);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, VAX_G_INVALID, 8);
       RAISE(cvt_s_invalid_value);
     }
@@ -1299,14 +1346,16 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
    ** Round the intermediate value at bit position 53.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     _round(intermediate_value, 53, options);
 
     /*
      ** Check for underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 1023)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 1023))
+    {
       memcpy(output_value, VAX_G_ZERO, 8);
       if (options & CVT_M_ERR_UNDERFLOW)
         RAISE(cvt_s_underflow);
@@ -1316,20 +1365,31 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1023)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1023))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, VAX_G_NEG_HUGE, 8);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, VAX_G_POS_HUGE, 8);
         }
-      } else if ((options & CVT_M_ROUND_TO_POS) &&
-                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_G_NEG_HUGE, 8);
-      } else if ((options & CVT_M_ROUND_TO_NEG) &&
-                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_G_POS_HUGE, 8);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, VAX_G_INVALID, 8);
       }
       RAISE(cvt_s_overflow);
@@ -1339,7 +1399,8 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
@@ -1469,16 +1530,22 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
-    if (intermediate_value[U_R_FLAGS] & U_R_ZERO) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
+    if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
+    {
       memcpy(output_value, VAX_H_ZERO, 16);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
       memcpy(output_value, VAX_H_INVALID, 16);
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
         RAISE(cvt_s_neg_infinity);
       else
         RAISE(cvt_s_pos_infinity);
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, VAX_H_INVALID, 16);
       RAISE(cvt_s_invalid_value);
     }
@@ -1488,14 +1555,16 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
    ** Round the intermediate value at bit position 113.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     _round(intermediate_value, 113, options);
 
     /*
      ** Check for underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 16383)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 16383))
+    {
       memcpy(output_value, VAX_H_ZERO, 16);
       if (options & CVT_M_ERR_UNDERFLOW)
         RAISE(cvt_s_underflow);
@@ -1505,20 +1574,31 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16383)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16383))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, VAX_H_NEG_HUGE, 16);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, VAX_H_POS_HUGE, 16);
         }
-      } else if ((options & CVT_M_ROUND_TO_POS) &&
-                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_H_NEG_HUGE, 16);
-      } else if ((options & CVT_M_ROUND_TO_NEG) &&
-                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, VAX_H_POS_HUGE, 16);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, VAX_H_INVALID, 16);
       }
       RAISE(cvt_s_overflow);
@@ -1528,7 +1608,8 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
@@ -1655,23 +1736,32 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IEEE_S_NEG_ZERO, 4);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IEEE_S_POS_ZERO, 4);
       }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IEEE_S_NEG_INFINITY, 4);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IEEE_S_POS_INFINITY, 4);
       }
     }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, IEEE_S_INVALID, 4);
       RAISE(cvt_s_invalid_value);
     }
@@ -1682,7 +1772,8 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
    ** round (0 <= i <= 24).
    ** ==========================================================================
    */
-  else {
+  else
+  {
     round_bit_position = intermediate_value[U_R_EXP] - ((U_R_BIAS - 126) - 23);
     if (round_bit_position < 0)
       round_bit_position = 0;
@@ -1695,15 +1786,20 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
      ** Check for Denorm or underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 125)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 125))
+    {
       /*
        ** Value is too small for a denorm, so underflow.
        ** ----------------------------------------------------------------------
        */
-      if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 125) - 23)) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 125) - 23))
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_S_NEG_ZERO, 4);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_S_POS_ZERO, 4);
         }
 
@@ -1715,7 +1811,8 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
        ** Figure leading zeros for denorm and right-justify fraction
        ** ----------------------------------------------------------------------
        */
-      else {
+      else
+      {
         i = 32 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 126) - 23));
         intermediate_value[1] >>= i;
 
@@ -1725,13 +1822,16 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
          */
         intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-        if (options & CVT_M_BIG_ENDIAN) {
+        if (options & CVT_M_BIG_ENDIAN)
+        {
           intermediate_value[0] =
               ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
           intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
           intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
           memcpy(output_value, intermediate_value, 4);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, &intermediate_value[1], 4);
         }
       }
@@ -1741,23 +1841,37 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 128)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 128))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_S_NEG_HUGE, 4);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_S_POS_HUGE, 4);
         }
-      } else if ((options & CVT_M_ROUND_TO_POS) &&
-                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IEEE_S_NEG_HUGE, 4);
-      } else if ((options & CVT_M_ROUND_TO_NEG) &&
-                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IEEE_S_POS_HUGE, 4);
-      } else {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      }
+      else
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_S_NEG_INFINITY, 4);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_S_POS_INFINITY, 4);
         }
       }
@@ -1768,7 +1882,8 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
@@ -1794,13 +1909,16 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 23);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      if (options & CVT_M_BIG_ENDIAN) {
+      if (options & CVT_M_BIG_ENDIAN)
+      {
         intermediate_value[0] =
             ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
         intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
         intermediate_value[0] |= ((intermediate_value[1] >> 8) & 0x0000FF00L);
         memcpy(output_value, intermediate_value, 4);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, &intermediate_value[1], 4);
       }
     }
@@ -1886,31 +2004,40 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IEEE_T_NEG_ZERO, 8);
         if (flip)
           FlipDouble((int *)output_value);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IEEE_T_POS_ZERO, 8);
         if (flip)
           FlipDouble((int *)output_value);
       }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
         if (flip)
           FlipDouble((int *)output_value);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IEEE_T_POS_INFINITY, 8);
         if (flip)
           FlipDouble((int *)output_value);
       }
     }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, IEEE_T_INVALID, 8);
       if (flip)
         FlipDouble((int *)output_value);
@@ -1923,7 +2050,8 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
    ** round (0 <= i <= 53).
    ** ==========================================================================
    */
-  else {
+  else
+  {
     round_bit_position = intermediate_value[U_R_EXP] - ((U_R_BIAS - 1022) - 52);
     if (round_bit_position < 0)
       round_bit_position = 0;
@@ -1936,17 +2064,22 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
      ** Check for Denorm or underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 1021)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 1021))
+    {
       /*
        ** Value is too small for a denorm, so underflow.
        ** ----------------------------------------------------------------------
        */
-      if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 1021) - 52)) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 1021) - 52))
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_T_NEG_ZERO, 8);
           if (flip)
             FlipDouble((int *)output_value);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_T_POS_ZERO, 8);
           if (flip)
             FlipDouble((int *)output_value);
@@ -1960,13 +2093,17 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
        ** Figure leading zeros for denorm and right-justify fraction
        ** ----------------------------------------------------------------------
        */
-      else {
+      else
+      {
         i = 64 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 1022) - 52));
-        if (i > 31) {
+        if (i > 31)
+        {
           i -= 32;
           intermediate_value[2] = (intermediate_value[1] >> i);
           intermediate_value[1] = 0;
-        } else {
+        }
+        else
+        {
           intermediate_value[2] >>= i;
           intermediate_value[2] |= (intermediate_value[1] << (32 - i));
           intermediate_value[1] >>= i;
@@ -1977,7 +2114,8 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
          ** --------------------------------------------------------------------
          */
         intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
-        if (options & CVT_M_BIG_ENDIAN) {
+        if (options & CVT_M_BIG_ENDIAN)
+        {
           intermediate_value[0] =
               ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
           intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
@@ -1986,7 +2124,9 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
               ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
           intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
           intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
-        } else {
+        }
+        else
+        {
           intermediate_value[0] = intermediate_value[2];
         }
         memcpy(output_value, intermediate_value, 8);
@@ -1999,13 +2139,18 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1024)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1024))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_T_NEG_HUGE, 8);
           if (flip)
             FlipDouble((int *)output_value);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_T_POS_HUGE, 8);
           if (flip)
             FlipDouble((int *)output_value);
@@ -2013,25 +2158,31 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
       }
 
       else if ((options & CVT_M_ROUND_TO_POS) &&
-               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IEEE_T_NEG_HUGE, 8);
         if (flip)
           FlipDouble((int *)output_value);
       }
 
       else if ((options & CVT_M_ROUND_TO_NEG) &&
-               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IEEE_T_POS_HUGE, 8);
         if (flip)
           FlipDouble((int *)output_value);
       }
 
-      else {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      else
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
           if (flip)
             FlipDouble((int *)output_value);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_T_POS_INFINITY, 8);
           if (flip)
             FlipDouble((int *)output_value);
@@ -2044,7 +2195,8 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
@@ -2072,7 +2224,8 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 20);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      if (options & CVT_M_BIG_ENDIAN) {
+      if (options & CVT_M_BIG_ENDIAN)
+      {
         intermediate_value[0] =
             ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
         intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
@@ -2081,7 +2234,9 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
             ((intermediate_value[2] << 24) | (intermediate_value[2] >> 24));
         intermediate_value[1] |= ((intermediate_value[2] << 8) & 0x00FF0000L);
         intermediate_value[1] |= ((intermediate_value[2] >> 8) & 0x0000FF00L);
-      } else {
+      }
+      else
+      {
         intermediate_value[0] = intermediate_value[2];
       }
       memcpy(output_value, &intermediate_value[0], 8);
@@ -2170,23 +2325,32 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IEEE_X_NEG_ZERO, 16);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IEEE_X_POS_ZERO, 16);
       }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IEEE_X_NEG_INFINITY, 16);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IEEE_X_POS_INFINITY, 16);
       }
     }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, IEEE_X_INVALID, 16);
       RAISE(cvt_s_invalid_value);
     }
@@ -2197,7 +2361,8 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
    ** round (0 <= i <= 113).
    ** ==========================================================================
    */
-  else {
+  else
+  {
     round_bit_position =
         intermediate_value[U_R_EXP] - ((U_R_BIAS - 16382) - 112);
     if (round_bit_position < 0)
@@ -2211,15 +2376,20 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
      ** Check for Denorm or underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 16381)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 16381))
+    {
       /*
        ** Value is too small for a denorm, so underflow.
        ** ----------------------------------------------------------------------
        */
-      if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 16381) - 112)) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_EXP] < ((U_R_BIAS - 16381) - 112))
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_X_NEG_ZERO, 16);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_X_POS_ZERO, 16);
         }
 
@@ -2231,22 +2401,28 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
        ** Figure leading zeros for denorm and right-justify fraction
        ** ----------------------------------------------------------------------
        */
-      else {
+      else
+      {
         i = 128 - (intermediate_value[U_R_EXP] - ((U_R_BIAS - 16382) - 112));
-        if (i > 95) {
+        if (i > 95)
+        {
           i -= 96;
           intermediate_value[4] = (intermediate_value[1] >> i);
           intermediate_value[3] = 0;
           intermediate_value[2] = 0;
           intermediate_value[1] = 0;
-        } else if (i > 63) {
+        }
+        else if (i > 63)
+        {
           i -= 64;
           intermediate_value[4] = (intermediate_value[2] >> i);
           intermediate_value[4] |= (intermediate_value[1] << (32 - i));
           intermediate_value[3] = (intermediate_value[1] >> i);
           intermediate_value[2] = 0;
           intermediate_value[1] = 0;
-        } else if (i > 31) {
+        }
+        else if (i > 31)
+        {
           i -= 32;
           intermediate_value[4] = (intermediate_value[3] >> i);
           intermediate_value[4] |= (intermediate_value[2] << (32 - i));
@@ -2254,7 +2430,9 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
           intermediate_value[3] |= (intermediate_value[1] << (32 - i));
           intermediate_value[2] = (intermediate_value[1] >> i);
           intermediate_value[1] = 0;
-        } else {
+        }
+        else
+        {
           intermediate_value[4] >>= i;
           intermediate_value[4] |= (intermediate_value[3] << (32 - i));
           intermediate_value[3] >>= i;
@@ -2269,7 +2447,8 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
          ** --------------------------------------------------------------------
          */
         intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
-        if (options & CVT_M_BIG_ENDIAN) {
+        if (options & CVT_M_BIG_ENDIAN)
+        {
           intermediate_value[0] =
               ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
           intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
@@ -2289,7 +2468,9 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
               ((intermediate_value[4] << 24) | (intermediate_value[4] >> 24));
           intermediate_value[3] |= ((intermediate_value[4] << 8) & 0x00FF0000L);
           intermediate_value[3] |= ((intermediate_value[4] >> 8) & 0x0000FF00L);
-        } else {
+        }
+        else
+        {
           intermediate_value[0] = intermediate_value[3];
           intermediate_value[3] = intermediate_value[1];
           intermediate_value[1] = intermediate_value[0];
@@ -2303,29 +2484,40 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16384)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16384))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_X_NEG_HUGE, 16);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_X_POS_HUGE, 16);
         }
       }
 
       else if ((options & CVT_M_ROUND_TO_POS) &&
-               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IEEE_X_NEG_HUGE, 16);
       }
 
       else if ((options & CVT_M_ROUND_TO_NEG) &&
-               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IEEE_X_POS_HUGE, 16);
       }
 
-      else {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      else
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IEEE_X_NEG_INFINITY, 16);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IEEE_X_POS_INFINITY, 16);
         }
       }
@@ -2336,7 +2528,8 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
@@ -2368,7 +2561,8 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 16);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      if (options & CVT_M_BIG_ENDIAN) {
+      if (options & CVT_M_BIG_ENDIAN)
+      {
         intermediate_value[0] =
             ((intermediate_value[1] << 24) | (intermediate_value[1] >> 24));
         intermediate_value[0] |= ((intermediate_value[1] << 8) & 0x00FF0000L);
@@ -2388,7 +2582,9 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
             ((intermediate_value[4] << 24) | (intermediate_value[4] >> 24));
         intermediate_value[3] |= ((intermediate_value[4] << 8) & 0x00FF0000L);
         intermediate_value[3] |= ((intermediate_value[4] >> 8) & 0x0000FF00L);
-      } else {
+      }
+      else
+      {
         intermediate_value[0] = intermediate_value[3];
         intermediate_value[3] = intermediate_value[1];
         intermediate_value[1] = intermediate_value[0];
@@ -2476,21 +2672,31 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IBM_L_NEG_ZERO, 8);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IBM_L_POS_ZERO, 8);
       }
 
-    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IBM_L_NEG_INFINITY, 8);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IBM_L_POS_INFINITY, 8);
       }
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, IBM_L_INVALID, 8);
       RAISE(cvt_s_invalid_value);
     }
@@ -2502,7 +2708,8 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
    ** (53 <= i <= 56).
    ** ==========================================================================
    */
-  else {
+  else
+  {
     i = (intermediate_value[U_R_EXP] & 0x00000003L);
     if (i)
       round_bit_position = i + 52;
@@ -2515,14 +2722,18 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
      ** Check for underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 255)) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 255))
+    {
       /*
        ** Value is too small, so underflow.
        ** ----------------------------------------------------------------------
        */
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IBM_L_NEG_ZERO, 8);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IBM_L_POS_ZERO, 8);
       }
 
@@ -2533,27 +2744,41 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 252)) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 252))
+    {
       /*
        ** Value is too large, so overflow.
        ** ----------------------------------------------------------------------
        */
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IBM_L_NEG_HUGE, 8);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IBM_L_POS_HUGE, 8);
         }
-      } else if ((options & CVT_M_ROUND_TO_POS) &&
-                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IBM_L_NEG_HUGE, 8);
-      } else if ((options & CVT_M_ROUND_TO_NEG) &&
-                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IBM_L_POS_HUGE, 8);
-      } else {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      }
+      else
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IBM_L_NEG_INFINITY, 8);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IBM_L_POS_INFINITY, 8);
         }
       }
@@ -2564,7 +2789,8 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Figure leading zeros (i) and biased exponent (j)
        ** ----------------------------------------------------------------------
@@ -2572,11 +2798,14 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
       i = (intermediate_value[U_R_EXP] & 0x00000003L);
       j = ((int)(intermediate_value[U_R_EXP] - U_R_BIAS) / 4) + 64;
 
-      if (i) {
+      if (i)
+      {
         if (intermediate_value[U_R_EXP] > U_R_BIAS)
           j += 1;
         i = 12 - i;
-      } else {
+      }
+      else
+      {
         i = 8;
       }
 
@@ -2689,21 +2918,30 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
     if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IBM_S_NEG_ZERO, 4);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IBM_S_POS_ZERO, 4);
       }
-    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IBM_S_NEG_INFINITY, 4);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IBM_S_POS_INFINITY, 4);
       }
-
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, IBM_S_INVALID, 4);
       RAISE(cvt_s_invalid_value);
     }
@@ -2715,7 +2953,8 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
    ** (21 <= i <=24).
    ** ==========================================================================
    */
-  else {
+  else
+  {
     i = (intermediate_value[U_R_EXP] & 0x00000003L);
     if (i)
       round_bit_position = i + 20;
@@ -2728,14 +2967,19 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
      ** Check for underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 255)) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 255))
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, IBM_S_NEG_ZERO, 4);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, IBM_S_POS_ZERO, 4);
       }
 
-      if (options & CVT_M_ERR_UNDERFLOW) {
+      if (options & CVT_M_ERR_UNDERFLOW)
+      {
         RAISE(cvt_s_underflow);
       }
     }
@@ -2744,23 +2988,37 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 252)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 252))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IBM_S_NEG_HUGE, 4);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IBM_S_POS_HUGE, 4);
         }
-      } else if ((options & CVT_M_ROUND_TO_POS) &&
-                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IBM_S_NEG_HUGE, 4);
-      } else if ((options & CVT_M_ROUND_TO_NEG) &&
-                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, IBM_S_POS_HUGE, 4);
-      } else {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+      }
+      else
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, IBM_S_NEG_INFINITY, 4);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, IBM_S_POS_INFINITY, 4);
         }
       }
@@ -2771,7 +3029,8 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Figure leading zeros (i) and biased exponent (j)
        ** ----------------------------------------------------------------------
@@ -2779,11 +3038,14 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
       i = (intermediate_value[U_R_EXP] & 0x00000003L);
       j = ((int)(intermediate_value[U_R_EXP] - U_R_BIAS) / 4) + 64;
 
-      if (i) {
+      if (i)
+      {
         if (intermediate_value[U_R_EXP] > U_R_BIAS)
           j += 1;
         i = 12 - i;
-      } else {
+      }
+      else
+      {
         i = 8;
       }
 
@@ -2896,23 +3158,34 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
    */
-  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL) {
-    if (intermediate_value[U_R_FLAGS] & U_R_ZERO) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+  if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
+  {
+    if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, CRAY_NEG_ZERO, 8);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, CRAY_POS_ZERO, 8);
       }
     }
-    if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, CRAY_NEG_INFINITY, 8);
         RAISE(cvt_s_neg_infinity);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, CRAY_POS_INFINITY, 8);
         RAISE(cvt_s_pos_infinity);
       }
-    } else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) {
+    }
+    else if (intermediate_value[U_R_FLAGS] & U_R_INVALID)
+    {
       memcpy(output_value, CRAY_INVALID, 8);
       RAISE(cvt_s_invalid_value);
     }
@@ -2922,7 +3195,8 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
    ** Round at position 48.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     round_bit_position = 48;
 
     _round(intermediate_value, round_bit_position, options);
@@ -2931,14 +3205,19 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
      ** Check for underflow.
      ** ========================================================================
      */
-    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 8192)) {
-      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    if (intermediate_value[U_R_EXP] < (U_R_BIAS - 8192))
+    {
+      if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+      {
         memcpy(output_value, CRAY_NEG_ZERO, 8);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, CRAY_POS_ZERO, 8);
       }
 
-      if (options & CVT_M_ERR_UNDERFLOW) {
+      if (options & CVT_M_ERR_UNDERFLOW)
+      {
         RAISE(cvt_s_underflow);
       }
     }
@@ -2947,20 +3226,31 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
      ** Check for overflow.
      ** ========================================================================
      */
-    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 8191)) {
-      if (options & CVT_M_TRUNCATE) {
-        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) {
+    else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 8191))
+    {
+      if (options & CVT_M_TRUNCATE)
+      {
+        if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
+        {
           memcpy(output_value, CRAY_NEG_HUGE, 8);
-        } else {
+        }
+        else
+        {
           memcpy(output_value, CRAY_POS_HUGE, 8);
         }
-      } else if ((options & CVT_M_ROUND_TO_POS) &&
-                 (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_POS) &&
+               (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, CRAY_NEG_HUGE, 8);
-      } else if ((options & CVT_M_ROUND_TO_NEG) &&
-                 !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) {
+      }
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
+               !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
+      {
         memcpy(output_value, CRAY_POS_HUGE, 8);
-      } else {
+      }
+      else
+      {
         memcpy(output_value, CRAY_INVALID, 8);
       }
       RAISE(cvt_s_overflow);
@@ -2970,7 +3260,8 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
      ** Pack up the output value and return it.
      ** ========================================================================
      */
-    else {
+    else
+    {
       /*
        ** Adjust bias of exponent
        ** ----------------------------------------------------------------------
@@ -3131,7 +3422,8 @@ static void _round(UNPACKED_REAL intermediate_value,
    ** If we are not going to TRUNCATE the number.
    ** ==========================================================================
    */
-  if (!(options & CVT_M_TRUNCATE)) {
+  if (!(options & CVT_M_TRUNCATE))
+  {
 
     /*
      ** Determine which word the round bit resides in.
@@ -3156,9 +3448,11 @@ static void _round(UNPACKED_REAL intermediate_value,
      ** Else handle the other rounding options.
      ** ========================================================================
      */
-    else {
+    else
+    {
       roundup = 0;
-      switch (intermediate_value[i] & bit_mask) {
+      switch (intermediate_value[i] & bit_mask)
+      {
 
         /*
          ** If round bit is clear, and ROUND TO NEAREST option is selected we
@@ -3177,7 +3471,8 @@ static void _round(UNPACKED_REAL intermediate_value,
          */
       default:
         if (!(more_bits = intermediate_value[i] & (bit_mask - 1)))
-          switch (i) {
+          switch (i)
+          {
           case 1:
             more_bits = intermediate_value[2];
             MDS_ATTR_FALLTHROUGH
@@ -3197,11 +3492,16 @@ static void _round(UNPACKED_REAL intermediate_value,
          ** round bit is set.
          ** ----------------------------------------------------------
          */
-        if (options & CVT_M_ROUND_TO_NEAREST) {
-          if (!(roundup = more_bits)) {
-            if (bit_mask << 1) {
+        if (options & CVT_M_ROUND_TO_NEAREST)
+        {
+          if (!(roundup = more_bits))
+          {
+            if (bit_mask << 1)
+            {
               roundup = intermediate_value[i] & (bit_mask << 1);
-            } else {
+            }
+            else
+            {
               if (i != 1)
                 roundup = intermediate_value[i - 1] & 1;
             }
@@ -3212,7 +3512,8 @@ static void _round(UNPACKED_REAL intermediate_value,
          ** Check ROUND TO POSITIVE INFINITY option.
          ** ----------------------------------------------------------
          */
-        else if (options & CVT_M_ROUND_TO_POS) {
+        else if (options & CVT_M_ROUND_TO_POS)
+        {
           if (!(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
             roundup = (intermediate_value[i] & bit_mask) | more_bits;
         }
@@ -3230,7 +3531,8 @@ static void _round(UNPACKED_REAL intermediate_value,
      ** Perform rounding if necessary.
      ** ========================================================================
      */
-    if (roundup) {
+    if (roundup)
+    {
 
       /*
        ** Add 1 at round position.
@@ -3332,7 +3634,8 @@ static void unpack_vax_f(CVT_VAX_F input_value, UNPACKED_REAL output_value,
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
-  if (output_value[U_R_EXP] == 0) {
+  if (output_value[U_R_EXP] == 0)
+  {
     if (output_value[U_R_FLAGS])
       output_value[U_R_FLAGS] |= U_R_INVALID;
     else
@@ -3343,7 +3646,8 @@ static void unpack_vax_f(CVT_VAX_F input_value, UNPACKED_REAL output_value,
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     output_value[1] = ((output_value[1] << 16) | (output_value[1] >> 16));
 
     /*
@@ -3455,7 +3759,8 @@ static void unpack_vax_d(CVT_VAX_D input_value, UNPACKED_REAL output_value,
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
-  if (output_value[U_R_EXP] == 0) {
+  if (output_value[U_R_EXP] == 0)
+  {
     if (output_value[U_R_FLAGS])
       output_value[U_R_FLAGS] |= U_R_INVALID;
     else
@@ -3466,7 +3771,8 @@ static void unpack_vax_d(CVT_VAX_D input_value, UNPACKED_REAL output_value,
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Adjust for VAX 16 bit floating format.
      ** ------------------------------------------------------------------------
@@ -3585,7 +3891,8 @@ static void unpack_vax_g(CVT_VAX_G input_value, UNPACKED_REAL output_value,
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
-  if (output_value[U_R_EXP] == 0) {
+  if (output_value[U_R_EXP] == 0)
+  {
     if (output_value[U_R_FLAGS])
       output_value[U_R_FLAGS] |= U_R_INVALID;
     else
@@ -3596,7 +3903,8 @@ static void unpack_vax_g(CVT_VAX_G input_value, UNPACKED_REAL output_value,
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Adjust for VAX 16 bit floating format.
      ** ------------------------------------------------------------------------
@@ -3714,7 +4022,8 @@ static void unpack_vax_h(CVT_VAX_H input_value, UNPACKED_REAL output_value,
    ** a zero value.  Set the flag bits accordingly.
    ** ==========================================================================
    */
-  if (output_value[U_R_EXP] == 0) {
+  if (output_value[U_R_EXP] == 0)
+  {
     if (output_value[U_R_FLAGS])
       output_value[U_R_FLAGS] |= U_R_INVALID;
     else
@@ -3725,7 +4034,8 @@ static void unpack_vax_h(CVT_VAX_H input_value, UNPACKED_REAL output_value,
    ** Else the exponent is not zero and we will always have a valid number.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Adjust for VAX 16 bit floating format.
      ** ------------------------------------------------------------------------
@@ -3826,7 +4136,8 @@ static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
    ** Initialization.
    ** ==========================================================================
    */
-  if (options & CVT_M_BIG_ENDIAN) {
+  if (options & CVT_M_BIG_ENDIAN)
+  {
     memcpy(output_value, input_value, 4);
 
     /*
@@ -3836,7 +4147,9 @@ static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
     output_value[1] = ((output_value[0] << 24) | (output_value[0] >> 24));
     output_value[1] |= ((output_value[0] << 8) & 0x00FF0000L);
     output_value[1] |= ((output_value[0] >> 8) & 0x0000FF00L);
-  } else {
+  }
+  else
+  {
     memcpy(&output_value[1], input_value, 4);
   }
 
@@ -3856,7 +4169,8 @@ static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
    ** Check for denormalized values.
    ** ==========================================================================
    */
-  if (output_value[U_R_EXP] == 0) {
+  if (output_value[U_R_EXP] == 0)
+  {
     /*
      ** Clear sign bit.
      ** ------------------------------------------------------------------------
@@ -3867,13 +4181,15 @@ static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
      ** If fraction is non-zero then normalize it.
      ** ------------------------------------------------------------------------
      */
-    if (output_value[1] != 0) {
+    if (output_value[1] != 0)
+    {
       /*
        ** Count leading zeros.
        ** ----------------------------------------------------------------------
        */
       i = 0;
-      while (!(output_value[1] & 0x00400000L)) {
+      while (!(output_value[1] & 0x00400000L))
+      {
         output_value[1] <<= 1;
         i += 1;
       }
@@ -3894,7 +4210,8 @@ static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
       output_value[4] = 0;
     }
 
-    else {
+    else
+    {
       output_value[U_R_FLAGS] |= U_R_ZERO;
     }
   }
@@ -3903,7 +4220,8 @@ static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
    ** Check for NANs and INFINITIES.
    ** ==========================================================================
    */
-  else if (output_value[U_R_EXP] == 255) {
+  else if (output_value[U_R_EXP] == 255)
+  {
     /*
      ** Clear sign bit and exponent.
      ** ------------------------------------------------------------------------
@@ -3919,7 +4237,8 @@ static void unpack_ieee_s(CVT_IEEE_S input_value, UNPACKED_REAL output_value,
    ** We have ourselves a genuine valid number.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Adjust exponent bias.
      ** ------------------------------------------------------------------------
@@ -4019,7 +4338,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
   memcpy(output_value, input_value, 8);
   if (flip)
     FlipDouble((int *)output_value);
-  if (options & CVT_M_BIG_ENDIAN) {
+  if (options & CVT_M_BIG_ENDIAN)
+  {
     /*
      ** Shuffle bytes to little endian format.
      ** ------------------------------------------------------------------------
@@ -4030,7 +4350,9 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
     output_value[1] = ((output_value[0] << 24) | (output_value[0] >> 24));
     output_value[1] |= ((output_value[0] << 8) & 0x00FF0000L);
     output_value[1] |= ((output_value[0] >> 8) & 0x0000FF00L);
-  } else {
+  }
+  else
+  {
     output_value[2] = output_value[0];
   }
 
@@ -4050,7 +4372,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
    ** Check for denormalized values.
    ** ==========================================================================
    */
-  if (output_value[U_R_EXP] == 0) {
+  if (output_value[U_R_EXP] == 0)
+  {
     /*
      ** Clear sign bit.
      ** ------------------------------------------------------------------------
@@ -4061,13 +4384,15 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
      ** If fraction is non-zero then normalize it.
      ** ------------------------------------------------------------------------
      */
-    if (output_value[1] != 0) {
+    if (output_value[1] != 0)
+    {
       /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
       i = 0;
-      while (!(output_value[1] & 0x00080000L)) {
+      while (!(output_value[1] & 0x00080000L))
+      {
         output_value[1] <<= 1;
         i += 1;
       }
@@ -4090,7 +4415,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
       output_value[4] = 0;
     }
 
-    else if (output_value[2]) {
+    else if (output_value[2])
+    {
       output_value[1] = output_value[2];
 
       /*
@@ -4098,7 +4424,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
        ** ----------------------------------------------------------------------
        */
       i = 20;
-      while (!(output_value[1] & 0x80000000L)) {
+      while (!(output_value[1] & 0x80000000L))
+      {
         output_value[1] <<= 1;
         i += 1;
       }
@@ -4116,7 +4443,9 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
       output_value[2] = 0;
       output_value[3] = 0;
       output_value[4] = 0;
-    } else {
+    }
+    else
+    {
       output_value[U_R_FLAGS] |= U_R_ZERO;
     }
   }
@@ -4125,7 +4454,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
    ** Check for NANs and INFINITIES.
    ** ==========================================================================
    */
-  else if (output_value[U_R_EXP] == 2047) {
+  else if (output_value[U_R_EXP] == 2047)
+  {
     /*
      ** Clear sign bit and exponent.
      ** ------------------------------------------------------------------------
@@ -4142,7 +4472,8 @@ static void unpack_ieee_t(CVT_IEEE_T input_value, UNPACKED_REAL output_value,
    ** We have ourselves a genuine valid number.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Adjust exponent.
      ** ------------------------------------------------------------------------
@@ -4240,7 +4571,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
    */
   memcpy(output_value, input_value, 16);
 
-  if (options & CVT_M_BIG_ENDIAN) {
+  if (options & CVT_M_BIG_ENDIAN)
+  {
     /*
      ** Shuffle bytes to little endian format.
      ** ------------------------------------------------------------------------
@@ -4260,7 +4592,9 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
     output_value[1] = ((output_value[0] << 24) | (output_value[0] >> 24));
     output_value[1] |= ((output_value[0] << 8) & 0x00FF0000L);
     output_value[1] |= ((output_value[0] >> 8) & 0x0000FF00L);
-  } else {
+  }
+  else
+  {
     output_value[4] = output_value[0];
     output_value[0] = output_value[3];
     output_value[3] = output_value[1];
@@ -4283,7 +4617,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
    ** Check for denormalized values.
    ** ==========================================================================
    */
-  if (output_value[U_R_EXP] == 0) {
+  if (output_value[U_R_EXP] == 0)
+  {
     /*
      ** Clear sign bit.
      ** ------------------------------------------------------------------------
@@ -4294,13 +4629,15 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
      ** If fraction is non-zero then normalize it.
      ** ------------------------------------------------------------------------
      */
-    if (output_value[1] != 0) {
+    if (output_value[1] != 0)
+    {
       /*
        ** Count leading zeros in fraction.
        ** ----------------------------------------------------------------------
        */
       i = 0;
-      while (!(output_value[1] & 0x00008000L)) {
+      while (!(output_value[1] & 0x00008000L))
+      {
         output_value[1] <<= 1;
         i += 1;
       }
@@ -4325,7 +4662,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
      ** longword and then normalize it.
      ** ------------------------------------------------------------------------
      */
-    else if (output_value[2]) {
+    else if (output_value[2])
+    {
       output_value[1] = output_value[2];
       output_value[2] = output_value[3];
       output_value[3] = output_value[4];
@@ -4335,7 +4673,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
        ** ----------------------------------------------------------------------
        */
       i = 0;
-      while (!(output_value[1] & 0x80000000L)) {
+      while (!(output_value[1] & 0x80000000L))
+      {
         output_value[1] <<= 1;
         i += 1;
       }
@@ -4362,7 +4701,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
      ** longwords and then normalize it.
      ** ------------------------------------------------------------------------
      */
-    else if (output_value[3]) {
+    else if (output_value[3])
+    {
       output_value[1] = output_value[3];
       output_value[2] = output_value[4];
 
@@ -4371,7 +4711,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
        ** ----------------------------------------------------------------------
        */
       i = 0;
-      while (!(output_value[1] & 0x80000000L)) {
+      while (!(output_value[1] & 0x80000000L))
+      {
         output_value[1] <<= 1;
         i += 1;
       }
@@ -4397,7 +4738,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
      ** longwords and then normalize it.
      ** ------------------------------------------------------------------------
      */
-    else if (output_value[4]) {
+    else if (output_value[4])
+    {
       output_value[1] = output_value[4];
 
       /*
@@ -4405,7 +4747,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
        ** ----------------------------------------------------------------------
        */
       i = 0;
-      while (!(output_value[1] & 0x80000000L)) {
+      while (!(output_value[1] & 0x80000000L))
+      {
         output_value[1] <<= 1;
         i += 1;
       }
@@ -4429,7 +4772,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
      ** Otherwise the fraction is completely zero, so set the zero flag.
      ** ------------------------------------------------------------------------
      */
-    else {
+    else
+    {
       output_value[U_R_FLAGS] |= U_R_ZERO;
     }
   }
@@ -4438,7 +4782,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
    ** Check for NANs and INFINITIES.
    ** ==========================================================================
    */
-  else if (output_value[U_R_EXP] == 32767) {
+  else if (output_value[U_R_EXP] == 32767)
+  {
     /*
      ** Clear sign bit and exponent.
      ** ------------------------------------------------------------------------
@@ -4455,7 +4800,8 @@ static void unpack_ieee_x(CVT_IEEE_X input_value, UNPACKED_REAL output_value,
    ** We have ourselves a genuine valid number.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Adjust exponent.
      ** ------------------------------------------------------------------------
@@ -4577,7 +4923,8 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value, UNPACKED_REAL output_value,
    ** Check if 0.
    ** ==========================================================================
    */
-  if ((output_value[1] == 0) && (output_value[2] == 0)) {
+  if ((output_value[1] == 0) && (output_value[2] == 0))
+  {
     output_value[U_R_FLAGS] |= U_R_ZERO;
   }
 
@@ -4585,7 +4932,8 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value, UNPACKED_REAL output_value,
    ** Ok, we know that the number is not zero.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Get unbiased hexadecimal exponent and convert it to binary.
      ** ------------------------------------------------------------------------
@@ -4597,7 +4945,8 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value, UNPACKED_REAL output_value,
      ** ------------------------------------------------------------------------
      */
     i = 0;
-    while (!(output_value[1] & 0x00800000L)) {
+    while (!(output_value[1] & 0x00800000L))
+    {
       i += 1;
       if (i > 3)
         break;
@@ -4608,7 +4957,8 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value, UNPACKED_REAL output_value,
      ** If we have more than three leading zero bits then number is invalid.
      ** ------------------------------------------------------------------------
      */
-    if (i > 3) {
+    if (i > 3)
+    {
       output_value[U_R_FLAGS] |= U_R_INVALID;
     }
 
@@ -4616,7 +4966,8 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value, UNPACKED_REAL output_value,
      ** Number is valid so far...
      ** ------------------------------------------------------------------------
      */
-    else {
+    else
+    {
 
       /*
        ** Adjust exponent to compensate for leading zeros.
@@ -4734,7 +5085,8 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value, UNPACKED_REAL output_value,
    ** Check if 0.
    ** ==========================================================================
    */
-  if (output_value[1] == 0) {
+  if (output_value[1] == 0)
+  {
     output_value[U_R_FLAGS] |= U_R_ZERO;
   }
 
@@ -4742,7 +5094,8 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value, UNPACKED_REAL output_value,
    ** Ok, we know that the number is not zero.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Get unbiased hexadecimal exponent and convert it to binary.
      ** ------------------------------------------------------------------------
@@ -4754,7 +5107,8 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value, UNPACKED_REAL output_value,
      ** ------------------------------------------------------------------------
      */
     i = 0;
-    while (!(output_value[1] & 0x00800000L)) {
+    while (!(output_value[1] & 0x00800000L))
+    {
       i += 1;
       if (i > 3)
         break;
@@ -4765,7 +5119,8 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value, UNPACKED_REAL output_value,
      ** If we have more than three leading zero bits then number is invalid.
      ** ------------------------------------------------------------------------
      */
-    if (i > 3) {
+    if (i > 3)
+    {
       output_value[U_R_FLAGS] |= U_R_INVALID;
     }
 
@@ -4773,7 +5128,8 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value, UNPACKED_REAL output_value,
      ** Number is valid so far...
      ** ------------------------------------------------------------------------
      */
-    else {
+    else
+    {
 
       /*
        ** Adjust exponent to compensate for leading zeros.
@@ -4899,11 +5255,14 @@ static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value,
    ** Check if 0 or an invalid exponent.
    ** ==========================================================================
    */
-  if ((output_value[1] == 0) && (output_value[2] == 0)) {
+  if ((output_value[1] == 0) && (output_value[2] == 0))
+  {
     output_value[U_R_FLAGS] |= U_R_ZERO;
-  } else if ((output_value[U_R_EXP] < 0x2000) ||
-             (output_value[U_R_EXP] >= 0x6000) ||
-             (!(output_value[1] & 0x00008000L))) {
+  }
+  else if ((output_value[U_R_EXP] < 0x2000) ||
+           (output_value[U_R_EXP] >= 0x6000) ||
+           (!(output_value[1] & 0x00008000L)))
+  {
     output_value[U_R_FLAGS] |= U_R_INVALID;
   }
 
@@ -4911,7 +5270,8 @@ static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value,
    ** Ok, we know that the number is not zero.
    ** ==========================================================================
    */
-  else {
+  else
+  {
     /*
      ** Adjust bias.
      ** ------------------------------------------------------------------------

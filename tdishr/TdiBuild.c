@@ -47,7 +47,8 @@ extern int TdiMasterData();
 */
 int Tdi1AsIs(opcode_t opcode __attribute__((unused)),
              int narg __attribute__((unused)), struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
 
   status = MdsCopyDxXd(list[0], out_ptr);
@@ -75,7 +76,8 @@ int Tdi1AsIs(opcode_t opcode __attribute__((unused)),
                 No arrays of descriptors.
 */
 int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[],
-              struct descriptor_xd *out_ptr) {
+              struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor *ptr;
   struct TdiFunctionStruct *fun_ptr =
@@ -88,9 +90,11 @@ int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[],
   build.length = 0;
   build.dtype = fun_ptr->o1;
   build.ndesc = (uint8_t)narg;
-  if (fun_ptr->o2 != fun_ptr->o1) {
+  if (fun_ptr->o2 != fun_ptr->o1)
+  {
     status = TdiGetLong(list[0], &modif);
-    switch (fun_ptr->o2) {
+    switch (fun_ptr->o2)
+    {
     case DTYPE_BU:
       build.length = 1;
       modif_c = (uint8_t)modif;
@@ -107,9 +111,11 @@ int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[],
     }
     --build.ndesc;
     j = 1;
-  } else
+  }
+  else
     j = 0;
-  for (k = 0; j < narg; ++j, ++k) {
+  for (k = 0; j < narg; ++j, ++k)
+  {
     ptr = list[j];
     while (ptr && ptr->dtype == DTYPE_DSC)
       ptr = (struct descriptor *)ptr->pointer;
@@ -127,7 +133,8 @@ int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[],
         WARNING: BUILD_PATH and BUILD_EVENT should be called MAKE_xxx.
 */
 int Tdi1BuildPath(opcode_t opcode, int narg, struct descriptor *list[],
-                  struct descriptor_xd *out_ptr) {
+                  struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
@@ -141,10 +148,10 @@ int Tdi1BuildPath(opcode_t opcode, int narg, struct descriptor *list[],
   Change from text to path or event.
   *********************************/
   if (STATUS_OK)
-    {
-      dat->pointer->dtype = TdiRefFunction[opcode].o1;
-      status = MdsCopyDxXd((struct descriptor *)dat, out_ptr);
-    }
+  {
+    dat->pointer->dtype = TdiRefFunction[opcode].o1;
+    status = MdsCopyDxXd((struct descriptor *)dat, out_ptr);
+  }
   if (STATUS_OK)
     status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
   if (sig->pointer)
@@ -164,7 +171,8 @@ int Tdi1BuildPath(opcode_t opcode, int narg, struct descriptor *list[],
         So BUILD_xxx(x,y,...) is the same as MAKE_xxx(AS_IS(x),AS_IS(y),...).
 */
 int Tdi1Make(opcode_t opcode, int narg, struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor *ptr;
   int j, k, modif;
@@ -178,9 +186,11 @@ int Tdi1Make(opcode_t opcode, int narg, struct descriptor *list[],
   build.length = 0;
   build.dtype = fun_ptr->o1;
   build.ndesc = (unsigned char)narg;
-  if (fun_ptr->o2 != fun_ptr->o1) {
+  if (fun_ptr->o2 != fun_ptr->o1)
+  {
     status = TdiGetLong(list[0], &modif);
-    switch (fun_ptr->o2) {
+    switch (fun_ptr->o2)
+    {
     case DTYPE_BU:
       build.length = 1;
       modif_c = (uint8_t)modif;
@@ -197,9 +207,11 @@ int Tdi1Make(opcode_t opcode, int narg, struct descriptor *list[],
     }
     --build.ndesc;
     j = 1;
-  } else
+  }
+  else
     j = 0;
-  for (k = 0; j < narg && STATUS_OK; ++j, ++k) {
+  for (k = 0; j < narg && STATUS_OK; ++j, ++k)
+  {
     xd[k] = EMPTY_XD;
     if (list[j])
       status = TdiEvaluate(list[j], &xd[k] MDS_END_ARG);

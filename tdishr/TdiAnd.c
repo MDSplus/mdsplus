@@ -79,8 +79,10 @@ int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor
 
 static inline int Operate(struct descriptor *in1, struct descriptor *in2,
                           struct descriptor *out,
-                          char operator(const char, const char)) {
-  if (in1->dtype != 2) {
+                          char operator(const char, const char))
+{
+  if (in1->dtype != 2)
+  {
     fprintf(
         stderr,
         "FATAL: TdiAnd.c function called with other than DTYPE_BU (%d,%d)\n",
@@ -92,7 +94,8 @@ static inline int Operate(struct descriptor *in1, struct descriptor *in2,
   struct descriptor_a *outa = (struct descriptor_a *)out;
   int scalars = 0;
   unsigned int nout;
-  switch (out->class) {
+  switch (out->class)
+  {
   case CLASS_S:
   case CLASS_D:
     nout = 1;
@@ -105,7 +108,8 @@ static inline int Operate(struct descriptor *in1, struct descriptor *in2,
   default:
     return TdiINVCLADSC;
   }
-  switch (in1->class) {
+  switch (in1->class)
+  {
   case CLASS_S:
   case CLASS_D:
     scalars |= 1;
@@ -117,7 +121,8 @@ static inline int Operate(struct descriptor *in1, struct descriptor *in2,
   default:
     return TdiINVCLADSC;
   }
-  switch (in2->class) {
+  switch (in2->class)
+  {
   case CLASS_S:
   case CLASS_D:
     if (scalars && (nout > 1))
@@ -134,7 +139,8 @@ static inline int Operate(struct descriptor *in1, struct descriptor *in2,
   char *in1p = (char *)in1->pointer;
   char *in2p = (char *)in2->pointer;
   char *outp = (char *)out->pointer;
-  switch (scalars) {
+  switch (scalars)
+  {
   case 0:
     while (nout--)
       *outp++ = operator(*in1p++, *in2p++);
@@ -154,74 +160,94 @@ static inline int Operate(struct descriptor *in1, struct descriptor *in2,
   return MDSplusSUCCESS;
 }
 
-static inline char and (const char a, const char b) {
+static inline char and (const char a, const char b)
+{
   return (char)(1 & (a & b));
 }
-static inline char nand(const char a, const char b) {
+static inline char nand(const char a, const char b)
+{
   return (char)(1 & ~(a & b));
 }
-static inline char and_not(const char a, const char b) {
+static inline char and_not(const char a, const char b)
+{
   return (char)(1 & (a & ~b));
 }
-static inline char nand_not(const char a, const char b) {
+static inline char nand_not(const char a, const char b)
+{
   return (char)(1 & ~(a & ~b));
 }
-static inline char or (const char a, const char b) {
+static inline char or (const char a, const char b)
+{
   return (char)(1 & (a | b));
 }
-static inline char nor(const char a, const char b) {
+static inline char nor(const char a, const char b)
+{
   return (char)(1 & ~(a | b));
 }
-static inline char or_not(const char a, const char b) {
+static inline char or_not(const char a, const char b)
+{
   return (char)(1 & (a | ~b));
 }
-static inline char nor_not(const char a, const char b) {
+static inline char nor_not(const char a, const char b)
+{
   return (char)(1 & ~(a | ~b));
 }
-static inline char eqv(const char a, const char b) {
+static inline char eqv(const char a, const char b)
+{
   return (char)(1 & (a ^ ~b));
 }
-static inline char neqv(const char a, const char b) {
+static inline char neqv(const char a, const char b)
+{
   return (char)(1 & (a ^ b));
 }
 
 int Tdi3And(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out) {
+            struct descriptor *out)
+{
   return Operate(in1, in2, out, and);
 }
 int Tdi3Nand(struct descriptor *in1, struct descriptor *in2,
-             struct descriptor *out) {
+             struct descriptor *out)
+{
   return Operate(in1, in2, out, nand);
 }
 int Tdi3AndNot(struct descriptor *in1, struct descriptor *in2,
-               struct descriptor *out) {
+               struct descriptor *out)
+{
   return Operate(in1, in2, out, and_not);
 }
 int Tdi3NandNot(struct descriptor *in1, struct descriptor *in2,
-                struct descriptor *out) {
+                struct descriptor *out)
+{
   return Operate(in1, in2, out, nand_not);
 }
 int Tdi3Or(struct descriptor *in1, struct descriptor *in2,
-           struct descriptor *out) {
+           struct descriptor *out)
+{
   return Operate(in1, in2, out, or);
 }
 int Tdi3Nor(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out) {
+            struct descriptor *out)
+{
   return Operate(in1, in2, out, nor);
 }
 int Tdi3OrNot(struct descriptor *in1, struct descriptor *in2,
-              struct descriptor *out) {
+              struct descriptor *out)
+{
   return Operate(in1, in2, out, or_not);
 }
 int Tdi3NorNot(struct descriptor *in1, struct descriptor *in2,
-               struct descriptor *out) {
+               struct descriptor *out)
+{
   return Operate(in1, in2, out, nor_not);
 }
 int Tdi3Eqv(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out) {
+            struct descriptor *out)
+{
   return Operate(in1, in2, out, eqv);
 }
 int Tdi3Neqv(struct descriptor *in1, struct descriptor *in2,
-             struct descriptor *out) {
+             struct descriptor *out)
+{
   return Operate(in1, in2, out, neqv);
 }

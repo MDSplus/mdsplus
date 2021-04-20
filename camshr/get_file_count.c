@@ -70,7 +70,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db type
 // output:      number of entries [0..n]; FILE_ERROR [-2 * 2] if error
 //-------------------------------------------------------------------------
-int get_file_count(int dbType) {
+int get_file_count(int dbType)
+{
   void *dbptr; // generic pointer to struct's
   char dbFileName[16];
   int dbFileSize, entrySize, i, numOfEntries;
@@ -80,7 +81,8 @@ int get_file_count(int dbType) {
   extern int CTSdbFileIsMapped;
   extern int CRATEdbFileIsMapped;
 
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     dbptr = (void *)CTSdb;
     entrySize = MODULE_ENTRY;
@@ -103,20 +105,24 @@ int get_file_count(int dbType) {
     printf("get_file_count()\n");
 
   // check for memory mapped file
-  if (*FileIsMapped == FALSE) {
-    if (map_data_file(dbType) != SUCCESS) {
+  if (*FileIsMapped == FALSE)
+  {
+    if (map_data_file(dbType) != SUCCESS)
+    {
       numOfEntries = MAP_ERROR;
       goto GetFileCount_Exit;
     }
   }
   // get total db file size in bytes
-  if ((dbFileSize = get_db_file_size(dbFileName)) < 0) {
+  if ((dbFileSize = get_db_file_size(dbFileName)) < 0)
+  {
     numOfEntries = FAILURE;
     goto GetFileCount_Exit;
   }
   // get the appropriate count
   numOfEntries = 0;
-  for (i = 0;; i += entrySize) {
+  for (i = 0;; i += entrySize)
+  {
     if ((i + entrySize) > dbFileSize) // make sure we don't fall off the end ...
       break;
 

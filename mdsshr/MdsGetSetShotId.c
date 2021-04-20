@@ -50,13 +50,15 @@ int MdsGetCurrentShotId(experiment,shot)
 #include <STATICdef.h>
 #include <stdio.h>
 
-int MdsGetCurrentShotId() {
+int MdsGetCurrentShotId()
+{
   printf(
       "MdsGetCurrentShotId is obsolete, use TreeGetCurrentShotId in TreeShr\n");
   return 0;
 }
 
-int MdsSetCurrentShotId() {
+int MdsSetCurrentShotId()
+{
   printf(
       "MdsSetCurrentShotId is obsolete, use TreeSetCurrentShotId in TreeShr\n");
   return 0;

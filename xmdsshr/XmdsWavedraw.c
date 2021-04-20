@@ -194,14 +194,14 @@ int XmdsCreateWavedraw( parent, name, args, argcount )
 #define waveformPanning(widget) ((widget)->waveform.panning)
 #define waveformRedraw(widget) ((widget)->waveform.redraw)
 #define waveformStepPlot(widget) ((widget)->waveform.step_plot)
-#define waveformDeleteOnlySelected(widget)                                     \
+#define waveformDeleteOnlySelected(widget) \
   ((widget)->wavedraw.delete_only_selected)
 #define wavedrawMoveCallbacks(widget) ((widget)->wavedraw.move_callback)
 #define wavedrawSelectCallbacks(widget) ((widget)->wavedraw.select_callback)
 #define wavedrawDeselectCallbacks(widget) ((widget)->wavedraw.deselect_callback)
-#define wavedrawAddPointCallbacks(widget)                                      \
+#define wavedrawAddPointCallbacks(widget) \
   ((widget)->wavedraw.add_point_callback)
-#define wavedrawDeletePointCallbacks(widget)                                   \
+#define wavedrawDeletePointCallbacks(widget) \
   ((widget)->wavedraw.delete_point_callback)
 #define wavedrawFitCallbacks(widget) ((widget)->wavedraw.fit_callback)
 #define wavedrawSelectionIdx(widget) ((widget)->wavedraw.selection_idx)
@@ -392,16 +392,18 @@ EXPORT WidgetClass xmdsWavedrawWidgetClass;
  Executable:                                                                  */
 
 EXPORT Widget XmdsCreateWavedraw(Widget parent, char *name, ArgList args,
-                                 Cardinal argcount) {
+                                 Cardinal argcount)
+{
   return XtCreateWidget(name, xmdsWavedrawWidgetClass, parent, args, argcount);
 }
 
-static void ClassPartInitialize(XmdsWavedrawWidgetClass class) {
+static void ClassPartInitialize(XmdsWavedrawWidgetClass class)
+{
 
-#define initTrans(field, deftrans)                                             \
-  if (field == XmdsInheritTranslations)                                        \
-    field = XtParseTranslationTable(deftrans);                                 \
-  else                                                                         \
+#define initTrans(field, deftrans)             \
+  if (field == XmdsInheritTranslations)        \
+    field = XtParseTranslationTable(deftrans); \
+  else                                         \
     field = XtParseTranslationTable((const char *)field)
 
   initTrans(xmdsWavedrawClassRec.wavedraw_class.draw1_trans,
@@ -417,10 +419,11 @@ static void ClassPartInitialize(XmdsWavedrawWidgetClass class) {
 <Btn3Down>:WaveformButton3()\n @Help <Btn1Down>:WaveformHelp()");
 }
 
-static void Initialize(XmdsWavedrawWidget req, XmdsWavedrawWidget w) {
+static void Initialize(XmdsWavedrawWidget req, XmdsWavedrawWidget w)
+{
 
-#define NewInstance(field, size)                                               \
-  if (field(req))                                                              \
+#define NewInstance(field, size) \
+  if (field(req))                \
   field(w) = (void *)memcpy(XtMalloc(size), field(req), size)
 
   NewInstance(xLowLimit, sizeof(float));
@@ -442,10 +445,11 @@ static void Initialize(XmdsWavedrawWidget req, XmdsWavedrawWidget w) {
 
 #undef NewInstance
 
-static void Destroy(XmdsWavedrawWidget w) {
+static void Destroy(XmdsWavedrawWidget w)
+{
 
-#define FreeInstance(field)                                                    \
-  if (field(w))                                                                \
+#define FreeInstance(field) \
+  if (field(w))             \
   XtFree((char *)field(w))
 
   FreeInstance(xLowLimit);
@@ -463,9 +467,11 @@ static void Destroy(XmdsWavedrawWidget w) {
    */
 }
 
-static void MoveBegin(XmdsWavedrawWidget w, XButtonEvent *event) {
+static void MoveBegin(XmdsWavedrawWidget w, XButtonEvent *event)
+{
   int selection = SelectedPoint(w, event, 0);
-  if (selection >= 0) {
+  if (selection >= 0)
+  {
     XmdsWavedrawValueCBStruct cb = {
         XmdsCRMovePointBegin, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     cb.event = (XEvent *)event;
@@ -483,12 +489,14 @@ static void MoveBegin(XmdsWavedrawWidget w, XButtonEvent *event) {
     XWarpPointer(XtDisplay(w), XtWindow(w), XtWindow(w), event->x, event->y,
                  XtWidth(w), XtHeight(w), xPixValue(w, selection),
                  yPixValue(w, selection));
-  } else
+  }
+  else
     wavedrawSelectionIdx(w) = -1;
   waveformPanning(w) = -1;
 }
 
-static void SetPen(XmdsWavedrawWidget w, XButtonEvent *event) {
+static void SetPen(XmdsWavedrawWidget w, XButtonEvent *event)
+{
   int selection = SelectedSegment(w, event);
   XmdsWavedrawFitCBStruct fitcb = {XmdsCRSetPen, 0, 0, 0, 0, 0, 0};
   ;
@@ -504,7 +512,8 @@ static void SetPen(XmdsWavedrawWidget w, XButtonEvent *event) {
   Refresh(w);
 }
 
-static void Refresh(XmdsWavedrawWidget w) {
+static void Refresh(XmdsWavedrawWidget w)
+{
   waveformRedraw(w) = 1;
   (((XmdsWavedrawWidgetClass)w->core.widget_class)->core_class.expose)(
       (Widget)w, 0, 0);
@@ -513,7 +522,8 @@ static void Refresh(XmdsWavedrawWidget w) {
 EXPORT Boolean XmdsWavedrawMovePoint(XmdsWavedrawWidget w, int idx,
                                      float *desired_x, float *desired_y,
                                      float *new_x, float *new_y,
-                                     Boolean callcallbacks, XEvent *event) {
+                                     Boolean callcallbacks, XEvent *event)
+{
   return (((XmdsWavedrawWidgetClass)w->core.widget_class)
               ->wavedraw_class.move_point_proc)(
       w, idx, desired_x, desired_y, new_x, new_y, callcallbacks, event);
@@ -521,7 +531,8 @@ EXPORT Boolean XmdsWavedrawMovePoint(XmdsWavedrawWidget w, int idx,
 
 static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
                          float *desired_y, float *new_x, float *new_y,
-                         Boolean callcallbacks, XEvent *event) {
+                         Boolean callcallbacks, XEvent *event)
+{
   Boolean stat = 0;
   int range = idx ? (idx >= (waveformCount(w) - 1) ? 3 : 2) : 1;
   if ((idx < 0) || (idx > (waveformCount(w) - 1)))
@@ -530,18 +541,23 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
     *desired_x = Round(*desired_x, *xGridSnap(w));
   if (yGridSnap(w) && (*yGridSnap(w) > 0.0))
     *desired_y = Round(*desired_y, *yGridSnap(w));
-  if (xNumChoices(w)) {
+  if (xNumChoices(w))
+  {
     float min_dif = 1E38;
     int i;
     int closest = -1;
-    for (i = 0; i < xNumChoices(w); i++) {
+    for (i = 0; i < xNumChoices(w); i++)
+    {
       if ((xLowLimit(w) && (xChoices(w)[i] >= *xLowLimit(w))) ||
-          (!xLowLimit(w))) {
+          (!xLowLimit(w)))
+      {
         float dif = *desired_x - xChoices(w)[i];
         dif = dif < 0.0 ? -dif : dif;
-        if (xIncreasing(w)) {
+        if (xIncreasing(w))
+        {
           float mindist = xMinDistance(w) ? *xMinDistance(w) : xResolution(w);
-          switch (range) {
+          switch (range)
+          {
           case 1:
             if (xChoices(w)[i] > (xValue(w)[idx + 1] - mindist))
               dif = 1E38;
@@ -557,39 +573,49 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
             break;
           }
         }
-        if (dif < min_dif) {
+        if (dif < min_dif)
+        {
           min_dif = dif;
           closest = i;
         }
       }
     }
-    if (closest >= 0) {
+    if (closest >= 0)
+    {
       *new_x = xChoices(w)[closest];
       stat = 1;
     }
-  } else if (xIncreasing(w)) {
+  }
+  else if (xIncreasing(w))
+  {
     float mindist = xMinDistance(w) ? *xMinDistance(w) : xResolution(w);
     *new_x = *desired_x;
     if (xLowLimit(w) && (*desired_x < *xLowLimit(w)))
       *new_x = *xLowLimit(w);
     if (xHighLimit(w) && (*desired_x > *xHighLimit(w)))
       *new_x = *xHighLimit(w);
-    switch (range) {
+    switch (range)
+    {
     case 1:
-      if (*desired_x > (xValue(w)[idx + 1] - mindist)) {
+      if (*desired_x > (xValue(w)[idx + 1] - mindist))
+      {
         if ((xLowLimit(w) &&
              (*xLowLimit(w) <= (xValue(w)[idx + 1] - mindist))) ||
-            !xLowLimit(w)) {
+            !xLowLimit(w))
+        {
           *new_x = xValue(w)[idx + 1] - mindist;
           stat = 1;
         }
-      } else {
+      }
+      else
+      {
         *new_x = *desired_x;
         stat = 1;
       }
       break;
     case 2:
-      if ((xValue(w)[idx + 1] - xValue(w)[idx - 1]) >= (1.99 * mindist)) {
+      if ((xValue(w)[idx + 1] - xValue(w)[idx - 1]) >= (1.99 * mindist))
+      {
         stat = 1;
         if (*desired_x < (xValue(w)[idx - 1] + mindist))
           *new_x = xValue(w)[idx - 1] + mindist;
@@ -600,20 +626,26 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
       }
       break;
     case 3:
-      if (*desired_x < (xValue(w)[idx - 1] + mindist)) {
+      if (*desired_x < (xValue(w)[idx - 1] + mindist))
+      {
         if ((xHighLimit(w) &&
              (*xHighLimit(w) >= (xValue(w)[idx - 1] + mindist))) ||
-            !xHighLimit(w)) {
+            !xHighLimit(w))
+        {
           *new_x = xValue(w)[idx - 1] + mindist;
           stat = 1;
         }
-      } else {
+      }
+      else
+      {
         *new_x = *desired_x;
         stat = 1;
       }
       break;
     }
-  } else {
+  }
+  else
+  {
     if (xLowLimit(w) && (*desired_x < *xLowLimit(w)))
       *new_x = *xLowLimit(w);
     else if (xHighLimit(w) && (*desired_x > *xHighLimit(w)))
@@ -626,18 +658,23 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
     return stat;
   stat = 0;
   /**********************************************/
-  if (yNumChoices(w)) {
+  if (yNumChoices(w))
+  {
     float min_dif = 1E38;
     int i;
     int closest = -1;
-    for (i = 0; i < yNumChoices(w); i++) {
+    for (i = 0; i < yNumChoices(w); i++)
+    {
       if ((yLowLimit(w) && (yChoices(w)[i] >= *yLowLimit(w))) ||
-          (!yLowLimit(w))) {
+          (!yLowLimit(w)))
+      {
         float dif = *desired_y - yChoices(w)[i];
         dif = dif < 0.0 ? -dif : dif;
-        if (yIncreasing(w)) {
+        if (yIncreasing(w))
+        {
           float mindist = yMinDistance(w) ? *yMinDistance(w) : yResolution(w);
-          switch (range) {
+          switch (range)
+          {
           case 1:
             if (yChoices(w)[i] > (yValue(w)[idx + 1] - mindist))
               dif = 1E38;
@@ -653,39 +690,49 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
             break;
           }
         }
-        if (dif < min_dif) {
+        if (dif < min_dif)
+        {
           min_dif = dif;
           closest = i;
         }
       }
     }
-    if (closest >= 0) {
+    if (closest >= 0)
+    {
       *new_y = yChoices(w)[closest];
       stat = 1;
     }
-  } else if (yIncreasing(w)) {
+  }
+  else if (yIncreasing(w))
+  {
     float mindist = yMinDistance(w) ? *yMinDistance(w) : yResolution(w);
     *new_y = *desired_y;
     if (yLowLimit(w) && (*desired_y < *yLowLimit(w)))
       *new_y = *yLowLimit(w);
     if (yHighLimit(w) && (*desired_y > *yHighLimit(w)))
       *new_y = *yHighLimit(w);
-    switch (range) {
+    switch (range)
+    {
     case 1:
-      if (*desired_y > (yValue(w)[idx + 1] - mindist)) {
+      if (*desired_y > (yValue(w)[idx + 1] - mindist))
+      {
         if ((yLowLimit(w) &&
              (*yLowLimit(w) <= (yValue(w)[idx + 1] - mindist))) ||
-            !yLowLimit(w)) {
+            !yLowLimit(w))
+        {
           *new_y = yValue(w)[idx + 1] - mindist;
           stat = 1;
         }
-      } else {
+      }
+      else
+      {
         *new_y = *desired_y;
         stat = 1;
       }
       break;
     case 2:
-      if ((yValue(w)[idx + 1] - yValue(w)[idx - 1]) >= (2 * mindist)) {
+      if ((yValue(w)[idx + 1] - yValue(w)[idx - 1]) >= (2 * mindist))
+      {
         stat = 1;
         if (*desired_y < (yValue(w)[idx - 1] + mindist))
           *new_y = yValue(w)[idx - 1] + mindist;
@@ -696,20 +743,26 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
       }
       break;
     case 3:
-      if (*desired_y < (yValue(w)[idx - 1] + mindist)) {
+      if (*desired_y < (yValue(w)[idx - 1] + mindist))
+      {
         if ((yHighLimit(w) &&
              (*yHighLimit(w) >= (yValue(w)[idx - 1] + mindist))) ||
-            !yHighLimit(w)) {
+            !yHighLimit(w))
+        {
           *new_y = yValue(w)[idx - 1] + mindist;
           stat = 1;
         }
-      } else {
+      }
+      else
+      {
         *new_y = *desired_y;
         stat = 1;
       }
       break;
     }
-  } else {
+  }
+  else
+  {
     if (yLowLimit(w) && (*desired_y < *yLowLimit(w)))
       *new_y = *yLowLimit(w);
     else if (yHighLimit(w) && (*desired_y > *yHighLimit(w)))
@@ -720,8 +773,10 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
   }
   if (!stat)
     return 0;
-  if (waveformSelections(w)) {
-    switch (waveformSelections(w)[idx]) {
+  if (waveformSelections(w))
+  {
+    switch (waveformSelections(w)[idx])
+    {
     case XmdsMOTION_XONLY:
       *new_y = yValue(w)[idx];
       break;
@@ -740,7 +795,8 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
     if (yGridSnap(w) && (*yGridSnap(w) > 0.0))
       *new_y = Round(*new_y,*yGridSnap(w));
   */
-  if (callcallbacks) {
+  if (callcallbacks)
+  {
     XmdsWavedrawValueCBStruct cb = {
         XmdsCRMovePoint, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     XmdsWavedrawFitCBStruct fitcb = {XmdsCRMovePoint, 0, 0, 0, 0, 0, 0};
@@ -765,7 +821,9 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
     wavedrawSelectionIdx(w) = cb.idx;
     XtCallCallbacks((Widget)w, XmdsNfitCallback, &fitcb);
     Refresh(w);
-  } else {
+  }
+  else
+  {
     xValue(w)[idx] = *new_x;
     yValue(w)[idx] = *new_y;
   }
@@ -775,7 +833,8 @@ static Boolean MovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
 static void SlideStretch(XmdsWavedrawWidget w, int idx, float *desired_x,
                          float *desired_y, float *new_x, float *new_y,
                          Boolean callcallbacks, XEvent *event,
-                         Boolean stretch) {
+                         Boolean stretch)
+{
   int i;
   float xoff = *desired_x - xValue(w)[idx];
   float yoff = *desired_y - yValue(w)[idx];
@@ -786,15 +845,18 @@ static void SlideStretch(XmdsWavedrawWidget w, int idx, float *desired_x,
   float *oldy = (float *)memcpy(XtMalloc(waveformCount(w) * sizeof(float)),
                                 yValue(w), waveformCount(w) * sizeof(float));
   Boolean ok = 1;
-  for (i = 0; i < waveformCount(w); i++) {
+  for (i = 0; i < waveformCount(w); i++)
+  {
     xValue(w)[i] = stretch ? xValue(w)[i] * xratio : xValue(w)[i] + xoff;
     yValue(w)[i] = stretch ? yValue(w)[i] * yratio : yValue(w)[i] + yoff;
   }
   for (i = 0; i < waveformCount(w); i++)
     ok = ok & MovePoint(w, i, &xValue(w)[i], &yValue(w)[i], &xValue(w)[i],
                         &yValue(w)[i], 0, 0);
-  if (ok) {
-    if (callcallbacks) {
+  if (ok)
+  {
+    if (callcallbacks)
+    {
       XmdsWavedrawValueCBStruct cb = {
           XmdsCRMovePoint, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
       XmdsWavedrawFitCBStruct fitcb = {XmdsCRMovePoint, 0, 0, 0, 0, 0, 0};
@@ -820,7 +882,9 @@ static void SlideStretch(XmdsWavedrawWidget w, int idx, float *desired_x,
       XtCallCallbacks((Widget)w, XmdsNfitCallback, &fitcb);
       Refresh(w);
     }
-  } else {
+  }
+  else
+  {
     memcpy(xValue(w), oldx, waveformCount(w) * sizeof(float));
     memcpy(yValue(w), oldy, waveformCount(w) * sizeof(float));
   }
@@ -828,7 +892,8 @@ static void SlideStretch(XmdsWavedrawWidget w, int idx, float *desired_x,
   XtFree((char *)oldy);
 }
 
-static void Move(XmdsWavedrawWidget w, XButtonEvent *event) {
+static void Move(XmdsWavedrawWidget w, XButtonEvent *event)
+{
   int idx = wavedrawSelectionIdx(w);
   Boolean warp = FALSE;
   float x;
@@ -837,7 +902,8 @@ static void Move(XmdsWavedrawWidget w, XButtonEvent *event) {
     ;
   if (idx < 0)
     return;
-  if (event->state & LockMask) {
+  if (event->state & LockMask)
+  {
     x = xValue(w)[idx] + ((event->x == xPixValue(w, idx))
                               ? 0
                               : ((event->state & ShiftMask)
@@ -853,7 +919,9 @@ static void Move(XmdsWavedrawWidget w, XButtonEvent *event) {
                                                   ? yResolution(w)
                                                   : -1 * yResolution(w)))));
     warp = TRUE;
-  } else {
+  }
+  else
+  {
     x = (event->state & ShiftMask)
             ? xValue(w)[idx]
             : Round(event->x * (*xMax(w) - *xMin(w)) / XtWidth(w) + *xMin(w),
@@ -876,10 +944,12 @@ static void Move(XmdsWavedrawWidget w, XButtonEvent *event) {
   Refresh(w);
 }
 
-static void MoveEnd(XmdsWavedrawWidget w, XButtonEvent *event) {
+static void MoveEnd(XmdsWavedrawWidget w, XButtonEvent *event)
+{
   int selection = wavedrawSelectionIdx(w);
   waveformPanning(w) = 0;
-  if (selection >= 0) {
+  if (selection >= 0)
+  {
     XmdsWavedrawValueCBStruct cb = {
         XmdsCRMovePointEnd, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     cb.event = (XEvent *)event;
@@ -898,8 +968,10 @@ static void MoveEnd(XmdsWavedrawWidget w, XButtonEvent *event) {
   }
 }
 
-static void SelectDeselect(XmdsWavedrawWidget w, XButtonEvent *event) {
-  if (waveformSelections(w)) {
+static void SelectDeselect(XmdsWavedrawWidget w, XButtonEvent *event)
+{
+  if (waveformSelections(w))
+  {
     int selection = SelectedPoint(w, event, !(event->state & ControlMask));
     XmdsWavedrawValueCBStruct cb = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     XmdsWavedrawFitCBStruct fitcb = {0, 0, 0, 0, 0, 0, 0};
@@ -920,9 +992,12 @@ static void SelectDeselect(XmdsWavedrawWidget w, XButtonEvent *event) {
     fitcb.selected = waveformSelections(w);
     fitcb.pen_down = waveformPenDown(w);
 
-    if (selection >= 0) {
-      if (event->state & ControlMask) {
-        if (waveformSelections(w)[selection]) {
+    if (selection >= 0)
+    {
+      if (event->state & ControlMask)
+      {
+        if (waveformSelections(w)[selection])
+        {
           waveformSelections(w)[selection] = 0;
           wavedrawNumSelections(w)--;
           fitcb.reason = cb.reason = XmdsCRDeselectPoint;
@@ -930,7 +1005,9 @@ static void SelectDeselect(XmdsWavedrawWidget w, XButtonEvent *event) {
           XtCallCallbacks((Widget)w, XmdsNfitCallback, &fitcb);
           Refresh(w);
         }
-      } else {
+      }
+      else
+      {
         if (!waveformSelections(w)[selection])
           wavedrawNumSelections(w)++;
         waveformSelections(w)[selection] =
@@ -947,7 +1024,8 @@ static void SelectDeselect(XmdsWavedrawWidget w, XButtonEvent *event) {
   }
 }
 
-static void AddDelete(XmdsWavedrawWidget w, XButtonEvent *event) {
+static void AddDelete(XmdsWavedrawWidget w, XButtonEvent *event)
+{
   float newx =
       Round((float)event->x / XtWidth(w) * (*xMax(w) - *xMin(w)) + *xMin(w),
             xResolution(w));
@@ -955,19 +1033,25 @@ static void AddDelete(XmdsWavedrawWidget w, XButtonEvent *event) {
                              (*yMax(w) - *yMin(w)) +
                          *yMin(w),
                      yResolution(w));
-  if (event->state & ShiftMask) {
-    if (waveformCount(w) > 2) {
+  if (event->state & ShiftMask)
+  {
+    if (waveformCount(w) > 2)
+    {
       int selection = SelectedPoint(w, event, !waveformDeleteOnlySelected(w));
       if (selection >= 0)
         XmdsWavedrawDeletePoint((Widget)w, selection, 1);
     }
-  } else {
+  }
+  else
+  {
     int selection;
-    if (waveformStepPlot(w)) {
+    if (waveformStepPlot(w))
+    {
       for (selection = 0; selection < waveformCount(w); selection++)
         if (xValue(w)[selection] > newx)
           break;
-    } else
+    }
+    else
       selection = InsertionPoint(w, event, SelectedPoint(w, event, 1));
     if (!XmdsWavedrawAddPoint((Widget)w, selection, &newx, &newy, 1,
                               XmdsMOTION_BOTH))
@@ -976,10 +1060,13 @@ static void AddDelete(XmdsWavedrawWidget w, XButtonEvent *event) {
 }
 
 static int InsertionPoint(XmdsWavedrawWidget w, XButtonEvent *event,
-                          int selection) {
+                          int selection)
+{
   int idx = selection;
-  if (selection) {
-    if (selection < (waveformCount(w) - 1)) {
+  if (selection)
+  {
+    if (selection < (waveformCount(w) - 1))
+    {
       if ((Distance(event->x - xPixValue(w, selection + 1),
                     waveformStepPlot(w)
                         ? 0
@@ -997,7 +1084,9 @@ static int InsertionPoint(XmdsWavedrawWidget w, XButtonEvent *event,
                                         : yPixValue(w, selection + 1) -
                                               yPixValue(w, selection))))
         idx++;
-    } else {
+    }
+    else
+    {
       if (Distance(event->x - xPixValue(w, selection - 1),
                    waveformStepPlot(w)
                        ? 0
@@ -1008,7 +1097,9 @@ static int InsertionPoint(XmdsWavedrawWidget w, XButtonEvent *event,
                        : yPixValue(w, selection) - yPixValue(w, selection - 1)))
         idx++;
     }
-  } else {
+  }
+  else
+  {
     if (Distance(event->x - xPixValue(w, selection + 1),
                  waveformStepPlot(w) ? 0
                                      : event->y - yPixValue(w, selection + 1)) <
@@ -1021,16 +1112,19 @@ static int InsertionPoint(XmdsWavedrawWidget w, XButtonEvent *event,
   return idx;
 }
 
-static int SelectedSegment(XmdsWavedrawWidget w, XButtonEvent *event) {
+static int SelectedSegment(XmdsWavedrawWidget w, XButtonEvent *event)
+{
   int i;
   int selection = -1;
   double min_distance = 2000000000;
   int count = waveformCount(w) - 1;
-  for (i = 0; i < count; i++) {
+  for (i = 0; i < count; i++)
+  {
     double distance =
         SegDistance(xPixValue(w, i), yPixValue(w, i), xPixValue(w, i + 1),
                     yPixValue(w, i + 1), event->x, event->y);
-    if (distance < min_distance) {
+    if (distance < min_distance)
+    {
       min_distance = distance;
       selection = i;
     }
@@ -1039,7 +1133,8 @@ static int SelectedSegment(XmdsWavedrawWidget w, XButtonEvent *event) {
 }
 
 static double SegDistance(double ax, double ay, double bx, double by, double cx,
-                          double cy) {
+                          double cy)
+{
   double distance;
   double theta = (ax == bx) ? 3.14159 / 2 : atan((by - ay) / (bx - ax));
   double sin_theta = sin(theta);
@@ -1049,7 +1144,8 @@ static double SegDistance(double ax, double ay, double bx, double by, double cx,
   double t_cy = (cy - ay) * cos_theta - (cx - ax) * sin_theta;
   if ((t_bx < 0) ? t_cx > 0 : t_cx < 0)
     distance = sqrt((ax - cx) * (ax - cx) + (ay - cy) * (ay - cy));
-  else {
+  else
+  {
     if ((t_bx < 0) ? t_cx < t_bx : t_cx > t_bx)
       distance = sqrt((bx - cx) * (bx - cx) + (by - cy) * (by - cy));
     else
@@ -1059,16 +1155,19 @@ static double SegDistance(double ax, double ay, double bx, double by, double cx,
 }
 
 static int SelectedPoint(XmdsWavedrawWidget w, XButtonEvent *event,
-                         Boolean anypoint) {
+                         Boolean anypoint)
+{
   int i;
   int selection = -1;
   unsigned int min_distance = 2000000000;
-  for (i = 0; i < waveformCount(w); i++) {
+  for (i = 0; i < waveformCount(w); i++)
+  {
     unsigned int distance =
         Distance(event->x - xPixValue(w, i), event->y - yPixValue(w, i));
     if ((anypoint || !waveformSelections(w) ||
          (waveformSelections(w) && waveformSelections(w)[i])) &&
-        (distance < min_distance)) {
+        (distance < min_distance))
+    {
       min_distance = distance;
       selection = i;
     }
@@ -1076,18 +1175,21 @@ static int SelectedPoint(XmdsWavedrawWidget w, XButtonEvent *event,
   return selection;
 }
 
-static unsigned int Distance(int xdistance, int ydistance) {
+static unsigned int Distance(int xdistance, int ydistance)
+{
   return xdistance * xdistance + ydistance * ydistance;
 }
 
 static Boolean SetValues(XmdsWavedrawWidget old, XmdsWavedrawWidget req,
-                         XmdsWavedrawWidget new) {
-#define NewInstance(field, size)                                               \
-  if (field(old) != field(req)) {                                              \
-    if (field(old))                                                            \
-      XtFree((char *)field(old));                                              \
-    if (field(req))                                                            \
-      field(new) = (void *)memcpy(XtMalloc(size), field(req), size);           \
+                         XmdsWavedrawWidget new)
+{
+#define NewInstance(field, size)                                     \
+  if (field(old) != field(req))                                      \
+  {                                                                  \
+    if (field(old))                                                  \
+      XtFree((char *)field(old));                                    \
+    if (field(req))                                                  \
+      field(new) = (void *)memcpy(XtMalloc(size), field(req), size); \
   }
 
   NewInstance(xLowLimit, sizeof(float));
@@ -1111,16 +1213,20 @@ static Boolean SetValues(XmdsWavedrawWidget old, XmdsWavedrawWidget req,
   return 0;
 }
 
-static void SetCursor(XmdsWavedrawWidget w) {
+static void SetCursor(XmdsWavedrawWidget w)
+{
   static Boolean first = 1;
   static Cursor draw_cursor;
-  if (first) {
+  if (first)
+  {
     draw_cursor = XCreateFontCursor(XtDisplay(w), XC_dotbox);
     first = 0;
   }
 
-  if (XtWindow(w)) {
-    switch (waveformPointerMode(w)) {
+  if (XtWindow(w))
+  {
+    switch (waveformPointerMode(w))
+    {
     case XmdsPOINTER_MODE_DRAW1:
     case XmdsPOINTER_MODE_DRAW2:
     case XmdsPOINTER_MODE_SET_PEN:
@@ -1131,10 +1237,13 @@ static void SetCursor(XmdsWavedrawWidget w) {
   }
 }
 
-static void SetTranslations(XmdsWavedrawWidget w) {
+static void SetTranslations(XmdsWavedrawWidget w)
+{
   Arg arglist[] = {{XmNtranslations, 0}};
-  if (waveformCount(w)) {
-    switch (waveformPointerMode(w)) {
+  if (waveformCount(w))
+  {
+    switch (waveformPointerMode(w))
+    {
     case XmdsPOINTER_MODE_DRAW1:
       arglist[0].value = (long)xmdsWavedrawClassRec.wavedraw_class.draw1_trans;
       XtSetValues((Widget)w, arglist, XtNumber(arglist));
@@ -1152,13 +1261,15 @@ static void SetTranslations(XmdsWavedrawWidget w) {
   }
 }
 
-EXPORT void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks) {
+EXPORT void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks)
+{
   XmdsWavedrawWidget wdw = (XmdsWavedrawWidget)w;
   (((XmdsWavedrawWidgetClass)wdw->core.widget_class)
        ->wavedraw_class.delete_point_proc)(wdw, idx, callcallbacks);
 }
 
-static void DeletePoint(XmdsWavedrawWidget w, int idx, Boolean callcallbacks) {
+static void DeletePoint(XmdsWavedrawWidget w, int idx, Boolean callcallbacks)
+{
   float oldx = xValue(w)[idx];
   float oldy = yValue(w)[idx];
   memcpy(xValue(w) + idx, xValue(w) + idx + 1,
@@ -1172,7 +1283,8 @@ static void DeletePoint(XmdsWavedrawWidget w, int idx, Boolean callcallbacks) {
     memcpy(waveformPenDown(w) + idx, waveformPenDown(w) + idx + 1,
            (waveformCount(w) - idx - 1) * sizeof(*waveformPenDown(w)));
   waveformCount(w)--;
-  if (callcallbacks) {
+  if (callcallbacks)
+  {
     XmdsWavedrawValueCBStruct cb = {
         XmdsCRDeletePoint, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     XmdsWavedrawFitCBStruct fitcb = {XmdsCRDeletePoint, 0, 0, 0, 0, 0, 0};
@@ -1199,7 +1311,8 @@ static void DeletePoint(XmdsWavedrawWidget w, int idx, Boolean callcallbacks) {
 
 EXPORT Boolean XmdsWavedrawAddPoint(Widget w, int idx, float *newx, float *newy,
                                     Boolean callcallbacks,
-                                    enum XmdsWaveformMotionRestriction motion) {
+                                    enum XmdsWaveformMotionRestriction motion)
+{
   XmdsWavedrawWidget wdw = (XmdsWavedrawWidget)w;
   return (((XmdsWavedrawWidgetClass)wdw->core.widget_class)
               ->wavedraw_class.add_point_proc)(wdw, idx, newx, newy,
@@ -1208,7 +1321,8 @@ EXPORT Boolean XmdsWavedrawAddPoint(Widget w, int idx, float *newx, float *newy,
 
 static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,
                         Boolean callcallbacks,
-                        enum XmdsWaveformMotionRestriction motion) {
+                        enum XmdsWaveformMotionRestriction motion)
+{
   float *oldxvals = xValue(w);
   float *oldyvals = yValue(w);
   Boolean *oldselections = waveformSelections(w);
@@ -1220,38 +1334,46 @@ static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,
       (yLowLimit(w) && y < *yLowLimit(w)) ||
       (yHighLimit(w) && y > *yHighLimit(w)))
     return 0;
-  if (xNumChoices(w)) {
+  if (xNumChoices(w))
+  {
     float min_dif = 1E38;
     int i;
     int closest = 0;
-    for (i = 0; i < xNumChoices(w); i++) {
+    for (i = 0; i < xNumChoices(w); i++)
+    {
       float dif = x - xChoices(w)[i];
       dif = dif < 0.0 ? -dif : dif;
-      if (dif < min_dif) {
+      if (dif < min_dif)
+      {
         min_dif = dif;
         closest = i;
       }
     }
     x = xChoices(w)[closest];
   }
-  if (yNumChoices(w)) {
+  if (yNumChoices(w))
+  {
     float min_dif = 1E38;
     int i;
     int closest = 0;
-    for (i = 0; i < yNumChoices(w); i++) {
+    for (i = 0; i < yNumChoices(w); i++)
+    {
       float dif = y - yChoices(w)[i];
       dif = dif < 0.0 ? -dif : dif;
-      if (dif < min_dif) {
+      if (dif < min_dif)
+      {
         min_dif = dif;
         closest = i;
       }
     }
     y = yChoices(w)[closest];
   }
-  if (xIncreasing(w)) {
+  if (xIncreasing(w))
+  {
     float mindist = xMinDistance(w) ? *xMinDistance(w) : xResolution(w);
     int range = idx ? (idx >= (waveformCount(w) - 1) ? 3 : 2) : 1;
-    switch (range) {
+    switch (range)
+    {
     case 1:
       if (x > (xValue(w)[idx] - mindist))
         return 0;
@@ -1266,10 +1388,12 @@ static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,
       break;
     }
   }
-  if (yIncreasing(w)) {
+  if (yIncreasing(w))
+  {
     float mindist = yMinDistance(w) ? *yMinDistance(w) : yResolution(w);
     int range = idx ? (idx >= (waveformCount(w) - 1) ? 3 : 2) : 1;
-    switch (range) {
+    switch (range)
+    {
     case 1:
       if (y > (yValue(w)[idx] - mindist))
         return 0;
@@ -1294,7 +1418,8 @@ static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,
   if (waveformPenDown(w))
     waveformPenDown(w) = waveformPenDownValPtr(w) =
         XtCalloc((waveformCount(w) + 1), sizeof(*waveformPenDown(w)));
-  if (idx) {
+  if (idx)
+  {
     memcpy(xValue(w), oldxvals, idx * sizeof(*xValue(w)));
     memcpy(yValue(w), oldyvals, idx * sizeof(*yValue(w)));
     if (waveformSelections(w))
@@ -1303,7 +1428,8 @@ static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,
     if (waveformPenDown(w))
       memcpy(waveformPenDown(w), oldpendown, idx * sizeof(*waveformPenDown(w)));
   }
-  if (idx < waveformCount(w)) {
+  if (idx < waveformCount(w))
+  {
     memcpy(xValue(w) + idx + 1, oldxvals + idx,
            (waveformCount(w) - idx) * sizeof(*xValue(w)));
     memcpy(yValue(w) + idx + 1, oldyvals + idx,
@@ -1330,7 +1456,8 @@ static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,
     XtFree(oldselections);
   if (oldpendown)
     XtFree(oldpendown);
-  if (callcallbacks) {
+  if (callcallbacks)
+  {
     XmdsWavedrawValueCBStruct cb = {
         XmdsCRAddPoint, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     XmdsWavedrawFitCBStruct fitcb = {XmdsCRAddPoint, 0, 0, 0, 0, 0, 0};
@@ -1357,7 +1484,8 @@ static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,
   return 1;
 }
 
-static double Round(double value, double resolution) {
+static double Round(double value, double resolution)
+{
 
   return (resolution > 0)
              ? ((value >= 0)
@@ -1366,14 +1494,16 @@ static double Round(double value, double resolution) {
              : value;
 }
 
-static void SetPointerMode(XmdsWavedrawWidget w, int mode) {
+static void SetPointerMode(XmdsWavedrawWidget w, int mode)
+{
   (*(void (*)(XmdsWavedrawWidget, int))
         xmdsWaveformClassRec.waveform_class.set_pointer_mode_proc)(w, mode);
   SetTranslations(w);
   SetCursor(w);
 }
 
-static int XPix(XmdsWavedrawWidget w, int idx) {
+static int XPix(XmdsWavedrawWidget w, int idx)
+{
   float value = xValue(w)[idx];
   float minval = *xMin(w);
   float maxval = *xMax(w);
@@ -1383,7 +1513,8 @@ static int XPix(XmdsWavedrawWidget w, int idx) {
   return (value - minval) * pix_over_span;
 }
 
-static int YPix(XmdsWavedrawWidget w, int idx) {
+static int YPix(XmdsWavedrawWidget w, int idx)
+{
   float value = yValue(w)[idx];
   float minval = *yMin(w);
   float maxval = *yMax(w);

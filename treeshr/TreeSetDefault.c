@@ -27,19 +27,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern void **TreeCtx();
 
-int TreeSetDefault(char *path, int *nid) {
+int TreeSetDefault(char *path, int *nid)
+{
   return _TreeSetDefault(*TreeCtx(), path, nid);
 }
 
-int TreeSetDefaultNid(int nid_in) {
+int TreeSetDefaultNid(int nid_in)
+{
   return _TreeSetDefaultNid(*TreeCtx(), nid_in);
 }
 
-int TreeGetDefaultNid(int *nid_in) {
+int TreeGetDefaultNid(int *nid_in)
+{
   return _TreeGetDefaultNid(*TreeCtx(), nid_in);
 }
 
-int _TreeSetDefault(void *dbid, char *path, int *nid) {
+int _TreeSetDefault(void *dbid, char *path, int *nid)
+{
   int status;
   status = _TreeFindNode(dbid, path, nid);
   if (status & 1)
@@ -47,24 +51,30 @@ int _TreeSetDefault(void *dbid, char *path, int *nid) {
   return status;
 }
 
-int _TreeSetDefaultNid(void *dbid, int nid_in) {
+int _TreeSetDefaultNid(void *dbid, int nid_in)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)&nid_in;
-  if (IS_OPEN(dblist)) {
+  if (IS_OPEN(dblist))
+  {
     NODE *node_ptr;
     if (dblist->remote)
       return SetDefaultNidRemote(dblist, nid_in);
     node_ptr = nid_to_node(dblist, nid);
-    if (node_ptr) {
+    if (node_ptr)
+    {
       dblist->default_node = node_ptr;
       return TreeSUCCESS;
-    } else
+    }
+    else
       return TreeNNF;
-  } else
+  }
+  else
     return TreeNOT_OPEN;
 }
 
-int _TreeGetDefaultNid(void *dbid, int *nid_in) {
+int _TreeGetDefaultNid(void *dbid, int *nid_in)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)nid_in;
   if (!(IS_OPEN(dblist)))

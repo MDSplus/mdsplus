@@ -58,7 +58,8 @@ using namespace testing;
 //};
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(String);
 
   {
@@ -80,8 +81,11 @@ int main(int argc __attribute__((unused)),
 
   {
     char *string[] = {
-        (char *)"str1", (char *)"str2", (char *)"str3",
-        (char *)"str4", (char *)"str5",
+        (char *)"str1",
+        (char *)"str2",
+        (char *)"str3",
+        (char *)"str4",
+        (char *)"str5",
     };
 
     Array *sactr1 = new StringArray(string, 5);

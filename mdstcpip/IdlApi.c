@@ -34,13 +34,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef NULL
 #define NULL (void *)0
 #endif
-STATIC_ROUTINE int BlockSig(int sig_number) {
+STATIC_ROUTINE int BlockSig(int sig_number)
+{
   sigset_t newsigset;
 #if defined(sun)
-  if (sig_number == SIGALRM) { /* Solaris: simple block doesn't work?  */
+  if (sig_number == SIGALRM)
+  { /* Solaris: simple block doesn't work?  */
     struct sigaction act;
     sigaction(sig_number, NULL, &act); /* get current state ...        */
-    if (~act.sa_flags & SA_RESTART) {  /*...set SA_RESTART bit         */
+    if (~act.sa_flags & SA_RESTART)
+    { /*...set SA_RESTART bit         */
       act.sa_flags |= SA_RESTART;
       if (sigaction(sig_number, &act, NULL))
         perror("BlockSig *err* sigaction");
@@ -52,7 +55,8 @@ STATIC_ROUTINE int BlockSig(int sig_number) {
   return sigprocmask(SIG_BLOCK, &newsigset, NULL);
 }
 
-STATIC_ROUTINE int UnBlockSig(int sig_number) {
+STATIC_ROUTINE int UnBlockSig(int sig_number)
+{
   sigset_t newsigset;
   sigemptyset(&newsigset);
   sigaddset(&newsigset, sig_number);
@@ -64,8 +68,10 @@ STATIC_ROUTINE int UnBlockSig(int sig_number) {
 // Start of Mac Changes
 static short bGUSIInit = 0;
 
-STATIC_ROUTINE void BlockSig(int) {
-  if (!bGUSIInit) {
+STATIC_ROUTINE void BlockSig(int)
+{
+  if (!bGUSIInit)
+  {
     //      GUSISetup ( GUSIwithInternetSockets );
     GUSISetupConfig();
     bGUSIInit = 1;
@@ -79,49 +85,57 @@ void main() {}
 // End of Mac Changes
 #endif
 
-EXPORT int IdlMdsClose(int lArgc, void **lpvArgv) {
+EXPORT int IdlMdsClose(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','IdlMdsClose', connection, value=[1b])
    */
   int status = 0;
   BlockSig(SIGALRM);
-  if (lArgc == 1) {
+  if (lArgc == 1)
+  {
     status = MdsClose((int)((char *)lpvArgv[0] - (char *)0));
   }
   UnBlockSig(SIGALRM);
   return status;
 }
 
-EXPORT int IdlConnectToMds(int lArgc, void **lpvArgv) {
+EXPORT int IdlConnectToMds(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','IdlConnectToMds', 'host-name')
    */
   int status = 0;
   BlockSig(SIGALRM);
-  if (lArgc == 1) {
+  if (lArgc == 1)
+  {
     status = ConnectToMds((char *)lpvArgv[0]);
   }
   UnBlockSig(SIGALRM);
   return status;
 }
 
-EXPORT int IdlDisconnectFromMds(int lArgc, void **lpvArgv) {
+EXPORT int IdlDisconnectFromMds(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','IdlDisconnectFromMds', connection,
    * value=[1b])
    */
   int status = 0;
   BlockSig(SIGALRM);
-  if (lArgc == 1) {
+  if (lArgc == 1)
+  {
     status = DisconnectFromMds((int)((char *)lpvArgv[0] - (char *)0));
   }
   UnBlockSig(SIGALRM);
   return status;
 }
 
-EXPORT int IdlMdsOpen(int lArgc, void **lpvArgv) {
+EXPORT int IdlMdsOpen(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','IdlMdsOpen', connection, 'tree-name',
    * shot, value = [1b,0b,1b])
    */
   int status = 0;
-  if (lArgc == 3) {
+  if (lArgc == 3)
+  {
     BlockSig(SIGALRM);
     status = MdsOpen((int)((char *)lpvArgv[0] - (char *)0), (char *)lpvArgv[1],
                      (int)((char *)lpvArgv[2] - (char *)0));
@@ -130,12 +144,14 @@ EXPORT int IdlMdsOpen(int lArgc, void **lpvArgv) {
   return status;
 }
 
-EXPORT int IdlMdsSetDefault(int lArgc, void **lpvArgv) {
+EXPORT int IdlMdsSetDefault(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','IdlMdsSetDefault', connection, 'node',
    * value = [1b,0b])
    */
   int status = 0;
-  if (lArgc == 2) {
+  if (lArgc == 2)
+  {
     BlockSig(SIGALRM);
     status = MdsSetDefault((int)((char *)lpvArgv[0] - (char *)0),
                            (char *)lpvArgv[1]);
@@ -144,13 +160,15 @@ EXPORT int IdlMdsSetDefault(int lArgc, void **lpvArgv) {
   return status;
 }
 
-EXPORT int IdlGetAnsInfo(int lArgc, void **lpvArgv) {
+EXPORT int IdlGetAnsInfo(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','IdlGetAnsInfo', connection_l, dtype_b,
      length_w, ndims_b, dims_l[7], numbytes_l, ans,
                                  value=[1b,0b,0b,0b,0b,0b,0b])
   */
   int status = 0;
-  if (lArgc == 7) {
+  if (lArgc == 7)
+  {
     BlockSig(SIGALRM);
     status = GetAnswerInfo((int)((char *)lpvArgv[0] - (char *)0),
                            (char *)lpvArgv[1], (short *)lpvArgv[2],
@@ -161,12 +179,14 @@ EXPORT int IdlGetAnsInfo(int lArgc, void **lpvArgv) {
   return status;
 }
 
-EXPORT int Idlmemcpy(int lArgc, void **lpvArgv) {
+EXPORT int Idlmemcpy(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','Idlmemcpy', answer, answer_ptr, nbytes,
    * value=[0b,1b,1b])
    */
   int status = 0;
-  if (lArgc == 3) {
+  if (lArgc == 3)
+  {
 #ifdef __alpha
     memcpy((void *)lpvArgv[0], *(void **)lpvArgv[1],
            (int)((char *)lpvArgv[2] - (char *)0));
@@ -179,13 +199,15 @@ EXPORT int Idlmemcpy(int lArgc, void **lpvArgv) {
   return status;
 }
 
-EXPORT int IdlSendArg(int lArgc, void **lpvArgv) {
+EXPORT int IdlSendArg(int lArgc, void **lpvArgv)
+{
   /*  status = call_external('mdsipshr','IdlSendArg', connection_l, idx_l,
      dtype_b, nargs_w, length_w, ndims_b, dims_l[7], bytes,
      value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
   */
   int status = 0;
-  if (lArgc == 8) {
+  if (lArgc == 8)
+  {
     unsigned char idx = (unsigned char)((char *)lpvArgv[1] - (char *)0);
     unsigned char dtype = (unsigned char)((char *)lpvArgv[2] - (char *)0);
     unsigned char nargs = (unsigned char)((char *)lpvArgv[3] - (char *)0);
@@ -199,13 +221,15 @@ EXPORT int IdlSendArg(int lArgc, void **lpvArgv) {
   return status;
 }
 
-EXPORT int IdlSetCompressionLevel(int lArgc, void **lpvArgv) {
+EXPORT int IdlSetCompressionLevel(int lArgc, void **lpvArgv)
+{
   extern int MdsSetCompression(int conid, int level);
   /*  status = call_external('mdsipshr','IdlSetCompressionLevel', connection_l,
    * level_l, value=[1b,1b])
    */
   int status = 0;
-  if (lArgc == 2) {
+  if (lArgc == 2)
+  {
     status = MdsSetCompression((int)((char *)lpvArgv[0] - (char *)0),
                                (int)((char *)lpvArgv[1] - (char *)0));
   }

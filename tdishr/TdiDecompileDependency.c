@@ -61,30 +61,37 @@ static const DESCRIPTOR(LEFT_PAREN, "(");
 static const DESCRIPTOR(RIGHT_PAREN, ")");
 
 static int DependencyGet(int prec, struct descriptor_r *pin,
-                         struct descriptor_d *pout) {
+                         struct descriptor_d *pout)
+{
   INIT_STATUS;
   int now = 0;
   struct descriptor *pwhich = 0;
 
-  switch (pin->dtype) {
+  switch (pin->dtype)
+  {
   case DTYPE_EVENT:
     status = StrConcat((struct descriptor *)pout, (struct descriptor *)pout,
                        &LEFT_ANGLE, pin, &RIGHT_ANGLE MDS_END_ARG);
     break;
-  case DTYPE_NID: {
+  case DTYPE_NID:
+  {
     char *path = TreeGetMinimumPath(0, *(int *)pin->pointer);
-    if (path != NULL) {
+    if (path != NULL)
+    {
       DESCRIPTOR_FROM_CSTRING(path_d, path);
       status = StrAppend(pout, &path_d);
       TreeFree(path);
-    } else
+    }
+    else
       status = TreeFAILURE;
-  } break;
+  }
+  break;
   case DTYPE_PATH:
     status = StrAppend(pout, (struct descriptor *)pin);
     break;
   case DTYPE_DEPENDENCY:
-    switch (*(treedep_t *)pin->pointer) {
+    switch (*(treedep_t *)pin->pointer)
+    {
     case TreeDEPENDENCY_AND:
       now = P_AND;
       pwhich = (struct descriptor *)&AND;
@@ -101,17 +108,18 @@ static int DependencyGet(int prec, struct descriptor_r *pin,
       status = StrAppend(pout, (struct descriptor *)&LEFT_PAREN);
     if (STATUS_OK)
       status =
-        DependencyGet(now - 1, (struct descriptor_r *)pin->dscptrs[0], pout);
+          DependencyGet(now - 1, (struct descriptor_r *)pin->dscptrs[0], pout);
     if (STATUS_OK)
       status = StrAppend(pout, pwhich);
     if (STATUS_OK)
       status =
-        DependencyGet(now + 1, (struct descriptor_r *)pin->dscptrs[1], pout);
+          DependencyGet(now + 1, (struct descriptor_r *)pin->dscptrs[1], pout);
     if (STATUS_OK && now < prec)
       status = StrAppend(pout, (struct descriptor *)&RIGHT_PAREN);
     break;
   case DTYPE_CONDITION:
-    switch (*((treecond_t *)pin->pointer)) {
+    switch (*((treecond_t *)pin->pointer))
+    {
     case TreeNEGATE_CONDITION:
       pwhich = (struct descriptor *)&NEGATE;
       break;
@@ -129,7 +137,7 @@ static int DependencyGet(int prec, struct descriptor_r *pin,
       status = StrAppend(pout, pwhich);
     if (STATUS_OK)
       status =
-        DependencyGet(P_UNARY, (struct descriptor_r *)pin->dscptrs[0], pout);
+          DependencyGet(P_UNARY, (struct descriptor_r *)pin->dscptrs[0], pout);
     break;
   default:
     status = TdiINVDTYDSC;
@@ -142,7 +150,8 @@ static int DependencyGet(int prec, struct descriptor_r *pin,
 int Tdi1DecompileDependency(opcode_t opcode __attribute__((unused)),
                             int narg __attribute__((unused)),
                             struct descriptor *list[],
-                            struct descriptor_xd *out_ptr) {
+                            struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_d answer = {0, DTYPE_T, CLASS_D, 0};
   struct descriptor *pdep = list[0];

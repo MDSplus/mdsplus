@@ -95,19 +95,23 @@ extern void *erealloc(void *, size_t n);
 static int out_fd = -1;
 static fpos_t out_pos;
 
-static FILE *switchStdout(const char *newStream) {
+static FILE *switchStdout(const char *newStream)
+{
   fflush(stdout);
   fgetpos(stdout, &out_pos);
   out_fd = dup(fileno(stdout));
-  if (newStream) {
+  if (newStream)
+  {
     if (freopen(newStream, "w", stdout) == NULL)
       perror("Error redirecting stdout\n");
-  } else
+  }
+  else
     fclose(stdout);
   return fdopen(out_fd, "w");
 }
 
-static void revertStdout() {
+static void revertStdout()
+{
   if (out_fd < 0)
     return;
   fflush(stdout);
@@ -124,20 +128,26 @@ static void revertStdout() {
 ///  Signal handler for the proces created by test fork
 ///
 #ifdef HAVE_FORK
-static void CK_ATTRIBUTE_UNUSED sig_handler(int sig_nr) {
-  switch (sig_nr) {
+static void CK_ATTRIBUTE_UNUSED sig_handler(int sig_nr)
+{
+  switch (sig_nr)
+  {
   case SIGALRM:
     alarm_received = 1;
     killpg(group_pid, SIGKILL);
     break;
   case SIGTERM:
-  case SIGINT: {
+  case SIGINT:
+  {
     pid_t own_group_pid;
     int child_sig = SIGTERM;
-    if (sig_nr == SIGINT) {
+    if (sig_nr == SIGINT)
+    {
       child_sig = SIGKILL;
       sigaction(SIGINT, &sigint_old_action, NULL);
-    } else {
+    }
+    else
+    {
       sigaction(SIGTERM, &sigterm_old_action, NULL);
     }
     killpg(group_pid, child_sig);
@@ -163,7 +173,8 @@ static void CK_ATTRIBUTE_UNUSED sig_handler(int sig_nr) {
 /// \brief __ck_assert_fail
 ///
 
-void __test_assert_fail(const char *file, int line, const char *expr, ...) {
+void __test_assert_fail(const char *file, int line, const char *expr, ...)
+{
   const char *msg;
   va_list ap;
   char buf[BUFSIZ];
@@ -172,20 +183,26 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...) {
   send_loc_info(file, line);
   va_start(ap, expr);
   msg = (const char *)va_arg(ap, char *);
-  if (msg != NULL) {
+  if (msg != NULL)
+  {
     vsnprintf(buf, BUFSIZ, msg, ap);
     to_send = buf;
-  } else {
+  }
+  else
+  {
     to_send = expr;
   }
 
   va_end(ap);
   send_failure_info(to_send, CK_FAILURE);
-  if (cur_fork_status() == CK_FORK && group_pid) {
+  if (cur_fork_status() == CK_FORK && group_pid)
+  {
 #ifdef HAVE_FORK
     _exit(1);
 #endif /* HAVE_FORK */
-  } else {
+  }
+  else
+  {
     __test_end();
     _exit(1);
   }
@@ -197,7 +214,8 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...) {
 
 void __mark_point(const char *__assertion, const char *__file,
                   ASSERT_LINE_TYPE __line,
-                  const char *__function __attribute__((unused))) {
+                  const char *__function __attribute__((unused)))
+{
   if (!suite)
     __test_init(__assertion, __file, __line);
   send_loc_info(__file, __line);
@@ -209,7 +227,8 @@ void __mark_point(const char *__assertion, const char *__file,
 
 void __assert_fail(const char *__assertion, const char *__file,
                    ASSERT_LINE_TYPE __line,
-                   const char *__function __attribute__((unused))) {
+                   const char *__function __attribute__((unused)))
+{
   if (!suite)
     __test_init(__assertion, __file, __line);
   __test_assert_fail(__file, __line, __assertion, NULL);
@@ -219,7 +238,8 @@ void __assert_fail(const char *__assertion, const char *__file,
   abort();
 }
 
-static char *pass_msg(void) {
+static char *pass_msg(void)
+{
   if (custom_pass_msg)
     return custom_pass_msg;
   else
@@ -244,13 +264,17 @@ static int waserror(int status, int expected_signal);
 static TestResult *receive_result_info_fork(const char *tcname,
                                             const char *tname, int iter,
                                             int status, int expected_signal,
-                                            signed char allowed_exit_value) {
+                                            signed char allowed_exit_value)
+{
   TestResult *tr;
 
   tr = receive_test_result(waserror(status, expected_signal));
-  if (tr == NULL) {
+  if (tr == NULL)
+  {
     eprintf("Failed to receive test result", __FILE__, __LINE__);
-  } else {
+  }
+  else
+  {
     tr->tcname = tcname;
     tr->tname = tname;
     tr->iter = iter;
@@ -261,7 +285,8 @@ static TestResult *receive_result_info_fork(const char *tcname,
 }
 
 static void set_fork_info(TestResult *tr, int status, int signal_expected,
-                          signed char allowed_exit_value) {
+                          signed char allowed_exit_value)
+{
   // nonzero value if the child process terminated because it received a
   // signal that was not handled
   int was_sig = WIFSIGNALED(status);
@@ -280,33 +305,46 @@ static void set_fork_info(TestResult *tr, int status, int signal_expected,
   // true.
   int signal_received = WTERMSIG(status);
 
-  if (was_sig) {
-    if (signal_expected == signal_received) {
-      if (alarm_received) {
+  if (was_sig)
+  {
+    if (signal_expected == signal_received)
+    {
+      if (alarm_received)
+      {
         /* Got alarm instead of signal */
         tr->rtype = CK_ERROR;
-        if (tr->msg != NULL) {
+        if (tr->msg != NULL)
+        {
           free(tr->msg);
         }
         tr->msg = signal_error_msg(signal_received, signal_expected);
-      } else {
+      }
+      else
+      {
         tr->rtype = CK_PASS;
-        if (tr->msg != NULL) {
+        if (tr->msg != NULL)
+        {
           free(tr->msg);
         }
         tr->msg = pass_msg();
       }
-    } else if (signal_expected != 0) {
+    }
+    else if (signal_expected != 0)
+    {
       /* signal received, but not the expected one */
       tr->rtype = CK_ERROR;
-      if (tr->msg != NULL) {
+      if (tr->msg != NULL)
+      {
         free(tr->msg);
       }
       tr->msg = signal_error_msg(signal_received, signal_expected);
-    } else {
+    }
+    else
+    {
       /* signal received and none expected */
       tr->rtype = CK_ERROR;
-      if (tr->msg != NULL) {
+      if (tr->msg != NULL)
+      {
         free(tr->msg);
       }
       tr->msg = signal_msg(signal_received);
@@ -314,63 +352,85 @@ static void set_fork_info(TestResult *tr, int status, int signal_expected,
   }
 
   // no signal .. (child exited by itself)
-  else if (signal_expected == 0) {
-    if (was_exit && exit_status == allowed_exit_value) {
+  else if (signal_expected == 0)
+  {
+    if (was_exit && exit_status == allowed_exit_value)
+    {
       tr->rtype = CK_PASS;
-      if (tr->msg != NULL) {
+      if (tr->msg != NULL)
+      {
         free(tr->msg);
       }
       tr->msg = pass_msg();
-    } else if (was_exit && exit_status != allowed_exit_value) {
-      if (tr->rtype == CK_TEST_RESULT_INVALID) { /* early exit */
+    }
+    else if (was_exit && exit_status != allowed_exit_value)
+    {
+      if (tr->rtype == CK_TEST_RESULT_INVALID)
+      { /* early exit */
         tr->rtype = CK_ERROR;
         tr->msg = exit_msg(exit_status);
         error_code = exit_status;
-      } else {
+      }
+      else
+      {
         //  tr->rtype = CK_FAILURE;
         error_code = exit_status;
       }
     }
   }
 
-  else { /* a signal was expected and none raised */
-    if (was_exit) {
-      if (tr->msg != NULL) {
+  else
+  { /* a signal was expected and none raised */
+    if (was_exit)
+    {
+      if (tr->msg != NULL)
+      {
         free(tr->msg);
       }
       tr->msg = exit_msg(exit_status);
-      if (exit_status == allowed_exit_value) {
+      if (exit_status == allowed_exit_value)
+      {
         tr->rtype = CK_FAILURE; /* normal exit status */
-      } else {
+      }
+      else
+      {
         tr->rtype = CK_FAILURE; /* early exit */
       }
     }
   }
 }
 
-static char *signal_msg(int signal) {
+static char *signal_msg(int signal)
+{
   char *msg = (char *)emalloc(MSG_LEN); /* free'd by caller */
 
-  if (alarm_received) {
+  if (alarm_received)
+  {
     snprintf(msg, MSG_LEN, "Test timeout expired");
-  } else {
+  }
+  else
+  {
     snprintf(msg, MSG_LEN, "Received signal %d (%s)", signal,
              strsignal(signal));
   }
   return msg;
 }
 
-static char *signal_error_msg(int signal_received, int signal_expected) {
+static char *signal_error_msg(int signal_received, int signal_expected)
+{
   char *sig_r_str;
   char *sig_e_str;
   char *msg = (char *)emalloc(MSG_LEN); /* free'd by caller */
 
   sig_r_str = strdup(strsignal(signal_received));
   sig_e_str = strdup(strsignal(signal_expected));
-  if (alarm_received) {
+  if (alarm_received)
+  {
     snprintf(msg, MSG_LEN, "Test timeout expired, expected signal %d (%s)",
              signal_expected, sig_e_str);
-  } else {
+  }
+  else
+  {
     snprintf(msg, MSG_LEN, "Received signal %d (%s), expected %d (%s)",
              signal_received, sig_r_str, signal_expected, sig_e_str);
   }
@@ -379,14 +439,16 @@ static char *signal_error_msg(int signal_received, int signal_expected) {
   return msg;
 }
 
-static char *exit_msg(int exitval) {
+static char *exit_msg(int exitval)
+{
   char *msg = (char *)emalloc(MSG_LEN); /* free'd by caller */
 
   snprintf(msg, MSG_LEN, "Early exit with return value %d", exitval);
   return msg;
 }
 
-static int waserror(int status, int signal_expected) {
+static int waserror(int status, int signal_expected)
+{
   int was_sig = WIFSIGNALED(status);
   int was_exit = WIFEXITED(status);
   int exit_status = WEXITSTATUS(status);
@@ -401,20 +463,25 @@ static int waserror(int status, int signal_expected) {
 //  nofork  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static void set_nofork_info(TestResult *tr) {
+static void set_nofork_info(TestResult *tr)
+{
   if (tr->msg == NULL && tr->rtype == CK_PASS)
     tr->msg = pass_msg();
 }
 
 static TestResult *receive_result_info_nofork(const char *tcname,
                                               const char *tname, int iter,
-                                              int duration) {
+                                              int duration)
+{
   TestResult *tr;
 
   tr = receive_test_result(0);
-  if (tr == NULL) {
+  if (tr == NULL)
+  {
     eprintf("Failed to receive test result", __FILE__, __LINE__);
-  } else {
+  }
+  else
+  {
     tr->tcname = tcname;
     tr->tname = tname;
     tr->iter = iter;
@@ -425,7 +492,8 @@ static TestResult *receive_result_info_nofork(const char *tcname,
   return tr;
 }
 
-static void srunner_add_failure(SRunner *sr, TestResult *tr) {
+static void srunner_add_failure(SRunner *sr, TestResult *tr)
+{
   check_list_add_end(sr->resultlst, tr);
   sr->stats->n_checked++; /* count checks during setup, test, and teardown */
   if (tr->rtype == CK_FAILURE)
@@ -435,19 +503,22 @@ static void srunner_add_failure(SRunner *sr, TestResult *tr) {
 }
 
 static void srunner_run_end(SRunner *sr,
-                            enum print_output CK_ATTRIBUTE_UNUSED print_mode) {
+                            enum print_output CK_ATTRIBUTE_UNUSED print_mode)
+{
   log_srunner_end(sr);
   srunner_end_logging(sr);
   teardown_messaging();
   set_fork_status(CK_FORK);
 }
 
-static void srunner_send_evt(SRunner *sr, void *obj, enum cl_event evt) {
+static void srunner_send_evt(SRunner *sr, void *obj, enum cl_event evt)
+{
   List *l;
   Log *lg;
 
   l = sr->loglst;
-  for (check_list_front(l); !check_list_at_end(l); check_list_advance(l)) {
+  for (check_list_front(l); !check_list_at_end(l); check_list_advance(l))
+  {
     lg = (Log *)check_list_val(l);
     fflush(lg->lfile);
     lg->lfun(sr, lg->lfile, lg->mode, obj, evt);
@@ -467,19 +538,23 @@ static void srunner_send_evt(SRunner *sr, void *obj, enum cl_event evt) {
 
 static enum print_output print_mode = CK_NORMAL;
 
-static int find_first(const char *str, const char *pat) {
+static int find_first(const char *str, const char *pat)
+{
   return strstr(str, pat) == str;
 }
 
-void __test_init(const char *test_name, const char *file, const int line) {
+void __test_init(const char *test_name, const char *file, const int line)
+{
 
-  if (!suite) {
+  if (!suite)
+  {
     suite = suite_create(file);
     runner = srunner_create(suite);
 
     // print mode normal by default //
     char *env = getenv("TEST_MODE");
-    if (env) {
+    if (env)
+    {
       if (strcmp(env, "silent") == 0)
         print_mode = CK_SILENT;
       if (strcmp(env, "minimal") == 0)
@@ -504,7 +579,8 @@ void __test_init(const char *test_name, const char *file, const int line) {
     // the standard output format is taken from the frist item in
     // TEST_FORMAT string
 
-    if (format) {
+    if (format)
+    {
       if (find_first(format, "log") || find_first(format, "LOG"))
         srunner_register_lfun(runner, stdout, 0, stdout_lfun, print_mode);
       else if (find_first(format, "tap") || find_first(format, "TAP"))
@@ -513,7 +589,9 @@ void __test_init(const char *test_name, const char *file, const int line) {
       else if (find_first(format, "xml") || find_first(format, "XML"))
         srunner_register_lfun(runner, switchStdout(out_file), 0, xml_lfun,
                               print_mode);
-    } else {
+    }
+    else
+    {
       // default to plain log format //
       srunner_register_lfun(runner, stdout, 0, lfile_lfun, print_mode);
     }
@@ -521,12 +599,14 @@ void __test_init(const char *test_name, const char *file, const int line) {
     // if any of TEST_TAPFILE or TEST_XMLFILE is given in env further
     // logger are instanced pointing to specified files.
 
-    if ((out_file = getenv("TEST_TAPFILE")) != NULL) {
+    if ((out_file = getenv("TEST_TAPFILE")) != NULL)
+    {
       FILE *f = fopen(out_file, "w");
       if (f)
         srunner_register_lfun(runner, f, 0, tap_lfun, print_mode);
     }
-    if ((out_file = getenv("TEST_XMLFILE")) != NULL) {
+    if ((out_file = getenv("TEST_XMLFILE")) != NULL)
+    {
       FILE *f = fopen(out_file, "w");
       if (f)
         srunner_register_lfun(runner, f, 0, xml_lfun, print_mode);
@@ -552,10 +632,12 @@ void __test_init(const char *test_name, const char *file, const int line) {
   // SET tcase TIMEOUT //
   tcase_set_timeout(tcase, default_timeout);
   char *time_unit = getenv("TEST_TIMEUNIT");
-  if (time_unit != NULL) {
+  if (time_unit != NULL)
+  {
     char *endptr = NULL;
     double tu = strtod(time_unit, &endptr);
-    if (tu >= 0 && endptr != time_unit && (*endptr) == '\0') {
+    if (tu >= 0 && endptr != time_unit && (*endptr) == '\0')
+    {
       tcase_set_timeout(tcase, default_timeout * tu);
     }
   }
@@ -564,7 +646,8 @@ void __test_init(const char *test_name, const char *file, const int line) {
   suite_add_tcase(suite, tcase);
 
 #ifdef HAVE_FORK
-  if (cur_fork_status() == CK_FORK) {
+  if (cur_fork_status() == CK_FORK)
+  {
 
     // SIGALRM //
     memset(&sigalarm_new_action, 0, sizeof(sigalarm_new_action));
@@ -598,19 +681,24 @@ void __test_timeout(double seconds) { default_timeout = seconds; }
 //  START TEST  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int __setup_parent() {
+int __setup_parent()
+{
 
   // FORK //
 #ifdef HAVE_FORK
-  if (cur_fork_status() == CK_FORK) {
+  if (cur_fork_status() == CK_FORK)
+  {
     pid_t pid = fork();
     if (pid == -1)
       // error forking //
       eprintf("Error forking to a new process:", __FILE__, __LINE__);
-    else if (pid == 0) {
+    else if (pid == 0)
+    {
       return 0;
       // continue on child //
-    } else {
+    }
+    else
+    {
       group_pid = pid;
 
       timer_t timerid;
@@ -618,23 +706,27 @@ int __setup_parent() {
       int status = 0;
       alarm_received = 0;
 
-      if (timer_create(check_get_clockid(), NULL, &timerid) == 0) {
+      if (timer_create(check_get_clockid(), NULL, &timerid) == 0)
+      {
         /* Set the timer to fire once */
         timer_spec.it_value = tcase->timeout;
         timer_spec.it_interval.tv_sec = 0;
         timer_spec.it_interval.tv_nsec = 0;
-        if (timer_settime(timerid, 0, &timer_spec, NULL) == 0) {
+        if (timer_settime(timerid, 0, &timer_spec, NULL) == 0)
+        {
           pid_t pid_w;
           do
             pid_w = waitpid(group_pid, &status, 0);
           while (pid_w == -1);
-        } else
+        }
+        else
           // settime failed //
           eprintf("Error in call to timer_settime:", __FILE__, __LINE__);
 
         /* If the timer has not fired, disable it */
         timer_delete(timerid);
-      } else
+      }
+      else
         // create timer failed //
         eprintf("Error in call to timer_create:", __FILE__, __LINE__);
 
@@ -651,15 +743,18 @@ int __setup_parent() {
       srunner_send_evt(runner, tr, CLEND_T);
       return 1;
     }
-  } else
+  }
+  else
 #endif
     // child here or no fork available
     return 0;
 }
 
-int __setup_child() {
+int __setup_child()
+{
 #ifdef HAVE_FORK
-  if (cur_fork_status() == CK_FORK) {
+  if (cur_fork_status() == CK_FORK)
+  {
     setpgid(0, 0);
     group_pid = getpgrp();
     return 1;
@@ -673,14 +768,18 @@ int __setup_child() {
 //  END TEST  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void __test_end() {
+void __test_end()
+{
   // if forked //
 #ifdef HAVE_FORK
-  if (cur_fork_status() == CK_FORK) {
-    if (group_pid) {
+  if (cur_fork_status() == CK_FORK)
+  {
+    if (group_pid)
+    {
       // child
       _exit(0);
-    } else
+    }
+    else
       // parent
       return;
   }
@@ -696,15 +795,18 @@ void __test_end() {
 //  EXIT FUNCTION  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void __test_exit() {
+void __test_exit()
+{
   // if we are on child silently exit //
 #ifdef HAVE_FORK
-  if (cur_fork_status() == CK_FORK && group_pid) {
+  if (cur_fork_status() == CK_FORK && group_pid)
+  {
     _exit(0);
   }
 #endif
   int _nerr = 0;
-  if (runner && suite) {
+  if (runner && suite)
+  {
     log_suite_end(runner, suite);
     srunner_run_end(runner, CK_VERBOSE);
     _nerr = srunner_ntests_failed(runner);
@@ -720,7 +822,8 @@ void __test_exit() {
 
 // Force exit with custo signal //
 void __test_abort(int code, const char *__msg, const char *__file,
-                  unsigned int __line, const char *__function) {
+                  unsigned int __line, const char *__function)
+{
   // TODO: fix this with proper enum related to test_driver
   error_code = code;
   if (tcase)
@@ -728,15 +831,19 @@ void __test_abort(int code, const char *__msg, const char *__file,
   else
     __mark_point("test aborted", __file, __line, __function);
 
-  switch (code) {
+  switch (code)
+  {
   case 77:
     custom_pass_msg = strdup(__msg);
     send_failure_info(__msg, CK_SKIP);
-    if (cur_fork_status() == CK_FORK && group_pid) {
+    if (cur_fork_status() == CK_FORK && group_pid)
+    {
 #ifdef HAVE_FORK
       _exit(code);
 #endif /* HAVE_FORK */
-    } else {
+    }
+    else
+    {
       TestResult *tr;
       tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
       if (tr)
@@ -756,10 +863,14 @@ void __test_abort(int code, const char *__msg, const char *__file,
 //  FORK SET FUNCTION  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void __test_setfork(int value) {
-  if (value) {
+void __test_setfork(int value)
+{
+  if (value)
+  {
     set_fork_status(CK_FORK);
-  } else {
+  }
+  else
+  {
     set_fork_status(CK_NOFORK);
   }
 }

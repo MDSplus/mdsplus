@@ -14,10 +14,12 @@ typedef union {
   int16_t cnt[4];
   int64_t all;
 } balance_t;
-typedef struct {
+typedef struct
+{
   void *scanner;
   int stack_idx;
-  struct stack {
+  struct stack
+  {
     void *buffer;
     TdiRefZone_t refzone;   // TdiCompile
     int compile_rec;        // TdiCompile
@@ -26,7 +28,8 @@ typedef struct {
     uint16_t decompile_max; // TdiDecompile
     balance_t balance;
   } stack[TDI_STACK_SIZE];
-  struct {
+  struct
+  {
     void *head;
     void *head_zone;
     void *data_zone;

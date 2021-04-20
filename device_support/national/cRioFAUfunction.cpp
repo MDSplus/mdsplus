@@ -5,7 +5,8 @@ using namespace MDSplus;
 /********************/
 
 // Support class for enqueueing storage requests
-class FAUSaveItem {
+class FAUSaveItem
+{
   uint8_t *data;
   double *time;
   double trigTime;
@@ -29,7 +30,8 @@ public:
   // FAUSaveItem(uint8_t *data, double *time, double trigTime, int currSize,
   // size_t nDio, int *dataNids, Tree *treePtr)
   FAUSaveItem(uint8_t *data, double *time, double trigTime, int *currSizeA,
-              int currSize, size_t nDio, int *dataNids, Tree *treePtr) {
+              int currSize, size_t nDio, int *dataNids, Tree *treePtr)
+  {
     this->data = data;
     this->time = time;
     this->trigTime = trigTime;
@@ -45,7 +47,8 @@ public:
 
   FAUSaveItem *getNext() { return nxt; }
 
-  void save() {
+  void save()
+  {
 
 #include <time.h>
 
@@ -54,11 +57,13 @@ public:
 
     /* handle connection */
 
-    try {
+    try
+    {
 
       clock_gettime(CLOCK_REALTIME, &before);
 
-      for (int j = 0; j < nDio; j++) {
+      for (int j = 0; j < nDio; j++)
+      {
         TreeNode *currNode =
             new TreeNode(((int *)dataNids)[j], (Tree *)treePtr);
         timeArrData = new Float64Array(&time[j * currSize], currSizeA[j]);
@@ -90,8 +95,9 @@ public:
       printf("Elapsed time %0.2f Segment Size %d\n", elapsed_nsecs/1000000000.,
       currSize);
       */
-
-    } catch (MdsException *exc) {
+    }
+    catch (MdsException *exc)
+    {
       printf("Class FAUSaveItem: Error saving data  %s\n", exc->what());
     }
   }
@@ -99,7 +105,8 @@ public:
 
 extern "C" void *FAUhandleSave(void *listPtr);
 
-class FAUSaveList {
+class FAUSaveList
+{
 public:
   pthread_cond_t FAUitemAvailable;
   pthread_t thread;
@@ -109,7 +116,8 @@ public:
   pthread_mutex_t mutex;
 
 public:
-  FAUSaveList() {
+  FAUSaveList()
+  {
     int status = pthread_mutex_init(&mutex, NULL);
     status = pthread_cond_init(&FAUitemAvailable, NULL);
     saveHead = saveTail = NULL;
@@ -117,14 +125,16 @@ public:
     threadCreated = false;
   }
   void addItem(uint8_t *value, double *time, double trigTime, int *currSizeA,
-               int currSize, size_t nDio, int *dataNids, Tree *treePtr) {
+               int currSize, size_t nDio, int *dataNids, Tree *treePtr)
+  {
     FAUSaveItem *newItem = new FAUSaveItem(value, time, trigTime, currSizeA,
                                            currSize, nDio, dataNids, treePtr);
 
     pthread_mutex_lock(&mutex);
     if (saveHead == NULL)
       saveHead = saveTail = newItem;
-    else {
+    else
+    {
       saveTail->setNext(newItem);
       saveTail = newItem;
     }
@@ -132,22 +142,27 @@ public:
     pthread_mutex_unlock(&mutex);
   }
 
-  void executeItems() {
+  void executeItems()
+  {
     int __count = 0;
     // printf("Start executeItems\n");
-    while (true) {
+    while (true)
+    {
       // printf("Get mutex  executeItems\n");
       pthread_mutex_lock(&mutex);
-      if (stopReq && saveHead == NULL) {
+      if (stopReq && saveHead == NULL)
+      {
         // printf("Stop executeItems\n");
         pthread_mutex_unlock(&mutex);
         pthread_exit(NULL);
       }
 
-      while (saveHead == NULL) {
+      while (saveHead == NULL)
+      {
         // printf("Wait  executeItems %p\n", &FAUitemAvailable);
         pthread_cond_wait(&FAUitemAvailable, &mutex);
-        if (stopReq && saveHead == NULL) {
+        if (stopReq && saveHead == NULL)
+        {
           // printf("Stop executeItems\n");
           pthread_mutex_unlock(&mutex);
           pthread_exit(NULL);
@@ -168,7 +183,8 @@ public:
     }
   }
 
-  int getItemPending() {
+  int getItemPending()
+  {
     int nItems = 0;
     pthread_mutex_lock(&mutex);
     for (FAUSaveItem *itm = saveHead; itm; itm = itm->getNext(), nItems++)
@@ -177,16 +193,19 @@ public:
     return nItems;
   }
 
-  void start() {
+  void start()
+  {
     pthread_create(&thread, NULL, FAUhandleSave, (void *)this);
     threadCreated = true;
   }
-  void stop() {
+  void stop()
+  {
     printf("START SAVE THREAD TERMINATED\n");
     printf("Pendig Items %d\n", getItemPending());
     stopReq = true;
     pthread_cond_signal(&FAUitemAvailable);
-    if (threadCreated) {
+    if (threadCreated)
+    {
       printf("Join thread\n");
       pthread_join(thread, NULL);
     }
@@ -194,22 +213,26 @@ public:
   }
 };
 
-extern "C" void *FAUhandleSave(void *listPtr) {
+extern "C" void *FAUhandleSave(void *listPtr)
+{
   FAUSaveList *list = (FAUSaveList *)listPtr;
   list->executeItems();
   return NULL;
 }
 
-extern "C" void FAUstartSave(void **retList) {
+extern "C" void FAUstartSave(void **retList)
+{
   printf("FAU Start Queued Save Thread\n");
   FAUSaveList *fauSaveList = new FAUSaveList;
   fauSaveList->start();
   *retList = (void *)fauSaveList;
 }
 
-extern "C" void FAUstopSave(void *listPtr) {
+extern "C" void FAUstopSave(void *listPtr)
+{
   printf("FAU Stop Queued Save Thread\n");
-  if (listPtr) {
+  if (listPtr)
+  {
     FAUSaveList *list = (FAUSaveList *)listPtr;
     list->stop();
     delete list;
@@ -218,7 +241,8 @@ extern "C" void FAUstopSave(void *listPtr) {
 
 /*********************/
 
-NiFpga_Status crioFauInit(NiFpga_Session *session, size_t FifoDepthSize) {
+NiFpga_Status crioFauInit(NiFpga_Session *session, size_t FifoDepthSize)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   NiFpga_Status status1 = NiFpga_Status_Success;
   size_t requestedDepth, actualDepth;
@@ -231,7 +255,8 @@ NiFpga_Status crioFauInit(NiFpga_Session *session, size_t FifoDepthSize) {
                                     NiFpga_FAU_cRIO_FPGA_Signature, "RIO0",
                                     NiFpga_OpenAttribute_NoRun, session));
 
-  if (NiFpga_IsNotError(status)) {
+  if (NiFpga_IsNotError(status))
+  {
     NiFpga_MergeStatus(
         &status,
         NiFpga_ConfigureFifo2(
@@ -241,7 +266,8 @@ NiFpga_Status crioFauInit(NiFpga_Session *session, size_t FifoDepthSize) {
     printf("Host FIFO %d data resize %d status %d\n", actualDepth,
            FifoDepthSize, status);
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(*session, 0);
       printf("Host FIFO data resize error\n");
       return -1;
@@ -253,7 +279,8 @@ NiFpga_Status crioFauInit(NiFpga_Session *session, size_t FifoDepthSize) {
                      NiFpga_FAU_cRIO_FPGA_TargetToHostFifoU64_AcquisitionFIFORT,
                      FifoDepthSize, &actualDepth));
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(*session, 0);
       printf("Host FIFO time resize error\n");
       return -1;
@@ -261,20 +288,23 @@ NiFpga_Status crioFauInit(NiFpga_Session *session, size_t FifoDepthSize) {
 
     NiFpga_MergeStatus(&status, NiFpga_Reset(*session));
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       NiFpga_Close(*session, 0);
       printf("VI Reset error\n");
       return -1;
     }
-
-  } else {
+  }
+  else
+  {
     printf("FPGA Open error\n");
     return -1;
   }
   return status;
 }
 
-NiFpga_Status closeFauFpgaSession(NiFpga_Session session) {
+NiFpga_Status closeFauFpgaSession(NiFpga_Session session)
+{
 
   /* CODAC NOTE: NiFpga_Initialize() is no longer necessary! */
   /* must be called before any other calls */
@@ -308,7 +338,8 @@ NiFpga_Status closeFauFpgaSession(NiFpga_Session session) {
 NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
                              uint64_t PTECountSlowFastMask,
                              uint32_t PTESlowCount, uint32_t PTEFastCount,
-                             uint16_t tickFreqCode) {
+                             uint16_t tickFreqCode)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   uint32_t PTEcount;
 
@@ -318,7 +349,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
                                      NiFpga_FAU_cRIO_FPGA_ControlU64_PTEEnaMask,
                                      PTEEnaMask));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting enable channels Pulse Train Mask");
     return -1;
   }
@@ -328,7 +360,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
       NiFpga_WriteU64(session, NiFpga_FAU_cRIO_FPGA_ControlU64_PTEFastSlowMask,
                       PTECountSlowFastMask));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting slow fast channels frequency Pulse Train Mask");
     return -1;
   }
@@ -338,7 +371,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
       NiFpga_WriteU32(session, NiFpga_FAU_cRIO_FPGA_ControlU32_PTEcountSlow,
                       PTESlowCount));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting Pulse Train slow frequency");
     return -1;
   }
@@ -348,7 +382,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
       NiFpga_WriteU32(session, NiFpga_FAU_cRIO_FPGA_ControlU32_PTEcountFast,
                       PTEFastCount));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting Pulse Train fast frequency");
     return -1;
   }
@@ -357,7 +392,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
                      NiFpga_WriteU16(session,
                                      NiFpga_FAU_cRIO_FPGA_ControlU16_CountFreq,
                                      tickFreqCode));
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting time base tick frequency");
     return -1;
   }
@@ -366,7 +402,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
       &status,
       NiFpga_WriteBool(session, NiFpga_FAU_cRIO_FPGA_ControlBool_goToIdle, 1));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error setting idle state");
     return -1;
   }
@@ -375,7 +412,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
       &status,
       NiFpga_WriteBool(session, NiFpga_FAU_cRIO_FPGA_ControlBool_AcqEna, 0));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error reset enable acquisition flag");
     return -1;
   }
@@ -385,7 +423,8 @@ NiFpga_Status setFauAcqParam(NiFpga_Session session, uint64_t PTEEnaMask,
 
 /***************************************/
 
-NiFpga_Status startFauAcquisition(NiFpga_Session session) {
+NiFpga_Status startFauAcquisition(NiFpga_Session session)
+{
   NiFpga_Status status = NiFpga_Status_Success;
 
   printf("startFauAcquisition\n");
@@ -394,7 +433,8 @@ NiFpga_Status startFauAcquisition(NiFpga_Session session) {
       &status,
       NiFpga_WriteBool(session, NiFpga_FAU_cRIO_FPGA_ControlBool_AcqEna, 1));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting enable acquisition flag");
     return -1;
   }
@@ -402,14 +442,16 @@ NiFpga_Status startFauAcquisition(NiFpga_Session session) {
   return status;
 }
 
-NiFpga_Status pauseFauAcquisition(NiFpga_Session session) {
+NiFpga_Status pauseFauAcquisition(NiFpga_Session session)
+{
   NiFpga_Status status = NiFpga_Status_Success;
 
   NiFpga_MergeStatus(
       &status,
       NiFpga_WriteBool(session, NiFpga_FAU_cRIO_FPGA_ControlBool_AcqEna, 0));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error Setting enable acquisition flag");
     return -1;
   }
@@ -422,7 +464,8 @@ NiFpga_Status pauseFauAcquisition(NiFpga_Session session) {
 
 int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
                      double trigTime, size_t maxSamp, size_t nDio,
-                     void *treePtr, void *dataNidPtr, uint8_t *stopFlag) {
+                     void *treePtr, void *dataNidPtr, uint8_t *stopFlag)
+{
 
   NiFpga_Status status = NiFpga_Status_Success;
   int currSize = 0;
@@ -431,7 +474,8 @@ int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
   double *time;
   int __count = 0;
 
-  if (nDio > 64) {
+  if (nDio > 64)
+  {
     printf("Invalid arguments\n");
     return -1;
   }
@@ -442,11 +486,13 @@ int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
   data = (uint8_t *)calloc(maxSamp * nDio, sizeof(uint8_t));
   time = (double *)calloc(maxSamp, sizeof(double));
 
-  while ((!*(uint8_t *)stopFlag) == 1) {
+  while ((!*(uint8_t *)stopFlag) == 1)
+  {
     currSize = readFauFifoData(session, data, time, tickPeriod, &maxSamp, nDio,
                                stopFlag);
 
-    if (currSize > 0) {
+    if (currSize > 0)
+    {
       printf("\rFau Acq %c", simb[__count++ % 5]);
       fflush(stdout);
 
@@ -457,12 +503,15 @@ int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
       double *timeQ = (double *)calloc(currSize * nDio, sizeof(double));
       int *currSizeA = (int *)calloc(nDio, sizeof(int));
 
-      for (int i = 0; i < currSize; i++) {
-        for (int j = 0; j < nDio; j++) {
+      for (int i = 0; i < currSize; i++)
+      {
+        for (int j = 0; j < nDio; j++)
+        {
 
           b = data[i + j * maxSamp];
           if (i == 0 || i == (currSize - 1) ||
-              (i >= 1 && data[(i - 1) + j * maxSamp] != b)) {
+              (i >= 1 && data[(i - 1) + j * maxSamp] != b))
+          {
             dataQ[currSizeA[j] + j * currSize] = b;
             timeQ[currSizeA[j] + j * currSize] = time[i] + trigTime;
             currSizeA[j]++;
@@ -486,7 +535,8 @@ int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
 
 int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
                    size_t maxSamp, size_t nDio, void *treePtr, void *dataNidPtr,
-                   uint8_t *stopFlag) {
+                   uint8_t *stopFlag)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   int currSize = 0;
   int *currSizeA;
@@ -504,11 +554,14 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
   timeDio = (double *)calloc(currSize * nDio, sizeof(double));
   currSizeA = (int *)calloc(nDio, sizeof(int));
 
-  for (int i = 0; i < currSize; i++) {
-    for (int j = 0; j < nDio; j++) {
+  for (int i = 0; i < currSize; i++)
+  {
+    for (int j = 0; j < nDio; j++)
+    {
       b = data[i + j * maxSamp];
       if (i == 0 || i == (currSize - 1) ||
-          (i >= 1 && data[(i - 1) + j * maxSamp] != b)) {
+          (i >= 1 && data[(i - 1) + j * maxSamp] != b))
+      {
         data[currSizeA[j] + j * maxSamp] = b;
         timeDio[currSizeA[j] + j * currSize] = time[i] + trigTime;
         currSizeA[j]++;
@@ -518,7 +571,8 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
 
   // currSize = 0;
 
-  if (currSize > 0) {
+  if (currSize > 0)
+  {
     printf("fauSaveAcqData %d maxSamp %d \n", currSize, maxSamp);
 
     Float64Array *timeArrData;
@@ -527,15 +581,20 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
     Uint8Array *dataArrData;
 
     TreeNode *currNode[NUM_DIO];
-    for (int i = 0; i < NUM_DIO; i++) {
-      try {
+    for (int i = 0; i < NUM_DIO; i++)
+    {
+      try
+      {
         currNode[i] = new TreeNode(dataNids[i], (Tree *)treePtr);
-      } catch (MdsException *exc) {
+      }
+      catch (MdsException *exc)
+      {
         printf("Error collecting data nodes %s\n", exc->what());
       }
     }
 
-    for (int j = 0; j < nDio; j++) {
+    for (int j = 0; j < nDio; j++)
+    {
       timeArrData = new Float64Array(&timeDio[j * currSize], currSizeA[j]);
       start = new Float64(timeDio[j * currSize]);
       end = new Float64(timeDio[(currSizeA[j] - 1) + j * currSize]);
@@ -564,7 +623,8 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
 
 int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
                     double tickPeriod, size_t *maxSampPtr, size_t nDio,
-                    uint8_t *stopFlag) {
+                    uint8_t *stopFlag)
+{
   NiFpga_Status status = NiFpga_Status_Success;
   size_t currSize = 0;
   uint32_t count = 0, noDataCount = 0;
@@ -579,7 +639,8 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
   uint64_t elem[MAX_FPGA_READ_BUF_SIZE];
   uint64_t tickTime[MAX_FPGA_READ_BUF_SIZE];
 
-  if (data == NULL || time == NULL || nDio > 64 || stopFlag == NULL) {
+  if (data == NULL || time == NULL || nDio > 64 || stopFlag == NULL)
+  {
     printf("Invalid arguments\n");
     return -1;
   }
@@ -590,7 +651,8 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
   // while( currSize < maxSamp && count < MAX_COUNT && !( count > MAX_COUNT/2 &&
   // currSize > MIN_SEGMENT ) )
   while (currSize < maxSamp && count < MAX_COUNT && currSize < MIN_SEGMENT &&
-         *(int *)stopFlag == 0) {
+         *(int *)stopFlag == 0)
+  {
 
     count++;
     /*
@@ -608,12 +670,14 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
             session, NiFpga_FAU_cRIO_FPGA_TargetToHostFifoU64_AcquisitionFIFOR,
             &dummy, 0, 0, &nElem));
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       printf("Read Error\n");
       return -1;
     }
 
-    if (nElem == 0) {
+    if (nElem == 0)
+    {
       noDataCount++;
       usleep(1000);
       // Acquisition isn't enabled
@@ -644,12 +708,14 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
             session, NiFpga_FAU_cRIO_FPGA_TargetToHostFifoU64_AcquisitionFIFORT,
             &dummy, 0, 0, &nTime));
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       printf("Read Error\n");
       return -1;
     }
 
-    if (nElem >= nTime) {
+    if (nElem >= nTime)
+    {
       // if (nElem > nTime)
       //       printf("Difference nElem %d nTime %d\n", nElem,nTime);
       nElem = nTime;
@@ -678,7 +744,8 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
             &elem[currSize], currElem, 500,
             &rElem)); // FIFO Remaining Element
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       printf("\nNiFpga_ReadFifoU64 Read Error data %d elem %d\n", status,
              currElem);
       printf("DataElem %d TimeElem %d ReadElem %d Remaining Elem %d \n", nElem,
@@ -695,7 +762,8 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
             currElem, // nTime,
             500, &rElem));
 
-    if (NiFpga_IsError(status)) {
+    if (NiFpga_IsError(status))
+    {
       printf("\nNiFpga_ReadFifoU64 Read Error time %d elem %d\n ", status,
              currElem);
       printf("DataElem %d TimeElem %d ReadElem %d Remaining Elem %d \n", nElem,
@@ -708,15 +776,18 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
     currSize += currElem;
   }
 
-  if (currSize > 0) {
+  if (currSize > 0)
+  {
     // printf("====== Complete Segment %d count %d noDataCount %d\n\n",
     // currSize, count, noDataCount);
 
-    for (int i = 0; i < currSize; i++) {
+    for (int i = 0; i < currSize; i++)
+    {
 
       // if(i < 10 )
       //  printf("%d ",i);
-      for (int j = 0; j < nDio; j++) {
+      for (int j = 0; j < nDio; j++)
+      {
         data[i + j * maxSamp] = (elem[i] & (((uint64_t)1) << j)) ? 1 : 0;
 
         // if(i < 10 )
@@ -735,23 +806,27 @@ int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
   return currSize;
 }
 
-NiFpga_Status startFauFpga(NiFpga_Session session) {
+NiFpga_Status startFauFpga(NiFpga_Session session)
+{
   NiFpga_Status status = NiFpga_Status_Success;
 
   // run the FPGA application
   printf("Running the FPGA...\n");
   NiFpga_MergeStatus(&status, NiFpga_Run(session, 0));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error running FPGA\n");
     return -1;
-  } else
+  }
+  else
     printf("OK running FPGA\n");
 
   return status;
 }
 
-NiFpga_Status getFauAcqState(NiFpga_Session session, uint16_t *acqState) {
+NiFpga_Status getFauAcqState(NiFpga_Session session, uint16_t *acqState)
+{
 
   NiFpga_Status status = NiFpga_Status_Success;
 
@@ -760,7 +835,8 @@ NiFpga_Status getFauAcqState(NiFpga_Session session, uint16_t *acqState) {
                                     NiFpga_FAU_cRIO_FPGA_IndicatorU16_AcqState,
                                     acqState));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error reading FAU acquisition state\n");
     return -1;
   }
@@ -768,7 +844,8 @@ NiFpga_Status getFauAcqState(NiFpga_Session session, uint16_t *acqState) {
   return status;
 }
 
-uint16_t IsFauFIFOOverflow(NiFpga_Session session) {
+uint16_t IsFauFIFOOverflow(NiFpga_Session session)
+{
 
   NiFpga_Status status = NiFpga_Status_Success;
   NiFpga_Bool fifoOverflowed;
@@ -778,7 +855,8 @@ uint16_t IsFauFIFOOverflow(NiFpga_Session session) {
                    session, NiFpga_FAU_cRIO_FPGA_IndicatorBool_FifoOverflowed,
                    &fifoOverflowed));
 
-  if (NiFpga_IsError(status)) {
+  if (NiFpga_IsError(status))
+  {
     printf("Error reading FAU FIFO overflow flag\n");
     return 1;
   }

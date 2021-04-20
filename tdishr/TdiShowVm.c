@@ -35,7 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int TdiGetLong();
 
-int Tdi1ShowVm() {
+int Tdi1ShowVm()
+{
   /*
   INIT_STATUS;
   int code, contex = 0, j = 1, mask, zone_id = 0;

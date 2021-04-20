@@ -50,7 +50,8 @@ extern int StrFree1Dx();
 /****************************************************************
  * TclDecompile:
  ****************************************************************/
-EXPORT int TclDecompile(void *ctx, char **error, char **output) {
+EXPORT int TclDecompile(void *ctx, char **error, char **output)
+{
   int nid;
   int sts = MdsdclIVVERB;
   char *path = 0;
@@ -58,21 +59,26 @@ EXPORT int TclDecompile(void *ctx, char **error, char **output) {
   static struct descriptor_xd xd = {0, 0, CLASS_XD, 0, 0};
 
   cli_get_value(ctx, "PATH", &path);
-  if (path != NULL) {
+  if (path != NULL)
+  {
     sts = TreeFindNode(path, &nid);
     free(path);
-    if (sts & 1) {
+    if (sts & 1)
+    {
       sts = TreeGetRecord(nid, &xd);
-      if (sts & 1) {
+      if (sts & 1)
+      {
         sts = TdiDecompile(&xd, &dsc_string MDS_END_ARG);
-        if (sts & 1) {
+        if (sts & 1)
+        {
           *output = malloc(dsc_string.length + 100);
           sprintf(*output, "%.*s\n", dsc_string.length, dsc_string.pointer);
         }
         StrFree1Dx(&dsc_string);
       }
     }
-    if (~sts & 1) {
+    if (~sts & 1)
+    {
       char *msg = MdsGetMsg(sts);
       *error = malloc(strlen(msg) + 100);
       sprintf(*error,

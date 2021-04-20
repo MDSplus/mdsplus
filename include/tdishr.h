@@ -14,7 +14,7 @@
 #include <opcbuiltins.h>
 #undef OPC
 
-#define OPC(name, ...)                                                         \
+#define OPC(name, ...) \
   extern int _Tdi##name(void **ctx, struct descriptor *first, ...);
 #include <opcbuiltins.h>
 #undef OPC

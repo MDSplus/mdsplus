@@ -66,46 +66,57 @@ extern int CvtConvertFloat();
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 
-inline int tdi_n_elements(const mdsdsc_t *const dsc_ptr, int *const status) {
+inline int tdi_n_elements(const mdsdsc_t *const dsc_ptr, int *const status)
+{
   int count;
   if (dsc_ptr->dtype == DTYPE_MISSING)
     count = 0;
-  else {
-    switch (dsc_ptr->class) {
-    default: {
+  else
+  {
+    switch (dsc_ptr->class)
+    {
+    default:
+    {
       count = 0;
       *status = TdiINVCLADSC;
-    } break;
-    case CLASS_A: {
+    }
+    break;
+    case CLASS_A:
+    {
       array_coeff *aptr = (array_coeff *)dsc_ptr;
-      if (aptr->length != 0) {
+      if (aptr->length != 0)
+      {
         count = aptr->arsize / aptr->length;
-      } else if (aptr->dtype == DTYPE_T && aptr->aflags.coeff == 1 &&
-                 aptr->dimct > 0) {
+      }
+      else if (aptr->dtype == DTYPE_T && aptr->aflags.coeff == 1 &&
+               aptr->dimct > 0)
+      {
         count = aptr->m[0];
         int i;
         for (i = 1; i < aptr->dimct; i++)
           count *= aptr->m[i];
-      } else
+      }
+      else
         count = 0;
-    } break;
+    }
+    break;
     case CLASS_S:
-    case CLASS_D: {
+    case CLASS_D:
+    {
       count = 1;
-    } break;
+    }
+    break;
     }
   }
   return count;
 }
 
 extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
-                     struct descriptor_xd *out_ptr) {
+                     struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
-  array_coeff arr = {1,  DTYPE_B,         CLASS_A,  (char *)0, 0,
-                     0,  {0, 1, 1, 1, 0}, MAX_DIMS, 0,         0,
-                     {0}};
-  array_int cvt = {sizeof(int), DTYPE_L,         CLASS_A, (int *)0, 0,
-                   0,           {0, 1, 1, 0, 0}, 1,       0};
+  array_coeff arr = {1, DTYPE_B, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0}, MAX_DIMS, 0, 0, {0}};
+  array_int cvt = {sizeof(int), DTYPE_L, CLASS_A, (int *)0, 0, 0, {0, 1, 1, 0, 0}, 1, 0};
   struct TdiFunctionStruct *fun_ptr =
       (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp = EMPTY_XD;
@@ -118,72 +129,85 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[],
   ****************************************/
   if (narg <= 0 || list[0] == 0)
     arr.class = CLASS_S;
-  else {
+  else
+  {
     status = TdiData(list[0], &tmp MDS_END_ARG);
     if (STATUS_OK)
       ndim = tdi_n_elements(tmp.pointer, &status);
     if (STATUS_OK)
+    {
+      if (ndim > MAX_DIMS)
+        status = TdiNDIM_OVER;
+      else
       {
-        if (ndim > MAX_DIMS)
-          status = TdiNDIM_OVER;
-        else {
-          if (ndim == 0)
-            arr.class = CLASS_S;
-          else {
-            arr.dimct = (unsigned char)ndim;
-            arr.aflags.coeff = (unsigned char)(tmp.pointer->class == CLASS_A);
-            arr.a0 = 0;
-            cvt.pointer = (int *)&arr.m[0];
-            cvt.arsize = sizeof(int) * ndim;
-            status = TdiConvert(tmp.pointer, &cvt);
-          }
+        if (ndim == 0)
+          arr.class = CLASS_S;
+        else
+        {
+          arr.dimct = (unsigned char)ndim;
+          arr.aflags.coeff = (unsigned char)(tmp.pointer->class == CLASS_A);
+          arr.a0 = 0;
+          cvt.pointer = (int *)&arr.m[0];
+          cvt.arsize = sizeof(int) * ndim;
+          status = TdiConvert(tmp.pointer, &cvt);
         }
       }
+    }
   }
 
   /*****************************
   Data type from opcode or mold.
   *****************************/
   if (STATUS_OK)
+  {
+    if (narg <= 1 || list[1] == 0)
     {
-      if (narg <= 1 || list[1] == 0) {
-        dtype = fun_ptr->o1;
-        length = TdiREF_CAT[dtype].length;
-      } else {
-        switch (list[1]->class) {
-        case CLASS_S:
-        case CLASS_D:
-        case CLASS_A:
-        case CLASS_CA: {
-          dtype = list[1]->dtype;
-          length = list[1]->length;
-        } break;
-        default: {
-          status = TdiData(list[1], &tmp MDS_END_ARG);
-          if (STATUS_OK)
-            {
-              dtype = tmp.pointer->dtype;
-              length = tmp.pointer->length;
-            }
-        } break;
+      dtype = fun_ptr->o1;
+      length = TdiREF_CAT[dtype].length;
+    }
+    else
+    {
+      switch (list[1]->class)
+      {
+      case CLASS_S:
+      case CLASS_D:
+      case CLASS_A:
+      case CLASS_CA:
+      {
+        dtype = list[1]->dtype;
+        length = list[1]->length;
+      }
+      break;
+      default:
+      {
+        status = TdiData(list[1], &tmp MDS_END_ARG);
+        if (STATUS_OK)
+        {
+          dtype = tmp.pointer->dtype;
+          length = tmp.pointer->length;
         }
       }
+      break;
+      }
     }
+  }
   MdsFree1Dx(&tmp, NULL);
 
   /*****************************
   Size is product of dimensions.
   *****************************/
   if (STATUS_OK)
+  {
+    if (arr.class == CLASS_A)
     {
-      if (arr.class == CLASS_A) {
-        for (arr.arsize = 1, j = ndim; --j >= 0;)
-          arr.arsize *= arr.m[j];
-        status =
-            MdsGet1DxA((struct descriptor_a *)&arr, &length, &dtype, out_ptr);
-      } else
-        status = MdsGet1DxS(&length, &dtype, out_ptr);
+      for (arr.arsize = 1, j = ndim; --j >= 0;)
+        arr.arsize *= arr.m[j];
+      status =
+          MdsGet1DxA((struct descriptor_a *)&arr, &length, &dtype, out_ptr);
     }
+    else
+      status = MdsGet1DxS(&length, &dtype, out_ptr);
+  }
 
   /*********************
   Put some data into it.
@@ -203,7 +227,8 @@ int Tdi3Array(/*int *out_ptr*/) { return MDSplusSUCCESS; }
 /*---------------------------------------------------------------------
         Create a ramp of integers starting from zero.
 */
-int Tdi3Ramp(struct descriptor *out_ptr) {
+int Tdi3Ramp(struct descriptor *out_ptr)
+{
   INIT_STATUS;
   static const int i0 = 0, i1 = 1;
   static const struct descriptor con0 = {sizeof(int), DTYPE_L, CLASS_S,
@@ -212,29 +237,31 @@ int Tdi3Ramp(struct descriptor *out_ptr) {
                                          (char *)&i1};
   int i, n;
 
-#define LoadRamp(type)                                                         \
-  {                                                                            \
-    type *ptr = (type *)out_ptr->pointer;                                      \
-    for (i = 0; i < n; i++)                                                    \
-      ptr[i] = (type)i;                                                        \
-    break;                                                                     \
+#define LoadRamp(type)                    \
+  {                                       \
+    type *ptr = (type *)out_ptr->pointer; \
+    for (i = 0; i < n; i++)               \
+      ptr[i] = (type)i;                   \
+    break;                                \
   }
-#define LoadRampF(type, dtype, native)                                         \
-  {                                                                            \
-    type *ptr = (type *)out_ptr->pointer;                                      \
-    type tmp;                                                                  \
-    for (i = 0; i < n; i++) {                                                  \
-      tmp = (type)i;                                                           \
-      if (native == dtype)                                                     \
-        ptr[i] = tmp;                                                          \
-      else                                                                     \
-        CvtConvertFloat(&tmp, native, &ptr[i], dtype);                         \
-    }                                                                          \
-    break;                                                                     \
+#define LoadRampF(type, dtype, native)                 \
+  {                                                    \
+    type *ptr = (type *)out_ptr->pointer;              \
+    type tmp;                                          \
+    for (i = 0; i < n; i++)                            \
+    {                                                  \
+      tmp = (type)i;                                   \
+      if (native == dtype)                             \
+        ptr[i] = tmp;                                  \
+      else                                             \
+        CvtConvertFloat(&tmp, native, &ptr[i], dtype); \
+    }                                                  \
+    break;                                             \
   }
 
   N_ELEMENTS(out_ptr, n);
-  switch (out_ptr->dtype) {
+  switch (out_ptr->dtype)
+  {
   case DTYPE_B:
     LoadRamp(int8_t) case DTYPE_BU : LoadRamp(uint8_t) case DTYPE_W
         : LoadRamp(int16_t) case DTYPE_WU : LoadRamp(uint16_t) case DTYPE_L
@@ -249,17 +276,20 @@ int Tdi3Ramp(struct descriptor *out_ptr) {
           WARNING this depends on order of operations in ADD routine.
           Make a zero and a one. Add 1 to this starter, but offset.
           **********************************************************/
-          default : {
+          default:
+    {
       struct descriptor new = *out_ptr;
       new.class = CLASS_S;
       if (n > 0)
         status = TdiConvert(&con0, &new);
-      if (n > 1) {
+      if (n > 1)
+      {
         int step = new.length;
         new.pointer += step;
         if (STATUS_OK)
           status = TdiConvert(&con1, &new);
-        if (n > 2) {
+        if (n > 2)
+        {
           struct descriptor_a modify = *(struct descriptor_a *)out_ptr;
           modify.pointer += step;
           modify.arsize -= step;
@@ -293,14 +323,16 @@ const double norm = .5 / 2147483648.;
  to add one random bit to rand32
  ***********************************/
 #define rand16(bit) rand()
-static uint32_t rand32(uint32_t *bit) {
+static uint32_t rand32(uint32_t *bit)
+{
   *bit = *bit << 1;
   if ((*bit & 0x7fffffff) == 0)
     *bit = rand() << 1 | 1;
   return ((uint32_t)rand() & 0x7fffffff) | (*bit & 0x80000000);
 }
 #else // assume RAND_MAX==0x7fff==32767
-static uint32_t rand16(uint32_t *bit) {
+static uint32_t rand16(uint32_t *bit)
+{
   *bit = *bit << 1;
   if ((*bit & 0x7fff) == 0)
     *bit = rand() << 1 | 1;
@@ -312,30 +344,33 @@ static uint32_t rand16(uint32_t *bit) {
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static void once_random() { srand(time(0)); }
 
-int Tdi3Random(struct descriptor_a *out_ptr) {
+int Tdi3Random(struct descriptor_a *out_ptr)
+{
   pthread_once(&once, once_random);
   INIT_STATUS;
   uint32_t bit = 0;
   int i, n;
   N_ELEMENTS(out_ptr, n);
-  switch (out_ptr->dtype) {
+  switch (out_ptr->dtype)
+  {
   default:
     status = TdiINVDTYDSC;
     break;
 
-#define LoadRandom(type, randx)                                                \
-  {                                                                            \
-    type *ptr = (type *)out_ptr->pointer;                                      \
-    for (i = 0; i < n; i++)                                                    \
-      ptr[i] = (type)randx(&bit);                                              \
+#define LoadRandom(type, randx)           \
+  {                                       \
+    type *ptr = (type *)out_ptr->pointer; \
+    for (i = 0; i < n; i++)               \
+      ptr[i] = (type)randx(&bit);         \
   }
-#define LoadRandomFloat(dtype, type, value)                                    \
-  {                                                                            \
-    type *ptr = (type *)out_ptr->pointer;                                      \
-    for (i = 0; i < n; i++) {                                                  \
-      double val = value;                                                      \
-      CvtConvertFloat(&val, DTYPE_NATIVE_DOUBLE, &ptr[i], dtype);              \
-    }                                                                          \
+#define LoadRandomFloat(dtype, type, value)                       \
+  {                                                               \
+    type *ptr = (type *)out_ptr->pointer;                         \
+    for (i = 0; i < n; i++)                                       \
+    {                                                             \
+      double val = value;                                         \
+      CvtConvertFloat(&val, DTYPE_NATIVE_DOUBLE, &ptr[i], dtype); \
+    }                                                             \
   }
   case DTYPE_O:
   case DTYPE_OU:
@@ -394,7 +429,8 @@ int Tdi3Random(struct descriptor_a *out_ptr) {
 /*---------------------------------------------------------------------
         Create an array of zeroes.
 */
-int Tdi3Zero(struct descriptor_a *out_ptr) {
+int Tdi3Zero(struct descriptor_a *out_ptr)
+{
   static const int i0 = 0;
   static const struct descriptor con0 = {sizeof(int), DTYPE_L, CLASS_S,
                                          (char *)&i0};

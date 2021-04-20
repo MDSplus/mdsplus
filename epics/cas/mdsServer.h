@@ -28,7 +28,8 @@ class mdsServer;
 // with several of this class all referencing
 // the same pv info class
 //
-class pvEntry : public stringId, public tsSLNode<pvEntry> {
+class pvEntry : public stringId, public tsSLNode<pvEntry>
+{
 public:
   pvEntry(mdsPV &pvIn, mdsServer &casIn, const char *pAliasName);
   ~pvEntry();
@@ -45,7 +46,8 @@ private:
 //
 // mdsPV
 //
-class mdsPV : public casPV, public tsSLNode<mdsPV> {
+class mdsPV : public casPV, public tsSLNode<mdsPV>
+{
 public:
   mdsPV(mdsServer &cas, char *name, Tree *tree, TreeNode *topNode, bool append);
   virtual ~mdsPV();
@@ -143,7 +145,8 @@ private:
 //
 // mdsServer
 //
-class mdsServer : private caServer {
+class mdsServer : private caServer
+{
 public:
   mdsServer(Tree *tree, bool append);
   ~mdsServer();
@@ -167,7 +170,8 @@ private:
 //
 // mdsChannel
 //
-class mdsChannel : public casChannel {
+class mdsChannel : public casChannel
+{
 public:
   mdsChannel(const casCtx &ctxIn);
   void setOwner(const char *const pUserName, const char *const pHostName);

@@ -64,7 +64,8 @@ int boxsmooth(int *num, float *in, int *width, float *out)
 #include <mdsplus/mdsconfig.h>
 #include <string.h>
 
-EXPORT int boxsmooth(int *num, float *in, int *width, float *out) {
+EXPORT int boxsmooth(int *num, float *in, int *width, float *out)
+{
   int i;
   int j;
   int w = *width;
@@ -73,18 +74,22 @@ EXPORT int boxsmooth(int *num, float *in, int *width, float *out) {
   int *out_int = (int *)out;
   if (n <= 0)
     return 0;
-  if (n < w) {
+  if (n < w)
+  {
     memcpy(out, in, n * sizeof(float));
     return 1;
   }
   w += (w % 2) ? 0 : 1;
   memcpy(out, in, w / 2 * sizeof(float));
-  for (i = w / 2; i < n - w / 2; i++) {
+  for (i = w / 2; i < n - w / 2; i++)
+  {
     int div;
     double total = 0.;
-    for (div = 0, j = 0; j < w; j++) {
+    for (div = 0, j = 0; j < w; j++)
+    {
       int idx = i + j - w / 2;
-      if (in_int[idx] != 32768) {
+      if (in_int[idx] != 32768)
+      {
         total += in[i + j - w / 2];
         div++;
       }

@@ -70,7 +70,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       pointer to cts.db data (in memory)
 // output:      pointer to struct of db data
 //-------------------------------------------------------------------------
-void parse_cts_db(struct MODULE *in, struct Module_ *out) {
+void parse_cts_db(struct MODULE *in, struct Module_ *out)
+{
   char adpt, fmt[6], line[MODULE_ENTRY + 1];
   char comm[41];
   int i;
@@ -80,7 +81,7 @@ void parse_cts_db(struct MODULE *in, struct Module_ *out) {
 
   sprintf(fmt, "%%.%ds", (int)(MODULE_ENTRY - 1)); // create format string
   memset(line, ' ', MODULE_ENTRY + 1);             // 2002.02.06
-  sprintf(line, fmt, (char *)in); // extract first (single) line
+  sprintf(line, fmt, (char *)in);                  // extract first (single) line
 
   // parse ...
   sscanf(line, "%32s GK%c%1d%02d:N%2d %40c", out->name, &adpt, // temporary
@@ -89,7 +90,8 @@ void parse_cts_db(struct MODULE *in, struct Module_ *out) {
   out->adapter = adpt - 'A'; // adjustment ...
 
   // find end of comment
-  for (i = sizeof(comm) - 1; i >= 0; --i) {
+  for (i = sizeof(comm) - 1; i >= 0; --i)
+  {
     if (comm[i] != ' ')
       break;
   }

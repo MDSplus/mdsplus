@@ -41,7 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 int TdiGetShape(int narg, struct descriptor_xd dat[1], length_t length,
-                dtype_t dtype, int *cmode_ptr, struct descriptor_xd *out_ptr) {
+                dtype_t dtype, int *cmode_ptr, struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   length_t ulen;
   int cmode = -1, count = 0x7fffffff, j, len, nelem;
@@ -50,17 +51,20 @@ int TdiGetShape(int narg, struct descriptor_xd dat[1], length_t length,
   /*******************************
   Find the smallest array, if any.
   *******************************/
-  for (j = 0; j < narg; j++) {
+  for (j = 0; j < narg; j++)
+  {
     aptr = (struct descriptor_a *)dat[j].pointer;
     if (aptr)
-      switch (aptr->class) {
+      switch (aptr->class)
+      {
       case CLASS_S:
       case CLASS_D:
         break;
       case CLASS_A:
         nelem =
             ((int)aptr->length > 0) ? (int)aptr->arsize / (int)aptr->length : 0;
-        if (nelem < count) {
+        if (nelem < count)
+        {
           count = nelem;
           cmode = j;
         }
@@ -75,16 +79,16 @@ int TdiGetShape(int narg, struct descriptor_xd dat[1], length_t length,
   Get array or scalar as needed.
   *****************************/
   if (STATUS_OK)
-    {
-      if ((len = length) == 0 && dtype < TdiCAT_MAX)
-        len = TdiREF_CAT[dtype].length;
-      ulen = (length_t)len;
-      if (cmode < 0)
-        status = MdsGet1DxS(&ulen, &dtype, out_ptr);
-      else
-        status = MdsGet1DxA((struct descriptor_a *)dat[cmode].pointer, &ulen,
-                            &dtype, out_ptr);
-    }
+  {
+    if ((len = length) == 0 && dtype < TdiCAT_MAX)
+      len = TdiREF_CAT[dtype].length;
+    ulen = (length_t)len;
+    if (cmode < 0)
+      status = MdsGet1DxS(&ulen, &dtype, out_ptr);
+    else
+      status = MdsGet1DxA((struct descriptor_a *)dat[cmode].pointer, &ulen,
+                          &dtype, out_ptr);
+  }
   *cmode_ptr = cmode;
   return status;
 }

@@ -32,27 +32,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <xtreeshr.h>
 
-int getShape(struct descriptor *dataD, int *dims, int *numDims) {
+int getShape(struct descriptor *dataD, int *dims, int *numDims)
+{
   /*
    * returns 1-D and N-D shaped arrays
    */
   ARRAY_COEFF(char *, MAX_DIMS) * arrPtr;
-  if (dataD->class != CLASS_A) {
+  if (dataD->class != CLASS_A)
+  {
     *numDims = 1;
     dims[0] = 0;
     return 0;
   }
   arrPtr = (void *)dataD;
-  if (arrPtr->dimct == 1) {
+  if (arrPtr->dimct == 1)
+  {
     *numDims = 1;
     dims[0] = arrPtr->arsize / arrPtr->length;
-  } else
+  }
+  else
     memcpy(dims, arrPtr->m, (*numDims = arrPtr->dimct) * sizeof(*arrPtr->m));
   return 1;
 }
 
 static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes,
-                              int *outShape) {
+                              int *outShape)
+{
   /*
    * checks if data shapes are fit for concatenation
    */
@@ -63,14 +68,16 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes,
   int minNumShapes = 0, maxNumShapes = 0;
   int *numShapes = (int *)malloc(numSignals * sizeof(int));
   int **shapes = (int **)malloc(numSignals * sizeof(int *));
-  for (i = 0; i < numSignals; i++) {
+  for (i = 0; i < numSignals; i++)
+  {
     currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
     shapes[i] = (int *)malloc(54 * sizeof(int));
     getShape((struct descriptor *)(currSignalD->data), shapes[i],
              &numShapes[i]);
     if (i == 0)
       minNumShapes = maxNumShapes = numShapes[i];
-    else {
+    else
+    {
       if (numShapes[i] < minNumShapes)
         minNumShapes = numShapes[i];
       if (numShapes[i] > maxNumShapes)
@@ -91,20 +98,21 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes,
           status = InvalidShapeInSegments;
 
   if (STATUS_OK)
+  {
+    // Shapes Ok, build definitive shapes array for this signal;
+    for (i = 0; i < minNumShapes; i++)
+      outShape[i] = shapes[0][i];
+    int lastDimension = 0;
+    for (i = 0; i < numSignals; i++)
     {
-      // Shapes Ok, build definitive shapes array for this signal;
-      for (i = 0; i < minNumShapes; i++)
-        outShape[i] = shapes[0][i];
-      int lastDimension = 0;
-      for (i = 0; i < numSignals; i++) {
-        if (numShapes[i] == maxNumShapes)
-          lastDimension += shapes[i][numShapes[i] - 1];
-        else
-          lastDimension++;
-      }
-      *totShapes = maxNumShapes;
-      outShape[*totShapes - 1] = lastDimension;
+      if (numShapes[i] == maxNumShapes)
+        lastDimension += shapes[i][numShapes[i] - 1];
+      else
+        lastDimension++;
     }
+    *totShapes = maxNumShapes;
+    outShape[*totShapes - 1] = lastDimension;
+  }
   else
     *totShapes = 0;
 
@@ -117,7 +125,8 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes,
 }
 
 static inline int checkNumDimensions(struct descriptor_a *signalsApd,
-                                     int *numDimensions) {
+                                     int *numDimensions)
+{
   /*
    * checks if dimensions are fit for merge
    */
@@ -130,7 +139,8 @@ static inline int checkNumDimensions(struct descriptor_a *signalsApd,
   return 1;
 }
 
-static inline int checkRanges(struct descriptor_a *signalsApd) {
+static inline int checkRanges(struct descriptor_a *signalsApd)
+{
   /*
    * checks if class and dtypes of dimensions are fit for mergeRanges
    */
@@ -147,7 +157,8 @@ static inline int checkRanges(struct descriptor_a *signalsApd) {
       (!firstRangeD->begin || firstRangeD->begin->class != CLASS_S))
     return B_FALSE; // delta given but invalid
   int i, numSignals = signalsApd->arsize / signalsApd->length;
-  for (i = 1; i < numSignals; i++) {
+  for (i = 1; i < numSignals; i++)
+  {
     currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
     struct descriptor_range *currRangeD =
         (struct descriptor_range *)currSignalD->dimensions[0];
@@ -168,7 +179,8 @@ static inline int checkRanges(struct descriptor_a *signalsApd) {
 
 static inline struct descriptor *
 mergeRanges(struct descriptor_a *signalsApd,
-            struct descriptor_range *outRangeD) {
+            struct descriptor_range *outRangeD)
+{
   /*
    * combines all Range dimensions into one total dimension
    */
@@ -191,7 +203,8 @@ mergeRanges(struct descriptor_a *signalsApd,
       rangeD->ending->length * numSignals;
   ((struct descriptor_a *)outRangeD->ending)->pointer =
       malloc(rangeD->ending->length * numSignals);
-  if (rangeD->ndesc > 2) {
+  if (rangeD->ndesc > 2)
+  {
     ((struct descriptor_a *)outRangeD->deltaval)->length =
         rangeD->deltaval->length;
     ((struct descriptor_a *)outRangeD->deltaval)->dtype =
@@ -200,10 +213,12 @@ mergeRanges(struct descriptor_a *signalsApd,
         rangeD->deltaval->length * numSignals;
     ((struct descriptor_a *)outRangeD->deltaval)->pointer =
         malloc(rangeD->deltaval->length * numSignals);
-  } else
+  }
+  else
     outRangeD->ndesc = 2;
   int i;
-  for (i = 0; i < numSignals; i++) {
+  for (i = 0; i < numSignals; i++)
+  {
     rangeD = (struct descriptor_range *)((((struct descriptor_signal **)
                                                signalsApd->pointer)[i])
                                              ->dimensions[0]);
@@ -225,7 +240,8 @@ static EMPTYXD(emptyXd);
 static inline int mergeArrays(struct descriptor_a *signalsApd,
                               struct descriptor_xd **dimensionsXd,
                               struct descriptor_a *outDimD, char **arraysBuf,
-                              char **outDimBuf) {
+                              char **outDimBuf)
+{
   /*
    * converts all dimensions into arrays and concatenates to total array
    */
@@ -242,13 +258,15 @@ static inline int mergeArrays(struct descriptor_a *signalsApd,
                                          malloc(numSignals * sizeof(char *)));
   // Evaluate first dimension for all segments
   int totSize = 0;
-  for (i = 0; i < numSignals; i++) {
+  for (i = 0; i < numSignals; i++)
+  {
     struct descriptor_signal *currSignalD =
         ((struct descriptor_signal **)signalsApd->pointer)[i];
     if (currSignalD->dimensions[0]->class ==
         CLASS_A) // Data evaluation not needed
       arraysD[i] = arrayD = (struct descriptor_a *)currSignalD->dimensions[0];
-    else {
+    else
+    {
       extern int TdiData();
       status =
           TdiData(currSignalD->dimensions[0], &(*dimensionsXd)[i] MDS_END_ARG);
@@ -257,7 +275,8 @@ static inline int mergeArrays(struct descriptor_a *signalsApd,
       arraysD[i] = arrayD = (struct descriptor_a *)(*dimensionsXd)[i].pointer;
       if (!arrayD ||
           arrayD->class !=
-              CLASS_A) { // Every first dimension must be evaluated to an array
+              CLASS_A)
+      { // Every first dimension must be evaluated to an array
         status = InvalidDimensionInSegments;
         break;
       }
@@ -273,7 +292,8 @@ static inline int mergeArrays(struct descriptor_a *signalsApd,
   *outDimBuf = malloc(totSize);
   outDimD->pointer = *outDimBuf;
   outDimD->arsize = totSize;
-  for (i = j = 0; i < numSignals; i++) {
+  for (i = j = 0; i < numSignals; i++)
+  {
     arrayD = arraysD[i];
     memcpy(&(*outDimBuf)[j], arrayD->pointer, arrayD->arsize);
     j += arrayD->arsize;
@@ -286,12 +306,14 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
                               struct descriptor *endD __attribute__((unused)),
                               struct descriptor *minDeltaD
                               __attribute__((unused)),
-                              struct descriptor_xd *outXd) {
+                              struct descriptor_xd *outXd)
+{
   if (signalsApd->class == CLASS_XD)
     signalsApd =
         (struct descriptor_a *)((struct descriptor_xd *)signalsApd)->pointer;
   int numSignals = signalsApd->arsize / signalsApd->length;
-  if (numSignals <= 0) {
+  if (numSignals <= 0)
+  {
     MdsCopyDxXd((struct descriptor *)&emptyXd, outXd);
     return 1;
   }
@@ -323,13 +345,15 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
 
   if (canDoMergeRanges) // merge in total range
     outSignalD.dimensions[0] = mergeRanges(signalsApd, &outRangeD);
-  else { // Not all dimensions are ranges, merge arrays
+  else
+  { // Not all dimensions are ranges, merge arrays
     status =
         mergeArrays(signalsApd, &dimensionsXd, (struct descriptor_a *)&outDimD,
                     &arraysBuf, &outDimBuf);
     if (STATUS_OK)
       outSignalD.dimensions[0] = (struct descriptor *)&outDimD;
-    else {
+    else
+    {
       numDimensions = 0;
     }
   }
@@ -346,7 +370,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   // arrays
   // Collect total data size
   int totSize = 0;
-  for (i = 0; i < numSignals; i++) {
+  for (i = 0; i < numSignals; i++)
+  {
     currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
     totSize += ((struct descriptor_a *)currSignalD->data)->arsize;
   }
@@ -358,7 +383,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   struct descriptor_a *arrayD = (struct descriptor_a *)currSignalD->data;
   outDataD.length = arrayD->length;
   outDataD.dtype = arrayD->dtype;
-  for (i = j = 0; i < numSignals; i++) {
+  for (i = j = 0; i < numSignals; i++)
+  {
     currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
     arrayD = (struct descriptor_a *)currSignalD->data;
     memcpy(&outDataBuf[j], arrayD->pointer, arrayD->arsize);
@@ -374,13 +400,17 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
 
   // free stuff
   free(outDataBuf);
-  if (canDoMergeRanges) {
-    if (numSignals > 1) {
+  if (canDoMergeRanges)
+  {
+    if (numSignals > 1)
+    {
       free(beginArrD.pointer);
       free(endingArrD.pointer);
       free(deltavalArrD.pointer);
     }
-  } else {
+  }
+  else
+  {
     for (i = 0; i < numSignals; i++)
       MdsFree1Dx(&dimensionsXd[i], 0);
     free(dimensionsXd);

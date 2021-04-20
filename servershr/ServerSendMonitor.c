@@ -31,14 +31,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 
 int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid,
-                      int on, int mode, char *server, int actstatus) {
+                      int on, int mode, char *server, int actstatus)
+{
   static int initialized = B_FALSE;
   static char *event = NULL;
   char now[32];
   Now32(now);
   const char *event_str = "event:";
   const unsigned int event_len = strlen(event_str);
-  if (!initialized) {
+  if (!initialized)
+  {
     initialized = B_TRUE;
     char *mon_env = getenv(monitor);
     if (!mon_env)
@@ -47,7 +49,8 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid,
         (strncasecmp(mon_env, event_str, event_len) == 0))
       event = strdup(mon_env + event_len);
   }
-  if (event) {
+  if (event)
+  {
     char *path = TreeGetPath(nid);
     char *status_text = MdsGetMsg(actstatus);
     char *eventmsg = alloca(1024);

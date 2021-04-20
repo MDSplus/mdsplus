@@ -38,16 +38,16 @@
 
 #define XmdsNnid "nid"             /* Nid */
 #define XmdsNnidOffset "nidOffset" /* Nid offset */
-#define XmdsNputOnApply                                                        \
-  "putOnApply" /* Put when a XmdsApplyAllXds is called                         \
-                */
+#define XmdsNputOnApply                                                          \
+  "putOnApply"                           /* Put when a XmdsApplyAllXds is called \
+                                          */
 #define XmdsNlabelStrings "labelStrings" /* String table of button labels */
-#define XmdsNvalueStrings                                                      \
-  "valueStrings" /* String table of value expressions                          \
+#define XmdsNvalueStrings                             \
+  "valueStrings" /* String table of value expressions \
                   */
-#define XmdsNresetCallback                                                     \
+#define XmdsNresetCallback \
   "resetCallback" /* User routine to call for resets (no nid) */
-#define XmdsNvalueChangedCallback                                              \
+#define XmdsNvalueChangedCallback \
   "valueChangedCallback" /* User routine to call when the value changes */
 
 /* External creation routines:

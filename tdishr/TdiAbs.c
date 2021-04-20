@@ -85,137 +85,161 @@ extern int CvtConvertFloat();
 
 static const int roprand = 0x8000;
 
-#define start_operate(type)                                                    \
-  {                                                                            \
-    type *in = (type *)(in_ptr->pointer);                                      \
-    type *out = (type *)(out_ptr->pointer);                                    \
-    for (i = 0; i < out_count; i++) {
+#define start_operate(type)                 \
+  {                                         \
+    type *in = (type *)(in_ptr->pointer);   \
+    type *out = (type *)(out_ptr->pointer); \
+    for (i = 0; i < out_count; i++)         \
+    {
 
-#define start_operate1(itype, otype)                                           \
-  {                                                                            \
-    itype *in = (itype *)(in_ptr->pointer);                                    \
-    otype *out = (otype *)(out_ptr->pointer);                                  \
-    for (i = 0; i < out_count; i++) {
+#define start_operate1(itype, otype)          \
+  {                                           \
+    itype *in = (itype *)(in_ptr->pointer);   \
+    otype *out = (otype *)(out_ptr->pointer); \
+    for (i = 0; i < out_count; i++)           \
+    {
 
-#define start_operate2(type)                                                   \
-  {                                                                            \
-    type *out = (type *)(out_ptr->pointer);                                    \
-    for (i = 0; i < out_count; i++) {
+#define start_operate2(type)                \
+  {                                         \
+    type *out = (type *)(out_ptr->pointer); \
+    for (i = 0; i < out_count; i++)         \
+    {
 
-#define end_operate                                                            \
-  }                                                                            \
-  break;                                                                       \
+#define end_operate \
+  }                 \
+  break;            \
   }
 
-#define AbsFloat(dtype)                                                        \
-  double tmp;                                                                  \
-  if (CvtConvertFloat(&in[i], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) {          \
-    tmp = tmp > 0 ? tmp : -tmp;                                                \
-    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);             \
-  } else                                                                       \
+#define AbsFloat(dtype)                                             \
+  double tmp;                                                       \
+  if (CvtConvertFloat(&in[i], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                 \
+    tmp = tmp > 0 ? tmp : -tmp;                                     \
+    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);  \
+  }                                                                 \
+  else                                                              \
     CvtConvertFloat(&roprand, DTYPE_F, &out[i], dtype, 0);
 
-#define UnaryMinusFloat(dtype)                                                 \
-  double tmp;                                                                  \
-  if (CvtConvertFloat(&in[i], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) {          \
-    tmp = -tmp;                                                                \
-    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);             \
-  } else                                                                       \
+#define UnaryMinusFloat(dtype)                                      \
+  double tmp;                                                       \
+  if (CvtConvertFloat(&in[i], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                 \
+    tmp = -tmp;                                                     \
+    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);  \
+  }                                                                 \
+  else                                                              \
     CvtConvertFloat(&roprand, DTYPE_F, &out[i], dtype, 0);
 
-#define UnaryMinusComplex(dtype)                                               \
-  double tmp;                                                                  \
-  if (CvtConvertFloat(&in[i * 2], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) {      \
-    tmp = -tmp;                                                                \
-    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i * 2], dtype, 0);         \
-  } else                                                                       \
-    CvtConvertFloat(&roprand, DTYPE_F, &out[i * 2], dtype, 0);                 \
-  if (CvtConvertFloat(&in[i * 2 + 1], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) {  \
-    tmp = -tmp;                                                                \
-    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i * 2 + 1], dtype, 0);     \
-  } else                                                                       \
+#define UnaryMinusComplex(dtype)                                            \
+  double tmp;                                                               \
+  if (CvtConvertFloat(&in[i * 2], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0))     \
+  {                                                                         \
+    tmp = -tmp;                                                             \
+    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i * 2], dtype, 0);      \
+  }                                                                         \
+  else                                                                      \
+    CvtConvertFloat(&roprand, DTYPE_F, &out[i * 2], dtype, 0);              \
+  if (CvtConvertFloat(&in[i * 2 + 1], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                         \
+    tmp = -tmp;                                                             \
+    CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, &out[i * 2 + 1], dtype, 0);  \
+  }                                                                         \
+  else                                                                      \
     CvtConvertFloat(&roprand, DTYPE_F, &out[i * 2 + 1], dtype, 0);
 
-#define NintFloat(dtype)                                                       \
-  double tmp;                                                                  \
-  if (CvtConvertFloat(&in[i], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) {          \
-    out[i] = (int)(tmp + (tmp > 0 ? .5 : -.5));                                \
-  } else                                                                       \
+#define NintFloat(dtype)                                            \
+  double tmp;                                                       \
+  if (CvtConvertFloat(&in[i], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                 \
+    out[i] = (int)(tmp + (tmp > 0 ? .5 : -.5));                     \
+  }                                                                 \
+  else                                                              \
     out[i] = 0;
 
-#define NintComplex(dtype)                                                     \
-  double tmp;                                                                  \
-  if (CvtConvertFloat(&in[i * 2], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) {      \
-    out[i] = (int)(tmp + (tmp > 0 ? .5 : -.5));                                \
-  } else                                                                       \
+#define NintComplex(dtype)                                              \
+  double tmp;                                                           \
+  if (CvtConvertFloat(&in[i * 2], dtype, &tmp, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                     \
+    out[i] = (int)(tmp + (tmp > 0 ? .5 : -.5));                         \
+  }                                                                     \
+  else                                                                  \
     out[i] = 0;
 
-#define AbssqComplex(dtype)                                                    \
-  double r;                                                                    \
-  double imag;                                                                 \
-  double ans;                                                                  \
-  if (CvtConvertFloat(&in[i * 2], dtype, &r, DTYPE_NATIVE_DOUBLE, 0) &&        \
-      CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) { \
-    ans = r * r + imag * imag;                                                 \
-    CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);             \
-  } else                                                                       \
+#define AbssqComplex(dtype)                                                  \
+  double r;                                                                  \
+  double imag;                                                               \
+  double ans;                                                                \
+  if (CvtConvertFloat(&in[i * 2], dtype, &r, DTYPE_NATIVE_DOUBLE, 0) &&      \
+      CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                          \
+    ans = r * r + imag * imag;                                               \
+    CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);           \
+  }                                                                          \
+  else                                                                       \
     CvtConvertFloat(&roprand, DTYPE_F, &out[i], dtype, 0);
 
-#define ConjgComplex(dtype)                                                    \
-  double imag;                                                                 \
-  double ans;                                                                  \
-  memcpy(&out[i * 2], &in[i * 2], sizeof(in[i * 2]));                          \
-  if (CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) { \
-    ans = -imag;                                                               \
-    CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i * 2 + 1], dtype, 0);     \
-  } else                                                                       \
+#define ConjgComplex(dtype)                                                  \
+  double imag;                                                               \
+  double ans;                                                                \
+  memcpy(&out[i * 2], &in[i * 2], sizeof(in[i * 2]));                        \
+  if (CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                          \
+    ans = -imag;                                                             \
+    CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i * 2 + 1], dtype, 0);   \
+  }                                                                          \
+  else                                                                       \
     CvtConvertFloat(&roprand, DTYPE_F, &out[i * 2 + 1], dtype, 0);
 
-#define AbsComplex(dtype)                                                      \
-  double r;                                                                    \
-  double imag;                                                                 \
-  double mx;                                                                   \
-  double mn;                                                                   \
-  double ans;                                                                  \
-  int bad = 0;                                                                 \
-  if (CvtConvertFloat(&in[i * 2], dtype, &r, DTYPE_NATIVE_DOUBLE, 0) &&        \
-      CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) { \
-    r = r > 0 ? r : -r;                                                        \
-    imag = imag > 0 ? imag : -imag;                                            \
-    mx = r > imag ? r : imag;                                                  \
-    mn = r <= imag ? r : imag;                                                 \
-    if (mx > 0)                                                                \
-      ans = mx * sqrt((mn * mn) / (mx * mx) + 1.);                             \
-    else                                                                       \
-      ans = 0.0;                                                               \
-  } else                                                                       \
-    bad = 1;                                                                   \
-  if (bad)                                                                     \
-    CvtConvertFloat(&roprand, DTYPE_F, &out[i], dtype, 0);                     \
-  else                                                                         \
+#define AbsComplex(dtype)                                                    \
+  double r;                                                                  \
+  double imag;                                                               \
+  double mx;                                                                 \
+  double mn;                                                                 \
+  double ans;                                                                \
+  int bad = 0;                                                               \
+  if (CvtConvertFloat(&in[i * 2], dtype, &r, DTYPE_NATIVE_DOUBLE, 0) &&      \
+      CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                          \
+    r = r > 0 ? r : -r;                                                      \
+    imag = imag > 0 ? imag : -imag;                                          \
+    mx = r > imag ? r : imag;                                                \
+    mn = r <= imag ? r : imag;                                               \
+    if (mx > 0)                                                              \
+      ans = mx * sqrt((mn * mn) / (mx * mx) + 1.);                           \
+    else                                                                     \
+      ans = 0.0;                                                             \
+  }                                                                          \
+  else                                                                       \
+    bad = 1;                                                                 \
+  if (bad)                                                                   \
+    CvtConvertFloat(&roprand, DTYPE_F, &out[i], dtype, 0);                   \
+  else                                                                       \
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);
 
-#define Abs1Complex(dtype)                                                     \
-  double r;                                                                    \
-  double imag;                                                                 \
-  double ans;                                                                  \
-  int bad = 0;                                                                 \
-  if (CvtConvertFloat(&in[i * 2], dtype, &r, DTYPE_NATIVE_DOUBLE, 0) &&        \
-      CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) { \
-    r = r > 0 ? r : -r;                                                        \
-    imag = imag > 0 ? imag : -imag;                                            \
-    ans = r + imag;                                                            \
-  } else                                                                       \
-    bad = 1;                                                                   \
-  if (bad)                                                                     \
-    CvtConvertFloat(&roprand, DTYPE_F, &out[i], dtype, 0);                     \
-  else                                                                         \
+#define Abs1Complex(dtype)                                                   \
+  double r;                                                                  \
+  double imag;                                                               \
+  double ans;                                                                \
+  int bad = 0;                                                               \
+  if (CvtConvertFloat(&in[i * 2], dtype, &r, DTYPE_NATIVE_DOUBLE, 0) &&      \
+      CvtConvertFloat(&in[i * 2 + 1], dtype, &imag, DTYPE_NATIVE_DOUBLE, 0)) \
+  {                                                                          \
+    r = r > 0 ? r : -r;                                                      \
+    imag = imag > 0 ? imag : -imag;                                          \
+    ans = r + imag;                                                          \
+  }                                                                          \
+  else                                                                       \
+    bad = 1;                                                                 \
+  if (bad)                                                                   \
+    CvtConvertFloat(&roprand, DTYPE_F, &out[i], dtype, 0);                   \
+  else                                                                       \
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], dtype, 0);
 
 int MthJNINT();
 int MthJIGNNT();
 
-int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
@@ -224,7 +248,8 @@ int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   if (STATUS_NOT_OK)
     return status;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_BU:
     start_operate(uint8_t) out[i] = in[i];
     end_operate case DTYPE_WU : start_operate(uint16_t) out[i] = in[i];
@@ -258,7 +283,8 @@ int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   return status;
 }
 
-int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
@@ -267,7 +293,8 @@ int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   if (STATUS_NOT_OK)
     return status;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_BU:
     start_operate(uint8_t) out[i] = in[i];
     end_operate case DTYPE_WU : start_operate(uint16_t) out[i] = in[i];
@@ -301,7 +328,8 @@ int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   return status;
 }
 
-int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
@@ -310,7 +338,8 @@ int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   if (STATUS_NOT_OK)
     return status;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_BU:
   case DTYPE_WU:
   case DTYPE_LU:
@@ -340,7 +369,8 @@ int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   return status;
 }
 
-int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
@@ -349,7 +379,8 @@ int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   if (STATUS_NOT_OK)
     return status;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     start_operate2(int8_t) out[i] = 0;
@@ -382,14 +413,16 @@ int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   return status;
 }
 
-int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if (STATUS_NOT_OK)
     return status;
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_BU:
   case DTYPE_B:
     start_operate(uint8_t) out[i] = in[i];
@@ -416,14 +449,16 @@ int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   return status;
 }
 
-int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if (STATUS_NOT_OK)
     return status;
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     start_operate(uint8_t) out[i] = ~in[i];
@@ -443,14 +478,16 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr) {
 
 int Tdi3Logical(struct descriptor *in_ptr,
                 struct descriptor *kind __attribute__((unused)),
-                struct descriptor *out_ptr) {
+                struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if (STATUS_NOT_OK)
     return status;
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     start_operate1(uint8_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
@@ -467,14 +504,16 @@ int Tdi3Logical(struct descriptor *in_ptr,
   return status;
 }
 
-int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if (STATUS_NOT_OK)
     return status;
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     start_operate1(uint8_t, uint8_t) out[i] = (uint8_t) !(in[i] & 1);
@@ -495,7 +534,8 @@ int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr) {
 
 int Tdi3Nint(struct descriptor *in_ptr,
              struct descriptor *kind __attribute__((unused)),
-             struct descriptor *out_ptr) {
+             struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
@@ -504,7 +544,8 @@ int Tdi3Nint(struct descriptor *in_ptr,
   if (STATUS_NOT_OK)
     return status;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_BU:
     start_operate(uint8_t) out[i] = in[i];
     end_operate case DTYPE_WU : start_operate(uint16_t) out[i] = in[i];
@@ -538,7 +579,8 @@ int Tdi3Nint(struct descriptor *in_ptr,
   return status;
 }
 
-int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int out_count = 1;
   register int i;
@@ -547,7 +589,8 @@ int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   if (STATUS_NOT_OK)
     return status;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_BU:
     start_operate(int8_t) out[i] = -in[i];
     end_operate case DTYPE_WU : start_operate(int16_t) out[i] = -in[i];

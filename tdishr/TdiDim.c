@@ -91,86 +91,90 @@ extern int Tdi3Subtract();
 extern int CvtConvertFloat();
 
 static const int roprand = 0x8000;
-typedef struct {
+typedef struct
+{
   int longword[4];
 } octaword;
 
 extern int TdiGtO();
 extern int TdiLtO();
 
-#define SetupArgs                                                              \
-  struct descriptor_a *ina1 = (struct descriptor_a *)in1;                      \
-  struct descriptor_a *ina2 = (struct descriptor_a *)in2;                      \
-  struct descriptor_a *outa = (struct descriptor_a *)out;                      \
-  int scalars = 0;                                                             \
-  int nout;                                                                    \
-  switch (out->class) {                                                        \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    nout = 1;                                                                  \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    nout = outa->arsize / outa->length;                                        \
-    if (nout == 0)                                                             \
-      return 1;                                                                \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
-  }                                                                            \
-  switch (in1->class) {                                                        \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    scalars |= 1;                                                              \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    if (ina1->arsize / ina1->length < (unsigned int)nout)                      \
-      return TdiINV_SIZE;                                                      \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
-  }                                                                            \
-  switch (in2->class) {                                                        \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    if (scalars && (nout > 1))                                                 \
-      return TdiINV_SIZE;                                                      \
-    scalars |= 2;                                                              \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    if (ina2->arsize / ina2->length < (unsigned int)nout)                      \
-      return TdiINV_SIZE;                                                      \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
+#define SetupArgs                                         \
+  struct descriptor_a *ina1 = (struct descriptor_a *)in1; \
+  struct descriptor_a *ina2 = (struct descriptor_a *)in2; \
+  struct descriptor_a *outa = (struct descriptor_a *)out; \
+  int scalars = 0;                                        \
+  int nout;                                               \
+  switch (out->class)                                     \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    nout = 1;                                             \
+    break;                                                \
+  case CLASS_A:                                           \
+    nout = outa->arsize / outa->length;                   \
+    if (nout == 0)                                        \
+      return 1;                                           \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
+  }                                                       \
+  switch (in1->class)                                     \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    scalars |= 1;                                         \
+    break;                                                \
+  case CLASS_A:                                           \
+    if (ina1->arsize / ina1->length < (unsigned int)nout) \
+      return TdiINV_SIZE;                                 \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
+  }                                                       \
+  switch (in2->class)                                     \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    if (scalars && (nout > 1))                            \
+      return TdiINV_SIZE;                                 \
+    scalars |= 2;                                         \
+    break;                                                \
+  case CLASS_A:                                           \
+    if (ina2->arsize / ina2->length < (unsigned int)nout) \
+      return TdiINV_SIZE;                                 \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
   }
 
-#define conv(data_type)                                                        \
-  {                                                                            \
-    DESCRIPTOR_A(i1, sizeof(double), data_type, 0, 0);                         \
-    DESCRIPTOR_A(i2, sizeof(double), data_type, 0, 0);                         \
-    DESCRIPTOR_A(o, sizeof(double), data_type, 0, 0);                          \
-    double *i1p = malloc(((scalars & 1) ? 1 : nout) * sizeof(double));         \
-    double *i2p = malloc(((scalars & 1) ? 1 : nout) * sizeof(double));         \
-    double *op = malloc(nout * sizeof(double));                                \
-    i1.arsize = (scalars & 1) ? 1 : nout;                                      \
-    i2.arsize = (scalars & 2) ? 1 : nout;                                      \
-    o.arsize = nout;                                                           \
-    i1.pointer = (char *)i1p;                                                  \
-    i2.pointer = (char *)i2p;                                                  \
-    o.pointer = (char *)op;                                                    \
-    TdiConvert(in1, &i1);                                                      \
-    TdiConvert(in2, &i2);                                                      \
-    {                                                                          \
-      struct descriptor_a *in1 = (struct descriptor_a *)&i1;                   \
-      struct descriptor_a *in2 = (struct descriptor_a *)&i2;                   \
+#define conv(data_type)                                                \
+  {                                                                    \
+    DESCRIPTOR_A(i1, sizeof(double), data_type, 0, 0);                 \
+    DESCRIPTOR_A(i2, sizeof(double), data_type, 0, 0);                 \
+    DESCRIPTOR_A(o, sizeof(double), data_type, 0, 0);                  \
+    double *i1p = malloc(((scalars & 1) ? 1 : nout) * sizeof(double)); \
+    double *i2p = malloc(((scalars & 1) ? 1 : nout) * sizeof(double)); \
+    double *op = malloc(nout * sizeof(double));                        \
+    i1.arsize = (scalars & 1) ? 1 : nout;                              \
+    i2.arsize = (scalars & 2) ? 1 : nout;                              \
+    o.arsize = nout;                                                   \
+    i1.pointer = (char *)i1p;                                          \
+    i2.pointer = (char *)i2p;                                          \
+    o.pointer = (char *)op;                                            \
+    TdiConvert(in1, &i1);                                              \
+    TdiConvert(in2, &i2);                                              \
+    {                                                                  \
+      struct descriptor_a *in1 = (struct descriptor_a *)&i1;           \
+      struct descriptor_a *in2 = (struct descriptor_a *)&i2;           \
       struct descriptor_a *out = (struct descriptor_a *)&o;
 
-#define unconv                                                                 \
-  }                                                                            \
-  TdiConvert(&o, out);                                                         \
-  free(i1p);                                                                   \
-  free(i2p);                                                                   \
-  free(op);                                                                    \
+#define unconv         \
+  }                    \
+  TdiConvert(&o, out); \
+  free(i1p);           \
+  free(i2p);           \
+  free(op);            \
   }
 
 #ifdef WORDS_BIGENDIAN
@@ -180,10 +184,12 @@ extern int TdiLtO();
 #endif
 
 int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2,
-              struct descriptor *out) {
+              struct descriptor *out)
+{
   int size;
   SetupArgs TdiConvert(in1, out);
-  switch (in1->dtype) {
+  switch (in1->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     size = sizeof(char);
@@ -229,10 +235,12 @@ int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2,
   {
     int *in2p = (int *)in2->pointer;
     char *outp = (char *)out->pointer;
-    switch (scalars) {
+    switch (scalars)
+    {
     case 0:
     case 1:
-      while (nout--) {
+      while (nout--)
+      {
         if (*in2p < size * 8)
           *(outp + _offset) |= 1 << (*in2p % 8);
         in2p++;
@@ -240,7 +248,8 @@ int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2,
       }
       break;
     case 2:
-      while (nout--) {
+      while (nout--)
+      {
         if (*in2p < size * 8)
           *(outp + _offset) |= 1 << (*in2p % 8);
         outp += size;
@@ -256,10 +265,12 @@ int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2,
-              struct descriptor *out) {
+              struct descriptor *out)
+{
   int size;
   SetupArgs TdiConvert(in1, out);
-  switch (in1->dtype) {
+  switch (in1->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     size = sizeof(char);
@@ -305,10 +316,12 @@ int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2,
   {
     int *in2p = (int *)in2->pointer;
     char *outp = (char *)out->pointer;
-    switch (scalars) {
+    switch (scalars)
+    {
     case 0:
     case 1:
-      while (nout--) {
+      while (nout--)
+      {
         if (*in2p < size * 8)
           *(outp + _offset) &= ~(1 << (*in2p % 8));
         in2p++;
@@ -316,7 +329,8 @@ int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2,
       }
       break;
     case 2:
-      while (nout--) {
+      while (nout--)
+      {
         if (*in2p < size * 8)
           *(outp + _offset) &= ~(1 << (*in2p % 8));
         outp += size;
@@ -332,9 +346,11 @@ int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3Btest(struct descriptor *in1, struct descriptor *in2,
-              struct descriptor *out) {
+              struct descriptor *out)
+{
   int size;
-  SetupArgs switch (in1->dtype) {
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     size = sizeof(char);
@@ -381,9 +397,11 @@ int Tdi3Btest(struct descriptor *in1, struct descriptor *in2,
     char *in1p = (char *)in1->pointer;
     int *in2p = (int *)in2->pointer;
     char *outp = (char *)out->pointer;
-    switch (scalars) {
+    switch (scalars)
+    {
     case 0:
-      while (nout--) {
+      while (nout--)
+      {
         if (*in2p < size * 8)
           *outp = (char)((*(in1p + *in2p / 8) & (1 << (*in2p % 8))) > 0);
         in1p += size;
@@ -392,7 +410,8 @@ int Tdi3Btest(struct descriptor *in1, struct descriptor *in2,
       }
       break;
     case 1:
-      while (nout--) {
+      while (nout--)
+      {
         if (*in2p < size * 8)
           *outp = (char)((*(in1p + *in2p / 8) & (1 << (*in2p % 8))) > 0);
         outp++;
@@ -400,7 +419,8 @@ int Tdi3Btest(struct descriptor *in1, struct descriptor *in2,
       }
       break;
     case 2:
-      while (nout--) {
+      while (nout--)
+      {
         if (*in2p < size * 8)
           *outp = (char)((*(in1p + *in2p / 8) & (1 << (*in2p % 8))) > 0);
         in1p++;
@@ -417,9 +437,11 @@ int Tdi3Btest(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3Complex(struct descriptor *in1, struct descriptor *in2,
-                struct descriptor *out) {
+                struct descriptor *out)
+{
   int size, isize;
-  SetupArgs switch (in1->dtype) {
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
   case DTYPE_W:
@@ -461,9 +483,11 @@ int Tdi3Complex(struct descriptor *in1, struct descriptor *in2,
     char *in1p = (char *)in1->pointer;
     char *in2p = (char *)in2->pointer;
     char *outp = (char *)out->pointer;
-    switch (scalars) {
+    switch (scalars)
+    {
     case 0:
-      while (nout--) {
+      while (nout--)
+      {
         memmove(outp, in1p, size);
         outp += size;
         memmove(outp, in2p, size);
@@ -473,7 +497,8 @@ int Tdi3Complex(struct descriptor *in1, struct descriptor *in2,
       }
       break;
     case 1:
-      while (nout--) {
+      while (nout--)
+      {
         memmove(outp, in1p, size);
         outp += size;
         memmove(outp, in2p, size);
@@ -482,7 +507,8 @@ int Tdi3Complex(struct descriptor *in1, struct descriptor *in2,
       }
       break;
     case 2:
-      while (nout--) {
+      while (nout--)
+      {
         memmove(outp, in1p, size);
         outp += size;
         memmove(outp, in2p, size);
@@ -500,85 +526,101 @@ int Tdi3Complex(struct descriptor *in1, struct descriptor *in2,
   return 1;
 }
 
-#define Operate(type, testit)                                                  \
-  {                                                                            \
-    type *in1p = (type *)in1->pointer;                                         \
-    type *in2p = (type *)in2->pointer;                                         \
-    type *outp = (type *)out->pointer;                                         \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-    case 3:                                                                    \
-      while (nout--) {                                                         \
-        *outp++ = *((testit) ? in1p : in2p);                                   \
-        in1p++;                                                                \
-        in2p++;                                                                \
-      }                                                                        \
-      break;                                                                   \
-    case 1:                                                                    \
-      while (nout--) {                                                         \
-        *outp++ = *((testit) ? in1p : in2p);                                   \
-        in2p++;                                                                \
-      }                                                                        \
-      break;                                                                   \
-    case 2:                                                                    \
-      while (nout--) {                                                         \
-        *outp++ = *((testit) ? in1p : in2p);                                   \
-        in1p++;                                                                \
-      }                                                                        \
-      break;                                                                   \
-    }                                                                          \
-    break;                                                                     \
+#define Operate(type, testit)                \
+  {                                          \
+    type *in1p = (type *)in1->pointer;       \
+    type *in2p = (type *)in2->pointer;       \
+    type *outp = (type *)out->pointer;       \
+    switch (scalars)                         \
+    {                                        \
+    case 0:                                  \
+    case 3:                                  \
+      while (nout--)                         \
+      {                                      \
+        *outp++ = *((testit) ? in1p : in2p); \
+        in1p++;                              \
+        in2p++;                              \
+      }                                      \
+      break;                                 \
+    case 1:                                  \
+      while (nout--)                         \
+      {                                      \
+        *outp++ = *((testit) ? in1p : in2p); \
+        in2p++;                              \
+      }                                      \
+      break;                                 \
+    case 2:                                  \
+      while (nout--)                         \
+      {                                      \
+        *outp++ = *((testit) ? in1p : in2p); \
+        in1p++;                              \
+      }                                      \
+      break;                                 \
+    }                                        \
+    break;                                   \
   }
 
-#define OperateF(type, dtype, native, testit)                                  \
-  {                                                                            \
-    type *in1p = (type *)in1->pointer;                                         \
-    type *in2p = (type *)in2->pointer;                                         \
-    type *outp = (type *)out->pointer;                                         \
-    type a, b;                                                                 \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-    case 3:                                                                    \
-      while (nout--) {                                                         \
-        if (CvtConvertFloat(in1p, dtype, &a, native, 0) &&                     \
-            CvtConvertFloat(in2p, dtype, &b, native, 0)) {                     \
-          type ans = (testit) ? a : b;                                         \
-          CvtConvertFloat(&ans, native, outp++, dtype, 0);                     \
-        } else                                                                 \
-          CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                \
-        in1p++;                                                                \
-        in2p++;                                                                \
-      }                                                                        \
-      break;                                                                   \
-    case 1:                                                                    \
-      while (nout--) {                                                         \
-        if (CvtConvertFloat(in1p, dtype, &a, native, 0) &&                     \
-            CvtConvertFloat(in2p, dtype, &b, native, 0)) {                     \
-          type ans = (testit) ? a : b;                                         \
-          CvtConvertFloat(&ans, native, outp++, dtype, 0);                     \
-        } else                                                                 \
-          CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                \
-        in2p++;                                                                \
-      }                                                                        \
-      break;                                                                   \
-    case 2:                                                                    \
-      while (nout--) {                                                         \
-        if (CvtConvertFloat(in1p, dtype, &a, native, 0) &&                     \
-            CvtConvertFloat(in2p, dtype, &b, native, 0)) {                     \
-          type ans = (testit) ? a : b;                                         \
-          CvtConvertFloat(&ans, native, outp++, dtype, 0);                     \
-        } else                                                                 \
-          CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                \
-        in1p++;                                                                \
-      }                                                                        \
-      break;                                                                   \
-    }                                                                          \
-    break;                                                                     \
+#define OperateF(type, dtype, native, testit)                   \
+  {                                                             \
+    type *in1p = (type *)in1->pointer;                          \
+    type *in2p = (type *)in2->pointer;                          \
+    type *outp = (type *)out->pointer;                          \
+    type a, b;                                                  \
+    switch (scalars)                                            \
+    {                                                           \
+    case 0:                                                     \
+    case 3:                                                     \
+      while (nout--)                                            \
+      {                                                         \
+        if (CvtConvertFloat(in1p, dtype, &a, native, 0) &&      \
+            CvtConvertFloat(in2p, dtype, &b, native, 0))        \
+        {                                                       \
+          type ans = (testit) ? a : b;                          \
+          CvtConvertFloat(&ans, native, outp++, dtype, 0);      \
+        }                                                       \
+        else                                                    \
+          CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0); \
+        in1p++;                                                 \
+        in2p++;                                                 \
+      }                                                         \
+      break;                                                    \
+    case 1:                                                     \
+      while (nout--)                                            \
+      {                                                         \
+        if (CvtConvertFloat(in1p, dtype, &a, native, 0) &&      \
+            CvtConvertFloat(in2p, dtype, &b, native, 0))        \
+        {                                                       \
+          type ans = (testit) ? a : b;                          \
+          CvtConvertFloat(&ans, native, outp++, dtype, 0);      \
+        }                                                       \
+        else                                                    \
+          CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0); \
+        in2p++;                                                 \
+      }                                                         \
+      break;                                                    \
+    case 2:                                                     \
+      while (nout--)                                            \
+      {                                                         \
+        if (CvtConvertFloat(in1p, dtype, &a, native, 0) &&      \
+            CvtConvertFloat(in2p, dtype, &b, native, 0))        \
+        {                                                       \
+          type ans = (testit) ? a : b;                          \
+          CvtConvertFloat(&ans, native, outp++, dtype, 0);      \
+        }                                                       \
+        else                                                    \
+          CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0); \
+        in1p++;                                                 \
+      }                                                         \
+      break;                                                    \
+    }                                                           \
+    break;                                                      \
   }
 
 int Tdi3Max(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+            struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_T:
     return TdiINVDTYDSC;
   case DTYPE_B:
@@ -603,8 +645,10 @@ int Tdi3Max(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3Min(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+            struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_T:
     return TdiINVDTYDSC;
   case DTYPE_B:
@@ -629,14 +673,17 @@ int Tdi3Min(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3Dim(struct descriptor *in1, struct descriptor *in2,
-            struct descriptor *out) {
+            struct descriptor *out)
+{
   INIT_STATUS;
-  typedef struct {
+  typedef struct
+  {
     double l[2];
   } octaword_aligned;
   static const octaword_aligned zero = {{0}};
 
-  switch (in1->dtype) {
+  switch (in1->dtype)
+  {
   default:
     break;
   case DTYPE_FC:
@@ -651,7 +698,8 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2,
   status = Tdi3Subtract(in1, in2, out);
   if (STATUS_NOT_OK)
     return status;
-  switch (in1->dtype) {
+  switch (in1->dtype)
+  {
   default:
     break;
   case DTYPE_BU:
@@ -679,74 +727,83 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2,
 }
 
 #undef Operate
-#define Operate(type1, type2)                                                  \
-  {                                                                            \
-    type1 *in1p = (type1 *)in1->pointer;                                       \
-    type2 *in2p = (type2 *)in2->pointer;                                       \
-    type1 *outp = (type1 *)out->pointer;                                       \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-      while (nout--) {                                                         \
-        if (*in2p > 0)                                                         \
-          *outp++ = (type1)(*in1p++ << *in2p++);                               \
-        else                                                                   \
-          *outp++ = (type1)(*in1p++ >> (-(*in2p++)));                          \
-      }                                                                        \
-      break;                                                                   \
-    case 1:                                                                    \
-      while (nout--) {                                                         \
-        if (*in2p > 0)                                                         \
-          *outp++ = (type1)(*in1p << *in2p++);                                 \
-        else                                                                   \
-          *outp++ = (type1)(*in1p >> (-(*in2p++)));                            \
-      }                                                                        \
-      break;                                                                   \
-    case 2:                                                                    \
-      while (nout--) {                                                         \
-        if (*in2p > 0)                                                         \
-          *outp++ = (type1)(*in1p++ << *in2p);                                 \
-        else                                                                   \
-          *outp++ = (type1)(*in1p++ >> (-(*in2p)));                            \
-      }                                                                        \
-      break;                                                                   \
-    case 3: {                                                                  \
-      if (*in2p > 0)                                                           \
-        *outp = (type1)(*in1p << *in2p);                                       \
-      else                                                                     \
-        *outp = (type1)(*in1p >> (-(*in2p)));                                  \
-    } break;                                                                   \
-    }                                                                          \
-    break;                                                                     \
+#define Operate(type1, type2)                         \
+  {                                                   \
+    type1 *in1p = (type1 *)in1->pointer;              \
+    type2 *in2p = (type2 *)in2->pointer;              \
+    type1 *outp = (type1 *)out->pointer;              \
+    switch (scalars)                                  \
+    {                                                 \
+    case 0:                                           \
+      while (nout--)                                  \
+      {                                               \
+        if (*in2p > 0)                                \
+          *outp++ = (type1)(*in1p++ << *in2p++);      \
+        else                                          \
+          *outp++ = (type1)(*in1p++ >> (-(*in2p++))); \
+      }                                               \
+      break;                                          \
+    case 1:                                           \
+      while (nout--)                                  \
+      {                                               \
+        if (*in2p > 0)                                \
+          *outp++ = (type1)(*in1p << *in2p++);        \
+        else                                          \
+          *outp++ = (type1)(*in1p >> (-(*in2p++)));   \
+      }                                               \
+      break;                                          \
+    case 2:                                           \
+      while (nout--)                                  \
+      {                                               \
+        if (*in2p > 0)                                \
+          *outp++ = (type1)(*in1p++ << *in2p);        \
+        else                                          \
+          *outp++ = (type1)(*in1p++ >> (-(*in2p)));   \
+      }                                               \
+      break;                                          \
+    case 3:                                           \
+    {                                                 \
+      if (*in2p > 0)                                  \
+        *outp = (type1)(*in1p << *in2p);              \
+      else                                            \
+        *outp = (type1)(*in1p >> (-(*in2p)));         \
+    }                                                 \
+    break;                                            \
+    }                                                 \
+    break;                                            \
   }
 
-#define Operate128(type, fun)                                                  \
-  {                                                                            \
-    type##_t *in1p = (type##_t *)in1->pointer;                                 \
-    int128_t *in2p = (int128_t *)in2->pointer;                                 \
-    type##_t *outp = (type##_t *)out->pointer;                                 \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-      while (nout--)                                                           \
-        type##_##fun(in1p++, (in2p++)->low, outp++);                           \
-      break;                                                                   \
-    case 1:                                                                    \
-      while (nout--)                                                           \
-        type##_##fun(in1p, (in2p++)->low, outp++);                             \
-      break;                                                                   \
-    case 2:                                                                    \
-      while (nout--)                                                           \
-        type##_##fun(in1p++, (in2p)->low, outp++);                             \
-      break;                                                                   \
-    case 3:                                                                    \
-      type##_##fun(in1p, (in2p)->low, outp);                                   \
-      break;                                                                   \
-    }                                                                          \
-    break;                                                                     \
+#define Operate128(type, fun)                        \
+  {                                                  \
+    type##_t *in1p = (type##_t *)in1->pointer;       \
+    int128_t *in2p = (int128_t *)in2->pointer;       \
+    type##_t *outp = (type##_t *)out->pointer;       \
+    switch (scalars)                                 \
+    {                                                \
+    case 0:                                          \
+      while (nout--)                                 \
+        type##_##fun(in1p++, (in2p++)->low, outp++); \
+      break;                                         \
+    case 1:                                          \
+      while (nout--)                                 \
+        type##_##fun(in1p, (in2p++)->low, outp++);   \
+      break;                                         \
+    case 2:                                          \
+      while (nout--)                                 \
+        type##_##fun(in1p++, (in2p)->low, outp++);   \
+      break;                                         \
+    case 3:                                          \
+      type##_##fun(in1p, (in2p)->low, outp);         \
+      break;                                         \
+    }                                                \
+    break;                                           \
   }
 
 int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2,
-              struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+              struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_BU:
   case DTYPE_B:
     Operate(uint8_t, int8_t) case DTYPE_WU : case DTYPE_W
@@ -759,45 +816,55 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2,
 }
 
 #undef Operate
-#define in2p_to_n(type1, type2, in2p)                                          \
-  type2 n = *in2p % (sizeof(type1) * CHAR_BIT);                                \
-  if (n < 0)                                                                   \
+#define in2p_to_n(type1, type2, in2p)           \
+  type2 n = *in2p % (sizeof(type1) * CHAR_BIT); \
+  if (n < 0)                                    \
   n += (sizeof(type1) * CHAR_BIT)
-#define Operate(type1, type2, operator)                                        \
-  {                                                                            \
-    type1 *in1p = (type1 *)in1->pointer;                                       \
-    type2 *in2p = (type2 *)in2->pointer;                                       \
-    type1 *outp = (type1 *)out->pointer;                                       \
-    switch (scalars) {                                                         \
-    case 0:                                                                    \
-      while (nout--) {                                                         \
-        in2p_to_n(type1, type2, in2p++);                                       \
-        *outp++ = (type1)(*in1p++ operator n);                                 \
-      }                                                                        \
-      break;                                                                   \
-    case 1:                                                                    \
-      while (nout--) {                                                         \
-        in2p_to_n(type1, type2, in2p++);                                       \
-        *outp++ = (type1)(*in1p operator n);                                   \
-      }                                                                        \
-      break;                                                                   \
-    case 2: {                                                                  \
-      in2p_to_n(type1, type2, in2p);                                           \
-      while (nout--) {                                                         \
-        *outp++ = (type1)(*in1p++ operator n);                                 \
-      }                                                                        \
-    } break;                                                                   \
-    case 3: {                                                                  \
-      in2p_to_n(type1, type2, in2p);                                           \
-      *outp = (type1)(*in1p operator n);                                       \
-    } break;                                                                   \
-    }                                                                          \
-    break;                                                                     \
+#define Operate(type1, type2, operator)        \
+  {                                            \
+    type1 *in1p = (type1 *)in1->pointer;       \
+    type2 *in2p = (type2 *)in2->pointer;       \
+    type1 *outp = (type1 *)out->pointer;       \
+    switch (scalars)                           \
+    {                                          \
+    case 0:                                    \
+      while (nout--)                           \
+      {                                        \
+        in2p_to_n(type1, type2, in2p++);       \
+        *outp++ = (type1)(*in1p++ operator n); \
+      }                                        \
+      break;                                   \
+    case 1:                                    \
+      while (nout--)                           \
+      {                                        \
+        in2p_to_n(type1, type2, in2p++);       \
+        *outp++ = (type1)(*in1p operator n);   \
+      }                                        \
+      break;                                   \
+    case 2:                                    \
+    {                                          \
+      in2p_to_n(type1, type2, in2p);           \
+      while (nout--)                           \
+      {                                        \
+        *outp++ = (type1)(*in1p++ operator n); \
+      }                                        \
+    }                                          \
+    break;                                     \
+    case 3:                                    \
+    {                                          \
+      in2p_to_n(type1, type2, in2p);           \
+      *outp = (type1)(*in1p operator n);       \
+    }                                          \
+    break;                                     \
+    }                                          \
+    break;                                     \
   }
 
 int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2,
-                   struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+                   struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_B:
     Operate(int8_t, int8_t, >>) case DTYPE_BU
         : Operate(uint8_t, int8_t, >>) case DTYPE_W
@@ -814,8 +881,10 @@ int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2,
 }
 
 int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2,
-                  struct descriptor *out) {
-  SetupArgs switch (in1->dtype) {
+                  struct descriptor *out)
+{
+  SetupArgs switch (in1->dtype)
+  {
   case DTYPE_B:
     Operate(int8_t, int8_t, <<) case DTYPE_BU
         : Operate(uint8_t, int8_t, <<) case DTYPE_W

@@ -47,31 +47,39 @@ using namespace MDSplus;
 using namespace testing;
 static char test[256];
 
-inline static Data *cnx_get(Connection *cnx, const char *cmd) {
+inline static Data *cnx_get(Connection *cnx, const char *cmd)
+{
   strcpy(test, cmd);
   return cnx->get(test);
 }
 
 void _test_tree_open(const char *prot, const unsigned short port,
-                     const char *mode) {
+                     const char *mode)
+{
   MdsIpInstancer mdsip(prot, port, mode);
   std::string addr = mdsip.getAddress();
   std::cout << "attempt to connect to: " << addr;
   if (mode)
     std::cout << " (" << mode << ")";
-  std::cout << "\n" << std::flush;
+  std::cout << "\n"
+            << std::flush;
   unique_ptr<Connection> cnx = NULL;
   int retry = 3;
   for (; !cnx; retry--)
-    try {
+    try
+    {
       cnx = new Connection(const_cast<char *>(addr.c_str()));
-    } catch (...) {
+    }
+    catch (...)
+    {
       if (retry <= 1)
         TEST0("could not connect");
-      std::cout << "retry\n" << std::flush;
+      std::cout << "retry\n"
+                << std::flush;
       usleep(500000);
     }
-  std::cout << "success: starting test\n" << std::flush;
+  std::cout << "success: starting test\n"
+            << std::flush;
   // test client-server communication with max 8 dims//
   unique_ptr<Data> data = cnx_get(cnx, "zero([1,1,1,1,1,1,1,1],1)");
   TEST1(AutoString(data->getString()).string == "[[[[[[[[0]]]]]]]]");
@@ -109,11 +117,17 @@ void _test_tree_open(const char *prot, const unsigned short port,
 }
 
 void test_tree_open(const char *prot, const unsigned short port,
-                    const char *mode) {
-  try {
+                    const char *mode)
+{
+  try
+  {
     _test_tree_open(prot, port, mode);
-  } catch (const std::exception &e) {
-    std::cout << "ERROR: " << test << '\n' << e.what() << '\n' << std::flush;
+  }
+  catch (const std::exception &e)
+  {
+    std::cout << "ERROR: " << test << '\n'
+              << e.what() << '\n'
+              << std::flush;
     TEST0("exception");
   }
 }
@@ -122,7 +136,8 @@ void test_tree_open(const char *prot, const unsigned short port,
 //  main  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   int ipv6 = (argc > 1 && !strcmp(argv[1], "ipv6"));
   TEST_TIMEOUT(30);
   setenv("t_connect_path", ".", 1);
@@ -141,13 +156,16 @@ int main(int argc, char *argv[]) {
 
   // this makes the t_connect in a separate process so that all static
   // variables instanced are destroied when the child ends.
-  try {
+  try
+  {
     unique_ptr<Tree> tree = new Tree("t_connect", -1, "NEW");
     unique_ptr<TreeNode>(tree->addNode("test_cnx", "NUMERIC"));
     tree->write();
     tree->edit(false);
     tree->createPulse(1);
-  } catch (...) {
+  }
+  catch (...)
+  {
     std::cerr << "Error creating model tree";
   }
 
@@ -174,7 +192,8 @@ int main(int argc, char *argv[]) {
   test_tree_open("tcp", 8601, "-m");
   END_TESTING;
 
-  if (ipv6) {
+  if (ipv6)
+  {
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6 - s);
     test_tree_open("tcpv6", 8602, "-s");
@@ -192,7 +211,8 @@ int main(int argc, char *argv[]) {
   test_tree_open("udt", 8605, "-m");
   END_TESTING;
 
-  if (ipv6) {
+  if (ipv6)
+  {
     // udtv6 //
     BEGIN_TESTING(Connection udtv6 - s);
     test_tree_open("udtv6", 8606, "-s");

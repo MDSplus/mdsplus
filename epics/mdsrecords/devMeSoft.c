@@ -57,7 +57,8 @@ static long init_record(waveformRecord *prec);
 static long read_me(waveformRecord *prec);
 extern int registerMdsEvent(char *eventName);
 extern int waitMdsEvent(char *eventName, char *buf, int maxLen, int *retLen);
-struct {
+struct
+{
   long number;
   DEVSUPFUN report;
   DEVSUPFUN init;
@@ -67,7 +68,8 @@ struct {
 } devMeSoft = {5, NULL, NULL, init_record, NULL, read_me};
 epicsExportAddress(dset, devMeSoft);
 
-static void callbackFunc(CALLBACK *pcallback) {
+static void callbackFunc(CALLBACK *pcallback)
+{
   struct dbCommon *precord;
   rset *prset;
 
@@ -78,7 +80,8 @@ static void callbackFunc(CALLBACK *pcallback) {
   dbScanUnlock(precord);
 }
 
-static long init_record(waveformRecord *prec) {
+static long init_record(waveformRecord *prec)
+{
   CALLBACK *pcallback;
   pcallback = (CALLBACK *)(calloc(1, sizeof(CALLBACK)));
   callbackSetCallback(callbackFunc, pcallback);
@@ -89,14 +92,16 @@ static long init_record(waveformRecord *prec) {
   return 0;
 }
 
-static long asynchRead(CALLBACK *pcallback) {
+static long asynchRead(CALLBACK *pcallback)
+{
   struct dbCommon *precord;
   waveformRecord *prec;
   int retLen, maxLen, elSize = 1;
 
   callbackGetUser(precord, pcallback);
   prec = (waveformRecord *)precord;
-  switch (prec->ftvl) {
+  switch (prec->ftvl)
+  {
   case DBF_UCHAR:
   case DBF_CHAR:
     elSize = 1;
@@ -127,9 +132,11 @@ static long asynchRead(CALLBACK *pcallback) {
   return 0;
 }
 
-static long read_me(waveformRecord *prec) {
+static long read_me(waveformRecord *prec)
+{
   CALLBACK *pcallback = (CALLBACK *)prec->dpvt;
-  if (prec->pact) {
+  if (prec->pact)
+  {
     prec->udf = FALSE;
     return 0;
   }

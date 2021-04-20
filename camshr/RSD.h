@@ -6,7 +6,8 @@
 // NB! order of members is different from original
 //      to get data to pack into same size memory, ie
 //      40 bytes
-typedef struct {
+typedef struct
+{
   __u8 error_code : 7;
   __u8 valid : 1;
 
@@ -34,7 +35,8 @@ typedef struct {
 
   union {
     __u16 stacsr;
-    struct {
+    struct
+    {
       __u8 noq : 1;
       __u8 nox : 1;
       __u8 done : 1;

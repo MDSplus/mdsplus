@@ -7,7 +7,8 @@
 #define TREETHREADSTATIC_ARG TREETHREADSTATIC_TYPE *TREETHREADSTATIC_VAR
 #define TREETHREADSTATIC(MTS) TREETHREADSTATIC_ARG = TreeGetThreadStatic(MTS)
 #define TREETHREADSTATIC_INIT TREETHREADSTATIC(NULL)
-typedef struct {
+typedef struct
+{
   void *dbid;
   int64_t view_date;
   NCI temp_nci;

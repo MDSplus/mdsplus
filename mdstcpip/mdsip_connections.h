@@ -18,7 +18,8 @@
 #define NULL (void *)0
 #endif
 
-enum _mdsip_client_types {
+enum _mdsip_client_types
+{
   VMS_CLIENT = 1,
   IEEE_CLIENT = 2,
   JAVA_CLIENT = 3,
@@ -27,19 +28,22 @@ enum _mdsip_client_types {
   CRAY_CLIENT = 8
 };
 
-typedef struct {
+typedef struct
+{
   char data[12];
   int eventid;
   void (*astadr)(void *, int, char *);
   void *astprm;
 } MdsEventInfo;
 
-typedef struct {
+typedef struct
+{
   char data[12];
   char eventid;
 } JMdsEventInfo;
 
-typedef struct _eventlist {
+typedef struct _eventlist
+{
   int conid;
   int eventid;
   char jeventid;
@@ -48,7 +52,8 @@ typedef struct _eventlist {
   struct _eventlist *next;
 } MdsEventList;
 
-typedef struct {
+typedef struct
+{
   char *short_name;
   char *long_name;
   int expects_value;
@@ -58,7 +63,8 @@ typedef struct {
 
 typedef uint8_t con_t;
 
-typedef struct _connection {
+typedef struct _connection
+{
   int id; // unique connection id
   struct _connection *next;
   pthread_cond_t cond;
@@ -107,7 +113,8 @@ int errno = 0;
 ///
 /// \brief Header of Message structure.
 ///
-typedef struct {
+typedef struct
+{
   int msglen bits32;
   int status bits32;
   short length bits16;
@@ -127,7 +134,8 @@ typedef struct {
 ///
 /// \brief Message structure for passing data through connections
 ///
-typedef struct {
+typedef struct
+{
   MsgHdr h;
   char bytes[1];
 } Message, *MsgPtr;
@@ -147,7 +155,8 @@ typedef struct {
 /// | disconnect | clear connection instance         |
 /// | recv_to    | receive buffer from cocnection with time out |
 ///
-typedef struct _io_routines {
+typedef struct _io_routines
+{
   int (*connect)(Connection *c, char *protocol, char *connectString);
   ssize_t (*send)(Connection *c, const void *buffer, size_t buflen, int nowait);
   ssize_t (*recv)(Connection *c, void *buffer, size_t buflen);
@@ -183,16 +192,17 @@ typedef struct _io_routines {
 #endif
 #define SupportsCompression(c) (c & SUPPORTS_COMPRESSION)
 
-#define FlipBytes(num, ptr)                                                    \
-  {                                                                            \
-    int __i;                                                                   \
-    int __n = num;                                                             \
-    char *__p = ptr;                                                           \
-    for (__i = 0; __i < __n / 2; __i++) {                                      \
-      char __tmp = __p[__i];                                                   \
-      __p[__i] = __p[__n - __i - 1];                                           \
-      __p[__n - __i - 1] = __tmp;                                              \
-    }                                                                          \
+#define FlipBytes(num, ptr)             \
+  {                                     \
+    int __i;                            \
+    int __n = num;                      \
+    char *__p = ptr;                    \
+    for (__i = 0; __i < __n / 2; __i++) \
+    {                                   \
+      char __tmp = __p[__i];            \
+      __p[__i] = __p[__n - __i - 1];    \
+      __p[__n - __i - 1] = __tmp;       \
+    }                                   \
   }
 #if HAVE_PTHREAD_H
 #include <pthread.h>

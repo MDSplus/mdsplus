@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////
 
 int MdsEventAst(int id, char *eventnam, void (*astadr)(), void *astprm,
-                int *eventid) {
+                int *eventid)
+{
 
   struct descrip eventnamarg;
   struct descrip infoarg;
@@ -48,7 +49,8 @@ int MdsEventAst(int id, char *eventnam, void (*astadr)(), void *astprm,
                   eventnam),
       MakeDescrip((struct descrip *)&infoarg, DTYPE_UCHAR, 1, &size, &info),
       (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) {
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
+  {
     *eventid = *(int *)ansarg.ptr;
   }
   free(ansarg.ptr);

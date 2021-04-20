@@ -47,7 +47,8 @@ static int KsMultiIo(CamKey Key,           // module info
                      TranslatedIosb *iosb, // status struct
                      int dmode,            // mode
                      int Enhanced          // enhanced
-) {
+)
+{
   char dev_name[12];
   BYTE Command[COMMAND_SIZE(OpCodeBlockCAMAC)];
   int scsiDevice, status;
@@ -71,7 +72,8 @@ static int KsMultiIo(CamKey Key,           // module info
   // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address);
   sprintf(dev_name, "GK%c%2d%2.2d", Key.scsi_port, Key.scsi_address, Key.crate);
 
-  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
+  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0)
+  {
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "%s(): error -- no scsi device found for '%s'\n",
               KM_ROUTINE_NAME, dev_name);
@@ -110,8 +112,10 @@ static int KsMultiIo(CamKey Key,           // module info
                    sizeof(sense), &sb_out_len, &transfer_len);
 
 #ifdef DEBUG
-  if (Verbose) {
-    struct {
+  if (Verbose)
+  {
+    struct
+    {
       char c2;
       char c3;
       char nb;
@@ -140,12 +144,14 @@ static int KsMultiIo(CamKey Key,           // module info
                {0x2, 0x00, 2, "Command Memory Address"},
                {0x2, 0x02, 2, "Demand Message"}};
     unsigned int i;
-    for (i = 0; i < (sizeof(reg) / sizeof(reg[0])); i++) {
+    for (i = 0; i < (sizeof(reg) / sizeof(reg[0])); i++)
+    {
       unsigned int l;
       unsigned short s;
       unsigned char c;
       char *dptr = 0;
-      switch (reg[i].nb) {
+      switch (reg[i].nb)
+      {
       case 1:
         dptr = (char *)&c;
         break;
@@ -156,7 +162,8 @@ static int KsMultiIo(CamKey Key,           // module info
         dptr = (char *)&l;
         break;
       }
-      if (!dptr) {
+      if (!dptr)
+      {
         printf("%s = invalid reg->nb = %d\n", reg[i].name, reg[i].nb);
         break;
       }
@@ -168,7 +175,8 @@ static int KsMultiIo(CamKey Key,           // module info
       Command[5] = 0;
       status = scsi_io(scsiDevice, 1, Command, 6, dptr, reg[i].nb, 0, 0,
                        &sb_out_len, &dummy);
-      switch (reg[i].nb) {
+      switch (reg[i].nb)
+      {
       case 1:
         printf("%s = %d,%x\n", reg[i].name, c, c);
         break;
@@ -208,7 +216,8 @@ static int KsMultiIo(CamKey Key,           // module info
     printf("%s(): ScsiIo() returned %d\n", KM_ROUTINE_NAME, status);
 
 KsMultiIo_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("%s(): iosb->status [0x%x]\n", KM_ROUTINE_NAME, iosb->status);
     printf("%s(): iosb->x      [0x%x]\n", KM_ROUTINE_NAME, iosb->x);
     printf("%s(): iosb->q      [0x%x]\n", KM_ROUTINE_NAME, iosb->q);

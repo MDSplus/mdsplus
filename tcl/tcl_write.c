@@ -44,10 +44,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TclWrite:
  ***************************************************************/
 EXPORT int TclWrite(void *ctx, char **error __attribute__((unused)),
-                    char **output) {
+                    char **output)
+{
   int sts;
   char *exp = 0;
-  if (cli_get_value(ctx, "FILE", &exp) & 1) {
+  if (cli_get_value(ctx, "FILE", &exp) & 1)
+  {
     char *shotidStr = 0;
     int shotid;
     cli_get_value(ctx, "SHOTID", &shotidStr);
@@ -55,11 +57,14 @@ EXPORT int TclWrite(void *ctx, char **error __attribute__((unused)),
     sts = TreeWriteTree(exp, shotid);
     free(exp);
     free(shotidStr);
-  } else {
+  }
+  else
+  {
     sts = TreeWriteTree(0, 0);
   }
 
-  if (~sts & 1) {
+  if (~sts & 1)
+  {
     char *msg = MdsGetMsg(sts);
     *output = malloc(strlen(msg) + 100);
     sprintf(*output,

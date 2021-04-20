@@ -65,10 +65,11 @@ extern int TdiDimOf();
 extern int TdiCvt();
 
 EXPORT struct descriptor *StepResample(struct descriptor *in_sig,
-                                       struct descriptor *in_x) {
+                                       struct descriptor *in_x)
+{
 
-#define return_on_error(func)                                                  \
-  if (!((status = func) & 1))                                                  \
+#define return_on_error(func) \
+  if (!((status = func) & 1)) \
     return (struct descriptor *)&emptyxd;
 
   int status;
@@ -133,12 +134,14 @@ EXPORT struct descriptor *StepResample(struct descriptor *in_sig,
   if (!sig_elements || (sig_elements != (int)(sig_x->arsize / sig_x->length)))
     return 0;
   sig_y_b[sig_elements - 1] = sig_y_b[sig_elements - 2];
-  for (i = 0; i < new_elements; i++) {
+  for (i = 0; i < new_elements; i++)
+  {
     if (new_x_f[i] <= sig_x_f[0])
       new_y_b[i] = 0;
     else if (new_x_f[i] >= sig_x_f[sig_elements - 1])
       new_y_b[i] = 0;
-    else {
+    else
+    {
       for (; j < sig_elements; j++)
         if (new_x_f[i] < sig_x_f[j])
           break;

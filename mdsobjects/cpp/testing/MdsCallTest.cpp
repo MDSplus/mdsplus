@@ -39,7 +39,8 @@ using namespace testing;
 /// This test refers to three C functions compiled into a shared library that
 /// should be present in ./testutils/libMdsTestDummy.so
 
-int main(int, char **argv __attribute__((unused))) {
+int main(int, char **argv __attribute__((unused)))
+{
   BEGIN_TESTING(Call);
 
   SKIP_TEST(
