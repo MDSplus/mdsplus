@@ -1,10 +1,11 @@
 #! /bin/sh
 cd $(dirname $0)
 
+check() { which $1 > /dev/null 2>&1; }
 unset abort
 testprog() {
 # $1 prog, $2 package
-if ! which $1 >/dev/null 2>&1
+if ! check $1
 then
 	export abort=$?
 	echo "Please install package providing '$1' in order to bootstrap"
@@ -15,11 +16,19 @@ then
 fi
 }
 
+
+if   check python3
+then PYTHON=python3 
+elif check python2
+then PYTHON=python2 
+else PYTHON=python 
+fi
+
 testprog aclocal	automake
 testprog autoheader	autoconf
 testprog automake	automake
 testprog autoconf	autoconf
-testprog python		python2 or python3
+testprog $PYTHON        python2 or python3
 testprog bison		bison
 testprog flex		flex
 
@@ -40,8 +49,8 @@ automake --add-missing
 
 autoconf
 
-python deploy/gen_messages.py
-python deploy/gen_compound_opcbuiltins.py
+$PYTHON deploy/gen_messages.py
+$PYTHON deploy/gen_compound_opcbuiltins.py
 
 deploy/yylex.gen tdishr
 deploy/yylex.gen mdsdcl
