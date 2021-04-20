@@ -1,0 +1,15 @@
+# clang-format --version
+# clang-format version 7.0.1-8+deb10u2 (tags/RELEASE_701/final)
+BasedOnStyle: LLVM
+UseTab: Never
+SortIncludes: false
+IndentWidth: 2
+TabWidth: 2
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+ColumnLimit: 0
+ReflowComments: true
+NamespaceIndentation: All
+FixNamespaceComments: false
+AccessModifierOffset: -2
