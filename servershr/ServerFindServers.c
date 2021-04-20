@@ -60,33 +60,41 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 #include <mdsplus/mdsconfig.h>
 #include <strroutines.h>
 
-EXPORT char *ServerFindServers(void **ctx, char *wild_match) {
+EXPORT char *ServerFindServers(void **ctx, char *wild_match)
+{
   char *ans = NULL;
   DIR *dir = (DIR *)*ctx;
-  if (dir == 0) {
+  if (dir == 0)
+  {
     char *serverdir = getenv("MDSIP_SERVER_LOGDIR");
     if (serverdir)
       *ctx = dir = opendir(serverdir);
   }
-  if (dir) {
-    for (;;) {
+  if (dir)
+  {
+    for (;;)
+    {
       struct dirent *entry = readdir(dir);
-      if (entry) {
+      if (entry)
+      {
         char *ans_c = strcpy(malloc(strlen(entry->d_name) + 1), entry->d_name);
         if ((strcmp(ans_c, ".") == 0) || (strcmp(ans_c, "..") == 0))
           continue;
-        else {
+        else
+        {
           struct descriptor ans_d = {strlen(ans_c), DTYPE_T, CLASS_S, ans_c};
           struct descriptor wild_d = {strlen(wild_match), DTYPE_T, CLASS_S,
                                       wild_match};
-          if
-            IS_OK(StrMatchWild(&ans_d, &wild_d)) {
-              ans = ans_c;
-              break;
-            }
+          if (IS_OK(StrMatchWild(&ans_d, &wild_d)))
+          {
+            ans = ans_c;
+            break;
+          }
         }
         free(ans_c);
-      } else {
+      }
+      else
+      {
         closedir(dir);
         *ctx = 0;
         break;

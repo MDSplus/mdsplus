@@ -80,8 +80,8 @@ extern int Tdi3Divide();
 #include <string.h>
 #include <tdishr_messages.h>
 
-#define out(typ)                                                               \
-  fprintf(stderr, "%3s: (%3d,%3d,%3d)\n", #typ, a->cnt_##typ, a->stp_##typ,    \
+#define out(typ)                                                            \
+  fprintf(stderr, "%3s: (%3d,%3d,%3d)\n", #typ, a->cnt_##typ, a->stp_##typ, \
           a->stpm_##typ)
 
 extern int CvtConvertFloat();
@@ -96,18 +96,21 @@ const int roprand = 0x8000;
 #define DHUGE 1.7E308
 #endif
 
-int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed) {
+int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed)
+{
   if (is_signed)
     return int128_lt((int128_t *)in1, (int128_t *)in2);
   return uint128_lt((uint128_t *)in1, (uint128_t *)in2);
 }
-int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed) {
+int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed)
+{
   if (is_signed)
     return int128_gt((int128_t *)in1, (int128_t *)in2);
   return uint128_gt((uint128_t *)in1, (uint128_t *)in2);
 }
 
-typedef struct _args_t {
+typedef struct _args_t
+{
   char *inp;
   char *outp;
   char *maskp;
@@ -125,8 +128,10 @@ typedef struct _args_t {
 
 static inline int setupArgs(struct descriptor *in, struct descriptor *mask,
                             struct descriptor *out, int stp_dim, int stp_bef,
-                            int stp_aft, args_t *a) {
-  switch (out->class) {
+                            int stp_aft, args_t *a)
+{
+  switch (out->class)
+  {
   case CLASS_S:
   case CLASS_D:
   case CLASS_A:
@@ -134,7 +139,8 @@ static inline int setupArgs(struct descriptor *in, struct descriptor *mask,
   default:
     return C_ERROR;
   }
-  switch (in->class) {
+  switch (in->class)
+  {
   case CLASS_S:
   case CLASS_D:
   case CLASS_A:
@@ -142,7 +148,8 @@ static inline int setupArgs(struct descriptor *in, struct descriptor *mask,
   default:
     return C_ERROR;
   }
-  switch (mask->class) {
+  switch (mask->class)
+  {
   case CLASS_S:
   case CLASS_D:
     break;
@@ -156,21 +163,21 @@ static inline int setupArgs(struct descriptor *in, struct descriptor *mask,
   return C_OK;
 }
 
-#define SETUP_ARGS(args)                                                       \
-  args_t args = {in->pointer,                                                  \
-                 out->pointer,                                                 \
-                 mask->pointer,                                                \
-                 in->length,                                                   \
-                 stp_dim * in->length,                                         \
-                 stp_bef * in->length,                                         \
-                 stp_aft * in->length,                                         \
-                 0,                                                            \
-                 0,                                                            \
-                 0,                                                            \
-                 cnt_dim,                                                      \
-                 cnt_bef,                                                      \
-                 cnt_aft};                                                     \
-  if (setupArgs(in, mask, out, stp_dim, stp_bef, stp_aft, &args))              \
+#define SETUP_ARGS(args)                                          \
+  args_t args = {in->pointer,                                     \
+                 out->pointer,                                    \
+                 mask->pointer,                                   \
+                 in->length,                                      \
+                 stp_dim * in->length,                            \
+                 stp_bef * in->length,                            \
+                 stp_aft * in->length,                            \
+                 0,                                               \
+                 0,                                               \
+                 0,                                               \
+                 cnt_dim,                                         \
+                 cnt_bef,                                         \
+                 cnt_aft};                                        \
+  if (setupArgs(in, mask, out, stp_dim, stp_bef, stp_aft, &args)) \
     return TdiINVCLADSC;
 
 /********************************************
@@ -182,35 +189,41 @@ static int gt(const double in1, const double in2) { return in1 > in2; }
 static int lt(const double in1, const double in2) { return in1 < in2; }
 static double add(const double in1, const double in2) { return in1 + in2; }
 static double mul(const double in1, const double in2) { return in1 * in2; }
-#define OP(type)                                                               \
-  static int type##_lt(const char *in1, const char *in2) {                     \
-    return *(type##_t *)in1 < *(type##_t *)in2;                                \
-  }                                                                            \
-  static int type##_gt(const char *in1, const char *in2) {                     \
-    return *(type##_t *)in1 > *(type##_t *)in2;                                \
-  }                                                                            \
-  static void type##_add(const char *in1, const char *in2, char *out) {        \
-    type##_t *res = (type##_t *)out;                                           \
-    *res = (*(type##_t *)in1) + (*(type##_t *)in2);                            \
-  }                                                                            \
-  static void type##_mul(const char *in1, const char *in2, char *out) {        \
-    type##_t *res = (type##_t *)out;                                           \
-    *res = (*(type##_t *)in1) * (*(type##_t *)in2);                            \
+#define OP(type)                                                      \
+  static int type##_lt(const char *in1, const char *in2)              \
+  {                                                                   \
+    return *(type##_t *)in1 < *(type##_t *)in2;                       \
+  }                                                                   \
+  static int type##_gt(const char *in1, const char *in2)              \
+  {                                                                   \
+    return *(type##_t *)in1 > *(type##_t *)in2;                       \
+  }                                                                   \
+  static void type##_add(const char *in1, const char *in2, char *out) \
+  {                                                                   \
+    type##_t *res = (type##_t *)out;                                  \
+    *res = (*(type##_t *)in1) + (*(type##_t *)in2);                   \
+  }                                                                   \
+  static void type##_mul(const char *in1, const char *in2, char *out) \
+  {                                                                   \
+    type##_t *res = (type##_t *)out;                                  \
+    *res = (*(type##_t *)in1) * (*(type##_t *)in2);                   \
   }
-#define AVG(type)                                                              \
-  static void type##_avgadd(const char *in, char *inout) {                     \
-    int64_t *sum = (int64_t *)inout;                                           \
-    *sum += (*(type##_t *)in);                                                 \
-  }                                                                            \
-  static void type##_avgdiv(const char *in, const int count, char *out) {      \
-    type##_t *res = (type##_t *)out;                                           \
-    *res = (type##_t)((*(int64_t *)in) / count);                               \
+#define AVG(type)                                                       \
+  static void type##_avgadd(const char *in, char *inout)                \
+  {                                                                     \
+    int64_t *sum = (int64_t *)inout;                                    \
+    *sum += (*(type##_t *)in);                                          \
+  }                                                                     \
+  static void type##_avgdiv(const char *in, const int count, char *out) \
+  {                                                                     \
+    type##_t *res = (type##_t *)out;                                    \
+    *res = (type##_t)((*(int64_t *)in) / count);                        \
   }
-#define BITOP(bit)                                                             \
-  OP(int##bit);                                                                \
+#define BITOP(bit) \
+  OP(int##bit);    \
   OP(uint##bit)
-#define BITAVG(bit)                                                            \
-  AVG(int##bit);                                                               \
+#define BITAVG(bit) \
+  AVG(int##bit);    \
   AVG(uint##bit)
 BITOP(8);
 BITOP(16);
@@ -220,56 +233,69 @@ BITAVG(8);
 BITAVG(16);
 BITAVG(32);
 
-static inline void int64_avgadd(const char *in, char *buf) {
+static inline void int64_avgadd(const char *in, char *buf)
+{
   int128_t a = {.low = *(uint64_t *)in, .high = *(int64_t *)in < 0 ? -1 : 0};
   int128_add(&a, (int128_t *)buf, (int128_t *)buf);
 }
-static inline void int64_avgdiv(const char *in, const int count, char *out) {
+static inline void int64_avgdiv(const char *in, const int count, char *out)
+{
   int128_t cnt = {.low = count, .high = 0};
   int128_div((int128_t *)in, &cnt, &cnt);
   memcpy(out, &cnt.low, sizeof(int64_t));
 }
-static inline void uint64_avgadd(const char *in, char *buf) {
+static inline void uint64_avgadd(const char *in, char *buf)
+{
   uint128_t a = {.low = *(uint64_t *)in, .high = 0};
   uint128_add(&a, (uint128_t *)buf, (uint128_t *)buf);
 }
-static inline void uint64_avgdiv(const char *in, const int count, char *out) {
+static inline void uint64_avgdiv(const char *in, const int count, char *out)
+{
   uint128_t cnt = {.low = count, .high = 0};
   uint128_div((uint128_t *)in, &cnt, &cnt);
   memcpy(out, &cnt.low, sizeof(uint64_t));
 }
 
 /* missing versions for octaword */
-static inline void int128_avgadd(const char *in, char *buf) {
+static inline void int128_avgadd(const char *in, char *buf)
+{
   int128_add((int128_t *)in, (int128_t *)buf, (int128_t *)buf);
 }
-static inline void int128_avgdiv(const char *in, const int count, char *out) {
+static inline void int128_avgdiv(const char *in, const int count, char *out)
+{
   int128_t cnt = {.low = count, .high = 0};
   int128_div((int128_t *)in, &cnt, (int128_t *)out);
 }
-static inline void uint128_avgadd(const char *in, char *buf) {
+static inline void uint128_avgadd(const char *in, char *buf)
+{
   uint128_add((uint128_t *)in, (uint128_t *)buf, (uint128_t *)buf);
 }
-static inline void uint128_avgdiv(const char *in, const int count, char *out) {
+static inline void uint128_avgdiv(const char *in, const int count, char *out)
+{
   uint128_t cnt = {.low = count, .high = 0};
   uint128_div((uint128_t *)in, &cnt, (uint128_t *)out);
 }
 
 static inline void
-operateIloc(char *start, int testit(const char *, const char *), args_t *a) {
+operateIloc(char *start, int testit(const char *, const char *), args_t *a)
+{
   int *outp = (int *)a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb++ < a->cnt_bef;
-         pib += a->stp_bef, pmb += a->stpm_bef, outp++) { // LOOP_BEFORE_LOC
+         pib += a->stp_bef, pmb += a->stpm_bef, outp++)
+    { // LOOP_BEFORE_LOC
       *outp = -1;
       char *result = start;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1 && testit(pid, result)) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1 && testit(pid, result))
+        {
           result = pid;
           *outp = jd;
         }
@@ -277,30 +303,37 @@ operateIloc(char *start, int testit(const char *, const char *), args_t *a) {
     }
   }
 }
-#define OperateIloc(type, start, testit)                                       \
-  do {                                                                         \
-    type strt = start;                                                         \
-    operateIloc((char *)&strt, testit, &args);                                 \
+#define OperateIloc(type, start, testit)       \
+  do                                           \
+  {                                            \
+    type strt = start;                         \
+    operateIloc((char *)&strt, testit, &args); \
   } while (0)
 static inline void OperateFloc(char dtype, double start,
                                int operator(const double, const double),
-                               args_t *a) {
+                               args_t *a)
+{
   int *outp = (int *)a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb++ < a->cnt_bef;
-         pib += a->stp_bef, pmb += a->stpm_bef, outp++) { // LOOP_BEFORE_LOC
+         pib += a->stp_bef, pmb += a->stpm_bef, outp++)
+    { // LOOP_BEFORE_LOC
       *outp = -1;
       double result = start;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           double val;
           if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0) &&
-              operator(val, result)) {
+              operator(val, result))
+          {
             result = val;
             *outp = jd;
           }
@@ -309,7 +342,8 @@ static inline void OperateFloc(char dtype, double start,
     }
   }
 }
-static inline void OperateTloc(int testit(), args_t *a) {
+static inline void OperateTloc(int testit(), args_t *a)
+{
   char testval;
   struct descriptor s_d = {a->length, DTYPE_T, CLASS_S, 0};
   struct descriptor o_d = {1, DTYPE_B, CLASS_S, &testval};
@@ -318,17 +352,22 @@ static inline void OperateTloc(int testit(), args_t *a) {
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb++ < a->cnt_bef;
-         pib += a->stp_bef, pmb += a->stpm_bef, outp++) { // LOOP_BEFORE_LOC
+         pib += a->stp_bef, pmb += a->stpm_bef, outp++)
+    { // LOOP_BEFORE_LOC
       struct descriptor result = {a->length, DTYPE_T, CLASS_S, pib};
       *outp = -1;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           s_d.pointer = pid;
           testit(&s_d, &result, &o_d);
-          if (testval) {
+          if (testval)
+          {
             result.pointer = pid;
             *outp = jd;
           }
@@ -340,9 +379,11 @@ static inline void OperateTloc(int testit(), args_t *a) {
 
 int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
                struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-               int stp_dim, int stp_bef, int stp_aft) {
+               int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
+  switch (in->dtype)
+  {
   case DTYPE_T:
     OperateTloc(Tdi3Gt, &args);
     break;
@@ -399,70 +440,88 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
 
 int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
                struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-               int stp_dim, int stp_bef, int stp_aft) {
+               int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
-  case DTYPE_T: {
+  switch (in->dtype)
+  {
+  case DTYPE_T:
+  {
     OperateTloc(Tdi3Lt, &args);
     break;
   }
-  case DTYPE_B: {
+  case DTYPE_B:
+  {
     OperateIloc(int8_t, 127, int8_lt);
     break;
   }
-  case DTYPE_BU: {
+  case DTYPE_BU:
+  {
     OperateIloc(uint8_t, -1, uint8_lt);
     break;
   }
-  case DTYPE_W: {
+  case DTYPE_W:
+  {
     OperateIloc(int16_t, 32767, int16_lt);
     break;
   }
-  case DTYPE_WU: {
+  case DTYPE_WU:
+  {
     OperateIloc(uint16_t, -1, uint16_lt);
     break;
   }
-  case DTYPE_L: {
+  case DTYPE_L:
+  {
     OperateIloc(int32_t, 0x7fffffff, int32_lt);
     break;
   }
-  case DTYPE_LU: {
+  case DTYPE_LU:
+  {
     OperateIloc(uint32_t, -1, uint32_lt);
     break;
   }
-  case DTYPE_Q: {
+  case DTYPE_Q:
+  {
     OperateIloc(int64_t, int64_max, int64_lt);
     break;
   }
-  case DTYPE_QU: {
+  case DTYPE_QU:
+  {
     OperateIloc(uint64_t, -1, uint64_lt);
     break;
   }
-  case DTYPE_O: {
+  case DTYPE_O:
+  {
     OperateIloc(int128_t, int128_max, (void *)int128_lt);
     break;
   }
-  case DTYPE_OU: {
+  case DTYPE_OU:
+  {
     OperateIloc(uint128_t, uint128_max, (void *)uint128_lt);
     break;
   }
-  case DTYPE_F: {
+  case DTYPE_F:
+  {
     OperateFloc(DTYPE_F, DHUGE, lt, &args);
     break;
   }
-  case DTYPE_FS: {
+  case DTYPE_FS:
+  {
     OperateFloc(DTYPE_FS, DHUGE, lt, &args);
     break;
   }
-  case DTYPE_G: {
+  case DTYPE_G:
+  {
     OperateFloc(DTYPE_G, DHUGE, lt, &args);
     break;
   }
-  case DTYPE_D: {
+  case DTYPE_D:
+  {
     OperateFloc(DTYPE_D, DHUGE, lt, &args);
     break;
   }
-  case DTYPE_FT: {
+  case DTYPE_FT:
+  {
     OperateFloc(DTYPE_FT, DHUGE, lt, &args);
     break;
   }
@@ -473,18 +532,22 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
 }
 
 static inline void
-operateIval(char *start, int testit(const char *, const char *), args_t *a) {
+operateIval(char *start, int testit(const char *, const char *), args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       char *result = start;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
         if (*pmd & 1 && testit(pid, result))
           result = pid;
       }
@@ -492,26 +555,32 @@ operateIval(char *start, int testit(const char *, const char *), args_t *a) {
     }
   }
 }
-#define OperateIval(type, start, testit)                                       \
-  do {                                                                         \
-    type strt = start;                                                         \
-    operateIval((char *)&strt, testit, &args);                                 \
+#define OperateIval(type, start, testit)       \
+  do                                           \
+  {                                            \
+    type strt = start;                         \
+    operateIval((char *)&strt, testit, &args); \
   } while (0)
 static inline void OperateFval(char dtype, double start,
                                int operator(const double, const double),
-                               args_t *a) {
+                               args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       double result = start;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           double val;
           if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0) &&
               operator(val, result))
@@ -522,7 +591,8 @@ static inline void OperateFval(char dtype, double start,
     }
   }
 }
-static inline void OperateTval(int testit(), args_t *a) {
+static inline void OperateTval(int testit(), args_t *a)
+{
   char testval;
   struct descriptor s_d = {a->length, DTYPE_T, CLASS_S, 0};
   struct descriptor o_d = {1, DTYPE_B, CLASS_S, &testval};
@@ -532,13 +602,17 @@ static inline void OperateTval(int testit(), args_t *a) {
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       result.pointer = pib;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           s_d.pointer = pid;
           testit(&s_d, &result, &o_d);
           if (testval)
@@ -552,9 +626,11 @@ static inline void OperateTval(int testit(), args_t *a) {
 
 int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
                struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-               int stp_dim, int stp_bef, int stp_aft) {
+               int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
+  switch (in->dtype)
+  {
   case DTYPE_T:
     OperateTval(Tdi3Gt, &args);
     break;
@@ -611,9 +687,11 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
 
 int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
                struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-               int stp_dim, int stp_bef, int stp_aft) {
+               int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
+  switch (in->dtype)
+  {
   case DTYPE_T:
     OperateTval(Tdi3Lt, &args);
     break;
@@ -672,21 +750,26 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 static inline void OperateImean(size_t buflen,
                                 void avgadd(const char *, char *),
                                 void avgdiv(const char *, const int, char *),
-                                args_t *a) {
+                                args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   char *buf = malloc(buflen);
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       int count = 0;
       memset(buf, 0, buflen);
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           avgadd(pid, buf);
           count++;
         }
@@ -699,25 +782,33 @@ static inline void OperateImean(size_t buflen,
   }
   free(buf);
 }
-static inline void OperateFmean(char dtype, args_t *a) {
+static inline void OperateFmean(char dtype, args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       int count = 0;
       double result = 0;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           double val;
-          if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0)) {
+          if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0))
+          {
             result += val;
             count++;
-          } else {
+          }
+          else
+          {
             CvtConvertFloat(&roprand, DTYPE_F, outp, dtype, 0);
             goto loop_dim_done;
           }
@@ -729,28 +820,36 @@ static inline void OperateFmean(char dtype, args_t *a) {
     }
   }
 }
-static inline void OperateCmean(char dtype, args_t *a) {
+static inline void OperateCmean(char dtype, args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       int count = 0;
       double resultr = 0, resulti = 0;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           double valr, vali;
           if (CvtConvertFloat(pid, dtype, &valr, DTYPE_NATIVE_DOUBLE, 0) &&
               CvtConvertFloat(pid + a->length / 2, dtype, &vali,
-                              DTYPE_NATIVE_DOUBLE, 0)) {
+                              DTYPE_NATIVE_DOUBLE, 0))
+          {
             resultr += valr;
             resulti += vali;
             count++;
-          } else {
+          }
+          else
+          {
             CvtConvertFloat(&roprand, DTYPE_F, outp, dtype, 0);
             CvtConvertFloat(&roprand, DTYPE_F, outp + a->length / 2, dtype, 0);
             goto loop_dim_done;
@@ -769,9 +868,11 @@ static inline void OperateCmean(char dtype, args_t *a) {
 
 int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
              struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-             int stp_dim, int stp_bef, int stp_aft) {
+             int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
+  switch (in->dtype)
+  {
   case DTYPE_B:
     OperateImean(8, int8_avgadd, int8_avgdiv, &args);
     break;
@@ -841,19 +942,23 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
 /*loops for sum and product*/
 static inline void OperateIfun(char init,
                                void fun(const char *, const char *, char *),
-                               args_t *a) {
+                               args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       memset(outp, 0, a->length);
       outp[0] = init;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
         if (*pmd & 1)
           fun(pid, outp, outp);
       }
@@ -862,23 +967,31 @@ static inline void OperateIfun(char init,
 }
 static inline void OperateFfun(double init, char dtype,
                                double fun(const double, const double),
-                               args_t *a) {
+                               args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       double result = init;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           double val;
-          if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0)) {
+          if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0))
+          {
             result = fun(val, result);
-          } else {
+          }
+          else
+          {
             CvtConvertFloat(&roprand, DTYPE_F, outp, dtype, 0);
             goto loop_dim_done;
           }
@@ -891,26 +1004,34 @@ static inline void OperateFfun(double init, char dtype,
 }
 static inline void OperateCfun(double init, char dtype,
                                double fun(const double, const double),
-                               args_t *a) {
+                               args_t *a)
+{
   char *outp = a->outp;
   int ja, jb, jd;
   char *pid, *pib, *pia;
   char *pmd, *pmb, *pma;
   for (ja = 0; pia = a->inp, pma = a->maskp, ja < a->cnt_aft;
-       ja++, pia += a->stp_aft, pma += a->stpm_aft) { // LOOP_AFTER
+       ja++, pia += a->stp_aft, pma += a->stpm_aft)
+  { // LOOP_AFTER
     for (jb = 0, pib = pia, pmb = pma; jb < a->cnt_bef; jb++, pib += a->stp_bef,
-        pmb += a->stpm_bef, outp += a->length) { // LOOP_BEFORE_VAL
+        pmb += a->stpm_bef, outp += a->length)
+    { // LOOP_BEFORE_VAL
       double resultr = init, resulti = init;
       for (jd = 0, pid = pib, pmd = pmb; jd < a->cnt_dim;
-           jd++, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM
-        if (*pmd & 1) {
+           jd++, pid += a->stp_dim, pmd += a->stpm_dim)
+      { // LOOP_DIM
+        if (*pmd & 1)
+        {
           double valr, vali;
           if (CvtConvertFloat(pid, dtype, &valr, DTYPE_NATIVE_DOUBLE, 0) &&
               CvtConvertFloat(pid + a->length / 2, dtype, &vali,
-                              DTYPE_NATIVE_DOUBLE, 0)) {
+                              DTYPE_NATIVE_DOUBLE, 0))
+          {
             resultr = fun(valr, resultr);
             resulti = fun(vali, resulti);
-          } else {
+          }
+          else
+          {
             CvtConvertFloat(&roprand, DTYPE_F, outp, dtype, 0);
             CvtConvertFloat(&roprand, DTYPE_F, outp + a->length / 2, dtype, 0);
             goto loop_dim_done;
@@ -927,9 +1048,11 @@ static inline void OperateCfun(double init, char dtype,
 
 int Tdi3Product(struct descriptor *in, struct descriptor *mask,
                 struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-                int stp_dim, int stp_bef, int stp_aft) {
+                int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
+  switch (in->dtype)
+  {
   case DTYPE_B:
     OperateIfun(1, int8_mul, &args);
     break;
@@ -998,9 +1121,11 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
 
 int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
             struct descriptor *out, int cnt_dim, int cnt_bef, int cnt_aft,
-            int stp_dim, int stp_bef, int stp_aft) {
+            int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
+  switch (in->dtype)
+  {
   case DTYPE_B:
     OperateIfun(0, int8_add, &args);
     break;
@@ -1068,7 +1193,8 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
 }
 
 static inline void OperateIaccum(void add(const char *, const char *, char *),
-                                 args_t *a) {
+                                 args_t *a)
+{
   int ja, jb, jd;
   char *poa, *pob, *pod;
   char *pia, *pib, *pid;
@@ -1076,15 +1202,19 @@ static inline void OperateIaccum(void add(const char *, const char *, char *),
   char *result = malloc(a->length);
   for (ja = 0, poa = a->outp, pia = a->inp, pma = a->maskp; ja++ < a->cnt_aft;
        poa += a->stp_aft, pia += a->stp_aft,
-      pma += a->stpm_aft) { // LOOP_AFTER_ARRAY
+      pma += a->stpm_aft)
+  { // LOOP_AFTER_ARRAY
     for (jb = 0, pob = poa, pib = pia, pmb = pma; jb++ < a->cnt_bef;
          pob += a->stp_bef, pib += a->stp_bef,
-        pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
+        pmb += a->stpm_bef)
+    { // LOOP_BEFORE_ARRAY
       memset(result, 0, a->length);
       for (jd = 0, pod = pob, pid = pib, pmd = pmb; jd++ < a->cnt_dim;
            pod += a->stp_dim, pid += a->stp_dim,
-          pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
-        if (*pmd & 1) {
+          pmd += a->stpm_dim)
+      { // LOOP_DIM_ARRAY
+        if (*pmd & 1)
+        {
           add(pid, result, result);
           memcpy(pod, result, a->length);
         }
@@ -1093,27 +1223,35 @@ static inline void OperateIaccum(void add(const char *, const char *, char *),
   }
   free(result);
 }
-static inline void OperateFaccum(char dtype, args_t *a) {
+static inline void OperateFaccum(char dtype, args_t *a)
+{
   int ja, jb, jd;
   char *poa, *pob, *pod;
   char *pia, *pib, *pid;
   char *pma, *pmb, *pmd;
   for (ja = 0, poa = a->outp, pia = a->inp, pma = a->maskp; ja++ < a->cnt_aft;
        poa += a->stp_aft, pia += a->stp_aft,
-      pma += a->stpm_aft) { // LOOP_AFTER_ARRAY
+      pma += a->stpm_aft)
+  { // LOOP_AFTER_ARRAY
     for (jb = 0, pob = poa, pib = pia, pmb = pma; jb++ < a->cnt_bef;
          pob += a->stp_bef, pib += a->stp_bef,
-        pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
+        pmb += a->stpm_bef)
+    { // LOOP_BEFORE_ARRAY
       double result = 0;
       for (jd = 0, pod = pob, pid = pib, pmd = pmb; jd++ < a->cnt_dim;
            pod += a->stp_dim, pid += a->stp_dim,
-          pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
-        if (*pmd & 1) {
+          pmd += a->stpm_dim)
+      { // LOOP_DIM_ARRAY
+        if (*pmd & 1)
+        {
           double val;
-          if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0)) {
+          if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0))
+          {
             result += val;
             CvtConvertFloat(&result, DTYPE_NATIVE_DOUBLE, pod, dtype, 0);
-          } else {
+          }
+          else
+          {
             CvtConvertFloat(&roprand, DTYPE_F, pod, dtype, 0);
           }
         }
@@ -1122,32 +1260,40 @@ static inline void OperateFaccum(char dtype, args_t *a) {
   }
 }
 
-static inline void OperateCaccum(char dtype, args_t *a) {
+static inline void OperateCaccum(char dtype, args_t *a)
+{
   int ja, jb, jd;
   char *poa, *pob, *pod;
   char *pia, *pib, *pid;
   char *pma, *pmb, *pmd;
   for (ja = 0, poa = a->outp, pia = a->inp, pma = a->maskp; ja++ < a->cnt_aft;
        poa += a->stp_aft, pia += a->stp_aft,
-      pma += a->stpm_aft) { // LOOP_AFTER_ARRAY
+      pma += a->stpm_aft)
+  { // LOOP_AFTER_ARRAY
     for (jb = 0, pob = poa, pib = pia, pmb = pma; jb++ < a->cnt_bef;
          pob += a->stp_bef, pib += a->stp_bef,
-        pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
+        pmb += a->stpm_bef)
+    { // LOOP_BEFORE_ARRAY
       double result = 0, resulti = 0;
       for (jd = 0, pod = pob, pid = pib, pmd = pmb; jd++ < a->cnt_dim;
            pod += a->stp_dim, pid += a->stp_dim,
-          pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
-        if (*pmd & 1) {
+          pmd += a->stpm_dim)
+      { // LOOP_DIM_ARRAY
+        if (*pmd & 1)
+        {
           double val, vali;
           if (CvtConvertFloat(pid, dtype, &val, DTYPE_NATIVE_DOUBLE, 0) &&
               CvtConvertFloat(pid + a->length, dtype, &vali,
-                              DTYPE_NATIVE_DOUBLE, 0)) {
+                              DTYPE_NATIVE_DOUBLE, 0))
+          {
             result += val;
             resulti += vali;
             CvtConvertFloat(&result, DTYPE_NATIVE_DOUBLE, pod, dtype, 0);
             CvtConvertFloat(&resulti, DTYPE_NATIVE_DOUBLE, pod + a->length / 2,
                             dtype, 0);
-          } else {
+          }
+          else
+          {
             CvtConvertFloat(&roprand, DTYPE_F, pod, dtype, 0);
             CvtConvertFloat(&roprand, DTYPE_F, pod + a->length / 2, dtype, 0);
           }
@@ -1159,9 +1305,11 @@ static inline void OperateCaccum(char dtype, args_t *a) {
 
 int Tdi3Accumulate(struct descriptor *in, struct descriptor *mask,
                    struct descriptor *out, int cnt_dim, int cnt_bef,
-                   int cnt_aft, int stp_dim, int stp_bef, int stp_aft) {
+                   int cnt_aft, int stp_dim, int stp_bef, int stp_aft)
+{
   SETUP_ARGS(args);
-  switch (in->dtype) {
+  switch (in->dtype)
+  {
   case DTYPE_B:
     OperateIaccum(int8_add, &args);
     break;

@@ -30,7 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsEventCan  ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsEventCan(int id, int eventid) {
+int MdsEventCan(int id, int eventid)
+{
   struct descrip eventarg;
   struct descrip ansarg = {0};
   int status = MdsValue(

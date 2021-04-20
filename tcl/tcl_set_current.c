@@ -47,25 +47,30 @@ extern int TdiExecute();
  * TclSetCurrent:
  *****************************************************************/
 EXPORT int TclSetCurrent(void *ctx, char **error,
-                         char **output __attribute__((unused))) {
+                         char **output __attribute__((unused)))
+{
   int sts;
   char *experiment = 0;
   char *shotasc = 0;
   int shot;
 
   cli_get_value(ctx, "EXPERIMENT", &experiment);
-  if (cli_present(ctx, "INCREMENT") & 1) {
+  if (cli_present(ctx, "INCREMENT") & 1)
+  {
     shot = TreeGetCurrentShotId(experiment);
     shot++;
     sts = TreeSetCurrentShotId(experiment, shot);
-  } else {
+  }
+  else
+  {
     cli_get_value(ctx, "SHOT", &shotasc);
     sts = tclStringToShot(shotasc, &shot, error);
     free(shotasc);
     sts = TreeSetCurrentShotId(experiment, shot);
   }
 
-  if (((sts & 1) != 1) && (*error == NULL)) {
+  if (((sts & 1) != 1) && (*error == NULL))
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error,

@@ -44,7 +44,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************/
 EXPORT int TclAddTag(void *ctx, char **error,
                      char **output
-                     __attribute__((unused))) { /* Return: status */
+                     __attribute__((unused)))
+{ /* Return: status */
   int nid;
   int sts;
   char *nodnam = 0;
@@ -55,7 +56,8 @@ EXPORT int TclAddTag(void *ctx, char **error,
   sts = TreeFindNode(nodnam, &nid);
   if (sts & 1)
     sts = TreeAddTag(nid, tagnam);
-  if (!(sts & 1)) {
+  if (!(sts & 1))
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(tagnam) + strlen(msg) + 100);
     sprintf(*error, "Error adding tag %s\nError message was: %s\n", tagnam,

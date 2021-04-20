@@ -61,7 +61,8 @@ dsc$descriptor *tree, int *shot, int *nid, void (*ast)(), int astprm, int
 EXPORT int ServerDispatchAction(int *id, char *server, char *tree, int shot,
                                 int nid, void (*ast)(), void *astprm,
                                 int *retstatus, pthread_rwlock_t *lock,
-                                int *socket, void (*before_ast)()) {
+                                int *socket, void (*before_ast)())
+{
   struct descrip p1, p2, p3;
   return ServerSendMessage(id, server, SrvAction, retstatus, lock, socket, ast,
                            astprm, before_ast, 3,

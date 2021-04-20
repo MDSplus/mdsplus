@@ -1,4 +1,9 @@
 # @configure_input@
+.PHONY: --always
+--always:
+	@
+echo-%: --always
+	@echo '$* = $($*)'
 
 DEFAULT_CFLAGS=-g -O3
 

@@ -121,7 +121,8 @@ int XmdsInitialize( )
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-    EXPORT extern void XmdsInitialize() {
+    EXPORT extern void XmdsInitialize()
+{
 #ifndef _NO_XDS
   static MrmRegisterArg callbacks[] = {
       {"XmdsApplyCallback", (char *)XmdsApplyCallback},

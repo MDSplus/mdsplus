@@ -65,7 +65,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      current number of entries in CTS data file
 // output:      status
 //-------------------------------------------------------------------------
-int expand_db(int dbType, int numOfEntries) {
+int expand_db(int dbType, int numOfEntries)
+{
   char *FileName;
   int FileIncr, newCount;
   int status = SUCCESS; // optimistic, aren't we ... :>
@@ -75,7 +76,8 @@ int expand_db(int dbType, int numOfEntries) {
     printf("expand_db()\n");
 
   // assimilate db specific information ...
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     FileName = CTS_DB_FILE;
     FileIncr = CTS_DB_INCREMENT;
@@ -94,23 +96,28 @@ int expand_db(int dbType, int numOfEntries) {
   newCount = (((int)numOfEntries / FileIncr) + 1) * FileIncr;
 
   // create a TMP file
-  if ((status = create_tmp_file(dbType, newCount, tmpfile)) != SUCCESS) {
+  if ((status = create_tmp_file(dbType, newCount, tmpfile)) != SUCCESS)
+  {
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "error creating TMP file\n");
 
     goto ExpandDB_Exit;
   }
   // only need to copy old data if there is any
-  if (numOfEntries) { // copy current db file to TMP file
-    if ((status = copy(dbType, FileName, tmpfile, numOfEntries)) != SUCCESS) {
+  if (numOfEntries)
+  { // copy current db file to TMP file
+    if ((status = copy(dbType, FileName, tmpfile, numOfEntries)) != SUCCESS)
+    {
       if (MSGLVL(ALWAYS))
         fprintf(stderr, "error copying db to TMP file\n");
 
       goto ExpandDB_Exit;
     }
     // remove old db file
-    if (Remove(FileName)) { // non-zero is an error
-      if (MSGLVL(ALWAYS)) {
+    if (Remove(FileName))
+    { // non-zero is an error
+      if (MSGLVL(ALWAYS))
+      {
         fprintf(stderr, "error removing old db file\n");
         perror("remove()");
       }
@@ -120,8 +127,10 @@ int expand_db(int dbType, int numOfEntries) {
     }
   }
 
-  if (rename(tmpfile, get_file_name(FileName))) { // non-zero is an error
-    if (MSGLVL(ALWAYS)) {
+  if (rename(tmpfile, get_file_name(FileName)))
+  { // non-zero is an error
+    if (MSGLVL(ALWAYS))
+    {
       fprintf(stderr, "error renaming temp db file\n");
       perror("rename()");
     }
@@ -131,7 +140,8 @@ int expand_db(int dbType, int numOfEntries) {
   }
   chmod(get_file_name(FileName), 0666);
   // re-map file
-  if (map_data_file(dbType) != SUCCESS) {
+  if (map_data_file(dbType) != SUCCESS)
+  {
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "unable to map expanded file\n");
 
@@ -140,7 +150,8 @@ int expand_db(int dbType, int numOfEntries) {
   }
 
 ExpandDB_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("expand_db('%s'): ", get_file_name(FileName));
     ShowStatus(status);
   }

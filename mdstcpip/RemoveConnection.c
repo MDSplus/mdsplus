@@ -37,22 +37,27 @@ extern int MDSEventCan();
 /// \param conid
 /// \return
 ///
-int RemoveConnection(int conid) {
+int RemoveConnection(int conid)
+{
   int status = 0;
   Connection *c = FindConnection(conid, 0);
-  if (c) {
+  if (c)
+  {
     void *tdi_context[6];
     MdsEventList *e, *nexte;
     FreeDescriptors(c);
-    for (e = c->event; e; e = nexte) {
+    for (e = c->event; e; e = nexte)
+    {
       nexte = e->next;
       /**/ MDSEventCan(e->eventid);
       /**/ if (e->info_len > 0)
         free(e->info);
       free(e);
     }
-    while
-      IS_OK(_TreeClose(&c->DBID, 0, 0));
+    do
+    {
+      status = _TreeClose(&c->DBID, 0, 0);
+    } while (STATUS_OK);
     TdiSaveContext(tdi_context);
     TdiDeleteContext(c->tdicontext);
     TdiRestoreContext(tdi_context);

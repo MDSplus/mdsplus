@@ -40,103 +40,107 @@ using namespace testing;
 //  NumericLimits Test  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace testing {
+namespace testing
+{
 
-///
-/// \brief The TestLimits class
-///
-/// This tests numeric conversion of Data object with numerical limits ..
+  ///
+  /// \brief The TestLimits class
+  ///
+  /// This tests numeric conversion of Data object with numerical limits ..
 
-///
-class TestLimits {
-public:
-  template <typename _MdsT>
-  static void print_type_conversion_test(const std::string &type_name) {
-    typedef typename detail::mds2cpp_typemap<_MdsT>::type c_type;
-    c_type min = numeric_limits<c_type>::lowest();
-    c_type eps = numeric_limits<c_type>::epsilon();
-    c_type max = numeric_limits<c_type>::highest();
+  ///
+  class TestLimits
+  {
+  public:
+    template <typename _MdsT>
+    static void print_type_conversion_test(const std::string &type_name)
+    {
+      typedef typename detail::mds2cpp_typemap<_MdsT>::type c_type;
+      c_type min = numeric_limits<c_type>::lowest();
+      c_type eps = numeric_limits<c_type>::epsilon();
+      c_type max = numeric_limits<c_type>::highest();
 
-    Data *mds_min = new _MdsT(min);
-    Data *mds_eps = new _MdsT(eps);
-    Data *mds_max = new _MdsT(max);
+      Data *mds_min = new _MdsT(min);
+      Data *mds_eps = new _MdsT(eps);
+      Data *mds_max = new _MdsT(max);
 
-    std::cout << "testing::TestLimits::test_conversion_limits<" << type_name
-              << ">("
-              << "\"" << mdsdata_to_string(mds_min) << "\","
-              << "\"" << mdsdata_to_string(mds_eps) << "\","
-              << "\"" << mdsdata_to_string(mds_max) << "\");\n";
+      std::cout << "testing::TestLimits::test_conversion_limits<" << type_name
+                << ">("
+                << "\"" << mdsdata_to_string(mds_min) << "\","
+                << "\"" << mdsdata_to_string(mds_eps) << "\","
+                << "\"" << mdsdata_to_string(mds_max) << "\");\n";
 
-    deleteData(mds_min);
-    deleteData(mds_eps);
-    deleteData(mds_max);
-  }
-
-  template <typename _MdsT>
-  static void test_conversion_limits(const std::string &tmin = "",
-                                     const std::string &teps = "",
-                                     const std::string &tmax = "") {
-    typedef typename detail::mds2cpp_typemap<_MdsT>::type c_type;
-    c_type min = numeric_limits<c_type>::lowest();
-    c_type eps = numeric_limits<c_type>::epsilon();
-    c_type max = numeric_limits<c_type>::highest();
-
-    { // MIN //
-      c_type &value = min;
-      const std::string &str = tmin;
-
-      Data *data = new _MdsT(value);
-      print_type_encoded(data);
-      MdsDataTest::test_data_numerics(data, value);
-      if (!str.empty())
-        MdsDataTest::test_data_string(data, str.c_str());
-      deleteData(data);
+      deleteData(mds_min);
+      deleteData(mds_eps);
+      deleteData(mds_max);
     }
-    { // 0 + EPSILON //
-      c_type &value = eps;
-      const std::string &str = teps;
 
-      Data *data = new _MdsT(value);
-      print_type_encoded(data);
-      MdsDataTest::test_data_numerics(data, value);
-      if (!str.empty())
-        MdsDataTest::test_data_string(data, str.c_str());
-      deleteData(data);
+    template <typename _MdsT>
+    static void test_conversion_limits(const std::string &tmin = "",
+                                       const std::string &teps = "",
+                                       const std::string &tmax = "")
+    {
+      typedef typename detail::mds2cpp_typemap<_MdsT>::type c_type;
+      c_type min = numeric_limits<c_type>::lowest();
+      c_type eps = numeric_limits<c_type>::epsilon();
+      c_type max = numeric_limits<c_type>::highest();
+
+      { // MIN //
+        c_type &value = min;
+        const std::string &str = tmin;
+
+        Data *data = new _MdsT(value);
+        print_type_encoded(data);
+        MdsDataTest::test_data_numerics(data, value);
+        if (!str.empty())
+          MdsDataTest::test_data_string(data, str.c_str());
+        deleteData(data);
+      }
+      { // 0 + EPSILON //
+        c_type &value = eps;
+        const std::string &str = teps;
+
+        Data *data = new _MdsT(value);
+        print_type_encoded(data);
+        MdsDataTest::test_data_numerics(data, value);
+        if (!str.empty())
+          MdsDataTest::test_data_string(data, str.c_str());
+        deleteData(data);
+      }
+      { // MAX //
+        c_type &value = max;
+        const std::string &str = tmax;
+
+        Data *data = new _MdsT(value);
+        print_type_encoded(data);
+        MdsDataTest::test_data_numerics(data, value);
+        if (!str.empty())
+          MdsDataTest::test_data_string(data, str.c_str());
+        deleteData(data);
+      }
     }
-    { // MAX //
-      c_type &value = max;
-      const std::string &str = tmax;
 
-      Data *data = new _MdsT(value);
-      print_type_encoded(data);
-      MdsDataTest::test_data_numerics(data, value);
-      if (!str.empty())
-        MdsDataTest::test_data_string(data, str.c_str());
-      deleteData(data);
-    }
-  }
+    // TODO: check limits for arrays //
+    template <typename _MdsT>
+    static void test_type_conversion_array(const std::string &tmin = "",
+                                           const std::string &teps = "",
+                                           const std::string &tmax = "") {}
+  };
 
-  // TODO: check limits for arrays //
-  template <typename _MdsT>
-  static void test_type_conversion_array(const std::string &tmin = "",
-                                         const std::string &teps = "",
-                                         const std::string &tmax = "") {}
-};
-
-// SPECIAL TRAIT FOR FLOAT  ..  //
-// template <>
-// void TestLimits::test_conversion_limits<Float32>(const std::string &tmin,
-//                                            const std::string &teps,
-//                                            const std::string &tmax)
-//{
-//    typedef typename detail::mds2cpp_typemap<Float32>::type c_type;
-//    c_type max = std::numeric_limits<c_type>::max();
-//    std::cout << " TESTING TRAIT FOR FLOAT: \n"
-//              << " max = " << max << "\n"
-//              << " static_cast<int>(max) = " << static_cast<int>(max) << "\n"
-//              << " numeric_cast<int>(max) = " <<
-//              Scalar::numeric_cast<int>(max) << "\n";
-//}
+  // SPECIAL TRAIT FOR FLOAT  ..  //
+  // template <>
+  // void TestLimits::test_conversion_limits<Float32>(const std::string &tmin,
+  //                                            const std::string &teps,
+  //                                            const std::string &tmax)
+  //{
+  //    typedef typename detail::mds2cpp_typemap<Float32>::type c_type;
+  //    c_type max = std::numeric_limits<c_type>::max();
+  //    std::cout << " TESTING TRAIT FOR FLOAT: \n"
+  //              << " max = " << max << "\n"
+  //              << " static_cast<int>(max) = " << static_cast<int>(max) << "\n"
+  //              << " numeric_cast<int>(max) = " <<
+  //              Scalar::numeric_cast<int>(max) << "\n";
+  //}
 
 } // namespace testing
 
@@ -148,14 +152,16 @@ public:
 /// This is a simple print of the test line to automatically compute type
 /// limits if the print argument is passed to the test execution.
 ///
-#define MDS_TEST_PRINT_TESTLINE(type)                                          \
+#define MDS_TEST_PRINT_TESTLINE(type) \
   testing::TestLimits::print_type_conversion_test<type>(#type);
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(Data);
 
-  if (argc > 1 && !strcmp(argv[1], "print")) {
+  if (argc > 1 && !strcmp(argv[1], "print"))
+  {
     std::cout << "--- CUT FROM HERE ------------------------------------\n";
 
     MDS_TEST_PRINT_TESTLINE(Int8);

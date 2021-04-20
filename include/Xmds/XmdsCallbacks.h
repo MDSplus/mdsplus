@@ -29,14 +29,16 @@
 #ifndef XmdsCallbacks_H
 #define XmdsCallbacks_H
 
-typedef struct _XmdsButtonCallbackStruct {
+typedef struct _XmdsButtonCallbackStruct
+{
   int reason;
   XEvent *event;
   struct descriptor_xd *xd;
   Boolean on_off;
 } XmdsButtonCallbackStruct;
 
-typedef struct _XmdsMenuCallbackStruct {
+typedef struct _XmdsMenuCallbackStruct
+{
   int reason;
   XEvent *event;
   int button;

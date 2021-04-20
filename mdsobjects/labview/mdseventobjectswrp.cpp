@@ -34,15 +34,19 @@ using namespace std;
 
 EXPORT void mdsplus_event_constructor(void **lvEventPtrOut,
                                       const char *evNameIn,
-                                      ErrorCluster *error) {
+                                      ErrorCluster *error)
+{
   Event *eventPtrOut = NULL;
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
   char const *errorMessage = (char *)"";
-  try {
+  try
+  {
     eventPtrOut = new Event(const_cast<char *>(evNameIn));
     *lvEventPtrOut = reinterpret_cast<void *>(eventPtrOut);
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     delete eventPtrOut;
     errorCode = bogusError;
     errorMessage = e.what();
@@ -52,7 +56,8 @@ EXPORT void mdsplus_event_constructor(void **lvEventPtrOut,
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-EXPORT void mdsplus_event_destructor(void **lvEventPtr) {
+EXPORT void mdsplus_event_destructor(void **lvEventPtr)
+{
   Event *eventPtr = reinterpret_cast<Event *>(*lvEventPtr);
   delete eventPtr;
   *lvEventPtr = NULL;
@@ -80,17 +85,21 @@ EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 }
 */
 EXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut,
-                                   int *timeoutOccurred, ErrorCluster *error) {
+                                   int *timeoutOccurred, ErrorCluster *error)
+{
   MgErr errorCode = noErr;
   char const *errorSource = __func__;
   char const *errorMessage = (char *)"";
-  try {
+  try
+  {
     *timeoutOccurred = 0;
     Event *eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
     // 1 Second timeout
     Data *dataPtrOut = eventPtr->waitData(1);
     *lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     *timeoutOccurred = 1;
     //		errorCode = bogusError;
     //		errorMessage = e.what();
@@ -99,13 +108,15 @@ EXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut,
 }
 
 EXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred,
-                               ErrorCluster *error) {
+                               ErrorCluster *error)
+{
   Event *eventPtr = NULL;
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
   char const *errorMessage = (char *)"";
   *timeoutOccurred = 0;
-  try {
+  try
+  {
     eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
 
     // 1 Sec timeout
@@ -113,7 +124,9 @@ EXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred,
 
     eventPtr->wait(1);
     std::cout << "EVENTO ARRIVATO....\n";
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     *timeoutOccurred = 1;
     // errorCode = bogusError;
     // errorMessage = e.what();
@@ -122,27 +135,33 @@ EXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred,
 }
 
 EXPORT void mdsplus_event_getName(const void *lvEventPtr,
-                                  LStrHandle lvStrHdlOut, ErrorCluster *error) {
+                                  LStrHandle lvStrHdlOut, ErrorCluster *error)
+{
   Event *eventPtr = NULL;
   char *strOut = NULL;
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
   char const *errorMessage = (char *)"";
-  try {
+  try
+  {
     eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
     strOut = strdup(eventPtr->getName());
     std::size_t strOutLen = std::strlen(strOut);
     errorCode =
         NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut),
                            strOutLen + sizeof(int32));
-    if (!errorCode) {
+    if (!errorCode)
+    {
       MoveBlock(reinterpret_cast<uChar *>(strOut), LStrBuf(*lvStrHdlOut),
                 strOutLen);
       (*lvStrHdlOut)->cnt = strOutLen;
-    } else
+    }
+    else
       errorMessage = (char *)"NumericArrayResize error";
     deleteNativeArray(strOut);
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     deleteNativeArray(strOut);
     errorCode = bogusError;
     errorMessage = e.what();
@@ -154,13 +173,15 @@ EXPORT void mdsplus_event_getName(const void *lvEventPtr,
 
 EXPORT void mdsplus_event_waitRaw(const void *lvEventPtr,
                                   LByteArrHdl lvByteArrHdlOut,
-                                  ErrorCluster *error) {
+                                  ErrorCluster *error)
+{
   Event *eventPtr = NULL;
   char const *byteArrOut = NULL;
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
   char const *errorMessage = (char *)"";
-  try {
+  try
+  {
     eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
     size_t byteArrLen = 0;
     std::cout << "ASPETTO EVENTO RAW ....\n";
@@ -169,13 +190,17 @@ EXPORT void mdsplus_event_waitRaw(const void *lvEventPtr,
     errorCode =
         NumericArrayResize(iB, 1, reinterpret_cast<UHandle *>(&lvByteArrHdlOut),
                            static_cast<int32>(byteArrLen));
-    if (!errorCode) {
+    if (!errorCode)
+    {
       for (size_t i = 0; i < byteArrLen; i++)
         (*lvByteArrHdlOut)->elt[i] = static_cast<int8>(byteArrOut[i]);
       (*lvByteArrHdlOut)->dimSize = static_cast<int32>(byteArrLen);
-    } else
+    }
+    else
       errorMessage = (char *)"NumericArrayResize error";
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     errorCode = bogusError;
     errorMessage = e.what();
     fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -184,13 +209,17 @@ EXPORT void mdsplus_event_waitRaw(const void *lvEventPtr,
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-EXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error) {
+EXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error)
+{
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
   char const *errorMessage = (char *)"";
-  try {
+  try
+  {
     Event::setEvent(const_cast<char *>(evNameIn));
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     errorCode = bogusError;
     errorMessage = e.what();
     fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -201,15 +230,19 @@ EXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error) {
 
 EXPORT void mdsplus_event_setEvent_data(const char *evNameIn,
                                         const void *lvDataPtrIn,
-                                        ErrorCluster *error) {
+                                        ErrorCluster *error)
+{
   Data *dataPtrIn = NULL;
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
   char const *errorMessage = (char *)"";
-  try {
+  try
+  {
     dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
     Event::setEvent(const_cast<char *>(evNameIn), dataPtrIn);
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     errorCode = bogusError;
     errorMessage = e.what();
     fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -220,19 +253,23 @@ EXPORT void mdsplus_event_setEvent_data(const char *evNameIn,
 
 EXPORT void mdsplus_event_setEventRaw(const char *evNameIn,
                                       LByteArrHdl lvByteArrHdlIn,
-                                      ErrorCluster *error) {
+                                      ErrorCluster *error)
+{
   char *int8Arr = NULL;
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
   char const *errorMessage = (char *)"";
-  try {
+  try
+  {
     int int8ArrLen = static_cast<int>((*lvByteArrHdlIn)->dimSize);
     int8Arr = new char[int8ArrLen];
     for (int i = 0; i < int8ArrLen; i++)
       int8Arr[i] = static_cast<char>((*lvByteArrHdlIn)->elt[i]);
     Event::setEventRaw(const_cast<char *>(evNameIn), int8ArrLen, int8Arr);
     delete[] int8Arr;
-  } catch (const MdsException &e) {
+  }
+  catch (const MdsException &e)
+  {
     delete[] int8Arr;
     errorCode = bogusError;
     errorMessage = e.what();

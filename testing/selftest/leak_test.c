@@ -29,15 +29,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "testing.h"
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   if (!getenv("VALGRIND_TOOL") || strcmp("memcheck", getenv("VALGRIND_TOOL")))
     SKIP_TEST("This test is supposed to run with valgrind memcheck");
 
   BEGIN_TESTING(leak test);
   volatile int undef;
-  if (undef) {
+  if (undef)
+  {
     printf(".");
-  } else {
+  }
+  else
+  {
     printf(",");
   }
   TEST1(1);

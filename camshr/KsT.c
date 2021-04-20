@@ -40,7 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "prototypes.h"
 
 //-----------------------------------------------------------
-int KsTranslateIosb(RequestSenseData *sense, int cam_status) {
+int KsTranslateIosb(RequestSenseData *sense, int cam_status)
+{
   int status;
 
   //  union {
@@ -49,7 +50,8 @@ int KsTranslateIosb(RequestSenseData *sense, int cam_status) {
   //    BYTE    b[4];
   //  } u;
 
-  if (Verbose) {
+  if (Verbose)
+  {
     printf("SCSI Sense data:  error code=%d,valid=%d,sense_key=%d\n\n",
            sense->error_code, sense->valid, sense->sense_key);
     printf("     CSR status register:\n\n");
@@ -88,8 +90,10 @@ int KsTranslateIosb(RequestSenseData *sense, int cam_status) {
 
   status = CamSERTRAERR;
   LastIosb.status = Shorten(CamSERTRAERR);
-  if (cam_status == 0 || cam_status == 1 || cam_status == 2) {
-    switch (sense->u2.esr.error_code) {
+  if (cam_status == 0 || cam_status == 1 || cam_status == 2)
+  {
+    switch (sense->u2.esr.error_code)
+    {
     case 0:
       status = 1;
       LastIosb.status = Shorten(CamDONE_Q);
@@ -129,7 +133,8 @@ int KsTranslateIosb(RequestSenseData *sense, int cam_status) {
     LastIosb.no_sync = sense->u2.esr.no_sync;
     LastIosb.tmo = sense->u2.esr.tmo;
     LastIosb.adnr = sense->u2.esr.adnr;
-    if (sense->u2.esr.adnr) {
+    if (sense->u2.esr.adnr)
+    {
       status = CamDONE_NOX;
       LastIosb.status = Shorten(CamDONE_NOX);
     }
@@ -137,7 +142,8 @@ int KsTranslateIosb(RequestSenseData *sense, int cam_status) {
     //      LastIosb.lbytcnt =  0;                  // list processing not
     //      supported
   }
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("%s(): LastIosb.status = %d [0x%x]\n", KT_ROUTINE_NAME,
            LastIosb.status, LastIosb.status);
     printf("%s(): LastIosb.x = %d\n", KT_ROUTINE_NAME, LastIosb.x);

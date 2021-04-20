@@ -46,15 +46,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TclShowDb:
  ***************************************************************/
 EXPORT int TclShowDB(void *ctx __attribute__((unused)),
-                     char **error __attribute__((unused)), char **output) {
+                     char **error __attribute__((unused)), char **output)
+{
   int sts;
   int open;
   DBI_ITM itm1[] = {{sizeof(open), DbiNUMBER_OPENED, &open, 0}, {0}};
   sts = TreeGetDbi(itm1);
-  if (sts & 1) {
+  if (sts & 1)
+  {
     int idx;
     *output = strdup("");
-    for (idx = 0; idx < open; idx++) {
+    for (idx = 0; idx < open; idx++)
+    {
       int shotid;
       char modified;
       char edit;

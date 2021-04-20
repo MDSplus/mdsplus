@@ -54,7 +54,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /****************************************************************
  * TclSetNode:
  ****************************************************************/
-EXPORT int TclSetNode(void *ctx, char **error, char **output) {
+EXPORT int TclSetNode(void *ctx, char **error, char **output)
+{
   int nid;
   int status = 1;
   int log;
@@ -67,18 +68,22 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
   log = cli_present(ctx, "LOG") & 1;
 
   usageMask = -1;
-  while ((status = TreeFindNodeWild(nodename, &nid, &ctx1, usageMask)) & 1) {
-    if (statusStr) {
+  while ((status = TreeFindNodeWild(nodename, &nid, &ctx1, usageMask)) & 1)
+  {
+    if (statusStr)
+    {
       int statval = strtol(statusStr, NULL, 0);
       NCI_ITM setnci[] = {{sizeof(int), NciSTATUS, 0, 0},
                           {0, NciEND_OF_LIST, 0, 0}};
       setnci[0].pointer = (unsigned char *)&statval;
       TreeSetNci(nid, setnci);
     }
-    switch (cli_present(ctx, "SUBTREE")) {
+    switch (cli_present(ctx, "SUBTREE"))
+    {
     case MdsdclPRESENT:
       status = TreeSetSubtree(nid);
-      if (!(status & 1)) {
+      if (!(status & 1))
+      {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
         sprintf(*error,
@@ -90,7 +95,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
       break;
     case MdsdclNEGATED:
       status = TreeSetNoSubtree(nid);
-      if (!(status & 1)) {
+      if (!(status & 1))
+      {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
         sprintf(*error,
@@ -103,11 +109,13 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
     }
     if (!(status & 1))
       goto error;
-    if (cli_present(ctx, "ON") & 1) {
+    if (cli_present(ctx, "ON") & 1)
+    {
       status = TreeTurnOn(nid);
       if (status & 1)
         TclNodeTouched(nid, on_off);
-      else {
+      else
+      {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
         sprintf(*error,
@@ -116,11 +124,14 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
                 nodename, msg);
         goto error;
       }
-    } else if (cli_present(ctx, "OFF") & 1) {
+    }
+    else if (cli_present(ctx, "OFF") & 1)
+    {
       status = TreeTurnOff(nid);
       if (status & 1)
         TclNodeTouched(nid, on_off);
-      else {
+      else
+      {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
         sprintf(*error,
@@ -141,7 +152,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
           {0, NciEND_OF_LIST, 0, 0}};
       set_flags = 0;
       clear_flags = 0;
-      switch (cli_present(ctx, "WRITE_ONCE")) {
+      switch (cli_present(ctx, "WRITE_ONCE"))
+      {
       case MdsdclPRESENT:
         set_flags |= NciM_WRITE_ONCE;
         break;
@@ -149,7 +161,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         clear_flags |= NciM_WRITE_ONCE;
         break;
       }
-      switch (cli_present(ctx, "CACHED")) {
+      switch (cli_present(ctx, "CACHED"))
+      {
       case MdsdclPRESENT:
         set_flags |= NciM_CACHED;
         break;
@@ -157,7 +170,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         clear_flags |= NciM_CACHED;
         break;
       }
-      switch (cli_present(ctx, "COMPRESS_ON_PUT")) {
+      switch (cli_present(ctx, "COMPRESS_ON_PUT"))
+      {
       case MdsdclPRESENT:
         set_flags |= NciM_COMPRESS_ON_PUT;
         break;
@@ -165,7 +179,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         clear_flags |= NciM_COMPRESS_ON_PUT;
         break;
       }
-      switch (cli_present(ctx, "COMPRESS_SEGMENTS")) {
+      switch (cli_present(ctx, "COMPRESS_SEGMENTS"))
+      {
       case MdsdclPRESENT:
         set_flags |= NciM_COMPRESS_SEGMENTS;
         break;
@@ -173,7 +188,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         clear_flags |= NciM_COMPRESS_SEGMENTS;
         break;
       }
-      switch (cli_present(ctx, "DO_NOT_COMPRESS")) {
+      switch (cli_present(ctx, "DO_NOT_COMPRESS"))
+      {
       case MdsdclPRESENT:
         set_flags |= NciM_DO_NOT_COMPRESS;
         break;
@@ -181,7 +197,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         clear_flags |= NciM_DO_NOT_COMPRESS;
         break;
       }
-      switch (cli_present(ctx, "SHOT_WRITE")) {
+      switch (cli_present(ctx, "SHOT_WRITE"))
+      {
       case MdsdclPRESENT:
         clear_flags |= NciM_NO_WRITE_SHOT;
         break;
@@ -189,7 +206,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         set_flags |= NciM_NO_WRITE_SHOT;
         break;
       }
-      switch (cli_present(ctx, "MODEL_WRITE")) {
+      switch (cli_present(ctx, "MODEL_WRITE"))
+      {
       case MdsdclPRESENT:
         clear_flags |= NciM_NO_WRITE_MODEL;
         break;
@@ -197,7 +215,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         set_flags |= NciM_NO_WRITE_MODEL;
         break;
       }
-      switch (cli_present(ctx, "INCLUDED")) {
+      switch (cli_present(ctx, "INCLUDED"))
+      {
       case MdsdclPRESENT:
         set_flags |= NciM_INCLUDE_IN_PULSE;
         break;
@@ -205,7 +224,8 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         clear_flags |= NciM_INCLUDE_IN_PULSE;
         break;
       }
-      switch (cli_present(ctx, "ESSENTIAL")) {
+      switch (cli_present(ctx, "ESSENTIAL"))
+      {
       case MdsdclPRESENT:
         set_flags |= NciM_ESSENTIAL;
         break;
@@ -217,13 +237,18 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
         status = TreeSetNci(nid, set_itmlst);
       if (clear_flags)
         status = TreeSetNci(nid, clear_itmlst);
-      if (status & 1) {
-        if (log) {
+      if (status & 1)
+      {
+        if (log)
+        {
           char *nout;
-          if (*output) {
+          if (*output)
+          {
             *output = realloc(*output, strlen(*output) + dsc_path.length + 100);
             nout = *output + strlen(*output);
-          } else {
+          }
+          else
+          {
             *output = malloc(dsc_path.length + 100);
             nout = *output;
           }
@@ -231,7 +256,9 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output) {
                   dsc_path.pointer);
         }
         StrFree1Dx(&dsc_path);
-      } else {
+      }
+      else
+      {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(msg) + dsc_path.length + 100);
         sprintf(*error,

@@ -41,10 +41,10 @@ int caenLibDebug = 1;
 // sampling rate = 100MHz
 // gain at 10 MHz is about 1.
 #define FILTER_LEN 25
-int16_t coeffs[FILTER_LEN] = {547,   469,  95,   -872,  -2261, -3518, -3845,
-                              -2528, 677,  5300, 10204, 13951, 15353, 13951,
-                              10204, 5300, 677,  -2528, -3845, -3518, -2261,
-                              -872,  95,   469,  547};
+int16_t coeffs[FILTER_LEN] = {547, 469, 95, -872, -2261, -3518, -3845,
+                              -2528, 677, 5300, 10204, 13951, 15353, 13951,
+                              10204, 5300, 677, -2528, -3845, -3518, -2261,
+                              -872, 95, 469, 547};
 
 #define SAMPLES 8000
 
@@ -61,7 +61,8 @@ int16_t insamp[BUFFER_LEN];
 void firFixedInit(void) { memset(insamp, 0, sizeof(insamp)); }
 // the FIR filter function
 void firFixed(int16_t *coeffs, int16_t *input, int16_t *output, int length,
-              int filterLength) {
+              int filterLength)
+{
   int32_t acc;     // accumulator for MACs
   int16_t *coeffp; // pointer to coefficients
   int16_t *inputp; // pointer to input samples
@@ -70,20 +71,25 @@ void firFixed(int16_t *coeffs, int16_t *input, int16_t *output, int length,
   // put the new samples at the high end of the buffer
   memcpy(&insamp[filterLength - 1], input, length * sizeof(int16_t));
   // apply the filter to each input sample
-  for (n = 0; n < length; n++) {
+  for (n = 0; n < length; n++)
+  {
     // calculate output n
     coeffp = coeffs;
     inputp = &insamp[filterLength - 1 + n];
     // load rounding constant
     acc = 1 << 14;
     // perform the multiply-accumulate
-    for (k = 0; k < filterLength; k++) {
+    for (k = 0; k < filterLength; k++)
+    {
       acc += (int32_t)(*coeffp++) * (int32_t)(*inputp--);
     }
     // saturate the result
-    if (acc > 0x3fffffff) {
+    if (acc > 0x3fffffff)
+    {
       acc = 0x3fffffff;
-    } else if (acc < -0x40000000) {
+    }
+    else if (acc < -0x40000000)
+    {
       acc = -0x40000000;
     }
     // convert from Q30 to Q15
@@ -98,7 +104,8 @@ void firFixed(int16_t *coeffs, int16_t *input, int16_t *output, int length,
 //////////////////////////////////////////////////////////////
 
 // Support class for enqueueing storage requests
-class SaveItem {
+class SaveItem
+{
   void *segment;
   char dataType;
   int segmentSize;
@@ -114,7 +121,8 @@ class SaveItem {
 public:
   SaveItem(void *segment, int segmentSize, char dataType, int startIdx_c,
            int endIdx_c, int segmentCount, int dataNid, int clockNid,
-           int triggerNid, void *treePtr) {
+           int triggerNid, void *treePtr)
+  {
     this->segment = segment;
     this->segmentSize = segmentSize;
     this->dataType = dataType;
@@ -132,7 +140,8 @@ public:
 
   SaveItem *getNext() { return nxt; }
 
-  void save() {
+  void save()
+  {
 
     TreeNode *dataNode = new TreeNode(dataNid, (Tree *)treePtr);
     TreeNode *clockNode = new TreeNode(clockNid, (Tree *)treePtr);
@@ -160,23 +169,29 @@ public:
         (Tree *)treePtr, 9, triggerNode, segCount, clockNode, startIdx,
         triggerNode, segCount, clockNode, endIdx, clockNode);
 
-    try {
+    try
+    {
 
-      switch (dataType) {
-      case DTYPE_W: {
+      switch (dataType)
+      {
+      case DTYPE_W:
+      {
         Int16Array *sData = new Int16Array((short *)segment, segmentSize);
         printf("Save short data segment idx %d endIdx_c %d\n", segmentCount,
                endIdx_c);
         dataNode->makeSegment(startTime, endTime, dim, sData);
         deleteData(sData);
-      } break;
-      case DTYPE_F: {
+      }
+      break;
+      case DTYPE_F:
+      {
         Float32Array *fData = new Float32Array((float *)segment, segmentSize);
         printf("Save flat data segment idx %d endIdx_c %d\n", segmentCount,
                endIdx_c);
         dataNode->makeSegment(startTime, endTime, dim, fData);
         deleteData(fData);
-      } break;
+      }
+      break;
       }
       free(segment);
       deleteData(startIdx);
@@ -184,8 +199,9 @@ public:
       deleteData(startTime);
       deleteData(endTime);
       deleteData(segCount);
-
-    } catch (MdsException *exc) {
+    }
+    catch (MdsException *exc)
+    {
       printf("Cannot put segment: %s\n", exc->what());
     }
     delete dataNode;
@@ -196,7 +212,8 @@ public:
 
 extern "C" void *handleSave(void *listPtr);
 
-class SaveList {
+class SaveList
+{
 public:
   pthread_cond_t itemAvailable;
   pthread_t thread;
@@ -206,7 +223,8 @@ public:
   pthread_mutex_t mutex;
 
 public:
-  SaveList() {
+  SaveList()
+  {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&itemAvailable, NULL);
     saveHead = saveTail = NULL;
@@ -216,16 +234,20 @@ public:
 
   void addItem(void *segment, int segmentSize, char dataType, int startIdx_c,
                int endIdx_c, int segmentCount, int dataNid, int clockNid,
-               int triggerNid, void *treePtr) {
+               int triggerNid, void *treePtr)
+  {
     // printf("add Item\n");
 
     int noFilter = 1;
     void *segmentc = calloc(1, segmentSize * sizeof(short));
     int size;
 
-    if (noFilter) {
+    if (noFilter)
+    {
       memcpy(segmentc, segment, segmentSize * sizeof(short));
-    } else {
+    }
+    else
+    {
       int cIdx = 0, currSize;
       // initialize the filter
       firFixedInit();
@@ -233,7 +255,8 @@ public:
       currSize = segmentSize;
       size = SAMPLES;
       printf("----Start Filter\n");
-      while (currSize > 0) {
+      while (currSize > 0)
+      {
         size = (size > currSize ? currSize : size);
         firFixed(coeffs, &((int16_t *)segment)[cIdx],
                  &((int16_t *)segmentc)[cIdx], size, FILTER_LEN);
@@ -248,24 +271,30 @@ public:
     pthread_mutex_lock(&mutex);
     if (saveHead == NULL)
       saveHead = saveTail = newItem;
-    else {
+    else
+    {
       saveTail->setNext(newItem);
       saveTail = newItem;
     }
     pthread_cond_signal(&itemAvailable);
     pthread_mutex_unlock(&mutex);
   }
-  void executeItems() {
-    while (true) {
+  void executeItems()
+  {
+    while (true)
+    {
       pthread_mutex_lock(&mutex);
-      if (stopReq && saveHead == NULL) {
+      if (stopReq && saveHead == NULL)
+      {
         pthread_mutex_unlock(&mutex);
         pthread_exit(NULL);
       }
 
-      while (saveHead == NULL) {
+      while (saveHead == NULL)
+      {
         pthread_cond_wait(&itemAvailable, &mutex);
-        if (stopReq && saveHead == NULL) {
+        if (stopReq && saveHead == NULL)
+        {
           pthread_mutex_unlock(&mutex);
           pthread_exit(NULL);
         }
@@ -289,52 +318,64 @@ public:
       delete currItem;
     }
   }
-  void start() {
+  void start()
+  {
     pthread_create(&thread, NULL, handleSave, (void *)this);
     threadCreated = true;
   }
-  void stop() {
+  void stop()
+  {
     stopReq = true;
     pthread_cond_signal(&itemAvailable);
-    if (threadCreated) {
+    if (threadCreated)
+    {
       pthread_join(thread, NULL);
       printf("SAVE THREAD TERMINATED\n");
     }
   }
 };
 
-extern "C" void *handleSave(void *listPtr) {
+extern "C" void *handleSave(void *listPtr)
+{
   SaveList *list = (SaveList *)listPtr;
   list->executeItems();
   return NULL;
 }
 
-extern "C" void startSave(void **retList) {
+extern "C" void startSave(void **retList)
+{
   SaveList *saveList = new SaveList;
   saveList->start();
   *retList = (void *)saveList;
 }
 
-extern "C" void stopSave(void *listPtr) {
-  if (listPtr) {
+extern "C" void stopSave(void *listPtr)
+{
+  if (listPtr)
+  {
     SaveList *list = (SaveList *)listPtr;
     list->stop();
     delete list;
   }
 }
 
-extern "C" void openTree(char *name, int shot, void **treePtr) {
-  try {
+extern "C" void openTree(char *name, int shot, void **treePtr)
+{
+  try
+  {
     Tree *tree = new Tree(name, shot);
     *treePtr = (void *)tree;
-  } catch (MdsException *exc) {
+  }
+  catch (MdsException *exc)
+  {
     printf("Cannot open tree %s %d: %s\n", name, shot, exc->what());
   }
 }
 
 #define MAX_CHANNELS 4
 
-struct segment_struct {
+struct segment_struct
+{
   int eventSize;
   int boardGroup;
   int counter;
@@ -369,7 +410,8 @@ readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numChannels,
   // Read number of buffers
   status = CAENVME_ReadCycle(handle, (vmeAddress + 0x812C), &actSegments,
                              cvA32_S_DATA, cvD32);
-  if (status != 0) {
+  if (status != 0)
+  {
     onError("Error reading number of acquired segments");
     return 0;
   }
@@ -383,12 +425,14 @@ readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numChannels,
   short *buff =
       (short *)calloc(1, 16 + nActChans * segmentSamples * sizeof(short));
 
-  for (int chan = 0; chan < numChannels; chan++) {
+  for (int chan = 0; chan < numChannels; chan++)
+  {
     channels[chan] =
         (short *)calloc(1, currChanSamples * actSegments * sizeof(short));
   }
 
-  for (int segmentIdx = 0; segmentIdx < actSegments; segmentIdx++) {
+  for (int segmentIdx = 0; segmentIdx < actSegments; segmentIdx++)
+  {
 
     int retLen = 0;
     // printf("Read CAENVME_FIFOBLTReadCycle %d vmeAddress %d segmentSize %d\n",
@@ -396,7 +440,8 @@ readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numChannels,
     status = CAENVME_FIFOBLTReadCycle(handle, vmeAddress, buff, segmentSize,
                                       cvA32_S_DATA, cvD64, &retLen);
 
-    if (status != 0) {
+    if (status != 0)
+    {
       free(buff);
       onError("ASYNCH: Error reading data segment");
       return 0;
@@ -414,8 +459,10 @@ readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numChannels,
       printf("Read actSize %d counter %d sizeInInts %d retLen %d Index %d\n",
              actSize, counter, sizeInInts, retLen, segment.time % actSize);
 
-    for (int chan = 0; chan < numChannels; chan++) {
-      if ((chanMask & (1 << chan)) != 0) {
+    for (int chan = 0; chan < numChannels; chan++)
+    {
+      if ((chanMask & (1 << chan)) != 0)
+      {
         if (caenLibDebug)
           printf("---Seg Idx %d - channels[%d][%d : %d], &buff[%d : %d]\n",
                  segmentIdx, chan, segmentIdx * currChanSamples,
@@ -431,12 +478,17 @@ readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numChannels,
 
   free(buff);
 
-  if (actSegments > 0) {
+  if (actSegments > 0)
+  {
 
-    for (int chan = 0; chan < numChannels; chan++) {
-      if ((chanMask & (1 << chan)) != 0) {
-        for (int seg = 0; seg < actSegments; seg++) {
-          if (numSegment > 0 && segmentCounter + seg > numSegment) {
+    for (int chan = 0; chan < numChannels; chan++)
+    {
+      if ((chanMask & (1 << chan)) != 0)
+      {
+        for (int seg = 0; seg < actSegments; seg++)
+        {
+          if (numSegment > 0 && segmentCounter + seg > numSegment)
+          {
             if (caenLibDebug)
               printf("skip seg %d for channel %d\n", (segmentCounter + seg),
                      chan);

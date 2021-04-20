@@ -56,7 +56,8 @@ int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 #include <servershr.h>
 #include "servershrp.h"
 
-EXPORT int ServerAbortServer(char *server, int flush) {
+EXPORT int ServerAbortServer(char *server, int flush)
+{
   struct descrip p1;
   return ServerSendMessage(0, server, SrvAbort, NULL, NULL, NULL, NULL, NULL,
                            NULL, 1, MakeDescrip(&p1, DTYPE_LONG, 0, 0, &flush));

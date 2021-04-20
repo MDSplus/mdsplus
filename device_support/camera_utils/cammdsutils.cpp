@@ -33,7 +33,8 @@ using namespace std;
 //#define DEBUG
 
 // Support class for enqueueing Frame storage requests
-class SaveFrame {
+class SaveFrame
+{
 
   void *frame;
   int width;
@@ -56,7 +57,8 @@ class SaveFrame {
 public:
   SaveFrame(void *frame, int width, int height, float frameTime, int pixelSize,
             void *treePtr, int dataNid, int timebaseNid, int frameIdx,
-            void *frameMetadata, int metaSize, int metaNid) {
+            void *frameMetadata, int metaSize, int metaNid)
+  {
     this->frame = frame;
     this->width = width;
     this->height = height;
@@ -76,7 +78,8 @@ public:
     nxt = 0;
   }
   SaveFrame(void *frame, int width, int height, float frameTime, int pixelSize,
-            void *treePtr, int dataNid, int timebaseNid, int frameIdx) {
+            void *treePtr, int dataNid, int timebaseNid, int frameIdx)
+  {
     this->frame = frame;
     this->width = width;
     this->height = height;
@@ -100,7 +103,8 @@ public:
 
   SaveFrame *getNext() { return nxt; }
 
-  void save() {
+  void save()
+  {
 
     int dataDims[] = {1, height, width};
     int metaDims[] = {1, metaSize};
@@ -117,18 +121,23 @@ public:
       metaData = new Int8Array((char *)frameMetadata, 2, metaDims);
 
     // check pixel size format
-    if (pixelSize <= 8) {
+    if (pixelSize <= 8)
+    {
       data = new Int8Array((char *)frame, 3, dataDims);
 #ifdef DEBUG
       printf("Pixel Format: 8bit.\n");
 #endif
-    } else if (pixelSize <= 16) {
+    }
+    else if (pixelSize <= 16)
+    {
       data = new Int16Array((short *)frame, 3, dataDims);
 #ifdef DEBUG
       printf("Pixel Format: 16bit. %d %d %d\n", dataDims[0], dataDims[1],
              dataDims[2]);
 #endif
-    } else if (pixelSize <= 32) {
+    }
+    else if (pixelSize <= 32)
+    {
       data = new Int32Array((int *)frame, 3, dataDims);
 #ifdef DEBUG
       printf("Pixel Format: 32bit.\n");
@@ -142,7 +151,8 @@ public:
       Data *time;
       Data *dim;
 
-      try {
+      try
+      {
         timebaseNode = new TreeNode(timebaseNid, (Tree *)treePtr);
 #ifdef DEBUG
         printf("SAVE Frame IDX %d %s\n", frameIdx, dataNode->decompile());
@@ -153,10 +163,13 @@ public:
         dim = compileWithArgs("fs_float([$1[$2]])", (Tree *)treePtr, 2,
                               timebaseNode, idxData);
         dataNode->makeSegment(time, time, dim, (Array *)data);
-        if (hasMetadata && metaSize > 0) {
+        if (hasMetadata && metaSize > 0)
+        {
           metaNode->makeSegment(time, time, dim, (Array *)metaData);
         }
-      } catch (MdsException *exc) {
+      }
+      catch (MdsException *exc)
+      {
         cout << "ERROR WRITING SEGMENT: " << exc->what() << "\n";
       }
       deleteData(data);
@@ -173,32 +186,39 @@ public:
         delete (short *)frame;
       else if (pixelSize <= 32)
         delete (int *)frame;
-
-    } else // timebase NOT defined (int. trigger)
+    }
+    else // timebase NOT defined (int. trigger)
     {
       Data *dim;
       Data *time = new Float32(frameTime);
 
-      try {
+      try
+      {
         dim = compileWithArgs("[$1]", (Tree *)treePtr, 1, time);
-      } catch (MdsException *exc) {
+      }
+      catch (MdsException *exc)
+      {
         cout << "ERROR CompileWithArgs: " << exc->what() << "\n";
       }
 
-      try {
+      try
+      {
         // cout << "WRITING SEGMENT " << time << dim << data << " " <<
         // dataNode->getFullPath() <<"\n";
 
         dataNode->makeSegment(time, time, dim, (Array *)data);
-        if (hasMetadata && metaSize > 0) {
+        if (hasMetadata && metaSize > 0)
+        {
           metaNode->makeSegment(time, time, dim, (Array *)metaData);
         }
-
-      } catch (MdsException *exc) {
+      }
+      catch (MdsException *exc)
+      {
         cout << "ERROR WRITING SEGMENT " << exc->what() << "\n";
       }
 
-      try {
+      try
+      {
         deleteData(data);
         deleteData(time);
         deleteData(dim);
@@ -212,14 +232,17 @@ public:
           delete (short *)frame;
         else if (pixelSize <= 32)
           delete (int *)frame;
-      } catch (MdsException *exc) {
+      }
+      catch (MdsException *exc)
+      {
         cout << "ERROR deleting data" << exc->what() << "\n";
       }
     }
   }
 };
 
-class SaveFrameList {
+class SaveFrameList
+{
 public:
   pthread_cond_t itemAvailable;
   pthread_t thread;
@@ -231,7 +254,8 @@ public:
 
 public:
   void setDeferredSave(bool deferredSave) { this->deferredSave = deferredSave; }
-  SaveFrameList() {
+  SaveFrameList()
+  {
     int status = pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&itemAvailable, NULL);
     saveHead = saveTail = NULL;
@@ -240,11 +264,15 @@ public:
     threadCreated = false;
   }
 
-  void addFrame(SaveFrame *newItem) {
+  void addFrame(SaveFrame *newItem)
+  {
     pthread_mutex_lock(&mutex);
-    if (saveHead == NULL) {
+    if (saveHead == NULL)
+    {
       saveHead = saveTail = newItem;
-    } else {
+    }
+    else
+    {
       saveTail->setNext(newItem);
       saveTail = newItem;
     }
@@ -254,7 +282,8 @@ public:
 
   void addFrame(void *frame, int width, int height, float frameTime,
                 int pixelSize, void *treePtr, int dataNid, int timebaseNid,
-                int frameIdx, void *frameMetadata, int metaSize, int metaNid) {
+                int frameIdx, void *frameMetadata, int metaSize, int metaNid)
+  {
     SaveFrame *newItem = new SaveFrame(
         frame, width, height, frameTime, pixelSize, treePtr, dataNid,
         timebaseNid, frameIdx, frameMetadata, metaSize, metaNid);
@@ -263,28 +292,37 @@ public:
 
   void addFrame(void *frame, int width, int height, float frameTime,
                 int pixelSize, void *treePtr, int dataNid, int timebaseNid,
-                int frameIdx) {
+                int frameIdx)
+  {
     SaveFrame *newItem =
         new SaveFrame(frame, width, height, frameTime, pixelSize, treePtr,
                       dataNid, timebaseNid, frameIdx);
     addFrame(newItem);
   }
 
-  void executeItems() {
-    while (true) {
+  void executeItems()
+  {
+    while (true)
+    {
       pthread_mutex_lock(&mutex);
-      if (stopReq && saveHead == NULL) {
+      if (stopReq && saveHead == NULL)
+      {
         pthread_mutex_unlock(&mutex);
         pthread_exit(NULL);
       }
-      if (deferredSave) {
+      if (deferredSave)
+      {
         pthread_cond_wait(&itemAvailable, &mutex);
-        if (!stopReq) {
+        if (!stopReq)
+        {
           pthread_mutex_unlock(&mutex);
           continue;
-        } else {
+        }
+        else
+        {
           // Empty pending queue
-          while (saveHead) {
+          while (saveHead)
+          {
             SaveFrame *currItem = saveHead;
             saveHead = saveHead->getNext();
 
@@ -304,9 +342,11 @@ public:
         }
       }
 
-      while (saveHead == NULL) {
+      while (saveHead == NULL)
+      {
         pthread_cond_wait(&itemAvailable, &mutex);
-        if (stopReq && saveHead == NULL) {
+        if (stopReq && saveHead == NULL)
+        {
           pthread_mutex_unlock(&mutex);
           pthread_exit(NULL);
         }
@@ -326,14 +366,17 @@ public:
       delete currItem;
     }
   }
-  void start() {
+  void start()
+  {
     pthread_create(&thread, NULL, handleSave, (void *)this);
     threadCreated = true;
   }
-  void stop() {
+  void stop()
+  {
     stopReq = true;
     pthread_cond_signal(&itemAvailable);
-    if (threadCreated) {
+    if (threadCreated)
+    {
       pthread_join(thread, NULL);
 #ifdef DEBUG
       printf("SAVE THREAD TERMINATED\n");
@@ -342,27 +385,32 @@ public:
   }
 };
 
-static void *handleSave(void *listPtr) {
+static void *handleSave(void *listPtr)
+{
   SaveFrameList *list = (SaveFrameList *)listPtr;
   list->executeItems();
   return NULL;
 }
 
-void camStartSave(void **retList) {
+void camStartSave(void **retList)
+{
   SaveFrameList *saveFrameList = new SaveFrameList;
   saveFrameList->start();
   *retList = (void *)saveFrameList;
 }
 
-void camStartSaveDeferred(void **retList) {
+void camStartSaveDeferred(void **retList)
+{
   SaveFrameList *saveFrameList = new SaveFrameList;
   saveFrameList->setDeferredSave(true);
   saveFrameList->start();
   *retList = (void *)saveFrameList;
 }
 
-void camStopSave(void *listPtr) {
-  if (listPtr) {
+void camStopSave(void *listPtr)
+{
+  if (listPtr)
+  {
     SaveFrameList *list = (SaveFrameList *)listPtr;
     list->stop();
     delete list;
@@ -370,12 +418,16 @@ void camStopSave(void *listPtr) {
 }
 
 // Open Mdsplus Tree
-int camOpenTree(char *treeName, int shot, void **treePtr) {
-  try {
+int camOpenTree(char *treeName, int shot, void **treePtr)
+{
+  try
+  {
     Tree *tree = new Tree(treeName, shot);
     *treePtr = (void *)tree;
     return 0;
-  } catch (MdsException *exc) {
+  }
+  catch (MdsException *exc)
+  {
     cout << "Error opening Tree " << treeName << ": " << exc->what() << "\n";
     return -1;
   }
@@ -404,19 +456,25 @@ int metaNid			MdsPlus NodeID for the metadata
 void camSaveFrame(void *frame, int width, int height, float frameTime,
                   int pixelSize, void *treePtr, int dataNid, int timebaseNid,
                   int frameIdx, void *frameMetadata, int metaSize, int metaNid,
-                  void *saveListPtr) {
+                  void *saveListPtr)
+{
 
   void *bufFrame;
   void *bufMdata;
   int frameSize = width * height;
 
-  if (pixelSize <= 8) {
+  if (pixelSize <= 8)
+  {
     bufFrame = new char[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(char));
-  } else if (pixelSize <= 16) {
+  }
+  else if (pixelSize <= 16)
+  {
     bufFrame = new short[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(short));
-  } else if (pixelSize <= 32) {
+  }
+  else if (pixelSize <= 32)
+  {
     bufFrame = new int[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(int));
   }
@@ -432,17 +490,23 @@ void camSaveFrame(void *frame, int width, int height, float frameTime,
 
 void camSaveFrameDirect(void *frame, int width, int height, float frameTime,
                         int pixelSize, void *treePtr, int dataNid,
-                        int timebaseNid, int frameIdx, void *saveListPtr) {
+                        int timebaseNid, int frameIdx, void *saveListPtr)
+{
 
   void *bufFrame;
   int frameSize = width * height;
-  if (pixelSize <= 8) {
+  if (pixelSize <= 8)
+  {
     bufFrame = new char[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(char));
-  } else if (pixelSize <= 16) {
+  }
+  else if (pixelSize <= 16)
+  {
     bufFrame = new short[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(short));
-  } else if (pixelSize <= 32) {
+  }
+  else if (pixelSize <= 32)
+  {
     bufFrame = new int[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(int));
   }

@@ -31,33 +31,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern void **TreeCtx();
 static inline int minInt(int a, int b) { return a < b ? a : b; }
 
-int TreeGetDbi(struct dbi_itm *itmlst) {
+int TreeGetDbi(struct dbi_itm *itmlst)
+{
   return _TreeGetDbi(*TreeCtx(), itmlst);
 }
 
-#define set_retlen(length)                                                     \
-  if ((unsigned int)lst->buffer_length < length) {                             \
-    status = TreeBUFFEROVF;                                                    \
-    break;                                                                     \
-  } else                                                                       \
+#define set_retlen(length)                       \
+  if ((unsigned int)lst->buffer_length < length) \
+  {                                              \
+    status = TreeBUFFEROVF;                      \
+    break;                                       \
+  }                                              \
+  else                                           \
     retlen = length
-#define CheckOpen(db)                                                          \
-  if (!db || !db->open) {                                                      \
-    status = TreeNOT_OPEN;                                                     \
-    break;                                                                     \
+#define CheckOpen(db)      \
+  if (!db || !db->open)    \
+  {                        \
+    status = TreeNOT_OPEN; \
+    break;                 \
   }
-#define set_ret_char(val)                                                      \
-  memset(lst->pointer, 0, (size_t)lst->buffer_length);                         \
+#define set_ret_char(val)                              \
+  memset(lst->pointer, 0, (size_t)lst->buffer_length); \
   *((char *)lst->pointer) = val
 
-int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst) {
+int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
+{
   PINO_DATABASE *db = (PINO_DATABASE *)dbid;
   struct dbi_itm *lst = itmlst;
   int status = TreeSUCCESS;
-  while ((lst->code != 0) && (status & 1)) {
+  while ((lst->code != 0) && (status & 1))
+  {
     char *string = NULL;
     unsigned short retlen = 0;
-    switch (lst->code) {
+    switch (lst->code)
+    {
     case DbiNAME:
 
       CheckOpen(db);
@@ -176,15 +183,19 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst) {
     default:
       status = TreeILLEGAL_ITEM;
     }
-    if (string) {
-      if (lst->buffer_length && lst->pointer) {
+    if (string)
+    {
+      if (lst->buffer_length && lst->pointer)
+      {
         retlen =
             (unsigned short)minInt((int)strlen(string), lst->buffer_length);
         memcpy((char *)lst->pointer, string, (size_t)retlen);
         if (retlen < lst->buffer_length)
           ((char *)lst->pointer)[retlen] = '\0';
         free(string);
-      } else {
+      }
+      else
+      {
         lst->pointer = (unsigned char *)string;
         retlen = (unsigned short)strlen(string);
       }

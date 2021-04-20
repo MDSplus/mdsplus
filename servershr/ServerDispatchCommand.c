@@ -61,7 +61,8 @@ int *netid, void (*link_down)(), void (*before_ast)())
 EXPORT int ServerDispatchCommand(int *id, char *server, char *cli,
                                  char *command, void (*ast)(), void *astprm,
                                  int *retstatus, pthread_rwlock_t *lock,
-                                 void (*before_ast)()) {
+                                 void (*before_ast)())
+{
   struct descrip p1, p2;
   return ServerSendMessage(id, server, SrvCommand, retstatus, lock, NULL, ast,
                            astprm, before_ast, 2,

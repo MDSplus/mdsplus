@@ -12,331 +12,333 @@
 
 #endif
 
-#define DEV$_BAD_ENDIDX                                                        \
+#define DEV$_BAD_ENDIDX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_FILTER                                                        \
+#define DEV$_BAD_FILTER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 2 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_FREQ                                                          \
+#define DEV$_BAD_FREQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 3 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_GAIN                                                          \
+#define DEV$_BAD_GAIN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 4 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_HEADER                                                        \
+#define DEV$_BAD_HEADER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 5 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_HEADER_IDX                                                    \
+#define DEV$_BAD_HEADER_IDX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 6 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_MEMORIES                                                      \
+#define DEV$_BAD_MEMORIES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 7 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_MODE                                                          \
+#define DEV$_BAD_MODE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 8 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_NAME                                                          \
+#define DEV$_BAD_NAME \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 9 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_OFFSET                                                        \
+#define DEV$_BAD_OFFSET \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 10 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_STARTIDX                                                      \
+#define DEV$_BAD_STARTIDX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 11 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_NOT_TRIGGERED                                                     \
+#define DEV$_NOT_TRIGGERED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 12 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_FREQ_TO_HIGH                                                      \
+#define DEV$_FREQ_TO_HIGH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 13 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_INVALID_NOC                                                       \
+#define DEV$_INVALID_NOC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 14 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_RANGE_MISMATCH                                                    \
+#define DEV$_RANGE_MISMATCH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 15 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAMACERR                                                          \
+#define DEV$_CAMACERR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 16 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_VERBS                                                         \
+#define DEV$_BAD_VERBS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 17 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_COMMANDS                                                      \
+#define DEV$_BAD_COMMANDS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 18 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_ADNR                                                          \
+#define DEV$_CAM_ADNR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 19 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_ERR                                                           \
+#define DEV$_CAM_ERR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 20 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_LOSYNC                                                        \
+#define DEV$_CAM_LOSYNC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 21 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_LPE                                                           \
+#define DEV$_CAM_LPE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 22 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_TMO                                                           \
+#define DEV$_CAM_TMO \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 23 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_TPE                                                           \
+#define DEV$_CAM_TPE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 24 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_STE                                                           \
+#define DEV$_CAM_STE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 25 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_DERR                                                          \
+#define DEV$_CAM_DERR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 26 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_SQ                                                            \
+#define DEV$_CAM_SQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 27 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_NOSQ                                                          \
+#define DEV$_CAM_NOSQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 28 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_SX                                                            \
+#define DEV$_CAM_SX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 29 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_NOSX                                                          \
+#define DEV$_CAM_NOSX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 30 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_INV_SETUP                                                         \
+#define DEV$_INV_SETUP \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 31 * MSG_MSGNUM_M + MSG_ERROR)
-#define RETICON$_NORMAL                                                        \
+#define RETICON$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 51 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define RETICON$_BAD_FRAMES                                                    \
+#define RETICON$_BAD_FRAMES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 52 * MSG_MSGNUM_M + MSG_ERROR)
-#define RETICON$_BAD_FRAME_SELECT                                              \
+#define RETICON$_BAD_FRAME_SELECT \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 53 * MSG_MSGNUM_M + MSG_ERROR)
-#define RETICON$_BAD_NUM_STATES                                                \
+#define RETICON$_BAD_NUM_STATES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 54 * MSG_MSGNUM_M + MSG_ERROR)
-#define RETICON$_BAD_PERIOD                                                    \
+#define RETICON$_BAD_PERIOD \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 55 * MSG_MSGNUM_M + MSG_ERROR)
-#define RETICON$_BAD_PIXEL_SELECT                                              \
+#define RETICON$_BAD_PIXEL_SELECT \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 56 * MSG_MSGNUM_M + MSG_ERROR)
-#define RETICON$_DATA_CORRUPTED                                                \
+#define RETICON$_DATA_CORRUPTED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 57 * MSG_MSGNUM_M + MSG_ERROR)
-#define RETICON$_TOO_MANY_FRAMES                                               \
+#define RETICON$_TOO_MANY_FRAMES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 58 * MSG_MSGNUM_M + MSG_ERROR)
-#define J221$_NORMAL                                                           \
+#define J221$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 101 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define J221$_INVALID_DATA                                                     \
+#define J221$_INVALID_DATA \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 102 * MSG_MSGNUM_M + MSG_WARNING)
-#define J221$_NO_DATA                                                          \
+#define J221$_NO_DATA \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 103 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_INVCLKFRQ                                                      \
+#define TIMING$_INVCLKFRQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 151 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_INVDELDUR                                                      \
+#define TIMING$_INVDELDUR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 152 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_INVOUTCTR                                                      \
+#define TIMING$_INVOUTCTR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 153 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_INVPSEUDODEV                                                   \
+#define TIMING$_INVPSEUDODEV \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 154 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_INVTRGMOD                                                      \
+#define TIMING$_INVTRGMOD \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 155 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_NOPSEUDODEV                                                    \
+#define TIMING$_NOPSEUDODEV \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 156 * MSG_MSGNUM_M + MSG_INFO)
-#define TIMING$_TOO_MANY_EVENTS                                                \
+#define TIMING$_TOO_MANY_EVENTS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 157 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_INVDUTY                                                        \
+#define TIMING$_INVDUTY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 158 * MSG_MSGNUM_M + MSG_ERROR)
-#define TIMING$_                                                               \
+#define TIMING$_ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 159 * MSG_MSGNUM_M + MSG_ERROR)
-#define B2408$_NORMAL                                                          \
+#define B2408$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 201 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define B2408$_OVERFLOW                                                        \
+#define B2408$_OVERFLOW \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 202 * MSG_MSGNUM_M + MSG_INFO)
-#define B2408$_TRIG_LIM                                                        \
+#define B2408$_TRIG_LIM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 203 * MSG_MSGNUM_M + MSG_WARNING)
-#define FERA$_NORMAL                                                           \
+#define FERA$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 251 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define FERA$_DIGNOTSTRARRAY                                                   \
+#define FERA$_DIGNOTSTRARRAY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 252 * MSG_MSGNUM_M + MSG_ERROR)
-#define FERA$_NODIG                                                            \
+#define FERA$_NODIG \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 253 * MSG_MSGNUM_M + MSG_ERROR)
-#define FERA$_MEMNOTSTRARRAY                                                   \
+#define FERA$_MEMNOTSTRARRAY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 254 * MSG_MSGNUM_M + MSG_ERROR)
-#define FERA$_NOMEM                                                            \
+#define FERA$_NOMEM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 255 * MSG_MSGNUM_M + MSG_ERROR)
-#define FERA$_PHASE_LOST                                                       \
+#define FERA$_PHASE_LOST \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 256 * MSG_MSGNUM_M + MSG_ERROR)
-#define FERA$_CONFUSED                                                         \
+#define FERA$_CONFUSED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 257 * MSG_MSGNUM_M + MSG_WARNING)
-#define FERA$_OVER_RUN                                                         \
+#define FERA$_OVER_RUN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 258 * MSG_MSGNUM_M + MSG_WARNING)
-#define FERA$_OVERFLOW                                                         \
+#define FERA$_OVERFLOW \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 259 * MSG_MSGNUM_M + MSG_INFO)
-#define HM650$_NORMAL                                                          \
+#define HM650$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 301 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define HM650$_DLYCHNG                                                         \
+#define HM650$_DLYCHNG \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 302 * MSG_MSGNUM_M + MSG_WARNING)
-#define HV4032$_NORMAL                                                         \
+#define HV4032$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 351 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define HV4032$_WRONG_POD_TYPE                                                 \
+#define HV4032$_WRONG_POD_TYPE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 352 * MSG_MSGNUM_M + MSG_ERROR)
-#define HV1440$_NORMAL                                                         \
+#define HV1440$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 401 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define HV1440$_WRONG_POD_TYPE                                                 \
+#define HV1440$_WRONG_POD_TYPE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 402 * MSG_MSGNUM_M + MSG_ERROR)
-#define HV1440$_BAD_FRAME                                                      \
+#define HV1440$_BAD_FRAME \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 403 * MSG_MSGNUM_M + MSG_ERROR)
-#define HV1440$_BAD_RANGE                                                      \
+#define HV1440$_BAD_RANGE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 404 * MSG_MSGNUM_M + MSG_ERROR)
-#define HV1440$_OUTRNG                                                         \
+#define HV1440$_OUTRNG \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 405 * MSG_MSGNUM_M + MSG_ERROR)
-#define HV1440$_STUCK                                                          \
+#define HV1440$_STUCK \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 406 * MSG_MSGNUM_M + MSG_ERROR)
-#define JOERGER$_BAD_PRE_TRIGGER                                               \
+#define JOERGER$_BAD_PRE_TRIGGER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 451 * MSG_MSGNUM_M + MSG_ERROR)
-#define JOERGER$_BAD_ACT_MEMORY                                                \
+#define JOERGER$_BAD_ACT_MEMORY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 452 * MSG_MSGNUM_M + MSG_ERROR)
-#define JOERGER$_BAD_GAIN                                                      \
+#define JOERGER$_BAD_GAIN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 453 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_BAD_WAVE_LENGTH                                                \
+#define U_OF_M$_BAD_WAVE_LENGTH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 501 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_BAD_SLIT_WIDTH                                                 \
+#define U_OF_M$_BAD_SLIT_WIDTH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 502 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_BAD_NUM_SPECTRA                                                \
+#define U_OF_M$_BAD_NUM_SPECTRA \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 503 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_BAD_GRATING                                                    \
+#define U_OF_M$_BAD_GRATING \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 504 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_BAD_EXPOSURE                                                   \
+#define U_OF_M$_BAD_EXPOSURE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 505 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_BAD_FILTER                                                     \
+#define U_OF_M$_BAD_FILTER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 506 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_GO_FILE_ERROR                                                  \
+#define U_OF_M$_GO_FILE_ERROR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 507 * MSG_MSGNUM_M + MSG_ERROR)
-#define U_OF_M$_DATA_FILE_ERROR                                                \
+#define U_OF_M$_DATA_FILE_ERROR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 508 * MSG_MSGNUM_M + MSG_ERROR)
-#define IDL$_NORMAL                                                            \
+#define IDL$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 551 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define IDL$_ERROR                                                             \
+#define IDL$_ERROR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 552 * MSG_MSGNUM_M + MSG_ERROR)
-#define B5910A$_BAD_CHAN                                                       \
+#define B5910A$_BAD_CHAN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 601 * MSG_MSGNUM_M + MSG_ERROR)
-#define B5910A$_BAD_CLOCK                                                      \
+#define B5910A$_BAD_CLOCK \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 602 * MSG_MSGNUM_M + MSG_ERROR)
-#define B5910A$_BAD_ITERATIONS                                                 \
+#define B5910A$_BAD_ITERATIONS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 603 * MSG_MSGNUM_M + MSG_ERROR)
-#define B5910A$_BAD_NOC                                                        \
+#define B5910A$_BAD_NOC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 604 * MSG_MSGNUM_M + MSG_ERROR)
-#define B5910A$_BAD_SAMPS                                                      \
+#define B5910A$_BAD_SAMPS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 605 * MSG_MSGNUM_M + MSG_ERROR)
-#define J412$_NOT_SORTED                                                       \
+#define J412$_NOT_SORTED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 651 * MSG_MSGNUM_M + MSG_ERROR)
-#define J412$_NO_DATA                                                          \
+#define J412$_NO_DATA \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 652 * MSG_MSGNUM_M + MSG_ERROR)
-#define J412$_BADCYCLES                                                        \
+#define J412$_BADCYCLES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 653 * MSG_MSGNUM_M + MSG_ERROR)
-#define TR16$_NORMAL                                                           \
+#define TR16$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 701 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define TR16$_BAD_MEMSIZE                                                      \
+#define TR16$_BAD_MEMSIZE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 702 * MSG_MSGNUM_M + MSG_ERROR)
-#define TR16$_BAD_ACTIVEMEM                                                    \
+#define TR16$_BAD_ACTIVEMEM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 703 * MSG_MSGNUM_M + MSG_ERROR)
-#define TR16$_BAD_ACTIVECHAN                                                   \
+#define TR16$_BAD_ACTIVECHAN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 704 * MSG_MSGNUM_M + MSG_ERROR)
-#define TR16$_BAD_PTS                                                          \
+#define TR16$_BAD_PTS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 705 * MSG_MSGNUM_M + MSG_ERROR)
-#define TR16$_BAD_FREQUENCY                                                    \
+#define TR16$_BAD_FREQUENCY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 706 * MSG_MSGNUM_M + MSG_ERROR)
-#define TR16$_BAD_MASTER                                                       \
+#define TR16$_BAD_MASTER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 707 * MSG_MSGNUM_M + MSG_ERROR)
-#define TR16$_BAD_GAIN                                                         \
+#define TR16$_BAD_GAIN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 708 * MSG_MSGNUM_M + MSG_ERROR)
-#define A14$_NORMAL                                                            \
+#define A14$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 751 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define A14$_BAD_CLK_DIVIDE                                                    \
+#define A14$_BAD_CLK_DIVIDE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 752 * MSG_MSGNUM_M + MSG_ERROR)
-#define A14$_BAD_MODE                                                          \
+#define A14$_BAD_MODE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 753 * MSG_MSGNUM_M + MSG_ERROR)
-#define A14$_BAD_CLK_POLARITY                                                  \
+#define A14$_BAD_CLK_POLARITY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 754 * MSG_MSGNUM_M + MSG_ERROR)
-#define A14$_BAD_STR_POLARITY                                                  \
+#define A14$_BAD_STR_POLARITY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 755 * MSG_MSGNUM_M + MSG_ERROR)
-#define A14$_BAD_STP_POLARITY                                                  \
+#define A14$_BAD_STP_POLARITY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 756 * MSG_MSGNUM_M + MSG_ERROR)
-#define A14$_BAD_GATED                                                         \
+#define A14$_BAD_GATED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 757 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_NORMAL                                                          \
+#define L6810$_NORMAL \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 801 * MSG_MSGNUM_M + MSG_SUCCESS)
-#define L6810$_BAD_ACTIVECHAN                                                  \
+#define L6810$_BAD_ACTIVECHAN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 802 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_ACTIVEMEM                                                   \
+#define L6810$_BAD_ACTIVEMEM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 803 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_FREQUENCY                                                   \
+#define L6810$_BAD_FREQUENCY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 804 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_FULL_SCALE                                                  \
+#define L6810$_BAD_FULL_SCALE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 805 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_MEMORIES                                                    \
+#define L6810$_BAD_MEMORIES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 806 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_COUPLING                                                    \
+#define L6810$_BAD_COUPLING \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 807 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_OFFSET                                                      \
+#define L6810$_BAD_OFFSET \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 808 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_SEGMENTS                                                    \
+#define L6810$_BAD_SEGMENTS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 809 * MSG_MSGNUM_M + MSG_ERROR)
-#define L6810$_BAD_TRIG_DELAY                                                  \
+#define L6810$_BAD_TRIG_DELAY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 810 * MSG_MSGNUM_M + MSG_ERROR)
-#define J_DAC$_OUTRNG                                                          \
+#define J_DAC$_OUTRNG \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 851 * MSG_MSGNUM_M + MSG_ERROR)
-#define INCAA$_BAD_ACTIVE_CHANS                                                \
+#define INCAA$_BAD_ACTIVE_CHANS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 901 * MSG_MSGNUM_M + MSG_ERROR)
-#define INCAA$_BAD_MASTER                                                      \
+#define INCAA$_BAD_MASTER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 902 * MSG_MSGNUM_M + MSG_ERROR)
-#define INCAA$_BAD_EXT_1MHZ                                                    \
+#define INCAA$_BAD_EXT_1MHZ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 903 * MSG_MSGNUM_M + MSG_ERROR)
-#define INCAA$_BAD_PTSC                                                        \
+#define INCAA$_BAD_PTSC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 904 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_BAD_HEADER                                                      \
+#define L8212$_BAD_HEADER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 951 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_BAD_MEMORIES                                                    \
+#define L8212$_BAD_MEMORIES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 952 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_BAD_NOC                                                         \
+#define L8212$_BAD_NOC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 953 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_BAD_OFFSET                                                      \
+#define L8212$_BAD_OFFSET \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 954 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_BAD_PTS                                                         \
+#define L8212$_BAD_PTS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 955 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_FREQ_TO_HIGH                                                    \
+#define L8212$_FREQ_TO_HIGH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 956 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_INVALID_NOC                                                     \
+#define L8212$_INVALID_NOC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 957 * MSG_MSGNUM_M + MSG_ERROR)
-#define MPB$_BADTIME                                                           \
+#define MPB$_BADTIME \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1001 * MSG_MSGNUM_M + MSG_ERROR)
-#define MPB$_BADFREQ                                                           \
+#define MPB$_BADFREQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1002 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8828$_BAD_OFFSET                                                      \
+#define L8828$_BAD_OFFSET \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1051 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8828$_BAD_PRETRIG                                                     \
+#define L8828$_BAD_PRETRIG \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1052 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8828$_BAD_ACTIVEMEM                                                   \
+#define L8828$_BAD_ACTIVEMEM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1053 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8828$_BAD_CLOCK                                                       \
+#define L8828$_BAD_CLOCK \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1054 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8818$_BAD_OFFSET                                                      \
+#define L8818$_BAD_OFFSET \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1101 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8818$_BAD_PRETRIG                                                     \
+#define L8818$_BAD_PRETRIG \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1102 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8818$_BAD_ACTIVEMEM                                                   \
+#define L8818$_BAD_ACTIVEMEM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1103 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8818$_BAD_CLOCK                                                       \
+#define L8818$_BAD_CLOCK \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1104 * MSG_MSGNUM_M + MSG_ERROR)
-#define J_TR612$_BAD_ACTMEM                                                    \
+#define J_TR612$_BAD_ACTMEM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1111 * MSG_MSGNUM_M + MSG_ERROR)
-#define J_TR612$_BAD_PRETRIG                                                   \
+#define J_TR612$_BAD_PRETRIG \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1112 * MSG_MSGNUM_M + MSG_ERROR)
-#define J_TR612$_BAD_MODE                                                      \
+#define J_TR612$_BAD_MODE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1113 * MSG_MSGNUM_M + MSG_ERROR)
-#define J_TR612$_BAD_FREQUENCY                                                 \
+#define J_TR612$_BAD_FREQUENCY \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1114 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8206$_NODATA                                                          \
+#define L8206$_NODATA \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1151 * MSG_MSGNUM_M + MSG_WARNING)
-#define H912$_BAD_CLOCK                                                        \
+#define H912$_BAD_CLOCK \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1161 * MSG_MSGNUM_M + MSG_ERROR)
-#define H912$_BAD_BLOCKS                                                       \
+#define H912$_BAD_BLOCKS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1162 * MSG_MSGNUM_M + MSG_ERROR)
-#define H912$_BAD_PTS                                                          \
+#define H912$_BAD_PTS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1163 * MSG_MSGNUM_M + MSG_ERROR)
-#define H908$_BAD_CLOCK                                                        \
+#define H908$_BAD_CLOCK \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1171 * MSG_MSGNUM_M + MSG_ERROR)
-#define H908$_BAD_ACTIVE_CHANS                                                 \
+#define H908$_BAD_ACTIVE_CHANS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1172 * MSG_MSGNUM_M + MSG_ERROR)
-#define H908$_BAD_PTS                                                          \
+#define H908$_BAD_PTS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1173 * MSG_MSGNUM_M + MSG_ERROR)
-#define DSP2904$_CHANNEL_READ_ERROR                                            \
+#define DSP2904$_CHANNEL_READ_ERROR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1181 * MSG_MSGNUM_M + MSG_ERROR)
-#define PY$_UNHANDLED_EXCEPTION                                                \
+#define PY$_UNHANDLED_EXCEPTION \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1191 * MSG_MSGNUM_M + MSG_ERROR)
-#define DT196B$_NO_SAMPLES                                                     \
+#define DT196B$_NO_SAMPLES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1201 * MSG_MSGNUM_M + MSG_ERROR)
-#define ACQ$_INITIALIZATION_ERROR                                              \
+#define ACQ$_INITIALIZATION_ERROR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1202 * MSG_MSGNUM_M + MSG_ERROR)
-#define ACQ$_SETTINGS_NOT_LOADED                                               \
+#define ACQ$_SETTINGS_NOT_LOADED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1203 * MSG_MSGNUM_M + MSG_ERROR)
-#define ACQ$_WRONG_TREE                                                        \
+#define ACQ$_WRONG_TREE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1204 * MSG_MSGNUM_M + MSG_ERROR)
-#define ACQ$_WRONG_PATH                                                        \
+#define ACQ$_WRONG_PATH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1205 * MSG_MSGNUM_M + MSG_ERROR)
-#define ACQ$_WRONG_SHOT                                                        \
+#define ACQ$_WRONG_SHOT \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1206 * MSG_MSGNUM_M + MSG_ERROR)
 
 #ifdef MSG_LIBRARY
 #include <stdlib.h>
-EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
-  static struct msg {
+EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
+{
+  static struct msg
+  {
     int sts;
     char *facnam;
     char *msgnam;
@@ -626,8 +628,10 @@ EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
        "with"}};
   size_t i;
   int status = 0;
-  for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++) {
-    if (msgs[i].sts == sts) {
+  for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++)
+  {
+    if (msgs[i].sts == sts)
+    {
       *facnam = msgs[i].facnam;
       *msgnam = msgs[i].msgnam;
       *msgtext = msgs[i].msgtext;

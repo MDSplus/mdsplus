@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsOpen  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsOpen(int id, char *tree, int shot) {
+int MdsOpen(int id, char *tree, int shot)
+{
   struct descrip treearg;
   struct descrip shotarg;
   struct descrip ansarg;

@@ -66,19 +66,23 @@ static const DESCRIPTOR_RANGE(EMPTY_RANGE, 0, 0, (struct descriptor *)&value);
 /**********************************************
         Redo culled array or scalar.
 */
-int TdiRecull(struct descriptor_xd *out_ptr) {
+int TdiRecull(struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_a *px = (struct descriptor_a *)out_ptr->pointer;
 
   /****************************
   Culled scalar is null vector.
   ****************************/
-  if (px->class != CLASS_A) {
+  if (px->class != CLASS_A)
+  {
     DESCRIPTOR_A(arr0, 0, 0, 0, 0);
     arr0.length = px->length;
     arr0.dtype = px->dtype;
     status = MdsCopyDxXd((struct descriptor *)&arr0, out_ptr);
-  } else {
+  }
+  else
+  {
     px->dimct = 1;
     px->aflags.coeff = 0;
     px->aflags.bounds = 0;
@@ -89,18 +93,19 @@ int TdiRecull(struct descriptor_xd *out_ptr) {
 /*---------------------------------------------
         Remove out-of-bounds integer-limited elements.
 */
-int TdiIcull(int left, int right, struct descriptor_a *px) {
+int TdiIcull(int left, int right, struct descriptor_a *px)
+{
   INIT_STATUS;
   int *pi = (int *)px->pointer, *po = pi;
   int n;
 
   N_ELEMENTS(px, n);
-  if
-    STATUS_OK
-  for (; --n >= 0; ++pi)
-    if (*pi >= left && *pi <= right)
-      *po++ = *pi;
-  if (pi != po) {
+  if (STATUS_OK)
+    for (; --n >= 0; ++pi)
+      if (*pi >= left && *pi <= right)
+        *po++ = *pi;
+  if (pi != po)
+  {
     /********************************
     Scalars must be nulled elsewhere.
     ********************************/
@@ -114,20 +119,21 @@ int TdiIcull(int left, int right, struct descriptor_a *px) {
 /*---------------------------------------------
         Replace out-of-bounds integer-limited elements.
 */
-int TdiIextend(int left, int right, struct descriptor_a *px) {
+int TdiIextend(int left, int right, struct descriptor_a *px)
+{
   INIT_STATUS;
   int *pi = (int *)px->pointer;
   int n;
 
   N_ELEMENTS(px, n);
-  if
-    STATUS_OK
-  for (; --n >= 0; ++pi) {
-    if (*pi < left)
-      *pi = left;
-    else if (*pi > right)
-      *pi = right;
-  }
+  if (STATUS_OK)
+    for (; --n >= 0; ++pi)
+    {
+      if (*pi < left)
+        *pi = left;
+      else if (*pi > right)
+        *pi = right;
+    }
   return status;
 }
 
@@ -135,25 +141,28 @@ int TdiIextend(int left, int right, struct descriptor_a *px) {
         Remove elements not satisfying mask.
 */
 static int rcull(struct descriptor *pnew __attribute__((unused)),
-                 struct descriptor_a *pmask, struct descriptor_a *px) {
+                 struct descriptor_a *pmask, struct descriptor_a *px)
+{
   INIT_STATUS;
   char *pm = pmask->pointer, *pi = px->pointer, *po = pi;
   int n, len = px->length;
   N_ELEMENTS(px, n);
-  if
-    STATUS_OK
-  for (; --n >= 0; pi += len)
-    if (*pm++) {
-      if (po < pi)
-        memcpy(po, pi, len);
-      po += len;
-    }
-  if (pi != po) {
+  if (STATUS_OK)
+    for (; --n >= 0; pi += len)
+      if (*pm++)
+      {
+        if (po < pi)
+          memcpy(po, pi, len);
+        po += len;
+      }
+  if (pi != po)
+  {
     status = SsINTERNAL;
     /********************************
      Scalars must be nulled elsewhere.
      ********************************/
-    if (px->class == CLASS_A) {
+    if (px->class == CLASS_A)
+    {
       px->arsize = (unsigned int)((char *)po - px->pointer);
       px->dimct = 1;
       px->aflags.coeff = 0;
@@ -167,16 +176,16 @@ static int rcull(struct descriptor *pnew __attribute__((unused)),
         Replace elements not in mask.
 */
 static int rextend(struct descriptor *pnew, struct descriptor_a *pmask,
-                   struct descriptor_a *px) {
+                   struct descriptor_a *px)
+{
   INIT_STATUS;
   char *pn = pnew->pointer, *pm = pmask->pointer, *pi = px->pointer;
   int n, len = px->length;
   N_ELEMENTS(px, n);
-  if
-    STATUS_OK
-  for (; --n >= 0; pi += len)
-    if (!*pm++)
-      memcpy(pi, pn, len);
+  if (STATUS_OK)
+    for (; --n >= 0; pi += len)
+      if (!*pm++)
+        memcpy(pi, pn, len);
   return status;
 }
 
@@ -186,7 +195,8 @@ static int rextend(struct descriptor *pnew, struct descriptor_a *pmask,
 static int work(int rroutine(struct descriptor *, struct descriptor_a *,
                              struct descriptor_a *),
                 opcode_t opcode, int narg, struct descriptor *list[3],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
   struct descriptor_xd in = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
@@ -203,11 +213,11 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
                                         DTYPE_DIMENSION, 0};
   static const unsigned char omitd[] = {DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0};
   status = tdi_get_data(omits, list[0], &in);
-  if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
+  if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS)
+  {
     status = TdiUnits(in.pointer, &units MDS_END_ARG);
-    if
-      STATUS_OK
-    status = tdi_get_data(&omits[1], &in, &in);
+    if (STATUS_OK)
+      status = tdi_get_data(&omits[1], &in, &in);
   }
   if (STATUS_OK && narg > 1 && list[1])
     status = TdiGetLong(list[1], &dim);
@@ -217,7 +227,8 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
   /*****************************
   Convert signal to a dimension.
   *****************************/
-  if (STATUS_OK && in.pointer->dtype == DTYPE_SIGNAL) {
+  if (STATUS_OK && in.pointer->dtype == DTYPE_SIGNAL)
+  {
     tmp = in;
     in = EMPTY_XD;
     psig = (struct descriptor_signal *)tmp.pointer;
@@ -225,68 +236,66 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
       status = TdiBAD_INDEX;
     else
       status = tdi_get_data(omitd, psig->dimensions[dim], &in);
-    if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
+    if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS)
+    {
       status = TdiUnits(in.pointer, &units MDS_END_ARG);
-      if
-        STATUS_OK
-      status = tdi_get_data(&omitd[1], &in, &in);
-    } else
+      if (STATUS_OK)
+        status = tdi_get_data(&omitd[1], &in, &in);
+    }
+    else
       MdsFree1Dx(&units, NULL);
     dim = 0;
   }
   /*************************
   Get dimension information.
   *************************/
-  if
-    STATUS_OK
-  switch (in.pointer->dtype) {
-  case DTYPE_MISSING:
-    if (narg > 2 && list[2])
-      status = MdsCopyDxXd(list[2], out_ptr);
-    else
+  if (STATUS_OK)
+    switch (in.pointer->dtype)
+    {
+    case DTYPE_MISSING:
+      if (narg > 2 && list[2])
+        status = MdsCopyDxXd(list[2], out_ptr);
+      else
+        MdsFree1Dx(out_ptr, NULL);
+      break;
+    case DTYPE_T:
+      if (!(narg > 2 && list[2]))
+      {
+        if (STATUS_OK)
+          status = TdiData(&in, out_ptr MDS_END_ARG);
+        break;
+      }
       MdsFree1Dx(out_ptr, NULL);
-    break;
-  case DTYPE_T:
-    if (!(narg > 2 && list[2])) {
-      if
-        STATUS_OK
-      status = TdiData(&in, out_ptr MDS_END_ARG);
+      status = TdiGetArgs(opcode, 1, &list[2], sig, uni, dat, cats);
+      if (STATUS_OK && units.pointer == 0)
+        status = MdsCopyDxXd((struct descriptor *)&uni[0], &units);
+      if (STATUS_OK)
+        status = TdiIsIn(dat[0].pointer, &in, &tmp MDS_END_ARG);
+      if (STATUS_OK)
+        status = rroutine(dat[0].pointer, (struct descriptor_a *)tmp.pointer,
+                          (struct descriptor_a *)dat[0].pointer);
+      if (status == SsINTERNAL)
+        status = TdiRecull(&dat[0]);
+      MdsFree1Dx(&sig[0], NULL);
+      MdsFree1Dx(&uni[0], NULL);
+      if (STATUS_OK)
+        *out_ptr = dat[0];
       break;
-    }
-    MdsFree1Dx(out_ptr, NULL);
-    status = TdiGetArgs(opcode, 1, &list[2], sig, uni, dat, cats);
-    if (STATUS_OK && units.pointer == 0)
-      status = MdsCopyDxXd((struct descriptor *)&uni[0], &units);
-    if
-      STATUS_OK
-    status = TdiIsIn(dat[0].pointer, &in, &tmp MDS_END_ARG);
-    if
-      STATUS_OK
-    status = rroutine(dat[0].pointer, (struct descriptor_a *)tmp.pointer,
-                      (struct descriptor_a *)dat[0].pointer);
-    if (status == SsINTERNAL)
-      status = TdiRecull(&dat[0]);
-    MdsFree1Dx(&sig[0], NULL);
-    MdsFree1Dx(&uni[0], NULL);
-    if
-      STATUS_OK
-    *out_ptr = dat[0];
-    break;
-  default:
-    if (!(narg > 2 && list[2])) {
-      if
-        STATUS_OK
-      status = TdiData(&in, out_ptr MDS_END_ARG);
-      break;
-    }
-    /********************************
+    default:
+      if (!(narg > 2 && list[2]))
+      {
+        if (STATUS_OK)
+          status = TdiData(&in, out_ptr MDS_END_ARG);
+        break;
+      }
+      /********************************
     Special conversion to get limits.
     Could use some tests to speed up.
     ********************************/
-    MdsFree1Dx(out_ptr, NULL);
-    status = TdiItoX(in.pointer, TdiItoXSpecial, &tmp MDS_END_ARG);
-    if
-      STATUS_OK {
+      MdsFree1Dx(out_ptr, NULL);
+      status = TdiItoX(in.pointer, TdiItoXSpecial, &tmp MDS_END_ARG);
+      if (STATUS_OK)
+      {
         pwu = (struct descriptor_with_units *)tmp.pointer;
         if (pwu->dtype == DTYPE_WITH_UNITS)
           dx0 = *pwu->data;
@@ -305,14 +314,16 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
         TDI_RANGE_PTRS[0] = &dx0;
         TDI_RANGE_PTRS[1] = &dx1;
         TDI_RANGE_PTRS[2] = 0;
-        if (in.pointer->dtype == DTYPE_DIMENSION) {
+        if (in.pointer->dtype == DTYPE_DIMENSION)
+        {
           TDI_RANGE_PTRS[2] = in.pointer;
           /************************************************************
           Dimensions conversion with missing increment uses all values.
           ************************************************************/
           if (new[2]->dtype == DTYPE_RANGE &&
               (new[2]->ndesc == 2 ||
-               (new[2]->ndesc == 3 && new[2]->deltaval == 0))) {
+               (new[2]->ndesc == 3 && new[2]->deltaval == 0)))
+          {
             fake_range = EMPTY_RANGE;
             fake_range.begin = new[2]->begin;
             fake_range.ending = new[2]->ending;
@@ -322,45 +333,40 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
         status = TdiGetArgs(opcode, 3, new, sig, uni, dat, cats);
         memcpy(TDI_RANGE_PTRS, keep, sizeof(keep));
       }
-    if
-      STATUS_OK
-    status = Tdi2Range(3, uni, dat, cats, 0);
-    if (STATUS_OK && units.pointer == 0)
-      status = MdsCopyDxXd((struct descriptor *)&uni[0], &units);
-    if
-      STATUS_OK
-    status = TdiCvtArgs(3, dat, cats);
-    if
-      STATUS_OK
-    status = TdiGe(dat[2].pointer, dat[0].pointer, &tmp MDS_END_ARG);
-    if
-      STATUS_OK
-    s1 = (status = rroutine(dat[0].pointer, (struct descriptor_a *)tmp.pointer,
-                            (struct descriptor_a *)dat[2].pointer)) ==
-         SsINTERNAL;
-    if (STATUS_OK || s1 == SsINTERNAL)
-      status = TdiLe(dat[2].pointer, dat[1].pointer, &tmp MDS_END_ARG);
-    if
-      STATUS_OK
-    s1 |= (status = rroutine(dat[1].pointer, (struct descriptor_a *)tmp.pointer,
-                             (struct descriptor_a *)dat[2].pointer)) ==
-          SsINTERNAL;
-    if (STATUS_OK && s1)
-      status = TdiRecull(&dat[2]);
-    MdsFree1Dx(&sig[0], NULL);
-    MdsFree1Dx(&sig[1], NULL);
-    MdsFree1Dx(&sig[2], NULL);
-    MdsFree1Dx(&uni[0], NULL);
-    MdsFree1Dx(&uni[1], NULL);
-    MdsFree1Dx(&uni[2], NULL);
-    MdsFree1Dx(&dat[0], NULL);
-    MdsFree1Dx(&dat[1], NULL);
-    if
-      STATUS_OK
-    *out_ptr = dat[2];
-    else MdsFree1Dx(&dat[2], NULL);
-    break;
-  }
+      if (STATUS_OK)
+        status = Tdi2Range(3, uni, dat, cats, 0);
+      if (STATUS_OK && units.pointer == 0)
+        status = MdsCopyDxXd((struct descriptor *)&uni[0], &units);
+      if (STATUS_OK)
+        status = TdiCvtArgs(3, dat, cats);
+      if (STATUS_OK)
+        status = TdiGe(dat[2].pointer, dat[0].pointer, &tmp MDS_END_ARG);
+      if (STATUS_OK)
+        s1 = (status = rroutine(dat[0].pointer, (struct descriptor_a *)tmp.pointer,
+                                (struct descriptor_a *)dat[2].pointer)) ==
+             SsINTERNAL;
+      if (STATUS_OK || s1 == SsINTERNAL)
+        status = TdiLe(dat[2].pointer, dat[1].pointer, &tmp MDS_END_ARG);
+      if (STATUS_OK)
+        s1 |= (status = rroutine(dat[1].pointer, (struct descriptor_a *)tmp.pointer,
+                                 (struct descriptor_a *)dat[2].pointer)) ==
+              SsINTERNAL;
+      if (STATUS_OK && s1)
+        status = TdiRecull(&dat[2]);
+      MdsFree1Dx(&sig[0], NULL);
+      MdsFree1Dx(&sig[1], NULL);
+      MdsFree1Dx(&sig[2], NULL);
+      MdsFree1Dx(&uni[0], NULL);
+      MdsFree1Dx(&uni[1], NULL);
+      MdsFree1Dx(&uni[2], NULL);
+      MdsFree1Dx(&dat[0], NULL);
+      MdsFree1Dx(&dat[1], NULL);
+      if (STATUS_OK)
+        *out_ptr = dat[2];
+      else
+        MdsFree1Dx(&dat[2], NULL);
+      break;
+    }
   MdsFree1Dx(&tmp, NULL);
   MdsFree1Dx(&in, NULL);
   if (STATUS_OK && units.pointer)
@@ -371,12 +377,14 @@ static int work(int rroutine(struct descriptor *, struct descriptor_a *,
 
 /***********************************************/
 int Tdi1Cull(opcode_t opcode, int narg, struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   return work(rcull, opcode, narg, list, out_ptr);
 }
 
 /***********************************************/
 int Tdi1Extend(opcode_t opcode, int narg, struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   return work(rextend, opcode, narg, list, out_ptr);
 }

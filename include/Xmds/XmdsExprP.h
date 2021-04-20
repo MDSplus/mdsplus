@@ -37,7 +37,8 @@
 
 /* New fields for the  Expr Widget record */
 
-typedef struct _XmdsExprPart {
+typedef struct _XmdsExprPart
+{
   struct descriptor_xd *xd;
   int nid;
   int nid_offset;
@@ -59,7 +60,8 @@ typedef struct _XmdsExprPart {
 /*
  * now define the actual widget data struct
  */
-typedef struct _XmdsExprWidgetRec {
+typedef struct _XmdsExprWidgetRec
+{
   CorePart core; /* basic widget */
   CompositePart composite;
   ConstraintPart constraint;
@@ -71,7 +73,8 @@ typedef struct _XmdsExprWidgetRec {
  * Expr Class part is empty.
  */
 
-typedef struct _XmdsExprClassPart {
+typedef struct _XmdsExprClassPart
+{
   caddr_t extension; /* Pointer to extension record */
 } XmdsExprClassPart;
 
@@ -79,7 +82,8 @@ typedef struct _XmdsExprClassPart {
  * The Expr Class record is a Dialog box class record plus
  * the empty ExprClassPart
  */
-typedef struct _XmdsExprClassRec {
+typedef struct _XmdsExprClassRec
+{
   CoreClassPart core_class;
   CompositeClassPart composite;
   ConstraintClassPart constraint;

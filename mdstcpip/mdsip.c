@@ -28,7 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 #include <pthread_port.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int errout;
   INIT_AND_FREE_ON_EXIT(char **, extra_argv);
   IoRoutines *io;
@@ -37,7 +38,8 @@ int main(int argc, char **argv) {
   io = LoadIo(GetProtocol());
   if (io && io->listen)
     errout = io->listen(extra_argc, extra_argv);
-  else {
+  else
+  {
     fprintf(stderr, "Protocol %s does not support servers\n", GetProtocol());
     errout = 1;
   }

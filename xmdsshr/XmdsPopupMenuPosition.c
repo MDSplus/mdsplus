@@ -85,7 +85,8 @@ void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
 
  Executable:                                                                  */
 
-EXPORT void XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event) {
+EXPORT void XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
+{
   Widget option = w->row_column.memory_subwidget;
   XtX(w) = event->x_root - (option ? XtX(option) + XtWidth(option) / 2 : 0);
   XtY(w) = event->y_root - (option ? XtY(option) + XtHeight(option) / 2 : 0);

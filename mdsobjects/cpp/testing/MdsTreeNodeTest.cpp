@@ -35,64 +35,72 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace testing;
 
-namespace testing {
-class TestTreeNodePotected : public MDSplus::TreeNode {
-public:
-  TestTreeNodePotected(TreeNode *node)
-      : TreeNode(node->getNid(), node->getTree()) {}
+namespace testing
+{
+  class TestTreeNodePotected : public MDSplus::TreeNode
+  {
+  public:
+    TestTreeNodePotected(TreeNode *node)
+        : TreeNode(node->getNid(), node->getTree()) {}
 
-  using TreeNode::getFlag;
-  using TreeNode::isImmutable;
-  using TreeNode::setFlag;
-};
+    using TreeNode::getFlag;
+    using TreeNode::isImmutable;
+    using TreeNode::setFlag;
+  };
 } // namespace testing
 
-namespace testing {
-class TestNode {
-public:
-  TreeNode *node;
+namespace testing
+{
+  class TestNode
+  {
+  public:
+    TreeNode *node;
 
-  TestNode(TreeNode *node) : node(node) {}
+    TestNode(TreeNode *node) : node(node) {}
 
-  friend std::ostream &operator<<(std::ostream &o, const TestNode &n) {
-    o << " -- test node -- \n"
-      << "name:   " << n.node->getNodeNameStr() << "\n"
-      << "usage:  " << n.node->getUsage() << "\n"
-      << "parent: "
-      << unique_ptr<TreeNode>(n.node->getParent())->getNodeNameStr() << "\n"
-      << "tree:   " << n.node->getTree()->getName() << "\n";
-    return o;
+    friend std::ostream &operator<<(std::ostream &o, const TestNode &n)
+    {
+      o << " -- test node -- \n"
+        << "name:   " << n.node->getNodeNameStr() << "\n"
+        << "usage:  " << n.node->getUsage() << "\n"
+        << "parent: "
+        << unique_ptr<TreeNode>(n.node->getParent())->getNodeNameStr() << "\n"
+        << "tree:   " << n.node->getTree()->getName() << "\n";
+      return o;
+    }
+
+    bool operator==(const TestNode &other)
+    {
+      return this->node->getNid() == other.node->getNid();
+    }
+
+    void operator()(std::string name, std::string usage, std::string parent,
+                    std::string tree)
+    {
+      TEST1(node->getNodeNameStr() == toupper(name));
+      TEST1(std::string(node->getUsage()) == toupper(usage));
+      TEST1(unique_ptr<TreeNode>(node->getParent())->getNodeNameStr() ==
+            toupper(parent));
+      TEST1(node->getTree()->getName() == tree);
+    }
+  };
+
+  void print_segment_info(TreeNode *node, int segment = -1)
+  {
+    char dtype, dimct;
+    int dims[8], next;
+    std::cout << "info> " << node->getPathStr() << "  ";
+    node->getSegmentInfo(segment, &dtype, &dimct, dims, &next);
+    std::cout << "dtype: " << (int)dtype << " ";
+    std::cout << "dims:"
+              << AutoString(
+                     unique_ptr<Array>(new Int32Array(dims, dimct))->decompile())
+                     .string;
+    if (next == dims[dimct - 1])
+      std::cout << " fullfilled\n";
+    else
+      std::cout << " next empty element: " << next << "\n";
   }
-
-  bool operator==(const TestNode &other) {
-    return this->node->getNid() == other.node->getNid();
-  }
-
-  void operator()(std::string name, std::string usage, std::string parent,
-                  std::string tree) {
-    TEST1(node->getNodeNameStr() == toupper(name));
-    TEST1(std::string(node->getUsage()) == toupper(usage));
-    TEST1(unique_ptr<TreeNode>(node->getParent())->getNodeNameStr() ==
-          toupper(parent));
-    TEST1(node->getTree()->getName() == tree);
-  }
-};
-
-void print_segment_info(TreeNode *node, int segment = -1) {
-  char dtype, dimct;
-  int dims[8], next;
-  std::cout << "info> " << node->getPathStr() << "  ";
-  node->getSegmentInfo(segment, &dtype, &dimct, dims, &next);
-  std::cout << "dtype: " << (int)dtype << " ";
-  std::cout << "dims:"
-            << AutoString(
-                   unique_ptr<Array>(new Int32Array(dims, dimct))->decompile())
-                   .string;
-  if (next == dims[dimct - 1])
-    std::cout << " fullfilled\n";
-  else
-    std::cout << " next empty element: " << next << "\n";
-}
 } // namespace testing
 
 #ifdef _WIN32
@@ -100,7 +108,8 @@ void print_segment_info(TreeNode *node, int segment = -1) {
 #define setenv(name, val, extra) _putenv_s(name, val)
 #endif
 
-void main_test() {
+void main_test()
+{
   TEST_TIMEOUT(100);
   BEGIN_TESTING(TreeNode);
 
@@ -368,7 +377,8 @@ void main_test() {
     TEST1(children[0]->getNodeNameStr() == "BROTHER");
     TEST1(children[1]->getNodeNameStr() == "BROTHER2");
     TEST1(children[2]->getNodeNameStr() == "CHILD");
-    for (int i = 0; i < num_children; ++i) {
+    for (int i = 0; i < num_children; ++i)
+    {
       deleteData(children[i]);
     }
     delete[] children;
@@ -381,7 +391,8 @@ void main_test() {
     // nodes are alphabetically ordered //
     TEST1(members[0]->getNodeNameStr() == "MEM1");
     TEST1(members[1]->getNodeNameStr() == "MEM2");
-    for (int i = 0; i < num_members; ++i) {
+    for (int i = 0; i < num_members; ++i)
+    {
       deleteData(members[i]);
     }
     delete[] members;
@@ -392,7 +403,8 @@ void main_test() {
     TEST1(num_desc == 5);
     parmem1->putData(unique_ptr<Data>(new Int32(5552368)));
     parmem2->putData(unique_ptr<Data>(new String("lorem ipsum")));
-    for (int i = 0; i < num_desc; ++i) {
+    for (int i = 0; i < num_desc; ++i)
+    {
       deleteData(desc[i]);
     }
     delete[] desc;
@@ -652,7 +664,8 @@ void main_test() {
       ts_node->beginTimestampedSegment(array_data);
       TEST1(ts_node->getNumSegments() == 1);
       int64_t times[10];
-      for (int i = 0; i < 10; ++i) {
+      for (int i = 0; i < 10; ++i)
+      {
         times[i] = (int64_t)array[i];
       }
 
@@ -891,16 +904,20 @@ void main_test() {
 }
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
-  std::cout << "START NORMAL TEST\n" << std::flush;
+         char *argv[] __attribute__((unused)))
+{
+  std::cout << "START NORMAL TEST\n"
+            << std::flush;
   setenv("t_treenode_path", ".", 1);
   setenv("t_treenode2_path", ".", 1);
   main_test();
-  std::cout << "START THREAD TEST\n" << std::flush;
+  std::cout << "START THREAD TEST\n"
+            << std::flush;
   setenv("t_treenode_path", "thread://1::.", 1);
   setenv("t_treenode2_path", "thread://2::.", 1);
   main_test();
-  std::cout << "START LOCAL TEST\n" << std::flush;
+  std::cout << "START LOCAL TEST\n"
+            << std::flush;
   setenv("t_treenode_path", "local://1::.", 1);
   setenv("t_treenode2_path", "local://2::.", 1);
   main_test();

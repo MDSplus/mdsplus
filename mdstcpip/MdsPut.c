@@ -32,7 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsPut  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsPut(int id, char *node, char *expression, ...) {
+int MdsPut(int id, char *node, char *expression, ...)
+{
   /**** NOTE: NULL terminated argument list expected ****/
   int i;
   int status = 1;
@@ -52,21 +53,21 @@ int MdsPut(int id, char *node, char *expression, ...) {
     status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]),
                      arglist[i]->ndims, arglist[i]->dims, arglist[i]->ptr);
   free(putexpr);
-  if
-    STATUS_OK {
-      char dtype;
-      int dims[MAX_DIMS];
-      char ndims;
-      short len;
-      int numbytes;
-      void *dptr;
-      void *mem = 0;
-      status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr,
-                               &mem);
-      if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 &&
-          numbytes == sizeof(int))
-        memcpy(&status, dptr, numbytes);
-      free(mem);
-    }
+  if (STATUS_OK)
+  {
+    char dtype;
+    int dims[MAX_DIMS];
+    char ndims;
+    short len;
+    int numbytes;
+    void *dptr;
+    void *mem = 0;
+    status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr,
+                             &mem);
+    if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 &&
+        numbytes == sizeof(int))
+      memcpy(&status, dptr, numbytes);
+    free(mem);
+  }
   return status;
 }

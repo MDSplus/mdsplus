@@ -1217,8 +1217,8 @@ static struct cduParam SET_XANDQ_params[2] = {
 static struct cduKeyword XANDQ_KEYWORDS[4] =
     {
         /* "Type" def   */
-        "ANY", 0x4000, 0,     0,      0, 0, "NO", 0x4000, 0, 0,
-        0,     0,      "YES", 0x4000, 0, 0, 0,    0,      0 /* null entry at end
+        "ANY", 0x4000, 0, 0, 0, 0, "NO", 0x4000, 0, 0,
+        0, 0, "YES", 0x4000, 0, 0, 0, 0, 0 /* null entry at end
                                                              */
 };
 
@@ -1236,7 +1236,7 @@ static struct cduQualifier SET_XANDQ_qualifiers[3] = {
 
 static struct cduVerb SET_XANDQ =
     {/* Syntax def   */
-     "SET_XANDQ",         0x0000, 0, 0, ccl_set_xandq, SET_XANDQ_params,
+     "SET_XANDQ", 0x0000, 0, 0, ccl_set_xandq, SET_XANDQ_params,
      SET_XANDQ_qualifiers};
 
 extern int ccl_set_memory();
@@ -1249,7 +1249,7 @@ static struct cduValue SET_MEMORY_16_q01value = {
 
 static struct cduQualifier SET_MEMORY_16_qualifiers[2] = {
     "MEMORY", 0x2005, 0, 0, &SET_MEMORY_16_q01value,
-    0,        0 /* null entry at end    */
+    0, 0 /* null entry at end    */
 };
 
 static struct cduVerb SET_MEMORY_16 =
@@ -1261,7 +1261,7 @@ static struct cduValue SET_MEMORY_24_q01value = {
 
 static struct cduQualifier SET_MEMORY_24_qualifiers[2] = {
     "MEMORY", 0x2005, 0, 0, &SET_MEMORY_24_q01value,
-    0,        0 /* null entry at end    */
+    0, 0 /* null entry at end    */
 };
 
 static struct cduVerb SET_MEMORY_24 =
@@ -1271,7 +1271,7 @@ static struct cduVerb SET_MEMORY_24 =
 static struct cduKeyword MEMORY_KEYWORDS[3] = {
     /* "Type" def   */
     "16", 0x4000, 0, &SET_MEMORY_16, 0, 0, "24", 0x4000, 0, &SET_MEMORY_24,
-    0,    0,      0 /* null entry at end    */
+    0, 0, 0 /* null entry at end    */
 };
 
 static struct cduValue SET_MEMORY_p02value = {
@@ -1279,7 +1279,7 @@ static struct cduValue SET_MEMORY_p02value = {
 
 static struct cduParam SET_MEMORY_params[3] = {
     "P1", 0x1000, 0, "What", &SET_MEMORY_p01value, 0,
-    "P2", 0x1000, 0, 0,      &SET_MEMORY_p02value, 0,
+    "P2", 0x1000, 0, 0, &SET_MEMORY_p02value, 0,
     0 /* null entry at end    */
 };
 
@@ -1296,7 +1296,7 @@ static struct cduValue SET_MODULE_p02value = {
     0x2000, 0, 0, {0, DSC_K_DTYPE_T, DSC_K_CLASS_D, 0}, 0};
 
 static struct cduParam SET_MODULE_params[3] = {
-    "P1", 0x1000, 0,      0,        &SET_MODULE_p01value, 0,
+    "P1", 0x1000, 0, 0, &SET_MODULE_p01value, 0,
     "P2", 0x1000, "NAME", "Module", &SET_MODULE_p02value, 0,
     0 /* null entry at end    */
 };
@@ -1308,14 +1308,14 @@ static struct cduVerb SET_MODULE =
 extern int ccl_set_noverbose();
 
 static struct cduVerb SET_NOVERBOSE = {/* Syntax def   */
-                                       "SET_NOVERBOSE",   0x0000, 0, 0,
-                                       ccl_set_noverbose, 0,      0};
+                                       "SET_NOVERBOSE", 0x0000, 0, 0,
+                                       ccl_set_noverbose, 0, 0};
 
 extern int ccl_set_verbose();
 
 static struct cduVerb SET_VERBOSE = {/* Syntax def   */
-                                     "SET_VERBOSE",   0x0000, 0, 0,
-                                     ccl_set_verbose, 0,      0};
+                                     "SET_VERBOSE", 0x0000, 0, 0,
+                                     ccl_set_verbose, 0, 0};
 
 static struct cduKeyword SET_KEYWORDS[6] = {
     /* "Type" def   */
@@ -1423,7 +1423,7 @@ static struct cduQualifier SHOW_DATA_qualifiers[8] = {
 
 static struct cduVerb SHOW_DATA =
     {/* Syntax def   */
-     "SHOW_DATA",         0x0000, 0, 0, ccl_show_data, SHOW_DATA_params,
+     "SHOW_DATA", 0x0000, 0, 0, ccl_show_data, SHOW_DATA_params,
      SHOW_DATA_qualifiers};
 
 extern int ccl_show_module();
@@ -1454,7 +1454,7 @@ static struct cduVerb SHOW_STATUS =
 
 static struct cduKeyword SHOW_KEYWORDS[4] = {
     /* "Type" def   */
-    "DATA",   0x4000, 0, &SHOW_DATA,   0, 0,
+    "DATA", 0x4000, 0, &SHOW_DATA, 0, 0,
     "MODULE", 0x4000, 0, &SHOW_MODULE, 0, 0,
     "STATUS", 0x4000, 0, &SHOW_STATUS, 0, 0,
     0 /* null entry at end    */
@@ -1482,9 +1482,9 @@ static struct cduValue v21q04value = {
     0x0000, "RETRO", 0, {0, DSC_K_DTYPE_T, DSC_K_CLASS_D, 0}, 0};
 
 static struct cduQualifier v21qualifiers[5] = {
-    "START",   0x2005, 0, 0, &v21q01value, 0,
-    "END",     0x2005, 0, 0, &v21q02value, 0,
-    "DEVICE",  0x2005, 0, 0, &v21q03value, 0,
+    "START", 0x2005, 0, 0, &v21q01value, 0,
+    "END", 0x2005, 0, 0, &v21q02value, 0,
+    "DEVICE", 0x2005, 0, 0, &v21q03value, 0,
     "DEVTYPE", 0x2005, 0, 0, &v21q04value, 0,
     0 /* null entry at end    */
 };

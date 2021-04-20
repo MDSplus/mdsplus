@@ -70,7 +70,8 @@
  * user code and by the driver itself.             *
  ***************************************************/
 
-struct dmaex_ioctl_data {
+struct dmaex_ioctl_data
+{
   unsigned long data[6];
 };
 
@@ -115,7 +116,8 @@ struct dmaex_ioctl_data {
 #define MMAP_K_TO_U_MEM_WRT 1
 #define MMAP_K_TO_U_MEM_RD 2
 
-enum dmaex_commands {
+enum dmaex_commands
+{
   C1,
   C2,
   C3,

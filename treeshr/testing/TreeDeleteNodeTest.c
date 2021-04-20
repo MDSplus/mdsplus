@@ -43,7 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // tree->write();
 //
 
-int dbiTest(void *ctx, short int code) {
+int dbiTest(void *ctx, short int code)
+{
   int supports;
   int len;
   struct dbi_itm dbiList[] = {{sizeof(int), code, &supports, &len},
@@ -64,7 +65,8 @@ int dbiTest(void *ctx, short int code) {
 ///
 ///
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(Tree Delete Node);
 
   void *ctx = NULL;
@@ -98,10 +100,13 @@ int main(int argc __attribute__((unused)),
 
   // close tree //
   int is_modified = dbiTest(ctx, DbiMODIFIED);
-  if (is_modified) {
+  if (is_modified)
+  {
     status = _TreeQuitTree(&ctx, tree_name, shot);
     TEST1(status & 1);
-  } else {
+  }
+  else
+  {
     status = _TreeClose(&ctx, tree_name, shot);
     TEST1(status & 1);
   }

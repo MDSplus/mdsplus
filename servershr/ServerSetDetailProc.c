@@ -56,7 +56,8 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
 #include <mdsplus/mdsconfig.h>
 
 static char *(*DetailProc)() = 0;
-EXPORT void ServerSetDetailProc(char *(*detail_proc)()) {
+EXPORT void ServerSetDetailProc(char *(*detail_proc)())
+{
   DetailProc = detail_proc;
 }
 

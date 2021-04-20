@@ -6,19 +6,21 @@
 //  ENABLE IF  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace MDSplus {
+namespace MDSplus
+{
 
-template <bool B, class T = void>
-struct enable_if {
+  template <bool B, class T = void>
+  struct enable_if
+  {
     typedef T type;
-};
+  };
 
-template <class T>
-struct enable_if<false, T> {};
+  template <class T>
+  struct enable_if<false, T>
+  {
+  };
 
 } // MDSplus
 
-
 #endif // DOXYGEN end of hidden code
 #endif // TRAITS_HPP
-

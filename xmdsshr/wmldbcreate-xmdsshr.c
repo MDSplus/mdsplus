@@ -228,22 +228,29 @@ char **argv;
   strcpy(outfilename, "motif.wmd");
   strcpy(debugfilename, "motif.dbg");
 
-  for (argc--, argv++; argc; argc--, argv++) {
-    if (strcmp("-debug", *argv) == 0) {
+  for (argc--, argv++; argc; argc--, argv++)
+  {
+    if (strcmp("-debug", *argv) == 0)
+    {
       DEBUG = TRUE;
-    } else if ((strcmp("-o", *argv) == 0)) {
+    }
+    else if ((strcmp("-o", *argv) == 0))
+    {
       strcpy(outfilename, argv[1]);
     }
   }
 
   bfile = fopen(outfilename, "w");
-  if (bfile == (FILE *)NULL) {
+  if (bfile == (FILE *)NULL)
+  {
     printf("\nCouldnt't open %s", outfilename);
     return;
   }
-  if (DEBUG) {
+  if (DEBUG)
+  {
     afile = fopen(debugfilename, "w");
-    if (afile == (FILE *)NULL) {
+    if (afile == (FILE *)NULL)
+    {
       printf("\nCouldn't open %s", debugfilename);
       return;
     }
@@ -318,7 +325,8 @@ char **argv;
   exit(0);
 }
 
-emit_globals() {
+emit_globals()
+{
   _db_globals globals;
 
   globals.version = DB_Compiled_Version;
@@ -358,7 +366,8 @@ emit_chars(table_id) int table_id;
   unsigned char *ptr;
   int i;
 
-  switch (table_id) {
+  switch (table_id)
+  {
   case Constraint_Tab:
     /*
      * NOTE: The first entry is not used but we copy it anyway
@@ -418,8 +427,10 @@ emit_chars(table_id) int table_id;
   emit_header(&header);
 
   fwrite(ptr, header.table_size, 1, bfile);
-  if (DEBUG) {
-    for (i = 0; i <= header.num_items; i++) {
+  if (DEBUG)
+  {
+    for (i = 0; i <= header.num_items; i++)
+    {
       fprintf(afile, "%d ", ptr[i]);
     }
   }
@@ -431,7 +442,8 @@ emit_ints_and_string(table_id) int table_id;
   key_keytable_entry_type *table;
   int i;
 
-  switch (table_id) {
+  switch (table_id)
+  {
     /*
      * All tables are zero based unless otherwise noted
      */
@@ -451,7 +463,8 @@ emit_ints_and_string(table_id) int table_id;
   emit_header(&header);
 
   fwrite(table, header.table_size, 1, bfile);
-  for (i = 0; i < header.num_items; i++) {
+  for (i = 0; i < header.num_items; i++)
+  {
     fwrite(table[i].at_name, table[i].b_length + 1, 1, bfile);
     if (DEBUG)
       fprintf(afile, "%d %d %d %d %s", table[i].b_class, table[i].b_subclass,
@@ -467,7 +480,8 @@ emit_char_table(table_id) int table_id;
   int i, j;
   int num_bits = (uil_max_object + 7) / 8;
 
-  switch (table_id) {
+  switch (table_id)
+  {
     /*
      * All tables are 1 based unless otherwise specified
      */
@@ -499,11 +513,14 @@ emit_char_table(table_id) int table_id;
 
   emit_header(&header);
 
-  for (i = 1; i <= header.num_items; i++) { /* First not used */
+  for (i = 1; i <= header.num_items; i++)
+  { /* First not used */
     entry_vec = table[i];
     fwrite(entry_vec, sizeof(char) * num_bits, 1, bfile);
-    if (DEBUG) {
-      for (j = 0; j < num_bits; j++) {
+    if (DEBUG)
+    {
+      for (j = 0; j < num_bits; j++)
+      {
         fprintf(afile, "%d, ", entry_vec[j]);
       }
       fprintf(afile, "\n");
@@ -519,7 +536,8 @@ emit_length_and_string(table_id) int table_id;
   char **table;
   int i;
 
-  switch (table_id) {
+  switch (table_id)
+  {
     /*
      * all the tables are 1 based unless otherwise documented
      */
@@ -598,21 +616,27 @@ emit_length_and_string(table_id) int table_id;
 
   lengths = (int *)malloc(sizeof(int) * (header.num_items + 1));
 
-  for (i = 0; i <= header.num_items; i++) {
-    if (table[i] != NULL) {
+  for (i = 0; i <= header.num_items; i++)
+  {
+    if (table[i] != NULL)
+    {
       /*
        * Add one to the length for the null terminator
        */
       lengths[i] = strlen(table[i]) + 1;
-    } else {
+    }
+    else
+    {
       lengths[i] = 0;
     }
     if (DEBUG)
       fprintf(afile, "%d ", lengths[i]);
   }
   fwrite(lengths, sizeof(int) * (header.num_items + 1), 1, bfile);
-  for (i = 0; i <= header.num_items; i++) {
-    if (lengths[i]) {
+  for (i = 0; i <= header.num_items; i++)
+  {
+    if (lengths[i])
+    {
       /*
        * assumed lengths[i] = lengths[i] * sizeof(char)
        * Add one for the null terminator
@@ -631,7 +655,8 @@ emit_shorts(table_id) int table_id;
   unsigned short int *ptr;
   int i;
 
-  switch (table_id) {
+  switch (table_id)
+  {
     /*
      * All tables are 1 based unless otherwise noted
      */
@@ -679,8 +704,10 @@ emit_shorts(table_id) int table_id;
   emit_header(&header);
 
   fwrite(ptr, header.table_size, 1, bfile);
-  if (DEBUG) {
-    for (i = 0; i < header.num_items; i++) {
+  if (DEBUG)
+  {
+    for (i = 0; i < header.num_items; i++)
+    {
       fprintf(afile, "%d ", ptr[i]);
     }
   }
@@ -693,7 +720,8 @@ emit_int_and_table_shorts(table_id) int table_id;
   int j, i;
   unsigned short int *value_vec;
 
-  switch (table_id) {
+  switch (table_id)
+  {
     /*
      * All tables are 1 based unless otherwise noted
      */
@@ -707,8 +735,10 @@ emit_int_and_table_shorts(table_id) int table_id;
 
   emit_header(&header);
   fwrite(table, header.table_size, 1, bfile);
-  for (i = 0; i <= header.num_items; i++) { /* first is not used */
-    if (table[i].values_cnt) {
+  for (i = 0; i <= header.num_items; i++)
+  { /* first is not used */
+    if (table[i].values_cnt)
+    {
       fwrite(table[i].values, sizeof(short) * table[i].values_cnt, 1, bfile);
     }
   }
@@ -736,8 +766,10 @@ emit_ints(table_id) int table_id;
   emit_header(&header);
 
   fwrite(ptr, header.table_size, 1, bfile);
-  if (DEBUG) {
-    for (i = 0; i < header.num_items; i++) {
+  if (DEBUG)
+  {
+    for (i = 0; i < header.num_items; i++)
+    {
       fprintf(afile, "%d ", ptr[i]);
     }
   }

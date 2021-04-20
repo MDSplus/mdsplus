@@ -47,9 +47,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  \param p [in,out] the address of a pointer to  a dclParameter struct.
 */
 
-void freeParameter(dclParameterPtr *p_in) {
+void freeParameter(dclParameterPtr *p_in)
+{
   dclParameterPtr p = *p_in;
-  if (p) {
+  if (p)
+  {
     int i;
     if (p->name != NULL)
       free(p->name);
@@ -73,16 +75,20 @@ void freeParameter(dclParameterPtr *p_in) {
  \param q [in,out] The address of a pointer to a dclQualifier struct
 */
 
-static void freeQualifier(dclQualifierPtr *q_in) {
-  if (q_in) {
+static void freeQualifier(dclQualifierPtr *q_in)
+{
+  if (q_in)
+  {
     dclQualifierPtr q = *q_in;
-    if (q) {
+    if (q)
+    {
       int i;
       free(q->name);
       free(q->defaultValue);
       free(q->type);
       free(q->syntax);
-      if (q->values) {
+      if (q->values)
+      {
         for (i = 0; i < q->value_count; i++)
           free(q->values[i]);
         free(q->values);
@@ -97,17 +103,21 @@ static void freeQualifier(dclQualifierPtr *q_in) {
  \param cmdDef [in] A pointer to a dclCommand structure.
 */
 
-void freeCommandParamsAndQuals(dclCommandPtr cmdDef) {
-  if (cmdDef) {
+void freeCommandParamsAndQuals(dclCommandPtr cmdDef)
+{
+  if (cmdDef)
+  {
     int i;
-    if (cmdDef->parameter_count > 0) {
+    if (cmdDef->parameter_count > 0)
+    {
       for (i = 0; i < cmdDef->parameter_count; i++)
         freeParameter(&cmdDef->parameters[i]);
       cmdDef->parameter_count = 0;
       free(cmdDef->parameters);
       cmdDef->parameters = 0;
     }
-    if (cmdDef->qualifier_count > 0) {
+    if (cmdDef->qualifier_count > 0)
+    {
       for (i = 0; i < cmdDef->qualifier_count; i++)
         freeQualifier(&cmdDef->qualifiers[i]);
       cmdDef->qualifier_count = 0;
@@ -121,10 +131,13 @@ void freeCommandParamsAndQuals(dclCommandPtr cmdDef) {
  \param cmd [in,out] The address of a pointer to a dclCommand structure
 */
 
-static void freeCommand(dclCommandPtr *cmd_in) {
-  if (cmd_in) {
+static void freeCommand(dclCommandPtr *cmd_in)
+{
+  if (cmd_in)
+  {
     dclCommandPtr cmd = *cmd_in;
-    if (cmd) {
+    if (cmd)
+    {
       free(cmd->verb);
       free(cmd->routine);
       free(cmd->image);
@@ -150,24 +163,28 @@ static void freeCommand(dclCommandPtr *cmd_in) {
 
 */
 
-static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
+static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd)
+{
 
   /* If the parent node is a verb */
 
   xmlNodePtr parent = node->parent;
-  if (parent->name && (strcasecmp((const char *)parent->name, "verb") == 0)) {
+  if (parent->name && (strcasecmp((const char *)parent->name, "verb") == 0))
+  {
     struct _xmlAttr *propNode;
 
     /* check to see if type is rest_of_line.
        If it is just set the cmd->rest_of_line and return;
      */
 
-    for (propNode = parent->properties; propNode; propNode = propNode->next) {
+    for (propNode = parent->properties; propNode; propNode = propNode->next)
+    {
       if (propNode->name &&
           (strcasecmp((const char *)propNode->name, "type") == 0) &&
           propNode->children && propNode->children->content &&
           (strcasecmp((const char *)propNode->children->content,
-                      "rest_of_line") == 0)) {
+                      "rest_of_line") == 0))
+      {
         cmd->rest_of_line = 1;
         break;
       }
@@ -177,7 +194,8 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
   /* If the node ia a paramter (i.e. <parameter ... />) */
 
   if ((cmd->rest_of_line == 0) && node->name &&
-      (strcasecmp((const char *)node->name, "parameter") == 0)) {
+      (strcasecmp((const char *)node->name, "parameter") == 0))
+  {
     struct _xmlAttr *propNode;
 
     /* allocate an empty parameter structure */
@@ -187,29 +205,33 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
 
     /* Look at all the properties of the parameter */
 
-    for (propNode = node->properties; propNode; propNode = propNode->next) {
+    for (propNode = node->properties; propNode; propNode = propNode->next)
+    {
 
       /* If this is a label property (i.e. <parameter label=gub ... />)
          duplicate the label value into the dclParameter structure. */
 
       if (propNode->name &&
           (strcasecmp((const char *)propNode->name, "label") == 0) &&
-          propNode->children && propNode->children->content) {
+          propNode->children && propNode->children->content)
+      {
         parameter->label = strdup((const char *)propNode->children->content);
 
         /* else if this is a name property duplicate the name value */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "name") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "name") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         parameter->name = strdup((const char *)propNode->children->content);
 
         /* else if this is a required property set required
            if value is True. */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "required") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "required") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         parameter->required =
             strcasecmp((const char *)propNode->children->content, "True") == 0;
 
@@ -222,49 +244,62 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
            on the value specified by the user for this parameter.
            The cmd definition may be completely replaced later when
            user input is analyzed. ** */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "type") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "type") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         if (strcasecmp((const char *)propNode->children->content,
-                       "rest_of_line") == 0) {
+                       "rest_of_line") == 0)
+        {
           parameter->useRestOfLine = 1;
-        } else {
+        }
+        else
+        {
           parameter->type = strdup((const char *)propNode->children->content);
         }
 
         /* else if this ia a prompt property duplicate into the parameter
            structure. The prompt may be sent to the user if he failed
            to provide this parameter in the command string. */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "prompt") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "prompt") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         parameter->prompt = strdup((const char *)propNode->children->content);
 
         /* else if this ia a list property set listOk in the parameter
            if value is "True". When processing a command if the user
            provided multiple values for the parameter a syntax error
            will be issued. */
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "list") == 0) &&
-                 propNode->children && propNode->children->content &&
-                 (strcasecmp((const char *)propNode->children->content,
-                             "true") == 0)) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "list") == 0) &&
+               propNode->children && propNode->children->content &&
+               (strcasecmp((const char *)propNode->children->content,
+                           "true") == 0))
+      {
         parameter->listOk = 1;
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "default") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "default") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         char *value = strdup((const char *)propNode->children->content);
         char *c, *v;
-        for (v = value, c = strchr(v, ','); strlen(v); c = strchr(v, ',')) {
+        for (v = value, c = strchr(v, ','); strlen(v); c = strchr(v, ','))
+        {
           if (c)
             *c = 0;
-          if (parameter->values) {
+          if (parameter->values)
+          {
             parameter->values =
                 realloc(parameter->values,
                         (parameter->value_count + 1) * sizeof(char *));
-          } else {
+          }
+          else
+          {
             parameter->values = malloc(sizeof(char *));
           }
           parameter->values[parameter->value_count++] = strdup(v);
@@ -289,9 +324,10 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
     cmd->parameter_count++;
 
     /* else if this is a qualifier node (i.e. <qualifier ... />) */
-
-  } else if ((cmd->rest_of_line == 0) && node->name &&
-             (strcasecmp((const char *)node->name, "qualifier") == 0)) {
+  }
+  else if ((cmd->rest_of_line == 0) && node->name &&
+           (strcasecmp((const char *)node->name, "qualifier") == 0))
+  {
 
     /* allocate an empty dclQualifier structure. */
 
@@ -301,22 +337,25 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
 
     /* examine all the properties of this node */
 
-    for (propNode = node->properties; propNode; propNode = propNode->next) {
+    for (propNode = node->properties; propNode; propNode = propNode->next)
+    {
 
       /* if this is a name property, duplicate to the qualifier structure. */
       if (propNode->name &&
           (strcasecmp((const char *)propNode->name, "name") == 0) &&
-          propNode->children && propNode->children->content) {
+          propNode->children && propNode->children->content)
+      {
         qualifier->name = strdup((const char *)propNode->children->content);
 
         /* else if this is a defaulted property, set the isDefault
            flag if value is "True". If isDefault is true when
            processing the command, this qualifier will be included unless
            preceded by "no" */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "defaulted") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "defaulted") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         qualifier->isDefault =
             strcasecmp((const char *)propNode->children->content, "True") == 0;
 
@@ -325,31 +364,34 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
            processing the command, this will check to make sure the user
            provided a value with the qualifier (i.e. /qualifier=value).
          */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "required") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "required") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         qualifier->valueRequired =
             strcasecmp((const char *)propNode->children->content, "True") == 0;
 
         /* else if this is a nonnegatable property, set the nonnegateable flag
            if the value is "True". If nonnegatable is set then the user cannot
            prefix the qualifier with "no" (i.e. cmd /nogub is disallowed). */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "nonnegatable") ==
-                  0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "nonnegatable") ==
+                0) &&
+               propNode->children && propNode->children->content)
+      {
         qualifier->nonnegatable =
             strcasecmp((const char *)propNode->children->content, "True") == 0;
 
         /* else if this is a list property, set the listOk flag if the value
            is "True". The listOk flag indicates whether more than one value
            is permitted with the qualifier. (i.e. cmd /gub=(val1,val2,val3)) */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "list") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "list") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         qualifier->listOk =
             strcasecmp((const char *)propNode->children->content, "True") == 0;
 
@@ -357,20 +399,22 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
            qualifier struct. The type property is used when processing the
            qualifier to check for valid values or whether the value(s) should be
            converted to integer during cli queries. */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "type") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "type") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         qualifier->type = strdup((const char *)propNode->children->content);
 
         /* else if this is a default property duplicate the value into
            the defaultValue qualifier struct member. This will be used
            to specify a default value if the user did not specify a value
            with the qualifier */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "default") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "default") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         qualifier->defaultValue =
             strdup((const char *)propNode->children->content);
 
@@ -378,10 +422,11 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
            into the qualifier structure. This will cause a command syntax
            replacement during command processing if the user included
            this qualifier in the command. */
-
-      } else if (propNode->name &&
-                 (strcasecmp((const char *)propNode->name, "syntax") == 0) &&
-                 propNode->children && propNode->children->content) {
+      }
+      else if (propNode->name &&
+               (strcasecmp((const char *)propNode->name, "syntax") == 0) &&
+               propNode->children && propNode->children->content)
+      {
         qualifier->syntax = strdup((const char *)propNode->children->content);
       }
     }
@@ -397,18 +442,23 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
 
     /* else if this is a routine node (i.e. <routine ... />
        duplicate the routine name into the command routine element. */
-
-  } else if (node->name &&
-             (strcasecmp((const char *)node->name, "routine") == 0)) {
+  }
+  else if (node->name &&
+           (strcasecmp((const char *)node->name, "routine") == 0))
+  {
     if (node->properties && node->properties->children &&
-        node->properties->children->content) {
+        node->properties->children->content)
+    {
       free(cmd->routine);
       cmd->routine = strdup((const char *)node->properties->children->content);
     }
-  } else if (node->name &&
-             (strcasecmp((const char *)node->name, "image") == 0)) {
+  }
+  else if (node->name &&
+           (strcasecmp((const char *)node->name, "image") == 0))
+  {
     if (node->properties && node->properties->children &&
-        node->properties->children->content) {
+        node->properties->children->content)
+    {
       free(cmd->image);
       cmd->image = strdup((const char *)node->properties->children->content);
     }
@@ -441,7 +491,8 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd) {
    */
 
 static void findEntity(xmlNodePtr node, const char *category, const char *name,
-                       dclNodeListPtr list, int *exactFound) {
+                       dclNodeListPtr list, int *exactFound)
+{
 
   /* If exact match already found just return */
 
@@ -456,13 +507,15 @@ static void findEntity(xmlNodePtr node, const char *category, const char *name,
            node->properties && node->properties->children &&
            node->properties->children->content &&
            (strncasecmp(name, (const char *)node->properties->children->content,
-                        strlen(name)) == 0)) {
+                        strlen(name)) == 0))
+  {
 
     /* Check if it is an exact match */
     if ((name == NULL) ||
         (strlen(name) ==
          strlen((const char *)node->properties->children
-                    ->content))) { // if exact command match use it!
+                    ->content)))
+    { // if exact command match use it!
 
       /* if already found other nodes but not exact match then free the "array"
        * of nodes. */
@@ -480,9 +533,12 @@ static void findEntity(xmlNodePtr node, const char *category, const char *name,
 
     /* Add this node to the list of nodes */
 
-    if (list->count == 0) {
+    if (list->count == 0)
+    {
       list->nodes = malloc(sizeof(xmlNodePtr));
-    } else {
+    }
+    else
+    {
       list->nodes =
           realloc(list->nodes, sizeof(xmlNodePtr) * (list->count + 1));
     }
@@ -525,7 +581,8 @@ static void findEntity(xmlNodePtr node, const char *category, const char *name,
 static int dispatchToHandler(char *image, dclCommandPtr cmd,
                              dclCommandPtr cmdDef, char **prompt, char **error,
                              char **output, char *(*getline)(),
-                             void *getlineinfo) {
+                             void *getlineinfo)
+{
   int i;
   int (*handler)(dclCommandPtr, char **, char **, char *(*getline)(),
                  void *getlineinfo) = NULL;
@@ -544,12 +601,15 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
      the value with the complete text of the rest of the command line. Throw
      away the trailing parameters and qualifiers if any. */
 
-  for (i = 0; i < cmdDef->parameter_count; i++) {
-    if (cmdDef->parameters[i]->useRestOfLine) {
+  for (i = 0; i < cmdDef->parameter_count; i++)
+  {
+    if (cmdDef->parameters[i]->useRestOfLine)
+    {
       int j;
 
       /* If user included this parameter */
-      if (cmd->parameter_count > i) {
+      if (cmd->parameter_count > i)
+      {
 
         /* save the rest of line */
         char *rol = cmd->parameters[i]->restOfLine;
@@ -572,11 +632,14 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
         cmd->parameters[i]->values[0] = rol;
         cmd->parameters[i]->value_count = 1;
       }
-      for (j = cmd->qualifier_count; j > 0; j--) {
-        if (cmd->qualifiers[j - 1]->position > i) {
+      for (j = cmd->qualifier_count; j > 0; j--)
+      {
+        if (cmd->qualifiers[j - 1]->position > i)
+        {
           freeQualifier(&cmd->qualifiers[j - 1]);
           cmd->qualifier_count--;
-          if (cmd->qualifier_count == 0) {
+          if (cmd->qualifier_count == 0)
+          {
             free(cmd->qualifiers);
             cmd->qualifiers = 0;
           }
@@ -588,21 +651,27 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
 
   /* Check to make sure the qualifiers specified are value for this command */
 
-  for (i = 0; i < cmd->qualifier_count; i++) {
+  for (i = 0; i < cmd->qualifier_count; i++)
+  {
     int j;
-    for (j = 0; j < cmdDef->qualifier_count; j++) {
+    for (j = 0; j < cmdDef->qualifier_count; j++)
+    {
       if (strncasecmp(cmd->qualifiers[i]->name, cmdDef->qualifiers[j]->name,
-                      strlen(cmd->qualifiers[i]->name)) == 0) {
+                      strlen(cmd->qualifiers[i]->name)) == 0)
+      {
         break;
-      } else if ((strncasecmp(cmd->qualifiers[i]->name, "no", 2) == 0) &&
-                 (strlen(cmd->qualifiers[i]->name) > 2) &&
-                 (strncasecmp(cmd->qualifiers[i]->name + 2,
-                              cmdDef->qualifiers[j]->name,
-                              strlen(cmd->qualifiers[i]->name) - 2) == 0)) {
+      }
+      else if ((strncasecmp(cmd->qualifiers[i]->name, "no", 2) == 0) &&
+               (strlen(cmd->qualifiers[i]->name) > 2) &&
+               (strncasecmp(cmd->qualifiers[i]->name + 2,
+                            cmdDef->qualifiers[j]->name,
+                            strlen(cmd->qualifiers[i]->name) - 2) == 0))
+      {
         break;
       }
     }
-    if (j == cmdDef->qualifier_count) {
+    if (j == cmdDef->qualifier_count)
+    {
       char *errstr = malloc(100);
       sprintf(errstr, "Qualifier \"%s\" is not valid for this command\n",
               cmd->qualifiers[i]->name);
@@ -612,7 +681,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
   }
   /* Check to make sure there are not too many parameters */
 
-  if (cmd->parameter_count > cmdDef->parameter_count) {
+  if (cmd->parameter_count > cmdDef->parameter_count)
+  {
     char *errstr = malloc(100);
     sprintf(errstr,
             "Too many parameters specified in the command. Maximum supported "
@@ -624,12 +694,15 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
 
   /* For all the parameters */
 
-  for (i = 0; i < cmdDef->parameter_count; i++) {
+  for (i = 0; i < cmdDef->parameter_count; i++)
+  {
 
     /* Check to make sure user did not specify too many values in parameters. */
 
-    if (cmdDef->parameters[i]->listOk == 0) {
-      if ((i < cmd->parameter_count) && (cmd->parameters[i]->value_count > 1)) {
+    if (cmdDef->parameters[i]->listOk == 0)
+    {
+      if ((i < cmd->parameter_count) && (cmd->parameters[i]->value_count > 1))
+      {
         char *errstr = malloc(500);
         sprintf(errstr,
                 "Parameter number %d does not accept a list of values. "
@@ -644,7 +717,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
      * not provided */
 
     if ((cmdDef->parameters[i]->value_count > 0) &&
-        ((i + 1) > cmd->parameter_count)) {
+        ((i + 1) > cmd->parameter_count))
+    {
       int j;
       dclParameterPtr pdef = cmdDef->parameters[i];
       dclParameterPtr p =
@@ -656,10 +730,13 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
       p->values = malloc(p->value_count * sizeof(char *));
       for (j = 0; j < p->value_count; j++)
         p->values[j] = strdup(pdef->values[j]);
-      if (cmd->parameter_count > 0) {
+      if (cmd->parameter_count > 0)
+      {
         cmd->parameters = realloc(cmd->parameters,
                                   (cmd->parameter_count + 1) * sizeof(char *));
-      } else {
+      }
+      else
+      {
         cmd->parameters = malloc(sizeof(char *));
       }
       cmd->parameters[cmd->parameter_count] = p;
@@ -668,8 +745,10 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
 
     /* Check to see if a required parameter was not specified. */
 
-    if (cmdDef->parameters[i]->required) {
-      if (cmd->parameter_count < (i + 1)) {
+    if (cmdDef->parameters[i]->required)
+    {
+      if (cmd->parameter_count < (i + 1))
+      {
         *prompt =
             strdup(cmdDef->parameters[i]->prompt ? cmdDef->parameters[i]->prompt
                                                  : "What");
@@ -680,17 +759,22 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
 
   /* For each possible qualifier */
 
-  for (i = 0; i < cmdDef->qualifier_count; i++) {
+  for (i = 0; i < cmdDef->qualifier_count; i++)
+  {
     int j;
 
     /* If the qualifier is required and was used in the command, make sure user
      * provided a value */
-    if (cmdDef->qualifiers[i]->valueRequired != 0) {
+    if (cmdDef->qualifiers[i]->valueRequired != 0)
+    {
       int q;
-      for (q = 0; q < cmd->qualifier_count; q++) {
+      for (q = 0; q < cmd->qualifier_count; q++)
+      {
         if (strncasecmp(cmd->qualifiers[q]->name, cmdDef->qualifiers[i]->name,
-                        strlen(cmd->qualifiers[q]->name)) == 0) {
-          if (cmd->qualifiers[q]->value_count == 0) {
+                        strlen(cmd->qualifiers[q]->name)) == 0)
+        {
+          if (cmd->qualifiers[q]->value_count == 0)
+          {
             char *errstr = malloc(100);
             sprintf(errstr,
                     "Qualifier \"%s\" requires a value and none was provided\n",
@@ -705,31 +789,39 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
 
     /* Look for qualifiers that are default qualifiers and add them if not
      * already there in cmd */
-    if (cmdDef->qualifiers[i]->isDefault) {
+    if (cmdDef->qualifiers[i]->isDefault)
+    {
 
       /* Look to see if the default qualifier is already provided by user. */
 
-      for (j = 0; j < cmd->qualifier_count; j++) {
+      for (j = 0; j < cmd->qualifier_count; j++)
+      {
         if (strncasecmp(cmd->qualifiers[j]->name, cmdDef->qualifiers[i]->name,
-                        strlen(cmd->qualifiers[j]->name)) == 0) {
+                        strlen(cmd->qualifiers[j]->name)) == 0)
+        {
           break;
         }
       }
 
       /* If not already provided add this qualifier with default value if any */
 
-      if (j == cmd->qualifier_count) {
+      if (j == cmd->qualifier_count)
+      {
         dclQualifierPtr qualifier =
             memset(malloc(sizeof(dclQualifier)), 0, sizeof(dclQualifier));
         qualifier->name = strdup(cmdDef->qualifiers[i]->name);
-        if (cmdDef->qualifiers[i]->defaultValue != NULL) {
+        if (cmdDef->qualifiers[i]->defaultValue != NULL)
+        {
           qualifier->value_count = 1;
           qualifier->values = malloc(sizeof(char *));
           qualifier->values[0] = strdup(cmdDef->qualifiers[i]->defaultValue);
         }
-        if (cmd->qualifier_count == 0) {
+        if (cmd->qualifier_count == 0)
+        {
           cmd->qualifiers = malloc(sizeof(dclQualifierPtr));
-        } else {
+        }
+        else
+        {
           cmd->qualifiers =
               realloc(cmd->qualifiers,
                       sizeof(dclQualifierPtr) * (cmd->qualifier_count + 1));
@@ -743,7 +835,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
   /* Replace any parameter names and labels with the real command definition
    * parameter names. */
 
-  for (i = 0; i < cmd->parameter_count; i++) {
+  for (i = 0; i < cmd->parameter_count; i++)
+  {
     free(cmd->parameters[i]->name);
     cmd->parameters[i]->name = strdup(cmdDef->parameters[i]->name);
     free(cmd->parameters[i]->label);
@@ -754,25 +847,29 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
 
   /* For all the qualifiers specified */
 
-  for (i = 0; i < cmd->qualifier_count; i++) {
+  for (i = 0; i < cmd->qualifier_count; i++)
+  {
     int q;
 
     /* for all possible qualifiers */
 
-    for (q = 0; q < cmdDef->qualifier_count; q++) {
+    for (q = 0; q < cmdDef->qualifier_count; q++)
+    {
       char *realname = cmdDef->qualifiers[q]->name;
       char *negated = strcpy(malloc(strlen(realname) + 3), "no");
       strcat(negated, realname);
       if ((strncasecmp(cmd->qualifiers[i]->name, realname,
                        strlen(cmd->qualifiers[i]->name)) == 0) ||
           (strncasecmp(cmd->qualifiers[i]->name, negated,
-                       strlen(cmd->qualifiers[i]->name)) == 0)) {
+                       strlen(cmd->qualifiers[i]->name)) == 0))
+      {
 
         /************* process type ************/
         /* Check if there are too many values specified */
 
         if ((cmd->qualifiers[i]->value_count > 1) &&
-            (cmdDef->qualifiers[q]->listOk == 0)) {
+            (cmdDef->qualifiers[q]->listOk == 0))
+        {
           char *errstr = malloc(100);
           sprintf(errstr, "Qualifier \"%s\" does not permit a list of values\n",
                   cmdDef->qualifiers[i]->name);
@@ -783,13 +880,16 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
         /* Check to see if the command was negated and if that is allowed */
 
         if ((strncasecmp(cmd->qualifiers[i]->name, "no", 2) == 0) &&
-            (strncasecmp(realname, "no", 2) != 0)) {
-          if (cmdDef->qualifiers[q]->nonnegatable) {
+            (strncasecmp(realname, "no", 2) != 0))
+        {
+          if (cmdDef->qualifiers[q]->nonnegatable)
+          {
             char *errstr = malloc(100);
             sprintf(errstr, "Qualifier \"%s\" cannot be negated\n", realname);
             *error = errstr;
             return MdsdclNOTNEGATABLE;
-          } else
+          }
+          else
             cmd->qualifiers[i]->negated = 1;
         }
 
@@ -802,7 +902,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
       }
       free(negated);
     }
-    if (q == cmdDef->qualifier_count) {
+    if (q == cmdDef->qualifier_count)
+    {
       char *errstr = malloc(100);
       sprintf(errstr, "Qualifier \"%s\" is not valid for this command\n",
               cmd->qualifiers[i]->name);
@@ -811,12 +912,15 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd,
     }
   }
 rest_of_line:
-  if (cmdDef->routine == NULL) {
+  if (cmdDef->routine == NULL)
+  {
     *error = strdup("No execution routine specified in command definition. "
                     "Internal error, please report to MDSplus developers\n");
     fprintf(stderr, "Command not supported\n");
     return MdsdclIVVERB;
-  } else {
+  }
+  else
+  {
     free(cmd->routine);
     cmd->routine = strdup(cmdDef->routine);
   }
@@ -826,14 +930,18 @@ rest_of_line:
   if (cmdDef->image)
     image = cmdDef->image;
   status = LibFindImageSymbol_C(image, cmdDef->routine, &handler);
-  if (status & 1) {
+  if (status & 1)
+  {
     status = handler(cmd, error, output, getline, getlineinfo);
-    if (!(status & 1)) {
-      if ((*error == 0) && (status != 0)) {
+    if (!(status & 1))
+    {
+      if ((*error == 0) && (status != 0))
+      {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(msg) + 100);
         sprintf(*error, "Error message was: %s\n", msg);
-      } else if (*error == 0)
+      }
+      else if (*error == 0)
         *error = strdup("");
       *error =
           realloc(*error, strlen(*error) + strlen(cmd->command_line) + 100);
@@ -890,7 +998,8 @@ rest_of_line:
 int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
                    dclCommandPtr cmd, dclCommandPtr cmdDef, char **prompt,
                    char **error, char **output, char *(*getline)(),
-                   void *getlineinfo) {
+                   void *getlineinfo)
+{
   xmlDocPtr doc = docList->doc;
   int i;
   int status = 0;
@@ -900,7 +1009,8 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
 
   /* loop in case syntax changes occur based on parameter or qualifiers */
 
-  while (redo) {
+  while (redo)
+  {
     redo = 0;
 
     /* Gather all the known information about the command being processed from
@@ -909,15 +1019,18 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
     findVerbInfo(verbNode->children, cmdDef);
 
     /* For each possible parameter */
-    for (i = 0; ((!isSyntax) && (i < cmdDef->parameter_count)); i++) {
+    for (i = 0; ((!isSyntax) && (i < cmdDef->parameter_count)); i++)
+    {
 
       /* if parameter has a type */
 
-      if ((!isSyntax) && (cmdDef->parameters[i]->type != NULL)) {
+      if ((!isSyntax) && (cmdDef->parameters[i]->type != NULL))
+      {
 
         /* If parameter was used in the command look up a type definition based
          * on the value of the parameter specified */
-        if (cmd->parameter_count > i && cmd->parameters[i]->value_count == 1) {
+        if (cmd->parameter_count > i && cmd->parameters[i]->value_count == 1)
+        {
           char *keywordName = cmd->parameters[i]->values[0];
           int exactFound = 0;
           dclNodeList list;
@@ -928,7 +1041,8 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
           /* If only one match found (which should be the case unless the
            * command definition is invalid!) */
 
-          if (list.count == 1) {
+          if (list.count == 1)
+          {
             xmlNodePtr typeNode = list.nodes[0];
             xmlNodePtr keywordNode;
             free(list.nodes);
@@ -937,20 +1051,25 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
              * matches it */
 
             for (keywordNode = typeNode->children; keywordNode;
-                 keywordNode = keywordNode->next) {
+                 keywordNode = keywordNode->next)
+            {
               if (keywordNode->name &&
                   (strcasecmp((const char *)keywordNode->name, "keyword") ==
-                   0)) {
+                   0))
+              {
                 struct _xmlAttr *nameNode = keywordNode->properties;
                 if (nameNode && nameNode->name &&
-                    (strcasecmp((const char *)nameNode->name, "name") == 0)) {
+                    (strcasecmp((const char *)nameNode->name, "name") == 0))
+                {
                   if (nameNode->children && nameNode->children->content &&
                       (strncasecmp(keywordName,
                                    (const char *)nameNode->children->content,
-                                   strlen(keywordName)) == 0)) {
+                                   strlen(keywordName)) == 0))
+                  {
                     struct _xmlAttr *syntaxNode = nameNode->next;
                     if (syntaxNode && syntaxNode->children &&
-                        syntaxNode->children->content) {
+                        syntaxNode->children->content)
+                    {
                       dclNodeList list = {0, 0};
                       int exactFound = 0;
 
@@ -964,7 +1083,8 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
                          command definition) reprocess the cmd using the new
                          syntax definition */
 
-                      if (list.count == 1) {
+                      if (list.count == 1)
+                      {
                         redo = 1;
                         isSyntax = 1;
                         verbNode = list.nodes[0];
@@ -990,28 +1110,34 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
 
     /* process syntax switching on qualifiers */
 
-    for (i = 0; (redo == 0) && (i < cmdDef->qualifier_count); i++) {
-      if (cmdDef->qualifiers[i]->syntax != NULL) {
+    for (i = 0; (redo == 0) && (i < cmdDef->qualifier_count); i++)
+    {
+      if (cmdDef->qualifiers[i]->syntax != NULL)
+      {
         int q;
-        for (q = 0; q < cmd->qualifier_count; q++) {
+        for (q = 0; q < cmd->qualifier_count; q++)
+        {
           char *realname = cmdDef->qualifiers[i]->name;
           char *negated = strcpy(malloc(strlen(realname) + 3), "no");
           strcat(negated, realname);
           if ((strncasecmp(cmd->qualifiers[q]->name, realname,
                            strlen(cmd->qualifiers[q]->name)) == 0) ||
               (strncasecmp(cmd->qualifiers[q]->name, negated,
-                           strlen(cmd->qualifiers[q]->name)) == 0)) {
+                           strlen(cmd->qualifiers[q]->name)) == 0))
+          {
             dclNodeList list = {0, 0};
             int exactFound = 0;
             findEntity(doc->children, "syntax", cmdDef->qualifiers[i]->syntax,
                        &list, &exactFound);
-            if (list.count == 1) {
+            if (list.count == 1)
+            {
               int k;
               freeQualifier(&cmd->qualifiers[q]);
               cmd->qualifier_count--;
               for (k = q; k < cmd->qualifier_count; k++)
                 cmd->qualifiers[k] = cmd->qualifiers[k + 1];
-              if (cmd->qualifier_count == 0) {
+              if (cmd->qualifier_count == 0)
+              {
                 free(cmd->qualifiers);
                 cmd->qualifiers = 0;
               }
@@ -1029,11 +1155,13 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in,
     }
 
   REDO:
-    if (redo) {
+    if (redo)
+    {
       freeCommandParamsAndQuals(cmdDef);
     }
   }
-  if (status == 0) {
+  if (status == 0)
+  {
     status = dispatchToHandler(docList->name, cmd, cmdDef, prompt, error,
                                output, getline, getlineinfo);
   }
@@ -1049,18 +1177,24 @@ DONE:
   \param doc [in] The xml document pointer.
 */
 
-static void mdsdclSetupCommands(xmlDocPtr doc) {
+static void mdsdclSetupCommands(xmlDocPtr doc)
+{
   /* Set prompt and def_file if defined in top level module key */
   struct _xmlAttr *p;
-  if (doc->children && doc->children) {
+  if (doc->children && doc->children)
+  {
     DCLTHREADSTATIC_INIT;
-    for (p = doc->children->properties; p; p = p->next) {
+    for (p = doc->children->properties; p; p = p->next)
+    {
       if ((strcasecmp((const char *)p->name, "prompt") == 0) && p->children &&
-          p->children->content) {
+          p->children->content)
+      {
         free(DCL_PROMPT);
         DCL_PROMPT = strdup((char *)p->children->content);
-      } else if ((strcasecmp((const char *)p->name, "def_file") == 0) &&
-                 p->children && p->children->content) {
+      }
+      else if ((strcasecmp((const char *)p->name, "def_file") == 0) &&
+               p->children && p->children->content)
+      {
         free(DCL_DEFFILE);
         if (p->children->content[0] == '*')
           DCL_DEFFILE = strdup((char *)p->children->content + 1);
@@ -1080,19 +1214,22 @@ static void mdsdclSetupCommands(xmlDocPtr doc) {
   \param error [out] An error message if trouble finding and/or parsing
                      the xml command definition file.
 */
-inline static void xmlInitParser_supp() {
+inline static void xmlInitParser_supp()
+{
   // so it can targeted for valgrind suppression
   xmlInitParser();
 }
 static inline void mdsdcl_alloc_docdef(dclDocListPtr doc_l,
-                                       DCLTHREADSTATIC_ARG) {
+                                       DCLTHREADSTATIC_ARG)
+{
   dclDocListPtr doc_p = malloc(sizeof(dclDocList));
   doc_p->name = doc_l->name;
   doc_p->doc = doc_l->doc;
   doc_p->next = DCL_DOCS;
   DCL_DOCS = doc_p;
 }
-EXPORT int mdsdclAddCommands(const char *name_in, char **error) {
+EXPORT int mdsdclAddCommands(const char *name_in, char **error)
+{
   size_t i;
   char *name = 0;
   char *commands;
@@ -1124,9 +1261,12 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error) {
   /* See if that command table has already been loaded in the private list. If
      it has, pop that table to the top of the stack and return */
   DCLTHREADSTATIC_INIT;
-  for (doc_l = DCL_DOCS, doc_p = 0; doc_l; doc_p = doc_l, doc_l = doc_l->next) {
-    if (strcmp(doc_l->name, commands) == 0) {
-      if (doc_p) {
+  for (doc_l = DCL_DOCS, doc_p = 0; doc_l; doc_p = doc_l, doc_l = doc_l->next)
+  {
+    if (strcmp(doc_l->name, commands) == 0)
+    {
+      if (doc_p)
+      {
         doc_p->next = doc_l->next;
         doc_l->next = DCL_DOCS;
         DCL_DOCS = doc_l;
@@ -1142,8 +1282,10 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error) {
   static dclDocListPtr dcl_docs_cache = NULL;
   static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&lock);
-  for (doc_l = dcl_docs_cache; doc_l; doc_l = doc_l->next) {
-    if (strcmp(doc_l->name, commands) == 0) {
+  for (doc_l = dcl_docs_cache; doc_l; doc_l = doc_l->next)
+  {
+    if (strcmp(doc_l->name, commands) == 0)
+    {
       pthread_mutex_unlock(&lock);
       mdsdcl_alloc_docdef(doc_l, DCLTHREADSTATIC_VAR);
       free(commands);
@@ -1160,7 +1302,8 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error) {
   mdsplus_dir = getenv("MDSPLUS_DIR");
   if (mdsplus_dir == 0)
     mdsplus_dir = strdup(".");
-  else {
+  else
+  {
     mdsplus_dir = strcpy(malloc(strlen(mdsplus_dir) + 10), mdsplus_dir);
     strcat(mdsplus_dir, "/xml");
   }
@@ -1177,13 +1320,16 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error) {
 
   /* If cannot find the file or parse it, set the error string */
 
-  if (doc == 0) {
+  if (doc == 0)
+  {
     pthread_mutex_unlock(&lock);
     char *errstr = malloc(strlen(filename) + 50);
     sprintf(errstr, " Error: unable to parse %s\n", filename);
     *error = errstr;
     status = -1;
-  } else {
+  }
+  else
+  {
     /* else stick the parsed xml document at the top of the command stack
     doc_p for the private entry and doc_l for the static one*/
     doc_l = malloc(sizeof(dclDocList));
@@ -1200,15 +1346,18 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error) {
   return status;
 }
 
-EXPORT int mdsdcl_do_command(char const *command) {
+EXPORT int mdsdcl_do_command(char const *command)
+{
   char *error = 0;
   char *output = 0;
   int status = mdsdcl_do_command_extra_args(command, 0, &error, &output, 0, 0);
-  if (error) {
+  if (error)
+  {
     fprintf(stderr, "%s", error);
     free(error);
   }
-  if (output) {
+  if (output)
+  {
     fprintf(stdout, "%s", output);
     free(output);
   }
@@ -1217,17 +1366,20 @@ EXPORT int mdsdcl_do_command(char const *command) {
 
 EXPORT int mdsdcl_do_command_dsc(char const *command,
                                  struct descriptor_xd *error_dsc,
-                                 struct descriptor_xd *output_dsc) {
+                                 struct descriptor_xd *output_dsc)
+{
   char *error = 0;
   char *output = 0;
   int status = mdsdcl_do_command_extra_args(command, 0, error_dsc ? &error : 0,
                                             output_dsc ? &output : 0, 0, 0);
-  if (error) {
+  if (error)
+  {
     struct descriptor d = {strlen(error), DTYPE_T, CLASS_S, error};
     MdsCopyDxXd(&d, error_dsc);
     free(error);
   }
-  if (output) {
+  if (output)
+  {
     struct descriptor d = {strlen(output), DTYPE_T, CLASS_S, output};
     MdsCopyDxXd(&d, output_dsc);
     free(output);
@@ -1236,7 +1388,8 @@ EXPORT int mdsdcl_do_command_dsc(char const *command,
 }
 EXPORT int _mdsdcl_do_command_dsc(void **ctx, char const *command,
                                   struct descriptor_xd *error_dsc,
-                                  struct descriptor_xd *output_dsc) {
+                                  struct descriptor_xd *output_dsc)
+{
   int status;
   CTX_PUSH(ctx);
   status = mdsdcl_do_command_dsc(command, error_dsc, output_dsc);
@@ -1247,11 +1400,12 @@ EXPORT int _mdsdcl_do_command_dsc(void **ctx, char const *command,
 #define facility(status) (status >> 16)
 #define msgnum(status) ((status & 0xffff) >> 3)
 #define MDSDCL_FACILITY 2050
-#define invalid_command(status)                                                \
+#define invalid_command(status) \
   ((facility(status) == MDSDCL_FACILITY) && (msgnum(status) > 100))
 
 int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
-               char **output_out, char *(*getline)(), void *getlineinfo) {
+               char **output_out, char *(*getline)(), void *getlineinfo)
+{
   int status = MdsdclIVVERB;
   char *prompt = 0;
   char *error = 0;
@@ -1261,11 +1415,13 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   DCLTHREADSTATIC_INIT;
   if (!DCL_DOCS)
     mdsdclAddCommands("mdsdcl_commands", &error);
-  if (mdsdclVerify() && strlen(cmd->command_line) > 0) {
+  if (mdsdclVerify() && strlen(cmd->command_line) > 0)
+  {
     char *prompt = mdsdclGetPrompt();
     if (error_out == NULL)
       fprintf(stderr, "%s%s\n", prompt, cmd->command_line);
-    else {
+    else
+    {
       if (*error_out == NULL)
         *error_out = strdup("");
       *error_out = realloc(*error_out, strlen(*error_out) + strlen(prompt) +
@@ -1278,7 +1434,8 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   }
   for (doc_l = DCL_DOCS; doc_l != NULL && invalid_command(status) &&
                          (status != MdsdclPROMPT_MORE);
-       doc_l = doc_l->next) {
+       doc_l = doc_l->next)
+  {
     dclCommandPtr cmdDef =
         memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
     cmdDef->verb = strdup(cmd->verb);
@@ -1286,27 +1443,36 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     dclNodeList matchingVerbs = {0, 0};
     findEntity(((xmlDocPtr)(doc_l->doc))->children, "verb", cmdDef->verb,
                &matchingVerbs, &exactFound);
-    if (matchingVerbs.count == 0 || matchingVerbs.count > 1) {
+    if (matchingVerbs.count == 0 || matchingVerbs.count > 1)
+    {
       if (matchingVerbs.nodes != NULL)
         free(matchingVerbs.nodes);
       status = MdsdclIVVERB;
-    } else {
+    }
+    else
+    {
       char *output_tmp = 0;
       char *error_tmp = 0;
       status =
           processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt,
                          &error_tmp, &output_tmp, getline, getlineinfo);
-      if (status & 1) {
+      if (status & 1)
+      {
         free(error);
         error = error_tmp;
-      } else {
-        if (error_tmp) {
+      }
+      else
+      {
+        if (error_tmp)
+        {
           if (error == NULL)
             error = error_tmp;
-          else {
+          else
+          {
             if (invalid_command(status))
               free(error_tmp);
-            else {
+            else
+            {
               free(error);
               error = error_tmp;
             }
@@ -1314,7 +1480,8 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
           error_tmp = 0;
         }
       }
-      if (output_tmp) {
+      if (output_tmp)
+      {
         if (output == NULL)
           output = output_tmp;
         else
@@ -1323,7 +1490,8 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
                      output_tmp);
       }
       free(matchingVerbs.nodes);
-      if (status == 0) {
+      if (status == 0)
+      {
         freeCommand(&cmdDef);
         break;
       }
@@ -1331,16 +1499,21 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     freeCommand(&cmdDef);
   }
   freeCommand(&cmd);
-  if (status == MdsdclPROMPT_MORE) {
-    if (!prompt) {
+  if (status == MdsdclPROMPT_MORE)
+  {
+    if (!prompt)
+    {
       prompt = strdup("What: ");
     }
   }
-  if (prompt != NULL) {
+  if (prompt != NULL)
+  {
     if (prompt_out)
       *prompt_out = prompt;
-    else {
-      if (error != NULL) {
+    else
+    {
+      if (error != NULL)
+      {
         error = strcat(
             realloc(error, strlen(error) + 100),
             "\nCommand incomplete, missing parameter or qualifier value.");
@@ -1348,42 +1521,58 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
       free(prompt);
     }
   }
-  if ((prompt == NULL) && (error == 0) && (!(status & 1))) {
-    if (status == MdsdclIVVERB && error == NULL) {
+  if ((prompt == NULL) && (error == 0) && (!(status & 1)))
+  {
+    if (status == MdsdclIVVERB && error == NULL)
+    {
       error = strcpy(malloc(100), "mdsdcl: No such command\n");
-    } else {
+    }
+    else
+    {
       char *msg = MdsGetMsg(status);
       error = malloc(strlen(msg) + 10);
       sprintf(error, "Error: %s\n", msg);
     }
   }
-  if (error != NULL) {
-    if (error_out == NULL) {
+  if (error != NULL)
+  {
+    if (error_out == NULL)
+    {
       fprintf(stderr, "%s", error);
       fflush(stderr);
       free(error);
-    } else {
-      if (*error_out) {
+    }
+    else
+    {
+      if (*error_out)
+      {
         *error_out = strcat(
             realloc(*error_out, strlen(*error_out) + strlen(error) + 1), error);
         free(error);
-      } else
+      }
+      else
         *error_out = error;
       mdsdclFlushError(*error_out);
     }
   }
-  if (output != NULL) {
-    if (output_out == NULL) {
+  if (output != NULL)
+  {
+    if (output_out == NULL)
+    {
       fprintf(stdout, "%s", output);
       fflush(stdout);
       free(output);
-    } else {
-      if (*output_out) {
+    }
+    else
+    {
+      if (*output_out)
+      {
         *output_out = strcat(
             realloc(*output_out, strlen(*output_out) + strlen(output) + 1),
             output);
         free(output);
-      } else
+      }
+      else
         *output_out = output;
       mdsdclFlushOutput(*output_out);
     }
@@ -1391,55 +1580,72 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   return status;
 }
 
-EXPORT int cli_present(void *ctx, const char *name) {
+EXPORT int cli_present(void *ctx, const char *name)
+{
   dclCommandPtr cmd = (dclCommandPtr)ctx;
   int i;
   int ans = MdsdclABSENT;
-  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->parameter_count); i++) {
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->parameter_count); i++)
+  {
     char *pname = cmd->parameters[i]->label ? cmd->parameters[i]->label
                                             : cmd->parameters[i]->name;
-    if (strcasecmp(name, pname) == 0) {
+    if (strcasecmp(name, pname) == 0)
+    {
       ans = MdsdclPRESENT;
     }
   }
-  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->qualifier_count); i++) {
-    if (strcasecmp(name, cmd->qualifiers[i]->name) == 0) {
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->qualifier_count); i++)
+  {
+    if (strcasecmp(name, cmd->qualifiers[i]->name) == 0)
+    {
       ans = cmd->qualifiers[i]->negated ? MdsdclNEGATED : MdsdclPRESENT;
     }
   }
   return ans;
 }
 
-EXPORT int cli_get_value(void *ctx, const char *name, char **value) {
+EXPORT int cli_get_value(void *ctx, const char *name, char **value)
+{
   dclCommandPtr cmd = (dclCommandPtr)ctx;
   int i;
   int ans = MdsdclABSENT;
 
-  if (strcasecmp(name, "command_line") == 0) {
+  if (strcasecmp(name, "command_line") == 0)
+  {
     *value = strdup(cmd->command_line);
     return 1;
   }
 
-  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->parameter_count); i++) {
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->parameter_count); i++)
+  {
     if ((strcasecmp(name, cmd->parameters[i]->name) == 0) ||
         ((cmd->parameters[i]->label) &&
-         (strcasecmp(name, cmd->parameters[i]->label) == 0))) {
-      if (cmd->parameters[i]->value_idx >= cmd->parameters[i]->value_count) {
+         (strcasecmp(name, cmd->parameters[i]->label) == 0)))
+    {
+      if (cmd->parameters[i]->value_idx >= cmd->parameters[i]->value_count)
+      {
         ans = MdsdclABSENT;
         cmd->parameters[i]->value_idx = 0;
-      } else {
+      }
+      else
+      {
         *value =
             strdup(cmd->parameters[i]->values[cmd->parameters[i]->value_idx++]);
         ans = MdsdclPRESENT;
       }
     }
   }
-  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->qualifier_count); i++) {
-    if (strcasecmp(name, cmd->qualifiers[i]->name) == 0) {
-      if (cmd->qualifiers[i]->value_idx >= cmd->qualifiers[i]->value_count) {
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->qualifier_count); i++)
+  {
+    if (strcasecmp(name, cmd->qualifiers[i]->name) == 0)
+    {
+      if (cmd->qualifiers[i]->value_idx >= cmd->qualifiers[i]->value_count)
+      {
         ans = MdsdclABSENT;
         cmd->qualifiers[i]->value_idx = 0;
-      } else {
+      }
+      else
+      {
         *value =
             strdup(cmd->qualifiers[i]->values[cmd->qualifiers[i]->value_idx++]);
         ans = MdsdclPRESENT;
@@ -1449,7 +1655,8 @@ EXPORT int cli_get_value(void *ctx, const char *name, char **value) {
   return ans;
 }
 
-EXPORT char *mdsdclGetPrompt() {
+EXPORT char *mdsdclGetPrompt()
+{
   char *ans;
   DCLTHREADSTATIC_INIT;
   if (!DCL_PROMPT)
@@ -1461,26 +1668,32 @@ EXPORT char *mdsdclGetPrompt() {
 static void (*MDSDCL_OUTPUT_RTN)(char *output) = 0;
 static void (*MDSDCL_ERROR_RTN)(char *error) = 0;
 
-EXPORT void *mdsdclSetOutputRtn(void (*rtn)()) {
+EXPORT void *mdsdclSetOutputRtn(void (*rtn)())
+{
   void *old_rtn = MDSDCL_OUTPUT_RTN;
   MDSDCL_OUTPUT_RTN = rtn;
   return old_rtn;
 }
 
-EXPORT void mdsdclFlushOutput(char *output) {
-  if (MDSDCL_OUTPUT_RTN) {
+EXPORT void mdsdclFlushOutput(char *output)
+{
+  if (MDSDCL_OUTPUT_RTN)
+  {
     MDSDCL_OUTPUT_RTN(output);
   }
 }
 
-EXPORT void *mdsdclSetErrorRtn(void (*rtn)()) {
+EXPORT void *mdsdclSetErrorRtn(void (*rtn)())
+{
   void *old_rtn = MDSDCL_ERROR_RTN;
   MDSDCL_ERROR_RTN = rtn;
   return old_rtn;
 }
 
-EXPORT void mdsdclFlushError(char *error) {
-  if (MDSDCL_ERROR_RTN) {
+EXPORT void mdsdclFlushError(char *error)
+{
+  if (MDSDCL_ERROR_RTN)
+  {
     MDSDCL_ERROR_RTN(error);
   }
 }

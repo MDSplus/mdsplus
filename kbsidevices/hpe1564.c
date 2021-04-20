@@ -55,33 +55,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #define hpe1564_DECLARE_TIME_LOCALS SYSTEMTIME st;
 #define hpe1564_GET_TIME GetLocalTime(&st);
-#define hpe1564_TIME_FIELDS                                                    \
+#define hpe1564_TIME_FIELDS \
   st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds
 #else             /* not win32 */
 #include <time.h> /* standard time functions */
 #ifdef __hpux
 #define DWORD int
 #include <sys/time.h>
-#define hpe1564_DECLARE_TIME_LOCALS                                            \
-  struct timeval tv;                                                           \
-  struct timezone tz;                                                          \
+#define hpe1564_DECLARE_TIME_LOCALS \
+  struct timeval tv;                \
+  struct timezone tz;               \
   struct tm *tmp;
-#define hpe1564_GET_TIME                                                       \
-  gettimeofday(&tv, &tz);                                                      \
+#define hpe1564_GET_TIME  \
+  gettimeofday(&tv, &tz); \
   tmp = localtime((time_t *)&tv.tv_sec);
-#define hpe1564_TIME_FIELDS                                                    \
-  tmp->tm_mon + 1, tmp->tm_mday, tmp->tm_hour, tmp->tm_min, tmp->tm_sec,       \
+#define hpe1564_TIME_FIELDS                                              \
+  tmp->tm_mon + 1, tmp->tm_mday, tmp->tm_hour, tmp->tm_min, tmp->tm_sec, \
       tv.tv_usec / 1000
 
 #else /* not unix, use ANSI time function */
 
-#define hpe1564_DECLARE_TIME_LOCALS                                            \
-  struct tm *tmp;                                                              \
+#define hpe1564_DECLARE_TIME_LOCALS \
+  struct tm *tmp;                   \
   time_t seconds;
-#define hpe1564_GET_TIME                                                       \
-  time(&seconds);                                                              \
+#define hpe1564_GET_TIME \
+  time(&seconds);        \
   tmp = localtime(&seconds);
-#define hpe1564_TIME_FIELDS                                                    \
+#define hpe1564_TIME_FIELDS \
   tmp->tm_mon + 1, tmp->tm_mday, tmp->tm_hour, tmp->tm_min, tmp->tm_sec, 0
 #endif /* ifdef __hpux  */
 
@@ -119,17 +119,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ViInt32 hpe1564_statusHap[hpe1564_MAX_STAT_HAP] = {
     hpe1564_USER_ERROR_HANDLER, hpe1564_INSTR_ERROR_HANDLER,
 
-    hpe1564_VOLT_OVLD,          hpe1564_LIM1_FAIL,           hpe1564_LIM2_FAIL,
-    hpe1564_LIM3_FAIL,          hpe1564_LIM4_FAIL,
+    hpe1564_VOLT_OVLD, hpe1564_LIM1_FAIL, hpe1564_LIM2_FAIL,
+    hpe1564_LIM3_FAIL, hpe1564_LIM4_FAIL,
 
-    hpe1564_GOT_TRIG,           hpe1564_PRETRIG_DONE,        hpe1564_MEAS_DONE};
+    hpe1564_GOT_TRIG, hpe1564_PRETRIG_DONE, hpe1564_MEAS_DONE};
 
 /* Assumes we have driver copies of the event register.  This is needed
  * because in IEEE 488.2, the event register are cleared after they are
  * read.  Since the event register contains several events, we need to
  * keep this information around to pass back to the user.
  */
-struct hpe1564_statusAccess {
+struct hpe1564_statusAccess
+{
   ViInt32 registerIdx;
   ViString condQry;
   ViString eventQry;
@@ -143,13 +144,16 @@ const struct hpe1564_statusAccess hpe1564_accessInfo[hpe1564_MAX_STAT_REG] = {
     {800, "STAT:OPER:COND?", "STAT:OPER:EVEN?", "STAT:OPER:ENAB"}};
 
 /* this will return the index associated with the happening */
-ViBoolean hpe1564_findHappeningIdx(ViInt32 happening, ViPInt32 pIdx) {
+ViBoolean hpe1564_findHappeningIdx(ViInt32 happening, ViPInt32 pIdx)
+{
   /* Note: this is a linear search, for faster access this
    * could be done as a binary search since the data is arrange
    * in order numerically.
    */
-  for (*pIdx = 0; *pIdx < hpe1564_MAX_STAT_HAP; *pIdx = *pIdx + 1) {
-    if (hpe1564_statusHap[*pIdx] == happening) {
+  for (*pIdx = 0; *pIdx < hpe1564_MAX_STAT_HAP; *pIdx = *pIdx + 1)
+  {
+    if (hpe1564_statusHap[*pIdx] == happening)
+    {
       return VI_TRUE;
     }
   }
@@ -158,9 +162,12 @@ ViBoolean hpe1564_findHappeningIdx(ViInt32 happening, ViPInt32 pIdx) {
 }
 
 /* this will return the index that corresponds with regNum */
-static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
-  for (*pIdx = 0; *pIdx < hpe1564_MAX_STAT_REG; *pIdx = *pIdx + 1) {
-    if (regNum == hpe1564_accessInfo[*pIdx].registerIdx) {
+static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
+{
+  for (*pIdx = 0; *pIdx < hpe1564_MAX_STAT_REG; *pIdx = *pIdx + 1)
+  {
+    if (regNum == hpe1564_accessInfo[*pIdx].registerIdx)
+    {
       return VI_TRUE;
     }
   }
@@ -171,36 +178,36 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
    if you do then you must also remove the routines that use them (_cmd_arr
    functions)
 */
-#define SWAP_FLOAT64(dest)                                                     \
-  {                                                                            \
-    unsigned char src[8];                                                      \
-    *((double *)src) = *((double *)dest);                                      \
-    ((unsigned char *)(dest))[0] = ((unsigned char *)(src))[7];                \
-    ((unsigned char *)(dest))[1] = ((unsigned char *)(src))[6];                \
-    ((unsigned char *)(dest))[2] = ((unsigned char *)(src))[5];                \
-    ((unsigned char *)(dest))[3] = ((unsigned char *)(src))[4];                \
-    ((unsigned char *)(dest))[4] = ((unsigned char *)(src))[3];                \
-    ((unsigned char *)(dest))[5] = ((unsigned char *)(src))[2];                \
-    ((unsigned char *)(dest))[6] = ((unsigned char *)(src))[1];                \
-    ((unsigned char *)(dest))[7] = ((unsigned char *)(src))[0];                \
+#define SWAP_FLOAT64(dest)                                      \
+  {                                                             \
+    unsigned char src[8];                                       \
+    *((double *)src) = *((double *)dest);                       \
+    ((unsigned char *)(dest))[0] = ((unsigned char *)(src))[7]; \
+    ((unsigned char *)(dest))[1] = ((unsigned char *)(src))[6]; \
+    ((unsigned char *)(dest))[2] = ((unsigned char *)(src))[5]; \
+    ((unsigned char *)(dest))[3] = ((unsigned char *)(src))[4]; \
+    ((unsigned char *)(dest))[4] = ((unsigned char *)(src))[3]; \
+    ((unsigned char *)(dest))[5] = ((unsigned char *)(src))[2]; \
+    ((unsigned char *)(dest))[6] = ((unsigned char *)(src))[1]; \
+    ((unsigned char *)(dest))[7] = ((unsigned char *)(src))[0]; \
   }
 
-#define SWAP_32(dest)                                                          \
-  {                                                                            \
-    unsigned char src[4];                                                      \
-    *((long *)src) = *((long *)dest);                                          \
-    ((unsigned char *)(dest))[0] = ((unsigned char *)(src))[3];                \
-    ((unsigned char *)(dest))[1] = ((unsigned char *)(src))[2];                \
-    ((unsigned char *)(dest))[2] = ((unsigned char *)(src))[1];                \
-    ((unsigned char *)(dest))[3] = ((unsigned char *)(src))[0];                \
+#define SWAP_32(dest)                                           \
+  {                                                             \
+    unsigned char src[4];                                       \
+    *((long *)src) = *((long *)dest);                           \
+    ((unsigned char *)(dest))[0] = ((unsigned char *)(src))[3]; \
+    ((unsigned char *)(dest))[1] = ((unsigned char *)(src))[2]; \
+    ((unsigned char *)(dest))[2] = ((unsigned char *)(src))[1]; \
+    ((unsigned char *)(dest))[3] = ((unsigned char *)(src))[0]; \
   }
 
-#define SWAP_16(dest)                                                          \
-  {                                                                            \
-    unsigned char src[2];                                                      \
-    *((ViInt16 *)src) = *((ViInt16 *)dest);                                    \
-    ((unsigned char *)(dest))[0] = ((unsigned char *)(src))[1];                \
-    ((unsigned char *)(dest))[1] = ((unsigned char *)(src))[0];                \
+#define SWAP_16(dest)                                           \
+  {                                                             \
+    unsigned char src[2];                                       \
+    *((ViInt16 *)src) = *((ViInt16 *)dest);                     \
+    ((unsigned char *)(dest))[0] = ((unsigned char *)(src))[1]; \
+    ((unsigned char *)(dest))[1] = ((unsigned char *)(src))[0]; \
   }
 /*===============================================================
  *
@@ -209,7 +216,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
  *===============================================================
  */
 
-#define hpe1564_MSG_VI_OPEN_ERR                                                \
+#define hpe1564_MSG_VI_OPEN_ERR \
   "vi was zero.  Was the hpe1564_init() successful?"
 
 #define hpe1564_MSG_CONDITION "condition"
@@ -218,11 +225,11 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
 #define hpe1564_MSG_EVENT "event"
 /* hpe1564_statEvent_Q() */
 
-#define hpe1564_MSG_EVENT_HDLR_INSTALLED                                       \
+#define hpe1564_MSG_EVENT_HDLR_INSTALLED \
   "event handler is already installed for event happening"
 /* hpe1564_statEvent_Q() */
 
-#define hpe1564_MSG_EVENT_HDLR_INST2                                           \
+#define hpe1564_MSG_EVENT_HDLR_INST2 \
   "Only 1 handler can be installed at a time."
 /* hpe1564_statEvent_Q() */
 
@@ -239,18 +246,18 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
 #define hpe1564_MSG_IN_FUNCTION "in function"
 /* hpe1564_error_message() */
 
-#define hpe1564_MSG_INVALID_STATUS                                             \
-  "Parameter 2 is invalid"                                                     \
+#define hpe1564_MSG_INVALID_STATUS \
+  "Parameter 2 is invalid"         \
   "in function hpe1564_error_message()."
 /* hpe1564_error_message() */
 
 #define hpe1564_MSG_INVALID_STATUS_VALUE "is not a valid viStatus value."
 /* hpe1564_error_message() */
 
-#define hpe1564_MSG_INVALID_VI                                                 \
-  "Parameter 1 is invalid"                                                     \
-  " in function hpe1564_error_message()"                                       \
-  ".  Using an inactive ViSession may cause this error."                       \
+#define hpe1564_MSG_INVALID_VI                           \
+  "Parameter 1 is invalid"                               \
+  " in function hpe1564_error_message()"                 \
+  ".  Using an inactive ViSession may cause this error." \
   "  Was the instrument driver closed prematurely?"
 /* hpe1564_message_query() */
 
@@ -263,7 +270,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
 #define hpe1564_MSG_SELF_TEST_PASSED "Self test passed."
 /* hpe1564_self_test() */
 
-#define hpe1564_MSG_WARN_SELF_TEST                                             \
+#define hpe1564_MSG_WARN_SELF_TEST \
   "Power-on self test failed, run full self test."
 /* hpe1564_self_test() */
 
@@ -323,7 +330,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
 
 #define VI_ERROR_FAIL_ID_QUERY_MSG "Instrument IDN does not match."
 
-#define INSTR_ERROR_INV_SESSION_MSG                                            \
+#define INSTR_ERROR_INV_SESSION_MSG \
   "ViSession (parmeter 1) was not created by this driver"
 
 #define INSTR_ERROR_NULL_PTR_MSG "NULL pointer detected"
@@ -332,48 +339,48 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
 
 #define INSTR_ERROR_UNEXPECTED_MSG "An unexpected error occurred"
 
-#define INSTR_ERROR_DETECTED_MSG                                               \
+#define INSTR_ERROR_DETECTED_MSG \
   "Instrument Error Detected, call hpe1564_error_query()."
 
 #define INSTR_ERROR_NOTFOUND_MSG "Instrument was not found."
 
-#define INSTR_ERROR_MULTIPLE_MSG                                               \
+#define INSTR_ERROR_MULTIPLE_MSG \
   "Multiple Instruments were found, none were opened"
 
 #define INSTR_ERROR_A16MAP_FAILED_MSG "reset failed"
 
 #define INSTR_ERROR_LOOKUP_MSG "String not found in table"
 
-#define INSTR_ERROR_SAMPTTL_MSG                                                \
+#define INSTR_ERROR_SAMPTTL_MSG \
   "output of SAMP disabled, sample source now using TTL trig line "
 
-#define INSTR_ERROR_MASTER_TRIGTTL_MSG                                         \
+#define INSTR_ERROR_MASTER_TRIGTTL_MSG \
   "Trig source 2 conflicts with MASTER|SLAVE mode; trig source 2 set to HOLD"
 
-#define INSTR_ERROR_MASTER_SAMPTTL_MSG                                         \
-  "Samp src TTLT<n> conflicts with trig mode MASTER<n>; setting samp src "     \
+#define INSTR_ERROR_MASTER_SAMPTTL_MSG                                     \
+  "Samp src TTLT<n> conflicts with trig mode MASTER<n>; setting samp src " \
   "TIMer"
 
-#define INSTR_ERROR_SLAVE_SAMPLE_MSG                                           \
+#define INSTR_ERROR_SLAVE_SAMPLE_MSG \
   "Sample source changes not allowed while trig mode is SLAVE<n>"
 
-#define INSTR_ERROR_MASTER_OUTP_MSG                                            \
+#define INSTR_ERROR_MASTER_OUTP_MSG \
   "Output state ON not allowed while trig mode is MASTER<n>|SLAVE<n>"
 
-#define INSTR_ERROR_TRIGTTL_MSG                                                \
+#define INSTR_ERROR_TRIGTTL_MSG \
   "output of TRIG disabled, trig source now using TTL trig line "
 
 #define INSTR_ERROR_LEVMIN_MSG "Trig or Limit level < MIN, setting to MIN."
 
 #define INSTR_ERROR_LEVMAX_MSG "Trig or Limit level > MAX, setting to MAX."
 
-#define INSTR_ERROR_TRIGLIM_MSG                                                \
+#define INSTR_ERROR_TRIGLIM_MSG \
   "Trig level/Limit check conflict, limit check disabled"
 
-#define INSTR_ERROR_LIMTRIG_MSG                                                \
+#define INSTR_ERROR_LIMTRIG_MSG \
   "Trig level/Limit check conflict, trig source set to IMMediate"
 
-#define INSTR_ERROR_PRETRIG_MSG                                                \
+#define INSTR_ERROR_PRETRIG_MSG \
   "Pretrigger count >= total count; setting pretrigger to total - 1"
 
 #define INSTR_ERROR_TRIG_IGN_MSG "Trigger ignored."
@@ -384,41 +391,41 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
 
 #define INSTR_ERROR_CAL_OFF_MSG "Calibration not enabled, see hpe1564_calState"
 
-#define INSTR_ERROR_BAD_CAL_VAL_MSG                                            \
+#define INSTR_ERROR_BAD_CAL_VAL_MSG \
   "Calibration value not between 85% and 98% of full scale"
 
-#define INSTR_ERROR_FLASH_PROG_MSG                                             \
+#define INSTR_ERROR_FLASH_PROG_MSG \
   "Flash programming error; switches set incorrectly?"
 
-#define INSTR_ERROR_FLASH_VPP_MSG                                              \
+#define INSTR_ERROR_FLASH_VPP_MSG \
   "Flash VPP low error; switches set incorrectly?"
 
 #define INSTR_ERROR_FLASH_ERASE_MSG "Error erasing flash; store aborted"
 
-#define INSTR_ERROR_CAL_STALE_MSG                                              \
+#define INSTR_ERROR_CAL_STALE_MSG \
   "Calibration constants not modified; store aborted"
 
-#define INSTR_ERROR_CAL_STORE_MSG                                              \
+#define INSTR_ERROR_CAL_STORE_MSG \
   "Calibration store unsuccessful; stored value incorrect"
 
-#define INSTR_ERROR_CAL_NOT_STORED_MSG                                         \
+#define INSTR_ERROR_CAL_NOT_STORED_MSG \
   "Must STORE data before exiting Calibration state"
 
 #define INSTR_ERROR_CAL_NO_CONVERGE_MSG "Calibration not converging; exiting"
 
 #define INSTR_ERROR_BIG_VOLT_MSG "Overloads occurring, reduce signal level."
 
-#define INSTR_ERROR_TRIG_DEAD_MSG                                              \
+#define INSTR_ERROR_TRIG_DEAD_MSG \
   "Trigger source deadlock detected, data fetch aborted"
 
-#define INSTR_ERROR_SAMP_DEAD_MSG                                              \
+#define INSTR_ERROR_SAMP_DEAD_MSG \
   "Sample source deadlock detected, data fetch aborted"
 
 #define INSTR_ERROR_CAL_GAIN_AUTO_MSG "Error generating gain constant"
 
 #define INSTR_ERROR_CAL_OFFS_AUTO_MSG "Error generating filter offset"
 
-#define INSTR_ERROR_OVLD_MSG                                                   \
+#define INSTR_ERROR_OVLD_MSG \
   "Overload detected; Attempting re-connect of input relays"
 
 #define INSTR_ERROR_OVLD_DATA_MSG "Overload detected; data is questionable"
@@ -427,22 +434,25 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
 
 /* don't check the debug pointer all the time!*/
 #ifdef DEBUG
-#define hpe1564_DEBUG_CHK_THIS(vi, thisPtr)                                    \
-  /* check for NULL user data */                                               \
-  if (0 == thisPtr) {                                                          \
-    hpe1564_LOG_STATUS(vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION);             \
-  }                                                                            \
-  {                                                                            \
-    ViSession defRM;                                                           \
-                                                                               \
-    /* This should never fail */                                               \
-    errStatus = viGetAttribute(vi, VI_ATTR_RM_SESSION, &defRM);                \
-    if (VI_SUCCESS > errStatus) {                                              \
-      hpe1564_LOG_STATUS(vi, NULL, hpe1564_INSTR_ERROR_UNEXPECTED);            \
-    }                                                                          \
-    if (defRM != thisPtr->defRMSession) {                                      \
-      hpe1564_LOG_STATUS(vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION);           \
-    }                                                                          \
+#define hpe1564_DEBUG_CHK_THIS(vi, thisPtr)                          \
+  /* check for NULL user data */                                     \
+  if (0 == thisPtr)                                                  \
+  {                                                                  \
+    hpe1564_LOG_STATUS(vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION);   \
+  }                                                                  \
+  {                                                                  \
+    ViSession defRM;                                                 \
+                                                                     \
+    /* This should never fail */                                     \
+    errStatus = viGetAttribute(vi, VI_ATTR_RM_SESSION, &defRM);      \
+    if (VI_SUCCESS > errStatus)                                      \
+    {                                                                \
+      hpe1564_LOG_STATUS(vi, NULL, hpe1564_INSTR_ERROR_UNEXPECTED);  \
+    }                                                                \
+    if (defRM != thisPtr->defRMSession)                              \
+    {                                                                \
+      hpe1564_LOG_STATUS(vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION); \
+    }                                                                \
   }
 #else
 #define hpe1564_DEBUG_CHK_THIS(vi, thisPtr)
@@ -455,14 +465,15 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx) {
  * hpe1564_statusUpdate() in order to determine exactly where an error
  * occured in a driver.
  */
-#define hpe1564_LOG_STATUS(vi, thisPtr, status)                                \
+#define hpe1564_LOG_STATUS(vi, thisPtr, status) \
   return hpe1564_statusUpdate(vi, thisPtr, status)
 
 /* declare this here since it is called by statusUpdate */
 static void hpe1564_srqTraverse(ViSession vi, ViInt32 eventReg);
 
 ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals *thisPtr,
-                              ViStatus s) {
+                              ViStatus s)
+{
   ViInt32 eventQ;
   ViUInt32 rc;
   char lc[20];
@@ -474,17 +485,20 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals *thisPtr,
   /* This is only done, if the vi is valid and
    * no other errors have occured.
    */
-  if (s == VI_ERROR_TMO) {
+  if (s == VI_ERROR_TMO)
+  {
     thisPtr->errNumber = s;
     return s;
   }
 
   /* Check if user wants to query the instrument state. */
-  if (thisPtr && thisPtr->errQueryDetect) {
+  if (thisPtr && thisPtr->errQueryDetect)
+  {
     /* assume IEEE 488.2 Instrument and query standard
      * status event register for a parser error
      */
-    if (thisPtr->e1406) {
+    if (thisPtr->e1406)
+    {
       errStatus = viWrite(vi, (ViBuf) "*ESR?", 5, &rc);
       if (errStatus < VI_SUCCESS)
         return VI_ERROR_SYSTEM_ERROR;
@@ -500,10 +514,12 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals *thisPtr,
            | 0x10 /* Execution Error */
            | 0x20 /* Command Error */
            ) &
-          eventQ) {
+          eventQ)
+      {
         /*  See if the user has an instr error handler enabled */
         if (thisPtr->eventHandlerArray[hpe1564_INSTR_ERROR_HANDLER_IDX]
-                .eventHandler) {
+                .eventHandler)
+        {
           /* call the users handler */
           thisPtr->eventHandlerArray[hpe1564_INSTR_ERROR_HANDLER_IDX]
               .eventHandler(
@@ -519,7 +535,8 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals *thisPtr,
 
   /* if a plug and play error occurs, see if the user has a handler enabled */
   if (s != hpe1564_INSTR_ERROR_DETECTED && VI_SUCCESS > s &&
-      thisPtr->eventHandlerArray[hpe1564_USER_ERROR_HANDLER_IDX].eventHandler) {
+      thisPtr->eventHandlerArray[hpe1564_USER_ERROR_HANDLER_IDX].eventHandler)
+  {
     /* call the users handler */
     thisPtr->eventHandlerArray[hpe1564_USER_ERROR_HANDLER_IDX].eventHandler(
         vi, (ViInt32)s,
@@ -535,7 +552,8 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals *thisPtr,
  * Error Message Structures
  */
 
-struct instrErrStruct {
+struct instrErrStruct
+{
   ViStatus errStatus;
   ViString errMessage;
 };
@@ -605,14 +623,16 @@ const static struct instrErrStruct instrErrMsgTable[] = {
 };
 
 /* macros for testing parameters */
-#define hpe1564_CHK_BOOLEAN(my_val, err)                                       \
-  if (hpe1564_chk_boolean(thisPtr, my_val))                                    \
+#define hpe1564_CHK_BOOLEAN(my_val, err)    \
+  if (hpe1564_chk_boolean(thisPtr, my_val)) \
     hpe1564_LOG_STATUS(vi, thisPtr, err);
 
 static ViBoolean hpe1564_chk_boolean(hpe1564_globals *thisPtr,
-                                     ViBoolean my_val) {
+                                     ViBoolean my_val)
+{
   char message[hpe1564_ERR_MSG_LENGTH];
-  if ((my_val != VI_TRUE) && (my_val != VI_FALSE)) {
+  if ((my_val != VI_TRUE) && (my_val != VI_FALSE))
+  {
     /* true = parameter is invalid */
     sprintf(message, hpe1564_MSG_BOOLEAN, my_val);
     hpe1564_CDE_MESSAGE(message);
@@ -624,16 +644,18 @@ static ViBoolean hpe1564_chk_boolean(hpe1564_globals *thisPtr,
   return VI_FALSE;
 }
 
-#define hpe1564_CHK_REAL_RANGE(my_val, min, max, err)                          \
-  if (hpe1564_chk_real_range(thisPtr, my_val, min, max))                       \
+#define hpe1564_CHK_REAL_RANGE(my_val, min, max, err)    \
+  if (hpe1564_chk_real_range(thisPtr, my_val, min, max)) \
     hpe1564_LOG_STATUS(vi, thisPtr, err);
 
 static ViBoolean hpe1564_chk_real_range(hpe1564_globals *thisPtr,
                                         ViReal64 my_val, ViReal64 min,
-                                        ViReal64 max) {
+                                        ViReal64 max)
+{
   char message[hpe1564_ERR_MSG_LENGTH];
 
-  if ((my_val < min) || (my_val > max)) {
+  if ((my_val < min) || (my_val > max))
+  {
     sprintf(message, hpe1564_MSG_REAL, min, max, my_val);
     hpe1564_CDE_MESSAGE(message);
     /* true = parameter is invalid */
@@ -642,15 +664,17 @@ static ViBoolean hpe1564_chk_real_range(hpe1564_globals *thisPtr,
   return VI_FALSE;
 }
 
-#define hpe1564_CHK_INT_RANGE(my_val, min, max, err)                           \
-  if (hpe1564_chk_int_range(thisPtr, my_val, min, max))                        \
+#define hpe1564_CHK_INT_RANGE(my_val, min, max, err)    \
+  if (hpe1564_chk_int_range(thisPtr, my_val, min, max)) \
     hpe1564_LOG_STATUS(vi, thisPtr, err);
 
 static ViBoolean hpe1564_chk_int_range(hpe1564_globals *thisPtr, ViInt16 my_val,
-                                       ViInt16 min, ViInt16 max) {
+                                       ViInt16 min, ViInt16 max)
+{
   char message[hpe1564_ERR_MSG_LENGTH];
 
-  if ((my_val < min) || (my_val > max)) {
+  if ((my_val < min) || (my_val > max))
+  {
     sprintf(message, hpe1564_MSG_INT, min, max, my_val);
     hpe1564_CDE_MESSAGE(message);
     /* true = parameter is invalid */
@@ -659,16 +683,18 @@ static ViBoolean hpe1564_chk_int_range(hpe1564_globals *thisPtr, ViInt16 my_val,
   return VI_FALSE;
 }
 
-#define hpe1564_CHK_LONG_RANGE(my_val, min, max, err)                          \
-  if (hpe1564_chk_long_range(thisPtr, my_val, min, max))                       \
+#define hpe1564_CHK_LONG_RANGE(my_val, min, max, err)    \
+  if (hpe1564_chk_long_range(thisPtr, my_val, min, max)) \
     hpe1564_LOG_STATUS(vi, thisPtr, err);
 
 static ViBoolean hpe1564_chk_long_range(hpe1564_globals *thisPtr,
                                         ViInt32 my_val, ViInt32 min,
-                                        ViInt32 max) {
+                                        ViInt32 max)
+{
   char message[hpe1564_ERR_MSG_LENGTH];
 
-  if ((my_val < min) || (my_val > max)) {
+  if ((my_val < min) || (my_val > max))
+  {
     sprintf(message, hpe1564_MSG_LONG, min, max, my_val);
     hpe1564_CDE_MESSAGE(message);
     /* true = parameter is invalid */
@@ -677,17 +703,19 @@ static ViBoolean hpe1564_chk_long_range(hpe1564_globals *thisPtr,
   return VI_FALSE;
 }
 
-#define hpe1564_CHK_ENUM(my_val, limit, err)                                   \
-  if (hpe1564_chk_enum(thisPtr, my_val, limit))                                \
+#define hpe1564_CHK_ENUM(my_val, limit, err)    \
+  if (hpe1564_chk_enum(thisPtr, my_val, limit)) \
     hpe1564_LOG_STATUS(vi, thisPtr, err);
 
 /* utility routine which searches for a string in an array of strings. */
 /* This is used by the CHK_ENUM macro */
 static ViBoolean hpe1564_chk_enum(hpe1564_globals *thisPtr, ViInt16 my_val,
-                                  ViInt16 limit) {
+                                  ViInt16 limit)
+{
   char message[hpe1564_ERR_MSG_LENGTH];
 
-  if ((my_val < 0) || (my_val > limit)) {
+  if ((my_val < 0) || (my_val > limit))
+  {
     sprintf(message, hpe1564_MSG_INT, 0, limit, my_val);
     hpe1564_CDE_MESSAGE(message);
     /* true = parameter is invalid */
@@ -706,7 +734,8 @@ ViStatus hpe1564_findIndex(hpe1564_globals *thisPtr,
                            const char *const array_of_strings[],
                            /*last entry in array must be 0 */
                            const char *string, /* string read from instrument */
-                           ViPInt16 index) {   /* result index */
+                           ViPInt16 index)
+{ /* result index */
   ViInt16 i;
   ViInt16 my_len;
   char search_str[20];
@@ -720,8 +749,10 @@ ViStatus hpe1564_findIndex(hpe1564_globals *thisPtr,
   if (search_str[my_len - 1] == '\n')
     search_str[my_len - 1] = '\0';
 
-  for (i = 0; array_of_strings[i]; i++) {
-    if (!strcmp(array_of_strings[i], search_str)) {
+  for (i = 0; array_of_strings[i]; i++)
+  {
+    if (!strcmp(array_of_strings[i], search_str))
+    {
       *index = i;
       return VI_SUCCESS;
     }
@@ -735,14 +766,15 @@ ViStatus hpe1564_findIndex(hpe1564_globals *thisPtr,
 
 /* returns the globals pointer */
 
-#define GetGlobals(vi, thisPtr)                                                \
-  {                                                                            \
-    errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);       \
-    if (VI_SUCCESS > errStatus)                                                \
-      hpe1564_LOG_STATUS(vi, NULL, errStatus);                                 \
+#define GetGlobals(vi, thisPtr)                                          \
+  {                                                                      \
+    errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr); \
+    if (VI_SUCCESS > errStatus)                                          \
+      hpe1564_LOG_STATUS(vi, NULL, errStatus);                           \
   }
 
-void hpe1564_delay(long delayTime) {
+void hpe1564_delay(long delayTime)
+{
   struct timeb timebuffer;
   long t0;
   long t1;
@@ -752,31 +784,38 @@ void hpe1564_delay(long delayTime) {
   t1 = (long)timebuffer.millitm;
   ftime(&timebuffer);
   while (((timebuffer.time - t0) * 1000 + ((long)timebuffer.millitm - t1)) <
-         delayTime) {
+         delayTime)
+  {
     ftime(&timebuffer);
   }
 }
 
 #ifndef __hpux
 
-long setDelay(double val) {
+long setDelay(double val)
+{
   double slice;
   _int64_t count;
 
-  if (!QueryPerformanceFrequency((LARGE_INTEGER *)&count)) {
+  if (!QueryPerformanceFrequency((LARGE_INTEGER *)&count))
+  {
     // hdw doesn't have high perfomance count so use getickcount
     slice = 1e-3; // units for gettick count
-  } else {
+  }
+  else
+  {
     slice = 1.0 / count; // Seconds per tick
   }
 
   return (long)(val / slice) + 1;
 }
 
-void hpe1564_doDelay(long ticks) {
+void hpe1564_doDelay(long ticks)
+{
   _int64_t startval, tmp;
 
-  if (!QueryPerformanceCounter((LARGE_INTEGER *)&startval)) {
+  if (!QueryPerformanceCounter((LARGE_INTEGER *)&startval))
+  {
     DWORD sval;
     sval = GetTickCount();
     while (GetTickCount() - sval < (DWORD)ticks)
@@ -784,16 +823,21 @@ void hpe1564_doDelay(long ticks) {
     return;
   }
   tmp = startval;
-  while (tmp - startval < (DWORD)ticks) {
+  while (tmp - startval < (DWORD)ticks)
+  {
     QueryPerformanceCounter((LARGE_INTEGER *)&tmp);
   }
 }
 
 #else
 
-long setDelay(double val) { return val * 1E6; }
+long setDelay(double val)
+{
+  return val * 1E6;
+}
 
-void doDelay(long ticks) {
+void doDelay(long ticks)
+{
   struct timeval t0, t1;
   gettimeofday(&t0, NULL);
   t0.tv_usec += ticks;
@@ -840,7 +884,8 @@ hpe1564_init
 *****************************************************************************/
 
 ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
-                               ViBoolean do_reset, ViPSession vi) {
+                               ViBoolean do_reset, ViPSession vi)
+{
   hpe1564_globals *thisPtr = NULL;
   ViSession defRM = 0;
   ViStatus errStatus;
@@ -861,7 +906,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
 
   /* Find the Default Resource Manager */
   errStatus = viOpenDefaultRM(&defRM);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     /* Errors: VI_ERROR_SYSTEM_ERROR
      *         VI_ERROR_ALLOC
      */
@@ -870,7 +916,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
 
   errStatus = viOpen(defRM, InstrDesc, VI_NULL, VI_NULL, vi);
 
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     viClose(defRM);
     /* Errors: VI_ERROR_NSUP_OPER
      *         VI_ERROR_INV_RSRC_NAME
@@ -884,7 +931,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
 
   /* get memory for instance specific globals */
   thisPtr = (hpe1564_globals *)malloc(sizeof(hpe1564_globals));
-  if (0 == thisPtr) {
+  if (0 == thisPtr)
+  {
     viClose(defRM); /* also closes vi session */
     *vi = VI_NULL;
     hpe1564_LOG_STATUS(*vi, NULL, VI_ERROR_ALLOC);
@@ -900,7 +948,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
       p[i] = 0;
   }
 
-  if (errStatus = viGetAttribute(*vi, VI_ATTR_INTF_TYPE, &intf)) {
+  if (errStatus = viGetAttribute(*vi, VI_ATTR_INTF_TYPE, &intf))
+  {
     viClose(*vi);
     viClose(defRM);
     *vi = VI_NULL;
@@ -909,7 +958,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
 
   /* check for 1406 internal driver by reading *IDN? of 0 and
    *IDN? of secondary for this address*/
-  if (intf == VI_INTF_GPIB_VXI) {
+  if (intf == VI_INTF_GPIB_VXI)
+  {
     viGetAttribute(*vi, VI_ATTR_INTF_NUM, &num);
     viGetAttribute(*vi, VI_ATTR_GPIB_PRIMARY_ADDR, &primary);
     sprintf(gpibdesc, "GPIB%hd::%hd::0", num, primary);
@@ -920,13 +970,15 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
     /* try sending an IDN? to 1406 */
     viSetAttribute(vi1406, VI_ATTR_TMO_VALUE, 1000);
     errStatus = viClear(vi1406);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       viClose(vi1406);
       goto gpib_check_done;
     }
 
     errStatus = viPrintf(vi1406, "*IDN?\n");
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       viClose(vi1406);
       goto gpib_check_done;
     }
@@ -966,7 +1018,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query,
     sprintf(gpibdesc, "GPIB%hd::%hd::%hd", num, primary, secondary);
     viClose(*vi);
     errStatus = viOpen(defRM, gpibdesc, VI_NULL, VI_NULL, vi);
-    if (errStatus < VI_SUCCESS) { /* this should never happen */
+    if (errStatus < VI_SUCCESS)
+    { /* this should never happen */
       viClose(defRM);
       *vi = VI_NULL;
       hpe1564_LOG_STATUS(*vi, NULL, errStatus);
@@ -981,7 +1034,8 @@ gpib_check_done:
    *   and writable.
    */
   errStatus = viSetAttribute(*vi, VI_ATTR_USER_DATA, (ViAttrState)thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     viClose(*vi);
     viClose(defRM); /* also closes vi session */
     *vi = VI_NULL;
@@ -1011,30 +1065,39 @@ gpib_check_done:
   thisPtr->delay_100_usec = setDelay(100.0e-6);
 
   /* next line is true if we switched to GPIB above */
-  if (intf == VI_INTF_GPIB) {
+  if (intf == VI_INTF_GPIB)
+  {
     thisPtr->e1406 = 1;
     /* mumble -- add back in when separate drivers
                     if( VI_TRUE == id_query )
             {
     */
     if (viClear(*vi) < VI_SUCCESS || viPrintf(*vi, "*IDN?\n") < VI_SUCCESS ||
-        viScanf(*vi, "%t", idn_buf) < VI_SUCCESS) {
+        viScanf(*vi, "%t", idn_buf) < VI_SUCCESS)
+    {
       /* ignore any errors in hpe1564_close */
       hpe1564_close(*vi);
       *vi = VI_NULL;
       hpe1564_LOG_STATUS(*vi, NULL, VI_ERROR_FAIL_ID_QUERY);
-    } else { /* we got *IDN successfully */
+    }
+    else
+    { /* we got *IDN successfully */
 
       /* mumble -- alter for each driver? */
       /* check for a idn match */
-      if (!strncmp(idn_buf, hpe1564_IDN_STRING2, strlen(hpe1564_IDN_STRING2))) {
+      if (!strncmp(idn_buf, hpe1564_IDN_STRING2, strlen(hpe1564_IDN_STRING2)))
+      {
         thisPtr->E1563 = 1;
         thisPtr->numChans = 2;
-      } else if (!strncmp(idn_buf, hpe1564_IDN_STRING4,
-                          strlen(hpe1564_IDN_STRING4))) {
+      }
+      else if (!strncmp(idn_buf, hpe1564_IDN_STRING4,
+                        strlen(hpe1564_IDN_STRING4)))
+      {
         thisPtr->E1563 = 0;
         thisPtr->numChans = 4;
-      } else {
+      }
+      else
+      {
         /* ignore any errors in hpe1564_close */
         hpe1564_close(*vi);
         *vi = VI_NULL;
@@ -1045,10 +1108,12 @@ gpib_check_done:
             }
     */
 
-    if (VI_TRUE == do_reset) {
+    if (VI_TRUE == do_reset)
+    {
       /* call the reset function to reset the instrument */
       /* dcl did not work if VXI or GPIB-VXI */
-      if (hpe1564_dcl(*vi) < VI_SUCCESS || hpe1564_reset(*vi) < VI_SUCCESS) {
+      if (hpe1564_dcl(*vi) < VI_SUCCESS || hpe1564_reset(*vi) < VI_SUCCESS)
+      {
         /* ignore any errors in hpe1564_close */
         hpe1564_close(*vi);
         *vi = VI_NULL;
@@ -1058,7 +1123,8 @@ gpib_check_done:
 
     /* set data format to packed */
     errStatus = viPrintf(*vi, "FORM:DATA PACK\n");
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       /* ignore any errors in hpe1564_close */
       hpe1564_close(*vi);
       *vi = VI_NULL;
@@ -1068,7 +1134,9 @@ gpib_check_done:
 
     /* specify motorola format */
     thisPtr->bigEndian = 1;
-  } else { /* either VXI or GPIB-VXI with no driver in command module */
+  }
+  else
+  { /* either VXI or GPIB-VXI with no driver in command module */
 
 #ifdef __hpux
     thisPtr->bigEndian = 1;
@@ -1082,7 +1150,8 @@ gpib_check_done:
     /* map A16 base */
     errStatus =
         viMapAddress(*vi, VI_A16_SPACE, 0x00, 0x40, VI_FALSE, VI_NULL, &addr);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       /* ignore any errors in hpe1564_close */
       hpe1564_close(*vi);
       *vi = VI_NULL;
@@ -1096,11 +1165,13 @@ gpib_check_done:
        startup routine.  We need to do it here for the gpib-vxi and vxi
        interface types.
      */
-    if ((intf == VI_INTF_VXI) || (intf == VI_INTF_GPIB_VXI)) {
+    if ((intf == VI_INTF_VXI) || (intf == VI_INTF_GPIB_VXI))
+    {
 
       /* find the VXI manufacturer's ID */
       errStatus = viGetAttribute(*vi, VI_ATTR_MANF_ID, &manfId);
-      if (VI_SUCCESS > errStatus) {
+      if (VI_SUCCESS > errStatus)
+      {
         /* Errors: VI_ERROR_NSUP_ATTR */
 
         /* ignore any errors in hpe1564_close */
@@ -1113,7 +1184,8 @@ gpib_check_done:
       /* find the instrument's model code */
       errStatus =
           viGetAttribute(*vi, VI_ATTR_MODEL_CODE, (ViPAttrState)(&modelCode));
-      if (VI_SUCCESS > errStatus) {
+      if (VI_SUCCESS > errStatus)
+      {
         /* Errors: VI_ERROR_NSUP_ATTR */
         /* Note: this should never happen
          *   with a VXI instrument
@@ -1125,7 +1197,8 @@ gpib_check_done:
         hpe1564_LOG_STATUS(*vi, NULL, errStatus);
       }
 
-      if (manfId != hpe1564_MANF_ID) {
+      if (manfId != hpe1564_MANF_ID)
+      {
         /* ignore any errors in hpe1564_close */
         hpe1564_close(*vi);
         *vi = VI_NULL;
@@ -1133,13 +1206,18 @@ gpib_check_done:
         hpe1564_LOG_STATUS(*vi, NULL, VI_ERROR_FAIL_ID_QUERY);
       }
 
-      if (modelCode == hpe1564_MODEL4_CODE) {
+      if (modelCode == hpe1564_MODEL4_CODE)
+      {
         thisPtr->E1563 = 0;
         thisPtr->numChans = 4;
-      } else if (modelCode == hpe1564_MODEL2_CODE) {
+      }
+      else if (modelCode == hpe1564_MODEL2_CODE)
+      {
         thisPtr->E1563 = 1;
         thisPtr->numChans = 2;
-      } else {
+      }
+      else
+      {
         /* ignore any errors in hpe1564_close */
         hpe1564_close(*vi);
         *vi = VI_NULL;
@@ -1195,7 +1273,8 @@ hpe1564_close
   |  | Instrument Handle returned from hpe1564_init()
 
 *****************************************************************************/
-ViStatus _VI_FUNC hpe1564_close(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_close(ViSession vi)
+{
   hpe1564_globals *thisPtr;
   ViStatus errStatus;
   ViSession defRM;
@@ -1207,12 +1286,14 @@ ViStatus _VI_FUNC hpe1564_close(ViSession vi) {
   defRM = thisPtr->defRMSession;
 
   /* if we have a handler, get rid of it */
-  if (thisPtr->interrupts) {
+  if (thisPtr->interrupts)
+  {
     viUninstallHandler(vi, VI_EVENT_VXI_SIGP, VI_ANY_HNDLR, (ViAddr)thisPtr);
   }
 
   /* free memory */
-  if (thisPtr) {
+  if (thisPtr)
+  {
     /* make sure there is something to free */
     free(thisPtr);
   }
@@ -1231,17 +1312,20 @@ hpe1564_reset
   |  | Instrument Handle returned from hpe1564_init()
 
 *****************************************************************************/
-ViStatus _VI_FUNC hpe1564_reset(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_reset(ViSession vi)
+{
   hpe1564_globals *thisPtr;
   ViStatus errStatus;
 
   GetGlobals(vi, thisPtr) hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     /* have to let ourselves know format has changed */
     thisPtr->digState.dataFormat = hpe1564_FORM_ASCII;
     errStatus = viPrintf(vi, "*RST\n");
-  } else
+  }
+  else
     errStatus = hpe1564_regReset(vi, thisPtr);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -1270,7 +1354,8 @@ hpe1564_self_test
 *****************************************************************************/
 
 ViStatus _VI_FUNC hpe1564_self_test(ViSession vi, ViPInt16 test_result,
-                                    ViPString test_message) {
+                                    ViPString test_message)
+{
   hpe1564_globals *thisPtr;
   ViStatus errStatus;
   ViInt16 result, diagCode;
@@ -1287,39 +1372,46 @@ ViStatus _VI_FUNC hpe1564_self_test(ViSession vi, ViPInt16 test_result,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     char *theMssg[80];
 
     /* save the user's timeout setting */
     viGetAttribute(vi, VI_ATTR_TMO_VALUE, &timeOutVal);
 
-    if (timeOutVal < 180000) {
+    if (timeOutVal < 180000)
+    {
       /* this command takes a long time, set for 180 seconds */
       viSetAttribute(vi, VI_ATTR_TMO_VALUE, 180000);
     }
 
     errStatus = viQueryf(vi, "*TST?\n", "%hd%*t", &result);
 
-    if (timeOutVal < 180000) {
+    if (timeOutVal < 180000)
+    {
       /* re-store user's timeout value */
       viSetAttribute(vi, VI_ATTR_TMO_VALUE, timeOutVal);
     }
 
-    if (VI_SUCCESS > errStatus) {
+    if (VI_SUCCESS > errStatus)
+    {
       *test_result = -1;
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
     /* if device clear, then blow outta here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       thisPtr->device_clear = 0;
       return VI_SUCCESS;
     }
 
-    if (result > 0) {
+    if (result > 0)
+    {
       errStatus = viQueryf(vi, "TEST:ERR? %hd\n", "%hd,%s%*t", result,
                            &diagCode, theMssg);
-      if (VI_SUCCESS > errStatus) {
+      if (VI_SUCCESS > errStatus)
+      {
         *test_result = -1;
         sprintf(test_message, "%s", "Visa error");
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -1327,16 +1419,20 @@ ViStatus _VI_FUNC hpe1564_self_test(ViSession vi, ViPInt16 test_result,
 
       /* report failure */
       sprintf(test_message, "code: %d, %s", diagCode, theMssg);
-    } else if (result == 0)
+    }
+    else if (result == 0)
       sprintf(test_message, "%s", "Self test Passed");
     else
       /* got result < 0 */
       sprintf(test_message, "%s", "Self test Failed");
-  } else {
+  }
+  else
+  {
     /* allocate some memory for use by self test */
     thisPtr->memPtr = malloc(400 * sizeof(ViInt16));
     errStatus = hpe1564_regSelfTest_Q(vi, thisPtr, &result);
-    if (VI_SUCCESS > errStatus) {
+    if (VI_SUCCESS > errStatus)
+    {
       *test_result = -1;
       sprintf(test_message, "%s", "Visa error in test.");
 
@@ -1347,7 +1443,8 @@ ViStatus _VI_FUNC hpe1564_self_test(ViSession vi, ViPInt16 test_result,
     }
 
     /* if we had a device_clear, handle it here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       hpe1564_regAbort(vi, thisPtr);
       thisPtr->device_clear = 0;
 
@@ -1357,12 +1454,14 @@ ViStatus _VI_FUNC hpe1564_self_test(ViSession vi, ViPInt16 test_result,
       return VI_SUCCESS;
     }
 
-    if (result > 0) {
+    if (result > 0)
+    {
       hpe1564_regTestErr_Q(vi, thisPtr, result, &diagCode, &errMssg);
 
       /* report failure */
       sprintf(test_message, "code: %d, %s", diagCode, errMssg);
-    } else if (result == 0)
+    }
+    else if (result == 0)
       sprintf(test_message, "%s", "Self test Passed");
     else
       /* got result < 0 */
@@ -1373,7 +1472,8 @@ ViStatus _VI_FUNC hpe1564_self_test(ViSession vi, ViPInt16 test_result,
   *test_result = result;
 
   /* if not D-SCPI, then free the malloced memory */
-  if (!thisPtr->e1406) {
+  if (!thisPtr->e1406)
+  {
     /* free the memory we were using */
     free(thisPtr->memPtr);
     thisPtr->memPtr = NULL;
@@ -1401,7 +1501,8 @@ hpe1564_error_query
 
 *****************************************************************************/
 ViStatus _VI_FUNC hpe1564_error_query(ViSession vi, ViPInt32 error_number,
-                                      ViPString error_message) {
+                                      ViPString error_message)
+{
   hpe1564_globals *thisPtr;
   ViStatus errStatus;
 
@@ -1412,10 +1513,12 @@ ViStatus _VI_FUNC hpe1564_error_query(ViSession vi, ViPInt32 error_number,
   GetGlobals(vi, thisPtr) hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
 
   /* get the error number */
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus =
         viQueryf(vi, "SYST:ERR?\n", "%ld,%t", error_number, error_message);
-    if (VI_SUCCESS > errStatus) {
+    if (VI_SUCCESS > errStatus)
+    {
 
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
@@ -1461,28 +1564,35 @@ ViStatus _VI_FUNC hpe1564_error_message(ViSession vi, ViStatus error_number,
   thisPtr = NULL;
 
   /* try to find a thisPtr */
-  if (VI_NULL != vi) {
+  if (VI_NULL != vi)
+  {
     GetGlobals(vi, thisPtr) hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   }
 
-  if (VI_SUCCESS == error_number) {
+  if (VI_SUCCESS == error_number)
+  {
     sprintf(message, hpe1564_MSG_NO_ERRORS);
     hpe1564_LOG_STATUS(vi, thisPtr, VI_SUCCESS);
   }
 
   /* return the static error message */
   for (idx = 0; idx < (sizeof instrErrMsgTable / sizeof(struct instrErrStruct));
-       idx++) {
+       idx++)
+  {
     /* check for a matching error number */
-    if (instrErrMsgTable[idx].errStatus == error_number) {
-      if ((thisPtr) && (thisPtr->errNumber == error_number)) {
+    if (instrErrMsgTable[idx].errStatus == error_number)
+    {
+      if ((thisPtr) && (thisPtr->errNumber == error_number))
+      {
         /* context dependent error
          * message is available.
          */
         sprintf(message, "%s " hpe1564_MSG_IN_FUNCTION " %s() %s",
                 instrErrMsgTable[idx].errMessage, thisPtr->errFuncName,
                 thisPtr->errMessage);
-      } else {
+      }
+      else
+      {
         /* No context dependent error
          * message available so copy
          * the static error message
@@ -1499,9 +1609,11 @@ ViStatus _VI_FUNC hpe1564_error_message(ViSession vi, ViStatus error_number,
    * At this point vi is either VALID or VI_NULL
    */
   errStatus = viStatusDesc(vi, error_number, message);
-  if (VI_SUCCESS == errStatus) {
+  if (VI_SUCCESS == errStatus)
+  {
     /* check for a context dependent error message */
-    if ((thisPtr) && (thisPtr->errNumber == error_number)) {
+    if ((thisPtr) && (thisPtr->errNumber == error_number))
+    {
       /* context dependent error
        * message is available.
        */
@@ -1518,7 +1630,8 @@ ViStatus _VI_FUNC hpe1564_error_message(ViSession vi, ViStatus error_number,
   }
 
   /* if we have a VI_NULL, then we need to return a error message */
-  if (VI_NULL == vi) {
+  if (VI_NULL == vi)
+  {
     strcpy(message, hpe1564_MSG_VI_OPEN_ERR);
     hpe1564_LOG_STATUS(vi, thisPtr, VI_SUCCESS);
   }
@@ -1552,7 +1665,8 @@ hpe1564_revision_query
 
 ViStatus _VI_FUNC hpe1564_revision_query(ViSession vi,
                                          ViChar _VI_FAR driver_rev[],
-                                         ViChar _VI_FAR instr_rev[]) {
+                                         ViChar _VI_FAR instr_rev[])
+{
   hpe1564_globals *thisPtr;
   ViStatus errStatus;
   char temp_str[256]; /* temp hold for instr rev string */
@@ -1566,9 +1680,11 @@ ViStatus _VI_FUNC hpe1564_revision_query(ViSession vi,
 
   sprintf(driver_rev, "%s", hpe1564_REV_CODE);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "*IDN?\n", "%s%*t", temp_str);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       driver_rev[0] = 0;
       instr_rev[0] = 0;
 
@@ -1577,15 +1693,17 @@ ViStatus _VI_FUNC hpe1564_revision_query(ViSession vi,
 
     last_comma = strrchr(temp_str, ',');
     /* error and exit if last comma not found */
-    if (!last_comma) {
+    if (!last_comma)
+    {
       instr_rev[0] = 0;
       hpe1564_CDE_MESSAGE("no last comma found in IDN string");
       hpe1564_LOG_STATUS(vi, thisPtr, hpe1564_INSTR_ERROR_UNEXPECTED);
     }
 
     strcpy(instr_rev, last_comma + 1);
-
-  } else {
+  }
+  else
+  {
     /* driver rev and instr rev are same here */
     sprintf(instr_rev, "%s", hpe1564_REV_CODE);
   }
@@ -1612,7 +1730,8 @@ hpe1564_timeOut
 /* Purpose:  Changes the timeout value of the instrument.  Input is in     */
 /*           milliseconds.                                                 */
 /* ----------------------------------------------------------------------- */
-ViStatus _VI_FUNC hpe1564_timeOut(ViSession vi, ViInt32 timeOut) {
+ViStatus _VI_FUNC hpe1564_timeOut(ViSession vi, ViInt32 timeOut)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
@@ -1644,7 +1763,8 @@ hpe1564_timeOut_Q
 /* Purpose:  Returns the current setting of the timeout value of the       */
 /*           instrument in milliseconds.                                   */
 /* ----------------------------------------------------------------------- */
-ViStatus _VI_FUNC hpe1564_timeOut_Q(ViSession vi, ViPInt32 timeOut) {
+ViStatus _VI_FUNC hpe1564_timeOut_Q(ViSession vi, ViPInt32 timeOut)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
@@ -1724,7 +1844,8 @@ hpe1564_dcl
   |  | Instrument Handle returned from hpe1564_init()
 
 *****************************************************************************/
-ViStatus _VI_FUNC hpe1564_dcl(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_dcl(ViSession vi)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
@@ -1761,12 +1882,14 @@ ViStatus _VI_FUNC hpe1564_dcl(ViSession vi) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_cls(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_cls(ViSession vi)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -1796,7 +1919,8 @@ hpe1564_readStatusByte_Q
   |  | returns the contents of the status byte
 
 *****************************************************************************/
-ViStatus _VI_FUNC hpe1564_readStatusByte_Q(ViSession vi, ViPInt16 statusByte) {
+ViStatus _VI_FUNC hpe1564_readStatusByte_Q(ViSession vi, ViPInt16 statusByte)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViUInt16 stb;
@@ -1805,7 +1929,8 @@ ViStatus _VI_FUNC hpe1564_readStatusByte_Q(ViSession vi, ViPInt16 statusByte) {
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
 
   /* this function does nothing if not command module path */
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viReadSTB(vi, &stb);
     if (VI_SUCCESS > errStatus)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -1825,17 +1950,21 @@ ViStatus _VI_FUNC hpe1564_readStatusByte_Q(ViSession vi, ViPInt16 statusByte) {
                 p1			- VI_TRUE if operations pending
 
 */
-ViStatus _VI_FUNC hpe1564_opc_Q(ViSession vi, ViPBoolean p1) {
+ViStatus _VI_FUNC hpe1564_opc_Q(ViSession vi, ViPBoolean p1)
+{
 
   ViStatus errStatus;
   hpe1564_globals *thisPtr;
 
   GetGlobals(vi, thisPtr);
   /* If (message-based I/O) then write to instrument. */
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "*OPC?\n", "%hd%*t", p1);
     hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else { /* Must be register-based I/O */
+  }
+  else
+  { /* Must be register-based I/O */
 
     /* if we get here, oper was complete */
     *p1 = 1;
@@ -1868,12 +1997,14 @@ ViStatus _VI_FUNC hpe1564_opc_Q(ViSession vi, ViPBoolean p1) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_abort(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_abort(ViSession vi)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -1904,7 +2035,8 @@ ViStatus _VI_FUNC hpe1564_abort(ViSession vi) {
  *             swap        - if == VI_TRUE, then does byte swapping.
  ************/
 ViStatus hpe1564_scan16(ViSession vi, ViInt32 max_length, ViPChar b16,
-                        ViPInt32 rtn_count, ViBoolean swap) {
+                        ViPInt32 rtn_count, ViBoolean swap)
+{
   ViChar c[2];
   ViChar length_str[16];
   ViInt16 digits;
@@ -1920,13 +2052,15 @@ ViStatus hpe1564_scan16(ViSession vi, ViInt32 max_length, ViPChar b16,
   digits = c[1] - '0'; /* c[0] is the # */
 
   /* If digits was not [0-9] then syntax problem, blow away input and return */
-  if ((digits < 0) || (9 < digits)) {
+  if ((digits < 0) || (9 < digits))
+  {
     rtn_code = viScanf(vi, "%*t"); /* Clear input. */
     return (VI_ERROR_INV_RESPONSE);
   }
 
   /* If (Definite Arbitrary Block) */
-  if (digits != 0) {
+  if (digits != 0)
+  {
     /* Scan DAB array count. */
     sprintf(fmtStr, "%%%ldc", digits);
     rtn_code = viScanf(vi, fmtStr, length_str);
@@ -1940,7 +2074,9 @@ ViStatus hpe1564_scan16(ViSession vi, ViInt32 max_length, ViPChar b16,
     /* Verify that caller's array is big enough. */
     if (n_bytes > (max_length * 2))
       return (VI_ERROR_PARAMETER2); /* Caller's length too small. */
-  } else {                          /* Indefinite Arbitrary Block */
+  }
+  else
+  { /* Indefinite Arbitrary Block */
 
     /* Read data up to max_length, else end of input.  */
     /* %t format reads to next END, else until n_bytes. */
@@ -1956,9 +2092,11 @@ ViStatus hpe1564_scan16(ViSession vi, ViInt32 max_length, ViPChar b16,
 
   *rtn_count = n_bytes / 2;
 
-  if (swap == VI_TRUE) {
+  if (swap == VI_TRUE)
+  {
     /* Byte reverse. */
-    for (i = 0; i < n_bytes / 2; i++) {
+    for (i = 0; i < n_bytes / 2; i++)
+    {
       ViChar c;
 
       c = b16[1];
@@ -1981,7 +2119,8 @@ ViStatus hpe1564_scan16(ViSession vi, ViInt32 max_length, ViPChar b16,
  *             num_bytes   - number of bytes coming back.
  *
  ************/
-ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes) {
+ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes)
+{
   ViChar c[2];
   ViChar length_str[16];
   ViInt16 digits;
@@ -1996,13 +2135,15 @@ ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes) {
   digits = c[1] - '0'; /* c[0] is the # */
 
   /* If digits was not [0-9] then syntax problem, blow away input and return */
-  if ((digits < 0) || (9 < digits)) {
+  if ((digits < 0) || (9 < digits))
+  {
     rtn_code = viScanf(vi, "%*t"); /* Clear input. */
     return (VI_ERROR_INV_RESPONSE);
   }
 
   /* If (Definite Arbitrary Block) */
-  if (digits != 0) {
+  if (digits != 0)
+  {
     /* Scan DAB array count. */
     sprintf(fmtStr, "%%%ldc", digits);
     rtn_code = viScanf(vi, fmtStr, length_str);
@@ -2012,8 +2153,9 @@ ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes) {
     length_str[digits] = '\0'; /* null terminate the string */
 
     n_bytes = strtol(length_str, NULL, 0);
-
-  } else { /* Indefinite Arbitrary Block, we don't handle, so error */
+  }
+  else
+  { /* Indefinite Arbitrary Block, we don't handle, so error */
 
     rtn_code = viScanf(vi, "%*t"); /* Clear input. */
     return (VI_ERROR_INV_RESPONSE);
@@ -2072,12 +2214,14 @@ ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calDacVolt(ViSession vi, ViReal64 voltage) {
+ViStatus _VI_FUNC hpe1564_calDacVolt(ViSession vi, ViReal64 voltage)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2091,9 +2235,11 @@ ViStatus _VI_FUNC hpe1564_calDacVolt(ViSession vi, ViReal64 voltage) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "CAL:DAC:VOLT %lg\n", voltage);
-  } else
+  }
+  else
     errStatus = hpe1564_regDacSour(vi, thisPtr, voltage);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2120,21 +2266,25 @@ ViStatus _VI_FUNC hpe1564_calDacVolt(ViSession vi, ViReal64 voltage) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calDacVolt_Q(ViSession vi, ViPReal64 voltage) {
+ViStatus _VI_FUNC hpe1564_calDacVolt_Q(ViSession vi, ViPReal64 voltage)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_calDacVolt_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "CAL:DAC:VOLT?\n", "%lg%*t", voltage);
-  } else
+  }
+  else
     errStatus = hpe1564_regDacSour_Q(vi, thisPtr, voltage);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2197,12 +2347,14 @@ ViStatus _VI_FUNC hpe1564_calDacVolt_Q(ViSession vi, ViPReal64 voltage) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength,
-                                    ViInt16 _VI_FAR calData[]) {
+                                    ViInt16 _VI_FAR calData[])
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2212,7 +2364,8 @@ ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength,
   hpe1564_CHK_LONG_RANGE(arrayLength, hpe1564_CAL_ARRAY_MIN,
                          hpe1564_CAL_ARRAY_MAX, VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViInt32 howMany;
 
     errStatus = viPrintf(vi, "CAL:DATA?\n");
@@ -2226,7 +2379,8 @@ ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength,
 #else
     errStatus = hpe1564_scan16(vi, arrayLength, (char *)calData, &howMany, 1);
 #endif
-  } else
+  }
+  else
     errStatus =
         hpe1564_regCalData_Q(vi, thisPtr, arrayLength, (ViInt16 *)calData);
 
@@ -2341,13 +2495,15 @@ ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength,
  */
 ViStatus _VI_FUNC hpe1564_calGain(ViSession vi, ViInt16 channel,
                                   ViInt32 numSamples, ViReal64 period,
-                                  ViBoolean autoCal) {
+                                  ViBoolean autoCal)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViPInt16 rdgs;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2375,10 +2531,13 @@ ViStatus _VI_FUNC hpe1564_calGain(ViSession vi, ViInt16 channel,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "CAL:GAIN%hd %ld, %lg, %hd\n", channel, numSamples,
                          period, autoCal);
-  } else {
+  }
+  else
+  {
     rdgs = (ViPInt16)malloc(numSamples * sizeof(ViInt16));
     if (rdgs == NULL)
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_ALLOC);
@@ -2457,13 +2616,15 @@ ViStatus _VI_FUNC hpe1564_calGain(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calOffset(ViSession vi, ViInt16 channel,
-                                    ViInt32 numSamples, ViReal64 period) {
+                                    ViInt32 numSamples, ViReal64 period)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViInt16 *rdgs;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2489,13 +2650,16 @@ ViStatus _VI_FUNC hpe1564_calOffset(ViSession vi, ViInt16 channel,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus =
         viPrintf(vi, "CAL:ZERO%hd %ld, %lg\n", channel, numSamples, period);
 
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else {
+  }
+  else
+  {
     rdgs = (ViPInt16)malloc(numSamples * sizeof(ViInt16));
     if (rdgs == NULL)
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_ALLOC);
@@ -2585,14 +2749,16 @@ ViStatus _VI_FUNC hpe1564_calOffset(ViSession vi, ViInt16 channel,
  */
 ViStatus _VI_FUNC hpe1564_calOffsAll_Q(ViSession vi, ViInt16 channel,
                                        ViInt32 numSamples, ViReal64 period,
-                                       ViPInt16 errCode) {
+                                       ViPInt16 errCode)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViUInt32 timeOutVal;
   ViPInt16 rdgs;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2618,19 +2784,22 @@ ViStatus _VI_FUNC hpe1564_calOffsAll_Q(ViSession vi, ViInt16 channel,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     /* save the user's timeout setting */
     viGetAttribute(vi, VI_ATTR_TMO_VALUE, &timeOutVal);
 
     /* change user's timeout value if too small */
-    if (timeOutVal < 180000) {
+    if (timeOutVal < 180000)
+    {
       /* this command takes a long time, set for 180 seconds */
       viSetAttribute(vi, VI_ATTR_TMO_VALUE, 180000);
     }
 
     errStatus = viPrintf(vi, "CAL:ZERO%hd:ALL? %ld, %lg\n", channel, numSamples,
                          period);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       /* if error, re-store user's timeout value */
       viSetAttribute(vi, VI_ATTR_TMO_VALUE, timeOutVal);
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2638,12 +2807,14 @@ ViStatus _VI_FUNC hpe1564_calOffsAll_Q(ViSession vi, ViInt16 channel,
 
     errStatus = viScanf(vi, "%hd%*t", errCode);
 
-    if (timeOutVal < 180000) {
+    if (timeOutVal < 180000)
+    {
       /* re-store user's timeout value */
       viSetAttribute(vi, VI_ATTR_TMO_VALUE, timeOutVal);
     }
-
-  } else {
+  }
+  else
+  {
     rdgs = (ViPInt16)malloc(numSamples * sizeof(ViInt16));
     if (rdgs == NULL)
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_ALLOC);
@@ -2691,12 +2862,14 @@ ViStatus _VI_FUNC hpe1564_calOffsAll_Q(ViSession vi, ViInt16 channel,
  */
 static const char *const hpe1564_calSource_source_a[] = {"INT", "EXT", 0};
 
-ViStatus _VI_FUNC hpe1564_calSource(ViSession vi, ViInt16 source) {
+ViStatus _VI_FUNC hpe1564_calSource(ViSession vi, ViInt16 source)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2709,10 +2882,12 @@ ViStatus _VI_FUNC hpe1564_calSource(ViSession vi, ViInt16 source) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus =
         viPrintf(vi, "CAL:SOUR %s\n", hpe1564_calSource_source_a[source]);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalSource(vi, thisPtr, source);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2746,27 +2921,31 @@ ViStatus _VI_FUNC hpe1564_calSource(ViSession vi, ViInt16 source) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calSource_Q(ViSession vi, ViPInt16 source) {
+ViStatus _VI_FUNC hpe1564_calSource_Q(ViSession vi, ViPInt16 source)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   char source_str[32];
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_calSource_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "CAL:SOUR?\n", "%s%*t", source_str);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = hpe1564_findIndex(thisPtr, hpe1564_calSource_source_a,
                                   source_str, source);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalSource_Q(vi, thisPtr, source);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2802,12 +2981,14 @@ ViStatus _VI_FUNC hpe1564_calSource_Q(ViSession vi, ViPInt16 source) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calState(ViSession vi, ViBoolean state) {
+ViStatus _VI_FUNC hpe1564_calState(ViSession vi, ViBoolean state)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2820,11 +3001,13 @@ ViStatus _VI_FUNC hpe1564_calState(ViSession vi, ViBoolean state) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "CAL:STAT %hd\n", state);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalState(vi, thisPtr, state);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2861,23 +3044,27 @@ ViStatus _VI_FUNC hpe1564_calState(ViSession vi, ViBoolean state) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calState_Q(ViSession vi, ViPBoolean state) {
+ViStatus _VI_FUNC hpe1564_calState_Q(ViSession vi, ViPBoolean state)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_calState_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "CAL:STAT?\n", "%hd%*t", state);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalState_Q(vi, thisPtr, state);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2902,12 +3089,14 @@ ViStatus _VI_FUNC hpe1564_calState_Q(ViSession vi, ViPBoolean state) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calStore(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_calStore(ViSession vi)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -2918,11 +3107,13 @@ ViStatus _VI_FUNC hpe1564_calStore(ViSession vi) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "CAL:STOR\n");
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalStore(vi, thisPtr);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -2986,12 +3177,14 @@ ViStatus _VI_FUNC hpe1564_calStore(ViSession vi) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calValue(ViSession vi, ViReal64 voltage) {
+ViStatus _VI_FUNC hpe1564_calValue(ViSession vi, ViReal64 voltage)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3001,11 +3194,13 @@ ViStatus _VI_FUNC hpe1564_calValue(ViSession vi, ViReal64 voltage) {
   hpe1564_CHK_REAL_RANGE(voltage, hpe1564_CAL_VALUE_MIN, hpe1564_CAL_VALUE_MAX,
                          VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "CAL:VAL %lg\n", voltage);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalValue(vi, thisPtr, voltage);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -3034,23 +3229,27 @@ ViStatus _VI_FUNC hpe1564_calValue(ViSession vi, ViReal64 voltage) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_calValue_Q(ViSession vi, ViPReal64 voltage) {
+ViStatus _VI_FUNC hpe1564_calValue_Q(ViSession vi, ViPReal64 voltage)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_calValue_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "CAL:VAL?\n", "%lg%*t", voltage);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalValue_Q(vi, thisPtr, voltage);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -3147,12 +3346,14 @@ ViStatus _VI_FUNC hpe1564_calValue_Q(ViSession vi, ViPReal64 voltage) {
  */
 ViStatus _VI_FUNC hpe1564_configure(ViSession vi, ViInt16 channel,
                                     ViReal64 expectMax, ViInt32 numSamples,
-                                    ViInt32 numPreTriggers) {
+                                    ViInt32 numPreTriggers)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3196,7 +3397,8 @@ ViStatus _VI_FUNC hpe1564_configure(ViSession vi, ViInt16 channel,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, ":SWE:OFFS:POIN %ld;:SWE:POIN %ld\n",
                          -numPreTriggers, numSamples);
 
@@ -3238,8 +3440,9 @@ ViStatus _VI_FUNC hpe1564_configure(ViSession vi, ViInt16 channel,
     errStatus = viPrintf(vi, "OUTP:TTLT0:STAT OFF\n");
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-
-  } else {
+  }
+  else
+  {
     /* don't bother checking return status here, only setting
        conflicts will happen and they should resolve correctly
      */
@@ -3337,12 +3540,14 @@ ViStatus _VI_FUNC hpe1564_configure(ViSession vi, ViInt16 channel,
  */
 ViStatus _VI_FUNC hpe1564_configure_Q(ViSession vi, ViInt16 channel,
                                       ViPReal64 range, ViPInt32 numSamples,
-                                      ViPInt32 numPreTriggers) {
+                                      ViPInt32 numPreTriggers)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3350,42 +3555,50 @@ ViStatus _VI_FUNC hpe1564_configure_Q(ViSession vi, ViInt16 channel,
   hpe1564_CDE_INIT("hpe1564_configure_Q");
 
   hpe1564_CHK_INT_RANGE(channel, 1, 4, VI_ERROR_PARAMETER2);
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViReal64 bigTrig;
 
     errStatus = viPrintf(vi, "VOLT%hd:RANG?\n", channel);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
     errStatus = viScanf(vi, "%lg%*t", range);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
     errStatus = viPrintf(vi, "SAMP:COUN?\n");
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
     errStatus = viScanf(vi, "%lg%*t", &bigTrig);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
     errStatus = viPrintf(vi, "SAMP:PRET:COUN?\n");
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
     errStatus = viScanf(vi, "%ld%*t", numPreTriggers);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
-    if (bigTrig < 180000000) /* The instrument could be set to 9.9E37 */
+    if (bigTrig < 180000000)                  /* The instrument could be set to 9.9E37 */
       *numSamples = (ViInt32)(bigTrig + 0.1); /* needed for CVI round off */
     else
       *numSamples = -1; /* Driver doesn't support INF samples */
-
-  } else {
+  }
+  else
+  {
 
     errStatus = hpe1564_regInpRange_Q(vi, thisPtr, channel, range);
     if (errStatus < VI_SUCCESS)
@@ -3448,12 +3661,14 @@ ViStatus _VI_FUNC hpe1564_configure_Q(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacGain(ViSession vi, ViInt16 chan,
-                                      ViInt16 data) {
+                                      ViInt16 data)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3517,12 +3732,14 @@ ViStatus _VI_FUNC hpe1564_diagDacGain(ViSession vi, ViInt16 chan,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacOffs(ViSession vi, ViInt16 chan,
-                                      ViInt16 data) {
+                                      ViInt16 data)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3587,12 +3804,14 @@ ViStatus _VI_FUNC hpe1564_diagDacOffs(ViSession vi, ViInt16 chan,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacOffsRamp(ViSession vi, ViInt16 chan,
-                                          ViInt16 count) {
+                                          ViInt16 count)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3643,12 +3862,14 @@ ViStatus _VI_FUNC hpe1564_diagDacOffsRamp(ViSession vi, ViInt16 chan,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_diagDacSour(ViSession vi, ViReal64 voltage) {
+ViStatus _VI_FUNC hpe1564_diagDacSour(ViSession vi, ViReal64 voltage)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3714,12 +3935,14 @@ ViStatus _VI_FUNC hpe1564_diagDacSour(ViSession vi, ViReal64 voltage) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_diagDacSourRamp(ViSession vi, ViInt16 count) {
+ViStatus _VI_FUNC hpe1564_diagDacSourRamp(ViSession vi, ViInt16 count)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3777,13 +4000,15 @@ ViStatus _VI_FUNC hpe1564_diagDacSourRamp(ViSession vi, ViInt16 count) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagFlashRead_Q(ViSession vi, ViInt16 arrayLength,
-                                          ViInt16 _VI_FAR flashData[]) {
+                                          ViInt16 _VI_FAR flashData[])
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViInt16 ii;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3794,7 +4019,8 @@ ViStatus _VI_FUNC hpe1564_diagFlashRead_Q(ViSession vi, ViInt16 arrayLength,
   hpe1564_CHK_LONG_RANGE(arrayLength, hpe1564_FLASH_ARRAY_MIN,
                          hpe1564_FLASH_ARRAY_MAX, VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViInt32 howMany;
 
     errStatus = viPrintf(vi, "DIAG:FLAS:DATA?\n");
@@ -3810,7 +4036,9 @@ ViStatus _VI_FUNC hpe1564_diagFlashRead_Q(ViSession vi, ViInt16 arrayLength,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 #endif
-  } else {
+  }
+  else
+  {
     /* places the data into the calArray */
     errStatus = hpe1564_regFlashRead_Q(vi, thisPtr);
 
@@ -3867,13 +4095,15 @@ ViStatus _VI_FUNC hpe1564_diagFlashRead_Q(ViSession vi, ViInt16 arrayLength,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagFlashWrite(ViSession vi, ViBoolean doCheckSum,
-                                         ViInt16 _VI_FAR flashData[]) {
+                                         ViInt16 _VI_FAR flashData[])
+{
   ViStatus errStatus = 0;
   ViInt16 ii;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3887,14 +4117,16 @@ ViStatus _VI_FUNC hpe1564_diagFlashWrite(ViSession vi, ViBoolean doCheckSum,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus =
         viPrintf(vi, "DIAG:FLAS:DATA %hd, %269hb\n", doCheckSum, flashData);
 
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-
-  } else {
+  }
+  else
+  {
     /* copy data into calArray */
     for (ii = 0; ii < FLASH_DATA_SIZE; ii++)
       thisPtr->digState.calArray[ii] = flashData[ii];
@@ -3937,12 +4169,14 @@ ViStatus _VI_FUNC hpe1564_diagFlashWrite(ViSession vi, ViBoolean doCheckSum,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_diagIntLine(ViSession vi, ViInt16 intLine) {
+ViStatus _VI_FUNC hpe1564_diagIntLine(ViSession vi, ViInt16 intLine)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -3956,9 +4190,12 @@ ViStatus _VI_FUNC hpe1564_diagIntLine(ViSession vi, ViInt16 intLine) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "DIAG:INT:LINE %hd\n", intLine);
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regDiagInt(vi, thisPtr, intLine);
   }
 
@@ -3987,21 +4224,26 @@ ViStatus _VI_FUNC hpe1564_diagIntLine(ViSession vi, ViInt16 intLine) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_diagIntLine_Q(ViSession vi, ViPInt16 intLine) {
+ViStatus _VI_FUNC hpe1564_diagIntLine_Q(ViSession vi, ViPInt16 intLine)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_diagIntLine_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "DIAG:INT:LINE?\n", "%hd", intLine);
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regDiagInt_Q(vi, thisPtr, intLine);
   }
 
@@ -4041,12 +4283,14 @@ ViStatus _VI_FUNC hpe1564_diagIntLine_Q(ViSession vi, ViPInt16 intLine) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_diagMemSize(ViSession vi, ViInt32 memSize) {
+ViStatus _VI_FUNC hpe1564_diagMemSize(ViSession vi, ViInt32 memSize)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4060,9 +4304,12 @@ ViStatus _VI_FUNC hpe1564_diagMemSize(ViSession vi, ViInt32 memSize) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "DIAG:MEM:SIZE %ld\n", memSize);
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regDiagMem(vi, thisPtr, memSize);
   }
 
@@ -4089,21 +4336,26 @@ ViStatus _VI_FUNC hpe1564_diagMemSize(ViSession vi, ViInt32 memSize) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_diagMemSize_Q(ViSession vi, ViPInt32 memSize) {
+ViStatus _VI_FUNC hpe1564_diagMemSize_Q(ViSession vi, ViPInt32 memSize)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_diagMemSize_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "DIAG:MEM:SIZE?\n", "%ld", memSize);
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regDiagMem_Q(vi, thisPtr, memSize);
   }
 
@@ -4142,12 +4394,14 @@ ViStatus _VI_FUNC hpe1564_diagMemSize_Q(ViSession vi, ViPInt32 memSize) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagPeek_Q(ViSession vi, ViInt16 regNum,
-                                     ViPInt16 data) {
+                                     ViPInt16 data)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4203,12 +4457,14 @@ ViStatus _VI_FUNC hpe1564_diagPeek_Q(ViSession vi, ViInt16 regNum,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_diagPoke(ViSession vi, ViInt16 regNum, ViInt16 data) {
+ViStatus _VI_FUNC hpe1564_diagPoke(ViSession vi, ViInt16 regNum, ViInt16 data)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4266,12 +4522,14 @@ ViStatus _VI_FUNC hpe1564_diagPoke(ViSession vi, ViInt16 regNum, ViInt16 data) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagShort(ViSession vi, ViInt16 channel,
-                                    ViBoolean state) {
+                                    ViBoolean state)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4322,12 +4580,14 @@ ViStatus _VI_FUNC hpe1564_diagShort(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagTest_Q(ViSession vi, ViInt32 arrayLength,
-                                     ViInt16 _VI_FAR results[]) {
+                                     ViInt16 _VI_FAR results[])
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4337,7 +4597,8 @@ ViStatus _VI_FUNC hpe1564_diagTest_Q(ViSession vi, ViInt32 arrayLength,
   hpe1564_CHK_LONG_RANGE(arrayLength, hpe1564_TEST_ARRAY_MIN,
                          hpe1564_TEST_ARRAY_MAX, VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViInt32 howMany;
 
     errStatus = viPrintf(vi, "TEST:TST?\n");
@@ -4348,7 +4609,8 @@ ViStatus _VI_FUNC hpe1564_diagTest_Q(ViSession vi, ViInt32 arrayLength,
 #else
     errStatus = hpe1564_scan16(vi, arrayLength, (char *)results, &howMany, 1);
 #endif
-  } else
+  }
+  else
     errStatus = hpe1564_regTestTst_Q(vi, thisPtr, results);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -4399,12 +4661,14 @@ ViStatus _VI_FUNC hpe1564_diagTest_Q(ViSession vi, ViInt32 arrayLength,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagTestNum_Q(ViSession vi, ViInt16 testNum,
-                                        ViInt16 iterations, ViPInt16 failures) {
+                                        ViInt16 iterations, ViPInt16 failures)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4420,13 +4684,15 @@ ViStatus _VI_FUNC hpe1564_diagTestNum_Q(ViSession vi, ViInt16 testNum,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "TEST:NUMB? %hd, %hd\n", "%hd%*t", testNum,
                          iterations, failures);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, 0, errStatus);
-
-  } else {
+  }
+  else
+  {
     /* allocate some memory for use by self test */
     thisPtr->memPtr = malloc(400 * sizeof(ViInt16));
     errStatus =
@@ -4480,13 +4746,15 @@ ViStatus _VI_FUNC hpe1564_diagTestNum_Q(ViSession vi, ViInt16 testNum,
  */
 ViStatus _VI_FUNC hpe1564_diagTestErr_Q(ViSession vi, ViInt16 testNum,
                                         ViPInt16 diagCode,
-                                        ViChar _VI_FAR test_message[]) {
+                                        ViChar _VI_FAR test_message[])
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   char *mssgPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4496,11 +4764,13 @@ ViStatus _VI_FUNC hpe1564_diagTestErr_Q(ViSession vi, ViInt16 testNum,
   hpe1564_CHK_INT_RANGE(testNum, 1, hpe1564_TESTS_IMPLEMENTED,
                         VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, "TEST:ERR? %hd\n", "%hd,%s%*t", testNum, diagCode,
                          test_message);
-
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regTestErr_Q(vi, thisPtr, testNum, diagCode, &mssgPtr);
 
     sprintf(test_message, "%s", mssgPtr);
@@ -4573,12 +4843,14 @@ ViStatus _VI_FUNC hpe1564_diagTestErr_Q(ViSession vi, ViInt16 testNum,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_fetchAll_Q(ViSession vi, ViInt32 arrayLength,
-                                     ViInt32 _VI_FAR data[], ViPInt32 howMany) {
+                                     ViInt32 _VI_FAR data[], ViPInt32 howMany)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4589,13 +4861,15 @@ ViStatus _VI_FUNC hpe1564_fetchAll_Q(ViSession vi, ViInt32 arrayLength,
                          hpe1564_FETCH_ALL_MAX, VI_ERROR_PARAMETER2);
 
   /* Format is set to PACKed when session is opened via hpe1564_init */
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViBoolean need_comma = 0;
     ViInt32 readingsPerChan;
 
     readingsPerChan = (arrayLength * 2) / thisPtr->numChans;
 
-    if (thisPtr->digState.dataFormat != hpe1564_FORM_PACK) {
+    if (thisPtr->digState.dataFormat != hpe1564_FORM_PACK)
+    {
       errStatus = viPrintf(vi, "FORM:DATA PACK\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -4609,7 +4883,8 @@ ViStatus _VI_FUNC hpe1564_fetchAll_Q(ViSession vi, ViInt32 arrayLength,
     *howMany = 0;
 
     /* if device clear, then blow outta here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       thisPtr->device_clear = 0;
       return VI_SUCCESS;
     }
@@ -4621,15 +4896,20 @@ ViStatus _VI_FUNC hpe1564_fetchAll_Q(ViSession vi, ViInt32 arrayLength,
     errStatus = hpe1564_scan16(vi, arrayLength * 2, (char *)data, howMany, 1);
 #endif
     /* if scan16 timed out, we are hung, so do device clear */
-    if (errStatus == VI_ERROR_TMO) {
+    if (errStatus == VI_ERROR_TMO)
+    {
       viClear(vi);
       *howMany = 0;
-    } else
+    }
+    else
       *howMany = *howMany / 2;
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regDataAll_Q(vi, thisPtr, arrayLength, data, howMany);
     /* if we had a device_clear, handle it here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       hpe1564_regAbort(vi, thisPtr);
       thisPtr->device_clear = 0;
       return VI_SUCCESS;
@@ -4734,7 +5014,8 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
                                   ViInt16 _VI_FAR data1[],
                                   ViInt16 _VI_FAR data2[],
                                   ViInt16 _VI_FAR data3[],
-                                  ViInt16 _VI_FAR data4[], ViPInt32 howMany) {
+                                  ViInt16 _VI_FAR data4[], ViPInt32 howMany)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
@@ -4748,7 +5029,8 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
   ViInt32 num_bytes;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -4759,45 +5041,54 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
                          VI_ERROR_PARAMETER2);
 
   /* Format is set to PACKed when session is opened via hpe1564_init */
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
 
     /* initialize chan_list to empty */
     chan_list[0] = '\0';
 
-    if (thisPtr->digState.dataFormat != hpe1564_FORM_PACK) {
+    if (thisPtr->digState.dataFormat != hpe1564_FORM_PACK)
+    {
       errStatus = viPrintf(vi, "FORM:DATA PACK\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
       thisPtr->digState.dataFormat = hpe1564_FORM_PACK;
     }
 
-    if (data1 != NULL) {
+    if (data1 != NULL)
+    {
       strcat(chan_list, "1");
       need_comma = 1;
     }
 
-    if (data2 != NULL) {
+    if (data2 != NULL)
+    {
       if (need_comma)
         strcat(chan_list, ",2");
-      else {
+      else
+      {
         need_comma = 1;
         strcat(chan_list, "2");
       }
     }
 
-    if (data3 != NULL) {
+    if (data3 != NULL)
+    {
       if (need_comma)
         strcat(chan_list, ",3");
-      else {
+      else
+      {
         need_comma = 1;
         strcat(chan_list, "3");
       }
     }
 
-    if (data4 != NULL) {
+    if (data4 != NULL)
+    {
       if (need_comma)
         strcat(chan_list, ",4");
-      else {
+      else
+      {
         need_comma = 1;
         strcat(chan_list, "4");
       }
@@ -4813,7 +5104,8 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
     *howMany = 0;
 
     /* if device clear, then blow outta here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       thisPtr->device_clear = 0;
       return VI_SUCCESS;
     }
@@ -4829,9 +5121,11 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
     /* set fmtStr to large block, don't use %*t */
     sprintf(fmtStr, "%%%ldc", BLOCK_SIZE * 2);
 
-    while (num_bytes > 0) {
+    while (num_bytes > 0)
+    {
       /* if num_bytes > 8000 (dataBlock array), get a chunk */
-      if (num_bytes >= BLOCK_SIZE * 2) {
+      if (num_bytes >= BLOCK_SIZE * 2)
+      {
         errStatus = viScanf(vi, fmtStr, (char *)dataBlock);
         if (errStatus < VI_SUCCESS)
           hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -4840,7 +5134,9 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
 
         /* update numRdgs for loop below */
         numRdgs = BLOCK_SIZE;
-      } else {
+      }
+      else
+      {
         /* note %*t in format string to finish the read */
         sprintf(fmtStr, "%%%ldc%%*t", num_bytes);
         errStatus = viScanf(vi, fmtStr, (char *)dataBlock);
@@ -4856,8 +5152,10 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
 
       /* sort the data into the proper arrays */
       ii = 0;
-      while (ii < numRdgs) {
-        if (data1 != NULL) {
+      while (ii < numRdgs)
+      {
+        if (data1 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_16(&dataBlock[ii]);
@@ -4866,7 +5164,8 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
           ii += 1;
         }
 
-        if (data2 != NULL) {
+        if (data2 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_16(&dataBlock[ii]);
@@ -4875,7 +5174,8 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
           ii += 1;
         }
 
-        if (data3 != NULL) {
+        if (data3 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_16(&dataBlock[ii]);
@@ -4884,7 +5184,8 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
           ii += 1;
         }
 
-        if (data4 != NULL) {
+        if (data4 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_16(&dataBlock[ii]);
@@ -4898,15 +5199,17 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
       }
 
     } /* end while (num_bytes > 0) */
-
-  } else {
+  }
+  else
+  {
     /* Cast data pointers to void and specify packed format (parm4 = 0 ) */
     errStatus =
         hpe1564_regData_Q(vi, thisPtr, arrayLength, 0, (void *)data1,
                           (void *)data2, (void *)data3, (void *)data4, howMany);
 
     /* if we had a device_clear, handle it here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       hpe1564_regAbort(vi, thisPtr);
       thisPtr->device_clear = 0;
       return VI_SUCCESS;
@@ -4952,23 +5255,27 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi, ViInt32 arrayLength,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_fetchCvt_Q(ViSession vi, ViInt16 _VI_FAR data[]) {
+ViStatus _VI_FUNC hpe1564_fetchCvt_Q(ViSession vi, ViInt16 _VI_FAR data[])
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_fetchCvt_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViInt32 howMany;
 
-    if (thisPtr->digState.dataFormat != hpe1564_FORM_PACK) {
+    if (thisPtr->digState.dataFormat != hpe1564_FORM_PACK)
+    {
       errStatus = viPrintf(vi, "FORM:DATA PACK\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -4985,7 +5292,8 @@ ViStatus _VI_FUNC hpe1564_fetchCvt_Q(ViSession vi, ViInt16 _VI_FAR data[]) {
 #else
     errStatus = hpe1564_scan16(vi, 4, (char *)data, &howMany, 1);
 #endif
-  } else
+  }
+  else
     errStatus = hpe1564_regDataCvt_Q(vi, thisPtr, data);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5012,7 +5320,8 @@ ViStatus _VI_FUNC hpe1564_fetchCvt_Q(ViSession vi, ViInt16 _VI_FAR data[]) {
  *             swap        - if == VI_TRUE, then swap bytes to Little Endian.
  ************/
 ViStatus hpe1564_scan64(ViSession vi, ViInt32 max_length, ViPReal64 f64_array,
-                        ViPInt32 rtn_count, ViBoolean swap) {
+                        ViPInt32 rtn_count, ViBoolean swap)
+{
   ViStatus rtn_code;
   ViChar c[2];
   ViChar length_str[16];
@@ -5033,17 +5342,21 @@ ViStatus hpe1564_scan64(ViSession vi, ViInt32 max_length, ViPReal64 f64_array,
   digits = c[1] - '0'; /* c[0] is the # */
 
   /* If digits was not [0-9] then syntax problem, blow away input and return */
-  if ((digits < 0) || (9 < digits)) {
+  if ((digits < 0) || (9 < digits))
+  {
     rtn_code = viScanf(vi, "%*t"); /* Clear input. */
     return (VI_ERROR_INV_RESPONSE);
   }
 
-  if (digits == 0) {
+  if (digits == 0)
+  {
     /* Is (Indefinite Block) */
     /* Read data up to max_length, else end of input.  */
     /* %nnnc format reads to next END, else until nnn bytes. */
     nbytes = max_length * 8;
-  } else { /* Must be DAB. */
+  }
+  else
+  { /* Must be DAB. */
 
     /* Scan DAB array count. */
     sprintf(fmtStr, "%%%ldc", digits);
@@ -5070,11 +5383,13 @@ ViStatus hpe1564_scan64(ViSession vi, ViInt32 max_length, ViPReal64 f64_array,
   *rtn_count = nbytes / 8;
 
   /* If (caller requests byte swapping) */
-  if (swap == VI_TRUE) {
+  if (swap == VI_TRUE)
+  {
     unsigned char src[8];
 
     /* Byte Swap (bytes [0->7] into bytes [7->0]). */
-    for (i = 0; i < (*rtn_count); i++) {
+    for (i = 0; i < (*rtn_count); i++)
+    {
       /* Place the 8 byte double into src[8]. */
       *((double *)src) = *((double *)(&f64_array[i]));
 
@@ -5119,23 +5434,27 @@ ViStatus hpe1564_scan64(ViSession vi, ViInt32 max_length, ViPReal64 f64_array,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_fetchScalCvt_Q(ViSession vi,
-                                         ViReal64 _VI_FAR data[]) {
+                                         ViReal64 _VI_FAR data[])
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_fetchScalCvt_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViInt32 howMany;
 
-    if (thisPtr->digState.dataFormat != hpe1564_FORM_REAL64) {
+    if (thisPtr->digState.dataFormat != hpe1564_FORM_REAL64)
+    {
       thisPtr->digState.dataFormat = hpe1564_FORM_REAL64;
       errStatus = viPrintf(vi, "FORM:DATA REAL,64\n");
       if (errStatus < VI_SUCCESS)
@@ -5152,7 +5471,8 @@ ViStatus _VI_FUNC hpe1564_fetchScalCvt_Q(ViSession vi,
 #else
     errStatus = hpe1564_scan64(vi, 4, data, &howMany, 1);
 #endif
-  } else
+  }
+  else
     errStatus = hpe1564_regScalDataCvt_Q(vi, thisPtr, data);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5237,13 +5557,15 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
                                       ViReal64 _VI_FAR data2[],
                                       ViReal64 _VI_FAR data3[],
                                       ViReal64 _VI_FAR data4[],
-                                      ViPInt32 howMany) {
+                                      ViPInt32 howMany)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5254,7 +5576,8 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
                          VI_ERROR_PARAMETER2);
 
   /* Format is set to PACKed when session is opened via hpe1564_init */
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     char chan_list[10];
     ViBoolean need_comma = 0;
     ViChar fmtStr[30];
@@ -5265,22 +5588,26 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
 
     /* initialize list to empty */
     chan_list[0] = '\0';
-    if (thisPtr->digState.dataFormat != hpe1564_FORM_REAL64) {
+    if (thisPtr->digState.dataFormat != hpe1564_FORM_REAL64)
+    {
       thisPtr->digState.dataFormat = hpe1564_FORM_REAL64;
       errStatus = viPrintf(vi, "FORM:DATA REAL,64\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
-    if (data1 != NULL) {
+    if (data1 != NULL)
+    {
       strcat(chan_list, "1");
       need_comma = 1;
     }
 
-    if (data2 != NULL) {
+    if (data2 != NULL)
+    {
       if (need_comma)
         strcat(chan_list, ",2");
-      else {
+      else
+      {
         need_comma = 1;
         strcat(chan_list, "2");
       }
@@ -5291,19 +5618,23 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
           MessageBox(NULL, mssg, "ERROR in IPRINTF", MB_OK | MB_TASKMODAL);
     */
 
-    if (data3 != NULL) {
+    if (data3 != NULL)
+    {
       if (need_comma)
         strcat(chan_list, ",3");
-      else {
+      else
+      {
         need_comma = 1;
         strcat(chan_list, "3");
       }
     }
 
-    if (data4 != NULL) {
+    if (data4 != NULL)
+    {
       if (need_comma)
         strcat(chan_list, ",4");
-      else {
+      else
+      {
         need_comma = 1;
         strcat(chan_list, "4");
       }
@@ -5319,7 +5650,8 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
     *howMany = 0;
 
     /* if device clear, then blow outta here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       thisPtr->device_clear = 0;
       return VI_SUCCESS;
     }
@@ -5335,9 +5667,11 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
     /* set fmtStr to large block, don't use %*t */
     sprintf(fmtStr, "%%%ldc", BLOCK_SIZE * 8);
 
-    while (num_bytes > 0) {
+    while (num_bytes > 0)
+    {
       /* if num_bytes > 32000 (dataBlock array), get a chunk */
-      if (num_bytes >= BLOCK_SIZE * 8) {
+      if (num_bytes >= BLOCK_SIZE * 8)
+      {
         errStatus = viScanf(vi, fmtStr, (char *)dataBlock);
         if (errStatus < VI_SUCCESS)
           hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5346,7 +5680,9 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
 
         /* update numRdgs for loop below */
         numRdgs = BLOCK_SIZE;
-      } else {
+      }
+      else
+      {
         /* note %*t in format string to finish the read */
         sprintf(fmtStr, "%%%ldc%%*t", num_bytes);
         errStatus = viScanf(vi, fmtStr, (char *)dataBlock);
@@ -5362,8 +5698,10 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
 
       /* sort the data into the proper arrays */
       ii = 0;
-      while (ii < numRdgs) {
-        if (data1 != NULL) {
+      while (ii < numRdgs)
+      {
+        if (data1 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_FLOAT64(&dataBlock[ii]);
@@ -5372,7 +5710,8 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
           ii += 1;
         }
 
-        if (data2 != NULL) {
+        if (data2 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_FLOAT64(&dataBlock[ii]);
@@ -5381,7 +5720,8 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
           ii += 1;
         }
 
-        if (data3 != NULL) {
+        if (data3 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_FLOAT64(&dataBlock[ii]);
@@ -5390,7 +5730,8 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
           ii += 1;
         }
 
-        if (data4 != NULL) {
+        if (data4 != NULL)
+        {
 #ifndef BIG_ENDIAN
           /* byte swap if not Motorola platform */
           SWAP_FLOAT64(&dataBlock[ii]);
@@ -5404,15 +5745,17 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
       }
 
     } /* end while (num_bytes > 0) */
-
-  } else {
+  }
+  else
+  {
     /* Cast data pointers to void and specify real format (parm4 = 1 ) */
     errStatus =
         hpe1564_regData_Q(vi, thisPtr, arrayLength, 1, (void *)data1,
                           (void *)data2, (void *)data3, (void *)data4, howMany);
 
     /* if we had a device_clear, handle it here */
-    if (thisPtr->device_clear) {
+    if (thisPtr->device_clear)
+    {
       hpe1564_regAbort(vi, thisPtr);
       thisPtr->device_clear = 0;
       return VI_SUCCESS;
@@ -5467,13 +5810,15 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi, ViInt32 arrayLength,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_initCont(ViSession vi, ViBoolean state) {
+ViStatus _VI_FUNC hpe1564_initCont(ViSession vi, ViBoolean state)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5483,7 +5828,8 @@ ViStatus _VI_FUNC hpe1564_initCont(ViSession vi, ViBoolean state) {
   hpe1564_CHK_BOOLEAN(state, VI_ERROR_PARAMETER2);
 
   /* error if initiated and not e1406 path */
-  if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr)) {
+  if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
+  {
     /* we are already initiated, error if we are trying to turn ON */
     if (state)
       return hpe1564_ERROR_INIT_IGN;
@@ -5491,12 +5837,15 @@ ViStatus _VI_FUNC hpe1564_initCont(ViSession vi, ViBoolean state) {
 
   if (thisPtr->e1406)
     errStatus = viPrintf(vi, "INIT:CONT %hd\n", state);
-  else {
-    if (state) {
+  else
+  {
+    if (state)
+    {
       errStatus = hpe1564_regInitContOn(vi, thisPtr);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else
+    }
+    else
       errStatus = hpe1564_regInitContOff(vi, thisPtr);
   }
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5526,13 +5875,15 @@ ViStatus _VI_FUNC hpe1564_initCont(ViSession vi, ViBoolean state) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_initCont_Q(ViSession vi, ViPBoolean state) {
+ViStatus _VI_FUNC hpe1564_initCont_Q(ViSession vi, ViPBoolean state)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5568,13 +5919,15 @@ ViStatus _VI_FUNC hpe1564_initCont_Q(ViSession vi, ViPBoolean state) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_initImm(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_initImm(ViSession vi)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5648,13 +6001,15 @@ ViStatus _VI_FUNC hpe1564_initImm(ViSession vi) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpFilt(ViSession vi, ViInt16 channel,
-                                  ViReal64 filter) {
+                                  ViReal64 filter)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5669,16 +6024,20 @@ ViStatus _VI_FUNC hpe1564_inpFilt(ViSession vi, ViInt16 channel,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     if (filter < 750.0)
       errStatus = viPrintf(vi, "INP%hd:FILT OFF\n", channel);
     else
       errStatus =
           viPrintf(vi, "INP%hd:FILT ON;FILT:FREQ %lg\n", channel, filter);
-  } else {
+  }
+  else
+  {
     if (filter < 750.0)
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, channel, hpe1564_OFF);
-    else {
+    else
+    {
       errStatus = hpe1564_regInpFiltFreq(vi, thisPtr, channel, filter);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5731,14 +6090,16 @@ ViStatus _VI_FUNC hpe1564_inpFilt(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpFilt_Q(ViSession vi, ViInt16 channel,
-                                    ViPReal64 filter) {
+                                    ViPReal64 filter)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViBoolean state;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5747,7 +6108,8 @@ ViStatus _VI_FUNC hpe1564_inpFilt_Q(ViSession vi, ViInt16 channel,
 
   hpe1564_CHK_INT_RANGE(channel, 1, 4, VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "INP%hd:FILT?\n", channel);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5756,7 +6118,8 @@ ViStatus _VI_FUNC hpe1564_inpFilt_Q(ViSession vi, ViInt16 channel,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (state) {
+    if (state)
+    {
       errStatus = viPrintf(vi, "INP%hd:FILT:FREQ?\n", channel);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5764,10 +6127,12 @@ ViStatus _VI_FUNC hpe1564_inpFilt_Q(ViSession vi, ViInt16 channel,
       errStatus = viScanf(vi, "%lg%*t", filter);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else
+    }
+    else
       *filter = 0.0;
-
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regInpFiltStat_Q(vi, thisPtr, channel, &state);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5823,13 +6188,15 @@ ViStatus _VI_FUNC hpe1564_inpFilt_Q(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpState(ViSession vi, ViInt16 channel,
-                                   ViBoolean state) {
+                                   ViBoolean state)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5845,7 +6212,8 @@ ViStatus _VI_FUNC hpe1564_inpState(ViSession vi, ViInt16 channel,
 
   if (thisPtr->e1406)
     errStatus = viPrintf(vi, "INP%hd %hd\n", channel, state);
-  else {
+  else
+  {
     errStatus = hpe1564_regInpStat(vi, thisPtr, channel, state);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -5900,13 +6268,15 @@ ViStatus _VI_FUNC hpe1564_inpState(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel,
-                                     ViPBoolean state) {
+                                     ViPBoolean state)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -5914,13 +6284,15 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel,
   hpe1564_CDE_INIT("hpe1564_inpState_Q");
 
   hpe1564_CHK_INT_RANGE(channel, 1, 4, VI_ERROR_PARAMETER2);
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "INP%hd?\n", channel);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%hd%*t", state);
-  } else
+  }
+  else
     errStatus = hpe1564_regInpStat_Q(vi, thisPtr, channel, state);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6055,13 +6427,15 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel,
 ViStatus _VI_FUNC hpe1564_input(ViSession vi, ViPReal64 range1, ViPReal64 filt1,
                                 ViPReal64 range2, ViPReal64 filt2,
                                 ViPReal64 range3, ViPReal64 filt3,
-                                ViPReal64 range4, ViPReal64 filt4) {
+                                ViPReal64 range4, ViPReal64 filt4)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -6097,7 +6471,8 @@ ViStatus _VI_FUNC hpe1564_input(ViSession vi, ViPReal64 range1, ViPReal64 filt1,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
 
     /* let's do 2 channels at a time -- that is, send the linefeed with
        the second channel.
@@ -6136,7 +6511,9 @@ ViStatus _VI_FUNC hpe1564_input(ViSession vi, ViPReal64 range1, ViPReal64 filt1,
       errStatus =
           viPrintf(vi, "INP4:STAT ON;FILT ON;FILT:FREQ %lg;:VOLT4:RANG %lg\n",
                    *filt4, *range4);
-  } else {
+  }
+  else
+  {
     /* do channel 1 */
     errStatus = hpe1564_regInpRange(vi, thisPtr, 1, *range1);
     if (errStatus < VI_SUCCESS)
@@ -6148,7 +6525,8 @@ ViStatus _VI_FUNC hpe1564_input(ViSession vi, ViPReal64 range1, ViPReal64 filt1,
      */
     if (*filt1 < 750.0)
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 1, hpe1564_OFF);
-    else {
+    else
+    {
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 1, hpe1564_ON);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6173,7 +6551,8 @@ ViStatus _VI_FUNC hpe1564_input(ViSession vi, ViPReal64 range1, ViPReal64 filt1,
      */
     if (*filt2 < 750.0)
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 2, hpe1564_OFF);
-    else {
+    else
+    {
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 2, hpe1564_ON);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6198,7 +6577,8 @@ ViStatus _VI_FUNC hpe1564_input(ViSession vi, ViPReal64 range1, ViPReal64 filt1,
      */
     if (*filt3 < 750.0)
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 3, hpe1564_OFF);
-    else {
+    else
+    {
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 3, hpe1564_ON);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6223,7 +6603,8 @@ ViStatus _VI_FUNC hpe1564_input(ViSession vi, ViPReal64 range1, ViPReal64 filt1,
      */
     if (*filt4 < 750.0)
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 4, hpe1564_OFF);
-    else {
+    else
+    {
       errStatus = hpe1564_regInpFiltStat(vi, thisPtr, 4, hpe1564_ON);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6305,21 +6686,24 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
                                   ViPReal64 filt1, ViPReal64 range2,
                                   ViPReal64 filt2, ViPReal64 range3,
                                   ViPReal64 filt3, ViPReal64 range4,
-                                  ViPReal64 filt4) {
+                                  ViPReal64 filt4)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViBoolean state;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_input_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     /* get the data for chan 1 */
     errStatus = viPrintf(vi, "INP1:FILT?\n");
     if (errStatus < VI_SUCCESS)
@@ -6329,7 +6713,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (state) {
+    if (state)
+    {
       errStatus = viPrintf(vi, "INP1:FILT:FREQ?\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6337,7 +6722,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
       errStatus = viScanf(vi, "%lg%*t", filt1);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else
+    }
+    else
       *filt1 = 0.0;
 
     errStatus = viPrintf(vi, "VOLT1:RANG?\n", range1);
@@ -6357,7 +6743,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (state) {
+    if (state)
+    {
       errStatus = viPrintf(vi, "INP2:FILT:FREQ?\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6365,7 +6752,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
       errStatus = viScanf(vi, "%lg%*t", filt2);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else
+    }
+    else
       *filt2 = 0.0;
 
     errStatus = viPrintf(vi, "VOLT2:RANG?\n", range2);
@@ -6385,7 +6773,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (state) {
+    if (state)
+    {
       errStatus = viPrintf(vi, "INP3:FILT:FREQ?\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6393,7 +6782,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
       errStatus = viScanf(vi, "%lg%*t", filt3);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else
+    }
+    else
       *filt3 = 0.0;
 
     errStatus = viPrintf(vi, "VOLT3:RANG?\n", range3);
@@ -6413,7 +6803,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (state) {
+    if (state)
+    {
       errStatus = viPrintf(vi, "INP4:FILT:FREQ?\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6421,7 +6812,8 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
       errStatus = viScanf(vi, "%lg%*t", filt4);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else
+    }
+    else
       *filt4 = 0.0;
 
     errStatus = viPrintf(vi, "VOLT4:RANG?\n", range4);
@@ -6429,8 +6821,9 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%lg%*t", range4);
-
-  } else {
+  }
+  else
+  {
     /* query channel 1 */
     errStatus = hpe1564_regInpRange_Q(vi, thisPtr, 1, range1);
     if (errStatus < VI_SUCCESS)
@@ -6533,13 +6926,15 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi, ViPReal64 range1,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_limitFail_Q(ViSession vi, ViInt16 channel,
-                                      ViPBoolean status) {
+                                      ViPBoolean status)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -6547,13 +6942,15 @@ ViStatus _VI_FUNC hpe1564_limitFail_Q(ViSession vi, ViInt16 channel,
   hpe1564_CDE_INIT("hpe1564_limitFail_Q");
 
   hpe1564_CHK_INT_RANGE(channel, 1, 4, VI_ERROR_PARAMETER2);
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "CALC%hd:LIM:FAIL?\n", channel);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%hd%*t", status);
-  } else
+  }
+  else
     errStatus = hpe1564_regCalcLimFail_Q(vi, thisPtr, channel, status);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6621,14 +7018,16 @@ ViStatus _VI_FUNC hpe1564_limitFail_Q(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_limitSet(ViSession vi, ViInt16 channel,
-                                   ViReal64 level, ViInt16 mode) {
+                                   ViReal64 level, ViInt16 mode)
+{
 
   ViStatus errStatus = 0;
   ViStatus tempErrStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -6645,20 +7044,26 @@ ViStatus _VI_FUNC hpe1564_limitSet(ViSession vi, ViInt16 channel,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
-    if (mode == hpe1564_LIMIT_OFF) {
+  if (thisPtr->e1406)
+  {
+    if (mode == hpe1564_LIMIT_OFF)
+    {
       errStatus = viPrintf(vi, "CALC%hd:LIM:UPP OFF\n", channel);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
       errStatus = viPrintf(vi, "CALC%hd:LIM:LOW OFF\n", channel);
-    } else if (mode == hpe1564_LIMIT_BELOW) {
+    }
+    else if (mode == hpe1564_LIMIT_BELOW)
+    {
       errStatus = viPrintf(vi, "CALC%hd:LIM:LOW:DATA %lg\n", channel, level);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
       errStatus = viPrintf(vi, "CALC%hd:LIM:UPP OFF;LOW ON\n", channel);
-    } else { /* wants to enable upper limit check */
+    }
+    else
+    { /* wants to enable upper limit check */
 
       errStatus = viPrintf(vi, "CALC%hd:LIM:UPP:DATA %lg\n", channel, level);
       if (errStatus < VI_SUCCESS)
@@ -6666,13 +7071,17 @@ ViStatus _VI_FUNC hpe1564_limitSet(ViSession vi, ViInt16 channel,
 
       errStatus = viPrintf(vi, "CALC%hd:LIM:LOW OFF;UPP ON\n", channel);
     }
-
-  } else {
-    if (mode == hpe1564_LIMIT_BELOW) {
+  }
+  else
+  {
+    if (mode == hpe1564_LIMIT_BELOW)
+    {
       errStatus = hpe1564_regCalcLimLowData(vi, thisPtr, channel, level);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else if (mode == hpe1564_LIMIT_ABOVE) {
+    }
+    else if (mode == hpe1564_LIMIT_ABOVE)
+    {
       errStatus = hpe1564_regCalcLimUppData(vi, thisPtr, channel, level);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6746,14 +7155,16 @@ ViStatus _VI_FUNC hpe1564_limitSet(ViSession vi, ViInt16 channel,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan,
-                                     ViPReal64 level, ViPInt16 mode) {
+                                     ViPReal64 level, ViPInt16 mode)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   ViBoolean state;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -6762,7 +7173,8 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan,
 
   hpe1564_CHK_INT_RANGE(chan, 1, 4, VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "CALC%hd:LIM:LOW?\n", chan);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6771,7 +7183,8 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (state) {
+    if (state)
+    {
       *mode = hpe1564_LIMIT_BELOW;
       errStatus = viPrintf(vi, "CALC%hd:LIM:LOW:DATA?\n", chan);
       if (errStatus < VI_SUCCESS)
@@ -6780,7 +7193,9 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan,
       errStatus = viScanf(vi, "%lg%*t", level);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else { /* check for upper limit enabled */
+    }
+    else
+    { /* check for upper limit enabled */
 
       errStatus = viPrintf(vi, "CALC%hd:LIM:UPP?\n", chan);
       if (errStatus < VI_SUCCESS)
@@ -6790,7 +7205,8 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan,
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-      if (state) {
+      if (state)
+      {
         *mode = hpe1564_LIMIT_ABOVE;
         errStatus = viPrintf(vi, "CALC%hd:LIM:UPP:DATA?\n", chan);
         if (errStatus < VI_SUCCESS)
@@ -6799,27 +7215,36 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan,
         errStatus = viScanf(vi, "%lg%*t", level);
         if (errStatus < VI_SUCCESS)
           hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-      } else { /* limit checking not enabled */
+      }
+      else
+      { /* limit checking not enabled */
 
         *level = 0.0;
         *mode = hpe1564_LIMIT_OFF;
       }
     }
-  } else { /* not E1406 */
+  }
+  else
+  { /* not E1406 */
 
     errStatus = hpe1564_regCalcLimStat_Q(vi, thisPtr, chan, mode);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (*mode == hpe1564_LIMIT_BELOW) { /* lower limit check enabled */
+    if (*mode == hpe1564_LIMIT_BELOW)
+    { /* lower limit check enabled */
       errStatus = hpe1564_regCalcLimLowData_Q(vi, thisPtr, chan, level);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else if (*mode == hpe1564_LIMIT_ABOVE) { /* see if upper limit */
+    }
+    else if (*mode == hpe1564_LIMIT_ABOVE)
+    { /* see if upper limit */
       errStatus = hpe1564_regCalcLimUppData_Q(vi, thisPtr, chan, level);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-    } else { /* limit checking not enabled */
+    }
+    else
+    { /* limit checking not enabled */
 
       *level = 0.0;
     }
@@ -6897,12 +7322,14 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan,
  */
 ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi, ViInt16 chan, ViPReal64 maxVolt,
                                  ViPReal64 maxTime, ViPReal64 minVolt,
-                                 ViPReal64 minTime) {
+                                 ViPReal64 minTime)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -6944,7 +7371,8 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi, ViInt16 chan, ViPReal64 maxVolt,
     iMin = 99999999;
 
     /* make sure data format is packed */
-    if (thisPtr->e1406) {
+    if (thisPtr->e1406)
+    {
       errStatus = viPrintf(vi, "FORM:DATA PACK\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -6984,7 +7412,8 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi, ViInt16 chan, ViPReal64 maxVolt,
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_ALLOC);
 
     totalCount = 0; /* total number we have read so far */
-    while (sampCount > totalCount) {
+    while (sampCount > totalCount)
+    {
 
       if (chan == 1)
         errStatus =
@@ -7003,12 +7432,15 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi, ViInt16 chan, ViPReal64 maxVolt,
         goto quit;
 
       /* OK, got the data ... analyze  */
-      for (i = 0; i < howMany; i++) {
-        if (data[i] < minV) {
+      for (i = 0; i < howMany; i++)
+      {
+        if (data[i] < minV)
+        {
           minV = data[i];
           iMin = i + totalCount;
         }
-        if (data[i] > maxV) {
+        if (data[i] > maxV)
+        {
           maxV = data[i];
           iMax = i + totalCount;
         }
@@ -7021,15 +7453,19 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi, ViInt16 chan, ViPReal64 maxVolt,
     *minVolt = range * minV / 32768.0;
 
     /* Subtract the pre-triggers */
-    if (preTrigs) {
+    if (preTrigs)
+    {
       iMin -= preTrigs;
       iMax -= preTrigs;
     }
 
-    if (sampSour == hpe1564_SAMP_TIM) { /* See if sample source is timer */
+    if (sampSour == hpe1564_SAMP_TIM)
+    { /* See if sample source is timer */
       *maxTime = iMax * sampTime;
       *minTime = iMin * sampTime;
-    } else {
+    }
+    else
+    {
       *maxTime = iMax;
       *minTime = iMin;
     }
@@ -7159,14 +7595,16 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi, ViInt16 chan, ViPReal64 maxVolt,
 ViStatus _VI_FUNC hpe1564_measure_Q(
     ViSession vi, ViReal64 expected, ViInt32 numSamples, ViInt32 arrayLength,
     ViReal64 _VI_FAR data1[], ViReal64 _VI_FAR data2[],
-    ViReal64 _VI_FAR data3[], ViReal64 _VI_FAR data4[], ViPInt32 howMany) {
+    ViReal64 _VI_FAR data3[], ViReal64 _VI_FAR data4[], ViPInt32 howMany)
+{
 
   ViStatus errStatus = 0;
   ViReal64 dTemp = 1.3e-6, dLevel = 0.0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7298,13 +7736,15 @@ static const char *const hpe1564_outpTtltSour_source_a[] = {"TRIG", "SAMP",
                                                             "BOTH", 0};
 
 ViStatus _VI_FUNC hpe1564_outpTtltSour(ViSession vi, ViInt16 line,
-                                       ViInt16 source) {
+                                       ViInt16 source)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7318,10 +7758,13 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour(ViSession vi, ViInt16 line,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "OUTP:TTLT%hd:SOUR %s\n", line,
                          hpe1564_outpTtltSour_source_a[source]);
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regOutpTtltSour(vi, thisPtr, line, source);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -7383,14 +7826,16 @@ static const char *const hpe1564_outpTtltSour_Q_source_a[] = {"TRIG", "SAMP",
                                                               "BOTH", 0};
 
 ViStatus _VI_FUNC hpe1564_outpTtltSour_Q(ViSession vi, ViInt16 line,
-                                         ViPInt16 source) {
+                                         ViPInt16 source)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   char source_str[10];
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7398,7 +7843,8 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour_Q(ViSession vi, ViInt16 line,
   hpe1564_CDE_INIT("hpe1564_outpTtltSour_Q");
 
   hpe1564_CHK_ENUM(line, 7, VI_ERROR_PARAMETER2);
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "OUTP:TTLT%hd:SOUR?\n", line);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -7409,7 +7855,8 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour_Q(ViSession vi, ViInt16 line,
 
     errStatus = hpe1564_findIndex(thisPtr, hpe1564_outpTtltSour_Q_source_a,
                                   source_str, source);
-  } else
+  }
+  else
     errStatus = hpe1564_regOutpTtltSour_Q(vi, thisPtr, line, source);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -7471,13 +7918,15 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour_Q(ViSession vi, ViInt16 line,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_outpTtltStat(ViSession vi, ViInt16 line,
-                                       ViBoolean state) {
+                                       ViBoolean state)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7493,7 +7942,8 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat(ViSession vi, ViInt16 line,
 
   if (thisPtr->e1406)
     errStatus = viPrintf(vi, "OUTP:TTLT%hd %hd\n", line, state);
-  else {
+  else
+  {
     errStatus = hpe1564_regOutpTtltStat(vi, thisPtr, line, state);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -7553,13 +8003,15 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat(ViSession vi, ViInt16 line,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line,
-                                         ViPBoolean state) {
+                                         ViPBoolean state)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7567,13 +8019,15 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line,
   hpe1564_CDE_INIT("hpe1564_outpTtltStat_Q");
 
   hpe1564_CHK_ENUM(line, 7, VI_ERROR_PARAMETER2);
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "OUTP:TTLT%hd?\n", line);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%hd%*t", state);
-  } else
+  }
+  else
     errStatus = hpe1564_regOutpTtltStat_Q(vi, thisPtr, line, state);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -7643,13 +8097,15 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_range(ViSession vi, ViInt16 chan, ViReal64 range) {
+ViStatus _VI_FUNC hpe1564_range(ViSession vi, ViInt16 chan, ViReal64 range)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7666,7 +8122,8 @@ ViStatus _VI_FUNC hpe1564_range(ViSession vi, ViInt16 chan, ViReal64 range) {
 
   if (thisPtr->e1406)
     errStatus = viPrintf(vi, "VOLT%hd:RANG %lg\n", chan, range);
-  else {
+  else
+  {
     errStatus = hpe1564_regInpRange(vi, thisPtr, chan, range);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -7712,13 +8169,15 @@ ViStatus _VI_FUNC hpe1564_range(ViSession vi, ViInt16 chan, ViReal64 range) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_range_Q(ViSession vi, ViInt16 chan, ViPReal64 range) {
+ViStatus _VI_FUNC hpe1564_range_Q(ViSession vi, ViInt16 chan, ViPReal64 range)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7726,13 +8185,15 @@ ViStatus _VI_FUNC hpe1564_range_Q(ViSession vi, ViInt16 chan, ViPReal64 range) {
   hpe1564_CDE_INIT("hpe1564_range_Q");
 
   hpe1564_CHK_INT_RANGE(chan, 1, 4, VI_ERROR_PARAMETER2);
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "VOLT%hd:RANG?\n", chan);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%lg%*t", range);
-  } else
+  }
+  else
     errStatus = hpe1564_regInpRange_Q(vi, thisPtr, chan, range);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -7780,13 +8241,15 @@ ViStatus _VI_FUNC hpe1564_range_Q(ViSession vi, ViInt16 chan, ViPReal64 range) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampCount(ViSession vi, ViInt32 numSamples,
-                                    ViInt32 numPreTriggers) {
+                                    ViInt32 numPreTriggers)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -7810,7 +8273,8 @@ ViStatus _VI_FUNC hpe1564_sampCount(ViSession vi, ViInt32 numSamples,
   if (thisPtr->e1406)
     errStatus = viPrintf(vi, ":SAMP:COUN %ld;PRET:COUN %ld\n", numSamples,
                          numPreTriggers);
-  else {
+  else
+  {
     char message[40];
 
     /* the following checks can only be done on this path, because the
@@ -7818,14 +8282,16 @@ ViStatus _VI_FUNC hpe1564_sampCount(ViSession vi, ViInt32 numSamples,
      */
 
     /* check sample count against specific memory option */
-    if (thisPtr->maxSampCount < numSamples) {
+    if (thisPtr->maxSampCount < numSamples)
+    {
       sprintf(message, "Max. count is %ld", thisPtr->maxSampCount);
       hpe1564_CDE_MESSAGE(message);
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_PARAMETER2);
     }
 
     /* check pretrigger count against specific memory option */
-    if (thisPtr->maxSampCount - 1 < numPreTriggers) {
+    if (thisPtr->maxSampCount - 1 < numPreTriggers)
+    {
       sprintf(message, "Max. pretrigger is %ld", thisPtr->maxSampCount - 1);
       hpe1564_CDE_MESSAGE(message);
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_PARAMETER3);
@@ -7889,43 +8355,53 @@ ViStatus _VI_FUNC hpe1564_sampCount(ViSession vi, ViInt32 numSamples,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampCount_Q(ViSession vi, ViPInt32 numSamples,
-                                      ViPInt32 numPreTriggers) {
+                                      ViPInt32 numPreTriggers)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_sampCount_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     ViReal64 bigSamp;
 
     errStatus = viQueryf(vi, "SAMP:COUN?\n", "%lg%*t", &bigSamp);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
     errStatus = viQueryf(vi, "SAMP:PRET:COUN?\n", "%ld%*t", numPreTriggers);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
     /* If CONTinuous init, D-SCPI will report back 9.9E37 for count,
        which is infinite.  We will report back -1 here to caller.
      */
-    if (bigSamp < 2.4E9) {     /* The instrument could be set to 9.9E37 */
+    if (bigSamp < 2.4E9)
+    {                          /* The instrument could be set to 9.9E37 */
       bigSamp = bigSamp + 0.1; /* needed for CVI round off */
       *numSamples = (ViInt32)(bigSamp);
-    } else
+    }
+    else
       *numSamples = -1; /* Indicate INF triggers */
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regSampCount_Q(vi, thisPtr, numSamples);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
@@ -7958,12 +8434,14 @@ ViStatus _VI_FUNC hpe1564_sampCount_Q(ViSession vi, ViPInt32 numSamples,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_sampImm(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_sampImm(ViSession vi)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -8008,13 +8486,15 @@ ViStatus _VI_FUNC hpe1564_sampImm(ViSession vi) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_sampSlop(ViSession vi, ViBoolean slope) {
+ViStatus _VI_FUNC hpe1564_sampSlop(ViSession vi, ViBoolean slope)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -8027,12 +8507,15 @@ ViStatus _VI_FUNC hpe1564_sampSlop(ViSession vi, ViBoolean slope) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     if (slope == hpe1564_SLOP_NEG)
       errStatus = viPrintf(vi, ":SAMP:SLOP NEG\n");
     else
       errStatus = viPrintf(vi, ":SAMP:SLOP POS\n");
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regSampSlop(vi, thisPtr, slope);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8074,7 +8557,8 @@ ViStatus _VI_FUNC hpe1564_sampSlop(ViSession vi, ViBoolean slope) {
  */
 static const char *const hpe1564_sampSlop_Q_slope_a[] = {"NEG", "POS", 0};
 
-ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope) {
+ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
@@ -8082,14 +8566,16 @@ ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope) {
   ViInt16 tslope;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_sampSlop_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, ":SAMP:SLOP?\n");
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8101,7 +8587,8 @@ ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope) {
     errStatus = hpe1564_findIndex(thisPtr, hpe1564_sampSlop_Q_slope_a,
                                   slope_str, &tslope);
     *slope = (0 == tslope) ? VI_FALSE : VI_TRUE;
-  } else
+  }
+  else
     errStatus = hpe1564_regSampSlop_Q(vi, thisPtr, slope);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8186,17 +8673,19 @@ ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope) {
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_sampSour_source_a[] = {
-    "HOLD",  "TIM",   "TTLT0", "TTLT1", "TTLT2", "TTLT3", "TTLT4",
-    "TTLT5", "TTLT6", "TTLT7", "EXT",   "EXT",   0};
+    "HOLD", "TIM", "TTLT0", "TTLT1", "TTLT2", "TTLT3", "TTLT4",
+    "TTLT5", "TTLT6", "TTLT7", "EXT", "EXT", 0};
 
-ViStatus _VI_FUNC hpe1564_sampSour(ViSession vi, ViInt16 source) {
+ViStatus _VI_FUNC hpe1564_sampSour(ViSession vi, ViInt16 source)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   char source_str[10];
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -8209,8 +8698,10 @@ ViStatus _VI_FUNC hpe1564_sampSour(ViSession vi, ViInt16 source) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
-    switch (source) {
+  if (thisPtr->e1406)
+  {
+    switch (source)
+    {
     case hpe1564_SAMP_HOLD:
       errStatus = viPrintf(vi, ":SAMP:SOUR HOLD\n");
       break;
@@ -8234,18 +8725,22 @@ ViStatus _VI_FUNC hpe1564_sampSour(ViSession vi, ViInt16 source) {
 
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regSampSour(vi, thisPtr, source);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    if (source == hpe1564_SAMP_EXT_RISE) {
+    if (source == hpe1564_SAMP_EXT_RISE)
+    {
       errStatus = hpe1564_regSampSlop(vi, thisPtr, hpe1564_SLOP_POS);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
-    if (source == hpe1564_SAMP_EXT_FALL) {
+    if (source == hpe1564_SAMP_EXT_FALL)
+    {
       errStatus = hpe1564_regSampSlop(vi, thisPtr, hpe1564_SLOP_NEG);
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8309,10 +8804,11 @@ ViStatus _VI_FUNC hpe1564_sampSour(ViSession vi, ViInt16 source) {
  */
 
 static const char *const hpe1564_sampSour_Q_source_a[] = {
-    "HOLD",  "TIM",   "TTLT0", "TTLT1", "TTLT2", "TTLT3",
-    "TTLT4", "TTLT5", "TTLT6", "TTLT7", "EXT",   0};
+    "HOLD", "TIM", "TTLT0", "TTLT1", "TTLT2", "TTLT3",
+    "TTLT4", "TTLT5", "TTLT6", "TTLT7", "EXT", 0};
 
-ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source) {
+ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
@@ -8321,14 +8817,16 @@ ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source) {
   ViInt16 slope;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_sampSour_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, ":SAMP:SOUR?\n");
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8341,7 +8839,8 @@ ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source) {
                                   source_str, source);
 
     /* if source was EXT, we need to know slope */
-    if (*source > hpe1564_SAMP_TTLT7) {
+    if (*source > hpe1564_SAMP_TTLT7)
+    {
       errStatus = viPrintf(vi, "SAMP:SLOP?\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8360,8 +8859,8 @@ ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source) {
       if (slope == hpe1564_SLOP_NEG)
         *source = *source + 1;
     }
-
-  } else
+  }
+  else
     errStatus = hpe1564_regSampSour_Q(vi, thisPtr, source);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8398,13 +8897,15 @@ ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_sampTim(ViSession vi, ViReal64 period) {
+ViStatus _VI_FUNC hpe1564_sampTim(ViSession vi, ViReal64 period)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -8418,13 +8919,15 @@ ViStatus _VI_FUNC hpe1564_sampTim(ViSession vi, ViReal64 period) {
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     /* for longer periods, send 8 decimal places of info. */
     if (period > 0.065)
       errStatus = viPrintf(vi, ":SAMP:TIM %0.8lg\n", period);
     else
       errStatus = viPrintf(vi, ":SAMP:TIM %lg\n", period);
-  } else
+  }
+  else
     errStatus = hpe1564_regSampTim(vi, thisPtr, period);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8454,26 +8957,30 @@ ViStatus _VI_FUNC hpe1564_sampTim(ViSession vi, ViReal64 period) {
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period) {
+ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_sampTim_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, ":SAMP:TIM?\n");
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%lg%*t", period);
-  } else
+  }
+  else
     errStatus = hpe1564_regSampTim_Q(vi, thisPtr, period);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8593,18 +9100,20 @@ ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period) {
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_sample_source_a[] = {
-    "HOLD",  "TIM",   "TTLT0", "TTLT1", "TTLT2", "TTLT3",
-    "TTLT4", "TTLT5", "TTLT6", "TTLT7", "EXT",   0};
+    "HOLD", "TIM", "TTLT0", "TTLT1", "TTLT2", "TTLT3",
+    "TTLT4", "TTLT5", "TTLT6", "TTLT7", "EXT", 0};
 
 ViStatus _VI_FUNC hpe1564_sample(ViSession vi, ViInt32 numSamples,
                                  ViInt32 numPreTriggers, ViInt16 source,
-                                 ViPReal64 period) {
+                                 ViPReal64 period)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -8632,8 +9141,10 @@ ViStatus _VI_FUNC hpe1564_sample(ViSession vi, ViInt32 numSamples,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
-    switch (source) {
+  if (thisPtr->e1406)
+  {
+    switch (source)
+    {
     case hpe1564_SAMP_HOLD:
       errStatus = viPrintf(vi, ":SAMP:SOUR HOLD\n");
       break;
@@ -8664,7 +9175,9 @@ ViStatus _VI_FUNC hpe1564_sample(ViSession vi, ViInt32 numSamples,
 
     errStatus = viPrintf(vi, ":SAMP:COUN %ld;PRET:COUN %ld\n", numSamples,
                          numPreTriggers);
-  } else {
+  }
+  else
+  {
     char message[40];
 
     /* the following checks can only be done on this path, because the
@@ -8672,14 +9185,16 @@ ViStatus _VI_FUNC hpe1564_sample(ViSession vi, ViInt32 numSamples,
      */
 
     /* check sample count against specific memory option */
-    if (thisPtr->maxSampCount < numSamples) {
+    if (thisPtr->maxSampCount < numSamples)
+    {
       sprintf(message, "Max. count is %ld", thisPtr->maxSampCount);
       hpe1564_CDE_MESSAGE(message);
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_PARAMETER2);
     }
 
     /* check pretrigger count against specific memory option */
-    if (thisPtr->maxSampCount - 1 < numPreTriggers) {
+    if (thisPtr->maxSampCount - 1 < numPreTriggers)
+    {
       sprintf(message, "Max. pretrigger is %ld", thisPtr->maxSampCount - 1);
       hpe1564_CDE_MESSAGE(message);
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_PARAMETER3);
@@ -8701,7 +9216,8 @@ ViStatus _VI_FUNC hpe1564_sample(ViSession vi, ViInt32 numSamples,
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    switch (source) {
+    switch (source)
+    {
     case hpe1564_SAMP_TIM:
       errStatus = hpe1564_regSampTim(vi, thisPtr, *period);
       break;
@@ -8780,13 +9296,14 @@ ViStatus _VI_FUNC hpe1564_sample(ViSession vi, ViInt32 numSamples,
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_sample_Q_source_a[] = {
-    "HOLD",  "TIM",   "TTLT0", "TTLT1", "TTLT2", "TTLT3", "TTLT4",
-    "TTLT5", "TTLT6", "TTLT7", "EXT",   "EXT",   0};
+    "HOLD", "TIM", "TTLT0", "TTLT1", "TTLT2", "TTLT3", "TTLT4",
+    "TTLT5", "TTLT6", "TTLT7", "EXT", "EXT", 0};
 static const char *const hpe1564_sample_Q_slope_a[] = {"NEG", "POS", 0};
 
 ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi, ViPInt32 numSamples,
                                    ViPInt32 numPreTriggers, ViPInt16 source,
-                                   ViPReal64 period) {
+                                   ViPReal64 period)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
@@ -8795,14 +9312,16 @@ ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi, ViPInt32 numSamples,
   ViBoolean slope;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_sample_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
 
     ViReal64 bigSamp;
 
@@ -8828,7 +9347,8 @@ ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi, ViPInt32 numSamples,
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     /* if source was EXT, we need to know slope */
-    if (*source > hpe1564_SAMP_TTLT7) {
+    if (*source > hpe1564_SAMP_TTLT7)
+    {
       errStatus = viPrintf(vi, "SAMP:SLOP?\n");
       if (errStatus < VI_SUCCESS)
         hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8849,24 +9369,30 @@ ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi, ViPInt32 numSamples,
     }
 
     errStatus = viQueryf(vi, "SAMP:COUN?\n", "%lg%*t", &bigSamp);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
     errStatus = viQueryf(vi, "SAMP:PRET:COUN?\n", "%ld%*t", numPreTriggers);
-    if (errStatus < VI_SUCCESS) {
+    if (errStatus < VI_SUCCESS)
+    {
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
     }
 
     /* If CONTinuous init, D-SCPI will report back 9.9E37 for count,
        which is infinite.  We will report back -1 here to caller.
      */
-    if (bigSamp < 2.4E9) { /* The instrument could be set to 9.9E37 */
+    if (bigSamp < 2.4E9)
+    { /* The instrument could be set to 9.9E37 */
       bigSamp = bigSamp;
       *numSamples = (ViInt32)(bigSamp + 0.1);
-    } else
+    }
+    else
       *numSamples = -1; /* Indicate INF triggers */
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regSampSour_Q(vi, thisPtr, source);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -8941,26 +9467,30 @@ ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi, ViPInt32 numSamples,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_status_Q(ViSession vi, ViPInt16 status) {
+ViStatus _VI_FUNC hpe1564_status_Q(ViSession vi, ViPInt16 status)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_status_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "DIAG:STAT?\n");
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%hd%*t", status);
-  } else
+  }
+  else
     errStatus = hpe1564_regDiagStat_Q(vi, thisPtr, status);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -9011,12 +9541,14 @@ ViStatus _VI_FUNC hpe1564_status_Q(ViSession vi, ViPInt16 status) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_timeBase(ViSession vi, ViInt16 source,
-                                   ViReal64 freq) {
+                                   ViReal64 freq)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -9031,12 +9563,15 @@ ViStatus _VI_FUNC hpe1564_timeBase(ViSession vi, ViInt16 source,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     if (source == hpe1564_TIMEBASE_EXT)
       errStatus = viPrintf(vi, ":ROSC:SOUR EXT;EXT:FREQ %lg\n", freq);
     else
       errStatus = viPrintf(vi, ":ROSC:SOUR INT;EXT:FREQ 10.0e6\n");
-  } else {
+  }
+  else
+  {
     /* no errors are returned from the next two calls */
     errStatus = hpe1564_regRoscFreq(vi, thisPtr, freq);
     errStatus = hpe1564_regRoscSour(vi, thisPtr, source);
@@ -9073,20 +9608,23 @@ ViStatus _VI_FUNC hpe1564_timeBase(ViSession vi, ViInt16 source,
 static const char *const hpe1564_timeBase_source_a[] = {"INT", "EXT", 0};
 
 ViStatus _VI_FUNC hpe1564_timeBase_Q(ViSession vi, ViPInt16 source,
-                                     ViPReal64 freq) {
+                                     ViPReal64 freq)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   char source_str[10];
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
   hpe1564_DEBUG_CHK_THIS(vi, thisPtr);
   hpe1564_CDE_INIT("hpe1564_timeBase_Q");
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, ":ROSC:SOUR? %s%*t\n", source_str);
     if (VI_SUCCESS > errStatus)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -9097,7 +9635,9 @@ ViStatus _VI_FUNC hpe1564_timeBase_Q(ViSession vi, ViPInt16 source,
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viQueryf(vi, ":ROSC:EXT:FREQ?\n", "%lg%*t", freq);
-  } else {
+  }
+  else
+  {
     /* no errors are returned from the next two calls */
     errStatus = hpe1564_regRoscFreq_Q(vi, thisPtr, freq);
     errStatus = hpe1564_regRoscSour_Q(vi, thisPtr, source);
@@ -9214,19 +9754,21 @@ ViStatus _VI_FUNC hpe1564_timeBase_Q(ViSession vi, ViPInt16 source,
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_trigEvent_source_a[] = {
-    "BUS",   "EXT",   "EXT",   "HOLD",  "IMM",   "INT1",  "INT1",  "INT2",
-    "INT2",  "INT3",  "INT3",  "INT4",  "INT4",  "TTLT0", "TTLT1", "TTLT2",
+    "BUS", "EXT", "EXT", "HOLD", "IMM", "INT1", "INT1", "INT2",
+    "INT2", "INT3", "INT3", "INT4", "INT4", "TTLT0", "TTLT1", "TTLT2",
     "TTLT3", "TTLT4", "TTLT5", "TTLT6", "TTLT7", 0};
 
 ViStatus _VI_FUNC hpe1564_trigEvent(ViSession vi, ViInt16 event, ViInt16 source,
-                                    ViPReal64 level) {
+                                    ViPReal64 level)
+{
 
   ViStatus errStatus = 0;
   ViStatus ignore = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -9242,8 +9784,10 @@ ViStatus _VI_FUNC hpe1564_trigEvent(ViSession vi, ViInt16 event, ViInt16 source,
   if (thisPtr->e1406 == 0 && hpe1564_regIsInitiated(vi, thisPtr))
     return hpe1564_ERROR_INIT_IGN;
 
-  if (thisPtr->e1406) {
-    switch (source) {
+  if (thisPtr->e1406)
+  {
+    switch (source)
+    {
     case hpe1564_TRIG_LEVEL1_FALL:
     case hpe1564_TRIG_LEVEL2_FALL:
     case hpe1564_TRIG_LEVEL3_FALL:
@@ -9313,10 +9857,12 @@ ViStatus _VI_FUNC hpe1564_trigEvent(ViSession vi, ViInt16 event, ViInt16 source,
       errStatus = viPrintf(vi, "TRIG:SOUR%hd %s\n", event,
                            hpe1564_trigEvent_source_a[source]);
     } /* end switch */
-  } else
+  }
+  else
   /* make sure download enum numbers match source int here */
   {
-    switch (source) {
+    switch (source)
+    {
     case hpe1564_TRIG_LEVEL1_FALL:
     case hpe1564_TRIG_LEVEL2_FALL:
     case hpe1564_TRIG_LEVEL3_FALL:
@@ -9476,13 +10022,14 @@ ViStatus _VI_FUNC hpe1564_trigEvent(ViSession vi, ViInt16 event, ViInt16 source,
 
 /* note that EXT may be returned instead of EXT1 */
 static const char *const hpe1564_trigEvent_Q_source_a[] = {
-    "BUS",   "EXT",   "EXT",   "HOLD",  "IMM",   "INT",   "INT1",  "INT2",
-    "INT2",  "INT3",  "INT3",  "INT4",  "INT4",  "TTLT0", "TTLT1", "TTLT2",
+    "BUS", "EXT", "EXT", "HOLD", "IMM", "INT", "INT1", "INT2",
+    "INT2", "INT3", "INT3", "INT4", "INT4", "TTLT0", "TTLT1", "TTLT2",
     "TTLT3", "TTLT4", "TTLT5", "TTLT6", "TTLT7", 0};
 static const char *const hpe1564_trigEvent_Q_slope_a[] = {"NEG", "POS", 0};
 
 ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event,
-                                      ViPInt16 source, ViPReal64 level) {
+                                      ViPInt16 source, ViPReal64 level)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
@@ -9492,7 +10039,8 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event,
   ViBoolean tslope;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -9502,7 +10050,8 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event,
   hpe1564_CHK_INT_RANGE(event, hpe1564_TRIG_EVENT_MIN, hpe1564_TRIG_EVENT_MAX,
                         VI_ERROR_PARAMETER2);
 
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "TRIG:SOUR%hd?\n", event);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -9519,7 +10068,8 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event,
     /* return 0.0 for level if not active source */
     *level = 0.0;
 
-    switch (*source) {
+    switch (*source)
+    {
     case hpe1564_TRIG_LEVEL1_FALL:
     case hpe1564_TRIG_LEVEL2_FALL:
     case hpe1564_TRIG_LEVEL3_FALL:
@@ -9637,13 +10187,15 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event,
         *source = *source - 1;
       break;
     }
-
-  } else {
+  }
+  else
+  {
     errStatus = hpe1564_regTrigSour_Q(vi, thisPtr, event, source);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
-    switch (*source) {
+    switch (*source)
+    {
     case hpe1564_TRIG_LEVEL1_FALL:
     case hpe1564_TRIG_LEVEL2_FALL:
     case hpe1564_TRIG_LEVEL3_FALL:
@@ -9721,13 +10273,15 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event,
  *
  *-----------------------------------------------------------------------------
  */
-ViStatus _VI_FUNC hpe1564_trigImm(ViSession vi) {
+ViStatus _VI_FUNC hpe1564_trigImm(ViSession vi)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -9789,13 +10343,15 @@ ViStatus _VI_FUNC hpe1564_trigImm(ViSession vi) {
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_trigLevel(ViSession vi, ViInt16 chan,
-                                    ViReal64 level) {
+                                    ViReal64 level)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -9853,13 +10409,15 @@ ViStatus _VI_FUNC hpe1564_trigLevel(ViSession vi, ViInt16 chan,
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan,
-                                      ViPReal64 level) {
+                                      ViPReal64 level)
+{
 
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (errStatus < VI_SUCCESS) {
+  if (errStatus < VI_SUCCESS)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -9867,13 +10425,15 @@ ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan,
   hpe1564_CDE_INIT("hpe1564_trigLevel_Q");
 
   hpe1564_CHK_INT_RANGE(chan, 1, 4, VI_ERROR_PARAMETER2);
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viPrintf(vi, "TRIG:LEV%hd?\n", chan);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus = viScanf(vi, "%lg%*t", level);
-  } else
+  }
+  else
     errStatus = hpe1564_regTrigLev_Q(vi, thisPtr, chan, level);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -9944,14 +10504,16 @@ ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan,
  */
 static const char *const hpe1564_trigMode_mode_a[] = {
     "NORMAL", "MASTER0", "MASTER2", "MASTER4", "MASTER6",
-    "SLAVE0", "SLAVE2",  "SLAVE4",  "SLAVE6",  0};
+    "SLAVE0", "SLAVE2", "SLAVE4", "SLAVE6", 0};
 
-ViStatus _VI_FUNC hpe1564_trigMode(ViSession vi, ViInt16 mode) {
+ViStatus _VI_FUNC hpe1564_trigMode(ViSession vi, ViInt16 mode)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -9963,7 +10525,8 @@ ViStatus _VI_FUNC hpe1564_trigMode(ViSession vi, ViInt16 mode) {
   hpe1564_CHK_ENUM(mode, 8, VI_ERROR_PARAMETER2);
   if (thisPtr->e1406)
     errStatus = viPrintf(vi, "TRIG:MODE %s\n", hpe1564_trigMode_mode_a[mode]);
-  else {
+  else
+  {
     errStatus = hpe1564_regTrigMode(vi, thisPtr, mode);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -10012,15 +10575,17 @@ ViStatus _VI_FUNC hpe1564_trigMode(ViSession vi, ViInt16 mode) {
  */
 static const char *const hpe1564_trigMode_Q_mode_a[] = {
     "NORMAL", "MASTER0", "MASTER2", "MASTER4", "MASTER6",
-    "SLAVE0", "SLAVE2",  "SLAVE4",  "SLAVE6",  0};
+    "SLAVE0", "SLAVE2", "SLAVE4", "SLAVE6", 0};
 
-ViStatus _VI_FUNC hpe1564_trigMode_Q(ViSession vi, ViPInt16 mode) {
+ViStatus _VI_FUNC hpe1564_trigMode_Q(ViSession vi, ViPInt16 mode)
+{
   ViStatus errStatus = 0;
   hpe1564_globals *thisPtr;
   char mode_str[32];
 
   errStatus = viGetAttribute(vi, VI_ATTR_USER_DATA, (ViAddr)&thisPtr);
-  if (VI_SUCCESS > errStatus) {
+  if (VI_SUCCESS > errStatus)
+  {
     hpe1564_LOG_STATUS(vi, 0, errStatus);
   }
 
@@ -10029,15 +10594,16 @@ ViStatus _VI_FUNC hpe1564_trigMode_Q(ViSession vi, ViPInt16 mode) {
   hpe1564_CDE_INIT("hpe1564_trigMode_Q");
 
   /* Perform Error Checking on Each Parameter */
-  if (thisPtr->e1406) {
+  if (thisPtr->e1406)
+  {
     errStatus = viQueryf(vi, ":TRIG:MODE?\n", "%s%*t", mode_str);
     if (errStatus < VI_SUCCESS)
       hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
     errStatus =
         hpe1564_findIndex(thisPtr, hpe1564_trigMode_Q_mode_a, mode_str, mode);
-
-  } else
+  }
+  else
     errStatus = hpe1564_regTrigMode_Q(vi, thisPtr, mode);
 
   hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
@@ -10081,7 +10647,8 @@ hpe1564_statEvenHdlr
 *****************************************************************************/
 ViStatus _VI_FUNC hpe1564_statEvenHdlr(ViSession vi, ViInt32 happening,
                                        hpe1564_InstrEventHandler eventHandler,
-                                       ViAddr userData) {
+                                       ViAddr userData)
+{
   ViUInt16 intf;
   hpe1564_globals *thisPtr;
   ViStatus errStatus;
@@ -10098,17 +10665,20 @@ ViStatus _VI_FUNC hpe1564_statEvenHdlr(ViSession vi, ViInt32 happening,
   hpe1564_CDE_INIT("hpe1564_statEvenHdlr");
 
   /* if we are not VI_INTF_VXI, then only one happening allowed */
-  if (intf != VI_INTF_VXI) {
+  if (intf != VI_INTF_VXI)
+  {
     /* return param 2 error if happening not USER_ERROR or INSTR_ERROR */
     if ((hpe1564_USER_ERROR_HANDLER != happening) &&
-        (hpe1564_INSTR_ERROR_HANDLER != happening)) {
+        (hpe1564_INSTR_ERROR_HANDLER != happening))
+    {
       sprintf(errMsg, "%hd " hpe1564_MSG_INVALID_HAPPENING, happening);
       hpe1564_CDE_MESSAGE(errMsg);
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_PARAMETER2);
     }
   }
 
-  if (hpe1564_USER_ERROR_HANDLER == happening) {
+  if (hpe1564_USER_ERROR_HANDLER == happening)
+  {
     /* store handler and user data */
     thisPtr->eventHandlerArray[hpe1564_USER_ERROR_HANDLER_IDX].eventHandler =
         eventHandler;
@@ -10117,7 +10687,8 @@ ViStatus _VI_FUNC hpe1564_statEvenHdlr(ViSession vi, ViInt32 happening,
     hpe1564_LOG_STATUS(vi, thisPtr, VI_SUCCESS);
   }
 
-  if (hpe1564_INSTR_ERROR_HANDLER == happening) {
+  if (hpe1564_INSTR_ERROR_HANDLER == happening)
+  {
     /* store handler and user data */
     thisPtr->eventHandlerArray[hpe1564_INSTR_ERROR_HANDLER_IDX].eventHandler =
         eventHandler;
@@ -10127,7 +10698,8 @@ ViStatus _VI_FUNC hpe1564_statEvenHdlr(ViSession vi, ViInt32 happening,
   }
 
   /* check validity of happening */
-  if (VI_FALSE == hpe1564_findHappeningIdx(happening, &hapIdx)) {
+  if (VI_FALSE == hpe1564_findHappeningIdx(happening, &hapIdx))
+  {
 
     sprintf(errMsg, "%ld " hpe1564_MSG_INVALID_HAPPENING, (long)happening);
     hpe1564_CDE_MESSAGE(errMsg);
@@ -10136,12 +10708,16 @@ ViStatus _VI_FUNC hpe1564_statEvenHdlr(ViSession vi, ViInt32 happening,
   }
 
   /* see if we want to enable or disable the handler */
-  if (NULL != eventHandler) {
+  if (NULL != eventHandler)
+  {
     /* see if event handler already exists */
-    if (NULL == thisPtr->eventHandlerArray[hapIdx].eventHandler) {
+    if (NULL == thisPtr->eventHandlerArray[hapIdx].eventHandler)
+    {
       /* okay - no event handler */
       thisPtr->numEventHandlers = thisPtr->numEventHandlers + 1;
-    } else {
+    }
+    else
+    {
       /* error - event handler already exists */
       sprintf(errMsg,
               hpe1564_MSG_EVENT_HDLR_INSTALLED
@@ -10156,9 +10732,11 @@ ViStatus _VI_FUNC hpe1564_statEvenHdlr(ViSession vi, ViInt32 happening,
     thisPtr->eventHandlerArray[hapIdx].userData = userData;
 
   } /* if - install event handler */
-  else {
+  else
+  {
     /* see if event handler already exists */
-    if (NULL != thisPtr->eventHandlerArray[hapIdx].eventHandler) {
+    if (NULL != thisPtr->eventHandlerArray[hapIdx].eventHandler)
+    {
       /* We do have a handler we will be un-installing */
       thisPtr->numEventHandlers = thisPtr->numEventHandlers - 1;
     }
@@ -10206,7 +10784,8 @@ hpe1564_statEvenHdlr_Q
 *****************************************************************************/
 ViStatus _VI_FUNC hpe1564_statEvenHdlr_Q(
     ViSession vi, ViInt32 happening, hpe1564_InstrPEventHandler pEventHandler,
-    ViPAddr pUserData) {
+    ViPAddr pUserData)
+{
   ViUInt16 intf;
   hpe1564_globals *thisPtr;
   ViStatus errStatus;
@@ -10223,10 +10802,12 @@ ViStatus _VI_FUNC hpe1564_statEvenHdlr_Q(
   viGetAttribute(vi, VI_ATTR_INTF_TYPE, &intf);
 
   /* only 2 happenings allowed if we are not VXI intf */
-  if (intf != VI_INTF_VXI) {
+  if (intf != VI_INTF_VXI)
+  {
     /* return param 2 error if happening not USER_ERROR or INSTR_ERROR */
     if (hpe1564_USER_ERROR_HANDLER != happening &&
-        hpe1564_INSTR_ERROR_HANDLER != happening) {
+        hpe1564_INSTR_ERROR_HANDLER != happening)
+    {
       sprintf(errMsg, "%hd " hpe1564_MSG_INVALID_HAPPENING, happening);
       hpe1564_CDE_MESSAGE(errMsg);
       hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_PARAMETER2);
@@ -10234,11 +10815,16 @@ ViStatus _VI_FUNC hpe1564_statEvenHdlr_Q(
   }
 
   /* check validity of happening */
-  if (hpe1564_USER_ERROR_HANDLER == happening) {
+  if (hpe1564_USER_ERROR_HANDLER == happening)
+  {
     hapIdx = hpe1564_USER_ERROR_HANDLER_IDX;
-  } else if (hpe1564_INSTR_ERROR_HANDLER == happening) {
+  }
+  else if (hpe1564_INSTR_ERROR_HANDLER == happening)
+  {
     hapIdx = hpe1564_INSTR_ERROR_HANDLER_IDX;
-  } else if (VI_FALSE == hpe1564_findHappeningIdx(happening, &hapIdx)) {
+  }
+  else if (VI_FALSE == hpe1564_findHappeningIdx(happening, &hapIdx))
+  {
     sprintf(errMsg, "%hd " hpe1564_MSG_INVALID_HAPPENING, happening);
     hpe1564_CDE_MESSAGE(errMsg);
     hpe1564_LOG_STATUS(vi, thisPtr, VI_ERROR_PARAMETER2);

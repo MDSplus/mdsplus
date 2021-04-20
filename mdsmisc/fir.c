@@ -71,28 +71,34 @@ static void Hanning(double *w, int n);
 static void Hamming(double *w, int n);
 static void Blackmann(double *w, int n);
 
-EXPORT Filter *FirRectangular(float *fc, float *s_f, int *n) {
+EXPORT Filter *FirRectangular(float *fc, float *s_f, int *n)
+{
   return Fir(*fc, *s_f, *n, Rectangular);
 }
 
-EXPORT Filter *FirBartlett(float *fc, float *s_f, int *n) {
+EXPORT Filter *FirBartlett(float *fc, float *s_f, int *n)
+{
   return Fir(*fc, *s_f, *n, Bartlett);
 }
 
-EXPORT Filter *FirHanning(float *fc, float *s_f, int *n) {
+EXPORT Filter *FirHanning(float *fc, float *s_f, int *n)
+{
   return Fir(*fc, *s_f, *n, Hanning);
 }
 
-EXPORT Filter *FirHamming(float *fc, float *s_f, int *n) {
+EXPORT Filter *FirHamming(float *fc, float *s_f, int *n)
+{
   return Fir(*fc, *s_f, *n, Hamming);
 }
 
-EXPORT Filter *FirBlackmann(float *fc, float *s_f, int *n) {
+EXPORT Filter *FirBlackmann(float *fc, float *s_f, int *n)
+{
   return Fir(*fc, *s_f, *n, Blackmann);
 }
 
 static Filter *Fir(double fc, double s_f, int n,
-                   void (*Window)(double *, int)) {
+                   void (*Window)(double *, int))
+{
   int i;
   Filter *filter;
   double *w, wc, alpha;
@@ -118,13 +124,15 @@ static Filter *Fir(double fc, double s_f, int n,
   return filter;
 }
 
-static void Rectangular(double *w, int n) {
+static void Rectangular(double *w, int n)
+{
   int i;
   for (i = 0; i < n; i++)
     w[i] = 1;
 }
 
-static void Bartlett(double *w, int n) {
+static void Bartlett(double *w, int n)
+{
   int i;
   for (i = 0; i <= (n - 1) / 2; i++)
     w[i] = 2 * i / (double)(n - 1);
@@ -132,19 +140,22 @@ static void Bartlett(double *w, int n) {
     w[i] = 2 - 2 * i / (double)(n - 1);
 }
 
-static void Hanning(double *w, int n) {
+static void Hanning(double *w, int n)
+{
   int i;
   for (i = 0; i < n; i++)
     w[i] = 0.5 * (1 - cos(2 * PI * i / (double)(n - 1)));
 }
 
-static void Hamming(double *w, int n) {
+static void Hamming(double *w, int n)
+{
   int i;
   for (i = 0; i < n; i++)
     w[i] = 0.54 - 0.46 * cos(2 * PI * i / (double)(n - 1));
 }
 
-static void Blackmann(double *w, int n) {
+static void Blackmann(double *w, int n)
+{
   int i;
   for (i = 0; i < n; i++)
     w[i] = 0.42 - 0.5 * cos(2 * PI * i / (double)(n - 1)) +

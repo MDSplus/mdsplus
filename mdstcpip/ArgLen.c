@@ -26,9 +26,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "mdsip_connections.h"
 
-short ArgLen(struct descrip *d) {
+short ArgLen(struct descrip *d)
+{
   short len = 0;
-  switch (d->dtype) {
+  switch (d->dtype)
+  {
   case DTYPE_CSTRING:
     len = d->length ? d->length : (short)(d->ptr ? strlen(d->ptr) : 0);
     break;

@@ -11,8 +11,8 @@
 
 #define FLIR_FILE_FORMAT 0x46464600 /* FFF\0 */
 #define FILE_FORMAT_VERSION 100     /* 1.00  */
-#define FFF_EXT                                                                \
-  "FFF" /* Default file name                                                   \
+#define FFF_EXT              \
+  "FFF" /* Default file name \
            extention */
 
 // Bit mask for trig types
@@ -29,7 +29,8 @@ typedef unsigned char BYTE;
 typedef unsigned short USHORT;
 typedef unsigned int ULONG;
 
-struct _fpgaheader_t {
+struct _fpgaheader_t
+{
   unsigned char major;
   unsigned char minor;
   unsigned char dp1_trig_type;   // Digital port 1, trig type
@@ -54,7 +55,8 @@ typedef struct _fpgaheader_t FPGA_HEADER;
 
 // main types
 
-typedef enum {
+typedef enum
+{
   /* General tags */
   FFF_TAGID_FREE = 0, /* Marks unused tag descriptor */
 
@@ -89,7 +91,8 @@ typedef enum {
 
 /* Sub Tags for FFF_TAGID_Pixels */
 
-enum {
+enum
+{
   FFF_Pixels_BE = 1, /* Big endian pixel data block */
   FFF_Pixels_LE = 2, /* Little endian pixel data block */
   FFF_Pixels_PNG = 3 /* PNG compressed pixel data block (BE or LE) */
@@ -97,11 +100,15 @@ enum {
 /* When appropriate, add subID enums for other TAG_MAIN_T too */
 
 /* When subtype isn't used, fill subtype with FFF_SubID_default */
-enum { FFF_SubID_default = 1 };
+enum
+{
+  FFF_SubID_default = 1
+};
 
 #pragma pack(push, 1)
 
-typedef struct tagFLIRFILEHEAD {
+typedef struct tagFLIRFILEHEAD
+{
   char szFormatID[4];           /* Fileformat ID 'FFF\0'  4   4       */
   char szOrigin[16];            /* File origin           16  20       */
   unsigned int dwVersion;       /* File format version    4  24       */
@@ -111,10 +118,11 @@ typedef struct tagFLIRFILEHEAD {
   unsigned short usSwapPattern; /* Swap pattern (0=MSBF)  2  38       */
   unsigned short usSpare[7];    /* Spare                 14  52       */
   unsigned int reserved[2];     /* reserved               8  60       */
-  unsigned int dwChecksum; /* Head & index checksum  4  64 unsigned chars */
+  unsigned int dwChecksum;      /* Head & index checksum  4  64 unsigned chars */
 } FLIRFILEHEAD;
 
-typedef struct _geometric_info_t {
+typedef struct _geometric_info_t
+{
   /** Size of one pixel in unsigned chars.
       Normal size is 2 unsigned chars (16 bit pixels)
       or 3 (for colorized YCbCr pixels) */
@@ -162,8 +170,9 @@ typedef struct _geometric_info_t {
   unsigned short reserved1; //!< For future use - should be set to 0
 } GEOMETRIC_INFO_T;         //!< sizeof struct == 32 unsigned chars
 
-struct IMAGEINFO_T {
-  unsigned int imageTime; //!< Time in seconds since 1970-01-01 00:00 (UTC)
+struct IMAGEINFO_T
+{
+  unsigned int imageTime;       //!< Time in seconds since 1970-01-01 00:00 (UTC)
   unsigned long imageMilliTime; //!< Milliseconds since last second
 
   short timeZoneBias;          //!< Time zone bias in minutes
@@ -191,7 +200,8 @@ struct IMAGEINFO_T {
 /**
    Distribution information
 */
-struct DISTR_DATA_T {
+struct DISTR_DATA_T
+{
   /** Framegrab independent distribution data */
   char imgName[16]; /* (4 longs) */
 
@@ -233,7 +243,8 @@ struct DISTR_DATA_T {
   int reserved2[3];
 }; //!< sizeof struct == 64 unsigned chars
 
-typedef struct _pres_par_t {
+typedef struct _pres_par_t
+{
   signed int level; /* Level as normalized pixel value (apix), Level is defined
                        as middle of span (in pixel units) */
   signed int span;  /* Span as normalized pixel value (apix) */
@@ -243,7 +254,8 @@ typedef struct _pres_par_t {
 /**
  *  FFF tag index
  */
-typedef struct tagFLIRFILEINDEX {
+typedef struct tagFLIRFILEINDEX
+{
   unsigned short wMainType; /**< Main type of index     2   2
                          Should be one of TAG_MAIN_T        */
   unsigned short wSubType;  /**< Sub type of index      2   4       */
@@ -262,7 +274,8 @@ typedef struct tagFLIRFILEINDEX {
     Ethernet polynom. */
 } FLIRFILEINDEX;
 
-struct _bidata_t {
+struct _bidata_t
+{
   GEOMETRIC_INFO_T GeometricInfo; // 32 unsigned chars
   unsigned char ObjectParameters[48];
   unsigned char CalibParameters[132];

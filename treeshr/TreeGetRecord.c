@@ -47,7 +47,8 @@ extern void **TreeCtx();
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 int TreeGetRecord(int nid_in, struct descriptor_xd *dsc);
-int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc) {
+int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
+{
   int status;
   CTX_PUSH(&dbid);
   status = TreeGetRecord(nid_in, dsc);
@@ -55,7 +56,8 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc) {
   return status;
 }
 
-int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {
+int TreeGetRecord(int nid_in, struct descriptor_xd *dsc)
+{
   void *dbid = *TreeCtx();
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)&nid_in;
@@ -72,131 +74,151 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {
   if (dblist->remote)
     return GetRecordRemote(dblist, nid_in, dsc);
   nid_to_tree_nidx(dblist, nid, info, nidx);
-  if (info) {
+  if (info)
+  {
     TreeCallHookFun("TreeNidHook", "GetNci", info->treenam, info->shot, nid,
                     NULL);
     status = TreeCallHook(GetNci, info, nid_in);
     if (status && STATUS_NOT_OK)
       return 0;
     status = TreeOpenDatafileR(info);
-    if
-      STATUS_OK {
-        int locked = 0;
-        status = tree_get_nci(info, nidx, &nci, 0, &locked);
-        if
-          STATUS_OK {
-            if (nci.length) {
-              TreeCallHookFun("TreeNidHook", "GetData", info->treenam,
-                              info->shot, nid, NULL);
-              status = TreeCallHook(GetData, info, nid_in);
-              if (status && STATUS_NOT_OK)
-                return 0;
-              switch (nci.class) {
-              case CLASS_APD:
-              case CLASS_CA:
-              case CLASS_R:
-              case CLASS_A:
-                if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
-                  status = TreeINVDFFCLASS;
-                  break;
+    if (STATUS_OK)
+    {
+      int locked = 0;
+      status = tree_get_nci(info, nidx, &nci, 0, &locked);
+      if (STATUS_OK)
+      {
+        if (nci.length)
+        {
+          TreeCallHookFun("TreeNidHook", "GetData", info->treenam,
+                          info->shot, nid, NULL);
+          status = TreeCallHook(GetData, info, nid_in);
+          if (status && STATUS_NOT_OK)
+            return 0;
+          switch (nci.class)
+          {
+          case CLASS_APD:
+          case CLASS_CA:
+          case CLASS_R:
+          case CLASS_A:
+            if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK)
+            {
+              status = TreeINVDFFCLASS;
+              break;
+            }
+            MDS_ATTR_FALLTHROUGH
+          case CLASS_S:
+          case CLASS_XS:
+            if (STATUS_OK)
+            {
+              if (nci.flags2 & NciM_EXTENDED_NCI)
+              {
+                EXTENDED_ATTRIBUTES attributes;
+                status = TreeGetExtendedAttributes(
+                    info, RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),
+                    &attributes);
+                if (STATUS_OK &&
+                    attributes
+                            .facility_offset[STANDARD_RECORD_FACILITY] !=
+                        -1)
+                {
+                  status = tree_get_dsc(
+                      info, nid->tree,
+                      attributes
+                          .facility_offset[STANDARD_RECORD_FACILITY],
+                      attributes
+                          .facility_length[STANDARD_RECORD_FACILITY],
+                      dsc);
                 }
-                MDS_ATTR_FALLTHROUGH
-              case CLASS_S:
-              case CLASS_XS:
-                if
-                  STATUS_OK {
-                    if (nci.flags2 & NciM_EXTENDED_NCI) {
-                      EXTENDED_ATTRIBUTES attributes;
-                      status = TreeGetExtendedAttributes(
-                          info, RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),
-                          &attributes);
-                      if (STATUS_OK &&
-                          attributes
-                                  .facility_offset[STANDARD_RECORD_FACILITY] !=
-                              -1) {
-                        status = tree_get_dsc(
-                            info, nid->tree,
-                            attributes
-                                .facility_offset[STANDARD_RECORD_FACILITY],
-                            attributes
-                                .facility_length[STANDARD_RECORD_FACILITY],
-                            dsc);
-                      } else if (STATUS_OK &&
-                                 attributes.facility_offset
-                                         [SEGMENTED_RECORD_FACILITY] != -1) {
-                        status = _TreeGetSegmentedRecord(dbid, nid_in, dsc);
-                      } else
-                        status = TreeBADRECORD;
-                    } else {
-                      if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
-                        dtype_t dsc_dtype = DTYPE_DSC;
-                        length_t dlen = nci.length - 8;
-                        l_length_t ddlen = dlen + sizeof(struct descriptor);
-                        status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc, 0);
-                        dptr = dsc->pointer;
-                        dptr->length = dlen;
-                        dptr->dtype = nci.dtype;
-                        dptr->class = CLASS_S;
-                        dptr->pointer =
-                            (char *)dptr + sizeof(struct descriptor);
-                        memcpy(dptr->pointer, nci.DATA_INFO.DATA_IN_RECORD.data,
-                               dptr->length);
-                        if (dptr->dtype != DTYPE_T) {
-                          switch (dptr->length) {
-                          case 2:
-                            *(int16_t *)dptr->pointer =
-                                swapint16(dptr->pointer);
-                            break;
-                          case 4:
-                            *(int32_t *)dptr->pointer =
-                                swapint32(dptr->pointer);
-                            break;
-                          case 8:
-                            *(int64_t *)dptr->pointer =
-                                swapint64(dptr->pointer);
-                            break;
-                          }
-                        }
-                      } else {
-                        int length = nci.DATA_INFO.DATA_LOCATION.record_length;
-                        if (length > 0) {
-                          char *data = malloc(length);
-                          status = TreeGetDatafile(
-                              info, nci.DATA_INFO.DATA_LOCATION.rfa, &length,
-                              data, &retsize, &nodenum, nci.flags2);
-                          if
-                            STATUS_NOT_OK
-                          status = TreeBADRECORD;
-                          else if (!(nci.flags2 & NciM_NON_VMS) &&
-                                   ((retsize != length) || (nodenum != nidx)))
-                              status = TreeBADRECORD;
-                          else status = (MdsSerializeDscIn(data, dsc) & 1)
-                                            ? TreeSUCCESS
-                                            : TreeBADRECORD;
-                          free(data);
-                        } else
-                          status = TreeBADRECORD;
-                      }
+                else if (STATUS_OK &&
+                         attributes.facility_offset
+                                 [SEGMENTED_RECORD_FACILITY] != -1)
+                {
+                  status = _TreeGetSegmentedRecord(dbid, nid_in, dsc);
+                }
+                else
+                  status = TreeBADRECORD;
+              }
+              else
+              {
+                if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK)
+                {
+                  dtype_t dsc_dtype = DTYPE_DSC;
+                  length_t dlen = nci.length - 8;
+                  l_length_t ddlen = dlen + sizeof(struct descriptor);
+                  status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc, 0);
+                  dptr = dsc->pointer;
+                  dptr->length = dlen;
+                  dptr->dtype = nci.dtype;
+                  dptr->class = CLASS_S;
+                  dptr->pointer =
+                      (char *)dptr + sizeof(struct descriptor);
+                  memcpy(dptr->pointer, nci.DATA_INFO.DATA_IN_RECORD.data,
+                         dptr->length);
+                  if (dptr->dtype != DTYPE_T)
+                  {
+                    switch (dptr->length)
+                    {
+                    case 2:
+                      *(int16_t *)dptr->pointer =
+                          swapint16(dptr->pointer);
+                      break;
+                    case 4:
+                      *(int32_t *)dptr->pointer =
+                          swapint32(dptr->pointer);
+                      break;
+                    case 8:
+                      *(int64_t *)dptr->pointer =
+                          swapint64(dptr->pointer);
+                      break;
                     }
                   }
-                break;
-              default:
-                status = TreeINVDFFCLASS;
-                break;
+                }
+                else
+                {
+                  int length = nci.DATA_INFO.DATA_LOCATION.record_length;
+                  if (length > 0)
+                  {
+                    char *data = malloc(length);
+                    status = TreeGetDatafile(
+                        info, nci.DATA_INFO.DATA_LOCATION.rfa, &length,
+                        data, &retsize, &nodenum, nci.flags2);
+                    if (STATUS_NOT_OK)
+                      status = TreeBADRECORD;
+                    else if (!(nci.flags2 & NciM_NON_VMS) &&
+                             ((retsize != length) || (nodenum != nidx)))
+                      status = TreeBADRECORD;
+                    else
+                      status = (MdsSerializeDscIn(data, dsc) & 1)
+                                   ? TreeSUCCESS
+                                   : TreeBADRECORD;
+                    free(data);
+                  }
+                  else
+                    status = TreeBADRECORD;
+                }
               }
-            } else
-              status = TreeNODATA;
+            }
+            break;
+          default:
+            status = TreeINVDFFCLASS;
+            break;
           }
+        }
+        else
+          status = TreeNODATA;
       }
-  } else
+    }
+  }
+  else
     status = TreeINVTREE;
-  if
-    STATUS_OK
-  status = TreeMakeNidsLocal((struct descriptor *)dsc, nid_in);
+  if (STATUS_OK)
+    status = TreeMakeNidsLocal((struct descriptor *)dsc, nid_in);
   return status;
 }
 
-int TreeOpenDatafileR(TREE_INFO *info) {
+int TreeOpenDatafileR(TREE_INFO *info)
+{
   int status = 1;
   WRLOCKINFO(info);
   if (!info->data_file)
@@ -205,19 +227,23 @@ int TreeOpenDatafileR(TREE_INFO *info) {
   return status;
 }
 static inline char *
-tree_to_datafile(const char *tree) { // replace .tree with .characteristics
+tree_to_datafile(const char *tree)
+{ // replace .tree with .characteristics
   const size_t baselen = strlen(tree) - sizeof("tree") + 1;
   const size_t namelen0 = baselen + sizeof("datafile");
   char *const filename = memcpy(malloc(namelen0), tree, baselen);
   memcpy(filename + baselen, "datafile", namelen0 - baselen);
   return filename;
 }
-int _TreeOpenDatafileR(TREE_INFO *info) {
+int _TreeOpenDatafileR(TREE_INFO *info)
+{
   INIT_STATUS_AS TreeFAILURE;
   if (!info->data_file)
     info->data_file = TreeGetVmDatafile(info);
-  if (info->data_file) {
-    if (!info->data_file->get) {
+  if (info->data_file)
+  {
+    if (!info->data_file->get)
+    {
       char *filename = tree_to_datafile(info->filespec);
       const int lun = MDS_IO_OPEN(filename, O_RDONLY, 0);
       free(filename);
@@ -231,13 +257,15 @@ int _TreeOpenDatafileR(TREE_INFO *info) {
 typedef RECORD(1) record_one;
 typedef ARRAY(struct descriptor *) array_dsc;
 
-int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid) {
+int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid)
+{
   int status = 1;
   unsigned char tree = ((NID *)&nid)->tree;
   if (dsc_ptr == NULL)
     status = 1;
   else
-    switch (dsc_ptr->class) {
+    switch (dsc_ptr->class)
+    {
 
     case CLASS_D:
     case CLASS_S:
@@ -247,11 +275,13 @@ int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid) {
         status = 1;
       else if (dsc_ptr->dtype == DTYPE_DSC)
         status = TreeMakeNidsLocal((struct descriptor *)dsc_ptr->pointer, nid);
-      else if (dsc_ptr->dtype == DTYPE_NID) {
+      else if (dsc_ptr->dtype == DTYPE_NID)
+      {
         NID *nid_ptr = (NID *)dsc_ptr->pointer;
         if ((nid_ptr->node == 0) && (nid_ptr->tree == 0))
           status = 1;
-        else {
+        else
+        {
           nid_ptr->node = *(int *)nid_ptr & 0xffffff;
           nid_ptr->tree = tree;
         }
@@ -265,25 +295,29 @@ int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid) {
         status = TreeUNSUPARRDTYPE;
       break;
 
-    case CLASS_R: {
+    case CLASS_R:
+    {
       record_one *rptr = (record_one *)dsc_ptr;
       int i;
       for (i = 0, status = 1; STATUS_OK && (i < rptr->ndesc); i++)
         status = TreeMakeNidsLocal(rptr->dscptrs[i], nid);
-    } break;
+    }
+    break;
 
     case CLASS_CA:
       status = 1;
       break;
 
-    case CLASS_APD: {
+    case CLASS_APD:
+    {
       array_dsc *aptr = (array_dsc *)dsc_ptr;
       int n_elts = aptr->arsize / aptr->length;
       int i;
       for (status = 1, i = 0; STATUS_OK && (i < n_elts); i++)
         status =
             TreeMakeNidsLocal((struct descriptor *)*(aptr->pointer + i), nid);
-    } break;
+    }
+    break;
 
     default:
       status = LibINVSTRDES;
@@ -292,7 +326,8 @@ int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid) {
   return status;
 }
 
-DATA_FILE *TreeGetVmDatafile() {
+DATA_FILE *TreeGetVmDatafile()
+{
   DATA_FILE *datafile_ptr;
   static const struct descriptor_xd empty_xd = {0, 0, CLASS_XD, 0, 0};
   int length = align(sizeof(DATA_FILE), sizeof(void *)) +
@@ -301,7 +336,8 @@ DATA_FILE *TreeGetVmDatafile() {
                align(sizeof(NCI), sizeof(void *)) +
                align(sizeof(struct descriptor_xd), sizeof(void *));
   datafile_ptr = malloc(length * 2);
-  if (datafile_ptr != NULL) {
+  if (datafile_ptr != NULL)
+  {
     char *ptr = (char *)datafile_ptr;
     memset(datafile_ptr, 0, length);
     datafile_ptr->record_header =
@@ -319,7 +355,8 @@ DATA_FILE *TreeGetVmDatafile() {
 
 EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
                            int *buffer_size, char *record, int *retsize,
-                           int *nodenum, unsigned char flags) {
+                           int *nodenum, unsigned char flags)
+{
   int status = 1;
   int buffer_space = *buffer_size;
   int first = 1;
@@ -327,13 +364,16 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
   char *bptr = (char *)record;
   *retsize = 0;
   memcpy(rfa, rfa_in, sizeof(rfa));
-  if (!(flags & NciM_DATA_CONTIGUOUS)) {
+  if (!(flags & NciM_DATA_CONTIGUOUS))
+  {
     while ((rfa[0] || rfa[1] || rfa[2] || rfa[3] || rfa[4] || rfa[5]) &&
-           buffer_space && STATUS_OK) {
+           buffer_space && STATUS_OK)
+    {
       RECORD_HEADER hdr;
       int64_t rfa_l = RfaToSeek(rfa);
       int deleted = 1;
-      while (STATUS_OK && deleted) {
+      while (STATUS_OK && deleted)
+      {
         status = (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)&hdr, 12,
                                 &deleted) == 12)
                      ? TreeSUCCESS
@@ -341,41 +381,47 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
         if (STATUS_OK && deleted)
           status = TreeReopenDatafile(info);
       }
-      if
-        STATUS_OK {
-          unsigned int partlen =
-              min(swapint16(&hdr.rlength) - 10, buffer_space);
-          int nidx = swapint32(&hdr.node_number);
-          if (first)
-            *nodenum = nidx;
-          else if (*nodenum != nidx) {
-            status = 0;
-            break;
-          }
-          deleted = 1;
-          while (STATUS_OK && deleted) {
-            status = ((unsigned int)MDS_IO_READ_X(info->data_file->get,
-                                                  rfa_l + 12, (void *)bptr,
-                                                  partlen, &deleted) == partlen)
-                         ? TreeSUCCESS
-                         : TreeDFREAD;
-            if (STATUS_OK && deleted)
-              status = TreeReopenDatafile(info);
-          }
-          if
-            STATUS_OK {
-              bptr += partlen;
-              buffer_space -= partlen;
-              *retsize = *retsize + partlen;
-              memcpy(rfa, &hdr.rfa, sizeof(rfa));
-            }
+      if (STATUS_OK)
+      {
+        unsigned int partlen =
+            min(swapint16(&hdr.rlength) - 10, buffer_space);
+        int nidx = swapint32(&hdr.node_number);
+        if (first)
+          *nodenum = nidx;
+        else if (*nodenum != nidx)
+        {
+          status = 0;
+          break;
         }
+        deleted = 1;
+        while (STATUS_OK && deleted)
+        {
+          status = ((unsigned int)MDS_IO_READ_X(info->data_file->get,
+                                                rfa_l + 12, (void *)bptr,
+                                                partlen, &deleted) == partlen)
+                       ? TreeSUCCESS
+                       : TreeDFREAD;
+          if (STATUS_OK && deleted)
+            status = TreeReopenDatafile(info);
+        }
+        if (STATUS_OK)
+        {
+          bptr += partlen;
+          buffer_space -= partlen;
+          *retsize = *retsize + partlen;
+          memcpy(rfa, &hdr.rfa, sizeof(rfa));
+        }
+      }
     }
-  } else {
-    if (flags & NciM_NON_VMS) {
+  }
+  else
+  {
+    if (flags & NciM_NON_VMS)
+    {
       int64_t rfa_l = RfaToSeek(rfa);
       int deleted = 1;
-      while (STATUS_OK && deleted) {
+      while (STATUS_OK && deleted)
+      {
         status = (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)record,
                                 *buffer_size, &deleted) == *buffer_size)
                      ? TreeSUCCESS
@@ -384,7 +430,9 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
           status = TreeReopenDatafile(info);
       }
       *retsize = *buffer_size;
-    } else {
+    }
+    else
+    {
       int blen = *buffer_size + (*buffer_size + DATAF_C_MAX_RECORD_SIZE + 1) /
                                     (DATAF_C_MAX_RECORD_SIZE + 2) *
                                     sizeof(RECORD_HEADER);
@@ -399,7 +447,8 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
           blen - (partlen
                       ? partlen
                       : (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
-      while (STATUS_OK && deleted) {
+      while (STATUS_OK && deleted)
+      {
         status = (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)buffer,
                                 blen, &deleted) == blen)
                      ? TreeSUCCESS
@@ -410,7 +459,8 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
       loadint32(nodenum, &((RECORD_HEADER *)buffer)->node_number);
       for (bptr_in = buffer, bptr = record + *buffer_size,
           bytes_remaining = *buffer_size;
-           bytes_remaining;) {
+           bytes_remaining;)
+      {
         int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_remaining);
         bptr_in += sizeof(RECORD_HEADER);
         memcpy(bptr - bytes_this_time, bptr_in, bytes_this_time);
@@ -426,11 +476,13 @@ EXPORT int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in,
 }
 
 static pthread_mutex_t viewdate_lock = PTHREAD_MUTEX_INITIALIZER;
-int TreeSetViewDate(int64_t *date) {
+int TreeSetViewDate(int64_t *date)
+{
   TREETHREADSTATIC_INIT;
   if (TREE_PRIVATECTX)
     TREE_VIEWDATE = *date;
-  else {
+  else
+  {
     pthread_mutex_lock(&viewdate_lock);
     ViewDate = *date;
     pthread_mutex_unlock(&viewdate_lock);
@@ -438,11 +490,13 @@ int TreeSetViewDate(int64_t *date) {
   return TreeSUCCESS;
 }
 
-int TreeGetViewDate(int64_t *date) {
+int TreeGetViewDate(int64_t *date)
+{
   TREETHREADSTATIC_INIT;
   if (TREE_PRIVATECTX)
     *date = TREE_VIEWDATE;
-  else {
+  else
+  {
     pthread_mutex_lock(&viewdate_lock);
     *date = ViewDate;
     pthread_mutex_unlock(&viewdate_lock);
@@ -450,29 +504,33 @@ int TreeGetViewDate(int64_t *date) {
   return TreeSUCCESS;
 }
 
-int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci) {
+int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
+{
   char nci_bytes[42];
   int status = TreeOpenDatafileR(info);
-  if
-    STATUS_OK {
-      int deleted = 1;
-      int64_t rfa_l = RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa);
-      rfa_l += ((nci->DATA_INFO.DATA_LOCATION.record_length ==
-                 (DATAF_C_MAX_RECORD_SIZE + 2))
-                    ? (DATAF_C_MAX_RECORD_SIZE + 2)
-                    : (nci->DATA_INFO.DATA_LOCATION.record_length %
-                       (DATAF_C_MAX_RECORD_SIZE + 2)));
-      rfa_l += sizeof(RECORD_HEADER);
-      while (STATUS_OK && deleted) {
-        status = (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)nci_bytes,
-                                42, &deleted) == 42)
-                     ? TreeSUCCESS
-                     : TreeDFREAD;
-        if (STATUS_OK && deleted)
-          status = TreeReopenDatafile(info);
-      }
-      if
-        STATUS_OK { TreeSerializeNciIn(nci_bytes, v_nci); }
+  if (STATUS_OK)
+  {
+    int deleted = 1;
+    int64_t rfa_l = RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa);
+    rfa_l += ((nci->DATA_INFO.DATA_LOCATION.record_length ==
+               (DATAF_C_MAX_RECORD_SIZE + 2))
+                  ? (DATAF_C_MAX_RECORD_SIZE + 2)
+                  : (nci->DATA_INFO.DATA_LOCATION.record_length %
+                     (DATAF_C_MAX_RECORD_SIZE + 2)));
+    rfa_l += sizeof(RECORD_HEADER);
+    while (STATUS_OK && deleted)
+    {
+      status = (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)nci_bytes,
+                              42, &deleted) == 42)
+                   ? TreeSUCCESS
+                   : TreeDFREAD;
+      if (STATUS_OK && deleted)
+        status = TreeReopenDatafile(info);
     }
+    if (STATUS_OK)
+    {
+      TreeSerializeNciIn(nci_bytes, v_nci);
+    }
+  }
   return status;
 }

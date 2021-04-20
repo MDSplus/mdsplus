@@ -43,11 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************/
 EXPORT int TclVerifyTree(void *ctx __attribute__((unused)), char **error,
                          char **output
-                         __attribute__((unused))) { /* Returns: status */
+                         __attribute__((unused)))
+{ /* Returns: status */
   int sts;
 
   sts = TreeVerify();
-  if (~sts & 1) {
+  if (~sts & 1)
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error,

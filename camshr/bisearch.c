@@ -67,7 +67,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      entry
 //-------------------------------------------------------------------------
 int bisearch(int dbType, const void *target, int size,
-             int (*compare)(const void *key1, const void *key2)) {
+             int (*compare)(const void *key1, const void *key2))
+{
   void *dbptr; // generic pointer
   char *candidate, fmt[9];
   int left, middle, right;
@@ -87,7 +88,8 @@ int bisearch(int dbType, const void *target, int size,
   left = 0;
   right = size - 1;
 
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     dbptr = (void *)CTSdb;
     entrySize = MODULE_ENTRY;
@@ -104,12 +106,14 @@ int bisearch(int dbType, const void *target, int size,
   candidate =
       (char *)malloc(entrySize); // allocate memory for item to compare with
 
-  while (left <= right) {
+  while (left <= right)
+  {
     middle = (left + right) / 2;
     if (MSGLVL(8))
       printf("middle=%d\n", middle);
 
-    switch (dbType) { // [2002.05.15]
+    switch (dbType)
+    { // [2002.05.15]
     case CTS_DB:
       sprintf(tmp, "%.32s",
               (char *)(dbptr +
@@ -131,7 +135,8 @@ int bisearch(int dbType, const void *target, int size,
     if (MSGLVL(8))
       printf("calling  compare('%s', '%s')\n", candidate, (char *)target);
 
-    switch (compare(candidate, target)) {
+    switch (compare(candidate, target))
+    {
     case -1:
       /*****************************************************************
        *  Prepare to search to the right of the middle index.           *

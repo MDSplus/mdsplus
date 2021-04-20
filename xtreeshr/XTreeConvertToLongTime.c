@@ -36,17 +36,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Convert a time expression to 64 bit integer
 #define L9223372036854775807L 0x7fffffffffffffffL
-EXPORT int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t *retTime) {
+EXPORT int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t *retTime)
+{
   int status;
   EMPTYXD(xd);
   FREEXD_ON_EXIT(&xd);
   status = TdiData(timeD, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   if (!xd.pointer || xd.pointer->class != CLASS_S)
     status = MDSplusERROR; // InvalidTimeFormat
   else
-    switch (xd.pointer->dtype) {
+    switch (xd.pointer->dtype)
+    {
     case DTYPE_B:
       *retTime = ((int64_t) * (int8_t *)xd.pointer->pointer) * 1000000000L;
       break;
@@ -74,40 +76,43 @@ EXPORT int XTreeConvertToLongTime(mdsdsc_t *timeD, int64_t *retTime) {
       else
         *retTime = *(int64_t *)xd.pointer->pointer;
       break;
-    default: {
+    default:
+    {
       // Not a 64 bit integer, try to convert it via float or double * 1e9
       status = TdiFloat((mdsdsc_t *)&xd, &xd MDS_END_ARG);
-      if
-        STATUS_OK {
-          double dbl;
-          if (xd.pointer->dtype == DTYPE_DOUBLE)
-            dbl = *(double *)xd.pointer->pointer;
-          else
-            dbl = *(float *)xd.pointer->pointer;
-          if (dbl < -9223372036.854775807)
-            *retTime = -L9223372036854775807L - 1;
-          else if (dbl > 9223372036.854775806)
-            *retTime = L9223372036854775807L;
-          else
-            *retTime = (int64_t)(dbl * 1e9);
-        }
+      if (STATUS_OK)
+      {
+        double dbl;
+        if (xd.pointer->dtype == DTYPE_DOUBLE)
+          dbl = *(double *)xd.pointer->pointer;
+        else
+          dbl = *(float *)xd.pointer->pointer;
+        if (dbl < -9223372036.854775807)
+          *retTime = -L9223372036854775807L - 1;
+        else if (dbl > 9223372036.854775806)
+          *retTime = L9223372036854775807L;
+        else
+          *retTime = (int64_t)(dbl * 1e9);
+      }
     }
     }
   FREEXD_NOW(&xd);
   return status;
 }
 
-EXPORT int XTreeConvertToDouble(mdsdsc_t *const timeD, double *const retTime) {
+EXPORT int XTreeConvertToDouble(mdsdsc_t *const timeD, double *const retTime)
+{
   int status;
   EMPTYXD(xd);
   FREEXD_ON_EXIT(&xd);
   status = TdiData(timeD, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK return status;
+  if (STATUS_NOT_OK)
+    return status;
   if (!xd.pointer || xd.pointer->class != CLASS_S)
     status = MDSplusERROR; // InvalidTimeFormat
   else
-    switch (xd.pointer->dtype) {
+    switch (xd.pointer->dtype)
+    {
     case DTYPE_B:
       *retTime = (double)*(int8_t *)xd.pointer->pointer;
       break;
@@ -138,15 +143,16 @@ EXPORT int XTreeConvertToDouble(mdsdsc_t *const timeD, double *const retTime) {
     case DTYPE_DOUBLE:
       *retTime = *(double *)xd.pointer->pointer;
       break;
-    default: {
+    default:
+    {
       status = TdiFloat((mdsdsc_t *)&xd, &xd MDS_END_ARG);
-      if
-        STATUS_OK {
-          if (xd.pointer->dtype == DTYPE_DOUBLE)
-            *retTime = *(double *)xd.pointer->pointer;
-          else
-            *retTime = *(float *)xd.pointer->pointer;
-        }
+      if (STATUS_OK)
+      {
+        if (xd.pointer->dtype == DTYPE_DOUBLE)
+          *retTime = *(double *)xd.pointer->pointer;
+        else
+          *retTime = *(float *)xd.pointer->pointer;
+      }
     }
     }
   FREEXD_NOW(&xd);

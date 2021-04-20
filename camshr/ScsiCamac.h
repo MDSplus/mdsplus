@@ -53,73 +53,80 @@
 #define QScan 3
 
 #define OpCodeTestUnitReady 0
-#define CDBTestUnitReady(name)                                                 \
-  struct {                                                                     \
-    char bytes[6];                                                             \
+#define CDBTestUnitReady(name) \
+  struct                       \
+  {                            \
+    char bytes[6];             \
   } name = {{OpCodeTestUnitReady, 0, 0, 0, 0, 0}}
 
 #define OpCodeRequestSense 3
-#define CDBRequestSense(name)                                                  \
-  struct {                                                                     \
-    char bytes[6];                                                             \
+#define CDBRequestSense(name) \
+  struct                      \
+  {                           \
+    char bytes[6];            \
   } name = {{OpCodeRequestSense, 0, 0, 0, sizeof(RequestSenseData), 0}}
 
 #define OpCodeRegisterAccess 0x0D
-#define CDBRegisterAccess(name, addr_l, addr_h)                                \
-  struct {                                                                     \
-    char bytes[6];                                                             \
+#define CDBRegisterAccess(name, addr_l, addr_h) \
+  struct                                        \
+  {                                             \
+    char bytes[6];                              \
   } name = {{OpCodeRegisterAccess, 0, addr_h, addr_l, 1, 0}}
 
 #define OpCodeInquiryCommand 0x12
-#define CDBInquiryCommand(name)                                                \
-  struct {                                                                     \
-    char bytes[6];                                                             \
+#define CDBInquiryCommand(name) \
+  struct                        \
+  {                             \
+    char bytes[6];              \
   } name = {{OpCodeInquiryCommand, 0, 0, 0, sizeof(InquiryData), 0}}
 
 #define OpCodeSendDiagnostic 0x1D
-#define CDBSendDiagnostic(x)                                                   \
+#define CDBSendDiagnostic(x) \
   SendDiagnostic x = {OpCodeSendDiagnostic, 0, 0, 1, 0, 0, 0, 0}
 
 #define OpCodeSingleCAMAC 0x21
 
 #define OpCodeBlockCAMAC 0xA2
 
-typedef struct {
+typedef struct
+{
   char bytes[6];
 } CamacNonData;
 #define OpCodeCamacNonDataCommand 0xC1
-#define CDBCamacNonDataCommand(name)                                           \
+#define CDBCamacNonDataCommand(name) \
   CamacNonData name = {{OpCodeCamacNonDataCommand, 0, 0, 0, 0, 0}}
 
 #define OpCodeCamacDataCommand 0xE1
-#define CDBCamacDataCommand(name)                                              \
-  CamacDataCommand name = {OpCodeCamacDataCommand,                             \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           0,                                                  \
-                           {0, 0, 0},                                          \
+#define CDBCamacDataCommand(name)                  \
+  CamacDataCommand name = {OpCodeCamacDataCommand, \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           0,                      \
+                           {0, 0, 0},              \
                            0}
 
 #include "ESR.h"
 
-typedef struct {
+typedef struct
+{
   unsigned short status;
   unsigned short bytcnt;
   unsigned fill : 24;
   unsigned char scsi_status;
 } Iosb;
 
-typedef struct {
+typedef struct
+{
   unsigned short status;
   unsigned short bytcnt;
   unsigned x : 1;
@@ -135,7 +142,8 @@ typedef struct {
   unsigned short lbytcnt;
 } TranslatedIosb;
 
-typedef struct {
+typedef struct
+{
   char scsi_port;
   char scsi_address;
   char slot;
@@ -146,7 +154,8 @@ typedef struct {
 #include "RSD.h"
 
 //  Inquiry Command - page 37
-typedef struct {
+typedef struct
+{
   unsigned device_type : 5;
   unsigned device_qual : 3;
   unsigned reserved_1 : 7;
@@ -175,7 +184,8 @@ typedef struct {
 // Send Diagnostic Command - page 41
 
 // CAMAC NAF Specifications - Page 70
-typedef struct {
+typedef struct
+{
   unsigned f : 5;
   unsigned a : 4;
   unsigned n : 5;
@@ -185,7 +195,8 @@ typedef struct {
 // Executing Single Transfer Operations -  Page 71
 //   and
 // Executing Block Transfer Operations  -  Page 74
-typedef struct {
+typedef struct
+{
   unsigned ignore_x : 1;
   unsigned bits_16 : 1;
   unsigned zero1 : 1;
@@ -196,7 +207,8 @@ typedef struct {
 } TransferOp;
 
 // Send Diagnostic Command - page 41
-typedef struct {
+typedef struct
+{
   unsigned char opcode;
   unsigned unitofl : 1;
   unsigned devofl : 1;
@@ -208,7 +220,8 @@ typedef struct {
 } SendDiagnostic;
 
 // Single CAMAC Operation Command - page 42
-typedef struct {
+typedef struct
+{
   unsigned char opcode;
   unsigned char zero1;
   unsigned char crate;
@@ -219,7 +232,8 @@ typedef struct {
 } SingleCAMAC;
 
 // Block CAMAC Operation Command - page 43
-typedef struct {
+typedef struct
+{
   unsigned char opcode;
   unsigned char zero1;
   unsigned char crate;
@@ -232,7 +246,8 @@ typedef struct {
   unsigned char zero2[3];
 } BlockCAMAC;
 
-typedef struct {
+typedef struct
+{
   unsigned int opcode;
   unsigned direction : 1;
   unsigned disconnect : 1;
@@ -262,7 +277,8 @@ typedef struct {
 
 #include "SD.h"
 
-typedef struct {
+typedef struct
+{
   Iosb actual_iosb;
   TranslatedIosb *iosb;
   int wait;

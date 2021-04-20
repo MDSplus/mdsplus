@@ -1,7 +1,8 @@
 #include <mdsdescrip.h>
 
 #pragma pack(push)
-typedef struct {
+typedef struct
+{
   const int MAJOR;
   const int MINOR;
   const int MICRO;

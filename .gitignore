@@ -185,6 +185,7 @@ testing/Makefile.in
 testing/backends/check/Makefile.in
 testing/selftest/Makefile.in
 treeshr/testing/Makefile.in
+treeshr/TreeFindNodeWild.c
 wfevent/Makefile.in
 
 # Generated Java binaries

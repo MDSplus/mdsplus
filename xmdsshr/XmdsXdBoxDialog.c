@@ -68,7 +68,8 @@ extern void XmdsXdBoxLoad();
   the initial widget.
 ****************************************************/
 EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args,
-                                    Cardinal argcount) {
+                                    Cardinal argcount)
+{
 
   /*------------------------------------------------------------------------------
 
@@ -122,9 +123,11 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args,
     XmNx and XmNy
    *************************************/
   sub_args = (Arg *)XtMalloc(sizeof(Arg) * argcount);
-  for (i = 0, cnt = 0; i < argcount; i++) {
+  for (i = 0, cnt = 0; i < argcount; i++)
+  {
     if ((strcmp(args[i].name, XmNx) != 0) &&
-        (strcmp(args[i].name, XmNy) != 0)) {
+        (strcmp(args[i].name, XmNy) != 0))
+    {
       sub_args[cnt].name = args[i].name;
       sub_args[cnt++].value = args[i].value;
     }
@@ -142,6 +145,7 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args,
 }
 
 static void LoadDialog(Widget shell, void *xdbw,
-                       void *unused __attribute__((unused))) {
+                       void *unused __attribute__((unused)))
+{
   XmdsXdBoxLoad((Widget)xdbw);
 }

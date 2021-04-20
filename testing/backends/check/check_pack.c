@@ -118,7 +118,8 @@ static pfun pftab[] = {(pfun)pack_ctx, (pfun)pack_fail, (pfun)pack_loc,
 static upfun upftab[] = {(upfun)upack_ctx, (upfun)upack_fail, (upfun)upack_loc,
                          (upfun)upack_duration};
 
-int pack(enum ck_msg_type type, char **buf, CheckMsg *msg) {
+int pack(enum ck_msg_type type, char **buf, CheckMsg *msg)
+{
   if (buf == NULL)
     return -1;
   if (msg == NULL)
@@ -129,7 +130,8 @@ int pack(enum ck_msg_type type, char **buf, CheckMsg *msg) {
   return pftab[type](buf, msg);
 }
 
-int upack(char *buf, CheckMsg *msg, enum ck_msg_type *type) {
+int upack(char *buf, CheckMsg *msg, enum ck_msg_type *type)
+{
   char *obuf;
 
   if (buf == NULL)
@@ -146,7 +148,8 @@ int upack(char *buf, CheckMsg *msg, enum ck_msg_type *type) {
   return buf - obuf;
 }
 
-static void pack_int(char **buf, int val) {
+static void pack_int(char **buf, int val)
+{
   unsigned char *ubuf = (unsigned char *)*buf;
   ck_uint32 uval = val;
 
@@ -158,7 +161,8 @@ static void pack_int(char **buf, int val) {
   *buf += 4;
 }
 
-static int upack_int(char **buf) {
+static int upack_int(char **buf)
+{
   unsigned char *ubuf = (unsigned char *)*buf;
   ck_uint32 uval;
 
@@ -170,7 +174,8 @@ static int upack_int(char **buf) {
   return (int)uval;
 }
 
-static void pack_str(char **buf, const char *val) {
+static void pack_str(char **buf, const char *val)
+{
   int strsz;
 
   if (val == NULL)
@@ -180,24 +185,29 @@ static void pack_str(char **buf, const char *val) {
 
   pack_int(buf, strsz);
 
-  if (strsz > 0) {
+  if (strsz > 0)
+  {
     memcpy(*buf, val, strsz);
     *buf += strsz;
   }
 }
 
-static char *upack_str(char **buf) {
+static char *upack_str(char **buf)
+{
   char *val;
   int strsz;
 
   strsz = upack_int(buf);
 
-  if (strsz > 0) {
+  if (strsz > 0)
+  {
     val = (char *)emalloc(strsz + 1);
     memcpy(val, *buf, strsz);
     val[strsz] = 0;
     *buf += strsz;
-  } else {
+  }
+  else
+  {
     val = (char *)emalloc(1);
     *val = 0;
   }
@@ -205,15 +215,18 @@ static char *upack_str(char **buf) {
   return val;
 }
 
-static void pack_type(char **buf, enum ck_msg_type type) {
+static void pack_type(char **buf, enum ck_msg_type type)
+{
   pack_int(buf, (int)type);
 }
 
-static enum ck_msg_type upack_type(char **buf) {
+static enum ck_msg_type upack_type(char **buf)
+{
   return (enum ck_msg_type)upack_int(buf);
 }
 
-static int pack_ctx(char **buf, CtxMsg *cmsg) {
+static int pack_ctx(char **buf, CtxMsg *cmsg)
+{
   char *ptr;
   int len;
 
@@ -226,11 +239,13 @@ static int pack_ctx(char **buf, CtxMsg *cmsg) {
   return len;
 }
 
-static void upack_ctx(char **buf, CtxMsg *cmsg) {
+static void upack_ctx(char **buf, CtxMsg *cmsg)
+{
   cmsg->ctx = (enum ck_result_ctx)upack_int(buf);
 }
 
-static int pack_duration(char **buf, DurationMsg *cmsg) {
+static int pack_duration(char **buf, DurationMsg *cmsg)
+{
   char *ptr;
   int len;
 
@@ -243,11 +258,13 @@ static int pack_duration(char **buf, DurationMsg *cmsg) {
   return len;
 }
 
-static void upack_duration(char **buf, DurationMsg *cmsg) {
+static void upack_duration(char **buf, DurationMsg *cmsg)
+{
   cmsg->duration = upack_int(buf);
 }
 
-static int pack_loc(char **buf, LocMsg *lmsg) {
+static int pack_loc(char **buf, LocMsg *lmsg)
+{
   char *ptr;
   int len;
 
@@ -261,12 +278,14 @@ static int pack_loc(char **buf, LocMsg *lmsg) {
   return len;
 }
 
-static void upack_loc(char **buf, LocMsg *lmsg) {
+static void upack_loc(char **buf, LocMsg *lmsg)
+{
   lmsg->file = upack_str(buf);
   lmsg->line = upack_int(buf);
 }
 
-static int pack_fail(char **buf, FailMsg *fmsg) {
+static int pack_fail(char **buf, FailMsg *fmsg)
+{
   char *ptr;
   int len;
 
@@ -280,24 +299,28 @@ static int pack_fail(char **buf, FailMsg *fmsg) {
   return len;
 }
 
-static void upack_fail(char **buf, FailMsg *fmsg) {
+static void upack_fail(char **buf, FailMsg *fmsg)
+{
   fmsg->msg = upack_str(buf);
   fmsg->rtype = upack_int(buf);
 }
 
-static void check_type(int type, const char *file, int line) {
+static void check_type(int type, const char *file, int line)
+{
   if (type < 0 || type >= CK_MSG_LAST)
     eprintf("Bad message type arg %d", file, line, type);
 }
 
 #ifdef HAVE_PTHREAD_H
 static pthread_mutex_t ck_mutex_lock = PTHREAD_MUTEX_INITIALIZER;
-static void ppack_cleanup(void *mutex) {
+static void ppack_cleanup(void *mutex)
+{
   pthread_mutex_unlock((pthread_mutex_t *)mutex);
 }
 #endif
 #pragma GCC diagnostic ignored "-Wclobbered"
-void ppack(FILE *fdes, enum ck_msg_type type, CheckMsg *msg) {
+void ppack(FILE *fdes, enum ck_msg_type type, CheckMsg *msg)
+{
   char *buf = NULL;
   int n;
   ssize_t r;
@@ -319,19 +342,22 @@ void ppack(FILE *fdes, enum ck_msg_type type, CheckMsg *msg) {
   free(buf);
 }
 
-static int read_buf(FILE *fdes, int size, char *buf) {
+static int read_buf(FILE *fdes, int size, char *buf)
+{
   int n;
 
   n = fread(buf, 1, size, fdes);
 
-  if (ferror(fdes)) {
+  if (ferror(fdes))
+  {
     eprintf("Error in call to fread:", __FILE__, __LINE__ - 4);
   }
 
   return n;
 }
 
-static int get_result(char *buf, RcvMsg *rmsg) {
+static int get_result(char *buf, RcvMsg *rmsg)
+{
   enum ck_msg_type type;
   CheckMsg msg;
   int n;
@@ -340,49 +366,64 @@ static int get_result(char *buf, RcvMsg *rmsg) {
   if (n == -1)
     eprintf("Error in call to upack", __FILE__, __LINE__ - 2);
 
-  if (type == CK_MSG_CTX) {
+  if (type == CK_MSG_CTX)
+  {
     CtxMsg *cmsg = (CtxMsg *)&msg;
 
     rcvmsg_update_ctx(rmsg, cmsg->ctx);
-  } else if (type == CK_MSG_LOC) {
+  }
+  else if (type == CK_MSG_LOC)
+  {
     LocMsg *lmsg = (LocMsg *)&msg;
 
-    if (rmsg->failctx == CK_CTX_INVALID) {
+    if (rmsg->failctx == CK_CTX_INVALID)
+    {
       rcvmsg_update_loc(rmsg, lmsg->file, lmsg->line);
     }
     free(lmsg->file);
-  } else if (type == CK_MSG_FAIL) {
+  }
+  else if (type == CK_MSG_FAIL)
+  {
     FailMsg *fmsg = (FailMsg *)&msg;
 
-    if (rmsg->msg == NULL) {
+    if (rmsg->msg == NULL)
+    {
       rmsg->msg = strdup(fmsg->msg);
       rmsg->rtype = fmsg->rtype;
       rmsg->failctx = rmsg->lastctx;
-    } else {
+    }
+    else
+    {
       /* Skip subsequent failure messages, only happens for CK_NOFORK */
     }
     free(fmsg->msg);
-  } else if (type == CK_MSG_DURATION) {
+  }
+  else if (type == CK_MSG_DURATION)
+  {
     DurationMsg *cmsg = (DurationMsg *)&msg;
 
     rmsg->duration = cmsg->duration;
-  } else
+  }
+  else
     check_type(type, __FILE__, __LINE__);
 
   return n;
 }
 
-static void reset_rcv_test(RcvMsg *rmsg) {
+static void reset_rcv_test(RcvMsg *rmsg)
+{
   rmsg->test_line = -1;
   rmsg->test_file = NULL;
 }
 
-static void reset_rcv_fixture(RcvMsg *rmsg) {
+static void reset_rcv_fixture(RcvMsg *rmsg)
+{
   rmsg->fixture_line = -1;
   rmsg->fixture_file = NULL;
 }
 
-static RcvMsg *rcvmsg_create(void) {
+static RcvMsg *rcvmsg_create(void)
+{
   RcvMsg *rmsg;
 
   rmsg = (RcvMsg *)emalloc(sizeof(RcvMsg));
@@ -395,34 +436,42 @@ static RcvMsg *rcvmsg_create(void) {
   return rmsg;
 }
 
-void rcvmsg_free(RcvMsg *rmsg) {
+void rcvmsg_free(RcvMsg *rmsg)
+{
   free(rmsg->fixture_file);
   free(rmsg->test_file);
   free(rmsg->msg);
   free(rmsg);
 }
 
-static void rcvmsg_update_ctx(RcvMsg *rmsg, enum ck_result_ctx ctx) {
-  if (rmsg->lastctx != CK_CTX_INVALID) {
+static void rcvmsg_update_ctx(RcvMsg *rmsg, enum ck_result_ctx ctx)
+{
+  if (rmsg->lastctx != CK_CTX_INVALID)
+  {
     free(rmsg->fixture_file);
     reset_rcv_fixture(rmsg);
   }
   rmsg->lastctx = ctx;
 }
 
-static void rcvmsg_update_loc(RcvMsg *rmsg, const char *file, int line) {
-  if (rmsg->lastctx == CK_CTX_TEST) {
+static void rcvmsg_update_loc(RcvMsg *rmsg, const char *file, int line)
+{
+  if (rmsg->lastctx == CK_CTX_TEST)
+  {
     free(rmsg->test_file);
     rmsg->test_line = line;
     rmsg->test_file = strdup(file);
-  } else {
+  }
+  else
+  {
     free(rmsg->fixture_file);
     rmsg->fixture_line = line;
     rmsg->fixture_file = strdup(file);
   }
 }
 
-RcvMsg *punpack(FILE *fdes) {
+RcvMsg *punpack(FILE *fdes)
+{
   int nread, nparse, n;
   char *buf;
   RcvMsg *rmsg;
@@ -435,14 +484,16 @@ RcvMsg *punpack(FILE *fdes) {
   nread = read_buf(fdes, CK_MAX_MSG_SIZE, buf);
   nparse = nread;
   /* While not all parsed */
-  while (nparse > 0) {
+  while (nparse > 0)
+  {
     /* Parse one message */
     n = get_result(buf, rmsg);
     nparse -= n;
     /* Move remaining data in buffer to the beginning */
     memmove(buf, buf + n, nparse);
     /* If EOF has not been seen */
-    if (nread > 0) {
+    if (nread > 0)
+    {
       /* Read more data into empty space at end of the buffer */
       nread = read_buf(fdes, n, buf + nparse);
       nparse += nread;
@@ -450,7 +501,8 @@ RcvMsg *punpack(FILE *fdes) {
   }
   free(buf);
 
-  if (rmsg->lastctx == CK_CTX_INVALID) {
+  if (rmsg->lastctx == CK_CTX_INVALID)
+  {
     free(rmsg);
     rmsg = NULL;
   }

@@ -49,24 +49,30 @@ int dtype_cstring = DTYPE_CSTRING;
 #define TEST(test)                                                             \
   {                                                                            \
     int s = test;                                                              \
-    if ((s & 1) == 0) {                                                        \
+    if ((s & 1) == 0)                                                          \
+    {                                                                          \
       fprintf(stderr, "%s:%d : " #test " = %d => ERROR\n", __FILE__, __LINE__, \
               s);                                                              \
       exit(1);                                                                 \
     }                                                                          \
   }
 
-int testOpen(char *tree, int shot) { return MdsOpen(tree, &shot); }
+int testOpen(char *tree, int shot)
+{
+  return MdsOpen(tree, &shot);
+}
 int testClose(char *tree, int shot) { return MdsClose(tree, &shot); }
 
-int testScalarString(char *expression, char *expected) {
+int testScalarString(char *expression, char *expected)
+{
   int length = strlen(expected);
   int lenalloc = length + 32;
   char *string = calloc(lenalloc, 1);
   int dsc = descr(&dtype_cstring, string, &null, &lenalloc);
   returnlength = 0;
   status = MdsValue(expression, &dsc, &null, &returnlength);
-  if (status & 1) {
+  if (status & 1)
+  {
     fprintf(stderr, "testScalarString(%.*s -- %s  %d)\n", returnlength, string, expected, returnlength);
     status =
         (returnlength == length) && (strncmp(string, expected, length) == 0);
@@ -77,7 +83,8 @@ int testScalarString(char *expression, char *expected) {
 
 int testSetDefault(char *node) { return (MdsSetDefault(node)); }
 
-int testNull(char *expression) {
+int testNull(char *expression)
+{
   char *buf = malloc(BUFFLEN);
   int bufflen = BUFFLEN;
   int dsc = descr(&dtype_cstring, buf, &null, &bufflen);
@@ -85,11 +92,13 @@ int testNull(char *expression) {
   return ((status & 1) == 0 && (returnlength == 0));
 }
 
-int testPut1Dsc(char *node, char *expression, int dsc) {
+int testPut1Dsc(char *node, char *expression, int dsc)
+{
   return (MdsPut(node, expression, &dsc, &null));
 }
 
-int testPut2Dsc(char *node, char *expression, int dsc1, int dsc2) {
+int testPut2Dsc(char *node, char *expression, int dsc1, int dsc2)
+{
   return (MdsPut(node, expression, &dsc1, &dsc2, &null));
 }
 
@@ -97,7 +106,8 @@ int testClearNode(char *node) { return (MdsPut(node, "", &null)); }
 
 /******** MAJOR TEST SECTIONS ********/
 
-void TestTreeOpenClose() {
+void TestTreeOpenClose()
+{
   TEST(testOpen(TREE, SHOT));
   TEST(testOpen("FOOFOOFOO", 0xDEAD) ^ 1);
   TEST(testClose("FOOFOOFOO", 0xDEAD) == TreeNOT_OPEN);
@@ -108,7 +118,8 @@ void TestTreeOpenClose() {
   TEST(testNull("$EXPT"));
 }
 
-void TestTdi() {
+void TestTdi()
+{
   int status;
   float result[10], result1;
   int dsc, dsc1, dsc2, i;
@@ -127,7 +138,8 @@ void TestTdi() {
   dsc = descr(&dtype_float, result, &sresult, &null);
   status = MdsValue("2. : 20. : 2.", &dsc, &null, &returnlength);
   status = (status && (returnlength == 10));
-  if (status & 1) {
+  if (status & 1)
+  {
     for (i = 0; i < returnlength; i++)
       status = status && (result[i] == 2. * (i + 1));
   }
@@ -146,7 +158,8 @@ void TestTdi() {
   TEST(testScalarString("MACHINE()", machine));
 }
 
-void TestArray1D() {
+void TestArray1D()
+{
   int i;
   int dsc;
   int size = 100;
@@ -162,9 +175,11 @@ void TestArray1D() {
 
   dsc = descr(&dtype_float, compare, &size, &null);
   status = MdsValue("\\TOP:A", &dsc, &null, &returnlength);
-  if (status & 1) {
+  if (status & 1)
+  {
     status = (returnlength == size);
-    if (status & 1) {
+    if (status & 1)
+    {
       int i;
       for (i = 0; i < size; i++)
         status = status && (array[i] == compare[i]);
@@ -178,7 +193,8 @@ void TestArray1D() {
   free(compare);
 }
 
-void TestArray2D() {
+void TestArray2D()
+{
   int dsc;
   int sx = 2;
   int sy = 13;
@@ -190,12 +206,14 @@ void TestArray2D() {
       {0., 31., 29., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.}};
   float compare[2][13];
   float compareBigger[4][20];
-  for (i = 0; i < sx; i++) {
+  for (i = 0; i < sx; i++)
+  {
     int j;
     for (j = 0; j < sy; j++)
       compare[i][j] = 0;
   }
-  for (i = 0; i < sxx; i++) {
+  for (i = 0; i < sxx; i++)
+  {
     int j;
     for (j = 0; j < syy; j++)
       compareBigger[i][j] = 0;
@@ -208,13 +226,17 @@ void TestArray2D() {
 
   dsc = descr(&dtype_float, compare, &sx, &sy, &null);
   status = MdsValue("\\TOP:A", &dsc, &null, &returnlength);
-  if (status & 1) {
+  if (status & 1)
+  {
     status = (returnlength == sx * sy);
-    if (status & 1) {
+    if (status & 1)
+    {
       int i;
-      for (i = 0; i < sx; i++) {
+      for (i = 0; i < sx; i++)
+      {
         int j;
-        for (j = 0; j < sy; j++) {
+        for (j = 0; j < sy; j++)
+        {
           status = status && (array[i][j] == compare[i][j]);
         }
       }
@@ -223,13 +245,17 @@ void TestArray2D() {
   TEST(status);
   dsc = descr(&dtype_float, compareBigger, &sxx, &syy, &null);
   status = MdsValue("\\TOP:A", &dsc, &null, &returnlength);
-  if (status & 1) {
+  if (status & 1)
+  {
     status = (returnlength == sx * sy);
-    if (status & 1) {
+    if (status & 1)
+    {
       int i;
-      for (i = 0; i < sx; i++) {
+      for (i = 0; i < sx; i++)
+      {
         int j;
-        for (j = 0; j < sy; j++) {
+        for (j = 0; j < sy; j++)
+        {
           status = status && (array[i][j] == compare[i][j]);
         }
       }
@@ -240,13 +266,15 @@ void TestArray2D() {
   TEST(testClearNode("\\TOP:A"));
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   (void)argv;
   int returnlength = 0;
   int status = 0;
   int dsc = descr(&dtype_long, &status, &null);
   TEST(MdsValue("setenv('test_path=.')", &dsc, &null, &returnlength));
-  if (argc > 1) {
+  if (argc > 1)
+  {
     SOCKET socket;
     printf("Connecting to: local://0\n");
     socket = MdsConnect("local://0");

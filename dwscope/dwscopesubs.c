@@ -142,14 +142,16 @@ static String FixupBARS(String in);
 #define XA_X_AXIS XInternAtom(XtDisplay(w), "DWSCOPE_X_AXIS", 0)
 #define XA_Y_AXIS XInternAtom(XtDisplay(w), "DWSCOPE_Y_AXIS", 0)
 
-static int FlipBitsIfNecessary(int in) {
+static int FlipBitsIfNecessary(int in)
+{
   static union {
     int i;
     unsigned bit : 1;
   } test = {1};
   if (test.bit)
     return in;
-  else {
+  else
+  {
     int out = 0;
     int i;
     for (i = 0; i < 32; i++)
@@ -159,9 +161,11 @@ static int FlipBitsIfNecessary(int in) {
 }
 
 Boolean ConvertSelectionToWave(Widget w, Atom type, unsigned long length,
-                               CutHeader *header, WaveInfo *wave) {
+                               CutHeader *header, WaveInfo *wave)
+{
   int status = 0;
-  if (type == XA_DWSCOPE_PANEL) {
+  if (type == XA_DWSCOPE_PANEL)
+  {
     String text = (String)(header + 1);
     if ((length >= sizeof(CutHeader)) &&
         (length ==
@@ -169,7 +173,8 @@ Boolean ConvertSelectionToWave(Widget w, Atom type, unsigned long length,
           header->default_node_length + header->x_length + header->y_length +
           header->xmin_length + header->xmax_length + header->ymin_length +
           header->ymax_length + header->title_length + header->event_length +
-          header->print_title_length + header->pad_label_length))) {
+          header->print_title_length + header->pad_label_length)))
+    {
       wave->update = header->update;
       wave->x_grid_labels = header->x_grid_labels;
       wave->y_grid_labels = header->y_grid_labels;
@@ -197,11 +202,14 @@ Boolean ConvertSelectionToWave(Widget w, Atom type, unsigned long length,
                                   text);
     }
     status = 1;
-  } else if (type == XA_STRING) {
+  }
+  else if (type == XA_STRING)
+  {
     String text = (String)header;
     text = ReplaceCountedString(&wave->y, strlen(text), text);
     wave->_global.global.y = 0;
-    if (strlen(wave->pad_label) == 0) {
+    if (strlen(wave->pad_label) == 0)
+    {
       int i;
       for (i = strlen(wave->y) - 1; i; i--)
         if (wave->y[i] == '.' || wave->y[i] == ':')
@@ -217,7 +225,8 @@ Boolean ConvertSelectionToWave(Widget w, Atom type, unsigned long length,
   return status;
 }
 
-static String ReplaceCountedString(String *old, short length, String new) {
+static String ReplaceCountedString(String *old, short length, String new)
+{
   if (*old)
     XtFree(*old);
   *old = strncpy(XtMalloc(length + 1), new, length);
@@ -225,49 +234,58 @@ static String ReplaceCountedString(String *old, short length, String new) {
   return new + length;
 }
 
-String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx) {
+String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx)
+{
   String answer = 0;
   int prefix_length = strlen(prefix);
   Boolean done = 0;
   float *fptr;
-  while (answer == 0 && !done) {
-    switch ((*ctx)++) {
+  while (answer == 0 && !done)
+  {
+    switch ((*ctx)++)
+    {
     case -4:
       XtVaGetValues(wave->w, XmdsNxMin, &fptr, NULL);
-      if (fptr != NULL) {
+      if (fptr != NULL)
+      {
         answer = XtMalloc(prefix_length + sizeof(".xmin_zoom: \n") + 12);
         sprintf(answer, "%s.%s: %g\n", prefix, "xmin_zoom", *fptr);
       }
       break;
     case -3:
       XtVaGetValues(wave->w, XmdsNxMax, &fptr, NULL);
-      if (fptr != NULL) {
+      if (fptr != NULL)
+      {
         answer = XtMalloc(prefix_length + sizeof(".xmax_zoom: \n") + 12);
         sprintf(answer, "%s.%s: %g\n", prefix, "xmax_zoom", *fptr);
       }
       break;
     case -2:
       XtVaGetValues(wave->w, XmdsNyMin, &fptr, NULL);
-      if (fptr != NULL) {
+      if (fptr != NULL)
+      {
         answer = XtMalloc(prefix_length + sizeof(".ymin_zoom: \n") + 12);
         sprintf(answer, "%s.%s: %g\n", prefix, "ymin_zoom", *fptr);
       }
       break;
     case -1:
       XtVaGetValues(wave->w, XmdsNyMax, &fptr, NULL);
-      if (fptr != NULL) {
+      if (fptr != NULL)
+      {
         answer = XtMalloc(prefix_length + sizeof(".ymax_zoom: \n") + 12);
         sprintf(answer, "%s.%s: %g\n", prefix, "ymax_zoom", *fptr);
       }
       break;
     case 0:
-      if (height) {
+      if (height)
+      {
         answer = XtMalloc(prefix_length + sizeof(".height: \n") + 16);
         sprintf(answer, "%s.%s: %d\n", prefix, "height", height);
       }
       MDS_ATTR_FALLTHROUGH
     case 1:
-      if (!wave->update) {
+      if (!wave->update)
+      {
         answer = XtMalloc(prefix_length + sizeof(".update: 0\n") + 1);
         strcpy(answer, prefix);
         strcat(answer, ".update: 0\n");
@@ -289,35 +307,40 @@ String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx) {
       answer = wave->step_plot ? Concat(prefix, ".step_plot: 1\n") : 0;
       break;
     case 6:
-      if (wave->x_grid_lines != 4) {
+      if (wave->x_grid_lines != 4)
+      {
         answer = XtMalloc(prefix_length + sizeof(".x.grid_lines: \n") + 16);
         sprintf(answer, "%s.%s: %d\n", prefix, "x.grid_lines",
                 wave->x_grid_lines);
       }
       break;
     case 7:
-      if (wave->y_grid_lines != 4) {
+      if (wave->y_grid_lines != 4)
+      {
         answer = XtMalloc(prefix_length + sizeof(".y.grid_lines: \n") + 16);
         sprintf(answer, "%s.%s: %d\n", prefix, "y.grid_lines",
                 wave->y_grid_lines);
       }
       break;
     case 8:
-      if (strlen(wave->database)) {
+      if (strlen(wave->database))
+      {
         answer = XtMalloc(prefix_length + sizeof(".experiment: \n") +
                           strlen(wave->database) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "experiment", wave->database);
       }
       break;
     case 9:
-      if (strlen(wave->shot)) {
+      if (strlen(wave->shot))
+      {
         answer = XtMalloc(prefix_length + sizeof(".shot: \n") +
                           strlen(wave->shot) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "shot", wave->shot);
       }
       break;
     case 10:
-      if (strlen(wave->default_node)) {
+      if (strlen(wave->default_node))
+      {
         answer = XtMalloc(prefix_length + sizeof(".default_node: \n") +
                           strlen(wave->default_node) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "default_node",
@@ -325,7 +348,8 @@ String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx) {
       }
       break;
     case 11:
-      if (strlen(wave->x)) {
+      if (strlen(wave->x))
+      {
         String out = FixupLFS(wave->x);
         answer = XtMalloc(prefix_length + sizeof(".x: \n") + strlen(out) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "x", out);
@@ -333,7 +357,8 @@ String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx) {
       }
       break;
     case 12:
-      if (strlen(wave->y)) {
+      if (strlen(wave->y))
+      {
         String out = FixupLFS(wave->y);
         answer = XtMalloc(prefix_length + sizeof(".y: \n") + strlen(out) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "y", out);
@@ -341,49 +366,56 @@ String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx) {
       }
       break;
     case 13:
-      if (strlen(wave->xmin)) {
+      if (strlen(wave->xmin))
+      {
         answer = XtMalloc(prefix_length + sizeof(".xmin: \n") +
                           strlen(wave->xmin) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "xmin", wave->xmin);
       }
       break;
     case 14:
-      if (strlen(wave->xmax)) {
+      if (strlen(wave->xmax))
+      {
         answer = XtMalloc(prefix_length + sizeof(".xmax: \n") +
                           strlen(wave->xmax) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "xmax", wave->xmax);
       }
       break;
     case 15:
-      if (strlen(wave->ymin)) {
+      if (strlen(wave->ymin))
+      {
         answer = XtMalloc(prefix_length + sizeof(".ymin: \n") +
                           strlen(wave->ymin) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "ymin", wave->ymin);
       }
       break;
     case 16:
-      if (strlen(wave->ymax)) {
+      if (strlen(wave->ymax))
+      {
         answer = XtMalloc(prefix_length + sizeof(".ymax: \n") +
                           strlen(wave->ymax) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "ymax", wave->ymax);
       }
       break;
     case 17:
-      if (strlen(wave->event)) {
+      if (strlen(wave->event))
+      {
         answer = XtMalloc(prefix_length + sizeof(".event: \n") +
                           strlen(wave->event) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "event", wave->event);
       }
       break;
     case 18:
-      if (strlen(wave->title)) {
+      if (strlen(wave->title))
+      {
         answer = XtMalloc(prefix_length + sizeof(".title: \n") +
                           strlen(wave->title) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "title", wave->title);
       }
       break;
     case 19:
-      if (strlen(wave->print_title)) {
+      if (strlen(wave->print_title))
+      {
         answer = XtMalloc(prefix_length + sizeof(".print_title: \n") +
                           strlen(wave->print_title) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "print_title",
@@ -391,14 +423,16 @@ String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx) {
       }
       break;
     case 20:
-      if (strlen(wave->pad_label)) {
+      if (strlen(wave->pad_label))
+      {
         answer = XtMalloc(prefix_length + sizeof(".label: \n") +
                           strlen(wave->pad_label) + 1);
         sprintf(answer, "%s.%s: %s\n", prefix, "label", wave->pad_label);
       }
       break;
     case 21:
-      if (wave->_global.global_defaults != (strlen(wave->y) ? 0 : -1)) {
+      if (wave->_global.global_defaults != (strlen(wave->y) ? 0 : -1))
+      {
         answer = XtMalloc(prefix_length + sizeof(".global_defaults: \n") + 16);
         sprintf(answer, "%s.%s: %d\n", prefix, "global_defaults",
                 FlipBitsIfNecessary(wave->_global.global_defaults));
@@ -416,9 +450,11 @@ String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx) {
 
 Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave,
                                Atom target, Atom *type, String *value,
-                               unsigned long *length, int *format) {
+                               unsigned long *length, int *format)
+{
   int status = 0;
-  if (target == XA_DWSCOPE_PANEL) {
+  if (target == XA_DWSCOPE_PANEL)
+  {
     CutHeader *header;
     String text;
     *type = target;
@@ -478,27 +514,34 @@ Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave,
     memcpy(text, wave->pad_label, strlen(wave->pad_label));
     text += strlen(wave->pad_label);
     status = 1;
-  } else if (target == XA_STRING) {
+  }
+  else if (target == XA_STRING)
+  {
     int ctx = 0;
     String text;
     String all_text = WaveToText(prefix, wave, 0, &ctx);
-    while (all_text && (text = WaveToText(prefix, wave, 0, &ctx))) {
+    while (all_text && (text = WaveToText(prefix, wave, 0, &ctx)))
+    {
       all_text = XtRealloc(all_text, strlen(all_text) + strlen(text) + 1);
       strcat(all_text, text);
       XtFree(text);
     }
-    if (all_text && strlen(all_text)) {
+    if (all_text && strlen(all_text))
+    {
       *type = target;
       *value = (String)all_text;
       *length = strlen(all_text);
       *format = 8;
       status = 1;
     }
-  } else if (target == XA_X_AXIS) {
+  }
+  else if (target == XA_X_AXIS)
+  {
     XmdsWaveformValStruct *x;
     int count = 0;
     XtVaGetValues(w, XmdsNxValStruct, &x, XmdsNcount, &count, NULL);
-    if (x && count) {
+    if (x && count)
+    {
       *format = 8;
       *type = target;
       *value = (String)memcpy(XtMalloc(count * sizeof(float)), x->addr,
@@ -506,11 +549,14 @@ Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave,
       *length = count * 32 / (*format);
       status = 1;
     }
-  } else if (target == XA_Y_AXIS) {
+  }
+  else if (target == XA_Y_AXIS)
+  {
     XmdsWaveformValStruct *y;
     int count = 0;
     XtVaGetValues(w, XmdsNyValStruct, &y, XmdsNcount, &count, NULL);
-    if (y && count) {
+    if (y && count)
+    {
       *format = 8;
       *type = target;
       *value = (String)memcpy(XtMalloc(count * sizeof(float)), y->addr,
@@ -518,7 +564,9 @@ Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave,
       *length = count * 32 / (*format);
       status = 1;
     }
-  } else if (target == XA_TARGETS) {
+  }
+  else if (target == XA_TARGETS)
+  {
     *type = target;
     *value = (String)XtMalloc(sizeof(Atom) * 4);
     ((Atom *)*value)[0] = XA_STRING;
@@ -532,13 +580,16 @@ Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave,
   return status;
 }
 
-XrmDatabase GetFileDatabase(String file_spec) {
+XrmDatabase GetFileDatabase(String file_spec)
+{
   FILE *file = fopen(file_spec, "r");
   XrmDatabase db = 0;
-  if (file) {
+  if (file)
+  {
     char line_text[32768];
     char doubled[32768];
-    while (fgets(line_text, 32768, file)) {
+    while (fgets(line_text, 32768, file))
+    {
       int i;
       int j;
       int put_it = 0;
@@ -547,13 +598,16 @@ XrmDatabase GetFileDatabase(String file_spec) {
         if (line_text[i] == ':')
           break;
       for (j = i + 1; j < size; j++)
-        if (line_text[j] != 9 && line_text[j] != 10 && line_text[j] != ' ') {
+        if (line_text[j] != 9 && line_text[j] != 10 && line_text[j] != ' ')
+        {
           put_it = 1;
           break;
         }
-      if (put_it) {
+      if (put_it)
+      {
         j = 0;
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < size; i++)
+        {
           if (line_text[i] == '\\')
             doubled[j++] = line_text[i];
           doubled[j++] = line_text[i];
@@ -567,7 +621,8 @@ XrmDatabase GetFileDatabase(String file_spec) {
   return db;
 }
 
-void LoadDataSetup(Widget w, String title, WaveInfo *info) {
+void LoadDataSetup(Widget w, String title, WaveInfo *info)
+{
   Widget top;
   Widget tw;
   XmString title_s = XmStringCreateSimple(title);
@@ -601,7 +656,8 @@ void LoadDataSetup(Widget w, String title, WaveInfo *info) {
   LoadGlobalDefaults(XtNameToWidget(top, "*defaults_setup_db"), info);
 }
 
-static void LoadGlobalDefaults(Widget w, WaveInfo *info) {
+static void LoadGlobalDefaults(Widget w, WaveInfo *info)
+{
   XmToggleButtonGadgetSetState(XtNameToWidget(w, "def_exp_text"),
                                info->_global.global.database, 1);
   XmToggleButtonGadgetSetState(XtNameToWidget(w, "def_shot_text"),
@@ -644,7 +700,8 @@ static void LoadGlobalDefaults(Widget w, WaveInfo *info) {
                                info->_global.global.y_grid_lines, 1);
 }
 
-String GetResource(XrmDatabase db, String resource, String default_answer) {
+String GetResource(XrmDatabase db, String resource, String default_answer)
+{
   XrmValue value = {0, (String)0};
   XrmString type;
   if (XrmGetResource(db, resource, 0, &type, &value) && value.size &&
@@ -656,7 +713,8 @@ String GetResource(XrmDatabase db, String resource, String default_answer) {
 
 static String GetPlotResource(XrmDatabase db, String prefix, int row,
                               int column, String plot_resource,
-                              String default_answer) {
+                              String default_answer)
+{
   static char resource[256];
   resource[0] = 0;
   sprintf(resource, "%s_%d_%d.%s", prefix, row + 1, column + 1, plot_resource);
@@ -664,7 +722,8 @@ static String GetPlotResource(XrmDatabase db, String prefix, int row,
 }
 
 void GetWaveFromDb(XrmDatabase db, String prefix, int row, int col,
-                   WaveInfo *info) {
+                   WaveInfo *info)
+{
   ReplaceString(&info->database,
                 GetPlotResource(db, prefix, row, col, "experiment", ""), 0);
   ReplaceString(&info->shot, GetPlotResource(db, prefix, row, col, "shot", ""),
@@ -712,7 +771,8 @@ void GetWaveFromDb(XrmDatabase db, String prefix, int row, int col,
 }
 
 Boolean GetWaveZoomFromDb(XrmDatabase db, String prefix, int row, int col,
-                          float *zoom) {
+                          float *zoom)
+{
   String limit;
   limit = GetPlotResource(db, prefix, row, col, "xmin_zoom", "");
   if (limit && strlen(limit) > 0)
@@ -737,7 +797,8 @@ Boolean GetWaveZoomFromDb(XrmDatabase db, String prefix, int row, int col,
   return TRUE;
 }
 
-void GetDataSetup(Widget w, WaveInfo *info, int *change_mask) {
+void GetDataSetup(Widget w, WaveInfo *info, int *change_mask)
+{
   int value;
   int mask = 0;
   int global_defaults = info->_global.global_defaults;
@@ -746,12 +807,12 @@ void GetDataSetup(Widget w, WaveInfo *info, int *change_mask) {
   for (tw = w; tw; top = tw, tw = XtParent(tw))
     ;
   GetGlobalDefaults(XtNameToWidget(top, "*defaults_setup_db"), info);
-#define changed(field, test)                                                   \
-  ((test) || ((global_defaults & M_##field) !=                                 \
-              (info->_global.global_defaults & M_##field)))                    \
+#define changed(field, test)                                \
+  ((test) || ((global_defaults & M_##field) !=              \
+              (info->_global.global_defaults & M_##field))) \
       << B_##field
-#define changed_string(field, name)                                            \
-  changed(field, ReplaceString(&info->field,                                   \
+#define changed_string(field, name)          \
+  changed(field, ReplaceString(&info->field, \
                                XmTextGetString(XtNameToWidget(w, name)), 0))
   mask |= changed_string(database, "exp_text");
   mask |= changed_string(shot, "shot_text");
@@ -792,7 +853,8 @@ void GetDataSetup(Widget w, WaveInfo *info, int *change_mask) {
 #undef changed_string
 }
 
-static void GetGlobalDefaults(Widget w, WaveInfo *info) {
+static void GetGlobalDefaults(Widget w, WaveInfo *info)
+{
   info->_global.global.database =
       XmToggleButtonGadgetGetState(XtNameToWidget(w, "def_exp_text"));
   info->_global.global.shot =
@@ -835,9 +897,11 @@ static void GetGlobalDefaults(Widget w, WaveInfo *info) {
       XmToggleButtonGadgetGetState(XtNameToWidget(w, "def_y_grid_lines"));
 }
 
-Boolean ReplaceString(String *old, String new, Boolean free) {
+Boolean ReplaceString(String *old, String new, Boolean free)
+{
   Boolean changed = TRUE;
-  if (*old) {
+  if (*old)
+  {
     changed = strcmp(*old, new);
     XtFree(*old);
   }
@@ -848,20 +912,24 @@ Boolean ReplaceString(String *old, String new, Boolean free) {
 }
 
 void SetDirMask(Widget w, String *file,
-                XmAnyCallbackStruct *callback_data __attribute__((unused))) {
-  if (*file) {
+                XmAnyCallbackStruct *callback_data __attribute__((unused)))
+{
+  if (*file)
+  {
     XmString mask;
     char *tmpfile = strcpy(malloc(strlen(*file) + 10), *file);
     char *typpos = strrchr(tmpfile, '.');
     char *dirpos = strrchr(tmpfile, '/');
-    if (dirpos) {
+    if (dirpos)
+    {
       dirpos[1] = 0;
       strcat(tmpfile, "*");
       if (typpos && typpos > dirpos)
         strcat(tmpfile, typpos);
       else
         strcat(tmpfile, ".dat");
-    } else
+    }
+    else
       strcpy(tmpfile, "*.dat");
     mask = XmStringCreateSimple(tmpfile);
     XtVaSetValues(w, XmNdirMask, mask, NULL);
@@ -874,7 +942,8 @@ void DisplayHelp(Widget w_in __attribute__((unused)),
                  String tag __attribute__((unused)),
                  XtPointer callback_data __attribute__((unused))) {}
 
-void ResetWave(WaveInfo *info) {
+void ResetWave(WaveInfo *info)
+{
   ReplaceString(&info->database, "", 0);
   ReplaceString(&info->shot, "", 0);
   ReplaceString(&info->default_node, "", 0);
@@ -899,7 +968,8 @@ void ResetWave(WaveInfo *info) {
 }
 
 void DisableGlobalDefault(Widget w, String tag,
-                          XtPointer callback_data __attribute__((unused))) {
+                          XtPointer callback_data __attribute__((unused)))
+{
   Widget top = w;
   Widget tw;
   Widget defaults_widget;
@@ -916,9 +986,11 @@ void DisableGlobalDefault(Widget w, String tag,
 }
 
 void InitDefaultsSetupWidget(Widget w, int *tag __attribute__((unused)),
-                             XtPointer callback_data __attribute__((unused))) {
+                             XtPointer callback_data __attribute__((unused)))
+{
   static int default_db_inited = 0;
-  if (!default_db_inited) {
+  if (!default_db_inited)
+  {
     Widget top = w;
     Widget tw;
     Widget defaults_widget;
@@ -936,9 +1008,11 @@ void InitDefaultsSetupWidget(Widget w, int *tag __attribute__((unused)),
                   NULL);
     XtVaGetValues(setup_widget, XtNwidth, &width, XtNheight, &height, NULL);
     XtVaSetValues(defaults_widget, XtNwidth, width, XtNheight, height, NULL);
-    for (i = 0; i < num; i++) {
+    for (i = 0; i < num; i++)
+    {
       Widget w = XtNameToWidget(setup_widget, &XtName(child[i])[4]);
-      if (w) {
+      if (w)
+      {
         Position x;
         Position y;
         XtVaGetValues(w, XtNx, &x, XtNy, &y, NULL);
@@ -949,7 +1023,8 @@ void InitDefaultsSetupWidget(Widget w, int *tag __attribute__((unused)),
   }
 }
 
-static String Concat(String prefix, String postfix) {
+static String Concat(String prefix, String postfix)
+{
   String answer = XtMalloc(strlen(prefix) + strlen(postfix) + 1);
   strcpy(answer, prefix);
   strcat(answer, postfix);
@@ -957,7 +1032,8 @@ static String Concat(String prefix, String postfix) {
 }
 
 void ExpandReset(Widget w, int *tag,
-                 XtPointer callback_data __attribute__((unused))) {
+                 XtPointer callback_data __attribute__((unused)))
+{
   Widget dsw;
   Widget exw;
   String exp;
@@ -972,14 +1048,16 @@ void ExpandReset(Widget w, int *tag,
   exp = XmTextGetString(XtNameToWidget(dsw, "*x_expression"));
   XmTextSetString(XtNameToWidget(exw, "*expanded_x"), exp);
   XtFree(exp);
-  if (!XtIsManaged(exw)) {
+  if (!XtIsManaged(exw))
+  {
     XtVaSetValues(exw, XmNuserData, dsw, NULL);
     XtManageChild(exw);
   }
 }
 
 void ExpandCancel(Widget w, int *tag __attribute__((unused)),
-                  XtPointer callback_data __attribute__((unused))) {
+                  XtPointer callback_data __attribute__((unused)))
+{
   Widget dsw;
   for (dsw = w; XtParent(dsw); dsw = XtParent(dsw))
     ;
@@ -987,7 +1065,8 @@ void ExpandCancel(Widget w, int *tag __attribute__((unused)),
 }
 
 void ExpandOk(Widget w, int *tag __attribute__((unused)),
-              XtPointer callback_data __attribute__((unused))) {
+              XtPointer callback_data __attribute__((unused)))
+{
   Widget dsw;
   Widget exw;
   String exp;
@@ -1005,7 +1084,8 @@ void ExpandOk(Widget w, int *tag __attribute__((unused)),
   ExpandCancel(exw, 0, 0);
 }
 
-static String FixupLFS(String in) {
+static String FixupLFS(String in)
+{
   int i;
   int j;
   int lfs = 0;
@@ -1014,45 +1094,55 @@ static String FixupLFS(String in) {
     if (in[i] == '\n')
       lfs++;
   out = XtMalloc(strlen(in) + lfs * 2 + 1);
-  for (i = 0, j = 0; in[i]; i++) {
-    if (in[i] == '\n') {
+  for (i = 0, j = 0; in[i]; i++)
+  {
+    if (in[i] == '\n')
+    {
       out[j++] = '|';
       out[j++] = '|';
       out[j++] = '|';
-    } else
+    }
+    else
       out[j++] = in[i];
   }
   out[j] = 0;
   return out;
 }
 
-static String FixupBARS(String in) {
+static String FixupBARS(String in)
+{
   int i;
   int j;
   int lfs = 0;
   String out;
   for (i = 0; in[i] && in[i + 1] && in[i + 2]; i++)
-    if (in[i] == '|' && in[i + 1] == '|' && in[i + 2] == '|') {
+    if (in[i] == '|' && in[i + 1] == '|' && in[i + 2] == '|')
+    {
       lfs++;
       i += 2;
     }
   out = XtMalloc(strlen(in) - lfs * 2 + 1);
-  for (i = 0, j = 0; in[i]; i++) {
-    if (lfs && in[i] == '|' && in[i + 1] == '|' && in[i + 2] == '|') {
+  for (i = 0, j = 0; in[i]; i++)
+  {
+    if (lfs && in[i] == '|' && in[i + 1] == '|' && in[i + 2] == '|')
+    {
       out[j++] = '\n';
       lfs--;
       i += 2;
-    } else
+    }
+    else
       out[j++] = in[i];
   }
   out[j] = 0;
   return out;
 }
 
-static void SetOptionIdx(Widget w, int idx) {
+static void SetOptionIdx(Widget w, int idx)
+{
   static Widget pulldown;
   XtVaGetValues(w, XmNsubMenuId, &pulldown, NULL);
-  if (pulldown) {
+  if (pulldown)
+  {
     static Widget *options;
     static Cardinal num_options;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options,
@@ -1062,19 +1152,22 @@ static void SetOptionIdx(Widget w, int idx) {
   }
 }
 
-static int GetOptionIdx(Widget w) {
+static int GetOptionIdx(Widget w)
+{
   int idx = -1;
   static Widget pulldown;
   static Widget option;
   XtVaGetValues(w, XmNsubMenuId, &pulldown, XmNmenuHistory, &option, NULL);
-  if (pulldown && option) {
+  if (pulldown && option)
+  {
     static Widget *options;
     static Cardinal num_options;
     int i;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options,
                   NULL);
     for (i = 0; i < (int)num_options; i++)
-      if (options[i] == option) {
+      if (options[i] == option)
+      {
         idx = i;
         break;
       }
@@ -1082,7 +1175,8 @@ static int GetOptionIdx(Widget w) {
   return idx;
 }
 
-void PositionPopupMenu(XmRowColumnWidget w, XButtonEvent *event) {
+void PositionPopupMenu(XmRowColumnWidget w, XButtonEvent *event)
+{
   Widget option = w->row_column.memory_subwidget;
   XtX(w) = event->x_root - (option ? XtX(option) + XtWidth(option) / 2 : 0);
   XtY(w) = event->y_root - (option ? XtY(option) + XtHeight(option) / 2 : 0);
@@ -1090,14 +1184,16 @@ void PositionPopupMenu(XmRowColumnWidget w, XButtonEvent *event) {
   RC_CascadeBtn(w) = XtWindowToWidget(XtDisplay(w), event->window);
 }
 
-void PopupComplaint(Widget parent, String string) {
+void PopupComplaint(Widget parent, String string)
+{
   Widget new_parent;
   Widget w;
   int i;
   for (new_parent = parent; new_parent && !XtIsWidget(new_parent);
        new_parent = XtParent(new_parent))
     ;
-  if (new_parent) {
+  if (new_parent)
+  {
     static XtCallbackRec ok_callback_list[] = {
         {(XtCallbackProc)XtDestroyWidget, 0}, {0, 0}};
     Arg args[] = {{XmNmessageString, (XtArgVal)0},
@@ -1117,7 +1213,8 @@ void PopupComplaint(Widget parent, String string) {
     XtDestroyWidget(XmMessageBoxGetChild(w, XmDIALOG_CANCEL_BUTTON));
     XtDestroyWidget(XmMessageBoxGetChild(w, XmDIALOG_HELP_BUTTON));
     XtManageChild(w);
-  } else
+  }
+  else
     printf("Error displaying dialog box\nCould not find widget to 'parent' "
            "box\nError message was:\n\t%s\n",
            string);

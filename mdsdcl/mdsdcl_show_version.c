@@ -16,7 +16,8 @@ extern const char *MdsRelease();
 
 EXPORT int mdsdcl_show_version(void *ctx __attribute__((unused)),
                                char **error __attribute__((unused)),
-                               char **output) {
+                               char **output)
+{
   char *info = *output = malloc(1024);
   info += sprintf(info, "\n\n");
   info += sprintf(info, "MDSplus version: %d.%d.%d\n", MdsVersion.MAJOR,
@@ -34,9 +35,10 @@ EXPORT int mdsdcl_show_version(void *ctx __attribute__((unused)),
   return 1;
 }
 
-EXPORT int mdsdcl_show_git_info(void *ctx, char **error, char **output) {
+EXPORT int mdsdcl_show_git_info(void *ctx, char **error, char **output)
+{
   int status;
-  int qfr[] = {cli_present(ctx, "TAG"),    cli_present(ctx, "BRANCH"),
+  int qfr[] = {cli_present(ctx, "TAG"), cli_present(ctx, "BRANCH"),
                cli_present(ctx, "REMOTE"), cli_present(ctx, "REMOTE_URL"),
                cli_present(ctx, "COMMIT"), cli_present(ctx, "SRCDIR")};
 
@@ -55,7 +57,8 @@ EXPORT int mdsdcl_show_git_info(void *ctx, char **error, char **output) {
                                 strlen(MDSplusGitVersion.GIT_COMMIT) +
                                 strlen(MDSplusGitVersion.GIT_SRCDIR) + 1000);
 
-  if (s) {
+  if (s)
+  {
     if (qfr[0] == MdsdclPRESENT)
       info += sprintf(info, "%s ", MDSplusGitVersion.GIT_TAG);
     if (qfr[1] == MdsdclPRESENT)
@@ -69,7 +72,9 @@ EXPORT int mdsdcl_show_git_info(void *ctx, char **error, char **output) {
     if (qfr[5] == MdsdclPRESENT)
       info += sprintf(info, "%s ", MDSplusGitVersion.GIT_SRCDIR);
     info += sprintf(info, "\n");
-  } else {
+  }
+  else
+  {
     info += sprintf(info, "\n MDSplus code info:\n");
     info += sprintf(info, "----------------------\n");
     info += sprintf(info, "  Tag:    %s\n", MDSplusGitVersion.GIT_TAG);

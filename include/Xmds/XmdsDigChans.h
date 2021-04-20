@@ -37,16 +37,16 @@
 #define XmdsNchannels "channels"   /* Number of digitizer channels */
 #define XmdsNnid "nid"             /* Nid of first channel */
 #define XmdsNnidOffset "nidOffset" /* Nid offset */
-#define XmdsNdataNidOffset                                                     \
+#define XmdsNdataNidOffset \
   "dataNidOffset" /* Offset from channel head to data */
-#define XmdsNstartIdxNidOffset                                                 \
+#define XmdsNstartIdxNidOffset \
   "startIdxNidOffset" /* Offset from channel head to startidx */
-#define XmdsNendIdxNidOffset                                                   \
+#define XmdsNendIdxNidOffset \
   "endIdxNidOffset" /* Offset from channel head to endidx */
-#define XmdsNnodesPerChannel                                                   \
+#define XmdsNnodesPerChannel \
   "nodesPerChannel" /* Number of nodes per digitizer channel */
-#define XmdsNputOnApply                                                        \
-  "putOnApply" /* Put when a XmdsApplyAllXds is called                         \
+#define XmdsNputOnApply                                \
+  "putOnApply" /* Put when a XmdsApplyAllXds is called \
                 */
 
 /* External creation routines:

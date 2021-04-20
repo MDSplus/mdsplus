@@ -37,16 +37,17 @@ extern int StrPosition(const mdsdsc_t *const source,
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-static void __attribute__((unused)) free_d(void *ptr) {
+static void __attribute__((unused)) free_d(void *ptr)
+{
   StrFree1Dx((mdsdsc_d_t *)ptr);
 }
 #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)
 #define FREED_IF(ptr, c) pthread_cleanup_pop(c)
 #define FREED_NOW(ptr) FREED_IF(ptr, 1)
 #define FREED_CANCEL(ptr) FREED_IF(ptr, 0)
-#define INIT_AS_AND_FREED_ON_EXIT(var, value)                                  \
-  mdsdsc_d_t var = value;                                                      \
+#define INIT_AS_AND_FREED_ON_EXIT(var, value) \
+  mdsdsc_d_t var = value;                     \
   FREED_ON_EXIT(&var)
-#define INIT_AND_FREED_ON_EXIT(var, dtype)                                     \
+#define INIT_AND_FREED_ON_EXIT(var, dtype) \
   INIT_AS_AND_FREED_ON_EXIT(var, ((mdsdsc_d_t){0, dtype, CLASS_D, NULL}))
 #endif

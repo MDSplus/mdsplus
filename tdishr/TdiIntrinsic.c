@@ -46,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PREC_COMMA 92
 #define MAXLINE 120
 #define MAXFRAC 40
-#define MINMAX(min, test, max)                                                 \
+#define MINMAX(min, test, max) \
   ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
 #define OPC_ENUM
 
@@ -64,7 +64,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 #include <treeshr.h>
-typedef struct _bounds {
+typedef struct _bounds
+{
   int l;
   int u;
 } BOUNDS;
@@ -76,7 +77,8 @@ extern int TdiConvert();
 extern int TdiGetLong();
 extern int SysGetMsg();
 
-static mdsdsc_t *fixed_array(mdsdsc_t *in) {
+static mdsdsc_t *fixed_array(mdsdsc_t *in)
+{
   array_coeff *a = (array_coeff *)in;
   int dsize = sizeof(mdsdsc_a_t) + sizeof(int) + 3 * sizeof(int) * a->dimct;
   int i;
@@ -98,7 +100,8 @@ Explain in 300 words or less.
 ****************************/
 #define MAXMESS 1800
 #define ADD(text) add(text, TDITHREADSTATIC_VAR)
-static void add(char *const text, TDITHREADSTATIC_ARG) {
+static void add(char *const text, TDITHREADSTATIC_ARG)
+{
   mdsdsc_d_t new = {0, DTYPE_T, CLASS_D, 0};
   new.length = (length_t)strlen(text);
   new.pointer = text;
@@ -106,7 +109,8 @@ static void add(char *const text, TDITHREADSTATIC_ARG) {
     StrAppend(&TDI_INTRINSIC_MSG, (mdsdsc_t *)&new);
 }
 #define NUMB(count) numb(count, TDITHREADSTATIC_VAR)
-static void numb(int count, TDITHREADSTATIC_ARG) {
+static void numb(int count, TDITHREADSTATIC_ARG)
+{
   char val[16];
   sprintf(val, "%d", count);
   ADD(val);
@@ -115,16 +119,20 @@ static void numb(int count, TDITHREADSTATIC_ARG) {
 /***************************************************
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
-int tdi_trace(mdsdsc_xd_t *out_ptr) {
+int tdi_trace(mdsdsc_xd_t *out_ptr)
+{
   TDITHREADSTATIC_INIT;
   if (TDI_INTRINSIC_MSG.length > MAXMESS)
     return MDSplusERROR;
   ADD("%TDI Decompile text_length");
   NUMB(out_ptr->length);
   ADD(" partial text: ");
-  if (out_ptr->length < MAXLINE - 70) {
+  if (out_ptr->length < MAXLINE - 70)
+  {
     StrAppend(&TDI_INTRINSIC_MSG, (mdsdsc_t *)out_ptr);
-  } else {
+  }
+  else
+  {
     *((char *)out_ptr->pointer + MAXLINE - 70) = '\0';
     ADD((char *)out_ptr->pointer);
   }
@@ -133,48 +141,58 @@ int tdi_trace(mdsdsc_xd_t *out_ptr) {
 
 #define TRACE(opcode, narg, list) trace(opcode, narg, list, TDITHREADSTATIC_VAR)
 static inline void trace(opcode_t opcode, int narg, mdsdsc_t *list[],
-                         TDITHREADSTATIC_ARG) {
+                         TDITHREADSTATIC_ARG)
+{
   if (TDI_INTRINSIC_MSG.length >= MAXMESS)
     return;
   unsigned short now = TDI_INTRINSIC_MSG.length;
   int j;
   mdsdsc_d_t text = {0, DTYPE_T, CLASS_D, 0};
-  if (opcode < TdiFUNCTION_MAX) {
+  if (opcode < TdiFUNCTION_MAX)
+  {
     struct TdiFunctionStruct *pfun =
         (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
-    if (narg < pfun->m1 || narg > pfun->m2) {
+    if (narg < pfun->m1 || narg > pfun->m2)
+    {
       if (pfun->m1 != pfun->m2)
         ADD("%TDI Requires ");
       NUMB(pfun->m1);
-      if (pfun->m1 != pfun->m2) {
+      if (pfun->m1 != pfun->m2)
+      {
         ADD(" to ");
         NUMB(pfun->m2);
       }
       ADD(" input arguments for ");
-    } else
+    }
+    else
       ADD("%TDI Error in ");
     ADD(pfun->name);
-  } else
+  }
+  else
     ADD("%TDI Unknown opcode ");
   ADD("(");
-  for (j = 0; j < narg;) {
-    if
-      IS_OK(Tdi0Decompile(list[j], PREC_COMMA, &text, 5)) {
-        if (TDI_INTRINSIC_MSG.length - now + text.length < MAXLINE - 2)
-          StrAppend(&TDI_INTRINSIC_MSG, (mdsdsc_t *)&text);
-        else {
-          *(text.pointer + MAXFRAC) = '\0';
-          ADD(text.pointer);
-          ADD(" ...");
-        }
+  for (j = 0; j < narg;)
+  {
+    if (IS_OK(Tdi0Decompile(list[j], PREC_COMMA, &text, 5)))
+    {
+      if (TDI_INTRINSIC_MSG.length - now + text.length < MAXLINE - 2)
+        StrAppend(&TDI_INTRINSIC_MSG, (mdsdsc_t *)&text);
+      else
+      {
+        *(text.pointer + MAXFRAC) = '\0';
+        ADD(text.pointer);
+        ADD(" ...");
       }
+    }
     else
       ADD("BAD_INPUT");
     StrFree1Dx(&text);
-    if (++j < narg) {
+    if (++j < narg)
+    {
       if (TDI_INTRINSIC_MSG.length - now < MAXLINE - MAXFRAC - 7)
         ADD(", ");
-      else {
+      else
+      {
         ADD(",\n");
         now = TDI_INTRINSIC_MSG.length;
         ADD("%- ");
@@ -184,13 +202,15 @@ static inline void trace(opcode_t opcode, int narg, mdsdsc_t *list[],
   ADD(")\n");
 }
 
-typedef struct {
+typedef struct
+{
   int n;
   char f[256];
   mdsdsc_t *a[256];
   int *rec;
 } fixed_t;
-static void cleanup_list(void *fixed_in) {
+static void cleanup_list(void *fixed_in)
+{
   fixed_t *const fixed = (fixed_t *)fixed_in;
   while (--fixed->n >= 0)
     if (fixed->f[fixed->n])
@@ -199,7 +219,8 @@ static void cleanup_list(void *fixed_in) {
 }
 
 EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
-                        mdsdsc_xd_t *out_ptr) {
+                        mdsdsc_xd_t *out_ptr)
+{
   int status;
   struct TdiFunctionStruct *fun_ptr =
       (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
@@ -215,16 +236,20 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
     status = TdiEXTRA_ARG;
   else if (TDI_INTRINSIC_REC > 1800)
     status = TdiRECURSIVE;
-  else {
+  else
+  {
     fixed_t fixed;
     TDI_INTRINSIC_REC++;
     pthread_cleanup_push(cleanup_list, &fixed);
     fixed.rec = &TDI_INTRINSIC_REC;
     for (fixed.n = 0; fixed.n < narg; fixed.n++)
-      if (list[fixed.n] != NULL && list[fixed.n]->class == CLASS_NCA) {
+      if (list[fixed.n] != NULL && list[fixed.n]->class == CLASS_NCA)
+      {
         fixed.f[fixed.n] = 1;
         fixed.a[fixed.n] = fixed_array(list[fixed.n]);
-      } else {
+      }
+      else
+      {
         fixed.f[fixed.n] = 0;
         fixed.a[fixed.n] = list[fixed.n];
       }
@@ -232,11 +257,13 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
     pthread_cleanup_pop(1);
   }
   if (STATUS_OK || status == TdiBREAK || status == TdiCONTINUE ||
-      status == TdiGOTO || status == TdiRETURN) {
+      status == TdiGOTO || status == TdiRETURN)
+  {
     if (!out_ptr)
       goto notmp;
     int stat1 = MDSplusSUCCESS;
-    switch (out_ptr->class) {
+    switch (out_ptr->class)
+    {
     default:
       status = TdiINVCLADSC;
       break;
@@ -252,13 +279,15 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
       if ((char *)out_ptr->pointer + out_ptr->l_length <= (char *)tmp.pointer ||
           (char *)out_ptr->pointer >= (char *)tmp.pointer + tmp.l_length)
         MdsFree1Dx(out_ptr, NULL);
-      else if (out_ptr->l_length) {
+      else if (out_ptr->l_length)
+      {
         ADD("%TDI DANGER, part of old output descriptor was input to below.\n");
         trace(opcode, narg, list, TDITHREADSTATIC_VAR);
       }
       if (tmp.class == CLASS_XD)
         *out_ptr = tmp;
-      else {
+      else
+      {
         stat1 = MdsCopyDxXd((mdsdsc_t *)&tmp, out_ptr);
         MdsFree1Dx(&tmp, NULL);
       }
@@ -274,19 +303,21 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
       if (dsc_ptr == 0)
         stat1 = StrFree1Dx((mdsdsc_d_t *)out_ptr);
       else
-        switch (dsc_ptr->class) {
+        switch (dsc_ptr->class)
+        {
         case CLASS_S:
         case CLASS_D:
-          if (out_ptr->length != dsc_ptr->length) {
+          if (out_ptr->length != dsc_ptr->length)
+          {
             stat1 = StrGet1Dx(&dsc_ptr->length, (mdsdsc_d_t *)out_ptr);
           }
-          if
-            IS_OK(stat1) {
-              out_ptr->dtype = dsc_ptr->dtype;
-              if ((out_ptr->length > 0) && (dsc_ptr != NULL))
-                _MOVC3(out_ptr->length, dsc_ptr->pointer,
-                       (char *)out_ptr->pointer);
-            }
+          if (IS_OK(stat1))
+          {
+            out_ptr->dtype = dsc_ptr->dtype;
+            if ((out_ptr->length > 0) && (dsc_ptr != NULL))
+              _MOVC3(out_ptr->length, dsc_ptr->pointer,
+                     (char *)out_ptr->pointer);
+          }
           break;
         default:
           stat1 = TdiINVCLADSC;
@@ -309,7 +340,8 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
         stat1 = TdiConvert(&miss_dsc, out_ptr);
       MdsFree1Dx(&tmp, NULL);
       break;
-    case CLASS_NCA: {
+    case CLASS_NCA:
+    {
       mdsdsc_t *fixed_out_ptr = fixed_array((mdsdsc_t *)out_ptr);
       if (tmp.class == CLASS_XD)
         dsc_ptr = tmp.pointer;
@@ -321,11 +353,11 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
         stat1 = TdiConvert(&miss_dsc, out_ptr);
       MdsFree1Dx(&tmp, NULL);
       free(fixed_out_ptr);
-    } break;
     }
-    if
-      IS_OK(stat1)
-    goto done;
+    break;
+    }
+    if (IS_OK(stat1))
+      goto done;
     status = stat1;
   }
   if (TDI_INTRINSIC_REC >= 0)
@@ -342,7 +374,8 @@ done:;
   return status;
 }
 EXPORT int _TdiIntrinsic(void **ctx, opcode_t opcode, int narg,
-                         mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+                         mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+{
   int status;
   CTX_PUSH(ctx);
   status = TdiIntrinsic(opcode, narg, list, out_ptr);
@@ -360,13 +393,15 @@ EXPORT int _TdiIntrinsic(void **ctx, opcode_t opcode, int narg,
                 8 return message before clear
 */
 int Tdi1Debug(opcode_t opcode __attribute__((unused)), int narg,
-              mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+              mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+{
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
   int option = -1;
   if (narg > 0 && list[0])
     status = TdiGetLong(list[0], &option);
-  if (option & 1 && TDI_INTRINSIC_STAT != SsSUCCESS) {
+  if (option & 1 && TDI_INTRINSIC_STAT != SsSUCCESS)
+  {
     mdsdsc_t dmsg = {0, DTYPE_T, CLASS_S, 0};
     dmsg.pointer = MdsGetMsg(TDI_INTRINSIC_STAT);
     dmsg.length = strlen(dmsg.pointer);
@@ -379,10 +414,12 @@ int Tdi1Debug(opcode_t opcode __attribute__((unused)), int narg,
               &oldmsg MDS_END_ARG);
     StrFree1Dx(&oldmsg);
   }
-  if (TDI_INTRINSIC_MSG.length) {
+  if (TDI_INTRINSIC_MSG.length)
+  {
     if (option & 2)
       printf("%.*s", TDI_INTRINSIC_MSG.length, TDI_INTRINSIC_MSG.pointer);
-    if (option & 4) {
+    if (option & 4)
+    {
       if (option & 8)
         status = MdsCopyDxXd((mdsdsc_t *)&TDI_INTRINSIC_MSG, out_ptr);
       StrFree1Dx(&TDI_INTRINSIC_MSG);

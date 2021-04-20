@@ -64,7 +64,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       none
 // output:      status
 //-------------------------------------------------------------------------
-int unlock_file() {
+int unlock_file()
+{
   int status = SUCCESS; // assume the best case
   struct sembuf sb = {0, P_SEMA4, 0};
   extern int semid;
@@ -73,14 +74,16 @@ int unlock_file() {
     printf("unlock_file()\n");
 
   sb.sem_op = V_SEMA4; // prepare to 'vend' a semaphore
-  if (semop(semid, &sb, 1) == ERROR) {
+  if (semop(semid, &sb, 1) == ERROR)
+  {
     if (MSGLVL(ALWAYS))
       perror("semop()");
 
     status = ERROR;
   }
 
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("unlock_file(): ");
     ShowStatus(status);
   }

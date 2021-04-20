@@ -31,9 +31,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #define PARENT_THREAD ((pthread_t)-1)
 
-static int io_disconnect(Connection *c) {
+static int io_disconnect(Connection *c)
+{
   io_pipes_t *p = get_pipes(c);
-  if (p && p->pth != PARENT_THREAD) {
+  if (p && p->pth != PARENT_THREAD)
+  {
 #ifdef _WIN32
     if (WaitForSingleObject(p->pid, 0) == WAIT_TIMEOUT)
       TerminateThread(p->pid, 0);
@@ -48,7 +50,8 @@ static int io_disconnect(Connection *c) {
   return C_OK;
 }
 
-static void io_cleanup(void *pp) {
+static void io_cleanup(void *pp)
+{
   void *ctx = (void *)-1;
   int id;
   char *info_name;
@@ -56,9 +59,11 @@ static void io_cleanup(void *pp) {
   size_t info_len = 0;
   pthread_t me = pthread_self();
   while ((id = NextConnection(&ctx, &info_name, (void *)&info, &info_len)) !=
-         INVALID_CONNECTION_ID) {
+         INVALID_CONNECTION_ID)
+  {
     if (info_name && strcmp(info_name, PROTOCOL) == 0 &&
-        pthread_equal(info->pth, me)) {
+        pthread_equal(info->pth, me))
+    {
       DisconnectConnection(id);
       break;
     }
@@ -66,15 +71,16 @@ static void io_cleanup(void *pp) {
   free(pp);
 }
 
-static void io_listen(void *pp) {
+static void io_listen(void *pp)
+{
   int id, status;
   pthread_cleanup_push(io_cleanup, pp);
   INIT_AND_FREE_ON_EXIT(char *, username);
   status = AcceptConnection("thread", "thread", 0, pp, sizeof(io_pipes_t), &id,
                             &username);
   FREE_NOW(username);
-  if
-    STATUS_OK while (DoMessage(id));
+  while (STATUS_OK)
+    status = DoMessage(id);
   close_pipe(((io_pipes_t *)pp)->in);
   close_pipe(((io_pipes_t *)pp)->out);
   pthread_cleanup_pop(1);
@@ -82,7 +88,8 @@ static void io_listen(void *pp) {
 
 inline static int io_connect(Connection *c,
                              char *protocol __attribute__((unused)),
-                             char *host __attribute__((unused))) {
+                             char *host __attribute__((unused)))
+{
 #ifdef _WIN32
   io_pipes_t p = {NULL, NULL, NULL, 0}, *pp = calloc(sizeof(p), 1);
   pp->pth = PARENT_THREAD;
@@ -95,19 +102,23 @@ inline static int io_connect(Connection *c,
   if (!CreatePipe(&pp->in, &p.out, &saAttr, 0))
     fprintf(stderr, "Stdin CreatePipe");
   if (!(p.pid = CreateThread(NULL, DEFAULT_STACKSIZE, (void *)io_listen, pp, 0,
-                             NULL))) {
+                             NULL)))
+  {
 #else
   io_pipes_t p, *pp = malloc(sizeof(p));
   int pipe_up[2], pipe_dn[2], ok_up, ok_dn;
   ok_up = pipe(pipe_up);
   ok_dn = pipe(pipe_dn);
-  if (ok_up || ok_dn) {
+  if (ok_up || ok_dn)
+  {
     perror("Error in mdsip io_connect creating pipes\n");
-    if (!ok_up) {
+    if (!ok_up)
+    {
       close(pipe_up[0]);
       close(pipe_up[1]);
     }
-    if (!ok_dn) {
+    if (!ok_dn)
+    {
       close(pipe_dn[0]);
       close(pipe_dn[1]);
     }
@@ -118,7 +129,8 @@ inline static int io_connect(Connection *c,
   pp->in = pipe_up[0];
   pp->out = pipe_dn[1];
   pp->pth = PARENT_THREAD;
-  if (pthread_create(&p.pth, NULL, (void *)io_listen, pp)) {
+  if (pthread_create(&p.pth, NULL, (void *)io_listen, pp))
+  {
 #endif
     close_pipe(p.in);
     close_pipe(p.out);
@@ -131,5 +143,5 @@ inline static int io_connect(Connection *c,
 }
 
 const IoRoutines thread_routines = {io_connect, io_send, io_recv, NULL,
-                                    NULL,       NULL,    NULL,    io_disconnect,
+                                    NULL, NULL, NULL, io_disconnect,
                                     io_recv_to, NULL};

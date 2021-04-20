@@ -15,7 +15,8 @@
 using namespace MDSplus;
 using namespace std;
 
-class SaveItem {
+class SaveItem
+{
 
 private:
   void *buffer;
@@ -44,10 +45,12 @@ private:
   int numCoeffs;
   float *coeffs;
 
-  vector<string> split(const char *str, char c = ' ') {
+  vector<string> split(const char *str, char c = ' ')
+  {
     vector<string> result;
 
-    do {
+    do
+    {
       const char *begin = str;
 
       while (*str != c && *str)
@@ -59,8 +62,10 @@ private:
     return result;
   }
 
-  void sendChannelSegmentPutEvent(TreeNode *dataNode) {
-    try {
+  void sendChannelSegmentPutEvent(TreeNode *dataNode)
+  {
+    try
+    {
       char *path;
       vector<string> tokens;
       char event[256];
@@ -74,7 +79,9 @@ private:
       sprintf(event, "%s_%s_CH%s", treeStr, tokens[0].data(),
               (tokens[1].substr(8)).data());
       Event::setevent(event);
-    } catch (MdsException *exc) {
+    }
+    catch (MdsException *exc)
+    {
       printf("Send Event Error: %s\n", exc->what());
     }
   }
@@ -96,7 +103,8 @@ public:
   void save();
 };
 
-class SaveList {
+class SaveList
+{
 public:
   pthread_cond_t itemAvailable;
   pthread_t thread;
@@ -106,11 +114,13 @@ public:
   pthread_mutex_t mutex;
 
 private:
-  int getQueueLen() {
+  int getQueueLen()
+  {
     pthread_mutex_lock(&mutex);
     int len = 0;
     SaveItem *currItem = saveHead;
-    while (currItem) {
+    while (currItem)
+    {
       len++;
       currItem = currItem->getNext();
     }

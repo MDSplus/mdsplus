@@ -67,15 +67,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db type, number of place holders
 // output:      status
 //-------------------------------------------------------------------------
-int create_tmp_file(int dbType, int count, char *filename) {
+int create_tmp_file(int dbType, int count, char *filename)
+{
   char fmt[10];
   int entrySize, fd, i, status = SUCCESS;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("create_tmp_file()\n");
 
-  if ((fd = mkstemp(filename)) == -1) {
-    if (MSGLVL(ALWAYS)) {
+  if ((fd = mkstemp(filename)) == -1)
+  {
+    if (MSGLVL(ALWAYS))
+    {
       fprintf(stderr, "create_tmp_file(): file error %d\n", fd);
       perror("creat()");
     }
@@ -85,7 +88,8 @@ int create_tmp_file(int dbType, int count, char *filename) {
   }
   chmod(filename, 0666);
   // figure out size of each entry
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     entrySize = MODULE_ENTRY;
     break;
@@ -108,8 +112,10 @@ int create_tmp_file(int dbType, int count, char *filename) {
     // 'blank' entry
     sprintf(line, fmt, " ");
 
-    for (i = 0; i < count; ++i) {
-      if (write(fd, line, entrySize) != entrySize) {
+    for (i = 0; i < count; ++i)
+    {
+      if (write(fd, line, entrySize) != entrySize)
+      {
         if (MSGLVL(ALWAYS))
           perror("write()");
 
@@ -122,7 +128,8 @@ int create_tmp_file(int dbType, int count, char *filename) {
   close(fd); // only get here if all is OK
 
 CreateTmpFile_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("create_tmp_file(): ");
     ShowStatus(status);
   }

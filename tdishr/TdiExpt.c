@@ -39,7 +39,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Default path name.
 */
 int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__((unused)),
-                   struct descriptor_xd *out_ptr) {
+                   struct descriptor_xd *out_ptr)
+{
   char value[4096];
   static const dtype_t dtype = DTYPE_T;
   int retlen, status;
@@ -49,14 +50,13 @@ int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__((unused)),
   lst[0].pointer = (uint8_t *)value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
-  if
-    STATUS_OK {
-      len = (length_t)retlen;
-      status = MdsGet1DxS(&len, &dtype, out_ptr);
-    }
-  if
-    STATUS_OK
-  memcpy(out_ptr->pointer->pointer, value, len);
+  if (STATUS_OK)
+  {
+    len = (length_t)retlen;
+    status = MdsGet1DxS(&len, &dtype, out_ptr);
+  }
+  if (STATUS_OK)
+    memcpy(out_ptr->pointer->pointer, value, len);
   return status;
 }
 
@@ -64,7 +64,8 @@ int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__((unused)),
         Experiment name.
 */
 int Tdi3Expt(struct descriptor *in_ptr __attribute__((unused)),
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   char value[39 - 7];
   int retlen, status;
   static const dtype_t dtype = DTYPE_T;
@@ -74,14 +75,13 @@ int Tdi3Expt(struct descriptor *in_ptr __attribute__((unused)),
   lst[0].pointer = (unsigned char *)value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
-  if
-    STATUS_OK {
-      len = (length_t)retlen;
-      status = MdsGet1DxS(&len, &dtype, out_ptr);
-    }
-  if
-    STATUS_OK
-  memcpy(out_ptr->pointer->pointer, value, len);
+  if (STATUS_OK)
+  {
+    len = (length_t)retlen;
+    status = MdsGet1DxS(&len, &dtype, out_ptr);
+  }
+  if (STATUS_OK)
+    memcpy(out_ptr->pointer->pointer, value, len);
   return status;
 }
 
@@ -89,7 +89,8 @@ int Tdi3Expt(struct descriptor *in_ptr __attribute__((unused)),
         Shot number identifier.
 */
 int Tdi3Shot(struct descriptor *in_ptr __attribute__((unused)),
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   int value;
   int retlen, status;
   static const dtype_t dtype = DTYPE_L;
@@ -99,14 +100,13 @@ int Tdi3Shot(struct descriptor *in_ptr __attribute__((unused)),
   lst[0].pointer = (unsigned char *)&value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
-  if
-    STATUS_OK {
-      len = (length_t)retlen;
-      status = MdsGet1DxS(&len, &dtype, out_ptr);
-    }
-  if
-    STATUS_OK
-  *(int *)out_ptr->pointer->pointer = value;
+  if (STATUS_OK)
+  {
+    len = (length_t)retlen;
+    status = MdsGet1DxS(&len, &dtype, out_ptr);
+  }
+  if (STATUS_OK)
+    *(int *)out_ptr->pointer->pointer = value;
   return status;
 }
 
@@ -114,7 +114,8 @@ int Tdi3Shot(struct descriptor *in_ptr __attribute__((unused)),
         Shot number identifier converted to string.
 */
 int Tdi3Shotname(struct descriptor *in_ptr __attribute__((unused)),
-                 struct descriptor_xd *out_ptr) {
+                 struct descriptor_xd *out_ptr)
+{
   int value;
   int retlen, status;
   struct dbi_itm lst[] = {{sizeof(value), DbiSHOTID, 0, 0},
@@ -124,13 +125,13 @@ int Tdi3Shotname(struct descriptor *in_ptr __attribute__((unused)),
   lst[0].pointer = (unsigned char *)&value;
   lst[0].return_length_address = &retlen;
   status = TreeGetDbi(lst);
-  if (value != -1) {
+  if (value != -1)
+  {
     sprintf(string, "%d", value);
     dmodel.pointer = string;
     dmodel.length = (unsigned short)strlen(string);
   }
-  if
-    STATUS_OK
-  status = MdsCopyDxXd((struct descriptor *)&dmodel, out_ptr);
+  if (STATUS_OK)
+    status = MdsCopyDxXd((struct descriptor *)&dmodel, out_ptr);
   return status;
 }

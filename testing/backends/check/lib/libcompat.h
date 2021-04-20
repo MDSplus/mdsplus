@@ -6,7 +6,7 @@
 #endif
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
-#define GCC_VERSION_AT_LEAST(major, minor)                                     \
+#define GCC_VERSION_AT_LEAST(major, minor) \
   ((__GNUC__ > (major)) || (__GNUC__ == (major) && __GNUC_MINOR__ >= (minor)))
 #else
 #define GCC_VERSION_AT_LEAST(major, minor) 0
@@ -141,7 +141,8 @@
  * specified in seconds and nanoseconds. If it is not defined in
  * time.g, then we need to define it here
  */
-struct timespec {
+struct timespec
+{
   time_t tv_sec;
   long tv_nsec;
 };
@@ -152,7 +153,8 @@ struct timespec {
  * The following structure is defined in POSIX.1b for timer start values and
  * intervals. If it is not defined in time.h, then we need to define it here.
  */
-struct itimerspec {
+struct itimerspec
+{
   struct timespec it_interval;
   struct timespec it_value;
 };
@@ -166,7 +168,9 @@ struct itimerspec {
 struct sigevent;
 
 #ifdef _WIN32
-struct __timer_t {};
+struct __timer_t
+{
+};
 typedef struct __timer_t timer_t;
 #endif
 

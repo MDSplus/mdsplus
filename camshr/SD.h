@@ -3,7 +3,8 @@
 #define __SD_H
 
 // for Linux on x86
-typedef struct {
+typedef struct
+{
   __u8 code : 7;
   __u8 valid : 1;
 
@@ -16,7 +17,8 @@ typedef struct {
 
   __u8 additional_sense_length;
 
-  struct {
+  struct
+  {
     __u8 bdmd : 1; // branch demand present
     __u8 dsne : 1; // serial demand stack not empty
     __u8 bdsq : 1; // branch demand sequencer set
@@ -27,7 +29,8 @@ typedef struct {
     __u8 no_q : 1; // module returned Q = 0
   } main_status_reg;
 
-  struct {
+  struct
+  {
     // 'high' byte
     __u8 cret : 1;   // command type message detected at receiver
     __u8 timos : 1;  // serial time-out

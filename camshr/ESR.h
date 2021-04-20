@@ -3,7 +3,8 @@
 #define __ESR_H
 
 // for Linux on x86
-typedef struct {
+typedef struct
+{
   __u32 noq : 1;
   __u32 nox : 1;
   __u32 ste : 1;

@@ -29,7 +29,11 @@
 #include <Xm/Xm.h>
 #endif
 
-typedef enum pathType { NciABSOLUTE_PATH, NciRELATIVE_PATH } XmdsPathType;
+typedef enum pathType
+{
+  NciABSOLUTE_PATH,
+  NciRELATIVE_PATH
+} XmdsPathType;
 /* Resources */
 
 #define XmdsNnid "nid"             /* Nid of first channel */

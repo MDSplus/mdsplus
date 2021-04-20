@@ -30,22 +30,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ipdesc.h>
 #include <stdio.h>
 #include <stdlib.h>
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int status;
   struct descrip ans;
   float val = 9876;
   struct descrip vald = {DTYPE_FLOAT, 0, {0}, 0, 0};
   long sock = ConnectToMds((argc > 1) ? argv[1] : "lost.pfc.mit.edu:9000");
-  if (sock != -1) {
+  if (sock != -1)
+  {
     printf("status from MdsOpen = %d\n", MdsOpen(sock, "main", -1));
     ans.ptr = 0;
-    if (MdsValue(sock, "f_float(member)", &ans, NULL) & 1) {
+    if (MdsValue(sock, "f_float(member)", &ans, NULL) & 1)
+    {
       printf("%g\n", *(float *)ans.ptr);
       val = *(float *)ans.ptr;
       val = val + (float)1.;
-    } else
+    }
+    else
       printf("%s\n", (char *)ans.ptr);
-    if (ans.ptr) {
+    if (ans.ptr)
+    {
       free(ans.ptr);
       ans.ptr = 0;
     }

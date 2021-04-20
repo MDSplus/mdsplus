@@ -1,7 +1,15 @@
 #ifndef TCL_P
 #define TCL_P
 
-typedef enum { on_off, rename_node, delete, new, tree, set_def } NodeTouchType;
+typedef enum
+{
+  on_off,
+  rename_node,
+  delete,
+  new,
+  tree,
+  set_def
+} NodeTouchType;
 
 extern void
 TclSetCallbacks(                    /* Returns: void                        */

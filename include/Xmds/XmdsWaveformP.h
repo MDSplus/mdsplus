@@ -82,17 +82,18 @@
 #define XmdsInheritUpdate                                                      \
   ((void (*)(Widget, XmdsWaveformValStruct *, XmdsWaveformValStruct *, char *, \
              float *, float *, float *, float *, Boolean))_XtInherit)
-#define XmdsInheritSetCrosshairs                                               \
+#define XmdsInheritSetCrosshairs \
   ((void (*)(Widget, float *, float *, Boolean))_XtInherit)
 #define XmdsInheritSetPointerMode ((void (*)(Widget, int))_XtInherit)
-#define XmdsInheritPrint                                                       \
+#define XmdsInheritPrint \
   ((void (*)(Widget, FILE *, int, int, int, char *, char *, int))_XtInherit)
 #define XmdsInheritReverse ((void (*)(Widget, int))_XtInherit)
-#define XmdsInheritSetWave                                                     \
-  ((void (*)(Widget, int, float *, float *, Boolean *, Boolean *, Boolean,     \
+#define XmdsInheritSetWave                                                 \
+  ((void (*)(Widget, int, float *, float *, Boolean *, Boolean *, Boolean, \
              Boolean))_XtInherit)
 
-typedef struct _WaveformClassPart {
+typedef struct _WaveformClassPart
+{
   XtTranslations default_trans;
   XtTranslations zoom_trans;
   XtTranslations drag_trans;
@@ -120,7 +121,8 @@ typedef struct _WaveformClassPart {
 } XmdsWaveformClassPart;
 /* Full class record declaration */
 
-typedef struct _XmdsWaveformClassRec {
+typedef struct _XmdsWaveformClassRec
+{
   CoreClassPart core_class;
   XmPrimitiveClassPart primitive_class;
   XmdsWaveformClassPart waveform_class;
@@ -131,7 +133,8 @@ externalref XmdsWaveformClassRec xmdsWaveformClassRec;
 
 /* Fields describing each axis */
 
-typedef struct _XmdsWaveformAxis {
+typedef struct _XmdsWaveformAxis
+{
   float *minval;
   float *maxval;
   double crosshair;
@@ -147,7 +150,8 @@ typedef struct _XmdsWaveformAxis {
 } XmdsWaveformAxis;
 /* Fields global to widget */
 
-typedef struct _WaveformPart {
+typedef struct _WaveformPart
+{
   char *title;
   int pointer_mode;
   int grid_style;
@@ -196,7 +200,8 @@ typedef struct _WaveformPart {
  *
  ****************************************************************/
 
-typedef struct _XmdsWaveformRec {
+typedef struct _XmdsWaveformRec
+{
   CorePart core;
   XmPrimitivePart primitive;
   XmdsWaveformPart waveform;
