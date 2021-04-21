@@ -511,21 +511,20 @@ public class MdsDataProvider implements DataProvider
 			var_idx += 2;
 			if (segmentMode == SEGMENTED_UNKNOWN)
 			{
-				final Vector<Descriptor> args = new Vector<>();
-				final String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
-				args.addElement(new Descriptor(null, fixedY));
-				try
+                            final String fixedY = duplicateBackslashes(in_y);
+                            try
+                            {
+				final String segExpr = "long(MdsMisc->IsSegmented(\"" + fixedY + "\"))";
+				final int[] retData = getIntArray(segExpr);
+				if (retData[0] != 0)
 				{
-					final byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
-					if (retData[0] > 0)
-					{
-						segmentNodeName = getStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
-						if (debug)
-							System.out.println("Segmented Node: " + segmentNodeName);
-						segmentMode = SEGMENTED_YES;
-					}
-					else
-						segmentMode = SEGMENTED_NO;
+                                    segmentNodeName = getStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
+                                    if (debug)
+					System.out.println("Segmented Node: " + segmentNodeName);
+                                    segmentMode = SEGMENTED_YES;
+				}
+				else
+                                    segmentMode = SEGMENTED_NO;
 				}
 				catch (final Exception exc)
 				{
@@ -590,20 +589,22 @@ public class MdsDataProvider implements DataProvider
 				return null;
 			if (segmentMode == SEGMENTED_UNKNOWN)
 			{
-				final Vector<Descriptor> args = new Vector<>();
-				args.addElement(new Descriptor(null, in_y));
-				try
+                            final String fixedY = duplicateBackslashes(in_y);
+                            try
+                            {
+				final String segExpr = "long(MdsMisc->IsSegmented(\"" + fixedY + "\"))";
+				final int[] retData = getIntArray(segExpr);
+				if (debug)
+                                    System.out.println(segExpr + " " + retData[0]);
+				if (retData[0] != 0)
 				{
-					final byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
-					if (retData[0] > 0)
-					{
-						segmentMode = SEGMENTED_YES;
-						segmentNodeName = getStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
-						if (debug)
-							System.out.println("Segmented Node: " + segmentNodeName);
-					}
-					else
-						segmentMode = SEGMENTED_NO;
+                                    segmentMode = SEGMENTED_YES;
+                                    segmentNodeName = getStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
+                                    if (debug)
+					System.out.println("Segmented Node: " + segmentNodeName);
+				}
+				else
+                                    segmentMode = SEGMENTED_NO;
 				}
 				catch (final Exception exc)
 				{
@@ -966,7 +967,12 @@ public class MdsDataProvider implements DataProvider
 				}
 				else
 				{
-					xLabel = getStringValue("Units(" + in_x + ")");
+                                    if (segmentMode == SEGMENTED_YES)
+                                    {
+					xLabel = ""; //Shall be set afterwards
+                                    }
+                                    else
+                                        xLabel = getStringValue("Units(" + in_x + ")");
 				}
 			}
 			return xLabel;
