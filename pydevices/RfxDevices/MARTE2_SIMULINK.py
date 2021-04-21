@@ -63,9 +63,9 @@ def BUILDER(cls):
         mmi = GetMmiPtr(states)
 
 # Initialization function is called with a dynamically-specified name
-        InitializeFunc = getattr(ModelLib, initializeFuncName)
-        InitializeFunc.argtypes = [ctypes.POINTER(None)]
-        InitializeFunc(states)
+#        InitializeFunc = getattr(ModelLib, initializeFuncName)
+#        InitializeFunc.argtypes = [ctypes.POINTER(None)]
+#        InitializeFunc(states)
 
         WrapperLib = ctypes.cdll.LoadLibrary("rtw_capi_wrapper.so")
 
