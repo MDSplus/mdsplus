@@ -23,9 +23,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from threading import Thread
-from MDSplus import Connection, GetMany, Float32, Range, setenv, Tree, TreeNNF, TreeNodeArray, ADD
+import os
+import shutil
+import subprocess
+import tempfile
 import time
+from MDSplus import Connection, GetMany, Float32, Range, setenv, Tree, TreeNNF, ADD
 
 
 def _mimport(name, level=1):
@@ -36,7 +39,6 @@ def _mimport(name, level=1):
 
 
 _UnitTest = _mimport("_UnitTest")
-
 
 class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
     index = 0
@@ -145,7 +147,7 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
 
                 def requests(c, idx):
                     args = [Float32(i/10+idx) for i in range(10)]
-                    for i in range(10):
+                    for _ in range(10):
                         self.assertEqual(
                             c.get("[$,$,$,$,$,$,$,$,$,$]", *args).tolist(), args)
                 c = Connection(server)
@@ -161,12 +163,10 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                 self.assertEqual(g.get('a'), 1)
                 self.assertEqual(g.get('b'), 2)
                 self.assertEqual(g.get('c'), 3)
-                threads = [Thread(name="C%d" % i, target=requests,
-                                  args=(c, i)) for i in range(10)]
-                for thread in threads:
-                    thread.start()
-                for thread in threads:
-                    thread.join()
+                _UnitTest.TestThread.assertRun(*(
+                    _UnitTest.TestThread("C%d" % i, requests, c, i)
+                    for i in range(10)
+                ))
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()
@@ -176,20 +176,72 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                 svr_log.close()
 
     def threadsLocal(self):
-        c = Connection('local://gub')
+        connection = Connection('local://gub')
+        def test(s, c):
+            for i in range(1000):
+                s.assertEqual(int(c.get('%d' % i)), i)
+        _UnitTest.TestThread.assertRun(*(
+            _UnitTest.TestThread("C%d" % i, test, self, connection)
+            for i in range(10)
+        ))
 
-        class ConnectionThread(Thread):
-            def run(self):
-                for i in range(1000):
-                    self.test.assertEqual(int(c.get('%d' % i)), i)
-        t1 = ConnectionThread()
-        t1.test = self
-        t2 = ConnectionThread()
-        t2.test = self
-        t1.start()
-        t2.start()
-        t1.join()
-        t2.join()
+
+    def fast_remote_write(self):
+        count = 100
+
+        def mdsip(hostfile):
+            with open(hostfile, "w") as f:
+                f.write("multi|SELF\n*")
+            process = subprocess.Popen((
+                'mdsip', '-m',
+                '-p', '8000',
+                '-P', 'TCP',
+                '-h', hostfile,
+            ))
+            time.sleep(1)
+            return process
+
+        def thread(test, name, node, count):
+            start = time.time()
+            i = -1
+            for i in range(count):
+                data = Float32([i*10+1])
+                now = Float32([time.time()])
+                node.makeSegment(now[0], now[0], data, now)
+            end = time.time()
+            i += 1
+            test.assertEqual(i, count)
+            print("%s: rate %f" % (name, i / (end-start)))
+
+        tempdir = tempfile.mkdtemp()
+        try:
+            server = mdsip(os.path.join(tempdir, "mdsip.hosts"))
+            try:
+                con = Connection('127.0.0.1')
+                def check(line, *args):
+                    sts = con.get(line, *args)
+                    self.assertTrue(sts & 1, "error %d in '%s'" % (sts, line))
+                check("setenv('test_path='//$)", tempdir)
+                for line in (
+                    "TreeOpenNew('test', 1)",
+                    "TreeAddNode('EV1', _, 6)",
+                    "TreeAddNode('EV2', _, 6)",
+                    "TreeWrite()",
+                    "TreeClose()",
+                ):
+                    check(line)
+                setenv("test_path", "127.0.0.1::" + tempdir)
+                tree = Tree("test", 1)
+                _UnitTest.TestThread.assertRun(
+                    _UnitTest.TestThread('EV1', thread, self, 'EV1', tree.EV1.copy(), count),
+                    _UnitTest.TestThread('EV2', thread, self, 'EV2', tree.EV2.copy(), count),
+                )
+            finally:
+                if server:
+                    server.kill()
+                    server.wait()
+        finally:
+            shutil.rmtree(tempdir, ignore_errors=False, onerror=None)
 
     @staticmethod
     def getTests():

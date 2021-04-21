@@ -42,7 +42,17 @@ static inline void free_buffer(buffer_t *buf)
   buf->free(buf->buffer);
   free(buf);
 }
-static void free_mts(MDSplusThreadStatic_t *mts)
+
+EXPORT MDSplusThreadStatic_t *newMDSplusThreadStatic()
+{
+  MDSplusThreadStatic_t *mts =
+      (MDSplusThreadStatic_t *)malloc(sizeof(MDSplusThreadStatic_t));
+  mts->is_owned = TRUE;
+  mts->buffers = calloc(THREADSTATIC_SIZE, sizeof(buffer_t *));
+  return mts;
+}
+
+EXPORT void destroyMDSplusThreadStatic(MDSplusThreadStatic_t *mts)
 {
   if (mts->is_owned)
   {
@@ -53,7 +63,8 @@ static void free_mts(MDSplusThreadStatic_t *mts)
   }
   free(mts);
 }
-static void init_mts_key() { pthread_key_create(&mts_key, (void *)free_mts); }
+
+static void init_mts_key() { pthread_key_create(&mts_key, (void *)destroyMDSplusThreadStatic); }
 EXPORT MDSplusThreadStatic_t *MDSplusThreadStatic(MDSplusThreadStatic_t *in)
 {
   // mts = MDSplusThreadStatic(NULL) : get current thread's mts
@@ -71,16 +82,14 @@ EXPORT MDSplusThreadStatic_t *MDSplusThreadStatic(MDSplusThreadStatic_t *in)
     mts->buffers = in->buffers;
     pthread_setspecific(mts_key, (void *)mts);
     if (old_mts)
-      free_mts(old_mts);
+      destroyMDSplusThreadStatic(old_mts);
   }
   else
   {
     // create if NULL
     if (!mts)
     {
-      mts = (MDSplusThreadStatic_t *)malloc(sizeof(MDSplusThreadStatic_t));
-      mts->is_owned = TRUE;
-      mts->buffers = calloc(THREADSTATIC_SIZE, sizeof(buffer_t *));
+      mts = newMDSplusThreadStatic();
       pthread_setspecific(mts_key, (void *)mts);
     }
   }
