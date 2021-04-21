@@ -25,7 +25,7 @@
 
 from unittest import TestCase, TestSuite, TextTestRunner
 from MDSplus import Tree, getenv, setenv, tcl, TreeWRITEFIRST, TreeNOT_OPEN
-from threading import RLock
+import threading
 from re import match
 import gc
 import os
@@ -49,6 +49,35 @@ class logger(object):
 
     def __getattr__(self, name): return self.__f.__getattribute__(name)
 
+
+class TestThread(threading.Thread):
+    """ Run Tests in parralel and evaluate """
+
+    @staticmethod
+    def assertRun(*threads):
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        for thread in threads:
+            thread.check()
+
+    def __init__(self, name, test, *args, **kwargs):
+        super(TestThread, self).__init__(name=name)
+        self.exc = None
+        self.test = test
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            self.test(*self.args, **self.kwargs)
+        except Exception as exc:
+            self.exc = exc
+
+    def check(self):
+        if self.exc:
+            raise self.exc
 
 class Tests(TestCase):
     debug = False
@@ -288,7 +317,7 @@ class MdsIp(object):
 
 
 class TreeTests(Tests):
-    lock = RLock()
+    lock = threading.RLock()
     shotinc = 1
     instances = 0
     trees = []
