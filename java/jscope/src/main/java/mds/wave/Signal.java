@@ -1413,7 +1413,12 @@ public class Signal implements WaveDataListener
 		{
 			System.out.println("ERROR: UP TO 2 Dimensions supported");
 		}
-	}
+                //Update X and Y labels if not defined
+                if(xlabel == null || xlabel.trim().length() == 0)
+                    xlabel = data.GetXLabel();
+                if(ylabel == null || ylabel.trim().length() == 0)
+                    ylabel = data.GetYLabel();
+        }
 
 	/**
 	 * Check if x array coordinates are increasing.
