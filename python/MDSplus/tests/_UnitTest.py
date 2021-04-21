@@ -25,8 +25,9 @@
 
 from unittest import TestCase, TestSuite, TextTestRunner
 from MDSplus import Tree, getenv, setenv, tcl, TreeWRITEFIRST, TreeNOT_OPEN
+import traceback
 import threading
-from re import match
+import re
 import gc
 import os
 import sys
@@ -77,6 +78,7 @@ class TestThread(threading.Thread):
 
     def check(self):
         if self.exc:
+            traceback.print_tb(self.exc.__traceback__)
             raise self.exc
 
 class Tests(TestCase):
@@ -107,35 +109,37 @@ class Tests(TestCase):
         finally:
             sys.stdout, sys.stderr = stdout, stderr
 
-    def _doTCLTest(self, expr, out=None, err=None, re=False, verify=False, quiet=False):
+    def _doTCLTest(self, expr, out=None, err=None, regex=False, verify=False, quiet=False, tree=None):
         def checkre(pattern, string):
             if pattern is None:
                 self.assertEqual(string is None, True)
             else:
                 self.assertEqual(string is None, False)
-                self.assertEqual(match(pattern, str(string)) is None,
+                self.assertEqual(re.match(pattern, str(string)) is None,
                                  False, '"%s"\nnot matched by\n"%s"' % (string, pattern))
         if not quiet:
             sys.stderr.write("TCL> %s\n" % (expr,))
-        outo, erro = tcl(expr, True, True, True)
+        outo, erro = (tree.tcl if tree else tcl)(
+            expr, True, True, True)
         if verify:
             ver, erro = erro.split('\n', 2)
             self.assertEqual(ver.endswith("%s" % expr), True)
             if len(erro) == 0:
                 erro = None
-        if not re:
+        if not regex:
             self.assertEqual(outo, out)
             self.assertEqual(erro, err)
         else:
             checkre(out, outo)
             checkre(err, erro)
 
-    def _doExceptionTest(self, expr, exc):
+    def _doExceptionTest(self, expr, exc, tree=None):
         if Tests.debug:
             sys.stderr.write("TCL(%s) # expected exception: %s\n" %
                              (expr, exc.__name__))
         try:
-            tcl(expr, True, True, True)
+            (tree.tcl if tree else tcl)(
+                expr, True, True, True)
         except Exception as e:
             self.assertEqual(e.__class__, exc)
             return
@@ -211,7 +215,7 @@ class MdsIp(object):
     def _checkIdle(self, server, **opt):
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n" % server
         self._doTCLTest('show server %s' %
-                        server, out=show_server, re=True, **opt)
+                        server, out=show_server, regex=True, **opt)
 
     def _waitIdle(self, server, timeout):
         timeout = time.time()+timeout
@@ -368,13 +372,13 @@ class TreeTests(Tests):
         if not self.is_win or self.inThread:
             return
 
-        def isTree(o):
+        def is_tree(o):
             try:
                 return isinstance(o, Tree)
             except Exception as e:
                 print(e)
                 return False
-        trees = [o for o in gc.get_objects() if isTree(o)]
+        trees = [o for o in gc.get_objects() if is_tree(o)]
         for t in trees:
             try:
                 t.close()
@@ -382,6 +386,5 @@ class TreeTests(Tests):
                 t.quit()
             except TreeNOT_OPEN:
                 pass
-            except:
-                import traceback
+            except Exception:
                 traceback.print_exc()

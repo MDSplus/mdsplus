@@ -23,9 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import sys
-from re import match
-from MDSplus import Tree, tcl, mdsExceptions as Exc
+from MDSplus import Tree, Device, mdsExceptions as Exc
 
 
 def _mimport(name, level=1):
@@ -43,12 +41,19 @@ class Tests(_UnitTest.TreeTests):
     tree = 'pytree'
 
     def dotask_timeout(self):
-        def test():
-            with Tree(self.tree, self.shot):
-                for i in range(1000):
-                    self._doExceptionTest(
-                        'do TESTDEVICE:TASK_TIMEOUT', Exc.TdiTIMEOUT)
-
+        with Tree(self.tree, self.shot, 'new') as tree:
+            Device.PyDevice('TestDevice').Add(tree, 'TESTDEVICE')
+            tree.write()
+        tree.normal()
+        for _ in range(2):
+            self._doTCLTest(
+                'do TESTDEVICE:TASK_TEST', tree=tree)
+            self._doExceptionTest(
+                'do TESTDEVICE:TASK_ERROR1', Exc.DevUNKOWN_STATE, tree)
+            self._doExceptionTest(
+                'do TESTDEVICE:TASK_ERROR2', Exc.DevUNKOWN_STATE, tree)
+            self._doExceptionTest(
+                'do TESTDEVICE:TASK_TIMEOUT', Exc.TdiTIMEOUT, tree)
     @staticmethod
     def getTests():
         return ['dotask_timeout']
