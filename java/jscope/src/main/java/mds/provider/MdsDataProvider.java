@@ -969,8 +969,7 @@ public class MdsDataProvider implements DataProvider
 				{
                                     if (segmentMode == SEGMENTED_YES)
                                     {
- 					String expr = "Units(GetSegment(" + segmentNodeName + ", 0))";
-					xLabel = getStringValue(expr);
+					xLabel = ""; //Shall be set afterwards
                                     }
                                     else
                                         xLabel = getStringValue("Units(" + in_x + ")");
