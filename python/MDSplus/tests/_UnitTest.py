@@ -74,6 +74,8 @@ class TestThread(threading.Thread):
         try:
             self.test(*self.args, **self.kwargs)
         except Exception as exc:
+            if not hasattr(exc, "__traceback__"):
+                _, _, exc.__traceback__ = sys.exc_info()
             self.exc = exc
 
     def check(self):
