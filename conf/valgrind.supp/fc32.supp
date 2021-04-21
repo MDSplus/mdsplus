@@ -147,6 +147,13 @@
    fun:_PyBytes_Resize
 }
 {
+   _PyObject_GC_Resize
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   fun:_PyObject_GC_Resize
+}
+{
    _PyLong_New
    Memcheck:Leak
    match-leak-kinds: possible
