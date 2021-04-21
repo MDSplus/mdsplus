@@ -6,7 +6,8 @@
 
         Ken Klare, LANL CTR-7	(c)1989,1990
 */
-typedef struct {
+typedef struct
+{
   char *a_begin;                 /*beginning of text     */
   char *a_cur;                   /*current character     */
   char *a_end;                   /*end of buffer + 1     */
@@ -23,7 +24,8 @@ typedef struct {
 #include "tdithreadstatic.h"
 #include <libroutines.h>
 
-struct marker {
+struct marker
+{
   struct descriptor_r *rptr;
   short builtin;
   unsigned short w_ok;
@@ -40,45 +42,46 @@ Definitions needed by Lex and friends.
 /*--------------------------------------------------
 Definitions needed by Lex and Yacc.
 --------------------------------------------------*/
-#define tdiyyerror(s)                                                          \
-  do {                                                                         \
-    TDI_REFZONE.l_ok = tdiyyval.mark.w_ok;                                     \
-    return MDSplusERROR;                                                       \
+#define tdiyyerror(s)                      \
+  do                                       \
+  {                                        \
+    TDI_REFZONE.l_ok = tdiyyval.mark.w_ok; \
+    return MDSplusERROR;                   \
   } while (0)
 
-#define MAKE_S(dtype_in, bytes, out)                                           \
-  {                                                                            \
-    unsigned int dsc_size = sizeof(struct descriptor_s);                       \
-    unsigned int vm_size = (dsc_size + (bytes));                               \
-    LibGetVm(&vm_size, (void *)&(out), (void *)&TDI_REFZONE.l_zone);           \
-    ((struct descriptor *)(out))->length = bytes;                              \
-    ((struct descriptor *)(out))->dtype = dtype_in;                            \
-    ((struct descriptor *)(out))->class = CLASS_S;                             \
-    ((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;          \
+#define MAKE_S(dtype_in, bytes, out)                                  \
+  {                                                                   \
+    unsigned int dsc_size = sizeof(struct descriptor_s);              \
+    unsigned int vm_size = (dsc_size + (bytes));                      \
+    LibGetVm(&vm_size, (void *)&(out), (void *)&TDI_REFZONE.l_zone);  \
+    ((struct descriptor *)(out))->length = bytes;                     \
+    ((struct descriptor *)(out))->dtype = dtype_in;                   \
+    ((struct descriptor *)(out))->class = CLASS_S;                    \
+    ((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size; \
   }
 
-#define MAKE_XD(dtype_in, bytes, out)                                          \
-  {                                                                            \
-    unsigned int dsc_size = sizeof(struct descriptor_xd);                      \
-    unsigned int vm_size = dsc_size + (bytes);                                 \
-    LibGetVm(&vm_size, (void *)&(out), (void *)&TDI_REFZONE.l_zone);           \
-    ((struct descriptor_xd *)(out))->l_length = bytes;                         \
-    ((struct descriptor_xd *)(out))->length = 0;                               \
-    ((struct descriptor_xd *)(out))->dtype = dtype_in;                         \
-    ((struct descriptor_xd *)(out))->class = CLASS_XD;                         \
-    ((struct descriptor_xd *)(out))->pointer =                                 \
-        (struct descriptor *)((char *)(out) + dsc_size);                       \
+#define MAKE_XD(dtype_in, bytes, out)                                \
+  {                                                                  \
+    unsigned int dsc_size = sizeof(struct descriptor_xd);            \
+    unsigned int vm_size = dsc_size + (bytes);                       \
+    LibGetVm(&vm_size, (void *)&(out), (void *)&TDI_REFZONE.l_zone); \
+    ((struct descriptor_xd *)(out))->l_length = bytes;               \
+    ((struct descriptor_xd *)(out))->length = 0;                     \
+    ((struct descriptor_xd *)(out))->dtype = dtype_in;               \
+    ((struct descriptor_xd *)(out))->class = CLASS_XD;               \
+    ((struct descriptor_xd *)(out))->pointer =                       \
+        (struct descriptor *)((char *)(out) + dsc_size);             \
   }
 
-#define MAKE_R(ndesc, dtype_in, bytes, out)                                    \
-  {                                                                            \
-    unsigned int dsc_size = sizeof($RECORD(ndesc));                            \
-    unsigned int vm_size = dsc_size + (bytes);                                 \
-    LibGetVm(&vm_size, (void *)&(out), (void *)&TDI_REFZONE.l_zone);           \
-    ((struct descriptor *)(out))->length = bytes;                              \
-    ((struct descriptor *)(out))->dtype = dtype_in;                            \
-    ((struct descriptor *)(out))->class = CLASS_R;                             \
-    ((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;          \
+#define MAKE_R(ndesc, dtype_in, bytes, out)                           \
+  {                                                                   \
+    unsigned int dsc_size = sizeof($RECORD(ndesc));                   \
+    unsigned int vm_size = dsc_size + (bytes);                        \
+    LibGetVm(&vm_size, (void *)&(out), (void *)&TDI_REFZONE.l_zone);  \
+    ((struct descriptor *)(out))->length = bytes;                     \
+    ((struct descriptor *)(out))->dtype = dtype_in;                   \
+    ((struct descriptor *)(out))->class = CLASS_R;                    \
+    ((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size; \
   }
 
 /**********************************************

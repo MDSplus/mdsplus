@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <tdishr_messages.h>
 
-#define UNDEF(x)                                                               \
+#define UNDEF(x) \
   int x() { return TdiNO_OPC; }
 /*** PERMANENT ***/
 UNDEF(Tdi1Else)

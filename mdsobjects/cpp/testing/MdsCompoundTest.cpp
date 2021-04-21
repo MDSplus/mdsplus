@@ -62,7 +62,8 @@ using namespace testing;
 //    virtual ~Compound();
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(Compound);
 
   Compound *com1 = new Compound();

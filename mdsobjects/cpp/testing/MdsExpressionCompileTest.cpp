@@ -60,28 +60,34 @@ const char *PyCmds[] = {
 };
 const int PyNCmd = sizeof(PyCmds) / sizeof(*PyCmds);
 
-void *Test(void *args) {
+void *Test(void *args)
+{
   int ii = 0, ic = 0;
   int ncmd = *(int *)((void **)args)[0];
   char **cmds = (char **)((void **)args)[1];
   delete MDSplus::execute("TreeShr->TreeUsePrivateCtx(1)");
-  try {
+  try
+  {
     for (; ii < NUM_REPEATS; ii++)
       for (; ic < ncmd; ic++)
         delete MDSplus::execute(cmds[ic]);
-  } catch (MDSplus::MdsException) {
+  }
+  catch (MDSplus::MdsException)
+  {
     std::cerr << "ERROR in cycle " << ii << " >> " << cmds[ic] << "\n";
     throw;
   }
   return NULL;
 }
 
-void MultiThreadTest(int ncmd, const char *cmds[]) {
+void MultiThreadTest(int ncmd, const char *cmds[])
+{
   pthread_t threads[NUM_THREADS];
   pthread_attr_t attr, *attrp;
   if (pthread_attr_init(&attr))
     attrp = NULL;
-  else {
+  else
+  {
     attrp = &attr;
     pthread_attr_setstacksize(&attr, 0x80000);
   }
@@ -98,14 +104,16 @@ void MultiThreadTest(int ncmd, const char *cmds[]) {
     pthread_join(threads[nt], NULL);
 }
 
-#define TEST_INT(cmd, value)                                                   \
-  do {                                                                         \
-    MDSplus::Data *d = MDSplus::execute(cmd);                                  \
-    TEST1(d->getInt() == value);                                               \
-    delete d;                                                                  \
+#define TEST_INT(cmd, value)                  \
+  do                                          \
+  {                                           \
+    MDSplus::Data *d = MDSplus::execute(cmd); \
+    TEST1(d->getInt() == value);              \
+    delete d;                                 \
   } while (0)
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(ExpressionCompile);
   delete MDSplus::execute("_s=[1,2,3]");
   TEST_INT("public _s = 3", 3);
@@ -125,7 +133,8 @@ int main(int argc __attribute__((unused)),
   MultiThreadTest(TreeNCmd, TreeCmds);
   END_TESTING;
   // python tests will not pass any test
-  if (getenv("PyLib") && getenv("TEST_PYTHON")) {
+  if (getenv("PyLib") && getenv("TEST_PYTHON"))
+  {
     BEGIN_TESTING(MultiThreadPython);
     MultiThreadTest(PyNCmd, PyCmds);
     END_TESTING;

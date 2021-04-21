@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "tdirefstandard.h"
 int Tdi1CompileDependency(/*opcode_t opcode, int narg, struct descriptor *list[],
-			    struct descriptor_xd *out_ptr*/)
+			    struct descriptor_xd *out_ptr*/
+)
 {
   return 1;
 }

@@ -39,26 +39,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace testing;
 using namespace MDSplus;
 
-#define TEST_SEGMENT_FLOAT(node, seg, test)                                    \
-  do {                                                                         \
-    unique_ptr<Array> signal = node->getSegment(seg);                          \
-    int length = 0;                                                            \
-    float *array = signal->getFloatArray(&length);                             \
-    try {                                                                      \
-      for (int i = 0; i < length; i++)                                         \
-        if (!(test))                                                           \
-          TEST1(test);                                                         \
-    } catch (MDSplus::MdsException) {                                          \
-      delete[] array;                                                          \
-      throw;                                                                   \
-    }                                                                          \
-    delete[] array;                                                            \
+#define TEST_SEGMENT_FLOAT(node, seg, test)           \
+  do                                                  \
+  {                                                   \
+    unique_ptr<Array> signal = node->getSegment(seg); \
+    int length = 0;                                   \
+    float *array = signal->getFloatArray(&length);    \
+    try                                               \
+    {                                                 \
+      for (int i = 0; i < length; i++)                \
+        if (!(test))                                  \
+          TEST1(test);                                \
+    }                                                 \
+    catch (MDSplus::MdsException)                     \
+    {                                                 \
+      delete[] array;                                 \
+      throw;                                          \
+    }                                                 \
+    delete[] array;                                   \
   } while (0);
 
-void putSegment() {
+void putSegment()
+{
   float times[1000];
   float data[1000];
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < 1000; i++)
+  {
     times[i] = i * 100;
     data[i] = i * 10;
   }
@@ -77,7 +83,8 @@ void putSegment() {
     }
     TEST_SEGMENT_FLOAT(n[0], 0, array[i] == 0.);
     TEST_SEGMENT_FLOAT(n[1], 0, array[i] == 0.);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
       unique_ptr<Float32Array> chunk =
           new MDSplus::Float32Array(&data[i * 100], 100);
       n[0]->putSegment(chunk, -1);
@@ -88,7 +95,8 @@ void putSegment() {
   }
 }
 
-void BlockAndRows() {
+void BlockAndRows()
+{
   unique_ptr<Tree> t = new MDSplus::Tree("t_treeseg", 1, "NEW");
   unique_ptr<TreeNode> n = t->addNode("BAR", "SIGNAL");
   t->write();
@@ -138,7 +146,8 @@ void BlockAndRows() {
 
 #define NUM_SEGMENTS 10
 #define SEG_SAMPLES 1000000
-void makeSegment() {
+void makeSegment()
+{
 
   MDSplus::Tree *t = new MDSplus::Tree("t_treeseg", -1, "NEW");
   MDSplus::TreeNode *na = t->addNode("SEG", "SIGNAL");
@@ -177,7 +186,8 @@ void makeSegment() {
   MDSplus::TreeNode *mmnRes = t->getNode("MMSEG_RES");
   MDSplus::TreeNode *mmpn = t->getNode("MMPSEG");
   MDSplus::TreeNode *mmpnRes = t->getNode("MMPSEG_RES");
-  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++) {
+  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
+  {
     float *segData = new float[SEG_SAMPLES];
     for (int i = 0; i < SEG_SAMPLES; i++)
       segData[i] = i;
@@ -196,7 +206,8 @@ void makeSegment() {
     deleteData(data);
     delete[] segData;
   }
-  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++) {
+  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
+  {
     float *segData = new float[SEG_SAMPLES];
     for (int i = 0; i < SEG_SAMPLES; i++)
       segData[i] = 0;
@@ -210,7 +221,8 @@ void makeSegment() {
     pn1->beginSegment(start, end, dim, data);
     for (int i = 0; i < SEG_SAMPLES; i++)
       segData[i] = i;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
       MDSplus::Float32Array *putData = new MDSplus::Float32Array(
           &segData[i * SEG_SAMPLES / 10], SEG_SAMPLES / 10);
       pn1->putSegment(putData, -1);
@@ -224,7 +236,8 @@ void makeSegment() {
     deleteData(data);
     delete[] segData;
   }
-  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++) {
+  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
+  {
     float *segData = new float[SEG_SAMPLES];
     for (int i = 0; i < SEG_SAMPLES; i++)
       segData[i] = i;
@@ -242,7 +255,8 @@ void makeSegment() {
     deleteData(data);
     delete[] segData;
   }
-  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++) {
+  for (int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
+  {
     float *segData = new float[SEG_SAMPLES];
     for (int i = 0; i < SEG_SAMPLES; i++)
       segData[i] = 0;
@@ -255,7 +269,8 @@ void makeSegment() {
     mmpn->beginSegmentMinMax(start, end, dim, data, mmpnRes, 1000);
     for (int i = 0; i < SEG_SAMPLES; i++)
       segData[i] = i;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
       MDSplus::Float32Array *putData = new MDSplus::Float32Array(
           &segData[i * SEG_SAMPLES / 10], SEG_SAMPLES / 10);
       mmpn->putSegmentMinMax(putData, -1, mmpnRes, 1000);
@@ -324,14 +339,16 @@ void makeSegment() {
   delete t;
 }
 
-#define TEST(prcedure)                                                         \
-  do {                                                                         \
-    BEGIN_TESTING(prcedure);                                                   \
-    prcedure();                                                                \
-    END_TESTING;                                                               \
+#define TEST(prcedure)       \
+  do                         \
+  {                          \
+    BEGIN_TESTING(prcedure); \
+    prcedure();              \
+    END_TESTING;             \
   } while (0)
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   setenv("t_treeseg_path", ".", 1);
   TEST(putSegment);
   TEST(BlockAndRows);

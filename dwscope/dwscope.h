@@ -4,7 +4,8 @@
 /*  *2    25-NOV-1991 10:32:07 TWF "add show mode" */
 /*  *1    12-NOV-1991 14:55:30 TWF "Data structures for DWSCOPE" */
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element DWSCOPE.H */
-typedef struct _WaveInfo {
+typedef struct _WaveInfo
+{
   Boolean update;
   Boolean x_grid_labels;
   Boolean y_grid_labels;
@@ -27,7 +28,8 @@ typedef struct _WaveInfo {
   String pad_label;
   union {
     int global_defaults;
-    struct {
+    struct
+    {
       unsigned update : 1;
 #define B_update 0
 #define M_update (1 << B_update)
@@ -97,12 +99,13 @@ typedef struct _WaveInfo {
   String print_title_evaluated;
 } WaveInfo;
 
-#define DefaultDefaults                                                        \
-  (M_update | M_x_grid_labels | M_y_grid_labels | M_show_mode | M_step_plot |  \
-   M_x_grid_lines | M_y_grid_lines | M_database | M_shot | M_default_node |    \
+#define DefaultDefaults                                                       \
+  (M_update | M_x_grid_labels | M_y_grid_labels | M_show_mode | M_step_plot | \
+   M_x_grid_lines | M_y_grid_lines | M_database | M_shot | M_default_node |   \
    M_xmin | M_xmax | M_ymin | M_ymax)
 
-typedef struct _CutHeader {
+typedef struct _CutHeader
+{
   Boolean update;
   Boolean x_grid_labels;
   Boolean y_grid_labels;

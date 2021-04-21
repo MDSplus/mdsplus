@@ -81,7 +81,8 @@ XmdsXdBoxOnOffButtonApply(Widget w);
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 
-typedef struct _Resources {
+typedef struct _Resources
+{
   int nid;
   int nid_offset;
   Boolean put_on_apply;
@@ -102,7 +103,8 @@ static void SetXdState(Widget w, Widget xd_w, XmToggleButtonCallbackStruct *cb);
 static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct *cb);
 
 EXPORT Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name,
-                                         ArgList args, Cardinal argcount) {
+                                         ArgList args, Cardinal argcount)
+{
   Widget w;
   Resources info = {0, 0, 1, 0};
   XmdsSetSubvalues(&info, resources, XtNumber(resources), args, argcount);
@@ -137,27 +139,33 @@ EXPORT Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name,
 }
 
 static void SetXdState(Widget w, Widget xd_w,
-                       XmToggleButtonCallbackStruct *cb) {
+                       XmToggleButtonCallbackStruct *cb)
+{
   XmdsXdBoxSetState(xd_w, cb->set);
 }
 
-static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct *cb) {
+static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct *cb)
+{
   XmToggleButtonSetState(oo_w, cb->on_off, 0);
 }
 
-EXPORT Boolean XmdsIsXdBoxOnOffButton(Widget w) {
+EXPORT Boolean XmdsIsXdBoxOnOffButton(Widget w)
+{
   return XtNameToWidget(w, "xmds_xdbox_on_off") &&
          XtNameToWidget(w, "xmds_xdbox_dialog_button");
 }
 
-EXPORT void XmdsXdBoxOnOffButtonReset(Widget w) {
-  if (XmdsIsXdBoxOnOffButton(w)) {
+EXPORT void XmdsXdBoxOnOffButtonReset(Widget w)
+{
+  if (XmdsIsXdBoxOnOffButton(w))
+  {
     XmdsOnOffToggleButtonReset(XtNameToWidget(w, "xmds_xdbox_on_off"));
     XmdsXdBoxDialogButtonReset(XtNameToWidget(w, "xmds_xdbox_dialog_button"));
   }
 }
 
-EXPORT int XmdsXdBoxOnOffButtonPut(Widget w) {
+EXPORT int XmdsXdBoxOnOffButtonPut(Widget w)
+{
   int status = 0;
   if (XmdsIsXdBoxOnOffButton(w))
     if ((status =
@@ -168,7 +176,8 @@ EXPORT int XmdsXdBoxOnOffButtonPut(Widget w) {
   return status;
 }
 
-EXPORT int XmdsXdBoxOnOffButtonApply(Widget w) {
+EXPORT int XmdsXdBoxOnOffButtonApply(Widget w)
+{
   int status = 0;
   if (XmdsIsXdBoxOnOffButton(w))
     if ((status = XmdsOnOffToggleButtonApply(

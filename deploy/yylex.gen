@@ -35,4 +35,7 @@ loop() { for o in $1/yylex/*.$2; do job $2 $o; done; }
 loop $1 y
 loop $1 l
 loop $1 gen
-# sed -i 's/int num_to_read/size_t num_to_read/g' $(echo $(cat $1/yylex/outfiles))
+if [ -f $1/yylex/fixme-files ]; then
+sed -i 's/\(size_t\|int\)\ n\;\s*\\/typeof(max_size) n\; \\/g'\
+ $(echo $(cat $1/yylex/fixme-files))
+fi

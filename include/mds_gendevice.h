@@ -34,81 +34,83 @@ extern int GenDeviceHeadNid();
 
 #endif
 
-#define DEV$_BAD_ENDIDX                                                        \
+#define DEV$_BAD_ENDIDX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 1 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_FILTER                                                        \
+#define DEV$_BAD_FILTER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 2 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_FREQ                                                          \
+#define DEV$_BAD_FREQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 3 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_GAIN                                                          \
+#define DEV$_BAD_GAIN \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 4 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_HEADER                                                        \
+#define DEV$_BAD_HEADER \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 5 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_HEADER_IDX                                                    \
+#define DEV$_BAD_HEADER_IDX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 6 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_MEMORIES                                                      \
+#define DEV$_BAD_MEMORIES \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 7 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_MODE                                                          \
+#define DEV$_BAD_MODE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 8 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_NAME                                                          \
+#define DEV$_BAD_NAME \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 9 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_OFFSET                                                        \
+#define DEV$_BAD_OFFSET \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 10 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_STARTIDX                                                      \
+#define DEV$_BAD_STARTIDX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 11 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_NOT_TRIGGERED                                                     \
+#define DEV$_NOT_TRIGGERED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 12 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_FREQ_TO_HIGH                                                      \
+#define DEV$_FREQ_TO_HIGH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 13 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_INVALID_NOC                                                       \
+#define DEV$_INVALID_NOC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 14 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_RANGE_MISMATCH                                                    \
+#define DEV$_RANGE_MISMATCH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 15 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAMACERR                                                          \
+#define DEV$_CAMACERR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 16 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_VERBS                                                         \
+#define DEV$_BAD_VERBS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 17 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BAD_COMMANDS                                                      \
+#define DEV$_BAD_COMMANDS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 18 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_ADNR                                                          \
+#define DEV$_CAM_ADNR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 19 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_ERR                                                           \
+#define DEV$_CAM_ERR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 20 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_LOSYNC                                                        \
+#define DEV$_CAM_LOSYNC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 21 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_LPE                                                           \
+#define DEV$_CAM_LPE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 22 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_TMO                                                           \
+#define DEV$_CAM_TMO \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 23 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_TPE                                                           \
+#define DEV$_CAM_TPE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 24 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_STE                                                           \
+#define DEV$_CAM_STE \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 25 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_DERR                                                          \
+#define DEV$_CAM_DERR \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 26 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_SQ                                                            \
+#define DEV$_CAM_SQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 27 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_NOSQ                                                          \
+#define DEV$_CAM_NOSQ \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 28 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_SX                                                            \
+#define DEV$_CAM_SX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 29 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_CAM_NOSX                                                          \
+#define DEV$_CAM_NOSX \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 30 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_INV_SETUP                                                         \
+#define DEV$_INV_SETUP \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 31 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_BADPARAM                                                          \
+#define DEV$_BADPARAM \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 32 * MSG_MSGNUM_M + MSG_ERROR)
-#define GEN_DEV$_NODATA                                                        \
+#define GEN_DEV$_NODATA \
   (MSG_MASK + 2037 * MSG_FACNUM_M + 1 * MSG_MSGNUM_M + MSG_WARNING)
-#define GEN_DEV$_INV_SETUP                                                     \
+#define GEN_DEV$_INV_SETUP \
   (MSG_MASK + 2037 * MSG_FACNUM_M + 2 * MSG_MSGNUM_M + MSG_WARNING)
-#define GEN_DEV$_X_IO_ERR                                                      \
+#define GEN_DEV$_X_IO_ERR \
   (MSG_MASK + 2037 * MSG_FACNUM_M + 3 * MSG_MSGNUM_M + MSG_WARNING)
 
 #ifdef MSG_LIBRARY
 
-int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
-  static struct msg {
+int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
+{
+  static struct msg
+  {
     int sts;
     char *facnam;
     char *msgnam;
@@ -167,8 +169,10 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
        " Hardware Error: X response failed"}};
   size_t i;
   int status = 0;
-  for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++) {
-    if (msgs[i].sts == sts) {
+  for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++)
+  {
+    if (msgs[i].sts == sts)
+    {
       *facnam = msgs[i].facnam;
       *msgnam = msgs[i].msgnam;
       *msgtext = msgs[i].msgtext;
@@ -183,124 +187,132 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
 
 #define STRING_LITERAL(string) "" #string ""
 
-#define ADD_NODE(name, usage)                                                  \
-  {                                                                            \
-    status = TreeAddNode(STRING_LITERAL(name), &curr_nid, usage);              \
-    if (!(status & 1)) {                                                       \
-      TreeSetDefaultNid(old_nid);                                              \
-      return status;                                                           \
-    }                                                                          \
-    flags = 0;                                                                 \
+#define ADD_NODE(name, usage)                                     \
+  {                                                               \
+    status = TreeAddNode(STRING_LITERAL(name), &curr_nid, usage); \
+    if (!(status & 1))                                            \
+    {                                                             \
+      TreeSetDefaultNid(old_nid);                                 \
+      return status;                                              \
+    }                                                             \
+    flags = 0;                                                    \
   }
 
-#define ADD_NODE_INTEGER(name, value, usage)                                   \
-  {                                                                            \
-    int num = value, curr_usage = usage;                                       \
-    struct descriptor num_d = {4, DTYPE_L, CLASS_S, 0};                        \
-    num_d.pointer = (char *)&num;                                              \
-    if (curr_usage)                                                            \
-      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
-    else                                                                       \
-      status =                                                                 \
-          TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC);     \
-    if (status & 1)                                                            \
-      status = TreePutRecord(curr_nid, &num_d, 0);                             \
-    if (!(status & 1)) {                                                       \
-      TreeSetDefaultNid(old_nid);                                              \
-      return status;                                                           \
-    }                                                                          \
-    flags = 0;                                                                 \
+#define ADD_NODE_INTEGER(name, value, usage)                               \
+  {                                                                        \
+    int num = value, curr_usage = usage;                                   \
+    struct descriptor num_d = {4, DTYPE_L, CLASS_S, 0};                    \
+    num_d.pointer = (char *)&num;                                          \
+    if (curr_usage)                                                        \
+      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);   \
+    else                                                                   \
+      status =                                                             \
+          TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC); \
+    if (status & 1)                                                        \
+      status = TreePutRecord(curr_nid, &num_d, 0);                         \
+    if (!(status & 1))                                                     \
+    {                                                                      \
+      TreeSetDefaultNid(old_nid);                                          \
+      return status;                                                       \
+    }                                                                      \
+    flags = 0;                                                             \
   }
 
-#define ADD_NODE_FLOAT(name, value, usage)                                     \
-  {                                                                            \
-    float num = value;                                                         \
-    int curr_usage = usage;                                                    \
-    struct descriptor num_d = {4, DTYPE_F, CLASS_S, 0};                        \
-    num_d.pointer = (char *)&num;                                              \
-    if (curr_usage)                                                            \
-      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
-    else                                                                       \
-      status =                                                                 \
-          TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC);     \
-    if (status & 1)                                                            \
-      status = TreePutRecord(curr_nid, &num_d, 0);                             \
-    if (!(status & 1)) {                                                       \
-      TreeSetDefaultNid(old_nid);                                              \
-      return status;                                                           \
-    }                                                                          \
-    flags = 0;                                                                 \
+#define ADD_NODE_FLOAT(name, value, usage)                                 \
+  {                                                                        \
+    float num = value;                                                     \
+    int curr_usage = usage;                                                \
+    struct descriptor num_d = {4, DTYPE_F, CLASS_S, 0};                    \
+    num_d.pointer = (char *)&num;                                          \
+    if (curr_usage)                                                        \
+      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);   \
+    else                                                                   \
+      status =                                                             \
+          TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC); \
+    if (status & 1)                                                        \
+      status = TreePutRecord(curr_nid, &num_d, 0);                         \
+    if (!(status & 1))                                                     \
+    {                                                                      \
+      TreeSetDefaultNid(old_nid);                                          \
+      return status;                                                       \
+    }                                                                      \
+    flags = 0;                                                             \
   }
 
-#define ADD_NODE_STRING(name, string, usage)                                   \
-  {                                                                            \
-    DESCRIPTOR(string_d, string);                                              \
-    int curr_usage = usage;                                                    \
-    if (curr_usage)                                                            \
-      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
-    else                                                                       \
-      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_TEXT);   \
-    if (status & 1)                                                            \
-      status = TreePutRecord(curr_nid, (struct descriptor *)&string_d, 0);     \
-    if (!(status & 1)) {                                                       \
-      TreeSetDefaultNid(old_nid);                                              \
-      return status;                                                           \
-    }                                                                          \
-    flags = 0;                                                                 \
+#define ADD_NODE_STRING(name, string, usage)                                 \
+  {                                                                          \
+    DESCRIPTOR(string_d, string);                                            \
+    int curr_usage = usage;                                                  \
+    if (curr_usage)                                                          \
+      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);     \
+    else                                                                     \
+      status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_TEXT); \
+    if (status & 1)                                                          \
+      status = TreePutRecord(curr_nid, (struct descriptor *)&string_d, 0);   \
+    if (!(status & 1))                                                       \
+    {                                                                        \
+      TreeSetDefaultNid(old_nid);                                            \
+      return status;                                                         \
+    }                                                                        \
+    flags = 0;                                                               \
   }
 
-#define ADD_NODE_EXPR(name, usage)                                             \
-  {                                                                            \
-    DESCRIPTOR(expr_d, expr);                                                  \
-    usage_t curr_usage = usage;                                                \
-    struct descriptor_xd comp_expr_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};        \
-    status =                                                                   \
-        TdiCompile((struct descriptor *)&expr_d, &comp_expr_xd MDS_END_ARG);   \
-    if (!(status & 1)) {                                                       \
-      TreeSetDefaultNid(old_nid);                                              \
-      return status;                                                           \
-    }                                                                          \
-    if (!curr_usage) {                                                         \
-      switch (comp_expr_xd.pointer->dtype) {                                   \
-      case DTYPE_DISPATCH:                                                     \
-        curr_usage = TreeUSAGE_DISPATCH;                                       \
-        break;                                                                 \
-      case DTYPE_ACTION:                                                       \
-        curr_usage = TreeUSAGE_ACTION;                                         \
-        break;                                                                 \
-      case DTYPE_CONGLOM:                                                      \
-        curr_usage = TreeUSAGE_DEVICE;                                         \
-        break;                                                                 \
-      case DTYPE_PROGRAM:                                                      \
-      case DTYPE_METHOD:                                                       \
-      case DTYPE_ROUTINE:                                                      \
-        curr_usage = TreeUSAGE_TASK;                                           \
-        break;                                                                 \
-      case DTYPE_SIGNAL:                                                       \
-        curr_usage = TreeUSAGE_SIGNAL;                                         \
-        break;                                                                 \
-      case DTYPE_RANGE:                                                        \
-        curr_usage = TreeUSAGE_AXIS;                                           \
-        break;                                                                 \
-      case DTYPE_WINDOW:                                                       \
-        curr_usage = TreeUSAGE_WINDOW;                                         \
-        break;                                                                 \
-      case DTYPE_T:                                                            \
-        curr_usage = TreeUSAGE_TEXT;                                           \
-        break;                                                                 \
-      default:                                                                 \
-        curr_usage = TreeUSAGE_NUMERIC;                                        \
-      }                                                                        \
-    }                                                                          \
-    status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);         \
-    if (status & 1)                                                            \
-      status = TreePutRecord(curr_nid, comp_expr_xd.pointer, 0);               \
-    if (!(status & 1)) {                                                       \
-      TreeSetDefaultNid(old_nid);                                              \
-      return status;                                                           \
-    }                                                                          \
-    MdsFree1Dx(&comp_expr_xd, 0);                                              \
-    flags = 0;                                                                 \
+#define ADD_NODE_EXPR(name, usage)                                           \
+  {                                                                          \
+    DESCRIPTOR(expr_d, expr);                                                \
+    usage_t curr_usage = usage;                                              \
+    struct descriptor_xd comp_expr_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};      \
+    status =                                                                 \
+        TdiCompile((struct descriptor *)&expr_d, &comp_expr_xd MDS_END_ARG); \
+    if (!(status & 1))                                                       \
+    {                                                                        \
+      TreeSetDefaultNid(old_nid);                                            \
+      return status;                                                         \
+    }                                                                        \
+    if (!curr_usage)                                                         \
+    {                                                                        \
+      switch (comp_expr_xd.pointer->dtype)                                   \
+      {                                                                      \
+      case DTYPE_DISPATCH:                                                   \
+        curr_usage = TreeUSAGE_DISPATCH;                                     \
+        break;                                                               \
+      case DTYPE_ACTION:                                                     \
+        curr_usage = TreeUSAGE_ACTION;                                       \
+        break;                                                               \
+      case DTYPE_CONGLOM:                                                    \
+        curr_usage = TreeUSAGE_DEVICE;                                       \
+        break;                                                               \
+      case DTYPE_PROGRAM:                                                    \
+      case DTYPE_METHOD:                                                     \
+      case DTYPE_ROUTINE:                                                    \
+        curr_usage = TreeUSAGE_TASK;                                         \
+        break;                                                               \
+      case DTYPE_SIGNAL:                                                     \
+        curr_usage = TreeUSAGE_SIGNAL;                                       \
+        break;                                                               \
+      case DTYPE_RANGE:                                                      \
+        curr_usage = TreeUSAGE_AXIS;                                         \
+        break;                                                               \
+      case DTYPE_WINDOW:                                                     \
+        curr_usage = TreeUSAGE_WINDOW;                                       \
+        break;                                                               \
+      case DTYPE_T:                                                          \
+        curr_usage = TreeUSAGE_TEXT;                                         \
+        break;                                                               \
+      default:                                                               \
+        curr_usage = TreeUSAGE_NUMERIC;                                      \
+      }                                                                      \
+    }                                                                        \
+    status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
+    if (status & 1)                                                          \
+      status = TreePutRecord(curr_nid, comp_expr_xd.pointer, 0);             \
+    if (!(status & 1))                                                       \
+    {                                                                        \
+      TreeSetDefaultNid(old_nid);                                            \
+      return status;                                                         \
+    }                                                                        \
+    MdsFree1Dx(&comp_expr_xd, 0);                                            \
+    flags = 0;                                                               \
   }
 
 #define ADD_NODE_ACTION(name, method_in, phase_in, sequence, completion_in,    \
@@ -334,7 +346,8 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
     action_d.task = (struct descriptor *)&task_d;                              \
     if (tim)                                                                   \
       task_d.time_out = &timout_d;                                             \
-    if (compl) {                                                               \
+    if (compl)                                                                 \
+    {                                                                          \
       completion_d.length = strlen(compl);                                     \
       dispatch_d.completion = &completion_d;                                   \
     }                                                                          \
@@ -344,22 +357,26 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_ACTION); \
     if (status & 1)                                                            \
       status = TreePutRecord(curr_nid, (struct descriptor *)&action_d, 0);     \
-    if (!(status & 1)) {                                                       \
+    if (!(status & 1))                                                         \
+    {                                                                          \
       TreeSetDefaultNid(old_nid);                                              \
       return status;                                                           \
     }                                                                          \
     flags = 0;                                                                 \
   }
 
-#define COPY_PART_NAME(name)                                                   \
-  {                                                                            \
-    DESCRIPTOR(return_d, STRING_LITERAL(name));                                \
-    if (out_d->class == CLASS_XD) {                                            \
-      status = MdsCopyDxXd(&return_d, (mdsdsc_xd_t *const)out_d);              \
-    } else {                                                                   \
-      status = StrCopyDx((struct descriptor *)out_d,                           \
-                         (struct descriptor *)&return_d);                      \
-    }                                                                          \
+#define COPY_PART_NAME(name)                                      \
+  {                                                               \
+    DESCRIPTOR(return_d, STRING_LITERAL(name));                   \
+    if (out_d->class == CLASS_XD)                                 \
+    {                                                             \
+      status = MdsCopyDxXd(&return_d, (mdsdsc_xd_t *const)out_d); \
+    }                                                             \
+    else                                                          \
+    {                                                             \
+      status = StrCopyDx((struct descriptor *)out_d,              \
+                         (struct descriptor *)&return_d);         \
+    }                                                             \
   }
 
 #define DevNODATA 2
@@ -371,162 +388,169 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext) {
 #define DevMODSEAR 6
 #define DevMODRANLON 7
 
-#define declare_variables(in_struct_type)                                      \
-  int error_code __attribute__((unused)) = 1;                                  \
-  int head_nid = GenDeviceHeadNid(nid_d_ptr), status;                          \
-  short code __attribute__((unused));                                          \
-  struct descriptor_xd xd                                                      \
-      __attribute__((unused)) = {0, DTYPE_DSC, CLASS_XD, 0, 0};                \
-  struct descriptor_a *array_d_ptr __attribute__((unused));                    \
-  in_struct_type in_struct __attribute__((unused));                            \
-  static int curr_nid __attribute__((unused));                                 \
-  static int curr_int __attribute__((unused));                                 \
-  static float curr_float __attribute__((unused));                             \
-  static struct descriptor curr_nid_d __attribute__((unused)) = {              \
-      sizeof(int), DTYPE_NID, CLASS_S, (char *)&curr_nid};                     \
-  static struct descriptor curr_float_d __attribute__((unused)) = {            \
-      sizeof(float), DTYPE_FS, CLASS_S, (char *)&curr_float};                  \
-  static struct descriptor curr_int_d __attribute__((unused)) = {              \
+#define declare_variables(in_struct_type)                           \
+  int error_code __attribute__((unused)) = 1;                       \
+  int head_nid = GenDeviceHeadNid(nid_d_ptr), status;               \
+  short code __attribute__((unused));                               \
+  struct descriptor_xd xd                                           \
+      __attribute__((unused)) = {0, DTYPE_DSC, CLASS_XD, 0, 0};     \
+  struct descriptor_a *array_d_ptr __attribute__((unused));         \
+  in_struct_type in_struct __attribute__((unused));                 \
+  static int curr_nid __attribute__((unused));                      \
+  static int curr_int __attribute__((unused));                      \
+  static float curr_float __attribute__((unused));                  \
+  static struct descriptor curr_nid_d __attribute__((unused)) = {   \
+      sizeof(int), DTYPE_NID, CLASS_S, (char *)&curr_nid};          \
+  static struct descriptor curr_float_d __attribute__((unused)) = { \
+      sizeof(float), DTYPE_FS, CLASS_S, (char *)&curr_float};       \
+  static struct descriptor curr_int_d __attribute__((unused)) = {   \
       sizeof(int), DTYPE_L, CLASS_S, (char *)&curr_int};
 
-#define initialize_variables(in_struct_type)                                   \
-  memset((char *)&in_struct, '\0', sizeof(in_struct_type));                    \
+#define initialize_variables(in_struct_type)                \
+  memset((char *)&in_struct, '\0', sizeof(in_struct_type)); \
   in_struct.head_nid = head_nid;
 
-#define next_xd                                                                \
-  memcpy((char *)&work_xd[xd_count++], (char *)&xd,                            \
-         sizeof(struct descriptor_xd));                                        \
-  xd.pointer = 0;                                                              \
+#define next_xd                                     \
+  memcpy((char *)&work_xd[xd_count++], (char *)&xd, \
+         sizeof(struct descriptor_xd));             \
+  xd.pointer = 0;                                   \
   xd.l_length = 0;
 
-#define read_descriptor(pos, field)                                            \
-  curr_nid = head_nid + pos;                                                   \
-  status = TreeGetRecord(curr_nid, &xd);                                       \
-  if (status & 1)                                                              \
-    in_struct.field = xd.pointer;                                              \
+#define read_descriptor(pos, field)      \
+  curr_nid = head_nid + pos;             \
+  status = TreeGetRecord(curr_nid, &xd); \
+  if (status & 1)                        \
+    in_struct.field = xd.pointer;        \
   next_xd
-#define read_descriptor_error(pos, field, err)                                 \
-  curr_nid = head_nid + pos;                                                   \
-  status = TreeGetRecord(curr_nid, &xd);                                       \
-  if (!(status & 1))                                                           \
-    error(head_nid, GEN_DEV$_INV_SETUP, err) in_struct.field = xd.pointer;     \
+#define read_descriptor_error(pos, field, err)                             \
+  curr_nid = head_nid + pos;                                               \
+  status = TreeGetRecord(curr_nid, &xd);                                   \
+  if (!(status & 1))                                                       \
+    error(head_nid, GEN_DEV$_INV_SETUP, err) in_struct.field = xd.pointer; \
   next_xd
-#define read_integer(pos, field)                                               \
-  curr_nid = head_nid + pos;                                                   \
-  status = TdiData(&curr_nid_d, &curr_int_d MDS_END_ARG);                      \
-  if (status & 1)                                                              \
+#define read_integer(pos, field)                          \
+  curr_nid = head_nid + pos;                              \
+  status = TdiData(&curr_nid_d, &curr_int_d MDS_END_ARG); \
+  if (status & 1)                                         \
     in_struct.field = curr_int;
-#define read_integer_error(pos, field, err)                                    \
-  curr_nid = head_nid + pos;                                                   \
-  status = TdiData(&curr_nid_d, &curr_int_d MDS_END_ARG);                      \
-  if (!(status & 1))                                                           \
+#define read_integer_error(pos, field, err)               \
+  curr_nid = head_nid + pos;                              \
+  status = TdiData(&curr_nid_d, &curr_int_d MDS_END_ARG); \
+  if (!(status & 1))                                      \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.field = curr_int;
-#define check_range(field, min, max, err)                                      \
-  if ((in_struct.field < min) || (in_struct.field > max))                      \
+#define check_range(field, min, max, err)                 \
+  if ((in_struct.field < min) || (in_struct.field > max)) \
     error(head_nid, GEN_DEV$_INV_SETUP, err);
-#define check_integer_set(field, table, max_idx, err)                          \
-  status = GenDeviceCvtIntCode(&code, in_struct.field, table, max_idx);        \
-  if (!(status & 1))                                                           \
+#define check_integer_set(field, table, max_idx, err)                   \
+  status = GenDeviceCvtIntCode(&code, in_struct.field, table, max_idx); \
+  if (!(status & 1))                                                    \
   error(head_nid, GEN_DEV$_INV_SETUP, err)
-#define check_integer_conv_set(field, conv_field, table, max_idx, err)         \
-  status = GenDeviceCvtIntCode(&code, in_struct.field, table, max_idx);        \
-  if (!(status & 1))                                                           \
+#define check_integer_conv_set(field, conv_field, table, max_idx, err)  \
+  status = GenDeviceCvtIntCode(&code, in_struct.field, table, max_idx); \
+  if (!(status & 1))                                                    \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.conv_field = code;
-#define read_integer_array_error(pos, field, field_count, err)                 \
-  curr_nid = head_nid + pos;                                                   \
-  status = GenDeviceCallData(DevMODINT, curr_nid, &xd);                        \
-  if (!(status & 1))                                                           \
-    error(head_nid, GEN_DEV$_INV_SETUP, err) else {                            \
-      array_d_ptr = (struct descriptor_a *)xd.pointer;                         \
-      if (array_d_ptr->class != CLASS_A)                                       \
-        error(head_nid, GEN_DEV$_INV_SETUP, err) else {                        \
-          in_struct.field = (int *)array_d_ptr->pointer;                       \
-          in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length;   \
-        }                                                                      \
-    }                                                                          \
+#define read_integer_array_error(pos, field, field_count, err)               \
+  curr_nid = head_nid + pos;                                                 \
+  status = GenDeviceCallData(DevMODINT, curr_nid, &xd);                      \
+  if (!(status & 1))                                                         \
+    error(head_nid, GEN_DEV$_INV_SETUP, err) else                            \
+    {                                                                        \
+      array_d_ptr = (struct descriptor_a *)xd.pointer;                       \
+      if (array_d_ptr->class != CLASS_A)                                     \
+        error(head_nid, GEN_DEV$_INV_SETUP, err) else                        \
+        {                                                                    \
+          in_struct.field = (int *)array_d_ptr->pointer;                     \
+          in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length; \
+        }                                                                    \
+    }                                                                        \
   next_xd
-#define read_integer_array(pos, field, field_count)                            \
-  curr_nid = head_nid + pos;                                                   \
-  status = GenDeviceCallData(DevMODINT, curr_nid, &xd);                        \
-  if (status & 1) {                                                            \
-    array_d_ptr = (struct descriptor_a *)xd.pointer;                           \
-    if (array_d_ptr->class == CLASS_A) {                                       \
-      in_struct.field = (int *)array_d_ptr->pointer;                           \
-      in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length;       \
-    }                                                                          \
-  }                                                                            \
+#define read_integer_array(pos, field, field_count)                      \
+  curr_nid = head_nid + pos;                                             \
+  status = GenDeviceCallData(DevMODINT, curr_nid, &xd);                  \
+  if (status & 1)                                                        \
+  {                                                                      \
+    array_d_ptr = (struct descriptor_a *)xd.pointer;                     \
+    if (array_d_ptr->class == CLASS_A)                                   \
+    {                                                                    \
+      in_struct.field = (int *)array_d_ptr->pointer;                     \
+      in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length; \
+    }                                                                    \
+  }                                                                      \
   next_xd
-#define read_float_array_error(pos, field, field_count, err)                   \
-  curr_nid = head_nid + pos;                                                   \
-  status = GenDeviceCallData(DevMODFLO, curr_nid, &xd);                        \
-  if (!(status & 1))                                                           \
-    error(head_nid, GEN_DEV$_INV_SETUP, err) array_d_ptr =                     \
-        (struct descriptor_a *)xd.pointer;                                     \
-  if (array_d_ptr->class != CLASS_A)                                           \
-    error(head_nid, GEN_DEV$_INV_SETUP, err) else {                            \
-      in_struct.field = (float *)array_d_ptr->pointer;                         \
-      in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length;       \
-    }                                                                          \
-  }                                                                            \
+#define read_float_array_error(pos, field, field_count, err)             \
+  curr_nid = head_nid + pos;                                             \
+  status = GenDeviceCallData(DevMODFLO, curr_nid, &xd);                  \
+  if (!(status & 1))                                                     \
+    error(head_nid, GEN_DEV$_INV_SETUP, err) array_d_ptr =               \
+        (struct descriptor_a *)xd.pointer;                               \
+  if (array_d_ptr->class != CLASS_A)                                     \
+    error(head_nid, GEN_DEV$_INV_SETUP, err) else                        \
+    {                                                                    \
+      in_struct.field = (float *)array_d_ptr->pointer;                   \
+      in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length; \
+    }                                                                    \
+  }                                                                      \
   next_xd
-#define read_float_array(pos, field, field_count)                              \
-  curr_nid = head_nid + pos;                                                   \
-  status = GenDeviceCallData(DevMODFLO, curr_nid, &xd);                        \
-  if (status & 1) {                                                            \
-    array_d_ptr = (struct descriptor_a *)xd.pointer;                           \
-    if (array_d_ptr->class == CLASS_A) {                                       \
-      in_struct.field = (float *)array_d_ptr->pointer;                         \
-      in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length;       \
-    }                                                                          \
-  }                                                                            \
+#define read_float_array(pos, field, field_count)                        \
+  curr_nid = head_nid + pos;                                             \
+  status = GenDeviceCallData(DevMODFLO, curr_nid, &xd);                  \
+  if (status & 1)                                                        \
+  {                                                                      \
+    array_d_ptr = (struct descriptor_a *)xd.pointer;                     \
+    if (array_d_ptr->class == CLASS_A)                                   \
+    {                                                                    \
+      in_struct.field = (float *)array_d_ptr->pointer;                   \
+      in_struct.field_count = array_d_ptr->arsize / array_d_ptr->length; \
+    }                                                                    \
+  }                                                                      \
   next_xd
-#define read_float(pos, field)                                                 \
-  curr_nid = head_nid + pos;                                                   \
-  status = TdiData(&curr_nid_d, &curr_float_d MDS_END_ARG);                    \
-  if (status & 1)                                                              \
+#define read_float(pos, field)                              \
+  curr_nid = head_nid + pos;                                \
+  status = TdiData(&curr_nid_d, &curr_float_d MDS_END_ARG); \
+  if (status & 1)                                           \
     in_struct.field = curr_float;
-#define read_float_error(pos, field, err)                                      \
-  curr_nid = head_nid + pos;                                                   \
-  status = TdiData(&curr_nid_d, &curr_float_d MDS_END_ARG);                    \
-  if (!(status & 1))                                                           \
+#define read_float_error(pos, field, err)                   \
+  curr_nid = head_nid + pos;                                \
+  status = TdiData(&curr_nid_d, &curr_float_d MDS_END_ARG); \
+  if (!(status & 1))                                        \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.field = curr_float;
-#define check_float_set(field, table, max_idx, err)                            \
-  status = GenDeviceCvtFloatCode(&code, in_struct.field, table, max_idx);      \
-  if (!(status & 1))                                                           \
+#define check_float_set(field, table, max_idx, err)                       \
+  status = GenDeviceCvtFloatCode(&code, in_struct.field, table, max_idx); \
+  if (!(status & 1))                                                      \
   error(head_nid, GEN_DEV$_INV_SETUP, err)
-#define check_float_conv_set(field, conv_field, table, max_idx, err)           \
-  status = GenDeviceCvtFloatCode(&code, in_struct.field, table, max_idx);      \
-  if (!(status & 1))                                                           \
+#define check_float_conv_set(field, conv_field, table, max_idx, err)      \
+  status = GenDeviceCvtFloatCode(&code, in_struct.field, table, max_idx); \
+  if (!(status & 1))                                                      \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.conv_field = code;
-#define read_string(pos, field)                                                \
-  curr_nid = head_nid + pos;                                                   \
-  status = GenDeviceCallData(DevMODSTR, curr_nid, &xd);                        \
-  if (status & 1)                                                              \
-    in_struct.field = xd.pointer->pointer;                                     \
+#define read_string(pos, field)                         \
+  curr_nid = head_nid + pos;                            \
+  status = GenDeviceCallData(DevMODSTR, curr_nid, &xd); \
+  if (status & 1)                                       \
+    in_struct.field = xd.pointer->pointer;              \
   next_xd
-#define read_string_error(pos, field, err)                                     \
-  curr_nid = head_nid + pos;                                                   \
-  status = GenDeviceCallData(DevMODSTR, curr_nid, &xd);                        \
-  if (!(status & 1))                                                           \
-    error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.field =            \
-        xd.pointer->pointer;                                                   \
+#define read_string_error(pos, field, err)                          \
+  curr_nid = head_nid + pos;                                        \
+  status = GenDeviceCallData(DevMODSTR, curr_nid, &xd);             \
+  if (!(status & 1))                                                \
+    error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.field = \
+        xd.pointer->pointer;                                        \
   next_xd
-#define check_string_set(field, table, max_idx, err)                           \
-  status = GenDeviceCvtStringCode(&code, in_struct.field, table, max_idx);     \
-  if (!(status & 1))                                                           \
+#define check_string_set(field, table, max_idx, err)                       \
+  status = GenDeviceCvtStringCode(&code, in_struct.field, table, max_idx); \
+  if (!(status & 1))                                                       \
   error(head_nid, GEN_DEV$_INV_SETUP, err)
-#define check_string_conv_set(field, conv_field, table, max_idx, err)          \
-  status = GenDeviceCvtStringCode(&code, in_struct.field, table, max_idx);     \
-  if (!(status & 1))                                                           \
+#define check_string_conv_set(field, conv_field, table, max_idx, err)      \
+  status = GenDeviceCvtStringCode(&code, in_struct.field, table, max_idx); \
+  if (!(status & 1))                                                       \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.conv_field = code;
-#define build_results_with_xd_and_return(num_xd)                               \
-  in_struct.__xds =                                                            \
-      (struct descriptor_xd *)malloc(num_xd * sizeof(struct descriptor_xd));   \
-  in_struct.__num_xds = num_xd;                                                \
-  memcpy((char *)in_struct.__xds, (char *)work_xd,                             \
-         num_xd * sizeof(struct descriptor_xd));                               \
-  *in_ptr = in_struct;                                                         \
+#define build_results_with_xd_and_return(num_xd)                             \
+  in_struct.__xds =                                                          \
+      (struct descriptor_xd *)malloc(num_xd * sizeof(struct descriptor_xd)); \
+  in_struct.__num_xds = num_xd;                                              \
+  memcpy((char *)in_struct.__xds, (char *)work_xd,                           \
+         num_xd * sizeof(struct descriptor_xd));                             \
+  *in_ptr = in_struct;                                                       \
   return error_code
-#define build_results_and_return                                               \
-  *in_ptr = in_struct;                                                         \
+#define build_results_and_return \
+  *in_ptr = in_struct;           \
   return error_code

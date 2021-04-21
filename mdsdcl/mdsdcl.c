@@ -51,31 +51,39 @@ be added using the "SET COMMAND table-name" command.
  \param argv [in] An array of command line option strings.
 */
 
-static void flushOut(char *output) {
+static void flushOut(char *output)
+{
   fprintf(stdout, "%s", output);
   fflush(stdout);
   output[0] = 0;
 }
 
-static void flushError(char *error) {
+static void flushError(char *error)
+{
   fprintf(stderr, "%s", error);
   fflush(stderr);
   error[0] = 0;
 }
 
 static char *prompt = NULL;
-static void keyboard_interrupt(int signo __attribute__((__unused__))) {
+static void keyboard_interrupt(int signo __attribute__((__unused__)))
+{
   fprintf(stderr, "KeyboardInterrupt\n");
 }
 #ifdef _WIN32
-static inline void set_readline_handlers() { signal(SIGINT, SIG_IGN); }
-static inline void set_execute_handlers() {
+static inline void set_readline_handlers()
+{
+  signal(SIGINT, SIG_IGN);
+}
+static inline void set_execute_handlers()
+{
   signal(SIGINT, keyboard_interrupt);
 }
 #else // _WIN32
 static struct sigaction act;
 #ifdef HAVE_RL_SET_SIGNALS
-static inline void set_readline_handlers() {
+static inline void set_readline_handlers()
+{
   rl_catch_signals = 1;
   rl_set_signals();
 }
@@ -84,7 +92,8 @@ static inline void set_execute_handlers() { rl_clear_signals(); }
 #ifdef _MACOSX
 #define _rl_sigint SIG_IGN
 #else  // _MACOSX
-static void _rl_sigint(int signo __attribute__((__unused__))) {
+static void _rl_sigint(int signo __attribute__((__unused__)))
+{
   // reset readline line buffer and state before printing new prompt
   rl_free_line_state();
   rl_cleanup_after_signal();
@@ -94,18 +103,21 @@ static void _rl_sigint(int signo __attribute__((__unused__))) {
   printf("\n%s", prompt);
 }
 #endif // !_MACOSX
-static inline void set_readline_handlers() {
+static inline void set_readline_handlers()
+{
   act.sa_handler = _rl_sigint;
   sigaction(SIGINT, &act, NULL);
 }
-static inline void set_execute_handlers() {
+static inline void set_execute_handlers()
+{
   act.sa_handler = keyboard_interrupt;
   sigaction(SIGINT, &act, NULL);
 }
 #endif // !HAVE_RL_SET_SIGNALS
 #endif // !_WIN32
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[])
+{
   char *history_file = NULL;
   char *command = NULL;
   int notDone = 1;
@@ -120,7 +132,8 @@ int main(int argc, char const *argv[]) {
   mdsdclSetErrorRtn(flushError);
 
   mdsdclAddCommands("mdsdcl_commands", &error);
-  if (error) {
+  if (error)
+  {
     fprintf(stderr, "%s", error);
     fflush(stderr), free(error);
     exit(1);
@@ -134,7 +147,8 @@ int main(int argc, char const *argv[]) {
   act.sa_handler = keyboard_interrupt;
   sigaction(SIGINT, &act, NULL);
 #endif
-  if ((argc > 2) && (strcmp("-prep", argv[1]) == 0)) {
+  if ((argc > 2) && (strcmp("-prep", argv[1]) == 0))
+  {
     char *prep_cmd = strdup(argv[2]);
     int inquote = 0;
     size_t k;
@@ -144,7 +158,8 @@ int main(int argc, char const *argv[]) {
        this to load the appropriate command definitions, set the prompt
        string and the history file. */
 
-    for (k = 0; k < strlen(prep_cmd); k++) {
+    for (k = 0; k < strlen(prep_cmd); k++)
+    {
       if (prep_cmd[k] == '"')
         inquote = !inquote;
       else if ((!inquote) && (prep_cmd[k] == '-'))
@@ -165,14 +180,17 @@ int main(int argc, char const *argv[]) {
 
   /* If other options on command line */
 
-  if ((argc > 2) && (strcmp("-f", argv[1]) == 0)) {
+  if ((argc > 2) && (strcmp("-f", argv[1]) == 0))
+  {
     FILE *fp = fopen(argv[2], "r");
-    if (fp == NULL) {
+    if (fp == NULL)
+    {
       perror("Error opening file");
       exit(EXIT_FAILURE);
     }
     char line[1024];
-    while (fgets(line, sizeof(line), fp)) {
+    while (fgets(line, sizeof(line), fp))
+    {
       size_t len = strlen(line);
       while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
         line[--len] = '\0';
@@ -185,11 +203,13 @@ int main(int argc, char const *argv[]) {
     exit(EXIT_SUCCESS);
   }
 
-  if (argc > 1) {
+  if (argc > 1)
+  {
 
     /* Concatenate rest of line into a mdsdcl command string */
     char *cmd = strdup(argv[1]);
-    for (i = 2; i < argc; i++) {
+    for (i = 2; i < argc; i++)
+    {
       cmd = strcat(realloc(cmd, strlen(cmd) + strlen(argv[i]) + 2), " ");
       strcat(cmd, argv[i]);
     }
@@ -207,7 +227,8 @@ int main(int argc, char const *argv[]) {
 
   /* While more commands to be entered */
 
-  while (notDone) {
+  while (notDone)
+  {
     char *cmd;
 
     /* If prompt not defined get the prompt */
@@ -220,15 +241,20 @@ int main(int argc, char const *argv[]) {
     cmd = readline(prompt);
     /* If not EOF */
 
-    if (cmd) {
+    if (cmd)
+    {
       /* If command continued from previous line or command need more input,
          append line to previous command portion */
-      if (command) {
-        if (strlen(cmd) > 0) {
+      if (command)
+      {
+        if (strlen(cmd) > 0)
+        {
           command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
           strcat(command, cmd);
           free(cmd);
-        } else {
+        }
+        else
+        {
           free(cmd);
           free(command);
           command = 0;
@@ -236,12 +262,14 @@ int main(int argc, char const *argv[]) {
           prompt = 0;
           continue;
         }
-      } else
+      }
+      else
         command = cmd;
 
       /* If line ends in hyphen it is a continuation. Go get rest of line */
       if (strlen(command) > 1)
-        if (command[strlen(command) - 1] == '-') {
+        if (command[strlen(command) - 1] == '-')
+        {
           command[strlen(command) - 1] = '\0';
           free(prompt);
           prompt = strdup("Continue: ");
@@ -250,20 +278,24 @@ int main(int argc, char const *argv[]) {
 
       /* If not an empty command line */
 
-      if (strlen(command) > 0) {
+      if (strlen(command) > 0)
+      {
         char *prompt_more = 0;
         add_history(command);
-        if (output) {
+        if (output)
+        {
           free(output);
           output = 0;
         }
         set_execute_handlers();
         status = mdsdcl_do_command_extra_args(command, &prompt_more, &error,
                                               &output, 0, 0);
-        if (prompt_more != NULL) {
+        if (prompt_more != NULL)
+        {
           HIST_ENTRY *hist;
           hist = remove_history(where_history());
-          if (hist) {
+          if (hist)
+          {
             if (hist->line)
               free((void *)hist->line);
             free(hist);
@@ -277,7 +309,8 @@ int main(int argc, char const *argv[]) {
           free(prompt_more);
           continue;
         }
-        if (error != NULL) {
+        if (error != NULL)
+        {
           fprintf(stderr, "%s", error);
           fflush(stderr);
           free(error);
@@ -285,7 +318,8 @@ int main(int argc, char const *argv[]) {
         }
         free(prompt);
         prompt = 0;
-        if (status == MdsdclEXIT) {
+        if (status == MdsdclEXIT)
+        {
           free(command);
           status = 0;
           goto done;
@@ -293,7 +327,9 @@ int main(int argc, char const *argv[]) {
       }
       free(command);
       command = 0;
-    } else {
+    }
+    else
+    {
       notDone = 0;
       printf("\n");
     }

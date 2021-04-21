@@ -36,12 +36,12 @@
 
 /* LessTif definitions that are convenient for Motif */
 #ifndef Prim_HighlightThickness
-#define Prim_HighlightThickness(w)                                             \
+#define Prim_HighlightThickness(w) \
   (((XmPrimitiveWidget)(w))->primitive.highlight_thickness)
 #endif
 
 #ifndef Prim_ShadowThickness
-#define Prim_ShadowThickness(w)                                                \
+#define Prim_ShadowThickness(w) \
   (((XmPrimitiveWidget)(w))->primitive.shadow_thickness)
 #endif
 
@@ -50,7 +50,7 @@
 #endif
 
 #ifndef Prim_BottomShadowGC
-#define Prim_BottomShadowGC(w)                                                 \
+#define Prim_BottomShadowGC(w) \
   (((XmPrimitiveWidget)(w))->primitive.bottom_shadow_GC)
 #endif
 
@@ -61,11 +61,13 @@
 #define TIMER_DOUBLE 2
 #define TIMER_WAITING 3
 
-typedef struct {
+typedef struct
+{
   int dummy; /* keep compiler happy with dummy field */
 } ListTreeClassPart;
 
-typedef struct _ListTreeClassRec {
+typedef struct _ListTreeClassRec
+{
   CoreClassPart core_class;
   XmPrimitiveClassPart primitive_class;
   ListTreeClassPart ListTree_class;
@@ -73,14 +75,16 @@ typedef struct _ListTreeClassRec {
 
 extern ListTreeClassRec listtreeClassRec;
 
-typedef struct {
+typedef struct
+{
   Pixmap bitmap;
   Pixmap pix;
   int width, height;
   int xoff;
 } Pixinfo;
 
-typedef struct {
+typedef struct
+{
   /* Public stuff ... */
   long foreground_pixel;
   XFontStruct *font;
@@ -155,7 +159,8 @@ typedef struct {
 
 } ListTreePart;
 
-typedef struct _ListTreeRec {
+typedef struct _ListTreeRec
+{
   CorePart core;
   XmPrimitivePart primitive;
   ListTreePart list;

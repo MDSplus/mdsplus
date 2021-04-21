@@ -40,7 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 
-EXPORT Complex AddC(Complex c1, Complex c2) {
+EXPORT Complex AddC(Complex c1, Complex c2)
+{
   // This ckeck is required to avoid floating point underflow!!
   if (fabs(c1.re) < 1E-30)
     c1.re = 0;
@@ -56,7 +57,8 @@ EXPORT Complex AddC(Complex c1, Complex c2) {
   return ris;
 }
 
-EXPORT Complex SubC(Complex c1, Complex c2) {
+EXPORT Complex SubC(Complex c1, Complex c2)
+{
   Complex ris;
   // This ckeck is required to avoid floating point underflow!!
   if (fabs(c1.re) < 1E-30)
@@ -72,7 +74,8 @@ EXPORT Complex SubC(Complex c1, Complex c2) {
   return ris;
 }
 
-EXPORT Complex MulC(Complex c1, Complex c2) {
+EXPORT Complex MulC(Complex c1, Complex c2)
+{
   Complex ris;
 
   // This ckeck is required to avoid floating point underflow!!
@@ -90,7 +93,8 @@ EXPORT Complex MulC(Complex c1, Complex c2) {
   return ris;
 }
 
-EXPORT Complex DivC(Complex c1, Complex c2) {
+EXPORT Complex DivC(Complex c1, Complex c2)
+{
   Complex ris;
   double den;
   // This ckeck is required to avoid floating point underflow!!
@@ -103,7 +107,8 @@ EXPORT Complex DivC(Complex c1, Complex c2) {
   if (fabs(c2.im) < 1E-30)
     c2.im = 0;
   den = c2.re * c2.re + c2.im * c2.im;
-  if (den == 0) {
+  if (den == 0)
+  {
     printf("DivC: division by Zero\n");
     exit(1);
   }
@@ -113,7 +118,8 @@ EXPORT Complex DivC(Complex c1, Complex c2) {
   return ris;
 }
 
-EXPORT Complex ExpC(Complex c) {
+EXPORT Complex ExpC(Complex c)
+{
   Complex ris;
   // This ckeck is required to avoid floating point underflow!!
   if (fabs(c.re) < 1E-30)
@@ -125,7 +131,8 @@ EXPORT Complex ExpC(Complex c) {
   return ris;
 }
 
-EXPORT double Mod2(Complex c) {
+EXPORT double Mod2(Complex c)
+{
   // This ckeck is required to avoid floating point underflow!!
   if (fabs(c.re) < 1E-30)
     c.re = 0;

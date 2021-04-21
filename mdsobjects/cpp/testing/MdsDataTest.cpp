@@ -44,7 +44,8 @@ using namespace MDSplus;
 using namespace testing;
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(Mds Data Test);
 
   { // CONSTRUCTORS

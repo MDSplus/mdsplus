@@ -22,6 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#define _GNU_SOURCE
+#include <sched.h>
+#include <pthread.h>
+
 #include <mdsplus/mdsconfig.h>
 
 #include <errno.h>
@@ -42,7 +46,7 @@ extern int UdpEventGetLoop(char *loop);
 extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
 #define MAX_MSG_LEN 4096
-#define MAX_EVENTS                                                             \
+#define MAX_EVENTS \
   1000000 /*Maximum number of events handled by a single process */
 
 #ifndef EVENT_THREAD_STACK_SIZE_MIN
@@ -51,9 +55,11 @@ extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
 #ifdef _WIN32
 #define socklen_t int
-static void print_error_code(char *message, int error) {
+static void print_error_code(char *message, int error)
+{
   char *errorstr;
-  switch (error) {
+  switch (error)
+  {
   case WSANOTINITIALISED:
     errorstr = "WSANOTINITIALISED";
     break;
@@ -98,21 +104,24 @@ static void print_error_code(char *message, int error) {
   else
     fprintf(stderr, "%s - error code %d\n", message, error);
 }
-inline static void print_error(char *message) {
+inline static void print_error(char *message)
+{
   print_error_code(message, WSAGetLastError());
 }
 #else
 #define print_error(message) fprintf(stderr, "%s\n", message)
 #endif
 
-typedef struct _EventList {
+typedef struct _EventList
+{
   int eventid;
   pthread_t thread;
   SOCKET socket;
   struct _EventList *next;
 } EventList;
 
-struct EventInfo {
+struct EventInfo
+{
   SOCKET socket;
   char *eventName;
   void *arg;
@@ -134,7 +143,8 @@ static pthread_mutex_t sendEventMutex = PTHREAD_MUTEX_INITIALIZER;
 
 ***********************/
 
-static void *handleMessage(void *info_in) {
+static void *handleMessage(void *info_in)
+{
   struct EventInfo *info = (struct EventInfo *)info_in;
   pthread_mutex_lock(&eventIdMutex);
   SOCKET socket = info->socket;
@@ -152,10 +162,12 @@ static void *handleMessage(void *info_in) {
   free(info->eventName);
   free(info);
   pthread_mutex_unlock(&eventIdMutex);
-  for (;;) {
+  for (;;)
+  {
     recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
                         (struct sockaddr *)&clientAddr, &addrSize);
-    if (recBytes <= 0) {
+    if (recBytes <= 0)
+    {
 #ifdef _WIN32
       int error = WSAGetLastError();
       if (!(recBytes == 0 || error == WSAEBADF || error == WSAESHUTDOWN ||
@@ -189,7 +201,8 @@ static void *handleMessage(void *info_in) {
   return 0;
 }
 
-static int pushEvent(pthread_t thread, SOCKET socket) {
+static int pushEvent(pthread_t thread, SOCKET socket)
+{
   pthread_mutex_lock(&eventIdMutex);
   EventList *ev = malloc(sizeof(EventList));
   ev->eventid = ++EVENTID;
@@ -201,13 +214,15 @@ static int pushEvent(pthread_t thread, SOCKET socket) {
   return ev->eventid;
 }
 
-static EventList *popEvent(int eventid) {
+static EventList *popEvent(int eventid)
+{
   pthread_mutex_lock(&eventIdMutex);
   EventList *ev, *ev_prev;
   for (ev = EVENTLIST, ev_prev = 0; ev && ev->eventid != eventid;
        ev_prev = ev, ev = ev->next)
     ;
-  if (ev) {
+  if (ev)
+  {
     if (ev_prev)
       ev_prev->next = ev->next;
     else
@@ -217,7 +232,8 @@ static EventList *popEvent(int eventid) {
   return ev;
 }
 
-static void getMulticastAddr(char const *eventName, char *retIp) {
+static void getMulticastAddr(char const *eventName, char *retIp)
+{
   char *addr_format;
   size_t i, len = strlen(eventName);
   unsigned char arange[2];
@@ -232,10 +248,12 @@ static void getMulticastAddr(char const *eventName, char *retIp) {
   free(addr_format);
 }
 
-int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
-                   void *astprm, int *eventid) {
+int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *),
+                       void *astprm, int *eventid, __attribute__((unused)) unsigned int cpuMask)
+{
   int check_bind_in_directive;
   struct sockaddr_in serverAddr;
+
 #ifdef _WIN32
   char flag = 1;
 #else
@@ -250,7 +268,8 @@ int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
   pthread_t thread;
   memset(&ipMreq, 0, sizeof(ipMreq));
   UdpEventGetPort(&port);
-  if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+  if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+  {
     print_error("Error creating socket");
     return 0;
   }
@@ -261,13 +280,15 @@ int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
 
   // Allow multiple connections
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) ==
-      SOCKET_ERROR) {
+      SOCKET_ERROR)
+  {
     print_error("Cannot set REUSEADDR option");
     return 0;
   }
 #ifdef SO_REUSEPORT
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEPORT, &flag, sizeof(flag)) ==
-      SOCKET_ERROR) {
+      SOCKET_ERROR)
+  {
     print_error("Cannot set REUSEPORT option");
   }
 #endif
@@ -278,7 +299,8 @@ int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
   check_bind_in_directive = (bind(udpSocket, (struct sockaddr *)&serverAddr,
                                   sizeof(struct sockaddr_in)) != 0);
 #endif
-  if (check_bind_in_directive) {
+  if (check_bind_in_directive)
+  {
     perror("Cannot bind socket\n");
     return 0;
   }
@@ -287,7 +309,8 @@ int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
   ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
   ipMreq.imr_interface.s_addr = INADDR_ANY;
   if (setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq,
-                 sizeof(ipMreq)) < 0) {
+                 sizeof(ipMreq)) < 0)
+  {
     print_error(
         "Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver");
     return 0;
@@ -303,31 +326,60 @@ int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
     size_t ssize;
     pthread_attr_t attr;
     s = pthread_attr_init(&attr);
-    if (s != 0) {
+    if (s != 0)
+    {
       perror("pthread_attr_init");
       return 0;
     }
     pthread_attr_getstacksize(&attr, &ssize);
-    if (ssize < EVENT_THREAD_STACK_SIZE_MIN) {
+    if (ssize < EVENT_THREAD_STACK_SIZE_MIN)
+    {
       s = pthread_attr_setstacksize(&attr, EVENT_THREAD_STACK_SIZE_MIN);
-      if (s != 0) {
+      if (s != 0)
+      {
         perror("pthread_attr_setstacksize");
         return 0;
       }
     }
     s = pthread_create(&thread, &attr, handleMessage, (void *)currInfo);
-    if (s != 0) {
+    if (s != 0)
+    {
       perror("pthread_create");
       return 0;
     }
+#ifdef CPU_SET
+    if (cpuMask != 0)
+    {
+      cpu_set_t processorCpuSet;
+      unsigned int j;
+      CPU_ZERO(&processorCpuSet);
+      for (j = 0u; (j < (sizeof(cpuMask) * 8u)) && (j < CPU_SETSIZE); j++)
+      {
+        if (((cpuMask >> j) & 0x1u) == 0x1u)
+        {
+          CPU_SET(j, &processorCpuSet);
+        }
+      }
+      pthread_setaffinity_np(thread, sizeof(processorCpuSet), &processorCpuSet);
+    }
+#endif
   }
+
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
 
-int MDSUdpEventCan(int eventid) {
+int MDSUdpEventAst(char const *eventName, void (*astadr)(void *, int, char *),
+                   void *astprm, int *eventid)
+{
+  return MDSUdpEventAstMask(eventName, astadr, astprm, eventid, 0);
+}
+
+int MDSUdpEventCan(int eventid)
+{
   EventList *ev = popEvent(eventid);
-  if (!ev) {
+  if (!ev)
+  {
     printf("invalid eventid %d\n", eventid);
     return 0;
   }
@@ -353,34 +405,35 @@ int MDSUdpEventCan(int eventid) {
 }
 
 static SOCKET send_socket = INVALID_SOCKET;
+static unsigned short sendPort = 0;
 static pthread_once_t send_socket_once = PTHREAD_ONCE_INIT;
-static void send_socket_get() {
+static void send_socket_get()
+{
   if ((send_socket = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
     print_error("Error creating socket");
+  UdpEventGetPort(&sendPort);
 }
 
-int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf) {
+int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
+{
   char multiIp[64];
   uint32_t buflen_net_order = (uint32_t)htonl(bufLen);
   SOCKET udpSocket;
-  struct sockaddr_in sin;
+  static struct sockaddr_in sin;
   char *msg = 0, *currPtr;
   unsigned int msgLen, nameLen = (unsigned int)strlen(eventName), actBufLen;
   uint32_t namelen_net_order = (uint32_t)htonl(nameLen);
   int status;
-  unsigned short port;
   char ttl, loop;
   struct in_addr *interface_addr = 0;
 
   getMulticastAddr(eventName, multiIp);
   pthread_once(&send_socket_once, &send_socket_get);
   udpSocket = send_socket;
-
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
   *(int *)&sin.sin_addr = LibGetHostAddr(multiIp);
-  UdpEventGetPort(&port);
-  sin.sin_port = htons(port);
+  sin.sin_port = htons(sendPort);
   nameLen = (unsigned int)strlen(eventName);
   if (bufLen < MAX_MSG_LEN - (4u + 4u + nameLen))
     actBufLen = bufLen;
@@ -403,20 +456,25 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf) {
     memcpy(currPtr, buf, bufLen);
 
   pthread_mutex_lock(&sendEventMutex);
+
   if (UdpEventGetTtl(&ttl))
     setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
   if (UdpEventGetLoop(&loop))
     setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
-  if (UdpEventGetInterface(&interface_addr)) {
+  if (UdpEventGetInterface(&interface_addr))
+  {
     status = setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_IF,
                         (char *)interface_addr, sizeof(*interface_addr));
     free(interface_addr);
   }
+
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) ==
-      -1) {
+      -1)
+  {
     print_error("Error sending UDP message");
     status = 0;
-  } else
+  }
+  else
     status = 1;
   free(msg);
   pthread_mutex_unlock(&sendEventMutex);

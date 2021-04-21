@@ -28,12 +28,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "mdsip_connections.h"
 
-void FlipData(Message *m) {
+void FlipData(Message *m)
+{
   int num = 1;
   int i;
   char *ptr;
   int dims[MAX_DIMS];
-  for (i = 0; i < MAX_DIMS; i++) {
+  for (i = 0; i < MAX_DIMS; i++)
+  {
 #ifdef __CRAY
     dims[i] = i % 2 ? m->h.dims[i / 2] & 0xffffffff : m->h.dims[i / 2] >> 32;
 #else
@@ -46,7 +48,8 @@ void FlipData(Message *m) {
 #ifdef DEBUG
   printf("num to flip = %d\n", num);
 #endif
-  switch (m->h.dtype) {
+  switch (m->h.dtype)
+  {
 #ifndef __CRAY
   case DTYPE_COMPLEX:
   case DTYPE_COMPLEX_DOUBLE:

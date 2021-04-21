@@ -54,7 +54,8 @@ using namespace testing;
 //    void setAxis(Data *axis){ assignDescAt(axis, 1); }
 //};
 
-int main() {
+int main()
+{
   BEGIN_TESTING(Dimension);
 
   { // CTR

@@ -31,14 +31,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsSetCompression  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsSetCompression(int id, int level) {
+int MdsSetCompression(int id, int level)
+{
   int old_level;
   if (level < 0)
     level = 0;
   else if (level > 9)
     level = 9;
   old_level = SetCompressionLevel(level);
-  if (id != -1) {
+  if (id != -1)
+  {
     char expression[128];
     struct descrip ans = {0};
     sprintf(expression, "MdsSetCompression(%d)", level);

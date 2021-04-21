@@ -33,20 +33,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 
 static int SendBytes(Connection *c, void *buffer, size_t bytes_to_send,
-                     int options) {
+                     int options)
+{
   char *bptr = (char *)buffer;
-  if (c && c->io) {
+  if (c && c->io)
+  {
     int tries = 0;
-    while ((bytes_to_send > 0) && (tries < 10)) {
+    while ((bytes_to_send > 0) && (tries < 10))
+    {
       ssize_t bytes_sent;
       bytes_sent = c->io->send(c, bptr, bytes_to_send, options);
-      if (bytes_sent < 0) {
-        if (errno != EINTR) {
+      if (bytes_sent < 0)
+      {
+        if (errno != EINTR)
+        {
           perror("Error sending data to remote server");
           return MDSplusERROR;
         }
         tries++;
-      } else {
+      }
+      else
+      {
         bytes_to_send -= bytes_sent;
         bptr += bytes_sent;
         if (bytes_sent)
@@ -55,7 +62,8 @@ static int SendBytes(Connection *c, void *buffer, size_t bytes_to_send,
           tries++;
       }
     }
-    if (tries >= 10) {
+    if (tries >= 10)
+    {
       char msg[256];
       sprintf(msg, "\rsend failed, shutting down connection %d", c->id);
       perror(msg);
@@ -67,14 +75,16 @@ static int SendBytes(Connection *c, void *buffer, size_t bytes_to_send,
   return MDSplusERROR;
 }
 
-int SendMdsMsgC(Connection *c, Message *m, int msg_options) {
+int SendMdsMsgC(Connection *c, Message *m, int msg_options)
+{
   unsigned long len = m->h.msglen - sizeof(m->h);
   unsigned long clength = 0;
   Message *cm = 0;
   int status;
   int do_swap = 0; /*Added to handle byte swapping with compression */
   if (len > 0 && GetCompressionLevel() > 0 &&
-      m->h.client_type != SENDCAPABILITIES) {
+      m->h.client_type != SENDCAPABILITIES)
+  {
     clength = len;
     cm = (Message *)malloc(m->h.msglen + 4);
   }
@@ -82,18 +92,22 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options) {
     c->io->flush(c);
   if (m->h.client_type == SENDCAPABILITIES)
     m->h.status = GetCompressionLevel();
-  if ((m->h.client_type & SwapEndianOnServer) != 0) {
-    if (Endian(m->h.client_type) != Endian(ClientType())) {
+  if ((m->h.client_type & SwapEndianOnServer) != 0)
+  {
+    if (Endian(m->h.client_type) != Endian(ClientType()))
+    {
       FlipData(m);
       FlipHeader(&m->h);
       do_swap = 1; /* Recall that the header field msglen needs to be swapped */
     }
-  } else
+  }
+  else
     m->h.client_type = ClientType();
   if (clength &&
       compress2((unsigned char *)cm->bytes + 4, &clength,
                 (unsigned char *)m->bytes, len, GetCompressionLevel()) == 0 &&
-      clength < len) {
+      clength < len)
+  {
     cm->h = m->h;
     cm->h.client_type |= COMPRESSED;
     memcpy(cm->bytes, &cm->h.msglen, 4);
@@ -101,16 +115,19 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options) {
     if (do_swap)
       FlipBytes(4, (char *)&cm->h.msglen);
     status = SendBytes(c, (char *)cm, msglen, msg_options);
-  } else
+  }
+  else
     status = SendBytes(c, (char *)m, len + sizeof(MsgHdr), msg_options);
   if (clength)
     free(cm);
   return status;
 }
 
-int SendMdsMsg(int id, Message *m, int msg_options) {
+int SendMdsMsg(int id, Message *m, int msg_options)
+{
   Connection *c = FindConnection(id, NULL);
-  if (SendMdsMsgC(c, m, msg_options) == SsINTERNAL) {
+  if (SendMdsMsgC(c, m, msg_options) == SsINTERNAL)
+  {
     DisconnectConnection(id);
     return MDSplusFATAL;
   }

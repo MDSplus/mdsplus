@@ -2,7 +2,8 @@
 #include <msgs.h>
 #endif
 
-struct _id {
+struct _id
+{
   struct linkage link;
   long status;
   char *name;

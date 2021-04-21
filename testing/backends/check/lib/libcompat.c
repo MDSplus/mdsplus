@@ -25,7 +25,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "libcompat.h"
 
 /* silence warnings about an empty library */
-void ck_do_nothing(void) {
+void ck_do_nothing(void)
+{
   assert(0);
 
   /*

@@ -70,7 +70,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db type
 // output:      status
 //-------------------------------------------------------------------------
-int map_data_file(int dbType) {
+int map_data_file(int dbType)
+{
   char *FileName = 0;
   int db_size, fd = ERROR, *FileIsMapped = FALSE;
   int status = SUCCESS;
@@ -80,7 +81,8 @@ int map_data_file(int dbType) {
   extern struct CRATE *CRATEdb;
 
   // set db specific parameters
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     FileName = CTS_DB_FILE;
     FileIsMapped = &CTSdbFileIsMapped;
@@ -96,27 +98,32 @@ int map_data_file(int dbType) {
     printf("map_data_file('%s')\n", FileName);
 
   // check to see if db file exists
-  if (check_for_file(FileName) != SUCCESS) {
+  if (check_for_file(FileName) != SUCCESS)
+  {
     status = FILE_ERROR;
     goto MapData_Exit; // no file, so we're out'a here
   }
   // get file size
-  if ((db_size = get_db_file_size(FileName)) == ERROR) {
+  if ((db_size = get_db_file_size(FileName)) == ERROR)
+  {
     status = ERROR;
     goto MapData_Exit;
   }
   // get a file descriptor -- NB! special version of 'Open()'
-  if ((fd = Open(FileName, O_RDWR)) == ERROR) {
+  if ((fd = Open(FileName, O_RDWR)) == ERROR)
+  {
     perror("open()");
     status = FILE_ERROR; // error flag
     goto MapData_Exit;
   }
   // now, memory map database file
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     if ((CTSdb = (struct MODULE *)mmap(
              (caddr_t)0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
-             fd, 0)) == MAP_FAILED) {
+             fd, 0)) == MAP_FAILED)
+    {
       if (MSGLVL(ALWAYS))
         perror("mmap(CTS)");
 
@@ -130,7 +137,8 @@ int map_data_file(int dbType) {
   case CRATE_DB:
     if ((CRATEdb = (struct CRATE *)mmap(
              (caddr_t)0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
-             fd, 0)) == MAP_FAILED) {
+             fd, 0)) == MAP_FAILED)
+    {
       if (MSGLVL(ALWAYS))
         perror("mmap(CRATE)");
 
@@ -158,7 +166,8 @@ MapData_Exit:
     return status;
   if (status != SUCCESS)
     printf("Error mapping %s\n", FileName);
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("map_data_file('%s'): ", FileName);
     ShowStatus(status);
   }

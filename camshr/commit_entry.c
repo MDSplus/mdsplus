@@ -65,7 +65,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       db file type
 // output:      status
 //-------------------------------------------------------------------------
-int commit_entry(int dbType) {
+int commit_entry(int dbType)
+{
   void *dbptr;                  // generic pointer to dbs
   int status = SUCCESS;         // assume the best
   extern struct MODULE *CTSdb;  // pointer to in-memory copy of data file
@@ -74,7 +75,8 @@ int commit_entry(int dbType) {
   if (MSGLVL(FUNCTION_NAME))
     printf("commit_entry()\n");
 
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     dbptr = (void *)CTSdb;
     break;
@@ -91,7 +93,8 @@ int commit_entry(int dbType) {
   if (msync(dbptr, 0, MS_SYNC | MS_INVALIDATE) == ERROR)
     status = COMMIT_ERROR;
 
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("commit_entry(): ");
     ShowStatus(status);
   }

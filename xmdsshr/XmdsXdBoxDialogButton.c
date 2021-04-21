@@ -77,7 +77,8 @@ Widget XmdsXdBoxDialogButtonGetXdBox(Widget w);
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 
-typedef struct _Resources {
+typedef struct _Resources
+{
   int nid;
   int nid_offset;
   Boolean put_on_apply;
@@ -97,7 +98,8 @@ static XtResource resources[] = {
      XtOffsetOf(Resources, put_on_apply), XmRImmediate, (void *)1}};
 
 EXPORT Widget XmdsCreateXdBoxDialogButton(Widget parent, String name,
-                                          ArgList args, Cardinal argcount) {
+                                          ArgList args, Cardinal argcount)
+{
   Widget w;
   Resources *info = (Resources *)XtMalloc(sizeof(Resources));
   Resources default_info = {0, 0, 1, 0};
@@ -119,23 +121,28 @@ EXPORT Widget XmdsCreateXdBoxDialogButton(Widget parent, String name,
   return w;
 }
 
-static void Destroy(Widget w, Resources *info, XtPointer cb) {
+static void Destroy(Widget w, Resources *info, XtPointer cb)
+{
   XtFree((char *)info);
 }
 
-static void Popup(Widget w, Resources *info, XtPointer cb) {
+static void Popup(Widget w, Resources *info, XtPointer cb)
+{
   if (info->popup_w)
     XmdsManageWindow(info->popup_w);
 }
 
-EXPORT Boolean XmdsIsXdBoxDialogButton(Widget w) {
+EXPORT Boolean XmdsIsXdBoxDialogButton(Widget w)
+{
   return GetResources(w) != 0;
 }
 
-static Resources *GetResources(Widget w) {
+static Resources *GetResources(Widget w)
+{
   Resources *answer = 0;
   if (XmIsPushButton(w) &&
-      (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome)) {
+      (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome))
+  {
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNdestroyCallback, &callbacks, NULL);
     for (; callbacks->callback &&
@@ -149,24 +156,28 @@ static Resources *GetResources(Widget w) {
   return answer;
 }
 
-EXPORT void XmdsXdBoxDialogButtonReset(Widget w) {
+EXPORT void XmdsXdBoxDialogButtonReset(Widget w)
+{
   Resources *info = GetResources(w);
   if (info)
     XmdsXdBoxReset(info->popup_w);
   return;
 }
 
-EXPORT int XmdsXdBoxDialogButtonPut(Widget w) {
+EXPORT int XmdsXdBoxDialogButtonPut(Widget w)
+{
   Resources *info = GetResources(w);
   return info ? XmdsXdBoxPut(info->popup_w) : 0;
 }
 
-EXPORT int XmdsXdBoxDialogButtonApply(Widget w) {
+EXPORT int XmdsXdBoxDialogButtonApply(Widget w)
+{
   Resources *info = GetResources(w);
   return info ? XmdsXdBoxApply(info->popup_w) : 0;
 }
 
-EXPORT Widget XmdsXdBoxDialogButtonGetXdBox(Widget w) {
+EXPORT Widget XmdsXdBoxDialogButtonGetXdBox(Widget w)
+{
   Resources *info = GetResources(w);
   return info ? info->popup_w : 0;
 }

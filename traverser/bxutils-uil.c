@@ -156,7 +156,8 @@ static int StrCasecmp(char *, char *);
  * If you add to the array, ALWAYS keep NUM_COMMON_WCHARS as the last
  * entry in the enum.  This will maintain correct memory usage, etc.
  */
-enum {
+enum
+{
   WNull,
   WTab,
   WNewLine,
@@ -248,19 +249,23 @@ static wchar_t *CStrCommonWideCharsGet();
  *             1; s1 != s2
  */
 static int StrCasecmp ARGLIST((s1, s2)) ARG(register char *, s1)
-    GRA(register char *, s2) {
+    GRA(register char *, s2)
+{
   register int c1, c2;
 
-  while (*s1 && *s2) {
+  while (*s1 && *s2)
+  {
     c1 = isupper(*s1) ? tolower(*s1) : *s1;
     c2 = isupper(*s2) ? tolower(*s2) : *s2;
-    if (c1 != c2) {
+    if (c1 != c2)
+    {
       return (1);
     }
     s1++;
     s2++;
   }
-  if (*s1 || *s2) {
+  if (*s1 || *s2)
+  {
     return (1);
   }
   return (0);
@@ -295,7 +300,8 @@ static int mblen ARGLIST((s, n)) ARG(char *, s) GRA(size_t, n) { return (1); }
  * Output:
  *      int : the number of characters found
  */
-static int strlenWc ARGLIST((ptr)) GRA(wchar_t *, ptr) {
+static int strlenWc ARGLIST((ptr)) GRA(wchar_t *, ptr)
+{
   register wchar_t *p = ptr;
   register int x = 0;
 
@@ -320,11 +326,13 @@ static int strlenWc ARGLIST((ptr)) GRA(wchar_t *, ptr) {
  *      bytesConv - size_t : number of bytes converted
  */
 static size_t doMbstowcs ARGLIST((wcs, mbs, n)) ARG(wchar_t *, wcs)
-    ARG(char *, mbs) GRA(size_t, n) {
+    ARG(char *, mbs) GRA(size_t, n)
+{
 #ifndef SUPPORTS_WCHARS
   int i;
 
-  for (i = 0; i < n && mbs[i] != 0; ++i) {
+  for (i = 0; i < n && mbs[i] != 0; ++i)
+  {
     wcs[i] = mbs[i];
   }
   wcs[i++] = 0;
@@ -347,11 +355,13 @@ static size_t doMbstowcs ARGLIST((wcs, mbs, n)) ARG(wchar_t *, wcs)
  *      bytesConv - size_t : number of bytes converted
  */
 static size_t doWcstombs ARGLIST((mbs, wcs, n)) ARG(char *, mbs)
-    ARG(wchar_t *, wcs) GRA(size_t, n) {
+    ARG(wchar_t *, wcs) GRA(size_t, n)
+{
 #ifndef SUPPORTS_WCHARS
   int i;
 
-  for (i = 0; i < n && wcs[i] != 0; ++i) {
+  for (i = 0; i < n && wcs[i] != 0; ++i)
+  {
     mbs[i] = wcs[i];
   }
   mbs[i] = 0;
@@ -383,7 +393,8 @@ static size_t doWcstombs ARGLIST((mbs, wcs, n)) ARG(char *, mbs)
  *      None
  */
 static void copyWcsToMbs ARGLIST((mbs, wcs, len, process_it)) ARG(char *, mbs)
-    ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it) {
+    ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it)
+{
   static wchar_t *tbuf = NULL;
   static int tbufSize = 0;
 
@@ -398,7 +409,8 @@ static void copyWcsToMbs ARGLIST((mbs, wcs, len, process_it)) ARG(char *, mbs)
   /*
    * Make sure there's room in the buffer
    */
-  if (tbufSize < len) {
+  if (tbufSize < len)
+  {
     tbuf = (wchar_t *)XtRealloc((char *)tbuf, (len + 1) * sizeof(wchar_t));
     tbufSize = len;
   }
@@ -408,37 +420,55 @@ static void copyWcsToMbs ARGLIST((mbs, wcs, len, process_it)) ARG(char *, mbs)
    */
   toP = tbuf;
   lenToConvert = 0;
-  while (fromP < x) {
+  while (fromP < x)
+  {
     /*
      * Check for quoted characters
      */
-    if ((*fromP == commonWChars[WBackSlash]) && process_it) {
-      fromP++;          /* Skip quote */
-      if (fromP == x) { /* Hanging quote? */
+    if ((*fromP == commonWChars[WBackSlash]) && process_it)
+    {
+      fromP++; /* Skip quote */
+      if (fromP == x)
+      { /* Hanging quote? */
         *toP++ = commonWChars[WBackSlash];
         lenToConvert++;
         break;
       }
       tmp = *fromP++;
-      if (tmp == commonWChars[WideN]) {
+      if (tmp == commonWChars[WideN])
+      {
         *toP++ = commonWChars[WNewLine];
-      } else if (tmp == commonWChars[WideT]) {
+      }
+      else if (tmp == commonWChars[WideT])
+      {
         *toP++ = commonWChars[WTab];
-      } else if (tmp == commonWChars[WideR]) {
+      }
+      else if (tmp == commonWChars[WideR])
+      {
         *toP++ = commonWChars[WCarriageReturn];
-      } else if (tmp == commonWChars[WideF]) {
+      }
+      else if (tmp == commonWChars[WideF])
+      {
         *toP++ = commonWChars[WFormFeed];
-      } else if (tmp == commonWChars[WideV]) {
+      }
+      else if (tmp == commonWChars[WideV])
+      {
         *toP++ = commonWChars[WVerticalTab];
-      } else if (tmp == commonWChars[WBackSlash]) {
+      }
+      else if (tmp == commonWChars[WBackSlash])
+      {
         *toP++ = commonWChars[WBackSlash];
-      } else {
+      }
+      else
+      {
         /*
          * No special translation needed
          */
         *toP++ = tmp;
       }
-    } else {
+    }
+    else
+    {
       *toP++ = *fromP++;
     }
     lenToConvert++;
@@ -470,18 +500,22 @@ static void copyWcsToMbs ARGLIST((mbs, wcs, len, process_it)) ARG(char *, mbs)
  *	       the multibyte character.
  */
 static int dombtowc ARGLIST((wide, multi, size)) ARG(wchar_t *, wide)
-    ARG(char *, multi) GRA(size_t, size) {
+    ARG(char *, multi) GRA(size_t, size)
+{
   int retVal = 0;
 
 #ifndef SUPPORTS_WCHARS
-  if ((multi == NULL) || (*multi == '\000')) {
+  if ((multi == NULL) || (*multi == '\000'))
+  {
     if (wide)
       wide[0] = '\0';
     return (0);
   }
 
-  for (retVal = 0; retVal < size && multi[retVal] != '\000'; retVal++) {
-    if (wide != NULL) {
+  for (retVal = 0; retVal < size && multi[retVal] != '\000'; retVal++)
+  {
+    if (wide != NULL)
+    {
       wide[retVal] = multi[retVal];
     }
   }
@@ -503,22 +537,29 @@ static int dombtowc ARGLIST((wide, multi, size)) ARG(wchar_t *, wide)
  *	ptr - wchar_t* : pointer to character, if found, points to end
  *			of string otherwise ('\0').
  */
-static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str) {
+static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str)
+{
   wchar_t *ptr = str;
   wchar_t *commonWChars = CStrCommonWideCharsGet();
 
-  while (*ptr) {
+  while (*ptr)
+  {
     /*
      * Check for separator
      */
     if ((*ptr == commonWChars[WHash]) || (*ptr == commonWChars[WQuote]) ||
-        (*ptr == commonWChars[WColon])) {
+        (*ptr == commonWChars[WColon]))
+    {
       return (ptr);
-    } else if (*ptr == commonWChars[WBackSlash]) {
+    }
+    else if (*ptr == commonWChars[WBackSlash])
+    {
       ptr++;
       if (*ptr)
         ptr++; /* Skip quoted character */
-    } else {
+    }
+    else
+    {
       ptr++;
     }
   }
@@ -548,7 +589,8 @@ static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str) {
 static Boolean extractSegment ARGLIST((str, tagStart, tagLen, txtStart, txtLen,
                                        pDir, pSep)) ARG(wchar_t **, str)
     ARG(wchar_t **, tagStart) ARG(size_t *, tagLen) ARG(wchar_t **, txtStart)
-        ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSep) {
+        ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSep)
+{
   wchar_t *start;
   wchar_t *text;
   int textL;
@@ -582,7 +624,8 @@ static Boolean extractSegment ARGLIST((str, tagStart, tagLen, txtStart, txtLen,
   /*
    * Guard against nulls
    */
-  if (!(start = *str)) {
+  if (!(start = *str))
+  {
     start = emptyStrWcs;
     emptyStrWcs[0] = commonWChars[WNull];
   }
@@ -592,47 +635,65 @@ static Boolean extractSegment ARGLIST((str, tagStart, tagLen, txtStart, txtLen,
    * just have a regular old simple string. Do the same the thing for
    * the empty string.
    */
-  if ((*start == '\0') || (start != getNextSeparator(start))) {
+  if ((*start == '\0') || (start != getNextSeparator(start)))
+  {
     text = start;
-    if (!(textL = strlenWc(start))) {
+    if (!(textL = strlenWc(start)))
+    {
       text = NULL;
     }
     start += textL;
-  } else {
+  }
+  else
+  {
     done = False;
-    while (!done) {
-      if (*start == commonWChars[WHash]) {
-        if (tagSeen) {
+    while (!done)
+    {
+      if (*start == commonWChars[WHash])
+      {
+        if (tagSeen)
+        {
           done = True;
           break;
-        } else {
+        }
+        else
+        {
           tagSeen = True;
           tag = ++start;
           start = getNextSeparator(tag);
-          if ((tagL = start - tag) == 0) {
+          if ((tagL = start - tag) == 0)
+          {
             tag = NULL; /* Null tag specified */
           }
         }
-      } else if (*start == commonWChars[WQuote]) {
+      }
+      else if (*start == commonWChars[WQuote])
+      {
         text = ++start;
         start = getNextSeparator(start);
         while (!((*start == commonWChars[WQuote]) ||
-                 (*start == commonWChars[WNull]))) {
+                 (*start == commonWChars[WNull])))
+        {
           start = getNextSeparator(++start);
         }
 
-        if ((textL = start - text) == 0) {
+        if ((textL = start - text) == 0)
+        {
           text = NULL; /* Null text specified  */
         }
         /*
          * if a quote, skip over it
          */
-        if (*start == commonWChars[WQuote]) {
+        if (*start == commonWChars[WQuote])
+        {
           start++;
         }
         done = True;
-      } else if (*start == commonWChars[WColon]) {
-        if (modsSeen) {
+      }
+      else if (*start == commonWChars[WColon])
+      {
+        if (modsSeen)
+        {
           done = True;
           break;
         }
@@ -646,22 +707,29 @@ static Boolean extractSegment ARGLIST((str, tagStart, tagLen, txtStart, txtLen,
         start++;
         if ((*start == commonWChars[WideT]) ||
             (*start == commonWChars[WideUT]) ||
-            (*start == commonWChars[WideOne])) {
+            (*start == commonWChars[WideOne]))
+        {
           sep = True;
           start++;
           checkDir = True;
-        } else if ((*start == commonWChars[WideF]) ||
-                   (*start == commonWChars[WideUF]) ||
-                   (*start == commonWChars[WideZero])) {
+        }
+        else if ((*start == commonWChars[WideF]) ||
+                 (*start == commonWChars[WideUF]) ||
+                 (*start == commonWChars[WideZero]))
+        {
           sep = False;
           start++;
           checkDir = True;
-        } else if ((*start == commonWChars[WideR]) ||
-                   (*start == commonWChars[WideUR])) {
+        }
+        else if ((*start == commonWChars[WideR]) ||
+                 (*start == commonWChars[WideUR]))
+        {
           start++;
           dir = XmSTRING_DIRECTION_R_TO_L;
-        } else if ((*start == commonWChars[WideL]) ||
-                   (*start == commonWChars[WideUL])) {
+        }
+        else if ((*start == commonWChars[WideL]) ||
+                 (*start == commonWChars[WideUL]))
+        {
           start++;
           dir = XmSTRING_DIRECTION_L_TO_R;
         }
@@ -669,18 +737,24 @@ static Boolean extractSegment ARGLIST((str, tagStart, tagLen, txtStart, txtLen,
          * Look for direction if necessary. This requires a bit of
          * look ahead.
          */
-        if (checkDir && (*start == commonWChars[WColon])) {
+        if (checkDir && (*start == commonWChars[WColon]))
+        {
           if ((*(start + 1) == commonWChars[WideL]) ||
-              (*(start + 1) == commonWChars[WideUL])) {
+              (*(start + 1) == commonWChars[WideUL]))
+          {
             dir = XmSTRING_DIRECTION_L_TO_R;
             start += 2;
-          } else if ((*(start + 1) == commonWChars[WideR]) ||
-                     (*(start + 1) == commonWChars[WideUR])) {
+          }
+          else if ((*(start + 1) == commonWChars[WideR]) ||
+                   (*(start + 1) == commonWChars[WideUR]))
+          {
             dir = XmSTRING_DIRECTION_R_TO_L;
             start += 2;
           }
         }
-      } else {
+      }
+      else
+      {
         /*
          * A bad string format! We'll just skip the character.
          */
@@ -720,7 +794,8 @@ static Boolean extractSegment ARGLIST((str, tagStart, tagLen, txtStart, txtLen,
  * Outputs:
  *	xstr - XmString : the allocated return structure
  */
-static XmString StringToXmString ARGLIST((str)) GRA(char *, str) {
+static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
+{
   static char *tagBuf = NULL;
   static size_t tagBufLen = 0;
   static char *textBuf = NULL;
@@ -762,12 +837,14 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str) {
    */
   more = True;
   ctx = wcStr;
-  while (more) {
+  while (more)
+  {
     more = extractSegment(&ctx, &tag, &tagLen, &text, &textLen, &dir, &sep);
     /*
      * Pick up a direction change
      */
-    if (dir != curDir) {
+    if (dir != curDir)
+    {
       curDir = dir;
       s1 = XmStringDirectionCreate(curDir);
       s2 = xmStr;
@@ -779,21 +856,28 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str) {
     /*
      * Create the segment. Text and tag first.
      */
-    if (textLen) {
-      if (textBufLen <= (textLen * sizeof(wchar_t))) {
+    if (textLen)
+    {
+      if (textBufLen <= (textLen * sizeof(wchar_t)))
+      {
         textBufLen = (textLen + 1) * sizeof(wchar_t);
         textBuf = (char *)XtRealloc(textBuf, textBufLen);
       }
       copyWcsToMbs(textBuf, text, textLen, True);
 
-      if (tagLen) {
-        if (tagBufLen <= (tagLen * sizeof(wchar_t))) {
+      if (tagLen)
+      {
+        if (tagBufLen <= (tagLen * sizeof(wchar_t)))
+        {
           tagBufLen = (tagLen + 1) * sizeof(wchar_t);
           tagBuf = (char *)XtRealloc(tagBuf, tagBufLen);
         }
         copyWcsToMbs(tagBuf, tag, tagLen, False);
-      } else {
-        if (!tagBuf) {
+      }
+      else
+      {
+        if (!tagBuf)
+        {
           tagBufLen = strlen(XmSTRING_DEFAULT_CHARSET) + 1;
           tagBuf = (char *)XtMalloc(tagBufLen);
         }
@@ -810,7 +894,8 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str) {
     /*
      * Add in the separators.
      */
-    if (sep) {
+    if (sep)
+    {
       s1 = XmStringSeparatorCreate();
       s2 = xmStr;
       xmStr = XmStringConcat(s2, s1);
@@ -837,7 +922,8 @@ static XmString StringToXmString ARGLIST((str)) GRA(char *, str) {
  *      nextCStr - char* : pointer to the next delimiter. Returns NULL if no
  *			delimiter found.
  */
-static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str) {
+static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
+{
   char *comma = str;
   Boolean inQuotes = False;
   int len;
@@ -852,13 +938,16 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str) {
 #else
   mblen(NULL, sizeof(wchar_t));
 #endif
-  while (*comma) {
-    if ((len = mblen(comma, sizeof(wchar_t))) > 1) {
+  while (*comma)
+  {
+    if ((len = mblen(comma, sizeof(wchar_t))) > 1)
+    {
       comma += len;
       continue;
     }
 
-    if (*comma == '\\') {
+    if (*comma == '\\')
+    {
       comma++; /* Over quote */
       comma += mblen(comma, sizeof(wchar_t));
       continue;
@@ -867,8 +956,10 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str) {
     /*
      * See if we have a delimiter
      */
-    if (!inQuotes) {
-      if ((*comma == ',') || (*comma == '\012')) {
+    if (!inQuotes)
+    {
+      if ((*comma == ',') || (*comma == '\012'))
+      {
         return (comma);
       }
     }
@@ -876,7 +967,8 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str) {
     /*
      * Deal with quotes
      */
-    if (*comma == '\"') {
+    if (*comma == '\"')
+    {
       inQuotes = ~inQuotes;
     }
 
@@ -897,7 +989,8 @@ static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str) {
  * Output:
  *      cnt - int : the number of XmStrings found
  */
-static int getCStrCount ARGLIST((str)) GRA(char *, str) {
+static int getCStrCount ARGLIST((str)) GRA(char *, str)
+{
   int x = 1;
   char *newStr;
 
@@ -906,7 +999,8 @@ static int getCStrCount ARGLIST((str)) GRA(char *, str) {
   if (!*str)
     return (0);
 
-  while ((newStr = getNextCStrDelim(str))) {
+  while ((newStr = getNextCStrDelim(str)))
+  {
     x++;
     str = ++newStr;
   }
@@ -923,7 +1017,8 @@ static int getCStrCount ARGLIST((str)) GRA(char *, str) {
  * Output:
  *     	cwc - wchar_t * : this array should never be written to or FREEd.
  */
-static wchar_t *CStrCommonWideCharsGet() {
+static wchar_t *CStrCommonWideCharsGet()
+{
   static wchar_t *CommonWideChars = NULL;
   /*
    * If you add to this array, don't forget to change the enum in
@@ -931,10 +1026,11 @@ static wchar_t *CStrCommonWideCharsGet() {
    * array.
    */
   static char *characters[] = {"\000", "\t", "\n", "\r", "\f", "\v", "\\", "\"",
-                               "#",    ":",  "f",  "l",  "n",  "r",  "t",  "v",
-                               "F",    "L",  "R",  "T",  "0",  "1"};
+                               "#", ":", "f", "l", "n", "r", "t", "v",
+                               "F", "L", "R", "T", "0", "1"};
 
-  if (CommonWideChars == NULL) {
+  if (CommonWideChars == NULL)
+  {
     int i;
 
     /*
@@ -942,7 +1038,8 @@ static wchar_t *CStrCommonWideCharsGet() {
      */
     CommonWideChars = (wchar_t *)XtMalloc(NUM_COMMON_WCHARS * sizeof(wchar_t));
 
-    for (i = 0; i < NUM_COMMON_WCHARS; i++) {
+    for (i = 0; i < NUM_COMMON_WCHARS; i++)
+    {
       (void)dombtowc(&(CommonWideChars[i]), characters[i], 1);
     }
   }
@@ -971,14 +1068,16 @@ static Boolean CvtStringToXmString ARGLIST((d, args, num_args, fromVal, toVal,
     UARG(XrmValue *, args __attribute__((unused)))
         ARG(Cardinal *, num_args __attribute__((unused)))
             ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal)
-                GRAU(XtPointer, data __attribute__((unused))) {
+                GRAU(XtPointer, data __attribute__((unused)))
+{
   static XmString resStr;
   char *str;
 
   /*
    * This converter takes no parameters
    */
-  if (*num_args != 0) {
+  if (*num_args != 0)
+  {
     XtAppWarningMsg(XtDisplayToApplicationContext(d), "cvtStringToXmString",
                     "wrongParameters", "XtToolkitError",
                     "String to XmString converter needs no extra arguments",
@@ -989,9 +1088,12 @@ static Boolean CvtStringToXmString ARGLIST((d, args, num_args, fromVal, toVal,
    * See if this is a simple string
    */
   str = (char *)fromVal->addr;
-  if (strncmp(str, "::", 2)) {
+  if (strncmp(str, "::", 2))
+  {
     resStr = XmStringCreateLtoR(fromVal->addr, XmSTRING_DEFAULT_CHARSET);
-  } else {
+  }
+  else
+  {
     /*
      * Convert into internal format
      */
@@ -1001,15 +1103,20 @@ static Boolean CvtStringToXmString ARGLIST((d, args, num_args, fromVal, toVal,
   /*
    * Done, return result
    */
-  if (toVal->addr == NULL) {
+  if (toVal->addr == NULL)
+  {
     toVal->addr = (XTPOINTER)&resStr;
     toVal->size = sizeof(XmString);
-  } else if (toVal->size < sizeof(XmString)) {
+  }
+  else if (toVal->size < sizeof(XmString))
+  {
     toVal->size = sizeof(XmString);
     XtDisplayStringConversionWarning(d, fromVal->addr, "XmString");
     XmStringFree(resStr);
     return (False);
-  } else {
+  }
+  else
+  {
     *(XmString *)toVal->addr = resStr;
     toVal->size = sizeof(XmString);
   }
@@ -1020,7 +1127,8 @@ static void XmStringCvtDestroy ARGLIST((app, to, data, args, num_args))
     UARG(XtAppContext, app __attribute__((unused))) ARG(XrmValue *, to)
         UARG(XtPointer, data __attribute__((unused)))
             UARG(XrmValue *, args __attribute__((unused)))
-                GRAU(Cardinal *, num_args __attribute__((unused))) {
+                GRAU(Cardinal *, num_args __attribute__((unused)))
+{
   XmStringFree(*(XmString *)(to->addr));
 }
 
@@ -1046,7 +1154,8 @@ static void XmStringCvtDestroy ARGLIST((app, to, data, args, num_args))
 static Boolean CvtStringToXmStringTable ARGLIST((d, args, num_args, fromVal,
                                                  toVal, data)) ARG(Display *, d)
     ARG(XrmValue *, args) ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal)
-        ARG(XrmValue *, toVal) GRAU(XtPointer, data __attribute__((unused))) {
+        ARG(XrmValue *, toVal) GRAU(XtPointer, data __attribute__((unused)))
+{
   static XmString *CStrTable;
   XmString *tblPtr;
   char *str;
@@ -1058,7 +1167,8 @@ static Boolean CvtStringToXmStringTable ARGLIST((d, args, num_args, fromVal,
   /*
    * This converter takes no parameters
    */
-  if (*num_args != 0) {
+  if (*num_args != 0)
+  {
     XtAppWarningMsg(
         XtDisplayToApplicationContext(d), "cvtStringToXmStringTable",
         "wrongParameters", "XtToolkitError",
@@ -1069,7 +1179,8 @@ static Boolean CvtStringToXmStringTable ARGLIST((d, args, num_args, fromVal,
   /*
    * Set str and make sure there's somethin' there
    */
-  if (!(str = (char *)fromVal->addr)) {
+  if (!(str = (char *)fromVal->addr))
+  {
     str = "";
   }
 
@@ -1090,14 +1201,17 @@ static Boolean CvtStringToXmStringTable ARGLIST((d, args, num_args, fromVal,
    * Create strings
    */
   tblPtr = CStrTable;
-  if (*str) {
-    while (str) {
+  if (*str)
+  {
+    while (str)
+    {
       nextDelim = getNextCStrDelim(str);
 
       /*
        * Overwrite nextDelim
        */
-      if (nextDelim) {
+      if (nextDelim)
+      {
         *nextDelim = '\0';
         nextDelim++;
       }
@@ -1134,20 +1248,26 @@ static Boolean CvtStringToXmStringTable ARGLIST((d, args, num_args, fromVal,
   /*
    * Done, return result
    */
-  if (toVal->addr == NULL) {
+  if (toVal->addr == NULL)
+  {
     toVal->addr = (XTPOINTER)&CStrTable;
     toVal->size = sizeof(XmString);
-  } else if (toVal->size < sizeof(XmString *)) {
+  }
+  else if (toVal->size < sizeof(XmString *))
+  {
     toVal->size = sizeof(XmString *);
     XtDisplayStringConversionWarning(d, fromVal->addr, "XmStringTable");
 
     tblPtr = CStrTable;
-    while (*tblPtr) {
+    while (*tblPtr)
+    {
       XmStringFree(*tblPtr);
     }
     XtFree((char *)CStrTable);
     return (False);
-  } else {
+  }
+  else
+  {
     *(XmString **)toVal->addr = CStrTable;
     toVal->size = sizeof(XmString *);
   }
@@ -1158,10 +1278,12 @@ static void XmStringTableCvtDestroy ARGLIST((app, to, data, args, num_args))
     UARG(XtAppContext, app __attribute__((unused))) ARG(XrmValue *, to)
         UARG(XtPointer, data __attribute__((unused)))
             UARG(XrmValue *, args __attribute__((unused)))
-                GRAU(Cardinal *, num_args __attribute__((unused))) {
+                GRAU(Cardinal *, num_args __attribute__((unused)))
+{
   XmString *tblPtr = *(XmString **)(to->addr);
 
-  while (*tblPtr) {
+  while (*tblPtr)
+  {
     XmStringFree(*tblPtr);
   }
   XtFree((char *)(*(XmString **)(to->addr)));
@@ -1184,7 +1306,8 @@ static void XmStringTableCvtDestroy ARGLIST((app, to, data, args, num_args))
  * Output:
  *      None
  */
-void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext) {
+void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext)
+{
   XtAppSetTypeConverter(appContext, XmRString, XmRXmString,
                         (XtTypeConverter)CvtStringToXmString, NULL, 0,
                         XtCacheNone, XmStringCvtDestroy);
@@ -1211,7 +1334,8 @@ void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext) {
 #ifndef IGNORE_CONVERT
 XtPointer CONVERT ARGLIST((w, from_string, to_type, to_size, success))
     ARG(Widget, w) ARG(char *, from_string) ARG(char *, to_type)
-        ARG(int, to_size __attribute__((unused))) GRA(Boolean *, success) {
+        ARG(int, to_size __attribute__((unused))) GRA(Boolean *, success)
+{
   XrmValue fromVal, toVal; /* resource holders             */
   Boolean convResult;      /* return value                 */
   XtPointer val;           /* Pointer size return value    */
@@ -1250,7 +1374,8 @@ XtPointer CONVERT ARGLIST((w, from_string, to_type, to_size, success))
    * Now we have two conditions here.  One the conversion was a success
    * and two the conversion failed.
    */
-  if (!convResult) {
+  if (!convResult)
+  {
     /*
      * If this conversion failed that we can pretty much return right
      * here because there is nothing else we can do.
@@ -1263,7 +1388,8 @@ XtPointer CONVERT ARGLIST((w, from_string, to_type, to_size, success))
    * well.  Now we have to handle the special cases for type and
    * size constraints.
    */
-  if (!strcmp(to_type, "String")) {
+  if (!strcmp(to_type, "String"))
+  {
     /*
      * Since strings are handled different in Xt we have to deal with
      * the conversion from a string to a string.  When this happens the
@@ -1272,11 +1398,17 @@ XtPointer CONVERT ARGLIST((w, from_string, to_type, to_size, success))
      * string conversion to happen so we do have to watch for it.
      */
     val = (XTPOINTER)toVal.addr;
-  } else if (!strcmp(to_type, "Double")) {
+  }
+  else if (!strcmp(to_type, "Double"))
+  {
     val = (XTPOINTER)((double *)toVal.addr);
-  } else if (!strcmp(to_type, "Float")) {
+  }
+  else if (!strcmp(to_type, "Float"))
+  {
     val = (XTPOINTER)((float *)toVal.addr);
-  } else {
+  }
+  else
+  {
     /*
      * Here is the generic conversion return value handler.  This
      * just does some size specific casting so that value that we
@@ -1290,7 +1422,8 @@ XtPointer CONVERT ARGLIST((w, from_string, to_type, to_size, success))
       long l;
       XTPOINTER p;
     } uval;
-    switch (toVal.size) {
+    switch (toVal.size)
+    {
     case 1:
       uval.c = *(char *)toVal.addr;
       break;
@@ -1340,7 +1473,8 @@ XtPointer CONVERT ARGLIST((w, from_string, to_type, to_size, success))
 
 void MENU_POST ARGLIST((p, mw, ev, dispatch))
     UARG(Widget, p __attribute__((unused))) ARG(XtPointer, mw) ARG(XEvent *, ev)
-        GRAU(Boolean *, dispatch __attribute__((unused))) {
+        GRAU(Boolean *, dispatch __attribute__((unused)))
+{
   Arg args[2];
   int argcnt;
   Cardinal button;
@@ -1381,7 +1515,8 @@ void MENU_POST ARGLIST((p, mw, ev, dispatch))
 
 void SET_BACKGROUND_COLOR ARGLIST((w, args, argcnt, bg_color))
     ARG(Widget, w __attribute__((unused))) ARG(ArgList, args)
-        ARG(Cardinal *, argcnt) GRA(Pixel, bg_color) {
+        ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
+{
 
 #if ((XmVERSION == 1) && (XmREVISION > 0))
   int i;
@@ -1395,16 +1530,24 @@ void SET_BACKGROUND_COLOR ARGLIST((w, args, argcnt, bg_color))
    * bottom shadow colors.
    */
   selectLoc = topShadowLoc = bottomShadowLoc = UNSET;
-  for (i = 0; i < *argcnt; i++) {
+  for (i = 0; i < *argcnt; i++)
+  {
     if ((strcmp(args[i].name, XmNtopShadowColor) == 0) ||
-        (strcmp(args[i].name, XmNtopShadowPixmap) == 0)) {
+        (strcmp(args[i].name, XmNtopShadowPixmap) == 0))
+    {
       topShadowLoc = i;
-    } else if ((strcmp(args[i].name, XmNbottomShadowColor) == 0) ||
-               (strcmp(args[i].name, XmNbottomShadowPixmap) == 0)) {
+    }
+    else if ((strcmp(args[i].name, XmNbottomShadowColor) == 0) ||
+             (strcmp(args[i].name, XmNbottomShadowPixmap) == 0))
+    {
       bottomShadowLoc = i;
-    } else if (strcmp(args[i].name, XmNarmColor) == 0) {
+    }
+    else if (strcmp(args[i].name, XmNarmColor) == 0)
+    {
       selectLoc = i;
-    } else if (strcmp(args[i].name, XmNforeground) == 0) {
+    }
+    else if (strcmp(args[i].name, XmNforeground) == 0)
+    {
       fgLoc = i;
     }
   }
@@ -1417,7 +1560,8 @@ void SET_BACKGROUND_COLOR ARGLIST((w, args, argcnt, bg_color))
    *
    */
   if ((bottomShadowLoc == UNSET) || (topShadowLoc == UNSET) ||
-      (selectLoc == UNSET) || (fgLoc == UNSET)) {
+      (selectLoc == UNSET) || (fgLoc == UNSET))
+  {
     Arg larg[1];
     Colormap cmap;
     Pixel topShadow;
@@ -1430,22 +1574,26 @@ void SET_BACKGROUND_COLOR ARGLIST((w, args, argcnt, bg_color))
     XmGetColors(XtScreen(w), cmap, bg_color, &fgColor, &topShadow,
                 &bottomShadow, &select);
 
-    if (topShadowLoc == UNSET) {
+    if (topShadowLoc == UNSET)
+    {
       XtSetArg(args[*argcnt], XmNtopShadowColor, topShadow);
       (*argcnt)++;
     }
 
-    if (bottomShadowLoc == UNSET) {
+    if (bottomShadowLoc == UNSET)
+    {
       XtSetArg(args[*argcnt], XmNbottomShadowColor, bottomShadow);
       (*argcnt)++;
     }
 
-    if (selectLoc == UNSET) {
+    if (selectLoc == UNSET)
+    {
       XtSetArg(args[*argcnt], XmNarmColor, select);
       (*argcnt)++;
     }
 
-    if (fgLoc == UNSET) {
+    if (fgLoc == UNSET)
+    {
       XtSetArg(args[*argcnt], XmNforeground, fgColor);
       (*argcnt)++;
     }
@@ -1469,10 +1617,12 @@ void SET_BACKGROUND_COLOR ARGLIST((w, args, argcnt, bg_color))
 #ifndef _BX_FIND_TOP_SHELL
 #define _BX_FIND_TOP_SHELL
 
-Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start) {
+Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start)
+{
   Widget p;
 
-  while ((p = XtParent(start))) {
+  while ((p = XtParent(start)))
+  {
     start = p;
   }
   return (start);
@@ -1496,7 +1646,8 @@ Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start) {
 #define _BX_WIDGETIDS_FROM_NAMES
 
 WidgetList BxWidgetIdsFromNames ARGLIST((ref, cbName, stringList))
-    ARG(Widget, ref) ARG(char, *cbName) GRA(char, *stringList) {
+    ARG(Widget, ref) ARG(char, *cbName) GRA(char, *stringList)
+{
   WidgetList wgtIds = NULL;
   int wgtCount = 0;
   Widget inst;
@@ -1515,24 +1666,31 @@ WidgetList BxWidgetIdsFromNames ARGLIST((ref, cbName, stringList))
   else
     start = tmp;
 
-  while ((start && *start) && isspace(*start)) {
+  while ((start && *start) && isspace(*start))
+  {
     start++;
   }
   ptr = strrchr(start, ']');
-  if (ptr) {
+  if (ptr)
+  {
     *ptr = '\0';
   }
 
   ptr = start + strlen(start) - 1;
-  while (ptr && *ptr) {
-    if (isspace(*ptr)) {
+  while (ptr && *ptr)
+  {
+    if (isspace(*ptr))
+    {
       ptr--;
-    } else {
+    }
+    else
+    {
       ptr++;
       break;
     }
   }
-  if (ptr && *ptr) {
+  if (ptr && *ptr)
+  {
     *ptr = '\0';
   }
 
@@ -1542,20 +1700,27 @@ WidgetList BxWidgetIdsFromNames ARGLIST((ref, cbName, stringList))
    * instance names.
    */
   start = strtok(start, ",");
-  while (start) {
-    while ((start && *start) && isspace(*start)) {
+  while (start)
+  {
+    while ((start && *start) && isspace(*start))
+    {
       start++;
     }
     ptr = start + strlen(start) - 1;
-    while (ptr && *ptr) {
-      if (isspace(*ptr)) {
+    while (ptr && *ptr)
+    {
+      if (isspace(*ptr))
+      {
         ptr--;
-      } else {
+      }
+      else
+      {
         ptr++;
         break;
       }
     }
-    if (ptr && *ptr) {
+    if (ptr && *ptr)
+    {
       *ptr = '\0';
     }
 
@@ -1570,9 +1735,11 @@ WidgetList BxWidgetIdsFromNames ARGLIST((ref, cbName, stringList))
      * or until the top of the hierarchy is reached.
      */
     current = ref;
-    while (current != NULL) {
+    while (current != NULL)
+    {
       inst = XtNameToWidget(current, widget);
-      if (inst != NULL) {
+      if (inst != NULL)
+      {
         wgtCount++;
         wgtIds =
             (WidgetList)XtRealloc((char *)wgtIds, wgtCount * sizeof(Widget));
@@ -1582,7 +1749,8 @@ WidgetList BxWidgetIdsFromNames ARGLIST((ref, cbName, stringList))
       current = XtParent(current);
     }
 
-    if (current == NULL) {
+    if (current == NULL)
+    {
       printf("Callback Error (%s):\n\t\
 Cannot find widget %s\n",
              cbName, widget);
@@ -1603,7 +1771,8 @@ Cannot find widget %s\n",
 }
 #endif /* _BX_WIDGETIDS_FROM_NAMES */
 
-XtPointer SINGLE ARGLIST((val)) GRA(float, val) {
+XtPointer SINGLE ARGLIST((val)) GRA(float, val)
+{
   XtPointer pointer;
 
   pointer = (XtPointer)XtMalloc(sizeof(float));
@@ -1612,7 +1781,8 @@ XtPointer SINGLE ARGLIST((val)) GRA(float, val) {
   return (pointer);
 }
 
-XtPointer DOUBLE ARGLIST((val)) GRA(double, val) {
+XtPointer DOUBLE ARGLIST((val)) GRA(double, val)
+{
   XtPointer pointer;
 
   pointer = (XtPointer)XtMalloc(sizeof(double));
@@ -1646,7 +1816,8 @@ XtPointer call;
 {
   Widget *widAddr = (Widget *)client;
 
-  if (widAddr == NULL) {
+  if (widAddr == NULL)
+  {
     return;
   }
   *widAddr = w;

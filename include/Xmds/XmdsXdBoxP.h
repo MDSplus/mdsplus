@@ -43,12 +43,14 @@
 
 /* New fields for the  Xd Widget record */
 
-typedef struct _XmdsXdUserPart {
+typedef struct _XmdsXdUserPart
+{
   void (*load_dlog_proc)();
   struct descriptor_xd *(*unload_dlog_proc)();
 } XmdsXdUserPart;
 
-typedef struct _XmdsXdBoxPart {
+typedef struct _XmdsXdBoxPart
+{
   int nid;
   int nid_offset;
   int default_nid;
@@ -81,7 +83,8 @@ typedef struct _XmdsXdBoxPart {
 /*
  * now define the actual widget data struct
  */
-typedef struct _XmdsXdBoxWidgetRec {
+typedef struct _XmdsXdBoxWidgetRec
+{
   CorePart core;           /*  basic widget */
   CompositePart composite; /*  composite specific data */
   ConstraintPart constraint;
@@ -94,7 +97,8 @@ typedef struct _XmdsXdBoxWidgetRec {
  * dialog box.
  */
 
-typedef struct _XmdsXdBoxClassPart {
+typedef struct _XmdsXdBoxClassPart
+{
   MrmHierarchy drm;
   caddr_t extension; /* Pointer to extension record */
 } XmdsXdBoxClassPart;
@@ -103,7 +107,8 @@ typedef struct _XmdsXdBoxClassPart {
  * The XdBox Class record is a composite class plus
  * the XdBoxClassPart
  */
-typedef struct _XmdsXdBoxClassRec {
+typedef struct _XmdsXdBoxClassRec
+{
   CoreClassPart core_class;
   CompositeClassPart composite_class;
   ConstraintClassPart constraint_class;

@@ -84,21 +84,32 @@ extern int TdiSortVal();
         Equality test where different.
 */
 #define NEQ_BU GTR_BU
-static int GTR_BU(unsigned char *a, unsigned char *b) { return *a - *b; }
+static int GTR_BU(unsigned char *a, unsigned char *b)
+{
+  return *a - *b;
+}
 
 #define NEQ_WU GTR_WU
-static int GTR_WU(unsigned short *a, unsigned short *b) { return *a - *b; }
+static int GTR_WU(unsigned short *a, unsigned short *b)
+{
+  return *a - *b;
+}
 
 #define NEQ_LU NEQ_L
-static int GTR_LU(unsigned int *a, unsigned int *b) { return *a > *b; }
+static int GTR_LU(unsigned int *a, unsigned int *b)
+{
+  return *a > *b;
+}
 
 #define NEQ_QU NEQ_Q
-static int GTR_QU(unsigned int a[2], unsigned int b[2]) {
+static int GTR_QU(unsigned int a[2], unsigned int b[2])
+{
   return a[1] > b[1] || (a[1] == b[1] && a[0] > b[0]);
 }
 
 #define NEQ_OU NEQ_O
-static int GTR_OU(unsigned int a[4], unsigned int b[4]) {
+static int GTR_OU(unsigned int a[4], unsigned int b[4])
+{
   return a[3] > b[3] ||
          (a[3] == b[3] &&
           (a[2] > b[2] ||
@@ -106,28 +117,38 @@ static int GTR_OU(unsigned int a[4], unsigned int b[4]) {
 }
 
 #define NEQ_B GTR_B
-static int GTR_B(char *a, char *b) { return *a - *b; }
+static int GTR_B(char *a, char *b)
+{
+  return *a - *b;
+}
 
 #define NEQ_W GTR_W
-static int GTR_W(short *a, short *b) { return *a - *b; }
+static int GTR_W(short *a, short *b)
+{
+  return *a - *b;
+}
 
 static int NEQ_L(int *a, int *b) { return *a != *b; }
 
 static int GTR_L(int *a, int *b) { return *a > *b; }
 
-static int NEQ_Q(unsigned int a[2], unsigned int b[2]) {
+static int NEQ_Q(unsigned int a[2], unsigned int b[2])
+{
   return a[0] != b[0] || a[1] != b[1];
 }
 
-static int GTR_Q(unsigned int a[2], unsigned int b[2]) {
+static int GTR_Q(unsigned int a[2], unsigned int b[2])
+{
   return (int)a[1] > (int)b[1] || (a[1] == b[1] && a[0] > b[0]);
 }
 
-static int NEQ_O(unsigned int a[4], unsigned int b[4]) {
+static int NEQ_O(unsigned int a[4], unsigned int b[4])
+{
   return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];
 }
 
-static int GTR_O(unsigned int a[4], unsigned int b[4]) {
+static int GTR_O(unsigned int a[4], unsigned int b[4])
+{
   return (int)a[3] > (int)b[3] ||
          (a[3] == b[3] &&
           (a[2] > b[2] ||
@@ -136,7 +157,8 @@ static int GTR_O(unsigned int a[4], unsigned int b[4]) {
 
 extern int CvtConvertFloat();
 
-static int GtrFloat(int dtype, void *a, void *b) {
+static int GtrFloat(int dtype, void *a, void *b)
+{
   int ans = 0;
   float a_local;
   float b_local;
@@ -146,7 +168,8 @@ static int GtrFloat(int dtype, void *a, void *b) {
   return ans;
 }
 
-static int GtrDouble(int dtype, void *a, void *b) {
+static int GtrDouble(int dtype, void *a, void *b)
+{
   int ans = 0;
   double a_local;
   double b_local;
@@ -157,57 +180,78 @@ static int GtrDouble(int dtype, void *a, void *b) {
 }
 
 #define NEQ_F NEQ_L
-static int GTR_F(void *a, void *b) { return GtrFloat(DTYPE_F, a, b); }
+static int GTR_F(void *a, void *b)
+{
+  return GtrFloat(DTYPE_F, a, b);
+}
 
 #define NEQ_FS NEQ_L
-static int GTR_FS(void *a, void *b) { return GtrFloat(DTYPE_FS, a, b); }
+static int GTR_FS(void *a, void *b)
+{
+  return GtrFloat(DTYPE_FS, a, b);
+}
 
 #define NEQ_D NEQ_Q
-static int GTR_D(void *a, void *b) { return GtrDouble(DTYPE_D, a, b); }
+static int GTR_D(void *a, void *b)
+{
+  return GtrDouble(DTYPE_D, a, b);
+}
 
 #define NEQ_G NEQ_Q
-static int GTR_G(void *a, void *b) { return GtrDouble(DTYPE_G, a, b); }
+static int GTR_G(void *a, void *b)
+{
+  return GtrDouble(DTYPE_G, a, b);
+}
 
 #define NEQ_FT NEQ_Q
-static int GTR_FT(void *a, void *b) { return GtrDouble(DTYPE_FT, a, b); }
+static int GTR_FT(void *a, void *b)
+{
+  return GtrDouble(DTYPE_FT, a, b);
+}
 
 #define NEQ_FC NEQ_Q
-static int GTR_FC(float *a, float *b) {
+static int GTR_FC(float *a, float *b)
+{
   if (NEQ_F((int *)a, (int *)b))
     return GTR_F(&a[0], &b[0]);
   return GTR_F(&a[1], &b[1]);
 }
 
 #define NEQ_FSC NEQ_Q
-static int GTR_FSC(float *a, float *b) {
+static int GTR_FSC(float *a, float *b)
+{
   if (NEQ_FS((int *)a, (int *)b))
     return GTR_FS(&a[0], &b[0]);
   return GTR_FS(&a[1], &b[1]);
 }
 
 #define NEQ_DC NEQ_O
-static int GTR_DC(double *a, double *b) {
+static int GTR_DC(double *a, double *b)
+{
   if (NEQ_D((unsigned int *)a, (unsigned int *)b))
     return GTR_D(&a[0], &b[0]);
   return GTR_D(&a[1], &b[1]);
 }
 
 #define NEQ_GC NEQ_O
-static int GTR_GC(double *a, double *b) {
+static int GTR_GC(double *a, double *b)
+{
   if (NEQ_G((unsigned int *)a, (unsigned int *)b))
     return GTR_G(&a[0], &b[0]);
   return GTR_G(&a[1], &b[1]);
 }
 
 #define NEQ_FTC NEQ_O
-static int GTR_FTC(double *a, double *b) {
+static int GTR_FTC(double *a, double *b)
+{
   if (NEQ_FT((unsigned int *)a, (unsigned int *)b))
     return GTR_FT(&a[0], &b[0]);
   return GTR_FT(&a[1], &b[1]);
 }
 
 #define NEQ_T GTR_T
-static int GTR_T(unsigned char *a, unsigned char *b, int len) {
+static int GTR_T(unsigned char *a, unsigned char *b, int len)
+{
   register char *pa = (char *)a, *pb = (char *)b;
   register int n = len;
   for (; --n >= 0;)
@@ -217,7 +261,8 @@ static int GTR_T(unsigned char *a, unsigned char *b, int len) {
 }
 
 int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int inc, hi, lo = -2, mid, *poutput;
   int upcase = 0, cmode = -1, len, mode = 0, ni = 0, nt = 0;
@@ -230,195 +275,207 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[],
   status = TdiGetArgs(opcode, 2, list, sig, uni, dat, cats);
   if (narg > 2 && STATUS_OK)
     status = TdiGetLong(list[2], &mode);
-  if
-    STATUS_OK
-  status = Tdi2Bsearch(2, uni, dat, cats);
-  if
-    STATUS_OK
-  status = TdiCvtArgs(2, dat, cats);
-  if
-    STATUS_OK { N_ELEMENTS(dat[0].pointer, ni); }
-  if
-    STATUS_OK { N_ELEMENTS(dat[1].pointer, nt); }
-  if
-    STATUS_OK
-  status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
-  if
-    STATUS_OK {
-      if (ni <= 0) { /* null output */
-      } else if (nt <= 0) {
-        status = TdiNULL_PTR; /* cannot lookup */
-      } else {
-        switch (dat[0].pointer->dtype) {
-        case DTYPE_BU:
-          neq = (int (*)()) & NEQ_BU;
-          gtr = (int (*)()) & GTR_BU;
-          break;
-        case DTYPE_WU:
-          neq = (int (*)()) & NEQ_WU;
-          gtr = (int (*)()) & GTR_WU;
-          break;
-        case DTYPE_NID:
-        case DTYPE_LU:
-          neq = (int (*)()) & NEQ_LU;
-          gtr = (int (*)()) & GTR_LU;
-          break;
-        case DTYPE_QU:
-          neq = (int (*)()) & NEQ_QU;
-          gtr = (int (*)()) & GTR_QU;
-          break;
-        case DTYPE_OU:
-          neq = (int (*)()) & NEQ_OU;
-          gtr = (int (*)()) & GTR_OU;
-          break;
+  if (STATUS_OK)
+    status = Tdi2Bsearch(2, uni, dat, cats);
+  if (STATUS_OK)
+    status = TdiCvtArgs(2, dat, cats);
+  if (STATUS_OK)
+  {
+    N_ELEMENTS(dat[0].pointer, ni);
+  }
+  if (STATUS_OK)
+  {
+    N_ELEMENTS(dat[1].pointer, nt);
+  }
+  if (STATUS_OK)
+    status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
+  if (STATUS_OK)
+  {
+    if (ni <= 0)
+    { /* null output */
+    }
+    else if (nt <= 0)
+    {
+      status = TdiNULL_PTR; /* cannot lookup */
+    }
+    else
+    {
+      switch (dat[0].pointer->dtype)
+      {
+      case DTYPE_BU:
+        neq = (int (*)()) & NEQ_BU;
+        gtr = (int (*)()) & GTR_BU;
+        break;
+      case DTYPE_WU:
+        neq = (int (*)()) & NEQ_WU;
+        gtr = (int (*)()) & GTR_WU;
+        break;
+      case DTYPE_NID:
+      case DTYPE_LU:
+        neq = (int (*)()) & NEQ_LU;
+        gtr = (int (*)()) & GTR_LU;
+        break;
+      case DTYPE_QU:
+        neq = (int (*)()) & NEQ_QU;
+        gtr = (int (*)()) & GTR_QU;
+        break;
+      case DTYPE_OU:
+        neq = (int (*)()) & NEQ_OU;
+        gtr = (int (*)()) & GTR_OU;
+        break;
 
-        case DTYPE_B:
-          neq = (int (*)()) & NEQ_B;
-          gtr = (int (*)()) & GTR_B;
-          break;
-        case DTYPE_W:
-          neq = (int (*)()) & NEQ_W;
-          gtr = (int (*)()) & GTR_W;
-          break;
-        case DTYPE_L:
-          neq = (int (*)()) & NEQ_L;
-          gtr = (int (*)()) & GTR_L;
-          break;
-        case DTYPE_Q:
-          neq = (int (*)()) & NEQ_Q;
-          gtr = (int (*)()) & GTR_Q;
-          break;
-        case DTYPE_O:
-          neq = (int (*)()) & NEQ_O;
-          gtr = (int (*)()) & GTR_O;
-          break;
+      case DTYPE_B:
+        neq = (int (*)()) & NEQ_B;
+        gtr = (int (*)()) & GTR_B;
+        break;
+      case DTYPE_W:
+        neq = (int (*)()) & NEQ_W;
+        gtr = (int (*)()) & GTR_W;
+        break;
+      case DTYPE_L:
+        neq = (int (*)()) & NEQ_L;
+        gtr = (int (*)()) & GTR_L;
+        break;
+      case DTYPE_Q:
+        neq = (int (*)()) & NEQ_Q;
+        gtr = (int (*)()) & GTR_Q;
+        break;
+      case DTYPE_O:
+        neq = (int (*)()) & NEQ_O;
+        gtr = (int (*)()) & GTR_O;
+        break;
 
-        case DTYPE_F:
-          neq = (int (*)()) & NEQ_F;
-          gtr = (int (*)()) & GTR_F;
-          break;
-        case DTYPE_FS:
-          neq = (int (*)()) & NEQ_FS;
-          gtr = (int (*)()) & GTR_FS;
-          break;
-        case DTYPE_D:
-          neq = (int (*)()) & NEQ_D;
-          gtr = (int (*)()) & GTR_D;
-          break;
-        case DTYPE_G:
-          neq = (int (*)()) & NEQ_G;
-          gtr = (int (*)()) & GTR_G;
-          break;
-        case DTYPE_FT:
-          neq = (int (*)()) & NEQ_FT;
-          gtr = (int (*)()) & GTR_FT;
-          break;
+      case DTYPE_F:
+        neq = (int (*)()) & NEQ_F;
+        gtr = (int (*)()) & GTR_F;
+        break;
+      case DTYPE_FS:
+        neq = (int (*)()) & NEQ_FS;
+        gtr = (int (*)()) & GTR_FS;
+        break;
+      case DTYPE_D:
+        neq = (int (*)()) & NEQ_D;
+        gtr = (int (*)()) & GTR_D;
+        break;
+      case DTYPE_G:
+        neq = (int (*)()) & NEQ_G;
+        gtr = (int (*)()) & GTR_G;
+        break;
+      case DTYPE_FT:
+        neq = (int (*)()) & NEQ_FT;
+        gtr = (int (*)()) & GTR_FT;
+        break;
 
-        case DTYPE_FC:
-          neq = (int (*)()) & NEQ_FC;
-          gtr = (int (*)()) & GTR_FC;
-          break;
-        case DTYPE_FSC:
-          neq = (int (*)()) & NEQ_FSC;
-          gtr = (int (*)()) & GTR_FSC;
-          break;
-        case DTYPE_DC:
-          neq = (int (*)()) & NEQ_DC;
-          gtr = (int (*)()) & GTR_DC;
-          break;
-        case DTYPE_GC:
-          neq = (int (*)()) & NEQ_GC;
-          gtr = (int (*)()) & GTR_GC;
-          break;
-        case DTYPE_FTC:
-          neq = (int (*)()) & NEQ_FTC;
-          gtr = (int (*)()) & GTR_FTC;
-          break;
+      case DTYPE_FC:
+        neq = (int (*)()) & NEQ_FC;
+        gtr = (int (*)()) & GTR_FC;
+        break;
+      case DTYPE_FSC:
+        neq = (int (*)()) & NEQ_FSC;
+        gtr = (int (*)()) & GTR_FSC;
+        break;
+      case DTYPE_DC:
+        neq = (int (*)()) & NEQ_DC;
+        gtr = (int (*)()) & GTR_DC;
+        break;
+      case DTYPE_GC:
+        neq = (int (*)()) & NEQ_GC;
+        gtr = (int (*)()) & GTR_GC;
+        break;
+      case DTYPE_FTC:
+        neq = (int (*)()) & NEQ_FTC;
+        gtr = (int (*)()) & GTR_FTC;
+        break;
 
-        case DTYPE_PATH:
-        case DTYPE_EVENT:
-        case DTYPE_T:
-          neq = (int (*)()) & NEQ_T;
-          gtr = (int (*)()) & GTR_T;
-          if (narg > 3)
-            status = TdiGetLong(list[3], &upcase);
-          if (upcase & 1) {
-            if
-              STATUS_OK
+      case DTYPE_PATH:
+      case DTYPE_EVENT:
+      case DTYPE_T:
+        neq = (int (*)()) & NEQ_T;
+        gtr = (int (*)()) & GTR_T;
+        if (narg > 3)
+          status = TdiGetLong(list[3], &upcase);
+        if (upcase & 1)
+        {
+          if (STATUS_OK)
             status = StrUpcase(dat[0].pointer, dat[0].pointer);
-            if
-              STATUS_OK
+          if (STATUS_OK)
             status = StrUpcase(dat[1].pointer, dat[1].pointer);
-          }
-          break;
-        default:
-          if (ni > 0)
-            status = TdiINVDTYDSC;
-          break;
         }
+        break;
+      default:
+        if (ni > 0)
+          status = TdiINVDTYDSC;
+        break;
       }
     }
-  if
-    STATUS_OK {
-      len = dat[0].pointer->length;
-      pinput = dat[0].pointer->pointer;
-      ptable = dat[1].pointer->pointer;
-      poutput = (int *)out_ptr->pointer->pointer;
-      for (; --ni >= 0; pinput += len) {
-        /**********************************
+  }
+  if (STATUS_OK)
+  {
+    len = dat[0].pointer->length;
+    pinput = dat[0].pointer->pointer;
+    ptable = dat[1].pointer->pointer;
+    poutput = (int *)out_ptr->pointer->pointer;
+    for (; --ni >= 0; pinput += len)
+    {
+      /**********************************
         Out of bounds does straight search.
         **********************************/
-        if (lo < -1 || lo >= nt) {
-          lo = -1;
-          hi = nt;
-        }
-        /*********************************
+      if (lo < -1 || lo >= nt)
+      {
+        lo = -1;
+        hi = nt;
+      }
+      /*********************************
         Expand search from previous point.
         Adjust upper limit above previous.
         *********************************/
-        else if (lo < 0 || (*gtr)(ptable + len * lo, pinput, len) <= 0) {
-          inc = 1;
-          while ((hi = lo + inc) < nt &&
-                 (*gtr)(ptable + len * hi, pinput, len) <= 0) {
-            lo = hi;
-            inc <<= 1;
-          }
-          if (hi > nt)
-            hi = nt;
+      else if (lo < 0 || (*gtr)(ptable + len * lo, pinput, len) <= 0)
+      {
+        inc = 1;
+        while ((hi = lo + inc) < nt &&
+               (*gtr)(ptable + len * hi, pinput, len) <= 0)
+        {
+          lo = hi;
+          inc <<= 1;
         }
-        /*********************************
+        if (hi > nt)
+          hi = nt;
+      }
+      /*********************************
         Adjust lower limit below previous.
         *********************************/
-        else {
-          inc = 1;
-          while (hi = lo,
-                 (lo -= inc) >= 0 && (*gtr)(ptable + len * lo, pinput, len) > 0)
-            inc <<= 1;
-          if (lo < 0)
-            lo = -1;
-        }
-        /*****************
+      else
+      {
+        inc = 1;
+        while (hi = lo,
+               (lo -= inc) >= 0 && (*gtr)(ptable + len * lo, pinput, len) > 0)
+          inc <<= 1;
+        if (lo < 0)
+          lo = -1;
+      }
+      /*****************
         The binary search.
         *****************/
-        while (hi - lo > 1) {
-          mid = (hi + lo) >> 1;
-          if ((*gtr)(ptable + len * mid, pinput, len) <= 0)
-            lo = mid;
-          else
-            hi = mid;
-        }
-        /**************
+      while (hi - lo > 1)
+      {
+        mid = (hi + lo) >> 1;
+        if ((*gtr)(ptable + len * mid, pinput, len) <= 0)
+          lo = mid;
+        else
+          hi = mid;
+      }
+      /**************
         Equality check.
         **************/
-        if (mode > 0 ||
-            (lo >= 0 && (*neq)(pinput, ptable + len * lo, len) == 0))
-          *poutput++ = lo;
-        else if (mode == 0)
-          *poutput++ = -1;
-        else
-          *poutput++ = lo + 1;
-      }
+      if (mode > 0 ||
+          (lo >= 0 && (*neq)(pinput, ptable + len * lo, len) == 0))
+        *poutput++ = lo;
+      else if (mode == 0)
+        *poutput++ = -1;
+      else
+        *poutput++ = lo + 1;
     }
+  }
   if (sig[1].pointer)
     MdsFree1Dx(&sig[1], NULL);
   if (uni[1].pointer)
@@ -427,9 +484,8 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[],
     MdsFree1Dx(&uni[0], NULL);
   MdsFree1Dx(&dat[1], NULL);
   MdsFree1Dx(&dat[0], NULL);
-  if
-    STATUS_OK
-  status = TdiMasterData(1, sig, uni, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(1, sig, uni, &cmode, out_ptr);
   if (sig[0].pointer)
     MdsFree1Dx(&sig[0], NULL);
   return status;
@@ -449,7 +505,8 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[],
    indices of equal value elements.
 */
 int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int64_t ran = 0;
   int i, j, keep, l, r, jstack, *ndx;
@@ -464,86 +521,87 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[],
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
-  if
-    STATUS_OK
-  switch (dat[0].pointer->dtype) {
-  case DTYPE_BU:
-    gtr = (int (*)()) & GTR_BU;
-    break;
-  case DTYPE_WU:
-    gtr = (int (*)()) & GTR_WU;
-    break;
-  case DTYPE_LU:
-    gtr = (int (*)()) & GTR_LU;
-    break;
-  case DTYPE_QU:
-    gtr = (int (*)()) & GTR_QU;
-    break;
-  case DTYPE_OU:
-    gtr = (int (*)()) & GTR_OU;
-    break;
+  if (STATUS_OK)
+    switch (dat[0].pointer->dtype)
+    {
+    case DTYPE_BU:
+      gtr = (int (*)()) & GTR_BU;
+      break;
+    case DTYPE_WU:
+      gtr = (int (*)()) & GTR_WU;
+      break;
+    case DTYPE_LU:
+      gtr = (int (*)()) & GTR_LU;
+      break;
+    case DTYPE_QU:
+      gtr = (int (*)()) & GTR_QU;
+      break;
+    case DTYPE_OU:
+      gtr = (int (*)()) & GTR_OU;
+      break;
 
-  case DTYPE_B:
-    gtr = (int (*)()) & GTR_B;
-    break;
-  case DTYPE_W:
-    gtr = (int (*)()) & GTR_W;
-    break;
-  case DTYPE_L:
-    gtr = (int (*)()) & GTR_L;
-    break;
-  case DTYPE_Q:
-    gtr = (int (*)()) & GTR_Q;
-    break;
-  case DTYPE_O:
-    gtr = (int (*)()) & GTR_O;
-    break;
+    case DTYPE_B:
+      gtr = (int (*)()) & GTR_B;
+      break;
+    case DTYPE_W:
+      gtr = (int (*)()) & GTR_W;
+      break;
+    case DTYPE_L:
+      gtr = (int (*)()) & GTR_L;
+      break;
+    case DTYPE_Q:
+      gtr = (int (*)()) & GTR_Q;
+      break;
+    case DTYPE_O:
+      gtr = (int (*)()) & GTR_O;
+      break;
 
-  case DTYPE_F:
-    gtr = (int (*)()) & GTR_F;
-    break;
-  case DTYPE_FS:
-    gtr = (int (*)()) & GTR_FS;
-    break;
-  case DTYPE_D:
-    gtr = (int (*)()) & GTR_D;
-    break;
-  case DTYPE_G:
-    gtr = (int (*)()) & GTR_G;
-    break;
-  case DTYPE_FT:
-    gtr = (int (*)()) & GTR_FT;
-    break;
+    case DTYPE_F:
+      gtr = (int (*)()) & GTR_F;
+      break;
+    case DTYPE_FS:
+      gtr = (int (*)()) & GTR_FS;
+      break;
+    case DTYPE_D:
+      gtr = (int (*)()) & GTR_D;
+      break;
+    case DTYPE_G:
+      gtr = (int (*)()) & GTR_G;
+      break;
+    case DTYPE_FT:
+      gtr = (int (*)()) & GTR_FT;
+      break;
 
-  case DTYPE_FC:
-    gtr = (int (*)()) & GTR_FC;
-    break;
-  case DTYPE_DC:
-    gtr = (int (*)()) & GTR_DC;
-    break;
-  case DTYPE_GC:
-    gtr = (int (*)()) & GTR_GC;
-    break;
-  case DTYPE_FTC:
-    gtr = (int (*)()) & GTR_FTC;
-    break;
+    case DTYPE_FC:
+      gtr = (int (*)()) & GTR_FC;
+      break;
+    case DTYPE_DC:
+      gtr = (int (*)()) & GTR_DC;
+      break;
+    case DTYPE_GC:
+      gtr = (int (*)()) & GTR_GC;
+      break;
+    case DTYPE_FTC:
+      gtr = (int (*)()) & GTR_FTC;
+      break;
 
-  case DTYPE_T:
-    gtr = (int (*)()) & GTR_T;
-    if (narg > 1)
-      status = TdiGetLong(list[1], &upcase);
-    if (STATUS_OK && IS_OK(upcase))
-      status = StrUpcase(dat[0].pointer, dat[0].pointer);
-    break;
-  default:
-    status = TdiINVDTYDSC;
-    break;
+    case DTYPE_T:
+      gtr = (int (*)()) & GTR_T;
+      if (narg > 1)
+        status = TdiGetLong(list[1], &upcase);
+      if (STATUS_OK && IS_OK(upcase))
+        status = StrUpcase(dat[0].pointer, dat[0].pointer);
+      break;
+    default:
+      status = TdiINVDTYDSC;
+      break;
+    }
+  if (STATUS_OK)
+    status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
+  if (STATUS_OK)
+  {
+    N_ELEMENTS(dat[0].pointer, n);
   }
-  if
-    STATUS_OK
-  status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
-  if
-    STATUS_OK { N_ELEMENTS(dat[0].pointer, n); }
   if (STATUS_NOT_OK || n <= 0)
     goto done;
 
@@ -559,12 +617,15 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[],
   for (i = 0; i < n; ++i)
     *ndx++ = i;
   ndx = (int *)out_ptr->pointer->pointer;
-  for (;;) {
+  for (;;)
+  {
     /*********************************************
     Insertion sort for small ranges. Say, 7 to 13.
     *********************************************/
-    while (r - l < 11) {
-      for (j = l; ++j <= r;) {
+    while (r - l < 11)
+    {
+      for (j = l; ++j <= r;)
+      {
         keep = *(ndx + j);
         pkeep = pinput + len * keep;
         for (i = j;
@@ -597,7 +658,8 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[],
     Those at lower location with lower value stick.
     Stuff misfits in opposite side.
     ************************************************/
-    for (;;) {
+    for (;;)
+    {
       while (i < j && (*gtr)(pinput + len * *(ndx + j), pkeep, len) > 0)
         --j;
       if (i == j)
@@ -615,11 +677,14 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[],
     /**********************************************************
     With i as breakpoint, put larger block on stack for latter.
     **********************************************************/
-    if (i - l <= r - i) {
+    if (i - l <= r - i)
+    {
       stack[jstack++] = i + 1;
       stack[jstack++] = r;
       r = i - 1;
-    } else {
+    }
+    else
+    {
       stack[jstack++] = l;
       stack[jstack++] = i - 1;
       l = i + 1;
@@ -629,10 +694,10 @@ done:
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
   MdsFree1Dx(&dat[0], NULL);
-  if (sig[0].pointer) {
-    if
-      STATUS_OK
-    status = TdiMasterData(1, &sig[0], uni, &cmode, out_ptr);
+  if (sig[0].pointer)
+  {
+    if (STATUS_OK)
+      status = TdiMasterData(1, &sig[0], uni, &cmode, out_ptr);
     MdsFree1Dx(&sig[0], NULL);
   }
   return status;
@@ -645,17 +710,16 @@ done:
         Method: MAP(array, SORT(array, [upcase]))
 */
 int Tdi1SortVal(opcode_t opcode __attribute__((unused)), int narg,
-                struct descriptor *list[], struct descriptor_xd *out_ptr) {
+                struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiSort(tmp.pointer, narg > 1 ? list[1] : 0, out_ptr MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiMap(&tmp, out_ptr, out_ptr MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiSort(tmp.pointer, narg > 1 ? list[1] : 0, out_ptr MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiMap(&tmp, out_ptr, out_ptr MDS_END_ARG);
   if (tmp.pointer)
     MdsFree1Dx(&tmp, NULL);
   return status;
@@ -667,95 +731,103 @@ int Tdi1SortVal(opcode_t opcode __attribute__((unused)), int narg,
         The signality is removed and units are joined by VECTOR.
 */
 int Tdi1Union(opcode_t opcode __attribute__((unused)), int narg,
-              struct descriptor *list[], struct descriptor_xd *out_ptr) {
+              struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int j, n, len;
   char *pi, *po;
 
   status = TdiIntrinsic(OPC_VECTOR, narg, list, out_ptr);
-  if
-    STATUS_OK
-  status = TdiSortVal(out_ptr, out_ptr MDS_END_ARG);
-  if
-    STATUS_OK {
-      struct descriptor_with_units *pdwu =
-          (struct descriptor_with_units *)out_ptr->pointer;
-      struct descriptor_a *pdo = pdwu->dtype == DTYPE_WITH_UNITS
-                                     ? (struct descriptor_a *)pdwu->data
-                                     : (struct descriptor_a *)pdwu;
-      char *cptri, *cptro;
-      short *sptri, *sptro;
-      int *lptri, *lptro;
-      if (pdo->class != CLASS_A)
-        return status;
-      len = pdo->length;
-      po = pi = pdo->pointer;
-      n = (int)pdo->arsize / (int)pdo->length;
-      switch (len) {
-      case 1:
-        for (cptri = (char *)pi, cptro = (char *)po; --n > 0;)
-          if (*++cptri != *cptro)
-            *++cptro = *cptri;
-        po = (char *)cptro;
+  if (STATUS_OK)
+    status = TdiSortVal(out_ptr, out_ptr MDS_END_ARG);
+  if (STATUS_OK)
+  {
+    struct descriptor_with_units *pdwu =
+        (struct descriptor_with_units *)out_ptr->pointer;
+    struct descriptor_a *pdo = pdwu->dtype == DTYPE_WITH_UNITS
+                                   ? (struct descriptor_a *)pdwu->data
+                                   : (struct descriptor_a *)pdwu;
+    char *cptri, *cptro;
+    short *sptri, *sptro;
+    int *lptri, *lptro;
+    if (pdo->class != CLASS_A)
+      return status;
+    len = pdo->length;
+    po = pi = pdo->pointer;
+    n = (int)pdo->arsize / (int)pdo->length;
+    switch (len)
+    {
+    case 1:
+      for (cptri = (char *)pi, cptro = (char *)po; --n > 0;)
+        if (*++cptri != *cptro)
+          *++cptro = *cptri;
+      po = (char *)cptro;
+      break;
+    case 2:
+      for (sptri = (short *)pi, sptro = (short *)po; --n > 0;)
+        if (*++sptri != *sptro)
+          *++sptro = *sptri;
+      po = (char *)sptro;
+      break;
+    case 4:
+      for (lptri = (int *)pi, lptro = (int *)po; --n > 0;)
+        if (*++lptri != *lptro)
+          *++lptro = *lptri;
+      po = (char *)lptro;
+      break;
+    default:
+      switch (len & 3)
+      {
+      default:
+        for (; --n > 0;)
+        {
+          pi += len;
+          for (j = 0; j < len; j += 1)
+            if (*(char *)(pi + j) != *(char *)(po + j))
+              break;
+          if (j < len)
+          {
+            po += len;
+            _MOVC3(len, pi, po);
+          }
+        }
         break;
       case 2:
-        for (sptri = (short *)pi, sptro = (short *)po; --n > 0;)
-          if (*++sptri != *sptro)
-            *++sptro = *sptri;
-        po = (char *)sptro;
+        for (; --n > 0;)
+        {
+          pi += len;
+          for (j = 0; j < len; j += 2)
+            if (*(short *)(pi + j) != *(short *)(po + j))
+              break;
+          if (j < len)
+          {
+            po += len;
+            _MOVC3(len, pi, po);
+          }
+        }
         break;
-      case 4:
-        for (lptri = (int *)pi, lptro = (int *)po; --n > 0;)
-          if (*++lptri != *lptro)
-            *++lptro = *lptri;
-        po = (char *)lptro;
-        break;
-      default:
-        switch (len & 3) {
-        default:
-          for (; --n > 0;) {
-            pi += len;
-            for (j = 0; j < len; j += 1)
-              if (*(char *)(pi + j) != *(char *)(po + j))
-                break;
-            if (j < len) {
-              po += len;
-              _MOVC3(len, pi, po);
-            }
+      case 0:
+        for (; --n > 0;)
+        {
+          pi += len;
+          for (j = 0; j < len; j += 4)
+            if (*(int *)(pi + j) != *(int *)(po + j))
+              break;
+          if (j < len)
+          {
+            po += len;
+            _MOVC3(len, pi, po);
           }
-          break;
-        case 2:
-          for (; --n > 0;) {
-            pi += len;
-            for (j = 0; j < len; j += 2)
-              if (*(short *)(pi + j) != *(short *)(po + j))
-                break;
-            if (j < len) {
-              po += len;
-              _MOVC3(len, pi, po);
-            }
-          }
-          break;
-        case 0:
-          for (; --n > 0;) {
-            pi += len;
-            for (j = 0; j < len; j += 4)
-              if (*(int *)(pi + j) != *(int *)(po + j))
-                break;
-            if (j < len) {
-              po += len;
-              _MOVC3(len, pi, po);
-            }
-          }
-          break;
         }
         break;
       }
-      pdo->arsize = (po - pdo->pointer) + len;
-      pdo->aflags.coeff = 0;
-      pdo->aflags.bounds = 0;
-      pdo->dimct = 1;
+      break;
     }
+    pdo->arsize = (po - pdo->pointer) + len;
+    pdo->aflags.coeff = 0;
+    pdo->aflags.bounds = 0;
+    pdo->dimct = 1;
+  }
   return status;
 }
 
@@ -768,16 +840,15 @@ int Tdi1Union(opcode_t opcode __attribute__((unused)), int narg,
         upcase  compare in uppercase (for text only)
 */
 int Tdi1IsIn(opcode_t opcode __attribute__((unused)), int narg,
-             struct descriptor *list[], struct descriptor_xd *out_ptr) {
+             struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor *pupcase = narg > 2 ? list[2] : 0;
 
   status = TdiSortVal(list[1], pupcase, out_ptr MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiBsearch(list[0], out_ptr, 0, pupcase, out_ptr MDS_END_ARG);
-  if
-    STATUS_OK
-  status = TdiGe(out_ptr, 0, out_ptr MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiBsearch(list[0], out_ptr, 0, pupcase, out_ptr MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiGe(out_ptr, 0, out_ptr MDS_END_ARG);
   return status;
 }

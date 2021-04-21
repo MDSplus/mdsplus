@@ -43,22 +43,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * <end> anchor:	last fix argument just before ... end:
  * terminating value, e.g. NULL or MdsEND_ARG
  */
-#define VA_LIST_TO_ARGLIST(arglist, nargs, pre, post, anchor, end)             \
-  {                                                                            \
-    va_list args;                                                              \
-    va_start(args, anchor);                                                    \
-    for (nargs = pre; nargs < (int)(sizeof(arglist) / sizeof(arglist[0]));     \
-         nargs++)                                                              \
-      if (end == (arglist[nargs] = va_arg(args, void *)))                      \
-        break;                                                                 \
-    va_end(args);                                                              \
-    nargs += post;                                                             \
+#define VA_LIST_TO_ARGLIST(arglist, nargs, pre, post, anchor, end)         \
+  {                                                                        \
+    va_list args;                                                          \
+    va_start(args, anchor);                                                \
+    for (nargs = pre; nargs < (int)(sizeof(arglist) / sizeof(arglist[0])); \
+         nargs++)                                                          \
+      if (end == (arglist[nargs] = va_arg(args, void *)))                  \
+        break;                                                             \
+    va_end(args);                                                          \
+    nargs += post;                                                         \
   }
 
 // abbreviations for NULL and MdsEND_ARG terminated va_lists
-#define VA_LIST_NULL(arglist, nargs, pre, post, anchor)                        \
+#define VA_LIST_NULL(arglist, nargs, pre, post, anchor) \
   VA_LIST_TO_ARGLIST(arglist, nargs, pre, post, anchor, NULL)
-#define VA_LIST_MDS_END_ARG(arglist, nargs, pre, post, anchor)                 \
+#define VA_LIST_MDS_END_ARG(arglist, nargs, pre, post, anchor) \
   VA_LIST_TO_ARGLIST(arglist, nargs, pre, post, anchor, MdsEND_ARG)
 
 #endif /* MDS_STDARG */

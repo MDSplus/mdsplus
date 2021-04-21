@@ -41,7 +41,8 @@
 #define NciM_EXTENDED_NCI 0x10
 #define NciV_EXTENDED_NCI 4
 
-typedef struct nci {
+typedef struct nci
+{
   unsigned int flags;
   unsigned char flags2;
   unsigned char spare;
@@ -53,17 +54,20 @@ typedef struct nci {
   unsigned char spare2;
   unsigned int status;
   union {
-    struct {
+    struct
+    {
       unsigned char file_level;
       unsigned char file_version;
       unsigned char rfa[6];
       unsigned int record_length;
     } DATA_LOCATION;
-    struct {
+    struct
+    {
       unsigned char element_length;
       unsigned char data[11];
     } DATA_IN_RECORD;
-    struct {
+    struct
+    {
       unsigned int error_status;
       unsigned int stv;
     } ERROR_INFO;
@@ -72,20 +76,23 @@ typedef struct nci {
 } NCI;
 
 #define FACILITIES_PER_EA 8
-typedef struct extended_attributes {
+typedef struct extended_attributes
+{
   int64_t next_ea_offset;
   int64_t facility_offset[FACILITIES_PER_EA];
   int facility_length[FACILITIES_PER_EA];
 } EXTENDED_ATTRIBUTES;
 
-enum {
+enum
+{
   STANDARD_RECORD_FACILITY = 0,
   SEGMENTED_RECORD_FACILITY = 1,
   NAMED_ATTRIBUTES_FACILITY = 2,
 };
 
 #define MAX_DIMS 8
-typedef struct segment_header {
+typedef struct segment_header
+{
   dtype_t dtype;
   char dimct;
   int dims[MAX_DIMS];
@@ -97,7 +104,8 @@ typedef struct segment_header {
   int64_t dim_offset;
 } SEGMENT_HEADER;
 
-typedef struct segment_info {
+typedef struct segment_info
+{
   int64_t start;
   int64_t end;
   int64_t start_offset;
@@ -111,7 +119,8 @@ typedef struct segment_info {
 } SEGMENT_INFO;
 
 #define SEGMENTS_PER_INDEX 128
-typedef struct segment_index {
+typedef struct segment_index
+{
   int64_t previous_offset;
   int first_idx;
   SEGMENT_INFO segment[SEGMENTS_PER_INDEX];
@@ -119,37 +128,42 @@ typedef struct segment_index {
 
 #define NAMED_ATTRIBUTES_PER_INDEX 128
 #define NAMED_ATTRIBUTE_NAME_SIZE 64
-typedef struct named_attribute {
+typedef struct named_attribute
+{
   char name[NAMED_ATTRIBUTE_NAME_SIZE];
   int64_t offset;
   int length;
 } NAMED_ATTRIBUTE;
 
-typedef struct named_attributes_index {
+typedef struct named_attributes_index
+{
   int64_t previous_offset;
   NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
 } NAMED_ATTRIBUTES_INDEX;
 
 // #define WORDS_BIGENDIAN // use for testing
 #ifdef WORDS_BIGENDIAN
-#define SWP(out, in, a, b)                                                     \
-  ((char *)(out))[a] = ((char *)(in))[b];                                      \
+#define SWP(out, in, a, b)                \
+  ((char *)(out))[a] = ((char *)(in))[b]; \
   ((char *)(out))[b] = ((char *)(in))[a];
-#define loadint16(out, in)                                                     \
-  do {                                                                         \
-    SWP(out, in, 0, 1);                                                        \
+#define loadint16(out, in) \
+  do                       \
+  {                        \
+    SWP(out, in, 0, 1);    \
   } while (0)
-#define loadint32(out, in)                                                     \
-  do {                                                                         \
-    SWP(out, in, 0, 3);                                                        \
-    SWP(out, in, 2, 1);                                                        \
+#define loadint32(out, in) \
+  do                       \
+  {                        \
+    SWP(out, in, 0, 3);    \
+    SWP(out, in, 2, 1);    \
   } while (0)
-#define loadint64(out, in)                                                     \
-  do {                                                                         \
-    SWP(out, in, 0, 7);                                                        \
-    SWP(out, in, 2, 5);                                                        \
-    SWP(out, in, 4, 3);                                                        \
-    SWP(out, in, 6, 1);                                                        \
+#define loadint64(out, in) \
+  do                       \
+  {                        \
+    SWP(out, in, 0, 7);    \
+    SWP(out, in, 2, 5);    \
+    SWP(out, in, 4, 3);    \
+    SWP(out, in, 6, 1);    \
   } while (0)
 #undef SWP
 #else
@@ -157,67 +171,80 @@ typedef struct named_attributes_index {
 #define loadint32(out, in) memcpy((char *)(out), (char *)(in), 4)
 #define loadint64(out, in) memcpy((char *)(out), (char *)(in), 8)
 #endif
-static inline int16_t swapint16(const void *buf) {
+static inline int16_t swapint16(const void *buf)
+{
   int16_t ans;
   loadint16(&ans, buf);
   return ans;
 }
-static inline int32_t swapint32(const void *buf) {
+static inline int32_t swapint32(const void *buf)
+{
   int32_t ans;
   loadint32(&ans, buf);
   return ans;
 }
-static inline int64_t swapint64(const void *buf) {
+static inline int64_t swapint64(const void *buf)
+{
   int64_t ans;
   loadint64(&ans, buf);
   return ans;
 }
-static inline void getchars(char **buf, void *ans, int n) {
+static inline void getchars(char **buf, void *ans, int n)
+{
   memcpy(ans, *buf, n);
   *buf += n;
 }
-static inline void getint8(char **buf, const void *ans) {
+static inline void getint8(char **buf, const void *ans)
+{
   *(char *)ans = **buf;
   *buf += sizeof(int8_t);
 }
-static inline void getint16(char **buf, void *ans) {
+static inline void getint16(char **buf, void *ans)
+{
   loadint16(ans, *buf);
   *buf += sizeof(int16_t);
 }
-static inline void getint32(char **buf, void *ans) {
+static inline void getint32(char **buf, void *ans)
+{
   loadint32(ans, *buf);
   *buf += sizeof(int32_t);
 }
-static inline void getint64(char **buf, void *ans) {
+static inline void getint64(char **buf, void *ans)
+{
   loadint64(ans, *buf);
   *buf += sizeof(int64_t);
 }
-static inline void putchars(char **buf, const void *ans, int n) {
+static inline void putchars(char **buf, const void *ans, int n)
+{
   memcpy(*buf, ans, n);
   *buf += n;
 }
-static inline void putint8(char **buf, const void *ans) {
+static inline void putint8(char **buf, const void *ans)
+{
   **buf = *(char *)ans;
   *buf += sizeof(int8_t);
 }
-static inline void putint16(char **buf, const void *ans) {
+static inline void putint16(char **buf, const void *ans)
+{
   loadint16(*buf, ans);
   *buf += sizeof(int16_t);
 }
-static inline void putint32(char **buf, const void *ans) {
+static inline void putint32(char **buf, const void *ans)
+{
   loadint32(*buf, ans);
   *buf += sizeof(int32_t);
 }
-static inline void putint64(char **buf, const void *ans) {
+static inline void putint64(char **buf, const void *ans)
+{
   loadint64(*buf, ans);
   *buf += sizeof(int64_t);
 }
 
-#define bitassign(bool, value, mask)                                           \
+#define bitassign(bool, value, mask) \
   value = (bool) ? (value) | (unsigned)(mask) : (value) & ~(unsigned)(mask)
-#define bitassign_c(bool, value, mask)                                         \
-  value = (unsigned char)(((bool) ? (value) | (unsigned)(mask)                 \
-                                  : (value) & ~(unsigned)(mask)) &             \
+#define bitassign_c(bool, value, mask)                             \
+  value = (unsigned char)(((bool) ? (value) | (unsigned)(mask)     \
+                                  : (value) & ~(unsigned)(mask)) & \
                           0xFF)
 
 /*****************************************
@@ -230,12 +257,14 @@ can be passed between processes.
 ******************************************/
 
 #ifdef WORDS_BIGENDIAN
-typedef struct nid {
+typedef struct nid
+{
   unsigned int tree : 8;
   unsigned int node : 24;
 } NID;
 #else
-typedef struct nid {
+typedef struct nid
+{
   unsigned int
       node : 24; /* Node offset of root node of tree this node belongs to */
   unsigned int
@@ -243,7 +272,7 @@ typedef struct nid {
 } NID;
 #endif
 
-#define MAX_SUBTREES                                                           \
+#define MAX_SUBTREES \
   256 /* since there are only 8 bits of tree number in a nid */
 #define DEFAULT_STACK_LIMIT 8
 
@@ -266,7 +295,8 @@ typedef char TREE_NAME[12];
  node it should be set to sizeof(NODE) etc.
 *********************************************/
 #pragma pack(push, 1)
-typedef struct node {
+typedef struct node
+{
   NODE_NAME name;
   int parent;
   int member;
@@ -293,11 +323,13 @@ static NODE empty_node = {
     0};
 #endif
 
-static inline int node_offset(NODE *a, NODE *b) {
+static inline int node_offset(NODE *a, NODE *b)
+{
   /* Returns byte offset of two nodes if both pointers are not NULL otherwise 0
    */
   int ans = 0;
-  if (a && b) {
+  if (a && b)
+  {
     ans = (int)((char *)a - (char *)b);
     ans = swapint32(&ans);
   }
@@ -317,7 +349,8 @@ static inline int node_offset(NODE *a, NODE *b) {
 
 typedef char TAG_NAME[24];
 
-typedef struct tag_info {
+typedef struct tag_info
+{
   TAG_NAME name;
   int node_idx; /* Node to which this tag is assigned   */
   int tag_link; /* Index of next tag also assigned to this node (index of first
@@ -332,7 +365,8 @@ typedef struct tag_info {
    bytes of a tree file
 *********************************************/
 
-typedef struct tree_header {
+typedef struct tree_header
+{
   char version; /* Version of tree file format */
 #ifdef _AIX
   unsigned sort_children : 1;
@@ -350,11 +384,11 @@ typedef struct tree_header {
   unsigned char : 3;
 #endif
   char fill1[6];
-  int free; /* First node in free node list (connected by PARENT/CHILD indexes
+  int free;      /* First node in free node list (connected by PARENT/CHILD indexes
              */
-  int tags; /* Number of tags defined */
+  int tags;      /* Number of tags defined */
   int externals; /* Number of externals/subtrees referenced */
-  int nodes; /* Number of nodes allocated (both defined and free node)     */
+  int nodes;     /* Number of nodes allocated (both defined and free node)     */
   char fill2[488];
 } TREE_HEADER;
 
@@ -363,18 +397,19 @@ Defines RFA type as 6 characters.
 Used for moving RFA's around
 efficiently.
 ************************************/
-typedef struct {
+typedef struct
+{
   unsigned char rfa[6];
 } RFA;
 
 #ifdef RFA_MACROS
-#define RfaToSeek(rfa)                                                         \
-  (((*(unsigned int *)rfa - 1) * 512) +                                        \
+#define RfaToSeek(rfa)                  \
+  (((*(unsigned int *)rfa - 1) * 512) + \
    (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
-#define SeekToRfa(seek, rfa)                                                   \
-  {                                                                            \
-    *(unsigned int *)rfa = (unsigned int)(seek / 512 + 1);                     \
-    *(unsigned short *)&(((char *)rfa)[4]) = (unsigned short)(seek % 512);     \
+#define SeekToRfa(seek, rfa)                                               \
+  {                                                                        \
+    *(unsigned int *)rfa = (unsigned int)(seek / 512 + 1);                 \
+    *(unsigned short *)&(((char *)rfa)[4]) = (unsigned short)(seek % 512); \
   }
 #endif
 
@@ -383,7 +418,8 @@ RECORD_HEADER
 VFC portion of file.
 ***************************************/
 #pragma pack(push, 1)
-typedef struct record_header {
+typedef struct record_header
+{
   unsigned short rlength; // packed! is aligned
   int node_number;        // packed! is not aligned
   RFA rfa;
@@ -392,7 +428,8 @@ typedef struct record_header {
 /*****************************************************
  *     New Search structures
  *****************************************************/
-typedef enum yytokentype {
+typedef enum yytokentype
+{
   TAG_TREE = 258,
   TAG = 259,
   CHILD = 260,
@@ -407,18 +444,21 @@ typedef enum yytokentype {
   EOLL = 269
 } YYTOKENTYPE;
 
-typedef struct _st {
+typedef struct _st
+{
   int search_type;
   char *term;
   struct _st *next;
   NODE *start_node;
 } SEARCH_TERM;
-typedef struct node_list {
+typedef struct node_list
+{
   NODE *node;
   struct node_list *next;
 } NODELIST;
 
-typedef struct {
+typedef struct
+{
   SEARCH_TERM *terms;
   char *wildcard;
   NODE *default_node;
@@ -433,12 +473,14 @@ editting. It keeps track of dynamic memory
 allocations for tree expansions
 *********************************************/
 
-typedef struct deleted_nid {
+typedef struct deleted_nid
+{
   NID nid;
   struct deleted_nid *next;
 } DELETED_NID;
 
-typedef struct tree_edit {
+typedef struct tree_edit
+{
   int header_pages;
   int node_vm_size;
   int tags_pages;
@@ -465,7 +507,8 @@ in doing I/O to the tree files.
 
 #define DATAF_C_MAX_RECORD_SIZE (32765u - sizeof(RECORD_HEADER))
 
-typedef enum {
+typedef enum
+{
   TREE_DIRECTORY = 0,     // just directory
   TREE_TREEFILE_TYPE = 1, //".tree"
   TREE_NCIFILE_TYPE = 2,  //".characteristics"
@@ -481,7 +524,8 @@ needed to do I/O on the node characteristics
 file.
 *********************************************/
 
-typedef struct nci_file {
+typedef struct nci_file
+{
   int get;
   int put;
   NCI nci;
@@ -493,7 +537,8 @@ Structure used for passing information
 to asynchronous I/O completion routines
 ***************************************/
 
-typedef struct asy_nci {
+typedef struct asy_nci
+{
   struct tree_info *info;
   NCI *nci;
 } ASY_NCI;
@@ -502,7 +547,8 @@ typedef struct asy_nci {
 DATA_FILE structure used for I/O to datafile
 ********************************************/
 
-typedef struct data_file {
+typedef struct data_file
+{
   unsigned open_for_write : 1;
   unsigned : 7;
   int get;
@@ -520,45 +566,46 @@ of trees which have been activated. There will
 be one tree info block per tree activated.
 *********************************************/
 
-typedef struct tree_info {
-  struct tree_info *next_info; /* Pointer to next tree info block */
-  int blockid;           /* Identifier indicating a valid tree info block    */
-  char *treenam;         /* Tree name                                        */
-  int shot;              /* Shot number                                      */
-  int vm_pages;          /* Number of pages and address of virtual memory    */
-  void *vm_addr;         /*  allocated for mapping the tree file             */
-  char *section_addr[2]; /* Beginning and ending addresses of mapped section */
-  TREE_HEADER *header;   /* Pointer to file header                           */
-  NODE *node;            /* Pointer to nodes                                 */
-  int *tags;             /* Pointer to tag indexes                           */
-  TAG_INFO *tag_info;    /* Pointer to tag information blocks                */
-  int *external;         /* Pointer to external reference node indexes       */
-  int channel;           /* I/O channel to tree file                         */
-  int alq;               /* Blocks allocated to tree file                    */
-  int speclen;           /* length of filespec part defined by local treepath*/
-  char *filespec;        /* Pointer to full file spec of tree file           */
-  char dvi[16];          /* Tree file disk info                              */
+typedef struct tree_info
+{
+  struct tree_info *next_info;       /* Pointer to next tree info block */
+  int blockid;                       /* Identifier indicating a valid tree info block    */
+  char *treenam;                     /* Tree name                                        */
+  int shot;                          /* Shot number                                      */
+  int vm_pages;                      /* Number of pages and address of virtual memory    */
+  void *vm_addr;                     /*  allocated for mapping the tree file             */
+  char *section_addr[2];             /* Beginning and ending addresses of mapped section */
+  TREE_HEADER *header;               /* Pointer to file header                           */
+  NODE *node;                        /* Pointer to nodes                                 */
+  int *tags;                         /* Pointer to tag indexes                           */
+  TAG_INFO *tag_info;                /* Pointer to tag information blocks                */
+  int *external;                     /* Pointer to external reference node indexes       */
+  int channel;                       /* I/O channel to tree file                         */
+  int alq;                           /* Blocks allocated to tree file                    */
+  int speclen;                       /* length of filespec part defined by local treepath*/
+  char *filespec;                    /* Pointer to full file spec of tree file           */
+  char dvi[16];                      /* Tree file disk info                              */
   unsigned short tree_info_w_fid[3]; /* Tree file file id */
-  unsigned flush : 1;    /* Flush I/O's buffers                              */
-  unsigned rundown : 1;  /* Doing rundown                                    */
-  unsigned mapped : 1;   /* Tree is mapped into memory                       */
-  unsigned has_lock : 1; /* is privte context                                */
-  int rundown_id;        /* Rundown event id                                 */
-  NODE *root;            /* Pointer to top node                              */
-  TREE_EDIT *edit;       /* Pointer to edit block (if editting the tree      */
-  NCI_FILE *nci_file;    /* Pointer to nci file block (if open)              */
-  DATA_FILE *data_file;  /* Pointer to a datafile access block               */
+  unsigned flush : 1;                /* Flush I/O's buffers                              */
+  unsigned rundown : 1;              /* Doing rundown                                    */
+  unsigned mapped : 1;               /* Tree is mapped into memory                       */
+  unsigned has_lock : 1;             /* is privte context                                */
+  int rundown_id;                    /* Rundown event id                                 */
+  NODE *root;                        /* Pointer to top node                              */
+  TREE_EDIT *edit;                   /* Pointer to edit block (if editting the tree      */
+  NCI_FILE *nci_file;                /* Pointer to nci file block (if open)              */
+  DATA_FILE *data_file;              /* Pointer to a datafile access block               */
   pthread_rwlock_t lock;
 } TREE_INFO;
 
-#define RDLOCKINFO(info)                                                       \
-  if (info->has_lock)                                                          \
+#define RDLOCKINFO(info) \
+  if (info->has_lock)    \
   pthread_rwlock_rdlock(&info->lock)
-#define WRLOCKINFO(info)                                                       \
-  if (info->has_lock)                                                          \
+#define WRLOCKINFO(info) \
+  if (info->has_lock)    \
   pthread_rwlock_wrlock(&info->lock)
-#define UNLOCKINFO(info)                                                       \
-  if (info->has_lock)                                                          \
+#define UNLOCKINFO(info) \
+  if (info->has_lock)    \
   pthread_rwlock_unlock(&info->lock)
 
 /********************************************
@@ -570,13 +617,15 @@ always passed as an argument to tree traversal
 routines.
 *********************************************/
 
-typedef struct {
+typedef struct
+{
   struct descriptor_xd start;
   struct descriptor_xd end;
   struct descriptor_xd delta;
 } timecontext_t;
 
-typedef struct pino_database {
+typedef struct pino_database
+{
   struct pino_database *next; /* Link to next database in open list */
   TREE_INFO *tree_info;       /* Pointer to main tree info block */
   NODE *default_node;         /* Pointer to current default node */
@@ -597,7 +646,8 @@ typedef struct pino_database {
                          */
 } PINO_DATABASE;
 
-static inline NODE *nid_to_node(PINO_DATABASE *dbid, NID *nid) {
+static inline NODE *nid_to_node(PINO_DATABASE *dbid, NID *nid)
+{
   TREE_INFO *info;
   unsigned int i;
   for (info = dbid->tree_info, i = 0; (i < nid->tree) && (info != NULL);
@@ -608,21 +658,28 @@ static inline NODE *nid_to_node(PINO_DATABASE *dbid, NID *nid) {
              : (NODE *)0;
 }
 
-static inline NODE *parent_of(PINO_DATABASE *dbid, NODE *a) {
+static inline NODE *parent_of(PINO_DATABASE *dbid, NODE *a)
+{
   NODE *ans = 0;
-  if (a) {
-    if (a->usage == TreeUSAGE_SUBTREE_TOP) {
+  if (a)
+  {
+    if (a->usage == TreeUSAGE_SUBTREE_TOP)
+    {
       ans = nid_to_node(dbid, (NID *)&a->parent);
-    } else if (a->parent) {
+    }
+    else if (a->parent)
+    {
       ans = (NODE *)((char *)a + swapint32(&a->parent));
     }
   }
   return ans;
 }
 
-static inline NODE *member_of(NODE *a) {
+static inline NODE *member_of(NODE *a)
+{
   NODE *ans = 0;
-  if (a && a->member) {
+  if (a && a->member)
+  {
     ans = (NODE *)((char *)a + swapint32(&a->member));
   }
   return ans;
@@ -634,12 +691,17 @@ static inline NODE *member_of(NODE *a) {
  * however, when editing, the usage of the nde will never be
  * TreeUSAGE_SUBTREE_REF, so it will never call nid_to_node
  */
-static inline NODE *child_of(PINO_DATABASE *dbid, NODE *a) {
+static inline NODE *child_of(PINO_DATABASE *dbid, NODE *a)
+{
   NODE *ans = 0;
-  if (a && a->child) {
-    if (a->usage == TreeUSAGE_SUBTREE_REF) {
+  if (a && a->child)
+  {
+    if (a->usage == TreeUSAGE_SUBTREE_REF)
+    {
       ans = nid_to_node(dbid, (NID *)&a->child);
-    } else {
+    }
+    else
+    {
       ans = (NODE *)((char *)a + swapint32(&a->child));
     }
   }
@@ -648,12 +710,17 @@ static inline NODE *child_of(PINO_DATABASE *dbid, NODE *a) {
   return ans;
 }
 
-static inline NODE *brother_of(PINO_DATABASE *dbid, NODE *a) {
+static inline NODE *brother_of(PINO_DATABASE *dbid, NODE *a)
+{
   NODE *ans = 0;
-  if (a && a->brother) {
-    if (a->usage == TreeUSAGE_SUBTREE_TOP) {
+  if (a && a->brother)
+  {
+    if (a->usage == TreeUSAGE_SUBTREE_TOP)
+    {
       ans = nid_to_node(dbid, (NID *)&a->brother);
-    } else {
+    }
+    else
+    {
       ans = (NODE *)((char *)a + swapint32(&a->brother));
       if (ans->usage == TreeUSAGE_SUBTREE_REF)
         ans = nid_to_node(dbid, (NID *)&ans->child);
@@ -664,12 +731,14 @@ static inline NODE *brother_of(PINO_DATABASE *dbid, NODE *a) {
   return ans;
 }
 
-static inline NODE *descendant_of(PINO_DATABASE *dbid, NODE *a) {
+static inline NODE *descendant_of(PINO_DATABASE *dbid, NODE *a)
+{
   NODE *answer = member_of(a);
   return (answer) ? answer : child_of(dbid, a);
 }
 
-static inline int is_member(PINO_DATABASE *dblist, NODE *node) {
+static inline int is_member(PINO_DATABASE *dblist, NODE *node)
+{
   NODE *n = 0;
   if (parent_of(dblist, node))
     for (n = member_of(parent_of(dblist, node)); n && n != node;
@@ -678,7 +747,8 @@ static inline int is_member(PINO_DATABASE *dblist, NODE *node) {
   return n == node;
 }
 
-static inline NODE *sibling_of(PINO_DATABASE *dbid, NODE *a) {
+static inline NODE *sibling_of(PINO_DATABASE *dbid, NODE *a)
+{
   NODE *answer = brother_of(dbid, a);
   if (!answer)
     if (is_member(dbid, a))
@@ -711,11 +781,13 @@ nid_to_node__info->next_info : 0;\
      }
 */
 
-static inline int node_to_nid(PINO_DATABASE *dbid, NODE *node, NID *nid_out) {
+static inline int node_to_nid(PINO_DATABASE *dbid, NODE *node, NID *nid_out)
+{
   TREE_INFO *info;
   NID nid = {0, 0};
   for (info = dbid->tree_info, nid.tree = 0; info != NULL;
-       info = info->next_info, nid.tree++) {
+       info = info->next_info, nid.tree++)
+  {
     if ((node >= info->node) && (node <= (info->node + info->header->nodes)))
       break;
   }
@@ -734,10 +806,11 @@ Another useful macro based on nid:
 nid_to_tree_nidx(pino, nid, info, nidx)
 *******************************************/
 
-#define nid_to_tree_nidx(pino, nid, info, nidx)                                \
+#define nid_to_tree_nidx(pino, nid, info, nidx) \
   nidx = nid_to_tree_idx(pino, nid, &info)
 static inline int nid_to_tree_idx(PINO_DATABASE *pino, NID *nid,
-                                  TREE_INFO **info_out) {
+                                  TREE_INFO **info_out)
+{
   unsigned int i;
   TREE_INFO *info = pino->tree_info;
   for (i = 0; info && i < nid->tree; i++)

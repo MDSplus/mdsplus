@@ -39,13 +39,15 @@ EXPORT void unregisterListener(int listenerId);
 EXPORT struct descriptor_xd *getNewSamplesSerializedXd();
 extern int TdiDecompile();
 
-static void printDecompiled(struct descriptor *inD) {
+static void printDecompiled(struct descriptor *inD)
+{
   int status;
   EMPTYXD(out_xd);
   char *buf;
 
   status = TdiDecompile(inD, &out_xd MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     printf("%s\n", MdsGetMsg(status));
     return;
   }
@@ -58,7 +60,8 @@ static void printDecompiled(struct descriptor *inD) {
   MdsFree1Dx(&out_xd, 0);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   int id, id1;
   int status;
   struct timespec waitTime;
@@ -67,18 +70,22 @@ int main(int argc, char *argv[]) {
 
   id = registerListener("2 * test_0", "test", 1);
   id1 = registerListener("10 * build_path('test_1')", "test", 1);
-  while (1) {
+  while (1)
+  {
     retXd = getNewSamplesSerializedXd();
-    if (!retXd->pointer) {
+    if (!retXd->pointer)
+    {
       printf("Error: Null serialized  returned\n");
       exit(0);
     }
-    if (retXd->pointer->class != CLASS_A) {
+    if (retXd->pointer->class != CLASS_A)
+    {
       printf("Error: Unexpected serilized class\n");
       exit(0);
     }
     status = MdsSerializeDscIn(retXd->pointer->pointer, &xd);
-    if (!(status & 1)) {
+    if (!(status & 1))
+    {
       printf("Error: decompressing result\n");
       exit(0);
     }

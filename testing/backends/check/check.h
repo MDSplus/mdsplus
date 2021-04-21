@@ -33,13 +33,15 @@
 */
 
 #ifdef __cplusplus
-#define CK_CPPSTART extern "C" {
+#define CK_CPPSTART \
+  extern "C"        \
+  {
 #define CK_CPPEND }
 CK_CPPSTART
 #endif
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
-#define GCC_VERSION_AT_LEAST(major, minor)                                     \
+#define GCC_VERSION_AT_LEAST(major, minor) \
   ((__GNUC__ > (major)) || (__GNUC__ == (major) && __GNUC_MINOR__ >= (minor)))
 #else
 #define GCC_VERSION_AT_LEAST(major, minor) 0
@@ -189,7 +191,7 @@ CK_DLL_EXP TCase *CK_EXPORT tcase_create(const char *name);
  *
  * @since 0.9.2
  * */
-#define tcase_add_test_raise_signal(tc, tf, signal)                            \
+#define tcase_add_test_raise_signal(tc, tf, signal) \
   _tcase_add_test((tc), (tf), "" #tf "", (signal), 0, 0, 1)
 
 /**
@@ -204,7 +206,7 @@ CK_DLL_EXP TCase *CK_EXPORT tcase_create(const char *name);
  *
  * @since 0.9.7
  */
-#define tcase_add_exit_test(tc, tf, expected_exit_value)                       \
+#define tcase_add_exit_test(tc, tf, expected_exit_value) \
   _tcase_add_test((tc), (tf), "" #tf "", 0, (expected_exit_value), 0, 1)
 
 /**
@@ -221,7 +223,7 @@ CK_DLL_EXP TCase *CK_EXPORT tcase_create(const char *name);
  *
  * @since 0.9.4
  */
-#define tcase_add_loop_test(tc, tf, s, e)                                      \
+#define tcase_add_loop_test(tc, tf, s, e) \
   _tcase_add_test((tc), (tf), "" #tf "", 0, 0, (s), (e))
 
 /**
@@ -242,7 +244,7 @@ CK_DLL_EXP TCase *CK_EXPORT tcase_create(const char *name);
  *
  * @since 0.9.5
  */
-#define tcase_add_loop_test_raise_signal(tc, tf, signal, s, e)                 \
+#define tcase_add_loop_test_raise_signal(tc, tf, signal, s, e) \
   _tcase_add_test((tc), (tf), "" #tf "", (signal), 0, (s), (e))
 
 /**
@@ -263,7 +265,7 @@ CK_DLL_EXP TCase *CK_EXPORT tcase_create(const char *name);
  *
  * @since 0.9.7
  */
-#define tcase_add_loop_exit_test(tc, tf, expected_exit_value, s, e)            \
+#define tcase_add_loop_exit_test(tc, tf, expected_exit_value, s, e) \
   _tcase_add_test((tc), (tf), "" #tf "", 0, (expected_exit_value), (s), (e))
 
 /* Add a test function to a test case
@@ -363,8 +365,9 @@ CK_DLL_EXP void CK_EXPORT tcase_fn_start(const char *fname, const char *file,
  *
  * @since 0.6.0
  */
-#define START_TEST(__testname)                                                 \
-  static void __testname(int _i CK_ATTRIBUTE_UNUSED) {                         \
+#define START_TEST(__testname)                       \
+  static void __testname(int _i CK_ATTRIBUTE_UNUSED) \
+  {                                                  \
     tcase_fn_start("" #__testname, __FILE__, __LINE__);
 
 /**
@@ -391,10 +394,10 @@ CK_DLL_EXP void CK_EXPORT tcase_fn_start(const char *fname, const char *file,
  * FIXME: these macros may conflict with C89 if expr is
  * FIXME:   strcmp (str1, str2) due to excessive string length.
  */
-#define fail_if(expr, ...)                                                     \
-  (expr)                                                                       \
-      ? _ck_assert_failed(__FILE__, __LINE__, "Failure '" #expr "' occurred",  \
-                          ##__VA_ARGS__, NULL)                                 \
+#define fail_if(expr, ...)                                                    \
+  (expr)                                                                      \
+      ? _ck_assert_failed(__FILE__, __LINE__, "Failure '" #expr "' occurred", \
+                          ##__VA_ARGS__, NULL)                                \
       : _mark_point(__FILE__, __LINE__)
 
 /*
@@ -445,10 +448,10 @@ CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
  *
  * @since 0.9.6
  */
-#define ck_assert_msg(expr, ...)                                               \
-  (expr)                                                                       \
-      ? _mark_point(__FILE__, __LINE__)                                        \
-      : _ck_assert_failed(__FILE__, __LINE__, "Assertion '" #expr "' failed",  \
+#define ck_assert_msg(expr, ...)                                              \
+  (expr)                                                                      \
+      ? _mark_point(__FILE__, __LINE__)                                       \
+      : _ck_assert_failed(__FILE__, __LINE__, "Assertion '" #expr "' failed", \
                           ##__VA_ARGS__, NULL)
 
 /**
@@ -468,19 +471,20 @@ CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
  *
  * @since 0.9.6
  */
-#define ck_abort_msg(...)                                                      \
+#define ck_abort_msg(...) \
   _ck_assert_failed(__FILE__, __LINE__, "Failed", ##__VA_ARGS__, NULL)
 
 /* Signed and unsigned integer comparison macros with improved output compared
  * to ck_assert(). */
 /* OP may be any comparison operator. */
-#define _ck_assert_int(X, OP, Y)                                               \
-  do {                                                                         \
-    intmax_t _ck_x = (X);                                                      \
-    intmax_t _ck_y = (Y);                                                      \
-    ck_assert_msg(_ck_x OP _ck_y,                                              \
-                  "Assertion '%s' failed: %s == %jd, %s == %jd",               \
-                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);                    \
+#define _ck_assert_int(X, OP, Y)                                 \
+  do                                                             \
+  {                                                              \
+    intmax_t _ck_x = (X);                                        \
+    intmax_t _ck_y = (Y);                                        \
+    ck_assert_msg(_ck_x OP _ck_y,                                \
+                  "Assertion '%s' failed: %s == %jd, %s == %jd", \
+                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);      \
   } while (0)
 
 /**
@@ -562,13 +566,14 @@ CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
  */
 #define ck_assert_int_ge(X, Y) _ck_assert_int(X, >=, Y)
 
-#define _ck_assert_uint(X, OP, Y)                                              \
-  do {                                                                         \
-    uintmax_t _ck_x = (X);                                                     \
-    uintmax_t _ck_y = (Y);                                                     \
-    ck_assert_msg(_ck_x OP _ck_y,                                              \
-                  "Assertion '%s' failed: %s == %ju, %s == %ju",               \
-                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);                    \
+#define _ck_assert_uint(X, OP, Y)                                \
+  do                                                             \
+  {                                                              \
+    uintmax_t _ck_x = (X);                                       \
+    uintmax_t _ck_y = (Y);                                       \
+    ck_assert_msg(_ck_x OP _ck_y,                                \
+                  "Assertion '%s' failed: %s == %ju, %s == %ju", \
+                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);      \
   } while (0)
 /**
  * Check two unsigned integers to determine if X==Y
@@ -653,13 +658,14 @@ CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
 /* OP might be any operator that can be used in '0 OP strcmp(X,Y)' comparison */
 /* The x and y parameter swap in strcmp() is needed to handle >, >=, <, <=
  * operators */
-#define _ck_assert_str(X, OP, Y)                                               \
-  do {                                                                         \
-    const char *_ck_x = (X);                                                   \
-    const char *_ck_y = (Y);                                                   \
-    ck_assert_msg(0 OP strcmp(_ck_y, _ck_x),                                   \
-                  "Assertion '%s' failed: %s == \"%s\", %s == \"%s\"",         \
-                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);                    \
+#define _ck_assert_str(X, OP, Y)                                       \
+  do                                                                   \
+  {                                                                    \
+    const char *_ck_x = (X);                                           \
+    const char *_ck_y = (Y);                                           \
+    ck_assert_msg(0 OP strcmp(_ck_y, _ck_x),                           \
+                  "Assertion '%s' failed: %s == \"%s\", %s == \"%s\"", \
+                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);            \
   } while (0)
 /**
  * Check two strings to determine if 0==strcmp(X,Y)
@@ -742,13 +748,14 @@ CK_DLL_EXP void CK_EXPORT _ck_assert_failed(const char *file, int line,
 
 /* Pointer comparison macros with improved output compared to ck_assert(). */
 /* OP may only be == or !=  */
-#define _ck_assert_ptr(X, OP, Y)                                               \
-  do {                                                                         \
-    const void *_ck_x = (X);                                                   \
-    const void *_ck_y = (Y);                                                   \
-    ck_assert_msg(_ck_x OP _ck_y,                                              \
-                  "Assertion '%s' failed: %s == %#x, %s == %#x",               \
-                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);                    \
+#define _ck_assert_ptr(X, OP, Y)                                 \
+  do                                                             \
+  {                                                              \
+    const void *_ck_x = (X);                                     \
+    const void *_ck_y = (Y);                                     \
+    ck_assert_msg(_ck_x OP _ck_y,                                \
+                  "Assertion '%s' failed: %s == %#x, %s == %#x", \
+                  #X " " #OP " " #Y, #X, _ck_x, #Y, _ck_y);      \
   } while (0)
 
 /**
@@ -796,7 +803,8 @@ CK_DLL_EXP void CK_EXPORT _mark_point(const char *file, int line);
 /**
  * Enum describing the possible results of a test
  */
-enum test_result {
+enum test_result
+{
   CK_TEST_RESULT_INVALID, /**< Default value; should not encounter this */
   CK_PASS,                /**< Test passed */
   CK_SKIP,
@@ -808,7 +816,8 @@ enum test_result {
 /**
  * Enum specifying the verbosity of output a SRunner should produce
  */
-enum print_output {
+enum print_output
+{
   CK_SILENT,  /**< No output */
   CK_MINIMAL, /**< Only summary output */
   CK_NORMAL,  /**< All failed tests */
@@ -837,7 +846,8 @@ typedef struct TestResult TestResult;
 /**
  * Enum representing the types of contexts for a test
  */
-enum ck_result_ctx {
+enum ck_result_ctx
+{
   CK_CTX_INVALID, /**< Default value; should not encounter this */
   CK_CTX_SETUP,   /**< Setup before a test */
   CK_CTX_TEST,    /**< Body of test itself */
@@ -1190,7 +1200,8 @@ CK_DLL_EXP const char *CK_EXPORT srunner_tap_fname(SRunner *sr);
 /**
  * Enum describing the current fork usage.
  */
-enum fork_status {
+enum fork_status
+{
   CK_FORK_GETENV, /**< look in the environment for CK_FORK */
   CK_FORK,        /**< call fork to run tests */
   CK_NOFORK       /**< don't call fork */

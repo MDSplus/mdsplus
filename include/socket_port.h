@@ -43,13 +43,14 @@ typedef int SOCKET;
 #define RECV_BUF_SIZE 32768
 
 #ifdef _WIN32
-#define DEFINE_INITIALIZESOCKETS                                               \
-  static void InitializeSockets() {                                            \
-    WSADATA wsaData;                                                           \
-    WORD wVersionRequested;                                                    \
-    wVersionRequested = MAKEWORD(1, 1);                                        \
-    WSAStartup(wVersionRequested, &wsaData);                                   \
-  }                                                                            \
+#define DEFINE_INITIALIZESOCKETS             \
+  static void InitializeSockets()            \
+  {                                          \
+    WSADATA wsaData;                         \
+    WORD wVersionRequested;                  \
+    wVersionRequested = MAKEWORD(1, 1);      \
+    WSAStartup(wVersionRequested, &wsaData); \
+  }                                          \
   INIT_SHARED_FUNCTION_ONCE(InitializeSockets)
 #define INITIALIZESOCKETS RUN_SHARED_FUNCTION_ONCE(InitializeSockets)
 #else

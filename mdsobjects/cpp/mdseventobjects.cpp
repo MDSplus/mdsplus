@@ -40,18 +40,21 @@ using namespace std;
 
 #define MAX_ARGS 512
 
-extern "C" {
-int64_t convertAsciiToTime(const char *ascTime);
-int MDSEventAst(const char *eventNameIn, void (*astadr)(void *, int, char *),
-                void *astprm, int *eventid);
-int MDSEventCan(int id);
-int MDSEvent(const char *eventNameIn, int bufLen, char *buf);
-void *MdsEventAddListener(char *name,
-                          void (*callback)(char *, char *, int, void *),
-                          void *callbackArg);
-void MdsEventRemoveListener(void *eventId);
-int MdsEventTrigger(char *name, char *buf, int size);
-int MdsEventTriggerAndWait(char *name, char *buf, int size);
+extern "C"
+{
+  int64_t convertAsciiToTime(const char *ascTime);
+  int MDSEventAst(const char *eventNameIn, void (*astadr)(void *, int, char *),
+                  void *astprm, int *eventid);
+  int MDSEventAstMask(const char *eventNameIn, void (*astadr)(void *, int, char *),
+                      void *astprm, int *eventid, unsigned int cpuMask);
+  int MDSEventCan(int id);
+  int MDSEvent(const char *eventNameIn, int bufLen, char *buf);
+  void *MdsEventAddListener(char *name,
+                            void (*callback)(char *, char *, int, void *),
+                            void *callbackArg);
+  void MdsEventRemoveListener(void *eventId);
+  int MdsEventTrigger(char *name, char *buf, int size);
+  int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
 #ifdef _WIN32
@@ -61,59 +64,69 @@ static CRITICAL_SECTION critSect;
 static pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
-namespace MDSplus {
+namespace MDSplus
+{
 
-void eventAst(void *arg, int len, char *buf) {
+  void eventAst(void *arg, int len, char *buf)
+  {
 #ifdef _WIN32
-  EnterCriticalSection(&critSect);
+    EnterCriticalSection(&critSect);
 #else
-  pthread_mutex_lock(&evMutex);
+    pthread_mutex_lock(&evMutex);
 #endif
-  Event *ev = (Event *)arg;
-  ev->eventBuf.assign(buf, len);
-  ev->eventTime = convertAsciiToTime("now");
-  ev->run();
+    Event *ev = (Event *)arg;
+    ev->eventBuf.assign(buf, len);
+    ev->eventTime = convertAsciiToTime("now");
+    ev->run();
 
-  // notify all waiting threads //
-  ev->notify();
+    // notify all waiting threads //
+    ev->notify();
 #ifdef _WIN32
-  LeaveCriticalSection(&critSect);
+    LeaveCriticalSection(&critSect);
 #else
-  pthread_mutex_unlock(&evMutex);
+    pthread_mutex_unlock(&evMutex);
 #endif
-}
+  }
 } // namespace MDSplus
 
-void Event::connectToEvents() {
+void Event::connectToEvents()
+{
 #ifdef _WIN32
-  if (!critSectInitialized) {
+  if (!critSectInitialized)
+  {
     critSectInitialized = true;
     InitializeCriticalSection(&critSect);
   }
 #endif
-  if (!MDSEventAst(this->getName(), MDSplus::eventAst, this, &eventId))
+  if (!MDSEventAstMask(this->getName(), MDSplus::eventAst, this, &eventId, cpuMask))
     throw MdsException("failed to connect to event listener");
 }
 
-void Event::disconnectFromEvents() {
+void Event::disconnectFromEvents()
+{
   if (!MDSEventCan(eventId))
     throw MdsException("failed to close event listener");
 }
 
 void Event::run() {}
 
+Event::Event(const char *name, unsigned int cpuMask)
+    : eventName(name), eventId(-1), cpuMask(cpuMask), eventTime(convertAsciiToTime("now")) {}
+
 Event::Event(const char *name)
-    : eventName(name), eventId(-1), eventTime(convertAsciiToTime("now")) {}
+    : eventName(name), eventId(-1), cpuMask(0), eventTime(convertAsciiToTime("now")) {}
 
 Event::~Event() { stop(); }
 
-Data *Event::getData() const {
+Data *Event::getData() const
+{
   if (eventBuf.length() == 0)
     return NULL;
   return deserialize(eventBuf.c_str());
 }
 
-const char *Event::getRaw(size_t *size) const {
+const char *Event::getRaw(size_t *size) const
+{
   *size = eventBuf.length();
   return eventBuf.c_str();
 }
@@ -124,8 +137,10 @@ const char *Event::getName() const { return eventName.c_str(); }
 
 void Event::start() { connectToEvents(); }
 
-void Event::stop() {
-  if (eventId > -1) {
+void Event::stop()
+{
+  if (eventId > -1)
+  {
     disconnectFromEvents();
     eventId = -1;
   }
@@ -133,7 +148,8 @@ void Event::stop() {
 
 bool Event::isStarted() const { return eventId > -1; }
 
-void Event::wait(size_t secs) {
+void Event::wait(size_t secs)
+{
   if (!isStarted())
     start();
   if (secs == 0)
@@ -144,13 +160,15 @@ void Event::wait(size_t secs) {
 
 void Event::notify() { condition.notify(); }
 
-void Event::setEvent(const char *evName, Data *evData) {
+void Event::setEvent(const char *evName, Data *evData)
+{
   int bufLen;
   char *buf = evData->serialize(&bufLen);
   setEventRaw(evName, bufLen, buf);
   delete[] buf;
 }
 
-void Event::setEventRaw(const char *evName, int bufLen, char *buf) {
+void Event::setEventRaw(const char *evName, int bufLen, char *buf)
+{
   MDSEvent(evName, bufLen, buf);
 }

@@ -35,8 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "epicsThread.h"
 #include "iocsh.h"
 
-int main(int argc, char *argv[]) {
-  if (argc >= 2) {
+int main(int argc, char *argv[])
+{
+  if (argc >= 2)
+  {
     iocsh(argv[1]);
     epicsThreadSleep(.2);
   }

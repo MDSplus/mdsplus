@@ -58,7 +58,8 @@ extern int TdiPower();
 #define _factor ((float).30103)
 
 int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[],
-               struct descriptor_xd *out_ptr) {
+               struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd sig[2] = {EMPTY_XD}, uni[2] = {EMPTY_XD},
                        dat[2] = {EMPTY_XD};
@@ -77,37 +78,34 @@ int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[],
   /******************************************
   Adjust category needed to match data types.
   ******************************************/
-  if
-    STATUS_OK
-  status = (*fun_ptr->f2)(narg, uni, dat, cats, &routine);
+  if (STATUS_OK)
+    status = (*fun_ptr->f2)(narg, uni, dat, cats, &routine);
 
   /******************************
   Do the needed type conversions.
   ******************************/
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
 
   /******************
   Find correct shape.
   ******************/
-  if
-    STATUS_OK
-  status = TdiGetShape(0, dat, 0, cats[narg].out_dtype, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiGetShape(0, dat, 0, cats[narg].out_dtype, &cmode, out_ptr);
 
   /*****************************
   Act on data, linear arguments.
   *****************************/
-  if
-    STATUS_OK
-  switch (fun_ptr->m2) {
-  case 1:
-    status = (*routine)(dat[0].pointer, out_ptr->pointer);
-    break;
-  case 2:
-    status = (*routine)(dat[0].pointer, dat[1].pointer, out_ptr->pointer);
-    break;
-  }
+  if (STATUS_OK)
+    switch (fun_ptr->m2)
+    {
+    case 1:
+      status = (*routine)(dat[0].pointer, out_ptr->pointer);
+      break;
+    case 2:
+      status = (*routine)(dat[0].pointer, dat[1].pointer, out_ptr->pointer);
+      break;
+    }
 
   if (STATUS_OK && (opcode == OPC_DOT_PRODUCT || fun_ptr->f2 == Tdi2Keep))
     status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
@@ -115,7 +113,8 @@ int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[],
   /********************
   Free all temporaries.
   ********************/
-  for (j = narg; --j >= 0;) {
+  for (j = narg; --j >= 0;)
+  {
     if (sig[j].pointer)
       MdsFree1Dx(&sig[j], NULL);
     if (uni[j].pointer)
@@ -133,10 +132,12 @@ int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[],
 
         NEED handling of bit and packed types.
 */
-int Tdi3BitSize(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3BitSize(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
 
-  switch (in_ptr->class) {
+  switch (in_ptr->class)
+  {
   case CLASS_A:
   case CLASS_S:
   case CLASS_D:
@@ -157,10 +158,12 @@ int Tdi3BitSize(struct descriptor *in_ptr, struct descriptor *out_ptr) {
         DIGITS(3.0) is 24, DIGITS(4) 31.
                 integer = DIGITS(number)
 */
-int Tdi3Digits(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Digits(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   int status = MDSplusSUCCESS, n;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   default:
     n = 0;
     status = TdiINVDTYDSC;
@@ -212,21 +215,22 @@ int Tdi3Digits(struct descriptor *in_ptr, struct descriptor *out_ptr) {
                 real = EPSILON(real-model)
 */
 
-int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr) {
+int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   double digits_d;
   struct descriptor digits = {sizeof(digits_d), DTYPE_NATIVE_DOUBLE, CLASS_S,
                               0};
   digits.pointer = (char *)&digits_d;
   status = TdiDigits(x_ptr, &digits MDS_END_ARG);
-  if
-    STATUS_OK {
-      static const double two_d = 2.;
-      static const struct descriptor two = {sizeof(two_d), DTYPE_NATIVE_DOUBLE,
-                                            CLASS_S, (char *)&two_d};
-      digits_d = 1. - digits_d;
-      status = TdiPower(&two, &digits, out_ptr MDS_END_ARG);
-    }
+  if (STATUS_OK)
+  {
+    static const double two_d = 2.;
+    static const struct descriptor two = {sizeof(two_d), DTYPE_NATIVE_DOUBLE,
+                                          CLASS_S, (char *)&two_d};
+    digits_d = 1. - digits_d;
+    status = TdiPower(&two, &digits, out_ptr MDS_END_ARG);
+  }
   return status;
 }
 
@@ -258,15 +262,17 @@ static const unsigned int FSC_HUGE[] = {0x7F7FFFFF};
 static const unsigned int FT_HUGE[] = {0xFFFFFFFF, 0x7FF7FFFF};
 static const unsigned int FTC_HUGE[] = {0xFFFFFFFF, 0x7FF7FFFF};
 
-#define CASE(dtype)                                                            \
-  case DTYPE_##dtype:                                                          \
-    memcpy(out_ptr->pointer, dtype##_HUGE, sizeof(dtype##_HUGE));              \
+#define CASE(dtype)                                               \
+  case DTYPE_##dtype:                                             \
+    memcpy(out_ptr->pointer, dtype##_HUGE, sizeof(dtype##_HUGE)); \
     break;
 
-int Tdi3Huge(struct descriptor *x_ptr, struct descriptor *out_ptr) {
+int Tdi3Huge(struct descriptor *x_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
 
-  switch (x_ptr->dtype) {
+  switch (x_ptr->dtype)
+  {
   default:
     status = TdiINVDTYDSC;
     break;
@@ -301,10 +307,12 @@ int Tdi3Huge(struct descriptor *x_ptr, struct descriptor *out_ptr) {
 
         NEED handling of bit and packed types.
 */
-int Tdi3Len(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Len(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
 
-  switch (in_ptr->class) {
+  switch (in_ptr->class)
+  {
   case CLASS_A:
   case CLASS_S:
   case CLASS_D:
@@ -322,10 +330,12 @@ int Tdi3Len(struct descriptor *in_ptr, struct descriptor *out_ptr) {
    fraction. This is computer-dependent. VAX base=2. MAXEXPONENT(3.0) is +127,
    MAXEXPONENT(4g0) +1023. integer = MAXEXPONENT(real)
 */
-int Tdi3MaxExponent(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3MaxExponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   int status = MDSplusSUCCESS, n;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   default:
     n = 0;
     status = TdiINVDTYDSC;
@@ -356,10 +366,12 @@ int Tdi3MaxExponent(struct descriptor *in_ptr, struct descriptor *out_ptr) {
    fraction. This is computer-dependent. VAX base=2. MINEXPONENT(3.0) is -127,
    MINEXPONENT(4g0) -1023. integer = MINEXPONENT(real)
 */
-int Tdi3MinExponent(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3MinExponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   int status = MDSplusSUCCESS, n;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   default:
     n = 0;
     status = TdiINVDTYDSC;
@@ -391,10 +403,12 @@ int Tdi3MinExponent(struct descriptor *in_ptr, struct descriptor *out_ptr) {
    power of 10) This is computer-dependent. VAX base=2. PRECISION(3.0) is 6,
    PRECISION(4g0) 15. integer = PRECISION(real)
 */
-int Tdi3Precision(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Precision(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   int status = MDSplusSUCCESS, n;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   default:
     n = 0;
     status = TdiINVDTYDSC;
@@ -428,11 +442,13 @@ int Tdi3Precision(struct descriptor *in_ptr, struct descriptor *out_ptr) {
         RADIX(3.0) is 2, RADIX(4) is 2.
                 integer = RADIX(number)
 */
-int Tdi3Radix(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Radix(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int n;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   default:
     n = 0;
     status = TdiINVDTYDSC;
@@ -469,10 +485,12 @@ int Tdi3Radix(struct descriptor *in_ptr, struct descriptor *out_ptr) {
    base=2. VAX huge < 1/tiny. RANGE(3.0) is 38, RANGE(4g0) 307. integer =
    RANGE(real)
 */
-int Tdi3Range(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Range(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   int status = MDSplusSUCCESS, n;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   default:
     n = 0;
     status = TdiINVDTYDSC;
@@ -502,7 +520,8 @@ int Tdi3Range(struct descriptor *in_ptr, struct descriptor *out_ptr) {
         F90 extension inquiry for declared number of dimensions of an array.
         Returns zero for a scalar.
 */
-int Tdi3Rank(struct descriptor_a *arr_ptr, struct descriptor *out_ptr) {
+int Tdi3Rank(struct descriptor_a *arr_ptr, struct descriptor *out_ptr)
+{
   int n;
 
   if (arr_ptr->class == CLASS_A)
@@ -518,28 +537,29 @@ int Tdi3Rank(struct descriptor_a *arr_ptr, struct descriptor *out_ptr) {
 /*---------------------------------------------------
         Return kind (dtype) of smallest integer with sufficient range.
 */
-int Tdi3SelectedIntKind(struct descriptor *pdr, struct descriptor *pout) {
+int Tdi3SelectedIntKind(struct descriptor *pdr, struct descriptor *pout)
+{
   int range, status;
   float frange;
 
   status = TdiGetLong(pdr, &range);
-  if
-    STATUS_OK {
-      frange = range / _factor;
-      if (frange <= 07)
-        range = DTYPE_B;
-      else if (frange <= 15)
-        range = DTYPE_W;
-      else if (frange <= 31)
-        range = DTYPE_L;
-      else if (frange <= 63)
-        range = DTYPE_Q;
-      else if (frange <= 127)
-        range = DTYPE_O;
-      else
-        range = -1;
-      *(int *)pout->pointer = range;
-    }
+  if (STATUS_OK)
+  {
+    frange = range / _factor;
+    if (frange <= 07)
+      range = DTYPE_B;
+    else if (frange <= 15)
+      range = DTYPE_W;
+    else if (frange <= 31)
+      range = DTYPE_L;
+    else if (frange <= 63)
+      range = DTYPE_Q;
+    else if (frange <= 127)
+      range = DTYPE_O;
+    else
+      range = -1;
+    *(int *)pout->pointer = range;
+  }
   return status;
 }
 
@@ -548,28 +568,28 @@ int Tdi3SelectedIntKind(struct descriptor *pdr, struct descriptor *pout) {
    range.
 */
 int Tdi3SelectedRealKind(struct descriptor *pdp, struct descriptor *pdr,
-                         struct descriptor *pout) {
+                         struct descriptor *pout)
+{
   int prec, range, status;
   float fprec, frange;
 
   status = TdiGetLong(pdp, &prec);
-  if
-    STATUS_OK
-  status = TdiGetLong(pdr, &range);
-  if
-    STATUS_OK {
-      fprec = prec / _factor;
-      frange = range / _factor;
-      if (fprec <= 23 && frange <= 127)
-        range = DTYPE_NATIVE_FLOAT;
-      else if (fprec <= 52 && frange <= 1023)
-        range = DTYPE_NATIVE_DOUBLE;
-      else if (fprec <= 55 && frange <= 127)
-        range = DTYPE_D;
-      else
-        range = 0;
-      *(int *)pout->pointer = range;
-    }
+  if (STATUS_OK)
+    status = TdiGetLong(pdr, &range);
+  if (STATUS_OK)
+  {
+    fprec = prec / _factor;
+    frange = range / _factor;
+    if (fprec <= 23 && frange <= 127)
+      range = DTYPE_NATIVE_FLOAT;
+    else if (fprec <= 52 && frange <= 1023)
+      range = DTYPE_NATIVE_DOUBLE;
+    else if (fprec <= 55 && frange <= 127)
+      range = DTYPE_D;
+    else
+      range = 0;
+    *(int *)pout->pointer = range;
+  }
   return status;
 }
 
@@ -578,11 +598,13 @@ int Tdi3SelectedRealKind(struct descriptor *pdp, struct descriptor *pdr,
                 int = SIZEOF(expression)
         NEED handling of bit and packed types.
 */
-int Tdi3SizeOf(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3SizeOf(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int size = 0;
 
-  switch (in_ptr->class) {
+  switch (in_ptr->class)
+  {
   case CLASS_A:
     size = ((struct descriptor_a *)in_ptr)->arsize;
     break;
@@ -609,10 +631,12 @@ static const unsigned int G_TINY[] = {0x10, 0};
 static const unsigned int FS_TINY[] = {0x800000};
 static const unsigned int FT_TINY[] = {0, 0x100000};
 
-int Tdi3Tiny(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Tiny(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
 
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   default:
     status = TdiINVDTYDSC;
     break;
@@ -644,7 +668,8 @@ int Tdi3Tiny(struct descriptor *in_ptr, struct descriptor *out_ptr) {
         Dot product of two vectors.
 */
 int Tdi3DotProduct(struct descriptor_a *in1_ptr, struct descriptor_a *in2_ptr,
-                   struct descriptor *out_ptr) {
+                   struct descriptor *out_ptr)
+{
   int lsum; /*need wsum and bsum when supported */
   char *p1 = in1_ptr->pointer;
   int inc1 = in1_ptr->class == CLASS_A ? in1_ptr->length : 0;
@@ -657,7 +682,8 @@ int Tdi3DotProduct(struct descriptor_a *in1_ptr, struct descriptor_a *in2_ptr,
   N_ELEMENTS(in2_ptr, n2);
   if (n > n2)
     n = n2;
-  switch (out_ptr->dtype) {
+  switch (out_ptr->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     for (lsum = 0; --n >= 0; p1 += inc1, p2 += inc2)
@@ -686,20 +712,20 @@ int Tdi3DotProduct(struct descriptor_a *in1_ptr, struct descriptor_a *in2_ptr,
       break;
     MDS_ATTR_FALLTHROUGH
   default:
-    if (inc1) {
+    if (inc1)
+    {
       status = Tdi3Multiply(in1_ptr, in2_ptr, in1_ptr);
-      if
-        STATUS_OK
-      status = TdiSum(in1_ptr, &tmp MDS_END_ARG);
-    } else {
-      status = Tdi3Multiply(in1_ptr, in2_ptr, in2_ptr);
-      if
-        STATUS_OK
-      status = TdiSum(in2_ptr, &tmp MDS_END_ARG);
+      if (STATUS_OK)
+        status = TdiSum(in1_ptr, &tmp MDS_END_ARG);
     }
-    if
-      STATUS_OK
-    _MOVC3(out_ptr->length, tmp.pointer->pointer, out_ptr->pointer);
+    else
+    {
+      status = Tdi3Multiply(in1_ptr, in2_ptr, in2_ptr);
+      if (STATUS_OK)
+        status = TdiSum(in2_ptr, &tmp MDS_END_ARG);
+    }
+    if (STATUS_OK)
+      _MOVC3(out_ptr->length, tmp.pointer->pointer, out_ptr->pointer);
     break;
   }
   MdsFree1Dx(&tmp, 0);

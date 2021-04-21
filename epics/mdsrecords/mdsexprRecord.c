@@ -92,7 +92,8 @@ rset mdsexprRSET = {RSETNUMBER,
                     get_control_double,
                     get_alarm_double};
 epicsExportAddress(rset, mdsexprRSET);
-struct mpdset { /* mdsexpr dset */
+struct mpdset
+{ /* mdsexpr dset */
   long number;
   DEVSUPFUN dev_report;
   DEVSUPFUN init;
@@ -105,36 +106,44 @@ static void monitor(mdsexprRecord *);
 static long readValue(mdsexprRecord *);
 static void checkAlarms(mdsexprRecord *prec);
 
-static long init_record(mdsexprRecord *prec, int pass) {
+static long init_record(mdsexprRecord *prec, int pass)
+{
   struct mpdset *pdset;
   long status;
-  if (pass == 0) {
+  if (pass == 0)
+  {
     if (prec->nelm <= 0)
       prec->nelm = 1;
     if (prec->ftvl > DBF_ENUM)
       prec->ftvl = DBF_UCHAR;
     prec->bptr = callocMustSucceed(prec->nelm, dbValueSize(prec->ftvl),
                                    "mdsexpr calloc failed");
-    if (prec->nelm == 1) {
+    if (prec->nelm == 1)
+    {
       prec->nord = 1;
-    } else {
+    }
+    else
+    {
       prec->nord = 0;
     }
     return 0;
   }
 
   /* wf.siml must be a CONSTANT or a PV_LINK or a DB_LINK */
-  if (prec->siml.type == CONSTANT) {
+  if (prec->siml.type == CONSTANT)
+  {
     recGblInitConstantLink(&prec->siml, DBF_USHORT, &prec->simm);
   }
 
   /* must have dset defined */
-  if (!(pdset = (struct mpdset *)(prec->dset))) {
+  if (!(pdset = (struct mpdset *)(prec->dset)))
+  {
     recGblRecordError(S_dev_noDSET, (void *)prec, "mp: init_record");
     return S_dev_noDSET;
   }
   /* must have read_wf function defined */
-  if ((pdset->number < 5) || (pdset->read_mp == NULL)) {
+  if ((pdset->number < 5) || (pdset->read_mp == NULL))
+  {
     recGblRecordError(S_dev_missingSup, (void *)prec, "mp: init_record");
     return S_dev_missingSup;
   }
@@ -146,12 +155,14 @@ static long init_record(mdsexprRecord *prec, int pass) {
   return status;
 }
 
-static long process(mdsexprRecord *prec) {
+static long process(mdsexprRecord *prec)
+{
   struct mpdset *pdset = (struct mpdset *)(prec->dset);
   long status;
   unsigned char pact = prec->pact;
 
-  if ((pdset == NULL) || (pdset->read_mp == NULL)) {
+  if ((pdset == NULL) || (pdset->read_mp == NULL))
+  {
     prec->pact = TRUE;
     recGblRecordError(S_dev_missingSup, (void *)prec, "read_mp");
     return S_dev_missingSup;
@@ -179,7 +190,8 @@ static long process(mdsexprRecord *prec) {
   return 0;
 }
 
-static long cvt_dbaddr(DBADDR *paddr) {
+static long cvt_dbaddr(DBADDR *paddr)
+{
   mdsexprRecord *prec = (mdsexprRecord *)paddr->precord;
 
   paddr->pfield = prec->bptr;
@@ -191,7 +203,8 @@ static long cvt_dbaddr(DBADDR *paddr) {
   return 0;
 }
 
-static long get_array_info(DBADDR *paddr, long *no_elements, long *offset) {
+static long get_array_info(DBADDR *paddr, long *no_elements, long *offset)
+{
   mdsexprRecord *prec = (mdsexprRecord *)paddr->precord;
 
   *no_elements = prec->nord;
@@ -200,7 +213,8 @@ static long get_array_info(DBADDR *paddr, long *no_elements, long *offset) {
   return 0;
 }
 
-static long put_array_info(DBADDR *paddr, long nNew) {
+static long put_array_info(DBADDR *paddr, long nNew)
+{
   mdsexprRecord *prec = (mdsexprRecord *)paddr->precord;
 
   prec->nord = nNew;
@@ -210,7 +224,8 @@ static long put_array_info(DBADDR *paddr, long nNew) {
   return 0;
 }
 
-static long get_units(DBADDR *paddr, char *units) {
+static long get_units(DBADDR *paddr, char *units)
+{
   mdsexprRecord *prec = (mdsexprRecord *)paddr->precord;
 
   strncpy(units, prec->egu, DB_UNITS_SIZE);
@@ -218,7 +233,8 @@ static long get_units(DBADDR *paddr, char *units) {
   return 0;
 }
 
-static long get_precision(DBADDR *paddr, long *precision) {
+static long get_precision(DBADDR *paddr, long *precision)
+{
   mdsexprRecord *prec = (mdsexprRecord *)paddr->precord;
   int fieldIndex = dbGetFieldIndex(paddr);
 
@@ -230,29 +246,36 @@ static long get_precision(DBADDR *paddr, long *precision) {
   return 0;
 }
 
-static long get_graphic_double(DBADDR *paddr, struct dbr_grDouble *pgd) {
+static long get_graphic_double(DBADDR *paddr, struct dbr_grDouble *pgd)
+{
   mdsexprRecord *prec = (mdsexprRecord *)paddr->precord;
 
-  if (dbGetFieldIndex(paddr) == mdsexprRecordVAL) {
+  if (dbGetFieldIndex(paddr) == mdsexprRecordVAL)
+  {
     pgd->upper_disp_limit = prec->hopr;
     pgd->lower_disp_limit = prec->lopr;
-  } else
+  }
+  else
     recGblGetGraphicDouble(paddr, pgd);
   return 0;
 }
 
-static long get_control_double(DBADDR *paddr, struct dbr_ctrlDouble *pcd) {
+static long get_control_double(DBADDR *paddr, struct dbr_ctrlDouble *pcd)
+{
   mdsexprRecord *prec = (mdsexprRecord *)paddr->precord;
 
-  if (dbGetFieldIndex(paddr) == mdsexprRecordVAL) {
+  if (dbGetFieldIndex(paddr) == mdsexprRecordVAL)
+  {
     pcd->upper_ctrl_limit = prec->hopr;
     pcd->lower_ctrl_limit = prec->lopr;
-  } else
+  }
+  else
     recGblGetControlDouble(paddr, pcd);
   return 0;
 }
 
-static void monitor(mdsexprRecord *prec) {
+static void monitor(mdsexprRecord *prec)
+{
   unsigned short monitor_mask = 0;
   unsigned int hash = 0;
 
@@ -265,12 +288,14 @@ static void monitor(mdsexprRecord *prec) {
 
   /* Calculate hash if we are interested in OnChange events. */
   if ((prec->mpst == mdsexprPOST_OnChange) ||
-      (prec->apst == mdsexprPOST_OnChange)) {
+      (prec->apst == mdsexprPOST_OnChange))
+  {
     hash = epicsMemHash((char *)prec->bptr,
                         prec->nord * dbValueSize(prec->ftvl), 0);
 
     /* Only post OnChange values if the hash is different. */
-    if (hash != prec->hash) {
+    if (hash != prec->hash)
+    {
       if (prec->mpst == mdsexprPOST_OnChange)
         monitor_mask |= DBE_VALUE;
       if (prec->apst == mdsexprPOST_OnChange)
@@ -283,16 +308,19 @@ static void monitor(mdsexprRecord *prec) {
     }
   }
 
-  if (monitor_mask) {
+  if (monitor_mask)
+  {
     db_post_events(prec, prec->bptr, monitor_mask);
   }
 }
 
-static long readValue(mdsexprRecord *prec) {
+static long readValue(mdsexprRecord *prec)
+{
   long status;
   struct mpdset *pdset = (struct mpdset *)prec->dset;
 
-  if (prec->pact == TRUE) {
+  if (prec->pact == TRUE)
+  {
     return (*pdset->read_mp)(prec);
   }
 
@@ -300,20 +328,25 @@ static long readValue(mdsexprRecord *prec) {
   if (status)
     return status;
 
-  if (prec->simm == menuYesNoNO) {
+  if (prec->simm == menuYesNoNO)
+  {
     return (*pdset->read_mp)(prec);
   }
 
-  if (prec->simm == menuYesNoYES) {
+  if (prec->simm == menuYesNoYES)
+  {
     long nRequest = prec->nelm;
     status = dbGetLink(&(prec->siol), prec->ftvl, prec->bptr, 0, &nRequest);
     /* nord set only for db links: needed for old db_access */
-    if (prec->siol.type != CONSTANT) {
+    if (prec->siol.type != CONSTANT)
+    {
       prec->nord = nRequest;
       if (status == 0)
         prec->udf = FALSE;
     }
-  } else {
+  }
+  else
+  {
     recGblSetSevr(prec, SOFT_ALARM, INVALID_ALARM);
     return -1;
   }
@@ -321,10 +354,12 @@ static long readValue(mdsexprRecord *prec) {
 
   return status;
 }
-static void checkAlarms(mdsexprRecord *prec) {
+static void checkAlarms(mdsexprRecord *prec)
+{
   int status = prec->errs;
 
-  if (prec->udf == TRUE) {
+  if (prec->udf == TRUE)
+  {
     recGblSetSevr(prec, UDF_ALARM, INVALID_ALARM);
     return;
   }

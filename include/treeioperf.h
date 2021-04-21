@@ -4,7 +4,8 @@
 
 #include <mdstypes.h>
 
-typedef struct _TREE_IO_PERF {
+typedef struct _TREE_IO_PERF
+{
 
   int num_writes_10_0_to_10_1;
   int num_writes_10_1_to_10_2;

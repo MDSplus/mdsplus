@@ -64,10 +64,13 @@ num_resources, Arglist args, Cardinal argcount )
 #include <Xm/Xm.h>
 
 int XmdsSetSubvalues(XtPointer record, XtResourceList resources,
-                     Cardinal num_resources, ArgList args, Cardinal argcount) {
+                     Cardinal num_resources, ArgList args, Cardinal argcount)
+{
   Cardinal i;
-  for (i = 0; i < num_resources; i++) {
-    if (*((int *)&resources[i].resource_offset) >= 0) {
+  for (i = 0; i < num_resources; i++)
+  {
+    if (*((int *)&resources[i].resource_offset) >= 0)
+    {
       resources[i].resource_name =
           XrmStringToQuark(resources[i].resource_name) + (char *)0;
       resources[i].resource_class =

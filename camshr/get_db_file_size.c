@@ -64,17 +64,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       name of file
 // output:      return the size of the db file, or error
 //-------------------------------------------------------------------------
-int get_db_file_size(char *FileName) {
+int get_db_file_size(char *FileName)
+{
   int retval;
   struct stat sbuf;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("get_db_file_size('%s')\n", FileName);
 
-  if (Stat(FileName, &sbuf) == ERROR) {
+  if (Stat(FileName, &sbuf) == ERROR)
+  {
     perror("stat()");
     retval = FAILURE; // error code is negative and odd
-  } else
+  }
+  else
     retval = sbuf.st_size;
 
   if (MSGLVL(DETAILS))

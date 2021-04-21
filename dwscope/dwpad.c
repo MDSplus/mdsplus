@@ -232,7 +232,8 @@ static int ApplyStatus = 0;
 static int Modified = 0;
 static String defaultfile;
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   /*------------------------------------------------------------------------------
 
    Local variables: */
@@ -285,8 +286,8 @@ int main(int argc, char **argv) {
   XtAppContext app_ctx;
   MrmHierarchy drm_hierarchy;
   static const char *fontfamilies[] = {
-      "adobe",  "b&h",  "bitstream",  "bold", "bolditalic", "isas",
-      "italic", "misc", "schumacher", "sony", "sun",        "xfree86"};
+      "adobe", "b&h", "bitstream", "bold", "bolditalic", "isas",
+      "italic", "misc", "schumacher", "sony", "sun", "xfree86"};
   static const char *fontfmt =
       "-%s-%s-medium-r-normal-*-*-*-%3.3d-%3.3d-*-*-*-*";
 #define MAXFONTNAMELEN 255
@@ -315,17 +316,20 @@ int main(int argc, char **argv) {
   XtManageChild(MainWidget);
   sprintf(fontname, fontfmt, "*", "menu", 100, 100);
   font[0] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
-  for (i = 0; ((!font[0]) && (i < N_ELEMENTS(fontfamilies))); i++) {
+  for (i = 0; ((!font[0]) && (i < N_ELEMENTS(fontfamilies))); i++)
+  {
     sprintf(fontname, fontfmt, fontfamilies[i], "*", 100, 100);
     font[0] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
   }
   sprintf(fontname, fontfmt, "*", "menu", 120, 120);
   font[1] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
-  for (i = 0; ((!font[1]) && (i < N_ELEMENTS(fontfamilies))); i++) {
+  for (i = 0; ((!font[1]) && (i < N_ELEMENTS(fontfamilies))); i++)
+  {
     sprintf(fontname, fontfmt, fontfamilies[i], "*", 120, 120);
     font[1] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
   }
-  if ((!font[0]) && (!font[1])) {
+  if ((!font[0]) && (!font[1]))
+  {
     printf(
         "No useable Fonts found-Please check your X-Windows configuration\n");
     exit(0);
@@ -340,7 +344,8 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-static void LabelSetString(Widget w, String string) {
+static void LabelSetString(Widget w, String string)
+{
   XmString label = XmStringCreateSimple(strlen(string) ? string : " ");
   XtVaSetValues(w, XmNlabelString, label, NULL);
   XmStringFree(label);
@@ -348,7 +353,8 @@ static void LabelSetString(Widget w, String string) {
 
 static void ExitWithCheck(Widget w __attribute__((unused)),
                           int *tag __attribute__((unused)),
-                          XtPointer callback_data __attribute__((unused))) {
+                          XtPointer callback_data __attribute__((unused)))
+{
   if (Modified)
     XtManageChild(WriteBeforeExitWidget);
   else
@@ -357,14 +363,16 @@ static void ExitWithCheck(Widget w __attribute__((unused)),
 
 static void Exit(Widget w __attribute__((unused)),
                  int *tag __attribute__((unused)),
-                 XtPointer callback_data __attribute__((unused))) {
+                 XtPointer callback_data __attribute__((unused)))
+{
   exit(1);
 }
 
 static void ApplyCustomizeWindow(Widget w __attribute__((unused)),
                                  int *tag __attribute__((unused)),
                                  XtPointer callback_data
-                                 __attribute__((unused))) {
+                                 __attribute__((unused)))
+{
   String title =
       XmTextGetString(XtNameToWidget(CustomizeWindowWidget, "window_title"));
   String icon =
@@ -392,7 +400,8 @@ static void ApplyCustomizeWindow(Widget w __attribute__((unused)),
     PopupComplaint(TopWidget, "Rows value is invalid.");
   else if (rows * cols > 1000)
     PopupComplaint(TopWidget, "Cannot have more than 1000 buttons");
-  else {
+  else
+  {
     ResetWindow(0, title, icon, cols, rows, bigfont, btnwidth);
     ApplyStatus = 1;
     Modified = 1;
@@ -405,7 +414,8 @@ static void ApplyCustomizeWindow(Widget w __attribute__((unused)),
 static void ResetCustomizeWindow(Widget w __attribute__((unused)),
                                  int *tag __attribute__((unused)),
                                  XtPointer callback_data
-                                 __attribute__((unused))) {
+                                 __attribute__((unused)))
+{
   char number[12];
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "window_title"),
                   PadTitle);
@@ -424,13 +434,15 @@ static void ResetCustomizeWindow(Widget w __attribute__((unused)),
 
 static void ApplyLabel(Widget w __attribute__((unused)),
                        int *tag __attribute__((unused)),
-                       XtPointer callback_data __attribute__((unused))) {
+                       XtPointer callback_data __attribute__((unused)))
+{
   WaveInfo *info;
   XtVaGetValues(CurrentWidget, XmNuserData, &info, NULL);
   if (ReplaceString(&info->pad_label,
                     XmTextGetString(
                         XtNameToWidget(PadLabelWidget, "pad_label_expression")),
-                    1)) {
+                    1))
+  {
     LabelSetString(CurrentWidget, info->pad_label);
     Modified = 1;
   }
@@ -438,7 +450,8 @@ static void ApplyLabel(Widget w __attribute__((unused)),
 
 static void ApplyDataSetup(Widget w __attribute__((unused)),
                            int *tag __attribute__((unused)),
-                           XtPointer callback_data __attribute__((unused))) {
+                           XtPointer callback_data __attribute__((unused)))
+{
   WaveInfo *info;
   int change_mask;
   XtVaGetValues(CurrentWidget, XmNuserData, &info, NULL);
@@ -450,12 +463,14 @@ static void ApplyDataSetup(Widget w __attribute__((unused)),
 }
 
 static void Ok(Widget w, int *tag __attribute__((unused)),
-               XtPointer callback_data __attribute__((unused))) {
+               XtPointer callback_data __attribute__((unused)))
+{
   if (ApplyStatus & 1)
     XtUnmanageChild(XtParent(w));
 }
 
-static void UpdatePopups() {
+static void UpdatePopups()
+{
   if (XtIsManaged(DataSetupWidget))
     ResetDataSetup(NULL, NULL, NULL);
   else if (XtIsManaged(PadLabelWidget))
@@ -464,7 +479,8 @@ static void UpdatePopups() {
 
 static void EraseDataSetup(Widget w __attribute__((unused)),
                            int *tag __attribute__((unused)),
-                           XtPointer callback_data __attribute__((unused))) {
+                           XtPointer callback_data __attribute__((unused)))
+{
   WaveInfo *info;
   XtVaGetValues(PendingWidget, XmNuserData, &info, NULL);
   ResetWave(info);
@@ -476,22 +492,29 @@ static void EraseDataSetup(Widget w __attribute__((unused)),
 
 static void /*XtCallbackProc */
 Restore(Widget w __attribute__((unused)), int *option,
-        XmFileSelectionBoxCallbackStruct *reason) {
+        XmFileSelectionBoxCallbackStruct *reason)
+{
   int opt = option ? *option : 0;
-  switch (opt) {
-  case 0: {
-    if (reason->length) {
+  switch (opt)
+  {
+  case 0:
+  {
+    if (reason->length)
+    {
       String filename;
       filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL,
                                  0, XmOUTPUT_ALL);
-      if (filename) {
+      if (filename)
+      {
         int length = strlen(filename);
-        if (length) {
+        if (length)
+        {
           RestoreDatabase(filename);
           if (defaultfile)
             XtFree(defaultfile);
           defaultfile = filename;
-        } else
+        }
+        else
           XtFree(filename);
       }
     }
@@ -500,7 +523,8 @@ Restore(Widget w __attribute__((unused)), int *option,
   case 1:
     RestoreDatabase(defaultfile);
     break;
-  case 2: {
+  case 2:
+  {
     Widget w = XtNameToWidget(TopWidget, "*file_dialog");
     XmString title = XmStringCreateSimple("Restore Current Settings From");
     XmString label =
@@ -524,22 +548,29 @@ Restore(Widget w __attribute__((unused)), int *option,
 
 static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
                                      int *option,
-                                     XmFileSelectionBoxCallbackStruct *reason) {
+                                     XmFileSelectionBoxCallbackStruct *reason)
+{
   int opt = option ? *option : 0;
-  switch (opt) {
-  case 0: {
-    if (reason->length) {
+  switch (opt)
+  {
+  case 0:
+  {
+    if (reason->length)
+    {
       String filename;
       filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL,
                                  0, XmOUTPUT_ALL);
-      if (filename) {
+      if (filename)
+      {
         int length = strlen(filename);
-        if (length) {
+        if (length)
+        {
           WriteDatabase(filename);
           if (defaultfile)
             XtFree(defaultfile);
           defaultfile = filename;
-        } else
+        }
+        else
           XtFree(filename);
       }
     }
@@ -548,7 +579,8 @@ static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
   case 1:
     WriteDatabase(defaultfile);
     break;
-  case 2: {
+  case 2:
+  {
     Widget w = XtNameToWidget(TopWidget, "*file_dialog");
     XmString title = XmStringCreateSimple("Save Current Settings As");
     XmString label =
@@ -572,7 +604,8 @@ static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
 
 static void ResetLabel(Widget w __attribute__((unused)),
                        int *tag __attribute__((unused)),
-                       XtPointer callback_data __attribute__((unused))) {
+                       XtPointer callback_data __attribute__((unused)))
+{
   WaveInfo *info;
   XmString title = XmStringCreateSimple(SetupTitle());
   CurrentWidget = PendingWidget;
@@ -586,7 +619,8 @@ static void ResetLabel(Widget w __attribute__((unused)),
 
 static void ResetDataSetup(Widget w __attribute__((unused)),
                            int *tag __attribute__((unused)),
-                           XtPointer callback_data __attribute__((unused))) {
+                           XtPointer callback_data __attribute__((unused)))
+{
   WaveInfo *info;
   CurrentWidget = PendingWidget;
   XtVaGetValues(CurrentWidget, XmNuserData, &info, NULL);
@@ -595,7 +629,8 @@ static void ResetDataSetup(Widget w __attribute__((unused)),
 
 static void Setup(Widget w, XtPointer client_data __attribute__((unused)),
                   XButtonEvent *event,
-                  Boolean *continue_to_dispatch __attribute__((unused))) {
+                  Boolean *continue_to_dispatch __attribute__((unused)))
+{
   int i;
   int num_waves;
   Widget *widgets;
@@ -610,16 +645,19 @@ static void Setup(Widget w, XtPointer client_data __attribute__((unused)),
   event_x -= x_offset;
   event_y -= y_offset;
   widg = 0;
-  for (i = 0; i < num_waves; i++) {
+  for (i = 0; i < num_waves; i++)
+  {
     int w_x = XtX(widgets[i]);
     int w_y = XtY(widgets[i]);
     if (event_x > w_x && event_x < w_x + (int)XtWidth(widgets[i]) &&
-        event_y > w_y && event_y < w_y + (int)XtHeight(widgets[i])) {
+        event_y > w_y && event_y < w_y + (int)XtHeight(widgets[i]))
+    {
       widg = widgets[i];
       break;
     }
   }
-  if (widg && event->button == Button3) {
+  if (widg && event->button == Button3)
+  {
     PendingWidget = widg;
     PositionPopupMenu(Button3Widget, event);
     XtManageChild(Button3Widget);
@@ -627,20 +665,24 @@ static void Setup(Widget w, XtPointer client_data __attribute__((unused)),
 }
 
 static void ComputeOffsets(Widget child, Widget ancestor, int *x_offset,
-                           int *y_offset) {
+                           int *y_offset)
+{
   Widget parent;
   *x_offset = 0;
   *y_offset = 0;
   for (parent = XtParent(child); parent != ancestor;
-       parent = XtParent(parent)) {
+       parent = XtParent(parent))
+  {
     (*x_offset) += XtX(parent);
     (*y_offset) += XtY(parent);
   }
   return;
 }
 
-static void SetPadVideo(Widget w, Boolean reverse) {
-  if (w) {
+static void SetPadVideo(Widget w, Boolean reverse)
+{
+  if (w)
+  {
     int fore, back;
     XtVaGetValues(MainWidget, XmNbackground, &back, XmNforeground, &fore, NULL);
     XtVaSetValues(w, XmNbackground, reverse ? fore : back, XmNforeground,
@@ -650,12 +692,14 @@ static void SetPadVideo(Widget w, Boolean reverse) {
 
 static void Cut(Widget w, XEvent *event __attribute__((unused)),
                 String *params __attribute__((unused)),
-                Cardinal *num_params __attribute__((unused))) {
+                Cardinal *num_params __attribute__((unused)))
+{
   if (w == SelectedWidget)
     XtDisownSelection(w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)));
   else if (XtOwnSelection(w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)),
                           (XtConvertSelectionProc)ConvertSelection,
-                          (XtLoseSelectionProc)LoseSelection, NULL)) {
+                          (XtLoseSelectionProc)LoseSelection, NULL))
+  {
     SetPadVideo(w, 1);
     SelectedWidget = w;
   }
@@ -664,7 +708,8 @@ static void Cut(Widget w, XEvent *event __attribute__((unused)),
 static Boolean ConvertSelection(Widget w,
                                 Atom *selection __attribute__((unused)),
                                 Atom *target, Atom *type, XtPointer *value,
-                                unsigned int *length, int *format) {
+                                unsigned int *length, int *format)
+{
   int r = 0;
   int c = 0;
   char prefix[36];
@@ -676,13 +721,15 @@ static Boolean ConvertSelection(Widget w,
                                 format);
 }
 
-static void LoseSelection(Widget w, Atom *selection __attribute__((unused))) {
+static void LoseSelection(Widget w, Atom *selection __attribute__((unused)))
+{
   SetPadVideo(w, 0);
   if (SelectedWidget == w)
     SelectedWidget = 0;
 }
 
-static void MakeWaves(int cols, int rows) {
+static void MakeWaves(int cols, int rows)
+{
   int old_numwaves;
   int num_waves = cols * rows;
   int i;
@@ -691,8 +738,10 @@ static void MakeWaves(int cols, int rows) {
   if (!translations)
     translations =
         XtParseTranslationTable("<Btn1Down>:Cut()\n <Btn2Down>:Paste()");
-  if (old_numwaves < num_waves) {
-    for (i = old_numwaves; i < num_waves; i++) {
+  if (old_numwaves < num_waves)
+  {
+    for (i = old_numwaves; i < num_waves; i++)
+    {
       WaveInfo *info = (WaveInfo *)XtMalloc(sizeof(WaveInfo));
       memset(info, 0, sizeof(WaveInfo));
       ResetWave(info);
@@ -706,7 +755,8 @@ static void MakeWaves(int cols, int rows) {
 }
 
 static void ResetWindow(String geometry, String title, String icon, int cols,
-                        int rows, Boolean bigfont, int btnwidth) {
+                        int rows, Boolean bigfont, int btnwidth)
+{
   int x;
   int y;
   unsigned int width;
@@ -718,7 +768,8 @@ static void ResetWindow(String geometry, String title, String icon, int cols,
   XtUnmanageChild(PadWidget);
   XtVaGetValues(PadWidget, XmNnumChildren, &num, XmNchildren, &widgets, NULL);
   XtUnmanageChildren(widgets, num);
-  if (geometry) {
+  if (geometry)
+  {
     XParseGeometry(geometry, &x, &y, &width, &height);
     if (x >= WidthOfScreen(XtScreen(PadWidget)))
       x = WidthOfScreen(XtScreen(PadWidget)) - 50;
@@ -741,7 +792,8 @@ static void ResetWindow(String geometry, String title, String icon, int cols,
   MakeWaves(cols, rows);
   num = Rows * Columns;
   XtVaGetValues(PadWidget, XmNchildren, &widgets, NULL);
-  for (i = 0; i < num; i++) {
+  for (i = 0; i < num; i++)
+  {
     WaveInfo *info;
     XtVaGetValues(widgets[i], XmNuserData, &info, NULL);
     XtVaSetValues(widgets[i], XmNwidth, width, XmNheight, height, XmNfontList,
@@ -759,7 +811,8 @@ static void ResetWindow(String geometry, String title, String icon, int cols,
         NULL);
 }
 
-static void RestoreDatabase(String dbname) {
+static void RestoreDatabase(String dbname)
+{
   int c;
   int r;
   Widget *widgets;
@@ -769,7 +822,8 @@ static void RestoreDatabase(String dbname) {
   MakeWaves(cols, rows);
   XtVaGetValues(PadWidget, XmNchildren, &widgets, NULL);
   for (c = 0; c < cols; c++)
-    for (r = 0; r < rows; r++) {
+    for (r = 0; r < rows; r++)
+    {
       WaveInfo *info;
       XtVaGetValues(widgets[c * Rows + r], XmNuserData, &info, NULL);
       GetWaveFromDb(paddb, "Pad.pad", r, c, info);
@@ -785,7 +839,8 @@ static void RestoreDatabase(String dbname) {
 
 static void Paste(Widget w, XEvent *event __attribute__((unused)),
                   String *params __attribute__((unused)),
-                  Cardinal *num_params __attribute__((unused))) {
+                  Cardinal *num_params __attribute__((unused)))
+{
   XtGetSelectionValue(w, XA_PRIMARY, XA_TARGETS,
                       (XtSelectionCallbackProc)PasteTypesComplete, 0,
                       XtLastTimestampProcessed(XtDisplay(w)));
@@ -796,12 +851,14 @@ static void PasteTypesComplete(Widget w,
                                Atom *selection __attribute__((unused)),
                                Atom *type __attribute__((unused)),
                                XtPointer value, unsigned int *length,
-                               int *format __attribute__((unused))) {
+                               int *format __attribute__((unused)))
+{
   unsigned int i;
   Atom req_type = XA_STRING;
   Atom *values = (Atom *)value;
   for (i = 0; i < *length; i++)
-    if (values[i] == XA_DWSCOPE_PANEL) {
+    if (values[i] == XA_DWSCOPE_PANEL)
+    {
       req_type = XA_DWSCOPE_PANEL;
       break;
     }
@@ -815,15 +872,18 @@ static void PasteTypesComplete(Widget w,
 static void PasteComplete(Widget w, XtPointer cdata __attribute__((unused)),
                           Atom *selection __attribute__((unused)), Atom *type,
                           XtPointer value, unsigned int *length,
-                          int *format __attribute__((unused))) {
+                          int *format __attribute__((unused)))
+{
   WaveInfo *info;
   XtVaGetValues(w, XmNuserData, &info, NULL);
-  if (ConvertSelectionToWave(w, *type, *length, value, info)) {
+  if (ConvertSelectionToWave(w, *type, *length, value, info))
+  {
     if (w == CurrentWidget)
       UpdatePopups();
     if (strlen(info->pad_label))
       LabelSetString(w, info->pad_label);
-    else {
+    else
+    {
       PendingWidget = w;
       ResetLabel(w, 0, 0);
       XtManageChild(PadLabelWidget);
@@ -834,7 +894,8 @@ static void PasteComplete(Widget w, XtPointer cdata __attribute__((unused)),
     XtFree(value);
 }
 
-static String SetupTitle() {
+static String SetupTitle()
+{
   static char title[80];
   int r = 0;
   int c = 0;
@@ -843,7 +904,8 @@ static String SetupTitle() {
   return title;
 }
 
-static int FindWave(Widget w, int *c, int *r) {
+static int FindWave(Widget w, int *c, int *r)
+{
   int num;
   Widget *widgets;
   XtVaGetValues(PadWidget, XmNnumChildren, &num, XmNchildren, &widgets, NULL);
@@ -854,7 +916,8 @@ static int FindWave(Widget w, int *c, int *r) {
   return 0;
 }
 
-static void WriteDatabase(String dbname) {
+static void WriteDatabase(String dbname)
+{
   int r;
   int c;
   Position x;
@@ -863,7 +926,8 @@ static void WriteDatabase(String dbname) {
   Dimension height;
   Widget *widgets;
   FILE *file = fopen(dbname, "w");
-  if (file) {
+  if (file)
+  {
     XtVaGetValues(PadWidget, XmNchildren, &widgets, NULL);
     XtVaGetValues(TopWidget, XtNx, &x, XtNy, &y, NULL);
     XtVaGetValues(MainWidget, XtNwidth, &width, XtNheight, &height, NULL);
@@ -874,8 +938,10 @@ static void WriteDatabase(String dbname) {
     fprintf(file, "Pad.rows: %d\n", Rows);
     fprintf(file, "Pad.padlabelwidth: %d\n", PadLabelWidth);
     fprintf(file, "Pad.font: %d\n", PadBigFont);
-    for (c = 0; c < Columns; c++) {
-      for (r = 0; r < Rows; r++) {
+    for (c = 0; c < Columns; c++)
+    {
+      for (r = 0; r < Rows; r++)
+      {
         WaveInfo *info;
         char prefix[36];
         int ctx = 0;
@@ -883,13 +949,15 @@ static void WriteDatabase(String dbname) {
         fprintf(file, "\n");
         sprintf(prefix, "Pad.pad_%d_%d", r + 1, c + 1);
         XtVaGetValues(widgets[c * Rows + r], XmNuserData, &info, NULL);
-        while ((text = WaveToText(prefix, info, 0, &ctx))) {
+        while ((text = WaveToText(prefix, info, 0, &ctx)))
+        {
           fprintf(file, "%s", text);
           XtFree(text);
         }
       }
     }
     fclose(file);
-  } else
+  }
+  else
     PopupComplaint(MainWidget, "Error writing setup file");
 }

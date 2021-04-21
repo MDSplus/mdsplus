@@ -76,7 +76,8 @@ union semun {
 // output:      semaphore count
 //      NB! count should be zero for success (ie binary semaphore)
 //-------------------------------------------------------------------------
-int check_sema4() {
+int check_sema4()
+{
   int count;
   union semun u;
 

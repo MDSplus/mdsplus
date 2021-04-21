@@ -115,35 +115,41 @@ static Complex *FindButtwPoles(double fp, double fs, double ap, double as,
                                double fc, int *N, double *gain);
 
 Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc,
-                   int *out_n) {
+                   int *out_n)
+{
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindButtwPoles);
 }
 
 EXPORT Filter *ButtwBilinear(float *fp, float *fs, float *ap, float *as,
-                             float *fc, int *out_n) {
+                             float *fc, int *out_n)
+{
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindButtwPoles);
 }
 
 EXPORT Filter *ChebInvar(float *fp, float *fs, float *ap, float *as, float *fc,
-                         int *out_n) {
+                         int *out_n)
+{
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
 
 EXPORT Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as,
-                            float *fc, int *out_n) {
+                            float *fc, int *out_n)
+{
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
 
 static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as,
                                double fc __attribute__((unused)), int *N,
-                               double *gain) {
+                               double *gain)
+{
   double n_real, Wc, l10;
   int n, j, i;
   Complex *poles;
 
   l10 = log(10.);
 
-  if (*N == 0) {
+  if (*N == 0)
+  {
     *gain = 1;
     n_real = 0.5 *
              (log10(exp(l10 * as / 10) - 1) - log10(exp(l10 * ap / 10) - 1)) /
@@ -153,24 +159,30 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as,
     else
       n = n_real;
     Wc = exp(l10 * (log10(Wp) - log10(exp(l10 * ap / 10) - 1) / (2. * n)));
-  } else {
+  }
+  else
+  {
     n = *N;
     Wc = Wp;
   }
   /* Find poles */
   poles = (Complex *)malloc(n * sizeof(Complex));
   j = 0;
-  if (n % 2) { /* odd N */
+  if (n % 2)
+  { /* odd N */
     poles[j].re = -Wc;
     poles[j++].im = 0;
-    for (i = 1; i < (n + 1) / 2; i++) {
+    for (i = 1; i < (n + 1) / 2; i++)
+    {
       poles[j].re = -Wc * cos(PI * i / n);
       poles[j++].im = Wc * sin(PI * i / n);
       poles[j].re = -Wc * cos(PI * i / n);
       poles[j++].im = -Wc * sin(PI * i / n);
     }
-  } else /* even N */
-    for (i = 0; i < n / 2; i++) {
+  }
+  else /* even N */
+    for (i = 0; i < n / 2; i++)
+    {
       poles[j].re = -Wc * cos(PI * (i + 0.5) / n);
       poles[j++].im = Wc * sin(PI * (i + 0.5) / n);
       poles[j].re = -Wc * cos(PI * (i + 0.5) / n);
@@ -183,7 +195,8 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as,
 
 static Complex *FindChebPoles(double Wp, double Ws, double ap, double as,
                               double fc __attribute__((unused)), int *N,
-                              double *gain) {
+                              double *gain)
+{
   double eps, Wc, alpha, a, b, l10, treshold, curr_val, angle, V, Vprev, Vnew;
   int n, i, j;
   Complex *poles;
@@ -195,11 +208,13 @@ static Complex *FindChebPoles(double Wp, double Ws, double ap, double as,
 
   treshold = exp(l10 * as / 10);
 
-  if (*N == 0) {
+  if (*N == 0)
+  {
     n = 1;
     Vprev = 1;
     V = Ws / Wp;
-    do {
+    do
+    {
       n++;
       Vnew = 2 * V * Ws / Wp - Vprev;
       curr_val = 1 + eps * eps * Vnew * Vnew;
@@ -207,7 +222,8 @@ static Complex *FindChebPoles(double Wp, double Ws, double ap, double as,
       V = Vnew;
     } while (curr_val < treshold);
     *N = n;
-  } else
+  }
+  else
     n = *N;
 
   alpha = 1 / eps + sqrt(1 + 1 / (eps * eps));
@@ -215,11 +231,13 @@ static Complex *FindChebPoles(double Wp, double Ws, double ap, double as,
   b = 0.5 * Wc * (exp(log(alpha) / n) + exp(-log(alpha) / n));
 
   poles = (Complex *)malloc(n * sizeof(Complex));
-  if (n % 2) {
+  if (n % 2)
+  {
     poles[0].re = -a;
     poles[0].im = 0;
     j = 1;
-    for (i = 1; i < (n + 1) / 2; i++) {
+    for (i = 1; i < (n + 1) / 2; i++)
+    {
       angle = i * PI / n;
       poles[j].im = -b * sin(angle);
       poles[j].re = -a * sqrt(1 - poles[j].im * poles[j].im / (b * b));
@@ -228,9 +246,12 @@ static Complex *FindChebPoles(double Wp, double Ws, double ap, double as,
       poles[j].im = -poles[j - 1].im;
       j++;
     }
-  } else {
+  }
+  else
+  {
     j = 0;
-    for (i = 0; i < n / 2; i++) {
+    for (i = 0; i < n / 2; i++)
+    {
       angle = (i + 0.5) * PI / n;
       poles[j].im = b * sin(angle);
       poles[j].re = -a * sqrt(1 - poles[j].im * poles[j].im / (b * b));

@@ -35,7 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int TdiGetLong();
 
-int Tdi1ShowVm() {
+int Tdi1ShowVm()
+{
   /*
   INIT_STATUS;
   int code, contex = 0, j = 1, mask, zone_id = 0;
@@ -48,7 +49,7 @@ int Tdi1ShowVm() {
     status = TdiGetLong(list[1], &mask);
   else
     mask = -1;
-  while STATUS_OK {
+  while (STATUS_OK) {
     status = LibFindVmZone(&contex, &zone_id);
     if (STATUS_OK && zone_id && j & mask)
       status = LibShowVmZone(&zone_id, &code);

@@ -72,29 +72,37 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     ]
 
     def init(self):
-        uut = self.getUUT()
         self.slots = super(_ACQ2106_435SC, self).getSlots()
         
         for card in self.slots:
             if self.is_global.data() == 1:
                 # Global controls for GAINS and OFFSETS
                 self.slots[card].SC32_OFFSET_ALL = self.def_offset.data()
-                print("Site {} OFFSET ALL {}".format(card, self.def_offset.data()))
+
+                if self.debug:
+                    print("Site %s OFFSET ALL %d" % (card, int(self.def_offset.data())))
 
                 self.slots[card].SC32_G1_ALL     = self.def_gain1.data()
-                print("Site {} GAIN 1 ALL {}".format(card, self.def_gain1.data()))
+                
+                if self.debug:
+                    print("Site %s GAIN 1 ALL %d" % (card, int(self.def_gain1.data())))
 
                 self.slots[card].SC32_G2_ALL     = self.def_gain2.data()
-                print("Site {} GAIN 2 ALL {}".format(card, self.def_gain2.data()))
+                
+                if self.debug:
+                    print("Site %s GAIN 2 ALL %d" % (card, int(self.def_gain2.data())))
             else:
                 self.setGainsOffsets(card)
 
             self.slots[card].SC32_GAIN_COMMIT = 1
-            print("GAINs Committed for site {}".format(card))
+            
+            if self.debug:
+                print("GAINs Committed for site %s" % (card,))
+                
         # Here, the argument to the init of the superclass:
         # - init(True) => use resampling function:
         # makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
-        super(_ACQ2106_435SC, self).init(resampling = True)
+        super(_ACQ2106_435SC, self).init(resampling=True)
 
     INIT=init
     
@@ -104,7 +112,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         return uut
 
     def setGainsOffsets(self, card):
-        uut = self.getUUT()
         for ic in range(1,32+1):
             if card == 1:
                 setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
@@ -141,46 +148,46 @@ def assemble(cls):
                 'options': ('no_write_model', 'write_once',)
             },
             {
-                'path': ':INPUT_%3.3d:DECIMATE'%(i+1,),
+                'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_dcim',
                 'options':('no_write_shot',)
             },           
             {
-                'path': ':INPUT_%3.3d:COEFFICIENT'%(i+1,), 
+                'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 
                 'type':'NUMERIC',
                 'options':('no_write_model', 
                 'write_once',)
             },
             {
-                'path': ':INPUT_%3.3d:OFFSET'%(i+1,),
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),
                 'type':'NUMERIC',
                 'options':('no_write_model', 'write_once',)
             },
             {
                 # Local (per channel) SC gains
-                'path': ':INPUT_%3.3d:SC_GAIN1'%(i+1,),
+                'path': ':INPUT_%3.3d:SC_GAIN1' % (i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_gain1',
                 'options':('no_write_shot',)
             },
             {
                 # Local (per channel) SC gains
-                'path': ':INPUT_%3.3d:SC_GAIN2'%(i+1,),
+                'path': ':INPUT_%3.3d:SC_GAIN2' % (i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_gain2',
                 'options':('no_write_shot',)
             },
             {
                 # Local (per channel) SC offsets
-                'path': ':INPUT_%3.3d:SC_OFFSET'%(i+1,),
+                'path': ':INPUT_%3.3d:SC_OFFSET' % (i+1,),
                 'type':'NUMERIC', 
                 'valueExpr':'head.def_offset',
                 'options':('no_write_shot',)
             },   
             {
                  # Conditioned signal goes here:
-                'path': ':INPUT_%3.3d:SC_INPUT'%(i+1,),
+                'path': ':INPUT_%3.3d:SC_INPUT' % (i+1,),
                 'type': 'SIGNAL',
                 'valueExpr': 
                      'ADD(MULTIPLY(head.INPUT_%3.3d, MULTIPLY(head.INPUT_%3.3d.SC_GAIN1, head.INPUT_%3.3d.SC_GAIN2)), head.INPUT_%3.3d.SC_OFFSET)'

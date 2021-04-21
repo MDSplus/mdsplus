@@ -28,16 +28,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <usagedef.h>
 
-#define checkString(S)                                                         \
-  case (S):                                                                    \
+#define checkString(S) \
+  case (S):            \
     return #S;
-#define checkAltStr(A, S)                                                      \
-  case (A):                                                                    \
+#define checkAltStr(A, S) \
+  case (A):               \
     return #S;
 
-EXPORT char *MdsDtypeString(const dtype_t id) {
+EXPORT char *MdsDtypeString(const dtype_t id)
+{
   static char dtypeString[24]; /* not really threadsafe but should be ok */
-  switch (id) {
+  switch (id)
+  {
 #define DEFINE(name, ...) checkString(DTYPE_##name)
 #include <dtypedef.h>
 #undef DEFINE
@@ -47,9 +49,11 @@ EXPORT char *MdsDtypeString(const dtype_t id) {
   }
 }
 
-EXPORT char *MdsClassString(const class_t id) {
+EXPORT char *MdsClassString(const class_t id)
+{
   static char classString[24]; /* not really threadsafe but ok */
-  switch (id) {
+  switch (id)
+  {
 #define DEFINE(name, ...) checkString(CLASS_##name)
 #include <classdef.h>
 #undef DEFINE
@@ -59,9 +63,11 @@ EXPORT char *MdsClassString(const class_t id) {
   }
 }
 
-EXPORT char *MdsUsageString(const usage_t id) {
+EXPORT char *MdsUsageString(const usage_t id)
+{
   static char usageString[24]; /* not really threadsafe but should be ok */
-  switch (id) {
+  switch (id)
+  {
     checkString(TreeUSAGE_ANY) checkString(TreeUSAGE_STRUCTURE)
         checkString(TreeUSAGE_ACTION) checkString(TreeUSAGE_DEVICE) checkString(
             TreeUSAGE_DISPATCH) checkString(TreeUSAGE_NUMERIC)

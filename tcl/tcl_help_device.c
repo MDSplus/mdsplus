@@ -21,11 +21,13 @@
 #include <unistd.h>
 
 EXPORT int tcl_help_device(void *ctx, char **error __attribute__((unused)),
-                           char **output __attribute__((unused))) {
+                           char **output __attribute__((unused)))
+{
   char *device = NULL;
   char *expr = NULL;
   cli_get_value(ctx, "devtype", &device);
-  if (device != NULL) {
+  if (device != NULL)
+  {
     int full = cli_present(ctx, "FULL") & 1;
     size_t len = strlen("DevHelp('','')") + strlen(device) + 20;
     expr = malloc(len);
@@ -36,8 +38,10 @@ EXPORT int tcl_help_device(void *ctx, char **error __attribute__((unused)),
     char *ans;
     int status = TdiExecute(&expr_d, &ans_d MDS_END_ARG);
     free(expr);
-    if ((status & 1) && (ans_d.pointer != NULL)) {
-      if ((ans_d.pointer->dtype == DTYPE_T) && (ans_d.pointer->length > 0)) {
+    if ((status & 1) && (ans_d.pointer != NULL))
+    {
+      if ((ans_d.pointer->dtype == DTYPE_T) && (ans_d.pointer->length > 0))
+      {
         ans = MdsDescrToCstring(ans_d.pointer);
         if ((*output) == NULL)
           *output = strdup("");
@@ -46,8 +50,9 @@ EXPORT int tcl_help_device(void *ctx, char **error __attribute__((unused)),
         strcat(*output, "\n");
         free(ans);
         return MdsdclSUCCESS;
-
-      } else {
+      }
+      else
+      {
         char *errorstr = "Error obtaining information on that type of device\n";
         if ((*error) == NULL)
           *error = strdup("");

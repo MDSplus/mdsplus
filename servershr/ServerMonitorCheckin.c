@@ -64,30 +64,36 @@ astparam, void (*link_down)())
 static void (*appAst)() = 0;
 
 static void eventAst(void *astprm, int msglen __attribute__((unused)),
-                     char *msg) {
+                     char *msg)
+{
   (*appAst)(astprm, msg);
 }
 
-EXPORT int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm) {
+EXPORT int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm)
+{
   static int usingEvents = -1;
   const char *event_str = "event:";
   const unsigned int event_len = strlen(event_str);
-  if (usingEvents == -1) {
+  if (usingEvents == -1)
+  {
     char *svr_env = getenv(server);
     if (!svr_env)
       svr_env = server;
     if ((strlen(svr_env) > event_len) &&
-        (strncasecmp(svr_env, event_str, event_len) == 0)) {
+        (strncasecmp(svr_env, event_str, event_len) == 0))
+    {
       int evid;
       appAst = ast;
       usingEvents =
           MDSEventAst(strdup(svr_env + event_len), eventAst, astprm, &evid) & 1;
-    } else
+    }
+    else
       usingEvents = B_FALSE;
   }
   if (usingEvents)
     return MDSplusSUCCESS;
-  else {
+  else
+  {
     struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
     char *cstring = "";
     int zero = 0;

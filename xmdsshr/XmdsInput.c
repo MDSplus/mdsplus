@@ -150,7 +150,8 @@ widget of the device.
   the nids of a particular channel.
 ****************************************************/
 EXPORT Widget XmdsCreateInput(Widget parent, char *name, ArgList args,
-                              int argcount) {
+                              int argcount)
+{
   Widget widg;
   static char *hierarchy_name[] = {"XmdsInput.uid"};
   MrmHierarchy hierarchy = 0;
@@ -162,7 +163,8 @@ EXPORT Widget XmdsCreateInput(Widget parent, char *name, ArgList args,
   return widg;
 }
 
-EXPORT void XmdsInputSetNid(Widget w, int nid) {
+EXPORT void XmdsInputSetNid(Widget w, int nid)
+{
   WidgetList children;
   XtPointer user_data;
   XtVaGetValues(w, XtNchildren, &children, NULL);
@@ -177,7 +179,8 @@ EXPORT void XmdsInputSetNid(Widget w, int nid) {
   XtVaSetValues(children[IDX_TIME], XmNuserData, user_data, NULL);
 }
 
-EXPORT void XmdsInputReset(Widget w) {
+EXPORT void XmdsInputReset(Widget w)
+{
   WidgetList children;
   XtPointer userdata;
   int nid;
@@ -202,7 +205,8 @@ EXPORT void XmdsInputReset(Widget w) {
   XmStringFree(label);
 }
 
-EXPORT void XmdsInputPut(Widget w) {
+EXPORT void XmdsInputPut(Widget w)
+{
   WidgetList children;
   XtPointer userdata;
   int nid;

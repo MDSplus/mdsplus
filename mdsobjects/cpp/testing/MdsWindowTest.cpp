@@ -52,7 +52,8 @@ using namespace testing;
 
 //};
 
-int main() {
+int main()
+{
   BEGIN_TESTING(Window);
 
   { // CTR

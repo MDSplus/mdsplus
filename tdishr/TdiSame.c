@@ -51,7 +51,8 @@ extern int TdiMasterData();
 extern int TdiFaultHandler();
 
 int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD},
                        dat[3] = {EMPTY_XD};
@@ -75,64 +76,65 @@ int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[],
   /******************************************
   Adjust category needed to match data types.
   ******************************************/
-  if
-    STATUS_OK
-  status =
-      (*fun_ptr->f2)(narg, uni, dat, cats, &routine, fun_ptr->o1, fun_ptr->o2);
+  if (STATUS_OK)
+    status =
+        (*fun_ptr->f2)(narg, uni, dat, cats, &routine, fun_ptr->o1, fun_ptr->o2);
 
   /******************************
   Do the needed type conversions.
   ******************************/
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
 
   /******************
   Find correct shape.
   ******************/
-  if
-    STATUS_OK
-  status = TdiGetShape(narg, dat, cats[narg].digits, cats[narg].out_dtype,
-                       &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiGetShape(narg, dat, cats[narg].digits, cats[narg].out_dtype,
+                         &cmode, out_ptr);
 
   /********************************
   Act on data, linear arguments.
   No action for simple conversions.
   Default is for MIN/MAX pairwise.
   ********************************/
-  if
-    STATUS_OK {
-      if (routine == &Tdi3undef || routine == 0) {
-        MdsFree1Dx(out_ptr, NULL);
-        *out_ptr = dat[0];
-        dat[0] = EMPTY_XD;
-      } else {
-        switch (fun_ptr->m2) {
-        case 1:
-          status = (*routine)(dat[0].pointer, out_ptr->pointer);
-          break;
-        default:
-        case 2:
-          status = (*routine)(dat[0].pointer, dat[1].pointer, out_ptr->pointer);
-          break;
-        case 3:
-          status = (*routine)(dat[0].pointer, dat[1].pointer, dat[2].pointer,
-                              out_ptr->pointer);
-          break;
-        }
+  if (STATUS_OK)
+  {
+    if (routine == &Tdi3undef || routine == 0)
+    {
+      MdsFree1Dx(out_ptr, NULL);
+      *out_ptr = dat[0];
+      dat[0] = EMPTY_XD;
+    }
+    else
+    {
+      switch (fun_ptr->m2)
+      {
+      case 1:
+        status = (*routine)(dat[0].pointer, out_ptr->pointer);
+        break;
+      default:
+      case 2:
+        status = (*routine)(dat[0].pointer, dat[1].pointer, out_ptr->pointer);
+        break;
+      case 3:
+        status = (*routine)(dat[0].pointer, dat[1].pointer, dat[2].pointer,
+                            out_ptr->pointer);
+        break;
       }
     }
+  }
   /********************
     Embed data in signal.
    ********************/
-  if
-    STATUS_OK
-  status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
 
   /********************
   Free all temporaries.
   ********************/
-  for (j = narg; --j >= 0;) {
+  for (j = narg; --j >= 0;)
+  {
     if (sig[j].pointer)
       MdsFree1Dx(&sig[j], NULL);
     if (uni[j].pointer)

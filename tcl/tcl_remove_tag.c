@@ -44,13 +44,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  Remove a tag name
  ***************************************************************/
 EXPORT int TclRemoveTag(void *ctx, char **error,
-                        char **output __attribute__((unused))) {
+                        char **output __attribute__((unused)))
+{
   int sts;
   char *tagnam = 0;
 
   cli_get_value(ctx, "TAGNAME", &tagnam);
   sts = TreeRemoveTag(tagnam);
-  if (~sts & 1) {
+  if (~sts & 1)
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + strlen(tagnam) + 100);
     sprintf(*error,

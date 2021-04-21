@@ -1,3 +1,7 @@
+%option prefix="treepath" outfile="treeshr/TreeFindNodeWild.c"
+%option stack noyymore nodefault noyywrap noyylineno
+%option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
+%option never-interactive reentrant
 %{
 #include <STATICdef.h>
 #include <stdio.h>
@@ -40,7 +44,7 @@ newline \n
 %option noinput
 %option nounput
 %option noyywrap
-%option reentrant 
+%option reentrant
 %option prefix="yytreepath"
 %option extra-type="SEARCH_CTX *"
 %%
@@ -88,11 +92,11 @@ newline \n
 }
 %%
 /*
-STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ) 
+STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ)
 {
   const char * names[] = {
     "TAG_TREE",
-    "TAG", 
+    "TAG",
     "CHILD",
     "MEMBER",
     "CHILD_OR_MEMBER",
@@ -107,12 +111,12 @@ STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ)
   return names[typ-TAG_TREE];
 }
 
-STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx) 
+STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx)
 {
   SEARCH_TERM *ptr;
   printf ("Print Context for %s\n", ctx->wildcard);
-  for ( ptr=ctx->terms; 
-        ptr; 
+  for ( ptr=ctx->terms;
+        ptr;
         ptr=ptr->next) {
     printf("\t%s -%s-\n", SearchTypeName(ptr->search_type), ptr->term);
   }
@@ -159,7 +163,7 @@ static char *strtrim(char *str)
   return str;
 }
 
-EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
+EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
 {
   int status = 1;
 
@@ -185,11 +189,11 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
       /* now merge in trailing search clauses */
       ctx->terms=SquishSearches(ctx->terms);
       /* check if any terms are wild */
-      *wild = strchr(wild_path, '*') || 
-              strchr(wild_path, '%') || 
-              strstr(wild_path, "~~~") || 
-              strstr(wild_path, "...") || 
-              strstr(wild_path, ":::") || 
+      *wild = strchr(wild_path, '*') ||
+              strchr(wild_path, '%') ||
+              strstr(wild_path, "~~~") ||
+              strstr(wild_path, "...") ||
+              strstr(wild_path, ":::") ||
               strstr(wild_path, "^^^") ;
     }
     yytreepathlex_destroy(scanner);
@@ -229,4 +233,3 @@ STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
     p->next = ptr;
   }
 }
-

@@ -73,7 +73,8 @@ static void Exit();
 static int OpenTree(String tree, int shot);
 static int Refresh();
 static Widget mw;
-typedef struct _info {
+typedef struct _info
+{
   unsigned char on;
   unsigned char included;
   unsigned int phase;
@@ -87,8 +88,10 @@ static int CompareActions(Info *a, Info *b);
 static Info *actions;
 static int num_actions;
 
-int main(int argc, String *argv) {
-  static struct {
+int main(int argc, String *argv)
+{
+  static struct
+  {
     String tree;
     int shot;
   } db;
@@ -129,23 +132,27 @@ int main(int argc, String *argv) {
 }
 
 static void Modify(Widget w, XtPointer tag __attribute__((unused)),
-                   XmListCallbackStruct *cb) {
+                   XmListCallbackStruct *cb)
+{
   int i;
   Widget xdbox = XtNameToWidget(XtParent(XtParent(w)), "*modify_xdbox");
   for (i = 0; i < num_actions && actions[i].item_idx != cb->item_position; i++)
     ;
-  if (i < num_actions) {
+  if (i < num_actions)
+  {
     XtManageChild(xdbox);
     XtVaSetValues(xdbox, XmdsNnid, actions[i].nid, NULL);
   }
 }
 
 static void ToggleEssential(Widget w, XtPointer tag __attribute__((unused)),
-                            XmListCallbackStruct *cb) {
+                            XmListCallbackStruct *cb)
+{
   int i;
   for (i = 0; i < num_actions && actions[i].item_idx != cb->item_position; i++)
     ;
-  if (i < num_actions) {
+  if (i < num_actions)
+  {
     XmString item;
     char *item_string;
     static int flags;
@@ -155,7 +162,8 @@ static void ToggleEssential(Widget w, XtPointer tag __attribute__((unused)),
     TreeGetNci(actions[i].nid, itmlst);
     item_string = XmStringUnparse(cb->item, NULL, 0, XmCHARSET_TEXT, NULL, 0,
                                   XmOUTPUT_ALL);
-    if (flags & NciM_ESSENTIAL) {
+    if (flags & NciM_ESSENTIAL)
+    {
       static int flags = NciM_ESSENTIAL;
       static NCI_ITM itmlst[] = {
           {sizeof(flags), NciCLEAR_FLAGS, (unsigned char *)&flags, 0},
@@ -163,7 +171,9 @@ static void ToggleEssential(Widget w, XtPointer tag __attribute__((unused)),
       TreeSetNci(actions[i].nid, itmlst);
       if (strlen(item_string) > 45)
         item_string[45] = ' ';
-    } else {
+    }
+    else
+    {
       static int flags = NciM_ESSENTIAL;
       static NCI_ITM itmlst[] = {
           {sizeof(flags), NciSET_FLAGS, (unsigned char *)&flags, 0},
@@ -183,7 +193,8 @@ static void Exit() { exit(0); }
 
 static int OpenTree(String tree, int shot) { return TreeOpen(tree, shot, 0); }
 
-static int Refresh() {
+static int Refresh()
+{
   void *ctx = 0;
   int nid;
   int i;
@@ -202,12 +213,14 @@ static int Refresh() {
   while (TreeFindNodeWild("***", &nid, &ctx, mask) & 1)
     num_actions++;
   TreeFindNodeEnd(&ctx);
-  if (num_actions) {
+  if (num_actions)
+  {
     actions = (Info *)XtMalloc(sizeof(Info) * num_actions);
     memset(actions, 0, sizeof(Info) * num_actions);
     for (i = 0; (TreeFindNodeWild("***", &actions[i].nid, &ctx, mask) & 1) &&
                 i < num_actions;
-         i++) {
+         i++)
+    {
       static struct descriptor ident = {31, DTYPE_T, CLASS_S, 0};
       static struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
       static EMPTYXD(xd);
@@ -231,10 +244,12 @@ static int Refresh() {
       actions[i].included = parent ? (p_flags & NciM_INCLUDE_IN_PULSE) != 0 : 1;
       StrCopyDx(&ident, (struct descriptor *)&blank);
       actions[i].idx = 0;
-      if (TdiDispatchOf(&niddsc, &xd MDS_END_ARG) & 1) {
+      if (TdiDispatchOf(&niddsc, &xd MDS_END_ARG) & 1)
+      {
         struct descriptor_dispatch *dispatch =
             (struct descriptor_dispatch *)xd.pointer;
-        if (dispatch->pointer && (dispatch->pointer[0] == TreeSCHED_SEQ)) {
+        if (dispatch->pointer && (dispatch->pointer[0] == TreeSCHED_SEQ))
+        {
           static struct descriptor phase_d = {sizeof(int), DTYPE_L, CLASS_S, 0};
           static DESCRIPTOR(phase_lookup, "PHASE_NUMBER_LOOKUP($)");
           phase_d.pointer = (char *)&actions[i].phase;
@@ -246,18 +261,22 @@ static int Refresh() {
             actions[i].phase = 254;
           if (!(TdiData(dispatch->ident, &ident MDS_END_ARG) & 1))
             actions[i].phase = 253;
-        } else
+        }
+        else
           actions[i].phase = 252;
-      } else
+      }
+      else
         actions[i].phase = 251;
     }
     TreeFindNodeEnd(&ctx);
     qsort(actions, num_actions, sizeof(Info),
           (int (*)(const void *, const void *))CompareActions);
-    for (item_idx = 1, i = 0; i < num_actions; i++) {
+    for (item_idx = 1, i = 0; i < num_actions; i++)
+    {
       char line[256];
       XmString item;
-      if (last_included != actions[i].included) {
+      if (last_included != actions[i].included)
+      {
         item = XmStringCreateSimple(
             "********************** The following nodes are not included in "
             "pulse *********************");
@@ -267,7 +286,8 @@ static int Refresh() {
         last_included = actions[i].included;
         last_on = 1;
       }
-      if (last_on != actions[i].on) {
+      if (last_on != actions[i].on)
+      {
         item =
             XmStringCreateSimple("****************************** The following "
                                  "nodes are turned off *********************");
@@ -276,7 +296,8 @@ static int Refresh() {
         item_idx++;
         last_on = actions[i].on;
       }
-      if (last_phase != actions[i].phase) {
+      if (last_phase != actions[i].phase)
+      {
         static String line_s =
             "************************** Phase: "
             "12345678901234567890123456789012*********************";
@@ -297,7 +318,8 @@ static int Refresh() {
         static struct descriptor phase_d = {sizeof(int), DTYPE_L, CLASS_S, 0};
         phase_d.pointer = (char *)&actions[i].phase;
         strcpy(line, line_s);
-        switch (actions[i].phase) {
+        switch (actions[i].phase)
+        {
         case 0x10000001:
           StrCopyDx(&error, (struct descriptor *)&bad_phase);
           break;
@@ -333,12 +355,14 @@ static int Refresh() {
       XmStringFree(item);
       actions[i].item_idx = item_idx++;
     }
-  } else
+  }
+  else
     status = TreeNNF;
   return status;
 }
 
-static int CompareActions(Info *a, Info *b) {
+static int CompareActions(Info *a, Info *b)
+{
   return (a->included == b->included)
              ? ((a->on == b->on)
                     ? ((a->phase == b->phase) ? (int)a->idx - (int)b->idx

@@ -161,7 +161,8 @@ Widget AddDialog;
 Widget AddDeviceDialog;
 Widget OpenDialog;
 int ClosingWindow = 0;
-void CloseWindow(Widget w, caddr_t client_data, caddr_t call_data) {
+void CloseWindow(Widget w, caddr_t client_data, caddr_t call_data)
+{
   ClosingWindow = 1;
   CloseTree(w, client_data, call_data);
   ClosingWindow = 0;
@@ -170,7 +171,8 @@ void CloseWindow(Widget w, caddr_t client_data, caddr_t call_data) {
 /*
  * Main Program
  */
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   Display *display;
   Arg args[256];
   Cardinal ac;
@@ -297,7 +299,8 @@ int main(int argc, char **argv) {
                           options, XtNumber(options), &argc, argv);
 #endif
 #endif
-  if (display == NULL) {
+  if (display == NULL)
+  {
     XtWarning("cannot open display");
     exit(1);
   }

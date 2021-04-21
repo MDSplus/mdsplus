@@ -56,7 +56,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
-                        const mdsdsc_t *const dsc2_ptr) {
+                        const mdsdsc_t *const dsc2_ptr)
+{
   const mdsdsc_t *d1 = dsc1_ptr;
   const mdsdsc_t *d2 = dsc2_ptr;
   int isequal = 0;
@@ -69,9 +70,12 @@ EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
     d1 = (const mdsdsc_t *)d1->pointer;
   while (d2 && d2->dtype == DTYPE_DSC)
     d2 = (const mdsdsc_t *)d2->pointer;
-  if (d1 && d2) {
-    if (d1->dtype == d2->dtype) {
-      switch (d1->class) {
+  if (d1 && d2)
+  {
+    if (d1->dtype == d2->dtype)
+    {
+      switch (d1->class)
+      {
       default:
         return 0; // TODO: handle missing classes
       case CLASS_S:
@@ -83,7 +87,8 @@ EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
 
       case CLASS_XD:
       case CLASS_XS:
-        if ((d2->class == CLASS_XS) || (d2->class == CLASS_XD)) {
+        if ((d2->class == CLASS_XS) || (d2->class == CLASS_XD))
+        {
           mdsdsc_xd_t *xd1 = (mdsdsc_xd_t *)d1;
           mdsdsc_xd_t *xd2 = (mdsdsc_xd_t *)d2;
           if (xd1->l_length == xd2->l_length)
@@ -92,17 +97,22 @@ EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
         break;
 
       case CLASS_R:
-        if (d2->class == CLASS_R) {
+        if (d2->class == CLASS_R)
+        {
           mdsdsc_r_t *r1 = (mdsdsc_r_t *)d1;
           mdsdsc_r_t *r2 = (mdsdsc_r_t *)d2;
           int i;
           isequal = (r1->length == r2->length) && (r1->ndesc == r2->ndesc);
-          if (isequal) {
-            if (r1->length) {
+          if (isequal)
+          {
+            if (r1->length)
+            {
               isequal = memcmp(r1->pointer, r2->pointer, r1->length) == 0;
             }
-            if (isequal) {
-              for (i = 0; isequal && (i < r1->ndesc); i++) {
+            if (isequal)
+            {
+              for (i = 0; isequal && (i < r1->ndesc); i++)
+              {
                 isequal = MdsCompareXd(r1->dscptrs[i], r2->dscptrs[i]) & 1;
               }
             }
@@ -113,7 +123,8 @@ EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
       case CLASS_A:
       case CLASS_CA:
       case CLASS_APD:
-        if (d2->class == d1->class) {
+        if (d2->class == d1->class)
+        {
           array_bounds *a1 = (array_bounds *)d1;
           array_bounds *a2 = (array_bounds *)d2;
           isequal = (a1->length == a2->length) && (a1->arsize == a2->arsize) &&
@@ -124,8 +135,10 @@ EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
                     (a1->aflags.column == a2->aflags.column) &&
                     (a1->aflags.coeff == a2->aflags.coeff) &&
                     (a1->aflags.bounds == a2->aflags.bounds);
-          if (isequal) {
-            if (a1->aflags.coeff) {
+          if (isequal)
+          {
+            if (a1->aflags.coeff)
+            {
               isequal = (a1->pointer - a1->a0 == a2->pointer - a2->a0);
               isequal &=
                   (memcmp(a1->m, a2->m, sizeof(a1->m[0]) * a1->dimct) == 0);
@@ -133,17 +146,20 @@ EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
                 isequal = memcmp(a1->m + a1->dimct, a2->m + a2->dimct,
                                  sizeof(bound_t) * a1->dimct) == 0;
             }
-            if (isequal) {
+            if (isequal)
+            {
               if (d1->class == CLASS_A)
                 isequal = memcmp(a1->pointer, a2->pointer, a1->arsize) == 0;
               else if (d1->class == CLASS_CA)
                 isequal = MdsCompareXd((mdsdsc_t *)a1->pointer,
                                        (mdsdsc_t *)a2->pointer);
-              else { // d1->class == CLASS_APD
+              else
+              { // d1->class == CLASS_APD
                 l_length_t i, nelts = a1->arsize / a1->length;
                 mdsdsc_t *ptr1 = (mdsdsc_t *)a1->pointer;
                 mdsdsc_t *ptr2 = (mdsdsc_t *)a2->pointer;
-                for (i = 0; isequal && (i < nelts);) {
+                for (i = 0; isequal && (i < nelts);)
+                {
                   isequal = MdsCompareXd(ptr1, ptr2);
                   ptr1++;
                   ptr2++;
@@ -155,7 +171,9 @@ EXPORT int MdsCompareXd(const mdsdsc_t *const dsc1_ptr,
         break;
       }
     }
-  } else {
+  }
+  else
+  {
     isequal = !(d1 || d2);
   }
   return isequal;

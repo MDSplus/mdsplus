@@ -56,7 +56,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // debug functions
 //*************************************************************************
 //*************************************************************************
-void dump_db(int count) {
+void dump_db(int count)
+{
   int i;
   extern struct MODULE *CTSdb;
 
@@ -68,10 +69,12 @@ void dump_db(int count) {
 //-------------------------------------------------------------------------
 // display error messages for diagnostics purposes
 //-------------------------------------------------------------------------
-void ShowStatus(int statcode) {
+void ShowStatus(int statcode)
+{
 #if 1
   // various status conditions
-  switch (statcode) {
+  switch (statcode)
+  {
     // good things :-)
   case SUCCESS:
     printf("SUCCESS !!!\n");
@@ -142,7 +145,8 @@ void ShowStatus(int statcode) {
 //-------------------------------------------------------------------------
 // runs once, on startup. MSGLVL = 0, displays library version
 //-------------------------------------------------------------------------
-void _init() {
+void _init()
+{
   char base[] = "libCamShr.so";
   char file[64];
   char *pDIR;
@@ -156,17 +160,21 @@ void _init() {
   CTSdbFileIsMapped = FALSE;   // initial state [2002.01.03]
   CRATEdbFileIsMapped = FALSE; // initial state [2002.01.03]
 
-  if (MSGLVL(0)) {
+  if (MSGLVL(0))
+  {
     pDIR = getenv("MDSPLUS_DIR");
 
-    while (!major_done) {
+    while (!major_done)
+    {
       sprintf(file, "%s/lib/%s.%d", pDIR, base, major);
       if (stat(file, &sbuf) == -1)
         ++major;
-      else {
+      else
+      {
         major_done = 1;
 
-        while (!minor_done) {
+        while (!minor_done)
+        {
           sprintf(file, "%s/lib/%s.%d.%d", pDIR, base, major, minor);
           if (stat(file, &sbuf) == -1)
             ++minor;

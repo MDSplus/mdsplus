@@ -55,13 +55,16 @@ static double frequency;
 static int pts;
 static int confOk;
 // Return 0 if succesful, -1 if any argument is not correct
-int initialize(char *name, int clockFreq, int postTriggerSamples) {
+int initialize(char *name, int clockFreq, int postTriggerSamples)
+{
   printf("INITIALIZE: %s\t%d\t%d\n", name, clockFreq, postTriggerSamples);
-  if (postTriggerSamples < 0 || postTriggerSamples >= totSamples) {
+  if (postTriggerSamples < 0 || postTriggerSamples >= totSamples)
+  {
     confOk = 0;
     return -1;
   }
-  switch (clockFreq) {
+  switch (clockFreq)
+  {
   case 1:
     frequency = 1000;
     break;
@@ -85,12 +88,14 @@ int initialize(char *name, int clockFreq, int postTriggerSamples) {
   return 1;
 }
 
-int acquire(char *name, short *c1, short *c2, short *c3, short *c4) {
+int acquire(char *name, short *c1, short *c2, short *c3, short *c4)
+{
   int i;
   //      it is assumed that c1,c2,c3,c4 arrays have totSamples elements
   if (!confOk)
     return -1;
-  for (i = 0; i < totSamples; i++) {
+  for (i = 0; i < totSamples; i++)
+  {
     c1[i] = (short)(sin(2 * PI * 10 * i / frequency) * 32767);
     c2[i] = (short)(sin(2 * PI * 50 * i / frequency) * 32767);
     c3[i] = (short)(sin(2 * PI * 100 * i / frequency) * 32767);

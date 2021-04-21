@@ -80,7 +80,8 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct *cb);
 static void ConfirmServerAbort(Widget w, void *tag, void *cb);
 static void SetKillSensitive(Widget top);
 
-typedef struct _doingListItem {
+typedef struct _doingListItem
+{
   int nid;
   int pos;
   struct _doingListItem *next;
@@ -110,7 +111,8 @@ static char *expt = NULL;
 
 #define offset(strc, field) (int)((void *)&(strc).field - (void *)&(strc))
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   static char *hierarchy_name[] = {"actmon.uid"};
   static MrmRegisterArg callbacks[] = {
       {"Exit", (char *)Exit},
@@ -124,7 +126,8 @@ int main(int argc, char **argv) {
       {"-monitor", "*monitor", XrmoptionSepArg, NULL},
       {"-expt", "*expt", XrmoptionSepArg, NULL},
   };
-  struct {
+  struct
+  {
     char *monitor;
     char *images;
     char *expt;
@@ -148,7 +151,8 @@ int main(int argc, char **argv) {
   XtGetApplicationResources(top, &resource_list, resources, XtNumber(resources),
                             (Arg *)NULL, 0);
   fprintf(stderr, "MONITOR: '%s'\n", resource_list.monitor);
-  if (resource_list.expt) {
+  if (resource_list.expt)
+  {
     int len = strlen(resource_list.expt);
     expt = malloc(sizeof(char) * (len + 1));
     expt[len] = 0;
@@ -168,7 +172,8 @@ int main(int argc, char **argv) {
   doing_label = XmStringCreateSimple("Doing");
   done_label = XmStringCreateSimple("Done");
   error_label = XmStringCreateSimple("Error");
-  if (!kill_target_w) {
+  if (!kill_target_w)
+  {
     kill_target_w = XtNameToWidget(top, "*server_name");
   }
   SetKillSensitive(top);
@@ -180,11 +185,13 @@ int main(int argc, char **argv) {
 
 static void Exit(Widget w __attribute__((unused)),
                  int *tag __attribute__((unused)),
-                 XtPointer callback_data __attribute__((unused))) {
+                 XtPointer callback_data __attribute__((unused)))
+{
   exit(0);
 }
 
-typedef struct serverList {
+typedef struct serverList
+{
   char *server;
   char path[512];
   struct serverList *next;
@@ -192,7 +199,8 @@ typedef struct serverList {
 
 static ServerList *Servers = NULL;
 
-static Widget FindTop(Widget w) {
+static Widget FindTop(Widget w)
+{
   for (; w && XtParent(w); w = XtParent(w))
     ;
   return w;
@@ -200,29 +208,35 @@ static Widget FindTop(Widget w) {
 
 static void SetKillTarget(Widget w __attribute__((unused)),
                           int *tag __attribute__((unused)),
-                          XmListCallbackStruct *cb __attribute__((unused))) {
+                          XmListCallbackStruct *cb __attribute__((unused)))
+{
   static ServerList *server;
   int idx;
 
-  if (cb->selected_item_count == 1) {
+  if (cb->selected_item_count == 1)
+  {
     idx = cb->item_position;
     for (server = Servers; idx > 1; idx--, server = server->next)
       ;
     XmTextSetString(kill_target_w, server->server);
-  } else {
+  }
+  else
+  {
     XmTextSetString(kill_target_w, "");
   }
 }
 
 static void ConfirmAbort(Widget w, int *tag,
-                         XmListCallbackStruct *cb __attribute__((unused))) {
+                         XmListCallbackStruct *cb __attribute__((unused)))
+{
   static int operation;
   static Widget dialog = NULL;
   XmString text_cs;
   char message[1024];
   char *server;
 
-  if (!dialog) {
+  if (!dialog)
+  {
     dialog = XmCreateQuestionDialog(FindTop(w), "ConfirmServerAbort", NULL, 0);
     XtVaSetValues(dialog, XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL,
                   XmNdefaultButtonType, XmDIALOG_CANCEL_BUTTON, XmNautoUnmanage,
@@ -232,8 +246,10 @@ static void ConfirmAbort(Widget w, int *tag,
   }
   operation = *(int *)tag;
   server = XmTextGetString(kill_target_w);
-  if (strlen(server) > 0) {
-    switch (operation) {
+  if (strlen(server) > 0)
+  {
+    switch (operation)
+    {
     case 0:
       sprintf(
           message,
@@ -251,7 +267,8 @@ static void ConfirmAbort(Widget w, int *tag,
     default:
       strcpy(message, "");
     }
-    if (strlen(message) > 0) {
+    if (strlen(message) > 0)
+    {
       text_cs = XmStringCreateLtoR(message, XmSTRING_DEFAULT_CHARSET);
       XtVaSetValues(dialog, XmNmessageString, text_cs, XmNuserData,
                     (void *)&operation, NULL);
@@ -261,7 +278,8 @@ static void ConfirmAbort(Widget w, int *tag,
   }
 }
 
-static int executable(const char *script) {
+static int executable(const char *script)
+{
   int status;
   static const char *cmd_front = "/bin/sh -c '/usr/bin/which ";
   static const char *cmd_back = " > /dev/null 2>/dev/null'";
@@ -276,22 +294,26 @@ static int executable(const char *script) {
   return !status;
 }
 
-static void SetKillSensitive(Widget top) {
+static void SetKillSensitive(Widget top)
+{
   int i;
   static const char *widgets[] = {"*abort_server_b", "*kill_server_b",
                                   "*kill_dispatcher_b"};
   static const char *scripts[] = {"mdsserver_abort", "mdsserver_kill",
                                   "mdsserver_kill_dispatcher"};
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++)
+  {
     Widget w = XtNameToWidget(top, widgets[i]);
-    if (executable(scripts[i])) {
+    if (executable(scripts[i]))
+    {
       XtVaSetValues(w, XmNsensitive, 1, NULL);
     }
   }
 }
 
 static void ConfirmServerAbort(Widget w, void *tag __attribute__((unused)),
-                               void *cb __attribute__((unused))) {
+                               void *cb __attribute__((unused)))
+{
   int *op_ptr;
   int operation;
   char *server;
@@ -302,8 +324,10 @@ static void ConfirmServerAbort(Widget w, void *tag __attribute__((unused)),
   XtVaGetValues(w, XmNuserData, (void *)&op_ptr, NULL);
   operation = *op_ptr;
   server = XmTextGetString(kill_target_w);
-  if (strlen(server) > 0) {
-    switch (operation) {
+  if (strlen(server) > 0)
+  {
+    switch (operation)
+    {
     case 0:
       strcpy(cmd, "mdsserver_abort ");
       strcat(cmd, server);
@@ -325,9 +349,11 @@ static void ConfirmServerAbort(Widget w, void *tag __attribute__((unused)),
 }
 
 static void Disable(Widget w __attribute__((unused)), int *tag,
-                    XmToggleButtonCallbackStruct *cb) {
+                    XmToggleButtonCallbackStruct *cb)
+{
   Widget dw = 0;
-  switch (*tag) {
+  switch (*tag)
+  {
   case 4:
     LogWidgetOff = cb->set;
     MDS_ATTR_FALLTHROUGH
@@ -347,7 +373,8 @@ static void Disable(Widget w __attribute__((unused)), int *tag,
     dw = XtParent(CurrentWidget);
     break;
   }
-  if (dw) {
+  if (dw)
+  {
     if (cb->set)
       XtUnmanageChild(dw);
     else
@@ -355,17 +382,20 @@ static void Disable(Widget w __attribute__((unused)), int *tag,
   }
 }
 
-static void DoTimer() {
+static void DoTimer()
+{
   _DoTimer();
   XtAppAddTimeOut(app_ctx, 100, DoTimer, 0);
 }
 
-static void EventUpdate(LinkedEvent *event) {
+static void EventUpdate(LinkedEvent *event)
+{
   _EventUpdate(event);
   XmTextSetString(kill_target_w, "");
 }
 
-static int FindServer(char *name, ServerList **srv) {
+static int FindServer(char *name, ServerList **srv)
+{
   ServerList *prev, *ptr, *newPtr;
   int idx;
   int match = 1;
@@ -373,7 +403,8 @@ static int FindServer(char *name, ServerList **srv) {
        ptr && (match = strcasecmp(ptr->server, name)) < 0;
        prev = ptr, ptr = ptr->next, idx++)
     ;
-  if (match != 0) {
+  if (match != 0)
+  {
     XmString item;
     newPtr = (ServerList *)XtMalloc(sizeof(ServerList));
     newPtr->server = (char *)XtMalloc(strlen(name) + 1);
@@ -394,7 +425,8 @@ static int FindServer(char *name, ServerList **srv) {
 }
 
 static void PutLog(char *time, char *mode, char *status, char *server,
-                   char *path) {
+                   char *path)
+{
   ServerList *srv;
   char text[2048];
   XmString item;
@@ -403,12 +435,14 @@ static void PutLog(char *time, char *mode, char *status, char *server,
     return;
   sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot,
           mode, status, server, path);
-  if (!LogWidgetOff) {
+  if (!LogWidgetOff)
+  {
     item = XmStringCreateSimple(text);
     XmListAddItemUnselected(LogWidget, item, 0);
     XmStringFree(item);
     XtVaGetValues(LogWidget, XmNitemCount, &items, NULL);
-    if (items > MaxLogLines) {
+    if (items > MaxLogLines)
+    {
       DoingListItem *doing;
       for (doing = DoingList; doing; doing = doing->next)
         doing->pos--;
@@ -416,17 +450,22 @@ static void PutLog(char *time, char *mode, char *status, char *server,
     }
     XmListSetBottomPos(LogWidget, 0);
   }
-  if (!CurrentWidgetOff) {
-    if (strcmp(mode, "DOING") == 0) {
+  if (!CurrentWidgetOff)
+  {
+    if (strcmp(mode, "DOING") == 0)
+    {
       int idx = FindServer(server, &srv);
       strcpy(srv->path, path);
       sprintf(text, "%-20.20s %s %12d %s", server, time, current_shot, path);
       item = XmStringCreateSimple(text);
       XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
       XmStringFree(item);
-    } else if (strcmp(mode, "DONE") == 0) {
+    }
+    else if (strcmp(mode, "DONE") == 0)
+    {
       int idx = FindServer(server, &srv);
-      if (strcmp(srv->path, path) == 0) {
+      if (strcmp(srv->path, path) == 0)
+      {
         strcpy(srv->path, "");
         item = XmStringCreateSimple(server);
         XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
@@ -437,7 +476,8 @@ static void PutLog(char *time, char *mode, char *status, char *server,
 }
 
 static void PutError(char *time, char *mode, char *status, char *server,
-                     char *path) {
+                     char *path)
+{
 
   char text[2048];
   XmString item;
@@ -451,7 +491,8 @@ static void PutError(char *time, char *mode, char *status, char *server,
   XmListAddItemUnselected(ErrorWidget, item, 0);
   XmStringFree(item);
   XtVaGetValues(ErrorWidget, XmNitemCount, &items, NULL);
-  if (items > MaxLogLines) {
+  if (items > MaxLogLines)
+  {
     DoingListItem *doing;
     for (doing = DoingList; doing; doing = doing->next)
       doing->pos--;
@@ -463,14 +504,16 @@ static void PutError(char *time, char *mode, char *status, char *server,
    */
 }
 
-static void DoOpenTree(LinkedEvent *event) {
+static void DoOpenTree(LinkedEvent *event)
+{
   if (expt && strcmp(event->tree, expt))
     return;
   DoingListItem *doing;
   DoingListItem *next;
   XmListDeleteAllItems(ErrorWidget);
   XmListDeselectAllItems(LogWidget);
-  for (doing = DoingList; doing; doing = next) {
+  for (doing = DoingList; doing; doing = next)
+  {
     next = doing->next;
     free(doing);
   }
@@ -479,7 +522,8 @@ static void DoOpenTree(LinkedEvent *event) {
   unique_tag_seed = 0;
 }
 
-static void Doing(LinkedEvent *event) {
+static void Doing(LinkedEvent *event)
+{
   DoingListItem *doing = malloc(sizeof(DoingListItem));
   DoingListItem *prev;
   DoingListItem *d;
@@ -498,7 +542,8 @@ static void Doing(LinkedEvent *event) {
   doing->next = 0;
 }
 
-static void Done(LinkedEvent *event) {
+static void Done(LinkedEvent *event)
+{
   DoingListItem *doing;
   DoingListItem *prev;
   int *items;
@@ -508,7 +553,8 @@ static void Done(LinkedEvent *event) {
   for (prev = 0, doing = DoingList; doing && (doing->nid != event->nid);
        prev = doing, doing = doing->next)
     ;
-  if (doing) {
+  if (doing)
+  {
     XmListDeselectPos(LogWidget, doing->pos);
     if (prev)
       prev->next = doing->next;

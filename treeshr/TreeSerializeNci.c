@@ -27,7 +27,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ncidef.h>
 #include <string.h>
 
-void TreeSerializeNciOut(const NCI *in, char *out) {
+void TreeSerializeNciOut(const NCI *in, char *out)
+{
   char *ptr = out;
   memset(out, 0, 42);
   putint32(&ptr, &in->flags);
@@ -40,13 +41,18 @@ void TreeSerializeNciOut(const NCI *in, char *out) {
   putint32(&ptr, &in->length);
   putint8(&ptr, &in->spare2);
   putint32(&ptr, &in->status);
-  if (in->flags2 & NciM_DATA_IN_ATT_BLOCK) {
+  if (in->flags2 & NciM_DATA_IN_ATT_BLOCK)
+  {
     putint8(&ptr, &in->DATA_INFO.DATA_IN_RECORD.element_length);
     putchars(&ptr, &in->DATA_INFO.DATA_IN_RECORD.data, 11);
-  } else if (in->flags2 & NciM_ERROR_ON_PUT) {
+  }
+  else if (in->flags2 & NciM_ERROR_ON_PUT)
+  {
     putint32(&ptr, &in->DATA_INFO.ERROR_INFO.error_status);
     putint32(&ptr, &in->DATA_INFO.ERROR_INFO.stv);
-  } else {
+  }
+  else
+  {
     putint8(&ptr, &in->DATA_INFO.DATA_LOCATION.file_level);
     putint8(&ptr, &in->DATA_INFO.DATA_LOCATION.file_version);
     putchars(&ptr, &in->DATA_INFO.DATA_LOCATION.rfa, 6);
@@ -54,7 +60,8 @@ void TreeSerializeNciOut(const NCI *in, char *out) {
   }
 }
 
-void TreeSerializeNciIn(const char *in, NCI *out) {
+void TreeSerializeNciIn(const char *in, NCI *out)
+{
   char *ptr = (char *)in;
   getint32(&ptr, &out->flags);
   getint8(&ptr, &out->flags2);
@@ -66,13 +73,18 @@ void TreeSerializeNciIn(const char *in, NCI *out) {
   getint32(&ptr, &out->length);
   getint8(&ptr, &out->spare2);
   getint32(&ptr, &out->status);
-  if (out->flags2 & NciM_DATA_IN_ATT_BLOCK) {
+  if (out->flags2 & NciM_DATA_IN_ATT_BLOCK)
+  {
     getint8(&ptr, &out->DATA_INFO.DATA_IN_RECORD.element_length);
     getchars(&ptr, &out->DATA_INFO.DATA_IN_RECORD.data, 11);
-  } else if (out->flags2 & NciM_ERROR_ON_PUT) {
+  }
+  else if (out->flags2 & NciM_ERROR_ON_PUT)
+  {
     getint32(&ptr, &out->DATA_INFO.ERROR_INFO.error_status);
     getint32(&ptr, &out->DATA_INFO.ERROR_INFO.stv);
-  } else {
+  }
+  else
+  {
     getint8(&ptr, &out->DATA_INFO.DATA_LOCATION.file_level);
     getint8(&ptr, &out->DATA_INFO.DATA_LOCATION.file_version);
     getchars(&ptr, &out->DATA_INFO.DATA_LOCATION.rfa, 6);

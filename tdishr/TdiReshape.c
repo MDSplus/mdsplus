@@ -32,7 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[],
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   if (narg < 1)
     return TdiMISS_ARG;
   int status;
@@ -43,14 +44,18 @@ int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[],
     return TdiINVCLADSC;
   array_coeff *arr = (array_coeff *)out_ptr->pointer;
   int i;
-  switch (opcode) {
+  switch (opcode)
+  {
   default:
     return TdiNO_OPC;
   case OPC_RESHAPE:
     return TdiNO_OPC;
-  case OPC_FLATTEN: {
-    if (arr->dimct > 1) {
-      for (i = 1; i < arr->dimct; i++) {
+  case OPC_FLATTEN:
+  {
+    if (arr->dimct > 1)
+    {
+      for (i = 1; i < arr->dimct; i++)
+      {
         arr->m[0] *= arr->m[i];
         arr->m[i] = 0;
       }
@@ -59,25 +64,33 @@ int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[],
     }
     break;
   }
-  case OPC_SQUEEZE: {
+  case OPC_SQUEEZE:
+  {
     int j = 0;
     // calculate old bounds location
     bound_t *bounds =
         arr->aflags.bounds ? (bound_t *)&arr->m[arr->dimct] : NULL;
-    for (i = 0; i < arr->dimct; i++) {
-      if (arr->m[i] == 1) {
+    for (i = 0; i < arr->dimct; i++)
+    {
+      if (arr->m[i] == 1)
+      {
         j++;
-      } else {
+      }
+      else
+      {
         arr->m[i - j] = arr->m[i];
-        if (bounds) {
+        if (bounds)
+        {
           bounds[i - j] = bounds[i];
         }
       }
     }
     arr->dimct = arr->dimct - j;
-    if (bounds) { // move bounds
+    if (bounds)
+    { // move bounds
       const int end = arr->dimct * (1 + sizeof(bound_t) / sizeof(int32_t));
-      for (i = arr->dimct; i < end; i++) {
+      for (i = arr->dimct; i < end; i++)
+      {
         arr->m[i] = arr->m[i + j];
       }
     }

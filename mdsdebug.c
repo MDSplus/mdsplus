@@ -20,7 +20,8 @@
 */
 int status_ok(int status) { return ((status & 1) == 1); }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   int status;
   int shot = 3;
 
@@ -34,7 +35,8 @@ int main(int argc, char *argv[]) {
 
   /* Open tree */
   status = MdsOpen("cryocon18i", &shot);
-  if (!status_ok(status)) {
+  if (!status_ok(status))
+  {
     printf("Error shot number %d\n", shot);
     fprintf(stderr, "Error shot number %d\n", shot);
     return -1;
@@ -45,7 +47,8 @@ int main(int argc, char *argv[]) {
   /* status = MdsValue("TCL(\"set def cryo18i\",_output)", &idesc, &null, &len);
    */
   status = MdsValue("TCL(\"set def cryo18i\",_output)", &idesc, &null, &len);
-  if (!status_ok(status)) {
+  if (!status_ok(status))
+  {
     printf("Error with set def command.\n");
     fprintf(stderr, "Error with set def command.\n");
     return -1;
@@ -53,9 +56,11 @@ int main(int argc, char *argv[]) {
   printf("Status of TCL(\"set def\") = %i\n", tstat);
 
   /* If the command was successful, print its output. */
-  if (status_ok(tstat)) {
+  if (status_ok(tstat))
+  {
     status = MdsValue("_output", &sdesc, &null, &len);
-    if (!status_ok(status)) {
+    if (!status_ok(status))
+    {
       fprintf(stderr, "Error getting _output from set def command.\n");
       return -1;
     }

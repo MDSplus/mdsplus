@@ -44,25 +44,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SWAP32(out, in) memcpy((char *)(out), (char *)(in), 4)
 #define SWAP64(out, in) memcpy((char *)(out), (char *)(in), 8)
 #else
-#define SWAP(out, in, a, b)                                                    \
-  ((char *)(out))[a] = ((char *)(in))[b];                                      \
+#define SWAP(out, in, a, b)               \
+  ((char *)(out))[a] = ((char *)(in))[b]; \
   ((char *)(out))[b] = ((char *)(in))[a]
-#define SWAP32(out, in)                                                        \
-  do {                                                                         \
-    SWAP(out, in, 0, 3);                                                       \
-    SWAP(out, in, 2, 1);                                                       \
+#define SWAP32(out, in)  \
+  do                     \
+  {                      \
+    SWAP(out, in, 0, 3); \
+    SWAP(out, in, 2, 1); \
   } while (0)
-#define SWAP64(out, in)                                                        \
-  do {                                                                         \
-    SWAP(out, in, 0, 7);                                                       \
-    SWAP(out, in, 2, 5);                                                       \
-    SWAP(out, in, 4, 3);                                                       \
-    SWAP(out, in, 6, 1);                                                       \
+#define SWAP64(out, in)  \
+  do                     \
+  {                      \
+    SWAP(out, in, 0, 7); \
+    SWAP(out, in, 2, 5); \
+    SWAP(out, in, 4, 3); \
+    SWAP(out, in, 6, 1); \
   } while (0)
 #endif
 static double to_doublex(const void *const ptr, const dtype_t dtype,
-                         const double defval, const int is_time) {
-  switch (dtype) {
+                         const double defval, const int is_time)
+{
+  switch (dtype)
+  {
   case DTYPE_FLOAT:
     return (double)*(float *)ptr;
   case DTYPE_DOUBLE:
@@ -86,10 +90,12 @@ static double to_doublex(const void *const ptr, const dtype_t dtype,
     return defval;
   }
 }
-inline static double to_double(const void *const ptr, const dtype_t dtype) {
+inline static double to_double(const void *const ptr, const dtype_t dtype)
+{
   return to_doublex(ptr, dtype, 0, FALSE);
 }
-static int recIsSegmented(const mdsdsc_t *const dsc) {
+static int recIsSegmented(const mdsdsc_t *const dsc)
+{
   /* returns nid of the first segmented node found
    * or 0 if none found
    */
@@ -100,9 +106,12 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
   EMPTYXD(xd);
   mdsdsc_r_t *rDsc;
 
-  switch (dsc->class) {
-  case CLASS_S: {
-    if (dsc->dtype == DTYPE_NID) {
+  switch (dsc->class)
+  {
+  case CLASS_S:
+  {
+    if (dsc->dtype == DTYPE_NID)
+    {
       nid = *(int *)dsc->pointer;
       status = TreeGetNumSegments(nid, &numSegments);
       if (STATUS_OK && numSegments > 0)
@@ -115,35 +124,42 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
       status = TreeGetNci(nid, nciList);
       if (STATUS_OK && (nciClass == CLASS_R ||
                         (nciClass == CLASS_S &&
-                         (nciDtype == DTYPE_NID || nciDtype == DTYPE_PATH)))) {
+                         (nciDtype == DTYPE_NID || nciDtype == DTYPE_PATH))))
+      {
         status = TreeGetRecord(nid, &xd);
-        if (STATUS_OK && xd.l_length > 0) {
+        if (STATUS_OK && xd.l_length > 0)
+        {
           nid = recIsSegmented(xd.pointer);
           MdsFree1Dx(&xd, 0);
           return nid;
         }
       }
-    } else if (dsc->dtype == DTYPE_PATH) {
+    }
+    else if (dsc->dtype == DTYPE_PATH)
+    {
       char *path = malloc(dsc->length + 1);
       memcpy(path, dsc->pointer, dsc->length);
       path[dsc->length] = 0;
       status = TreeFindNode(path, &nid);
       free(path);
-      if
-        STATUS_OK {
-          status = TreeGetNumSegments(nid, &numSegments);
-          if (STATUS_OK) {
-            if (numSegments > 0) {
-              return nid;
-            }
-            status = TreeGetRecord(nid, &xd);
-            if (STATUS_OK && xd.l_length > 0) {
-              nid = recIsSegmented(xd.pointer);
-              MdsFree1Dx(&xd, 0);
-              return nid;
-            }
+      if (STATUS_OK)
+      {
+        status = TreeGetNumSegments(nid, &numSegments);
+        if (STATUS_OK)
+        {
+          if (numSegments > 0)
+          {
+            return nid;
+          }
+          status = TreeGetRecord(nid, &xd);
+          if (STATUS_OK && xd.l_length > 0)
+          {
+            nid = recIsSegmented(xd.pointer);
+            MdsFree1Dx(&xd, 0);
+            return nid;
           }
         }
+      }
     }
     break;
   }
@@ -153,12 +169,14 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
     if (dsc->pointer)
       return recIsSegmented((mdsdsc_t *)dsc->pointer);
     break;
-  case CLASS_R: {
+  case CLASS_R:
+  {
     rDsc = (mdsdsc_r_t *)dsc;
     if (rDsc->dtype == DTYPE_SIGNAL)
       break; // If the expression includes a Signal descriptor, the time base
              // may be different from that of the segmented node
-    for (i = 0; i < rDsc->ndesc; i++) {
+    for (i = 0; i < rDsc->ndesc; i++)
+    {
       if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
         return nid;
     }
@@ -184,7 +202,8 @@ inline static int64_t
 estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
                    mdsdsc_t *const xMax, int *const estimatedSegmentSamples,
                    double *const dMin, double *const dMax, double *const sMin,
-                   double *const sMax, int *const dIsLong) {
+                   double *const sMax, int *const dIsLong)
+{
   /* return the number of samples the signal holds based on meta information
      or -1 if something went wrong
    */
@@ -198,17 +217,18 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
   if (!nid)
     goto return_neg1;
   int status = TreeGetNumSegments(nid, &numSegments);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   status = TreeGetSegmentLimits(nid, 0, NULL, &xd);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   status = TdiData(xd.pointer, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   *dIsLong = xd.pointer &&
              (xd.pointer->dtype == DTYPE_Q || xd.pointer->dtype == DTYPE_QU);
-  if (xMin != NULL || xMax != NULL) {
+  if (xMin != NULL || xMax != NULL)
+  {
     if (xMin)
       XTreeConvertToLongTime(xMin, &startTime);
     if (xMax)
@@ -216,14 +236,16 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
     if (numSegments < NUM_SEGMENTS_THRESHOLD)
       goto return_neg1;
     startIdx = 0; // If no start time specified, take all initial segments
-    if (xMin) {
-      while (startIdx < numSegments) {
+    if (xMin)
+    {
+      while (startIdx < numSegments)
+      {
         status = TreeGetSegmentLimits(nid, startIdx, NULL, &xd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         status = XTreeConvertToLongTime(xd.pointer, &currEnd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         if (currEnd >= startTime) // First overlapping segment
           break;
         startIdx++;
@@ -233,15 +255,17 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
       goto return_neg1; // All segments antecedent to start time
     if (!xMax)
       endIdx = numSegments - 1;
-    else {
+    else
+    {
       segmentIdx = startIdx;
-      while (segmentIdx < numSegments) {
+      while (segmentIdx < numSegments)
+      {
         status = TreeGetSegmentLimits(nid, segmentIdx, NULL, &xd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         status = XTreeConvertToLongTime(xd.pointer, &currEnd);
-        if
-          STATUS_NOT_OK goto return_neg1;
+        if (STATUS_NOT_OK)
+          goto return_neg1;
         if (currEnd >= endTime) // Last overlapping segment
           break;
         segmentIdx++;
@@ -250,53 +274,61 @@ estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin,
       endIdx = (segmentIdx == numSegments) ? numSegments - 1 : segmentIdx;
     }
     numActSegments = endIdx - startIdx + 1;
-  } else {
+  }
+  else
+  {
     startIdx = 0;
     numActSegments = numSegments;
     endIdx = numSegments - 1;
   }
   status = TreeGetSegmentInfo(nid, startIdx, &dtype, &dimct, dims, &nextRow);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   segmentSamples = nextRow;
   // Compute duration
   status = TreeGetSegmentLimits(nid, startIdx, &xd, NULL);
-  if
-    STATUS_OK status = TdiData(xd.pointer, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_OK)
+    status = TdiData(xd.pointer, &xd MDS_END_ARG);
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   *sMin = to_doublex(xd.pointer->pointer, xd.pointer->dtype, -INFINITY, TRUE);
   status = TreeGetSegmentLimits(nid, endIdx, NULL, &xd);
-  if
-    STATUS_OK status = TdiData((mdsdsc_t *)&xd, &xd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_neg1;
+  if (STATUS_OK)
+    status = TdiData((mdsdsc_t *)&xd, &xd MDS_END_ARG);
+  if (STATUS_NOT_OK)
+    goto return_neg1;
   *sMax = to_doublex(xd.pointer->pointer, xd.pointer->dtype, INFINITY, TRUE);
   MdsFree1Dx(&xd, NULL);
   *dMin =
       xMin ? to_doublex(xMin->pointer, xMin->dtype, -INFINITY, TRUE) : *sMin;
   *dMax = xMax ? to_doublex(xMax->pointer, xMax->dtype, INFINITY, TRUE) : *sMax;
-  if(numActSegments == 1 && xMin && xMax) //Handle the case of a single (likely large) segment
+  if (numActSegments == 1 && xMin && xMax) //Handle the case of a single (likely large) segment
   {
-      double givenTimeSpan = to_doublex(xMax->pointer, xMax->dtype, -INFINITY, TRUE) - to_doublex(xMin->pointer, xMin->dtype, -INFINITY, TRUE);
-      double segmentTimeSpan = *sMax - *sMin;
-      if(segmentTimeSpan > 0 && segmentTimeSpan > givenTimeSpan)
-        return (int64_t)(segmentSamples * givenTimeSpan / segmentTimeSpan);
+    double givenTimeSpan = to_doublex(xMax->pointer, xMax->dtype, -INFINITY, TRUE) - to_doublex(xMin->pointer, xMin->dtype, -INFINITY, TRUE);
+    double segmentTimeSpan = *sMax - *sMin;
+    if (segmentTimeSpan > 0 && segmentTimeSpan > givenTimeSpan)
+      return (int64_t)(segmentSamples * givenTimeSpan / segmentTimeSpan);
   }
   *estimatedSegmentSamples = segmentSamples;
   return segmentSamples * (int64_t)numActSegments;
 return_neg1:;
-  if (xMin && IS_OK(TdiData(xMin, &xd MDS_END_ARG))) {
+  if (xMin && IS_OK(TdiData(xMin, &xd MDS_END_ARG)))
+  {
     *sMin = to_doublex(xd.pointer->pointer, xd.pointer->dtype, -INFINITY, TRUE);
     *dMin = to_doublex(xMin->pointer, xMin->dtype, -INFINITY, TRUE);
-  } else {
+  }
+  else
+  {
     *sMin = -INFINITY;
     *dMin = -INFINITY;
   }
-  if (xMax && IS_OK(TdiData(xMax, &xd MDS_END_ARG))) {
+  if (xMax && IS_OK(TdiData(xMax, &xd MDS_END_ARG)))
+  {
     *sMax = to_doublex(xd.pointer->pointer, xd.pointer->dtype, INFINITY, TRUE);
     *dMax = to_doublex(xMax->pointer, xMax->dtype, INFINITY, TRUE);
-  } else {
+  }
+  else
+  {
     *sMax = INFINITY;
     *dMax = INFINITY;
   }
@@ -310,7 +342,8 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x,
                             const int nSamples, const int reqPoints,
                             const double xMin, const double xMax,
                             int *const retPoints, float *const retResolution,
-                            int treeshrResampled) {
+                            int treeshrResampled)
+{
 
   /*  if(nSamples < 10 * reqPoints) {
     //Does not perform any compression
@@ -346,7 +379,8 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x,
                            ? 1
                            : (endIdx - startIdx + 1) / reqPoints;
 
-  if (nSamples < 10 * reqPoints) {
+  if (nSamples < 10 * reqPoints)
+  {
     // Does not perform any compression
     *retResolution = 1E12;
     *retPoints = nSamples;
@@ -362,19 +396,25 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x,
 
   int curIdx = startIdx;
   int outIdx = 0;
-  if (deltaIdx == 1) {
+  if (deltaIdx == 1)
+  {
     *retResolution = 1E12;
-    if (outIdx < curIdx) { // check if not src == dst
-      while (curIdx < endIdx) {
+    if (outIdx < curIdx)
+    { // check if not src == dst
+      while (curIdx < endIdx)
+      {
         memcpy(&x->pointer[outIdx * x->length], &x->pointer[curIdx * x->length],
                x->length);
         y[outIdx++] = y[curIdx++];
       }
-    } else // but in this case the number of points must be reported!!!
+    }
+    else // but in this case the number of points must be reported!!!
     {
       outIdx = endIdx - startIdx;
     }
-  } else {
+  }
+  else
+  {
     *retResolution = reqPoints / (to_doublex(&x->pointer[endIdx * x->length],
                                              x->dtype, INFINITY, TRUE) -
                                   to_doublex(&x->pointer[startIdx * x->length],
@@ -382,14 +422,16 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x,
     const double deltaTime =
         (deltaIdx == 1) ? 0 : (xMax - xMin) / (double)reqPoints;
     float minY, maxY;
-    while (curIdx < endIdx) {
+    while (curIdx < endIdx)
+    {
       minY = maxY = y[curIdx];
       int i, actSamples = 0;
       const double endXDouble = to_doublex(&x->pointer[curIdx * x->length],
                                            x->dtype, INFINITY, TRUE) +
                                 deltaTime;
       for (i = curIdx; i < nSamples && i < curIdx + deltaIdx;
-           i++, actSamples++) {
+           i++, actSamples++)
+      {
         if (to_doublex(&x->pointer[i * x->length], x->dtype, -INFINITY, TRUE) >
             endXDouble)
           break; // Handle dual speed clocks
@@ -420,26 +462,30 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x,
 }
 
 static int recGetXxxx(const mdsdsc_t *const dsc_in, mdsdsc_xd_t *const xd_out,
-                      const int getHelp) {
+                      const int getHelp)
+{
   const mdsdsc_t *dsc = dsc_in;
 again:;
   if (!dsc)
     return MDSplusERROR;
   int status;
-  switch (dsc->class) {
+  switch (dsc->class)
+  {
   case CLASS_S:
-    if (dsc->dtype == DTYPE_NID || dsc->dtype == DTYPE_PATH) {
+    if (dsc->dtype == DTYPE_NID || dsc->dtype == DTYPE_PATH)
+    {
       int nid;
       if (dsc->dtype == DTYPE_NID)
         nid = *(int *)dsc->pointer;
-      else { // if(dsc->dtype == DTYPE_PATH)
+      else
+      { // if(dsc->dtype == DTYPE_PATH)
         char *path = malloc(dsc->length + 1);
         memcpy(path, dsc->pointer, dsc->length);
         path[dsc->length] = 0;
         status = TreeFindNode(path, &nid);
         free(path);
-        if
-          STATUS_NOT_OK goto status_not_ok_out;
+        if (STATUS_NOT_OK)
+          goto status_not_ok_out;
       }
       int numSegments;
       status = TreeGetNumSegments(nid, &numSegments);
@@ -447,8 +493,8 @@ again:;
         goto error_out;
       EMPTYXD(xd);
       status = TreeGetRecord(nid, &xd);
-      if
-        STATUS_OK status = recGetXxxx(xd.pointer, xd_out, getHelp);
+      if (STATUS_OK)
+        status = recGetXxxx(xd.pointer, xd_out, getHelp);
       MdsFree1Dx(&xd, NULL);
       goto status_out;
     }
@@ -461,13 +507,16 @@ again:;
     dsc = (mdsdsc_t *)dsc->pointer;
     goto again;
   case CLASS_R:
-    if (getHelp) {
-      if (dsc->dtype == DTYPE_PARAM) {
+    if (getHelp)
+    {
+      if (dsc->dtype == DTYPE_PARAM)
+      {
         mds_param_t *pDsc = (mds_param_t *)dsc;
-        if (pDsc->help) {
+        if (pDsc->help)
+        {
           status = TdiData(pDsc->help, xd_out MDS_END_ARG);
-          if
-            STATUS_NOT_OK goto status_not_ok_out;
+          if (STATUS_NOT_OK)
+            goto status_not_ok_out;
           if (xd_out->pointer && xd_out->pointer->class == CLASS_S &&
               xd_out->pointer->dtype == DTYPE_T)
             goto status_out;
@@ -476,52 +525,64 @@ again:;
       }
       mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
       int i;
-      for (i = 0; i < rDsc->ndesc; i++) {
+      for (i = 0; i < rDsc->ndesc; i++)
+      {
         status = recGetXxxx(rDsc->dscptrs[i], xd_out, getHelp);
-        if
-          STATUS_OK goto status_out;
+        if (STATUS_OK)
+          goto status_out;
       }
-    } else {
-      if (dsc->dtype == DTYPE_WITH_UNITS) {
+    }
+    else
+    {
+      if (dsc->dtype == DTYPE_WITH_UNITS)
+      {
         mds_with_units_t *uDsc = (mds_with_units_t *)dsc;
-        if (uDsc->units) {
+        if (uDsc->units)
+        {
           status = TdiData(uDsc->units, xd_out MDS_END_ARG);
-          if
-            STATUS_NOT_OK goto status_not_ok_out;
+          if (STATUS_NOT_OK)
+            goto status_not_ok_out;
           if (xd_out->pointer && xd_out->pointer->class == CLASS_S &&
               xd_out->pointer->dtype == DTYPE_T)
             goto status_out;
         }
         break;
       }
-      if (dsc->dtype == DTYPE_PARAM) {
+      if (dsc->dtype == DTYPE_PARAM)
+      {
         dsc = ((mds_param_t *)dsc)->value;
         ;
         goto again;
       }
-      if (dsc->dtype == DTYPE_SIGNAL) {
+      if (dsc->dtype == DTYPE_SIGNAL)
+      {
         dsc = ((mds_signal_t *)dsc)->data;
         goto again;
       }
       mdsdsc_r_t *rDsc = (mdsdsc_r_t *)dsc;
-      if (rDsc->ndesc == 1) {
+      if (rDsc->ndesc == 1)
+      {
         dsc = rDsc->dscptrs[0];
         goto again;
       }
-      if (rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer) {
+      if (rDsc->dtype == DTYPE_FUNCTION && rDsc->pointer)
+      {
         int i;
         if (*(opcode_t *)rDsc->pointer == OPC_ADD ||
-            *(opcode_t *)rDsc->pointer == OPC_SUBTRACT) {
+            *(opcode_t *)rDsc->pointer == OPC_SUBTRACT)
+        {
           status = recGetXxxx(rDsc->dscptrs[0], xd_out, getHelp);
-          if
-            STATUS_NOT_OK goto status_not_ok_out;
+          if (STATUS_NOT_OK)
+            goto status_not_ok_out;
           EMPTYXD(xd);
-          for (i = 1; i < rDsc->ndesc; i++) {
+          for (i = 1; i < rDsc->ndesc; i++)
+          {
             status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
             if (STATUS_NOT_OK ||
                 xd.pointer->length != xd_out->pointer->length ||
                 strncmp(xd.pointer->pointer, xd_out->pointer->pointer,
-                        xd.pointer->length)) {
+                        xd.pointer->length))
+            {
               MdsFree1Dx(&xd, NULL);
               goto error_out; // Different units
             }
@@ -530,31 +591,37 @@ again:;
           goto status_out;
         }
         if (*(opcode_t *)rDsc->pointer == OPC_MULTIPLY ||
-            *(opcode_t *)rDsc->pointer == OPC_DIVIDE) {
+            *(opcode_t *)rDsc->pointer == OPC_DIVIDE)
+        {
           mdsdsc_t da = {0, DTYPE_T, CLASS_D, NULL};
           char mulDivC =
               (*(opcode_t *)rDsc->pointer == OPC_MULTIPLY) ? '*' : '/';
           mdsdsc_t mulDiv = {1, DTYPE_T, CLASS_S, &mulDivC};
           EMPTYXD(xd);
-          for (i = 0; i < rDsc->ndesc; i++) {
+          for (i = 0; i < rDsc->ndesc; i++)
+          {
             status = recGetXxxx(rDsc->dscptrs[i], &xd, getHelp);
-            if
-              STATUS_OK {
-                if (da.pointer) {
-                  status = StrConcat(&da, &da, &mulDiv, xd.pointer MDS_END_ARG);
-                  if
-                    STATUS_NOT_OK {
-                      MdsFree1Dx(&xd, NULL);
-                      goto status_not_ok_out;
-                    }
-                } else {
-                  da.length = xd.pointer->length;
-                  da.pointer = strdup(xd.pointer->pointer);
+            if (STATUS_OK)
+            {
+              if (da.pointer)
+              {
+                status = StrConcat(&da, &da, &mulDiv, xd.pointer MDS_END_ARG);
+                if (STATUS_NOT_OK)
+                {
+                  MdsFree1Dx(&xd, NULL);
+                  goto status_not_ok_out;
                 }
               }
+              else
+              {
+                da.length = xd.pointer->length;
+                da.pointer = strdup(xd.pointer->pointer);
+              }
+            }
           }
           MdsFree1Dx(&xd, NULL);
-          if (da.pointer) {
+          if (da.pointer)
+          {
             da.class = CLASS_S;
             MdsCopyDxXd((mdsdsc_t *)&da, xd_out);
             free(da.pointer);
@@ -578,28 +645,32 @@ success:;
 }
 
 static inline int recGetHelp(const mdsdsc_t *const dsc,
-                             mdsdsc_xd_t *const xd_out) {
+                             mdsdsc_xd_t *const xd_out)
+{
   return recGetXxxx(dsc, xd_out, TRUE);
 }
 
 static inline int recGetUnits(const mdsdsc_t *const dsc,
-                              mdsdsc_xd_t *const xd_out) {
+                              mdsdsc_xd_t *const xd_out)
+{
   return recGetXxxx(dsc, xd_out, FALSE);
 }
 
 // Check if the passed expression contains at least one segmented node
-EXPORT int IsSegmented(char *const expr) {
+EXPORT int IsSegmented(char *const expr)
+{
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-  if
-    IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
+  if (IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)))
+    return FALSE;
   int segNid = recIsSegmented(xd.pointer);
   MdsFree1Dx(&xd, NULL);
   return segNid;
 }
 
 // Check if the passed expression contains at least one segmented node
-EXPORT struct descriptor_xd *GetPathOf(int *nid) {
+EXPORT struct descriptor_xd *GetPathOf(int *nid)
+{
   static EMPTYXD(retXd);
   mdsdsc_t pathD = {0, DTYPE_T, CLASS_S, 0};
   char *path = TreeGetPath(*nid);
@@ -612,20 +683,22 @@ EXPORT struct descriptor_xd *GetPathOf(int *nid) {
   return &retXd;
 }
 
-EXPORT int TestGetHelp(char *const expr) {
+EXPORT int TestGetHelp(char *const expr)
+{
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-  if
-    IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
+  if (IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)))
+    return FALSE;
   MdsFree1Dx(&xd, 0);
   return TRUE;
 }
 
-EXPORT int TestGetUnits(char *const expr) {
+EXPORT int TestGetUnits(char *const expr)
+{
   EMPTYXD(xd);
   mdsdsc_t exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-  if
-    IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
+  if (IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)))
+    return FALSE;
   MdsFree1Dx(&xd, 0);
   return TRUE;
 }
@@ -633,37 +706,47 @@ EXPORT int TestGetUnits(char *const expr) {
 static inline int pack_meta(const mdsdsc_t *const title,
                             const mdsdsc_t *const xLabel,
                             const mdsdsc_t *const yLabel, const float res,
-                            char *const retArr, int idx) {
+                            char *const retArr, int idx)
+{
   // idx is the current index in retArr
   // Write title, xLabel, yLabel as length followed by chars
   int len;
-  if (title) {
+  if (title)
+  {
     len = title->length & 0xffff;
     SWAP32(&retArr[idx], &len);
     idx += sizeof(int);
     memcpy(&retArr[idx], title->pointer, len);
     idx += len;
-  } else {
+  }
+  else
+  {
     *(int *)&retArr[idx] = 0; // no swap required
     idx += 4;
   }
-  if (xLabel) {
+  if (xLabel)
+  {
     len = xLabel->length & 0xffff;
     SWAP32(&retArr[idx], &len);
     idx += sizeof(int);
     memcpy(&retArr[idx], xLabel->pointer, len);
     idx += len;
-  } else {
+  }
+  else
+  {
     *(int *)&retArr[idx] = 0; // no swap required
     idx += 4;
   }
-  if (yLabel) {
+  if (yLabel)
+  {
     len = yLabel->length & 0xffff;
     SWAP32(&retArr[idx], &len);
     idx += sizeof(int);
     memcpy(&retArr[idx], yLabel->pointer, len);
     idx += len;
-  } else {
+  }
+  else
+  {
     *(int *)&retArr[idx] = 0; // no swap required
     idx += 4;
   }
@@ -673,20 +756,23 @@ static inline int pack_meta(const mdsdsc_t *const title,
 
 inline static int getNSamples(const mdsdsc_xd_t *const yXd,
                               const mdsdsc_xd_t *const xXd,
-                              int *const nSamples) {
+                              int *const nSamples)
+{
   if (yXd->pointer->class != CLASS_A)
     return TdiINVCLADSC;
   if (xXd->pointer->class != CLASS_A)
     return TdiINVCLADSC;
-  if (yXd->pointer->dtype == DTYPE_F) {
+  if (yXd->pointer->dtype == DTYPE_F)
+  {
     const int status = TdiFloat(yXd->pointer, yXd MDS_END_ARG);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
   }
-  if (xXd->pointer->dtype == DTYPE_F) {
+  if (xXd->pointer->dtype == DTYPE_F)
+  {
     const int status = TdiFloat(xXd->pointer, xXd MDS_END_ARG);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
   }
   // Number of samples set to minimum between X and Y
   const int ySamples =
@@ -698,10 +784,12 @@ inline static int getNSamples(const mdsdsc_xd_t *const yXd,
 }
 
 inline static float *getFloatArray(const mdsdsc_a_t *const yArrD,
-                                   const int nSamples) {
+                                   const int nSamples)
+{
   int i;
   float *y;
-  switch (yArrD->dtype) {
+  switch (yArrD->dtype)
+  {
   case DTYPE_B:
   case DTYPE_BU:
     y = (float *)malloc(nSamples * sizeof(float));
@@ -739,45 +827,53 @@ inline static float *getFloatArray(const mdsdsc_a_t *const yArrD,
 }
 
 static inline int getXArray(const mdsdsc_a_t *const xArrD, const int retSamples,
-                            char *const retArr, int idx) {
+                            char *const retArr, int idx)
+{
   int i;
-  switch (xArrD->dtype) {
+  switch (xArrD->dtype)
+  {
   default:
     return -1;
   case DTYPE_B:
   case DTYPE_BU:
-    for (i = 0; i < retSamples; i++, idx += 4) {
+    for (i = 0; i < retSamples; i++, idx += 4)
+    {
       const float tmp = *((int8_t *)(&xArrD->pointer[i * xArrD->length]));
       SWAP32(&retArr[idx], &tmp);
     }
     break;
   case DTYPE_W:
   case DTYPE_WU:
-    for (i = 0; i < retSamples; i++, idx += 4) {
+    for (i = 0; i < retSamples; i++, idx += 4)
+    {
       const float tmp = *((int16_t *)(&xArrD->pointer[i * xArrD->length]));
       SWAP32(&retArr[idx], &tmp);
     }
     break;
   case DTYPE_L:
   case DTYPE_LU:
-    for (i = 0; i < retSamples; i++, idx += 4) {
+    for (i = 0; i < retSamples; i++, idx += 4)
+    {
       const float tmp = *((int32_t *)(&xArrD->pointer[i * xArrD->length]));
       SWAP32(&retArr[idx], &tmp);
     }
     break;
   case DTYPE_Q:
   case DTYPE_QU:
-    for (i = 0; i < retSamples; i++, idx += 8) {
+    for (i = 0; i < retSamples; i++, idx += 8)
+    {
       SWAP64(&retArr[idx], &xArrD->pointer[i * xArrD->length]);
     }
     break;
   case DTYPE_FLOAT:
-    for (i = 0; i < retSamples; i++, idx += 4) {
+    for (i = 0; i < retSamples; i++, idx += 4)
+    {
       SWAP32(&retArr[idx], &xArrD->pointer[i * xArrD->length]);
     }
     break;
   case DTYPE_DOUBLE:
-    for (i = 0; i < retSamples; i++, idx += 8) {
+    for (i = 0; i < retSamples; i++, idx += 8)
+    {
       SWAP64(&retArr[idx], &xArrD->pointer[i * xArrD->length]);
     }
     break;
@@ -787,7 +883,8 @@ static inline int getXArray(const mdsdsc_a_t *const xArrD, const int retSamples,
 
 EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
                          mdsdsc_t *const inXMin, mdsdsc_t *const inXMax,
-                         const int reqNSamples, mdsdsc_xd_t *const retXd) {
+                         const int reqNSamples, mdsdsc_xd_t *const retXd)
+{
   if (!inY)
     return TdiNULL_PTR;
   EMPTYXD(yXd);
@@ -807,10 +904,11 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
   xMaxP = (xmax < INFINITY) ? inXMax : NULL;
 
-   //printf("ESTIMATED SAMPLES: %d  THRESHOLD: %d\n", estimatedSamples,
-   //NUM_SAMPLES_THRESHOLD);
+  //printf("ESTIMATED SAMPLES: %d  THRESHOLD: %d\n", estimatedSamples,
+  //NUM_SAMPLES_THRESHOLD);
 
-  if (estimatedSamples > NUM_SAMPLES_THRESHOLD) {
+  if (estimatedSamples > NUM_SAMPLES_THRESHOLD)
+  {
     delta = estimatedSamples / reqNSamples;
     if (xmin > -INFINITY && xmax < INFINITY && smax > smin)
       delta *= (xmax - xmin) / (smax - smin);
@@ -826,22 +924,20 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
     if (isLong)
       delta /= 1e9; // quick compensation of xtreeshr conversion
 
-      
-    //printf("DELTA: %e\n", delta);  
-      
+    //printf("DELTA: %e\n", delta);
+
     deltaP = (delta > 1e-9) ? &deltaD : NULL;
-  } else
+  }
+  else
     deltaP = NULL;
   // Set limits if any
-  
-  
-  
+
   int status = TreeSetTimeContext(xMinP, xMaxP, deltaP);
 
-  if
-    STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_err;
+  if (STATUS_OK)
+    status = TdiEvaluate(inY, &yXd MDS_END_ARG);
+  if (STATUS_NOT_OK)
+    goto return_err;
   // Get Y, title, and yLabel, if any
   EMPTYXD(title);
   EMPTYXD(xLabel);
@@ -853,20 +949,20 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
     status = TdiDimOf(yXd.pointer, &xXd MDS_END_ARG);
   else // Get xLabel, if any
     status = TdiEvaluate(inX, &xXd MDS_END_ARG);
-  if
-    STATUS_NOT_OK goto return_err;
+  if (STATUS_NOT_OK)
+    goto return_err;
 
   recGetUnits(xXd.pointer, &xLabel);
-  if
-    STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
-  if
-    STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
 
   int nSamples = 0;
-  if
-    STATUS_OK status = getNSamples(&yXd, &xXd, &nSamples);
-  if
-    STATUS_NOT_OK goto return_err;
+  if (STATUS_OK)
+    status = getNSamples(&yXd, &xXd, &nSamples);
+  if (STATUS_NOT_OK)
+    goto return_err;
   mdsdsc_a_t *xArrD = (mdsdsc_a_t *)xXd.pointer;
   mdsdsc_a_t *yArrD = (mdsdsc_a_t *)yXd.pointer;
   float *y = getFloatArray(yArrD, nSamples);
@@ -905,7 +1001,8 @@ return_err:;
 EXPORT int _GetXYSignalXd(void **const ctx, mdsdsc_t *const y,
                           mdsdsc_t *const x, mdsdsc_t *const xmin,
                           mdsdsc_t *const xmax, const int num,
-                          mdsdsc_xd_t *const retXd) {
+                          mdsdsc_xd_t *const retXd)
+{
   int status;
   void *ps = TreeCtxPush(ctx);
   pthread_cleanup_push(TreeCtxPop, ps);
@@ -914,15 +1011,18 @@ EXPORT int _GetXYSignalXd(void **const ctx, mdsdsc_t *const y,
   return status;
 }
 EXPORT int GetXYWaveXd(mdsdsc_t *sig, mdsdsc_t *xmin, mdsdsc_t *xmax, int num,
-                       mdsdsc_xd_t *retXd) {
+                       mdsdsc_xd_t *retXd)
+{
   return GetXYSignalXd(sig, NULL, xmin, xmax, num, retXd);
 }
 
 static mdsdsc_xd_t *encodeError(const char *error, const int line,
-                                mdsdsc_xd_t *out_xd) {
+                                mdsdsc_xd_t *out_xd)
+{
   /* converts message to packed error message (float res,int len,char msg[len])
    */
-  typedef struct __attribute__((__packed__)) {
+  typedef struct __attribute__((__packed__))
+  {
     int line;
     int len;
     char msg[0];
@@ -941,7 +1041,8 @@ static mdsdsc_xd_t *encodeError(const char *error, const int line,
   return out_xd;
 }
 
-static mdsdsc_xd_t *getPackedDsc(mdsdsc_xd_t *retXd) {
+static mdsdsc_xd_t *getPackedDsc(mdsdsc_xd_t *retXd)
+{
   /*Assemble result. Format:
   -retResolution(float)
   -number of samples (minumum between X and Y)
@@ -951,22 +1052,28 @@ static mdsdsc_xd_t *getPackedDsc(mdsdsc_xd_t *retXd) {
   */
   mdsdsc_t *title, *xLabel, *yLabel;
   mdsdsc_t const *sig = retXd->pointer;
-  if (sig->dtype == DTYPE_PARAM) {
+  if (sig->dtype == DTYPE_PARAM)
+  {
     title = ((mdsdsc_r_t *)sig)->dscptrs[1];
     sig = ((mdsdsc_r_t *)sig)->dscptrs[0];
-  } else
+  }
+  else
     title = NULL;
   mdsdsc_t const *dat = ((mdsdsc_r_t *)sig)->dscptrs[0];
-  if (dat->dtype == DTYPE_WITH_UNITS) {
+  if (dat->dtype == DTYPE_WITH_UNITS)
+  {
     yLabel = ((mdsdsc_r_t *)dat)->dscptrs[1];
     dat = ((mdsdsc_r_t *)dat)->dscptrs[0];
-  } else
+  }
+  else
     yLabel = NULL;
   mdsdsc_t const *dim = ((mdsdsc_r_t *)sig)->dscptrs[2];
-  if (dim->dtype == DTYPE_WITH_UNITS) {
+  if (dim->dtype == DTYPE_WITH_UNITS)
+  {
     xLabel = ((mdsdsc_r_t *)dim)->dscptrs[1];
     dim = ((mdsdsc_r_t *)dim)->dscptrs[0];
-  } else
+  }
+  else
     xLabel = NULL;
   float retResolution = *(float *)(((mdsdsc_r_t *)sig)->dscptrs[1]->pointer);
   const int retSamples = ((mdsdsc_a_t *)dat)->arsize / dat->length;
@@ -995,11 +1102,13 @@ static mdsdsc_xd_t *getPackedDsc(mdsdsc_xd_t *retXd) {
   else
     retArr[8] = 3;
   int i, idx = 9;
-  for (i = 0; i < retSamples; i++, idx += sizeof(float)) {
+  for (i = 0; i < retSamples; i++, idx += sizeof(float))
+  {
     SWAP32(&retArr[idx], &((float *)dat->pointer)[i]);
   }
   idx = getXArray((mdsdsc_a_t *)dim, retSamples, retArr, idx);
-  if (idx < 0) {
+  if (idx < 0)
+  {
     encodeError("Cannot Convert X data dtype", __LINE__, retXd);
     return retXd;
   }
@@ -1011,7 +1120,8 @@ static mdsdsc_xd_t *getPackedDsc(mdsdsc_xd_t *retXd) {
 }
 
 EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
-                                float *inXMax, int *reqNSamples) {
+                                float *inXMax, int *reqNSamples)
+{
   static EMPTYXD(retXd);
   const size_t len = strlen(inY);
   // printf("GET XY SIGNAL %s xmin: %f  xmax: %f Req samples: %d  \n", inY,
@@ -1027,23 +1137,25 @@ EXPORT mdsdsc_xd_t *GetXYSignal(char *inY, char *inX, float *inXMin,
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &yXd MDS_END_ARG);
   }
-  if (STATUS_OK && inX && *inX) {
+  if (STATUS_OK && inX && *inX)
+  {
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
     status = TdiCompile(&expX, &xXd MDS_END_ARG);
   }
-  if
-    STATUS_OK status =
+  if (STATUS_OK)
+    status =
         GetXYSignalXd(yXd.pointer, xXd.pointer, inXMin ? &xMinD : NULL,
                       inXMax ? &xMaxD : NULL, *reqNSamples, &retXd);
   MdsFree1Dx(&yXd, NULL);
   MdsFree1Dx(&xXd, NULL);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &retXd));
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &retXd));
   return getPackedDsc(&retXd);
 }
 
 EXPORT mdsdsc_xd_t *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin,
-                                         int64_t *inXMax, int *reqNSamples) {
+                                         int64_t *inXMax, int *reqNSamples)
+{
   static EMPTYXD(xd);
 
   const size_t len = strlen(inY);
@@ -1057,22 +1169,24 @@ EXPORT mdsdsc_xd_t *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin,
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &yXd MDS_END_ARG);
   }
-  if (STATUS_OK && inX && *inX) {
+  if (STATUS_OK && inX && *inX)
+  {
     mdsdsc_t expX = {strlen(inX), DTYPE_T, CLASS_S, inX};
     status = TdiCompile(&expX, &xd MDS_END_ARG);
   }
-  if
-    STATUS_OK status =
+  if (STATUS_OK)
+    status =
         GetXYSignalXd(yXd.pointer, xd.pointer, inXMin ? &xMinD : NULL,
                       inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
   MdsFree1Dx(&yXd, NULL);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
   return getPackedDsc(&xd);
 }
 
 EXPORT mdsdsc_xd_t *GetXYWave(char *inY, float *inXMin, float *inXMax,
-                              int *reqNSamples) {
+                              int *reqNSamples)
+{
   static EMPTYXD(xd);
   const size_t len = strlen(inY);
   if (len == 0)
@@ -1084,16 +1198,17 @@ EXPORT mdsdsc_xd_t *GetXYWave(char *inY, float *inXMin, float *inXMax,
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &xd MDS_END_ARG);
   }
-  if
-    STATUS_OK status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
-                                     inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  if (STATUS_OK)
+    status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
+                           inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
   return &xd;
 }
 
 EXPORT mdsdsc_xd_t *GetXYWaveLongTimes(char *inY, int64_t *inXMin,
-                                       int64_t *inXMax, int *reqNSamples) {
+                                       int64_t *inXMax, int *reqNSamples)
+{
   static EMPTYXD(xd);
   const size_t len = strlen(inY);
   if (len == 0)
@@ -1105,10 +1220,10 @@ EXPORT mdsdsc_xd_t *GetXYWaveLongTimes(char *inY, int64_t *inXMin,
     mdsdsc_t expY = {len, DTYPE_T, CLASS_S, inY};
     status = TdiCompile(&expY, &xd MDS_END_ARG);
   }
-  if
-    STATUS_OK status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
-                                     inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
-  if
-    STATUS_NOT_OK return (encodeError(MdsGetMsg(status), __LINE__, &xd));
+  if (STATUS_OK)
+    status = GetXYSignalXd(xd.pointer, NULL, inXMin ? &xMinD : NULL,
+                           inXMax ? &xMaxD : NULL, *reqNSamples, &xd);
+  if (STATUS_NOT_OK)
+    return (encodeError(MdsGetMsg(status), __LINE__, &xd));
   return &xd;
 }

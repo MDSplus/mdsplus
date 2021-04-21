@@ -3,12 +3,14 @@
 #include "Timeout.h"
 #include <windows.h>
 #define MAX_SEM_COUNT 256
-class EXPORT UnnamedSemaphore {
+class EXPORT UnnamedSemaphore
+{
   //      LPSTR semName;
   char semName[256];
 
 public:
-  void initialize(int initVal) {
+  void initialize(int initVal)
+  {
 
     SECURITY_ATTRIBUTES sa;
     sa.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -16,21 +18,25 @@ public:
     sa.lpSecurityDescriptor = NULL;
 
     int64_t uniqueId = reinterpret_cast<int64_t>(this);
-    while (true) {
+    while (true)
+    {
       sprintf((char *)semName, "%x", uniqueId);
       HANDLE semHandle =
           CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, (LPSTR)semName);
       if (semHandle == 0)
         throw new SystemException("Error initializing semaphore",
                                   GetLastError());
-      if (GetLastError() == ERROR_ALREADY_EXISTS) {
+      if (GetLastError() == ERROR_ALREADY_EXISTS)
+      {
         CloseHandle(semHandle);
         uniqueId++;
-      } else
+      }
+      else
         break;
     }
   }
-  void wait() {
+  void wait()
+  {
     HANDLE semHandle =
         OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
     if (semHandle == 0)
@@ -42,7 +48,8 @@ public:
     // CloseHandle(semHandle);
   }
 
-  int timedWait(MdsTimeout &timeout) {
+  int timedWait(MdsTimeout &timeout)
+  {
     HANDLE semHandle =
         OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
     if (semHandle == 0)
@@ -67,7 +74,8 @@ public:
     // CloseHandle(semHandle);
   }
 
-  bool isZero() {
+  bool isZero()
+  {
     HANDLE semHandle =
         OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
     if (semHandle == 0)

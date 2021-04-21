@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype,
                                       int length, char ndims, int *dims,
-                                      void *ptr) {
+                                      void *ptr)
+{
   int i;
   in_descrip->dtype = dtype;
   in_descrip->ndims = ndims;
@@ -49,7 +50,8 @@ struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype,
 ////////////////////////////////////////////////////////////////////////////////
 
 struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims,
-                            int *dims, void *ptr) {
+                            int *dims, void *ptr)
+{
   int i;
   in_descrip->dtype = dtype;
   in_descrip->ndims = ndims;

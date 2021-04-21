@@ -22,7 +22,8 @@
 */
 int status_ok(int status) { return ((status & 1) == 1); }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   int status;
   int shot = 3;
   /*char const tree="cryocon18i";
@@ -37,7 +38,8 @@ int main(int argc, char *argv[]) {
 
   status = _TreeOpen(&dbid, "cryocon18i", shot, read_only);
   /*status = _TreeOpen(TreeCtx(), "cryocon18i", shot, read_only);*/
-  if (!status_ok(status)) {
+  if (!status_ok(status))
+  {
     printf("Error shot number %d\n", shot);
     fprintf(stderr, "Error shot number %d\n", shot);
     return -1;

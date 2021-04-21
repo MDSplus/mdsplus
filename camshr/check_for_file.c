@@ -64,14 +64,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       file to check
 // output:      status (ie SUCCESS or ERROR)
 //-------------------------------------------------------------------------
-int check_for_file(char *FileName) {
+int check_for_file(char *FileName)
+{
   int fd, status;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("check_for_file('%s')\n", FileName);
 
-  if ((fd = Open(FileName, O_RDONLY)) < 0) { // file does not exist, yet
-    status = FILE_ERROR;                     // :<
+  if ((fd = Open(FileName, O_RDONLY)) < 0)
+  {                      // file does not exist, yet
+    status = FILE_ERROR; // :<
     goto Filecheck_Exit;
   }
   // things are good !
@@ -79,7 +81,8 @@ int check_for_file(char *FileName) {
   status = SUCCESS; // :>
 
 Filecheck_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("check_for_file('%s'): ", FileName);
     ShowStatus(status);
   }

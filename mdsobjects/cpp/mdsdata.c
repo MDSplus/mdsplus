@@ -69,7 +69,8 @@ extern void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen,
 extern void *getManyObj(char *serializedIn);
 extern void *putManyObj(char *serializedIn);
 
-void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr) {
+void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
+{
   EMPTYXD(emptyXd);
   int status;
   struct descriptor dsc;
@@ -83,7 +84,8 @@ void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr) {
   dsc.length = length;
   dsc.pointer = ptr;
   status = MdsCopyDxXd(&dsc, xdPtr);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     printf("PANIC in convertToScalarDsc: MdsCopyDxXd failed\n");
     exit(0);
   }
@@ -91,7 +93,8 @@ void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr) {
 }
 
 void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
-                        int *dims, void *ptr) {
+                        int *dims, void *ptr)
+{
   EMPTYXD(emptyXd);
   int status, i;
   DESCRIPTOR_A(arr1Dsc, length, dtype, ptr, arsize);
@@ -100,10 +103,12 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
       (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
   *xdPtr = emptyXd;
 
-  if (nDims == 1) {
+  if (nDims == 1)
+  {
     arr1Dsc.class = clazz;
     status = MdsCopyDxXd((struct descriptor *)&arr1Dsc, xdPtr);
-    if (!(status & 1)) {
+    if (!(status & 1))
+    {
       printf("PANIC in convertToArrayDsc: MdsCopyDxXd failed: %s\n",
              MdsGetMsg(status));
       exit(0);
@@ -116,7 +121,8 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
   arrNDsc.pointer = ptr;
 
   status = MdsCopyDxXd((struct descriptor *)&arrNDsc, xdPtr);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     printf("PANIC in convertToArrayDsc: MdsCopyDxXd failed\n");
     exit(0);
   }
@@ -126,7 +132,8 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
 #define MAX_ARGS 128
 
 void *convertToCompoundDsc(int clazz __attribute__((unused)), int dtype,
-                           int length, void *ptr, int ndescs, void **descs) {
+                           int length, void *ptr, int ndescs, void **descs)
+{
   EMPTYXD(emptyXd);
   struct descriptor_xd *xds[MAX_ARGS];
   int status, i;
@@ -138,21 +145,26 @@ void *convertToCompoundDsc(int clazz __attribute__((unused)), int dtype,
   recDsc.length = length;
   recDsc.pointer = ptr;
   recDsc.ndesc = ndescs;
-  for (i = 0; i < ndescs; i++) {
+  for (i = 0; i < ndescs; i++)
+  {
     xds[i] = 0;
-    if (descs[i]) {
+    if (descs[i])
+    {
       xds[i] = (struct descriptor_xd *)convertDataToDsc(descs[i]);
       recDsc.dscptrs[i] = xds[i]->pointer;
-    } else
+    }
+    else
       recDsc.dscptrs[i] = 0;
   }
   status = MdsCopyDxXd((struct descriptor *)&recDsc, xdPtr);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     printf("PANIC in convertToCompoundDsc: MdsCopyDxXd failed\n");
     exit(0);
   }
   for (i = 0; i < ndescs; i++)
-    if (xds[i]) {
+    if (xds[i])
+    {
       MdsFree1Dx(xds[i], 0);
       free(xds[i]);
     }
@@ -160,7 +172,8 @@ void *convertToCompoundDsc(int clazz __attribute__((unused)), int dtype,
   return xdPtr;
 }
 
-void *convertToApdDsc(int type, int ndescs, void **descs) {
+void *convertToApdDsc(int type, int ndescs, void **descs)
+{
   EMPTYXD(emptyXd);
   struct descriptor_xd **xds =
       (struct descriptor_xd **)malloc(ndescs * sizeof(struct descriptor_xd *));
@@ -172,22 +185,27 @@ void *convertToApdDsc(int type, int ndescs, void **descs) {
   apdDsc.dtype = type;
   apdDsc.arsize = ndescs * sizeof(struct descriptor *);
   apdDsc.pointer = malloc(ndescs * sizeof(struct descriptor *));
-  for (i = 0; i < ndescs; i++) {
+  for (i = 0; i < ndescs; i++)
+  {
     xds[i] = 0;
-    if (descs[i]) {
+    if (descs[i])
+    {
       xds[i] = (struct descriptor_xd *)convertDataToDsc(descs[i]);
       ((struct descriptor **)apdDsc.pointer)[i] = xds[i]->pointer;
-    } else
+    }
+    else
       ((struct descriptor **)apdDsc.pointer)[i] = 0;
   }
   status = MdsCopyDxXd((struct descriptor *)&apdDsc, xdPtr);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     printf("PANIC in convertToApdDsc: MdsCopyDxXd failed\n");
     exit(0);
   }
   free(apdDsc.pointer);
   for (i = 0; i < ndescs; i++)
-    if (xds[i]) {
+    if (xds[i])
+    {
       MdsFree1Dx(xds[i], 0);
       free(xds[i]);
     }
@@ -195,19 +213,23 @@ void *convertToApdDsc(int type, int ndescs, void **descs) {
   return xdPtr;
 }
 
-void *evaluateData(void *dscPtr, void *ctx, int isEvaluate, int *retStatus) {
+void *evaluateData(void *dscPtr, void *ctx, int isEvaluate, int *retStatus)
+{
   EMPTYXD(emptyXd);
   int status;
 
   struct descriptor_xd *xdPtr =
       (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
   *xdPtr = emptyXd;
-  if (isEvaluate) {
+  if (isEvaluate)
+  {
     if (ctx)
       status = _TdiEvaluate(&ctx, dscPtr, xdPtr MDS_END_ARG);
     else
       status = TdiEvaluate(dscPtr, xdPtr MDS_END_ARG);
-  } else {
+  }
+  else
+  {
     if (ctx)
       status = _TdiData(&ctx, (struct descriptor *)dscPtr, xdPtr MDS_END_ARG);
     else
@@ -219,7 +241,8 @@ void *evaluateData(void *dscPtr, void *ctx, int isEvaluate, int *retStatus) {
   return (void *)xdPtr;
 }
 
-void *convertFromDsc(void *ptr, void *tree) {
+void *convertFromDsc(void *ptr, void *tree)
+{
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)ptr;
   struct descriptor *dscPtr;
   int i, status;
@@ -249,16 +272,20 @@ void *convertFromDsc(void *ptr, void *tree) {
   dscRPtr = (struct descriptor_r *)dscPtr;
   while (dscRPtr->class == CLASS_R && (dscRPtr->dtype == DTYPE_WITH_ERROR ||
                                        dscRPtr->dtype == DTYPE_WITH_UNITS ||
-                                       dscRPtr->dtype == DTYPE_PARAM)) {
-    if (!errorData && dscRPtr->dtype == DTYPE_WITH_ERROR) {
+                                       dscRPtr->dtype == DTYPE_PARAM))
+  {
+    if (!errorData && dscRPtr->dtype == DTYPE_WITH_ERROR)
+    {
       errorData = convertFromDsc(dscRPtr->dscptrs[1], tree);
       dscRPtr = (struct descriptor_r *)dscRPtr->dscptrs[0];
     }
-    if (!unitsData && dscRPtr->dtype == DTYPE_WITH_UNITS) {
+    if (!unitsData && dscRPtr->dtype == DTYPE_WITH_UNITS)
+    {
       unitsData = convertFromDsc(dscRPtr->dscptrs[1], tree);
       dscRPtr = (struct descriptor_r *)dscRPtr->dscptrs[0];
     }
-    if (dscRPtr->dtype == DTYPE_PARAM) {
+    if (dscRPtr->dtype == DTYPE_PARAM)
+    {
       helpData =
           (dscRPtr->dscptrs[1]) ? convertFromDsc(dscRPtr->dscptrs[1], tree) : 0;
       validationData =
@@ -270,27 +297,31 @@ void *convertFromDsc(void *ptr, void *tree) {
 
   // printf("CONVERTFROMDSC class %d  type %d\n", dscPtr->class, dscPtr->dtype);
 
-  switch (dscPtr->class) {
+  switch (dscPtr->class)
+  {
   case CLASS_S:
     return createScalarData(dscPtr->dtype, dscPtr->length, dscPtr->pointer,
                             unitsData, errorData, helpData, validationData,
                             tree);
   case CLASS_CA:
     status = TdiData(dscPtr, &caXd MDS_END_ARG);
-    if (!(status & 1)) {
+    if (!(status & 1))
+    {
       printf("Cannot evaluate CA descriptor\n");
       return NULL;
     }
     isCa = 1;
     MDS_ATTR_FALLTHROUGH
 
-  case CLASS_A: {
+  case CLASS_A:
+  {
     ARRAY_COEFF(char, 64) * arrDscPtr;
     if (isCa)
       arrDscPtr = (void *)caXd.pointer;
     else
       arrDscPtr = (void *)dscPtr;
-    if (arrDscPtr->dimct > 1) {
+    if (arrDscPtr->dimct > 1)
+    {
       void *res =
           createArrayData(arrDscPtr->dtype, arrDscPtr->length, arrDscPtr->dimct,
                           (int *)&arrDscPtr->m, arrDscPtr->pointer, unitsData,
@@ -298,7 +329,9 @@ void *convertFromDsc(void *ptr, void *tree) {
       if (isCa)
         MdsFree1Dx(&caXd, 0);
       return res;
-    } else {
+    }
+    else
+    {
       int dims =
           (arrDscPtr->arsize > 0) ? arrDscPtr->arsize / arrDscPtr->length : 0;
       void *res = createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims,
@@ -309,27 +342,32 @@ void *convertFromDsc(void *ptr, void *tree) {
       return res;
     }
   }
-  case CLASS_R: {
+  case CLASS_R:
+  {
     void *retData;
     char **descs = malloc(dscRPtr->ndesc * sizeof(char *));
     // Remove WITH_UNITS, WITH ERROR, PARAM which are not on the top of the Data
     // tree
     dscRPtr = (struct descriptor_r *)dscPtr;
     if (dscRPtr->dtype == DTYPE_WITH_UNITS ||
-        dscRPtr->dtype == DTYPE_WITH_ERROR || dscRPtr->dtype == DTYPE_PARAM) {
+        dscRPtr->dtype == DTYPE_WITH_ERROR || dscRPtr->dtype == DTYPE_PARAM)
+    {
       EMPTYXD(currXd);
       MdsCopyDxXd(dscRPtr->dscptrs[0], &currXd);
       retData = convertFromDsc(&currXd, tree);
       MdsFree1Dx(&currXd, 0);
       return retData;
     }
-    for (i = 0; i < dscRPtr->ndesc; i++) {
-      if (dscRPtr->dscptrs[i]) {
+    for (i = 0; i < dscRPtr->ndesc; i++)
+    {
+      if (dscRPtr->dscptrs[i])
+      {
         EMPTYXD(currXd);
         MdsCopyDxXd(dscRPtr->dscptrs[i], &currXd);
         descs[i] = convertFromDsc(&currXd, tree);
         MdsFree1Dx(&currXd, 0);
-      } else
+      }
+      else
         descs[i] = 0;
     }
     retData = createCompoundData(
@@ -338,21 +376,26 @@ void *convertFromDsc(void *ptr, void *tree) {
     free(descs);
     return retData;
   }
-  case CLASS_APD: {
+  case CLASS_APD:
+  {
     struct descriptor_a *arrPtr = (struct descriptor_a *)dscPtr;
     char **descs = malloc(arrPtr->arsize);
     void *retData;
     int size = arrPtr->arsize / arrPtr->length;
-    for (i = 0; i < size; i++) {
-      if (((char **)arrPtr->pointer)[i]) {
+    for (i = 0; i < size; i++)
+    {
+      if (((char **)arrPtr->pointer)[i])
+      {
         EMPTYXD(currXd);
         MdsCopyDxXd(((struct descriptor **)arrPtr->pointer)[i], &currXd);
         descs[i] = convertFromDsc(&currXd, tree);
         MdsFree1Dx(&currXd, 0);
-      } else
+      }
+      else
         descs[i] = 0;
     }
-    switch (dscPtr->dtype) {
+    switch (dscPtr->dtype)
+    {
     case DTYPE_LIST:
       retData = createListData(size, descs, unitsData, errorData, helpData,
                                validationData);
@@ -375,12 +418,14 @@ void *convertFromDsc(void *ptr, void *tree) {
   return (0);
 }
 
-void freeDsc(void *dscPtr) {
+void freeDsc(void *dscPtr)
+{
 
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)dscPtr;
   if (!dscPtr)
     return;
-  if (xdPtr->class != CLASS_XD) {
+  if (xdPtr->class != CLASS_XD)
+  {
     printf("PANIC in convertFromDsc: not an XD\n");
     exit(0);
   }
@@ -388,7 +433,8 @@ void freeDsc(void *dscPtr) {
   free(xdPtr);
 }
 
-char *decompileDsc(void *ptr, void *ctx) {
+char *decompileDsc(void *ptr, void *ctx)
+{
   int status;
   EMPTYXD(xd);
   char *buf;
@@ -397,7 +443,8 @@ char *decompileDsc(void *ptr, void *ctx) {
     status = _TdiDecompile(&ctx, dscPtr, &xd MDS_END_ARG);
   else
     status = TdiDecompile(dscPtr, &xd MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     printf("Error decompiling expression: %s\n", MdsGetMsg(status));
     return NULL;
   }
@@ -411,7 +458,8 @@ char *decompileDsc(void *ptr, void *ctx) {
 }
 
 void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
-                              void *ctx, int *retStatus) {
+                              void *ctx, int *retStatus)
+{
   int varIdx;
   int i, status;
   void *arglist[MAX_ARGS];
@@ -423,15 +471,19 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
   exprD.length = (uint16_t)strlen(expr);
   exprD.pointer = (char *)expr;
 
-  if (ctx) {
+  if (ctx)
+  {
     arglist[1] = &ctx;
     arglist[2] = &exprD;
     varIdx = 3;
-  } else {
+  }
+  else
+  {
     arglist[1] = &exprD;
     varIdx = 2;
   }
-  for (i = 0; i < nArgs; i++) {
+  for (i = 0; i < nArgs; i++)
+  {
     arglistXd[i] = (struct descriptor_xd *)args[i];
     if (arglistXd[i]->l_length > 0)
       arglist[varIdx] = arglistXd[i]->pointer;
@@ -443,9 +495,12 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
 
-  if (ctx) {
+  if (ctx)
+  {
     status = *retStatus = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
-  } else {
+  }
+  else
+  {
     status = *retStatus = (int)(intptr_t)LibCallg(arglist, TdiCompile);
   }
   if (!(status & 1))
@@ -459,7 +514,8 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree,
   return data;
 }
 
-void *convertToByte(void *dsc) {
+void *convertToByte(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_BYTE;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -470,14 +526,16 @@ void *convertToByte(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToByteUnsigned(void *dsc) {
+void *convertToByteUnsigned(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_BYTE_UNSIGNED;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -488,14 +546,16 @@ void *convertToByteUnsigned(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToShort(void *dsc) {
+void *convertToShort(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_WORD;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -506,14 +566,16 @@ void *convertToShort(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToShortUnsigned(void *dsc) {
+void *convertToShortUnsigned(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_WORD_UNSIGNED;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -524,14 +586,16 @@ void *convertToShortUnsigned(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToInt(void *dsc) {
+void *convertToInt(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_LONG;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -542,14 +606,16 @@ void *convertToInt(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToIntUnsigned(void *dsc) {
+void *convertToIntUnsigned(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_LONG_UNSIGNED;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -560,14 +626,16 @@ void *convertToIntUnsigned(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToLong(void *dsc) {
+void *convertToLong(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_QUADWORD;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -578,14 +646,16 @@ void *convertToLong(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToLongUnsigned(void *dsc) {
+void *convertToLongUnsigned(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_QUADWORD_UNSIGNED;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -596,14 +666,16 @@ void *convertToLongUnsigned(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToFloat(void *dsc) {
+void *convertToFloat(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_FLOAT;
 
@@ -615,14 +687,16 @@ void *convertToFloat(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToDouble(void *dsc) {
+void *convertToDouble(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_FT_FLOAT;
 
@@ -634,14 +708,16 @@ void *convertToDouble(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToShape(void *dsc) {
+void *convertToShape(void *dsc)
+{
   int status;
   unsigned short opcode = OPC_SHAPE;
   DESCRIPTOR_FUNCTION(funD, &opcode, 1);
@@ -652,14 +728,16 @@ void *convertToShape(void *dsc) {
   *xdPtr = emptyXd;
   funD.arguments[0] = dsc;
   status = TdiData((struct descriptor *)&funD, xdPtr MDS_END_ARG);
-  if (!(status & 1)) {
+  if (!(status & 1))
+  {
     free(xdPtr);
     return 0;
   }
   return xdPtr;
 }
 
-void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc) {
+void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
+{
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
   struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
@@ -667,13 +745,16 @@ void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc) {
   struct descriptor_xd *validationXd = (struct descriptor_xd *)validationDsc;
   DESCRIPTOR_PARAM(paramD, 0, 0, 0);
 
-  if (xd) {
+  if (xd)
+  {
     paramD.value = xd->pointer;
   }
-  if (helpXd) {
+  if (helpXd)
+  {
     paramD.help = helpXd->pointer;
   }
-  if (validationXd) {
+  if (validationXd)
+  {
     paramD.validation = validationXd->pointer;
   }
   retXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
@@ -682,17 +763,20 @@ void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc) {
   return retXd;
 }
 
-void *convertToUnits(void *dsc, void *unitsDsc) {
+void *convertToUnits(void *dsc, void *unitsDsc)
+{
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
   struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
   struct descriptor_xd *unitsXd = (struct descriptor_xd *)unitsDsc;
   DESCRIPTOR_WITH_UNITS(withUnitsD, 0, 0);
 
-  if (xd) {
+  if (xd)
+  {
     withUnitsD.data = xd->pointer;
   }
-  if (unitsXd) {
+  if (unitsXd)
+  {
     withUnitsD.units = unitsXd->pointer;
   }
   retXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
@@ -701,17 +785,20 @@ void *convertToUnits(void *dsc, void *unitsDsc) {
   return retXd;
 }
 
-void *convertToError(void *dsc, void *errorDsc) {
+void *convertToError(void *dsc, void *errorDsc)
+{
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
   struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
   struct descriptor_xd *errorXd = (struct descriptor_xd *)errorDsc;
   DESCRIPTOR_WITH_ERROR(withErrorD, 0, 0);
 
-  if (xd) {
+  if (xd)
+  {
     withErrorD.data = xd->pointer;
   }
-  if (errorXd) {
+  if (errorXd)
+  {
     withErrorD.error = errorXd->pointer;
   }
   retXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
@@ -720,7 +807,8 @@ void *convertToError(void *dsc, void *errorDsc) {
   return retXd;
 }
 
-char *serializeData(void *dsc, int *retSize, void **retDsc) {
+char *serializeData(void *dsc, int *retSize, void **retDsc)
+{
   int status;
   struct descriptor *dscIn = (struct descriptor *)dsc;
   EMPTYXD(emptyXd);
@@ -731,12 +819,14 @@ char *serializeData(void *dsc, int *retSize, void **retDsc) {
   *xdPtr = emptyXd;
 
   status = MdsSerializeDscOut(dscIn, xdPtr);
-  if (!(status & 1) || !xdPtr->pointer) {
+  if (!(status & 1) || !xdPtr->pointer)
+  {
     free(xdPtr);
     return 0;
   }
   arrPtr = (struct descriptor_a *)xdPtr->pointer;
-  if (arrPtr->dtype != DTYPE_B && arrPtr->dtype != DTYPE_BU) {
+  if (arrPtr->dtype != DTYPE_B && arrPtr->dtype != DTYPE_BU)
+  {
     printf("Fatal error: MdsSerializeDscOut returned a wrong type");
     return 0;
   }
@@ -745,7 +835,8 @@ char *serializeData(void *dsc, int *retSize, void **retDsc) {
   return arrPtr->pointer;
 }
 
-void *deserializeData(char const *serialized) {
+void *deserializeData(char const *serialized)
+{
   EMPTYXD(emptyXd);
   struct descriptor_xd *xdPtr;
   int status;
@@ -759,7 +850,8 @@ void *deserializeData(char const *serialized) {
 }
 
 void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen,
-                        int *retLen) {
+                        int *retLen)
+{
   struct descriptor_d dateDsc = {0, DTYPE_T, CLASS_D, 0};
   unsigned short len;
   LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)timePtr);
@@ -771,7 +863,8 @@ void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen,
   *retLen = len;
 }
 
-int64_t convertAsciiToTime(const char *ascTime) {
+int64_t convertAsciiToTime(const char *ascTime)
+{
   int64_t time;
   //      LibConvertDateString("now", &time);
   LibConvertDateString(ascTime, &time);
@@ -780,7 +873,8 @@ int64_t convertAsciiToTime(const char *ascTime) {
 
 // Conversion from VMS to IEEE float
 void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims,
-                             void *ptr) {
+                             void *ptr)
+{
   int status, arsize, i;
   float *fArr;
   DESCRIPTOR_A(inArrD, 0, 0, 0, 0);
@@ -810,13 +904,15 @@ void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims,
   free(fArr);
 }
 
-void convertToIEEEFloat(int dtype, int length, void *ptr) {
+void convertToIEEEFloat(int dtype, int length, void *ptr)
+{
   int dims[1] = {1};
   convertToIEEEFloatArray(dtype, length, 1, dims, ptr);
 }
 
 ///////////////mdsip support for Connection class///////////
-struct descriptor_xd EXPORT *GetManyExecute(char *serializedIn) {
+struct descriptor_xd EXPORT *GetManyExecute(char *serializedIn)
+{
   static EMPTYXD(xd);
   struct descriptor_xd *serResult;
 
@@ -829,7 +925,8 @@ struct descriptor_xd EXPORT *GetManyExecute(char *serializedIn) {
   return &xd;
 }
 
-struct descriptor_xd *PutManyExecute(char *serializedIn) {
+struct descriptor_xd *PutManyExecute(char *serializedIn)
+{
   static EMPTYXD(xd);
   struct descriptor *serResult;
 

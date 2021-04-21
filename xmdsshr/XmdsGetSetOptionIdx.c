@@ -84,10 +84,12 @@ int XmdsGetOptionIdx(Widget w);
 
  Executable:                                                                  */
 
-EXPORT void XmdsSetOptionIdx(Widget w, Cardinal idx) {
+EXPORT void XmdsSetOptionIdx(Widget w, Cardinal idx)
+{
   static Widget pulldown;
   XtVaGetValues(w, XmNsubMenuId, &pulldown, NULL);
-  if (pulldown) {
+  if (pulldown)
+  {
     Widget *options;
     Cardinal num_options;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options,
@@ -97,19 +99,22 @@ EXPORT void XmdsSetOptionIdx(Widget w, Cardinal idx) {
   }
 }
 
-EXPORT int XmdsGetOptionIdx(Widget w) {
+EXPORT int XmdsGetOptionIdx(Widget w)
+{
   int idx = -1;
   static Widget pulldown;
   static Widget option;
   XtVaGetValues(w, XmNsubMenuId, &pulldown, XmNmenuHistory, &option, NULL);
-  if (pulldown && option) {
+  if (pulldown && option)
+  {
     static Widget *options;
     static Cardinal num_options;
     Cardinal i;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options,
                   NULL);
     for (i = 0; i < num_options; i++)
-      if (options[i] == option) {
+      if (options[i] == option)
+      {
         idx = i;
         break;
       }

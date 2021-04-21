@@ -3,71 +3,91 @@
 #include <PvStream.h>
 #include <PvStreamGEV.h> //new 9mar2016 for SDK4
 
-enum FPS_ENUM { fps_200, fps_100, fps_50, fps_25, fps_12, fps_6, fps_3 };
-enum IRFMT_ENUM { radiometric, linear10mK, linear100mK };
-enum EXPMODE_ENUM { internal_mode, external_mode };
+enum FPS_ENUM
+{
+  fps_200,
+  fps_100,
+  fps_50,
+  fps_25,
+  fps_12,
+  fps_6,
+  fps_3
+};
+enum IRFMT_ENUM
+{
+  radiometric,
+  linear10mK,
+  linear100mK
+};
+enum EXPMODE_ENUM
+{
+  internal_mode,
+  external_mode
+};
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-extern int flirRadiometricConv(void *frame, int width, int height,
-                               void *metaData);
+  extern int flirRadiometricConv(void *frame, int width, int height,
+                                 void *metaData);
 
-// Wrapper for Python that must see the cpp class as standard C functions
+  // Wrapper for Python that must see the cpp class as standard C functions
 
-int flirOpen(const char *cameraName, int *camHandle);
-int flirClose(int camHandle);
-int checkLastOp(int camHandle);
-int printAllParameters(int camHandle);
-int setExposureMode(int camHandle, EXPMODE_ENUM exposureMode);
+  int flirOpen(const char *cameraName, int *camHandle);
+  int flirClose(int camHandle);
+  int checkLastOp(int camHandle);
+  int printAllParameters(int camHandle);
+  int setExposureMode(int camHandle, EXPMODE_ENUM exposureMode);
 
-int setFrameRate(int camHandle, FPS_ENUM frameRate, int *frameToSkip);
-int setFrameRateNew(int camHandle, double frameRate);
+  int setFrameRate(int camHandle, FPS_ENUM frameRate, int *frameToSkip);
+  int setFrameRateNew(int camHandle, double frameRate);
 
-int setIrFormat(int camHandle, IRFMT_ENUM irFormat);
-int getReadoutArea(int camHandle, int *x, int *y, int *width, int *height);
-int setReadoutArea(int camHandle, int x, int y, int width, int height);
-int setObjectParameters(int camHandle, double reflectedTemperature,
-                        double atmosphericTemperature, double objectDistance,
-                        double objectEmissivity, double relativeHumidity,
-                        double extOpticsTemperature,
-                        double extOpticsTransmission,
-                        double estimatedTransmission);
-int setMeasurementRange(int camHandle, int measRange);
-int getFocusAbsPosition(int camHandle, int *focusPos);
-int setFocusAbsPosition(int camHandle, int focusPos);
-int setAcquisitionMode(int camHandle, int storeEnabled, int acqSkipFrameNumber);
+  int setIrFormat(int camHandle, IRFMT_ENUM irFormat);
+  int getReadoutArea(int camHandle, int *x, int *y, int *width, int *height);
+  int setReadoutArea(int camHandle, int x, int y, int width, int height);
+  int setObjectParameters(int camHandle, double reflectedTemperature,
+                          double atmosphericTemperature, double objectDistance,
+                          double objectEmissivity, double relativeHumidity,
+                          double extOpticsTemperature,
+                          double extOpticsTransmission,
+                          double estimatedTransmission);
+  int setMeasurementRange(int camHandle, int measRange);
+  int getFocusAbsPosition(int camHandle, int *focusPos);
+  int setFocusAbsPosition(int camHandle, int focusPos);
+  int setAcquisitionMode(int camHandle, int storeEnabled, int acqSkipFrameNumber);
 
-int executeAutoFocus(int camHandle);
-int setCalibMode(int camHandle, int calMode);
-int executeAutoCalib(int camHandle);
-int startAcquisition(int camHandle, int *width, int *height, int *payloadSize);
-int stopAcquisition(int camHandle);
-int getFrame(int camHandle, int *status, void *frame, void *metaData);
-int frameConv(int camHandle, unsigned short *frame, int width, int height);
-int startFramesAcquisition(int camHandle);
-int stopFramesAcquisition(int camHandle);
+  int executeAutoFocus(int camHandle);
+  int setCalibMode(int camHandle, int calMode);
+  int executeAutoCalib(int camHandle);
+  int startAcquisition(int camHandle, int *width, int *height, int *payloadSize);
+  int stopAcquisition(int camHandle);
+  int getFrame(int camHandle, int *status, void *frame, void *metaData);
+  int frameConv(int camHandle, unsigned short *frame, int width, int height);
+  int startFramesAcquisition(int camHandle);
+  int stopFramesAcquisition(int camHandle);
 
-int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled,
-                     bool autoAdjustLimit, const char *streamingServer,
-                     int streamingPort, int lowLim, int highLim, int adjRoiX,
-                     int adjRoiY, int adjRoiW, int adjRoiH,
-                     const char *deviceName);
+  int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled,
+                       bool autoAdjustLimit, const char *streamingServer,
+                       int streamingPort, int lowLim, int highLim, int adjRoiX,
+                       int adjRoiY, int adjRoiW, int adjRoiH,
+                       const char *deviceName);
 
-int setTriggerMode(int camHandle, int triggerMode, double burstDuration,
-                   int numTrigger);
-int softwareTrigger(int camHandle);
-int setTreeInfo(int camHandle, void *treePtr, int framesNid, int timebaseNid,
-                int framesMetadNid, int frame0TimeNid);
+  int setTriggerMode(int camHandle, int triggerMode, double burstDuration,
+                     int numTrigger);
+  int softwareTrigger(int camHandle);
+  int setTreeInfo(int camHandle, void *treePtr, int framesNid, int timebaseNid,
+                  int framesMetadNid, int frame0TimeNid);
 
-void getLastError(int camHandle, char *msg);
+  void getLastError(int camHandle, char *msg);
 
 #ifdef __cplusplus
 }
 #endif
 
-class FLIR_SC65X {
+class FLIR_SC65X
+{
 private:
   PvDevice *lDevice;  // camera handle
   PvStream *lStream;  // stream handle

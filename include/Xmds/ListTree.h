@@ -55,60 +55,67 @@
 #define XtDESTROY 4
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-extern WidgetClass listtreeWidgetClass;
+  extern WidgetClass listtreeWidgetClass;
 
-typedef struct _ListTreeClassRec *ListTreeWidgetClass;
-typedef struct _ListTreeRec *ListTreeWidget;
+  typedef struct _ListTreeClassRec *ListTreeWidgetClass;
+  typedef struct _ListTreeRec *ListTreeWidget;
 
-typedef enum _ListTreeItemType {
-  ItemDetermineType = 0,
-  ItemBranchType = XtBRANCH,
-  ItemLeafType = XtLEAF
-} ListTreeItemType;
+  typedef enum _ListTreeItemType
+  {
+    ItemDetermineType = 0,
+    ItemBranchType = XtBRANCH,
+    ItemLeafType = XtLEAF
+  } ListTreeItemType;
 
-typedef struct _ListTreeItem {
-  Boolean open;
-  Boolean highlighted;
-  char *text;
-  int length;
-  int x, y, ytext;
-  int count;
-  Dimension height;
-  ListTreeItemType type;
-  struct _ListTreeItem *parent, *firstchild, *prevsibling, *nextsibling;
-  Pixmap openPixmap, closedPixmap;
-  XtPointer user_data;
-} ListTreeItem;
+  typedef struct _ListTreeItem
+  {
+    Boolean open;
+    Boolean highlighted;
+    char *text;
+    int length;
+    int x, y, ytext;
+    int count;
+    Dimension height;
+    ListTreeItemType type;
+    struct _ListTreeItem *parent, *firstchild, *prevsibling, *nextsibling;
+    Pixmap openPixmap, closedPixmap;
+    XtPointer user_data;
+  } ListTreeItem;
 
-typedef struct _ListTreeReturnStruct {
-  int reason;
-  ListTreeItem *item;
-  ListTreeItem **path;
-  int count;
-  Boolean open;
-} ListTreeReturnStruct;
+  typedef struct _ListTreeReturnStruct
+  {
+    int reason;
+    ListTreeItem *item;
+    ListTreeItem **path;
+    int count;
+    Boolean open;
+  } ListTreeReturnStruct;
 
-typedef struct _ListTreeMultiReturnStruct {
-  ListTreeItem **items;
-  int count;
-} ListTreeMultiReturnStruct;
+  typedef struct _ListTreeMultiReturnStruct
+  {
+    ListTreeItem **items;
+    int count;
+  } ListTreeMultiReturnStruct;
 
-typedef struct _ListTreeActivateStruct {
-  int reason;
-  ListTreeItem *item;
-  Boolean open;
-  ListTreeItem **path;
-  int count;
-} ListTreeActivateStruct;
+  typedef struct _ListTreeActivateStruct
+  {
+    int reason;
+    ListTreeItem *item;
+    Boolean open;
+    ListTreeItem **path;
+    int count;
+  } ListTreeActivateStruct;
 
-typedef struct _ListTreeItemReturnStruct {
-  int reason;
-  ListTreeItem *item;
-  XEvent *event;
-} ListTreeItemReturnStruct;
+  typedef struct _ListTreeItemReturnStruct
+  {
+    int reason;
+    ListTreeItem *item;
+    XEvent *event;
+  } ListTreeItemReturnStruct;
 
 #ifdef __cplusplus
 };

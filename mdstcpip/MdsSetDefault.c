@@ -31,7 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsSetDefault  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int MdsSetDefault(int id, char *node) {
+int MdsSetDefault(int id, char *node)
+{
   struct descrip nodearg;
   struct descrip ansarg;
   STATIC_CONSTANT char *expression = "TreeSetDefault($)";

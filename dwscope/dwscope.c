@@ -322,7 +322,8 @@ static float DeltaY;
 static XtAppContext AppContext;
 static XtWorkProcId UpdateWaveformsWorkProcID;
 
-int main(int argc, String *argv) {
+int main(int argc, String *argv)
+{
   int i;
   static String hierarchy_names[] = {"dwscope.uid"};
   String fallback_resources[] = {
@@ -384,7 +385,8 @@ int main(int argc, String *argv) {
                                    {"Shrink", Shrink},
                                    {"Expand", Expand}};
   MrmType class;
-  typedef struct {
+  typedef struct
+  {
     String defaultfile;
     Boolean icon_update;
   } AppResourcesRec;
@@ -434,12 +436,14 @@ int main(int argc, String *argv) {
                    &drm_hierarchy);
   MrmFetchWidget(drm_hierarchy, "scope", TopWidget, &MainWidget, &class);
   MrmCloseHierarchy(drm_hierarchy);
-  if (!MainWidget) {
+  if (!MainWidget)
+  {
     printf("Problem loading UID\n");
     exit(1);
   }
   LockScalesWidget = XtNameToWidget(MainWidget, "*lockScales");
-  if (appRes.icon_update) {
+  if (appRes.icon_update)
+  {
     XmToggleButtonGadgetSetState(
         XtNameToWidget(TopWidget, "*disable_icon_updates"), False, False);
   }
@@ -450,14 +454,16 @@ int main(int argc, String *argv) {
   for (c = 1; c < NumPanes; c++)
     XtVaSetValues(Pane[c], XmNleftAttachment, XmATTACH_OPPOSITE_WIDGET,
                   XmNleftWidget, Sash[c - 1], XmNleftOffset, 2, NULL);
-  if (printers) {
+  if (printers)
+  {
     Widget printers_pulldown =
         XtNameToWidget(MainWidget, "*printer_select_pulldown");
     Arg arglist[] = {{XmNlabelString, 0}};
     int num;
     Widget *children;
     char *printer;
-    for (printer = strtok(printers, "\n"); printer; printer = strtok(0, "\n")) {
+    for (printer = strtok(printers, "\n"); printer; printer = strtok(0, "\n"))
+    {
       arglist[0].value = (long)XmStringCreateSimple(printer);
       XmCreatePushButtonGadget(printers_pulldown, printer, arglist,
                                XtNumber(arglist));
@@ -472,7 +478,8 @@ int main(int argc, String *argv) {
   for (i = 0; i < NumSashs; i++)
     XDefineCursor(XtDisplay(TopWidget), XtWindow(Sash[i]), cursor);
   for (c = 0; c < MaxCols; c++)
-    for (r = 0; r < MaxRows; r++) {
+    for (r = 0; r < MaxRows; r++)
+    {
       int p_r = (r + 1) % MaxRows;
       int p_c = p_r ? c : (c + 1) % MaxCols;
       XtVaSetValues(Wave[c][r].w, XmdsNpanWith, Wave[p_c][p_r].w, NULL);
@@ -498,7 +505,8 @@ int main(int argc, String *argv) {
 #include <errno.h>
 #include <mdsdescrip.h>
 
-static void DoPrint(char *filename) {
+static void DoPrint(char *filename)
+{
   char cmd[512];
   int num =
       snprintf(cmd, sizeof(cmd), "dwscopePrint %s %s", filename, ScopePrinter);
@@ -507,18 +515,24 @@ static void DoPrint(char *filename) {
       printf("Error invoking dwscopePrint\n");
 }
 
-static char *GetPrinterList() {
+static char *GetPrinterList()
+{
   char *printers = 0;
   FILE *fp = popen("ScopePrinters", "r");
-  if (fp != NULL) {
+  if (fp != NULL)
+  {
     char buff[256];
     size_t bytes;
-    while ((bytes = fread(buff, 1, sizeof(buff) - 1, fp))) {
+    while ((bytes = fread(buff, 1, sizeof(buff) - 1, fp)))
+    {
       buff[bytes] = 0;
-      if (printers) {
+      if (printers)
+      {
         printers = realloc(printers, strlen(printers) + 1 + bytes);
         strcat(printers, buff);
-      } else {
+      }
+      else
+      {
         printers = strcpy(malloc(bytes + 1), buff);
       }
     }
@@ -527,16 +541,19 @@ static char *GetPrinterList() {
   return printers;
 }
 
-static void Shrink(Widget w, XEvent *event __attribute__((unused))) {
+static void Shrink(Widget w, XEvent *event __attribute__((unused)))
+{
   if (XmToggleButtonGadgetGetState(
-          XtNameToWidget(w, "*disable_icon_updates"))) {
+          XtNameToWidget(w, "*disable_icon_updates")))
+  {
     UpdateWhenExpand =
         XmToggleButtonGadgetGetState(XtNameToWidget(w, "*updates"));
     XmToggleButtonGadgetSetState(XtNameToWidget(w, "*updates"), FALSE, TRUE);
   }
 }
 
-static void Expand(Widget w, XEvent *event __attribute__((unused))) {
+static void Expand(Widget w, XEvent *event __attribute__((unused)))
+{
   if (XmToggleButtonGadgetGetState(
           XtNameToWidget(w, "*disable_icon_updates")) &&
       UpdateWhenExpand)
@@ -545,12 +562,14 @@ static void Expand(Widget w, XEvent *event __attribute__((unused))) {
 
 static void /*XtCallbackProc */
 UpdatesMenuButton(Widget w, int *mode __attribute__((unused)),
-                  XtPointer callback_data __attribute__((unused))) {
+                  XtPointer callback_data __attribute__((unused)))
+{
   XmToggleButtonGadgetSetState(XtNameToWidget(MainWidget, "*updates"),
                                !XmToggleButtonGadgetGetState(w), TRUE);
 }
 
-static String XYString(float x, float y) {
+static String XYString(float x, float y)
+{
   static char label[42] = {'['};
   int length;
   String ptr = (String)&label[1];
@@ -565,10 +584,12 @@ static String XYString(float x, float y) {
   return (String)label;
 }
 
-void PositionMark() {
+void PositionMark()
+{
   if (!MarkWidget)
     MarkWidget = XtNameToWidget(MainWidget, "*crosshairs_mark");
-  if (DeltaWaveWidget && XtIsManaged(DeltaWaveWidget)) {
+  if (DeltaWaveWidget && XtIsManaged(DeltaWaveWidget))
+  {
     float *xmin, *xmax, *ymin, *ymax;
     Position plots_rootx, plots_rooty;
     Position wave_rootx, wave_rooty;
@@ -588,19 +609,22 @@ void PositionMark() {
            XtHeight(PlotsWidget) * 1000;
     if (xpos < 0 || ypos < 0 || xpos > 1000 || ypos > 1000)
       XtUnmanageChild(MarkWidget);
-    else {
+    else
+    {
       XtVaSetValues(MarkWidget, XmNleftPosition, xpos, XmNtopPosition, ypos,
                     NULL);
       XtManageChild(MarkWidget);
     }
-  } else
+  }
+  else
     XtUnmanageChild(MarkWidget);
 }
 
 static void /*XtCallbackProc */ Crosshairs(Widget w,
                                            XtPointer client_data
                                            __attribute__((unused)),
-                                           XmdsWaveformCrosshairsCBStruct *cb) {
+                                           XmdsWaveformCrosshairsCBStruct *cb)
+{
   static Widget value_w = 0;
   int r;
   int c;
@@ -609,10 +633,13 @@ static void /*XtCallbackProc */ Crosshairs(Widget w,
   String label;
   if (!value_w)
     value_w = XtNameToWidget(MainWidget, "*crosshairs_value");
-  if (cb->event->xbutton.type == ButtonPress) {
-    if (cb->event->xbutton.state & ShiftMask) {
+  if (cb->event->xbutton.type == ButtonPress)
+  {
+    if (cb->event->xbutton.state & ShiftMask)
+    {
       DeltaWaveWidget = DeltaWaveWidget ? 0 : w;
-      if (DeltaWaveWidget) {
+      if (DeltaWaveWidget)
+      {
         DeltaX = cb->x;
         DeltaY = cb->y;
       }
@@ -625,7 +652,8 @@ static void /*XtCallbackProc */ Crosshairs(Widget w,
         XmdsWaveformSetCrosshairs(Wave[c][r].w, &cb->x, &cb->y, 0);
   display_x = cb->x;
   display_y = cb->y;
-  if (DeltaWaveWidget) {
+  if (DeltaWaveWidget)
+  {
     display_x -= DeltaX;
     display_y -= DeltaY;
   }
@@ -639,13 +667,16 @@ static void /*XtCallbackProc */ Exit(Widget w __attribute__((unused)),
                                      XtPointer client_data
                                      __attribute__((unused)),
                                      XmAnyCallbackStruct *reason
-                                     __attribute__((unused))) {
+                                     __attribute__((unused)))
+{
   exit(1);
 }
 
 static void /*XtCallbackProc */
-SetPointerMode(Widget w, int *mode, int *reason __attribute__((unused))) {
-  if (XmToggleButtonGetState(w)) {
+SetPointerMode(Widget w, int *mode, int *reason __attribute__((unused)))
+{
+  if (XmToggleButtonGetState(w))
+  {
     int r;
     int c;
     pointermode = *mode;
@@ -661,10 +692,12 @@ SetPointerMode(Widget w, int *mode, int *reason __attribute__((unused))) {
 
 static void /*XtCallbackProc */
 SetPointerModeMenu(Widget w __attribute__((unused)), int *mode,
-                   int *reason __attribute__((unused))) {
+                   int *reason __attribute__((unused)))
+{
   int r;
   int c;
-  switch (*mode) {
+  switch (*mode)
+  {
   case XmdsPOINTER_MODE_POINT:
     XmToggleButtonSetState(XtNameToWidget(MainWidget, "*Point"), 1, 1);
     break;
@@ -685,27 +718,35 @@ SetPointerModeMenu(Widget w __attribute__((unused)), int *mode,
   }
 }
 
-static void RemoveZeros(String string, int *length) {
+static void RemoveZeros(String string, int *length)
+{
   int i;
   int done = 0;
-  while (!done) {
+  while (!done)
+  {
     done = 1;
-    for (i = *length; i > 0; i--) {
+    for (i = *length; i > 0; i--)
+    {
       if (((string[i] == 'e') && (string[i + 1] == '0')) ||
           ((string[i] == '-') && (string[i + 1] == '0')) ||
-          ((string[i] == '+') && (string[i + 1] == '0'))) {
+          ((string[i] == '+') && (string[i + 1] == '0')))
+      {
         int j;
         for (j = i + 1; j < *length; j++)
           string[j] = string[j + 1];
         (*length)--;
         done = 0;
-      } else if ((string[i] == '0') && (string[i + 1] == 'e')) {
+      }
+      else if ((string[i] == '0') && (string[i + 1] == 'e'))
+      {
         int j;
         for (j = i; j < *length; j++)
           string[j] = string[j + 1];
         (*length)--;
         done = 0;
-      } else if ((string[i] == '.') && (string[i + 1] == 'e')) {
+      }
+      else if ((string[i] == '.') && (string[i + 1] == 'e'))
+      {
         int j;
         for (j = i; j < *length; j++)
           string[j] = string[j + 1];
@@ -719,7 +760,8 @@ static void RemoveZeros(String string, int *length) {
 static void /*XtCallbackProc */ Align(int w __attribute__((unused)),
                                       XtPointer client_data
                                       __attribute__((unused)),
-                                      XmdsWaveformLimitsCBStruct *l) {
+                                      XmdsWaveformLimitsCBStruct *l)
+{
   int r;
   int c;
   for (c = 0; c < MaxCols; c++)
@@ -732,7 +774,8 @@ static void /*XtCallbackProc */ GridStyle(Widget w __attribute__((unused)),
                                           XtPointer client_data
                                           __attribute__((unused)),
                                           XmAnyCallbackStruct *cb
-                                          __attribute__((unused))) {
+                                          __attribute__((unused)))
+{
   int lines = XmToggleButtonGadgetGetState(w);
   int r;
   int c;
@@ -744,12 +787,14 @@ static void /*XtCallbackProc */ GridStyle(Widget w __attribute__((unused)),
 
 static void /*XtCallbackProc */
 Ok(Widget w, XtPointer client_data __attribute__((unused)),
-   XmAnyCallbackStruct *callback_data __attribute__((unused))) {
+   XmAnyCallbackStruct *callback_data __attribute__((unused)))
+{
   if (ApplyStatus & 1)
     XtUnmanageChild(XtParent(w));
 }
 
-static String SetupTitle() {
+static String SetupTitle()
+{
   int c;
   int r;
   static char title[80];
@@ -767,10 +812,12 @@ found:
 static void /*XtCallbackProc */ Autoscale(Widget w __attribute__((unused)),
                                           String type,
                                           XmAnyCallbackStruct *callback_data
-                                          __attribute__((unused))) {
+                                          __attribute__((unused)))
+{
   int r;
   int c;
-  switch (type[0]) {
+  switch (type[0])
+  {
   case 'y':
     XtVaSetValues(PendingWave->w, XmdsNyMin, NULL, XmdsNyMax, NULL, NULL);
     break;
@@ -797,7 +844,8 @@ static void /*XtCallbackProc */ Autoscale(Widget w __attribute__((unused)),
         XtVaSetValues(Wave[c][r].w, XmdsNxMin, NULL, XmdsNxMax, NULL, XmdsNyMin,
                       NULL, XmdsNyMax, NULL, NULL);
     break;
-  case '0': {
+  case '0':
+  {
     float *xMin;
     float *xMax;
     float *yMin;
@@ -811,7 +859,8 @@ static void /*XtCallbackProc */ Autoscale(Widget w __attribute__((unused)),
                         XmdsNyMin, yMin, XmdsNyMax, yMax, NULL);
     break;
   }
-  case '1': {
+  case '1':
+  {
     float *xMin;
     float *xMax;
     float *yMin;
@@ -824,7 +873,8 @@ static void /*XtCallbackProc */ Autoscale(Widget w __attribute__((unused)),
           XtVaSetValues(Wave[c][r].w, XmdsNxMin, xMin, XmdsNxMax, xMax, NULL);
     break;
   }
-  case '2': {
+  case '2':
+  {
     float *xMin;
     float *xMax;
     float *yMin;
@@ -837,7 +887,8 @@ static void /*XtCallbackProc */ Autoscale(Widget w __attribute__((unused)),
           XtVaSetValues(Wave[c][r].w, XmdsNyMin, yMin, XmdsNyMax, yMax, NULL);
     break;
   }
-  case '3': {
+  case '3':
+  {
     float *xMin;
     float *xMax;
     float *yMin;
@@ -850,7 +901,8 @@ static void /*XtCallbackProc */ Autoscale(Widget w __attribute__((unused)),
                       NULL, XmdsNyMax, NULL, NULL);
     break;
   }
-  case '4': {
+  case '4':
+  {
     float *xMin;
     float *xMax;
     float *yMin;
@@ -863,13 +915,15 @@ static void /*XtCallbackProc */ Autoscale(Widget w __attribute__((unused)),
                   yMin, XmdsNyMax, yMax, NULL);
     break;
   }
-  case '5': {
+  case '5':
+  {
     float *xMin;
     float *xMax;
     float *yMin;
     float *yMax;
     for (c = 0; c < MaxCols; c++)
-      for (r = 0; r < MaxRows; r++) {
+      for (r = 0; r < MaxRows; r++)
+      {
         Boolean update = Wave[c][r].update;
         Wave[c][r].update = TRUE;
         GetNewLimits(&Wave[c][r], &xMin, &xMax, &yMin, &yMax);
@@ -887,27 +941,35 @@ static void /*XtCallbackProc */ Refresh(Widget w __attribute__((unused)),
                                         XtPointer client_data
                                         __attribute__((unused)),
                                         XmAnyCallbackStruct *callback_data
-                                        __attribute__((unused))) {
+                                        __attribute__((unused)))
+{
   UpdateWaveform(0, PendingWave, 0, -1, -1);
 }
 
 static void /*XtCallbackProc */
-Restore(Widget w, int *option, XmFileSelectionBoxCallbackStruct *reason) {
+Restore(Widget w, int *option, XmFileSelectionBoxCallbackStruct *reason)
+{
   int opt = option ? *option : 0;
-  switch (opt) {
-  case 0: {
-    if (reason->length) {
+  switch (opt)
+  {
+  case 0:
+  {
+    if (reason->length)
+    {
       String filename;
       filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL,
                                  0, XmOUTPUT_ALL);
-      if (filename) {
+      if (filename)
+      {
         int length = strlen(filename);
-        if (length) {
+        if (length)
+        {
           RestoreDatabase(filename, w);
           if (defaultfile)
             XtFree(defaultfile);
           defaultfile = filename;
-        } else
+        }
+        else
           XtFree(filename);
       }
     }
@@ -916,7 +978,8 @@ Restore(Widget w, int *option, XmFileSelectionBoxCallbackStruct *reason) {
   case 1:
     RestoreDatabase(defaultfile, TopWidget);
     break;
-  case 2: {
+  case 2:
+  {
     Widget w = XtNameToWidget(TopWidget, "*file_dialog");
     XmString title = XmStringCreateSimple("Restore Current Settings From");
     XmString label =
@@ -941,22 +1004,29 @@ Restore(Widget w, int *option, XmFileSelectionBoxCallbackStruct *reason) {
 
 static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
                                      int *option,
-                                     XmFileSelectionBoxCallbackStruct *reason) {
+                                     XmFileSelectionBoxCallbackStruct *reason)
+{
   int opt = option ? *option : 0;
-  switch (opt) {
-  case 0: {
-    if (reason->length) {
+  switch (opt)
+  {
+  case 0:
+  {
+    if (reason->length)
+    {
       String filename;
       filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL,
                                  0, XmOUTPUT_ALL);
-      if (filename) {
+      if (filename)
+      {
         int length = strlen(filename);
-        if (length) {
+        if (length)
+        {
           WriteDatabase(filename, FALSE);
           if (defaultfile)
             XtFree(defaultfile);
           defaultfile = filename;
-        } else
+        }
+        else
           XtFree(filename);
       }
     }
@@ -965,7 +1035,8 @@ static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
   case 1:
     WriteDatabase(defaultfile, FALSE);
     break;
-  case 2: {
+  case 2:
+  {
     Widget w = XtNameToWidget(TopWidget, "*file_dialog");
     XmString title = XmStringCreateSimple("Save Current Settings As");
     XmString label =
@@ -984,19 +1055,24 @@ static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
     XmStringFree(deffile);
     break;
   }
-  case 3: {
-    if (reason->length) {
+  case 3:
+  {
+    if (reason->length)
+    {
       String filename;
       filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL,
                                  0, XmOUTPUT_ALL);
-      if (filename) {
+      if (filename)
+      {
         int length = strlen(filename);
-        if (length) {
+        if (length)
+        {
           WriteDatabase(filename, TRUE);
           if (defaultfile)
             XtFree(defaultfile);
           defaultfile = filename;
-        } else
+        }
+        else
           XtFree(filename);
       }
     }
@@ -1005,7 +1081,8 @@ static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
   case 4:
     WriteDatabase(defaultfile, TRUE);
     break;
-  case 5: {
+  case 5:
+  {
     Widget w = XtNameToWidget(TopWidget, "*file_dialog");
     XmString title = XmStringCreateSimple("Save Current Settings As");
     XmString label =
@@ -1028,7 +1105,8 @@ static void /*XtCallbackProc */ Save(Widget w __attribute__((unused)),
   }
 }
 
-static void ManageWaveforms() {
+static void ManageWaveforms()
+{
   int row;
   int col;
   int max_rows = 0;
@@ -1036,11 +1114,13 @@ static void ManageWaveforms() {
   if (!translations)
     translations = XtParseTranslationTable(
         "Shift<Btn1Up>:EqualPanes(H)\n <Btn2Up>:EqualPanes(H)");
-  for (col = 0; col < Columns; col++) {
+  for (col = 0; col < Columns; col++)
+  {
     Widget w[MaxRows];
     if (Rows[col] > max_rows)
       max_rows = Rows[col];
-    for (row = Rows[col]; row < MaxRows; row++) {
+    for (row = Rows[col]; row < MaxRows; row++)
+    {
       if (&Wave[col][row] == SelectedWave)
         XtDisownSelection(SelectedWave->w, XA_PRIMARY,
                           XtLastTimestampProcessed(XtDisplay(SelectedWave->w)));
@@ -1058,7 +1138,8 @@ static void ManageWaveforms() {
   if (Columns > 1)
     XtManageChildren(Sash, Columns - 1);
   XtManageChildren(Pane, Columns);
-  for (col = 0; col < Columns; col++) {
+  for (col = 0; col < Columns; col++)
+  {
     int i;
     int num;
     Widget *child;
@@ -1072,7 +1153,8 @@ static void ManageWaveforms() {
     RaiseWindows();
 }
 
-static void RaiseWindows() {
+static void RaiseWindows()
+{
   int col;
   for (col = 0; col < Columns - 1; col++)
     XRaiseWindow(XtDisplay(Sash[col]), XtWindow(Sash[col]));
@@ -1082,7 +1164,8 @@ static void RaiseWindows() {
 
 static void /*XtCallbackProc */
 ResetDataSetup(Widget w __attribute__((unused)), int *global,
-               XmAnyCallbackStruct *callback_data __attribute__((unused))) {
+               XmAnyCallbackStruct *callback_data __attribute__((unused)))
+{
   if (*global == 1)
     PendingWave = &GlobalWave;
   CurrentWave = PendingWave;
@@ -1099,7 +1182,8 @@ static void /*XtCallbackProc */
 ResetCustomizeWindow(Widget w __attribute__((unused)),
                      XtPointer client_data __attribute__((unused)),
                      XmAnyCallbackStruct *callback_data
-                     __attribute__((unused))) {
+                     __attribute__((unused)))
+{
   int i;
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "window_title"),
                   ScopeTitle);
@@ -1107,7 +1191,8 @@ ResetCustomizeWindow(Widget w __attribute__((unused)),
                   ScopeIcon);
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "title_event"),
                   ScopeTitleEvent);
-  for (i = 0; i < MaxCols; i++) {
+  for (i = 0; i < MaxCols; i++)
+  {
     char name[8];
     sprintf(name, "rows_%d", i + 1);
     XmScaleSetValue(XtNameToWidget(CustomizeWindowWidget, name), Rows[i]);
@@ -1120,7 +1205,8 @@ static void /*XtCallbackProc */
 ResetCustomizePrint(Widget w __attribute__((unused)),
                     XtPointer client_data __attribute__((unused)),
                     XmAnyCallbackStruct *callback_data
-                    __attribute__((unused))) {
+                    __attribute__((unused)))
+{
   Widget *children;
   int numchildren;
   int i;
@@ -1138,18 +1224,21 @@ ResetCustomizePrint(Widget w __attribute__((unused)),
   XtVaGetValues(
       XtNameToWidget(CustomizePrintWidget, "*printer_select_pulldown"),
       XmNnumChildren, &numchildren, XmNchildren, &children, NULL);
-  for (i = 0; i < numchildren; i++) {
+  for (i = 0; i < numchildren; i++)
+  {
     XmString label;
     String label_string;
     XtVaGetValues(children[i], XmNlabelString, &label, NULL);
     label_string =
         XmStringUnparse(label, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
-    if (strcmp(label_string, ScopePrinter) == 0) {
+    if (strcmp(label_string, ScopePrinter) == 0)
+    {
       XtFree(label_string);
       XtVaSetValues(XtNameToWidget(CustomizePrintWidget, "*printer_select"),
                     XmNmenuHistory, children[i], NULL);
       break;
-    } else
+    }
+    else
       XtFree(label_string);
   }
   if ((i > numchildren) && numchildren > 0)
@@ -1164,7 +1253,8 @@ ResetCustomizePrint(Widget w __attribute__((unused)),
 static void /*XtCallbackProc */
 CreateCustomizeFont(Widget w, XtPointer client_data __attribute__((unused)),
                     XmAnyCallbackStruct *callback_data
-                    __attribute__((unused))) {
+                    __attribute__((unused)))
+{
   int c_count;
   String *courier_fonts = XListFonts(
       XtDisplay(w), "-*-courier-*-*-*--*-*-*-*-*-*-*-*", 1000, &c_count);
@@ -1204,10 +1294,13 @@ CreateCustomizeFont(Widget w, XtPointer client_data __attribute__((unused)),
 static void Setup(Widget w __attribute__((unused)),
                   XtPointer client_data __attribute__((unused)),
                   XButtonEvent *event,
-                  Boolean *continue_to_dispatch __attribute__((unused))) {
-  if (event->button == Button3) {
+                  Boolean *continue_to_dispatch __attribute__((unused)))
+{
+  if (event->button == Button3)
+  {
     if ((event->type == ButtonPress) &&
-        !(event->state & (Button1Mask | Button2Mask))) {
+        !(event->state & (Button1Mask | Button2Mask)))
+    {
       int col;
       int row;
       for (col = 0; col < Columns - 1 && event->x > XtX(Sash[col]); col++)
@@ -1220,7 +1313,9 @@ static void Setup(Widget w __attribute__((unused)),
       PendingWave = &Wave[col][row];
       PositionPopupMenu(Button3Widget, event);
       XtManageChild(Button3Widget);
-    } else {
+    }
+    else
+    {
       XUngrabPointer(XtDisplay(Button3Widget), event->time);
       XtPopdown(XtParent(Button3Widget));
     }
@@ -1231,7 +1326,8 @@ static void /*XtCallbackProc */
 ApplyCustomizeWindow(Widget w __attribute__((unused)),
                      XtPointer client_data __attribute__((unused)),
                      XmAnyCallbackStruct *callback_data
-                     __attribute__((unused))) {
+                     __attribute__((unused)))
+{
   int c;
   int r;
   int old_columns = Columns;
@@ -1255,7 +1351,8 @@ ApplyCustomizeWindow(Widget w __attribute__((unused)),
   XtUnmanageChildren(widgets, num);
   Columns = 1;
   memcpy(old_rows, Rows, sizeof(Rows));
-  for (c = 0; c < MaxCols; c++) {
+  for (c = 0; c < MaxCols; c++)
+  {
     char name[8];
     sprintf(name, "rows_%d", c + 1);
     XmScaleGetValue(XtNameToWidget(CustomizeWindowWidget, name), &Rows[c]);
@@ -1264,19 +1361,26 @@ ApplyCustomizeWindow(Widget w __attribute__((unused)),
     else
       Rows[c] = 1;
   }
-  for (c = 0; c < MaxCols; c++) {
-    for (r = 0; r < MaxRows; r++) {
-      if (c >= Columns) {
+  for (c = 0; c < MaxCols; c++)
+  {
+    for (r = 0; r < MaxRows; r++)
+    {
+      if (c >= Columns)
+      {
         ClearWaveform(&Wave[c][r]);
         Rows[c] = 0;
-      } else if (r >= Rows[c])
+      }
+      else if (r >= Rows[c])
         ClearWaveform(&Wave[c][r]);
-      else {
-        if ((r < Rows[c]) && (Rows[c] != old_rows[c])) {
+      else
+      {
+        if ((r < Rows[c]) && (Rows[c] != old_rows[c]))
+        {
           int height = (pane_height - 2 * Rows[c] + (r % 2) * .4999) / Rows[c];
           XtVaSetValues(Wave[c][r].w, XtNheight, height, NULL);
         }
-        if ((r >= old_rows[c]) && (r < Rows[c])) {
+        if ((r >= old_rows[c]) && (r < Rows[c]))
+        {
           WaveInfo *info = &Wave[c][r];
           UpdateWaveform(0, info, 0, -1, -1);
           SetupEvent(info->_global.global.event ? GlobalWave.event
@@ -1298,7 +1402,8 @@ static void /*XtCallbackProc */
 ApplyCustomizePrint(Widget w __attribute__((unused)),
                     XtPointer client_data __attribute__((unused)),
                     XmAnyCallbackStruct *callback_data
-                    __attribute__((unused))) {
+                    __attribute__((unused)))
+{
   Widget printer_select = XtNameToWidget(MainWidget, "*printer_select");
   Widget option;
   XmString label;
@@ -1325,16 +1430,20 @@ ApplyCustomizePrint(Widget w __attribute__((unused)),
   ApplyStatus = 1;
 }
 
-static void SetFont(String font) {
+static void SetFont(String font)
+{
   int c;
   int r;
   XFontStruct *font_struct = XLoadQueryFont(XtDisplay(TopWidget), font);
-  if (font_struct) {
+  if (font_struct)
+  {
     for (c = 0; c < MaxCols; c++)
       for (r = 0; r < MaxRows; r++)
         if (Wave[c][r].w)
           XtVaSetValues(Wave[c][r].w, XmdsNlabelFont, font_struct, NULL);
-  } else {
+  }
+  else
+  {
     static String prefix = "Unknown font selected: ";
     String error = XtMalloc(strlen(prefix) + strlen(font) + 1);
     sprintf(error, "%s%s", prefix, font);
@@ -1346,7 +1455,8 @@ static void SetFont(String font) {
 static void ResetCustomizeFont(Widget w __attribute__((unused)),
                                XtPointer client_data __attribute__((unused)),
                                XmAnyCallbackStruct *callback_data
-                               __attribute__((unused))) {
+                               __attribute__((unused)))
+{
   String font;
   XFontStruct *font_struct;
   unsigned long fontprop;
@@ -1363,7 +1473,8 @@ static void ResetCustomizeFont(Widget w __attribute__((unused)),
 static void /*XtCallbackProc */
 ApplyFont(Widget w __attribute__((unused)),
           XtPointer client_data __attribute__((unused)),
-          XmSelectionBoxCallbackStruct *callback_data) {
+          XmSelectionBoxCallbackStruct *callback_data)
+{
   String font;
   font = XmStringUnparse(callback_data->value, NULL, 0, XmCHARSET_TEXT, NULL, 0,
                          XmOUTPUT_ALL);
@@ -1375,28 +1486,34 @@ void /*XtInputCallbackProc */ EventUpdate(XtPointer client_data
                                           __attribute__((unused)),
                                           int *source __attribute__((unused)),
                                           XtInputId *id
-                                          __attribute__((unused))) {
+                                          __attribute__((unused)))
+{
   int r;
   int c;
   XAllowEvents(XtDisplay(Button3Widget), AsyncPointer, CurrentTime);
   pthread_mutex_lock(&event_mutex);
-  if (ScopeTitleEventReceived) {
+  if (ScopeTitleEventReceived)
+  {
     SetWindowTitles();
     ScopeTitleEventReceived = 0;
   }
-  if (UpdatesOn) {
+  if (UpdatesOn)
+  {
     for (c = 0; c < MaxCols; c++)
       for (r = 0; r < MaxRows; r++)
-        if (Wave[c][r].received) {
+        if (Wave[c][r].received)
+        {
           UpdateWaveform(0, &Wave[c][r], 1, -1, -1);
           Wave[c][r].received = 0;
         }
-    if (ScopePrintEventReceived) {
+    if (ScopePrintEventReceived)
+    {
       PrintAll(0, 0, 0);
       ScopePrintEventReceived = 0;
     }
   }
-  if (CloseDataSourcesEventReceived) {
+  if (CloseDataSourcesEventReceived)
+  {
     CloseDataSourcesEventReceived = 0;
     CloseDataSources();
   }
@@ -1404,19 +1521,23 @@ void /*XtInputCallbackProc */ EventUpdate(XtPointer client_data
   return;
 }
 
-struct _UpdateWaveformsInfo {
+struct _UpdateWaveformsInfo
+{
   int r;
   int c;
 };
 
-static Boolean UpdateWaveformsWorkproc(XtPointer settings) {
+static Boolean UpdateWaveformsWorkproc(XtPointer settings)
+{
   struct _UpdateWaveformsInfo *info = (struct _UpdateWaveformsInfo *)settings;
   UpdateWaveform(0, &Wave[info->c][info->r], 0, -1, -1);
   info->r++;
-  if (info->r >= Rows[info->c]) {
+  if (info->r >= Rows[info->c])
+  {
     info->r = 0;
     info->c++;
-    if (info->c >= Columns) {
+    if (info->c >= Columns)
+    {
       XmString label = XmStringCreateSimple("Apply");
       XtVaSetValues(XtNameToWidget(MainWidget, "*override_shot_apply"),
                     XmNlabelString, label, XmNmarginWidth, 5, NULL);
@@ -1434,16 +1555,20 @@ static Boolean UpdateWaveformsWorkproc(XtPointer settings) {
 static void /*XtCallbackProc */ ApplyOverride(Widget w __attribute__((unused)),
                                               int *mode __attribute__((unused)),
                                               XtPointer callback_data
-                                              __attribute__((unused))) {
+                                              __attribute__((unused)))
+{
   static struct _UpdateWaveformsInfo info;
-  if (UpdateWaveformsWorkProcID != 0) {
+  if (UpdateWaveformsWorkProcID != 0)
+  {
     XmString label = XmStringCreateSimple("Apply");
     XtRemoveWorkProc(UpdateWaveformsWorkProcID);
     XtVaSetValues(XtNameToWidget(MainWidget, "*override_shot_apply"),
                   XmNlabelString, label, XmNmarginWidth, 5, NULL);
     UpdateWaveformsWorkProcID = 0;
     XmStringFree(label);
-  } else {
+  }
+  else
+  {
     XmString label = XmStringCreateSimple("Cancel");
     XtVaSetValues(XtNameToWidget(MainWidget, "*override_shot_apply"),
                   XmNlabelString, label, XmNmarginWidth, 2, NULL);
@@ -1458,7 +1583,8 @@ static void /*XtCallbackProc */ ApplyOverride(Widget w __attribute__((unused)),
 static void /*XtCallbackProc */ Updates(Widget w,
                                         int *mode __attribute__((unused)),
                                         XtPointer callback_data
-                                        __attribute__((unused))) {
+                                        __attribute__((unused)))
+{
   UpdatesOn = XmToggleButtonGadgetGetState(w);
   if (UpdatesOn)
     EventUpdate(0, 0, 0);
@@ -1468,15 +1594,19 @@ static void /*XtCallbackProc */ Updates(Widget w,
 
 static void /*XtCallbackProc */ ApplyDataSetup(Widget w, int *mode,
                                                XtPointer callback_data
-                                               __attribute__((unused))) {
+                                               __attribute__((unused)))
+{
   int change_mask;
-  if (CurrentWave != &GlobalWave) {
-    if (*mode) {
+  if (CurrentWave != &GlobalWave)
+  {
+    if (*mode)
+    {
       WaveInfo info;
       CopyWave(CurrentWave, &info);
       GetDataSetup(DataSetupWidget, &info, &change_mask);
       ApplyStatus = UpdateWaveform(*mode, &info, 0, 0, change_mask);
-      if (ApplyStatus & 1) {
+      if (ApplyStatus & 1)
+      {
         String event =
             info._global.global.event ? GlobalWave.event : info.event;
         FreeWave(CurrentWave);
@@ -1485,19 +1615,25 @@ static void /*XtCallbackProc */ ApplyDataSetup(Widget w, int *mode,
         if (ApplyStatus & 1 && CurrentWave == SelectedWave)
           XtDisownSelection(SelectedWave->w, XA_PRIMARY,
                             XtLastTimestampProcessed(XtDisplay(w)));
-      } else
+      }
+      else
         FreeWave(&info);
-    } else {
+    }
+    else
+    {
       GetDataSetup(DataSetupWidget, CurrentWave, &change_mask);
       XtUnmanageChild(DataSetupWidget);
     }
-  } else {
+  }
+  else
+  {
     int r;
     int c;
     GetDataSetup(DataSetupWidget, &GlobalWave, &change_mask);
     for (c = 0; c < Columns; c++)
       for (r = 0; r < Rows[c]; r++)
-        if (Wave[c][r]._global.global_defaults) {
+        if (Wave[c][r]._global.global_defaults)
+        {
           UpdateWaveform(0, &Wave[c][r], 0, change_mask, 0);
           if (Wave[c][r]._global.global.event)
             SetupEvent(GlobalWave.event, &Wave[c][r].received,
@@ -1510,7 +1646,8 @@ static void /*XtCallbackProc */ ApplyDataSetup(Widget w, int *mode,
   return;
 }
 
-static void CopyWave(WaveInfo *in, WaveInfo *out) {
+static void CopyWave(WaveInfo *in, WaveInfo *out)
+{
   *out = *in;
   out->database = XtNewString(in->database);
   out->shot = XtNewString(in->shot);
@@ -1523,7 +1660,8 @@ static void CopyWave(WaveInfo *in, WaveInfo *out) {
   out->pad_label = XtNewString(in->pad_label);
 }
 
-static void FreeWave(WaveInfo *info) {
+static void FreeWave(WaveInfo *info)
+{
   if (info->database)
     XtFree(info->database);
   if (info->shot)
@@ -1548,7 +1686,8 @@ static void /*XtActionProc */ MoveVerticalPane(Widget w, XEvent *event,
                                                String *params
                                                __attribute__((unused)),
                                                Cardinal *num_params
-                                               __attribute__((unused))) {
+                                               __attribute__((unused)))
+{
   Position main_x_root;
   Position main_y_root;
   static Position min_offset;
@@ -1558,19 +1697,24 @@ static void /*XtActionProc */ MoveVerticalPane(Widget w, XEvent *event,
   XtTranslateCoords(PlotsWidget, 0, 0, &main_x_root, &main_y_root);
   if (!separator)
     separator = XtNameToWidget(TopWidget, "*pane_separator");
-  if (event->type == ButtonPress) {
+  if (event->type == ButtonPress)
+  {
     for (i = 0; i < NumSashs; i++)
       if (Sash[i] == w)
         break;
-    if (i) {
+    if (i)
+    {
       XtVaGetValues(Sash[i - 1], XmNx, &min_offset, NULL);
       min_offset += 10;
-    } else
+    }
+    else
       min_offset = 10;
-    if (i < (NumSashs - 1) && XtIsManaged(Sash[i + 1])) {
+    if (i < (NumSashs - 1) && XtIsManaged(Sash[i + 1]))
+    {
       XtVaGetValues(Sash[i + 1], XmNx, &max_offset, NULL);
       max_offset -= 10;
-    } else
+    }
+    else
       max_offset = XtWidth(MainWidget) - 10;
     separator->core.widget_class->core_class.compress_motion = 1;
     XtManageChild(separator);
@@ -1579,7 +1723,8 @@ static void /*XtActionProc */ MoveVerticalPane(Widget w, XEvent *event,
       separator, XmNleftOffset,
       min(max_offset, max(min_offset, event->xbutton.x_root - main_x_root)),
       NULL);
-  if (event->type == ButtonRelease) {
+  if (event->type == ButtonRelease)
+  {
     unsigned short position;
     XtVaGetValues(separator, XmNx, &position, NULL);
     position = position * 1000. / XtWidth(MainWidget) + .49999;
@@ -1589,13 +1734,16 @@ static void /*XtActionProc */ MoveVerticalPane(Widget w, XEvent *event,
   }
 }
 
-static XrmDatabase MdsGetFileDatabase(String file_spec) {
+static XrmDatabase MdsGetFileDatabase(String file_spec)
+{
   FILE *file = fopen(file_spec, "r");
   XrmDatabase db = 0;
-  if (file) {
+  if (file)
+  {
     char line_text[8192];
     char doubled[8192];
-    while (fgets(line_text, 8192, file)) {
+    while (fgets(line_text, 8192, file))
+    {
       size_t i;
       size_t j;
       int put_it = 0;
@@ -1604,13 +1752,16 @@ static XrmDatabase MdsGetFileDatabase(String file_spec) {
         if (line_text[i] == ':')
           break;
       for (j = i + 1; j < size; j++)
-        if (line_text[j] != 9 && line_text[j] != 10 && line_text[j] != ' ') {
+        if (line_text[j] != 9 && line_text[j] != 10 && line_text[j] != ' ')
+        {
           put_it = 1;
           break;
         }
-      if (put_it) {
+      if (put_it)
+      {
         j = 0;
-        for (i = 0; (i < size) && (j < sizeof(doubled)); i++) {
+        for (i = 0; (i < size) && (j < sizeof(doubled)); i++)
+        {
           if (line_text[i] == '\\')
             doubled[j++] = line_text[i];
           doubled[j++] = line_text[i];
@@ -1624,7 +1775,8 @@ static XrmDatabase MdsGetFileDatabase(String file_spec) {
   return db;
 }
 
-static Window CreateBusyWindow(Widget toplevel) {
+static Window CreateBusyWindow(Widget toplevel)
+{
   unsigned long valuemask;
   XSetWindowAttributes attributes;
   /* Ignore device events while the busy cursor is displayed. */
@@ -1642,10 +1794,12 @@ static Window CreateBusyWindow(Widget toplevel) {
                        &attributes);
 }
 
-static void Busy() {
+static void Busy()
+{
   if (BusyLevel++)
     return;
-  if (BusyWindow) {
+  if (BusyWindow)
+  {
     XEvent event;
     XMapRaised(XtDisplay(MainWidget), BusyWindow);
     while (XCheckMaskEvent(XtDisplay(MainWidget),
@@ -1658,7 +1812,8 @@ static void Busy() {
   }
 }
 
-static void Unbusy() {
+static void Unbusy()
+{
   if (--BusyLevel)
     return;
   if (BusyWindow)
@@ -1669,7 +1824,8 @@ static void /*XtCallbackProc */ PrintAll(Widget w __attribute__((unused)),
                                          XtPointer client_data
                                          __attribute__((unused)),
                                          XmAnyCallbackStruct *callback_data
-                                         __attribute__((unused))) {
+                                         __attribute__((unused)))
+{
 
 #ifndef _NO_DPS
   char filename[256];
@@ -1681,11 +1837,13 @@ static void /*XtCallbackProc */ PrintAll(Widget w __attribute__((unused)),
   if (ScopePrintToFile)
     printfid = fopen(ScopePrintFile,
                      "w"); /*,"rop=RAH,WBH","mbc=8","mbf=2","deq=32"); */
-  else {
+  else
+  {
     sprintf(filename, "/tmp/dwscope_tmp_%0x_%0x", getpid(), ScopeTempFileIdx++);
     printfid = fopen(filename, "w");
   }
-  if (printfid) {
+  if (printfid)
+  {
     XmString filenames[1];
     int orientation = ScopePrintPortrait ? 1 : 2;
     filenames[0] = XmStringCreateSimple(ScopePrintFile);
@@ -1697,22 +1855,26 @@ static void /*XtCallbackProc */ PrintAll(Widget w __attribute__((unused)),
     Busy();
     for (c = 0; c < Columns; c++)
       for (r = 0; r < Rows[c]; r++)
-        if (ScopePrintWindowTitle) {
+        if (ScopePrintWindowTitle)
+        {
           String title;
           String title_error;
           Boolean title_status =
               EvaluateText(ScopeTitle, " ", &title, &title_error);
-          if (!title_status) {
+          if (!title_status)
+          {
             XtFree(title_error);
             XmdsWaveformPrint(Wave[c][r].w, printfid, width, height,
                               orientation, Wave[c][r].print_title_evaluated, 0,
                               0);
-          } else
+          }
+          else
             XmdsWaveformPrint(Wave[c][r].w, printfid, width, height,
                               orientation, Wave[c][r].print_title_evaluated,
                               title, 0);
           XtFree(title);
-        } else
+        }
+        else
           XmdsWaveformPrint(Wave[c][r].w, printfid, width, height, orientation,
                             Wave[c][r].print_title_evaluated, 0, 0);
     fclose(printfid);
@@ -1724,7 +1886,9 @@ static void /*XtCallbackProc */ PrintAll(Widget w __attribute__((unused)),
 #endif /* DXmNorientation */
     XmStringFree(filenames[0]);
     Unbusy();
-  } else {
+  }
+  else
+  {
     static String prefix = "Error creating printfile, ";
     String error = XtMalloc(strlen(prefix) + strlen(ScopePrintFile) + 1);
     sprintf(error, "%s%s", prefix, ScopePrintFile);
@@ -1739,22 +1903,26 @@ static void /*XtCallbackProc */ Print(Widget w __attribute__((unused)),
                                       XtPointer client_data
                                       __attribute__((unused)),
                                       XmAnyCallbackStruct *callback_data
-                                      __attribute__((unused))) {
+                                      __attribute__((unused)))
+{
 #ifndef _NO_DPS
   int count;
   XtVaGetValues(PendingWave->w, XmdsNcount, &count, NULL);
-  if (count) {
+  if (count)
+  {
     char filename[256];
     FILE *printfid;
     if (ScopePrintToFile)
       printfid = fopen(ScopePrintFile,
                        "w"); /*,"rop=RAH,WBH","mbc=8","mbf=2","deq=32"); */
-    else {
+    else
+    {
       sprintf(filename, "/tmp/dwscope_tmp_%0x_%0x", getpid(),
               ScopeTempFileIdx++);
       printfid = fopen(filename, "w");
     }
-    if (printfid) {
+    if (printfid)
+    {
       XmString filenames[1];
       int orientation = ScopePrintPortrait ? 1 : 2;
       filenames[0] = XmStringCreateSimple(ScopePrintFile);
@@ -1762,20 +1930,24 @@ static void /*XtCallbackProc */ Print(Widget w __attribute__((unused)),
       XtVaGetValues(CustomizePrintWidget, DXmNorientation, &orientation, NULL);
 #endif
       Busy();
-      if (ScopePrintWindowTitle) {
+      if (ScopePrintWindowTitle)
+      {
         String title;
         String title_error;
         Boolean title_status =
             EvaluateText(ScopeTitle, " ", &title, &title_error);
-        if (!title_status) {
+        if (!title_status)
+        {
           XtFree(title_error);
           XmdsWaveformPrint(PendingWave->w, printfid, 0, 0, orientation,
                             PendingWave->print_title_evaluated, 0, 0);
-        } else
+        }
+        else
           XmdsWaveformPrint(PendingWave->w, printfid, 0, 0, orientation,
                             PendingWave->print_title_evaluated, title, 0);
         XtFree(title);
-      } else
+      }
+      else
         XmdsWaveformPrint(PendingWave->w, printfid, 0, 0, orientation,
                           PendingWave->print_title_evaluated, 0, 0);
       fclose(printfid);
@@ -1787,14 +1959,17 @@ static void /*XtCallbackProc */ Print(Widget w __attribute__((unused)),
 #endif
       XmStringFree(filenames[0]);
       Unbusy();
-    } else {
+    }
+    else
+    {
       static String prefix = "Error creating printfile, ";
       String error = XtMalloc(strlen(prefix) + strlen(ScopePrintFile) + 1);
       sprintf(error, "%s%s", prefix, ScopePrintFile);
       PopupComplaint(TopWidget, error);
       XtFree(error);
     }
-  } else
+  }
+  else
     PopupComplaint(TopWidget, "No data to print");
 #endif /* _NO_DPS */
   return;
@@ -1802,13 +1977,15 @@ static void /*XtCallbackProc */ Print(Widget w __attribute__((unused)),
 
 static void /*XtCallbackProc */
 Clear(Widget w, XtPointer client_data __attribute__((unused)),
-      XmAnyCallbackStruct *callback_data __attribute__((unused))) {
+      XmAnyCallbackStruct *callback_data __attribute__((unused)))
+{
   if (SelectedWave && SelectedWave == GetPending(w))
     XtDisownSelection(SelectedWave->w, XA_PRIMARY,
                       XtLastTimestampProcessed(XtDisplay(w)));
 }
 
-static WaveInfo *GetPending(Widget w) {
+static WaveInfo *GetPending(Widget w)
+{
   int r;
   int c;
   for (c = 0; c < MaxCols; c++)
@@ -1823,14 +2000,16 @@ found:
 static void /*XtCallbackProc */ Cut(Widget w,
                                     XtPointer client_data
                                     __attribute__((unused)),
-                                    XmAnyCallbackStruct *callback_struct) {
+                                    XmAnyCallbackStruct *callback_struct)
+{
   WaveInfo *pending = GetPending(w);
   if (pending == SelectedWave)
     XtDisownSelection(SelectedWave->w, XA_PRIMARY,
                       callback_struct->event->xbutton.time);
   else if (XtOwnSelection(
                pending->w, XA_PRIMARY, callback_struct->event->xbutton.time,
-               (XtConvertSelectionProc)ConvertSelection, LoseSelection, NULL)) {
+               (XtConvertSelectionProc)ConvertSelection, LoseSelection, NULL))
+  {
     SelectedWave = pending;
     XmdsWaveformReverse(SelectedWave->w, 1);
   }
@@ -1839,7 +2018,8 @@ static void /*XtCallbackProc */ Cut(Widget w,
 static Boolean /*XtConvertSelectionProc */
 ConvertSelection(Widget w, Atom *selection __attribute__((unused)),
                  Atom *target, Atom *type, XtPointer *value,
-                 unsigned long *length, int *format) {
+                 unsigned long *length, int *format)
+{
   int r = 0;
   int c = 0;
   char prefix[36];
@@ -1855,7 +2035,8 @@ found:
 }
 
 static void /*XtLoseSelectionProc */ LoseSelection(Widget w, Atom *selection
-                                                   __attribute__((unused))) {
+                                                   __attribute__((unused)))
+{
   XmdsWaveformReverse(w, 0);
   if (SelectedWave && (SelectedWave->w == w))
     SelectedWave = 0;
@@ -1865,7 +2046,8 @@ static void /*XtActionProc */ Paste(Widget w,
                                     XEvent *event __attribute__((unused)),
                                     String *params __attribute__((unused)),
                                     Cardinal *num_params
-                                    __attribute__((unused))) {
+                                    __attribute__((unused)))
+{
   WaveInfo *pending = GetPending(w);
   if (pending)
     XtGetSelectionValue(pending->w, XA_PRIMARY, XA_TARGETS,
@@ -1877,12 +2059,14 @@ static void /*XtSelectionCallbackProc */
 PasteTypesComplete(Widget w, XtPointer cdata,
                    Atom *selection __attribute__((unused)),
                    Atom *type __attribute__((unused)), XtPointer value,
-                   unsigned long *length, int *format __attribute__((unused))) {
+                   unsigned long *length, int *format __attribute__((unused)))
+{
   unsigned long i;
   Atom req_type = XA_STRING;
   Atom *values = (Atom *)value;
   for (i = 0; i < *length; i++)
-    if (values[i] == XA_DWSCOPE_PANEL) {
+    if (values[i] == XA_DWSCOPE_PANEL)
+    {
       req_type = XA_DWSCOPE_PANEL;
       break;
     }
@@ -1896,8 +2080,10 @@ PasteTypesComplete(Widget w, XtPointer cdata,
 static void /*XtSelectionCallbackProc */
 PasteComplete(Widget w, WaveInfo *info, Atom *selection __attribute__((unused)),
               Atom *type, XtPointer value, unsigned long *length,
-              int *format __attribute__((unused))) {
-  if (ConvertSelectionToWave(w, *type, *length, value, info)) {
+              int *format __attribute__((unused)))
+{
+  if (ConvertSelectionToWave(w, *type, *length, value, info))
+  {
     UpdateWaveform(0, info, 0, -1, -1);
     SetupEvent(info->_global.global.event ? GlobalWave.event : info->event,
                &info->received, &info->eventid);
@@ -1908,34 +2094,39 @@ PasteComplete(Widget w, WaveInfo *info, Atom *selection __attribute__((unused)),
 
 static void /*XtCallbackProc */
 RegisterPane(Widget w, XtPointer client_data __attribute__((unused)),
-             XmAnyCallbackStruct *callback_data __attribute__((unused))) {
+             XmAnyCallbackStruct *callback_data __attribute__((unused)))
+{
   Pane[NumPanes++] = w;
   NumWaves = 0;
 }
 
 static void /*XtCallbackProc */
 RegisterWave(Widget w, XtPointer client_data __attribute__((unused)),
-             XmAnyCallbackStruct *callback_data __attribute__((unused))) {
+             XmAnyCallbackStruct *callback_data __attribute__((unused)))
+{
   Wave[NumPanes - 1][NumWaves].w = w;
   ResetWave(&Wave[NumPanes - 1][NumWaves++]);
 }
 
 static void /*XtCallbackProc */
 RegisterSash(Widget w, XtPointer client_data __attribute__((unused)),
-             XmAnyCallbackStruct *callback_data __attribute__((unused))) {
+             XmAnyCallbackStruct *callback_data __attribute__((unused)))
+{
   Sash[NumSashs++] = w;
 }
 
-static String GlobalShot() {
+static String GlobalShot()
+{
   String override_shot =
       XmTextFieldGetString(XtNameToWidget(TopWidget, "*override_shot"));
   return strlen(override_shot) ? override_shot : GlobalWave.shot;
 }
 
 static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
-                          int global_change_mask, int change_mask) {
+                          int global_change_mask, int change_mask)
+{
 
-#define changed(field)                                                         \
+#define changed(field) \
   ((info->_global.global.field ? global_change_mask : change_mask) & M_##field)
 
   Boolean new_grid = changed(x_grid_lines) || changed(y_grid_lines) ||
@@ -1944,7 +2135,8 @@ static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
   info->received = 0;
   Busy();
   if (changed(shot) || changed(database) || changed(default_node) ||
-      changed(x) || changed(y) || changed(title) || changed(print_title)) {
+      changed(x) || changed(y) || changed(title) || changed(print_title))
+  {
     XmdsWaveformValStruct x_wave;
     XmdsWaveformValStruct y_wave;
     String title_evaluated = 0;
@@ -1978,12 +2170,14 @@ static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
   found:
     if (!EvaluateData(brief, r, c, idx, event ? &update : (Boolean *)0,
                       database, shot, default_node, x, y, &x_wave, &y_wave,
-                      &error)) {
+                      &error))
+    {
       String terror = 0;
       if (!complain &&
           EvaluateText(title, "Error evaluating title", &title_evaluated,
                        &terror) &&
-          title_evaluated) {
+          title_evaluated)
+      {
         String save = error;
         int len = strlen(title_evaluated) + 2 + strlen(save);
         error = XtMalloc(len + 1);
@@ -1991,7 +2185,8 @@ static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
         strcat(error, "\n");
         strcat(error, save);
         error[len] = 0;
-      } else if (terror)
+      }
+      else if (terror)
         XtFree(terror);
       if (title_evaluated)
         XtFree(title_evaluated);
@@ -2001,23 +2196,27 @@ static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
       Unbusy();
       return 0;
     }
-    if (event & !update) {
+    if (event & !update)
+    {
       Unbusy();
       return 1;
     }
     if (!EvaluateText(title, "Error evaluating title", &title_evaluated,
-                      &error)) {
+                      &error))
+    {
       if (complain)
         PopupComplaint(DataSetupWidget, error);
       if (error)
         XtFree(error);
     }
-    if (info->print_title_evaluated) {
+    if (info->print_title_evaluated)
+    {
       XtFree(info->print_title_evaluated);
       info->print_title_evaluated = 0;
     }
     if (!EvaluateText(print_title, "Error evaluating print title",
-                      &info->print_title_evaluated, &error)) {
+                      &info->print_title_evaluated, &error))
+    {
       if (complain)
         PopupComplaint(DataSetupWidget, error);
       if (error)
@@ -2029,7 +2228,9 @@ static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
     XmdsWaveformUpdate(info->w, &x_wave, &y_wave, title_evaluated, xmin, xmax,
                        ymin, ymax, new_grid);
     XtFree(title_evaluated);
-  } else if (changed(xmin) || changed(ymin) || changed(xmax) || changed(ymax)) {
+  }
+  else if (changed(xmin) || changed(ymin) || changed(xmax) || changed(ymax))
+  {
     float *xmin;
     float *xmax;
     float *ymin;
@@ -2038,7 +2239,8 @@ static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
     XtVaSetValues(info->w, XmdsNxMin, xmin, XmdsNxMax, xmax, XmdsNyMin, ymin,
                   XmdsNyMax, ymax, NULL);
   }
-  if (new_grid) {
+  if (new_grid)
+  {
     int x_grid_lines = info->_global.global.x_grid_lines
                            ? GlobalWave.x_grid_lines
                            : info->x_grid_lines;
@@ -2064,12 +2266,15 @@ static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event,
   return 1;
 }
 
-static void Complain(WaveInfo *info, char mode, String error) {
-  switch (mode) {
+static void Complain(WaveInfo *info, char mode, String error)
+{
+  switch (mode)
+  {
   case 0:
     XtVaSetValues(info->w, XmdsNcount, 0, XmdsNtitle, error, NULL);
     break;
-  case 1: {
+  case 1:
+  {
     Widget w = XtNameToWidget(DataSetupWidget, "*data_setup_error");
     XmString error_string = XmStringCreateLtoR(error, XmSTRING_DEFAULT_CHARSET);
     XtVaSetValues(w, XmNmessageString, error_string, NULL);
@@ -2084,7 +2289,8 @@ static void Complain(WaveInfo *info, char mode, String error) {
   }
 }
 
-static void ClearWaveform(WaveInfo *info) {
+static void ClearWaveform(WaveInfo *info)
+{
   ResetWave(info);
   SetupEvent("", &info->received, &info->eventid);
   if (info->w)
@@ -2095,7 +2301,8 @@ static void ClearWaveform(WaveInfo *info) {
                   0, XmdsNtitle, "", NULL);
 }
 
-static void RestoreDatabase(String dbname, Widget w) {
+static void RestoreDatabase(String dbname, Widget w)
+{
   int c;
   int r;
   int x;
@@ -2153,7 +2360,8 @@ static void RestoreDatabase(String dbname, Widget w) {
              &ScopeTitleEventReceived, &ScopeTitleEventId);
   SetupEvent(ScopePrintEvent, &ScopePrintEventReceived, &ScopePrintEventId);
   XtVaSetValues(TopWidget, XtNx, x, XtNy, y, NULL);
-  if (XtWidth(MainWidget) != width || XtHeight(MainWidget) != height) {
+  if (XtWidth(MainWidget) != width || XtHeight(MainWidget) != height)
+  {
     PreventResize = TRUE;
     /* XtVaSetValues(MainWidget, XtNwidth, width, XtNheight, height, NULL); */
     XtVaSetValues(TopWidget, XtNwidth, width, XtNheight, height, NULL);
@@ -2163,7 +2371,8 @@ static void RestoreDatabase(String dbname, Widget w) {
   Columns =
       min(max(strtol(GetResource(scopedb, "Scope.columns", "1"), NULL, 0), 1),
           MaxCols);
-  for (c = 0; c < MaxCols; c++) {
+  for (c = 0; c < MaxCols; c++)
+  {
     char resource[50];
     sprintf(resource, "Scope.rows_in_column_%d", c + 1);
     resource[strlen(resource) - 1] = '1' + c;
@@ -2174,10 +2383,12 @@ static void RestoreDatabase(String dbname, Widget w) {
             : 0;
     if (Rows[c])
       XtVaSetValues(Pane[c], XtNheight, height, NULL);
-    for (r = 0; r < MaxRows; r++) {
+    for (r = 0; r < MaxRows; r++)
+    {
       WaveInfo *info = &Wave[c][r];
       Dimension pheight;
-      if (r < Rows[c]) {
+      if (r < Rows[c])
+      {
         float zoom[4];
         int old_update;
         GetWaveFromDb(scopedb, "Scope.plot", r, c, info);
@@ -2196,11 +2407,13 @@ static void RestoreDatabase(String dbname, Widget w) {
                         XmdsNyMin, &zoom[2], XmdsNyMax, &zoom[3], NULL);
         SetupEvent(info->_global.global.event ? GlobalWave.event : info->event,
                    &info->received, &info->eventid);
-      } else
+      }
+      else
         ClearWaveform(info);
     }
   }
-  for (c = 0; c < Columns - 1; c++) {
+  for (c = 0; c < Columns - 1; c++)
+  {
     static char resource[] = "Scope.vpane_n";
     int position;
     resource[12] = '1' + c;
@@ -2210,7 +2423,8 @@ static void RestoreDatabase(String dbname, Widget w) {
     XtVaSetValues(Sash[c], XmNleftPosition, position, NULL);
   }
   ManageWaveforms();
-  if (!XtIsRealized(TopWidget)) {
+  if (!XtIsRealized(TopWidget))
+  {
     XtRealizeWidget(TopWidget);
     RaiseWindows();
     /*    PreventResize = FALSE; */
@@ -2220,7 +2434,8 @@ static void RestoreDatabase(String dbname, Widget w) {
   XrmDestroyDatabase(scopedb);
 }
 
-static void WriteDatabase(String dbname, Boolean zoom) {
+static void WriteDatabase(String dbname, Boolean zoom)
+{
   int r;
   int c;
   Position x;
@@ -2240,7 +2455,8 @@ static void WriteDatabase(String dbname, Boolean zoom) {
       filename[i] = 0;
   file = fopen(filename, "w");
   XtFree(filename);
-  if (file) {
+  if (file)
+  {
     XtVaGetValues(TopWidget, XtNx, &x, XtNy, &y, NULL);
     XtVaGetValues(MainWidget, XtNwidth, &width, XtNheight, &height, NULL);
     fprintf(file, "Scope.geometry: %dx%d+%d+%d\n", width, height, x, y);
@@ -2265,39 +2481,46 @@ static void WriteDatabase(String dbname, Boolean zoom) {
     fprintf(file, "Scope.font: %s\n", font);
     XFree(font);
     fprintf(file, "Scope.columns: %d\n", Columns);
-    while ((text = WaveToText("Scope.global_1_1", &GlobalWave, 0, &ctx))) {
+    while ((text = WaveToText("Scope.global_1_1", &GlobalWave, 0, &ctx)))
+    {
       fprintf(file, "%s", text);
       XtFree(text);
     }
-    for (c = 0; c < Columns; c++) {
+    for (c = 0; c < Columns; c++)
+    {
       fprintf(file, "Scope.rows_in_column_%d: %d\n", c + 1, Rows[c]);
-      for (r = 0; r < Rows[c]; r++) {
+      for (r = 0; r < Rows[c]; r++)
+      {
         char prefix[36];
         int ctx = zoom ? -4 : 0;
         int height;
         XtVaGetValues(Wave[c][r].w, XtNheight, &height, NULL);
         fprintf(file, "\n");
         sprintf(prefix, "Scope.plot_%d_%d", r + 1, c + 1);
-        while ((text = WaveToText(prefix, &Wave[c][r], height, &ctx))) {
+        while ((text = WaveToText(prefix, &Wave[c][r], height, &ctx)))
+        {
           fprintf(file, "%s", text);
           XtFree(text);
         }
       }
     }
-    for (c = 0; c < Columns - 1; c++) {
+    for (c = 0; c < Columns - 1; c++)
+    {
       int position;
       XtVaGetValues(Sash[c], XmNleftPosition, &position, NULL);
       fprintf(file, "Scope.vpane_%d: %d\n", c + 1, position);
     }
     fclose(file);
-  } else
+  }
+  else
     PopupComplaint(MainWidget, "Error writing setup file");
 }
 
 static void /*XtActionProc */ Resize(Widget w, XEvent *event,
                                      String *params __attribute__((unused)),
                                      Cardinal *num_params
-                                     __attribute__((unused))) {
+                                     __attribute__((unused)))
+{
   int c;
   int r;
   double orig_height = XtHeight(Pane[0]);
@@ -2307,7 +2530,8 @@ static void /*XtActionProc */ Resize(Widget w, XEvent *event,
   /* flush the event que for resize events */
   while (XCheckTypedWindowEvent(XtDisplay(w), XtWindow(w), event->type, &ev))
     event = &ev;
-  if (!PreventResize) {
+  if (!PreventResize)
+  {
     for (c = 0; c < Columns; c++)
       for (r = 0; r < Rows[c]; r++)
         Wave[c][r].height = XtHeight(Wave[c][r].w);
@@ -2317,11 +2541,13 @@ static void /*XtActionProc */ Resize(Widget w, XEvent *event,
                 event->xresizerequest.height, NULL);
   {
     new_height = XtHeight(Pane[0]);
-    if (PreventResize) {
+    if (PreventResize)
+    {
       orig_height = new_height;
       PreventResize = FALSE;
     }
-    for (c = 0; c < Columns; c++) {
+    for (c = 0; c < Columns; c++)
+    {
       XtUnmanageChild(Pane[c]);
       for (r = 0; r < Rows[c]; r++)
         XtVaSetValues(Wave[c][r].w, XtNheight,
@@ -2338,15 +2564,20 @@ static void /*XtActionProc */ Resize(Widget w, XEvent *event,
 static void /*XtActionProc */ EqualPanes(Widget w,
                                          XEvent *event __attribute__((unused)),
                                          String *string,
-                                         Cardinal *num_strings) {
+                                         Cardinal *num_strings)
+{
   int c;
   int r;
-  if ((*num_strings == 1) && (string[0][0] == 'V')) {
-    for (c = 0; c < Columns - 1; c++) {
+  if ((*num_strings == 1) && (string[0][0] == 'V'))
+  {
+    for (c = 0; c < Columns - 1; c++)
+    {
       int position = (c + 1) * 1000 / Columns;
       XtVaSetValues(Sash[c], XmNleftPosition, position, NULL);
     }
-  } else if ((*num_strings == 1) && (string[0][0] == 'H')) {
+  }
+  else if ((*num_strings == 1) && (string[0][0] == 'H'))
+  {
     Widget p = XtParent(w);
     int height;
     for (c = 0; c < Columns; c++)
@@ -2362,10 +2593,12 @@ static void /*XtActionProc */ EqualPanes(Widget w,
 }
 
 static void GetNewLimits(WaveInfo *info, float **xmin, float **xmax,
-                         float **ymin, float **ymax) {
+                         float **ymin, float **ymax)
+{
   int lockScales =
       LockScalesWidget ? XmToggleButtonGetState(LockScalesWidget) : 0;
-  if (info->update && !lockScales) {
+  if (info->update && !lockScales)
+  {
     static float xminval;
     static float xmaxval;
     static float yminval;
@@ -2390,7 +2623,9 @@ static void GetNewLimits(WaveInfo *info, float **xmin, float **xmax,
     if (strlen(ymax_s))
       if (sscanf(ymax_s, "%f", &ymaxval))
         *ymax = &ymaxval;
-  } else {
+  }
+  else
+  {
     *xmin = (float *)-1;
     *xmax = (float *)-1;
     *ymin = (float *)-1;
@@ -2398,7 +2633,8 @@ static void GetNewLimits(WaveInfo *info, float **xmin, float **xmax,
   }
 }
 
-static void SetWindowTitles() {
+static void SetWindowTitles()
+{
   String title;
   String title_error;
   XmdsWaveformValStruct x_wave;

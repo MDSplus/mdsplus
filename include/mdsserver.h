@@ -2,7 +2,8 @@
 #define _MDSSERVER
 #include <treeshr_hooks.h>
 
-typedef enum {
+typedef enum
+{
   doabort,        /**** Abort current action or mdsdcl command ***/
   action,         /**** Execute an action nid in a tree ***/
   close_tree,     /**** Close open trees ***/
@@ -15,9 +16,15 @@ typedef enum {
   noop            /**** Noop used to start server ***/
 } MsgType;
 
-typedef enum { none, log, statistics } LoggingType;
+typedef enum
+{
+  none,
+  log,
+  statistics
+} LoggingType;
 
-typedef enum {
+typedef enum
+{
   build_table_begin = 1,
   build_table,
   build_table_end,
@@ -27,27 +34,33 @@ typedef enum {
   done
 } MonitorMode;
 
-typedef struct {
+typedef struct
+{
   char flush;
 } DoAbortMsg;
-typedef struct {
+typedef struct
+{
   char treename[12];
   int shot;
   int nid;
 } ActionMsg;
 /* close message has no data */
-typedef struct {
+typedef struct
+{
   char treename[12];
   int shot;
 } CreatePulseMsg;
-typedef struct {
+typedef struct
+{
   LoggingType type;
 } LoggingMsg;
-typedef struct {
+typedef struct
+{
   char cli[12];
   char command[1];
 } MdsDclCommandMsg;
-typedef struct {
+typedef struct
+{
   char treename[12];
   int shot;
   int phase;
@@ -57,12 +70,14 @@ typedef struct {
   char server[32];
   int status;
 } MonitorMsg;
-typedef struct {
+typedef struct
+{
   char full;
 } ShowMsg;
 /* stop message has no data */
 
-typedef struct {
+typedef struct
+{
   char opcode;
   char now;
   char fill1;
@@ -73,7 +88,8 @@ typedef struct {
 
 #define MsgOffset(field) ((int)&((Msg *)0)->field)
 
-typedef struct {
+typedef struct
+{
   char server[32];
   int nid;
   int phase;
@@ -91,7 +107,8 @@ typedef struct {
   unsigned recorded : 1;
 } ActionInfo;
 
-typedef struct {
+typedef struct
+{
   int num;
   char tree[12];
   int shot;
@@ -99,7 +116,8 @@ typedef struct {
   ActionInfo actions[1];
 } DispatchTable;
 
-typedef struct {
+typedef struct
+{
   int shot;
   union {
     int nid;

@@ -74,7 +74,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <stdlib.h>
 
-static inline l_length_t align(l_length_t bytes, l_length_t size) {
+static inline l_length_t align(l_length_t bytes, l_length_t size)
+{
   if (size == 0)
     return bytes;
   return ((bytes + size - 1) / size) * size;
@@ -83,7 +84,8 @@ static inline l_length_t align(l_length_t bytes, l_length_t size) {
 EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr,
                       const length_t *const length_ptr,
                       const dtype_t *const dtype_ptr,
-                      mdsdsc_xd_t *const out_xd) {
+                      mdsdsc_xd_t *const out_xd)
+{
   array_coeff *in_dsc = (array_coeff *)in_ptr;
   l_length_t new_arsize;
   l_length_t dsc_size;
@@ -107,45 +109,51 @@ EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr,
   dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
-  if
-    STATUS_OK {
-      out_dsc = (array_coeff *)out_xd->pointer;
-      *(mdsdsc_a_t *)out_dsc = *(mdsdsc_a_t *)in_dsc;
-      out_dsc->length = *length_ptr;
-      out_dsc->dtype = *dtype_ptr;
-      out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
-      out_dsc->arsize = new_arsize;
-      if (out_dsc->aflags.coeff || (new_arsize == 0 && in_dsc->pointer)) {
-        if (!in_dsc->aflags.coeff) { // new_arsize==0; in_dsc->a0 invalid
-          out_dsc->aflags.coeff = 1;
-          out_dsc->a0 = out_dsc->pointer;
-          out_dsc->dimct = 0;
-        } else {
-          int64_t offset;
-          if (out_dsc->class == CLASS_CA)
-            offset = ((int64_t)out_dsc->length) *
-                     ((int64_t)(intptr_t)in_dsc->a0 /
-                      ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
-          else
-            offset = ((int64_t)out_dsc->length) *
-                     ((in_dsc->a0 - in_dsc->pointer) /
-                      ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
-          out_dsc->a0 = out_dsc->pointer + offset;
-        }
-        for (i = 0; i < out_dsc->dimct; i++)
-          out_dsc->m[i] = in_dsc->m[i];
-        if (new_arsize == 0 && out_dsc->dimct == 0) {
-          out_dsc->dimct = 1;
-          out_dsc->m[0] = in_dsc->arsize;
-        }
-        if (in_dsc->aflags.bounds) {
-          bound_t *new_bound_ptr = (bound_t *)&out_dsc->m[out_dsc->dimct];
-          bound_t *a_bound_ptr = (bound_t *)&in_dsc->m[in_dsc->dimct];
-          for (i = 0; i < out_dsc->dimct; i++)
-            new_bound_ptr[i] = a_bound_ptr[i];
-        }
+  if (STATUS_OK)
+  {
+    out_dsc = (array_coeff *)out_xd->pointer;
+    *(mdsdsc_a_t *)out_dsc = *(mdsdsc_a_t *)in_dsc;
+    out_dsc->length = *length_ptr;
+    out_dsc->dtype = *dtype_ptr;
+    out_dsc->pointer = (char *)out_dsc + align(dsc_size, align_size);
+    out_dsc->arsize = new_arsize;
+    if (out_dsc->aflags.coeff || (new_arsize == 0 && in_dsc->pointer))
+    {
+      if (!in_dsc->aflags.coeff)
+      { // new_arsize==0; in_dsc->a0 invalid
+        out_dsc->aflags.coeff = 1;
+        out_dsc->a0 = out_dsc->pointer;
+        out_dsc->dimct = 0;
       }
-      out_dsc->class = CLASS_A;
+      else
+      {
+        int64_t offset;
+        if (out_dsc->class == CLASS_CA)
+          offset = ((int64_t)out_dsc->length) *
+                   ((int64_t)(intptr_t)in_dsc->a0 /
+                    ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
+        else
+          offset = ((int64_t)out_dsc->length) *
+                   ((in_dsc->a0 - in_dsc->pointer) /
+                    ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
+        out_dsc->a0 = out_dsc->pointer + offset;
+      }
+      for (i = 0; i < out_dsc->dimct; i++)
+        out_dsc->m[i] = in_dsc->m[i];
+      if (new_arsize == 0 && out_dsc->dimct == 0)
+      {
+        out_dsc->dimct = 1;
+        out_dsc->m[0] = in_dsc->arsize;
+      }
+      if (in_dsc->aflags.bounds)
+      {
+        bound_t *new_bound_ptr = (bound_t *)&out_dsc->m[out_dsc->dimct];
+        bound_t *a_bound_ptr = (bound_t *)&in_dsc->m[in_dsc->dimct];
+        for (i = 0; i < out_dsc->dimct; i++)
+          new_bound_ptr[i] = a_bound_ptr[i];
+      }
     }
+    out_dsc->class = CLASS_A;
+  }
   return status;
 }

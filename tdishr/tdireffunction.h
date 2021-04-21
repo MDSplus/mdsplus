@@ -8,7 +8,8 @@
 #include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
 
-struct TdiFunctionStruct {
+struct TdiFunctionStruct
+{
   char *name;       /*string to compile/decompile   */
   int (*f1)();      /*routine to check arguments    */
   int (*f2)();      /*routine to set conversions    */

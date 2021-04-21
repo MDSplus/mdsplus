@@ -42,16 +42,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /***************************************************************
  * TclShowCurrent:
  ***************************************************************/
-EXPORT int TclShowCurrent(void *ctx, char **error, char **output) {
+EXPORT int TclShowCurrent(void *ctx, char **error, char **output)
+{
   int shot;
   char *experiment = 0;
 
   cli_get_value(ctx, "EXPERIMENT", &experiment);
   shot = TreeGetCurrentShotId(experiment);
-  if (shot) {
+  if (shot)
+  {
     *output = malloc(100);
     sprintf(*output, "Current shot is %d\n", shot);
-  } else {
+  }
+  else
+  {
     *error = strdup("Failed to get shotid.\n");
   }
   free(experiment);

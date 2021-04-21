@@ -43,14 +43,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define UnBlockSig(a)
 #define SIGALRM 0
 #else
-static int BlockSig(int sig_number) {
+static int BlockSig(int sig_number)
+{
   sigset_t newsigset;
   sigemptyset(&newsigset);
   sigaddset(&newsigset, sig_number);
   return sigprocmask(SIG_BLOCK, &newsigset, NULL);
 }
 
-static int UnBlockSig(int sig_number) {
+static int UnBlockSig(int sig_number)
+{
   sigset_t newsigset;
   sigemptyset(&newsigset);
   sigaddset(&newsigset, sig_number);
@@ -61,12 +63,14 @@ static int UnBlockSig(int sig_number) {
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
-EXPORT int IdlMdsClose(int argc, void **argv) {
+EXPORT int IdlMdsClose(int argc, void **argv)
+{
   int status;
   BlockSig(SIGALRM);
   if (argc > 1)
     status = TreeClose((char *)argv[0], (int)(intptr_t)argv[1]);
-  else {
+  else
+  {
     status = TreeClose(0, 0);
     while (TreeClose(0, 0) & 1)
       ;
@@ -75,9 +79,11 @@ EXPORT int IdlMdsClose(int argc, void **argv) {
   return status;
 }
 
-EXPORT int IdlMdsOpen(int argc, void **argv) {
+EXPORT int IdlMdsOpen(int argc, void **argv)
+{
   int status = 0;
-  if (argc == 2) {
+  if (argc == 2)
+  {
     BlockSig(SIGALRM);
     status = TreeOpen((char *)argv[0], (int)(intptr_t)argv[1], 0);
     UnBlockSig(SIGALRM);
@@ -85,10 +91,12 @@ EXPORT int IdlMdsOpen(int argc, void **argv) {
   return status;
 }
 
-EXPORT int IdlMdsSetDefault(int argc, void **argv) {
+EXPORT int IdlMdsSetDefault(int argc, void **argv)
+{
   int status = 0;
   int nid;
-  if (argc == 1) {
+  if (argc == 1)
+  {
     BlockSig(SIGALRM);
     status = TreeSetDefault((char *)argv[0], &nid);
     UnBlockSig(SIGALRM);
@@ -100,19 +108,22 @@ static EMPTYXD(mdsValueAnswer);
 static array_coeff arrayArgs[16];
 static struct descriptor scalarArgs[16];
 
-typedef struct {
+typedef struct
+{
   unsigned short slen; /* Length of string */
   short stype;         /* type of string:  (0) static, (!0)   dynamic */
   char *s;             /*  Addr of string, invalid if slen == 0.  */
 } IDL_STRING;
 
-typedef struct {
+typedef struct
+{
   unsigned int slen; /* Length of string */
   short stype;       /* type of string:  (0) static, (!0)   dynamic */
   char *s;           /*  Addr of string, invalid if slen == 0.  */
 } IDL_STRING_L;
 
-static int ShortStrings(char *b) {
+static int ShortStrings(char *b)
+{
 #ifndef _WIN32
   extern char *__progname;
   int isGdl = strcmp(__progname, "gdl") == 0;
@@ -131,11 +142,14 @@ static int ShortStrings(char *b) {
   return ((b[t1_idx] != 0) && (b[t1_idx] != 1)) || (b[t2_idx] != 0);
 }
 
-static void *MakeDescr(int idx, int *argsize, void *bytes) {
-  if (argsize[0] == 0) {
+static void *MakeDescr(int idx, int *argsize, void *bytes)
+{
+  if (argsize[0] == 0)
+  {
     scalarArgs[idx].class = CLASS_S;
     scalarArgs[idx].pointer = (char *)bytes;
-    switch (argsize[1]) {
+    switch (argsize[1])
+    {
     case 1:
       scalarArgs[idx].length = 1;
       scalarArgs[idx].dtype = DTYPE_BU;
@@ -193,7 +207,9 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
       return 0;
     }
     return (void *)&scalarArgs[idx];
-  } else {
+  }
+  else
+  {
     int i;
     arrayArgs[idx].class = CLASS_A;
     arrayArgs[idx].pointer = arrayArgs[idx].a0 = (char *)bytes;
@@ -203,7 +219,8 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
     arrayArgs[idx].aflags.coeff = 1;
     for (i = 0; i < argsize[0]; i++)
       arrayArgs[idx].m[i] = argsize[i + 1];
-    switch (argsize[argsize[0] + 1]) {
+    switch (argsize[argsize[0] + 1])
+    {
     case 1:
       arrayArgs[idx].length = 1;
       arrayArgs[idx].dtype = DTYPE_BU;
@@ -234,8 +251,10 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
       arrayArgs[idx].dtype = DTYPE_FSC;
       arrayArgs[idx].arsize = argsize[argsize[0] + 2] * 8;
       break;
-    case 7: {
-      if (ShortStrings(bytes)) {
+    case 7:
+    {
+      if (ShortStrings(bytes))
+      {
         IDL_STRING *str;
         int num = 1;
         unsigned short maxlen;
@@ -247,7 +266,8 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
             maxlen = str->slen;
         arrayArgs[idx].length = maxlen;
         arrayArgs[idx].arsize = maxlen * num;
-        if (arrayArgs[idx].arsize > 0) {
+        if (arrayArgs[idx].arsize > 0)
+        {
           char *ptr;
           char *blanks;
           blanks = malloc(maxlen + 1);
@@ -255,16 +275,20 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
               malloc(arrayArgs[idx].arsize + 1);
           memset(blanks, 32, maxlen);
           for (i = 0, str = (IDL_STRING *)bytes; i < num;
-               i++, str++, ptr += maxlen) {
+               i++, str++, ptr += maxlen)
+          {
             if (str->s)
               strcpy(ptr, str->s);
             if (str->slen < maxlen)
               strncat(ptr, blanks, maxlen - str->slen);
           }
           free(blanks);
-        } else
+        }
+        else
           arrayArgs[idx].pointer = 0;
-      } else {
+      }
+      else
+      {
         IDL_STRING_L *str;
         int num = 1;
         unsigned short maxlen;
@@ -277,7 +301,8 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
             maxlen = str->slen;
         arrayArgs[idx].length = maxlen;
         arrayArgs[idx].arsize = maxlen * num;
-        if (arrayArgs[idx].arsize > 0) {
+        if (arrayArgs[idx].arsize > 0)
+        {
           char *ptr;
           char *blanks;
           blanks = malloc(maxlen + 1);
@@ -285,17 +310,20 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
               malloc(arrayArgs[idx].arsize + 1);
           memset(blanks, 32, maxlen);
           for (i = 0, str = (IDL_STRING_L *)bytes; i < num;
-               i++, str++, ptr += maxlen) {
+               i++, str++, ptr += maxlen)
+          {
             if (str->s)
               strcpy(ptr, str->s);
             if (str->slen < maxlen)
               strncat(ptr, blanks, maxlen - str->slen);
           }
           free(blanks);
-        } else
+        }
+        else
           arrayArgs[idx].pointer = 0;
       }
-    } break;
+    }
+    break;
     case 9:
       arrayArgs[idx].length = 16;
       arrayArgs[idx].dtype = DTYPE_FTC;
@@ -328,7 +356,8 @@ static void *MakeDescr(int idx, int *argsize, void *bytes) {
   }
 }
 
-EXPORT int IdlMdsValue(int argc, void **argv) {
+EXPORT int IdlMdsValue(int argc, void **argv)
+{
   int status;
   int arglistlen = 3 + (argc / 2);
   void **arglist = (void **)alloca(arglistlen * sizeof(void *));
@@ -343,7 +372,8 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
   expression.length = strlen((char *)argv[0]);
   expression.pointer = (char *)argv[0];
   arglist[argidx++] = (void *)&expression;
-  for (i = 3; i < argc; i += 2, argidx++) {
+  for (i = 3; i < argc; i += 2, argidx++)
+  {
     arglist[argidx] =
         (void *)MakeDescr(argidx - 2, (int *)argv[i], argv[i + 1]);
   }
@@ -351,23 +381,28 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
   arglist[argidx++] = MdsEND_ARG;
   *(long *)&arglist[0] = argidx;
   status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
-  if (status & 1) {
+  if (status & 1)
+  {
     status = TdiData(tmp.pointer, &mdsValueAnswer MDS_END_ARG);
     MdsFree1Dx(&tmp, NULL);
-    if (status & 1) {
+    if (status & 1)
+    {
       if (mdsValueAnswer.pointer->dtype == DTYPE_F ||
-          mdsValueAnswer.pointer->dtype == DTYPE_FS) {
+          mdsValueAnswer.pointer->dtype == DTYPE_FS)
+      {
         float float_v = (float)0.0;
         DESCRIPTOR_FLOAT(float_d, 0);
         float_d.pointer = (char *)&float_v;
         if (float_d.dtype != mdsValueAnswer.pointer->dtype)
           TdiCvt((struct descriptor *)&mdsValueAnswer, &float_d,
                  &mdsValueAnswer MDS_END_ARG);
-      } else if (mdsValueAnswer.pointer->dtype == DTYPE_D ||
-                 mdsValueAnswer.pointer->dtype == DTYPE_G ||
-                 mdsValueAnswer.pointer->dtype == DTYPE_FT ||
-                 mdsValueAnswer.pointer->dtype == DTYPE_O ||
-                 mdsValueAnswer.pointer->dtype == DTYPE_OU) {
+      }
+      else if (mdsValueAnswer.pointer->dtype == DTYPE_D ||
+               mdsValueAnswer.pointer->dtype == DTYPE_G ||
+               mdsValueAnswer.pointer->dtype == DTYPE_FT ||
+               mdsValueAnswer.pointer->dtype == DTYPE_O ||
+               mdsValueAnswer.pointer->dtype == DTYPE_OU)
+      {
         double double_v = 0.0;
         struct descriptor double_d = {sizeof(double), DTYPE_NATIVE_DOUBLE,
                                       CLASS_S, 0};
@@ -376,8 +411,10 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
         if (double_d.dtype != mdsValueAnswer.pointer->dtype)
           TdiCvt((struct descriptor *)&mdsValueAnswer, &double_d,
                  &mdsValueAnswer MDS_END_ARG);
-      } else if (mdsValueAnswer.pointer->dtype == DTYPE_FC ||
-                 mdsValueAnswer.pointer->dtype == DTYPE_FSC) {
+      }
+      else if (mdsValueAnswer.pointer->dtype == DTYPE_FC ||
+               mdsValueAnswer.pointer->dtype == DTYPE_FSC)
+      {
         float float_v[2] = {(float)0.0, (float)0.0};
         struct descriptor complex_d = {sizeof(float_v), DTYPE_FLOAT_COMPLEX,
                                        CLASS_S, 0};
@@ -385,9 +422,11 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
         if (complex_d.dtype != mdsValueAnswer.pointer->dtype)
           TdiCvt((struct descriptor *)&mdsValueAnswer, &complex_d,
                  &mdsValueAnswer MDS_END_ARG);
-      } else if (mdsValueAnswer.pointer->dtype == DTYPE_DC ||
-                 mdsValueAnswer.pointer->dtype == DTYPE_GC ||
-                 mdsValueAnswer.pointer->dtype == DTYPE_FTC) {
+      }
+      else if (mdsValueAnswer.pointer->dtype == DTYPE_DC ||
+               mdsValueAnswer.pointer->dtype == DTYPE_GC ||
+               mdsValueAnswer.pointer->dtype == DTYPE_FTC)
+      {
         double double_v[2] = {0.0, 0.0};
         struct descriptor dcomplex_d = {sizeof(double_v), DTYPE_DOUBLE_COMPLEX,
                                         CLASS_S, 0};
@@ -397,8 +436,10 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
                  &mdsValueAnswer MDS_END_ARG);
       }
       ((char *)argv[2])[0] = 0;
-      if (mdsValueAnswer.pointer->class == CLASS_S) {
-        switch (mdsValueAnswer.pointer->dtype) {
+      if (mdsValueAnswer.pointer->class == CLASS_S)
+      {
+        switch (mdsValueAnswer.pointer->dtype)
+        {
         default:
           break; // TODO: handle invalid dtypes
         case DTYPE_B:
@@ -439,26 +480,33 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
           strcpy((char *)argv[1], "answer = dcomplex(0.0)");
           break;
         case DTYPE_T:
-          if (mdsValueAnswer.pointer->length > 0) {
+          if (mdsValueAnswer.pointer->length > 0)
+          {
             sprintf((char *)argv[1], "answer = bytarr(%d)",
                     mdsValueAnswer.pointer->length);
             strcpy((char *)argv[2], "answer = string(answer)");
-          } else {
+          }
+          else
+          {
             strcpy((char *)argv[1], "answer = ''");
           }
           break;
         }
-      } else if (mdsValueAnswer.pointer->class == CLASS_A) {
+      }
+      else if (mdsValueAnswer.pointer->class == CLASS_A)
+      {
         array_coeff *ptr = (array_coeff *)mdsValueAnswer.pointer;
         char dims[512] = "(";
         int i;
         if (ptr->aflags.coeff)
-          for (i = 0; i < ptr->dimct; i++) {
+          for (i = 0; i < ptr->dimct; i++)
+          {
             char dim[16];
             sprintf(dim, "%d,", ptr->m[i] > 0 ? ptr->m[i] : 1);
             strcat(dims, dim);
           }
-        else {
+        else
+        {
           char dim[16];
           sprintf(dim, "%d,",
                   ((ptr->arsize / ptr->length) > 0)
@@ -468,7 +516,8 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
         }
         dims[strlen(dims) - 1] = '\0';
         strcat(dims, ")");
-        switch (mdsValueAnswer.pointer->dtype) {
+        switch (mdsValueAnswer.pointer->dtype)
+        {
         default:
           break; // TODO: handle invalid dtypes
         case DTYPE_B:
@@ -520,12 +569,15 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
           strcat((char *)argv[1], dims);
           break;
         case DTYPE_T:
-          if (mdsValueAnswer.pointer->length > 0) {
+          if (mdsValueAnswer.pointer->length > 0)
+          {
             sprintf((char *)argv[1], "answer = bytarr(%d,",
                     mdsValueAnswer.pointer->length);
             strcat((char *)argv[1], &dims[1]);
             strcpy((char *)argv[2], "answer = strtrim(string(answer))");
-          } else {
+          }
+          else
+          {
             strcpy((char *)argv[1], "answer = strarr");
             strcat((char *)argv[1], dims);
           }
@@ -534,8 +586,10 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
       }
     }
   }
-  for (i = 0; i < 16; i++) {
-    if (arrayArgs[i].dtype == DTYPE_T && arrayArgs[i].pointer != NULL) {
+  for (i = 0; i < 16; i++)
+  {
+    if (arrayArgs[i].dtype == DTYPE_T && arrayArgs[i].pointer != NULL)
+    {
       free(arrayArgs[i].pointer);
       arrayArgs[i].pointer = 0;
     }
@@ -546,7 +600,8 @@ EXPORT int IdlMdsValue(int argc, void **argv) {
   return status;
 }
 
-EXPORT int IdlMdsPut(int argc, void **argv) {
+EXPORT int IdlMdsPut(int argc, void **argv)
+{
   int status;
   int arglistlen = 4 + (argc / 2);
   void **arglist = (void **)alloca(arglistlen * sizeof(void *));
@@ -558,11 +613,13 @@ EXPORT int IdlMdsPut(int argc, void **argv) {
   memset(arglist, 0, arglistlen * sizeof(void *));
   BlockSig(SIGALRM);
   status = TreeFindNode((char *)argv[0], &nid);
-  if (status & 1) {
+  if (status & 1)
+  {
     expression.length = strlen((char *)argv[1]);
     expression.pointer = (char *)argv[1];
     arglist[argidx++] = (void *)&expression;
-    for (i = 2; i < argc; i += 2, argidx++) {
+    for (i = 2; i < argc; i += 2, argidx++)
+    {
       arglist[argidx] =
           (void *)MakeDescr(argidx - 2, (int *)argv[i], argv[i + 1]);
     }
@@ -570,12 +627,15 @@ EXPORT int IdlMdsPut(int argc, void **argv) {
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx;
     status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
-    if (status & 1) {
+    if (status & 1)
+    {
       status = TreePutRecord(nid, (struct descriptor *)&tmp, 0);
       MdsFree1Dx(&tmp, NULL);
     }
-    for (i = 0; i < 16; i++) {
-      if (arrayArgs[i].dtype == DTYPE_T && arrayArgs[i].pointer != NULL) {
+    for (i = 0; i < 16; i++)
+    {
+      if (arrayArgs[i].dtype == DTYPE_T && arrayArgs[i].pointer != NULL)
+      {
         free(arrayArgs[i].pointer);
         arrayArgs[i].pointer = 0;
       }
@@ -585,13 +645,18 @@ EXPORT int IdlMdsPut(int argc, void **argv) {
   return status;
 }
 
-EXPORT int IdlGetAns(int argc, void **argv) {
+EXPORT int IdlGetAns(int argc, void **argv)
+{
   int status = 1;
-  if (argc == 1) {
-    if (mdsValueAnswer.pointer->class == CLASS_S) {
+  if (argc == 1)
+  {
+    if (mdsValueAnswer.pointer->class == CLASS_S)
+    {
       memcpy(argv[0], mdsValueAnswer.pointer->pointer,
              mdsValueAnswer.pointer->length);
-    } else if (mdsValueAnswer.pointer->class == CLASS_A) {
+    }
+    else if (mdsValueAnswer.pointer->class == CLASS_A)
+    {
       memcpy(argv[0], mdsValueAnswer.pointer->pointer,
              ((struct descriptor_a *)mdsValueAnswer.pointer)->arsize);
     }

@@ -32,7 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  DoMessage  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int DoMessage(int id) {
+int DoMessage(int id)
+{
   Connection *c = FindConnection(id, 0);
   static Message *(*processMessage)(Connection *, Message *) = NULL;
   int status =
@@ -41,15 +42,17 @@ int DoMessage(int id) {
     return 0; // will cause tunnel to terminate
   Message *msgptr = GetMdsMsg(id, &status);
   Message *ans = 0;
-  if
-    STATUS_OK {
-      ans = processMessage(c, msgptr);
-      if (ans) {
-        status = SendMdsMsg(id, ans, 0);
-        free(ans);
-      }
+  if (STATUS_OK)
+  {
+    ans = processMessage(c, msgptr);
+    if (ans)
+    {
+      status = SendMdsMsg(id, ans, 0);
+      free(ans);
     }
-  else {
+  }
+  else
+  {
     CloseConnection(id);
     status = 0; // will cause tunnel to terminate
   }

@@ -101,18 +101,21 @@ static Pixmap *gray_icons;
 
  Executable:                                                                  */
 
-void XmdsUsageIconsInitialize(Widget w) {
+void XmdsUsageIconsInitialize(Widget w)
+{
   static String hierarchy_name[] = {"xmds_usage_icons.uid"};
   static MrmHierarchy mrm_hierarchy;
   int usage;
   int usages;
-  if (!icons) {
+  if (!icons)
+  {
     MrmInitialize();
     MrmOpenHierarchy(1, hierarchy_name, 0, &mrm_hierarchy);
     usages = 13;
     icons = (unsigned long *)XtMalloc(sizeof(Pixmap) * usages * 2);
     gray_icons = icons + usages;
-    for (usage = 0; usage < usages; usage++) {
+    for (usage = 0; usage < usages; usage++)
+    {
       char name[] = {'U', 0, 0, 0, 0};
       name[1] = '0' + (usage / 10);
       name[2] = '0' + usage - (usage / 10) * 10;

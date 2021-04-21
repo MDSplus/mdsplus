@@ -28,7 +28,8 @@
 #define FAILURE 0
 
 // MSGLVL() values
-enum {
+enum
+{
   ALWAYS = 1, // ... well, almost always -- for debug printout
   IMPORTANT,  // not fatal
   FUNCTION_NAME = 5,
@@ -43,10 +44,26 @@ enum {
 
 #define FALSE 0
 #define TRUE 1
-enum { TO_CAMAC, FROM_CAMAC }; // ie WRITE and READ
-enum { STATUS_BAD, STATUS_GOOD };
-enum { CTS_DB, CRATE_DB };
-enum { OFF, ON }; // crate offline/online command
+enum
+{
+  TO_CAMAC,
+  FROM_CAMAC
+}; // ie WRITE and READ
+enum
+{
+  STATUS_BAD,
+  STATUS_GOOD
+};
+enum
+{
+  CTS_DB,
+  CRATE_DB
+};
+enum
+{
+  OFF,
+  ON
+}; // crate offline/online command
 
 // semaphore values
 #define P_SEMA4 -1

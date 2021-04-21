@@ -38,7 +38,8 @@ void external_test();
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
 
   BEGIN_TESTING(test 1);
   printf("test1\n");
@@ -54,7 +55,8 @@ int main(int argc __attribute__((unused)),
   END_TESTING;
 
   // test block explicit //
-  BEGIN_TESTING(example2) {
+  BEGIN_TESTING(example2)
+  {
     int a, *b;
     memcpy(b, &a, 10000000000);
     printf("I should be in segfault here...\n");
@@ -64,7 +66,8 @@ int main(int argc __attribute__((unused)),
   // start testing without fork //
   TEST_FORK(0);
 
-  BEGIN_TESTING(example3) {
+  BEGIN_TESTING(example3)
+  {
     int c = 1;
     TEST0(c == 0 && "false");
     test_pass_function();
@@ -75,7 +78,8 @@ int main(int argc __attribute__((unused)),
   external_test();
 
   TEST_FORK(1);
-  BEGIN_TESTING(timeout) {
+  BEGIN_TESTING(timeout)
+  {
     printf(" ... child 3 ... \n");
     sleep(30);
   }
@@ -106,7 +110,8 @@ void test_fail_function() { TEST1(0 && "no passing external function"); }
 /// inside another test as tests can not be nested.
 ///
 
-void external_test() {
+void external_test()
+{
   BEGIN_TESTING(external_test);
   printf(" ... child 4 ... \n");
   int external_test = 0;
