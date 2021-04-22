@@ -1,6 +1,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+//#define DEBUG
+#ifdef DEBUG
+#define DBG(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define DBG(...) \
+  { /**/         \
+  }
+#endif
+
 static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
                        int nowait);
 static int io_disconnect(Connection *c);
@@ -25,8 +34,9 @@ static IoRoutines io_routines = {
 #include <inttypes.h>
 
 #define IP(addr) ((uint8_t *)&addr)
-#define ADDR2IP(a) IP(a) \
-                   [0], IP(a)[1], IP(a)[2], IP(a)[3]
+#define ADDR2IP(a) \
+  IP(a)            \
+  [0], IP(a)[1], IP(a)[2], IP(a)[3]
 
 // Connected client definition for client list
 
@@ -39,6 +49,7 @@ typedef struct _client
   uint32_t addr;
   char *host;
   char *iphost;
+  pthread_t *thread;
 } Client;
 
 // List of clients connected to server instance.
@@ -502,7 +513,8 @@ static int io_disconnect(Connection *con)
   if (sock != INVALID_SOCKET)
   {
     Client *c, **p;
-    for (p = &ClientList, c = ClientList; c && c->id != con->id;
+    for (p = &ClientList, c = ClientList;
+         c && c->id != con->id;
          p = &c->next, c = c->next)
       ;
     if (c)
@@ -519,6 +531,12 @@ static int io_disconnect(Connection *con)
 #endif
         printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
                now, (int)sock, getpid(), c->username, c->host, c->iphost);
+      }
+      if (c->thread)
+      {
+        pthread_cancel(*c->thread);
+        pthread_detach(*c->thread);
+        free(c->thread);
       }
       free(c->username);
       free(c->iphost);
@@ -553,20 +571,50 @@ static int run_server_mode(Options *options)
   SOCKLEN_T len = sizeof(sin);
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in *)&sin)->sin_addr.s_addr);
-  Client *client = calloc(1, sizeof(Client));
-  client->id = id;
-  client->sock = sock;
-  client->next = ClientList;
-  client->username = username;
-  client->iphost = getHostInfo(sock, &client->host);
-  ClientList = client;
-#ifdef _TCP
-  FD_SET(sock, &fdactive);
-#endif
+  free(username);
+  Connection * connection = PopConnection(id);
   int status;
   do
   {
-    status = DoMessage(id);
+    status = DoMessageC(connection);
   } while (STATUS_OK);
   return C_ERROR;
+}
+
+typedef struct
+{
+  Connection *connection;
+  uint32_t client_addr;
+} client_thread_arg_t;
+
+static void *client_thread(void *args)
+{
+  client_thread_arg_t *c = (client_thread_arg_t *)args;
+  Connection *connection = c->connection;
+  MdsSetClientAddr(c->client_addr);
+  free(args);
+  int status;
+  do
+  {
+    status = DoMessageC(connection);
+  } while (STATUS_OK);
+  return NULL;
+}
+
+static inline int dispatch_client(Client *client)
+{
+  client_thread_arg_t* c = (client_thread_arg_t*)malloc(sizeof(client_thread_arg_t));
+  c->connection = PopConnection(client->id);
+  c->client_addr = client->addr;
+  client->thread = (pthread_t*)malloc(sizeof(pthread_t));
+  errno = pthread_create(client->thread, NULL, client_thread, (void *)c);
+  if (errno)
+  {
+    perror("dispatch_client");
+    free(client->thread);
+    client->thread = NULL;
+    CloseConnectionC(c->connection);
+    free(c);
+  }
+  return !!errno;
 }
