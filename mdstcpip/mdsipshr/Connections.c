@@ -533,7 +533,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
   INIT_STATUS_ERROR;
   if (c)
   {
-    static Message m;
+    Message m;
     Message *m_user;
     char *user = NULL, *user_p = NULL;
     // SET INFO //
@@ -576,7 +576,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     m.h.client_type = m_user ? m_user->h.client_type : 0;
     m.h.ndims = 1;
     m.h.dims[0] = MDSIP_VERSION;
-    MdsIpFree(m_user);
+    free(m_user);
     // reply to client //
     SendMdsMsgC(c, &m, 0);
     if (STATUS_OK)
