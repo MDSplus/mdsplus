@@ -53,6 +53,7 @@ typedef struct _client
 } Client;
 
 // List of clients connected to server instance.
+static pthread_mutex_t ClientListLock = PTHREAD_MUTEX_INITIALIZER;
 static Client *ClientList = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -365,8 +366,8 @@ static int io_authorize(Connection *c, char *username)
   Now32(now);
   if ((iphost = getHostInfo(sock, &hoststr)))
   {
-    printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", now,
-           (int)sock, getpid(), username, hoststr, iphost);
+    fprintf(stdout, "%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n",
+            now, (int)sock, getpid(), username, hoststr, iphost);
     char *matchString[2] = {NULL, NULL};
     FREE_ON_EXIT(matchString[0]);
     FREE_ON_EXIT(matchString[1]);
@@ -513,6 +514,7 @@ static int io_disconnect(Connection *con)
   if (sock != INVALID_SOCKET)
   {
     Client *c, **p;
+    pthread_mutex_lock(&ClientListLock);
     for (p = &ClientList, c = ClientList;
          c;
          p = &c->next, c = c->next)
@@ -520,6 +522,11 @@ static int io_disconnect(Connection *con)
       if (c->connection != con)
         continue;
       *p = c->next;
+      break;
+    }
+    pthread_mutex_unlock(&ClientListLock);
+    if (c)
+    {
 #ifdef _TCP
       if (FD_ISSET(sock, &fdactive))
       {
@@ -542,7 +549,6 @@ static int io_disconnect(Connection *con)
       free(c->iphost);
       free(c->host);
       free(c);
-      break;
     }
 #ifdef _TCP
     err = shutdown(sock, SHUT_RDWR);
@@ -573,7 +579,7 @@ static int run_server_mode(Options *options)
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in *)&sin)->sin_addr.s_addr);
   free(username);
-  Connection * connection = PopConnection(id);
+  Connection *connection = PopConnection(id);
   int status;
   do
   {
@@ -599,7 +605,7 @@ static void *client_thread(void *args)
 
 static inline int dispatch_client(Client *client)
 {
-  client->thread = (pthread_t*)malloc(sizeof(pthread_t));
+  client->thread = (pthread_t *)malloc(sizeof(pthread_t));
   errno = pthread_create(client->thread, NULL, client_thread, (void *)client);
   if (errno)
   {

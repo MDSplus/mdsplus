@@ -136,8 +136,7 @@ EXPORT int GetConnectionVersion(int id)
 Connection *FindConnectionWithLock(int id, con_t state)
 {
   MDSIPTHREADSTATIC_INIT;
-  Connection *c;
-  c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
+  Connection *c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
   while (c && (c->state & CON_ACTIVITY) && !(c->state & CON_DISCONNECT))
   {
     DBG("Connections: %02d -- 0x%02x : 0x%" PRIxPTR " is would wait to lock 0x%02x\n",
@@ -171,10 +170,6 @@ void UnlockConnection(Connection *c_in)
   }
 }
 
-#define CONNECTION_UNLOCK_PUSH(c) \
-  pthread_cleanup_push((void *)UnlockConnection, (void *)c)
-#define CONNECTION_UNLOCK(c) pthread_cleanup_pop(1)
-
 int NextConnection(void **ctx, char **info_name, void **info,
                    size_t *info_len)
 { // check
@@ -207,12 +202,11 @@ int SendToConnection(int id, const void *buffer, size_t buflen, int nowait)
 {
   int res;
   Connection *c = FindConnectionWithLock(id, CON_SEND);
-  CONNECTION_UNLOCK_PUSH(c);
   if (c && c->io && c->io->send)
     res = c->io->send(c, buffer, buflen, nowait);
   else
     res = -1;
-  CONNECTION_UNLOCK(c);
+  UnlockConnection(c);
   return res;
 }
 
@@ -220,12 +214,11 @@ int FlushConnection(int id)
 {
   int res;
   Connection *c = FindConnectionWithLock(id, CON_FLUSH);
-  CONNECTION_UNLOCK_PUSH(c);
   if (c && c->io)
     res = c->io->flush ? c->io->flush(c) : 0;
   else
     res = -1;
-  CONNECTION_UNLOCK(c);
+  UnlockConnection(c);
   return res;
 }
 
@@ -233,26 +226,13 @@ int ReceiveFromConnection(int id, void *buffer, size_t buflen)
 {
   int res;
   Connection *c = FindConnectionWithLock(id, CON_RECV);
-  CONNECTION_UNLOCK_PUSH(c);
   if (c && c->io && c->io->recv)
     res = c->io->recv(c, buffer, buflen);
   else
     res = -1;
-  CONNECTION_UNLOCK(c);
+  UnlockConnection(c);
   return res;
 }
-
-static void exitHandler(void)
-{
-  int id;
-  void *ctx = (void *)-1;
-  while ((id = NextConnection(&ctx, 0, 0, 0)) != INVALID_CONNECTION_ID)
-  {
-    CloseConnection(id);
-    ctx = 0;
-  }
-}
-static void registerHandler() { atexit(exitHandler); }
 
 ////////////////////////////////////////////////////////////////////////////////
 //  NewConnection  /////////////////////////////////////////////////////////////
@@ -264,11 +244,10 @@ Connection *newConnection(char *protocol)
   IoRoutines *io = LoadIo(protocol);
   if (io)
   {
-    RUN_FUNCTION_ONCE(registerHandler);
     connection = calloc(1, sizeof(Connection));
     connection->io = io;
-    connection->readfd = -1;
-    connection->message_id = -1;
+    connection->readfd = INVALID_SOCKET;
+    connection->message_id = INVALID_MESSAGE_ID;
     connection->protocol = strdup(protocol);
     connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
@@ -453,7 +432,7 @@ unsigned char ConnectionIncMessageId(Connection *c)
   if (c)
   {
     c->message_id++;
-    if (c->message_id == 0)
+    if (c->message_id == INVALID_MESSAGE_ID)
       c->message_id = 1;
     return c->message_id;
   }
@@ -477,7 +456,7 @@ unsigned char GetConnectionMessageId(int conid)
 {
   MDSIPTHREADSTATIC_INIT;
   Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  return c ? c->message_id : 0;
+  return c ? c->message_id : INVALID_MESSAGE_ID;
 }
 
 ///

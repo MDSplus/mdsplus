@@ -88,6 +88,7 @@ typedef struct _connection
 } Connection;
 
 #define INVALID_CONNECTION_ID -1
+#define INVALID_MESSAGE_ID 0
 
 #define CON_ACTIVITY (con_t)0x7F
 #define CON_IDLE (con_t)0x00
