@@ -25,6 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <mdsshr.h>
 #include "../mdsip_connections.h"
@@ -33,8 +34,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pthread_port.h>
 #include <treeshr.h>
 
+// #define DEBUG
 #ifdef DEBUG
 #define DBG(...) fprintf(stderr, __VA_ARGS__)
+#define PID ((intptr_t)pthread_self())
 #else
 #define DBG(...) \
   { /**/         \
@@ -51,9 +54,16 @@ static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 Connection *_FindConnection(int id, Connection **prev)
 {
-  Connection *c, *p;
-  for (p = 0, c = ConnectionList; c && c->id != id; p = c, c = c->next)
-    ;
+  Connection *p = NULL, *c = ConnectionList;
+  while (c)
+  {
+    if (c->id == id)
+    {
+      break;
+    }
+    p = c;
+    c = c->next;
+  }
   if (prev)
     *prev = p;
   return c;
@@ -70,20 +80,26 @@ Connection *FindConnection(int id, Connection **prev)
   return c;
 }
 
+/// Find Connection that is ready for sending
+/// must be CON_IDLE or CON_REQUEST
 Connection *FindConnectionSending(int id)
 {
   Connection *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(id, NULL);
-  if (c && c->state != CON_SENDARG)
+  if (c)
   {
-    if (c->state & CON_SENDARG)
+    if ((c->state & CON_ACTIVITY & ~CON_REQUEST) && !(c->state & CON_DISCONNECT))
     {
-      c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
-      DBG("Connection %02d -> %02x unlocked\n", c->id, c->state);
-      pthread_cond_signal(&c->cond);
+      if (c->state & CON_REQUEST)
+      {
+        c->state &= ~CON_REQUEST; // clear sendarg
+        DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked sendarg\n",
+            c->id, c->state, PID);
+        pthread_cond_signal(&c->cond);
+      }
+      c = NULL;
     }
-    c = NULL;
   }
   CONNECTIONLIST_UNLOCK;
   return c;
@@ -104,23 +120,23 @@ Connection *FindConnectionWithLock(int id, con_t state)
   Connection *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(id, NULL);
-  if (c)
+  while (c && (c->state & CON_ACTIVITY) && !(c->state & CON_DISCONNECT))
   {
-    while (c->state & ~CON_DISCONNECT)
-    {
-      DBG("Connection %02d -- %02x waiting\n", c->id, state);
-      pthread_cond_wait(&c->cond, &connection_mutex);
-    }
-    if (c->state & CON_DISCONNECT)
+    DBG("Connections: %02d -- 0x%02x : 0x%" PRIxPTR " is waiting to lock 0x%02x\n",
+        c->id, c->state, PID, state);
+    pthread_cond_wait(&c->cond, &connection_mutex);
+    c = _FindConnection(id, NULL);
+    if (c && (c->state & CON_DISCONNECT))
     {
       pthread_cond_signal(&c->cond); // pass on signal
       c = NULL;
     }
-    else
-    {
-      DBG("Connection %02d -> %02x   locked\n", c->id, state);
-      c->state = state;
-    }
+  }
+  if (c)
+  {
+    c->state |= state;
+    DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " locked 0x%02x\n",
+        c->id, c->state, PID, state);
   }
   CONNECTIONLIST_UNLOCK
   return c;
@@ -134,8 +150,9 @@ void UnlockConnection(Connection *c_in)
     ;
   if (c)
   {
-    c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
-    DBG("Connection %02d -> %02x unlocked\n", c->id, c->state);
+    c->state &= ~CON_ACTIVITY; // clear activity
+    DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked 0x%02x\n",
+        c->id, c->state, PID, CON_ACTIVITY);
     pthread_cond_signal(&c->cond);
   }
   CONNECTIONLIST_UNLOCK;
@@ -233,6 +250,7 @@ void DisconnectConnectionC(Connection *c)
 {
   // connection should not be in list at this point
   c->io->disconnect(c);
+  DBG("Connections: %02d disconnected\n", c->id);
   free(c->info);
   FreeDescriptors(c);
   free(c->protocol);
@@ -254,17 +272,17 @@ int DisconnectConnection(int conid)
   {
     c->state |= CON_DISCONNECT; // sets disconnect
     pthread_cond_broadcast(&c->cond);
-    if (c->state & ~CON_DISCONNECT)
+    if (c->state & CON_ACTIVITY)
     { // if any task but disconnect
       struct timespec tp;
       clock_gettime(CLOCK_REALTIME, &tp);
       tp.tv_sec += 10;
       // wait upto 10 seconds to allow current task to finish
       // while exits if no other task but disconnect or on timeout
-      while (c->state & ~CON_DISCONNECT &&
+      while (c->state & CON_ACTIVITY &&
              !pthread_cond_timedwait(&c->cond, &connection_mutex, &tp))
         ;
-      if (c->state & ~CON_DISCONNECT)
+      if (c->state & CON_ACTIVITY)
         fprintf(stderr,
                 "DisconnectConnection: Timeout waiting for connection %d "
                 "state=%d\n",
@@ -549,6 +567,7 @@ int AddConnection(Connection *c)
   c->id = id;
   c->next = ConnectionList;
   ConnectionList = c;
+  DBG("Connections: %02d connected\n", c->id);
   CONNECTIONLIST_UNLOCK;
   return c->id;
 }
@@ -613,7 +632,6 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     }
     else
       DisconnectConnectionC(c);
-    // fflush(stderr); stderr needs no flush
   }
   return status;
 }

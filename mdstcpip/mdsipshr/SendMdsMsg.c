@@ -125,9 +125,11 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
 
 int SendMdsMsg(int id, Message *m, int msg_options)
 {
-  Connection *c = FindConnection(id, NULL);
-  if (SendMdsMsgC(c, m, msg_options) == SsINTERNAL)
+  Connection *c = FindConnectionWithLock(id, CON_REQUEST);
+  int status = SendMdsMsgC(c, m, msg_options);
+  if (status == SsINTERNAL)
   {
+    UnlockConnection(c);
     DisconnectConnection(id);
     return MDSplusFATAL;
   }

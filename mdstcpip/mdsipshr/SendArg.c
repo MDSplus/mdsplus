@@ -51,7 +51,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
             unsigned short length, char ndims, int *dims, char *bytes)
 {
   Connection *c = (idx == 0 || idx > nargs)
-                      ? FindConnectionWithLock(id, CON_SENDARG)
+                      ? FindConnectionWithLock(id, CON_REQUEST)
                       : FindConnectionSending(id);
   if (!c)
     return MDSplusERROR; // both methods will leave connection id unlocked

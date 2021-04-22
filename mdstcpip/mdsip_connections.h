@@ -91,13 +91,14 @@ typedef struct _connection
 
 #define INVALID_CONNECTION_ID -1
 
+#define CON_ACTIVITY (con_t)0x7F
 #define CON_IDLE (con_t)0x00
 #define CON_CONNECT (con_t)0x01
 #define CON_AUTHORIZE (con_t)0x02
 #define CON_SEND (con_t)0x04
 #define CON_FLUSH (con_t)0x08
 #define CON_RECV (con_t)0x10
-#define CON_SENDARG (con_t)0x20
+#define CON_REQUEST (con_t)0x20
 #define CON_USER (con_t)0x40
 #define CON_DISCONNECT (con_t)0x80
 
