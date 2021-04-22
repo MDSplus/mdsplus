@@ -64,37 +64,6 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
 ////////////////////////////////////////////////////////////////////////////////
 //  LISTEN  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-static void refresh_list()
-{
-  LockAsts();
-  int locked = 0;
-  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&ClientListLock);
-  locked = !pthread_mutex_lock(&ClientListLock);
-  Client *c;
-  for (c = ClientList; c;)
-  {
-    int c_epoll = udt_epoll_create();
-    UDTSOCKET readfds[1];
-    UDTSOCKET writefds[1];
-    int readnum = 1;
-    int writenum = 1;
-    udt_epoll_add_usock(c_epoll, c->sock, NULL);
-    int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
-                              &writenum, 0, NULL, NULL, NULL, NULL);
-    udt_epoll_release(c_epoll);
-    if (err)
-    {
-      locked = pthread_mutex_unlock(&ClientListLock);
-      destroyConnection(c->connection);
-      locked = !pthread_mutex_lock(&ClientListLock);
-      c = ClientList;
-    }
-    else
-      c = c->next;
-  }
-  pthread_cleanup_pop(locked);
-  UnlockAsts();
-}
 
 static int io_listen(int argc, char **argv)
 {
@@ -124,8 +93,8 @@ static int io_listen(int argc, char **argv)
     UDTSOCKET readfds[1024];
     int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
     int gai_stat;
-    static const struct addrinfo hints = {AI_PASSIVE, AF_T, SOCK_STREAM, 0,
-                                          0, 0, 0, 0};
+    static const struct addrinfo hints = {
+        AI_PASSIVE, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0};
     gai_stat = getaddrinfo(NULL, GetPortname(), &hints, &result);
     if (gai_stat)
     {
@@ -160,72 +129,34 @@ static int io_listen(int argc, char **argv)
     atexit(destroyClientList);
     for (;;)
     {
-      int readfds_num = 1024;
-      if (udt_epoll_wait2(server_epoll, readfds, &readfds_num, NULL, NULL, 5000,
-                          NULL, NULL, NULL, NULL))
+      int readfds_num = 1;
+      while (udt_epoll_wait2(server_epoll, readfds, &readfds_num, NULL, NULL, 5000,
+                             NULL, NULL, NULL, NULL))
+        continue;
+      if (readfds[0] == ssock)
       {
-        refresh_list();
-      }
-      else
-      {
-        int i;
-        for (i = 0; readfds_num != 1024 && i < readfds_num; i++)
+        int len = sizeof(sin);
+        int id = -1;
+        char *username = NULL;
+        UDTSOCKET sock = udt_accept(ssock, (struct sockaddr *)&sin, &len);
+        int status = AcceptConnection(PROT, PROT, sock, NULL, 0, &id, &username);
+        if (STATUS_OK)
         {
-          if (readfds[i] == ssock)
-          {
-            // int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
-            int len = sizeof(sin);
-            int id = -1;
-            int status;
-            char *username;
-            UDTSOCKET sock = udt_accept(ssock, (struct sockaddr *)&sin, &len);
-            status =
-                AcceptConnection(PROT, PROT, sock, NULL, 0, &id, &username);
-            if (STATUS_OK)
-            {
-              Client *client = calloc(1, sizeof(Client));
-              client->connection = PopConnection(id);
-              client->sock = sock;
-              client->username = username;
-              client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
-              client->iphost = getHostInfo(sock, &client->host);
-              pthread_mutex_lock(&ClientListLock);
-              client->next = ClientList;
-              ClientList = client;
-              pthread_mutex_unlock(&ClientListLock);
-              udt_epoll_add_usock(server_epoll, sock, &events);
-            }
-          }
-          else
-          {
-            Client *c;
-            pthread_mutex_lock(&ClientListLock);
-            for (c = ClientList; c; c = c->next)
-            {
-              if (c->sock == readfds[i])
-                break;
-            }
-            pthread_mutex_unlock(&ClientListLock);
-            if (c)
-            {
-              int c_epoll = udt_epoll_create();
-              UDTSOCKET readfds[1];
-              UDTSOCKET writefds[1];
-              int readnum = 1;
-              int writenum = 1;
-              udt_epoll_add_usock(c_epoll, c->sock, NULL);
-              int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
-                                        &writenum, 0, NULL, NULL, NULL, NULL);
-              udt_epoll_release(c_epoll);
-              if (err)
-              {
-                destroyConnection(c->connection);
-                break;
-              }
-              MdsSetClientAddr(c->addr);
-              DoMessageC(c->connection);
-            }
-          }
+          Client *client = calloc(1, sizeof(Client));
+          client->connection = PopConnection(id);
+          client->sock = sock;
+          client->username = username;
+          client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
+          client->iphost = getHostInfo(sock, &client->host);
+          pthread_mutex_lock(&ClientListLock);
+          client->next = ClientList;
+          ClientList = client;
+          pthread_mutex_unlock(&ClientListLock);
+          dispatch_client(client);
+        }
+        else
+        {
+          free(username);
         }
       }
     }
