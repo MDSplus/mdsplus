@@ -119,6 +119,11 @@ static int io_listen(int argc, char **argv)
         break;
       close(ssock);
     }
+    if (ssock == INVALID_SOCKET)
+    {
+      fprintf(stderr, "Error from udt_socket/bind: %s\n", udt_getlasterror_desc());
+      exit(EXIT_FAILURE);
+    }
     udt_epoll_add_usock(server_epoll, ssock, &events);
     memset(&sin, 0, sizeof(sin));
     if (udt_listen(ssock, 128) < 0)
