@@ -393,6 +393,7 @@ static int io_listen(int argc, char **argv)
     PERROR("Error from listen");
     exit(EXIT_FAILURE);
   }
+  atexit(destroyClientList);
   // LISTEN LOOP ///////////////////////////////////////////////////////////
   struct timeval readto, timeout = {1, 0};
   fd_set readfds;

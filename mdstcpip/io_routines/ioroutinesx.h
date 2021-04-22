@@ -622,10 +622,14 @@ static inline int dispatch_client(Client *client)
 
 static inline void destroyClientList()
 {
-  Client *c;
-  while ((c = ClientList))
+  Client *c, *n;
+  pthread_mutex_lock(&ClientListLock);
+  n = ClientList;
+  ClientList = NULL;
+  pthread_mutex_unlock(&ClientListLock);
+  while ((c = n))
   {
-    ClientList = ClientList->next;
+    n = c->next;
     destroyConnection(c->connection);
     destroyClient(c);
   }

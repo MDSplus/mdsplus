@@ -64,6 +64,37 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
 ////////////////////////////////////////////////////////////////////////////////
 //  LISTEN  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+static void refresh_list()
+{
+  LockAsts();
+  int locked = 0;
+  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&ClientListLock);
+  locked = !pthread_mutex_lock(&ClientListLock);
+  Client *c;
+  for (c = ClientList; c;)
+  {
+    int c_epoll = udt_epoll_create();
+    UDTSOCKET readfds[1];
+    UDTSOCKET writefds[1];
+    int readnum = 1;
+    int writenum = 1;
+    udt_epoll_add_usock(c_epoll, c->sock, NULL);
+    int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
+                              &writenum, 0, NULL, NULL, NULL, NULL);
+    udt_epoll_release(c_epoll);
+    if (err)
+    {
+      locked = pthread_mutex_unlock(&ClientListLock);
+      destroyConnection(c->connection);
+      locked = !pthread_mutex_lock(&ClientListLock);
+      c = ClientList;
+    }
+    else
+      c = c->next;
+  }
+  pthread_cleanup_pop(locked);
+  UnlockAsts();
+}
 
 static int io_listen(int argc, char **argv)
 {
@@ -126,40 +157,14 @@ static int io_listen(int argc, char **argv)
       fprintf(stderr, "Error from udt_listen: %s\n", udt_getlasterror_desc());
       exit(EXIT_FAILURE);
     }
+    atexit(destroyClientList);
     for (;;)
     {
       int readfds_num = 1024;
       if (udt_epoll_wait2(server_epoll, readfds, &readfds_num, NULL, NULL, 5000,
                           NULL, NULL, NULL, NULL))
       {
-        Client *c;
-        LockAsts();
-        int locked = 0;
-        pthread_cleanup_push((void*)pthread_mutex_unlock, (void*)&ClientListLock);
-        locked = !pthread_mutex_lock(&ClientListLock);
-        for (c = ClientList; c;)
-        {
-          int c_epoll = udt_epoll_create();
-          UDTSOCKET readfds[1];
-          UDTSOCKET writefds[1];
-          int readnum = 1;
-          int writenum = 1;
-          udt_epoll_add_usock(c_epoll, c->sock, NULL);
-          int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
-                                    &writenum, 0, NULL, NULL, NULL, NULL);
-          udt_epoll_release(c_epoll);
-          if (err)
-          {
-            locked = pthread_mutex_unlock(&ClientListLock);
-            destroyConnection(c->connection);
-            locked = !pthread_mutex_lock(&ClientListLock);
-            c = ClientList;
-          }
-          else
-            c = c->next;
-        }
-        pthread_cleanup_pop(locked);
-        UnlockAsts();
+        refresh_list();
       }
       else
       {
