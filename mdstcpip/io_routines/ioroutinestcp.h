@@ -395,7 +395,6 @@ static int io_listen(int argc, char **argv)
   }
   // LISTEN LOOP ///////////////////////////////////////////////////////////
   struct timeval readto, timeout = {1, 0};
-  int error_count = 0;
   fd_set readfds;
   for (;;)
   {
@@ -405,9 +404,7 @@ static int io_listen(int argc, char **argv)
     if (num == 0)
       continue; // timeout
     if (num > 0)
-    {
-      // read ready from socket list //
-      error_count = 0;
+    { // read ready from socket list
       if (FD_ISSET(ssock, &readfds))
       {
         socklen_t len = sizeof(sin);
@@ -422,37 +419,17 @@ static int io_listen(int argc, char **argv)
         if (IS_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)))
         {
           // add client to client list //
-          Client *client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
+          Client *client = calloc(1, sizeof(Client));
           client->id = id;
-          client->sock = sock;
-          client->next = ClientList;
-          client->username = username;
           client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
+          client->sock = sock;
+          client->username = username;
           client->iphost = getHostInfo(sock, &client->host);
           ClientList = client;
-          // add socket to active sockets //
-          FD_SET(sock, &fdactive);
+          client->next = ClientList;
+          dispatch_client(client);
+          // dispatch_client will closed connection and inlist client on failure
         }
-      }
-      // Process Clients in list searching for active sockets //
-      Client *c = ClientList;
-      while (c)
-      {
-        if (FD_ISSET(c->sock, &readfds))
-        {
-          // process active socket client //
-          MdsSetClientAddr(c->addr);
-          // DO MESSAGE ---> ProcessMessage() on client c //
-          DoMessage(c->id);
-          Client *c_chk;
-          for (c_chk = ClientList; c_chk && c_chk != c; c_chk = c_chk->next)
-            ;
-          if (c_chk)
-            FD_CLR(c->sock, &readfds);
-          c = ClientList;
-        }
-        else
-          c = c->next;
       }
     }
     else if (errno == EINTR)
@@ -461,38 +438,9 @@ static int io_listen(int argc, char **argv)
                 // os.system()
     }
     else
-    { // Select returned -1 error code
-      error_count++;
-      PERROR("error in main select");
-      fprintf(stderr, "Error count=%d\n", error_count);
-      fflush(stderr);
-      if (error_count > 100)
-      {
-        fprintf(stderr, "Error count exceeded, shutting down\n");
-        exit(EXIT_FAILURE);
-      }
-      else
-      {
-        Client *c;
-        FD_ZERO(&fdactive);
-        if (ssock != INVALID_SOCKET)
-          FD_SET(ssock, &fdactive);
-        for (c = ClientList; c; c = c->next)
-        {
-          struct SOCKADDR_IN sin;
-          socklen_t n = sizeof(sin);
-          LockAsts();
-          if (getpeername(c->sock, (struct sockaddr *)&sin, &n))
-          {
-            fprintf(stderr, "Removed disconnected client\n");
-            fflush(stderr);
-            CloseConnection(c->id);
-          }
-          else
-            FD_SET(c->sock, &fdactive);
-          UnlockAsts();
-        }
-      }
+    {
+      PERROR("Error in server select, shutting down");
+      exit(EXIT_FAILURE);
     }
   } // end LISTEN LOOP //
   return C_ERROR;
