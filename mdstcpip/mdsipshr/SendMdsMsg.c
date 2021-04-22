@@ -32,8 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../mdsip_connections.h"
 
-static int SendBytes(Connection *c, void *buffer, size_t bytes_to_send,
-                     int options)
+static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
+                      int options)
 {
   char *bptr = (char *)buffer;
   if (c && c->io)
@@ -47,7 +47,7 @@ static int SendBytes(Connection *c, void *buffer, size_t bytes_to_send,
       {
         if (errno != EINTR)
         {
-          perror("Error sending data to remote server");
+          perror("send_bytes: Error sending data to remote server");
           return MDSplusERROR;
         }
         tries++;
@@ -114,10 +114,10 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
     if (do_swap)
       FlipBytes(4, (char *)&cm->h.msglen);
-    status = SendBytes(c, (char *)cm, msglen, msg_options);
+    status = send_bytes(c, (char *)cm, msglen, msg_options);
   }
   else
-    status = SendBytes(c, (char *)m, len + sizeof(MsgHdr), msg_options);
+    status = send_bytes(c, (char *)m, len + sizeof(MsgHdr), msg_options);
   if (clength)
     free(cm);
   return status;
