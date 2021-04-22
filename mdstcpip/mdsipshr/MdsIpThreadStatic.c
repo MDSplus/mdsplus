@@ -22,42 +22,30 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <ctype.h>
-#include <stdio.h>
+#include <mdsplus/mdsconfig.h>
+
 #include <stdlib.h>
 #include <string.h>
 
 #include <libroutines.h>
+#include <mdsshr.h>
+#include <status.h>
+#include <strroutines.h>
 
-#include "../mdsip_connections.h"
+#include "../mdsshr/version.h"
+#include "mdsipthreadstatic.h"
 
-////////////////////////////////////////////////////////////////////////////////
-//  LoadIo  ////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-extern IoRoutines tunnel_routines;
-extern IoRoutines thread_routines;
-
-IoRoutines *LoadIo(char *protocol_in)
+static void buffer_free(MDSIPTHREADSTATIC_ARG)
 {
-  if (protocol_in == 0)
-    protocol_in = "TCP";
-  char *protocol = strcpy((char *)malloc(strlen(protocol_in) + 1), protocol_in);
-  size_t i;
-  for (i = 0; i < strlen(protocol); i++)
-    protocol[i] = toupper(protocol[i]);
-  if (strcmp(protocol, "THREAD") == 0)
-  {
-    free(protocol);
-    return &thread_routines;
-  }
-  char *image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
-  strcat(image, protocol);
-  free(protocol);
-  IoRoutines *(*rtn)() = NULL;
-  int status = LibFindImageSymbol_C(image, "Io", (void **)&rtn);
-  free(image);
-  if (STATUS_OK && rtn)
-    return rtn();
-  return &tunnel_routines;
+  free(MDSIPTHREADSTATIC_VAR);
 }
+static inline MDSIPTHREADSTATIC_TYPE *buffer_alloc()
+{
+  MDSIPTHREADSTATIC_ARG =
+      (MDSIPTHREADSTATIC_TYPE *)calloc(1, sizeof(MDSIPTHREADSTATIC_TYPE));
+
+  return MDSIPTHREADSTATIC_VAR;
+}
+
+IMPLEMENT_GETTHREADSTATIC(MDSIPTHREADSTATIC_TYPE, MdsIpGetThreadStatic,
+                          THREADSTATIC_MDSIP, buffer_alloc, buffer_free)
