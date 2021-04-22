@@ -37,6 +37,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void buffer_free(MDSIPTHREADSTATIC_ARG)
 {
+  Connection* c;
+  while ((c = MDSIP_CONNECTIONS))
+  {
+    MDSIP_CONNECTIONS = c->next;
+    destroyConnection(c);
+  }
   free(MDSIPTHREADSTATIC_VAR);
 }
 static inline MDSIPTHREADSTATIC_TYPE *buffer_alloc()
