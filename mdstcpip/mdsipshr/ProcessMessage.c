@@ -58,6 +58,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../mdsIo.h"
 #include "../mdsip_connections.h"
 
+// #define DEBUG
+#ifdef DEBUG
+#define DBG(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define DBG(...) \
+  { /**/         \
+  }
+#endif
+
 extern int TdiRestoreContext(void **);
 extern int TdiSaveContext(void **);
 
@@ -486,6 +495,12 @@ static void send_response(Connection *connection, Message *message,
     DisconnectConnection(connection->id);
 }
 
+static void return_status(Connection *connection, Message *message, int status)
+{
+  struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&status};
+  send_response(connection, message, 1, &ans_d);
+}
+
 static void GetErrorText(int status, mdsdsc_xd_t *xd)
 {
   static DESCRIPTOR(unknown, "unknown error occured");
@@ -616,8 +631,12 @@ static void execute_message(Connection *connection, Message *message)
   DESCRIPTOR(eventastreq, EVENTASTREQUEST); // AST request descriptor //
   DESCRIPTOR(eventcanreq, EVENTCANREQUEST); // Can request descriptor //
   const int java = CType(connection->client_type) == JAVA_CLIENT;
-
-  if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventastreq) == 0)
+  if (!connection->descrip[0])
+  {
+    fprintf(stderr, "execute_message: NULL_ptr as first descrip argument\n");
+    return_status(connection, message, TdiNULL_PTR);
+  }
+  else if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventastreq) == 0)
   { // AST REQUEST //
     int eventid = -1;
     DESCRIPTOR_LONG(eventiddsc, &eventid);
@@ -711,7 +730,6 @@ static void execute_message(Connection *connection, Message *message)
         connection->compression_level = GetMaxCompressionLevel();
       SetCompressionLevel(connection->compression_level);
     }
-
     send_response(connection, message, status, ans_xd.pointer);
     FREEXD_NOW(ans_xd);
   }
@@ -742,164 +760,176 @@ static void standard_command(Connection *connection, Message *message)
     COPY_DESC(d, EMPTYXD, tmp);
     connection->descrip[message->h.descriptor_idx] = d;
     free(message);
-    return;
+    DBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial\n",
+        connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
   }
-  if (!d)
+  else
   {
-    // instance the connection descriptor field //
-    const short lengths[] = {0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0};
-    if (message->h.ndims == 0)
+    if (!d)
     {
-      d = calloc(1, sizeof(struct descriptor_s));
-      d->class = CLASS_S;
-    }
-    else
-      COPY_DESC(d, DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
-    d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype]
-                                                 : message->h.length;
-    d->dtype = message->h.dtype;
-    if (d->class == CLASS_A)
-    {
-      array_coeff *a = (array_coeff *)d;
-      int num = 1;
-      int i;
-      a->dimct = message->h.ndims;
-      for (i = 0; i < a->dimct; i++)
+      // instance the connection descriptor field //
+      const short lengths[] = {0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0};
+      if (message->h.ndims == 0)
       {
-        a->m[i] = message->h.dims[i];
-        num *= a->m[i];
+        d = calloc(1, sizeof(struct descriptor_s));
+        d->class = CLASS_S;
       }
-      a->arsize = a->length * num;
-      a->pointer = a->a0 = malloc(a->arsize);
-    }
-    else
-      d->pointer = d->length ? malloc(d->length) : 0;
-    // set new instance //
-    connection->descrip[message->h.descriptor_idx] = d;
-  }
-  if (d)
-  {
-    // have valid connection descriptor instance     //
-    // copy the message buffer into the descriptor   //
-
-    int dbytes = d->class == CLASS_S ? (int)d->length
-                                     : (int)((array_coeff *)d)->arsize;
-    int num = d->length > 1 ? (dbytes / d->length) : dbytes;
-
-    switch (CType(connection->client_type))
-    {
-    case IEEE_CLIENT:
-    case JAVA_CLIENT:
-      memcpy(d->pointer, message->bytes, dbytes);
-      break;
-    case CRAY_IEEE_CLIENT:
-      switch (d->dtype)
+      else
+        COPY_DESC(d, DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
+      d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype]
+                                                   : message->h.length;
+      d->dtype = message->h.dtype;
+      if (d->class == CLASS_A)
       {
-      case DTYPE_USHORT:
-      case DTYPE_ULONG:
-        convert_binary(num, 0, message->h.length, message->bytes, d->length,
-                       d->pointer);
-        break;
-      case DTYPE_SHORT:
-      case DTYPE_LONG:
-        convert_binary(num, 1, message->h.length, message->bytes, d->length,
-                       d->pointer);
-        break;
-      default:
+        array_coeff *a = (array_coeff *)d;
+        int num = 1;
+        int i;
+        a->dimct = message->h.ndims;
+        for (i = 0; i < a->dimct; i++)
+        {
+          a->m[i] = message->h.dims[i];
+          num *= a->m[i];
+        }
+        a->arsize = a->length * num;
+        a->pointer = a->a0 = malloc(a->arsize);
+      }
+      else
+        d->pointer = d->length ? malloc(d->length) : 0;
+      // set new instance //
+      connection->descrip[message->h.descriptor_idx] = d;
+    }
+    if (d)
+    {
+      // have valid connection descriptor instance     //
+      // copy the message buffer into the descriptor   //
+      int dbytes = d->class == CLASS_S ? (int)d->length
+                                       : (int)((array_coeff *)d)->arsize;
+      int num = d->length > 1 ? (dbytes / d->length) : dbytes;
+
+      switch (CType(connection->client_type))
+      {
+      case IEEE_CLIENT:
+      case JAVA_CLIENT:
         memcpy(d->pointer, message->bytes, dbytes);
         break;
-      }
-      break;
-    case CRAY_CLIENT:
-      switch (d->dtype)
-      {
-      case DTYPE_USHORT:
-      case DTYPE_ULONG:
-        convert_binary(num, 0, message->h.length, message->bytes, d->length,
-                       d->pointer);
+      case CRAY_IEEE_CLIENT:
+        switch (d->dtype)
+        {
+        case DTYPE_USHORT:
+        case DTYPE_ULONG:
+          convert_binary(num, 0, message->h.length, message->bytes, d->length,
+                         d->pointer);
+          break;
+        case DTYPE_SHORT:
+        case DTYPE_LONG:
+          convert_binary(num, 1, message->h.length, message->bytes, d->length,
+                         d->pointer);
+          break;
+        default:
+          memcpy(d->pointer, message->bytes, dbytes);
+          break;
+        }
         break;
-      case DTYPE_SHORT:
-      case DTYPE_LONG:
-        convert_binary(num, 1, message->h.length, message->bytes, d->length,
-                       d->pointer);
-        break;
-      case DTYPE_FLOAT:
-        convert_float(num, CRAY, (char)message->h.length, message->bytes,
-                      IEEE_S, (char)d->length, d->pointer);
-        break;
-      case DTYPE_COMPLEX:
-        convert_float(num * 2, CRAY, (char)(message->h.length / 2),
-                      message->bytes, IEEE_S, (char)(d->length / 2),
-                      d->pointer);
-        break;
-      case DTYPE_DOUBLE:
-        convert_float(num, CRAY, (char)message->h.length, message->bytes,
-                      IEEE_T, sizeof(double), d->pointer);
+      case CRAY_CLIENT:
+        switch (d->dtype)
+        {
+        case DTYPE_USHORT:
+        case DTYPE_ULONG:
+          convert_binary(num, 0, message->h.length, message->bytes, d->length,
+                         d->pointer);
+          break;
+        case DTYPE_SHORT:
+        case DTYPE_LONG:
+          convert_binary(num, 1, message->h.length, message->bytes, d->length,
+                         d->pointer);
+          break;
+        case DTYPE_FLOAT:
+          convert_float(num, CRAY, (char)message->h.length, message->bytes,
+                        IEEE_S, (char)d->length, d->pointer);
+          break;
+        case DTYPE_COMPLEX:
+          convert_float(num * 2, CRAY, (char)(message->h.length / 2),
+                        message->bytes, IEEE_S, (char)(d->length / 2),
+                        d->pointer);
+          break;
+        case DTYPE_DOUBLE:
+          convert_float(num, CRAY, (char)message->h.length, message->bytes,
+                        IEEE_T, sizeof(double), d->pointer);
+          break;
+        default:
+          memcpy(d->pointer, message->bytes, dbytes);
+          break;
+        }
         break;
       default:
-        memcpy(d->pointer, message->bytes, dbytes);
-        break;
+        switch (d->dtype)
+        {
+        case DTYPE_FLOAT:
+          convert_float(num, VAX_F, (char)message->h.length, message->bytes,
+                        IEEE_S, sizeof(float), d->pointer);
+          break;
+        case DTYPE_COMPLEX:
+          convert_float(num * 2, VAX_F, (char)message->h.length,
+                        message->bytes, IEEE_S, sizeof(float), d->pointer);
+          break;
+        case DTYPE_DOUBLE:
+          if (CType(connection->client_type) == VMSG_CLIENT)
+            convert_float(num, VAX_G, (char)message->h.length, message->bytes,
+                          IEEE_T, sizeof(double), d->pointer);
+          else
+            convert_float(num, VAX_D, (char)message->h.length, message->bytes,
+                          IEEE_T, sizeof(double), d->pointer);
+          break;
+
+        case DTYPE_COMPLEX_DOUBLE:
+          if (CType(connection->client_type) == VMSG_CLIENT)
+            convert_float(num * 2, VAX_G, (char)(message->h.length / 2),
+                          message->bytes, IEEE_T, sizeof(double), d->pointer);
+          else
+            convert_float(num * 2, VAX_D, (char)(message->h.length / 2),
+                          message->bytes, IEEE_T, sizeof(double), d->pointer);
+          break;
+        default:
+          memcpy(d->pointer, message->bytes, dbytes);
+          break;
+        }
       }
-      break;
-    default:
       switch (d->dtype)
       {
+      default:
+        break;
       case DTYPE_FLOAT:
-        convert_float(num, VAX_F, (char)message->h.length, message->bytes,
-                      IEEE_S, sizeof(float), d->pointer);
+        d->dtype = DTYPE_FS;
         break;
       case DTYPE_COMPLEX:
-        convert_float(num * 2, VAX_F, (char)message->h.length,
-                      message->bytes, IEEE_S, sizeof(float), d->pointer);
+        d->dtype = DTYPE_FSC;
         break;
       case DTYPE_DOUBLE:
-        if (CType(connection->client_type) == VMSG_CLIENT)
-          convert_float(num, VAX_G, (char)message->h.length, message->bytes,
-                        IEEE_T, sizeof(double), d->pointer);
-        else
-          convert_float(num, VAX_D, (char)message->h.length, message->bytes,
-                        IEEE_T, sizeof(double), d->pointer);
+        d->dtype = DTYPE_FT;
         break;
-
       case DTYPE_COMPLEX_DOUBLE:
-        if (CType(connection->client_type) == VMSG_CLIENT)
-          convert_float(num * 2, VAX_G, (char)(message->h.length / 2),
-                        message->bytes, IEEE_T, sizeof(double), d->pointer);
-        else
-          convert_float(num * 2, VAX_D, (char)(message->h.length / 2),
-                        message->bytes, IEEE_T, sizeof(double), d->pointer);
-        break;
-      default:
-        memcpy(d->pointer, message->bytes, dbytes);
+        d->dtype = DTYPE_FTC;
         break;
       }
-    }
-    switch (d->dtype)
-    {
-    default:
-      break;
-    case DTYPE_FLOAT:
-      d->dtype = DTYPE_FS;
-      break;
-    case DTYPE_COMPLEX:
-      d->dtype = DTYPE_FSC;
-      break;
-    case DTYPE_DOUBLE:
-      d->dtype = DTYPE_FT;
-      break;
-    case DTYPE_COMPLEX_DOUBLE:
-      d->dtype = DTYPE_FTC;
-      break;
-    }
-    // CALL EXECUTE MESSAGE //
-    if (message->h.descriptor_idx == (message->h.nargs - 1))
-    {
-      execute_message(connection, message);
+      DBG("ProcessMessage: %d NewA %3d (%2d/%2d) : simple\n",
+          connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
     }
     else
     {
-      free(message);
+      return_status(connection, message, 0);
     }
+  }
+  // CALL EXECUTE MESSAGE //
+  if (message->h.descriptor_idx == (message->h.nargs - 1))
+  {
+    DBG("ProcessMessage: %d Call %3d (%2d/%2d)\n",
+        connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
+    execute_message(connection, message);
+    UnlockConnection(connection);
+  }
+  else
+  {
+    free(message);
   }
 }
 
@@ -1089,12 +1119,6 @@ static inline void mdsio_open_one_k(Connection *connection, Message *message)
   free(msg);
 }
 
-static void return_status(Connection *connection, Message *message, int ans_o)
-{
-  struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
-  send_response(connection, message, 1, &ans_d);
-}
-
 static void mdsio_command(Connection *connection, Message *message)
 {
   connection->client_type = message->h.client_type;
@@ -1192,6 +1216,9 @@ void ProcessMessage(Connection *connection, Message *message)
   // reset connection id //
   if (connection->message_id != message->h.message_id)
   {
+    DBG("ProcessMessage: %d NewM %3d (%2d/%2d) : was %3d (\?\?/%2d)\n",
+        connection->id, message->h.message_id, message->h.descriptor_idx, message->h.nargs,
+        connection->message_id, connection->nargs);
     FreeDescriptors(connection);
     if (message->h.nargs < MDSIP_MAX_ARGS - 1)
     {
