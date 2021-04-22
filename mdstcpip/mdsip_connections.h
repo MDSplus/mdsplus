@@ -100,6 +100,7 @@ typedef struct _connection
 #define CON_RECV (con_t)0x10
 #define CON_REQUEST (con_t)0x20
 #define CON_USER (con_t)0x40
+#define CON_DETACHED (con_t)0x80
 #define CON_DISCONNECT (con_t)0x80
 
 #if defined(__CRAY) || defined(CRAY)
@@ -319,7 +320,7 @@ EXPORT int DoMessage(int id);
 ///        instance
 /// \return the Connection intance identified by id or NULL pointer of not found
 ///
-EXPORT Connection *FindConnection(int id, Connection **prev);
+EXPORT Connection *PopConnection(int id);
 
 client_t GetConnectionClientType(int id);
 
@@ -763,7 +764,7 @@ EXPORT int GetConnectionCompression(int conid);
 ///
 
 Connection *NewConnectionC(char *protocol);
-void DisconnectConnectionC(Connection *c);
+int DisconnectConnectionC(Connection *c);
 unsigned char IncrementConnectionMessageIdC(Connection *c);
 int AddConnection(Connection *c);
 

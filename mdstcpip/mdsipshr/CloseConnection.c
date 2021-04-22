@@ -53,13 +53,13 @@ int CloseConnectionC(Connection *connection)
       status = _TreeClose(&connection->DBID, 0, 0);
     } while (STATUS_OK);
     status = TdiDeleteContext(connection->tdicontext);
-    DisconnectConnection(connection->id);
+    DisconnectConnectionC(connection);
   }
   return status;
 }
 
 int CloseConnection(int id)
 {
-  Connection *connection = FindConnection(id, NULL);
+  Connection *connection = PopConnection(id);
   return CloseConnectionC(connection);
 }

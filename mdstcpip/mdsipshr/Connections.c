@@ -69,13 +69,56 @@ Connection *_FindConnection(int id, Connection **prev)
   return c;
 }
 
-Connection *FindConnection(int id, Connection **prev)
+Connection *PopConnection(int id)
 {
-  Connection *c;
+  Connection *p, *c;
   CONNECTIONLIST_LOCK;
-  c = _FindConnection(id, prev);
-  if (c && c->state & CON_DISCONNECT)
+  c = _FindConnection(id, &p);
+  if (c && c->state & CON_DETACHED)
     c = NULL;
+  else if (c)
+  {
+    c->state |= CON_DETACHED; // sets disconnect
+    pthread_cond_broadcast(&c->cond);
+    if (c->state & CON_ACTIVITY)
+    { // if any task but disconnect
+      struct timespec tp;
+      clock_gettime(CLOCK_REALTIME, &tp);
+      tp.tv_sec += 10;
+      // wait upto 10 seconds to allow current task to finish
+      // while exits if no other task but disconnect or on timeout
+      if (c->state & CON_ACTIVITY)
+      {
+        DBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " is waiting to pop\n",
+            c->id, c->state, PID);
+        do
+        {
+          if (pthread_cond_timedwait(&c->cond, &connection_mutex, &tp) && c->state & CON_ACTIVITY)
+          {
+            DBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " is waiting to pop\n",
+                c->id, c->state, PID);
+            break;
+          }
+        } while (c->state & CON_ACTIVITY);
+      }
+      c = _FindConnection(id, &p); // we were waiting, so we need to update p
+    }
+    if (c)
+    {
+      // remove after task is complete
+      if (p)
+      {
+        p->next = c->next;
+      }
+      else
+      {
+        ConnectionList = c->next;
+      }
+      c->next = NULL;
+      DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " popped\n",
+          c->id, c->state, PID);
+    }
+  }
   CONNECTIONLIST_UNLOCK;
   return c;
 }
@@ -246,9 +289,15 @@ static void registerHandler() { atexit(exitHandler); }
 //  DisconnectConnection  //////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void DisconnectConnectionC(Connection *c)
+int DisconnectConnectionC(Connection *c)
 {
-  // connection should not be in list at this point
+  if (c && c->id != INVALID_CONNECTION_ID //
+      && c->state != CON_DETACHED)
+  { // connection should not have been in list at this point
+    c = PopConnection(c->id);
+  }
+  if (!c)
+    return MDSplusERROR;
   c->io->disconnect(c);
   DBG("Connections: %02d disconnected\n", c->id);
   free(c->info);
@@ -259,49 +308,13 @@ void DisconnectConnectionC(Connection *c)
   TreeFreeDbid(c->DBID);
   pthread_cond_destroy(&c->cond);
   free(c);
+  return MDSplusSUCCESS;
 }
 
 int DisconnectConnection(int conid)
 {
-  Connection *p, *c;
-  CONNECTIONLIST_LOCK;
-  c = _FindConnection(conid, &p);
-  if (c && c->state & CON_DISCONNECT)
-    c = NULL;
-  else if (c)
-  {
-    c->state |= CON_DISCONNECT; // sets disconnect
-    pthread_cond_broadcast(&c->cond);
-    if (c->state & CON_ACTIVITY)
-    { // if any task but disconnect
-      struct timespec tp;
-      clock_gettime(CLOCK_REALTIME, &tp);
-      tp.tv_sec += 10;
-      // wait upto 10 seconds to allow current task to finish
-      // while exits if no other task but disconnect or on timeout
-      while (c->state & CON_ACTIVITY &&
-             !pthread_cond_timedwait(&c->cond, &connection_mutex, &tp))
-        ;
-      if (c->state & CON_ACTIVITY)
-        fprintf(stderr,
-                "DisconnectConnection: Timeout waiting for connection %d "
-                "state=%d\n",
-                conid, c->state);
-      c = _FindConnection(conid, &p); // we were waiting, so we need to update p
-    }
-    // remove after task is complete
-    if (p)
-      p->next = c->next;
-    else
-      ConnectionList = c->next;
-  }
-  CONNECTIONLIST_UNLOCK;
-  if (c)
-  {
-    DisconnectConnectionC(c);
-    return MDSplusSUCCESS;
-  }
-  return MDSplusERROR;
+   Connection *const c = PopConnection(conid);
+  return DisconnectConnectionC(c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

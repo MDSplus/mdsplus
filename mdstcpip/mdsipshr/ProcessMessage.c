@@ -492,7 +492,9 @@ static void send_response(Connection *connection, Message *message,
   free(m);
   free(message);
   if (STATUS_NOT_OK)
-    DisconnectConnection(connection->id);
+  {
+    DisconnectConnectionC(connection);
+  }
 }
 
 static void return_status(Connection *connection, Message *message, int status)
