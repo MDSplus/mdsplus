@@ -23,6 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "../mdsip_connections.h"
+#include "mdsipthreadstatic.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -199,8 +200,15 @@ int SetMdsConnectTimeout(int sec)
 ////////////////////////////////////////////////////////////////////////////////
 //  CLIENT ADDRESS  ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-static int ClientAddr = 0;
-int MdsGetClientAddr() { return ClientAddr; }
+int MdsGetClientAddr()
+{
+  MDSIPTHREADSTATIC_INIT;
+  return MDSIP_CLIENTADDR;
+}
 
 /// Address of current client structure
-void MdsSetClientAddr(int addr) { ClientAddr = addr; }
+void MdsSetClientAddr(int addr)
+{
+  MDSIPTHREADSTATIC_INIT;
+  MDSIP_CLIENTADDR = addr;
+}
