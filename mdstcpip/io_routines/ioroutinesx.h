@@ -55,10 +55,6 @@ typedef struct _client
 // List of clients connected to server instance.
 static pthread_mutex_t ClientListLock = PTHREAD_MUTEX_INITIALIZER;
 static Client *ClientList = NULL;
-#define CLIENT_LIST_LOCK()               \
-  pthread_mutex_lock(&ClientListLock); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&ClientListLock)
-#define CLIENT_LIST_UNLOCK() pthread_cleanup_pop(1)
 
 ////////////////////////////////////////////////////////////////////////////////
 //  SOCKET LIST  ///////////////////////////////////////////////////////////////
@@ -86,10 +82,9 @@ static SOCKET getSocket(Connection *c)
 }
 
 static pthread_mutex_t socket_list_mutex = PTHREAD_MUTEX_INITIALIZER;
-static void unlock_socket_list() { pthread_mutex_unlock(&socket_list_mutex); }
 #define LOCK_SOCKET_LIST                  \
   pthread_mutex_lock(&socket_list_mutex); \
-  pthread_cleanup_push(unlock_socket_list, NULL);
+  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&socket_list_mutex);
 #define UNLOCK_SOCKET_LIST pthread_cleanup_pop(1);
 
 #ifdef _TCP
@@ -508,6 +503,19 @@ static int io_check(Connection *c)
 ////////////////////////////////////////////////////////////////////////////////
 //  DISCONNECT  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+static void destroyClient(Client *c)
+{
+  if (c->thread)
+  {
+    pthread_cancel(*c->thread);
+    pthread_detach(*c->thread);
+    free(c->thread);
+  }
+  free(c->username);
+  free(c->iphost);
+  free(c->host);
+  free(c);
+}
 
 static int io_disconnect(Connection *con)
 {
@@ -518,7 +526,7 @@ static int io_disconnect(Connection *con)
   if (sock != INVALID_SOCKET)
   {
     Client *c, **p;
-    CLIENT_LIST_LOCK();
+    pthread_mutex_lock(&ClientListLock);
     for (p = &ClientList, c = ClientList;
          c;
          p = &c->next, c = c->next)
@@ -528,7 +536,7 @@ static int io_disconnect(Connection *con)
       *p = c->next;
       break;
     }
-    CLIENT_LIST_UNLOCK();
+    pthread_mutex_unlock(&ClientListLock);
     if (c)
     {
 #ifdef _TCP
@@ -543,16 +551,7 @@ static int io_disconnect(Connection *con)
         printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
                now, (int)sock, getpid(), c->username, c->host, c->iphost);
       }
-      if (c->thread)
-      {
-        pthread_cancel(*c->thread);
-        pthread_detach(*c->thread);
-        free(c->thread);
-      }
-      free(c->username);
-      free(c->iphost);
-      free(c->host);
-      free(c);
+      destroyClient(c);
     }
 #ifdef _TCP
     err = shutdown(sock, SHUT_RDWR);
@@ -597,28 +596,28 @@ static void *client_thread(void *args)
   Client *client = (Client *)args;
   Connection *connection = client->connection;
   MdsSetClientAddr(client->addr);
-  free(args);
   int status;
   do
   {
     status = DoMessageC(connection);
   } while (STATUS_OK);
-  destroyConnection(connection);
   return NULL;
 }
 
 static inline int dispatch_client(Client *client)
 {
   client->thread = (pthread_t *)malloc(sizeof(pthread_t));
-  errno = pthread_create(client->thread, NULL, client_thread, (void *)client);
-  if (errno)
+  const int err = pthread_create(client->thread, NULL, client_thread, (void *)client);
+  if (err)
   {
+    errno = err;
     perror("dispatch_client");
     free(client->thread);
     client->thread = NULL;
     destroyConnection(client->connection);
+    return err;
   }
-  return !!errno;
+  return err;
 }
 
 static inline void destroyClientList()
@@ -628,6 +627,6 @@ static inline void destroyClientList()
   {
     ClientList = ClientList->next;
     destroyConnection(c->connection);
-    free(c);
+    destroyClient(c);
   }
 }

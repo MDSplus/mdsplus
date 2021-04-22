@@ -128,7 +128,6 @@ static int io_listen(int argc, char **argv)
     }
     for (;;)
     {
-      int i;
       int readfds_num = 1024;
       if (udt_epoll_wait2(server_epoll, readfds, &readfds_num, NULL, NULL, 5000,
                           NULL, NULL, NULL, NULL))
@@ -164,6 +163,7 @@ static int io_listen(int argc, char **argv)
       }
       else
       {
+        int i;
         for (i = 0; readfds_num != 1024 && i < readfds_num; i++)
         {
           if (readfds[i] == ssock)
@@ -184,23 +184,23 @@ static int io_listen(int argc, char **argv)
               client->username = username;
               client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
               client->iphost = getHostInfo(sock, &client->host);
-              CLIENT_LIST_LOCK();
+              pthread_mutex_lock(&ClientListLock);
               client->next = ClientList;
               ClientList = client;
-              CLIENT_LIST_UNLOCK();
+              pthread_mutex_unlock(&ClientListLock);
               udt_epoll_add_usock(server_epoll, sock, &events);
             }
           }
           else
           {
             Client *c;
-            CLIENT_LIST_LOCK();
+            pthread_mutex_lock(&ClientListLock);
             for (c = ClientList; c; c = c->next)
             {
               if (c->sock == readfds[i])
                 break;
             }
-            CLIENT_LIST_UNLOCK();
+            pthread_mutex_unlock(&ClientListLock);
             if (c)
             {
               int c_epoll = udt_epoll_create();
