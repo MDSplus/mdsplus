@@ -322,6 +322,8 @@ EXPORT Connection *FindConnection(int id, Connection **prev);
 
 client_t GetConnectionClientType(int id);
 
+int GetConnectionVersion(int id);
+
 extern void FlipData(Message *m);
 extern void FlipHeader(MsgHdr *header);
 

@@ -49,8 +49,8 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
 {
   int dim = 0;
   int i, status;
-  Connection *c = FindConnection(id, NULL);
-  if (c->version >= MDSIP_VERSION_DSC_ARGS)
+  int version = GetConnectionVersion(id);
+  if (version >= MDSIP_VERSION_DSC_ARGS)
   {
     status =
         SendArg(id, 0, DTYPE_CSTRING, ++nargs, 0, 0, &dim, (char *)expression);
