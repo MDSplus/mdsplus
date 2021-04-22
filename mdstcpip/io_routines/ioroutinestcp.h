@@ -425,8 +425,10 @@ static int io_listen(int argc, char **argv)
           client->sock = sock;
           client->username = username;
           client->iphost = getHostInfo(sock, &client->host);
+          CLIENT_LIST_LOCK();
           ClientList = client;
           client->next = ClientList;
+          CLIENT_LIST_UNLOCK();
           dispatch_client(client);
           // dispatch_client will closed connection and inlist client on failure
         }

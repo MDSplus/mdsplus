@@ -135,30 +135,31 @@ static int io_listen(int argc, char **argv)
       {
         Client *c;
         LockAsts();
-        for (;;)
+        int locked = 0;
+        pthread_cleanup_push((void*)pthread_mutex_unlock, (void*)&ClientListLock);
+        locked = !pthread_mutex_lock(&ClientListLock);
+        for (c = ClientList; c;)
         {
-          for (c = ClientList; c; c = c->next)
+          int c_epoll = udt_epoll_create();
+          UDTSOCKET readfds[1];
+          UDTSOCKET writefds[1];
+          int readnum = 1;
+          int writenum = 1;
+          udt_epoll_add_usock(c_epoll, c->sock, NULL);
+          int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
+                                    &writenum, 0, NULL, NULL, NULL, NULL);
+          udt_epoll_release(c_epoll);
+          if (err)
           {
-            int c_epoll = udt_epoll_create();
-            UDTSOCKET readfds[1];
-            UDTSOCKET writefds[1];
-            int readnum = 1;
-            int writenum = 1;
-            udt_epoll_add_usock(c_epoll, c->sock, NULL);
-            int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
-                                      &writenum, 0, NULL, NULL, NULL, NULL);
-            udt_epoll_release(c_epoll);
-            if (err)
-            {
-              destroyConnection(c->connection);
-              goto next;
-              break;
-            }
+            locked = pthread_mutex_unlock(&ClientListLock);
+            destroyConnection(c->connection);
+            locked = !pthread_mutex_lock(&ClientListLock);
+            c = ClientList;
           }
-          break;
-        next:
-          continue;
+          else
+            c = c->next;
         }
+        pthread_cleanup_pop(locked);
         UnlockAsts();
       }
       else
@@ -180,45 +181,44 @@ static int io_listen(int argc, char **argv)
               Client *client = calloc(1, sizeof(Client));
               client->connection = PopConnection(id);
               client->sock = sock;
-              client->next = ClientList;
               client->username = username;
               client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
               client->iphost = getHostInfo(sock, &client->host);
+              CLIENT_LIST_LOCK();
+              client->next = ClientList;
               ClientList = client;
+              CLIENT_LIST_UNLOCK();
               udt_epoll_add_usock(server_epoll, sock, &events);
             }
           }
           else
           {
             Client *c;
-            for (c = ClientList; c;)
+            CLIENT_LIST_LOCK();
+            for (c = ClientList; c; c = c->next)
             {
               if (c->sock == readfds[i])
+                break;
+            }
+            CLIENT_LIST_UNLOCK();
+            if (c)
+            {
+              int c_epoll = udt_epoll_create();
+              UDTSOCKET readfds[1];
+              UDTSOCKET writefds[1];
+              int readnum = 1;
+              int writenum = 1;
+              udt_epoll_add_usock(c_epoll, c->sock, NULL);
+              int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
+                                        &writenum, 0, NULL, NULL, NULL, NULL);
+              udt_epoll_release(c_epoll);
+              if (err)
               {
-                Client *c_chk;
-                int c_epoll = udt_epoll_create();
-                UDTSOCKET readfds[1];
-                UDTSOCKET writefds[1];
-                int readnum = 1;
-                int writenum = 1;
-                udt_epoll_add_usock(c_epoll, c->sock, NULL);
-                int err = udt_epoll_wait2(c_epoll, readfds, &readnum, writefds,
-                                          &writenum, 0, NULL, NULL, NULL, NULL);
-                udt_epoll_release(c_epoll);
-                if (err)
-                {
-                  destroyConnection(c->connection);
-                  break;
-                }
-                MdsSetClientAddr(c->addr);
-                DoMessageC(c->connection);
-                for (c_chk = ClientList; c_chk && c_chk != c;
-                     c_chk = c_chk->next)
-                  ;
-                c = c_chk ? c->next : ClientList;
+                destroyConnection(c->connection);
+                break;
               }
-              else
-                c = c->next;
+              MdsSetClientAddr(c->addr);
+              DoMessageC(c->connection);
             }
           }
         }

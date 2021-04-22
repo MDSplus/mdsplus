@@ -55,6 +55,10 @@ typedef struct _client
 // List of clients connected to server instance.
 static pthread_mutex_t ClientListLock = PTHREAD_MUTEX_INITIALIZER;
 static Client *ClientList = NULL;
+#define CLIENT_LIST_LOCK()               \
+  pthread_mutex_lock(&ClientListLock); \
+  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&ClientListLock)
+#define CLIENT_LIST_UNLOCK() pthread_cleanup_pop(1)
 
 ////////////////////////////////////////////////////////////////////////////////
 //  SOCKET LIST  ///////////////////////////////////////////////////////////////
@@ -514,7 +518,7 @@ static int io_disconnect(Connection *con)
   if (sock != INVALID_SOCKET)
   {
     Client *c, **p;
-    pthread_mutex_lock(&ClientListLock);
+    CLIENT_LIST_LOCK();
     for (p = &ClientList, c = ClientList;
          c;
          p = &c->next, c = c->next)
@@ -524,7 +528,7 @@ static int io_disconnect(Connection *con)
       *p = c->next;
       break;
     }
-    pthread_mutex_unlock(&ClientListLock);
+    CLIENT_LIST_UNLOCK();
     if (c)
     {
 #ifdef _TCP
@@ -617,7 +621,7 @@ static inline int dispatch_client(Client *client)
   return !!errno;
 }
 
-static inline void cleanupClientList()
+static inline void destroyClientList()
 {
   Client *c;
   while ((c = ClientList))

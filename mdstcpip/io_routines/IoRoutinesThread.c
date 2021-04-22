@@ -61,7 +61,6 @@ static void io_listen(void *pp)
   pipes->connection = PopConnection(id);
   while (STATUS_OK)
     status = DoMessageC(pipes->connection);
-  destroyConnection(pipes->connection);
   free(pp);
 }
 
