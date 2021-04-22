@@ -510,12 +510,12 @@ void SetConnectionClientType(int conid, int client_type)
 /// \param conid the connection id
 /// \return client_type value stored in connection structure
 ///
-int GetConnectionClientType(int conid)
+client_t GetConnectionClientType(int conid)
 {
-  int type;
+  client_t type;
   CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
-  type = c ? c->client_type : 0;
+  type = c ? c->client_type : INVALID_CLIENT;
   CONNECTIONLIST_UNLOCK;
   return type;
 }

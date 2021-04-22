@@ -489,19 +489,18 @@ static void GetErrorText(int status, mdsdsc_xd_t *xd)
 
 static void client_event_ast(MdsEventList *e, int data_len, char *data)
 {
-  Connection *c = FindConnection(e->conid, 0);
+
   int i;
-  char client_type;
   Message *m;
   JMdsEventInfo *info;
   int len;
+  client_t client_type = GetConnectionClientType(e->conid);
   // Check Connection: if down, cancel the event and return
-  if (!c)
+  if (client_type == INVALID_CLIENT)
   {
     MDSEventCan(e->eventid);
     return;
   }
-  client_type = c->client_type;
   LockAsts();
   if (CType(client_type) == JAVA_CLIENT)
   {

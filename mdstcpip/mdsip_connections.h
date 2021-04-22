@@ -18,15 +18,16 @@
 #define NULL (void *)0
 #endif
 
-enum _mdsip_client_types
+typedef enum _mdsip_client_types
 {
+  INVALID_CLIENT = 0,
   VMS_CLIENT = 1,
   IEEE_CLIENT = 2,
   JAVA_CLIENT = 3,
   VMSG_CLIENT = 4,
   CRAY_IEEE_CLIENT = 7,
   CRAY_CLIENT = 8
-};
+} client_t;
 
 typedef struct
 {
@@ -75,7 +76,7 @@ typedef struct _connection
   size_t info_len;
   void *DBID;
   unsigned char message_id;
-  int client_type;
+  client_t client_type;
   int nargs;
   struct descriptor *descrip[MDSIP_MAX_ARGS]; // list for message arguments
   MdsEventList *event;
@@ -318,6 +319,8 @@ EXPORT int DoMessage(int id);
 /// \return the Connection intance identified by id or NULL pointer of not found
 ///
 EXPORT Connection *FindConnection(int id, Connection **prev);
+
+client_t GetConnectionClientType(int id);
 
 extern void FlipData(Message *m);
 extern void FlipHeader(MsgHdr *header);
