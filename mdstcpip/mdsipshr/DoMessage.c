@@ -34,22 +34,18 @@ extern void ProcessMessage(Connection *, Message *);
 ////////////////////////////////////////////////////////////////////////////////
 int DoMessageC(Connection *connection)
 {
-  int status = MDSplusFATAL;
   if (!connection)
-    return status; // will cause tunnel to terminate
+    return 0; // will cause tunnel to terminate
+  int status = MDSplusFATAL;
   Message *message = GetMdsMsgTOC(connection, &status, -1);
-  if (STATUS_OK && !message)
-    status = MDSplusFATAL;
-  if (STATUS_OK)
+  if (message && STATUS_OK)
   {
     ProcessMessage(connection, message);
+    return 1;
   }
-  else
-  {
-    free(message);
-    CloseConnectionC(connection);
-  }
-  return status;
+  free(message);
+  CloseConnectionC(connection);
+  return 0;
 }
 
 int DoMessage(int id)

@@ -567,9 +567,8 @@ static int gsi_listen(int argc, char **argv)
     testStatus(res, "get handle to connection");
     status =
         AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-    if (STATUS_OK)
-      while (DoMessage(id))
-        ;
+    while (STATUS_OK)
+      status = DoMessage(id);
   }
   return C_OK;
 }
