@@ -505,17 +505,40 @@ static int io_check(Connection *c)
 ////////////////////////////////////////////////////////////////////////////////
 static void destroyClient(Client *c)
 {
+  DBG("destroyClient");
   if (c->thread)
   {
     if (!pthread_equal(*c->thread, pthread_self()))
+    {
       pthread_cancel(*c->thread);
-    pthread_detach(*c->thread);
+    }
+    else
+    {
+      pthread_detach(*c->thread);
+    }
     free(c->thread);
   }
+  else
+    destroyConnection(c->connection);
   free(c->username);
   free(c->iphost);
   free(c->host);
   free(c);
+}
+
+static inline void destroyClientList()
+{
+  Client *cl;
+  pthread_mutex_lock(&ClientListLock);
+  cl = ClientList;
+  ClientList = NULL;
+  pthread_mutex_unlock(&ClientListLock);
+  while (cl)
+  {
+    Client *const c = cl;
+    cl = cl->next;
+    destroyClient(c);
+  }
 }
 
 inline static Client *pop_client(Connection *con)
@@ -541,36 +564,26 @@ inline static Client *pop_client(Connection *con)
 
 static int io_disconnect(Connection *con)
 {
-  SOCKET sock = getSocket(con);
   int err = C_OK;
-  char now[32];
-  Now32(now);
+  SOCKET sock = getSocket(con);
+  Client *c = pop_client(con);
+  if (c)
+  {
+    char now[32];
+    Now32(now);
+    fprintf(stdout, "%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
+            now, (int)sock, getpid(), c->username, c->host, c->iphost);
+    c->connection = NULL;
+    destroyClient(c);
+  }
   if (sock != INVALID_SOCKET)
   {
-    Client *c = pop_client(con);
-    if (c)
-    {
-#ifdef _TCP
-      if (FD_ISSET(sock, &fdactive))
-      {
-        FD_CLR(sock, &fdactive);
-#else
-      if (server_epoll != -1)
-      {
-        udt_epoll_remove_usock(server_epoll, sock);
-#endif
-        printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
-               now, (int)sock, getpid(), c->username, c->host, c->iphost);
-      }
-      destroyClient(c);
-    }
 #ifdef _TCP
     err = shutdown(sock, SHUT_RDWR);
 #endif
     err = close(sock);
   }
   fflush(stdout);
-  fflush(stderr);
   return err;
 }
 
@@ -595,8 +608,9 @@ static int run_server_mode(Options *options)
   int status;
   do
   {
-    status = DoMessageC(connection);
+    status = ConnectionDoMessage(connection);
   } while (STATUS_OK);
+  destroyConnection(connection);
   return C_ERROR;
 }
 
@@ -605,11 +619,13 @@ static void *client_thread(void *args)
   Client *client = (Client *)args;
   Connection *connection = client->connection;
   MdsSetClientAddr(client->addr);
+  pthread_cleanup_push((void *)destroyConnection, (void *)connection);
   int status;
   do
   {
-    status = DoMessageC(connection);
+    status = ConnectionDoMessage(connection);
   } while (STATUS_OK);
+  pthread_cleanup_pop(1);
   return NULL;
 }
 
@@ -623,23 +639,15 @@ static inline int dispatch_client(Client *client)
     perror("dispatch_client");
     free(client->thread);
     client->thread = NULL;
-    destroyConnection(client->connection);
-    return err;
+    client->connection->id = INVALID_CONNECTION_ID;
+    destroyClient(client);
+  }
+  else
+  {
+    pthread_mutex_lock(&ClientListLock);
+    client->next = ClientList;
+    ClientList = client;
+    pthread_mutex_unlock(&ClientListLock);
   }
   return err;
-}
-
-static inline void destroyClientList()
-{
-  Client *c, *n;
-  pthread_mutex_lock(&ClientListLock);
-  n = ClientList;
-  ClientList = NULL;
-  pthread_mutex_unlock(&ClientListLock);
-  while ((c = n))
-  {
-    n = c->next;
-    destroyConnection(c->connection);
-    destroyClient(c);
-  }
 }

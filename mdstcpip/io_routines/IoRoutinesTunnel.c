@@ -288,8 +288,9 @@ static int io_listen(int argc __attribute__((unused)),
   {
     pipes.connection = PopConnection(id);
     do
-      status = DoMessageC(pipes.connection);
+      status = ConnectionDoMessage(pipes.connection);
     while (STATUS_OK);
+    destroyConnection(pipes.connection);
     return C_OK;
   }
   return C_ERROR;

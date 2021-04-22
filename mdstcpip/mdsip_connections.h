@@ -308,7 +308,7 @@ EXPORT int DisconnectFromMds(int id);
 /// \return the status of the Process message.
 ///
 EXPORT int DoMessage(int id);
-EXPORT int DoMessageC(Connection *connection);
+EXPORT int ConnectionDoMessage(Connection *connection);
 EXPORT int destroyConnection(Connection *connection);
 
 ////////////////////////////////////////////////////////////////////////////////

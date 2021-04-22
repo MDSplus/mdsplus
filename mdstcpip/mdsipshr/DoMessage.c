@@ -32,7 +32,7 @@ extern void ProcessMessage(Connection *, Message *);
 ////////////////////////////////////////////////////////////////////////////////
 //  DoMessage  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-int DoMessageC(Connection *connection)
+int ConnectionDoMessage(Connection *connection)
 {
   if (!connection)
     return 0; // will cause tunnel to terminate
@@ -44,14 +44,15 @@ int DoMessageC(Connection *connection)
     return 1;
   }
   free(message);
-  destroyConnection(connection);
   return 0;
 }
 
 int DoMessage(int id)
 {
   Connection *connection = FindConnectionWithLock(id, CON_ACTIVITY);
-  int status = DoMessageC(connection);
+  int status = ConnectionDoMessage(connection);
   UnlockConnection(connection);
+  if (!status)
+    destroyConnection(connection);
   return status;
 }

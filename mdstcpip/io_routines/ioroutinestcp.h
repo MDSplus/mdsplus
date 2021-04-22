@@ -426,12 +426,7 @@ static int io_listen(int argc, char **argv)
           client->sock = sock;
           client->username = username;
           client->iphost = getHostInfo(sock, &client->host);
-          pthread_mutex_lock(&ClientListLock);
-          ClientList = client;
-          client->next = ClientList;
-          pthread_mutex_unlock(&ClientListLock);
           dispatch_client(client);
-          // dispatch_client will closed connection and inlist client on failure
         }
       }
     }

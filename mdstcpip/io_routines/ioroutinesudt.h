@@ -153,10 +153,6 @@ static int io_listen(int argc, char **argv)
           client->username = username;
           client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
           client->iphost = getHostInfo(sock, &client->host);
-          pthread_mutex_lock(&ClientListLock);
-          client->next = ClientList;
-          ClientList = client;
-          pthread_mutex_unlock(&ClientListLock);
           dispatch_client(client);
         }
         else

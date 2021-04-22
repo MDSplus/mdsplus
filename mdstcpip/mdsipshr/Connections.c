@@ -288,28 +288,31 @@ extern int TdiDeleteContext();
 extern int MDSEventCan();
 int destroyConnection(Connection *connection)
 {
-  if (connection && connection->id != INVALID_CONNECTION_ID //
-      && connection->state != CON_DETACHED)
-  { // connection should not have been in list at this point
-    connection = PopConnection(connection->id);
-  }
   if (!connection)
     return MDSplusERROR;
-
-  MdsEventList *e, *nexte;
-  for (e = connection->event; e; e = nexte)
+  if (connection->id != INVALID_CONNECTION_ID)
   {
-    nexte = e->next;
-    MDSEventCan(e->eventid);
-    if (e->info_len > 0)
-      free(e->info);
-    free(e);
+    if (connection->state != CON_DETACHED)
+    { // connection should not have been in list at this point
+      if (connection != PopConnection(connection->id))
+        fprintf(stderr, "Connections: %02d not detached but not found\n",
+                connection->id);
+    }
+    MdsEventList *e, *nexte;
+    for (e = connection->event; e; e = nexte)
+    {
+      nexte = e->next;
+      MDSEventCan(e->eventid);
+      if (e->info_len > 0)
+        free(e->info);
+      free(e);
+    }
+    TdiDeleteContext(connection->tdicontext);
+    connection->io->disconnect(connection);
+    DBG("Connections: %02d disconnected\n", c->id);
+    FreeDescriptors(connection);
   }
-  TdiDeleteContext(connection->tdicontext);
-  connection->io->disconnect(connection);
-  DBG("Connections: %02d disconnected\n", c->id);
   free(connection->info);
-  FreeDescriptors(connection);
   free(connection->protocol);
   free(connection->info_name);
   free(connection->rm_user);
