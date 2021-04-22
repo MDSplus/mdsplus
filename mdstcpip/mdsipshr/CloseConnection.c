@@ -38,14 +38,13 @@ int CloseConnectionC(Connection *connection)
   int status = 0;
   if (connection)
   {
-    void *tdi_context[6];
     MdsEventList *e, *nexte;
     FreeDescriptors(connection);
     for (e = connection->event; e; e = nexte)
     {
       nexte = e->next;
-      /**/ MDSEventCan(e->eventid);
-      /**/ if (e->info_len > 0)
+      MDSEventCan(e->eventid);
+      if (e->info_len > 0)
         free(e->info);
       free(e);
     }
@@ -53,10 +52,8 @@ int CloseConnectionC(Connection *connection)
     {
       status = _TreeClose(&connection->DBID, 0, 0);
     } while (STATUS_OK);
-    TdiSaveContext(tdi_context);
-    TdiDeleteContext(connection->tdicontext);
-    TdiRestoreContext(tdi_context);
-    status = DisconnectConnection(connection->id);
+    status = TdiDeleteContext(connection->tdicontext);
+    DisconnectConnection(connection->id);
   }
   return status;
 }
