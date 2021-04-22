@@ -254,6 +254,7 @@
    Helgrind:Race
    fun:memmove
    obj:/usr/lib64/libpython3.8.so.1.0
+}
 {
    PyEval_AcquireThread
    Helgrind:Race
