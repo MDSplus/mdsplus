@@ -89,7 +89,7 @@ typedef struct _connection
   char *rm_user;
 } Connection;
 
-#define INVALID_CONNECTION_ID 0
+#define INVALID_CONNECTION_ID -1
 
 #define CON_IDLE (con_t)0x00
 #define CON_CONNECT (con_t)0x01

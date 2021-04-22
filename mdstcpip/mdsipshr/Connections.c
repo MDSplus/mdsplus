@@ -540,10 +540,12 @@ static inline int authorize_client(Connection *c, char *username)
 ////////////////////////////////////////////////////////////////////////////////
 int AddConnection(Connection *c)
 {
-  static int id = 0;
+  static int id = INVALID_CONNECTION_ID;
   CONNECTIONLIST_LOCK;
-  while (++id == INVALID_CONNECTION_ID && _FindConnection(++id, 0))
-    ; // find next free id
+  do
+  {
+    id++; // find next free id
+  } while (id == INVALID_CONNECTION_ID && _FindConnection(id, NULL));
   c->id = id;
   c->next = ConnectionList;
   ConnectionList = c;

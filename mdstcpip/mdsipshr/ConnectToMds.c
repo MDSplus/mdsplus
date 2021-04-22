@@ -163,7 +163,7 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
 
 int ConnectToMds(char *hostin)
 {
-  int id = -1;
+  int id = INVALID_CONNECTION_ID;
   char *host = 0;
   char *protocol = 0;
   if (hostin == 0)
