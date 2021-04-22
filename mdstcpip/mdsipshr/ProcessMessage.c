@@ -55,12 +55,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../tdishr/tdithreadstatic.h"
 #include "../treeshr/treeshrp.h"
-#include "cvtdef.h"
 #include "../mdsIo.h"
 #include "../mdsip_connections.h"
 
 extern int TdiRestoreContext(void **);
 extern int TdiSaveContext(void **);
+
+extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue,
+                           uint32_t outdtype, uint32_t options);
+#define VAX_F DTYPE_F   /* VAX F     Floating point data    */
+#define VAX_D DTYPE_D   /* VAX D     Floating point data    */
+#define VAX_G DTYPE_G   /* VAX G     Floating point data    */
+#define VAX_H DTYPE_H   /* VAX H     Floating point data    */
+#define IEEE_S DTYPE_FS /* IEEE S    Floating point data    */
+#define IEEE_T DTYPE_FT /* IEEE T    Floating point data    */
+#define IBM_LONG 6      /* IBM Long  Floating point data    */
+#define IBM_SHORT 7     /* IBM Short Floating point data    */
+#define CRAY 8          /* Cray      Floating point data    */
+#define IEEE_X 9        /* IEEE X    Floating point data    */
 
 static void convert_binary(int num, int sign_extend, short in_length,
                            char *in_ptr, short out_length, char *out_ptr)
@@ -90,7 +102,7 @@ static void convert_float(int num, int in_type, char in_length, char *in_ptr,
   {
     char *ptr = in_p;
     char cray_f[8];
-    if (in_type == CvtCRAY)
+    if (in_type == CRAY)
     {
       int j, k;
       for (j = 0; j < 2; j++)
@@ -104,7 +116,7 @@ static void convert_float(int num, int in_type, char in_length, char *in_ptr,
     }
     CvtConvertFloat(ptr, in_type, out_p, out_type, 0);
 #ifdef WORDS_BIGENDIAN
-    if (out_type == CvtCRAY)
+    if (out_type == CRAY)
     {
       int j, k;
       ptr = out_p;
@@ -200,13 +212,13 @@ static void send_response(Connection *connection, Message *message,
     switch (d->dtype)
     {
     case DTYPE_F:
-      convert_float(num, CvtVAX_F, (char)d->length, d->pointer, CvtIEEE_S,
+      convert_float(num, VAX_F, (char)d->length, d->pointer, IEEE_S,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FC:
-      convert_float(num * 2, CvtVAX_F, (char)(d->length / 2), d->pointer,
-                    CvtIEEE_S, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
+                    IEEE_S, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FS:
@@ -218,23 +230,23 @@ static void send_response(Connection *connection, Message *message,
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_D:
-      convert_float(num, CvtVAX_D, (char)d->length, d->pointer, CvtIEEE_T,
+      convert_float(num, VAX_D, (char)d->length, d->pointer, IEEE_T,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_DC:
-      convert_float(num * 2, CvtVAX_D, (char)(d->length / 2), d->pointer,
-                    CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
+                    IEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_G:
-      convert_float(num, CvtVAX_G, (char)d->length, d->pointer, CvtIEEE_T,
+      convert_float(num, VAX_G, (char)d->length, d->pointer, IEEE_T,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_GC:
-      convert_float(num * 2, CvtVAX_G, (char)(d->length / 2), d->pointer,
-                    CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_G, (char)(d->length / 2), d->pointer,
+                    IEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_FT:
@@ -263,31 +275,31 @@ static void send_response(Connection *connection, Message *message,
                      m->bytes);
       break;
     case DTYPE_F:
-      convert_float(num, CvtVAX_F, (char)d->length, d->pointer, CvtCRAY,
+      convert_float(num, VAX_F, (char)d->length, d->pointer, CRAY,
                     (char)m->h.length, m->bytes);
       break;
     case DTYPE_FS:
-      convert_float(num, CvtIEEE_S, (char)d->length, d->pointer, CvtCRAY,
+      convert_float(num, IEEE_S, (char)d->length, d->pointer, CRAY,
                     (char)m->h.length, m->bytes);
       break;
     case DTYPE_FC:
-      convert_float(num * 2, CvtVAX_F, (char)(d->length / 2), d->pointer,
-                    CvtCRAY, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
+                    CRAY, (char)(m->h.length / 2), m->bytes);
       break;
     case DTYPE_FSC:
-      convert_float(num * 2, CvtIEEE_S, (char)(d->length / 2), d->pointer,
-                    CvtCRAY, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, IEEE_S, (char)(d->length / 2), d->pointer,
+                    CRAY, (char)(m->h.length / 2), m->bytes);
       break;
     case DTYPE_D:
-      convert_float(num, CvtVAX_D, sizeof(double), d->pointer, CvtCRAY,
+      convert_float(num, VAX_D, sizeof(double), d->pointer, CRAY,
                     (char)m->h.length, m->bytes);
       break;
     case DTYPE_G:
-      convert_float(num, CvtVAX_G, sizeof(double), d->pointer, CvtCRAY,
+      convert_float(num, VAX_G, sizeof(double), d->pointer, CRAY,
                     (char)m->h.length, m->bytes);
       break;
     case DTYPE_FT:
-      convert_float(num, CvtIEEE_T, sizeof(double), d->pointer, CvtCRAY,
+      convert_float(num, IEEE_T, sizeof(double), d->pointer, CRAY,
                     (char)m->h.length, m->bytes);
       break;
     default:
@@ -308,13 +320,13 @@ static void send_response(Connection *connection, Message *message,
                      m->bytes);
       break;
     case DTYPE_F:
-      convert_float(num, CvtVAX_F, (char)d->length, d->pointer, CvtIEEE_S,
+      convert_float(num, VAX_F, (char)d->length, d->pointer, IEEE_S,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FC:
-      convert_float(num * 2, CvtVAX_F, (char)(d->length / 2), d->pointer,
-                    CvtIEEE_S, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
+                    IEEE_S, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FS:
@@ -326,23 +338,23 @@ static void send_response(Connection *connection, Message *message,
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_D:
-      convert_float(num, CvtVAX_D, (char)d->length, d->pointer, CvtIEEE_T,
+      convert_float(num, VAX_D, (char)d->length, d->pointer, IEEE_T,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_DC:
-      convert_float(num * 2, CvtVAX_D, (char)(d->length / 2), d->pointer,
-                    CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
+                    IEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_G:
-      convert_float(num, CvtVAX_G, (char)d->length, d->pointer, CvtIEEE_T,
+      convert_float(num, VAX_G, (char)d->length, d->pointer, IEEE_T,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_GC:
-      convert_float(num * 2, CvtVAX_G, (char)(d->length / 2), d->pointer,
-                    CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_G, (char)(d->length / 2), d->pointer,
+                    IEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_FT:
@@ -370,13 +382,13 @@ static void send_response(Connection *connection, Message *message,
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_D:
-      convert_float(num, CvtVAX_D, sizeof(double), d->pointer, CvtVAX_G,
+      convert_float(num, VAX_D, sizeof(double), d->pointer, VAX_G,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_DC:
-      convert_float(num * 2, CvtVAX_D, (char)(d->length / 2), d->pointer,
-                    CvtVAX_G, (char)(m->h.length / 2), m->bytes);
+      convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
+                    VAX_G, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_G:
@@ -388,22 +400,22 @@ static void send_response(Connection *connection, Message *message,
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_FS:
-      convert_float(num, CvtIEEE_S, sizeof(float), d->pointer, CvtVAX_F,
+      convert_float(num, IEEE_S, sizeof(float), d->pointer, VAX_F,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FSC:
-      convert_float(num * 2, CvtIEEE_S, sizeof(float), d->pointer, CvtVAX_F,
+      convert_float(num * 2, IEEE_S, sizeof(float), d->pointer, VAX_F,
                     (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FT:
-      convert_float(num, CvtIEEE_T, sizeof(double), d->pointer, CvtVAX_G,
+      convert_float(num, IEEE_T, sizeof(double), d->pointer, VAX_G,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_FTC:
-      convert_float(num * 2, CvtIEEE_T, sizeof(double), d->pointer, CvtVAX_G,
+      convert_float(num * 2, IEEE_T, sizeof(double), d->pointer, VAX_G,
                     (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
@@ -432,32 +444,32 @@ static void send_response(Connection *connection, Message *message,
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_G:
-      convert_float(num, CvtVAX_G, sizeof(double), d->pointer, CvtVAX_D,
+      convert_float(num, VAX_G, sizeof(double), d->pointer, VAX_D,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_GC:
-      convert_float(num * 2, CvtVAX_G, sizeof(double), d->pointer, CvtVAX_D,
+      convert_float(num * 2, VAX_G, sizeof(double), d->pointer, VAX_D,
                     (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_FS:
-      convert_float(num, CvtIEEE_S, sizeof(float), d->pointer, CvtVAX_F,
+      convert_float(num, IEEE_S, sizeof(float), d->pointer, VAX_F,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FSC:
-      convert_float(num * 2, CvtIEEE_S, sizeof(float), d->pointer, CvtVAX_F,
+      convert_float(num * 2, IEEE_S, sizeof(float), d->pointer, VAX_F,
                     (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FT:
-      convert_float(num, CvtIEEE_T, sizeof(double), d->pointer, CvtVAX_D,
+      convert_float(num, IEEE_T, sizeof(double), d->pointer, VAX_D,
                     (char)m->h.length, m->bytes);
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_FTC:
-      convert_float(num * 2, CvtIEEE_T, sizeof(double), d->pointer, CvtVAX_D,
+      convert_float(num * 2, IEEE_T, sizeof(double), d->pointer, VAX_D,
                     (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
@@ -812,17 +824,17 @@ static void standard_command(Connection *connection, Message *message)
                        d->pointer);
         break;
       case DTYPE_FLOAT:
-        convert_float(num, CvtCRAY, (char)message->h.length, message->bytes,
-                      CvtIEEE_S, (char)d->length, d->pointer);
+        convert_float(num, CRAY, (char)message->h.length, message->bytes,
+                      IEEE_S, (char)d->length, d->pointer);
         break;
       case DTYPE_COMPLEX:
-        convert_float(num * 2, CvtCRAY, (char)(message->h.length / 2),
-                      message->bytes, CvtIEEE_S, (char)(d->length / 2),
+        convert_float(num * 2, CRAY, (char)(message->h.length / 2),
+                      message->bytes, IEEE_S, (char)(d->length / 2),
                       d->pointer);
         break;
       case DTYPE_DOUBLE:
-        convert_float(num, CvtCRAY, (char)message->h.length, message->bytes,
-                      CvtIEEE_T, sizeof(double), d->pointer);
+        convert_float(num, CRAY, (char)message->h.length, message->bytes,
+                      IEEE_T, sizeof(double), d->pointer);
         break;
       default:
         memcpy(d->pointer, message->bytes, dbytes);
@@ -833,29 +845,29 @@ static void standard_command(Connection *connection, Message *message)
       switch (d->dtype)
       {
       case DTYPE_FLOAT:
-        convert_float(num, CvtVAX_F, (char)message->h.length, message->bytes,
-                      CvtIEEE_S, sizeof(float), d->pointer);
+        convert_float(num, VAX_F, (char)message->h.length, message->bytes,
+                      IEEE_S, sizeof(float), d->pointer);
         break;
       case DTYPE_COMPLEX:
-        convert_float(num * 2, CvtVAX_F, (char)message->h.length,
-                      message->bytes, CvtIEEE_S, sizeof(float), d->pointer);
+        convert_float(num * 2, VAX_F, (char)message->h.length,
+                      message->bytes, IEEE_S, sizeof(float), d->pointer);
         break;
       case DTYPE_DOUBLE:
         if (CType(connection->client_type) == VMSG_CLIENT)
-          convert_float(num, CvtVAX_G, (char)message->h.length, message->bytes,
-                        CvtIEEE_T, sizeof(double), d->pointer);
+          convert_float(num, VAX_G, (char)message->h.length, message->bytes,
+                        IEEE_T, sizeof(double), d->pointer);
         else
-          convert_float(num, CvtVAX_D, (char)message->h.length, message->bytes,
-                        CvtIEEE_T, sizeof(double), d->pointer);
+          convert_float(num, VAX_D, (char)message->h.length, message->bytes,
+                        IEEE_T, sizeof(double), d->pointer);
         break;
 
       case DTYPE_COMPLEX_DOUBLE:
         if (CType(connection->client_type) == VMSG_CLIENT)
-          convert_float(num * 2, CvtVAX_G, (char)(message->h.length / 2),
-                        message->bytes, CvtIEEE_T, sizeof(double), d->pointer);
+          convert_float(num * 2, VAX_G, (char)(message->h.length / 2),
+                        message->bytes, IEEE_T, sizeof(double), d->pointer);
         else
-          convert_float(num * 2, CvtVAX_D, (char)(message->h.length / 2),
-                        message->bytes, CvtIEEE_T, sizeof(double), d->pointer);
+          convert_float(num * 2, VAX_D, (char)(message->h.length / 2),
+                        message->bytes, IEEE_T, sizeof(double), d->pointer);
         break;
       default:
         memcpy(d->pointer, message->bytes, dbytes);
