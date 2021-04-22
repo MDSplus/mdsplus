@@ -265,28 +265,31 @@ err:;
 static int io_listen(int argc __attribute__((unused)),
                      char **argv __attribute__((unused)))
 {
-  int id, status;
-  INIT_AND_FREE_ON_EXIT(char *, username);
 #ifdef _WIN32
-  io_pipes_t p;
-  p.in = GetStdHandle(STD_INPUT_HANDLE);
-  p.out = GetStdHandle(STD_OUTPUT_HANDLE);
-  p.pid = NULL;
+  io_pipes_t pipes;
+  pipes.connection = NULL
+  pipes.in = GetStdHandle(STD_INPUT_HANDLE);
+  pipes.out = GetStdHandle(STD_OUTPUT_HANDLE);
+  pipes.pid = NULL;
 #else
-  io_pipes_t p = {0, 1, 0};
-  p.in = dup(0);
-  p.out = dup(1);
-  fcntl(p.in, F_SETFD, FD_CLOEXEC);
-  fcntl(p.out, F_SETFD, FD_CLOEXEC);
+  io_pipes_t pipes = {NULL, 0, 1, 0};
+  pipes.in = dup(0);
+  pipes.out = dup(1);
+  fcntl(pipes.in, F_SETFD, FD_CLOEXEC);
+  fcntl(pipes.out, F_SETFD, FD_CLOEXEC);
   fcntl(0, F_SETFD, FD_CLOEXEC);
   close(1); // fcntl(1,F_SETFD,FD_CLOEXEC);
   dup2(2, 1);
 #endif
-  status = AcceptConnection(GetProtocol(), PROTOCOL, 0, &p, sizeof(p), &id,
-                            &username);
-  FREE_NOW(username);
+  int id, status;
+  char *username = NULL;
+  status = AcceptConnection(
+      GetProtocol(), PROTOCOL, 0, &pipes, sizeof(io_pipes_t), &id, &username);
+  free(username);
+  pipes.connection = PopConnection(id);
   while (STATUS_OK)
-    status = DoMessage(id);
+    status = DoMessageC(pipes.connection);
+  DisconnectConnectionC(pipes.connection);
   return C_OK;
 }
 

@@ -46,6 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 typedef struct
 {
+  Connection *connection;
 #ifdef _WIN32
   HANDLE out;
   HANDLE in;

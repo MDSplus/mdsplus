@@ -50,41 +50,19 @@ static int io_disconnect(Connection *c)
   return C_OK;
 }
 
-static void io_cleanup(void *pp)
-{
-  void *ctx = (void *)-1;
-  int id;
-  char *info_name;
-  io_pipes_t *info;
-  size_t info_len = 0;
-  pthread_t me = pthread_self();
-  while ((id = NextConnection(&ctx, &info_name, (void *)&info, &info_len)) !=
-         INVALID_CONNECTION_ID)
-  {
-    if (info_name && strcmp(info_name, PROTOCOL) == 0 &&
-        pthread_equal(info->pth, me))
-    {
-      DisconnectConnection(id);
-      break;
-    }
-  }
-  free(pp);
-}
-
 static void io_listen(void *pp)
 {
+  io_pipes_t *pipes = (io_pipes_t *)pp;
   int id, status;
-  pthread_cleanup_push(io_cleanup, pp);
-  INIT_AND_FREE_ON_EXIT(char *, username);
-  status = AcceptConnection("thread", "thread", 0, pp, sizeof(io_pipes_t), &id,
-                            &username);
-  FREE_NOW(username);
-
+  char *username = NULL;
+  status = AcceptConnection(
+      PROTOCOL, PROTOCOL, 0, pp, sizeof(io_pipes_t), &id, &username);
+  free(username);
+  pipes->connection = PopConnection(id);
   while (STATUS_OK)
-    status = DoMessage(id);
-  close_pipe(((io_pipes_t *)pp)->in);
-  close_pipe(((io_pipes_t *)pp)->out);
-  pthread_cleanup_pop(1);
+    status = DoMessageC(pipes->connection);
+  DisconnectConnectionC(pipes->connection);
+  free(pp);
 }
 
 inline static int io_connect(Connection *c,
