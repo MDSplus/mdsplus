@@ -50,6 +50,8 @@ int DoMessageC(Connection *connection)
 
 int DoMessage(int id)
 {
-  Connection *connection = FindConnection(id, NULL);
-  return DoMessageC(connection);
+  Connection *connection = FindConnectionWithLock(id, CON_ACTIVITY);
+  int status = DoMessageC(connection);
+  UnlockConnection(connection);
+  return status;
 }
