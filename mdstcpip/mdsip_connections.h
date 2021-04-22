@@ -257,7 +257,7 @@ EXPORT char ClientType(void);
 /// the server "MdsIpSrvShr" library.
 ///
 EXPORT int CloseConnection(int conid);
-int CloseConnectionC(Connection *connection); // internal use
+int destroyConnection(Connection *connection); // internal use
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -286,11 +286,11 @@ EXPORT int ConnectToMds(char *connection_string);
 /// \param id the id of connection to be disconnected
 /// \return true if the connection was correctly freed or false otherwise.
 ///
-EXPORT int DisconnectConnection(int id);
+EXPORT int CloseConnection(int id);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// calls DisconnectConnection for the connection id.
+/// calls CloseConnection for the connection id.
 ///
 EXPORT int DisconnectFromMds(int id);
 
@@ -308,7 +308,7 @@ EXPORT int DisconnectFromMds(int id);
 ///
 EXPORT int DoMessage(int id);
 EXPORT int DoMessageC(Connection *connection);
-EXPORT int CloseConnectionC(Connection *connection);
+EXPORT int destroyConnection(Connection *connection);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -397,7 +397,7 @@ EXPORT int GetCompressionLevel();
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
-EXPORT void *GetConnectionInfoC(Connection *c, char **info_name, SOCKET *readfd,
+EXPORT void *ConnectionGetInfo(Connection *c, char **info_name, SOCKET *readfd,
                                 size_t *len);
 EXPORT void *GetConnectionInfo(int id, char **info_name, SOCKET *readfd,
                                size_t *len);
@@ -700,7 +700,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options);
 ///
 EXPORT void SetConnectionInfo(int conid, char *info_name, SOCKET readfd,
                               void *info, size_t len);
-EXPORT void SetConnectionInfoC(Connection *c, char *info_name, SOCKET readfd,
+EXPORT void ConnectionSetInfo(Connection *c, char *info_name, SOCKET readfd,
                                void *info, size_t len);
 
 EXPORT int SetCompressionLevel(int setting);
@@ -763,9 +763,9 @@ EXPORT int GetConnectionCompression(int conid);
 /// \return The new instanced connection id or -1 if error occurred.
 ///
 
-Connection *NewConnectionC(char *protocol);
-int DisconnectConnectionC(Connection *c);
-unsigned char IncrementConnectionMessageIdC(Connection *c);
+Connection *newConnection(char *protocol);
+int destroyConnection(Connection *c);
+unsigned char ConnectionIncMessageId(Connection *c);
 int AddConnection(Connection *c);
 
 Connection *FindConnectionWithLock(int id, con_t state);

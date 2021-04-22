@@ -50,7 +50,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
       PERROR("Error in connect to service");
       return C_ERROR;
     }
-    SetConnectionInfoC(c, PROT, sock, NULL, 0);
+    ConnectionSetInfo(c, PROT, sock, NULL, 0);
     return C_OK;
   }
   else
@@ -150,7 +150,7 @@ static int io_listen(int argc, char **argv)
             udt_epoll_release(c_epoll);
             if (err)
             {
-              CloseConnection(c->id);
+              destroyConnection(c->connection);
               goto next;
               break;
             }
@@ -177,9 +177,8 @@ static int io_listen(int argc, char **argv)
                 AcceptConnection(PROT, PROT, sock, NULL, 0, &id, &username);
             if (STATUS_OK)
             {
-              Client *client =
-                  memset(malloc(sizeof(Client)), 0, sizeof(Client));
-              client->id = id;
+              Client *client = calloc(1, sizeof(Client));
+              client->connection = PopConnection(id);
               client->sock = sock;
               client->next = ClientList;
               client->username = username;
@@ -208,11 +207,11 @@ static int io_listen(int argc, char **argv)
                 udt_epoll_release(c_epoll);
                 if (err)
                 {
-                  CloseConnection(c->id);
+                  destroyConnection(c->connection);
                   break;
                 }
                 MdsSetClientAddr(c->addr);
-                DoMessage(c->id);
+                DoMessageC(c->connection);
                 for (c_chk = ClientList; c_chk && c_chk != c;
                      c_chk = c_chk->next)
                   ;

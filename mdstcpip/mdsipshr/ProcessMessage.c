@@ -493,7 +493,7 @@ static void send_response(Connection *connection, Message *message,
   free(message);
   if (STATUS_NOT_OK)
   {
-    DisconnectConnectionC(connection);
+    destroyConnection(connection);
   }
 }
 

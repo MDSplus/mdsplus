@@ -243,7 +243,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
     return C_ERROR;
   }
   SetSocketOptions(sock, 0);
-  SetConnectionInfoC(c, PROT, sock, NULL, 0);
+  ConnectionSetInfo(c, PROT, sock, NULL, 0);
   return C_OK;
 }
 
@@ -420,7 +420,7 @@ static int io_listen(int argc, char **argv)
         {
           // add client to client list //
           Client *client = calloc(1, sizeof(Client));
-          client->id = id;
+          client->connection = PopConnection(id);
           client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
           client->sock = sock;
           client->username = username;

@@ -61,7 +61,7 @@ static void io_listen(void *pp)
   pipes->connection = PopConnection(id);
   while (STATUS_OK)
     status = DoMessageC(pipes->connection);
-  DisconnectConnectionC(pipes->connection);
+  destroyConnection(pipes->connection);
   free(pp);
 }
 
@@ -117,7 +117,7 @@ inline static int io_connect(Connection *c,
     close_pipe(pp->in);
     return C_ERROR;
   }
-  SetConnectionInfoC(c, PROTOCOL, 0, &p, sizeof(p));
+  ConnectionSetInfo(c, PROTOCOL, 0, &p, sizeof(p));
   return C_OK;
 }
 

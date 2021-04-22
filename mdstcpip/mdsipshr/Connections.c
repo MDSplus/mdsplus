@@ -47,15 +47,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Connection *_FindConnection(int id, Connection **prev, MDSIPTHREADSTATIC_ARG)
 {
-  Connection *p = NULL, *c = MDSIP_CONNECTIONS;
-  while (c)
+  Connection *c = MDSIP_CONNECTIONS, *p = NULL;
+  for ( ; c ; p = c, c = c->next)
   {
     if (c->id == id)
-    {
       break;
-    }
-    p = c;
-    c = c->next;
   }
   if (prev)
     *prev = p;
@@ -252,47 +248,17 @@ static void exitHandler(void)
   void *ctx = (void *)-1;
   while ((id = NextConnection(&ctx, 0, 0, 0)) != INVALID_CONNECTION_ID)
   {
-    DisconnectConnection(id);
+    CloseConnection(id);
     ctx = 0;
   }
 }
 static void registerHandler() { atexit(exitHandler); }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  DisconnectConnection  //////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-int DisconnectConnectionC(Connection *c)
-{
-  if (c && c->id != INVALID_CONNECTION_ID //
-      && c->state != CON_DETACHED)
-  { // connection should not have been in list at this point
-    c = PopConnection(c->id);
-  }
-  if (!c)
-    return MDSplusERROR;
-  c->io->disconnect(c);
-  DBG("Connections: %02d disconnected\n", c->id);
-  free(c->info);
-  FreeDescriptors(c);
-  free(c->protocol);
-  free(c->info_name);
-  free(c->rm_user);
-  free(c);
-  return MDSplusSUCCESS;
-}
-
-int DisconnectConnection(int conid)
-{
-   Connection *const c = PopConnection(conid);
-  return DisconnectConnectionC(c);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 //  NewConnection  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Connection *NewConnectionC(char *protocol)
+Connection *newConnection(char *protocol)
 {
   Connection *connection;
   IoRoutines *io = LoadIo(protocol);
@@ -337,6 +303,48 @@ void FreeDescriptors(Connection *c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//  CloseConnection  //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+extern int TdiDeleteContext();
+extern int MDSEventCan();
+int destroyConnection(Connection *connection)
+{
+  if (connection && connection->id != INVALID_CONNECTION_ID //
+      && connection->state != CON_DETACHED)
+  { // connection should not have been in list at this point
+    connection = PopConnection(connection->id);
+  }
+  if (!connection)
+    return MDSplusERROR;
+
+  MdsEventList *e, *nexte;
+  for (e = connection->event; e; e = nexte)
+  {
+    nexte = e->next;
+    MDSEventCan(e->eventid);
+    if (e->info_len > 0)
+      free(e->info);
+    free(e);
+  }
+  TdiDeleteContext(connection->tdicontext);
+  connection->io->disconnect(connection);
+  DBG("Connections: %02d disconnected\n", c->id);
+  free(connection->info);
+  FreeDescriptors(connection);
+  free(connection->protocol);
+  free(connection->info_name);
+  free(connection->rm_user);
+  free(connection);
+  return MDSplusSUCCESS;
+}
+
+int CloseConnection(int id)
+{
+  Connection *const c = PopConnection(id);
+  return destroyConnection(c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 //  GetConnectionIo  ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -353,8 +361,8 @@ IoRoutines *GetConnectionIo(int conid)
 //  GetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void *GetConnectionInfoC(Connection *c, char **info_name, SOCKET *readfd,
-                         size_t *len)
+void *ConnectionGetInfo(Connection *c, char **info_name, SOCKET *readfd,
+                        size_t *len)
 {
   if (c)
   {
@@ -375,16 +383,16 @@ void *GetConnectionInfo(int conid, char **info_name, SOCKET *readfd,
   MDSIPTHREADSTATIC_INIT;
   void *ans;
   Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  ans = GetConnectionInfoC(c, info_name, readfd, len);
+  ans = ConnectionGetInfo(c, info_name, readfd, len);
   return ans;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  SetConnectionInfo  /////////////////////////////////////////////////////////
+//  ConnectionSetInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void SetConnectionInfoC(Connection *c, char *info_name, SOCKET readfd,
-                        void *info, size_t len)
+void ConnectionSetInfo(Connection *c, char *info_name, SOCKET readfd,
+                       void *info, size_t len)
 {
   if (c)
   {
@@ -408,8 +416,7 @@ void SetConnectionInfo(int conid, char *info_name, SOCKET readfd, void *info,
 {
   MDSIPTHREADSTATIC_INIT;
   Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  if (c)
-    SetConnectionInfoC(c, info_name, readfd, info, len);
+  ConnectionSetInfo(c, info_name, readfd, info, len);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -424,7 +431,7 @@ void SetConnectionCompression(int conid, int compression)
     c->compression_level = compression;
 }
 
-static inline int GetConnectionCompressionC(Connection *c)
+static inline int ConnectionGetCompression(Connection *c)
 {
   return c ? c->compression_level : 0;
 }
@@ -433,7 +440,7 @@ int GetConnectionCompression(int conid)
   MDSIPTHREADSTATIC_INIT;
   int complv;
   Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  complv = GetConnectionCompressionC(c);
+  complv = ConnectionGetCompression(c);
   return complv;
 }
 
@@ -441,7 +448,7 @@ int GetConnectionCompression(int conid)
 //  IncrementConnectionMessageId  //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-unsigned char IncrementConnectionMessageIdC(Connection *c)
+unsigned char ConnectionIncMessageId(Connection *c)
 {
   if (c)
   {
@@ -458,7 +465,7 @@ unsigned char IncrementConnectionMessageId(int conid)
   MDSIPTHREADSTATIC_INIT;
   unsigned char id;
   Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  id = IncrementConnectionMessageIdC(c);
+  id = ConnectionIncMessageId(c);
   return id;
 }
 
@@ -466,18 +473,11 @@ unsigned char IncrementConnectionMessageId(int conid)
 //  GetConnectionMessageId  ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-inline static unsigned char GetConnectionMessageIdC(Connection *c)
-{
-  return c ? c->message_id : 0;
-}
-
 unsigned char GetConnectionMessageId(int conid)
 {
   MDSIPTHREADSTATIC_INIT;
-  unsigned char id;
   Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  id = GetConnectionMessageIdC(c);
-  return id;
+  return c ? c->message_id : 0;
 }
 
 ///
@@ -550,7 +550,7 @@ int AddConnection(Connection *c)
 int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
                      size_t info_len, int *id, char **usr)
 {
-  Connection *c = NewConnectionC(protocol);
+  Connection *c = newConnection(protocol);
   INIT_STATUS_ERROR;
   if (c)
   {
@@ -558,13 +558,13 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     Message *m_user;
     char *user = NULL, *user_p = NULL;
     // SET INFO //
-    SetConnectionInfoC(c, info_name, readfd, info, info_len);
+    ConnectionSetInfo(c, info_name, readfd, info, info_len);
     m_user = GetMdsMsgTOC(c, &status, 10000);
     if (!m_user || STATUS_NOT_OK)
     {
       free(m_user);
       *usr = NULL;
-      DisconnectConnectionC(c);
+      destroyConnection(c);
       return MDSplusERROR;
     }
     m.h.msglen = sizeof(MsgHdr);
@@ -606,7 +606,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       *id = AddConnection(c);
     }
     else
-      DisconnectConnectionC(c);
+      destroyConnection(c);
   }
   return status;
 }

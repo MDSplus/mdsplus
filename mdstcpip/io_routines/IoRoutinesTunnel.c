@@ -90,7 +90,7 @@ static void ChildSignalHandler(int num __attribute__((unused)))
       if (info_name && strcmp(info_name, PROTOCOL) == 0 &&
           ((io_pipes_t *)info)->pid == pid)
       {
-        DisconnectConnection(id);
+        CloseConnection(id);
         break;
       }
     }
@@ -160,7 +160,7 @@ static int io_connect(Connection *c, char *protocol, char *host)
     CloseHandle(pipe_c2p.wr);
     CloseHandle(pipe_p2c.rd);
     CloseHandle(piProcInfo.hThread);
-    SetConnectionInfoC(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
+    ConnectionSetInfo(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
     return C_OK;
   }
   fprintf(stderr, "CreateProcess");
@@ -227,7 +227,7 @@ err:;
     sigaddset(&handler.sa_mask, SIGPIPE);
     sigaction(SIGCHLD, &handler, NULL);
     sigaction(SIGPIPE, &handler, NULL);
-    SetConnectionInfoC(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
+    ConnectionSetInfo(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
     return C_OK;
   }
   /*if (pid==0)*/ { // child
@@ -267,7 +267,7 @@ static int io_listen(int argc __attribute__((unused)),
 {
 #ifdef _WIN32
   io_pipes_t pipes;
-  pipes.connection = NULL
+  pipes.connection = NULL;
   pipes.in = GetStdHandle(STD_INPUT_HANDLE);
   pipes.out = GetStdHandle(STD_OUTPUT_HANDLE);
   pipes.pid = NULL;
@@ -289,7 +289,7 @@ static int io_listen(int argc __attribute__((unused)),
   pipes.connection = PopConnection(id);
   while (STATUS_OK)
     status = DoMessageC(pipes.connection);
-  DisconnectConnectionC(pipes.connection);
+  destroyConnection(pipes.connection);
   return C_OK;
 }
 

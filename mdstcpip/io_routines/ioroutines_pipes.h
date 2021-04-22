@@ -67,7 +67,7 @@ static io_pipes_t *get_pipes(Connection *c)
 {
   size_t len;
   char *info_name;
-  io_pipes_t *p = (io_pipes_t *)GetConnectionInfoC(c, &info_name, 0, &len);
+  io_pipes_t *p = (io_pipes_t *)ConnectionGetInfo(c, &info_name, 0, &len);
   return (info_name && !strcmp(PROTOCOL, info_name) &&
           len == sizeof(io_pipes_t))
              ? p

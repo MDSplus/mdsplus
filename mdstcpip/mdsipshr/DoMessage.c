@@ -44,7 +44,7 @@ int DoMessageC(Connection *connection)
     return 1;
   }
   free(message);
-  CloseConnectionC(connection);
+  destroyConnection(connection);
   return 0;
 }
 

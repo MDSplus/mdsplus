@@ -147,7 +147,7 @@ Message *GetMdsMsgTO(int id, int *status, int to_msec)
   if (!msg && *status == SsINTERNAL)
   {
     // not for ETIMEDOUT or EINTR like exceptions
-    DisconnectConnection(id);
+    CloseConnection(id);
     *status = MDSplusERROR;
   }
   return msg;

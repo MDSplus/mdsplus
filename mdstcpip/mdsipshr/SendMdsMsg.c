@@ -130,7 +130,7 @@ int SendMdsMsg(int id, Message *m, int msg_options)
   if (status == SsINTERNAL)
   {
     UnlockConnection(c);
-    DisconnectConnection(id);
+    CloseConnection(id);
     return MDSplusFATAL;
   }
   return MDSplusSUCCESS;

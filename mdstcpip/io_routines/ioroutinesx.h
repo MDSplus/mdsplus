@@ -43,13 +43,13 @@ static IoRoutines io_routines = {
 typedef struct _client
 {
   struct _client *next;
-  SOCKET sock;
-  int id;
-  char *username;
+  Connection *connection;
+  pthread_t *thread;
   uint32_t addr;
+  SOCKET sock;
+  char *username;
   char *host;
   char *iphost;
-  pthread_t *thread;
 } Client;
 
 // List of clients connected to server instance.
@@ -76,7 +76,7 @@ static SOCKET getSocket(Connection *c)
   size_t len;
   char *info_name;
   SOCKET readfd;
-  GetConnectionInfoC(c, &info_name, &readfd, &len);
+  ConnectionGetInfo(c, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, PROT) == 0) ? readfd : INVALID_SOCKET;
 }
 
@@ -514,11 +514,11 @@ static int io_disconnect(Connection *con)
   {
     Client *c, **p;
     for (p = &ClientList, c = ClientList;
-         c && c->id != con->id;
+         c;
          p = &c->next, c = c->next)
-      ;
-    if (c)
     {
+      if (c->connection != con)
+        continue;
       *p = c->next;
 #ifdef _TCP
       if (FD_ISSET(sock, &fdactive))
@@ -542,6 +542,7 @@ static int io_disconnect(Connection *con)
       free(c->iphost);
       free(c->host);
       free(c);
+      break;
     }
 #ifdef _TCP
     err = shutdown(sock, SHUT_RDWR);
@@ -581,40 +582,42 @@ static int run_server_mode(Options *options)
   return C_ERROR;
 }
 
-typedef struct
-{
-  Connection *connection;
-  uint32_t client_addr;
-} client_thread_arg_t;
-
 static void *client_thread(void *args)
 {
-  client_thread_arg_t *c = (client_thread_arg_t *)args;
-  Connection *connection = c->connection;
-  MdsSetClientAddr(c->client_addr);
+  Client *client = (Client *)args;
+  Connection *connection = client->connection;
+  MdsSetClientAddr(client->addr);
   free(args);
   int status;
   do
   {
     status = DoMessageC(connection);
   } while (STATUS_OK);
+  destroyConnection(connection);
   return NULL;
 }
 
 static inline int dispatch_client(Client *client)
 {
-  client_thread_arg_t* c = (client_thread_arg_t*)malloc(sizeof(client_thread_arg_t));
-  c->connection = PopConnection(client->id);
-  c->client_addr = client->addr;
   client->thread = (pthread_t*)malloc(sizeof(pthread_t));
-  errno = pthread_create(client->thread, NULL, client_thread, (void *)c);
+  errno = pthread_create(client->thread, NULL, client_thread, (void *)client);
   if (errno)
   {
     perror("dispatch_client");
     free(client->thread);
     client->thread = NULL;
-    CloseConnectionC(c->connection);
-    free(c);
+    destroyConnection(client->connection);
   }
   return !!errno;
+}
+
+static inline void cleanupClientList()
+{
+  Client *c;
+  while ((c = ClientList))
+  {
+    ClientList = ClientList->next;
+    destroyConnection(c->connection);
+    free(c);
+  }
 }

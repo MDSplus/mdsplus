@@ -169,7 +169,7 @@ int ConnectToMds(char *hostin)
   if (hostin == 0)
     return id;
   parseHost(hostin, &protocol, &host);
-  Connection *c = NewConnectionC(protocol);
+  Connection *c = newConnection(protocol);
   if (c)
   {
     if (c->io && c->io->connect)
@@ -177,7 +177,7 @@ int ConnectToMds(char *hostin)
       c->compression_level = GetCompressionLevel();
       if (c->io->connect(c, protocol, host) < 0 || IS_NOT_OK(doLogin(c)))
       {
-        DisconnectConnectionC(c);
+        destroyConnection(c);
       }
       else
       {
@@ -192,7 +192,7 @@ int ConnectToMds(char *hostin)
 
 int DisconnectFromMds(int id)
 {
-  return DisconnectConnection(id);
+  return CloseConnection(id);
 }
 
 void FreeMessage(void *m)
