@@ -69,7 +69,8 @@ inline static int io_connect(Connection *c,
                              char *host __attribute__((unused)))
 {
 #ifdef _WIN32
-  io_pipes_t p = {NULL, NULL, NULL, 0}, *pp = calloc(sizeof(p), 1);
+  io_pipes_t p, *pp = calloc(1, sizeof(p));
+  memset(&p, 0, sizeof(p));
   pp->pth = PARENT_THREAD;
   SECURITY_ATTRIBUTES saAttr;
   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
