@@ -507,7 +507,8 @@ static void destroyClient(Client *c)
 {
   if (c->thread)
   {
-    pthread_cancel(*c->thread);
+    if (!pthread_equal(*c->thread, pthread_self()))
+      pthread_cancel(*c->thread);
     pthread_detach(*c->thread);
     free(c->thread);
   }
@@ -515,6 +516,27 @@ static void destroyClient(Client *c)
   free(c->iphost);
   free(c->host);
   free(c);
+}
+
+inline static Client *pop_client(Connection *con)
+{
+  Client *c, *p;
+  pthread_mutex_lock(&ClientListLock);
+  for (p = NULL, c = ClientList;
+       c;
+       p = c, c = c->next)
+  {
+    if (c->connection == con)
+    {
+      if (p)
+        p->next = c->next;
+      else
+        ClientList = c->next;
+      break;
+    }
+  }
+  pthread_mutex_unlock(&ClientListLock);
+  return c;
 }
 
 static int io_disconnect(Connection *con)
@@ -525,18 +547,7 @@ static int io_disconnect(Connection *con)
   Now32(now);
   if (sock != INVALID_SOCKET)
   {
-    Client *c, **p;
-    pthread_mutex_lock(&ClientListLock);
-    for (p = &ClientList, c = ClientList;
-         c;
-         p = &c->next, c = c->next)
-    {
-      if (c->connection != con)
-        continue;
-      *p = c->next;
-      break;
-    }
-    pthread_mutex_unlock(&ClientListLock);
+    Client *c = pop_client(con);
     if (c)
     {
 #ifdef _TCP
