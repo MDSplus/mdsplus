@@ -48,10 +48,6 @@ int CloseConnectionC(Connection *connection)
         free(e->info);
       free(e);
     }
-    do
-    {
-      status = _TreeClose(&connection->DBID, 0, 0);
-    } while (STATUS_OK);
     status = TdiDeleteContext(connection->tdicontext);
     DisconnectConnectionC(connection);
   }

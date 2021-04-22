@@ -68,13 +68,11 @@ typedef struct _connection
 {
   struct _connection *next;
   int id; // unique connection id
-  pthread_cond_t cond;
   con_t state;
   char *protocol;
   char *info_name;
   void *info;
   size_t info_len;
-  void *DBID;
   unsigned char message_id;
   client_t client_type;
   int nargs;

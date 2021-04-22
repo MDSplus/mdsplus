@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include "../mdsip_connections.h"
 #include "../mdsIo.h"
+#include "mdsipthreadstatic.h"
 
 #include <pthread_port.h>
 #include <treeshr.h>
@@ -44,17 +45,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   }
 #endif
 
-static Connection *ConnectionList = NULL;
-static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-#define CONNECTIONLIST_LOCK              \
-  pthread_mutex_lock(&connection_mutex); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&connection_mutex);
-#define CONNECTIONLIST_UNLOCK pthread_cleanup_pop(1);
 
 Connection *_FindConnection(int id, Connection **prev)
 {
-  Connection *p = NULL, *c = ConnectionList;
+  MDSIPTHREADSTATIC_INIT;
+  Connection *p = NULL, *c = MDSIP_CONNECTIONS;
   while (c)
   {
     if (c->id == id)
@@ -72,14 +68,12 @@ Connection *_FindConnection(int id, Connection **prev)
 Connection *PopConnection(int id)
 {
   Connection *p, *c;
-  CONNECTIONLIST_LOCK;
   c = _FindConnection(id, &p);
   if (c && c->state & CON_DETACHED)
     c = NULL;
   else if (c)
   {
     c->state |= CON_DETACHED; // sets disconnect
-    pthread_cond_broadcast(&c->cond);
     if (c->state & CON_ACTIVITY)
     { // if any task but disconnect
       struct timespec tp;
@@ -89,17 +83,8 @@ Connection *PopConnection(int id)
       // while exits if no other task but disconnect or on timeout
       if (c->state & CON_ACTIVITY)
       {
-        DBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " is waiting to pop\n",
+        DBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " would wait to pop\n",
             c->id, c->state, PID);
-        do
-        {
-          if (pthread_cond_timedwait(&c->cond, &connection_mutex, &tp) && c->state & CON_ACTIVITY)
-          {
-            DBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " is waiting to pop\n",
-                c->id, c->state, PID);
-            break;
-          }
-        } while (c->state & CON_ACTIVITY);
       }
       c = _FindConnection(id, &p); // we were waiting, so we need to update p
     }
@@ -112,14 +97,14 @@ Connection *PopConnection(int id)
       }
       else
       {
-        ConnectionList = c->next;
+        MDSIPTHREADSTATIC_INIT;
+        MDSIP_CONNECTIONS = c->next;
       }
       c->next = NULL;
       DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " popped\n",
           c->id, c->state, PID);
     }
   }
-  CONNECTIONLIST_UNLOCK;
   return c;
 }
 
@@ -128,7 +113,6 @@ Connection *PopConnection(int id)
 Connection *FindConnectionSending(int id)
 {
   Connection *c;
-  CONNECTIONLIST_LOCK;
   c = _FindConnection(id, NULL);
   if (c)
   {
@@ -139,39 +123,32 @@ Connection *FindConnectionSending(int id)
         c->state &= ~CON_REQUEST; // clear sendarg
         DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked sendarg\n",
             c->id, c->state, PID);
-        pthread_cond_signal(&c->cond);
       }
       c = NULL;
     }
   }
-  CONNECTIONLIST_UNLOCK;
   return c;
 }
 
 EXPORT int GetConnectionVersion(int id)
 {
   int version;
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(id, NULL);
   version = c ? (int)c->version : -1;
-  CONNECTIONLIST_UNLOCK;
   return version;
 }
 
 Connection *FindConnectionWithLock(int id, con_t state)
 {
   Connection *c;
-  CONNECTIONLIST_LOCK;
   c = _FindConnection(id, NULL);
   while (c && (c->state & CON_ACTIVITY) && !(c->state & CON_DISCONNECT))
   {
-    DBG("Connections: %02d -- 0x%02x : 0x%" PRIxPTR " is waiting to lock 0x%02x\n",
+    DBG("Connections: %02d -- 0x%02x : 0x%" PRIxPTR " is would wait to lock 0x%02x\n",
         c->id, c->state, PID, state);
-    pthread_cond_wait(&c->cond, &connection_mutex);
     c = _FindConnection(id, NULL);
     if (c && (c->state & CON_DISCONNECT))
     {
-      pthread_cond_signal(&c->cond); // pass on signal
       c = NULL;
     }
   }
@@ -181,24 +158,21 @@ Connection *FindConnectionWithLock(int id, con_t state)
     DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " locked 0x%02x\n",
         c->id, c->state, PID, state);
   }
-  CONNECTIONLIST_UNLOCK
   return c;
 }
 
 void UnlockConnection(Connection *c_in)
 {
-  CONNECTIONLIST_LOCK;
+  MDSIPTHREADSTATIC_INIT;
   Connection *c; // check if not yet freed
-  for (c = ConnectionList; c && c != c_in; c = c->next)
+  for (c = MDSIP_CONNECTIONS; c && c != c_in; c = c->next)
     ;
   if (c)
   {
     c->state &= ~CON_ACTIVITY; // clear activity
     DBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked 0x%02x\n",
         c->id, c->state, PID, CON_ACTIVITY);
-    pthread_cond_signal(&c->cond);
   }
-  CONNECTIONLIST_UNLOCK;
 }
 
 #define CONNECTION_UNLOCK_PUSH(c) \
@@ -209,10 +183,10 @@ int NextConnection(void **ctx, char **info_name, void **info,
                    size_t *info_len)
 { // check
   int ans;
-  CONNECTIONLIST_LOCK;
+  MDSIPTHREADSTATIC_INIT;
   Connection *c, *next;
-  next = (*ctx != (void *)-1) ? (Connection *)*ctx : ConnectionList;
-  for (c = ConnectionList; c && c != next; c = c->next)
+  next = (*ctx != (void *)-1) ? (Connection *)*ctx : MDSIP_CONNECTIONS;
+  for (c = MDSIP_CONNECTIONS; c && c != next; c = c->next)
     ;
   if (c)
   {
@@ -230,7 +204,6 @@ int NextConnection(void **ctx, char **info_name, void **info,
     *ctx = 0;
     ans = INVALID_CONNECTION_ID;
   }
-  CONNECTIONLIST_UNLOCK;
   return ans;
 }
 
@@ -305,8 +278,6 @@ int DisconnectConnectionC(Connection *c)
   free(c->protocol);
   free(c->info_name);
   free(c->rm_user);
-  TreeFreeDbid(c->DBID);
-  pthread_cond_destroy(&c->cond);
   free(c);
   return MDSplusSUCCESS;
 }
@@ -335,8 +306,6 @@ Connection *NewConnectionC(char *protocol)
     connection->protocol = strdup(protocol);
     connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
-    _TreeNewDbid(&connection->DBID);
-    pthread_cond_init(&connection->cond, NULL);
     return connection;
   }
   else
@@ -374,10 +343,8 @@ void FreeDescriptors(Connection *c)
 IoRoutines *GetConnectionIo(int conid)
 {
   IoRoutines *io;
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   io = c ? c->io : NULL;
-  CONNECTIONLIST_UNLOCK;
   return io;
 }
 
@@ -405,10 +372,8 @@ void *GetConnectionInfo(int conid, char **info_name, SOCKET *readfd,
                         size_t *len)
 {
   void *ans;
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   ans = GetConnectionInfoC(c, info_name, readfd, len);
-  CONNECTIONLIST_UNLOCK;
   return ans;
 }
 
@@ -439,11 +404,9 @@ void SetConnectionInfoC(Connection *c, char *info_name, SOCKET readfd,
 void SetConnectionInfo(int conid, char *info_name, SOCKET readfd, void *info,
                        size_t len)
 {
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   if (c)
     SetConnectionInfoC(c, info_name, readfd, info, len);
-  CONNECTIONLIST_UNLOCK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -452,11 +415,9 @@ void SetConnectionInfo(int conid, char *info_name, SOCKET readfd, void *info,
 
 void SetConnectionCompression(int conid, int compression)
 {
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, NULL);
   if (c)
     c->compression_level = compression;
-  CONNECTIONLIST_UNLOCK;
 }
 
 static inline int GetConnectionCompressionC(Connection *c)
@@ -466,10 +427,8 @@ static inline int GetConnectionCompressionC(Connection *c)
 int GetConnectionCompression(int conid)
 {
   int complv;
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, NULL);
   complv = GetConnectionCompressionC(c);
-  CONNECTIONLIST_UNLOCK;
   return complv;
 }
 
@@ -492,10 +451,8 @@ unsigned char IncrementConnectionMessageIdC(Connection *c)
 unsigned char IncrementConnectionMessageId(int conid)
 {
   unsigned char id;
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, NULL);
   id = IncrementConnectionMessageIdC(c);
-  CONNECTIONLIST_UNLOCK;
   return id;
 }
 
@@ -511,10 +468,8 @@ inline static unsigned char GetConnectionMessageIdC(Connection *c)
 unsigned char GetConnectionMessageId(int conid)
 {
   unsigned char id;
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   id = GetConnectionMessageIdC(c);
-  CONNECTIONLIST_UNLOCK;
   return id;
 }
 
@@ -527,11 +482,9 @@ unsigned char GetConnectionMessageId(int conid)
 ///
 void SetConnectionClientType(int conid, int client_type)
 {
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   if (c)
     c->client_type = client_type;
-  CONNECTIONLIST_UNLOCK;
 }
 
 ///
@@ -544,10 +497,8 @@ void SetConnectionClientType(int conid, int client_type)
 client_t GetConnectionClientType(int conid)
 {
   client_t type;
-  CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   type = c ? c->client_type : INVALID_CLIENT;
-  CONNECTIONLIST_UNLOCK;
   return type;
 }
 
@@ -571,17 +522,16 @@ static inline int authorize_client(Connection *c, char *username)
 ////////////////////////////////////////////////////////////////////////////////
 int AddConnection(Connection *c)
 {
+  MDSIPTHREADSTATIC_INIT;
   static int id = INVALID_CONNECTION_ID;
-  CONNECTIONLIST_LOCK;
   do
   {
     id++; // find next free id
   } while (id == INVALID_CONNECTION_ID && _FindConnection(id, NULL));
   c->id = id;
-  c->next = ConnectionList;
-  ConnectionList = c;
+  c->next = MDSIP_CONNECTIONS;
+  MDSIP_CONNECTIONS = c;
   DBG("Connections: %02d connected\n", c->id);
-  CONNECTIONLIST_UNLOCK;
   return c->id;
 }
 
