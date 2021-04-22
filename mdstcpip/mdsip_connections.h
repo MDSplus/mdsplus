@@ -138,7 +138,7 @@ typedef struct
 typedef struct
 {
   MsgHdr h;
-  char bytes[1];
+  char bytes[0];
 } Message, *MsgPtr;
 
 ///

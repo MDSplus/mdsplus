@@ -281,15 +281,18 @@ static int io_listen(int argc __attribute__((unused)),
   close(1); // fcntl(1,F_SETFD,FD_CLOEXEC);
   dup2(2, 1);
 #endif
-  int id, status;
-  char *username = NULL;
-  status = AcceptConnection(
-      GetProtocol(), PROTOCOL, 0, &pipes, sizeof(io_pipes_t), &id, &username);
-  free(username);
-  pipes.connection = PopConnection(id);
-  while (STATUS_OK)
-    status = DoMessageC(pipes.connection);
-  return C_OK;
+  int id;
+  int status = AcceptConnection(
+      GetProtocol(), PROTOCOL, 0, &pipes, sizeof(io_pipes_t), &id, NULL);
+  if (STATUS_OK)
+  {
+    pipes.connection = PopConnection(id);
+    do
+      status = DoMessageC(pipes.connection);
+    while (STATUS_OK);
+    return C_OK;
+  }
+  return C_ERROR;
 }
 
 const IoRoutines tunnel_routines = {io_connect, io_send, io_recv, NULL,

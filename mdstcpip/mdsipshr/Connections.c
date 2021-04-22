@@ -48,7 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Connection *_FindConnection(int id, Connection **prev, MDSIPTHREADSTATIC_ARG)
 {
   Connection *c = MDSIP_CONNECTIONS, *p = NULL;
-  for ( ; c ; p = c, c = c->next)
+  for (; c; p = c, c = c->next)
   {
     if (c->id == id)
       break;
@@ -529,30 +529,29 @@ int AddConnection(Connection *c)
 int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
                      size_t info_len, int *id, char **usr)
 {
+  if (usr)
+    *usr = NULL;
   Connection *c = newConnection(protocol);
   INIT_STATUS_ERROR;
   if (c)
   {
-    Message m;
-    Message *m_user;
+    Message *msg;
     char *user = NULL, *user_p = NULL;
     // SET INFO //
     ConnectionSetInfo(c, info_name, readfd, info, info_len);
-    m_user = GetMdsMsgTOC(c, &status, 10000);
-    if (!m_user || STATUS_NOT_OK)
+    msg = GetMdsMsgTOC(c, &status, 10000);
+    if (!msg || STATUS_NOT_OK)
     {
-      free(m_user);
-      *usr = NULL;
+      free(msg);
       destroyConnection(c);
       return MDSplusERROR;
     }
-    m.h.msglen = sizeof(MsgHdr);
     // AUTHORIZE //
-    if (STATUS_OK && (m_user) && (m_user->h.dtype == DTYPE_CSTRING))
+    if (STATUS_OK && (msg) && (msg->h.dtype == DTYPE_CSTRING))
     {
-      user = malloc(m_user->h.length + 1);
-      memcpy(user, m_user->bytes, m_user->h.length);
-      user[m_user->h.length] = 0;
+      user = malloc(msg->h.length + 1);
+      memcpy(user, msg->bytes, msg->h.length);
+      user[msg->h.length] = 0;
     }
     c->rm_user = user;
     user_p = user ? user : "?";
@@ -560,32 +559,34 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     // SET COMPRESSION //
     if (STATUS_OK)
     {
-      c->compression_level = m_user->h.status & 0xf;
-      c->client_type = m_user->h.client_type;
-      *usr = strdup(user_p);
-      if (m_user->h.ndims > 0)
-        c->version = m_user->h.dims[0];
+      c->compression_level = msg->h.status & 0xf;
+      c->client_type = msg->h.client_type;
+      if (msg->h.ndims > 0)
+        c->version = msg->h.dims[0];
+      fprintf(stderr, "Connected: %s\n", user_p);
     }
     else
-      *usr = NULL;
-    if (STATUS_NOT_OK)
+    {
       fprintf(stderr, "Access denied: %s\n", user_p);
-    else
-      fprintf(stderr, "Connected: %s\n", user_p);
-    m.h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
-    m.h.client_type = m_user ? m_user->h.client_type : 0;
-    m.h.ndims = 1;
-    m.h.dims[0] = MDSIP_VERSION;
-    free(m_user);
+    }
+    msg->h.msglen = sizeof(MsgHdr);
+    msg->h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
+    msg->h.ndims = 1;
+    msg->h.dims[0] = MDSIP_VERSION;
     // reply to client //
-    SendMdsMsgC(c, &m, 0);
+    status = SendMdsMsgC(c, msg, 0);
+    free(msg);
     if (STATUS_OK)
     {
+      if (usr)
+        *usr = strdup(user_p);
       // all good add connection
       *id = AddConnection(c);
     }
     else
+    {
       destroyConnection(c);
+    }
   }
   return status;
 }

@@ -585,14 +585,12 @@ static int run_server_mode(Options *options)
   (void)options;
 #endif
   int id;
-  char *username;
-  if (IS_NOT_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)))
+  if (IS_NOT_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, NULL)))
     return C_ERROR;
   struct SOCKADDR_IN sin;
   SOCKLEN_T len = sizeof(sin);
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in *)&sin)->sin_addr.s_addr);
-  free(username);
   Connection *connection = PopConnection(id);
   int status;
   do

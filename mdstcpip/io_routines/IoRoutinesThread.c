@@ -53,14 +53,16 @@ static int io_disconnect(Connection *c)
 static void io_listen(void *pp)
 {
   io_pipes_t *pipes = (io_pipes_t *)pp;
-  int id, status;
-  char *username = NULL;
-  status = AcceptConnection(
-      PROTOCOL, PROTOCOL, 0, pp, sizeof(io_pipes_t), &id, &username);
-  free(username);
-  pipes->connection = PopConnection(id);
-  while (STATUS_OK)
-    status = DoMessageC(pipes->connection);
+  int id;
+  int status = AcceptConnection(
+      PROTOCOL, PROTOCOL, 0, pp, sizeof(io_pipes_t), &id, NULL);
+  if (STATUS_OK)
+  {
+    pipes->connection = PopConnection(id);
+    do
+      status = DoMessageC(pipes->connection);
+    while (STATUS_OK);
+  }
   free(pp);
 }
 
