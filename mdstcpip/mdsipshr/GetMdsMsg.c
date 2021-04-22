@@ -141,8 +141,9 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
 
 Message *GetMdsMsgTO(int id, int *status, int to_msec)
 {
-  Connection *c = FindConnection(id, NULL);
+  Connection *c = FindConnectionWithLock(id, CON_RECV);
   Message *msg = GetMdsMsgTOC(c, status, to_msec);
+  UnlockConnection(c);
   if (!msg && *status == SsINTERNAL)
   {
     // not for ETIMEDOUT or EINTR like exceptions
