@@ -52,28 +52,27 @@ static int io_disconnect(Connection *c)
 
 static void io_listen(void *pp)
 {
-  io_pipes_t *pipes = (io_pipes_t *)pp;
   int id;
   int status = AcceptConnection(
       PROTOCOL, PROTOCOL, 0, pp, sizeof(io_pipes_t), &id, NULL);
+  free(pp);
   if (STATUS_OK)
   {
-    pipes->connection = PopConnection(id);
+    Connection *connection = PopConnection(id);
     do
-      status = ConnectionDoMessage(pipes->connection);
+      status = ConnectionDoMessage(connection);
     while (STATUS_OK);
-    destroyConnection(pipes->connection);
+    destroyConnection(connection);
   }
-  free(pp);
 }
 
 inline static int io_connect(Connection *c,
                              char *protocol __attribute__((unused)),
                              char *host __attribute__((unused)))
 {
-#ifdef _WIN32
   io_pipes_t p, *pp = calloc(1, sizeof(p));
   memset(&p, 0, sizeof(p));
+#ifdef _WIN32
   pp->pth = PARENT_THREAD;
   SECURITY_ATTRIBUTES saAttr;
   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -87,7 +86,6 @@ inline static int io_connect(Connection *c,
                              NULL)))
   {
 #else
-  io_pipes_t p, *pp = malloc(sizeof(p));
   int pipe_up[2], pipe_dn[2], ok_up, ok_dn;
   ok_up = pipe(pipe_up);
   ok_dn = pipe(pipe_dn);
@@ -118,6 +116,7 @@ inline static int io_connect(Connection *c,
     close_pipe(p.out);
     close_pipe(pp->out);
     close_pipe(pp->in);
+    free(pp);
     return C_ERROR;
   }
   ConnectionSetInfo(c, PROTOCOL, 0, &p, sizeof(p));

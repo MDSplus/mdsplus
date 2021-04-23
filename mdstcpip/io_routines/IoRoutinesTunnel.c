@@ -265,14 +265,12 @@ err:;
 static int io_listen(int argc __attribute__((unused)),
                      char **argv __attribute__((unused)))
 {
-#ifdef _WIN32
   io_pipes_t pipes;
-  pipes.connection = NULL;
+  memset(&pipes, 0, sizeof(pipes));
+#ifdef _WIN32
   pipes.in = GetStdHandle(STD_INPUT_HANDLE);
   pipes.out = GetStdHandle(STD_OUTPUT_HANDLE);
-  pipes.pid = NULL;
 #else
-  io_pipes_t pipes = {NULL, 0, 1, 0};
   pipes.in = dup(0);
   pipes.out = dup(1);
   fcntl(pipes.in, F_SETFD, FD_CLOEXEC);
@@ -286,11 +284,11 @@ static int io_listen(int argc __attribute__((unused)),
       GetProtocol(), PROTOCOL, 0, &pipes, sizeof(io_pipes_t), &id, NULL);
   if (STATUS_OK)
   {
-    pipes.connection = PopConnection(id);
+    Connection *connection = PopConnection(id);
     do
-      status = ConnectionDoMessage(pipes.connection);
+      status = ConnectionDoMessage(connection);
     while (STATUS_OK);
-    destroyConnection(pipes.connection);
+    destroyConnection(connection);
     return C_OK;
   }
   return C_ERROR;
