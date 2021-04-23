@@ -511,6 +511,7 @@ static void destroyClient(Client *c)
     if (!pthread_equal(*c->thread, pthread_self()))
     {
       pthread_cancel(*c->thread);
+      pthread_join(*c->thread, NULL);
     }
     else
     {
@@ -531,7 +532,11 @@ static inline void destroyClientList()
   Client *cl;
   pthread_mutex_lock(&ClientListLock);
   cl = ClientList;
-  ClientList = NULL;
+  for (; ClientList; ClientList = ClientList->next)
+  {
+    if (ClientList->thread)
+      pthread_cancel(*ClientList->thread);
+  }
   pthread_mutex_unlock(&ClientListLock);
   while (cl)
   {
