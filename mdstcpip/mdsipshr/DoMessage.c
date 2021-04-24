@@ -28,7 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../mdsip_connections.h"
 
-extern void ProcessMessage(Connection *, Message *);
+/// returns true if message cleanup is handled
+extern int ProcessMessage(Connection *, Message *);
 ////////////////////////////////////////////////////////////////////////////////
 //  DoMessage  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,23 +37,22 @@ int ConnectionDoMessage(Connection *connection)
 {
   if (!connection)
     return 0; // will cause tunnel to terminate
+  int err;
+  INIT_AND_FREE_ON_EXIT(Message*, message);
+  err = 1;
   int status = MDSplusFATAL;
-  Message *message = GetMdsMsgTOC(connection, &status, -1);
-  if (message && STATUS_OK)
-  {
-    ProcessMessage(connection, message);
-    return 1;
-  }
-  free(message);
-  return 0;
+  message = GetMdsMsgTOC(connection, &status, -1);
+  err = !(message && STATUS_OK && ProcessMessage(connection, message));
+  FREE_IF(message, err);
+  return !err;
 }
 
 int DoMessage(int id)
 {
   Connection *connection = FindConnectionWithLock(id, CON_ACTIVITY);
-  int status = ConnectionDoMessage(connection);
+  int ok = ConnectionDoMessage(connection);
   UnlockConnection(connection);
-  if (!status)
-    destroyConnection(connection);
-  return status;
+  if (!ok)
+    CloseConnection(id);
+  return ok;
 }

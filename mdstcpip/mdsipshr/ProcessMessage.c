@@ -139,8 +139,9 @@ static void convert_float(int num, int in_type, char in_length, char *in_ptr,
   }
 }
 
-static void send_response(Connection *connection, Message *message,
-                          int status, mdsdsc_t *d)
+/// returns true if message cleanup is handled
+static int send_response(Connection *connection, Message *message,
+                         int status, mdsdsc_t *d)
 {
   const int client_type = connection->client_type;
   const unsigned char message_id = connection->message_id;
@@ -490,17 +491,17 @@ static void send_response(Connection *connection, Message *message,
   }
   status = SendMdsMsgC(connection, m, 0);
   free(m);
-  free(message);
   if (STATUS_NOT_OK)
-  {
-    destroyConnection(connection);
-  }
+    return FALSE; // no good close connection
+  free(message);
+  return TRUE;
 }
 
-static void return_status(Connection *connection, Message *message, int status)
+/// returns true if message cleanup is handled
+static int return_status(Connection *connection, Message *message, int status)
 {
   struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&status};
-  send_response(connection, message, 1, &ans_d);
+  return send_response(connection, message, 1, &ans_d);
 }
 
 static void GetErrorText(int status, mdsdsc_xd_t *xd)
@@ -608,7 +609,7 @@ static inline int execute_command(Connection *connection, mdsdsc_xd_t *ans_xd)
   return status;
 }
 
-///
+/// returns true if message cleanup is handled
 /// Executes TDI expression held by a connecion instance. This first searches if
 /// connection message corresponds to AST or CAN requests, if no asyncronous ops
 /// are requested the TDI actual expression is parsed through tdishr library.
@@ -625,10 +626,10 @@ static inline int execute_command(Connection *connection, mdsdsc_xd_t *ans_xd)
 /// arguments \return the execute message answer built using BuildAnswer()
 ///
 
-static void execute_message(Connection *connection, Message *message)
+static int execute_message(Connection *connection, Message *message)
 {
-  int status = 1; // return status           //
-
+  int status = 1;
+  int freed_message = FALSE;
   char *evname;
   DESCRIPTOR(eventastreq, EVENTASTREQUEST); // AST request descriptor //
   DESCRIPTOR(eventcanreq, EVENTCANREQUEST); // Can request descriptor //
@@ -636,7 +637,7 @@ static void execute_message(Connection *connection, Message *message)
   if (!connection->descrip[0])
   {
     fprintf(stderr, "execute_message: NULL_ptr as first descrip argument\n");
-    return_status(connection, message, TdiNULL_PTR);
+    freed_message = return_status(connection, message, TdiNULL_PTR);
   }
   else if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventastreq) == 0)
   { // AST REQUEST //
@@ -688,9 +689,12 @@ static void execute_message(Connection *connection, Message *message)
         connection->event = newe;
     }
     if (!java)
-      send_response(connection, message, status, &eventiddsc);
+      freed_message = send_response(connection, message, status, &eventiddsc);
     else
+    {
       free(message);
+      freed_message = TRUE;
+    }
   }
   else if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventcanreq) == 0)
   { // CAN REQUEST //
@@ -715,9 +719,12 @@ static void execute_message(Connection *connection, Message *message)
       }
     }
     if (!java)
-      send_response(connection, message, status, &eventiddsc);
+      freed_message = send_response(connection, message, status, &eventiddsc);
     else
+    {
       free(message);
+      freed_message = TRUE;
+    }
   }
   else // NORMAL TDI COMMAND //
   {
@@ -732,13 +739,15 @@ static void execute_message(Connection *connection, Message *message)
         connection->compression_level = GetMaxCompressionLevel();
       SetCompressionLevel(connection->compression_level);
     }
-    send_response(connection, message, status, ans_xd.pointer);
+    freed_message = send_response(connection, message, status, ans_xd.pointer);
     FREEXD_NOW(ans_xd);
   }
   FreeDescriptors(connection);
+  return freed_message;
 }
 
-static void standard_command(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static int standard_command(Connection *connection, Message *message)
 {
   // set connection to the message client_type  //
   connection->client_type = message->h.client_type;
@@ -761,7 +770,6 @@ static void standard_command(Connection *connection, Message *message)
     }
     COPY_DESC(d, EMPTYXD, tmp);
     connection->descrip[message->h.descriptor_idx] = d;
-    free(message);
     DBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial\n",
         connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
   }
@@ -918,7 +926,7 @@ static void standard_command(Connection *connection, Message *message)
     }
     else
     {
-      return_status(connection, message, 0);
+      return return_status(connection, message, 0);
     }
   }
   // CALL EXECUTE MESSAGE //
@@ -926,16 +934,16 @@ static void standard_command(Connection *connection, Message *message)
   {
     DBG("ProcessMessage: %d Call %3d (%2d/%2d)\n",
         connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
-    execute_message(connection, message);
+    int freed_message = execute_message(connection, message);
     UnlockConnection(connection);
+    return freed_message;
   }
-  else
-  {
-    free(message);
-  }
+  free(message);
+  return TRUE;
 }
 
-static inline void mdsio_open_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_open_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   char *filename = (char *)message->bytes;
@@ -956,19 +964,21 @@ static inline void mdsio_open_k(Connection *connection, Message *message)
     fopts |= O_RDWR;
   int fd = MDS_IO_OPEN(filename, fopts, mode);
   struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&fd};
-  send_response(connection, message, 3, &ans_d);
+  return send_response(connection, message, 3, &ans_d);
 }
 
-static inline void mdsio_close_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_close_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   int fd = mdsio->close.fd;
   int ans_o = MDS_IO_CLOSE(fd);
   struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
-  send_response(connection, message, 1, &ans_d);
+  return send_response(connection, message, 1, &ans_d);
 }
 
-static inline void mdsio_lseek_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_lseek_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   int fd = mdsio->lseek.fd;
@@ -979,10 +989,11 @@ static inline void mdsio_lseek_k(Connection *connection, Message *message)
   struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, 0};
   ans_d.pointer = (char *)&ans_o;
   SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
-  send_response(connection, message, 1, (mdsdsc_t *)&ans_d);
+  return send_response(connection, message, 1, (mdsdsc_t *)&ans_d);
 }
 
-static inline void mdsio_read_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_read_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   int fd = mdsio->read.fd;
@@ -992,22 +1003,25 @@ static inline void mdsio_read_k(Connection *connection, Message *message)
 #ifdef USE_PERF
   TreePerfRead(nbytes);
 #endif
+  int freed_message;
   if (nbytes > 0)
   {
     DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
     if ((size_t)nbytes != count)
       perror("READ_K wrong byte count");
-    send_response(connection, message, 1, (mdsdsc_t *)&ans_d);
+    freed_message = send_response(connection, message, 1, (mdsdsc_t *)&ans_d);
   }
   else
   {
     DESCRIPTOR(ans_d, "");
-    send_response(connection, message, 1, (mdsdsc_t *)&ans_d);
+    freed_message = send_response(connection, message, 1, (mdsdsc_t *)&ans_d);
   }
   free(buf);
+  return freed_message;
 }
 
-static inline void mdsio_write_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_write_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   /* from http://man7.org/linux/man-pages/man2/write.2.html
@@ -1025,10 +1039,11 @@ static inline void mdsio_write_k(Connection *connection, Message *message)
   SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
   if (ans_o != mdsio->write.count)
     perror("WRITE_K wrong byte count");
-  send_response(connection, message, 1, &ans_d);
+  return send_response(connection, message, 1, &ans_d);
 }
 
-static inline void mdsio_lock_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_lock_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   int fd = mdsio->lock.fd;
@@ -1041,35 +1056,39 @@ static inline void mdsio_lock_k(Connection *connection, Message *message)
   int deleted;
   int ans_o = MDS_IO_LOCK(fd, offset, size, mode | nowait, &deleted);
   struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
-  send_response(connection, message, deleted ? 3 : 1, &ans_d);
+  return send_response(connection, message, deleted ? 3 : 1, &ans_d);
 }
 
-static inline void mdsio_exists_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_exists_k(Connection *connection, Message *message)
 {
   char *filename = message->bytes;
   int ans_o = MDS_IO_EXISTS(filename);
   struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
-  send_response(connection, message, 1, &ans_d);
+  return send_response(connection, message, 1, &ans_d);
 }
 
-static inline void mdsio_remove_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_remove_k(Connection *connection, Message *message)
 {
   char *filename = message->bytes;
   int ans_o = MDS_IO_REMOVE(filename);
   struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
-  send_response(connection, message, 1, &ans_d);
+  return send_response(connection, message, 1, &ans_d);
 }
 
-static inline void mdsio_rename_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_rename_k(Connection *connection, Message *message)
 {
   char *old = message->bytes;
   char *new = message->bytes + strlen(old) + 1;
   int ans_o = MDS_IO_RENAME(old, new);
   struct descriptor ans_d = {4, DTYPE_L, CLASS_S, (char *)&ans_o};
-  send_response(connection, message, 1, &ans_d);
+  return send_response(connection, message, 1, &ans_d);
 }
 
-static inline void mdsio_read_x_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_read_x_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   int fd = mdsio->read_x.fd;
@@ -1079,22 +1098,25 @@ static inline void mdsio_read_x_k(Connection *connection, Message *message)
   void *buf = malloc(count);
   int deleted;
   size_t nbytes = MDS_IO_READ_X(fd, offset, buf, count, &deleted);
+  int freed_message;
   if (nbytes > 0)
   {
     DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
     if ((size_t)nbytes != count)
       perror("READ_X_K wrong byte count");
-    send_response(connection, message, deleted ? 3 : 1, (mdsdsc_t *)&ans_d);
+    freed_message = send_response(connection, message, deleted ? 3 : 1, (mdsdsc_t *)&ans_d);
   }
   else
   {
     DESCRIPTOR(ans_d, "");
-    send_response(connection, message, deleted ? 3 : 1, (mdsdsc_t *)&ans_d);
+    freed_message = send_response(connection, message, deleted ? 3 : 1, (mdsdsc_t *)&ans_d);
   }
   free(buf);
+  return freed_message;
 }
 
-static inline void mdsio_open_one_k(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static inline int mdsio_open_one_k(Connection *connection, Message *message)
 {
   const mdsio_t *mdsio = (mdsio_t *)message->h.dims;
   char *treename = message->bytes;
@@ -1117,51 +1139,41 @@ static inline void mdsio_open_one_k(Connection *connection, Message *message)
     memcpy(msg + 8, fullpath, msglen - 8);
     free(fullpath);
   }
-  send_response(connection, message, 3, (mdsdsc_t *)&ans_d);
+  int freed_message = send_response(connection, message, 3, (mdsdsc_t *)&ans_d);
   free(msg);
+  return freed_message;
 }
 
-static void mdsio_command(Connection *connection, Message *message)
+/// returns true if message cleanup is handled
+static int mdsio_command(Connection *connection, Message *message)
 {
   connection->client_type = message->h.client_type;
   switch (message->h.descriptor_idx)
   {
   case MDS_IO_OPEN_K:
-    mdsio_open_k(connection, message);
-    break;
+    return mdsio_open_k(connection, message);
   case MDS_IO_CLOSE_K:
-    mdsio_close_k(connection, message);
-    break;
+    return mdsio_close_k(connection, message);
   case MDS_IO_LSEEK_K:
-    mdsio_lseek_k(connection, message);
-    break;
+    return mdsio_lseek_k(connection, message);
   case MDS_IO_READ_K:
-    mdsio_read_k(connection, message);
-    break;
+    return mdsio_read_k(connection, message);
   case MDS_IO_WRITE_K:
-    mdsio_write_k(connection, message);
-    break;
+    return mdsio_write_k(connection, message);
   case MDS_IO_LOCK_K:
-    mdsio_lock_k(connection, message);
-    break;
+    return mdsio_lock_k(connection, message);
   case MDS_IO_EXISTS_K:
-    mdsio_exists_k(connection, message);
-    break;
+    return mdsio_exists_k(connection, message);
   case MDS_IO_REMOVE_K:
-    mdsio_remove_k(connection, message);
-    break;
+    return mdsio_remove_k(connection, message);
   case MDS_IO_RENAME_K:
-    mdsio_rename_k(connection, message);
-    break;
+    return mdsio_rename_k(connection, message);
   case MDS_IO_READ_X_K:
-    mdsio_read_x_k(connection, message);
-    break;
+    return mdsio_read_x_k(connection, message);
   case MDS_IO_OPEN_ONE_K:
-    mdsio_open_one_k(connection, message);
-    break;
+    return mdsio_open_one_k(connection, message);
   default:
-    return_status(connection, message, 0);
-    break;
+    return return_status(connection, message, 0);
   }
 }
 
@@ -1169,7 +1181,7 @@ static void mdsio_command(Connection *connection, Message *message)
 #ifdef THREADED_IO
 struct command
 {
-  void (*method)(Connection *, Message *);
+  int (*method)(Connection *, Message *);
   Connection *connection;
   Message *message;
 };
@@ -1177,12 +1189,14 @@ struct command
 static void *thread_command(void *args)
 {
   struct command *cm = (struct command *)args;
-  cm->method(cm->connection, cm->message);
+  if (!cm->method(cm->connection, cm->message))
+    free(cm->message);
   return NULL;
 }
 
-static Message *dispatch_command(
-    void (*method)(Connection *, Message *),
+/// returns true if message cleanup is handled
+static int dispatch_command(
+    int (*method)(Connection *, Message *),
     Connection *connection,
     Message *message)
 {
@@ -1197,8 +1211,10 @@ static Message *dispatch_command(
       perror("pthread_create");
     else if (pthread_detach(thread))
       perror("pthread_detach");
+    else
+      return TRUE;
   }
-  return_status(connection, message, MDSplusFATAL);
+  return return_status(connection, message, MDSplusFATAL);
 }
 #endif
 
@@ -1209,9 +1225,9 @@ static Message *dispatch_command(
 ///
 /// \param connection the connection instance to handle
 /// \param message the message to process
-/// \return message answer
+/// \return true if message cleanup is handled
 ///
-void ProcessMessage(Connection *connection, Message *message)
+int ProcessMessage(Connection *connection, Message *message)
 {
   //MDSplusThreadStatic(connection->mts);
   // COMING NEW MESSAGE //
@@ -1229,24 +1245,23 @@ void ProcessMessage(Connection *connection, Message *message)
     }
     else
     {
-      return_status(connection, message, 0);
-      return;
+      return return_status(connection, message, 0);
     }
   }
   if (message->h.descriptor_idx < connection->nargs)
   {
 #ifdef THREADED_IO
-    dispatch_command(standard_command, connection, message);
+    return dispatch_command(standard_command, connection, message);
 #else
-    standard_command(connection, message);
+    return standard_command(connection, message);
 #endif
   }
   else
   {
 #ifdef THREADED_IO
-    dispatch_command(mdsio_command, connection, message);
+    return dispatch_command(mdsio_command, connection, message);
 #else
-    mdsio_command(connection, message);
+    return mdsio_command(connection, message);
 #endif
   }
 }
