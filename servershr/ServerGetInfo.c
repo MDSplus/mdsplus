@@ -84,8 +84,8 @@ EXPORT char *ServerGetInfo(int full __attribute__((unused)), char *server)
       int dims[8];
       int numbytes;
       char *reply;
-      status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes,
-                               (void **)&reply, &mem, 10);
+      status = GetAnswerInfoTS(
+        sock, &dtype, &len, &ndims, dims, &numbytes, &reply, &mem, 10);
       if (STATUS_OK && (dtype == DTYPE_CSTRING))
         ans = reply;
       else
@@ -108,5 +108,5 @@ EXPORT char *ServerGetInfo(int full __attribute__((unused)), char *server)
   ansret = strncpy((char *)malloc(len + 1), ans, len);
   free(mem);
   ansret[len] = 0;
-  return (ansret);
+  return ansret;
 }
