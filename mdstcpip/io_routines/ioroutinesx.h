@@ -610,12 +610,12 @@ static int run_server_mode(Options *options)
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in *)&sin)->sin_addr.s_addr);
   Connection *connection = PopConnection(id);
+  pthread_cleanup_push((void*)destroyConnection, (void*)connection);
   int status;
   do
-  {
     status = ConnectionDoMessage(connection);
-  } while (STATUS_OK);
-  destroyConnection(connection);
+  while (STATUS_OK);
+  pthread_cleanup_pop(1);
   return C_ERROR;
 }
 
