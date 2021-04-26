@@ -1,33 +1,14 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@ 
+builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsServerShr.dll.a
 
-SOURCES = \
-      ServerDispatchAction.c\
-      ServerSetDetailProc.c\
-      ServerAbortServer.c\
-      ServerDispatchClose.c\
-      ServerGetInfo.c\
-      ServerSetLogging.c\
-      ServerBuildDispatchTable.c\
-      ServerDispatchCommand.c\
-      ServerMonitorCheckin.c\
-      ServerStartServer.c\
-      ServerCloseTrees.c\
-      ServerDispatchPhase.c\
-      ServerStopServer.c\
-      ServerCreatePulse.c\
-      ServerFindServers.c\
-      ServerSendMessage.c\
-      ServerSendMonitor.c\
-      ServerQAction.c
-
-OBJECTS = $(SOURCES:.c=.o)
+SOURCES = $(wildcard @srcdir@/Server*.c)
+OBJECTS = $(SOURCES:@srcdir@/%.c=%.o)
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsServerShr.a
 
@@ -53,4 +34,3 @@ install: $(libdir)
 @MAKELIBDIR@@LIBPRE@MdsServerShr.a: $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
-
