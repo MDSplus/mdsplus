@@ -340,58 +340,50 @@ EXPORT int TclDispatch_show_server(void *ctx,
                                    char **error __attribute__((unused)),
                                    char **output)
 {
-  INIT_TCLSTATUS;
-  char *ident;
   int dooutput = IS_OK(cli_present(ctx, "OUTPUT"));
   int full = IS_OK(cli_present(ctx, "FULL"));
   if (dooutput)
     *output = strdup("");
-  while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVER_NAME", &ident)))
+  char *ident = NULL;
+  while (IS_OK(cli_get_value(ctx, "SERVER_NAME", &ident)))
   {
-    FREE_ON_EXIT(ident);
     if (IS_WILD(ident))
     { /* contains wildcard?     */
       void *ctx1 = NULL;
-      char *server = NULL;
+      char *server;
       while ((server = ServerFindServers(&ctx1, ident)))
       {
-        FREE_ON_EXIT(server);
         tclAppend(output, "Checking server: ");
         tclAppend(output, server);
         tclAppend(output, "\n");
         mdsdclFlushOutput(*output);
-        char *info = NULL;
-        FREE_ON_EXIT(info);
+        char *info = ServerGetInfo(full, ident);
         if (dooutput)
         {
-          tclAppend(output, info = ServerGetInfo(full, server));
+          tclAppend(output, info);
           tclAppend(output, "\n");
         }
-        else
-          info = ServerGetInfo(full, server);
-        FREE_NOW(info);
-        FREE_NOW(server);
+        free(info);
+        free(server);
       }
     }
     else
     {
-      char *info = NULL;
       tclAppend(output, "Checking server: ");
       tclAppend(output, ident);
       tclAppend(output, "\n");
       mdsdclFlushOutput(*output);
-      FREE_ON_EXIT(info);
-      info = ServerGetInfo(full, ident);
+      char *info = ServerGetInfo(full, ident);
       if (dooutput)
       {
         tclAppend(output, info);
         tclAppend(output, "\n");
       }
-      FREE_NOW(info);
+      free(info);
     }
-    FREE_NOW(ident);
+    free(ident);
   }
-  return status;
+  return TclNORMAL;
 }
 
 static inline void printIt(char *output) { fprintf(stdout, "%s\n", output); }
@@ -403,9 +395,9 @@ EXPORT int TclDispatch_phase(void *ctx, char **error,
                              char **output __attribute__((unused)))
 {
   int status;
-  INIT_AND_FREE_ON_EXIT(char *, phase);
-  INIT_AND_FREE_ON_EXIT(char *, synch_str);
-  INIT_AND_FREE_ON_EXIT(char *, monitor);
+  char *phase = NULL;
+  char *synch_str = NULL;
+  char *monitor = NULL;
   int synch;
   int noaction = IS_OK(cli_present(ctx, "NOACTION"));
   void (*output_rtn)() = IS_OK(cli_present(ctx, "LOG")) ? printIt : 0;
@@ -419,6 +411,9 @@ EXPORT int TclDispatch_phase(void *ctx, char **error,
                                  output_rtn, monitor);
   else
     status = TclNO_DISPATCH_TABLE;
+  free(monitor);
+  free(synch_str);
+  free(phase);
   if (STATUS_NOT_OK)
   {
     char *msg = MdsGetMsg(status);
@@ -428,9 +423,6 @@ EXPORT int TclDispatch_phase(void *ctx, char **error,
             "Error message was: %s\n",
             msg);
   }
-  FREE_NOW(monitor);
-  FREE_NOW(synch_str);
-  FREE_NOW(phase);
   return status;
 }
 
