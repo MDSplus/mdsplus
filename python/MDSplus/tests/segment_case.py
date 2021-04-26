@@ -24,7 +24,11 @@
 #
 
 import os
-
+import numpy
+from MDSplus import Int32, Int64, Float32
+from MDSplus import DateToQuad, Float32Array, Int16Array, Int32Array, Int64Array
+from MDSplus import Tree, Dimension, Range, Window, DIVIDE, ADD, MULTIPLY, ZERO
+from MDSplus import set_default_resample_mode, Opaque, tdi, TreeBUFFEROVF
 
 def _mimport(name, level=1):
     try:
@@ -33,16 +37,19 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
-from MDSplus import setenv, set_default_resample_mode
+_common = _mimport("_common")
 
 
-class Tests(_UnitTest.TreeTests):
+class Tests(_common.TreeTests):
     shotinc = 12
-    tree = 'segments'
+    tree = 'segment'
+    TESTS = {
+        'dim_order', 'block_rows', 'write', 'opaque', 'update',
+        'time_context', 'scaled', 'dimless', 'compress', 'compress_ts',
+    }
 
-    def ArrayDimensionOrder(self):
-        from MDSplus import Tree, Float32, Float32Array, Int16Array
+
+    def dim_order(self):
         from numpy import zeros
 
         with Tree(self.tree, self.shot+0, 'NEW') as ptree:
@@ -51,19 +58,18 @@ class Tests(_UnitTest.TreeTests):
         ptree.normal()
         WIDTH = 32
         HEIGHT = 16
-        currFrame = zeros((1, HEIGHT, WIDTH), 'int16').shape
-        currTime = float(0)
-        startTime = Float32(currTime)
-        endTime = Float32(currTime)
-        dim = Float32Array(currTime)
-        segment = Int16Array(currFrame)
+        curr_frame = zeros((1, HEIGHT, WIDTH), 'int16').shape
+        curr_time = float(0)
+        start_time = Float32(curr_time)
+        end_time = Float32(curr_time)
+        dim = Float32Array(curr_time)
+        segment = Int16Array(curr_frame)
         shape = segment.getShape()
-        node.makeSegment(startTime, endTime, dim, segment)
-        retShape = node.getShape()
-        self.assertEqual(shape, retShape)
+        node.makeSegment(start_time, end_time, dim, segment)
+        ret_shape = node.getShape()
+        self.assertEqual(shape, ret_shape)
 
-    def BlockAndRows(self):
-        from MDSplus import Tree, Int32Array
+    def block_rows(self):
         with Tree(self.tree, self.shot+1, 'NEW') as ptree:
             ptree.addNode('S')
             ptree.write()
@@ -86,13 +92,12 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(str(node.getSegment(0)),
                          "Build_Signal([1,7], *, [-1Q,0Q])")
 
-    def WriteSegments(self):
+    def write(self):
         def check_signal(node, dim, dat):
             signal = node.record
             self.assertEqual(dim, signal.dim_of().tolist())
             self.assertEqual(dat, signal.data()  .tolist())
 
-        from MDSplus import Tree
         from numpy import array, zeros, int32
         with Tree(self.tree, self.shot+2, 'NEW') as ptree:
             ptree.addNode('MS')
@@ -190,8 +195,7 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(node.getSegmentLimits(1), (10, 16))
         check_signal(node, dim, dat)
 
-    def WriteOpaque(self):
-        from MDSplus import Tree, Opaque
+    def opaque(self):
         with Tree(self.tree, self.shot+3, 'NEW') as ptree:
             ptree.addNode('JPGS')
             ptree.addNode('JPG')
@@ -218,15 +222,14 @@ class Tests(_UnitTest.TreeTests):
             seg = node.getSegment(i)
             self.assertEqual(len(seg.value.value.data()), lens[i])
 
-    def UpdateSegments(self):
-        from MDSplus import Tree, Int32, Int64, Dimension, Range, Window, DIVIDE, ADD, MULTIPLY
+    def update(self):
         from numpy import arange, ones, int16, int64
         slp = 3.3
         off = 1.1
         trg = -1000000
         clk = 1000000
         with Tree(self.tree, self.shot+4, 'NEW') as ptree:
-            sig = ptree.addNode('SIG').record = ADD(
+            ptree.addNode('SIG').record = ADD(
                 MULTIPLY(ptree.addNode('RAW'), ptree.addNode('SLP')), ptree.addNode('OFF'))
             ptree.addNode('TRG').record = Int64(trg)
             ptree.addNode('CLK').record = Int32(clk)
@@ -267,8 +270,7 @@ class Tests(_UnitTest.TreeTests):
         self.assertTrue(sig.dim_of().tolist(), (arange(
             0, length, dtype=int64)*int(1e9/clk)).tolist())
 
-    def TimeContext(self):
-        from MDSplus import Tree, Int64, Int64Array, Float32Array, tdi
+    def time_context(self):
         Tree.setTimeContext()  # test initPinoDb
         self.assertEqual(Tree.getTimeContext(), (None, None, None))
         with Tree(self.tree, self.shot+5, 'NEW') as ptree:
@@ -351,8 +353,7 @@ class Tests(_UnitTest.TreeTests):
         tdi('treeclose()')
         self.assertEqual(Tree.getTimeContext(), (2, 3, 4))
 
-    def ScaledSegments(self):
-        from MDSplus import Tree, Int64, Int64Array, Int16Array
+    def scaled(self):
         with Tree(self.tree, self.shot+7, 'NEW') as ptree:
             node = ptree.addNode('S')
             ptree.write()
@@ -376,21 +377,20 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ptree.tdiExecute("S").decompile(
         ), "Build_Signal($VALUE + 1D0, Word([-1000,0,1000]), [-1000Q,0Q,1000Q])")
 
-    def DimensionlessSegments(self):
-        from MDSplus import Tree, Int32Array, numpy, TreeBUFFEROVF
+    def dimless(self):
         with Tree(self.tree, self.shot+8, 'NEW') as ptree:
             ptree.addNode('S')
             ptree.write()
         ptree.normal()
         node = ptree.S
-        len = 10
-        seg0 = Int32Array(numpy.array(range(len)))
+        length = 10
+        seg0 = Int32Array(numpy.array(range(length)))
         for i in range(10):
-            seg = seg0 + i*len
-            start, end = seg[0], seg[len-1]
+            seg = seg0 + i*length
+            start, end = seg[0], seg[length-1]
             node.makeSegment(start, end, None, seg)
-        seg = seg0 + 10*len
-        start, end = seg[0], seg[len-1]
+        seg = seg0 + 10*length
+        start, end = seg[0], seg[length-1]
         node.beginSegment(start, end, None, seg)
         node.putSegment(seg[0:1])
         self.assertEqual(node.record.data()
@@ -415,8 +415,7 @@ class Tests(_UnitTest.TreeTests):
         ptree.setTimeContext(17, 21, None)
         self.assertEqual(node.record.data().tolist(), [17, 18, 19, 20, 21])
 
-    def CompressSegments(self):
-        from MDSplus import Tree, DateToQuad, ZERO, Int32, Int32Array, Int64Array, Range
+    def compress(self):
         with Tree(self.tree, self.shot+9, 'NEW') as ptree:
             node = ptree.addNode('S')
             node.compress_on_put = False
@@ -456,8 +455,7 @@ class Tests(_UnitTest.TreeTests):
             self.assertEqual(node.getSegmentDim(i).data().tolist(),
                              node1.getSegmentDim(i).data().tolist())
 
-    def CompressTimestampedSegments(self):
-        from MDSplus import Tree, Int32, Int64
+    def compress_ts(self):
         with Tree(self.tree, self.shot+10, 'NEW') as ptree:
             s = ptree.addNode('s', 'SIGNAL')
             ptree.write()
@@ -474,9 +472,5 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(True, (before.dim_of().data() == after.dim_of(
         ).data()).all(), "%r != %r" % (before.dim_of(), after.dim_of()))
 
-    @staticmethod
-    def getTests():
-        return ['ArrayDimensionOrder', 'BlockAndRows', 'WriteSegments', 'WriteOpaque', 'UpdateSegments', 'TimeContext', 'ScaledSegments', 'DimensionlessSegments', 'CompressSegments', 'CompressTimestampedSegments']
 
-
-Tests.main(__name__)
+Tests.main()

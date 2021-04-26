@@ -24,7 +24,6 @@
 #
 
 import sys
-from time import sleep
 from MDSplus import Tree, Device, Connection
 from MDSplus import dcl, ccl, tcl, cts, mdsExceptions as Exc
 
@@ -36,15 +35,22 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
 
-class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
-    shotinc = 1
-    tree = 'pytree'
+class Tests(_common.TreeTests, _common.MdsIp):
+    shotinc = 2
+    tree = 'dcl'
+    NOT_IN_THREADS = {'dispatcher'}
+    TESTS = {'interface', 'dispatcher'}
 
     def interface(self):
-        with Tree(self.tree, self.shot, 'new') as pytree:
+        shot = self.shot + 0
+        fmt = {
+            'EXPT': self.tree.upper(),
+            'SHOT': shot,
+        }
+        with Tree(self.tree, shot, 'new') as pytree:
             Device.PyDevice('TestDevice').Add(pytree, 'TESTDEVICE_I')
             Device.PyDevice('TestDevice').Add(pytree, 'TESTDEVICE_S')
             pytree.write()
@@ -64,10 +70,10 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
             Tree.usePrivateCtx(1)
         self._doTCLTest('close/all')
         self._doTCLTest('show db', '\n')
-        self._doTCLTest('set tree pytree/shot=%d' % (self.shot,))
+        self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
         self._doTCLTest(
-            'show db', '000  PYTREE        shot: %d [\\PYTREE::TOP]   \n\n' % self.shot)
-        self._doTCLTest('edit PYTREE/shot=%d' % (self.shot,))
+            'show db', '000\\s+%(EXPT)s\\s+shot:\\s+%(SHOT)d\\s+\\[\\\\%(EXPT)s::TOP\\]\\s+\n\n' % fmt, regex=True)
+        self._doTCLTest('edit %(EXPT)s/shot=%(SHOT)d' % fmt)
         self._doTCLTest('add node TCL_NUM/usage=numeric')
         self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE_I:TASK_TEST')
@@ -86,10 +92,10 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
         self._doTCLTest('close')
         self._doTCLTest('show db', '\n')
         """ context """
-        self._doTCLTest('set tree pytree/shot=%d' % (self.shot,))
+        self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
         pytree = Tree()
-        self.assertEqual(str(pytree), 'Tree("PYTREE",%d,"Normal")' % self.shot)
-        self._doTCLTest('close pytree/shot=%d' % (self.shot,))
+        self.assertEqual(str(pytree), 'Tree("%(EXPT)s",%(SHOT)d,"Normal")' % fmt)
+        self._doTCLTest('close %(EXPT)s/shot=%(SHOT)d' % fmt)
         self.assertEqual(str(pytree), 'Tree("?",?,"Closed")')
         if self.inThread:
             Tree.usePrivateCtx(0)
@@ -101,17 +107,22 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
             'dispatch/command/server type test', Exc.MdsdclIVVERB)
 
     def dispatcher(self):
-        shot = self.shot+1
+        shot = self.shot + 1
+        fmt = {
+            'EXPT': self.tree.upper(),
+            'SHOT': shot,
+        }
+        print(self.envx)
         with Tree(self.tree, shot, 'new') as pytree:
             Device.PyDevice('TestDevice').Add(pytree, 'TESTDEVICE_I')
             Device.PyDevice('TestDevice').Add(
                 pytree, 'TESTDEVICE_S', add_source=True)
             pytree.write()
         monitor, monitor_port = self._setup_mdsip(
-            'ACTION_MONITOR', 'MONITOR_PORT', 7010+self.index, False)
+            'ACTION_MONITOR', 'MONITOR_PORT', 7100+self.index, False)
         monitor_opt = "/monitor=%s" % monitor if monitor_port > 0 else ""
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7000+self.index, True)
+            'ACTION_SERVER', 'ACTION_PORT', 7110+self.index, True)
         pytree.normal()
         pytree.TESTDEVICE_I.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE_I.ACTIONSERVER.record = server
@@ -127,16 +138,11 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                     self.assertEqual(mon.poll(), None)
                 if svr:
                     self.assertEqual(svr.poll(), None)
-                # Connection(server).get("""py("MDSplus.Device.PyDevice('TestDevice')","None")""")
                 """ tcl dispatch """
                 self._testDispatchCommand(server, 'type test')
-                self._doTCLTest('set tree pytree/shot=%d' % shot)
-                # if not self.in_valgrind:
-                #    self._doTCLTest('dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL')
-                #    self._waitIdle(server,3)
-                # else:
-                #    sys.stdout.write("VALGRIND: skipping 'dispatch TESTDEVICE_S:ACTIONSERVER:MANUAL'\n")
-                #    sys.stdout.flush()
+                env = "%s_path" % self.tree
+                self._doTCLTest('env '+ env, '%s=%s\n' % (env, self.envx[env]))
+                self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
                 self._doTCLTest('dispatch/build%s' % monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT' % monitor_opt)
                 self._waitIdle(server, 3)
@@ -161,8 +167,6 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                 mon_log.close()
             self._doTCLTest('close/all')
         pytree.readonly()
-        # if not self.in_valgrind:
-        #    self.assertTrue(pytree.TESTDEVICE_S.MANUAL_DONE.record<= pytree.TESTDEVICE_S.INIT1_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_I.INIT1_DONE.record <=
                         pytree.TESTDEVICE_I.INIT2_DONE.record)
         self.assertTrue(pytree.TESTDEVICE_S.INIT1_DONE.record <=
@@ -192,7 +196,7 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
             print(expr)
             c.get(expr, **kv)
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7000+self.index, True)
+            'ACTION_SERVER', 'ACTION_PORT', 7120+self.index, True)
         svr = svr_log = None
         try:
             svr, svr_log = self._start_mdsip(server, server_port, 'timeout')
@@ -222,13 +226,5 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
 
     def timeoutfull(self): self.timeout(full=True)
 
-    @staticmethod
-    def getTests():
-        lst = ['interface']
-        if Tests.inThread:
-            return lst
-        lst.append('dispatcher')
-        return lst
 
-
-Tests.main(__name__)
+Tests.main()

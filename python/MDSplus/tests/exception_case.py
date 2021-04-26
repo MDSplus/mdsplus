@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,11 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# This test is meant to intentionally rise a segmentation fault within the
-# mdsplus libraries to see if the python test library can manage it.
-#
 import sys
-from MDSplus import Data
+import unittest
+
+from MDSplus import TdiExecute, DevNOT_TRIGGERED, TclNORMAL
 
 
 def _mimport(name, level=1):
@@ -37,23 +36,45 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
 
-class Tests(_UnitTest.Tests):
-    def generateSegFault(self):
+class Tests(_common.Tests):
+    TESTS = {'default', 'custom', 'tcl', 'segfault'}
+
+    @unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
+    def segfault(self):
         try:
-            Data.execute('MdsShr->LibFindImageSymbol(val(0))')
+            TdiExecute('MdsShr->LibFindImageSymbol(val(0))')
         except Exception as exc:
             expected = 'exception: access violation reading 0x0000000000000000'
             self.assertEqual(exc.__class__, WindowsError)
             self.assertEqual(exc.message, expected[0:len(exc.message)])
 
-    @staticmethod
-    def getTests():
-        if sys.platform.startswith("win"):
-            return ['generateSegFault']
-        return []
+    def default(self):
+        err = DevNOT_TRIGGERED()
+        self.assertEqual(err.status, 662470754)
+        self.assertEqual(err.severity, 'E')
+        self.assertEqual(err.fac, 'Dev')
+        self.assertEqual(
+            err.message, 'device was not triggered,  check wires and triggering device')
+        self.assertEqual(str(
+            err), '%DEV-E-NOT_TRIGGERED, device was not triggered,  check wires and triggering device')
+
+    def custom(self):
+        err = DevNOT_TRIGGERED('This is a custom error string')
+        self.assertEqual(err.status, 662470754)
+        self.assertEqual(err.severity, 'E')
+        self.assertEqual(err.fac, 'Dev')
+        self.assertEqual(err.message, 'This is a custom error string')
+        self.assertEqual(
+            str(err), '%DEV-E-NOT_TRIGGERED, This is a custom error string')
+
+    def tcl(self):
+        err = TclNORMAL()
+        self.assertEqual(err.status, 2752521)
+        self.assertEqual(err.severity, 'S')
+        self.assertEqual(err.fac, 'Tcl')
 
 
-Tests.main(__name__)
+Tests.main()

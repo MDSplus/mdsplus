@@ -23,8 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-
-from MDSplus import DevNOT_TRIGGERED, TclNORMAL
+from MDSplus import Tree, Device, mdsExceptions as Exc
 
 
 def _mimport(name, level=1):
@@ -34,38 +33,28 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
 
-class Tests(_UnitTest.Tests):
-    def defaultErrorValues(self):
-        err = DevNOT_TRIGGERED()
-        self.assertEqual(err.status, 662470754)
-        self.assertEqual(err.severity, 'E')
-        self.assertEqual(err.fac, 'Dev')
-        self.assertEqual(
-            err.message, 'device was not triggered,  check wires and triggering device')
-        self.assertEqual(str(
-            err), '%DEV-E-NOT_TRIGGERED, device was not triggered,  check wires and triggering device')
+class Tests(_common.TreeTests):
+    shotinc = 1
+    tree = 'task'
+    TESTS = {'do'}
 
-    def customErrorString(self):
-        err = DevNOT_TRIGGERED('This is a custom error string')
-        self.assertEqual(err.status, 662470754)
-        self.assertEqual(err.severity, 'E')
-        self.assertEqual(err.fac, 'Dev')
-        self.assertEqual(err.message, 'This is a custom error string')
-        self.assertEqual(
-            str(err), '%DEV-E-NOT_TRIGGERED, This is a custom error string')
-
-    def tclErrors(self):
-        err = TclNORMAL()
-        self.assertEqual(err.status, 2752521)
-        self.assertEqual(err.severity, 'S')
-        self.assertEqual(err.fac, 'Tcl')
-
-    @staticmethod
-    def getTests():
-        return ['defaultErrorValues', 'customErrorString', 'tclErrors']
+    def do(self):
+        with Tree(self.tree, self.shot, 'new') as tree:
+            Device.PyDevice('TestDevice').Add(tree, 'TESTDEVICE')
+            tree.write()
+        tree.normal()
+        for _ in range(2):
+            self._doTCLTest(
+                'do TESTDEVICE:TASK_TEST', tree=tree)
+            self._doExceptionTest(
+                'do TESTDEVICE:TASK_ERROR1', Exc.DevUNKOWN_STATE, tree)
+            self._doExceptionTest(
+                'do TESTDEVICE:TASK_ERROR2', Exc.DevUNKOWN_STATE, tree)
+            self._doExceptionTest(
+                'do TESTDEVICE:TASK_TIMEOUT', Exc.TdiTIMEOUT, tree)
 
 
-Tests.main(__name__)
+Tests.main()

@@ -6,3 +6,21 @@
    ...
    fun:xmlInitParser_supp
 }
+{
+   pthread_once false positive
+   Helgrind:Race
+   fun:MDSplusThreadStatic
+}
+{
+   pthread_once is meant to be thrad safe and blocking
+   Helgrind:Race
+   fun:*
+   fun:__pthread_once_slow
+}
+{
+   PyGIL locked on exit
+   Helgrind:Misc
+   fun:raise
+   fun:abort
+   fun:PyGILState_Cleanup
+}

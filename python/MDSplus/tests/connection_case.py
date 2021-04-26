@@ -28,7 +28,9 @@ import shutil
 import subprocess
 import tempfile
 import time
-from MDSplus import Connection, GetMany, Float32, Range, setenv, Tree, TreeNNF, ADD
+
+from MDSplus import Connection, GetMany
+from MDSplus import Int32, Float32, ADD, Range, setenv, Tree, TreeNNF
 
 
 def _mimport(name, level=1):
@@ -38,12 +40,15 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
-class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
+
+class Tests(_common.TreeTests, _common.MdsIp):
     index = 0
-    trees = ["pysub"]
-    tree = "pytree"
+    trees = ["consub"]
+    tree = "con"
+    treesub = "consub"
+    TESTS = {'io', 'thick', 'thread', 'tunnel', 'tcp', 'write'}
 
     def thick(self):
         def testnci(thick, local, con, nci):
@@ -64,7 +69,7 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                 print(nci, t, l, c)
                 raise
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7100+self.index, True)
+            'ACTION_SERVER', 'ACTION_PORT', 7000+self.index, True)
         svr = svr_log = None
         try:
             svr, svr_log = self._start_mdsip(server, server_port, 'thick')
@@ -73,7 +78,7 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                 self.assertEqual(con.get("zero([1,1,1,1,1,1,1,1],1)").tolist(), [
                                  [[[[[[[0]]]]]]]])
                 with Tree(self.tree, -1, "new") as local:
-                    local.addNode("pysub", "SUBTREE")
+                    local.addNode(self.treesub, "SUBTREE")
                     s = local.addNode("S", "SIGNAL")
                     s.addTag("tagS")
                     s.record = ADD(Float32(1), Float32(2))
@@ -82,20 +87,24 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                     t.record = t.TT
                     t.TT = "recTT"
                     local.write()
-                with Tree(self.trees[0], -1, "new") as sub:
+                with Tree(self.treesub, -1, "new") as sub:
                     sub.addNode("OK")
                     sub.write()
                 local.normal()
                 Tree.setCurrent(self.tree, 7)
-                setenv("pytree_path", "%s::" % server)
+                setenv("%s_path" % self.tree, "%s::" % server)
                 print(con.get("getenv($//'_path')", self.tree))
                 con.get("TreeShr->TreeOpen(ref($),val($),val(1))", self.tree, -1)
                 thick = Tree(self.tree, -1)
                 thick.createPulse(1)
                 thick1 = Tree(self.tree, 1)
-                self.assertEqual(local.PYSUB.OK.nid, thick1.PYSUB.OK.nid)
-                self.assertEqual(local.getFileName(),
-                                 thick.getFileName().split("::", 2)[1])
+                self.assertEqual(
+                    getattr(local, self.treesub.upper()).OK.nid,
+                    getattr(thick1, self.treesub.upper()).OK.nid)
+                local_filename = local.getFileName()
+                thick_filename = thick.getFileName()
+                self.assertTrue("::" in thick_filename, thick_filename)
+                self.assertTrue(local_filename, thick_filename.split("::", 1)[1])
                 """ TreeTurnOff / TreeTurnOn """
                 thick.S.on = False
                 self.assertEqual(local.S.on, False)
@@ -124,7 +133,11 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                 """ nci """
                 thick.S.write_once = True
                 self.assertEqual(thick.S.write_once, True)
-                for nci in ('on', 'depth', 'usage_str', 'dtype', 'length', 'rlength', 'fullpath', 'minpath', 'member_nids', 'children_nids', 'rfa', 'write_once'):
+                for nci in (
+                    'on', 'depth', 'usage_str', 'dtype', 'length',
+                    'rlength', 'fullpath', 'minpath', 'member_nids',
+                    'children_nids', 'rfa', 'write_once',
+                ):
                     testnci(thick, local, con, nci)
                 """ new stuff """
                 self.assertEqual(local.getFileName(), con.get(
@@ -135,38 +148,43 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
             if svr_log:
                 svr_log.close()
 
-    def threadsTcp(self):
+    def io(self):
+        connection = Connection("thread://io")
+        """ mdsconnect """
+        self.assertEqual(connection.get('_a=1').tolist(), 1)
+        self.assertEqual(connection.get('_a').tolist(), 1)
+        self.assertEqual(connection.getObject('1:3:1').__class__, Range)
+        g = GetMany(connection)
+        g.append('a', '1')
+        g.append('b', '$', 2)
+        g.append('c', '$+$', 1, 2)
+        g.execute()
+        self.assertEqual(g.get('a'), 1)
+        self.assertEqual(g.get('b'), 2)
+        self.assertEqual(g.get('c'), 3)
+
+    def _thread_test(self, server):
+        def requests(self, c, idx):
+            args = [Int32(i+idx+10) for i in range(10)]
+            for _ in range(20):
+                self.assertEqual(
+                    c.get("[$,$,$,$,$,$,$,$,$,$]", *args).tolist(), args)
+        connection = Connection(server)
+        _common.TestThread.assertRun(*(
+            _common.TestThread("T%d" % idx, requests, self, connection, idx)
+            for idx in range(5)
+        ))
+
+    def tcp(self):
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7100+self.index, True)
+            'ACTION_SERVER', 'ACTION_PORT', 7010+self.index, True)
         svr = svr_log = None
         try:
             svr, svr_log = self._start_mdsip(server, server_port, 'tcp')
             try:
                 if svr is not None:
                     time.sleep(1)
-
-                def requests(c, idx):
-                    args = [Float32(i/10+idx) for i in range(10)]
-                    for _ in range(10):
-                        self.assertEqual(
-                            c.get("[$,$,$,$,$,$,$,$,$,$]", *args).tolist(), args)
-                c = Connection(server)
-                """ mdsconnect """
-                self.assertEqual(c.get('_a=1').tolist(), 1)
-                self.assertEqual(c.get('_a').tolist(), 1)
-                self.assertEqual(c.getObject('1:3:1').__class__, Range)
-                g = GetMany(c)
-                g.append('a', '1')
-                g.append('b', '$', 2)
-                g.append('c', '$+$', 1, 2)
-                g.execute()
-                self.assertEqual(g.get('a'), 1)
-                self.assertEqual(g.get('b'), 2)
-                self.assertEqual(g.get('c'), 3)
-                _UnitTest.TestThread.assertRun(*(
-                    _UnitTest.TestThread("C%d" % i, requests, c, i)
-                    for i in range(10)
-                ))
+                self._thread_test(server)
             finally:
                 if svr and svr.poll() is None:
                     svr.terminate()
@@ -175,18 +193,13 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
             if svr_log:
                 svr_log.close()
 
-    def threadsLocal(self):
-        connection = Connection('local://gub')
-        def test(s, c):
-            for i in range(1000):
-                s.assertEqual(int(c.get('%d' % i)), i)
-        _UnitTest.TestThread.assertRun(*(
-            _UnitTest.TestThread("C%d" % i, test, self, connection)
-            for i in range(10)
-        ))
+    def tunnel(self):
+        self._thread_test('local://threads')
 
+    def thread(self):
+        self._thread_test('thread://threads')
 
-    def fast_remote_write(self):
+    def write(self):
         count = 100
 
         def mdsip(hostfile):
@@ -218,6 +231,7 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
             server = mdsip(os.path.join(tempdir, "mdsip.hosts"))
             try:
                 con = Connection('127.0.0.1')
+
                 def check(line, *args):
                     sts = con.get(line, *args)
                     self.assertTrue(sts & 1, "error %d in '%s'" % (sts, line))
@@ -232,9 +246,11 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
                     check(line)
                 setenv("test_path", "127.0.0.1::" + tempdir)
                 tree = Tree("test", 1)
-                _UnitTest.TestThread.assertRun(
-                    _UnitTest.TestThread('EV1', thread, self, 'EV1', tree.EV1.copy(), count),
-                    _UnitTest.TestThread('EV2', thread, self, 'EV2', tree.EV2.copy(), count),
+                _common.TestThread.assertRun(
+                    _common.TestThread('EV1', thread, self,
+                                       'EV1', tree.EV1.copy(), count),
+                    _common.TestThread('EV2', thread, self,
+                                       'EV2', tree.EV2.copy(), count),
                 )
             finally:
                 if server:
@@ -243,9 +259,5 @@ class Tests(_UnitTest.TreeTests, _UnitTest.MdsIp):
         finally:
             shutil.rmtree(tempdir, ignore_errors=False, onerror=None)
 
-    @staticmethod
-    def getTests():
-        return ['threadsTcp', 'threadsLocal', 'thick']
 
-
-Tests.main(__name__)
+Tests.main()

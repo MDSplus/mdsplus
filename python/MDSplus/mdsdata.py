@@ -928,7 +928,7 @@ class DataX(Data):
         """
         if isinstance(idx, (slice,)):
             return self._descs[idx]
-        if idx < len(self.descs):
+        if isinstance(idx, int) and idx < len(self.descs):
             return self._descs[idx]
         return None
 

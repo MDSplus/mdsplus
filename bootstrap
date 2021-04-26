@@ -39,6 +39,8 @@ fi
 
 conf/update_submodules
 
+python/generate_tests
+
 aclocal -I ./m4
 
 autoheader

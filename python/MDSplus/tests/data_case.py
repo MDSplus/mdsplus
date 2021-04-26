@@ -35,10 +35,15 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
 
-class Tests(_UnitTest.Tests):
+class Tests(_common.Tests):
+    TESTS = {
+        'data', 'scalars', 'arrays', 'vms',
+        'tdi', 'decompile', 'casts', 'tdipy',
+    }
+
     def _doThreeTest(self, tdiexpr, pyexpr, ans, **kwargs):
         """ tests Scalars tdi expression vs. python Expression vs. expected result """
         almost = kwargs.get('almost', False)
@@ -172,18 +177,19 @@ class Tests(_UnitTest.Tests):
         def doTest(suffix, cl, scl, ucl, **kw):
             """ test scalar """
             import warnings
-            results = [cl(13), cl(7), cl(30), cl(10./3), cl(1000),
-                       ucl(11), ucl(2),
-                       False, True,
-                       cl(80), cl(1), scl(-10), scl(10), scl(10), scl(100),
-                       cl(22026.4658), cl(2.30258509),
-                       cl(-0.54402111), cl(-0.83907153), cl(0.64836083),
-                       cl(1.57079633), cl(0.), cl(1.47112767), cl(1.47112767),
-                       cl(3.32192809), cl(1.),
-                       cl(0.17364818), cl(0.98480775), cl(0.17632698),
-                       cl(3),
-                       cl(1), True, True, False, False,
-                       ]
+            results = [
+                cl(13), cl(7), cl(30), cl(10./3), cl(1000),
+                ucl(11), ucl(2),
+                False, True,
+                cl(80), cl(1), scl(-10), scl(10), scl(10), scl(100),
+                cl(22026.4658), cl(2.30258509),
+                cl(-0.54402111), cl(-0.83907153), cl(0.64836083),
+                cl(1.57079633), cl(0.), cl(1.47112767), cl(1.47112767),
+                cl(3.32192809), cl(1.),
+                cl(0.17364818), cl(0.98480775), cl(0.17632698),
+                cl(3),
+                cl(1), True, True, False, False,
+            ]
             m.Data.execute('_a=10%s,_b=3%s' % tuple([suffix]*2))
             a, b = cl(10), cl(3)
             with warnings.catch_warnings():
@@ -276,7 +282,7 @@ class Tests(_UnitTest.Tests):
         doTest('*cmplx(1D0,0D0)', m.Complex128Array,
                m.Complex128Array, m.Uint64Array, almost=7, real=False)
 
-    def vmsSupport(self):
+    def vms(self):
         self.assertEqual(str(m.TdiExecute('1.23F0')), "1.23")
         self.assertEqual(str(m.TdiExecute('1.23V0')), "1.23D0")
         self.assertEqual(str(m.TdiExecute('1.23G0')), "1.23D0")
@@ -302,7 +308,7 @@ class Tests(_UnitTest.Tests):
         else:
             self.assertEqual(m.Data.execute(expr), res)
 
-    def tdiFunctions(self):
+    def tdi(self):
         from MDSplus import mdsExceptions as Exc
         """Test Exceptions"""
         self._doExceptionTest('abort()', Exc.TdiABORT)
@@ -431,7 +437,7 @@ class Tests(_UnitTest.Tests):
         self.assertEqual(str(m.Signal(m.ZERO(100000, 0.).evaluate(
         ), None, 0.)), "Build_Signal(Set_Range(100000,0D0 /*** etc. ***/), *, 0D0)")
 
-    def python_casts(self):
+    def casts(self):
         for WITH in (m.WithError, m.Parameter, m.WithUnits):
             data = WITH(1, "with")
             self.assertEqual(int(data), 1, WITH)
@@ -441,7 +447,7 @@ class Tests(_UnitTest.Tests):
             self.assertEqual(str(data), "1", WITH)
             self.assertEqual(bytes(data), b"1", WITH)
 
-    def tdiPythonInterface(self):
+    def tdipy(self):
         self._doTdiTest("Py('a=None')", 1)
         self._doTdiTest("Py('a=None','a')", None)
         self._doTdiTest("Py('a=123','a')", 123)
@@ -457,9 +463,5 @@ class Tests(_UnitTest.Tests):
         if not self.inThread:
             self._doTdiTest("TEST()", m.Array([1, 2]))
 
-    @staticmethod
-    def getTests():
-        return ['data', 'scalars', 'arrays', 'vmsSupport', 'tdiFunctions', 'decompile', 'python_casts', 'tdiPythonInterface']
 
-
-Tests.main(__name__)
+Tests.main()

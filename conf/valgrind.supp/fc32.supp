@@ -40,6 +40,11 @@
    fun:calloc
    fun:_dl_allocate_tls
 }
+{
+   mempcpy e.g. caused by printf
+   Helgrind:Race
+   fun:mempcpy
+}
 
 # python
 
