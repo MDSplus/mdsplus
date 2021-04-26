@@ -52,7 +52,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LibVM_EXTEND_AREA 32
 #define LibVM_TAIL_LARGE 128
 #define compression_threshold 128
-#define _MOVC3(a, b, c) memcpy(c, b, (size_t)(a))
 
 inline static size_t _sizeAligned(const size_t bytes)
 {
@@ -214,7 +213,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
         *po = in;
         po->class = CLASS_XS;
         po->pointer = (mdsdsc_t *)po + sizeof(in);
-        _MOVC3(in.l_length, in.pointer, po->pointer);
+        memcpy(po->pointer, in.pointer, in.l_length);
       }
       if (path.pointer)
         StrFree1Dx(&path);
@@ -230,11 +229,11 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
               (pi->ndesc - 1u) * (uint32_t)sizeof(mdsdsc_t *);
       if (po)
       {
-        _MOVC3(bytes, (char *)pi, (char *)po);
+        memcpy((char *)po, (char *)pi, bytes);
         if (pi->length > 0)
         {
           po->pointer = (unsigned char *)po + bytes;
-          _MOVC3(pi->length, (char *)pi->pointer, (char *)po->pointer);
+          memcpy((char *)po->pointer, (char *)pi->pointer, pi->length);
         }
       }
       bytes = (uint32_t)_sizeAligned(bytes + pi->length);
@@ -265,9 +264,9 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
           (pi->aflags.bounds ? (uint32_t)sizeof(int) * pi->dimct * 2u : 0u);
       if (po)
       {
-        _MOVC3(bytes, (char *)pi, (char *)po);
+        memcpy((char *)po, (char *)pi, bytes);
         po->pointer = (char *)po + bytes;
-        _MOVC3(pi->arsize, pi->pointer, po->pointer);
+        memcpy(po->pointer, pi->pointer, pi->arsize);
         if (pi->aflags.coeff)
           po->a0 = po->pointer + (pi->a0 - pi->pointer);
       }
@@ -295,10 +294,10 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
       bytes = dscsize + pi->arsize + align_size;
       if (po)
       {
-        _MOVC3(dscsize, (char *)pi, (char *)po);
+        memcpy((char *)po, (char *)pi, dscsize);
         po->pointer = _align((char *)po, dscsize, align_size);
         if (pi->arsize > 0 && pi->pointer != NULL)
-          _MOVC3(pi->arsize, pi->pointer, po->pointer);
+          memcpy(po->pointer, pi->pointer, pi->arsize);
         if (pi->aflags.coeff)
           po->a0 = po->pointer + (pi->a0 - pi->pointer);
       }
@@ -324,7 +323,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
               (pi->aflags.bounds ? (uint32_t)sizeof(int) * pi->dimct * 2u : 0u);
       if (po)
       {
-        _MOVC3(bytes, (char *)pi, (char *)po);
+        memcpy((char *)po, (char *)pi, bytes);
         pdo = (mdsdsc_t **)(po->pointer = (char *)po + bytes);
       }
       bytes = (uint32_t)_sizeAligned(bytes + pi->arsize);
@@ -357,7 +356,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
           (pi->aflags.bounds ? (uint32_t)sizeof(int) * pi->dimct * 2u : 0u));
       if (po)
       {
-        _MOVC3(bytes, (char *)pi, (char *)po);
+        memcpy((char *)po, (char *)pi, bytes);
         if (pi->pointer)
           po->pointer = _align((char *)po, bytes, sizeof(void *));
         else

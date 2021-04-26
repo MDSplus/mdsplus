@@ -78,7 +78,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         NEED to know about REPLICATE and SPREAD with subscript ranges.
 */
 
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 #ifdef WORDS_BIGENDIAN
 #define MaskTrue (pi0[leni - 1] & 1)
 #else
@@ -293,11 +292,11 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     pmask = (mdsdsc_t *)&ncopies;
     /** scalar to simple vector **/
     if (rank == 0)
-      _MOVC3(head, (char *)pa, (char *)&arr);
+      memcpy((char *)&arr, (char *)pa, head);
     /** simple and coefficient vector **/
     else
     {
-      _MOVC3(head, (char *)pa, (char *)&arr);
+      memcpy((char *)&arr, (char *)pa, head);
       arr.m[dim] *= ncopies;
     }
     arr.arsize *= ncopies;
@@ -329,18 +328,18 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     pmask = (mdsdsc_t *)&ncopies;
     /** scalar to simple vector **/
     if (rank == 0)
-      _MOVC3(head, (char *)pa, (char *)&arr);
+      memcpy((char *)&arr, (char *)pa, head);
     else if (rank >= MAX_DIMS)
       status = TdiNDIM_OVER;
     /** coefficient vector **/
     else if (pa->aflags.coeff)
     {
-      _MOVC3(head, (char *)pa, (char *)&arr);
-      _MOVC3((short)(sizeof(int) * (rank - dim) * 2),
+      memcpy((char *)&arr, (char *)pa, head);
+      memcpy((char *)&arr.m[rank + 2 * dim + 3],
              (char *)&arr.m[rank + 2 * dim],
-             (char *)&arr.m[rank + 2 * dim + 3]);
-      _MOVC3((short)(sizeof(int) * (rank - dim)), (char *)&arr.m[dim],
-             (char *)&arr.m[dim + 1]);
+             (short)(sizeof(int) * (rank - dim) * 2));
+      memcpy((char *)&arr.m[dim + 1], (char *)&arr.m[dim],
+             (short)(sizeof(int) * (rank - dim)));
       arr.m[dim] = ncopies;
       arr.m[rank + 2 * dim + 1] = 0;
       arr.m[rank + 2 * dim + 2] = ncopies - 1;
@@ -349,7 +348,7 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     /** simple vector to 2-D **/
     else
     {
-      _MOVC3(head, (char *)pa, (char *)&arr);
+      memcpy((char *)&arr, (char *)pa, head);
       arr.dimct = 2;
       arr.aflags.coeff = 1;
       arr.a0 = arr.pointer;
@@ -385,7 +384,7 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
   else if (pfun->f2 == Tdi2Mask2)
   {
     psig = 0;
-    _MOVC3(head, (char *)pa, (char *)&arr);
+    memcpy((char *)&arr, (char *)pa, head);
     arr.arsize = pa->length * rank;
     status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
   }
@@ -398,13 +397,13 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       --psig->ndesc;
     for (j = dim; ++j < ndim;)
       psig->dimensions[j - 1] = psig->dimensions[j];
-    _MOVC3(head, (char *)pa, (char *)&arr);
+    memcpy((char *)&arr, (char *)pa, head);
     arr.arsize /= arr.m[dim];
-    _MOVC3((short)(sizeof(int) * (rank - dim - 1)), (char *)&arr.m[dim + 1],
-           (char *)&arr.m[dim]);
-    _MOVC3((short)(sizeof(int) * (rank - dim - 1) * 2),
+    memcpy((char *)&arr.m[dim], (char *)&arr.m[dim + 1],
+           (short)(sizeof(int) * (rank - dim - 1)));
+    memcpy((char *)&arr.m[rank + 2 * dim - 1],
            (char *)&arr.m[rank + 2 * dim + 2],
-           (char *)&arr.m[rank + 2 * dim - 1]);
+           (short)(sizeof(int) * (rank - dim - 1) * 2));
     --arr.dimct;
     status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
   }
