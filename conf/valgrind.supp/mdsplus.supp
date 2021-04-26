@@ -24,3 +24,13 @@
    fun:abort
    fun:PyGILState_Cleanup
 }
+{
+   unresolved issue in TclDispatch_show_server
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   fun:TclDispatch_show_server
+}
