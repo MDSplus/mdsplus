@@ -78,6 +78,14 @@
    fun:PyBytes_FromStringAndSize
 }
 {
+   likely GIL stuff
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   obj:/usr/lib64/libpython3.8.so.1.0
+}
+{
    PyObject_Malloc
    Memcheck:Leak
    match-leak-kinds: possible
