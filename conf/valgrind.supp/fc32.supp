@@ -401,3 +401,11 @@
    Memcheck:Cond
    fun:_ZN10InlineTreeC1EP7CompilePKS_P8ciMethodP8JVMStateifi
 }
+{
+   os::PlatformEvent::unpark()
+   Helgrind:Misc
+   fun:pthread_cond_signal@@GLIBC_2.3.2
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:_ZN2os13PlatformEvent6unparkEv
+}
