@@ -238,154 +238,146 @@ static int _get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
     return MdsCopyDxXd(&missing_dsc, out_ptr);
   }
   int i;
-  for (i = 0; omits[i] && omits[i] != dtype; i++)
-    ;
-  if (omits[i])
-    status = MdsCopyDxXd((mdsdsc_t *)pin, out_ptr);
-  else
+  for (i = 0; omits[i]; i++)
   {
-    switch (pin->class)
+    if (omits[i] == dtype)
     {
-    case CLASS_CA:
-      if (pin->pointer)
+      return MdsCopyDxXd((mdsdsc_t *)pin, out_ptr);
+    }
+  }
+  switch (pin->class)
+  {
+  case CLASS_CA:
+    if (pin->pointer)
+    {
+      status = get_data(omits, (mdsdsc_t *)pin->pointer, out_ptr, TDITHREADSTATIC_VAR);
+      /* Why is this needed????????????? */
+      RETURN_IF_STATUS_NOT_OK;
+      return TdiImpose((mdsdsc_a_t *)pin, out_ptr);
+      /***********************************/
+    }
+    return MdsCopyDxXd((mdsdsc_t *)pin, out_ptr);
+  case CLASS_APD:
+    return TdiEvaluate(pin, out_ptr MDS_END_ARG);
+  case CLASS_S:
+  case CLASS_D:
+  case CLASS_A:
+    /***********************
+     Evaluate on these types.
+     ***********************/
+    switch (dtype)
+    {
+    case DTYPE_IDENT:
+      status = tdi_get_ident(pin, out_ptr);
+      RETURN_IF_STATUS_NOT_OK;
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_NID:
+      pnid = (int *)pin->pointer;
+      status = TdiGetRecord(*pnid, out_ptr);
+      RETURN_IF_STATUS_NOT_OK;
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_PATH:
+    {
+      char *path = MdsDescrToCstring((mdsdsc_t *)pin);
+      status = TreeFindNode(path, &nid);
+      MdsFree(path);
+      RETURN_IF_STATUS_NOT_OK;
+      status = TdiGetRecord(nid, out_ptr);
+      RETURN_IF_STATUS_NOT_OK;
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    }
+    default:
+      /**************************************
+       VMS types come here. Renames their XD.
+       *************************************/
+      if (their_ptr->class == CLASS_XD)
       {
-        status = get_data(omits, (mdsdsc_t *)pin->pointer, out_ptr,
-                          TDITHREADSTATIC_VAR);
-        /********************* Why is this needed?????????????
-           * *************************************/
-        if (STATUS_OK)
-          status = TdiImpose((mdsdsc_a_t *)pin, out_ptr);
-        /***************************************************************************************/
+        *out_ptr = *(mdsdsc_xd_t *)their_ptr;
+        *(mdsdsc_xd_t *)their_ptr = EMPTY_XD;
+        return status;
       }
       else
-        status = MdsCopyDxXd((mdsdsc_t *)pin, out_ptr);
-      break;
-    case CLASS_APD:
-      status = TdiEvaluate(pin, out_ptr MDS_END_ARG);
-      break;
-    case CLASS_S:
-    case CLASS_D:
-    case CLASS_A:
-      switch (dtype)
-      {
-        /***********************
-          Evaluate on these types.
-          ***********************/
-      case DTYPE_IDENT:
-        status = tdi_get_ident(pin, out_ptr);
-      redo:
-        if (STATUS_OK)
-          status =
-              get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
-        break;
-      case DTYPE_NID:
-        pnid = (int *)pin->pointer;
-        status = TdiGetRecord(*pnid, out_ptr);
-        goto redo;
-      case DTYPE_PATH:
-      {
-        char *path = MdsDescrToCstring((mdsdsc_t *)pin);
-        status = TreeFindNode(path, &nid);
-        MdsFree(path);
-        if (STATUS_OK)
-          status = TdiGetRecord(nid, out_ptr);
-      }
-        goto redo;
-      /**************************************
-         VMS types come here. Renames their XD.
-         *************************************/
-      default:
-        if (their_ptr->class == CLASS_XD)
-        {
-          *out_ptr = *(mdsdsc_xd_t *)their_ptr;
-          *(mdsdsc_xd_t *)their_ptr = EMPTY_XD;
-        }
-        else
-          status = MdsCopyDxXd((mdsdsc_t *)pin, out_ptr);
-        break;
-      }
-      break;
-    case CLASS_R:
-      switch (dtype)
-      {
-      case DTYPE_FUNCTION:
-        status = TdiIntrinsic(*(opcode_t *)pin->pointer, pin->ndesc,
-                              pin->dscptrs, out_ptr);
-        goto redo;
-      case DTYPE_CALL:
-        status = TdiCall(pin->length ? *(dtype_t *)pin->pointer : DTYPE_L,
-                         pin->ndesc, pin->dscptrs, out_ptr);
-        goto redo;
-      case DTYPE_PARAM:
-        keep = (mds_signal_t *)TDI_SELF_PTR;
-        TDI_SELF_PTR = (mdsdsc_xd_t *)pin;
-        status = get_data(omits, (mdsdsc_t *)((mds_param_t *)pin)->value,
-                          out_ptr, TDITHREADSTATIC_VAR);
-        TDI_SELF_PTR = (mdsdsc_xd_t *)keep;
-        break;
-      case DTYPE_SIGNAL:
-        /******************************************
-           We must set up for reference to our $VALUE.
-           ******************************************/
-        keep = (mds_signal_t *)TDI_SELF_PTR;
-        TDI_SELF_PTR = (mdsdsc_xd_t *)pin;
-        status = get_data(omits, (mdsdsc_t *)((mds_signal_t *)pin)->data,
-                          out_ptr, TDITHREADSTATIC_VAR);
-        TDI_SELF_PTR = (mdsdsc_xd_t *)keep;
-        break;
-      /***************
-         Windowless axis.
-         ***************/
-      case DTYPE_SLOPE:
-      {
-        int seg;
-        EMPTYXD(times);
-        for (seg = 0; (status & 1) && (seg < pin->ndesc / 3); seg++)
-        {
-          mdsdsc_t *args[] = {*(pin->dscptrs + (seg * 3 + 1)),
-                              *(pin->dscptrs + (seg * 3 + 2)),
-                              *(pin->dscptrs + (seg * 3))};
-          status = TdiIntrinsic(OPC_DTYPE_RANGE, 3, &args, &times);
-          if (STATUS_OK)
-          {
-            args[0] = (mdsdsc_t *)out_ptr;
-            args[1] = (mdsdsc_t *)&times;
-            status = TdiIntrinsic(OPC_VECTOR, 2, &args, out_ptr);
-          }
-        }
-        goto redo;
-      }
-      case DTYPE_DIMENSION:
-        status = TdiItoX(pin, out_ptr MDS_END_ARG);
-        goto redo;
-      /**************************
-         Range can have 2 or 3 args.
-         **************************/
-      case DTYPE_RANGE:
-        status = TdiIntrinsic(OPC_DTYPE_RANGE, pin->ndesc, &pin->dscptrs[0],
-                              out_ptr);
-        goto redo;
-      case DTYPE_WITH_UNITS:
-        status = get_data(omits, (mdsdsc_t *)((mds_with_units_t *)pin)->data,
-                          out_ptr, TDITHREADSTATIC_VAR);
-        break;
-      case DTYPE_WITH_ERROR:
-        status = get_data(omits, (mdsdsc_t *)((mds_with_error_t *)pin)->data,
-                          out_ptr, TDITHREADSTATIC_VAR);
-        break;
-      case DTYPE_OPAQUE:
-        status = get_data(omits, (mdsdsc_t *)((mds_opaque_t *)pin)->data,
-                          out_ptr, TDITHREADSTATIC_VAR);
-        break;
-      default:
-        status = TdiINVCLADTY;
-        break;
-      }
-      break;
-    default:
-      status = TdiINVCLADSC;
-      break;
+        return MdsCopyDxXd((mdsdsc_t *)pin, out_ptr);
     }
+    break;
+  case CLASS_R:
+    switch (dtype)
+    {
+    case DTYPE_FUNCTION:
+      status = TdiIntrinsic(*(opcode_t *)pin->pointer, pin->ndesc,
+                            pin->dscptrs, out_ptr);
+      RETURN_IF_STATUS_NOT_OK;
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_CALL:
+      status = TdiCall(pin->length ? *(dtype_t *)pin->pointer : DTYPE_L,
+                       pin->ndesc, pin->dscptrs, out_ptr);
+      RETURN_IF_STATUS_NOT_OK;
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_PARAM:
+      keep = (mds_signal_t *)TDI_SELF_PTR;
+      TDI_SELF_PTR = (mdsdsc_xd_t *)pin;
+      status = get_data(omits, (mdsdsc_t *)((mds_param_t *)pin)->value,
+                        out_ptr, TDITHREADSTATIC_VAR);
+      TDI_SELF_PTR = (mdsdsc_xd_t *)keep;
+      return status;
+    case DTYPE_SIGNAL:
+      /******************************************
+       We must set up for reference to our $VALUE.
+       ******************************************/
+      keep = (mds_signal_t *)TDI_SELF_PTR;
+      TDI_SELF_PTR = (mdsdsc_xd_t *)pin;
+      status = get_data(omits, (mdsdsc_t *)((mds_signal_t *)pin)->data,
+                        out_ptr, TDITHREADSTATIC_VAR);
+      TDI_SELF_PTR = (mdsdsc_xd_t *)keep;
+      return status;
+    case DTYPE_SLOPE:
+    {
+      /***************
+       Windowless axis.
+      ***************/
+      int seg;
+      EMPTYXD(times);
+      for (seg = 0; (seg < pin->ndesc / 3) ; seg++)
+      {
+        mdsdsc_t *args[] = {*(pin->dscptrs + (seg * 3 + 1)),
+                            *(pin->dscptrs + (seg * 3 + 2)),
+                            *(pin->dscptrs + (seg * 3))};
+        status = TdiIntrinsic(OPC_DTYPE_RANGE, 3, &args, &times);
+        RETURN_IF_STATUS_NOT_OK;
+        args[0] = (mdsdsc_t *)out_ptr;
+        args[1] = (mdsdsc_t *)&times;
+        status = TdiIntrinsic(OPC_VECTOR, 2, &args, out_ptr);
+        RETURN_IF_STATUS_NOT_OK;
+      }
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    }
+    case DTYPE_DIMENSION:
+      status = TdiItoX(pin, out_ptr MDS_END_ARG);
+      RETURN_IF_STATUS_NOT_OK;
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_RANGE:
+      /**************************
+       Range can have 2 or 3 args.
+       **************************/
+      status = TdiIntrinsic(OPC_DTYPE_RANGE, pin->ndesc, &pin->dscptrs[0],
+                            out_ptr);
+      RETURN_IF_STATUS_NOT_OK;
+      return get_data(omits, (mdsdsc_t *)out_ptr, out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_WITH_UNITS:
+      return get_data(omits, (mdsdsc_t *)((mds_with_units_t *)pin)->data,
+                      out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_WITH_ERROR:
+      return get_data(omits, (mdsdsc_t *)((mds_with_error_t *)pin)->data,
+                      out_ptr, TDITHREADSTATIC_VAR);
+    case DTYPE_OPAQUE:
+      return get_data(omits, (mdsdsc_t *)((mds_opaque_t *)pin)->data,
+                      out_ptr, TDITHREADSTATIC_VAR);
+    default:
+      return TdiINVCLADTY;
+    }
+    break;
+  default:
+    return TdiINVCLADSC;
   }
   return status;
 }
