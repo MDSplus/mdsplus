@@ -34,6 +34,15 @@
    fun:getnameinfo
 }
 {
+   getservbyname
+   Helgrind:Race
+   fun:_nss_files_parse_servent
+   fun:internal_getent
+   fun:_nss_files_getservbyname_r
+   fun:getservbyname_r@@GLIBC_2.2.5
+   fun:getservbyname
+}
+{
    pthread_create
    Memcheck:Leak
    match-leak-kinds: possible
