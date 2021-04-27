@@ -196,8 +196,6 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
   DispatchTable **table_ptr = (DispatchTable **)table;
   void *fnwctx = 0;
   int i;
-  const DESCRIPTOR(varnames, "_ACTION_*");
-  mdsdsc_d_t varnames_d = {0, DTYPE_T, CLASS_D, 0};
   char *nodespec = wildcard ? wildcard : ALL_NODES;
   int mask = 1 << TreeUSAGE_ACTION;
   int status = 1;
@@ -225,8 +223,6 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
     return ServerINVSHOT;
   nids = (int *)malloc(MAX_ACTIONS * sizeof(int));
   ctx_t ctx = {NULL, 0, 0};
-  if (!varnames_d.length)
-    StrCopyDx((mdsdsc_t *)&varnames_d, (mdsdsc_t *)&varnames);
   while ((TreeFindNodeWild(nodespec, &nids[ctx.num_actions], &fnwctx, mask) & 1) &&
         (ctx.num_actions < MAX_ACTIONS))
     ctx.num_actions++;
