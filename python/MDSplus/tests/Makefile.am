@@ -55,10 +55,7 @@ connection_thread_test.py \
 connection_tunnel_test.py \
 connection_tcp_test.py \
 dcl_interface_test.py \
-dcl_dispatcher_test.py \
-thread_data_test.py \
-thread_dcl_test.py \
-thread_task_test.py
+dcl_dispatcher_test.py
 
 
 VALGRIND_SUPPRESSIONS_FILES =
