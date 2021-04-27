@@ -107,6 +107,13 @@
    fun:_PyObject_New
 }
 {
+   _PyObject_New
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_PyObject_New
+}
+{
    PyMem_Calloc
    Memcheck:Leak
    match-leak-kinds: possible
