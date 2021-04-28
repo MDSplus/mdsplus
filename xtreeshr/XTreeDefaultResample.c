@@ -238,8 +238,14 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
   if (!fulltimebase)
   {
     MdsFree1Dx(&dataXd, 0);
-    MdsCopyDxXd((mdsdsc_t *)&inSignalD, outSignalXd);
+    MdsCopyDxXd((mdsdsc_t *)inSignalD, outSignalXd);
     return 3; // Cannot convert timebase to 64 bit int
+  }
+  if(numData == 0) //If empty segment
+  {
+     MdsFree1Dx(&dataXd, 0);
+     MdsCopyDxXd((mdsdsc_t *)inSignalD, outSignalXd);
+     return 1; 
   }
 
   // Check data array too short
@@ -280,7 +286,7 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
 
   int i, j;
   double prevData, nextData, currData;
-  int itemSize = (dataD->arsize == 0) ? 0 : dataD->arsize / numData;
+  int itemSize = dataD->arsize / numData;
   int numDataItems = itemSize / dataD->length;
   int outItemSize;
   DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, MAX_DIMS, 0);
