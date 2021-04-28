@@ -85,7 +85,7 @@ EXPORT char *ServerGetInfo(int full __attribute__((unused)), char *server)
       int numbytes;
       char *reply;
       status = GetAnswerInfoTS(
-        sock, &dtype, &len, &ndims, dims, &numbytes, &reply, &mem, 10);
+          sock, &dtype, &len, &ndims, dims, &numbytes, &reply, &mem, 10);
       if (STATUS_OK && (dtype == DTYPE_CSTRING))
         ans = reply;
       else

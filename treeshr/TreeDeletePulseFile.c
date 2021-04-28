@@ -65,13 +65,7 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 #include <treeshr.h>
 
 //#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  {              \
-  }
-#endif
+#include <mdsdbg.h>
 
 extern void **TreeCtx();
 

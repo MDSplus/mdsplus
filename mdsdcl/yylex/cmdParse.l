@@ -36,15 +36,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dcl.h>
 #include "dclyacc.h"
 //#define DEBUG
+#include <mdsdbg.h>
 #ifdef DEBUG
+#undef DBG
 # define DBG(...) do{\
 fprintf(stderr, "cmdParse: ");\
 fprintf(stderr, __VA_ARGS__);\
 fprintf(stderr, "\n");\
 }while(0) //"
-#else
-# define DBG(...)
 #endif
+
 #define DBGM(RETURN,prefix)	DBG("%-9s -> %-12s : '%s'", #RETURN, #prefix, yytext)
 %}
 

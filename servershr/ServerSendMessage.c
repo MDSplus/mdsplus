@@ -84,17 +84,7 @@ int ServerSendMessage();
 #endif
 
 //#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
-
-#define IP(addr) ((uint8_t *)&addr)
-#define ADDR2IP(a) IP(a) \
-                   [0], IP(a)[1], IP(a)[2], IP(a)[3]
+#include <mdsdbg.h>
 
 extern short ArgLen();
 
@@ -758,8 +748,8 @@ static void ReceiverThread(void *sockptr)
         }
       }
     }
-    SOCKERROR("Dispatcher select loop failed\nLast client: %u.%u.%u.%u:%u\n",
-              ADDR2IP(last_client_addr), last_client_port);
+    SOCKERROR("Dispatcher select loop failed\nLast client: " IPADDRPRI ":%u\n",
+              IPADDRVAR(&last_client_addr), last_client_port);
     ResetFdactive(rep, sock, &fdactive);
   }
   fprintf(stderr,
@@ -940,7 +930,7 @@ static void AddClient(unsigned int addr, uint16_t port, int conid)
   else
     Clients = new;
   UNLOCK_CLIENTS;
-  DBG("added connection from %u.%u.%u.%u\n", ADDR2IP(addr));
+  DBG("added connection from " IPADDRPRI "\n", IPADDRVAR(addr));
 }
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin,
@@ -959,12 +949,12 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin,
   {
     c->reply_sock = reply_sock;
     FD_SET(reply_sock, fdactive);
-    DBG("accepted connection from %u.%u.%u.%u\n", ADDR2IP(addr));
+    DBG("accepted connection from " IPADDRPRI "\n", IPADDRVAR(&addr));
   }
   else
   {
     shutdown(reply_sock, 2);
     close(reply_sock);
-    DBG("dropped connection from %u.%u.%u.%u\n", ADDR2IP(addr));
+    DBG("dropped connection from " IPADDRPRI "\n", IPADDRVAR(&addr));
   }
 }

@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void buffer_free(MDSIPTHREADSTATIC_ARG)
 {
-  Connection* c;
+  Connection *c;
   while ((c = MDSIP_CONNECTIONS))
   {
     MDSIP_CONNECTIONS = c->next;

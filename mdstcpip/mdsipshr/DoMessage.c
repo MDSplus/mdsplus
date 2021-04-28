@@ -38,7 +38,7 @@ int ConnectionDoMessage(Connection *connection)
   if (!connection)
     return 0; // will cause tunnel to terminate
   int err;
-  INIT_AND_FREE_ON_EXIT(Message*, message);
+  INIT_AND_FREE_ON_EXIT(Message *, message);
   err = 1;
   int status = MDSplusFATAL;
   message = GetMdsMsgTOC(connection, &status, -1);

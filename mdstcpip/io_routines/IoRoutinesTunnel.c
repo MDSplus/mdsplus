@@ -285,7 +285,7 @@ static int io_listen(int argc __attribute__((unused)),
   if (STATUS_OK)
   {
     Connection *connection = PopConnection(id);
-    pthread_cleanup_push((void*)destroyConnection, (void*)connection);
+    pthread_cleanup_push((void *)destroyConnection, (void *)connection);
     do
       status = ConnectionDoMessage(connection);
     while (STATUS_OK);

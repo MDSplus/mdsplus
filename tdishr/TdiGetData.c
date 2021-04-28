@@ -337,7 +337,7 @@ static int _get_data(const dtype_t omits[], mdsdsc_t *their_ptr,
       ***************/
       int seg;
       EMPTYXD(times);
-      for (seg = 0; (seg < pin->ndesc / 3) ; seg++)
+      for (seg = 0; (seg < pin->ndesc / 3); seg++)
       {
         mdsdsc_t *args[] = {*(pin->dscptrs + (seg * 3 + 1)),
                             *(pin->dscptrs + (seg * 3 + 2)),

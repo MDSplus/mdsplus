@@ -66,14 +66,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treeshrp.h"
 
 //#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  do             \
-  {              \
-  } while (0)
-#endif
+#include <mdsdbg.h>
 
 static inline char *replaceBackslashes(char *filename)
 {

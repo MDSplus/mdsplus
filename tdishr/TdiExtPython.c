@@ -37,8 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 //#define DEBUG
+#include <mdsdbg.h>
 #ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
 #define DEBUG_GIL_CHECK                                                   \
   if (PyGILState_Check)                                                   \
     fprintf(stderr,                                                       \
@@ -46,9 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             (uintptr_t)pthread_self(), (uintptr_t)GIL,                    \
             "ny"[PyGILState_Check() != 0]);
 #else
-#define DBG(...) \
-  { /**/         \
-  }
 #define DEBUG_GIL_CHECK
 #endif
 

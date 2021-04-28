@@ -35,13 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsValue  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  {              \
-  }
-#endif
+#include <mdsdbg.h>
 
 EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
                               struct descriptor **arglist_in,

@@ -2,13 +2,7 @@
 #include <unistd.h>
 
 //#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
+#include <mdsdbg.h>
 
 static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
                        int nowait);
@@ -32,11 +26,7 @@ static IoRoutines io_routines = {
 #include <mdsshr.h>
 #include <signal.h>
 #include <inttypes.h>
-
-#define IP(addr) ((uint8_t *)&addr)
-#define ADDR2IP(a) \
-  IP(a)            \
-  [0], IP(a)[1], IP(a)[2], IP(a)[3]
+#include <mdsdbg.h>
 
 // Connected client definition for client list
 
@@ -610,7 +600,7 @@ static int run_server_mode(Options *options)
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in *)&sin)->sin_addr.s_addr);
   Connection *connection = PopConnection(id);
-  pthread_cleanup_push((void*)destroyConnection, (void*)connection);
+  pthread_cleanup_push((void *)destroyConnection, (void *)connection);
   int status;
   do
     status = ConnectionDoMessage(connection);

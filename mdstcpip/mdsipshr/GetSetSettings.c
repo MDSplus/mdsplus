@@ -27,6 +27,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
+//#define DEBUG
+#include <mdsdbg.h>
+
 #ifdef _WIN32
 #define DEFAULT_HOSTFILE "C:\\MDSIP.HOSTS"
 #else
@@ -203,6 +206,7 @@ int SetMdsConnectTimeout(int sec)
 int MdsGetClientAddr()
 {
   MDSIPTHREADSTATIC_INIT;
+  DBG("GET CLIENT " IPADDRPRI "\n", IPADDRVAR(&MDSIP_CLIENTADDR));
   return MDSIP_CLIENTADDR;
 }
 
@@ -211,4 +215,5 @@ void MdsSetClientAddr(int addr)
 {
   MDSIPTHREADSTATIC_INIT;
   MDSIP_CLIENTADDR = addr;
+  DBG("SET CLIENT " IPADDRPRI "\n", IPADDRVAR(&MDSIP_CLIENTADDR));
 }

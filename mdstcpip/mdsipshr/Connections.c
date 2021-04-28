@@ -36,14 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 
 // #define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#define PID ((intptr_t)pthread_self())
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
+#include <mdsdbg.h>
 
 Connection *_FindConnection(int id, Connection **prev, MDSIPTHREADSTATIC_ARG)
 {
@@ -309,7 +302,7 @@ int destroyConnection(Connection *connection)
     }
     TdiDeleteContext(connection->tdicontext);
     connection->io->disconnect(connection);
-    DBG("Connections: %02d disconnected\n", c->id);
+    DBG("Connections: %02d disconnected\n", connection->id);
     FreeDescriptors(connection);
   }
   free(connection->info);

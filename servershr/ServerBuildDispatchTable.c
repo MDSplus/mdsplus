@@ -224,7 +224,7 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name,
   nids = (int *)malloc(MAX_ACTIONS * sizeof(int));
   ctx_t ctx = {NULL, 0, 0};
   while ((TreeFindNodeWild(nodespec, &nids[ctx.num_actions], &fnwctx, mask) & 1) &&
-        (ctx.num_actions < MAX_ACTIONS))
+         (ctx.num_actions < MAX_ACTIONS))
     ctx.num_actions++;
   TreeFindNodeEnd(&fnwctx);
   if (ctx.num_actions)

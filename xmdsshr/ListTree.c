@@ -63,19 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
-#ifdef DEBUG
-#define DBG(fmt, ...)                                                  \
-  do                                                                   \
-  {                                                                    \
-    fprintf(stderr, "%s:%d %s()  ", __FILE__, __LINE__, __FUNCTION__); \
-    fprintf(stderr, fmt, __VA_ARGS__);                                 \
-  } while (0)
-#define DBGW(a) \
-  fprintf(stderr, "%s:%d %s()  %s\n", __FILE__, __LINE__, __FUNCTION__, a)
-#else
-#define DBG(fmt...)
-#define DBGW(a)
-#endif
+#include <mdsdbg.h>
 
 #define folder_width 16
 #define folder_height 12

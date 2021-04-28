@@ -40,13 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 
 // #define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
+#include <mdsdbg.h>
 
 #ifdef _WIN32
 #include <process.h>

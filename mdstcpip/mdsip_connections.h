@@ -399,7 +399,7 @@ EXPORT int GetCompressionLevel();
 ////////////////////////////////////////////////////////////////////////////////
 ///
 EXPORT void *ConnectionGetInfo(Connection *c, char **info_name, SOCKET *readfd,
-                                size_t *len);
+                               size_t *len);
 EXPORT void *GetConnectionInfo(int id, char **info_name, SOCKET *readfd,
                                size_t *len);
 
@@ -702,7 +702,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options);
 EXPORT void SetConnectionInfo(int conid, char *info_name, SOCKET readfd,
                               void *info, size_t len);
 EXPORT void ConnectionSetInfo(Connection *c, char *info_name, SOCKET readfd,
-                               void *info, size_t len);
+                              void *info, size_t len);
 
 EXPORT int SetCompressionLevel(int setting);
 

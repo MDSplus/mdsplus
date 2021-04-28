@@ -254,8 +254,14 @@ typedef struct descriptor_xd
   l_length_t l_length;
 } mdsdsc_xd_t;
 
-#define MDSDSC_D_INITIALIZER {0, DTYPE_DSC, CLASS_D, 0}
-#define MDSDSC_XD_INITIALIZER {0, DTYPE_DSC, CLASS_XD, 0, 0}
+#define MDSDSC_D_INITIALIZER \
+  {                          \
+    0, DTYPE_DSC, CLASS_D, 0 \
+  }
+#define MDSDSC_XD_INITIALIZER    \
+  {                              \
+    0, DTYPE_DSC, CLASS_XD, 0, 0 \
+  }
 #define EMPTYXD(name) mdsdsc_xd_t name = MDSDSC_XD_INITIALIZER
 
 /************************************************

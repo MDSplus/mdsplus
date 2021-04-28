@@ -68,13 +68,7 @@ inline static char *strndup(const char *src, size_t n)
 #endif
 
 //#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
+#include <mdsdbg.h>
 
 int treeshr_errno = 0;
 extern int MDSEventCan();

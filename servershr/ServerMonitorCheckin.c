@@ -75,8 +75,8 @@ static void event_ast(void *astprm, int msglen __attribute__((unused)), char *ms
   (*ast)(astprm, msg);
 }
 
-#define EVENT_PREFIX      "event:"
-#define EVENT_PREFIX_LEN  (sizeof(EVENT_PREFIX)-1)
+#define EVENT_PREFIX "event:"
+#define EVENT_PREFIX_LEN (sizeof(EVENT_PREFIX) - 1)
 static inline int using_events(char *server, void (*ast)(), void *astprm)
 {
   int yesno;
