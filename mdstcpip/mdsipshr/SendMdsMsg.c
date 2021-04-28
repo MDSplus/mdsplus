@@ -22,57 +22,61 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "../zlib/zlib.h"
+#include "../mdsip_connections.h"
+
 #include <errno.h>
 #include <status.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../zlib/zlib.h"
+//#define DEBUG
+#include <mdsdbg.h>
 
-#include "../mdsip_connections.h"
 
 static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
                       int options)
 {
+  if (!c || !c->io)
+    return MDSplusERROR;
   char *bptr = (char *)buffer;
-  if (c && c->io)
+  int tries = 0;
+  DBG("Sending %u bytes\n", (uint32_t)bytes_to_send);
+  while ((bytes_to_send > 0) && (tries < 10))
   {
-    int tries = 0;
-    while ((bytes_to_send > 0) && (tries < 10))
+    ssize_t bytes_sent;
+    bytes_sent = c->io->send(c, bptr, bytes_to_send, options);
+    if (bytes_sent < 0)
     {
-      ssize_t bytes_sent;
-      bytes_sent = c->io->send(c, bptr, bytes_to_send, options);
-      if (bytes_sent < 0)
+      if (errno != EINTR)
       {
-        if (errno != EINTR)
-        {
-          perror("send_bytes: Error sending data to remote server");
-          return MDSplusERROR;
-        }
-        tries++;
+        DBG("Exception %d\n", errno);
+        perror("send_bytes: Error sending data to remote server");
+        return MDSplusERROR;
       }
+      tries++;
+    }
+    else
+    {
+      bytes_to_send -= bytes_sent;
+      bptr += bytes_sent;
+      if (bytes_sent)
+        tries = 0;
       else
-      {
-        bytes_to_send -= bytes_sent;
-        bptr += bytes_sent;
-        if (bytes_sent)
-          tries = 0;
-        else
-          tries++;
-      }
+        tries++;
     }
-    if (tries >= 10)
-    {
-      char msg[256];
-      sprintf(msg, "\rsend failed, shutting down connection %d", c->id);
-      perror(msg);
-      return SsINTERNAL;
-    }
-    return MDSplusSUCCESS;
   }
-  printf("Connection to remote server failed");
-  return MDSplusERROR;
+  if (tries >= 10)
+  {
+    char msg[256];
+    sprintf(msg, "\rsend failed, shutting down connection %d", c->id);
+    perror(msg);
+    return SsINTERNAL;
+  }
+
+  DBG("Sent all bytes\n");
+  return MDSplusSUCCESS;
 }
 
 int SendMdsMsgC(Connection *c, Message *m, int msg_options)

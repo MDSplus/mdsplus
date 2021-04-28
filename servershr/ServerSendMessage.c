@@ -723,7 +723,6 @@ static void ReceiverThread(void *sockptr)
         AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin,
                      &fdactive);
       }
-      else
       {
         Client *c, *next;
         for (;;)
@@ -929,8 +928,8 @@ static void AddClient(unsigned int addr, uint16_t port, int conid)
     c->next = new;
   else
     Clients = new;
+  DBG("Added connection from " IPADDRPRI ":%d\n", IPADDRVAR(&addr), port);
   UNLOCK_CLIENTS;
-  DBG("added connection from " IPADDRPRI "\n", IPADDRVAR(addr));
 }
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin,
@@ -949,12 +948,12 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin,
   {
     c->reply_sock = reply_sock;
     FD_SET(reply_sock, fdactive);
-    DBG("accepted connection from " IPADDRPRI "\n", IPADDRVAR(&addr));
+    DBG("Accepted connection from " IPADDRPRI ":%d\n", IPADDRVAR(&sin->sin_addr), sin->sin_port);
   }
   else
   {
     shutdown(reply_sock, 2);
     close(reply_sock);
-    DBG("dropped connection from " IPADDRPRI "\n", IPADDRVAR(&addr));
+    DBG("Dropped connection from " IPADDRPRI ":%d\n", IPADDRVAR(&sin->sin_addr), sin->sin_port);
   }
 }

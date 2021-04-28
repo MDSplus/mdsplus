@@ -50,6 +50,7 @@ typedef int SOCKET;
 #include <signal.h>
 #endif
 #include <sys/time.h>
+#include <mdsdbg.h>
 
 typedef struct _MonitorList
 {
@@ -190,30 +191,40 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.shot = *(int *)p2;
     job.nid = *(int *)p3;
     if (job.h.addr)
+    {
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      DBG("No Client Address.\n");
       status = DoSrvAction((SrvJob *)&job);
+    }
     break;
   }
   case SrvClose:
   {
     SrvCloseJob job;
-    job.h.addr = MdsGetClientAddr();
+    job.h.addr = addr ? *addr : MdsGetClientAddr();
     job.h.port = *port;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
     if (job.h.addr)
+    {
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      DBG("No Client Address.\n");
       status = DoSrvClose((SrvJob *)&job);
+    }
     break;
   }
   case SrvCreatePulse:
   {
     SrvCreatePulseJob job;
-    job.h.addr = MdsGetClientAddr();
+    job.h.addr = addr ? *addr : MdsGetClientAddr();
     job.h.port = *port;
     job.h.op = *op;
     job.h.length = sizeof(job);
@@ -222,9 +233,14 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.tree = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
     job.shot = *(int *)p2;
     if (job.h.addr)
+    {
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      DBG("No Client Address.\n");
       status = DoSrvCreatePulse((SrvJob *)&job);
+    }
     break;
   }
   case SrvSetLogging:
@@ -236,7 +252,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   case SrvCommand:
   {
     SrvCommandJob job;
-    job.h.addr = MdsGetClientAddr();
+    job.h.addr = addr ? *addr : MdsGetClientAddr();
     job.h.port = *port;
     job.h.op = *op;
     job.h.length = sizeof(job);
@@ -245,15 +261,20 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.table = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
     job.command = strcpy(malloc(strlen((char *)p2) + 1), (char *)p2);
     if (job.h.addr)
+    {
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      DBG("No Client Address.\n");
       status = DoSrvCommand((SrvJob *)&job);
+    }
     break;
   }
   case SrvMonitor:
   {
     SrvMonitorJob job;
-    job.h.addr = MdsGetClientAddr();
+    job.h.addr = addr ? *addr : MdsGetClientAddr();
     job.h.port = *port;
     job.h.op = *op;
     job.h.length = sizeof(job);
@@ -268,9 +289,14 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.server = strcpy(malloc(strlen((char *)p7) + 1), (char *)p7);
     job.status = *(int *)p8;
     if (job.h.addr)
+    {
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      DBG("No Client Address.\n");
       status = MDSplusERROR;
+    }
     break;
   }
   case SrvShow:
@@ -301,6 +327,7 @@ static void AbortJob(SrvJob *job)
 // main
 static int QJob(SrvJob *job)
 {
+  DBG("Queued job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
   SrvJob *qjob = (SrvJob *)memcpy(malloc(job->h.length), job, job->h.length);
   QUEUE_LOCK;
   if (JobQueueNext)
@@ -713,6 +740,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
   CONDITION_SET(&WorkerRunning);
   while ((job = NextJob(1)))
   {
+    DBG("Starting job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
     if (Debug)
       fprintf(stderr, "job started.\n");
     char *save_text;
@@ -746,7 +774,8 @@ static void WorkerThread(void *arg __attribute__((unused)))
       break;
     }
     ProgLoc = 7;
-    SetCurrentJob(0);
+    DBG("Finished job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+    SetCurrentJob(NULL);
     ProgLoc = 8;
     FreeJob(job);
     ProgLoc = 9;
@@ -801,11 +830,9 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port)
     {
       shutdown(sock, 2);
       close(sock);
-      uint8_t *ip = (uint8_t *)&addr;
       char now[32];
       Now32(now);
-      fprintf(stderr, "%s, ERROR Cannot connect to %u.%u.%u.%u:%u", now, ip[0],
-              ip[1], ip[2], ip[3], port);
+      fprintf(stderr, "%s, ERROR Cannot connect to " IPADDRPRI ":%u", now, IPADDRVAR(&addr), port);
       perror(" ");
       return INVALID_SOCKET;
     }
@@ -854,6 +881,7 @@ static void reset_sigpipe_handler()
 static int SendReply(SrvJob *job, int replyType, int status_in, int length,
                      char *msg)
 {
+  DBG("Sending reply %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
   int status;
 #ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
