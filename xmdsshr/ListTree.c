@@ -1290,7 +1290,7 @@ static void focus_in(Widget aw, XEvent *event, String *params,
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
-  DBGW("focus_in");
+  DBG("focus_in");
 
   if (!w->list.HasFocus)
   {
@@ -1306,7 +1306,7 @@ static void focus_out(Widget aw, XEvent *event, String *params,
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
-  DBGW("focus_out");
+  DBG("focus_out");
 
   if (w->list.HasFocus)
   {

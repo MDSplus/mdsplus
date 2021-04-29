@@ -109,6 +109,7 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret, String
 #include <ctype.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <status.h>
 #ifndef _toupper
 #define _toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c)&0xDF : (c))
 #endif

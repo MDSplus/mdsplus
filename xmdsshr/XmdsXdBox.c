@@ -2223,7 +2223,7 @@ static void UpdateTags(Widget w, int nid, char *tags)
   while (t_ptr)
   {
     status = TreeAddTag(nid, t_ptr);
-    if (!status & 1)
+    if (STATUS_NOT_OK)
       XmdsComplain(w, "Error adding tag %s to node number %d", t_ptr, nid);
     t_ptr = strtok(NULL, ", ");
   }
