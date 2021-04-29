@@ -76,6 +76,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor
 #include <mds_stdarg.h>
 #include <tdishr_messages.h>
 #include "servershrp.h"
+#include <mdsdbg.h>
 
 extern int TdiCompletionOf();
 extern int TdiExecute();
@@ -85,19 +86,19 @@ extern int ProgLoc;
 
 void SendMonitor(int mode, int idx);
 
-STATIC_ROUTINE void Dispatch(int idx);
-STATIC_ROUTINE void DoSendMonitor(int mode, int idx);
-STATIC_ROUTINE void ActionDone(int idx);
-STATIC_ROUTINE void DoActionDone(int idx);
-STATIC_ROUTINE void Before(int idx);
-STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c);
-STATIC_ROUTINE void AbortRange(int s, int e);
-STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g);
-STATIC_ROUTINE int NoOutstandingActions(int s, int e);
-STATIC_ROUTINE void RecordStatus(int s, int e);
-STATIC_ROUTINE void Dispatch(int i);
-STATIC_ROUTINE void WaitForActions(int conditionals, int first_g, int last_g,
-                                   int first_c, int last_c);
+static void Dispatch(int idx);
+static void DoSendMonitor(int mode, int idx);
+static void ActionDone(int idx);
+static void DoActionDone(int idx);
+static void Before(int idx);
+static void SetActionRanges(int phase, int *first_c, int *last_c);
+static void AbortRange(int s, int e);
+static void SetGroup(int sync, int first_g, int *last_g);
+static int NoOutstandingActions(int s, int e);
+static void RecordStatus(int s, int e);
+static void Dispatch(int i);
+static void WaitForActions(int conditionals, int first_g, int last_g,
+                           int first_c, int last_c);
 
 // STATIC_CONSTANT const int zero = 0;
 
@@ -167,36 +168,44 @@ STATIC_THREADSAFE pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
 #define UNLOCK_TABLE pthread_rwlock_unlock(&table_lock)
 
 #define ACTION_LOCK(idx) table->actions[idx].lock
-#define DEBUG_LOCK( \
-    idx, info, typ, \
-    b) // fprintf(stderr,"%d: %-10s  %s[%d,%d]%c\n",idx,#info,#typ,ACTION_LOCK(idx).__data.__readers,ACTION_LOCK(idx).__data.__writers,b)
+#ifdef DEBUG_ACTION
+#define ACTION_DBG(idx, info, typ, b)                           \
+  fprintf(stderr, "%d: %-10s  %s[%d,%d]%c\n", idx, #info, #typ, \
+          ACTION_LOCK(idx).__data.__readers, ACTION_LOCK(idx).__data.__writers, b)
+#else
+#define ACTION_DBG(idx, info, typ, b)
+#endif
 #define XLOCK_ACTION(idx, info, typ)               \
   do                                               \
   {                                                \
-    DEBUG_LOCK(idx, info, typ, '?');               \
+    ACTION_DBG(idx, info, typ, '?');               \
     pthread_rwlock_##typ##lock(&ACTION_LOCK(idx)); \
-    DEBUG_LOCK(idx, info, typ, '!');               \
+    ACTION_DBG(idx, info, typ, '!');               \
   } while (0)
 #define WRLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, wr)
 #define RDLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, rd)
 #define UNLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, un)
 
 //#define DEBUG
-#define PRINT_ACTIONS                                                    \
-  {                                                                      \
-    int sti;                                                             \
-    for (sti = 0; sti < table->num; sti++)                               \
-    {                                                                    \
-      RDLOCK_ACTION(sti, debug);                                         \
-      fprintf(stderr, "Action(%d): %s, p=%d(%d), %d, %d\n", sti,         \
-              table->actions[sti].path, table->actions[sti].phase,       \
-              table->actions[sti].condition != NULL,                     \
-              table->actions[sti].dispatched, table->actions[sti].done); \
-      UNLOCK_ACTION(sti, debug);                                         \
-    }                                                                    \
+#define PRINT_ACTIONS                                            \
+  {                                                              \
+    int i;                                                       \
+    for (i = 0; i < table->num; i++)                             \
+    {                                                            \
+      RDLOCK_ACTION(i, debug);                                   \
+      fprintf(stderr, "Action(%d): %s, p=%d(%d), %d-%d-%d\n", i, \
+              table->actions[i].path,                            \
+              table->actions[i].phase,                           \
+              table->actions[i].condition != NULL,               \
+              table->actions[i].dispatched,                      \
+              table->actions[i].doing,                           \
+              table->actions[i].done);                           \
+      UNLOCK_ACTION(i, debug);                                   \
+    }                                                            \
   }
 //"
-STATIC_ROUTINE char *Server(char *out, char *srv)
+
+static char *Server(char *out, char *srv)
 {
   int i;
   for (i = 0; i < 32; i++)
@@ -237,7 +246,7 @@ void SendMonitor(int mode, int idx)
   }
 }
 
-STATIC_ROUTINE void ActionDone(int idx)
+static void ActionDone(int idx)
 {
   int i;
   char logmsg[1024];
@@ -322,7 +331,7 @@ STATIC_ROUTINE void ActionDone(int idx)
   CONDITION_SET(&JobWaitC);
 }
 
-STATIC_ROUTINE void Before(int idx)
+static void Before(int idx)
 {
   RDLOCK_TABLE;
   if (table)
@@ -368,7 +377,7 @@ STATIC_ROUTINE void Before(int idx)
   if (i < END)                          \
     UNLOCK_ACTION(i, fnae_##info);
 
-STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c)
+static void SetActionRanges(int phase, int *first_c, int *last_c)
 {
   int i;
   RDLOCK_TABLE;
@@ -422,7 +431,7 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c)
 #endif
 }
 
-STATIC_ROUTINE void AbortRange(int s, int e)
+static void AbortRange(int s, int e)
 {
   int i;
   RDLOCK_TABLE;
@@ -443,7 +452,7 @@ STATIC_ROUTINE void AbortRange(int s, int e)
   UNLOCK_TABLE;
 }
 
-STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g)
+static void SetGroup(int sync, int first_g, int *last_g)
 {
   if (first_g == last_s)
   {
@@ -472,19 +481,17 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g)
   *last_g = i;
 }
 
-STATIC_ROUTINE int NoOutstandingActions(const int s, const int e)
+static int NoOutstandingActions(const int s, const int e)
 {
   int i;
   ActionInfo *actions = table->actions;
   FIND_NEXT_ACTION(s, e, actions[i].dispatched && !actions[i].done, noa);
   FIND_NEXT_ACTION_END(e, noa);
-#ifdef DEBUG
-  fprintf(stderr, "%d -> %d==%d\n", s, i, e);
-#endif
+  DBG("%d -> %d==%d\n", s, i, e);
   return i >= e;
 }
 
-STATIC_ROUTINE void RecordStatus(int s, int e)
+static void RecordStatus(int s, int e)
 {
   int i;
   RDLOCK_TABLE;
@@ -517,8 +524,8 @@ STATIC_ROUTINE void RecordStatus(int s, int e)
   UNLOCK_TABLE;
 }
 
-STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g,
-                                   int first_c, int last_c)
+static void WaitForActions(int all, int first_g, int last_g,
+                           int first_c, int last_c)
 {
   int c_status = C_OK;
   _CONDITION_LOCK(&JobWaitC);
@@ -529,10 +536,13 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g,
          (g = !NoOutstandingActions(first_g, last_g) ||
               (all && (c = !NoOutstandingActions(first_c, last_c)))))
   {
+    if (c_status == C_OK)
+    {
+      DBG("%lu: %d, %d\n", (uint64_t)tp.tv_sec, g, c);
 #ifdef DEBUG
-    fprintf(stderr, "%lu: %d, %d\n", (long unsigned int)tp.tv_sec, g, c);
-    PRINT_ACTIONS;
+      PRINT_ACTIONS;
 #endif
+    }
     tp.tv_sec++;
     c_status = pthread_cond_timedwait(&JobWaitC.cond, &JobWaitC.mutex, &tp);
 #if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
@@ -543,7 +553,7 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g,
   _CONDITION_UNLOCK(&JobWaitC);
 }
 
-STATIC_ROUTINE char *DetailProc(int full)
+static char *DetailProc(int full)
 {
   char *msg;
   RDLOCK_TABLE;
@@ -721,7 +731,7 @@ EXPORT int ServerFailedEssential(void *vtable, int reset)
   return failed;
 }
 
-STATIC_ROUTINE void Dispatch(int i)
+static void Dispatch(int i)
 {
   RDLOCK_TABLE;
   if (table)
@@ -777,14 +787,14 @@ STATIC_ROUTINE void Dispatch(int i)
   UNLOCK_TABLE;
 }
 
-STATIC_ROUTINE void WakeCompletedActionQueue() { CONDITION_SET(&CompletedC); }
+static void WakeCompletedActionQueue() { CONDITION_SET(&CompletedC); }
 
-STATIC_ROUTINE void WaitForActionDoneQueue()
+static void WaitForActionDoneQueue()
 {
   CONDITION_WAIT_1SEC(&CompletedC);
 }
 
-STATIC_ROUTINE void QueueCompletedAction(int i)
+static void QueueCompletedAction(int i)
 {
   Complete *c = malloc(sizeof(Complete));
   c->idx = i;
@@ -799,7 +809,7 @@ STATIC_ROUTINE void QueueCompletedAction(int i)
   WakeCompletedActionQueue();
 }
 
-STATIC_ROUTINE int DequeueCompletedAction(int *i)
+static int DequeueCompletedAction(int *i)
 {
   int doneAction = -1;
   while (doneAction == -1)
@@ -828,9 +838,9 @@ STATIC_ROUTINE int DequeueCompletedAction(int *i)
 
 STATIC_THREADSAFE Condition ActionDoneRunningC = CONDITION_INITIALIZER;
 
-STATIC_ROUTINE void ActionDoneExit() { CONDITION_RESET(&ActionDoneRunningC); }
+static void ActionDoneExit() { CONDITION_RESET(&ActionDoneRunningC); }
 
-STATIC_ROUTINE void ActionDoneThread()
+static void ActionDoneThread()
 {
   int i;
   pthread_cleanup_push(ActionDoneExit, 0);
@@ -838,10 +848,9 @@ STATIC_ROUTINE void ActionDoneThread()
   while (DequeueCompletedAction(&i))
     ActionDone(i);
   pthread_cleanup_pop(1);
-  pthread_exit(NULL);
 }
 
-STATIC_ROUTINE void DoActionDone(int i)
+static void DoActionDone(int i)
 {
   INIT_STATUS;
   pthread_t thread;
@@ -853,14 +862,14 @@ STATIC_ROUTINE void DoActionDone(int i)
 
 STATIC_THREADSAFE Condition SendMonitorRunningC = CONDITION_INITIALIZER;
 
-STATIC_ROUTINE void WakeSendMonitorQueue() { CONDITION_SET(&SendMonitorC); }
+static void WakeSendMonitorQueue() { CONDITION_SET(&SendMonitorC); }
 
-STATIC_ROUTINE void WaitForSendMonitorQueue()
+static void WaitForSendMonitorQueue()
 {
   CONDITION_WAIT_1SEC(&SendMonitorC);
 }
 
-STATIC_ROUTINE void QueueSendMonitor(int mode, int i)
+static void QueueSendMonitor(int mode, int i)
 {
   SendMonitorInfo *c = malloc(sizeof(SendMonitorInfo));
   c->idx = i;
@@ -876,7 +885,7 @@ STATIC_ROUTINE void QueueSendMonitor(int mode, int i)
   WakeSendMonitorQueue();
 }
 
-STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
+static int DequeueSendMonitor(int *mode_out, int *i)
 {
   int idx;
   int mode;
@@ -897,8 +906,7 @@ STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
     }
     else
     {
-      pthread_mutex_unlock(&send_monitor_queue_mutex);
-      release = 0;
+      release = pthread_mutex_unlock(&send_monitor_queue_mutex);
       idx = -1;
       mode = 0;
       WaitForSendMonitorQueue();
@@ -910,9 +918,9 @@ STATIC_ROUTINE int DequeueSendMonitor(int *mode_out, int *i)
   return B_TRUE;
 }
 
-STATIC_ROUTINE void SendMonitorExit() { CONDITION_RESET(&SendMonitorRunningC); }
+static void SendMonitorExit() { CONDITION_RESET(&SendMonitorRunningC); }
 
-STATIC_ROUTINE void SendMonitorThread()
+static void SendMonitorThread()
 {
   int i;
   int mode;
@@ -924,7 +932,7 @@ STATIC_ROUTINE void SendMonitorThread()
   pthread_exit(NULL);
 }
 
-STATIC_ROUTINE void DoSendMonitor(int mode, int idx)
+static void DoSendMonitor(int mode, int idx)
 {
   INIT_STATUS;
   pthread_t thread;

@@ -871,41 +871,45 @@ static void RemoveClient(SrvJob *job)
   }
 }
 
-#ifndef _WIN32
-static void reset_sigpipe_handler()
-{
-  signal(SIGPIPE, SIG_DFL);
-}
+#ifdef _WIN32
+#define MSG_NOSIGNAL 0
 #endif
 // both
-static int SendReply(SrvJob *job, int replyType, int status_in, int length,
-                     char *msg)
+static int send_all(SOCKET sock, char *msg, int len)
 {
-  DBG("Sending reply %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+  int bytes, sent = 0;
+  do
+  {
+    bytes = send(sock, msg + sent, len - sent, MSG_NOSIGNAL);
+    if (bytes <= 0)
+      return bytes;
+  } while (sent < len);
+  return sent;
+}
+
+static int SendReply(SrvJob *job, int replyType, int status_in, int length, char *msg)
+{
+  DBG("Job #%d for " IPADDRPRI ":%d : %d\n", job->h.jobid,
+      IPADDRVAR(&job->h.addr), job->h.port, replyType);
   int status;
-#ifndef _WIN32
-  signal(SIGPIPE, SIG_IGN);
-  pthread_cleanup_push((void *)reset_sigpipe_handler, NULL);
-#endif
   status = MDSplusERROR;
   SOCKET sock;
   long msg_len = msg ? (long)strlen(msg) : 0;
   int try_again = TRUE;
+  char reply[60];
+  memset(reply, 0, 60);
+  sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg_len);
   do
   {
     errno = 0;
     sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
     if (sock == INVALID_SOCKET)
       break;
-    char reply[60];
-    int bytes;
-    memset(reply, 0, 60);
-    sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg_len);
-    bytes = send(sock, reply, 60, MSG_DONTWAIT);
-    if (bytes == 60)
+    int bytes = send_all(sock, reply, 60);
+    if (bytes > 0)
     {
-      bytes = send(sock, msg, length, MSG_DONTWAIT);
-      if (bytes == length)
+      bytes = send_all(sock, msg, length);
+      if (bytes > 0)
       {
         status = MDSplusSUCCESS;
         break;
@@ -926,8 +930,5 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length,
       RemoveClient(job);
     }
   } while (try_again--);
-#ifndef _WIN32
-  pthread_cleanup_pop(1);
-#endif
   return status;
 }

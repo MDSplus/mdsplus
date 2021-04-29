@@ -89,13 +89,7 @@ int ServerSendMessage();
 extern short ArgLen();
 
 extern int GetAnswerInfoTS();
-/*
- *typedef struct _Condition {
- *  pthread_cond_t  cond;
- *  pthread_mutex_t mutex;
- *  int             value;
- *} Condition;
- */
+
 typedef struct job
 {
   struct job *next;
@@ -312,14 +306,19 @@ static pthread_mutex_t job_conds = PTHREAD_MUTEX_INITIALIZER;
 
 static void doCompletionAst(Job *j, int status, char *msg, int removeJob)
 {
-  if (j->lock)
-    pthread_rwlock_wrlock(j->lock);
   if (j->retstatus)
-    *j->retstatus = status;
-  if (j->lock)
-    pthread_rwlock_unlock(j->lock);
+  {
+    if (j->lock)
+    {
+      pthread_rwlock_wrlock(j->lock);
+      *j->retstatus = status;
+      pthread_rwlock_unlock(j->lock);
+    }
+    else
+      *j->retstatus = status;
+  }
   if (j->ast)
-    (*j->ast)(j->astparam, msg);
+    (*j->ast)(j->astparam);
   /**** If job has a condition, RemoveJob will not remove it. ***/
   pthread_mutex_lock(&job_conds);
   pthread_cleanup_push((void *)pthread_mutex_unlock, &job_conds);
@@ -329,11 +328,12 @@ static void doCompletionAst(Job *j, int status, char *msg, int removeJob)
   }
   else if (removeJob && j->jobid != MonJob)
   {
-    remove_job(j);
     DBG("Job #%d async done.\n", j->jobid);
+    remove_job(j);
   }
   pthread_cleanup_pop(1);
 }
+
 static inline Job *get_job_by_jobid(int jobid)
 {
   Job *j;
@@ -416,12 +416,14 @@ static inline int get_client_conid(Client *c, fd_set *fdactive)
 }
 static void RemoveClient(Client *c, fd_set *fdactive)
 {
+  DBG("Client#%d: " IPADDRPRI ":%d\n", c->conid, IPADDRVAR(&c->addr), c->port);
   int conid = get_client_conid(c, fdactive);
   for (;;)
   {
     Job *j = pop_job_by_conid(conid);
     if (j)
     {
+      DBG("Job #%d: " IPADDRPRI ":%d done\n", j->jobid, IPADDRVAR(&c->addr), c->port);
       doCompletionAst(j, ServerPATH_DOWN, NULL, FALSE);
       free(j);
     }
@@ -436,6 +438,7 @@ static void CleanupJob(int status, int jobid)
   {
     const int conid = j->conid;
     DisconnectFromMds(conid);
+    DBG("Job #%d: %d done\n", j->jobid, conid);
     doCompletionAst(j, status, NULL, FALSE);
     free(j);
     for (;;)
@@ -443,6 +446,7 @@ static void CleanupJob(int status, int jobid)
       j = pop_job_by_conid(conid);
       if (j)
       {
+        DBG("Job #%d: %d done\n", j->jobid, conid);
         doCompletionAst(j, status, NULL, FALSE);
         free(j);
       }
@@ -515,8 +519,6 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock,
   j->astparam = astparam;
   j->before_ast = before_ast;
   j->conid = conid;
-  LOCK_JOBS;
-  j->jobid = ++JobId;
   if (msgid)
   {
     j->cond = malloc(sizeof(Condition));
@@ -529,6 +531,8 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock,
     j->cond = NULL;
     DBG("Job #%d async registered.\n", j->jobid);
   }
+  LOCK_JOBS;
+  j->jobid = ++JobId;
   j->next = Jobs;
   Jobs = j;
   UNLOCK_JOBS;
@@ -722,25 +726,29 @@ static void ReceiverThread(void *sockptr)
         socklen_t len = sizeof(struct sockaddr_in);
         AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin,
                      &fdactive);
+        num--;
       }
       {
-        Client *c, *next;
+        Client *c;
         for (;;)
         {
           LOCK_CLIENTS;
-          for (c = Clients, next = c ? c->next : 0;
-               c && (c->reply_sock == INVALID_SOCKET ||
-                     !FD_ISSET(c->reply_sock, &readfds));
-               c = next, next = c ? c->next : 0)
-            ;
+          for (c = Clients; c; c = c->next)
+          {
+            if (FD_ISSET(c->reply_sock, &readfds))
+            {
+              last_client_addr = c->addr;
+              last_client_port = c->port;
+              break;
+            }
+          }
           UNLOCK_CLIENTS;
           if (c)
           {
-            SOCKET reply_sock = c->reply_sock;
-            last_client_addr = c->addr;
-            last_client_port = c->port;
+            FD_CLR(c->reply_sock, &readfds);
+            DBG("Reply from " IPADDRPRI ":%u\n", IPADDRVAR(&c->addr), c->port);
             DoMessage(c, &fdactive);
-            FD_CLR(reply_sock, &readfds);
+            num--;
           }
           else
             break;
@@ -898,7 +906,10 @@ static void DoMessage(Client *c, fd_set *fdactive)
     if (!j)
       j = get_job_by_jobid(MonJob);
     if (j)
+    {
+      DBG("Job #%d: %d done\n", j->jobid, j->conid);
       doCompletionAst(j, status, msg, TRUE);
+    }
     break;
   }
   case SrvJobSTARTING:

@@ -92,20 +92,18 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
   {
     if (Endian(header.client_type) != Endian(ClientType()))
       FlipHeader(&header);
-#ifdef DEBUG
-    printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = "
-           "%d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
+    DBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
+           "descriptor_idx = %d, message_id = %d, dtype = %d, "
+           "client_type = %d, header.ndims = %d)\n",
            header.msglen, header.status, header.length, header.nargs,
-           header.descriptor_idx, header.message_id, header.dtype);
-    printf("client_type = %d\nndims = %d\n", header.client_type,
-           header.ndims);
-#endif
+           header.descriptor_idx, header.message_id, header.dtype,
+           header.client_type, header.ndims);
     uint32_t msglen = (uint32_t)header.msglen;
     if (msglen < sizeof(MsgHdr) || CType(header.client_type) > CRAY_CLIENT ||
         header.ndims > MAX_DIMS)
     {
       fprintf(stderr,
-              "\rGetMdsMsg shutdown connection %d: bad msg header, "
+              "\nGetMdsMsg shutdown connection %d: bad msg header, "
               "header.ndims=%d, client_type=%d\n",
               c->id, header.ndims, CType(header.client_type));
       *status = SsINTERNAL;

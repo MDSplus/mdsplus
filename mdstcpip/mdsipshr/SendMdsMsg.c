@@ -116,6 +116,12 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     cm->h.client_type |= COMPRESSED;
     memcpy(cm->bytes, &cm->h.msglen, 4);
     int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
+    DBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
+        "descriptor_idx = %d, message_id = %d, dtype = %d, "
+        "client_type = %d, header.ndims = %d)\n",
+        cm->h.msglen, cm->h.status, cm->h.length, cm->h.nargs,
+        cm->h.descriptor_idx, cm->h.message_id, cm->h.dtype,
+        cm->h.client_type, cm->h.ndims);
     if (do_swap)
       FlipBytes(4, (char *)&cm->h.msglen);
     status = send_bytes(c, (char *)cm, msglen, msg_options);
