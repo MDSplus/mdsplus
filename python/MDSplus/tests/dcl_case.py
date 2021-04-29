@@ -120,7 +120,7 @@ class Tests(_common.TreeTests, _common.MdsIp):
             pytree.write()
         monitor, monitor_port = self._setup_mdsip(
             'ACTION_MONITOR', 'MONITOR_PORT', 7100+self.index, False)
-        monitor_opt = "/monitor=%s" % monitor if monitor_port > 0 else ""
+        monitor_opt = "/monitor=%s" % monitor if monitor else ""
         server, server_port = self._setup_mdsip(
             'ACTION_SERVER', 'ACTION_PORT', 7110+self.index, True)
         pytree.normal()

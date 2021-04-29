@@ -212,13 +212,13 @@ class MdsIp(object):
 
     @staticmethod
     def _setup_mdsip(server_env, port_env, default_port, fix0):
-        host=getenv(server_env, '')
+        host = getenv(server_env, '')
         if len(host) > 0:
             return host, 0
-        port=int(getenv(port_env, default_port))
+        port = int(getenv(port_env, default_port))
         if port == 0:
             if fix0:
-                port=default_port
+                port = default_port
             else:
                 return None, 0
         return 'localhost:%d' % (port,), port
