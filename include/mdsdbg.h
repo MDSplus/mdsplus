@@ -1,11 +1,17 @@
 #pragma once
+#include <time.h>
+
 //#define DEBUG
 #ifdef DEBUG
-#define DBG(...)                                                       \
-  do                                                                   \
-  {                                                                    \
-    fprintf(stderr, "%s:%d %s()  ", __FILE__, __LINE__, __FUNCTION__); \
-    fprintf(stderr, __VA_ARGS__);                                      \
+#define DBG(...)                                               \
+  do                                                           \
+  {                                                            \
+    struct timespec ts;                                        \
+    clock_gettime(CLOCK_REALTIME, &ts);                        \
+    fprintf(stderr, "%u.%09u: %s:%d %s()  ",                   \
+            (unsigned int)ts.tv_sec, (unsigned int)ts.tv_nsec, \
+            __FILE__, __LINE__, __FUNCTION__);                 \
+    fprintf(stderr, __VA_ARGS__);                              \
   } while (0)
 #else
 #define DBG(...) \
