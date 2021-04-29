@@ -38,7 +38,7 @@ EXPORT int tcl_help_device(void *ctx, char **error __attribute__((unused)),
     char *ans;
     int status = TdiExecute(&expr_d, &ans_d MDS_END_ARG);
     free(expr);
-    if ((status & 1) && (ans_d.pointer != NULL))
+    if ((STATUS_OK) && (ans_d.pointer != NULL))
     {
       if ((ans_d.pointer->dtype == DTYPE_T) && (ans_d.pointer->length > 0))
       {

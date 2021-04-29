@@ -102,7 +102,7 @@ EXPORT int TclDeleteNode(void *ctx, char **error, char **output)
   {
     ctx_fn = 0;
     while (TreeFindNodeWild(nodename, &nid, &ctx_fn, usageMask) & 1 &&
-           (status & 1))
+           (STATUS_OK))
     {
       nids++;
       status = TreeDeleteNodeInitialize(nid, &count, reset);

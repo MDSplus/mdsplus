@@ -585,7 +585,7 @@ static int InitMath()
   static DESCRIPTOR(csval_d, "csval_");
   int status;
   status = LibFindImageSymbol(&image, &csakm_d, &csakm);
-  if (status & 1)
+  if (STATUS_OK)
     status = LibFindImageSymbol(&image, &csval_d, &csval);
   return status;
 }
@@ -599,7 +599,7 @@ EXPORT int b5910a_SPLFIT(int *num_knots, float *knots_x, float *knots_y, int *nu
     float *cscoef = (float *)XtCalloc(*num_knots * 4, sizeof(float));
     if (csakm == 0 || csval == 0)
       status = InitMath();
-    if (status & 1) {
+    if (STATUS_OK) {
       (*csakm) (num_knots, knots_x, knots_y, fbreak, cscoef);
       for (i = 0; i < *num_v; i++)
 	y[i] = (*csval) (&x[i], num_knots, fbreak, cscoef);
@@ -892,7 +892,7 @@ EXPORT int b5910a___init(struct descriptor *niddsc_ptr __attribute__ ((unused)),
       return DEVBAD_ACTIVE_CHAN;
     }
     status = TdiExecute((struct descriptor *)&chan_exp, data, &y MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       float *yval = (float *)y.pointer->pointer;
       float volts_per_bit;
       short max_counts;

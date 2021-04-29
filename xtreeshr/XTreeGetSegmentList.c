@@ -59,7 +59,7 @@ static void printDecompiled(struct descriptor *inD)
   char *buf;
 
   status = TdiDecompile(inD, &out_xd MDS_END_ARG);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK) {
     printf("%s\n", MdsGetMsg(status));
     return;
   }
@@ -81,7 +81,7 @@ static int check(char *compExpr, struct descriptor *time1Dsc,
   int status;
   EMPTYXD(ansXd);
   status = TdiExecute(&compExprDsc, time1Dsc, time2Dsc, &ansXd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   *answ = *ansXd.pointer->pointer;
   MdsFree1Dx(&ansXd, 0);

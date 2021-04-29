@@ -45,7 +45,7 @@ EXPORT int TclSetReadonly(void *ctx, char **error,
    * Executable ...
    *-------------------------------------------------------*/
   status = TreeSetDbiItm(DbiREADONLY, (cli_present(ctx, "OFF") & 1) == 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);

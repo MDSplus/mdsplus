@@ -46,7 +46,7 @@ EXPORT int hv1443__get_settings(struct descriptor *niddsc_ptr __attribute__ ((un
   if (max_chans != HV1443_K_CHANS)
     return HV1440$_WRONG_POD_TYPE;
   status = hv1443___get_settings(niddsc_ptr, &setup);
-  if (status & 1) {
+  if (STATUS_OK) {
     int i;
     for (i = 0; i < HV1443_K_CHANS; i++) {
       int nid = setup.head_nid + HV1443_N_VOLTAGE_01 + i;

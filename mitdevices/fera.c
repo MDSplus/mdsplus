@@ -169,7 +169,7 @@ EXPORT int fera___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), I
     status = FERA$_NODIG;
 
   /* setup the memory modules */
-  if (status & 1) {
+  if (STATUS_OK) {
     if ((num_mem = NElements(setup->head_nid + FERA_N_MEM_NAME))) {
       int i;
       for (i = 0; i < num_mem; i++) {
@@ -255,12 +255,12 @@ EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   }
 
   status = Unpack(&buffer, num_pts, num_mem, num_chan, total_data / num_chan);
-  if ((status & 1) || (status == FERA$_CONFUSED) || (status == FERA$_OVERFLOW))
+  if ((STATUS_OK) || (status == FERA$_CONFUSED) || (status == FERA$_OVERFLOW))
     put_status =
 	Put(buffer, total_data / num_chan, num_chan, setup->head_nid + FERA_N_EXT_CLOCK,
 	    setup->head_nid + FERA_N_OUTPUT);
   free(buffer);
-  return (put_status & 1) ? ((status & 1) ? mem_status : status) : put_status;
+  return (put_status & 1) ? ((STATUS_OK) ? mem_status : status) : put_status;
 }
 
 static int Unpack(unsigned short **buffer, int *num_pts, int num_mems, int chans, int pts_per_chan)
@@ -306,12 +306,12 @@ static int NElements(int nid)
     last_nid = 0;
     status = TdiExecute((struct descriptor *)&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
   }
-  if (status & 1) {
+  if (STATUS_OK) {
     static DESCRIPTOR(size_expr, "SIZE(_TextArray)");
     last_nid = nid;
     status = TdiExecute((struct descriptor *)&size_expr, &num_dsc MDS_END_ARG);
   }
-  return (status & 1) ? num : 0;
+  return (STATUS_OK) ? num : 0;
 }
 
 static char *ArrayRef(int nid, int num)
@@ -328,13 +328,13 @@ static char *ArrayRef(int nid, int num)
     last_nid = 0;
     status = TdiExecute((struct descriptor *)&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
   }
-  if (status & 1) {
+  if (STATUS_OK) {
     static DESCRIPTOR(subscript_expr, "_TextArray[$]//\"\\0\"");
     struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };
     num_dsc.pointer = (char *)&num;
     status = TdiExecute((struct descriptor *)&subscript_expr, &num_dsc, &empty_string MDS_END_ARG);
   }
-  return ((status & 1) == 0) ? 0 : empty_string.pointer;
+  return ((STATUS_OK) == 0) ? 0 : empty_string.pointer;
 }
 
 static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int clock_nid, int nid)
@@ -355,7 +355,7 @@ static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int cloc
   clock_nid_dsc.pointer = (char *)&clock_nid;
   num_dsc.pointer = (char *)&max_chan_num;
   status = TdiCompile((struct descriptor *)&expr, &a_dsc, &clock_nid_dsc, &num_dsc, &output_xd MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     status = TreePutRecord(nid, (struct descriptor *)&output_xd, 0);
     MdsFree1Dx(&output_xd, 0);
   }

@@ -243,7 +243,7 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	 time of the stop trigger and
 	 write it out.
 	******************************/
-      if (status & 1 && TreeIsOn(stop_out_nid) & 1) {
+      if (STATUS_OK && TreeIsOn(stop_out_nid) & 1) {
 	static DESCRIPTOR_FUNCTION_2(trig_mult_exp, &OpcMultiply, &dt3, &f3_count);
 	static DESCRIPTOR_FUNCTION_2(trig_add_exp, &OpcAdd, &fswitch,
 				     &trig_mult_exp);

@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     }
     vald.ptr = (void *)&val;
     status = MdsPut(sock, "member", "$", &vald, NULL);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       printf("Error during put %d\n", status);
     if (MdsValue(sock, "42.0", &ans, NULL) & 1)
       printf("%g\n", *(float *)ans.ptr);

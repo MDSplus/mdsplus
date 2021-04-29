@@ -60,7 +60,7 @@ EXPORT int TclWfevent(void *ctx, char **error,
     if (seconds > 0)
     {
       status = MDSWfeventTimed(event, 0, 0, 0, seconds);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
         *error = strdup("Timeout\n");
     }
     else

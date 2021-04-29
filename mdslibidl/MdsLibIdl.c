@@ -381,11 +381,11 @@ EXPORT int IdlMdsValue(int argc, void **argv)
   arglist[argidx++] = MdsEND_ARG;
   *(long *)&arglist[0] = argidx;
   status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = TdiData(tmp.pointer, &mdsValueAnswer MDS_END_ARG);
     MdsFree1Dx(&tmp, NULL);
-    if (status & 1)
+    if (STATUS_OK)
     {
       if (mdsValueAnswer.pointer->dtype == DTYPE_F ||
           mdsValueAnswer.pointer->dtype == DTYPE_FS)
@@ -613,7 +613,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
   memset(arglist, 0, arglistlen * sizeof(void *));
   BlockSig(SIGALRM);
   status = TreeFindNode((char *)argv[0], &nid);
-  if (status & 1)
+  if (STATUS_OK)
   {
     expression.length = strlen((char *)argv[1]);
     expression.pointer = (char *)argv[1];
@@ -627,7 +627,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx;
     status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
-    if (status & 1)
+    if (STATUS_OK)
     {
       status = TreePutRecord(nid, (struct descriptor *)&tmp, 0);
       MdsFree1Dx(&tmp, NULL);

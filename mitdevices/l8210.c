@@ -130,7 +130,7 @@ EXPORT int l8210___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 			 (frequency ==
 			  0.0) ? (struct descriptor *)&ext_clock_d : (struct descriptor
 								      *)(&int_clock_d), 0);
-  for (chan = 0; ((chan < num_chans) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < num_chans) && (STATUS_OK)); chan++) {
     int channel_nid =
 	setup->head_nid + L8210_N_INPUT_1 + chan * (L8210_N_INPUT_2 - L8210_N_INPUT_1);
     int usetimes_nid = channel_nid + L8210_N_INPUT_1_USETIMES - L8210_N_INPUT_1;
@@ -144,28 +144,28 @@ EXPORT int l8210___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	raw.bounds[0].l = min_idx;
 	raw.bounds[0].u = max_idx;
 	status = DevFloat(&startidx_nid, &start_time);
-	if (~status & 1)
+	if (STATUS_NOT_OK)
 	  start_time = -1;
 
 	status = DevFloat(&endidx_nid, &end_time);
-	if (~status & 1)
+	if (STATUS_NOT_OK)
 	  end_time = -1;
 
 	status = DevXToI(start_time, end_time, &dimension, min_idx, max_idx, &raw.bounds[0].l,
 			 &raw.bounds[0].u);
-	if (~status & 1) {
+	if (STATUS_NOT_OK) {
 	  raw.bounds[0].l = min_idx;
 	  raw.bounds[0].u = max_idx;
 	}
       } else {
 	status = DevLong(&startidx_nid, (int *)&raw.bounds[0].l);
-	if (status & 1)
+	if (STATUS_OK)
 	  raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
 	else
 	  raw.bounds[0].l = min_idx;
 
 	status = DevLong(&endidx_nid, (int *)&raw.bounds[0].u);
-	if (status & 1)
+	if (STATUS_OK)
 	  raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
 	else
 	  raw.bounds[0].u = max_idx;
@@ -175,7 +175,7 @@ EXPORT int l8210___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	samples_to_read = raw.bounds[0].u - min_idx + 1;
 
 	status = ReadChannel(setup, &samples_per_channel, chan, &samples_to_read, channel_data_ptr);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  raw.pointer = (char *)(channel_data_ptr + (raw.bounds[0].l - min_idx));
 	  raw.a0 = raw.pointer - raw.bounds[0].l * sizeof(*channel_data_ptr);
 	  raw.arsize = raw.m[0] * 2;
@@ -200,7 +200,7 @@ static int ReadSetup(InStoreStruct * setup, int *mem_ptr, char *head_ptr, int *s
   static float freq[8] = { 0, 1.E-4, 4.E-5, 2.E-5, 1.E-5, 4.E-6, 2.E-6, 1.E-6 };
   int status;
   pio(1, 0, (short *)&l8210_setup);
-  if (status & 1) {
+  if (STATUS_OK) {
     *noc_ptr = l8210_setup.l8210_setup_v_noc + 1;
     *freq_ptr = freq[l8210_setup.l8210_setup_v_period];
     *samples_ptr = 32768 * *mem_ptr / *noc_ptr;
@@ -289,11 +289,11 @@ static int DevXToI(float start_time,
     time_array_dsc.pointer = (char *)times;
     time_array_dsc.arsize = num_times * sizeof(float);
     status = TdiXtoI((struct descriptor *)dimension, &time_array_dsc, &idxs_xd MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       status = TdiNint((struct descriptor *)&idxs_xd, &idxs_xd MDS_END_ARG);
-      if (status & 1) {
+      if (STATUS_OK) {
 	status = TdiLong((struct descriptor *)&idxs_xd, &idxs_xd MDS_END_ARG);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  struct descriptor_a *a_ptr = (struct descriptor_a *)idxs_xd.pointer;
 	  int *i_ptr = (int *)a_ptr->pointer;
 	  if (!nostart) {
@@ -376,7 +376,7 @@ static Boolean apply_proc(Widget w)
     XmdsComplain(XtParent(w), "Error writing num memories");
   if (status)
     XmdsApplyAllXds(XtParent(w));
-  return status & 1;
+  return STATUS_OK;
 }
 
 static void pts_activate_proc(Widget w)

@@ -65,7 +65,7 @@ EXPORT int h912___init(struct descriptor *niddsc __attribute__ ((unused)), InIni
   if (msetup.pretrig) {
     int pts;
     status = TdiGetLong(setup->pts, &pts);
-    if (status & 1) {
+    if (STATUS_OK) {
       pio(16, 1, &pts, 16);
     } else
       return H912$_BAD_PTS;
@@ -174,13 +174,13 @@ EXPORT int h912___store(struct descriptor *niddsc __attribute__ ((unused)), InSt
     if ((onstat & 1) || (onstat == TreePARENT_OFF)) {
       int samples_to_read;
       status = DevLong(&startidx_nid, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(samples - 1, max(0, raw.bounds[0].l));
       else
 	raw.bounds[0].l = 0;
 
       status = DevLong(&endidx_nid, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(samples - 1, max(0, raw.bounds[0].u));
       else
 	raw.bounds[0].u = samples - 1;
@@ -189,7 +189,7 @@ EXPORT int h912___store(struct descriptor *niddsc __attribute__ ((unused)), InSt
       if (raw.m[0] > 0) {
 	samples_to_read = raw.bounds[0].u + 1;
 	status = ReadChannel(setup, samples_to_read, chan, buffer);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  raw.pointer = (char *)(buffer + (raw.bounds[0].l));
 	  raw.a0 = (char *)buffer;
 	  raw.arsize = raw.m[0] * sizeof(short);

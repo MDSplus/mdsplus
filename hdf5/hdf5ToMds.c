@@ -134,7 +134,7 @@ static int AddNode(const char *h5name, int usage)
     }
     status = TreeAddNode(name, &nid, usage);
   }
-  if (status & 1)
+  if (STATUS_OK)
   {
     int old;
     int name_nid;

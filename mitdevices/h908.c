@@ -68,7 +68,7 @@ EXPORT int h908___init(struct descriptor *niddsc __attribute__ ((unused)), InIni
   if (msetup.pretrig) {
     int pts;
     status = TdiGetLong((struct descriptor *)setup->pts, &pts);
-    if (status & 1) {
+    if (STATUS_OK) {
       msetup.pts = (pts + 15) / 16;
     } else
       return H908$_BAD_PTS;
@@ -165,13 +165,13 @@ EXPORT int h908___store(struct descriptor *niddsc __attribute__ ((unused)), InSt
     if ((onstat & 1) || (onstat == TreePARENT_OFF)) {
       int samples_to_read;
       status = DevLong(&startidx_nid, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&endidx_nid, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -180,7 +180,7 @@ EXPORT int h908___store(struct descriptor *niddsc __attribute__ ((unused)), InSt
       if (raw.m[0] > 0) {
 	samples_to_read = raw.bounds[0].u - min_idx + 1;
 	status = ReadChannel(setup, samples_to_read, chan, buffer);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  static DESCRIPTOR(sig_exp, "BUILD_SIGNAL(BUILD_WITH_UNITS(1.25E-3*$VALUE,'volts'),BUILD_WITH_UNITS($,'counts'),"	//
 			    "BUILD_DIM(BUILD_WINDOW($,$,$),$))");
 	  raw.pointer = (char *)(buffer + (raw.bounds[0].l - min_idx));

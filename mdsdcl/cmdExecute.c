@@ -930,10 +930,10 @@ rest_of_line:
   if (cmdDef->image)
     image = cmdDef->image;
   status = LibFindImageSymbol_C(image, cmdDef->routine, &handler);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = handler(cmd, error, output, getline, getlineinfo);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       if ((*error == 0) && (status != 0))
       {
@@ -1456,7 +1456,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
       status =
           processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt,
                          &error_tmp, &output_tmp, getline, getlineinfo);
-      if (status & 1)
+      if (STATUS_OK)
       {
         free(error);
         error = error_tmp;
@@ -1521,7 +1521,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
       free(prompt);
     }
   }
-  if ((prompt == NULL) && (error == 0) && (!(status & 1)))
+  if ((prompt == NULL) && (error == 0) && (STATUS_NOT_OK))
   {
     if (status == MdsdclIVVERB && error == NULL)
     {

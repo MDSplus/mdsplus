@@ -163,7 +163,7 @@ int TreeGetCurrentShotId(char const *experiment)
       status = MDS_IO_READ(fd, &shot, sizeof(shot)) == sizeof(shot);
       MDS_IO_CLOSE(fd);
 #ifdef WORDS_BIGENDIAN
-      if (status & 1)
+      if (STATUS_OK)
       {
         int lshot = shot;
         int i;

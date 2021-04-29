@@ -412,5 +412,5 @@ Boolean XmdsApplyAllXds(Widget w)
     for (i = 0; i < num && status; i++)
       status = XmdsApplyAllXds(popups[i]);
   }
-  return status & 1;
+  return STATUS_OK;
 }

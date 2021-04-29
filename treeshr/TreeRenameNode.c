@@ -105,7 +105,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
     make sure that the new node is not already there
   ***************************************************/
   status = _TreeFindNode(dbid, upcase_name, &i);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = TreeALREADY_THERE;
     goto cleanup;
@@ -115,7 +115,7 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   ******************************************************/
   status =
       TreeFindParent(dblist, upcase_name, &newnode, &newnode_name, &is_child);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   /************************************************
     Make sure that the node being renamed is not
@@ -221,10 +221,10 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
     status = TreeInsertMember(newnode, oldnode_ptr,
                               dblist->tree_info->header->sort_members);
 
-  if (status & 1)
+  if (STATUS_OK)
     status = FixParentState(dblist, newnode, oldnode_ptr);
 
-  if (status & 1)
+  if (STATUS_OK)
     dblist->modified = 1;
 
 cleanup:
@@ -258,7 +258,7 @@ static int FixParentState(PINO_DATABASE *dblist, NODE *parent_ptr,
   ****************************************************/
   parent_state = _TreeIsOn(dblist, *(int *)&parent_nid) & 1;
   status = _TreeGetNci(dblist, *(int *)&child_nid, child_itm_list);
-  if (status & 1)
+  if (STATUS_OK)
   {
     child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
     if (child_parent_state != parent_state)

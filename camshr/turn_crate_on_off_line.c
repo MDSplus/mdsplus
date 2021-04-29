@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <status.h>
 
 #include "common.h"
 #include "crate.h"
@@ -114,7 +115,7 @@ int turn_crate_on_off_line(char *crate_name, int state)
                      16,                  // mem == 16-bit data
                      &iosb                // *iosb
     );
-    if (status & 1)
+    if (STATUS_OK)
     {
       status = get_crate_status(pController, &crateStatus);
       online = ((crateStatus & 0x1000) != 0x1000) ? TRUE : FALSE;

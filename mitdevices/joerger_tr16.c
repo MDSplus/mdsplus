@@ -180,16 +180,16 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) {free(channel_data); return status;}
 
-  for (chan = 0; ((chan < 16) && (status & 1) && (put_status & 1)); chan++) {
+  for (chan = 0; ((chan < 16) && (STATUS_OK) && (put_status & 1)); chan++) {
     if (TreeIsOn(CHAN_NID(chan, JOERGER_TR16_N_CHAN_HEAD)) & 1) {
       status = DevLong(&CHAN_NID(chan, JOERGER_TR16_N_CHAN_STARTIDX), (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&CHAN_NID(chan, JOERGER_TR16_N_CHAN_ENDIDX), (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(raw.bounds[0].l, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -198,12 +198,12 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
       if (raw.m[0] > 0) {
 	int tries;
 	status = 0;
-	for (tries = 0; (!(status & 1) && (tries < 5)); tries++) {
+	for (tries = 0; (STATUS_NOT_OK && (tries < 5)); tries++) {
 	  samples_to_read = raw.bounds[0].u - min_idx + 1;
 	  status =
 	      ReadChannel(setup->name, chan, &samples_to_read, channel_data,
 			  TreeIsOn(c_nids[1]) & 1);
-	  if (status & 1) {
+	  if (STATUS_OK) {
 	    coefficient = .610E-3;
 	    raw.pointer = (char *)(channel_data + (raw.bounds[0].l - min_idx));
 	    raw.a0 = raw.pointer - (raw.bounds[0].l * sizeof(channel_data[0]));
@@ -218,7 +218,7 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	      ret_status = put_status;
 	  }
 	}
-	if (!(status & 1) && (ret_status & 1))
+	if (STATUS_NOT_OK && (ret_status & 1))
 	  ret_status = status;
 	status = 1;
       }

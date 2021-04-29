@@ -180,7 +180,7 @@ EXPORT int dsp2904___store(struct descriptor *niddsc __attribute__ ((unused)), I
       }
     }
   }
-  if ((status & 1) && (TreeIsOn(counter_nid) & 1)) {
+  if ((STATUS_OK) && (TreeIsOn(counter_nid) & 1)) {
     int channel_nid = setup->head_nid + DSP2904_N_COUNTER_CHANNEL;
     int channel;
     return_on_error(DevLong(&channel_nid, &channel), status);
@@ -230,14 +230,14 @@ static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned sho
     AccessTraq(setup, 0x0A000 | channel, 24);
     AccessTraq(setup, 0x0B000, 24);
     pio(8, 0, 0, 16);
-    for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (status & 1); try++) {
+    for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (STATUS_OK); try++) {
       pio(8, 0, 0, 16);
     }
     pio(10, 0, 0, 16);
-    for (points_to_read = num; points_to_read && (status & 1); points_to_read = num - points_read) {
+    for (points_to_read = num; points_to_read && (STATUS_OK); points_to_read = num - points_read) {
       int count = points_to_read > 32767 ? 32767 : points_to_read;
       status = CamQstopw(setup->traq_name, 0, 2, count, buffer + points_read, 16, (unsigned short *)&iosb);
-      status = (status & 1) ? iosb.status : status;
+      status = (STATUS_OK) ? iosb.status : status;
       if (iosb.bytcnt == 0)
 	break;
       points_read += iosb.bytcnt / 2;
@@ -265,7 +265,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize)
   int try;
   int status;
   pio(17, 0, &data, memsize);
-  for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (status & 1); try++) {
+  for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (STATUS_OK); try++) {
     DevWait((float).0005);
     pio(17, 0, &data, memsize);
   }

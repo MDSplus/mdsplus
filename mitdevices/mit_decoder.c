@@ -102,7 +102,7 @@ int mit_decoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), I
       //unsigned short cam_data = chan + 1;
       chan_flags |= (1 << chan);
       status = TreeGetRecord(dev_nid, &pseudo_xd);
-      if (!(status & 1)) {
+      if (STATUS_NOT_OK) {
 	if (status != TreeNODATA)
 	  return status;
       } else {
@@ -130,7 +130,7 @@ int mit_decoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), I
   }
   memset(&events[STOP_CHAN], 0, sizeof(EventMask));
   status = GetEvent("STOP_SCALERS", &events[STOP_CHAN]);
-  if (status & 1)
+  if (STATUS_OK)
     OctaOr(&events[STOP_CHAN], &all_events);
 
 /********** Scalers automatically start on recognizing channel event *****
@@ -272,11 +272,11 @@ static int GetEvent(char *name, EventMask * mask)
   name_dsc.length = strlen(name);
   name_dsc.pointer = name;
   status = TdiExecute((struct descriptor *)&expr, &name_dsc, &xd MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     unsigned char event = *(unsigned char *)xd.pointer->pointer;
     mask->bits[event / 32] |= 1 << (event % 32);
   }
-  return status & 1;
+  return STATUS_OK;
 }
 
 EXPORT int mit_decoder__get_event(int *ref_nid, unsigned int *event_mask)
@@ -288,7 +288,7 @@ EXPORT int mit_decoder__get_event(int *ref_nid, unsigned int *event_mask)
   int status;
   nid_dsc.pointer = (char *)ref_nid;
   status = TdiExecute((struct descriptor *)&expression, &nid_dsc, &xd MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     if (xd.pointer->class == CLASS_A) {
       struct descriptor_a *array = (struct descriptor_a *)xd.pointer;
       char *event = array->pointer;

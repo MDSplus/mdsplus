@@ -46,7 +46,7 @@ static void printDecompiled(struct descriptor *inD)
   char *buf;
 
   status = TdiDecompile(inD, &out_xd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     printf("%s\n", MdsGetMsg(status));
     return;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
       exit(0);
     }
     status = MdsSerializeDscIn(retXd->pointer->pointer, &xd);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       printf("Error: decompressing result\n");
       exit(0);

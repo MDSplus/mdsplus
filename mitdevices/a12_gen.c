@@ -142,7 +142,7 @@ EXPORT int a12__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)),
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
   nci_list[0].pointer = (unsigned char *)&element;
   status = TreeGetNci(*(int *)nid_d_ptr->pointer, nci_list);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   switch (element) {
   case (A12_N_HEAD + 1):

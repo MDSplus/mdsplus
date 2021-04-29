@@ -347,7 +347,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
   hid_t obj, type;
   int item_type;
   int status = FindItem(name, &obj, &item_type);
-  if (status & 1)
+  if (STATUS_OK)
   {
     if (item_type == H5G_DATASET)
     {

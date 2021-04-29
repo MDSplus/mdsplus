@@ -498,7 +498,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
 
     /* send each argument */
     va_copy(incrmtr, initial_incrmtr);
-    for (i = 1; i <= nargs && (status & 1); i++)
+    for (i = 1; i <= nargs && (STATUS_OK); i++)
     {
       descnum = va_arg(incrmtr, int *);
       if (*descnum > 0)
@@ -515,7 +515,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
       }
     }
 
-    if (status & 1)
+    if (STATUS_OK)
     {
       int numbytes;
       short len;
@@ -533,7 +533,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
        **  present for client-only library.
        **/
 
-      if (status & 1)
+      if (STATUS_OK)
       {
         int ansdescr = 0;
         int dims[MAX_DIMS];
@@ -597,7 +597,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
           status = 0;
           break;
         }
-        if (status & 1)
+        if (STATUS_OK)
           mds_value_set(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
       }
       free(dnew);
@@ -634,7 +634,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
     *(int *)&arglist[0] = argidx - 1;
     status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
 
-    if (status & 1)
+    if (STATUS_OK)
     {
 
       descnum = va_arg(incrmtr, int *);
@@ -642,7 +642,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
 
       status = TdiData(xd1.pointer, &xd2 MDS_END_ARG);
 
-      if (status & 1 && xd2.pointer != 0 && xd2.pointer->pointer != 0)
+      if (STATUS_OK && xd2.pointer != 0 && xd2.pointer->pointer != 0)
       {
         int templen = (xd2.pointer)->length;
         status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
@@ -657,7 +657,7 @@ static inline int mds_value_vargs(va_list incrmtr, int connection,
           (xd3.pointer)->length = MIN(templen, (xd3.pointer)->length);
       }
 
-      if (status & 1)
+      if (STATUS_OK)
       {
         mds_value_set(dsc, xd3.pointer, length);
 
@@ -750,7 +750,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
     /* send each argument */
 
     va_copy(incrmtr, initial_incrmtr);
-    for (i = 1; i <= nargs && (status & 1); i++)
+    for (i = 1; i <= nargs && (STATUS_OK); i++)
     {
       descnum = va_arg(incrmtr, int *);
       if (*descnum > 0)
@@ -768,7 +768,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
       }
     }
 
-    if (status & 1)
+    if (STATUS_OK)
     {
       int numbytes;
       short len;
@@ -786,7 +786,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
        **  present for client-only library.
        **/
 
-      if (status & 1)
+      if (STATUS_OK)
       {
         int ansdescr = 0;
         int dims[MAX_DIMS];
@@ -850,7 +850,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
           status = 0;
           break;
         }
-        if (status & 1)
+        if (STATUS_OK)
           mds_value_set(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
       }
       free(dnew);
@@ -888,7 +888,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
     *(int *)&arglist[0] = argidx - 1;
     status = (int)(intptr_t)LibCallg(arglist, TdiExecute);
 
-    if (status & 1)
+    if (STATUS_OK)
     {
 
       descnum = va_arg(incrmtr, int *);
@@ -897,7 +897,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
 
       status = TdiData(xd1.pointer, &xd2 MDS_END_ARG);
 
-      if (status & 1 && xd2.pointer)
+      if (STATUS_OK && xd2.pointer)
       {
         int templen = (xd2.pointer)->length;
         status = TdiCvt(&xd2, dsc, &xd3 MDS_END_ARG);
@@ -912,7 +912,7 @@ static inline int mds_value2_vargs(va_list incrmtr, int connection,
           (xd3.pointer)->length = MIN(templen, (xd3.pointer)->length);
       }
 
-      if (status & 1)
+      if (STATUS_OK)
       {
         mds_value_set(dsc, xd3.pointer, length);
 
@@ -986,7 +986,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
     status = SendArg(connection, idx++, arg->dtype, nargs, ArgLen(arg),
                      arg->ndims, arg->dims, arg->ptr);
     arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, expression);
-    for (i = idx; i < nargs && (status & 1); i++)
+    for (i = idx; i < nargs && (STATUS_OK); i++)
     {
       status = SendArg(connection, (char)i, arg->dtype, nargs, ArgLen(arg),
                        arg->ndims, arg->dims, arg->ptr);
@@ -998,7 +998,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
       }
     }
 
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       int dims[MAX_DIMS];
@@ -1008,7 +1008,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
       void *dptr;
       status = GetAnswerInfo(connection, &dtype, &len, &ndims, dims, &numbytes,
                              &dptr);
-      if (status & 1 && dtype == DTYPE_LONG && ndims == 0 &&
+      if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 &&
           numbytes == sizeof(int))
         memcpy(&status, dptr, numbytes);
     }
@@ -1048,7 +1048,7 @@ static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname,
 
       status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 
-      if (status & 1)
+      if (STATUS_OK)
       {
         if ((status = TreePutRecord(
                  nid, (struct descriptor *)arglist[argidx - 2], 0)) &
@@ -1125,7 +1125,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
     status = SendArg(connection, idx++, arg->dtype, nargs, ArgLen(arg),
                      arg->ndims, arg->dims, arg->ptr);
     arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, expression);
-    for (i = idx; i < nargs && (status & 1); i++)
+    for (i = idx; i < nargs && (STATUS_OK); i++)
     {
       status = SendArg(connection, (char)i, arg->dtype, nargs, ArgLen(arg),
                        arg->ndims, arg->dims, arg->ptr);
@@ -1138,7 +1138,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
       }
     }
 
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       int dims[MAX_DIMS];
@@ -1148,7 +1148,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
       void *dptr;
       status = GetAnswerInfo(connection, &dtype, &len, &ndims, dims, &numbytes,
                              &dptr);
-      if (status & 1 && dtype == DTYPE_LONG && ndims == 0 &&
+      if (STATUS_OK && dtype == DTYPE_LONG && ndims == 0 &&
           numbytes == sizeof(int))
         memcpy(&status, dptr, numbytes);
     }
@@ -1189,7 +1189,7 @@ static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname,
 
       status = (int)(intptr_t)LibCallg(arglist, TdiCompile);
 
-      if (status & 1)
+      if (STATUS_OK)
       {
         if ((status =
                  TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2]),
@@ -1615,7 +1615,7 @@ EXPORT int MdsOpenR(int *connection, char *tree, int *shot)
     d3 = descr(&dtype_long, &answer, &null);
 
     status = MdsValueR(connection, expression, &d1, &d2, &d3, &null, &length);
-    if ((status & 1))
+    if ((STATUS_OK))
     {
       return *(int *)&answer;
     }
@@ -1670,7 +1670,7 @@ extern EXPORT int MdsCloseR(int *connection, char *tree, int *shot)
 
     status = MdsValueR(connection, expression, &d1, &d2, &d3, &null, &length);
 
-    if ((status & 1))
+    if ((STATUS_OK))
     {
       return *(int *)&answer;
     }
@@ -1715,7 +1715,7 @@ EXPORT int MdsSetDefaultR(int *connection, char *node)
     strcat(expression, "')");
     status = MdsValueR(connection, expression, &d1, &null, &length);
     free(expression);
-    if ((status & 1))
+    if ((STATUS_OK))
     {
       return *(int *)&answer;
     }

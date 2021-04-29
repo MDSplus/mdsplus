@@ -756,7 +756,7 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
   int status = TreeSUCCESS;
   NCI_ITM *itm;
   struct descrip ans;
-  for (itm = nci_itm; itm->code != NciEND_OF_LIST && status & 1; itm++)
+  for (itm = nci_itm; itm->code != NciEND_OF_LIST && STATUS_OK; itm++)
   {
     char *getnci_str = NULL;
     switch (itm->code)
@@ -970,7 +970,7 @@ int SetNciRemote(PINO_DATABASE *dblist, int nid, NCI_ITM *nci_itm)
 {
   int status = 1;
   NCI_ITM *itm_ptr;
-  for (itm_ptr = nci_itm; itm_ptr->code != NciEND_OF_LIST && status & 1;
+  for (itm_ptr = nci_itm; itm_ptr->code != NciEND_OF_LIST && STATUS_OK;
        itm_ptr++)
   {
     switch (itm_ptr->code)
@@ -993,7 +993,7 @@ int SetDbiRemote(PINO_DATABASE *dblist, DBI_ITM *dbi_itm)
 {
   int status = 1;
   DBI_ITM *itm_ptr;
-  for (itm_ptr = dbi_itm; itm_ptr->code != DbiEND_OF_LIST && status & 1;
+  for (itm_ptr = dbi_itm; itm_ptr->code != DbiEND_OF_LIST && STATUS_OK;
        itm_ptr++)
   {
     switch (itm_ptr->code)
@@ -1085,7 +1085,7 @@ int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
       if (ans.dtype == DTYPE_L)
         *shot = *(int *)ans.ptr;
       else
-        status = status & 1 ? TreeFAILURE : status;
+        status = STATUS_OK ? TreeFAILURE : status;
       MdsIpFree(ans.ptr);
     }
   }

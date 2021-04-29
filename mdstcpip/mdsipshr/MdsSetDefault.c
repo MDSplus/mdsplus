@@ -39,7 +39,7 @@ int MdsSetDefault(int id, char *node)
   int status =
       MdsValue(id, expression, MakeDescrip(&nodearg, DTYPE_CSTRING, 0, 0, node),
                &ansarg, NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
+  if ((STATUS_OK) && (ansarg.dtype == DTYPE_LONG))
     status = *(int *)ansarg.ptr;
   free(ansarg.ptr);
   return status;

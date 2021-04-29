@@ -420,11 +420,11 @@ static int GetEventNum(char *name, unsigned int *mask)
   name_dsc.length = strlen(name);
   name_dsc.pointer = name;
   status = TdiExecute((struct descriptor *)&expr, &name_dsc, &xd MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     unsigned char event = *(unsigned char *)xd.pointer->pointer;
     mask[event / 32] |= 1 << (event % 32);
   }
-  return status & 1;
+  return STATUS_OK;
 }
 */
 EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
@@ -680,7 +680,7 @@ static int GetEvent(int *ref_nid, unsigned int *event_mask)
   int status;
   nid_dsc.pointer = (char *)ref_nid;
   status = TdiExecute((struct descriptor *)&expression, &nid_dsc, &xd MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     if (xd.pointer->class == CLASS_A) {
       struct descriptor_a *array = (struct descriptor_a *)xd.pointer;
       char *event = array->pointer;
@@ -715,10 +715,10 @@ static int ClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_ou
   static float frequency;
   static float duty_cycle;
   status = GetFloat(w, nid, channel, CHANNEL_P1, &frequency);
-  if ((!(status & 1)) || (frequency <= 0.0))
+  if ((STATUS_NOT_OK) || (frequency <= 0.0))
     return TIMING$_INVCLKFRQ;
   status = GetFloat(w, nid, channel, CHANNEL_P2, &duty_cycle);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return TIMING$_INVDUTY;
   dt = 1 / frequency;
   GetClockSet(dt, &source, &period);
@@ -760,7 +760,7 @@ static int ClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_ou
     MdsFree1Dx(edges, 0);
     *setup_out = setup;
     status = GetEvent(&event_nid, event_mask);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return status;
   } else {
     String text = (*info = malloc(500));
@@ -789,10 +789,10 @@ static int GatedClockGetSetup(Widget w, int nid, int channel, DecoderSetup * set
   static float frequency;
   static float duty_cycle;
   status = GetFloat(w, nid, channel, CHANNEL_P1, &frequency);
-  if ((!(status & 1)) || (frequency <= 0.0))
+  if ((STATUS_NOT_OK) || (frequency <= 0.0))
     return TIMING$_INVCLKFRQ;
   status = GetFloat(w, nid, channel, CHANNEL_P2, &duty_cycle);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return TIMING$_INVDUTY;
   dt = 1 / frequency;
   GetClockSet(dt, &source, &period);
@@ -836,7 +836,7 @@ static int GatedClockGetSetup(Widget w, int nid, int channel, DecoderSetup * set
     MdsFree1Dx(edges, 0);
     *setup_out = setup;
     status = GetEvent(&event_nid, event_mask);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return status;
   } else {
     String text = (*info = malloc(500));
@@ -866,13 +866,13 @@ static int GateGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_out
   float pulse_time;
   int trigger_mode;
   status = GetFloat(w, nid, channel, CHANNEL_P1, &delay);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return TIMING$_INVDELDUR;
   status = GetFloat(w, nid, channel, CHANNEL_P2, &duration);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return TIMING$_INVDELDUR;
   status = GetFloat(w, nid, channel, CHANNEL_P3, &pulse_time);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return TIMING$_INVDELDUR;
   delay = delay - pulse_time;
   dt = max(delay, duration);
@@ -887,7 +887,7 @@ static int GateGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_out
   setup.clock_source = source;
   setup.falling_edge = 0;
   status = GetInt(w, nid, channel, CHANNEL_P5, &trigger_mode);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return TIMING$_INVTRGMOD;
   switch (trigger_mode) {
   case TM_EVENT_TRIGGER:
@@ -929,7 +929,7 @@ static int GateGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_out
     else
       event_nid = nid + MPB__DECODER_N_START_EVENT;
     status = GetEvent(&event_nid, event_mask);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return status;
   } else {
     String text = (*info = malloc(500));
@@ -958,10 +958,10 @@ static int DualClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setu
   static float frequency_1;
   static float frequency_2;
   status = GetFloat(w, nid, channel, CHANNEL_P1, &frequency_1);
-  if ((!(status & 1)) || (frequency_1 <= 0.0))
+  if ((STATUS_NOT_OK) || (frequency_1 <= 0.0))
     return TIMING$_INVCLKFRQ;
   status = GetFloat(w, nid, channel, CHANNEL_P2, &frequency_2);
-  if ((!(status & 1)) || (frequency_2 <= 0.0))
+  if ((STATUS_NOT_OK) || (frequency_2 <= 0.0))
     return TIMING$_INVCLKFRQ;
   dt = 1 / min(frequency_1, frequency_2);
   GetClockSet(dt, &source, &period);
@@ -1011,7 +1011,7 @@ static int DualClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setu
     MdsFree1Dx(edges, 0);
     *setup_out = setup;
     status = GetEvent(&event_nid, event_mask);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return status;
   } else {
     String text = (*info = malloc(500));

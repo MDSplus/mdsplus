@@ -224,19 +224,19 @@ int joerger_tr612___store(struct descriptor *niddsc __attribute__ ((unused)), In
   c_offset[4] = range2.range_1 & 1 ? -2048 : 0;
   c_coef[5] = coefs[range2.range_2];
   c_offset[5] = range2.range_2 & 1 ? -2048 : 0;
-  for (chan = 0; ((chan < 6) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < 6) && (STATUS_OK)); chan++) {
     int nid = CHAN_NID(chan, JOERGER_TR612_N_INP_HEAD);
     if (TreeIsOn(nid) & 1) {
       nid = CHAN_NID(chan, JOERGER_TR612_N_INP_STARTIDX);
       status = DevLong(&nid, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       nid = CHAN_NID(chan, JOERGER_TR612_N_INP_ENDIDX);
       status = DevLong(&nid, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -245,7 +245,7 @@ int joerger_tr612___store(struct descriptor *niddsc __attribute__ ((unused)), In
       if (raw.m[0] > 0) {
 	samples_to_read = raw.bounds[0].u - min_idx + 1;
 	status = ReadChannel(setup, samples_to_read, chan, channel_data);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  offset = c_offset[chan];
 	  coefficient = c_coef[chan];
 	  raw.pointer = (char *)(channel_data + raw.bounds[0].l - min_idx);

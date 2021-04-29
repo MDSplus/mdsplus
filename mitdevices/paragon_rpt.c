@@ -58,7 +58,7 @@ int paragon_rpt___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   FILE *file;
   int isftp;
   int status = PARAGON_FTP_COPY(setup->report_name,(struct descriptor *)&rpt_name,&isftp);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     return(status);
   }

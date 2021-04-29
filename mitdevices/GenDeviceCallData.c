@@ -105,7 +105,7 @@ EXPORT int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *settin
  Executable:								      */
 
   status = TreeGetRecord(cur_nid, &record_d);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return (status);
   type = record_d.pointer->dtype;
   switch (mode) {
@@ -114,7 +114,7 @@ EXPORT int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *settin
       status = TdiData(record_d.pointer, setting_d_ptr MDS_END_ARG);
     else
       MdsCopyDxXd((struct descriptor *)&record_d, setting_d_ptr);
-    if (~status & 1) {
+    if (STATUS_NOT_OK) {
       if ((setting_d_ptr) && (setting_d_ptr->pointer))
 	setting_d_ptr->pointer->class = CLASS_D;
     } else {
@@ -138,7 +138,7 @@ EXPORT int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *settin
     break;
   case DevMODSLO:
     status = TdiEvaluate(record_d.pointer, setting_d_ptr MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       if (((setting_d_ptr->pointer)->dtype != DTYPE_SLOPE)
 	  && ((setting_d_ptr->pointer)->dtype != DTYPE_RANGE)) {
 	MdsFree1Dx(setting_d_ptr, 0);
@@ -148,7 +148,7 @@ EXPORT int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *settin
     break;
   case DevMODRAN:
     status = TdiEvaluate(record_d.pointer, &temp_xd MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       if ((temp_xd.pointer)->dtype != DTYPE_RANGE) {
 	MdsFree1Dx(&temp_xd, 0);
 	status = DEV$_BADPARAM;
@@ -180,7 +180,7 @@ EXPORT int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *settin
     break;
   case DevMODRANLON:
     status = TdiEvaluate(record_d.pointer, &temp_xd MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       if ((temp_xd.pointer)->dtype != DTYPE_RANGE) {
 	MdsFree1Dx(&temp_xd, 0);
 	status = DEV$_BADPARAM;

@@ -51,7 +51,7 @@ int dbiTest(void *ctx, short int code)
                               {0, DbiEND_OF_LIST, 0, 0}};
 
   int status = _TreeGetDbi(ctx, dbiList);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   return supports;
 }
@@ -78,37 +78,37 @@ int main(int argc __attribute__((unused)),
 
   // open tree //
   status = _TreeOpenNew(&ctx, tree_name, shot);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST0(ctx == NULL);
 
   // add node //
   int nid;
   status = _TreeAddNode(ctx, node_name, &nid, TreeUSAGE_ANY);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   status = _TreeWriteTree(&ctx, tree_name, shot);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   // remove node //
   int count;
   status = _TreeDeleteNodeInitialize(ctx, nid, &count, 1);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   _TreeDeleteNodeExecute(ctx);
 
   status = _TreeWriteTree(&ctx, tree_name, shot);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   // close tree //
   int is_modified = dbiTest(ctx, DbiMODIFIED);
   if (is_modified)
   {
     status = _TreeQuitTree(&ctx, tree_name, shot);
-    TEST1(status & 1);
+    TEST1(STATUS_OK);
   }
   else
   {
     status = _TreeClose(&ctx, tree_name, shot);
-    TEST1(status & 1);
+    TEST1(STATUS_OK);
   }
   TreeFreeDbid(ctx);
 

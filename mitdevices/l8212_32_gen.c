@@ -38,21 +38,21 @@ EXPORT int l8212_32__add(struct descriptor *name_d_ptr, struct descriptor *dummy
   flag_itm[0].pointer = (unsigned char *)&flags;
   name_ptr[name_d_ptr->length] = 0;
   status = TreeStartConglomerate(L8212_32_K_CONG_NODES);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeAddNode(name_ptr, &head_nid, usage);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   *nid_ptr = head_nid;
   status = TreeSetNci(head_nid, flag_itm);
   status = TreePutRecord(head_nid, (struct descriptor *)&conglom_d, 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeGetDefaultNid(&old_nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeSetDefaultNid(head_nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
  ADD_NODE(:NAME, TreeUSAGE_TEXT)
  ADD_NODE(:COMMENT, TreeUSAGE_TEXT)
@@ -443,7 +443,7 @@ EXPORT int l8212_32__add(struct descriptor *name_d_ptr, struct descriptor *dummy
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   return (TreeSetDefaultNid(old_nid));
 }
@@ -455,7 +455,7 @@ EXPORT int l8212_32__part_name(struct descriptor *nid_d_ptr __attribute__ ((unus
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
   nci_list[0].pointer = (unsigned char *)&element;
   status = TreeGetNci(*(int *)nid_d_ptr->pointer, nci_list);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   switch (element) {
   case (L8212_32_N_HEAD + 1):

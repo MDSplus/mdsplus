@@ -43,9 +43,9 @@ EXPORT int j412___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), In
   struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int status;
   status = TdiLong((struct descriptor *)in_struct->set_points, &xd MDS_END_ARG);
-  if (status & 1)
+  if (STATUS_OK)
     status = TdiData((struct descriptor *)&xd, &xd MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     struct descriptor_a *a_ptr = (struct descriptor_a *)xd.pointer;
     int num = a_ptr->arsize / a_ptr->length;
     int *buff = (int *)a_ptr->pointer;
@@ -54,7 +54,7 @@ EXPORT int j412___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), In
     num = max(min(1024, num), 0);
 
     if (num) {
-      status = status & 1;
+      status = STATUS_OK;
       for (i = 1; (i < num) && status; i++)
 	status = buff[i] > buff[i - 1];
 

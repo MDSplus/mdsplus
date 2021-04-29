@@ -129,7 +129,7 @@ static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStore
   FILE *file;
   int isftp;
   status = PARAGON_FTP_COPY(setup->report_name, (struct descriptor *)&rpt_name, &isftp);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK) {
     return (status);
   }
   for (i = 0; i < 10; i++) {
@@ -143,7 +143,7 @@ static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStore
       static DESCRIPTOR_NID(nid_dsc, &limit_nid);
       limit_nid = setup->head_nid + PARAGON_HIST_N_LIMIT_0 + i;
       status = TdiData((struct descriptor *)&nid_dsc, &limits[i] MDS_END_ARG);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
 	MdsFree1Dx(&limits[i], 0);
       nums[i] = 0;
       sizes[i] = INITIAL_SIZE;
@@ -228,7 +228,7 @@ static void StoreSignal(int nid,
     MdsCopyDxXd((struct descriptor *)&vals, &values);
   }
   status = TreeGetRecord(nid, &tmp_xd);
-  if (status & 1) {
+  if (STATUS_OK) {
     static struct descriptor_xd value = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
     static struct descriptor_xd time = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
     //static DESCRIPTOR(sorted_times, "SORT($)");

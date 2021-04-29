@@ -166,12 +166,12 @@ int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), In
 	int end_nid = data_nid + L8590_SCLR_N_INPUT_1_ENDIDX - L8590_SCLR_N_INPUT_1;
 	if (TreeIsOn(data_nid) & 1) {
 	  status = DevLong(&start_nid, (int *)&raw.bounds[0].l);
-	  if (status & 1)
+	  if (STATUS_OK)
 	    raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
 	  else
 	    raw.bounds[0].l = min_idx;
 	  status = DevLong(&end_nid, (int *)&raw.bounds[0].u);
-	  if (status & 1)
+	  if (STATUS_OK)
 	    raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
 	  else
 	    raw.bounds[0].u = max_idx;
@@ -227,7 +227,7 @@ static void Load(Widget w)
     char digname[512];
     sprintf(digname, "%s:L8590_%d", l8590_memname, i);
     status = TreeFindNode(digname, &dig_nid);
-    if (status & 1) {
+    if (STATUS_OK) {
       TreeGetNci(dig_nid, itmlst);
       item = XmStringCreateSimple(nodename);
       XmListAddItem(w, item, 0);

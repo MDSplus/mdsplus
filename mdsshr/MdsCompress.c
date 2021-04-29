@@ -133,7 +133,7 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
     case CLASS_R:
       ppd = &((mdsdsc_r_t *)pwork)->dscptrs[0];
       j = ((mdsdsc_r_t *)pwork)->ndesc;
-      while ((--j >= 0) && (status & 1))
+      while ((--j >= 0) && (STATUS_OK))
         if ((stat1 = compress(pcimage, pcentry, delta, *(ppd++))) != 1)
           status = stat1;
       break;
@@ -195,7 +195,7 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
         dximage = EMPTY_D;
         dxentry = EMPTY_D;
         status = LibFindImageSymbol(pcimage, pcentry, &symbol);
-        if (status & 1)
+        if (STATUS_OK)
           status = (*symbol)(&nitems, pwork, pdat, &bit, &dximage, &dxentry);
         pdat->arsize = (bit + 7) / 8;
         pd0 = (mdsdsc_t *)(pdat->pointer + pdat->arsize);
@@ -227,7 +227,7 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
           pd0 = pd1;
           StrFree1Dx(&dxentry);
         }
-        if ((status & 1) && (status != LibSTRTRU) &&
+        if ((STATUS_OK) && (status != LibSTRTRU) &&
             ((char *)pd0 < (char *)plim))
           goto good;
         /**************************************************
@@ -245,7 +245,7 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
       ********************/
       status = MdsCmprs(&nitems, (mdsdsc_a_t *)pwork, pdat, (int *)&bit);
       pdat->arsize = (bit + 7) / 8;
-      if ((status & 1) && (status != LibSTRTRU))
+      if ((STATUS_OK) && (status != LibSTRTRU))
         goto good;
       /*************************************
       Did not do a good job, so restore all.
@@ -314,11 +314,11 @@ Compact/copy from work.
 #ifdef _RECURSIVE_COMPRESS
   while (status == MdsCOMPRESSIBLE)
 #else
-  if (status & 1)
+  if (STATUS_OK)
 #endif
   {
     status = MdsGet1Dx(&work.l_length, &dsc_dtype, out_ptr, NULL);
-    if (status & 1)
+    if (STATUS_OK)
     {
 #ifdef _RECURSIVE_COMPRESS
       int orig_len = work.l_length;
@@ -327,7 +327,7 @@ Compact/copy from work.
       status = compress(cimage_ptr, centry_ptr,
                         (char *)out_ptr->pointer - (char *)work.pointer,
                         work.pointer);
-      if (status & 1)
+      if (STATUS_OK)
         status = MdsCopyDxXd(work.pointer, out_ptr);
       MdsFree1Dx(&work, NULL);
 #ifdef _RECURSIVE_COMPRESS
@@ -375,7 +375,7 @@ EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr)
     if (prec->dscptrs[1])
     {
       status = LibFindImageSymbol(prec->dscptrs[0], prec->dscptrs[1], &symbol);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
         return status;
     }
     else
@@ -383,15 +383,15 @@ EXPORT int MdsDecompress(const mdsdsc_r_t *rec_ptr, mdsdsc_xd_t *out_ptr)
       symbol = MdsXpand;
       status = 1;
     }
-    if (status & 1)
+    if (STATUS_OK)
       status = MdsGet1DxA(pa, &pa->length, &pa->dtype, out_ptr);
-    if (status & 1)
+    if (STATUS_OK)
     {
       if (prec->dscptrs[3]->class == CLASS_CA)
       {
         EMPTYXD(tmp_xd);
         status = MdsDecompress((mdsdsc_r_t *)prec->dscptrs[3], &tmp_xd);
-        if (status & 1)
+        if (STATUS_OK)
           status = (*symbol)(&nitems, tmp_xd.pointer, out_ptr->pointer, &bit);
         MdsFree1Dx(&tmp_xd, 0);
       }

@@ -45,7 +45,7 @@ EXPORT int mit__clock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((u
   int status;
   InGet_setupStruct s;
   status = mit__clock___get_setup(niddsc_ptr, &s);
-  if (status & 1) {
+  if (STATUS_OK) {
     static int output_nid;
     static DESCRIPTOR_NID(output_dsc, (char *)&output_nid);
     int invert = 0;

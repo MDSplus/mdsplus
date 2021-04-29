@@ -91,9 +91,9 @@ static int StoreChannel(InStoreStruct * setup, int chan)
 	offset = ctl * 10. / 2048.0 - 10.0;
     out_nid_d.pointer = (char *)&output_nid;
     status = TdiCompile((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &value MDS_END_ARG);
-    if (!(status & 1)) { return status; }
+    if (STATUS_NOT_OK) { return status; }
     status = TreePutRecord(input_nid, (struct descriptor *)&value, 0);
-    if (!(status & 1)) { return status; }
+    if (STATUS_NOT_OK) { return status; }
     if (TreeIsOn(filter_on_nid) & 1) {
       status = TreePutRecord(filter_on_nid, filter, 0);
     }

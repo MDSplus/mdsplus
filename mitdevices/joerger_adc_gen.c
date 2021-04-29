@@ -38,21 +38,21 @@ EXPORT int joerger_adc__add(struct descriptor *name_d_ptr, struct descriptor *du
   flag_itm[0].pointer = (unsigned char *)&flags;
   name_ptr[name_d_ptr->length] = 0;
   status = TreeStartConglomerate(JOERGER_ADC_K_CONG_NODES);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeAddNode(name_ptr, &head_nid, usage);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   *nid_ptr = head_nid;
   status = TreeSetNci(head_nid, flag_itm);
   status = TreePutRecord(head_nid, (struct descriptor *)&conglom_d, 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeGetDefaultNid(&old_nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeSetDefaultNid(head_nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
  ADD_NODE(:NAME, TreeUSAGE_TEXT)
  ADD_NODE(:COMMENT, TreeUSAGE_TEXT)
@@ -67,7 +67,7 @@ EXPORT int joerger_adc__add(struct descriptor *name_d_ptr, struct descriptor *du
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE_ACTION(:STORE_ACTION, STORE, STORE, 50, 0, 0, CAMAC_SERVER, 0)
       status = TreeEndConglomerate();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   return (TreeSetDefaultNid(old_nid));
 }
@@ -79,7 +79,7 @@ EXPORT int joerger_adc__part_name(struct descriptor *nid_d_ptr __attribute__ ((u
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
   nci_list[0].pointer = (unsigned char *)&element;
   status = TreeGetNci(*(int *)nid_d_ptr->pointer, nci_list);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   switch (element) {
   case (JOERGER_ADC_N_HEAD + 1):

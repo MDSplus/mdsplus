@@ -1367,7 +1367,7 @@ EXPORT int CamSetMAXBUF(char *Name, int new)
     int scsiDevice, enhanced, online;
     CamKey Key;
     int status = CamAssign(Name, &Key);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address,
@@ -1399,7 +1399,7 @@ EXPORT int CamGetMAXBUF(char *Name)
     int scsiDevice, enhanced, online;
     CamKey Key;
     int status = CamAssign(Name, &Key);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address,

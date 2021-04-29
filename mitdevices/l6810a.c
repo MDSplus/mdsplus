@@ -242,16 +242,16 @@ EXPORT int l6810a___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) {free(channel_data); return status;}
 
-  for (chan = 0; ((chan < 4) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < 4) && (STATUS_OK)); chan++) {
     if (TreeIsOn(CHAN_NID(chan, L6810A_N_CHAN_HEAD)) & 1) {
       status = DevLong(&CHAN_NID(chan, L6810A_N_CHAN_STARTIDX), (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&CHAN_NID(chan, L6810A_N_CHAN_ENDIDX), (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(raw.bounds[0].l, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -260,7 +260,7 @@ EXPORT int l6810a___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
       if (raw.m[0] > 0) {
 	samples_to_read = raw.bounds[0].u - min_idx + 1;
 	status = ReadChannel(in_struct->name, chan, &samples_to_read, channel_data);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  short *optr;
 	  coefficient = coeffs[setup.sensitivity[chan]];
 	  raw.pointer = (char *)(channel_data + (raw.bounds[0].l - min_idx));

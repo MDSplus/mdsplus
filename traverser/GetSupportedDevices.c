@@ -39,7 +39,7 @@ int GetSupportedDevices(char ***devnames, int *number)
   *number = 0;
   *devnames = 0;
   status = TdiExecute((struct descriptor *)&expr, &dev_list MDS_END_ARG);
-  if (status & 1)
+  if (STATUS_OK)
   {
     int i;
     struct descriptor_a *a_ptr = (struct descriptor_a *)dev_list.pointer;

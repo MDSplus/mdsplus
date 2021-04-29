@@ -35,7 +35,7 @@ extern int GenDeviceFree();
 
 static DESCRIPTOR(event_lookup, "EVENT_LOOKUP($)");
 static int one = 1;
-#define return_on_error(func,statret) status = func; if (!(status & 1)) return statret
+#define return_on_error(func,statret) status = func; if (STATUS_NOT_OK) return statret
 #define pio(f,a,d) return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0), status);
 
 int mit_encoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
@@ -82,7 +82,7 @@ EXPORT int mit_encoder__set_event(struct descriptor *niddsc_ptr __attribute__ ((
 {
   InSet_eventStruct setup;
   int status = mit_encoder___set_event(niddsc_ptr, &setup);
-  if (status & 1) {
+  if (STATUS_OK) {
     static unsigned short event = 0;
     static struct descriptor event_d = { 1, DTYPE_BU, CLASS_S, (char *)&event };
     static int nid;

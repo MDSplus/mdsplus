@@ -45,7 +45,7 @@ EXPORT int mit_gclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((u
   int status;
   InGet_setupStruct s;
   status = mit_gclock___get_setup(niddsc_ptr, &s);
-  if (status & 1) {
+  if (STATUS_OK) {
     float duty_cycle = 0.;
     int invert = 0;
     static float frequency[2];
@@ -66,7 +66,7 @@ EXPORT int mit_gclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((u
     gate_nid = s.head_nid + MIT_GCLOCK_N_GATE;
     memset(event_mask, 0, sizeof(EventMask));
     status = TdiData((struct descriptor *)s.frequency, (struct descriptor *)&frequency_a MDS_END_ARG);
-    if (!(status & 1)) {
+    if (STATUS_NOT_OK) {
       status = TIMING$_INVCLKFRQ;
       goto error;
     }
@@ -117,12 +117,12 @@ EXPORT int mit_gclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((u
       setup->start_high = 1;
     }
     status = TdiCompile((struct descriptor *)&output_exp, &gate_dsc, &dt_dsc, &out MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       static int output_nid;
       static DESCRIPTOR_NID(output_dsc, (char *)&output_nid);
       output_nid = s.head_nid + MIT_GCLOCK_N_OUTPUT;
       status = TreePutRecord(output_nid, (struct descriptor *)&out, 0);
-      *output = (status & 1) ? &output_dsc : 0;
+      *output = (STATUS_OK) ? &output_dsc : 0;
     } else
       *output = 0;
     GenDeviceFree(&s);

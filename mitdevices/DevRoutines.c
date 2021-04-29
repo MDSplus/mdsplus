@@ -55,7 +55,7 @@ EXPORT int DevFloat(int *nid, float *ans)
 
 EXPORT int DevCamChk(int status, int *expect_x, int *expect_q)
 {
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
 
   if (expect_x) {
@@ -90,7 +90,7 @@ EXPORT int DevNid(int *nid_in, int *nid_out)
 {
   EMPTYXD(xd);
   int status = TreeGetRecord(*nid_in, &xd);
-  if (status & 1) {
+  if (STATUS_OK) {
     switch (xd.pointer->dtype) {
     case DTYPE_NID:
       *nid_out = *(int *)xd.pointer->pointer;

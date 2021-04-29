@@ -123,7 +123,7 @@ static int doOpen(int streams, char *name, int options, int mode,
     info[2] = (int)mode;
     status = SendArg(mfile->socket, MDS_IO_OPEN_K, 0, 0, 0,
                      sizeof(info) / sizeof(int), info, filepart);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       short length;
@@ -195,7 +195,7 @@ off_t getSize(struct mdsfile *file)
     *(off_t *)(&info[2]) = 0;
     status = SendArg(sock, MDS_IO_LSEEK_K, 0, 0, 0, sizeof(info) / sizeof(int),
                      info, 0);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       unsigned short length;
@@ -217,7 +217,7 @@ off_t getSize(struct mdsfile *file)
     }
     status = SendArg(sock, MDS_IO_LSEEK_K, 0, 0, 0, sizeof(info) / sizeof(int),
                      info, 0);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       unsigned short length;
@@ -258,7 +258,7 @@ off_t doRead(struct mdsfile *file, off_t count, void *buff)
     info[2] = count;
     status = SendArg(sock, MDS_IO_READ_K, 0, 0, 0, sizeof(info) / sizeof(int),
                      info, 0);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       unsigned short length;
@@ -297,7 +297,7 @@ static off_t doWrite(struct mdsfile *file, off_t count, void *buff)
     info[0] = count;
     status = SendArg(sock, MDS_IO_WRITE_K, 0, 0, 0, sizeof(info) / sizeof(int),
                      info, buff);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       unsigned short length;
@@ -333,7 +333,7 @@ static int doClose(struct mdsfile *file)
     info[1] = file->fd;
     status = SendArg(sock, MDS_IO_CLOSE_K, 0, 0, 0, sizeof(info) / sizeof(int),
                      info, 0);
-    if (status & 1)
+    if (STATUS_OK)
     {
       char dtype;
       short length;

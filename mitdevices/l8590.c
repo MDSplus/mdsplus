@@ -104,13 +104,13 @@ EXPORT int l8590___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
       int end_nid = data_nid + L8590_N_INPUT_1_ENDIDX - L8590_N_INPUT_1;
       if (TreeIsOn(data_nid) & 1) {
 	status = DevLong(&start_nid, (int *)&raw.bounds[0].l);
-	if (status & 1)
+	if (STATUS_OK)
 	  raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
 	else
 	  raw.bounds[0].l = min_idx;
 
 	status = DevLong(&end_nid, (int *)&raw.bounds[0].u);
-	if (status & 1)
+	if (STATUS_OK)
 	  raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
 	else
 	  raw.bounds[0].u = max_idx;

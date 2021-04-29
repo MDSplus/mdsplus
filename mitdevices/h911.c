@@ -110,7 +110,7 @@ EXPORT int h911___store(struct descriptor *nid_d_ptr __attribute__ ((unused)), I
     data_dsc.pointer = (char *)buffer;
     data_dsc.arsize = samples * sizeof(short);
     clk_nid = in->head_nid + H911_N_EXT_CLOCK;
-    for (i = 0, status = 1; ((status & 1) && (i < chans)); i++) {
+    for (i = 0, status = 1; ((STATUS_OK) && (i < chans)); i++) {
       int nid = in->head_nid + H911_N_CHANNEL_01 + i;
       if (TreeIsOn(nid)) {
 	short addr = i;

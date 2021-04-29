@@ -248,16 +248,16 @@ EXPORT int l6810b___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) {free(channel_data); return status;}
 
-  for (chan = 0; ((chan < setup.active_chan) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < setup.active_chan) && (STATUS_OK)); chan++) {
     if (TreeIsOn(CHAN_NID(chan, L6810B_N_CHAN_HEAD)) & 1) {
       status = DevLong(&CHAN_NID(chan, L6810B_N_CHAN_STARTIDX), (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&CHAN_NID(chan, L6810B_N_CHAN_ENDIDX), (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(raw.bounds[0].l, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -268,7 +268,7 @@ EXPORT int l6810b___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
 	status =
 	    ReadChannel(in_struct->name, chan, segs, samples_per_segment, drop, &samples_to_read,
 			channel_data);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  short *optr;
 	  coefficient = coeffs[setup.sensitivity[chan]];
 	  raw.pointer = (char *)(channel_data + (raw.bounds[0].l - min_idx));
@@ -301,7 +301,7 @@ EXPORT int l6810b___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
 				(setup.f1_freq == 0) ? (struct descriptor *)&ext_clock_d :
 				(struct descriptor *)&int_clock_d, &dimension_xd MDS_END_ARG);
 	  }
-	  if (status & 1)
+	  if (STATUS_OK)
 	    status =
 		TreePutRecord(CHAN_NID(chan, L6810B_N_CHAN_HEAD), (struct descriptor *)&signal, 0);
 	}

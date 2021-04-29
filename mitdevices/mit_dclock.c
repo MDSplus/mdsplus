@@ -45,7 +45,7 @@ EXPORT int mit_dclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((u
   int status;
   InGet_setupStruct s;
   status = mit_dclock___get_setup(niddsc_ptr, &s);
-  if (status & 1) {
+  if (STATUS_OK) {
     float max_period;
     float period;
     static float dt1;
@@ -93,12 +93,12 @@ EXPORT int mit_dclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((u
     dt1 = setup->load * period * 2;
     dt2 = setup->hold * period * 2;
     status = TdiCompile((struct descriptor *)&output_exp, &dt1_dsc, &dt2_dsc, &gate_dsc, &out MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       static int output_nid;
       static DESCRIPTOR_NID(output_dsc, (char *)&output_nid);
       output_nid = s.head_nid + MIT_DCLOCK_N_OUTPUT;
       status = TreePutRecord(output_nid, (struct descriptor *)&out, 0);
-      *output = (status & 1) ? &output_dsc : 0;
+      *output = (STATUS_OK) ? &output_dsc : 0;
     } else
       *output = 0;
     GenDeviceFree(&s);

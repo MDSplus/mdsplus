@@ -190,7 +190,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define ADD_NODE(name, usage)                                     \
   {                                                               \
     status = TreeAddNode(STRING_LITERAL(name), &curr_nid, usage); \
-    if (!(status & 1))                                            \
+    if (STATUS_NOT_OK)                                            \
     {                                                             \
       TreeSetDefaultNid(old_nid);                                 \
       return status;                                              \
@@ -208,9 +208,9 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     else                                                                   \
       status =                                                             \
           TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC); \
-    if (status & 1)                                                        \
+    if (STATUS_OK)                                                        \
       status = TreePutRecord(curr_nid, &num_d, 0);                         \
-    if (!(status & 1))                                                     \
+    if (STATUS_NOT_OK)                                                     \
     {                                                                      \
       TreeSetDefaultNid(old_nid);                                          \
       return status;                                                       \
@@ -229,9 +229,9 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     else                                                                   \
       status =                                                             \
           TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC); \
-    if (status & 1)                                                        \
+    if (STATUS_OK)                                                        \
       status = TreePutRecord(curr_nid, &num_d, 0);                         \
-    if (!(status & 1))                                                     \
+    if (STATUS_NOT_OK)                                                     \
     {                                                                      \
       TreeSetDefaultNid(old_nid);                                          \
       return status;                                                       \
@@ -247,9 +247,9 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);     \
     else                                                                     \
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_TEXT); \
-    if (status & 1)                                                          \
+    if (STATUS_OK)                                                          \
       status = TreePutRecord(curr_nid, (struct descriptor *)&string_d, 0);   \
-    if (!(status & 1))                                                       \
+    if (STATUS_NOT_OK)                                                       \
     {                                                                        \
       TreeSetDefaultNid(old_nid);                                            \
       return status;                                                         \
@@ -264,7 +264,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     struct descriptor_xd comp_expr_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};      \
     status =                                                                 \
         TdiCompile((struct descriptor *)&expr_d, &comp_expr_xd MDS_END_ARG); \
-    if (!(status & 1))                                                       \
+    if (STATUS_NOT_OK)                                                       \
     {                                                                        \
       TreeSetDefaultNid(old_nid);                                            \
       return status;                                                         \
@@ -304,9 +304,9 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
       }                                                                      \
     }                                                                        \
     status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
-    if (status & 1)                                                          \
+    if (STATUS_OK)                                                          \
       status = TreePutRecord(curr_nid, comp_expr_xd.pointer, 0);             \
-    if (!(status & 1))                                                       \
+    if (STATUS_NOT_OK)                                                       \
     {                                                                        \
       TreeSetDefaultNid(old_nid);                                            \
       return status;                                                         \
@@ -355,9 +355,9 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
     else                                                                       \
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_ACTION); \
-    if (status & 1)                                                            \
+    if (STATUS_OK)                                                            \
       status = TreePutRecord(curr_nid, (struct descriptor *)&action_d, 0);     \
-    if (!(status & 1))                                                         \
+    if (STATUS_NOT_OK)                                                         \
     {                                                                          \
       TreeSetDefaultNid(old_nid);                                              \
       return status;                                                           \
@@ -419,40 +419,40 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_descriptor(pos, field)      \
   curr_nid = head_nid + pos;             \
   status = TreeGetRecord(curr_nid, &xd); \
-  if (status & 1)                        \
+  if (STATUS_OK)                        \
     in_struct.field = xd.pointer;        \
   next_xd
 #define read_descriptor_error(pos, field, err)                             \
   curr_nid = head_nid + pos;                                               \
   status = TreeGetRecord(curr_nid, &xd);                                   \
-  if (!(status & 1))                                                       \
+  if (STATUS_NOT_OK)                                                       \
     error(head_nid, GEN_DEV$_INV_SETUP, err) in_struct.field = xd.pointer; \
   next_xd
 #define read_integer(pos, field)                          \
   curr_nid = head_nid + pos;                              \
   status = TdiData(&curr_nid_d, &curr_int_d MDS_END_ARG); \
-  if (status & 1)                                         \
+  if (STATUS_OK)                                         \
     in_struct.field = curr_int;
 #define read_integer_error(pos, field, err)               \
   curr_nid = head_nid + pos;                              \
   status = TdiData(&curr_nid_d, &curr_int_d MDS_END_ARG); \
-  if (!(status & 1))                                      \
+  if (STATUS_NOT_OK)                                      \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.field = curr_int;
 #define check_range(field, min, max, err)                 \
   if ((in_struct.field < min) || (in_struct.field > max)) \
     error(head_nid, GEN_DEV$_INV_SETUP, err);
 #define check_integer_set(field, table, max_idx, err)                   \
   status = GenDeviceCvtIntCode(&code, in_struct.field, table, max_idx); \
-  if (!(status & 1))                                                    \
+  if (STATUS_NOT_OK)                                                    \
   error(head_nid, GEN_DEV$_INV_SETUP, err)
 #define check_integer_conv_set(field, conv_field, table, max_idx, err)  \
   status = GenDeviceCvtIntCode(&code, in_struct.field, table, max_idx); \
-  if (!(status & 1))                                                    \
+  if (STATUS_NOT_OK)                                                    \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.conv_field = code;
 #define read_integer_array_error(pos, field, field_count, err)               \
   curr_nid = head_nid + pos;                                                 \
   status = GenDeviceCallData(DevMODINT, curr_nid, &xd);                      \
-  if (!(status & 1))                                                         \
+  if (STATUS_NOT_OK)                                                         \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else                            \
     {                                                                        \
       array_d_ptr = (struct descriptor_a *)xd.pointer;                       \
@@ -467,7 +467,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_integer_array(pos, field, field_count)                      \
   curr_nid = head_nid + pos;                                             \
   status = GenDeviceCallData(DevMODINT, curr_nid, &xd);                  \
-  if (status & 1)                                                        \
+  if (STATUS_OK)                                                        \
   {                                                                      \
     array_d_ptr = (struct descriptor_a *)xd.pointer;                     \
     if (array_d_ptr->class == CLASS_A)                                   \
@@ -480,7 +480,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_float_array_error(pos, field, field_count, err)             \
   curr_nid = head_nid + pos;                                             \
   status = GenDeviceCallData(DevMODFLO, curr_nid, &xd);                  \
-  if (!(status & 1))                                                     \
+  if (STATUS_NOT_OK)                                                     \
     error(head_nid, GEN_DEV$_INV_SETUP, err) array_d_ptr =               \
         (struct descriptor_a *)xd.pointer;                               \
   if (array_d_ptr->class != CLASS_A)                                     \
@@ -494,7 +494,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_float_array(pos, field, field_count)                        \
   curr_nid = head_nid + pos;                                             \
   status = GenDeviceCallData(DevMODFLO, curr_nid, &xd);                  \
-  if (status & 1)                                                        \
+  if (STATUS_OK)                                                        \
   {                                                                      \
     array_d_ptr = (struct descriptor_a *)xd.pointer;                     \
     if (array_d_ptr->class == CLASS_A)                                   \
@@ -507,41 +507,41 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_float(pos, field)                              \
   curr_nid = head_nid + pos;                                \
   status = TdiData(&curr_nid_d, &curr_float_d MDS_END_ARG); \
-  if (status & 1)                                           \
+  if (STATUS_OK)                                           \
     in_struct.field = curr_float;
 #define read_float_error(pos, field, err)                   \
   curr_nid = head_nid + pos;                                \
   status = TdiData(&curr_nid_d, &curr_float_d MDS_END_ARG); \
-  if (!(status & 1))                                        \
+  if (STATUS_NOT_OK)                                        \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.field = curr_float;
 #define check_float_set(field, table, max_idx, err)                       \
   status = GenDeviceCvtFloatCode(&code, in_struct.field, table, max_idx); \
-  if (!(status & 1))                                                      \
+  if (STATUS_NOT_OK)                                                      \
   error(head_nid, GEN_DEV$_INV_SETUP, err)
 #define check_float_conv_set(field, conv_field, table, max_idx, err)      \
   status = GenDeviceCvtFloatCode(&code, in_struct.field, table, max_idx); \
-  if (!(status & 1))                                                      \
+  if (STATUS_NOT_OK)                                                      \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.conv_field = code;
 #define read_string(pos, field)                         \
   curr_nid = head_nid + pos;                            \
   status = GenDeviceCallData(DevMODSTR, curr_nid, &xd); \
-  if (status & 1)                                       \
+  if (STATUS_OK)                                       \
     in_struct.field = xd.pointer->pointer;              \
   next_xd
 #define read_string_error(pos, field, err)                          \
   curr_nid = head_nid + pos;                                        \
   status = GenDeviceCallData(DevMODSTR, curr_nid, &xd);             \
-  if (!(status & 1))                                                \
+  if (STATUS_NOT_OK)                                                \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.field = \
         xd.pointer->pointer;                                        \
   next_xd
 #define check_string_set(field, table, max_idx, err)                       \
   status = GenDeviceCvtStringCode(&code, in_struct.field, table, max_idx); \
-  if (!(status & 1))                                                       \
+  if (STATUS_NOT_OK)                                                       \
   error(head_nid, GEN_DEV$_INV_SETUP, err)
 #define check_string_conv_set(field, conv_field, table, max_idx, err)      \
   status = GenDeviceCvtStringCode(&code, in_struct.field, table, max_idx); \
-  if (!(status & 1))                                                       \
+  if (STATUS_NOT_OK)                                                       \
     error(head_nid, GEN_DEV$_INV_SETUP, err) else in_struct.conv_field = code;
 #define build_results_with_xd_and_return(num_xd)                             \
   in_struct.__xds =                                                          \

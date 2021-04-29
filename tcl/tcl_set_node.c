@@ -82,7 +82,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
     {
     case MdsdclPRESENT:
       status = TreeSetSubtree(nid);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
@@ -95,7 +95,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       break;
     case MdsdclNEGATED:
       status = TreeSetNoSubtree(nid);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
@@ -107,12 +107,12 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       }
       break;
     }
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       goto error;
     if (cli_present(ctx, "ON") & 1)
     {
       status = TreeTurnOn(nid);
-      if (status & 1)
+      if (STATUS_OK)
         TclNodeTouched(nid, on_off);
       else
       {
@@ -128,7 +128,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
     else if (cli_present(ctx, "OFF") & 1)
     {
       status = TreeTurnOff(nid);
-      if (status & 1)
+      if (STATUS_OK)
         TclNodeTouched(nid, on_off);
       else
       {
@@ -237,7 +237,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
         status = TreeSetNci(nid, set_itmlst);
       if (clear_flags)
         status = TreeSetNci(nid, clear_itmlst);
-      if (status & 1)
+      if (STATUS_OK)
       {
         if (log)
         {

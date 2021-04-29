@@ -77,7 +77,7 @@ static void *FindSymbol(char *name)
 {
   void *rtn = NULL;
   int status = LibFindImageSymbol_C("hdf5", name, &rtn);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     printf("Error activating hdf5 shared library\n");
     exit(1);

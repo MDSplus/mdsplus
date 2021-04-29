@@ -369,7 +369,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
 #endif
   tdiarg = expression; /* first in list (corresponding to string) */
                        /* Cycle through the arguments */
-  for (i = 0; (i < nargs) && (status & 1); i++)
+  for (i = 0; (i < nargs) && (STATUS_OK); i++)
   {
 #ifdef DEBUG
     printf("idx[%d] dtype[%d] nargs[%d]\n", i, tdiarg->dtype, nargs);

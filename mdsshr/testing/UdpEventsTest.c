@@ -142,5 +142,5 @@ int main(int argc, char **args)
   status = MDSEventCan(id2);
 
   END_TESTING;
-  return (status & 1) == 0;
+  return (STATUS_OK) == 0;
 }

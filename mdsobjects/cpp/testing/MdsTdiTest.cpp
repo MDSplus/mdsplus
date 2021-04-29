@@ -91,7 +91,7 @@ int SingleThreadTest(int idx, int repeats)
           std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
           err = 1;
         }
-        else if (!(status & 1))
+        else if (STATUS_NOT_OK)
           throw MDSplus::MdsException(status);
       }
       catch (MDSplus::MdsException e)

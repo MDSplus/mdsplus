@@ -66,19 +66,19 @@ EXPORT int ec727___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   pio(17, 0);
   for (i = 0; i < 4; i++, dptr += 8192)
     stop(0, 0, 8192, dptr);
-  for (chan = 0; ((chan < 32) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < 32) && (STATUS_OK)); chan++) {
     int c_nid = setup->head_nid + EC727_N_INPUT_01 + chan * (EC727_N_INPUT_02 - EC727_N_INPUT_01);
     int s_nid = c_nid + EC727_N_INPUT_01_STARTIDX - EC727_N_INPUT_01;
     int e_nid = c_nid + EC727_N_INPUT_01_ENDIDX - EC727_N_INPUT_01;
     if (TreeIsOn(c_nid) & 1) {
       status = DevLong(&s_nid, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(1023, max(0, raw.bounds[0].l));
       else
 	raw.bounds[0].l = 0;
 
       status = DevLong(&e_nid, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(1023, max(0, raw.bounds[0].u));
       else
 	raw.bounds[0].u = 1023;

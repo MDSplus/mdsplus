@@ -109,7 +109,7 @@ EXPORT int hm650___init(struct descriptor *niddsc __attribute__ ((unused)), InIn
       ndelay = 0xFFFF;
     }
     pio(16, i, &ndelay, 16);
-    if (status & 1) {
+    if (STATUS_OK) {
       static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
       int trig_in = setup->head_nid + HM650_N_TRIG_IN_0 + i;
       int trig_out = setup->head_nid + HM650_N_TRIG_OUT_0 + i;
@@ -134,7 +134,7 @@ EXPORT int hm650___init(struct descriptor *niddsc __attribute__ ((unused)), InIn
 
   pio(21, 0, &zero, 16);
 
-  if ((status & 1) == 0)
+  if ((STATUS_OK) == 0)
     return status;
   else if ((dly_status & 1) == 0)
     return dly_status;

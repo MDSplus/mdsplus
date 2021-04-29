@@ -317,7 +317,7 @@ PHP_FUNCTION(mdsplus_open)
   shot = (int)zshot;
   mdsplus_replace_error(0, 1);
   status = MdsOpen(socket, tree, shot);
-  if (status & 1)
+  if (STATUS_OK)
   {
     RETURN_TRUE;
   }
@@ -351,7 +351,7 @@ PHP_FUNCTION(mdsplus_close)
   socket = (int)zsocket;
   mdsplus_replace_error(0, 1);
   status = MdsClose(socket);
-  if (status & 1)
+  if (STATUS_OK)
   {
     RETURN_TRUE;
   }
@@ -464,7 +464,7 @@ PHP_FUNCTION(mdsplus_value)
       WRONG_PARAM_COUNT;
     status = SendArg(socket, 0, DTYPE_CSTRING, num_args - 1, strlen(expression),
                      0, dims, expression);
-    for (i = 2; (status & 1) && i < num_args; i++)
+    for (i = 2; (STATUS_OK) && i < num_args; i++)
     {
       switch (Z_TYPE_P(*args[i]))
       {
@@ -485,14 +485,14 @@ PHP_FUNCTION(mdsplus_value)
             "invalid argument type, must be long, double or string only", 0);
         RETURN_FALSE;
       }
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         mdsplus_replace_error("error sending argument to server", 0);
         RETURN_FALSE;
         break;
       }
     }
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       mdsplus_replace_error("error sending argument to server", 0);
       RETURN_FALSE;
@@ -523,7 +523,7 @@ PHP_FUNCTION(mdsplus_value)
       free(mem);
     }
   }
-  if (status & 1)
+  if (STATUS_OK)
   {
     if (ans.ndims == 0)
     {
@@ -671,7 +671,7 @@ PHP_FUNCTION(mdsplus_put)
                      node);
     status = SendArg(socket, 2, DTYPE_CSTRING, num_args, strlen(expression), 0,
                      dims, expression);
-    for (i = 3; (status & 1) && i < num_args; i++)
+    for (i = 3; (STATUS_OK) && i < num_args; i++)
     {
       switch (Z_TYPE_P(*args[i]))
       {
@@ -694,13 +694,13 @@ PHP_FUNCTION(mdsplus_put)
         goto done_mdsplus_put;
         break;
       }
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         mdsplus_replace_error("error sending argument to server", 0);
         goto done_mdsplus_put;
       }
     }
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       mdsplus_replace_error("error sending argument to server", 0);
       goto done_mdsplus_put;
@@ -731,7 +731,7 @@ PHP_FUNCTION(mdsplus_put)
       free(mem);
     }
   }
-  if (status & 1)
+  if (STATUS_OK)
   {
     if (ans.ptr && (*(int *)ans.ptr & 1))
     {
@@ -765,7 +765,7 @@ PHP_FUNCTION(mdsplus_put)
   }
 done_mdsplus_put:
   free(ans.ptr);
-  if (status & 1)
+  if (STATUS_OK)
   {
     RETURN_TRUE;
   }

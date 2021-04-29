@@ -188,20 +188,20 @@ EXPORT int incaa4___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
   min_idx = setup->ptsc - samps_per_chan;
   free(raw.pointer);
   raw.pointer = malloc(samps_per_chan * 2);
-  for (chan = 0; ((chan < active_chans) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < active_chans) && (STATUS_OK)); chan++) {
     int input_nid =
 	setup->head_nid + INCAA4_N_INPUT_1 + chan * (INCAA4_N_INPUT_2 - INCAA4_N_INPUT_1);
     int startidx_nid = input_nid + 1;
     int endidx_nid = input_nid + 2;
     if (TreeIsOn(input_nid) & 1) {
       status = DevLong(&startidx_nid, &raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&endidx_nid, &raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -212,13 +212,13 @@ EXPORT int incaa4___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
 	int samps;
 	pio(16, 0, &addr);
 	for (samples_to_read = raw.m[0], data_ptr = (short *)raw.pointer;
-	     (samples_to_read > 0) && (status & 1);
+	     (samples_to_read > 0) && (STATUS_OK);
 	     samples_to_read -= samps, data_ptr += samps, addr += (samps * active_chans)) {
 	  pio(16, 0, &addr);
 	  samps = min(samples_to_read, 32767);
 	  fstop(2, 0, samps, data_ptr);
 	}
-	if (status & 1) {
+	if (STATUS_OK) {
 	  raw.a0 = raw.pointer - raw.bounds[0].l;
 	  raw.arsize = raw.m[0] * 2;
 	  status = TreePutRecord(input_nid, (struct descriptor *)&signal, 0);

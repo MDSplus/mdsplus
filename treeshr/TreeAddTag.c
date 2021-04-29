@@ -100,7 +100,7 @@ int _TreeAddTag(void *dbid, int nid_in, char const *tagnam)
   ************************************************/
 
   status = IS_OPEN_FOR_EDIT(dblist) ? TreeSUCCESS : TreeNOEDIT;
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
 
   len = strlen(tagnam);

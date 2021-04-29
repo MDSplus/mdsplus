@@ -133,7 +133,7 @@ static int Apply(Widget w)
   XtFree(old_list);
   if (status)
     XmdsApplyAllXds(XtParent(w));
-  return status & 1;
+  return STATUS_OK;
 }
 
 static void Reset(Widget w)

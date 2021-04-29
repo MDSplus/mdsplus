@@ -844,7 +844,7 @@ Data *MDSplus::compileWithArgs(const char *expr, int nArgs...)
                                           &status);
   }
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return res;
 }
@@ -883,7 +883,7 @@ Data *MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs...)
       expr, nArgs, (void *)args, tree, (tree) ? tree->getCtx() : NULL, &status);
   for (i = 0; i < nArgs; i++)
     freeDsc(args[i]);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return res;
 }
@@ -915,7 +915,7 @@ Data *MDSplus::executeWithArgs(const char *expr, int nArgs...)
   Data *compData = (Data *)compileFromExprWithArgs(
       expr, nArgs, (void *)args, actTree, (actTree) ? actTree->getCtx() : NULL,
       &status);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   Data *evalData = compData->data();
   deleteData(compData);
@@ -947,7 +947,7 @@ Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs...)
   Data *compData =
       (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree,
                                       (tree) ? tree->getCtx() : NULL, &status);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   if (!compData)
     throw MdsException("Cannot compile expression");

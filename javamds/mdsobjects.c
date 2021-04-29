@@ -3985,7 +3985,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));
     return;
   }
-  if (status & 1 && dtype == DTYPE_LONG && nDims == 0 &&
+  if (STATUS_OK && dtype == DTYPE_LONG && nDims == 0 &&
       numBytes == sizeof(int))
     memcpy(&status, ptr, numBytes);
   if (mem)
@@ -4017,15 +4017,15 @@ EXPORT struct descriptor_xd *getDeviceFields(char *deviceName)
   }
   status = TreeOpenNew("device_beans", -1);
   printf("%s\n", MdsGetMsg(status));
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return &xd;
   status = TreeAddNode("Boh", &nid, TreeUSAGE_STRUCTURE);
   TreeSetDefaultNid(nid);
   status = TreeAddConglom("TEST", deviceName, &nid);
   printf("%s\n", MdsGetMsg(status));
-  if (status & 1)
+  if (STATUS_OK)
     status = TreeGetNci(nid, nci_list);
-  if (!(status & 1) || conglomerate_nids == 0)
+  if (STATUS_NOT_OK || conglomerate_nids == 0)
   {
     TreeQuitTree("device_beans", -1);
     return &xd;
