@@ -94,7 +94,8 @@ class Tests(_common.TreeTests, _common.MdsIp):
         """ context """
         self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
         pytree = Tree()
-        self.assertEqual(str(pytree), 'Tree("%(EXPT)s",%(SHOT)d,"Normal")' % fmt)
+        self.assertEqual(
+            str(pytree), 'Tree("%(EXPT)s",%(SHOT)d,"Normal")' % fmt)
         self._doTCLTest('close %(EXPT)s/shot=%(SHOT)d' % fmt)
         self.assertEqual(str(pytree), 'Tree("?",?,"Closed")')
         if self.inThread:
@@ -141,7 +142,8 @@ class Tests(_common.TreeTests, _common.MdsIp):
                 """ tcl dispatch """
                 self._testDispatchCommand(server, 'type test')
                 env = "%s_path" % self.tree
-                self._doTCLTest('env '+ env, '%s=%s\n' % (env, self.envx[env]))
+                self._doTCLTest('env ' + env, '%s=%s\n' %
+                                (env, self.envx[env]))
                 self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
                 self._doTCLTest('dispatch/build%s' % monitor_opt)
                 self._doTCLTest('dispatch/phase%s INIT' % monitor_opt)
