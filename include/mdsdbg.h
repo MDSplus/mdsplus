@@ -15,8 +15,9 @@
   } while (0)
 #else
 #define DBG(...) \
+  do             \
   { /**/         \
-  }
+  } while (0)
 #endif
 
 #define PID ((intptr_t)pthread_self())
