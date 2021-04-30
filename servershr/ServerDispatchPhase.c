@@ -529,13 +529,13 @@ static void WaitForActions(int all, int first_g, int last_g,
 {
   int c_status = C_OK;
   _CONDITION_LOCK(&JobWaitC);
-  struct timespec tp;
-  clock_gettime(CLOCK_REALTIME, &tp);
   int g, c = 1;
   while ((c_status == ETIMEDOUT || c_status == C_OK) && !isAbortInProgress() &&
          (g = !NoOutstandingActions(first_g, last_g) ||
               (all && (c = !NoOutstandingActions(first_c, last_c)))))
   {
+    struct timespec tp;
+    clock_gettime(CLOCK_REALTIME, &tp);
     if (c_status == C_OK)
     {
       DBG("%lu: %d, %d\n", (uint64_t)tp.tv_sec, g, c);

@@ -73,7 +73,7 @@ extern int TdiExecute();
 extern int mdsdcl_do_command(char *command);
 extern int is_broken_socket(SOCKET sock);
 
-static int SendReply(SrvJob *job, int replyType, int status, int length,
+static int send_reply(SrvJob *job, int replyType, int status, int length,
                      char *msg);
 
 static int DoSrvCommand(SrvJob *job_in);
@@ -320,7 +320,7 @@ static void AbortJob(SrvJob *job)
 {
   if (job)
   {
-    SendReply(job, SrvJobFINISHED, ServerABORT, 0, 0);
+    send_reply(job, SrvJobFINISHED, ServerABORT, 0, 0);
     FreeJob(job);
   }
 }
@@ -563,7 +563,7 @@ static int DoSrvAction(SrvJob *job_in)
 end:;
   TreeFreeDbid(dbid);
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
 // thread
@@ -578,7 +578,7 @@ static int DoSrvClose(SrvJob *job_in)
   } while (STATUS_OK);
   status = (status == TreeNOT_OPEN) ? TreeSUCCESS : status;
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
 // thread
@@ -592,7 +592,7 @@ static int DoSrvCreatePulse(SrvJob *job_in)
   current_job_text = job_text;
   status = TreeCreateTreeFiles(job->tree, job->shot, -1);
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
 // thread
@@ -623,7 +623,7 @@ static int DoSrvCommand(SrvJob *job_in)
   }
   ProgLoc = 69;
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   ProgLoc = 70;
   return status;
 }
@@ -683,7 +683,7 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
             job->phase, job->nid, job->on, job->mode, job->server, job->status,
             now, status_text);
   }
-  status = SendReply(job_in, SrvJobFINISHED, 1, strlen(msg), msg);
+  status = send_reply(job_in, SrvJobFINISHED, 1, strlen(msg), msg);
   free(msg);
   if (STATUS_NOT_OK)
   {
@@ -718,7 +718,7 @@ static void DoSrvMonitor(SrvJob *job_in)
   SrvMonitorJob *job = (SrvMonitorJob *)job_in;
   status = (job->mode == MonitorCheckin) ? AddMonitorClient(job_in)
                                          : SendToMonitors(job_in);
-  SendReply(job_in,
+  send_reply(job_in,
             (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED,
             status, 0, 0);
 }
@@ -752,7 +752,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
     if ((job->h.flags & SrvJobBEFORE_NOTIFY) != 0)
     {
       ProgLoc = 5;
-      SendReply(job, SrvJobSTARTING, 1, 0, 0);
+      send_reply(job, SrvJobSTARTING, 1, 0, 0);
     }
     ProgLoc = 6;
     switch (job->h.op)
@@ -883,11 +883,12 @@ static int send_all(SOCKET sock, char *msg, int len)
     bytes = send(sock, msg + sent, len - sent, MSG_NOSIGNAL);
     if (bytes <= 0)
       return bytes;
+    sent += bytes;
   } while (sent < len);
   return sent;
 }
 
-static int SendReply(SrvJob *job, int replyType, int status_in, int length, char *msg)
+static int send_reply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
   DBG("Job #%d for " IPADDRPRI ":%d : %d\n", job->h.jobid,
       IPADDRVAR(&job->h.addr), job->h.port, replyType);
@@ -895,7 +896,7 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length, char
   status = MDSplusERROR;
   SOCKET sock;
   long msg_len = msg ? (long)strlen(msg) : 0;
-  int try_again = TRUE;
+  int try_again = FALSE;
   char reply[60];
   memset(reply, 0, 60);
   sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg_len);
