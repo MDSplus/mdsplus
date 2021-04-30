@@ -285,6 +285,7 @@ class MdsIp(object):
         procs = [(svr, server) for svr, server in procs if svr.poll() is None]
         if len(procs) == 0:
             return
+        """
         # stop server
         for svr, server in procs:
             try:
@@ -296,6 +297,7 @@ class MdsIp(object):
                  for svr, server in procs if self._wait(svr, t-time.time()) is None]
         if len(procs) == 0:
             return
+        """
         # terminate server
         for svr, server in procs:
             sys.stderr.write("sending SIGTERM to %s" % server)
