@@ -388,8 +388,10 @@ static Job *pop_job_by_conid(int conid)
 
 static inline int Client_get_conid(Client *client, fd_set *fdactive)
 {
+  Client *curr;
   LOCK_CLIENTS;
-  Client *curr = Clients, **nextp = &Clients; // points to previous->next field
+  curr = Clients;
+  Client **nextp = &Clients; // points to previous->next field
   for (; curr; nextp = &curr->next, curr = curr->next)
   {
     if (curr == client)
@@ -398,20 +400,19 @@ static inline int Client_get_conid(Client *client, fd_set *fdactive)
       break;
     }
   }
-  client = curr;
   UNLOCK_CLIENTS;
-  if (client)
+  if (curr)
   {
-    int conid = client->conid;
-    if (client->reply_sock != INVALID_SOCKET)
+    int conid = curr->conid;
+    if (curr->reply_sock != INVALID_SOCKET)
     {
-      shutdown(client->reply_sock, 2);
-      close(client->reply_sock);
+      shutdown(curr->reply_sock, 2);
+      close(curr->reply_sock);
       if (fdactive)
-        FD_CLR(client->reply_sock, fdactive);
+        FD_CLR(curr->reply_sock, fdactive);
     }
-    DisconnectFromMds(client->conid);
-    free(client);
+    DisconnectFromMds(curr->conid);
+    free(curr);
     return conid;
   }
   return -1;
@@ -481,7 +482,7 @@ EXPORT void ServerWait(int jobid)
     DBG(JOB_PRI " sync done\n", JOB_VAR(j));
   }
   else
-    DBG(JOB_PRI " sync lost!\n", JOB_VAR(j));
+    DBG("Job(%d, ?) sync lost!\n", jobid);
 }
 
 static void do_callback_before(int jobid)
@@ -489,6 +490,7 @@ static void do_callback_before(int jobid)
   void *callback_param;
   void (*callback_before)();
   LOCK_JOBS;
+  callback_param = NULL;
   callback_before = NULL;
   Job *j;
   for (j = Jobs; j; j = j->next)

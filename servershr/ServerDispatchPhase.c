@@ -84,32 +84,17 @@ extern int TdiErrorlogsOf();
 extern int TdiGetLong();
 extern int ProgLoc;
 
-void SendMonitor(int mode, int idx);
-
-static void Dispatch(int idx);
-static void DoSendMonitor(int mode, int idx);
-static void ActionDone(int idx);
-static void DoActionDone(int idx);
-static void Before(int idx);
-static void SetActionRanges(int phase, int *first_c, int *last_c);
-static void AbortRange(int s, int e);
-static void SetGroup(int sync, int first_g, int *last_g);
-static int NoOutstandingActions(int s, int e);
-static void RecordStatus(int s, int e);
-static void Dispatch(int i);
-static void WaitForActions(int conditionals, int first_g, int last_g,
+static void dispatch(int idx);
+static void send_monitor(int mode, int idx);
+static void action_done(intptr_t idx);
+static void before(int idx);
+static void set_action_ranges(int phase, int *first_c, int *last_c);
+static void abort_range(int s, int e);
+static void set_group(int sync, int first_g, int *last_g);
+static int check_actions_done(int s, int e);
+static void record_status(int s, int e);
+static void wait_for_actions(int conditionals, int first_g, int last_g,
                            int first_c, int last_c);
-
-// STATIC_CONSTANT const int zero = 0;
-
-typedef struct _complete
-{
-  struct _complete *next;
-  int idx;
-} Complete;
-
-STATIC_THREADSAFE Complete *CompletedQueueHead = NULL;
-STATIC_THREADSAFE Complete *CompletedQueueTail = NULL;
 
 typedef struct _send_monitor
 {
@@ -118,16 +103,16 @@ typedef struct _send_monitor
   int mode;
 } SendMonitorInfo;
 
-STATIC_THREADSAFE SendMonitorInfo *SendMonitorQueueHead = NULL;
-STATIC_THREADSAFE SendMonitorInfo *SendMonitorQueueTail = NULL;
+static SendMonitorInfo *SendMonitorQueueHead = NULL;
+static SendMonitorInfo *SendMonitorQueueTail = NULL;
 
-STATIC_THREADSAFE DispatchTable *table;
-STATIC_THREADSAFE int noact;
-STATIC_THREADSAFE void (*Output)();
-STATIC_THREADSAFE int MonitorOn = 0;
-STATIC_THREADSAFE char *Monitor = 0;
-STATIC_THREADSAFE int first_s;
-STATIC_THREADSAFE int last_s;
+static DispatchTable *table;
+static int noact;
+static void (*Output)();
+static int MonitorOn = 0;
+static char *Monitor = 0;
+static int first_s;
+static int last_s;
 
 static int AbortInProgress;
 static pthread_mutex_t abortinprogress_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -149,9 +134,8 @@ static inline int isAbortInProgress()
   return val;
 }
 
-STATIC_THREADSAFE Condition JobWaitC = CONDITION_INITIALIZER;
-STATIC_THREADSAFE Condition SendMonitorC = CONDITION_INITIALIZER;
-STATIC_THREADSAFE Condition CompletedC = CONDITION_INITIALIZER;
+static Condition JobWaitC = CONDITION_INITIALIZER;
+static Condition SendMonitorC = CONDITION_INITIALIZER;
 
 static pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define MONITOR_QUEUE_LOCK                       \
@@ -159,10 +143,8 @@ static pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_cleanup_push((void *)pthread_mutex_unlock, &send_monitor_queue_mutex)
 #define MONITOR_QUEUE_UNLOCK pthread_cleanup_pop(1)
 
-STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex =
-    PTHREAD_MUTEX_INITIALIZER;
 
-STATIC_THREADSAFE pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
+static pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
 #define WRLOCK_TABLE pthread_rwlock_wrlock(&table_lock)
 #define RDLOCK_TABLE pthread_rwlock_rdlock(&table_lock)
 #define UNLOCK_TABLE pthread_rwlock_unlock(&table_lock)
@@ -214,124 +196,7 @@ static char *Server(char *out, char *srv)
   return out;
 }
 
-void SendMonitor(int mode, int idx)
-{
-  if (MonitorOn)
-  {
-    char tree[13];
-    char *cptr;
-    int i;
-    RDLOCK_TABLE;
-    if (table)
-    { // if no table prevent seg fault
-      for (i = 0, cptr = table->tree; i < 12; i++)
-        if (cptr[i] == (char)32)
-          break;
-        else
-          tree[i] = cptr[i];
-      tree[i] = 0;
-      ActionInfo *actions = table->actions;
-      RDLOCK_ACTION(idx, sm);
-      int on = actions[idx].on;
-      char server[33];
-      for (i = 0, cptr = actions[idx].server; i < 32 && (cptr[i] != ' '); i++)
-        server[i] = cptr[i];
-      server[i] = 0;
-      MonitorOn = ServerSendMonitor(Monitor, tree, table->shot,
-                                    actions[idx].phase, actions[idx].nid, on,
-                                    mode, server, actions[idx].status);
-      UNLOCK_ACTION(idx, sm);
-    }
-    UNLOCK_TABLE;
-  }
-}
-
-static void ActionDone(int idx)
-{
-  int i;
-  char logmsg[1024];
-  if (idx >= 0)
-  {
-    RDLOCK_TABLE;
-    if (table)
-    { // if no table prevent seg fault
-      RDLOCK_ACTION(idx, ad);
-      ActionInfo *actions = table->actions;
-      if (actions[idx].event)
-        MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
-      DoSendMonitor(MonitorDone, idx);
-      if (Output)
-      {
-        char now[32];
-        Now32(now);
-        if (IS_OK(actions[idx].status))
-          sprintf(logmsg, "%s, Action %s completed", now, actions[idx].path);
-        else
-        {
-          char *emsg = MdsGetMsg(actions[idx].status);
-          sprintf(logmsg, "%s, Action %s failed, %s", now, actions[idx].path,
-                  emsg);
-        }
-        (*Output)(logmsg);
-      }
-      if (!isAbortInProgress())
-      {
-        EMPTYXD(xd);
-        char expression[60];
-        struct descriptor expression_d = {0, DTYPE_T, CLASS_S, 0};
-        expression_d.pointer = expression;
-        expression_d.length = sprintf(expression, "PUBLIC _ACTION_%08X = %d",
-                                      actions[idx].nid, actions[idx].status);
-        TdiExecute(&expression_d, &xd MDS_END_ARG);
-        MdsFree1Dx(&xd, NULL);
-        for (i = 0; i < actions[idx].num_references; i++)
-        {
-          int dstat;
-          int doit;
-          int cidx = actions[idx].referenced_by[i];
-          RDLOCK_ACTION(cidx, adl);
-          if (!actions[cidx].done)
-          {
-            if (IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)))
-            {
-              UNLOCK_ACTION(cidx, ad_ftt);
-              if (doit)
-                Dispatch(cidx);
-              else
-              {
-                WRLOCK_ACTION(cidx, ad_ftte);
-                actions[cidx].status = ServerNOT_DISPATCHED;
-                UNLOCK_ACTION(cidx, ad_ftte);
-                DoActionDone(cidx);
-              }
-            }
-            else if (dstat != TdiUNKNOWN_VAR)
-            {
-              UNLOCK_ACTION(cidx, ad_fte);
-              WRLOCK_ACTION(cidx, ad_fte);
-              actions[cidx].status = ServerINVALID_DEPENDENCY;
-              UNLOCK_ACTION(cidx, ad_fte);
-              DoActionDone(cidx);
-            }
-          }
-          else
-            UNLOCK_ACTION(cidx, ad_fe);
-        }
-      }
-      UNLOCK_ACTION(idx, ad);
-      WRLOCK_ACTION(idx, ad);
-      {
-        actions[idx].done = 1;
-        actions[idx].recorded = 0;
-      }
-      UNLOCK_ACTION(idx, ad);
-    }
-    UNLOCK_TABLE;
-  }
-  CONDITION_SET(&JobWaitC);
-}
-
-static void Before(int idx)
+static void before(int idx)
 {
   RDLOCK_TABLE;
   if (table)
@@ -341,7 +206,7 @@ static void Before(int idx)
       ActionInfo *actions = table->actions;
       char logmsg[1024];
       actions[idx].doing = 1;
-      DoSendMonitor(MonitorDoing, idx);
+      send_monitor(MonitorDoing, idx);
       if (Output)
       {
         char server[33];
@@ -377,7 +242,7 @@ static void Before(int idx)
   if (i < END)                          \
     UNLOCK_ACTION(i, fnae_##info);
 
-static void SetActionRanges(int phase, int *first_c, int *last_c)
+static void set_action_ranges(int phase, int *first_c, int *last_c)
 {
   int i;
   RDLOCK_TABLE;
@@ -431,7 +296,7 @@ static void SetActionRanges(int phase, int *first_c, int *last_c)
 #endif
 }
 
-static void AbortRange(int s, int e)
+static void abort_range(int s, int e)
 {
   int i;
   RDLOCK_TABLE;
@@ -452,7 +317,7 @@ static void AbortRange(int s, int e)
   UNLOCK_TABLE;
 }
 
-static void SetGroup(int sync, int first_g, int *last_g)
+static void set_group(int sync, int first_g, int *last_g)
 {
   if (first_g == last_s)
   {
@@ -481,7 +346,7 @@ static void SetGroup(int sync, int first_g, int *last_g)
   *last_g = i;
 }
 
-static int NoOutstandingActions(const int s, const int e)
+static int check_actions_done(const int s, const int e)
 {
   int i;
   ActionInfo *actions = table->actions;
@@ -491,7 +356,7 @@ static int NoOutstandingActions(const int s, const int e)
   return i >= e;
 }
 
-static void RecordStatus(int s, int e)
+static void record_status(int s, int e)
 {
   int i;
   RDLOCK_TABLE;
@@ -524,15 +389,15 @@ static void RecordStatus(int s, int e)
   UNLOCK_TABLE;
 }
 
-static void WaitForActions(int all, int first_g, int last_g,
+static void wait_for_actions(int all, int first_g, int last_g,
                            int first_c, int last_c)
 {
   int c_status = C_OK;
   _CONDITION_LOCK(&JobWaitC);
   int g, c = 1;
   while ((c_status == ETIMEDOUT || c_status == C_OK) && !isAbortInProgress() &&
-         (g = !NoOutstandingActions(first_g, last_g) ||
-              (all && (c = !NoOutstandingActions(first_c, last_c)))))
+         (g = !check_actions_done(first_g, last_g) ||
+              (all && (c = !check_actions_done(first_c, last_c)))))
   {
     struct timespec tp;
     clock_gettime(CLOCK_REALTIME, &tp);
@@ -553,7 +418,7 @@ static void WaitForActions(int all, int first_g, int last_g,
   _CONDITION_UNLOCK(&JobWaitC);
 }
 
-static char *DetailProc(int full)
+static char *detail_proc(int full)
 {
   char *msg;
   RDLOCK_TABLE;
@@ -602,7 +467,7 @@ static char *DetailProc(int full)
   return msg;
 }
 
-static inline void setMonitor(const char *monitor)
+static inline void set_monitor(const char *monitor)
 {
   MONITOR_QUEUE_LOCK;
   if (monitor)
@@ -650,33 +515,33 @@ EXPORT int ServerDispatchPhase(int *id __attribute__((unused)), void *vtable,
   ProgLoc = 6006;
   if (STATUS_OK && (phase > 0))
   {
-    setMonitor(monitor);
+    set_monitor(monitor);
     ProgLoc = 6007;
-    SetActionRanges(phase, &first_c, &last_c);
+    set_action_ranges(phase, &first_c, &last_c);
     ProgLoc = 6008;
-    ServerSetDetailProc(DetailProc);
+    ServerSetDetailProc(detail_proc);
     ProgLoc = 6009;
     first_g = first_s;
     while (!isAbortInProgress() && (first_g < last_s))
     {
       ProgLoc = 6010;
-      SetGroup(sync, first_g, &last_g);
+      set_group(sync, first_g, &last_g);
       ProgLoc = 6011;
       for (i = first_g; i < last_g; i++)
-        Dispatch(i);
+        dispatch(i);
       ProgLoc = 6012;
-      WaitForActions(0, first_g, last_g, first_c, last_c);
+      wait_for_actions(0, first_g, last_g, first_c, last_c);
       first_g = last_g;
     }
     ProgLoc = 6013;
     if (setAbortInProgress(0))
     {
-      AbortRange(first_c, last_c);
-      AbortRange(first_s, last_s);
+      abort_range(first_c, last_c);
+      abort_range(first_s, last_s);
       status = ServerABORT;
     }
     ProgLoc = 6014;
-    WaitForActions(1, first_g, last_g, first_c, last_c);
+    wait_for_actions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6015;
     setAbortInProgress(1);
     RDLOCK_TABLE;
@@ -691,20 +556,20 @@ EXPORT int ServerDispatchPhase(int *id __attribute__((unused)), void *vtable,
           UNLOCK_ACTION(i, sdpw);
           WRLOCK_ACTION(i, sdpw);
           actions[i].status = ServerCANT_HAPPEN;
-          DoActionDone(i);
+          action_done(i);
         }
         UNLOCK_ACTION(i, sdp);
       }
     }
     UNLOCK_TABLE;
     ProgLoc = 6015;
-    WaitForActions(1, first_g, last_g, first_c, last_c);
+    wait_for_actions(1, first_g, last_g, first_c, last_c);
     ProgLoc = 6016;
     if (!noact)
-      RecordStatus(first_c, last_c);
+      record_status(first_c, last_c);
     ProgLoc = 6017;
     if (!noact)
-      RecordStatus(first_s, last_s);
+      record_status(first_s, last_s);
     ProgLoc = 6018;
   }
   ProgLoc = 6019;
@@ -731,7 +596,7 @@ EXPORT int ServerFailedEssential(void *vtable, int reset)
   return failed;
 }
 
-static void Dispatch(int i)
+static void dispatch(int i)
 {
   RDLOCK_TABLE;
   if (table)
@@ -754,21 +619,21 @@ static void Dispatch(int i)
         (*Output)(logmsg);
       }
       // ProgLoc = 7001;
-      DoSendMonitor(MonitorDispatched, i);
+      send_monitor(MonitorDispatched, i);
       // ProgLoc = 7002;
       if (noact)
       {
         actions[i].dispatched = 1;
         actions[i].status = status = 1;
-        DoActionDone(i);
+        action_done(i);
       }
       else
       {
         UNLOCK_ACTION(i, d_w);
         status = ServerDispatchAction(
             0, Server(server, actions[i].server), table->tree, table->shot,
-            actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status,
-            &actions[i].lock, &actions[i].netid, Before);
+            actions[i].nid, action_done, (void *)(intptr_t)i, &actions[i].status,
+            &actions[i].lock, &actions[i].netid, before);
         WRLOCK_ACTION(i, d_w);
         // ProgLoc = 7003;
         if (STATUS_OK)
@@ -778,7 +643,7 @@ static void Dispatch(int i)
       if (STATUS_NOT_OK)
       {
         actions[i].status = status;
-        DoActionDone(i);
+        action_done(i);
       }
       // ProgLoc = 7005;
     }
@@ -787,14 +652,112 @@ static void Dispatch(int i)
   UNLOCK_TABLE;
 }
 
-static void WakeCompletedActionQueue() { CONDITION_SET(&CompletedC); }
+static void action_done_do(intptr_t idx)
+{
+  DBG("Action(%d)\n", (int)idx);
+  int i;
+  char logmsg[1024];
+  if (idx >= 0)
+  {
+    RDLOCK_TABLE;
+    if (table)
+    { // if no table prevent seg fault
+      RDLOCK_ACTION(idx, ad);
+      ActionInfo *actions = table->actions;
+      if (actions[idx].event)
+        MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
+      send_monitor(MonitorDone, idx);
+      if (Output)
+      {
+        char now[32];
+        Now32(now);
+        if (IS_OK(actions[idx].status))
+          sprintf(logmsg, "%s, Action %s completed", now, actions[idx].path);
+        else
+        {
+          char *emsg = MdsGetMsg(actions[idx].status);
+          sprintf(logmsg, "%s, Action %s failed, %s", now, actions[idx].path,
+                  emsg);
+        }
+        (*Output)(logmsg);
+      }
+      if (!isAbortInProgress())
+      {
+        EMPTYXD(xd);
+        char expression[60];
+        struct descriptor expression_d = {0, DTYPE_T, CLASS_S, 0};
+        expression_d.pointer = expression;
+        expression_d.length = sprintf(expression, "PUBLIC _ACTION_%08X = %d",
+                                      actions[idx].nid, actions[idx].status);
+        TdiExecute(&expression_d, &xd MDS_END_ARG);
+        MdsFree1Dx(&xd, NULL);
+        for (i = 0; i < actions[idx].num_references; i++)
+        {
+          int dstat;
+          int doit;
+          int cidx = actions[idx].referenced_by[i];
+          RDLOCK_ACTION(cidx, adl);
+          if (!actions[cidx].done)
+          {
+            if (IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)))
+            {
+              UNLOCK_ACTION(cidx, ad_ftt);
+              if (doit)
+                dispatch(cidx);
+              else
+              {
+                WRLOCK_ACTION(cidx, ad_ftte);
+                actions[cidx].status = ServerNOT_DISPATCHED;
+                UNLOCK_ACTION(cidx, ad_ftte);
+                action_done(cidx);
+              }
+            }
+            else if (dstat != TdiUNKNOWN_VAR)
+            {
+              UNLOCK_ACTION(cidx, ad_fte);
+              WRLOCK_ACTION(cidx, ad_fte);
+              actions[cidx].status = ServerINVALID_DEPENDENCY;
+              UNLOCK_ACTION(cidx, ad_fte);
+              action_done(cidx);
+            }
+          }
+          else
+            UNLOCK_ACTION(cidx, ad_fe);
+        }
+      }
+      UNLOCK_ACTION(idx, ad);
+      WRLOCK_ACTION(idx, ad);
+      {
+        actions[idx].done = 1;
+        actions[idx].recorded = 0;
+      }
+      UNLOCK_ACTION(idx, ad);
+    }
+    UNLOCK_TABLE;
+  }
+  CONDITION_SET(&JobWaitC);
+}
 
-static void WaitForActionDoneQueue()
+#ifdef ACTION_DONE_THREAD
+typedef struct _complete
+{
+  struct _complete *next;
+  int idx;
+} Complete;
+
+static Condition CompletedC = CONDITION_INITIALIZER;
+static Complete *CompletedQueueHead = NULL;
+static Complete *CompletedQueueTail = NULL;
+
+static pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+static inline void action_done_signal() { CONDITION_SET(&CompletedC); }
+
+static inline void action_done_wait()
 {
   CONDITION_WAIT_1SEC(&CompletedC);
 }
 
-static void QueueCompletedAction(int i)
+static void action_done_push(intptr_t i)
 {
   Complete *c = malloc(sizeof(Complete));
   c->idx = i;
@@ -806,10 +769,10 @@ static void QueueCompletedAction(int i)
     CompletedQueueHead = c;
   CompletedQueueTail = c;
   pthread_mutex_unlock(&completed_queue_mutex);
-  WakeCompletedActionQueue();
+  action_done_signal();
 }
 
-static int DequeueCompletedAction(int *i)
+static int action_done_pop(intptr_t *i)
 {
   int doneAction = -1;
   while (doneAction == -1)
@@ -829,47 +792,89 @@ static int DequeueCompletedAction(int *i)
     {
       CONDITION_RESET(&CompletedC); // reset list state
       pthread_mutex_unlock(&completed_queue_mutex);
-      WaitForActionDoneQueue();
+      action_done_wait();
     }
   }
   *i = doneAction;
   return B_TRUE;
 }
 
-STATIC_THREADSAFE Condition ActionDoneRunningC = CONDITION_INITIALIZER;
+static Condition ActionDoneRunningC = CONDITION_INITIALIZER;
 
-static void ActionDoneExit() { CONDITION_RESET(&ActionDoneRunningC); }
-
-static void ActionDoneThread()
+static void action_done_exit()
 {
-  int i;
-  pthread_cleanup_push(ActionDoneExit, 0);
+  DBG("\n");
+  CONDITION_RESET(&ActionDoneRunningC);
+}
+
+static void action_done_thread()
+{
+  intptr_t i;
+  pthread_cleanup_push(action_done_exit, 0);
   CONDITION_SET(&ActionDoneRunningC);
-  while (DequeueCompletedAction(&i))
-    ActionDone(i);
+  while (action_done_pop(&i))
+    action_done_do(i);
   pthread_cleanup_pop(1);
 }
 
-static void DoActionDone(int i)
+static void action_done(intptr_t i)
 {
   INIT_STATUS;
-  pthread_t thread;
-  QueueCompletedAction(i); /***** must be done before starting thread ****/
-  CONDITION_START_THREAD(&ActionDoneRunningC, thread, , ActionDoneThread, NULL);
+  static pthread_t thread;
+  action_done_push(i); /***** must be done before starting thread ****/
+  CONDITION_START_THREAD(&ActionDoneRunningC, thread, , action_done_thread, NULL);
   if (STATUS_NOT_OK)
-    perror("DoActionDone: pthread creation failed");
+    perror("action_done: pthread creation failed");
+}
+#else
+static inline void action_done(intptr_t i)
+{
+  return action_done_do(i);
+}
+#endif
+
+void send_monitor_do(int mode, int idx)
+{
+  if (MonitorOn)
+  {
+    char tree[13];
+    char *cptr;
+    int i;
+    RDLOCK_TABLE;
+    if (table)
+    { // if no table prevent seg fault
+      for (i = 0, cptr = table->tree; i < 12; i++)
+        if (cptr[i] == (char)32)
+          break;
+        else
+          tree[i] = cptr[i];
+      tree[i] = 0;
+      ActionInfo *actions = table->actions;
+      RDLOCK_ACTION(idx, sm);
+      int on = actions[idx].on;
+      char server[33];
+      for (i = 0, cptr = actions[idx].server; i < 32 && (cptr[i] != ' '); i++)
+        server[i] = cptr[i];
+      server[i] = 0;
+      MonitorOn = ServerSendMonitor(Monitor, tree, table->shot,
+                                    actions[idx].phase, actions[idx].nid, on,
+                                    mode, server, actions[idx].status);
+      UNLOCK_ACTION(idx, sm);
+    }
+    UNLOCK_TABLE;
+  }
 }
 
-STATIC_THREADSAFE Condition SendMonitorRunningC = CONDITION_INITIALIZER;
+static Condition SendMonitorRunningC = CONDITION_INITIALIZER;
 
-static void WakeSendMonitorQueue() { CONDITION_SET(&SendMonitorC); }
+static inline void send_monitor_signal() { CONDITION_SET(&SendMonitorC); }
 
-static void WaitForSendMonitorQueue()
+static inline void send_monitor_wait()
 {
   CONDITION_WAIT_1SEC(&SendMonitorC);
 }
 
-static void QueueSendMonitor(int mode, int i)
+static void send_monitor_push(int mode, int i)
 {
   SendMonitorInfo *c = malloc(sizeof(SendMonitorInfo));
   c->idx = i;
@@ -882,10 +887,10 @@ static void QueueSendMonitor(int mode, int i)
     SendMonitorQueueHead = c;
   SendMonitorQueueTail = c;
   MONITOR_QUEUE_UNLOCK;
-  WakeSendMonitorQueue();
+  send_monitor_signal();
 }
 
-static int DequeueSendMonitor(int *mode_out, int *i)
+static int send_monitor_pop(int *mode_out, int *i)
 {
   int idx;
   int mode;
@@ -909,7 +914,7 @@ static int DequeueSendMonitor(int *mode_out, int *i)
       release = pthread_mutex_unlock(&send_monitor_queue_mutex);
       idx = -1;
       mode = 0;
-      WaitForSendMonitorQueue();
+      send_monitor_wait();
     }
     pthread_cleanup_pop(release);
   } while (idx == -1);
@@ -918,32 +923,35 @@ static int DequeueSendMonitor(int *mode_out, int *i)
   return B_TRUE;
 }
 
-static void SendMonitorExit() { CONDITION_RESET(&SendMonitorRunningC); }
+static void send_monitor_exit()
+{
+  CONDITION_RESET(&SendMonitorRunningC);
+}
 
-static void SendMonitorThread()
+static void send_monitor_thread()
 {
   int i;
   int mode;
-  pthread_cleanup_push(SendMonitorExit, NULL);
+  pthread_cleanup_push(send_monitor_exit, NULL);
   CONDITION_SET(&SendMonitorRunningC);
-  while (DequeueSendMonitor(&mode, &i))
-    SendMonitor(mode, i);
+  while (send_monitor_pop(&mode, &i))
+    send_monitor_do(mode, i);
   pthread_cleanup_pop(1);
-  pthread_exit(NULL);
 }
 
-static void DoSendMonitor(int mode, int idx)
+static void send_monitor(int mode, int idx)
 {
   INIT_STATUS;
-  pthread_t thread;
-  QueueSendMonitor(mode, idx); /***** must be done before starting thread ****/
-  CONDITION_START_THREAD(&SendMonitorRunningC, thread, , SendMonitorThread,
+  static pthread_t thread;
+  send_monitor_push(mode, idx); /***** must be done before starting thread ****/
+  CONDITION_START_THREAD(&SendMonitorRunningC, thread, , send_monitor_thread,
                          NULL);
   if (STATUS_NOT_OK)
-    perror("DoSendMonitor: pthread creation failed");
+    perror("send_monitor: pthread creation failed");
 }
 
-void serverDisarmDispatchTable(void *vtable)
+// used in ServerDispatchClose
+void server_dispatch_table_disarm(void *vtable)
 {
   WRLOCK_TABLE;
   if (table == vtable)
@@ -951,7 +959,7 @@ void serverDisarmDispatchTable(void *vtable)
   UNLOCK_TABLE;
 }
 
-static inline void serverFreeDispatchTable(void *vtable)
+static inline void server_dispatch_table_free(void *vtable)
 {
   ActionInfo *actions = ((DispatchTable *)vtable)->actions;
   int num_actions = ((DispatchTable *)vtable)->num;
@@ -976,8 +984,8 @@ EXPORT int ServerFreeDispatchTable(void *vtable)
   // should be called during CloseTopTree
   if (vtable)
   {
-    serverDisarmDispatchTable(vtable);
-    serverFreeDispatchTable(vtable);
+    server_dispatch_table_disarm(vtable);
+    server_dispatch_table_free(vtable);
   }
   return MDSplusSUCCESS;
 }
