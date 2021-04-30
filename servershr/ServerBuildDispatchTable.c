@@ -181,7 +181,7 @@ inline static void link_conditions(ctx_t *const ctx)
       MdsCopyDxXdZ(ctx->actions[i].condition, &xd, 0,
                    fixup_nid, ctx, fixup_path, ctx);
       MdsCopyDxXdZ((mdsdsc_t *)&xd, (mdsdsc_xd_t *)ctx->actions[i].condition,
-                   0, 0, 0, make_idents, i + (char *)0);
+                   0, 0, 0, make_idents, (void*)(intptr_t)i);
       MdsFree1Dx(&xd, 0);
     }
   }
