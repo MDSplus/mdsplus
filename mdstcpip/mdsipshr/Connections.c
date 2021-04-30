@@ -40,6 +40,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Connection *_FindConnection(int id, Connection **prev, MDSIPTHREADSTATIC_ARG)
 {
+  if (id == INVALID_CONNECTION_ID)
+    return NULL;
   Connection *c = MDSIP_CONNECTIONS, *p = NULL;
   for (; c; p = c, c = c->next)
   {
