@@ -102,6 +102,8 @@ typedef struct job
   void (*callback_before)();
   void *callback_param;
 } Job;
+#define JOB_PRI "Job(%d, %d)"
+#define JOB_VAR(j) (j)->jobid, (j)->conid
 pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_JOBS                  \
   pthread_mutex_lock(&jobs_mutex); \
@@ -121,6 +123,8 @@ typedef struct _client
   uint16_t port;
   struct _client *next;
 } Client;
+#define CLIENT_PRI "Client(%d, " IPADDRPRI ":%d)"
+#define CLIENT_VAR(c) (c)->conid, IPADDRVAR(&(c)->addr), (c)->port
 static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_CLIENTS                  \
   pthread_mutex_lock(&clients_mutex); \
@@ -133,7 +137,6 @@ static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 static Client *Clients = NULL;
 
 static int MonJob = -1;
-static int JobId = 0;
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -288,7 +291,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
 static inline void remove_job(Job *j_i)
 {
   // only call this when cond is NULL
-  DBG("Job #%d for Connection #%d\n", j_i->jobid, j_i->conid);
+  DBG(JOB_PRI "\n", JOB_VAR(j_i));
   LOCK_JOBS;
   Job *j, *p;
   for (j = Jobs, p = NULL; j; p = j, j = j->next)
@@ -332,7 +335,7 @@ static void do_callback_done(Job *j, int status, int removeJob)
   }
   else if (removeJob && !is_mon)
   {
-    DBG("Job #%d async done.\n", j->jobid);
+    DBG(JOB_PRI "async done\n", JOB_VAR(j));
     remove_job(j);
   }
   pthread_cleanup_pop(1);
@@ -356,7 +359,7 @@ static Job *pop_job_by_jobid(int jobid)
   {
     if (j->jobid == jobid)
     {
-      DBG("Job #%d for Connection #%d\n", j->jobid, j->conid);
+      DBG(JOB_PRI "\n", JOB_VAR(j));
       *n = j->next;
       break;
     }
@@ -374,7 +377,7 @@ static Job *pop_job_by_conid(int conid)
   {
     if (j->conid == conid)
     {
-      DBG("Job #%d for Connection #%d\n", j->jobid, j->conid);
+      DBG(JOB_PRI "\n", JOB_VAR(j));
       *n = j->next;
       break;
     }
@@ -416,14 +419,14 @@ static inline int Client_get_conid(Client *client, fd_set *fdactive)
 
 static void Client_remove(Client *c, fd_set *fdactive)
 {
-  DBG("Client#%d: " IPADDRPRI ":%d\n", c->conid, IPADDRVAR(&c->addr), c->port);
+  DBG(CLIENT_PRI " removed", CLIENT_VAR(c));
   int conid = Client_get_conid(c, fdactive);
   for (;;)
   {
     Job *j = pop_job_by_conid(conid);
     if (j)
     {
-      DBG("Job #%d: " IPADDRPRI ":%d done\n", j->jobid, IPADDRVAR(&c->addr), c->port);
+      DBG(JOB_PRI " done\n", JOB_VAR(j));
       do_callback_done(j, ServerPATH_DOWN, FALSE);
       free(j);
     }
@@ -441,7 +444,7 @@ static void cleanup_job(int status, int jobid)
   DisconnectFromMds(conid);
   do
   {
-    DBG("Job #%d: %d done\n", j->jobid, conid);
+    DBG(JOB_PRI " done\n", JOB_VAR(j));
     do_callback_done(j, status, FALSE);
     free(j);
     j = pop_job_by_conid(conid);
@@ -455,7 +458,7 @@ static void abandon(void *in)
   if (j && j->cond)
   {
     CONDITION_DESTROY_PTR(j->cond, &job_conds);
-    DBG("Job #%d sync abandoned!\n", j->jobid);
+    DBG(JOB_PRI " sync abandoned!\n", JOB_VAR(j));
   }
   pthread_cleanup_pop(1);
 }
@@ -471,14 +474,14 @@ EXPORT void ServerWait(int jobid)
   Job *j = get_job_by_jobid(jobid);
   if (j && j->cond)
   {
-    DBG("Job #%d sync pending.\n", jobid);
+    DBG(JOB_PRI " sync pending\n", JOB_VAR(j));
     pthread_cleanup_push(abandon, (void *)&j);
     wait_and_remove_job(j);
     pthread_cleanup_pop(0);
-    DBG("Job #%d sync done.\n", jobid);
+    DBG(JOB_PRI " sync done\n", JOB_VAR(j));
   }
   else
-    DBG("Job #%d sync lost!\n", jobid);
+    DBG(JOB_PRI " sync lost!\n", JOB_VAR(j));
 }
 
 static void do_callback_before(int jobid)
@@ -513,20 +516,21 @@ static int register_job(int *msgid, int *retstatus, pthread_rwlock_t *lock,
   j->callback_param = callback_param;
   j->callback_before = callback_before;
   j->conid = conid;
+  LOCK_JOBS;
+  static int JobId = 0;
+  j->jobid = JobId++;
   if (msgid)
   {
     j->cond = malloc(sizeof(Condition));
     CONDITION_INIT(j->cond);
     *msgid = j->jobid;
-    DBG("Job #%d sync registered.\n", j->jobid);
+    DBG(JOB_PRI " sync registered\n", JOB_VAR(j));
   }
   else
   {
     j->cond = NULL;
-    DBG("Job #%d async registered.\n", j->jobid);
+    DBG(JOB_PRI " async registered\n", JOB_VAR(j));
   }
-  LOCK_JOBS;
-  j->jobid = ++JobId;
   j->next = Jobs;
   Jobs = j;
   UNLOCK_JOBS;
@@ -869,6 +873,7 @@ static void Client_do_message(Client *c, fd_set *fdactive)
   nbytes = recv(c->reply_sock, reply, 60, MSG_WAITALL);
   if (nbytes != 60)
   {
+    DBG("Invalid read %d/60 " CLIENT_PRI "\n", nbytes, CLIENT_VAR(c));
     Client_remove(c, fdactive);
     return;
   }
