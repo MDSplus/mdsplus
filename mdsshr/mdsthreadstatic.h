@@ -51,9 +51,11 @@ typedef struct
   char MdsMsg_cstr[1024];
   char MdsGetMsg_cstr[1024];
   mdsdsc_t MdsGetMsg_desc;
+  char *librtl_fis_error;
 } MDSTHREADSTATIC_TYPE;
 #define MDS_MDSMSG_CSTR MDSTHREADSTATIC_VAR->MdsMsg_cstr
 #define MDS_MDSGETMSG_CSTR MDSTHREADSTATIC_VAR->MdsGetMsg_cstr
 #define MDS_MDSGETMSG_DESC MDSTHREADSTATIC_VAR->MdsGetMsg_desc
+#define MDS_FIS_ERROR MDSTHREADSTATIC_VAR->librtl_fis_error
 
 extern DEFINE_GETTHREADSTATIC(MDSTHREADSTATIC_TYPE, MdsGetThreadStatic);

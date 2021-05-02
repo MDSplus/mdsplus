@@ -59,6 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr_messages.h>
 #include <mdstypes.h>
 #include <strroutines.h>
+#include "mdsthreadstatic.h"
 
 #define LIBRTL_SRC
 
@@ -500,17 +501,14 @@ EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
   return out;
 }
 
-// int LibSigToRet()
-//{
-//  return 1;
-//}
+EXPORT char *LibFindImageSymbolErrString()
+{
+  MDSTHREADSTATIC_INIT;
+  return MDS_FIS_ERROR;
+}
 
-STATIC_THREADSAFE char *FIS_Error = "";
-
-EXPORT char *LibFindImageSymbolErrString() { return FIS_Error; }
-
-static void *loadLib(const char *const dirspec, const char *const filename,
-                     char *errorstr)
+static void *load_lib(const char *const dirspec, const char *const filename,
+                      char *errorstr)
 {
   void *handle = NULL;
   char *full_filename = alloca(strlen(dirspec) + strlen(filename) + 10);
@@ -529,7 +527,7 @@ static void *loadLib(const char *const dirspec, const char *const filename,
   {
     strcpy(full_filename, filename);
   }
-#ifndef _WIN32
+#ifdef RTLD_NOLOAD
   handle = dlopen(full_filename, RTLD_NOLOAD | RTLD_LAZY);
   if (!handle)
 #endif
@@ -546,9 +544,8 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
                                 const char *const symbol, void **symbol_value)
 {
   int status;
-  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&dlopen_mutex);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&dlopen_mutex);
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  MUTEX_LOCK_PUSH(&lock);
   if (*symbol_value) // already loaded
     status = 1;
   else
@@ -576,7 +573,7 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
     {
       strcat(filename, SHARELIB_TYPE);
     }
-    handle = loadLib("", filename, errorstr);
+    handle = load_lib("", filename, errorstr);
     if (handle == NULL && (strchr(filename, '/') == 0) &&
         (strchr(filename, '\\') == 0))
     {
@@ -590,7 +587,7 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
           char *dptr = strchr(libpath + offset, delim);
           if (dptr)
             *dptr = '\0';
-          handle = loadLib(libpath + offset, filename, errorstr);
+          handle = load_lib(libpath + offset, filename, errorstr);
           if (handle)
             break;
           offset = offset + strlen(libpath + offset) + 1;
@@ -604,7 +601,7 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
         {
           char *libdir = alloca(strlen(mdir) + 10);
           sprintf(libdir, "%s/%s", mdir, "lib");
-          handle = loadLib(libdir, filename, errorstr);
+          handle = load_lib(libdir, filename, errorstr);
         }
       }
     }
@@ -617,20 +614,20 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
                  "Error: %s\n", dlerror());
       }
     }
-    if (strlen(FIS_Error) > 0)
-    {
-      free(FIS_Error);
-      FIS_Error = "";
-    }
+    MDSTHREADSTATIC_INIT;
+    free(MDS_FIS_ERROR);
     if (*symbol_value == NULL)
     {
-      FIS_Error = strdup(errorstr);
+      MDS_FIS_ERROR = strdup(errorstr);
       status = LibKEYNOTFOU;
     }
     else
+    {
+      MDS_FIS_ERROR = NULL;
       status = 1;
+    }
   }
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&lock);
   return status;
 }
 
