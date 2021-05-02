@@ -88,7 +88,7 @@ static void dispatch(int idx);
 static void send_monitor(int mode, int idx);
 static void action_done(intptr_t idx);
 static void before(int idx);
-static void set_action_ranges(int phase, int *first_c, int *last_c);
+static inline void set_action_ranges(int phase, int *first_c, int *last_c);
 static void abort_range(int s, int e);
 static void set_group(int sync, int first_g, int *last_g);
 static int check_actions_done(int s, int e);
@@ -242,7 +242,7 @@ static void before(int idx)
   if (i < END)                          \
     UNLOCK_ACTION(i, fnae_##info);
 
-static void set_action_ranges(int phase, int *first_c, int *last_c)
+static inline void set_action_ranges(int phase, int *first_c, int *last_c)
 {
   int i;
   RDLOCK_TABLE;
@@ -334,8 +334,7 @@ static void set_group(int sync, int first_g, int *last_g)
     RDLOCK_ACTION(first_g, sg);
     group = actions[first_g].sequence / sync;
     UNLOCK_ACTION(first_g, sg);
-    FIND_NEXT_ACTION(first_g + 1, last_s, (actions[i].sequence / sync) != group,
-                     sg);
+    FIND_NEXT_ACTION(first_g + 1, last_s, (actions[i].sequence / sync) != group, sg);
     FIND_NEXT_ACTION_END(last_s, sg);
   }
   else
@@ -662,7 +661,7 @@ static void action_done_do(intptr_t idx)
     RDLOCK_TABLE;
     if (table)
     { // if no table prevent seg fault
-      RDLOCK_ACTION(idx, ad);
+      WRLOCK_ACTION(idx, ad);
       ActionInfo *actions = table->actions;
       if (actions[idx].event)
         MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
@@ -681,6 +680,9 @@ static void action_done_do(intptr_t idx)
         }
         (*Output)(logmsg);
       }
+      actions[idx].done = 1;
+      actions[idx].recorded = 0;
+      UNLOCK_ACTION(idx, ad);
       if (!isAbortInProgress())
       {
         EMPTYXD(xd);
@@ -703,7 +705,9 @@ static void action_done_do(intptr_t idx)
             {
               UNLOCK_ACTION(cidx, ad_ftt);
               if (doit)
+              {
                 dispatch(cidx);
+              }
               else
               {
                 WRLOCK_ACTION(cidx, ad_ftte);
@@ -725,13 +729,6 @@ static void action_done_do(intptr_t idx)
             UNLOCK_ACTION(cidx, ad_fe);
         }
       }
-      UNLOCK_ACTION(idx, ad);
-      WRLOCK_ACTION(idx, ad);
-      {
-        actions[idx].done = 1;
-        actions[idx].recorded = 0;
-      }
-      UNLOCK_ACTION(idx, ad);
     }
     UNLOCK_TABLE;
   }
