@@ -22,6 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <inttypes.h>
 #include <STATICdef.h>
 #include <ipdesc.h>
 #include <mdsplus/mdsconfig.h>
@@ -93,7 +94,7 @@ EXPORT int IdlMdsClose(int lArgc, void **lpvArgv)
   BlockSig(SIGALRM);
   if (lArgc == 1)
   {
-    status = MdsClose((int)((char *)lpvArgv[0] - (char *)0));
+    status = MdsClose((int)(intptr_t)(lpvArgv[0]));
   }
   UnBlockSig(SIGALRM);
   return status;
@@ -122,7 +123,7 @@ EXPORT int IdlDisconnectFromMds(int lArgc, void **lpvArgv)
   BlockSig(SIGALRM);
   if (lArgc == 1)
   {
-    status = DisconnectFromMds((int)((char *)lpvArgv[0] - (char *)0));
+    status = DisconnectFromMds((int)(intptr_t)(lpvArgv[0]));
   }
   UnBlockSig(SIGALRM);
   return status;
@@ -137,8 +138,8 @@ EXPORT int IdlMdsOpen(int lArgc, void **lpvArgv)
   if (lArgc == 3)
   {
     BlockSig(SIGALRM);
-    status = MdsOpen((int)((char *)lpvArgv[0] - (char *)0), (char *)lpvArgv[1],
-                     (int)((char *)lpvArgv[2] - (char *)0));
+    status = MdsOpen((int)(intptr_t)(lpvArgv[0]), (char *)lpvArgv[1],
+                     (int)(intptr_t)(lpvArgv[2]));
     UnBlockSig(SIGALRM);
   }
   return status;
@@ -153,8 +154,7 @@ EXPORT int IdlMdsSetDefault(int lArgc, void **lpvArgv)
   if (lArgc == 2)
   {
     BlockSig(SIGALRM);
-    status = MdsSetDefault((int)((char *)lpvArgv[0] - (char *)0),
-                           (char *)lpvArgv[1]);
+    status = MdsSetDefault((int)(intptr_t)(lpvArgv[0]), (char *)lpvArgv[1]);
     UnBlockSig(SIGALRM);
   }
   return status;
@@ -170,7 +170,7 @@ EXPORT int IdlGetAnsInfo(int lArgc, void **lpvArgv)
   if (lArgc == 7)
   {
     BlockSig(SIGALRM);
-    status = GetAnswerInfo((int)((char *)lpvArgv[0] - (char *)0),
+    status = GetAnswerInfo((int)(intptr_t)(lpvArgv[0]),
                            (char *)lpvArgv[1], (short *)lpvArgv[2],
                            (char *)lpvArgv[3], (int *)lpvArgv[4],
                            (int *)lpvArgv[5], (void **)lpvArgv[6]);
@@ -188,11 +188,9 @@ EXPORT int Idlmemcpy(int lArgc, void **lpvArgv)
   if (lArgc == 3)
   {
 #ifdef __alpha
-    memcpy((void *)lpvArgv[0], *(void **)lpvArgv[1],
-           (int)((char *)lpvArgv[2] - (char *)0));
+    memcpy((void *)lpvArgv[0], *(void **)lpvArgv[1], (intptr_t)(lpvArgv[2]));
 #else
-    memcpy((void *)lpvArgv[0], (void *)lpvArgv[1],
-           (int)((char *)lpvArgv[2] - (char *)0));
+    memcpy((void *)lpvArgv[0], (void *)lpvArgv[1], (intptr_t)(lpvArgv[2]));
 #endif
     status = 1;
   }
@@ -208,13 +206,13 @@ EXPORT int IdlSendArg(int lArgc, void **lpvArgv)
   int status = 0;
   if (lArgc == 8)
   {
-    unsigned char idx = (unsigned char)((char *)lpvArgv[1] - (char *)0);
-    unsigned char dtype = (unsigned char)((char *)lpvArgv[2] - (char *)0);
-    unsigned char nargs = (unsigned char)((char *)lpvArgv[3] - (char *)0);
-    short length = (short)((char *)lpvArgv[4] - (char *)0);
-    char ndims = (char)((char *)lpvArgv[5] - (char *)0);
+    unsigned char idx = (unsigned char)(intptr_t)(lpvArgv[1]);
+    unsigned char dtype = (unsigned char)(intptr_t)(lpvArgv[2]);
+    unsigned char nargs = (unsigned char)(intptr_t)(lpvArgv[3]);
+    short length = (short)(intptr_t)(lpvArgv[4]);
+    char ndims = (char)(intptr_t)(lpvArgv[5]);
     BlockSig(SIGALRM);
-    status = SendArg((int)((char *)lpvArgv[0] - (char *)0), idx, dtype, nargs,
+    status = SendArg((int)(intptr_t)(lpvArgv[0]), idx, dtype, nargs,
                      length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
     UnBlockSig(SIGALRM);
   }
@@ -230,8 +228,8 @@ EXPORT int IdlSetCompressionLevel(int lArgc, void **lpvArgv)
   int status = 0;
   if (lArgc == 2)
   {
-    status = MdsSetCompression((int)((char *)lpvArgv[0] - (char *)0),
-                               (int)((char *)lpvArgv[1] - (char *)0));
+    status = MdsSetCompression((int)(intptr_t)(lpvArgv[0]),
+                               (int)(intptr_t)(lpvArgv[1]));
   }
   return status;
 }

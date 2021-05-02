@@ -1113,7 +1113,7 @@ void DeleteNode(Widget w, XtPointer client_data __attribute__((unused)),
 void RenameNodeNow(Widget w, XtPointer client_data,
                    XtPointer call_data __attribute__((unused)))
 {
-  int nid = (int)((char *)client_data - (char *)0);
+  int nid = (int)(intptr_t)client_data;
   Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
   Widget tw = XtNameToWidget(w, "*.new_name");
   char *new_name = (char *)XmTextFieldGetString(tw);
