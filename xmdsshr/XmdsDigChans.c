@@ -74,6 +74,7 @@ XmdsDigChansApply(Widget w) Boolean XmdsIsDigChans(Widget w)
  External functions or symbols referenced:                                    */
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <ncidef.h>
@@ -189,10 +190,10 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args,
                                           {"c_startidx_nid", NULL},
                                           {"c_endidx_nid", NULL},
                                           {"c_path", NULL}};
-      uilnames[0].value = data_nid + (char *)0;
+      uilnames[0].value = (char *)(intptr_t)data_nid;
       uilnames[1].value = name;
-      uilnames[2].value = startidx_nid + (char *)0;
-      uilnames[3].value = endidx_nid + (char *)0;
+      uilnames[2].value = (char *)(intptr_t)startidx_nid;
+      uilnames[3].value = (char *)(intptr_t)endidx_nid;
       uilnames[4].value = path;
       MrmRegisterNamesInHierarchy(drm_hierarchy, uilnames, XtNumber(uilnames));
       if (info.nodes_per_channel > 1)
@@ -221,7 +222,7 @@ EXPORT void XmdsDigChansReset(Widget w)
     XtPointer userdata;
     int nid;
     XtVaGetValues(chan_w[i], XmNuserData, &userdata, NULL);
-    nid = (char *)userdata - (char *)0;
+    nid = (int)(intptr_t)userdata;
     XmToggleButtonGadgetSetState(XtNameToWidget(chan_w[i], "*on_off_button"),
                                  XmdsIsOn((int)nid), FALSE);
   }
@@ -246,7 +247,7 @@ EXPORT int XmdsDigChansPut(Widget w)
       Widget *children;
       XtVaGetValues(chan_w[i], XmNnumChildren, &num_ctls, XmNchildren,
                     &children, XmNuserData, &user_data, NULL);
-      nid = (char *)user_data - (char *)0;
+      nid = (int)(intptr_t)user_data;
       if (XmToggleButtonGadgetGetState(children[1]))
         TreeTurnOn(nid);
       else
