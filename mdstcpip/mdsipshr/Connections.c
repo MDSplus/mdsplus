@@ -303,9 +303,12 @@ int destroyConnection(Connection *connection)
       free(e);
     }
     TdiDeleteContext(connection->tdicontext);
-    connection->io->disconnect(connection);
     DBG("Connections: %02d disconnected\n", connection->id);
     FreeDescriptors(connection);
+  }
+  if (connection->io)
+  {
+    connection->io->disconnect(connection);
   }
   free(connection->info);
   free(connection->protocol);
