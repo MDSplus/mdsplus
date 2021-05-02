@@ -23,8 +23,8 @@
 #include <sys/filio.h>
 #endif
 
-#include <STATICdef.h>
 #include <socket_port.h>
+DEFINE_INITIALIZESOCKETS;
 
 #include "../mdsip_connections.h"
 

@@ -10,6 +10,8 @@
   char iphost[INET6_ADDRSTRLEN]; \
   inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN)
 
+#include <mdsplus/mdsconfig.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -23,10 +25,11 @@
 #include <sys/filio.h>
 #endif
 
-#include <STATICdef.h>
+
 #include <socket_port.h>
+DEFINE_INITIALIZESOCKETS;
+
 #include "../mdsip_connections.h"
-#include <mdsplus/mdsconfig.h>
 
 static int GetHostAndPort(char *hostin, struct sockaddr_in6 *sin);
 

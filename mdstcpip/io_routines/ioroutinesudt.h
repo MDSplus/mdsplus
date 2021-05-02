@@ -1,4 +1,6 @@
-#include <socket_port.h>
+#ifdef _WIN32
+#define close closesocket
+#endif
 #undef SOCKET
 #define SOCKET UDTSOCKET
 #define INVALID_SOCKET -1

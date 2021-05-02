@@ -1,5 +1,4 @@
-#include <socket_port.h>
-
+#define _TCP
 #define SOCKLEN_T socklen_t
 #define GETPEERNAME getpeername
 #define SEND send
@@ -56,6 +55,7 @@ static void int_select(int signo)
     close(int_sock);
 }
 #endif
+
 static int io_connect(Connection *c, char *protocol __attribute__((unused)),
                       char *host)
 {
