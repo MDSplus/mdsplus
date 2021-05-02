@@ -34,6 +34,17 @@ typedef int SOCKET;
 
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
+#ifdef _WIN32
+#define MSG_NOSIGNAL_ALT_PUSH() NOP()
+#define MSG_NOSIGNAL_ALT_POP() NOP()
+#else
+#include <signal.h>
+#define MSG_NOSIGNAL_ALT_PUSH() signal(SIGPIPE, SIG_IGN)
+#define MSG_NOSIGNAL_ALT_POP() signal(SIGPIPE, SIG_DFL)
+#endif
+#else
+#define MSG_NOSIGNAL_ALT_PUSH() NOP()
+#define MSG_NOSIGNAL_ALT_POP() NOP()
 #endif
 #ifndef MSG_DONTWAIT
 #define MSG_DONTWAIT 0

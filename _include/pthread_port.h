@@ -1,5 +1,10 @@
 #ifndef PTHREAD_PORT_H
 #define PTHREAD_PORT_H
+#define NOP() \
+  do          \
+  {           \
+  } while (0)
+
 #define _GNU_SOURCE
 #include <STATICdef.h>
 #include <status.h>

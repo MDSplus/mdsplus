@@ -189,6 +189,7 @@ static int io_flush(Connection *c)
     FD_SET(sock, &readfds);
     FD_ZERO(&writefds);
     FD_SET(sock, &writefds);
+    MSG_NOSIGNAL_ALT_PUSH();
     while (((((err = select(sock + 1, &readfds, &writefds, 0, &timout)) > 0) &&
              FD_ISSET(sock, &readfds)) ||
             (err == -1 && errno == EINTR)) &&
@@ -214,6 +215,7 @@ static int io_flush(Connection *c)
       timout.tv_usec = 100000;
       FD_CLR(sock, &writefds);
     }
+    MSG_NOSIGNAL_ALT_POP();
   }
 #endif
   return C_OK;

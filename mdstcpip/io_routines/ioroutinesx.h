@@ -183,7 +183,7 @@ static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin)
     if (!getservbyname(service, "tcp"))
     {
       char *env_service = getenv(service);
-      if ((env_service == NULL))
+      if (env_service == NULL)
       {
         if (strcmp(service, "mdsip") == 0)
         {
@@ -390,14 +390,17 @@ static int io_authorize(Connection *c, char *username)
 //  SEND  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static ssize_t io_send(Connection *c, const void *bptr, size_t num,
-                       int nowait)
+static ssize_t io_send(Connection *c, const void *bptr, size_t num, int nowait)
 {
   SOCKET sock = getSocket(c);
-  int options = nowait ? MSG_DONTWAIT : 0;
-  if (sock != INVALID_SOCKET)
-    return SEND(sock, bptr, num, options | MSG_NOSIGNAL);
-  return -1; // sent
+  if (sock == INVALID_SOCKET)
+    return -1;
+  int sent;
+  int options = nowait ? MSG_DONTWAIT | MSG_NOSIGNAL : MSG_NOSIGNAL;
+  MSG_NOSIGNAL_ALT_PUSH();
+  sent = SEND(sock, bptr, num, options);
+  MSG_NOSIGNAL_ALT_POP();
+  return sent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -411,6 +414,7 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
   if (sock != INVALID_SOCKET)
   {
     PushSocket(sock);
+    MSG_NOSIGNAL_ALT_PUSH();
 #ifdef _TCP
     struct timeval to, timeout;
     if (to_msec < 0)
@@ -452,6 +456,7 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
         break; // Error
       }
     } while (to_msec < 0); // else timeout
+    MSG_NOSIGNAL_ALT_POP();
     PopSocket(sock);
   }
   return recved;
@@ -465,6 +470,7 @@ static int io_check(Connection *c)
   if (sock != INVALID_SOCKET)
   {
     PushSocket(sock);
+    MSG_NOSIGNAL_ALT_PUSH();
     struct timeval timeout = {0, 0};
     fd_set readfds;
     FD_ZERO(&readfds);
@@ -479,11 +485,12 @@ static int io_check(Connection *c)
     default:
     { // for select this will be 1
       char bptr[1];
-      err = RECV(sock, bptr, 1, MSG_NOSIGNAL || MSG_PEEK);
+      err = RECV(sock, bptr, 1, MSG_NOSIGNAL | MSG_PEEK);
       err = (err == 1) ? 0 : -1;
       break;
     }
     }
+    MSG_NOSIGNAL_ALT_POP();
     PopSocket(sock);
   }
   return (int)err;

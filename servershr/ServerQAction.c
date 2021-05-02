@@ -39,16 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef _WIN32
-#include <windows.h>
-#define MSG_DONTWAIT 0 // TODO: implement workaround usiing select
-#else
-typedef int SOCKET;
-#define INVALID_SOCKET -1
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
-#endif
+#include <socket_port.h>
 #include <sys/time.h>
 #include <mdsdbg.h>
 
@@ -871,20 +862,23 @@ static void RemoveClient(SrvJob *job)
   }
 }
 
-#ifdef _WIN32
-#define MSG_NOSIGNAL 0
-#endif
 // both
 static int send_all(SOCKET sock, char *msg, int len)
 {
-  int bytes, sent = 0;
+  int sent;
+  MSG_NOSIGNAL_ALT_PUSH();
+  sent = 0;
   do
   {
-    bytes = send(sock, msg + sent, len - sent, MSG_NOSIGNAL);
+    const int bytes = send(sock, msg + sent, len - sent, MSG_NOSIGNAL);
     if (bytes <= 0)
-      return bytes;
+    {
+      sent = bytes;
+      break;
+    }
     sent += bytes;
   } while (sent < len);
+  MSG_NOSIGNAL_ALT_POP();
   return sent;
 }
 
