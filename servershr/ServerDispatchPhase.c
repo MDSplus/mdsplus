@@ -76,6 +76,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor
 #include <mds_stdarg.h>
 #include <tdishr_messages.h>
 #include "servershrp.h"
+#define DEBUG
 #include <mdsdbg.h>
 
 extern int TdiCompletionOf();
@@ -87,6 +88,8 @@ extern int ProgLoc;
 static void dispatch(int idx);
 static void send_monitor(int mode, int idx);
 static void action_done(intptr_t idx);
+static void action_done_action_locked(int idx);
+static void action_done_action_unlocked(int idx);
 static void before(int idx);
 static inline void set_action_ranges(int phase, int *first_c, int *last_c);
 static void abort_range(int s, int e);
@@ -125,7 +128,7 @@ static inline int setAbortInProgress(int val_in)
   pthread_mutex_unlock(&abortinprogress_mutex);
   return val_out;
 }
-static inline int isAbortInProgress()
+static inline int is_abort_in_progress()
 {
   int val;
   pthread_mutex_lock(&abortinprogress_mutex);
@@ -157,33 +160,34 @@ static pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
   {                                   \
   } while (0)
 #endif
-#define XLOCK_ACTION(idx, info, typ)               \
-  do                                               \
-  {                                                \
-    ACTION_DBG(idx, info, typ, '?');               \
-    pthread_rwlock_##typ##lock(&ACTION_LOCK(idx)); \
+#define XLOCK_ACTION(idx, info, typ) \
+  ({ACTION_DBG(idx, info, typ, '?');               \
+    int r = pthread_rwlock_##typ##lock(&ACTION_LOCK(idx)); \
     ACTION_DBG(idx, info, typ, '!');               \
-  } while (0)
+  r; })
 #define WRLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, wr)
 #define RDLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, rd)
 #define UNLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, un)
 
 //#define DEBUG
-#define PRINT_ACTIONS                                            \
-  {                                                              \
-    int i;                                                       \
-    for (i = 0; i < table->num; i++)                             \
-    {                                                            \
-      RDLOCK_ACTION(i, debug);                                   \
-      fprintf(stderr, "Action(%d): %s, p=%d(%d), %d-%d-%d\n", i, \
-              table->actions[i].path,                            \
-              table->actions[i].phase,                           \
-              table->actions[i].condition != NULL,               \
-              table->actions[i].dispatched,                      \
-              table->actions[i].doing,                           \
-              table->actions[i].done);                           \
-      UNLOCK_ACTION(i, debug);                                   \
-    }                                                            \
+
+#define ACTION_PRI "Action(%d, %s, p=%d(%d), %d-%d-%d)"
+#define ACTION_VAR(i) i,                                   \
+                      table->actions[i].path,              \
+                      table->actions[i].phase,             \
+                      table->actions[i].condition != NULL, \
+                      table->actions[i].dispatched,        \
+                      table->actions[i].doing,             \
+                      table->actions[i].done
+#define PRINT_ACTIONS                                  \
+  {                                                    \
+    int i;                                             \
+    for (i = 0; i < table->num; i++)                   \
+    {                                                  \
+      RDLOCK_ACTION(i, debug);                         \
+      fprintf(stderr, ACTION_PRI "\n", ACTION_VAR(i)); \
+      UNLOCK_ACTION(i, debug);                         \
+    }                                                  \
   }
 //"
 
@@ -394,7 +398,7 @@ static void wait_for_actions(int all, int first_g, int last_g,
   int c_status = C_OK;
   _CONDITION_LOCK(&JobWaitC);
   int g, c = 1;
-  while ((c_status == ETIMEDOUT || c_status == C_OK) && !isAbortInProgress() &&
+  while ((c_status == ETIMEDOUT || c_status == C_OK) && !is_abort_in_progress() &&
          (g = !check_actions_done(first_g, last_g) ||
               (all && (c = !check_actions_done(first_c, last_c)))))
   {
@@ -402,7 +406,7 @@ static void wait_for_actions(int all, int first_g, int last_g,
     clock_gettime(CLOCK_REALTIME, &tp);
     if (c_status == C_OK)
     {
-      DBG("%lu: %d, %d\n", (uint64_t)tp.tv_sec, g, c);
+      DBG("%d, %d\n", g, c);
 #ifdef DEBUG
       PRINT_ACTIONS;
 #endif
@@ -521,7 +525,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__((unused)), void *vtable,
     ServerSetDetailProc(detail_proc);
     ProgLoc = 6009;
     first_g = first_s;
-    while (!isAbortInProgress() && (first_g < last_s))
+    while (!is_abort_in_progress() && (first_g < last_s))
     {
       ProgLoc = 6010;
       set_group(sync, first_g, &last_g);
@@ -549,13 +553,11 @@ EXPORT int ServerDispatchPhase(int *id __attribute__((unused)), void *vtable,
       ActionInfo *actions = table->actions;
       for (i = first_c; i < last_c; i++)
       {
-        RDLOCK_ACTION(i, sdp);
+        WRLOCK_ACTION(i, sdpw);
         if (!actions[i].done)
         {
-          UNLOCK_ACTION(i, sdpw);
-          WRLOCK_ACTION(i, sdpw);
           actions[i].status = ServerCANT_HAPPEN;
-          action_done(i);
+          action_done_action_locked(i);
         }
         UNLOCK_ACTION(i, sdp);
       }
@@ -603,132 +605,152 @@ static void dispatch(int i)
     int status;
     char logmsg[1024];
     char server[33];
+    ActionInfo *actions = table->actions;
     WRLOCK_ACTION(i, d);
+    DBG(ACTION_PRI "\n", ACTION_VAR(i));
+    actions[i].done = 0;
+    actions[i].doing = 0;
+    actions[i].dispatched = 0;
+    if (Output)
     {
-      ActionInfo *actions = table->actions;
-      actions[i].done = 0;
-      actions[i].doing = 0;
-      actions[i].dispatched = 0;
-      if (Output)
+      char now[32];
+      Now32(now);
+      sprintf(logmsg, "%s, Dispatching node %s to %s", now, actions[i].path,
+              Server(server, actions[i].server));
+      (*Output)(logmsg);
+    }
+    // ProgLoc = 7001;
+    send_monitor(MonitorDispatched, i);
+    // ProgLoc = 7002;
+    if (noact)
+    {
+      actions[i].dispatched = 1;
+      actions[i].status = status = 1;
+      action_done_action_locked(i);
+      UNLOCK_ACTION(i, d);
+      action_done_action_unlocked(i);
+    }
+    else
+    {
+      UNLOCK_ACTION(i, d_w);
+      status = ServerDispatchAction(
+          0, Server(server, actions[i].server), table->tree, table->shot,
+          actions[i].nid, action_done, (void *)(intptr_t)i, &actions[i].status,
+          &actions[i].lock, &actions[i].netid, before);
+      if (STATUS_OK)
       {
-        char now[32];
-        Now32(now);
-        sprintf(logmsg, "%s, Dispatching node %s to %s", now, actions[i].path,
-                Server(server, actions[i].server));
-        (*Output)(logmsg);
-      }
-      // ProgLoc = 7001;
-      send_monitor(MonitorDispatched, i);
-      // ProgLoc = 7002;
-      if (noact)
-      {
+        WRLOCK_ACTION(i, d_w);
         actions[i].dispatched = 1;
-        actions[i].status = status = 1;
-        action_done(i);
+        UNLOCK_ACTION(i, d);
       }
       else
       {
-        UNLOCK_ACTION(i, d_w);
-        status = ServerDispatchAction(
-            0, Server(server, actions[i].server), table->tree, table->shot,
-            actions[i].nid, action_done, (void *)(intptr_t)i, &actions[i].status,
-            &actions[i].lock, &actions[i].netid, before);
         WRLOCK_ACTION(i, d_w);
-        // ProgLoc = 7003;
-        if (STATUS_OK)
-          actions[i].dispatched = 1;
-      }
-      // ProgLoc = 7004;
-      if (STATUS_NOT_OK)
-      {
         actions[i].status = status;
-        action_done(i);
+        action_done_action_locked(i);
+        UNLOCK_ACTION(i, d);
+        action_done_action_unlocked(i);
       }
-      // ProgLoc = 7005;
     }
-    UNLOCK_ACTION(i, d);
   }
   UNLOCK_TABLE;
+}
+
+static void action_done_action_locked(int idx)
+{
+  ActionInfo *actions = table->actions;
+  if (actions[idx].event)
+    MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
+  send_monitor(MonitorDone, idx);
+  if (Output)
+  {
+    char logmsg[1024];
+    char now[32];
+    Now32(now);
+    if (IS_OK(actions[idx].status))
+      sprintf(logmsg, "%s, Action %s completed", now, actions[idx].path);
+    else
+    {
+      char *emsg = MdsGetMsg(actions[idx].status);
+      sprintf(logmsg, "%s, Action %s failed, %s", now, actions[idx].path,
+              emsg);
+    }
+    (*Output)(logmsg);
+  }
+  actions[idx].done = 1;
+  actions[idx].recorded = 0;
+  EMPTYXD(xd);
+  char expression[60];
+  struct descriptor expression_d = {0, DTYPE_T, CLASS_S, 0};
+  expression_d.pointer = expression;
+  expression_d.length = sprintf(expression, "PUBLIC _ACTION_%08X = %d",
+                                actions[idx].nid, actions[idx].status);
+  TdiExecute(&expression_d, &xd MDS_END_ARG);
+  MdsFree1Dx(&xd, NULL);
+}
+
+static void action_done_action_unlocked(int idx)
+{
+  if (is_abort_in_progress())
+    return;
+  ActionInfo *actions = table->actions;
+  int i;
+  for (i = 0; i < actions[idx].num_references; i++)
+  {
+    int dstat;
+    int doit;
+    int cidx = actions[idx].referenced_by[i];
+    RDLOCK_ACTION(cidx, adl);
+    if (!actions[cidx].done && !actions[cidx].dispatched)
+    {
+      if (IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)))
+      {
+        UNLOCK_ACTION(cidx, ad_ftt);
+        if (doit)
+        {
+          dispatch(cidx);
+        }
+        else
+        {
+          WRLOCK_ACTION(cidx, ad_ftte);
+          actions[cidx].status = ServerNOT_DISPATCHED;
+          action_done_action_locked(cidx);
+          UNLOCK_ACTION(cidx, ad_ftte);
+          action_done_action_unlocked(cidx);
+        }
+      }
+      else if (dstat != TdiUNKNOWN_VAR)
+      {
+        UNLOCK_ACTION(cidx, ad_fte);
+        WRLOCK_ACTION(cidx, ad_fte);
+        actions[cidx].status = ServerINVALID_DEPENDENCY;
+        action_done(cidx);
+        UNLOCK_ACTION(cidx, ad_fte);
+        action_done_action_unlocked(cidx);
+      }
+    }
+    else
+      UNLOCK_ACTION(cidx, ad_fe);
+  }
+}
+
+static inline void action_done_table_locked(int idx)
+{
+  WRLOCK_ACTION(idx, ad);
+  action_done_action_locked(idx);
+  UNLOCK_ACTION(idx, ad);
+  action_done_action_unlocked(idx);
 }
 
 static void action_done_do(intptr_t idx)
 {
   DBG("Action(%d)\n", (int)idx);
-  int i;
-  char logmsg[1024];
   if (idx >= 0)
   {
     RDLOCK_TABLE;
     if (table)
     { // if no table prevent seg fault
-      WRLOCK_ACTION(idx, ad);
-      ActionInfo *actions = table->actions;
-      if (actions[idx].event)
-        MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
-      send_monitor(MonitorDone, idx);
-      if (Output)
-      {
-        char now[32];
-        Now32(now);
-        if (IS_OK(actions[idx].status))
-          sprintf(logmsg, "%s, Action %s completed", now, actions[idx].path);
-        else
-        {
-          char *emsg = MdsGetMsg(actions[idx].status);
-          sprintf(logmsg, "%s, Action %s failed, %s", now, actions[idx].path,
-                  emsg);
-        }
-        (*Output)(logmsg);
-      }
-      actions[idx].done = 1;
-      actions[idx].recorded = 0;
-      UNLOCK_ACTION(idx, ad);
-      if (!isAbortInProgress())
-      {
-        EMPTYXD(xd);
-        char expression[60];
-        struct descriptor expression_d = {0, DTYPE_T, CLASS_S, 0};
-        expression_d.pointer = expression;
-        expression_d.length = sprintf(expression, "PUBLIC _ACTION_%08X = %d",
-                                      actions[idx].nid, actions[idx].status);
-        TdiExecute(&expression_d, &xd MDS_END_ARG);
-        MdsFree1Dx(&xd, NULL);
-        for (i = 0; i < actions[idx].num_references; i++)
-        {
-          int dstat;
-          int doit;
-          int cidx = actions[idx].referenced_by[i];
-          RDLOCK_ACTION(cidx, adl);
-          if (!actions[cidx].done)
-          {
-            if (IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)))
-            {
-              UNLOCK_ACTION(cidx, ad_ftt);
-              if (doit)
-              {
-                dispatch(cidx);
-              }
-              else
-              {
-                WRLOCK_ACTION(cidx, ad_ftte);
-                actions[cidx].status = ServerNOT_DISPATCHED;
-                UNLOCK_ACTION(cidx, ad_ftte);
-                action_done(cidx);
-              }
-            }
-            else if (dstat != TdiUNKNOWN_VAR)
-            {
-              UNLOCK_ACTION(cidx, ad_fte);
-              WRLOCK_ACTION(cidx, ad_fte);
-              actions[cidx].status = ServerINVALID_DEPENDENCY;
-              UNLOCK_ACTION(cidx, ad_fte);
-              action_done(cidx);
-            }
-          }
-          else
-            UNLOCK_ACTION(cidx, ad_fe);
-        }
-      }
+      action_done_table_locked(idx);
     }
     UNLOCK_TABLE;
   }
