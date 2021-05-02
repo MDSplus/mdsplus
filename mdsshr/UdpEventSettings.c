@@ -309,8 +309,7 @@ DEFINE_INITIALIZESOCKETS;
 EXPORT void InitializeEventSettings()
 {
   INITIALIZESOCKETS;
-  pthread_mutex_lock(&init_lock);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &init_lock);
+  MUTEX_LOCK_PUSH(&init_lock);
   int i, missing = 0;
   xmlInitParser_supp();
   for (i = 0; i < NUM_SETTINGS; i++)
@@ -414,5 +413,5 @@ EXPORT void InitializeEventSettings()
     fprintf(stderr, "\n");
 #endif
   }
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&init_lock);
 }

@@ -180,23 +180,21 @@ static void timeout_init()
 int GetMdsConnectTimeout()
 {
   int connect_timeout;
-  pthread_mutex_lock(&timeout_mutex);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &timeout_mutex);
+  MUTEX_LOCK_PUSH(&timeout_mutex);
   pthread_once(&timeout_once, timeout_init);
   connect_timeout = timeout_value;
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&timeout_mutex);
   return connect_timeout;
 }
 
 int SetMdsConnectTimeout(int sec)
 {
   int old;
-  pthread_mutex_lock(&timeout_mutex);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &timeout_mutex);
+  MUTEX_LOCK_PUSH(&timeout_mutex);
   pthread_once(&timeout_once, timeout_init);
   old = timeout_value;
   timeout_value = sec;
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&timeout_mutex);
   return old;
 }
 

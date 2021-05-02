@@ -388,8 +388,7 @@ int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes)
   static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   static NODE *empty_node_array = NULL;
   static NCI *empty_nci_array = NULL;
-  pthread_mutex_lock(&lock);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &lock);
+  MUTEX_LOCK_PUSH(&lock);
   status = TreeSUCCESS;
   int *saved_node_numbers;
   NODE *node_ptr;
@@ -541,7 +540,7 @@ int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes)
   }
   header_ptr->nodes += EXTEND_NODES;
 end:;
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&lock);
   return status;
 }
 

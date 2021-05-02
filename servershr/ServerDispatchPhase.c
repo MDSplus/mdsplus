@@ -138,10 +138,8 @@ static Condition JobWaitC = CONDITION_INITIALIZER;
 static Condition SendMonitorC = CONDITION_INITIALIZER;
 
 static pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define MONITOR_QUEUE_LOCK                       \
-  pthread_mutex_lock(&send_monitor_queue_mutex); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &send_monitor_queue_mutex)
-#define MONITOR_QUEUE_UNLOCK pthread_cleanup_pop(1)
+#define MONITOR_QUEUE_LOCK MUTEX_LOCK_PUSH(&send_monitor_queue_mutex)
+#define MONITOR_QUEUE_UNLOCK MUTEX_LOCK_POP(&send_monitor_queue_mutex)
 
 static pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
 #define WRLOCK_TABLE pthread_rwlock_wrlock(&table_lock)

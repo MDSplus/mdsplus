@@ -96,10 +96,8 @@ static host_list_t *host_list = NULL;
 static int host_list_armed = FALSE;
 static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t host_list_sig = PTHREAD_COND_INITIALIZER;
-#define HOST_LIST_LOCK                 \
-  pthread_mutex_lock(&host_list_lock); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &host_list_lock);
-#define HOST_LIST_UNLOCK pthread_cleanup_pop(1);
+#define HOST_LIST_LOCK MUTEX_LOCK_PUSH(&host_list_lock)
+#define HOST_LIST_UNLOCK MUTEX_LOCK_POP(&host_list_lock)
 /** host_list_cleanup
  * Can be colled to cleanup unused connections in host_list.
  * Meant to be called by host_list_clean_main() with conid = -1
@@ -1179,10 +1177,8 @@ char *ParseFile(char *filename, char **hostpart, char **filepart)
 }
 
 static pthread_mutex_t fds_lock = PTHREAD_MUTEX_INITIALIZER;
-#define FDS_LOCK                 \
-  pthread_mutex_lock(&fds_lock); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &fds_lock);
-#define FDS_UNLOCK pthread_cleanup_pop(1);
+#define FDS_LOCK MUTEX_LOCK_PUSH(&fds_lock)
+#define FDS_UNLOCK MUTEX_LOCK_POP(&fds_lock)
 
 int ADD_FD(int fd, int conid, int enhanced)
 {
@@ -1257,8 +1253,7 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size,
 {
   int status;
   static pthread_mutex_t io_lock = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&io_lock);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &io_lock);
+  MUTEX_LOCK_PUSH(&io_lock);
   char nargs = size / sizeof(int);
   status = SendArg(conid, (int)idx, 0, 0, 0, nargs, mdsio->dims, din);
   if (STATUS_NOT_OK)
@@ -1281,7 +1276,7 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size,
       remote_access_disconnect(conid, 0);
     }
   }
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&io_lock);
   return status;
 }
 

@@ -105,10 +105,8 @@ typedef struct job
 #define JOB_PRI "Job(%d, %d)"
 #define JOB_VAR(j) (j)->jobid, (j)->conid
 pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_JOBS                  \
-  pthread_mutex_lock(&jobs_mutex); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &jobs_mutex)
-#define UNLOCK_JOBS pthread_cleanup_pop(1)
+#define LOCK_JOBS MUTEX_LOCK_PUSH(&jobs_mutex)
+#define UNLOCK_JOBS MUTEX_LOCK_POP(&jobs_mutex)
 #define UNLOCK_JOBS_REV              \
   pthread_mutex_unlock(&jobs_mutex); \
   pthread_cleanup_push((void *)pthread_mutex_lock, &jobs_mutex)
@@ -126,14 +124,10 @@ typedef struct _client
 #define CLIENT_PRI "Client(%d, " IPADDRPRI ":%d)"
 #define CLIENT_VAR(c) (c)->conid, IPADDRVAR(&(c)->addr), (c)->port
 static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_CLIENTS                  \
-  pthread_mutex_lock(&clients_mutex); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &clients_mutex)
-#define UNLOCK_CLIENTS pthread_cleanup_pop(1)
-#define UNLOCK_CLIENTS_REV              \
-  pthread_mutex_unlock(&clients_mutex); \
-  pthread_cleanup_push((void *)pthread_mutex_lock, &clients_mutex)
-#define LOCK_CLIENTS_REV pthread_cleanup_pop(1)
+#define LOCK_CLIENTS MUTEX_LOCK_PUSH(&clients_mutex)
+#define UNLOCK_CLIENTS MUTEX_LOCK_POP(&clients_mutex)
+#define UNLOCK_CLIENTS_REV MUTEX_UNLOCK_PUSH(&clients_mutex)
+#define LOCK_CLIENTS_REV MUTEX_UNLOCK_POP(&clients_mutex)
 static Client *Clients = NULL;
 
 static int MonJob = -1;
@@ -327,8 +321,7 @@ static void do_callback_done(Job *j, int status, int removeJob)
   if (callback_done)
     callback_done(j->callback_param);
   /**** If job has a condition, RemoveJob will not remove it. ***/
-  pthread_mutex_lock(&job_conds);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &job_conds);
+  MUTEX_LOCK_PUSH(&job_conds);
   if (j->cond)
   {
     CONDITION_SET(j->cond);
@@ -338,7 +331,7 @@ static void do_callback_done(Job *j, int status, int removeJob)
     DBG(JOB_PRI "async done\n", JOB_VAR(j));
     remove_job(j);
   }
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&job_conds);
 }
 
 static inline Job *get_job_by_jobid(int jobid)
@@ -454,14 +447,13 @@ static void cleanup_job(int status, int jobid)
 static void abandon(void *in)
 {
   Job *j = *(Job **)in;
-  pthread_mutex_lock(&job_conds);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &job_conds);
+  MUTEX_LOCK_PUSH(&job_conds);
   if (j && j->cond)
   {
     CONDITION_DESTROY_PTR(j->cond, &job_conds);
     DBG(JOB_PRI " sync abandoned!\n", JOB_VAR(j));
   }
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&job_conds);
 }
 static inline void wait_and_remove_job(Job *j)
 {

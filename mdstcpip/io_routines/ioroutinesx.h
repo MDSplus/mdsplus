@@ -72,10 +72,8 @@ static SOCKET getSocket(Connection *c)
 }
 
 static pthread_mutex_t socket_list_mutex = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_SOCKET_LIST                  \
-  pthread_mutex_lock(&socket_list_mutex); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&socket_list_mutex);
-#define UNLOCK_SOCKET_LIST pthread_cleanup_pop(1);
+#define LOCK_SOCKET_LIST MUTEX_LOCK_PUSH(&socket_list_mutex)
+#define UNLOCK_SOCKET_LIST MUTEX_LOCK_POP(&socket_list_mutex)
 
 #ifdef _TCP
 static void socket_list_cleanup()

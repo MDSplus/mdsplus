@@ -834,15 +834,11 @@ EXPORT int StrRight(mdsdsc_t *const out, const mdsdsc_t *const in,
 }
 
 static pthread_mutex_t zones_lock = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_ZONES                 \
-  pthread_mutex_lock(&zones_lock); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &zones_lock)
-#define UNLOCK_ZONES pthread_cleanup_pop(1);
+#define LOCK_ZONES MUTEX_LOCK_PUSH(&zones_lock)
+#define UNLOCK_ZONES MUTEX_LOCK_POP(&zones_lock)
 ZoneList *MdsZones = NULL;
-#define LOCK_ZONE(zone)              \
-  pthread_mutex_lock(&(zone)->lock); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &(zone)->lock)
-#define UNLOCK_ZONE(zone) pthread_cleanup_pop(1);
+#define LOCK_ZONE(zone) MUTEX_LOCK_PUSH(&(zone)->lock)
+#define UNLOCK_ZONE(zone) MUTEX_LOCK_POP(&(zone)->lock)
 
 EXPORT int LibCreateVmZone(ZoneList **const zone)
 {

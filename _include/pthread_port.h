@@ -114,8 +114,13 @@ static void __attribute__((unused)) fclose_if(void *ptr)
 
 #define MUTEX_LOCK_PUSH(ptr) \
   pthread_mutex_lock(ptr);   \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)ptr)
+  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)(ptr))
 #define MUTEX_LOCK_POP(ptr) \
+  pthread_cleanup_pop(1)
+#define MUTEX_UNLOCK_PUSH(ptr) \
+  pthread_mutex_unlock(ptr);   \
+  pthread_cleanup_push((void *)pthread_mutex_lock, (void *)(ptr))
+#define MUTEX_UNLOCK_POP(ptr) \
   pthread_cleanup_pop(1)
 
 #endif // PTHREAD_PORT_H
