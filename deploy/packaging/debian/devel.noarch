@@ -1,5 +1,3 @@
-./usr/local/mdsplus/include/STATICdef.h
-./usr/local/mdsplus/include/WindowsUnnamedSemaphore.h
 ./usr/local/mdsplus/include/Xmds/ListTree.h
 ./usr/local/mdsplus/include/Xmds/ListTreeP.h
 ./usr/local/mdsplus/include/Xmds/XmdsCallbacks.h
@@ -30,13 +28,9 @@
 ./usr/local/mdsplus/include/camshr.h
 ./usr/local/mdsplus/include/camshr_messages.h
 ./usr/local/mdsplus/include/classdef.h
-./usr/local/mdsplus/include/condition.h
-./usr/local/mdsplus/include/coz.h
 ./usr/local/mdsplus/include/dbidef.h
 ./usr/local/mdsplus/include/dcl.h
 ./usr/local/mdsplus/include/dtypedef.h
-./usr/local/mdsplus/include/getusername.h
-./usr/local/mdsplus/include/int128.h
 ./usr/local/mdsplus/include/ipdesc.h
 ./usr/local/mdsplus/include/libroutines.h
 ./usr/local/mdsplus/include/mds_gendevice.h
@@ -64,11 +58,9 @@
 ./usr/local/mdsplus/include/msc_stdint.h
 ./usr/local/mdsplus/include/ncidef.h
 ./usr/local/mdsplus/include/opcbuiltins.h
-./usr/local/mdsplus/include/pthread_port.h
 ./usr/local/mdsplus/include/rtevents.h
 ./usr/local/mdsplus/include/servershr.h
 ./usr/local/mdsplus/include/servershr_messages.h
-./usr/local/mdsplus/include/socket_port.h
 ./usr/local/mdsplus/include/sqldb.h
 ./usr/local/mdsplus/include/sqlfront.h
 ./usr/local/mdsplus/include/status.h
