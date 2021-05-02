@@ -24,4 +24,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define MSG_LIBRARY
 #include <mdsplus/mdsconfig.h>
-#include <mitdevices_msg.h>
+#include "mitdevices_msg.h"

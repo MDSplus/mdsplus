@@ -23,12 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
+#include "mds_gendevice.h"
 #include <mds_stdarg.h>
 #include "b2408_gen.h"
 #include <treeshr.h>
 #include <libroutines.h>
-#include <mitdevices_msg.h>
+#include "mitdevices_msg.h"
 #include <stdio.h>
 #include "devroutines.h"
 #include <xmdsshr.h>

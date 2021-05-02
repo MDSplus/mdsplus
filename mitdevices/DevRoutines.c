@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-#include <mitdevices_msg.h>
+#include "mitdevices_msg.h"
 #include <treeshr.h>
 #include <ncidef.h>
 #include <time.h>

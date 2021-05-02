@@ -104,8 +104,8 @@ The data is dumped into the 4302 memory modules without using the hardware
 
 #include <stdlib.h>
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <strroutines.h>
 

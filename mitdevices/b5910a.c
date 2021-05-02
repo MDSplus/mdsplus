@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
+#include "mds_gendevice.h"
 #include <mds_stdarg.h>
-#include <mitdevices_msg.h>
+#include "mitdevices_msg.h"
 #include <ncidef.h>
 #include <Xm/XmP.h>
 #include <stdio.h>

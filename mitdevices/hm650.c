@@ -47,8 +47,8 @@ Note also that the front panel VETO and CLR inputs may inhibit action.
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include "hm650_gen.h"
