@@ -74,7 +74,7 @@ extern int mdsdcl_do_command(char *command);
 extern int is_broken_socket(SOCKET sock);
 
 static int send_reply(SrvJob *job, int replyType, int status, int length,
-                     char *msg);
+                      char *msg);
 
 static int DoSrvCommand(SrvJob *job_in);
 static int DoSrvAction(SrvJob *job_in);
@@ -719,8 +719,8 @@ static void DoSrvMonitor(SrvJob *job_in)
   status = (job->mode == MonitorCheckin) ? AddMonitorClient(job_in)
                                          : SendToMonitors(job_in);
   send_reply(job_in,
-            (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED,
-            status, 0, 0);
+             (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED,
+             status, 0, 0);
 }
 // thread
 static void WorkerExit(void *arg __attribute__((unused)))

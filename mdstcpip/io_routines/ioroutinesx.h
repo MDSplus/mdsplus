@@ -378,7 +378,7 @@ static int io_authorize(Connection *c, char *username)
     FREE_NOW(matchString[0]);
   }
   else
-    PERROR("error getting hostinfo");
+    print_socket_error("error getting hostinfo");
   FREE_NOW(iphost);
   FREE_NOW(hoststr);
   fflush(stdout);

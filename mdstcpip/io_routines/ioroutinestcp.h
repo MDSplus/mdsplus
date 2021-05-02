@@ -1,83 +1,5 @@
-#define _TCP
-DEFINE_INITIALIZESOCKETS;
-#ifdef _WIN32
-static void socketerror()
-{
-  int err;
-  switch (err = WSAGetLastError())
-  {
-  case 0:
-    perror("");
-    break;
-  case WSANOTINITIALISED:
-    fprintf(stderr, "WSANOTINITIALISED\n");
-    break;
-  case WSAENETDOWN:
-    fprintf(stderr, "WSAENETDOWN\n");
-    break;
-  case WSAEADDRINUSE:
-    fprintf(stderr, "WSAEADDRINUSE\n");
-    break;
-  case WSAEINTR:
-    fprintf(stderr, "WSAEINTR\n");
-    break;
-  case WSAENOTCONN:
-    fprintf(stderr, "WSAENOTCONN\n");
-    break;
-  case WSAEINPROGRESS:
-    fprintf(stderr, "WSAEINPROGRESS\n");
-    break;
-  case WSAEALREADY:
-    fprintf(stderr, "WSAEALREADY\n");
-    break;
-  case WSAEADDRNOTAVAIL:
-    fprintf(stderr, "WSAEADDRNOTAVAIL\n");
-    break;
-  case WSAEAFNOSUPPORT:
-    fprintf(stderr, "WSAEAFNOSUPPORT\n");
-    break;
-  case WSAECONNREFUSED:
-    fprintf(stderr, "WSAECONNREFUSED\n");
-    break;
-  case WSAENOPROTOOPT:
-    fprintf(stderr, "WSAENOPROTOOPT\n");
-    break;
-  case WSAEFAULT:
-    fprintf(stderr, "WSAEFAULT\n");
-    break;
-  case WSAENOTSOCK:
-    fprintf(stderr, "WSAENOTSOCK\n");
-    break;
-  case WSAESHUTDOWN:
-    fprintf(stderr, "WSAESHUTDOWN\n");
-    break;
-  case WSAEHOSTUNREACH:
-    fprintf(stderr, "WSAEHOSTUNREACH\n");
-    break;
-  case WSAEACCES:
-    fprintf(stderr, "WSAEACCES\n");
-    break;
-  default:
-    fprintf(stderr, "WSA %d\n", err);
-  }
-}
-#define PERROR(...)               \
-  do                              \
-  {                               \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, ": ");        \
-    socketerror();                \
-  } while (0)
-#else
-#define PERROR(...)               \
-  do                              \
-  {                               \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, ": ");        \
-    perror("");                   \
-  } while (0)
-#include <netinet/tcp.h>
-#endif
+#include <socket_port.h>
+
 #define SOCKLEN_T socklen_t
 #define GETPEERNAME getpeername
 #define SEND send
@@ -148,7 +70,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
   sock = socket(AF_T, SOCK_STREAM, 0);
   if (sock == INVALID_SOCKET)
   {
-    PERROR("Error creating socket");
+    print_socket_error("Error creating socket");
     return C_ERROR;
   }
   struct timeval connectTimer = {0, 0};
@@ -183,7 +105,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
     if (err < 1)
     {
       if (err < 0)
-        PERROR("Error in connect");
+        print_socket_error("Error in connect");
       else
         fprintf(stderr, "Error in connect: timeout ?!\n");
       close(int_sock);
@@ -236,7 +158,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
 #endif // !_WIN32
   if (err == -1)
   {
-    PERROR("Error in connect to service");
+    print_socket_error("Error in connect to service");
   error:;
     shutdown(sock, SHUT_RDWR);
     close(sock);
@@ -368,7 +290,7 @@ static int io_listen(int argc, char **argv)
   SOCKET ssock = socket(AF_T, SOCK_STREAM, 0);
   if (ssock == INVALID_SOCKET)
   {
-    PERROR("Error getting Connection Socket");
+    print_socket_error("Error getting Connection Socket");
     exit(EXIT_FAILURE);
   }
   FD_ZERO(&fdactive);
@@ -384,13 +306,13 @@ static int io_listen(int argc, char **argv)
   sin.SIN_ADDR = _INADDR_ANY;
   if (bind(ssock, (struct sockaddr *)&sin, sizeof(sin)) < 0)
   {
-    PERROR("Error binding to service (tcp_listen)");
+    print_socket_error("Error binding to service (tcp_listen)");
     exit(EXIT_FAILURE);
   }
   // LISTEN //
   if (listen(ssock, 128) < 0)
   {
-    PERROR("Error from listen");
+    print_socket_error("Error from listen");
     exit(EXIT_FAILURE);
   }
   atexit(destroyClientList);
@@ -414,7 +336,7 @@ static int io_listen(int argc, char **argv)
         // ACCEPT new connection and register new socket //
         SOCKET sock = accept(ssock, (struct sockaddr *)&sin, &len);
         if (sock == INVALID_SOCKET)
-          PERROR("Error accepting socket");
+          print_socket_error("Error accepting socket");
         else
           SetSocketOptions(sock, 0);
         if (IS_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)))
@@ -437,7 +359,7 @@ static int io_listen(int argc, char **argv)
     }
     else
     {
-      PERROR("Error in server select, shutting down");
+      print_socket_error("Error in server select, shutting down");
       exit(EXIT_FAILURE);
     }
   } // end LISTEN LOOP //

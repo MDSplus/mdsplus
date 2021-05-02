@@ -1,22 +1,4 @@
-#ifdef _WIN32
-#define close closesocket
-#define PERROR(...)               \
-  do                              \
-  {                               \
-    errno = WSAGetLastError();    \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, ": ");        \
-    perror("");                   \
-  } while (0)
-#undef INVALID_SOCKET
-#else
-#define PERROR(...)                                     \
-  do                                                    \
-  {                                                     \
-    fprintf(stderr, __VA_ARGS__);                       \
-    fprintf(stderr, ": %s\n", udt_getlasterror_desc()); \
-  } while (0)
-#endif
+#include <socket_port.h>
 #undef SOCKET
 #define SOCKET UDTSOCKET
 #define INVALID_SOCKET -1
@@ -47,7 +29,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
     }
     if (udt_connect(sock, (struct sockaddr *)&sin, sizeof(sin)))
     {
-      PERROR("Error in connect to service");
+      print_socket_error("Error in connect to service");
       return C_ERROR;
     }
     ConnectionSetInfo(c, PROT, sock, NULL, 0);

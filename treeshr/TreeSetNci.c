@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <treeshr.h>
 
-
 extern void **TreeCtx();
 
 extern int SetNciRemote();

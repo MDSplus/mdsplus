@@ -53,7 +53,44 @@ typedef int SOCKET;
   }                                          \
   INIT_SHARED_FUNCTION_ONCE(InitializeSockets)
 #define INITIALIZESOCKETS RUN_SHARED_FUNCTION_ONCE(InitializeSockets)
+#define socklen_t int
+static void _print_socket_error(char *message, int error)
+{
+  char *errorstr;
+  switch (error)
+  {
+#define __SOCKET_CASE(WSA) \
+  case WSA:                \
+    errorstr = #WSA;       \
+    break;
+    __SOCKET_CASE(WSANOTINITIALISED);
+    __SOCKET_CASE(WSAENETDOWN);
+    __SOCKET_CASE(WSAEADDRINUSE);
+    __SOCKET_CASE(WSAEINTR);
+    __SOCKET_CASE(WSAEINPROGRESS);
+    __SOCKET_CASE(WSAEALREADY);
+    __SOCKET_CASE(WSAEADDRNOTAVAIL);
+    __SOCKET_CASE(WSAEAFNOSUPPORT);
+    __SOCKET_CASE(WSAECONNREFUSED);
+    __SOCKET_CASE(WSAENOPROTOOPT);
+    __SOCKET_CASE(WSAEFAULT);
+    __SOCKET_CASE(WSAENOTSOCK);
+    __SOCKET_CASE(WSAESHUTDOWN);
+    __SOCKET_CASE(WSAEHOSTUNREACH);
+    __SOCKET_CASE(WSAEACCES);
+#undef __SOCKET_CASE
+  default:
+    fprintf(stderr, "%s - WSAError %d\n", message, error);
+    return;
+  }
+  fprintf(stderr, "%s - %s\n", message, errorstr);
+}
+inline static void print_socket_error(char *message)
+{
+  _print_socket_error(message, WSAGetLastError());
+}
 #else
+#define print_socket_error(message) fprintf(stderr, "%s\n", message)
 #define DEFINE_INITIALIZESOCKETS
 #define INITIALIZESOCKETS
 #endif

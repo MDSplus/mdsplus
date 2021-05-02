@@ -53,65 +53,6 @@ extern int UdpEventGetInterface(struct in_addr **interface_addr);
 #define EVENT_THREAD_STACK_SIZE_MIN 102400
 #endif
 
-#ifdef _WIN32
-#define socklen_t int
-static void print_error_code(char *message, int error)
-{
-  char *errorstr;
-  switch (error)
-  {
-  case WSANOTINITIALISED:
-    errorstr = "WSANOTINITIALISED";
-    break;
-  case WSAENETDOWN:
-    errorstr = "WSAENETDOWN";
-    break;
-  case WSAEADDRINUSE:
-    errorstr = "WSAEADDRINUSE";
-    break;
-  case WSAEINTR:
-    errorstr = "WSAEINTR";
-    break;
-  case WSAEINPROGRESS:
-    errorstr = "WSAEINPROGRESS";
-    break;
-  case WSAEALREADY:
-    errorstr = "WSAEALREADY";
-    break;
-  case WSAEADDRNOTAVAIL:
-    errorstr = "WSAEADDRNOTAVAIL";
-    break;
-  case WSAEAFNOSUPPORT:
-    errorstr = "WSAEAFNOSUPPORT";
-    break;
-  case WSAECONNREFUSED:
-    errorstr = "WSAECONNREFUSED";
-    break;
-  case WSAENOPROTOOPT:
-    errorstr = "WSAENOPROTOOPT";
-    break;
-  case WSAEFAULT:
-    errorstr = "WSAEFAULT";
-    break;
-  case WSAENOTSOCK:
-    errorstr = "WSAENOTSOCK";
-    break;
-  default:
-    errorstr = 0;
-  }
-  if (errorstr)
-    fprintf(stderr, "%s - %s\n", message, errorstr);
-  else
-    fprintf(stderr, "%s - error code %d\n", message, error);
-}
-inline static void print_error(char *message)
-{
-  print_error_code(message, WSAGetLastError());
-}
-#else
-#define print_error(message) fprintf(stderr, "%s\n", message)
-#endif
-
 typedef struct _EventList
 {
   int eventid;
@@ -172,7 +113,7 @@ static void *handleMessage(void *info_in)
       int error = WSAGetLastError();
       if (!(recBytes == 0 || error == WSAEBADF || error == WSAESHUTDOWN ||
             error == WSAEINTR || error == WSAENOTSOCK))
-        print_error_code("Error getting data", error);
+        _print_socket_error("Error getting data", error);
 #endif
       break;
     }
@@ -270,7 +211,7 @@ int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *
   UdpEventGetPort(&port);
   if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
   {
-    print_error("Error creating socket");
+    print_socket_error("Error creating socket");
     return 0;
   }
   //    serverAddr.sin_len = sizeof(serverAddr);
@@ -282,14 +223,14 @@ int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) ==
       SOCKET_ERROR)
   {
-    print_error("Cannot set REUSEADDR option");
+    print_socket_error("Cannot set REUSEADDR option");
     return 0;
   }
 #ifdef SO_REUSEPORT
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEPORT, &flag, sizeof(flag)) ==
       SOCKET_ERROR)
   {
-    print_error("Cannot set REUSEPORT option");
+    print_socket_error("Cannot set REUSEPORT option");
   }
 #endif
 #ifdef _WIN32
@@ -311,7 +252,7 @@ int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *
   if (setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq,
                  sizeof(ipMreq)) < 0)
   {
-    print_error(
+    print_socket_error(
         "Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver");
     return 0;
   }
@@ -410,7 +351,7 @@ static pthread_once_t send_socket_once = PTHREAD_ONCE_INIT;
 static void send_socket_get()
 {
   if ((send_socket = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
-    print_error("Error creating socket");
+    print_socket_error("Error creating socket");
   UdpEventGetPort(&sendPort);
 }
 
@@ -471,7 +412,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) ==
       -1)
   {
-    print_error("Error sending UDP message");
+    print_socket_error("Error sending UDP message");
     status = 0;
   }
   else

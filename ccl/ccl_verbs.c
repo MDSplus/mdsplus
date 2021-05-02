@@ -62,7 +62,7 @@ static int Qrequired = 0;
   EXPORT int ccl_name(void *ctx, char **error, char **output)                \
   {                                                                          \
     int status = ParseQualifiers(ctx, error, output);                        \
-    if (STATUS_OK)                                                          \
+    if (STATUS_OK)                                                           \
       status = cam_name(Name, A, F, Count, D, Mem, (unsigned short *)&iosb); \
     return CheckErrors(status, (unsigned short *)&iosb, error, output);      \
   }
@@ -71,7 +71,7 @@ static int Qrequired = 0;
   EXPORT int ccl_name(void *ctx, char **error, char **output)           \
   {                                                                     \
     int status = ParseQualifiers(ctx, error);                           \
-    if (STATUS_OK)                                                     \
+    if (STATUS_OK)                                                      \
       status = cam_name(Name, A, F, D, Mem, (unsigned short *)&iosb);   \
     return CheckErrors(status, (unsigned short *)&iosb, error, output); \
   }

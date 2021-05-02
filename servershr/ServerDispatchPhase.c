@@ -94,7 +94,7 @@ static void set_group(int sync, int first_g, int *last_g);
 static int check_actions_done(int s, int e);
 static void record_status(int s, int e);
 static void wait_for_actions(int conditionals, int first_g, int last_g,
-                           int first_c, int last_c);
+                             int first_c, int last_c);
 
 typedef struct _send_monitor
 {
@@ -143,7 +143,6 @@ static pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_cleanup_push((void *)pthread_mutex_unlock, &send_monitor_queue_mutex)
 #define MONITOR_QUEUE_UNLOCK pthread_cleanup_pop(1)
 
-
 static pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
 #define WRLOCK_TABLE pthread_rwlock_wrlock(&table_lock)
 #define RDLOCK_TABLE pthread_rwlock_rdlock(&table_lock)
@@ -155,7 +154,10 @@ static pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
   fprintf(stderr, "%d: %-10s  %s[%d,%d]%c\n", idx, #info, #typ, \
           ACTION_LOCK(idx).__data.__readers, ACTION_LOCK(idx).__data.__writers, b)
 #else
-#define ACTION_DBG(idx, info, typ, b) do{}while(0)
+#define ACTION_DBG(idx, info, typ, b) \
+  do                                  \
+  {                                   \
+  } while (0)
 #endif
 #define XLOCK_ACTION(idx, info, typ)               \
   do                                               \
@@ -390,7 +392,7 @@ static void record_status(int s, int e)
 }
 
 static void wait_for_actions(int all, int first_g, int last_g,
-                           int first_c, int last_c)
+                             int first_c, int last_c)
 {
   int c_status = C_OK;
   _CONDITION_LOCK(&JobWaitC);

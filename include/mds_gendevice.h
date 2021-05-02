@@ -208,7 +208,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     else                                                                   \
       status =                                                             \
           TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC); \
-    if (STATUS_OK)                                                        \
+    if (STATUS_OK)                                                         \
       status = TreePutRecord(curr_nid, &num_d, 0);                         \
     if (STATUS_NOT_OK)                                                     \
     {                                                                      \
@@ -229,7 +229,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     else                                                                   \
       status =                                                             \
           TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC); \
-    if (STATUS_OK)                                                        \
+    if (STATUS_OK)                                                         \
       status = TreePutRecord(curr_nid, &num_d, 0);                         \
     if (STATUS_NOT_OK)                                                     \
     {                                                                      \
@@ -247,7 +247,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);     \
     else                                                                     \
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_TEXT); \
-    if (STATUS_OK)                                                          \
+    if (STATUS_OK)                                                           \
       status = TreePutRecord(curr_nid, (struct descriptor *)&string_d, 0);   \
     if (STATUS_NOT_OK)                                                       \
     {                                                                        \
@@ -304,7 +304,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
       }                                                                      \
     }                                                                        \
     status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
-    if (STATUS_OK)                                                          \
+    if (STATUS_OK)                                                           \
       status = TreePutRecord(curr_nid, comp_expr_xd.pointer, 0);             \
     if (STATUS_NOT_OK)                                                       \
     {                                                                        \
@@ -355,7 +355,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);       \
     else                                                                       \
       status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_ACTION); \
-    if (STATUS_OK)                                                            \
+    if (STATUS_OK)                                                             \
       status = TreePutRecord(curr_nid, (struct descriptor *)&action_d, 0);     \
     if (STATUS_NOT_OK)                                                         \
     {                                                                          \
@@ -419,7 +419,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_descriptor(pos, field)      \
   curr_nid = head_nid + pos;             \
   status = TreeGetRecord(curr_nid, &xd); \
-  if (STATUS_OK)                        \
+  if (STATUS_OK)                         \
     in_struct.field = xd.pointer;        \
   next_xd
 #define read_descriptor_error(pos, field, err)                             \
@@ -431,7 +431,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_integer(pos, field)                          \
   curr_nid = head_nid + pos;                              \
   status = TdiData(&curr_nid_d, &curr_int_d MDS_END_ARG); \
-  if (STATUS_OK)                                         \
+  if (STATUS_OK)                                          \
     in_struct.field = curr_int;
 #define read_integer_error(pos, field, err)               \
   curr_nid = head_nid + pos;                              \
@@ -467,7 +467,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_integer_array(pos, field, field_count)                      \
   curr_nid = head_nid + pos;                                             \
   status = GenDeviceCallData(DevMODINT, curr_nid, &xd);                  \
-  if (STATUS_OK)                                                        \
+  if (STATUS_OK)                                                         \
   {                                                                      \
     array_d_ptr = (struct descriptor_a *)xd.pointer;                     \
     if (array_d_ptr->class == CLASS_A)                                   \
@@ -494,7 +494,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_float_array(pos, field, field_count)                        \
   curr_nid = head_nid + pos;                                             \
   status = GenDeviceCallData(DevMODFLO, curr_nid, &xd);                  \
-  if (STATUS_OK)                                                        \
+  if (STATUS_OK)                                                         \
   {                                                                      \
     array_d_ptr = (struct descriptor_a *)xd.pointer;                     \
     if (array_d_ptr->class == CLASS_A)                                   \
@@ -507,7 +507,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_float(pos, field)                              \
   curr_nid = head_nid + pos;                                \
   status = TdiData(&curr_nid_d, &curr_float_d MDS_END_ARG); \
-  if (STATUS_OK)                                           \
+  if (STATUS_OK)                                            \
     in_struct.field = curr_float;
 #define read_float_error(pos, field, err)                   \
   curr_nid = head_nid + pos;                                \
@@ -525,7 +525,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define read_string(pos, field)                         \
   curr_nid = head_nid + pos;                            \
   status = GenDeviceCallData(DevMODSTR, curr_nid, &xd); \
-  if (STATUS_OK)                                       \
+  if (STATUS_OK)                                        \
     in_struct.field = xd.pointer->pointer;              \
   next_xd
 #define read_string_error(pos, field, err)                          \

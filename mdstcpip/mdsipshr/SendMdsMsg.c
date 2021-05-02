@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define DEBUG
 #include <mdsdbg.h>
 
-
 static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
                       int options)
 {
