@@ -155,7 +155,7 @@ static pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
   fprintf(stderr, "%d: %-10s  %s[%d,%d]%c\n", idx, #info, #typ, \
           ACTION_LOCK(idx).__data.__readers, ACTION_LOCK(idx).__data.__writers, b)
 #else
-#define ACTION_DBG(idx, info, typ, b)
+#define ACTION_DBG(idx, info, typ, b) do{}while(0)
 #endif
 #define XLOCK_ACTION(idx, info, typ)               \
   do                                               \
