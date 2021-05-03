@@ -88,7 +88,7 @@ static void printHelp()
 static int doOpen(int streams, char *name, int options, int mode,
                   struct mdsfile *mfile)
 {
-  char *tmp = strcpy((char *)malloc(strlen(name) + 1), name);
+  char *tmp = strdup(name);
   char *hostpart = tmp;
   char *filepart = strstr(tmp, "::");
   int status;
@@ -162,11 +162,9 @@ static int doOpen(int streams, char *name, int options, int mode,
     mfile->fd = open(name, options, mode);
     if (mfile->fd == -1)
     {
-      char *fmt = "Error opening file: %s";
-      char *msg = (char *)malloc(strlen(name) + strlen(fmt) + 10);
-      sprintf(msg, fmt, name);
+      char *msg = alloc(strlen(name) + 32);
+      sprintf(msg, "Error opening file: %s", name);
       perror(msg);
-      free(msg);
       status = -1;
     }
     else

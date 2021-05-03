@@ -501,11 +501,16 @@ static int io_check(Connection *c)
 static void destroyClient(Client *c)
 {
   DBG("destroyClient");
+  Connection* con = c->connection;
+  if (con)
+  {
+    con->io = NULL;
+    io_disconnect(con);
+  }
   if (c->thread)
   {
     if (!pthread_equal(*c->thread, pthread_self()))
     {
-      pthread_cancel(*c->thread);
       pthread_join(*c->thread, NULL);
     }
     else
@@ -515,7 +520,7 @@ static void destroyClient(Client *c)
     free(c->thread);
   }
   else
-    destroyConnection(c->connection);
+    destroyConnection(con);
   free(c->username);
   free(c->iphost);
   free(c->host);

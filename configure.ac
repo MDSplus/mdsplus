@@ -1433,6 +1433,7 @@ AC_OUTPUT(
   mdsshr/docs/Makefile
   mdssql/Makefile
   mdstcpip/Makefile
+  mdstcpip/testing/Makefile
   mdstcpip/zlib/Makefile
   mdstcpip/docs/Makefile
   mdstcpip/docs/img/Makefile

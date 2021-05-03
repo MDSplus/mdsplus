@@ -38,16 +38,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdbg.h>
 
 EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
-                              struct descriptor **arglist_in,
-                              struct descriptor_xd *ans_ptr)
+                              mdsdsc_t **arglist_in,
+                              mdsdsc_xd_t *ans_ptr)
 {
   int dim = 0;
   int i, status;
   int version = GetConnectionVersion(id);
-  if (version >= MDSIP_VERSION_DSC_ARGS)
+  const int expect_serial = version >= MDSIP_VERSION_DSC_ARGS;
+  if (expect_serial)
   {
-    status =
-        SendArg(id, 0, DTYPE_CSTRING, ++nargs, 0, 0, &dim, (char *)expression);
+    status = SendArg(id, 0, DTYPE_CSTRING, ++nargs,
+                     strlen(expression), 0, &dim, (char *)expression);
     for (i = 1; i < nargs && STATUS_OK; i++)
       status = SendDsc(id, i, nargs, arglist_in[i - 1]);
   }
@@ -75,7 +76,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
     for (i = 2; i < nargs && STATUS_OK; i++)
     {
       status = MdsSerializeDscOut(arglist_in[i - 2], &xd);
-      arr = (struct descriptor_a *)xd.pointer;
+      arr = (mdsdsc_a_t *)xd.pointer;
       if (STATUS_OK)
         status = SendArg(id, i, arr->dtype, nargs, arr->length, 1,
                          (int *)&arr->arsize, arr->pointer);
@@ -87,15 +88,15 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
     char ndims;
     void *mem = 0;
     int dims[MAX_DIMS] = {0};
-    struct descriptor_a ser = {0};
+    mdsdsc_a_t ser = {0};
     status = GetAnswerInfoTS(id, (char *)&ser.dtype, (short int *)&ser.length,
                              &ndims, dims, (int *)&ser.arsize,
                              (void **)&ser.pointer, &mem);
     ser.class = CLASS_A;
-    if (ser.dtype == DTYPE_SERIAL || ser.dtype == DTYPE_B)
+    if ((expect_serial && ser.dtype == DTYPE_SERIAL) || ser.dtype == DTYPE_B)
       status = MdsSerializeDscIn(ser.pointer, ans_ptr);
     else
-      status = MDSplusERROR;
+      status = MdsCopyDxXd((mdsdsc_t*)&ser, ans_ptr);
     free(mem);
   }
   return status;

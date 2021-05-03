@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../mdsIo.h"
 #include "../mdsip_connections.h"
 
-// #define DEBUG
+#define DEBUG
 #include <mdsdbg.h>
 
 extern int TdiRestoreContext(void **);
@@ -140,348 +140,369 @@ static int send_response(Connection *connection, Message *message,
   const int client_type = connection->client_type;
   const unsigned char message_id = connection->message_id;
   Message *m = NULL;
-  int nbytes = (d->class == CLASS_S) ? d->length : ((array_coeff *)d)->arsize;
-  int num = nbytes / ((d->length < 1) ? 1 : d->length);
-  short length = d->length;
-  if (CType(client_type) == CRAY_CLIENT)
+  if (SupportsCompression(client_type))
   {
-    switch (d->dtype)
+    INIT_AND_FREEXD_ON_EXIT(out);
+    if (IS_OK(MdsSerializeDscOut(d, &out)))
     {
-    case DTYPE_USHORT:
-    case DTYPE_ULONG:
-    case DTYPE_SHORT:
-    case DTYPE_LONG:
-    case DTYPE_F:
-    case DTYPE_FS:
-      length = 8;
-      break;
-    case DTYPE_FC:
-    case DTYPE_FSC:
-    case DTYPE_D:
-    case DTYPE_G:
-    case DTYPE_FT:
-      length = 16;
-      break;
-    default:
-      length = d->length;
-      break;
+      struct descriptor_a *array = (struct descriptor_a *)out.pointer;
+      m = malloc(sizeof(MsgHdr) + array->arsize);
+      memset(&m->h, 0, sizeof(MsgHdr));
+      m->h.msglen = sizeof(MsgHdr) + array->arsize;
+      m->h.client_type = client_type;
+      m->h.message_id = message_id;
+      m->h.status = status;
+      m->h.dtype = DTYPE_SERIAL;
+      m->h.length = 1;
+      memcpy(m->bytes, array->pointer, array->arsize);
     }
-    nbytes = num * length;
+    FREEXD_NOW(out);
   }
-  else if (CType(client_type) == CRAY_IEEE_CLIENT)
-  {
-    switch (d->dtype)
-    {
-    case DTYPE_USHORT:
-    case DTYPE_SHORT:
-      length = 4;
-      break;
-    case DTYPE_ULONG:
-    case DTYPE_LONG:
-      length = 8;
-      break;
-    default:
-      length = d->length;
-      break;
-    }
-    nbytes = num * length;
-  }
-  m = malloc(sizeof(MsgHdr) + nbytes);
-  memset(&m->h, 0, sizeof(MsgHdr));
-  m->h.msglen = sizeof(MsgHdr) + nbytes;
-  m->h.client_type = client_type;
-  m->h.message_id = message_id;
-  m->h.status = status;
-  m->h.dtype = d->dtype;
-  m->h.length = length;
-  if (d->class == CLASS_S)
-    m->h.ndims = 0;
   else
   {
-    int i;
-    array_coeff *a = (array_coeff *)d;
-    m->h.ndims = a->dimct;
-    if (a->aflags.coeff)
-      for (i = 0; i < m->h.ndims && i < MAX_DIMS; i++)
-        m->h.dims[i] = a->m[i];
+    int nbytes = (d->class == CLASS_S) ? d->length : ((array_coeff *)d)->arsize;
+    int num = nbytes / ((d->length < 1) ? 1 : d->length);
+    short length = d->length;
+    if (CType(client_type) == CRAY_CLIENT)
+    {
+      switch (d->dtype)
+      {
+      case DTYPE_USHORT:
+      case DTYPE_ULONG:
+      case DTYPE_SHORT:
+      case DTYPE_LONG:
+      case DTYPE_F:
+      case DTYPE_FS:
+        length = 8;
+        break;
+      case DTYPE_FC:
+      case DTYPE_FSC:
+      case DTYPE_D:
+      case DTYPE_G:
+      case DTYPE_FT:
+        length = 16;
+        break;
+      default:
+        length = d->length;
+        break;
+      }
+      nbytes = num * length;
+    }
+    else if (CType(client_type) == CRAY_IEEE_CLIENT)
+    {
+      switch (d->dtype)
+      {
+      case DTYPE_USHORT:
+      case DTYPE_SHORT:
+        length = 4;
+        break;
+      case DTYPE_ULONG:
+      case DTYPE_LONG:
+        length = 8;
+        break;
+      default:
+        length = d->length;
+        break;
+      }
+      nbytes = num * length;
+    }
+    m = malloc(sizeof(MsgHdr) + nbytes);
+    memset(&m->h, 0, sizeof(MsgHdr));
+    m->h.msglen = sizeof(MsgHdr) + nbytes;
+    m->h.client_type = client_type;
+    m->h.message_id = message_id;
+    m->h.status = status;
+    m->h.dtype = d->dtype;
+    m->h.length = length;
+    if (d->class == CLASS_S)
+      m->h.ndims = 0;
     else
-      m->h.dims[0] = a->length ? a->arsize / a->length : 0;
-    for (i = m->h.ndims; i < MAX_DIMS; i++)
-      m->h.dims[i] = 0;
-  }
-  switch (CType(client_type))
-  {
-  case IEEE_CLIENT:
-  case JAVA_CLIENT:
-    switch (d->dtype)
     {
-    case DTYPE_F:
-      convert_float(num, VAX_F, (char)d->length, d->pointer, IEEE_S,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_FLOAT;
+      int i;
+      array_coeff *a = (array_coeff *)d;
+      m->h.ndims = a->dimct;
+      if (a->aflags.coeff)
+        for (i = 0; i < m->h.ndims && i < MAX_DIMS; i++)
+          m->h.dims[i] = a->m[i];
+      else
+        m->h.dims[0] = a->length ? a->arsize / a->length : 0;
+      for (i = m->h.ndims; i < MAX_DIMS; i++)
+        m->h.dims[i] = 0;
+    }
+    switch (CType(client_type))
+    {
+    case IEEE_CLIENT:
+    case JAVA_CLIENT:
+      switch (d->dtype)
+      {
+      case DTYPE_F:
+        convert_float(num, VAX_F, (char)d->length, d->pointer, IEEE_S,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FC:
+        convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
+                      IEEE_S, (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_FS:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FSC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_D:
+        convert_float(num, VAX_D, (char)d->length, d->pointer, IEEE_T,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_DC:
+        convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
+                      IEEE_T, (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_G:
+        convert_float(num, VAX_G, (char)d->length, d->pointer, IEEE_T,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_GC:
+        convert_float(num * 2, VAX_G, (char)(d->length / 2), d->pointer,
+                      IEEE_T, (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_FT:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_FTC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      default:
+        memcpy(m->bytes, d->pointer, nbytes);
+        break;
+      }
       break;
-    case DTYPE_FC:
-      convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
-                    IEEE_S, (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX;
+    case CRAY_CLIENT:
+      switch (d->dtype)
+      {
+      case DTYPE_USHORT:
+      case DTYPE_ULONG:
+        convert_binary(num, 0, d->length, d->pointer, m->h.length, m->bytes);
+        break;
+      case DTYPE_SHORT:
+      case DTYPE_LONG:
+        convert_binary(num, 1, (char)d->length, d->pointer, (char)m->h.length,
+                       m->bytes);
+        break;
+      case DTYPE_F:
+        convert_float(num, VAX_F, (char)d->length, d->pointer, CRAY,
+                      (char)m->h.length, m->bytes);
+        break;
+      case DTYPE_FS:
+        convert_float(num, IEEE_S, (char)d->length, d->pointer, CRAY,
+                      (char)m->h.length, m->bytes);
+        break;
+      case DTYPE_FC:
+        convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
+                      CRAY, (char)(m->h.length / 2), m->bytes);
+        break;
+      case DTYPE_FSC:
+        convert_float(num * 2, IEEE_S, (char)(d->length / 2), d->pointer,
+                      CRAY, (char)(m->h.length / 2), m->bytes);
+        break;
+      case DTYPE_D:
+        convert_float(num, VAX_D, sizeof(double), d->pointer, CRAY,
+                      (char)m->h.length, m->bytes);
+        break;
+      case DTYPE_G:
+        convert_float(num, VAX_G, sizeof(double), d->pointer, CRAY,
+                      (char)m->h.length, m->bytes);
+        break;
+      case DTYPE_FT:
+        convert_float(num, IEEE_T, sizeof(double), d->pointer, CRAY,
+                      (char)m->h.length, m->bytes);
+        break;
+      default:
+        memcpy(m->bytes, d->pointer, nbytes);
+        break;
+      }
       break;
-    case DTYPE_FS:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_FLOAT;
+    case CRAY_IEEE_CLIENT:
+      switch (d->dtype)
+      {
+      case DTYPE_USHORT:
+      case DTYPE_ULONG:
+        convert_binary(num, 0, d->length, d->pointer, m->h.length, m->bytes);
+        break;
+      case DTYPE_SHORT:
+      case DTYPE_LONG:
+        convert_binary(num, 1, (char)d->length, d->pointer, (char)m->h.length,
+                       m->bytes);
+        break;
+      case DTYPE_F:
+        convert_float(num, VAX_F, (char)d->length, d->pointer, IEEE_S,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FC:
+        convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
+                      IEEE_S, (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_FS:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FSC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_D:
+        convert_float(num, VAX_D, (char)d->length, d->pointer, IEEE_T,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_DC:
+        convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
+                      IEEE_T, (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_G:
+        convert_float(num, VAX_G, (char)d->length, d->pointer, IEEE_T,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_GC:
+        convert_float(num * 2, VAX_G, (char)(d->length / 2), d->pointer,
+                      IEEE_T, (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_FT:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_FTC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      default:
+        memcpy(m->bytes, d->pointer, nbytes);
+        break;
+      }
       break;
-    case DTYPE_FSC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX;
-      break;
-    case DTYPE_D:
-      convert_float(num, VAX_D, (char)d->length, d->pointer, IEEE_T,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_DC:
-      convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
-                    IEEE_T, (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_G:
-      convert_float(num, VAX_G, (char)d->length, d->pointer, IEEE_T,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_GC:
-      convert_float(num * 2, VAX_G, (char)(d->length / 2), d->pointer,
-                    IEEE_T, (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_FT:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_FTC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+    case VMSG_CLIENT:
+      switch (d->dtype)
+      {
+      case DTYPE_F:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_D:
+        convert_float(num, VAX_D, sizeof(double), d->pointer, VAX_G,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_DC:
+        convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
+                      VAX_G, (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_G:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_GC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_FS:
+        convert_float(num, IEEE_S, sizeof(float), d->pointer, VAX_F,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FSC:
+        convert_float(num * 2, IEEE_S, sizeof(float), d->pointer, VAX_F,
+                      (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_FT:
+        convert_float(num, IEEE_T, sizeof(double), d->pointer, VAX_G,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_FTC:
+        convert_float(num * 2, IEEE_T, sizeof(double), d->pointer, VAX_G,
+                      (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      default:
+        memcpy(m->bytes, d->pointer, nbytes);
+        break;
+      }
       break;
     default:
-      memcpy(m->bytes, d->pointer, nbytes);
+      switch (d->dtype)
+      {
+      case DTYPE_F:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_D:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_DC:
+        memcpy(m->bytes, d->pointer, nbytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_G:
+        convert_float(num, VAX_G, sizeof(double), d->pointer, VAX_D,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_GC:
+        convert_float(num * 2, VAX_G, sizeof(double), d->pointer, VAX_D,
+                      (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      case DTYPE_FS:
+        convert_float(num, IEEE_S, sizeof(float), d->pointer, VAX_F,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_FLOAT;
+        break;
+      case DTYPE_FSC:
+        convert_float(num * 2, IEEE_S, sizeof(float), d->pointer, VAX_F,
+                      (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX;
+        break;
+      case DTYPE_FT:
+        convert_float(num, IEEE_T, sizeof(double), d->pointer, VAX_D,
+                      (char)m->h.length, m->bytes);
+        m->h.dtype = DTYPE_DOUBLE;
+        break;
+      case DTYPE_FTC:
+        convert_float(num * 2, IEEE_T, sizeof(double), d->pointer, VAX_D,
+                      (char)(m->h.length / 2), m->bytes);
+        m->h.dtype = DTYPE_COMPLEX_DOUBLE;
+        break;
+      default:
+        memcpy(m->bytes, d->pointer, nbytes);
+        break;
+      }
       break;
     }
-    break;
-  case CRAY_CLIENT:
-    switch (d->dtype)
-    {
-    case DTYPE_USHORT:
-    case DTYPE_ULONG:
-      convert_binary(num, 0, d->length, d->pointer, m->h.length, m->bytes);
-      break;
-    case DTYPE_SHORT:
-    case DTYPE_LONG:
-      convert_binary(num, 1, (char)d->length, d->pointer, (char)m->h.length,
-                     m->bytes);
-      break;
-    case DTYPE_F:
-      convert_float(num, VAX_F, (char)d->length, d->pointer, CRAY,
-                    (char)m->h.length, m->bytes);
-      break;
-    case DTYPE_FS:
-      convert_float(num, IEEE_S, (char)d->length, d->pointer, CRAY,
-                    (char)m->h.length, m->bytes);
-      break;
-    case DTYPE_FC:
-      convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
-                    CRAY, (char)(m->h.length / 2), m->bytes);
-      break;
-    case DTYPE_FSC:
-      convert_float(num * 2, IEEE_S, (char)(d->length / 2), d->pointer,
-                    CRAY, (char)(m->h.length / 2), m->bytes);
-      break;
-    case DTYPE_D:
-      convert_float(num, VAX_D, sizeof(double), d->pointer, CRAY,
-                    (char)m->h.length, m->bytes);
-      break;
-    case DTYPE_G:
-      convert_float(num, VAX_G, sizeof(double), d->pointer, CRAY,
-                    (char)m->h.length, m->bytes);
-      break;
-    case DTYPE_FT:
-      convert_float(num, IEEE_T, sizeof(double), d->pointer, CRAY,
-                    (char)m->h.length, m->bytes);
-      break;
-    default:
-      memcpy(m->bytes, d->pointer, nbytes);
-      break;
-    }
-    break;
-  case CRAY_IEEE_CLIENT:
-    switch (d->dtype)
-    {
-    case DTYPE_USHORT:
-    case DTYPE_ULONG:
-      convert_binary(num, 0, d->length, d->pointer, m->h.length, m->bytes);
-      break;
-    case DTYPE_SHORT:
-    case DTYPE_LONG:
-      convert_binary(num, 1, (char)d->length, d->pointer, (char)m->h.length,
-                     m->bytes);
-      break;
-    case DTYPE_F:
-      convert_float(num, VAX_F, (char)d->length, d->pointer, IEEE_S,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_FLOAT;
-      break;
-    case DTYPE_FC:
-      convert_float(num * 2, VAX_F, (char)(d->length / 2), d->pointer,
-                    IEEE_S, (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX;
-      break;
-    case DTYPE_FS:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_FLOAT;
-      break;
-    case DTYPE_FSC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX;
-      break;
-    case DTYPE_D:
-      convert_float(num, VAX_D, (char)d->length, d->pointer, IEEE_T,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_DC:
-      convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
-                    IEEE_T, (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_G:
-      convert_float(num, VAX_G, (char)d->length, d->pointer, IEEE_T,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_GC:
-      convert_float(num * 2, VAX_G, (char)(d->length / 2), d->pointer,
-                    IEEE_T, (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_FT:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_FTC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    default:
-      memcpy(m->bytes, d->pointer, nbytes);
-      break;
-    }
-    break;
-  case VMSG_CLIENT:
-    switch (d->dtype)
-    {
-    case DTYPE_F:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_FLOAT;
-      break;
-    case DTYPE_FC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX;
-      break;
-    case DTYPE_D:
-      convert_float(num, VAX_D, sizeof(double), d->pointer, VAX_G,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_DC:
-      convert_float(num * 2, VAX_D, (char)(d->length / 2), d->pointer,
-                    VAX_G, (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_G:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_GC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_FS:
-      convert_float(num, IEEE_S, sizeof(float), d->pointer, VAX_F,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_FLOAT;
-      break;
-    case DTYPE_FSC:
-      convert_float(num * 2, IEEE_S, sizeof(float), d->pointer, VAX_F,
-                    (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX;
-      break;
-    case DTYPE_FT:
-      convert_float(num, IEEE_T, sizeof(double), d->pointer, VAX_G,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_FTC:
-      convert_float(num * 2, IEEE_T, sizeof(double), d->pointer, VAX_G,
-                    (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    default:
-      memcpy(m->bytes, d->pointer, nbytes);
-      break;
-    }
-    break;
-  default:
-    switch (d->dtype)
-    {
-    case DTYPE_F:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_FLOAT;
-      break;
-    case DTYPE_FC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX;
-      break;
-    case DTYPE_D:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_DC:
-      memcpy(m->bytes, d->pointer, nbytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_G:
-      convert_float(num, VAX_G, sizeof(double), d->pointer, VAX_D,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_GC:
-      convert_float(num * 2, VAX_G, sizeof(double), d->pointer, VAX_D,
-                    (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    case DTYPE_FS:
-      convert_float(num, IEEE_S, sizeof(float), d->pointer, VAX_F,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_FLOAT;
-      break;
-    case DTYPE_FSC:
-      convert_float(num * 2, IEEE_S, sizeof(float), d->pointer, VAX_F,
-                    (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX;
-      break;
-    case DTYPE_FT:
-      convert_float(num, IEEE_T, sizeof(double), d->pointer, VAX_D,
-                    (char)m->h.length, m->bytes);
-      m->h.dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_FTC:
-      convert_float(num * 2, IEEE_T, sizeof(double), d->pointer, VAX_D,
-                    (char)(m->h.length / 2), m->bytes);
-      m->h.dtype = DTYPE_COMPLEX_DOUBLE;
-      break;
-    default:
-      memcpy(m->bytes, d->pointer, nbytes);
-      break;
-    }
-    break;
   }
   status = SendMdsMsgC(connection, m, 0);
   free(m);
@@ -597,6 +618,7 @@ static inline int execute_command(Connection *connection, mdsdsc_xd_t *ans_xd)
   --TDI_INTRINSIC_REC;
   status = TdiIntrinsic(OPC_EXECUTE, connection->nargs, connection->descrip, &xd);
   ++TDI_INTRINSIC_REC;
+  if (connection)
   if (STATUS_OK)
     status = TdiData(xd.pointer, ans_xd MDS_END_ARG);
   pthread_cleanup_pop(1);
@@ -625,8 +647,8 @@ static int execute_message(Connection *connection, Message *message)
   int status = 1;
   int freed_message = FALSE;
   char *evname;
-  DESCRIPTOR(eventastreq, EVENTASTREQUEST); // AST request descriptor //
-  DESCRIPTOR(eventcanreq, EVENTCANREQUEST); // Can request descriptor //
+  static const DESCRIPTOR(eventastreq, EVENTASTREQUEST); // AST request descriptor //
+  static const DESCRIPTOR(eventcanreq, EVENTCANREQUEST); // Can request descriptor //
   const int java = CType(connection->client_type) == JAVA_CLIENT;
   if (!connection->descrip[0])
   {
@@ -743,16 +765,26 @@ static int execute_message(Connection *connection, Message *message)
 /// returns true if message cleanup is handled
 static int standard_command(Connection *connection, Message *message)
 {
+  if (connection->message_id != message->h.message_id)
+  {
+    DBG("ProcessMessage: %d NewM %3d (%2d/%2d) : '%.*s'\n",
+        connection->id, message->h.message_id, message->h.descriptor_idx, message->h.nargs,
+        message->h.length, message->bytes);
+    FreeDescriptors(connection);
+    if (message->h.nargs < MDSIP_MAX_ARGS - 1)
+    {
+      connection->message_id = message->h.message_id;
+      connection->nargs = message->h.nargs;
+    }
+    else
+    {
+      return return_status(connection, message, 0);
+    }
+  }
   // set connection to the message client_type  //
   connection->client_type = message->h.client_type;
-#define COPY_DESC(name, GENERATOR, ...)                            \
-  do                                                               \
-  {                                                                \
-    const GENERATOR(__VA_ARGS__);                                  \
-    *(void **)&d = memcpy(malloc(sizeof(tmp)), &tmp, sizeof(tmp)); \
-  } while (0)
   // d -> reference to curent idx argument desctriptor  //
-
+  int status = 1;
   mdsdsc_t *d = connection->descrip[message->h.descriptor_idx];
   if (message->h.dtype == DTYPE_SERIAL)
   {
@@ -762,10 +794,12 @@ static int standard_command(Connection *connection, Message *message)
         free(d->pointer);
       free(d);
     }
-    COPY_DESC(d, EMPTYXD, tmp);
-    connection->descrip[message->h.descriptor_idx] = d;
+    static const EMPTYXD(empty);
+    connection->descrip[message->h.descriptor_idx] = d =
+        memcpy(malloc(sizeof(empty)), &empty, sizeof(empty));
     DBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial\n",
         connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
+    status = MdsSerializeDscIn(message->bytes, (mdsdsc_xd_t *)d);
   }
   else
   {
@@ -779,7 +813,10 @@ static int standard_command(Connection *connection, Message *message)
         d->class = CLASS_S;
       }
       else
-        COPY_DESC(d, DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
+      {
+        static const DESCRIPTOR_A_COEFF(empty, 0, 0, 0, MAX_DIMS, 0);
+        d = memcpy(malloc(sizeof(empty)), &empty, sizeof(empty));
+      }
       d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype]
                                                    : message->h.length;
       d->dtype = message->h.dtype;
@@ -920,20 +957,27 @@ static int standard_command(Connection *connection, Message *message)
     }
     else
     {
-      return return_status(connection, message, 0);
+      status = LibINSVIRMEM;
     }
   }
-  // CALL EXECUTE MESSAGE //
-  if (message->h.descriptor_idx == (message->h.nargs - 1))
+  if (STATUS_OK)
   {
-    DBG("ProcessMessage: %d Call %3d (%2d/%2d)\n",
-        connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
-    int freed_message = execute_message(connection, message);
-    UnlockConnection(connection);
-    return freed_message;
+    // CALL EXECUTE MESSAGE //
+    if (message->h.descriptor_idx == (message->h.nargs - 1))
+    {
+      DBG("ProcessMessage: %d Call %3d (%2d/%2d)\n",
+          connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
+      int freed_message = execute_message(connection, message);
+      UnlockConnection(connection);
+      return freed_message;
+    }
+    free(message);
+    return TRUE;
   }
-  free(message);
-  return TRUE;
+  else
+  {
+    return return_status(connection, message, status);
+  }
 }
 
 /// returns true if message cleanup is handled
@@ -1223,26 +1267,7 @@ static int dispatch_command(
 ///
 int ProcessMessage(Connection *connection, Message *message)
 {
-  //MDSplusThreadStatic(connection->mts);
-  // COMING NEW MESSAGE //
-  // reset connection id //
-  if (connection->message_id != message->h.message_id)
-  {
-    DBG("ProcessMessage: %d NewM %3d (%2d/%2d) : was %3d (\?\?/%2d)\n",
-        connection->id, message->h.message_id, message->h.descriptor_idx, message->h.nargs,
-        connection->message_id, connection->nargs);
-    FreeDescriptors(connection);
-    if (message->h.nargs < MDSIP_MAX_ARGS - 1)
-    {
-      connection->message_id = message->h.message_id;
-      connection->nargs = message->h.nargs;
-    }
-    else
-    {
-      return return_status(connection, message, 0);
-    }
-  }
-  if (message->h.descriptor_idx < connection->nargs)
+  if (message->h.descriptor_idx < message->h.nargs)
   {
 #ifdef THREADED_IO
     return dispatch_command(standard_command, connection, message);
