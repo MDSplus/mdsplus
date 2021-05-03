@@ -103,8 +103,7 @@ extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims,
 static void printDecompiled(struct descriptor *dsc)
 {
   EMPTYXD(out_xd);
-  static char decompiled[1024];
-
+  char decompiled[1024];
   TdiDecompile(dsc, &out_xd MDS_END_ARG);
   if (!out_xd.pointer)
     printf("NULL\n");
@@ -116,8 +115,7 @@ static void printDecompiled(struct descriptor *dsc)
 static void printDecompiled1(void *ctx, struct descriptor *dsc)
 {
   EMPTYXD(out_xd);
-  static char decompiled[1024];
-
+  char decompiled[1024];
   CTXCALLR(TdiDecompile, dsc, &out_xd MDS_END_ARG);
   if (!out_xd.pointer)
     printf("NULL\n");
