@@ -1,8 +1,14 @@
+#!/bin/sh
+repo=$(dirname $(dirname $(realpath $0)))
+supp=$repo/conf/valgrind.supp
+suppressions="--suppressions=$supp/mdsplus.supp"
+if test -f "$supp/${DISTNAME}.supp"
+then suppressions="${suppressions} --suppressions=$supp/${DISTNAME}.supp"
+fi
 exec valgrind --tool=helgrind --history-level=full\
  --xml=yes --xml-file=$(basename $1)-helgrind-%p.xml\
  --gen-suppressions=all --num-callers=64\
  --trace-children-skip='*/ld,*/collect2,*/ldconfig,*/sh'\
  --trace-children=yes --child-silent-after-fork=yes\
- --trace-children-skip-by-arg='*SetMdsplusFileProtection*'\
- --suppressions=$MDSPLUS_DIR/conf/valgrind.supp/mdsplus.supp\
+ $suppressions\
  "$@"

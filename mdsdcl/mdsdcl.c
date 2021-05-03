@@ -340,7 +340,11 @@ done:
   free(error);
   history_file = mdsdclGetHistoryFile();
   if (history_file)
+  {
     write_history(history_file);
-  free(history_file);
+    free(history_file);
+  }
+  else
+    clear_history();
   return status;
 }

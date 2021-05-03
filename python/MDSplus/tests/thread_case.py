@@ -38,45 +38,49 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
 
-class threadJob(Thread):
-    def __init__(self, testclass, test, idx):
-        super(threadJob, self).__init__()
-        self.test = testclass(test)
-        self.test.index = idx
-    """Thread to execute the treeTests"""
+class Tests(_common.Tests):
+    TESTS = {'data', 'dcl', 'segment', 'task', 'tree'}
 
-    def run(self):
-        """Run test1.test() function"""
-        # Tree.usePrivateCtx()
-        stream = StringIO()
-        try:
-            self.result = TextTestRunner(
-                stream=stream, verbosity=2).run(self.test)
-        finally:
-            stream.seek(0)
-            self.stream = stream.read()
-            stream.close()
+    class Job(Thread):
+        def __init__(self, testclass, test, idx):
+            super(Tests.Job, self).__init__()
+            self.test = testclass(test)
+            self.test.index = idx
+        """Thread to execute the treeTests"""
 
+        def run(self):
+            """Run test1.test() function"""
+            # Tree.usePrivateCtx()
+            stream = StringIO()
+            try:
+                self.result = TextTestRunner(
+                    stream=stream, verbosity=2).run(self.test)
+            finally:
+                stream.seek(0)
+                self.stream = stream.read()
+                stream.close()
 
-class Tests(_UnitTest.Tests):
-    def doThreadsTestCase(self, testclass, test, numthreads):
+    def _run_testcase(self, testclass, test, numthreads):
         numsuccess = 0
         stack_size(0x100000)  # 1MB
-        # start at idx=1 in case its running in parallel to single test
-        threads = [threadJob(testclass, test, i+1) for i in range(numthreads)]
-        for i, t in enumerate(threads):
+        # start at idx = 1  in case its running in parallel to single test
+        threads = [
+            self.Job(testclass, test, i+1)
+            for i in range(numthreads)
+        ]
+        for t in threads:
             t.start()
-        for i, t in enumerate(threads):
+        for i, t in enumerate(threads, 1):
             t.join()
             if t.result.wasSuccessful():
                 numsuccess += 1
             else:
-                print('### begin thread %2d: %s##################' % (i, test))
+                print('### begin thread %2d: %s ##################' % (i, test))
                 print(t.stream)
-                print('### end   thread %2d: %s##################' % (i, test))
+                print('### end   thread %2d: %s ##################' % (i, test))
         self.assertEqual(numsuccess, numthreads, test)
 
     def _xxxThreadsTest(self, tests, numthreads):
@@ -84,32 +88,25 @@ class Tests(_UnitTest.Tests):
         tests.setUpClass()
         try:
             for test in tests.getTests():
-                self.doThreadsTestCase(tests, test, numthreads)
+                self._run_testcase(tests, test, numthreads)
         finally:
             tests.inThread = False
             tests.tearDownClass()
 
     def data(self):
-        self._xxxThreadsTest(_mimport('dataUnitTest').Tests, 3)
+        self._xxxThreadsTest(_mimport('data_case').Tests, 3)
 
     def dcl(self):
-        self._xxxThreadsTest(_mimport('dclUnitTest').Tests, 3)
+        self._xxxThreadsTest(_mimport('dcl_case').Tests, 3)
 
-    def mdsip(self):
-        self._xxxThreadsTest(_mimport('mdsipUnitTest').Tests, 3)
-
-    def segments(self):
-        self._xxxThreadsTest(_mimport('segmentsUnitTest').Tests, 3)
+    def segment(self):
+        self._xxxThreadsTest(_mimport('segment_case').Tests, 3)
 
     def task(self):
-        self._xxxThreadsTest(_mimport('treeUnitTest').Tests, 3)
+        self._xxxThreadsTest(_mimport('task_case').Tests, 3)
 
     def tree(self):
-        self._xxxThreadsTest(_mimport('treeUnitTest').Tests, 3)
-
-    @staticmethod
-    def getTests():
-        return ['data', 'dcl', 'task', 'tree']  # ,'mdsip','segments'
+        self._xxxThreadsTest(_mimport('tree_case').Tests, 3)
 
 
-Tests.main(__name__)
+Tests.main()

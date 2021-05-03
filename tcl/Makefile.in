@@ -1,60 +1,24 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@ 
+builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
-CFLAGS += $(THREAD) 
+CFLAGS += $(THREAD)
 LDFLAGS += $(THREAD)
 
 @MINGW_TRUE@ MDSTCL=mdstcl.bat
 @MINGW_FALSE@ MDSTCL=mdstcl
 
-SOURCES = 			\
-	tcl_add_node.c	\
-	tcl_add_tag.c		\
-	tcl_clean_datafile.c		\
-	tcl_close.c		\
-	tcl_compress_datafile.c		\
-	tcl_create_pulse.c	\
-	tcl_decompile.c	\
-	tcl_delete_node.c	\
-	tcl_delete_pulse.c	\
-	tcl_directory.c	\
-	tcl_directory_tag.c	\
-	tcl_dispatch.c		\
-	tcl_do_method.c	\
-	tcl_do_node.c	\
-	tcl_edit.c		\
-        tcl_help_device.c       \
-	tcl_put_expression.c		\
-	tcl_remove_tag.c	\
-	tcl_rename.c		\
-	tcl_set_callbacks.c	\
-	tcl_set_current.c	\
-	tcl_set_default.c	\
-	tcl_set_node.c	\
-	tcl_set_tree.c	\
-        tcl_set_view.c \
-	tcl_setevent.c \
-	tcl_set_readonly.c \
-	tcl_setshow_attribute.c \
-	tcl_setshow_versions.c \
-	tcl_show_current.c	\
-	tcl_show_data.c	\
-	tcl_show_db.c	\
-	tcl_verify_tree.c	\
-	tcl_wfevent.c \
-	tcl_write.c
-@MINGW_TRUE@ SOURCES += icon.o
-
-OBJECTS = $(SOURCES:.c=.o)
+SOURCES = $(wildcard @srcdir@/tcl_*.c)
+@MINGW_TRUE@SOURCES += icon.o
+OBJECTS = $(SOURCES:@srcdir@/%.c=%.o)
 EXPORTS = tcl_commands.export
 
 all:	@MAKEBINDIR@$(MDSTCL) @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@
 
-depend: 
+depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 clean:

@@ -1,0 +1,17 @@
+#!/bin/bash
+PYTHON=${PYTHON:-python}
+here=$(dirname $(realpath $0))
+testdir=$here/MDSplus/tests/
+rm $testdir/*_test.py 2>/dev/null
+get_tests() {
+  $PYTHON -c "0;$(sed -n '/TESTS\s*=/,/^\s*$/p' $1);print(' '.join(TESTS))"
+}
+for c in $testdir/*_case.py; do
+  c=$(basename $c)
+  for t in $(get_tests $testdir/$c); do
+    test=${c:0:-8}_${t}_test.py
+    echo $test \\
+    ln -s $c $testdir/$test
+  done &
+done | sort
+wait &

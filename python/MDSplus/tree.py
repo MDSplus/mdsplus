@@ -1660,23 +1660,22 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         Use replace=True if any existing tags should be removed.
         Tag names must be either a str or a list or tuple
         containing str instances."""
-        def checkstr(s):
-            if not isinstance(s, str):
+        if isinstance(names, _ver.basestring):
+            names = (names,)
+        else:
+            try:
+                names = tuple(names)
+                for name in names:
+                    if not isinstance(name, _ver.basestring):
+                        raise TypeError
+            except TypeError:
                 raise TypeError(
                     "Tag names must be a string or list of strings")
-        if isinstance(names, (list, tuple)):
-            for name in names:
-                checkstr(name)
-        else:
-            checkstr(names)
         if replace:
             for name in self.tags:
                 self.removeTag(name)
-        if isinstance(names, str):
-            self.addTag(names)
-        else:
-            for name in names:
-                self.addTag(name)
+        for name in names:
+            self.addTag(name)
 
     def addTag(self, tag):
         """Add a tagname to this node
@@ -3270,7 +3269,7 @@ class cached_property(object):
         with self.lock:
             if (self.cache_on_set):
                 inst.__dict__[self.target] = value
-            else:
+            elif self.target in inst.__dict__:
                 del(inst.__dict__[self.target])
 
     def __delete__(self, inst):

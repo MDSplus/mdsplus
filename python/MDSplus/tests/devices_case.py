@@ -23,7 +23,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Tree, Device, tdi
+import unittest
+from MDSplus import Tree, Device, tdi, TreeNNF
 
 
 def _mimport(name, level=1):
@@ -33,11 +34,12 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
 
-class Tests(_UnitTest.TreeTests):
-    tree = 'devtree'
+class Tests(_common.TreeTests):
+    tree = 'devices'
+    TESTS = {'mit', 'rfx', 'w7x'}
 
     @staticmethod
     def getNodeName(t, model):
@@ -53,13 +55,13 @@ class Tests(_UnitTest.TreeTests):
                 return node, model
             try:
                 node = node.getNode(base)
-            except:
+            except TreeNNF:
                 node = node.addNode(base, 'STRUCTURE')
         else:
             name = model
         return node, name
 
-    def DevicesTests(self, package):
+    def _add_devices(self, package):
         with Tree(self.tree, self.shot, 'new') as t:
             devices = __import__(package).__dict__
             for model in sorted(devices.keys()):
@@ -68,7 +70,7 @@ class Tests(_UnitTest.TreeTests):
                     node, name = self.getNodeName(t, model)
                     cls.Add(node, name)
 
-    def XyzDevices(self, package, expected=None):
+    def _xyz_devices(self, package, expected=None):
         if expected is None:
             expected = [s for s in (str(s).strip()
                                     for s, p in tdi('%s()' % package))]
@@ -86,21 +88,20 @@ class Tests(_UnitTest.TreeTests):
                     if Device.debug:
                         print('FAILED %s' % model)
         self.assertEqual(passed, expected)
-        self.DevicesTests(package)
+        self._add_devices(package)
 
-    def MitDevices(self):
-        self.XyzDevices('MitDevices', ['CHS_A14', 'DC1394', 'DC1394A', 'DIO2', 'DT196AO',
-                                       'DT200', 'DT_ACQ16', 'INCAA_TR10', 'JRG_ADC32A', 'JRG_TR1612', 'L6810', 'MATROX'])
+    def mit(self):
+        self._xyz_devices('MitDevices', [
+            'CHS_A14', 'DC1394', 'DC1394A', 'DIO2', 'DT196AO',
+            'DT200', 'DT_ACQ16', 'INCAA_TR10', 'JRG_ADC32A',
+            'JRG_TR1612', 'L6810', 'MATROX'])
 
-    def RfxDevices(self):
-        self.XyzDevices('RfxDevices')  # check them all
+    @unittest.skip("not clean yet")
+    def rfx(self):
+        self._xyz_devices('RfxDevices', )  # check them all
 
-    def W7xDevices(self):
-        self.XyzDevices('W7xDevices', [])  # no tdi devices to check
-
-    @staticmethod
-    def getTests():
-        return ['MitDevices', 'RfxDevices', 'W7xDevices']
+    def w7x(self):
+        self._xyz_devices('W7xDevices', [])  # no tdi devices to check
 
 
-Tests.main(__name__)
+Tests.main()

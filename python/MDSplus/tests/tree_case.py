@@ -24,9 +24,8 @@
 #
 
 import os
-import gc
 import numpy
-from MDSplus import Tree, TreeNode, Data, Array, Signal, Range, Device, tree, tcl, Int32, Float32Array
+from MDSplus import Tree, TreeNode, Data, Array, Signal, Range, Device, Int32, Float32Array
 from MDSplus import TreeNOEDIT, ADD, COMPILE, mdsrecord
 
 
@@ -37,18 +36,25 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 
-_UnitTest = _mimport("_UnitTest")
+_common = _mimport("_common")
 
 
-class Tests(_UnitTest.TreeTests):
+att2 = '1 : 200 : *'
+att3 = 'this is plasma current'
+
+
+class Tests(_common.TreeTests):
     trees = ['pytree', 'pytreesub']
     shotinc = 11
+    TESTS = {
+        'attr', 'open', 'node', 'find', 'default', 'linkage',
+        'nci', 'data', 'xysignal', 'compression', 'records'
+    }
 
-    def extAttr(self):
-        with Tree('pytree', self.shot+0, 'new') as pytree:
-            if pytree.shot != self.shot+0:
-                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (
-                    pytree.shot, self.shot+0))
+    def attr(self):
+        shot = self.shot + 0
+        with Tree('pytree', shot, 'new') as pytree:
+            self.assertEqual(pytree.shot, shot)
             pytree.default.addNode(
                 'pytreesub', 'subtree').include_in_pulse = True
             pytree.write()
@@ -60,58 +66,57 @@ class Tests(_UnitTest.TreeTests):
             pytree.versions_in_pulse = 1
             self.assertEqual(pytree.versions_in_model, True)
             self.assertEqual(pytree.versions_in_pulse, True)
-        with Tree('pytreesub', self.shot+0, 'new') as pytreesub:
-            if pytreesub.shot != self.shot+0:
-                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (
-                    pytreesub.shot, self.shot+0))
+        with Tree('pytreesub', shot, 'new') as pytreesub:
+            self.assertEqual(pytreesub.shot, shot)
             node = pytreesub.addNode('node', 'signal')
             node.setExtendedAttribute('ATT1', 100)
             node.setExtendedAttribute('ATT2', Range(1, 200))
             node.setExtendedAttribute('ATT3', 'this is ip')
-            node.setExtendedAttribute('ATT3', 'this is plasma current')
+            node.setExtendedAttribute('ATT3', att3)
             pytreesub.write()
         pytree.readonly()
         node = pytree.getNode(".PYTREESUB:NODE")
         self.assertEqual(str(node.getExtendedAttribute('ATT1')), '100')
-        self.assertEqual(str(node.getExtendedAttribute('ATT2')), '1 : 200 : *')
-        self.assertEqual(str(node.getExtendedAttribute('ATT3')),
-                         'this is plasma current')
+        self.assertEqual(str(node.getExtendedAttribute('ATT2')), att2)
+        self.assertEqual(str(node.getExtendedAttribute('ATT3')), att3)
         exattr = node.getExtendedAttributes()
         self.assertEqual(exattr['ATT1'], 100)
-        self.assertEqual(str(exattr['ATT2']), '1 : 200 : *')
-        self.assertEqual(exattr['ATT3'], 'this is plasma current')
+        self.assertEqual(str(exattr['ATT2']), att2)
+        self.assertEqual(exattr['ATT3'], att3)
 
-    def openTrees(self):
-        with Tree('pytree', self.shot+1, 'new') as pytree:
+    def open(self):
+        shot1 = self.shot + 1
+        shot2 = shot1 + 1
+        with Tree('pytree', shot1, 'new') as pytree:
             a = pytree.addNode('A', 'TEXT')
             pytree.write()
         pytree.open()
         a.record = 'a'*64
         self.assertEqual(pytree.getDatafileSize(), 84)
         pytree.close()
-        with Tree('pytree', self.shot+1, 'new') as pytree:
+        with Tree('pytree', shot1, 'new') as pytree:
             # new should clear datafile (O_TRUNC)
             self.assertEqual(pytree.getDatafileSize(), 0)
         filepath = ('%s/pytree_%03d.tree' %
-                    (self.tmpdir, self.shot+1)).replace(os.sep, '/')
-        self.assertEqual(Tree.getFileName('pytree', self.shot+1), filepath)
-        pytree = Tree('pytree', self.shot+1)
+                    (self.tmpdir, shot1)).replace(os.sep, '/')
+        self.assertEqual(Tree.getFileName('pytree', shot1), filepath)
+        pytree = Tree('pytree', shot1)
         self.assertEqual(pytree.getFileName(), filepath)
         self.assertEqual(
-            str(pytree), 'Tree("PYTREE",%d,"Normal")' % (self.shot+1,))
-        pytree.createPulse(self.shot+2)
+            str(pytree), 'Tree("PYTREE",%d,"Normal")' % (shot1,))
+        pytree.createPulse(shot2)
         self.assertEqual(pytree.number_opened, 1)
         if not Tests.inThread:
-            Tree.setCurrent('pytree', self.shot+2)
+            Tree.setCurrent('pytree', shot2)
             pytree2 = Tree('pytree', 0)
             self.assertEqual(
-                str(pytree2), 'Tree("PYTREE",%d,"Normal")' % (self.shot+2,))
-            self.assertEqual(pytree2.incrementCurrent(1000), self.shot+1002)
-            self.assertEqual(pytree2.getCurrent(), self.shot+1002)
+                str(pytree2), 'Tree("PYTREE",%d,"Normal")' % (shot2,))
+            self.assertEqual(pytree2.incrementCurrent(1000), shot2+1000)
+            self.assertEqual(pytree2.getCurrent(), shot2+1000)
             pytree2.setCurrent()
-            self.assertEqual(Tree.getCurrent('pytree'), self.shot+2)
+            self.assertEqual(Tree.getCurrent('pytree'), shot2)
         else:
-            pytree2 = Tree('pytree', self.shot+2)
+            pytree2 = Tree('pytree', shot2)
         self.assertEqual(pytree2.number_opened, 1)
         self.assertEqual(pytree.shotid, pytree.shot)
         self.assertEqual(pytree.tree, pytree.expt)
@@ -129,45 +134,48 @@ class Tests(_UnitTest.TreeTests):
         else:
             self.assertEqual("TreeSUCCESS", "TreeNOEDIT")
 
-    def getNode(self):
-        with Tree('pytree', self.shot+3, 'new') as pytree:
+    def node(self):
+        shot = self.shot + 3
+        with Tree('pytree', shot, 'new') as pytree:
             pytree.addNode('pytreesub', 'subtree').include_in_pulse = True
             pytree.write()
-        with Tree('pytreesub', self.shot+3, 'new') as pytreesub:
+        with Tree('pytreesub', shot, 'new') as pytreesub:
             ip = pytreesub.addNode('ip', 'signal')
             ip.tag = 'IP'
             pytreesub.write()
-        pytree = Tree('pytree', self.shot+3, 'ReadOnly')
+        pytree = Tree('pytree', shot, 'ReadOnly')
         ip = pytree.getNode('\\ip')
         self.assertEqual(str(ip), '\\PYTREESUB::IP')
         self.assertEqual(ip.nid, pytree._IP.nid)
         self.assertEqual(ip.nid, pytree.__PYTREESUB.IP.nid)
         self.assertEqual(ip.nid, pytree.__PYTREESUB__IP.nid)
 
-    def findNode(self):
-        pytree = Tree('pytree', self.shot+4, 'ReadOnly')
-        nodes = pytree.getNodeWild('***:SIG_CMPRS')
-        self.assertEqual(len(nodes), 1)
-        self.assertEqual(str(nodes[0]), '\\PYTREE::TOP:SIG_CMPRS')
+    def find(self):
+        tree = Tree('main', -1, 'ReadOnly')
+        nodes = tree.getNodeWild('***:COMMENT')
+        self.assertEqual(len(nodes), 71)
+        self.assertEqual(str(nodes[0]), '\\SUBTREE::TOP:COMMENT')
 
-    def setDefault(self):
-        with Tree('pytree', self.shot+5, 'new') as pytree:
+    def default(self):
+        shot = self.shot + 4
+        with Tree('pytree', shot, 'new') as pytree:
             pytree.default.addNode(
                 'pytreesub', 'subtree').include_in_pulse = True
             pytree.write()
-        with Tree('pytreesub', self.shot+5, 'new') as pytreesub:
+        with Tree('pytreesub', shot, 'new') as pytreesub:
             pytreesub.default.addNode('mynode', 'numeric').addTag("mytag")
             pytreesub.write()
         pytree.readonly()
-        pytree2 = Tree('pytree', self.shot+5, "ReadOnly")
+        pytree2 = Tree('pytree', shot, "ReadOnly")
         pytree.setDefault(pytree._MYTAG)
         self.assertEqual(str(pytree.getDefault()), '\\PYTREESUB::MYTAG')
         self.assertEqual(str(pytree2.getDefault()), '\\PYTREE::TOP')
         pytree.getNode("\\PYTREESUB::TOP").setDefault()
         self.assertEqual(str(pytree.getDefault()), '\\PYTREESUB::TOP')
 
-    def nodeLinkage(self):
-        with Tree('pytree', self.shot+6, 'new') as pytree:
+    def linkage(self):
+        shot = self.shot + 5
+        with Tree('pytree', shot, 'new') as pytree:
             pytree.default.addNode(
                 'pytreesub', 'subtree').include_in_pulse = True
             for i in range(10):
@@ -179,7 +187,7 @@ class Tests(_UnitTest.TreeTests):
                 node.addNode('text', 'text')
                 node.addNode('child', 'structure')
             pytree.write()
-        with Tree('pytreesub', self.shot+6, 'new') as pytreesub:
+        with Tree('pytreesub', shot, 'new') as pytreesub:
             ip = pytreesub.addNode('ip', 'signal')
             ip.tag = 'IP'
             for i in range(3):
@@ -250,13 +258,14 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ip.path, "\\PYTREESUB::IP")
         self.assertEqual(ip.path, ip.getPath())
 
-    def nciInfo(self):
-        with Tree('pytree', self.shot+7, 'new') as pytree:
+    def nci(self):
+        shot = self.shot + 6
+        with Tree('pytree', shot, 'new') as pytree:
             pytree.addNode('pytreesub', 'subtree').include_in_pulse = True
             Device.PyDevice('TestDevice').Add(pytree, 'TESTDEVICE')
             Device.PyDevice('CYGNET4K').Add(pytree, 'CYGNET4K').on = False
             pytree.write()
-        with Tree('pytreesub', self.shot+7, 'new') as pytreesub:
+        with Tree('pytreesub', shot, 'new') as pytreesub:
             ip = pytreesub.addNode('ip', 'signal')
             ip.record = Signal(Int32(range(10)), None, Range(1., 10.))
             ip.tag = 'MAG_PLASMA_CURRENT'
@@ -266,17 +275,14 @@ class Tests(_UnitTest.TreeTests):
             ip.tag = 'IP'
             ip.setExtendedAttribute('ATT1', 100)
             ip.setExtendedAttribute('ATT2', Range(1, 200))
-            ip.setExtendedAttribute('ATT3', 'this is ip')
-            ip.setExtendedAttribute('ATT3', 'this is plasma current')
+            ip.setExtendedAttribute('ATT3', att3)
             self.assertEqual(str(ip.getExtendedAttribute('ATT1')), '100')
-            self.assertEqual(
-                str(ip.getExtendedAttribute('ATT2')), '1 : 200 : *')
-            self.assertEqual(str(ip.getExtendedAttribute(
-                'ATT3')), 'this is plasma current')
+            self.assertEqual(str(ip.getExtendedAttribute('ATT2')), att2)
+            self.assertEqual(str(ip.getExtendedAttribute('ATT3')), att3)
             exattr = ip.getExtendedAttributes()
             self.assertEqual(exattr['ATT1'], 100)
-            self.assertEqual(str(exattr['ATT2']), '1 : 200 : *')
-            self.assertEqual(exattr['ATT3'], 'this is plasma current')
+            self.assertEqual(str(exattr['ATT2']), att2)
+            self.assertEqual(exattr['ATT3'], att3)
             for i in range(3):
                 node = pytreesub.addNode('child%02d' % (i,), 'structure')
                 node.addDevice('dt200_%02d' % (i,), 'dt200').on = False
@@ -329,7 +335,8 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(part.PART_NAME(), ':ACTIONSERVER')
         self.assertEqual(part.original_part_name, ':ACTIONSERVER')
         self.assertEqual(
-            str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")', part)), ':ACTIONSERVER')
+            str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")', part)),
+            ':ACTIONSERVER')
         self.assertEqual(pydev.__class__, Device.PyDevice('TestDevice'))
         devs = pytree.getNodeWild('\\PYTREESUB::TOP.***', 'DEVICE')
         part = devs[0].conglomerate_nids[3]
@@ -344,16 +351,18 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ip.status, 0)
         self.assertEqual(ip.status, ip.getStatus())
         self.assertEqual((ip.tags == Array(
-            ['IP', 'MAGNETICS_IP', 'MAG_IP', 'MAGNETICS_PLASMA_CURRENT', 'MAG_PLASMA_CURRENT'])).all(), True)
+            ['IP', 'MAGNETICS_IP', 'MAG_IP', 'MAGNETICS_PLASMA_CURRENT',
+             'MAG_PLASMA_CURRENT'])).all(), True)
         self.assertEqual((ip.tags == ip.getTags()).all(), True)
         self.assertEqual(ip.time_inserted, ip.getTimeInserted())
 
-    def getData(self):
-        with Tree('pytree', self.shot+8, 'new') as pytree:
+    def data(self):
+        shot = self.shot + 7
+        with Tree('pytree', shot, 'new') as pytree:
             pytree.default.addNode(
                 'pytreesub', 'subtree').include_in_pulse = True
             pytree.write()
-        with Tree('pytreesub', self.shot+8, 'new') as pytreesub:
+        with Tree('pytreesub', shot, 'new') as pytreesub:
             node = pytreesub.addNode('.rog', 'structure')
             for i in range(10):
                 node = node.addNode('.child', 'structure')
@@ -367,17 +376,18 @@ class Tests(_UnitTest.TreeTests):
             node.compress_on_put = True
             node.record = Signal(Range(2., 2000., 2.), None, Range(1., 1000.))
             ip = pytreesub.addNode('ip', 'signal')
-            ip.tag = "ip"
+            ip.tag = "IP"
             rec = pytreesub.tdiCompile(
                 "Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
             ip.record = rec
             pytreesub.versions_in_pulse = True
             pytreesub.write()
         pytree.readonly()
-        ip = pytree.getNode('\\ip')
+        ip = pytree.getNode('\\IP')
         pytree.setDefault(ip)
-        self.assertEqual(str(
-            ip.record), 'Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, "ampere"), *, DIM_OF(\\BTOR))')
+        self.assertEqual(
+            str(ip.record),
+            'Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, "ampere"), *, DIM_OF(\\BTOR))')
         self.assertEqual(str(ip.record), str(ip.getData()))
         self.assertEqual(ip.segmented, ip.isSegmented())
         self.assertEqual(ip.versions, ip.containsVersions())
@@ -391,21 +401,24 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(ip.record.data().tolist(),
                          (pytree.getNode("\\BTOR").data()+1).tolist())
 
-    def getXYSignal(self):
-        with Tree('pytree', self.shot+9, 'new') as pytree:
+    def xysignal(self):
+        shot = self.shot + 8
+        with Tree('pytree', shot, 'new') as pytree:
             node = pytree.addNode('SIG', 'signal')
             pytree.write()
         pytree.normal()
         dim = numpy.array(range(100000), 'float32')/10000
-        pytree.SIG.record = Signal(Float32Array(numpy.sin(dim)).setUnits(
-            "ylabel"), None, Float32Array(dim).setUnits("xlabel")).setHelp('title')
+        pytree.SIG.record = Signal(
+            Float32Array(numpy.sin(dim)).setUnits("ylabel"), None,
+            Float32Array(dim).setUnits("xlabel")).setHelp('title')
         sig = node.getXYSignal(num=100)
         self.assertEqual(sig.units, "ylabel")
         self.assertEqual(sig.dim_of().units, "xlabel")
         self.assertEqual(sig.help, "title")
 
-    def getCompression(self):
-        with Tree('pytree', self.shot+10, 'new') as pytree:
+    def compression(self):
+        shot = self.shot + 9
+        with Tree('pytree', shot, 'new') as pytree:
             node = pytree.addNode('SIG_CMPRS', 'signal')
             node.compress_on_put = True
             pytree.write()
@@ -413,11 +426,13 @@ class Tests(_UnitTest.TreeTests):
         testing = Tree('testing', -1)
         for node in testing.getNodeWild(".compression:*"):
             pytree.SIG_CMPRS.record = node.record
-            self.assertTrue((pytree.SIG_CMPRS.record == node.record).all(),
-                            msg="Error writing compressed signal%s" % node)
+            self.assertTrue(
+                (pytree.SIG_CMPRS.record == node.record).all(),
+                msg="Error writing compressed signal%s" % node)
 
-    def mdsrecords(self):
-        with Tree('pytree', self.shot+11, 'new') as pytree:
+    def records(self):
+        shot = self.shot + 10
+        with Tree('pytree', shot, 'new') as pytree:
             node = pytree.addDevice('DEV', 'TestDevice')
             pytree.write()
         pytree.normal()
@@ -439,9 +454,5 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(cls._parts_str.filter, mdsrecord.str)
         self.assertEqual(cls._parts_int_list.filter, mdsrecord.int_list)
 
-    @staticmethod
-    def getTests():
-        return ['extAttr', 'openTrees', 'getNode', 'setDefault', 'nodeLinkage', 'nciInfo', 'getData', 'getXYSignal', 'getCompression', 'mdsrecords']
 
-
-Tests.main(__name__)
+Tests.main()
