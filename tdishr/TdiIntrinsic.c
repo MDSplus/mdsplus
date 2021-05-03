@@ -70,7 +70,6 @@ typedef struct _bounds
   int u;
 } BOUNDS;
 
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 extern int TdiFaultHandlerNoFixup();
 extern int Tdi0Decompile();
 extern int TdiConvert();
@@ -315,8 +314,8 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[],
           {
             out_ptr->dtype = dsc_ptr->dtype;
             if ((out_ptr->length > 0) && (dsc_ptr != NULL))
-              _MOVC3(out_ptr->length, dsc_ptr->pointer,
-                     (char *)out_ptr->pointer);
+              memcpy((char *)out_ptr->pointer, dsc_ptr->pointer,
+                     out_ptr->length);
           }
           break;
         default:

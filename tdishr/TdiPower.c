@@ -31,7 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    use double. Ken Klare, LANL P-4     (c)1990,1991
 */
 #include <string.h>
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 #include "tdinelements.h"
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
@@ -92,9 +91,9 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
     for (; !(yy & 1) && STATUS_OK; yy >>= 1)
       status = Tdi3Multiply(x, x, x);
     if (x->class != CLASS_A)
-      _MOVC3(z->length, x->pointer, z->pointer);
+      memcpy(z->pointer, x->pointer, z->length);
     else
-      _MOVC3(z->arsize, x->pointer, z->pointer);
+      memcpy(z->pointer, x->pointer, z->arsize);
     for (; (yy >>= 1) > 0 && STATUS_OK;)
     {
       status = Tdi3Multiply(x, x, x);
@@ -128,12 +127,12 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
       status = TdiConvert(&one_dsc, &duno);
     for (; --n >= 0 && STATUS_OK; px += incx, dz.pointer += incz)
     {
-      _MOVC3(dx.length, px, xx);
+      memcpy(xx, px, dx.length);
       if ((int)(yy = *py++) <= 0)
       {
         if (yy == 0)
         {
-          _MOVC3(dz.length, uno, dz.pointer);
+          memcpy(dz.pointer, uno, dz.length);
           continue;
         }
         yy = -yy;
@@ -141,7 +140,7 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
       }
       for (; !(yy & 1) && STATUS_OK; yy >>= 1)
         status = Tdi3Multiply(&dx, &dx, &dx);
-      _MOVC3(dz.length, dx.pointer, dz.pointer);
+      memcpy(dz.pointer, dx.pointer, dz.length);
       for (; (yy >>= 1) > 0 && STATUS_OK;)
       {
         status = Tdi3Multiply(&dx, &dx, &dx);
@@ -223,9 +222,9 @@ int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse,
       int sm = stepm, st = stept, sf = stepf;
       for (; --n >= 0; pm += sm, pt += st, pf += sf, po += len)
         if (*pm & 1)
-          _MOVC3(len, pt, po);
+          memcpy(po, pt, len);
         else
-          _MOVC3(len, pf, po);
+          memcpy(po, pf, len);
     }
     break;
     }

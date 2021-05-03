@@ -66,8 +66,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <tdishr_messages.h>
 
-#define _MOVC3(a, b, c) memcpy(c, b, a)
-
 extern int TdiGetArgs();
 extern int TdiMasterData();
 extern int TdiIcull();
@@ -321,7 +319,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
     else
       status = MdsGet1DxS(&llen, &dtype, out_ptr);
     if (STATUS_OK)
-      _MOVC3(len, pin, out_ptr->pointer->pointer);
+      memcpy(out_ptr->pointer->pointer, pin, len);
   }
   else
   {
@@ -344,8 +342,10 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
     pin -= len * *px[0];
     row = arr.m[0] * sizeof(int);
   inner:
-    for (j = 0; j < row; j += sizeof(int))
-      _MOVC3(len, pin + len * *(int *)((char *)px[0] + j), pout), pout += len;
+    for (j = 0; j < row; j += sizeof(int)) {
+      memcpy(pout, pin + len * *(int *)((char *)px[0] + j), len);
+      pout += len;
+    }
     /******************************************************
     Find the index to increment, reset those that overflow.
     Must avoid reading beyond end of vector.
@@ -530,7 +530,7 @@ int Tdi1Map(opcode_t opcode, int narg __attribute__((unused)),
     default:
       while (--n >= 0)
       {
-        _MOVC3(len, (char *)abase + (len * *pindex++), po);
+        memcpy(po, (char *)abase + (len * *pindex++), len);
         po += len;
       }
       break;

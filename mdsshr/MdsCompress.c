@@ -82,7 +82,6 @@ output number of bits in packed. (untested)
 #include <strroutines.h>
 #include <tdishr.h>
 
-#define _MOVC3(a, b, c) memcpy(c, b, (size_t)(a))
 #define align(bytes, size) ((((bytes) + (size)-1) / (size)) * (size))
 typedef ARRAY_COEFF(char, 1) array_coef;
 typedef RECORD(4) mds_decompress_t;
@@ -207,8 +206,9 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
           {
             prec->dscptrs[0] = pd0;
             *pd0 = *(mdsdsc_t *)&dximage;
-            _MOVC3(dximage.length, dximage.pointer,
-                   pd0->pointer = (char *)&pd0[1]);
+            pd0->pointer = (char *)&pd0[1];
+            memcpy(pd0->pointer, dximage.pointer,
+                   dximage.length);
           }
           pd0 = pd1;
           StrFree1Dx(&dximage);
@@ -220,8 +220,9 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
           {
             prec->dscptrs[1] = pd0;
             *pd0 = *(mdsdsc_t *)&dxentry;
-            _MOVC3(dxentry.length, dxentry.pointer,
-                   pd0->pointer = (char *)&pd0[1]);
+            pd0->pointer = (char *)&pd0[1];
+            memcpy(pd0->pointer, dxentry.pointer,
+                   dxentry.length);
           }
           pd0 = pd1;
           StrFree1Dx(&dxentry);
@@ -235,7 +236,8 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
         bit = 0;
         prec->dscptrs[0] = 0;
         prec->dscptrs[1] = 0;
-        _MOVC3(pdat->arsize = (unsigned int)(plim - pcmp), pcmp + delta, pcmp);
+        pdat->arsize = (unsigned int)(plim - pcmp);
+        memcpy(pcmp, pcmp + delta, pdat->arsize);
       }
 
       /********************
@@ -249,14 +251,14 @@ STATIC_ROUTINE int compress(const mdsdsc_t *const pcimage,
       Did not do a good job, so restore all.
       *************************************/
       status = 1;
-      _MOVC3(asize + porig->arsize, porig, pwork);
+      memcpy(pwork, porig, asize + porig->arsize);
       break;
     good:
       pca0 = (array_coef *)pwork;
       pca0->class = CLASS_CA;
       if (pca0->aflags.coeff)
         pca0->a0 = (char *)(pca0->a0 - porig->pointer);
-      _MOVC3((short)asize, (char *)pca0, (char *)pca1);
+      memcpy((char *)pca1, (char *)pca0, (short)asize);
       pca0->pointer = (char *)prec;
       pca1->pointer = 0;
 
@@ -321,7 +323,7 @@ Compact/copy from work.
 #ifdef _RECURSIVE_COMPRESS
       int orig_len = work.l_length;
 #endif
-      _MOVC3(work.l_length, work.pointer, out_ptr->pointer);
+      memcpy(out_ptr->pointer, work.pointer, work.l_length);
       status = compress(cimage_ptr, centry_ptr,
                         (char *)out_ptr->pointer - (char *)work.pointer,
                         work.pointer);
