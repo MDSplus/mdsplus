@@ -21,6 +21,7 @@ InstType "Minimal"
 !define READLINELIB libreadline8.dll
 !define GCC_STDCPP_LIB libstdc++-6.dll
 !define GCC_S_SEH_LIB libgcc_s_seh-1.dll
+!define GCC_S_DW2_LIB libgcc_s_dw2-1.dll
 !define GFORTRAN_LIB libgfortran-5.dll
 !define QUADMATH_LIB libquadmath-0.dll
 !define LIBXML2_LIB libxml2-2.dll
@@ -257,6 +258,7 @@ SectionGroup "!core" core
 	File ${MINGWLIB32}/${READLINELIB}
 	File ${MINGWLIB32}/${TERMCAPLIB}
 	File ${MINGWLIB32}/${GCC_STDCPP_LIB}
+	File ${MINGWLIB32}/${GCC_S_DW2_LIB}
 	File ${MINGWLIB32}/${GFORTRAN_LIB}
 	File ${MINGWLIB32}/${QUADMATH_LIB}
 	File ${MINGWLIB32}/${LIBXML2_LIB}
