@@ -52,7 +52,7 @@ __attribute__((deprecated)) int GetAnswerInfo(int id, char *dtype,
 ////////////////////////////////////////////////////////////////////////////////
 
 int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
-                           int *dims, int *numbytes, void **dptr, void **mout)
+                    int *dims, int *numbytes, void **dptr, void **mout)
 {
   return GetAnswerInfoTO(id, dtype, length, ndims, dims, numbytes, dptr, mout,
                          -1);

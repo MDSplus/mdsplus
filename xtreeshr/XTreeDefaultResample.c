@@ -241,11 +241,11 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
     MdsCopyDxXd((mdsdsc_t *)inSignalD, outSignalXd);
     return 3; // Cannot convert timebase to 64 bit int
   }
-  if(numData == 0) //If empty segment
+  if (numData == 0) //If empty segment
   {
-     MdsFree1Dx(&dataXd, 0);
-     MdsCopyDxXd((mdsdsc_t *)inSignalD, outSignalXd);
-     return 1; 
+    MdsFree1Dx(&dataXd, 0);
+    MdsCopyDxXd((mdsdsc_t *)inSignalD, outSignalXd);
+    return 1;
   }
 
   // Check data array too short
