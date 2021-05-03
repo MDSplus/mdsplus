@@ -79,6 +79,13 @@
    fun:_PyThreadState_Swap
 }
 {
+   PyThread_allocate_lock
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyThread_allocate_lock
+}
+{
    PyBytes_FromStringAndSize
    Memcheck:Leak
    match-leak-kinds: possible

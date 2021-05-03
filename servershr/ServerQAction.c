@@ -107,14 +107,13 @@ static SrvJob *CurrentJob = NULL;
 static Condition_p JobQueueCond = CONDITION_INITIALIZER;
 #define JobQueue (JobQueueCond.value)
 
-static char *current_job_text = NULL;
-
-static int Logging = 1;
-static int Debug = 0;
-static int QueueLocked = 0;
-static int WorkerDied = 0;
-static int LeftWorkerLoop = 0;
-static int CondWStat = 0;
+static char *STATIC_current_job_text = NULL;
+static int STATIC_Logging = 1;
+static int STATIC_Debug = 0;
+static int STATIC_QueueLocked = 0;
+static int STATIC_WorkerDied = 0;
+static int STATIC_LeftWorkerLoop = 0;
+static int STATIC_CondWStat = 0;
 int ProgLoc = 0;
 
 EXPORT struct descriptor *ServerInfo()
@@ -130,10 +129,11 @@ EXPORT struct descriptor *ServerInfo()
 
 EXPORT int ServerDebug(int setting)
 {
-  int old = Debug;
-  Debug = setting;
+  int old = STATIC_Debug;
+  STATIC_Debug = setting;
   return old;
 }
+
 // main
 EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
                          int *jobid, void *p1, void *p2, void *p3, void *p4,
@@ -236,7 +236,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   }
   case SrvSetLogging:
   {
-    Logging = *(int *)p1;
+    STATIC_Logging = *(int *)p1;
     status = MDSplusSUCCESS;
     break;
   }
@@ -343,13 +343,13 @@ static void LogPrefix(char *ans_c)
     char now[32];
     Now32(now);
     sprintf(ans_c, "%s, %s:%s, %s, ", now, hname, port ? port : "?",
-            Logging == 0 ? "logging disabled" : "logging enabled");
-    if (Debug)
+            STATIC_Logging == 0 ? "logging disabled" : "logging enabled");
+    if (STATIC_Debug)
     {
       sprintf(ans_c + strlen(ans_c),
               "\nDebug info: QueueLocked = %d ProgLoc = %d WorkerDied = %d"
               "\n            LeftWorkerLoop = %d CondWStat = %d\n",
-              QueueLocked, ProgLoc, WorkerDied, LeftWorkerLoop, CondWStat);
+              STATIC_QueueLocked, ProgLoc, STATIC_WorkerDied, STATIC_LeftWorkerLoop, STATIC_CondWStat);
     }
   }
 }
@@ -359,7 +359,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
   char *ans_c;
   struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
   QUEUE_LOCK;
-  char *job_text = current_job_text;
+  char *job_text = STATIC_current_job_text;
   if (job_text == 0)
   {
     ans_c = malloc(1024);
@@ -473,12 +473,12 @@ static void SetCurrentJob(SrvJob *job)
 static inline void LockQueue()
 {
   _CONDITION_LOCK(&JobQueueCond);
-  QueueLocked = 1;
+  STATIC_QueueLocked = 1;
 }
 // thread
 static inline void UnlockQueue()
 {
-  QueueLocked = 0;
+  STATIC_QueueLocked = 0;
   _CONDITION_UNLOCK(&JobQueueCond);
 }
 // main
@@ -499,7 +499,7 @@ static int DoSrvAction(SrvJob *job_in)
   char *job_text, *old_job_text;
   sprintf((job_text = (char *)malloc(100)), "Doing nid %d in %s shot %d",
           job->nid, job->tree, job->shot);
-  current_job_text = job_text;
+  STATIC_current_job_text = job_text;
   void *dbid = NULL;
   status = _TreeNewDbid(&dbid);
   if (STATUS_NOT_OK)
@@ -524,27 +524,27 @@ static int DoSrvAction(SrvJob *job_in)
     job_text = malloc(fullpath.length + 1024);
     sprintf(job_text, "Doing %s in %s shot %d", fullpath.pointer, job->tree,
             job->shot);
-    old_job_text = current_job_text;
-    current_job_text = job_text;
+    old_job_text = STATIC_current_job_text;
+    STATIC_current_job_text = job_text;
     free(old_job_text);
     StrFree1Dx(&fullpath);
     nid_dsc.pointer = (char *)&job->nid;
     ans_dsc.pointer = (char *)&retstatus;
     TreeSetDefaultNid(0);
-    if (Logging)
+    if (STATIC_Logging)
     {
       char now[32];
       Now32(now);
-      printf("%s, %s\n", now, current_job_text);
+      printf("%s, %s\n", now, STATIC_current_job_text);
       fflush(stdout);
     }
     status = TdiDoTask(&nid_dsc, &ans_dsc MDS_END_ARG);
-    if (Logging)
+    if (STATIC_Logging)
     {
       char now[32];
       Now32(now);
-      memcpy(current_job_text, "Done ", 5);
-      printf("%s, %s\n", now, current_job_text);
+      memcpy(STATIC_current_job_text, "Done ", 5);
+      printf("%s, %s\n", now, STATIC_current_job_text);
       fflush(stdout);
     }
     if (STATUS_OK)
@@ -562,7 +562,7 @@ static int DoSrvClose(SrvJob *job_in)
 {
   INIT_STATUS_ERROR;
   char *job_text = strcpy((char *)malloc(32), "Closing trees");
-  current_job_text = job_text;
+  STATIC_current_job_text = job_text;
   do
   {
     status = TreeClose(0, 0);
@@ -580,7 +580,7 @@ static int DoSrvCreatePulse(SrvJob *job_in)
   char *job_text = malloc(100);
   sprintf(job_text, "Creating pulse for %s shot %d",
           ((SrvCreatePulseJob *)job)->tree, ((SrvCreatePulseJob *)job)->shot);
-  current_job_text = job_text;
+  STATIC_current_job_text = job_text;
   status = TreeCreateTreeFiles(job->tree, job->shot, -1);
   if (job_in->h.addr)
     send_reply(job_in, SrvJobFINISHED, status, 0, 0);
@@ -598,7 +598,7 @@ static int DoSrvCommand(SrvJob *job_in)
   sprintf(job_text, "Doing command %s in command table %s", job->command,
           job->table);
   ProgLoc = 62;
-  current_job_text = job_text;
+  STATIC_current_job_text = job_text;
   ProgLoc = 63;
   strcat(set_table, job->table);
   ProgLoc = 64;
@@ -716,10 +716,10 @@ static void DoSrvMonitor(SrvJob *job_in)
 // thread
 static void WorkerExit(void *arg __attribute__((unused)))
 {
-  if (QueueLocked)
+  if (STATIC_QueueLocked)
     UnlockQueue();
   CONDITION_RESET(&WorkerRunning);
-  WorkerDied++;
+  STATIC_WorkerDied++;
   fprintf(stderr, "Worker thread exitted\n");
 }
 // thread
@@ -732,7 +732,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
   while ((job = NextJob(1)))
   {
     DBG("Starting job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
-    if (Debug)
+    if (STATIC_Debug)
       fprintf(stderr, "job started.\n");
     char *save_text;
     ProgLoc = 2;
@@ -770,14 +770,14 @@ static void WorkerThread(void *arg __attribute__((unused)))
     ProgLoc = 8;
     FreeJob(job);
     ProgLoc = 9;
-    save_text = current_job_text;
-    current_job_text = 0;
+    save_text = STATIC_current_job_text;
+    STATIC_current_job_text = 0;
     free(save_text);
     ProgLoc = 10;
-    if (Debug)
+    if (STATIC_Debug)
       fprintf(stderr, "job done.\n");
   }
-  LeftWorkerLoop++;
+  STATIC_LeftWorkerLoop++;
   pthread_cleanup_pop(1);
   pthread_exit(NULL);
 }
@@ -913,7 +913,7 @@ static int send_reply(SrvJob *job, int replyType, int status_in, int length, cha
     if (STATUS_NOT_OK)
     {
       try_again = errno == EPIPE;
-      if (Debug)
+      if (STATIC_Debug)
       {
         uint8_t *ip = (uint8_t *)&job->h.addr;
         char now[32];
