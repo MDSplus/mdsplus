@@ -727,7 +727,7 @@ static void receiver_thread(void *sockptr)
           LOCK_CLIENTS;
           for (c = Clients; c; c = c->next)
           {
-            if (FD_ISSET(c->reply_sock, &readfds))
+            if ((c->reply_sock != INVALID_SOCKET) && FD_ISSET(c->reply_sock, &readfds))
             {
               last_client_addr = c->addr;
               last_client_port = c->port;

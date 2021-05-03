@@ -76,7 +76,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor
 #include <mds_stdarg.h>
 #include <tdishr_messages.h>
 #include "servershrp.h"
-#define DEBUG
+//#define DEBUG
 #include <mdsdbg.h>
 
 extern int TdiCompletionOf();
