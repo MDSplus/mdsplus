@@ -256,6 +256,7 @@ Connection *newConnection(char *protocol)
 //  FreeDescriptors  ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
 void FreeDescriptors(Connection *c)
 {
   int i;
@@ -263,15 +264,8 @@ void FreeDescriptors(Connection *c)
   {
     for (i = 0; i < MDSIP_MAX_ARGS; i++)
     {
-      if (c->descrip[i])
-      {
-        if (c->descrip[i] != MdsEND_ARG)
-        {
-          free(c->descrip[i]->pointer);
-          free(c->descrip[i]);
-        }
-        c->descrip[i] = NULL;
-      }
+      MdsFreeDescriptor(c->descrip[i]);
+      c->descrip[i] = NULL;
     }
   }
 }

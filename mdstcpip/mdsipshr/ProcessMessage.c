@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../mdsIo.h"
 #include "../mdsip_connections.h"
 
-#define DEBUG
+//#define DEBUG
 #include <mdsdbg.h>
 
 extern int TdiRestoreContext(void **);
@@ -134,29 +134,34 @@ static void convert_float(int num, int in_type, char in_length, char *in_ptr,
 }
 
 /// returns true if message cleanup is handled
-static int send_response(Connection *connection, Message *message,
-                         int status, mdsdsc_t *d)
+static int send_response(Connection *connection, Message *message, int status, mdsdsc_t *d)
 {
   const int client_type = connection->client_type;
   const unsigned char message_id = connection->message_id;
   Message *m = NULL;
-  if (SupportsCompression(client_type))
+  int serial = STATUS_NOT_OK || (connection->descrip[0] && connection->descrip[0]->dtype == DTYPE_SERIAL);
+  if (!serial && SupportsCompression(client_type))
   {
-    INIT_AND_FREEXD_ON_EXIT(out);
-    if (IS_OK(MdsSerializeDscOut(d, &out)))
-    {
-      struct descriptor_a *array = (struct descriptor_a *)out.pointer;
-      m = malloc(sizeof(MsgHdr) + array->arsize);
-      memset(&m->h, 0, sizeof(MsgHdr));
-      m->h.msglen = sizeof(MsgHdr) + array->arsize;
-      m->h.client_type = client_type;
-      m->h.message_id = message_id;
-      m->h.status = status;
-      m->h.dtype = DTYPE_SERIAL;
-      m->h.length = 1;
-      memcpy(m->bytes, array->pointer, array->arsize);
-    }
-    FREEXD_NOW(out);
+    EMPTYXD(xd);
+    status = MdsSerializeDscOut(d, &xd);
+    MdsFreeDescriptor(d);
+    d = xd.pointer;
+    serial = 1;
+  }
+  if (serial && STATUS_OK && d->class == CLASS_A)
+  {
+    mdsdsc_a_t *array = (mdsdsc_a_t *)d;
+    m = malloc(sizeof(MsgHdr) + array->arsize);
+    memset(&m->h, 0, sizeof(MsgHdr));
+    m->h.msglen = sizeof(MsgHdr) + array->arsize;
+    m->h.client_type = client_type;
+    m->h.message_id = message_id;
+    m->h.status = status;
+    m->h.dtype = DTYPE_SERIAL;
+    m->h.ndims = 1;
+    m->h.dims[0] = array->arsize;
+    m->h.length = 1;
+    memcpy(m->bytes, array->pointer, array->arsize);
   }
   else
   {
@@ -613,14 +618,26 @@ static inline int execute_command(Connection *connection, mdsdsc_xd_t *ans_xd)
   p.connection = connection;
   EMPTYXD(xd);
   p.xdp = &xd;
+  const int serialize_out = connection->descrip[0]->dtype == DTYPE_SERIAL;
+  if (serialize_out)
+  {
+    connection->descrip[0]->dtype = DTYPE_T;
+  }
   pthread_cleanup_push(cleanup_command, (void *)&p);
   TDITHREADSTATIC_INIT;
   --TDI_INTRINSIC_REC;
   status = TdiIntrinsic(OPC_EXECUTE, connection->nargs, connection->descrip, &xd);
   ++TDI_INTRINSIC_REC;
-  if (connection)
   if (STATUS_OK)
-    status = TdiData(xd.pointer, ans_xd MDS_END_ARG);
+  {
+    if (serialize_out)
+    {
+      connection->descrip[0]->dtype = DTYPE_SERIAL;
+      status = MdsSerializeDscOut(xd.pointer, ans_xd);
+    }
+    else
+      status = TdiData(xd.pointer, ans_xd MDS_END_ARG);
+  }
   pthread_cleanup_pop(1);
   return status;
 }
@@ -752,8 +769,10 @@ static int execute_message(Connection *connection, Message *message)
     {
       connection->compression_level = GetCompressionLevel();
       if (connection->compression_level > GetMaxCompressionLevel())
+      {
         connection->compression_level = GetMaxCompressionLevel();
-      SetCompressionLevel(connection->compression_level);
+        SetCompressionLevel(connection->compression_level);
+      }
     }
     freed_message = send_response(connection, message, status, ans_xd.pointer);
     FREEXD_NOW(ans_xd);
@@ -783,23 +802,20 @@ static int standard_command(Connection *connection, Message *message)
   }
   // set connection to the message client_type  //
   connection->client_type = message->h.client_type;
-  // d -> reference to curent idx argument desctriptor  //
   int status = 1;
   mdsdsc_t *d = connection->descrip[message->h.descriptor_idx];
   if (message->h.dtype == DTYPE_SERIAL)
   {
-    if (d && d->class != CLASS_XD)
-    {
-      if (d->class == CLASS_D && d->pointer)
-        free(d->pointer);
-      free(d);
-    }
-    static const EMPTYXD(empty);
-    connection->descrip[message->h.descriptor_idx] = d =
-        memcpy(malloc(sizeof(empty)), &empty, sizeof(empty));
+    MdsFreeDescriptor(d);
+    mdsdsc_xd_t xd = MDSDSC_XD_INITIALIZER;
     DBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial\n",
         connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
-    status = MdsSerializeDscIn(message->bytes, (mdsdsc_xd_t *)d);
+    status = MdsSerializeDscIn(message->bytes, &xd);
+    connection->descrip[message->h.descriptor_idx] = d = xd.pointer;
+    if (STATUS_OK && message->h.descriptor_idx == 0 && d->dtype == DTYPE_T)
+    {
+      d->dtype = DTYPE_SERIAL;
+    }
   }
   else
   {
@@ -807,44 +823,48 @@ static int standard_command(Connection *connection, Message *message)
     {
       // instance the connection descriptor field //
       const short lengths[] = {0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0};
+      length_t length = message->h.dtype < DTYPE_CSTRING
+                            ? lengths[message->h.dtype]
+                            : message->h.length;
       if (message->h.ndims == 0)
       {
-        d = calloc(1, sizeof(struct descriptor_s));
+        d = malloc(sizeof(mdsdsc_s_t) + length);
         d->class = CLASS_S;
+        d->dtype = message->h.dtype;
+        d->length = length;
+        d->pointer = length ? (void *)d + sizeof(mdsdsc_s_t) : 0;
       }
       else
       {
         static const DESCRIPTOR_A_COEFF(empty, 0, 0, 0, MAX_DIMS, 0);
-        d = memcpy(malloc(sizeof(empty)), &empty, sizeof(empty));
-      }
-      d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype]
-                                                   : message->h.length;
-      d->dtype = message->h.dtype;
-      if (d->class == CLASS_A)
-      {
-        array_coeff *a = (array_coeff *)d;
-        int num = 1;
         int i;
+        int num = 1;
+        for (i = 0; i < message->h.ndims; i++)
+        {
+          num *= message->h.dims[i];
+        }
+        arsize_t arsize = length * num;
+        d = memcpy(malloc(sizeof(empty) + arsize), &empty, sizeof(empty));
+        d->dtype = message->h.dtype;
+        array_coeff *a = (array_coeff *)d;
         a->dimct = message->h.ndims;
         for (i = 0; i < a->dimct; i++)
         {
           a->m[i] = message->h.dims[i];
-          num *= a->m[i];
         }
-        a->arsize = a->length * num;
-        a->pointer = a->a0 = malloc(a->arsize);
+        a->length = length;
+        a->arsize = arsize;
+        a->pointer = a->a0 = (void *)d + sizeof(empty);
       }
-      else
-        d->pointer = d->length ? malloc(d->length) : 0;
-      // set new instance //
       connection->descrip[message->h.descriptor_idx] = d;
     }
     if (d)
     {
       // have valid connection descriptor instance     //
       // copy the message buffer into the descriptor   //
-      int dbytes = d->class == CLASS_S ? (int)d->length
-                                       : (int)((array_coeff *)d)->arsize;
+      int dbytes = d->class == CLASS_S
+                       ? (int)d->length
+                       : (int)((array_coeff *)d)->arsize;
       int num = d->length > 1 ? (dbytes / d->length) : dbytes;
 
       switch (CType(connection->client_type))

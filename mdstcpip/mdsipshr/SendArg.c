@@ -84,7 +84,6 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
   msglen = sizeof(MsgHdr) + nbytes;
   m = malloc(msglen);
   memset(&m->h, 0, sizeof(m->h));
-  m->h.client_type = 0;
   m->h.msglen = msglen;
   m->h.descriptor_idx = idx;
   m->h.dtype = dtype;

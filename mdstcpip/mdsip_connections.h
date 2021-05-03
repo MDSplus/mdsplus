@@ -76,7 +76,7 @@ typedef struct _connection
   unsigned char message_id;
   client_t client_type;
   int nargs;
-  struct descriptor *descrip[MDSIP_MAX_ARGS]; // list for message arguments
+  mdsdsc_t *descrip[MDSIP_MAX_ARGS]; // list for message arguments
   MdsEventList *event;
   void *tdicontext[6];
   int addr;

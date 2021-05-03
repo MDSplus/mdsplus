@@ -492,6 +492,18 @@ EXPORT int TranslateLogicalXd(const mdsdsc_t *const in,
 
 EXPORT void MdsFree(void *const ptr) { free(ptr); }
 
+EXPORT void MdsFreeDescriptor(mdsdsc_t *d)
+{
+  if (d)
+  {
+    if (d->class == CLASS_XD)
+      MdsFree1Dx((mdsdsc_xd_t *)d, NULL);
+    else if (d->class == CLASS_D)
+      free(d->pointer);
+    free(d);
+  }
+}
+
 EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
 {
   char *out = malloc((size_t)in->length + 1);
@@ -2060,51 +2072,6 @@ EXPORT int LibFindFileCaseBlind(const mdsdsc_t *const filespec,
 }
 
 EXPORT void TranslateLogicalFree(char *const value) { free(value); }
-
-#ifdef LOBYTE
-#undef LOBYTE
-#endif
-#ifdef HIBYTE
-#undef HIBYTE
-#endif
-#define LOBYTE(x) ((x)&0xFF)
-#define HIBYTE(x) (((x) >> 8) & 0xFF)
-
-/*
-// Cyclic redundancy check but seems unused
-static uint16_t icrc1(const uint16_t crc)
-{
-  int i;
-  uint32_t ans = crc;
-  for (i = 0; i < 8; i++) {
-    if (ans & 0x8000) {
-      ans <<= 1;
-      ans = ans ^ 4129;
-    } else
-      ans <<= 1;
-  }
-  return (uint16_t)ans;
-}
-uint16_t Crc(const uint32_t len, uint8_t *const bufptr)
-{
-  STATIC_THREADSAFE pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  STATIC_THREADSAFE uint16_t icrctb[256], init = 0;
-  pthread_mutex_lock(&mutex);
-  //  STATIC_THREADSAFE unsigned char rchr[256];
-  //STATIC_CONSTANT unsigned it[16] = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13,
-3, 11, 7, 15 }; if (!init) { init = 1; int i; for (i = 0; i < 256; i++) {
-      icrctb[i] = icrc1((uint16_t)(i << 8));
-      //  rchr[i] = (unsigned char)(it[i & 0xF] << 4 | it[i >> 4]);
-    }
-  }
-  int cword = 0;
-  uint32_t j;
-  for (j = 0; j < len; j++)
-    cword = icrctb[bufptr[j] ^ HIBYTE(cword)] ^ LOBYTE(cword) << 8;
-  pthread_mutex_unlock(&mutex);
-  return (uint16_t)cword;
-}
-*/
 
 EXPORT int MdsPutEnv(const char *const cmd)
 {

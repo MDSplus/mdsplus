@@ -362,7 +362,7 @@ inline static void MdsIpFreeDsc(struct descriptor_xd *xd)
 {
   // used to free ans.ptr returned by MdsValueDsc
   static void (*mdsIpFreeDsc)(struct descriptor_xd *) = NULL;
-  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", (void **)&mdsIpFreeDsc)))
+  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFreeDsc", (void **)&mdsIpFreeDsc)))
     return;
   mdsIpFreeDsc(xd);
 }

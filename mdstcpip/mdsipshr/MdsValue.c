@@ -37,6 +37,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mdsdbg.h>
 
+#define SERIAL
+#define DEF_SERIAL_IN                          \
+  "public fun __si(in _i)"                     \
+  "{"                                          \
+  "_o=*;"                                      \
+  "MdsShr->MdsSerializeDscIn(ref(_i),xd(_o));" \
+  "return(_o);"                                \
+  "};"
+#define DEF_SERIAL_OUT                         \
+  "public fun __so(optional in _i)"            \
+  "{"                                          \
+  "_o=*;"                                      \
+  "MdsShr->MdsSerializeDscOut(xd(_i),xd(_o));" \
+  "return(_o);"                                \
+  "};"
+
 EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
                               mdsdsc_t **arglist_in,
                               mdsdsc_xd_t *ans_ptr)
@@ -47,20 +63,16 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
   const int expect_serial = version >= MDSIP_VERSION_DSC_ARGS;
   if (expect_serial)
   {
-    status = SendArg(id, 0, DTYPE_CSTRING, ++nargs,
-                     strlen(expression), 0, &dim, (char *)expression);
+    DESCRIPTOR_FROM_CSTRING(exp_dsc, expression);
+    status = SendDsc(id, 0, ++nargs, &exp_dsc);
     for (i = 1; i < nargs && STATUS_OK; i++)
       status = SendDsc(id, i, nargs, arglist_in[i - 1]);
   }
   else
   {
     EMPTYXD(xd);
-    char *newexp = malloc(strlen(expression) + 256 + nargs * 8);
-    strcpy(newexp, "public fun __si(in "
-                   "_i){_o=*;MdsShr->MdsSerializeDscIn(ref(_i),xd(_o));return(_"
-                   "o);};public fun __so(optional in "
-                   "_i){_o=*;MdsShr->MdsSerializeDscOut(xd(_i),xd(_o));return(_"
-                   "o);};__so(execute($");
+    char *newexp = malloc(16 + 8*8 + sizeof(DEF_SERIAL_OUT) + sizeof(DEF_SERIAL_IN));
+    strcpy(newexp, DEF_SERIAL_IN DEF_SERIAL_OUT "__so(execute($");
     for (i = 0; i < nargs; i++)
       strcat(newexp, ",__si($)");
     strcat(newexp, "))");
@@ -96,7 +108,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
     if ((expect_serial && ser.dtype == DTYPE_SERIAL) || ser.dtype == DTYPE_B)
       status = MdsSerializeDscIn(ser.pointer, ans_ptr);
     else
-      status = MdsCopyDxXd((mdsdsc_t*)&ser, ans_ptr);
+      status = MdsCopyDxXd((mdsdsc_t *)&ser, ans_ptr);
     free(mem);
   }
   return status;

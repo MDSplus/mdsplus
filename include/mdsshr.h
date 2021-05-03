@@ -85,6 +85,7 @@ extern "C"
   extern void MdsEnableSandbox();
   extern int MDSfprintf(FILE *const fp, const char *const fmt, ...);
   extern void MdsFree(void *const ptr);
+  extern void MdsFreeDescriptor(mdsdsc_t *d);
   extern int MdsGet1Dx(const l_length_t *const len, const dtype_t *const dtype,
                        mdsdsc_xd_t *const dsc, void **const zone);
   extern int MdsGet1DxA(const mdsdsc_a_t *const in, const length_t *const len,
