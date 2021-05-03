@@ -31,6 +31,7 @@ public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
         deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         deviceInputs1 = new DeviceInputs();
+        deviceOutputs1 = new DeviceOutputs();
         deviceParameters1 = new DeviceParameters();
 
         setDeviceProvider("spilds:8100");
@@ -52,6 +53,9 @@ public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
         deviceInputs1.setOffsetNid(449);
         jTabbedPane1.addTab("Inputs", deviceInputs1);
 
+        deviceOutputs1.setOffsetNid(1250);
+        jTabbedPane1.addTab("Outputs", deviceOutputs1);
+
         deviceParameters1.setNumParameters(144);
         deviceParameters1.setOffsetNid(4);
         deviceParameters1.setParameterOffset(4);
@@ -65,6 +69,7 @@ public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
     private DeviceInputs deviceInputs1;
+    private DeviceOutputs deviceOutputs1;
     private DeviceParameters deviceParameters1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;

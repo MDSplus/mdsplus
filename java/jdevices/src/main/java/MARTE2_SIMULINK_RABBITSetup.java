@@ -32,6 +32,7 @@ public class MARTE2_SIMULINK_RABBITSetup extends DeviceSetup {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         deviceInputs1 = new DeviceInputs();
         deviceOutputs1 = new DeviceOutputs();
+        deviceParameters1 = new DeviceParameters();
 
         setDeviceProvider("spilds:8100");
         setDeviceTitle("Rabbit Setup");
@@ -54,6 +55,11 @@ public class MARTE2_SIMULINK_RABBITSetup extends DeviceSetup {
         deviceOutputs1.setOffsetNid(353);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
+        deviceParameters1.setNumParameters(5);
+        deviceParameters1.setOffsetNid(4);
+        deviceParameters1.setParameterOffset(4);
+        jTabbedPane1.addTab("Parameters", deviceParameters1);
+
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -63,6 +69,7 @@ public class MARTE2_SIMULINK_RABBITSetup extends DeviceSetup {
     private DeviceField deviceField1;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
+    private DeviceParameters deviceParameters1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables

@@ -44,6 +44,8 @@ public class MARTE2_SIMULINK_FLUXMAPSetup extends DeviceSetup {
 
         deviceInputs1.setOffsetNid(50);
         jTabbedPane1.addTab("Inputs", deviceInputs1);
+
+        deviceOutputs1.setOffsetNid(171);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
         deviceParameters1.setNumParameters(10);

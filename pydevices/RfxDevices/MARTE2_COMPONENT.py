@@ -1772,7 +1772,8 @@ class MARTE2_COMPONENT(Device):
                     dataSourceText += '      '+nodeDict['name']+' = {\n'
                     valExpr = nodeDict['expr']
                     if isinstance(valExpr, TreeNode):
-                        valExpr = valExpr.getFullPath()
+#                        valExpr = valExpr.getPath()
+                        valExpr = str(valExpr)
                     else:
                         valExpr = str(valExpr)
                     dataSourceText += '        DataExpr = "'+valExpr+'"\n'
