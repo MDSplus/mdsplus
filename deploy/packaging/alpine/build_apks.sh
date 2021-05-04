@@ -1,24 +1,26 @@
 #!/bin/bash
-[ -z ${BRANCH} ] && exit 1
+[ -z "${BUILDROOT}" ] && exit 1
+[ -z "${BRANCH}" ] && exit 1
+[ -z "${RELEASE_VERSION}" ] && exit 1
+[ -z "${ARCH}" ] && exit 1
+[ -z "${DISTNAME}" ] && exit 1
 pckdir=$(dirname $(realpath $0))
 export HOME=/workspace
 cd /workspace
 signkeys="/sign_keys/mdsplus@mdsplus.org-589e05b6.rsa"
 mkdir -p /workspace/.abuild
-if [ -f $signkeys ]
-then
-  echo -e "PACKAGER_PRIVKEY=\"$signkeys\"\n" > /workspace/.abuild/abuild.conf
-elif [ ! -f /workspace/.abuild/abuild.conf ]
-then
+if [ -f $signkeys ]; then
+  echo -e "PACKAGER_PRIVKEY=\"$signkeys\"\n" >/workspace/.abuild/abuild.conf
+elif [ ! -f /workspace/.abuild/abuild.conf ]; then
   touch /workspace/.abuild/abuild.conf
   abuild-keygen -aqn # generate new keys
 fi
 # we have to unset srcdir as it is a reserved name in abuild
 # in the process of building the apks it will wipe $srcdir
 srcdir= \
-BUILDROOT=/workspace/releasebld/buildroot \
-BRANCH=${BRANCH} \
-RELEASE_VERSION=${RELEASE_VERSION} \
-ARCH=${ARCH} \
-DISTNAME=${DISTNAME} \
-${pckdir}/alpine_build_apks.py
+  BUILDROOT=${BUILDROOT} \
+  BRANCH=${BRANCH} \
+  RELEASE_VERSION=${RELEASE_VERSION} \
+  ARCH=${ARCH} \
+  DISTNAME=${DISTNAME} \
+  ${pckdir}/alpine_build_apks.py
