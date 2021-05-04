@@ -62,14 +62,13 @@ debtopkg() {
 buildrelease() {
   ### Build release version of MDSplus and then construct installer debs
   set -e
+  # ${RELEASEDIR}/${BRANCH}/DEBS will be cleaned in debian_build.sh
   RELEASEDEBS=/release/${BRANCH}/DEBS/${ARCH}
   RELEASEBLD=/workspace/releasebld
   BUILDROOT=${RELEASEBLD}/buildroot
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
   rm -Rf ${RELEASEBLD}/${bits}
   mkdir -p ${RELEASEBLD}/${bits} ${BUILDROOT} ${MDSPLUS_DIR}
-  rm -Rf ${RELEASEDEBS}
-  mkdir -p ${RELEASEDEBS}
   pushd ${RELEASEBLD}/${bits}
   config ${config_param} ${ALPHA_DEBUG_INFO}
   if [ -z "$NOMAKE" ]; then
@@ -78,6 +77,7 @@ buildrelease() {
   fi
   popd
   if [ -z "$NOMAKE" ]; then
+    mkdir -p ${RELEASEDEBS}
     BRANCH=${BRANCH} \
       RELEASE_VERSION=${RELEASE_VERSION} \
       ARCH=${ARCH} \
@@ -113,10 +113,7 @@ buildrelease() {
     checkstatus abort "Failure: Problem with contents of one or more debs. (see above)" $baddeb
     if [ -z "$abort" ] || [ "$abort" = "0" ]; then
       echo "Building repo"
-      mkdir -p /release/repo/conf
-      mkdir -p /release/repo/db
-      mkdir -p /release/repo/dists
-      mkdir -p /release/repo/pool
+      mkdir -p /release/repo/conf /release/repo/db /release/repo/dists /release/repo/pool
       if [ "${BRANCH}" = "alpha" -o "${BRANCH}" = "stable" ]; then
         component=""
       else

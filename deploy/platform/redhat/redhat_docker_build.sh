@@ -58,7 +58,7 @@ buildrelease() {
   RELEASEBLD=/workspace/releasebld
   BUILDROOT=${RELEASEBLD}/buildroot
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
-  rm -Rf ${RELEASEBLD}
+  rm -Rf ${RELEASEBLD} /release/${BRANCH}
   mkdir -p ${RELEASEBLD}/64 ${BUILDROOT} ${MDSPLUS_DIR}
   pushd ${RELEASEBLD}/64
   config ${test64} ${ALPHA_DEBUG_INFO}
@@ -103,19 +103,13 @@ gpgcheck=${GPGCHECK}
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
-    ###
-    ### Build RPMS
-    ###
-    ### Clean up release stage area
-    ###
-    rm -Rf /release/${BRANCH}
     mkdir -p /release/${BRANCH}
-    BRANCH=${BRANCH} \
-      RELEASE_VERSION=${RELEASE_VERSION} \
-      BNAME=${BNAME} \
-      DISTNAME=${DISTNAME} \
-      BUILDROOT=${BUILDROOT} \
-      PLATFORM=${PLATFORM} \
+    BRANCH=${BRANCH}\
+      RELEASE_VERSION=${RELEASE_VERSION}\
+      BNAME=${BNAME}\
+      DISTNAME=${DISTNAME}\
+      BUILDROOT=${BUILDROOT}\
+      PLATFORM=${PLATFORM}\
       ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py
     do_createrepo /release
     badrpm=0

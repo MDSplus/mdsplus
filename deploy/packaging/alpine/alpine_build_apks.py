@@ -217,8 +217,8 @@ def buildApks():
     root = tree.getroot()
     apks = []
     noarch = "noarch"
-    noarchdir = "/release/%(flavor)s/noarch" % info
     archdir = "/release/%(flavor)s/%(arch)s" % info
+    noarchdir = "/release/%(flavor)s/%(arch)s/noarch" % info
     os.system("rm -Rf %s/*" % archdir)
     if info['arch'] == noarch_builder:
         os.system("rm -Rf %s" % noarchdir)
