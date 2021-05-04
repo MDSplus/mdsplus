@@ -67,7 +67,7 @@ buildrelease() {
   RELEASEBLD=/workspace/releasebld
   BUILDROOT=${RELEASEBLD}/buildroot
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
-  rm -Rf ${RELEASEBLD}/${bits}
+  rm -Rf ${RELEASEBLD}/${bits} ${BUILDROOT}
   mkdir -p ${RELEASEBLD}/${bits} ${BUILDROOT} ${MDSPLUS_DIR}
   pushd ${RELEASEBLD}/${bits}
   config ${config_param} ${ALPHA_DEBUG_INFO}
