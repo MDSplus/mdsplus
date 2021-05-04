@@ -54,7 +54,30 @@
    Helgrind:Race
    fun:mempcpy
 }
-
+{
+   lock still held on thread_exit
+   Helgrind:Misc
+   fun:__open_nocancel
+   fun:open_verify.constprop.0
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
+{
+   inside data symbol "environ" with putenv
+   Helgrind:Race
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
 # python
 
 {
@@ -312,6 +335,12 @@
    fun:pthread_cond_timedwait_WRK
    fun:pthread_cond_timedwait@*
    obj:/usr/lib64/libpython3.8.so.1.0
+}
+{
+   lock stil hold in PyDict_SetDefault
+   Helgrind:Misc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyDict_SetDefault
 }
 
 # java
