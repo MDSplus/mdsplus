@@ -73,14 +73,6 @@ int ServerSendMessage();
 #include "servershrp.h"
 #ifdef _WIN32
 #define random rand
-#define SOCKERROR(...)            \
-  do                              \
-  {                               \
-    errno = WSAGetLastError();    \
-    fprintf(stderr, __VA_ARGS__); \
-  } while (0)
-#else
-#define SOCKERROR(...) fprintf(stderr, __VA_ARGS__)
 #endif
 
 //#define DEBUG
@@ -747,8 +739,8 @@ static void receiver_thread(void *sockptr)
         }
       }
     }
-    SOCKERROR("Dispatcher select loop failed\nLast client: " IPADDRPRI ":%u\n",
-              IPADDRVAR(&last_client_addr), last_client_port);
+    print_socket_error("Dispatcher select loop failed\n");
+    fprintf(stderr, "Last client: " IPADDRPRI ":%u\n", IPADDRVAR(&last_client_addr), last_client_port);
     reset_fdactive(rep, sock, &fdactive);
   }
   fprintf(stderr,

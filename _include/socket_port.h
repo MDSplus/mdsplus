@@ -67,34 +67,73 @@ typedef int SOCKET;
 #define socklen_t int
 static void _print_socket_error(char *message, int error)
 {
-  char *errorstr;
-  switch (error)
+  wchar_t *werrorstr = NULL;
+  FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                 NULL, error,
+                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                 (LPWSTR)&werrorstr, 0, NULL);
+  if (werrorstr)
   {
+    fprintf(stderr, "%s - WSA(%d) %S\n", message, error, werrorstr);
+    LocalFree(werrorstr);
+  }
+  else
+  {
+    char *errorstr;
+    switch (error)
+    {
 #define __SOCKET_CASE(WSA) \
   case WSA:                \
     errorstr = #WSA;       \
     break;
-    __SOCKET_CASE(WSANOTINITIALISED);
-    __SOCKET_CASE(WSAENETDOWN);
-    __SOCKET_CASE(WSAEADDRINUSE);
-    __SOCKET_CASE(WSAEINTR);
-    __SOCKET_CASE(WSAEINPROGRESS);
-    __SOCKET_CASE(WSAEALREADY);
-    __SOCKET_CASE(WSAEADDRNOTAVAIL);
-    __SOCKET_CASE(WSAEAFNOSUPPORT);
-    __SOCKET_CASE(WSAECONNREFUSED);
-    __SOCKET_CASE(WSAENOPROTOOPT);
-    __SOCKET_CASE(WSAEFAULT);
-    __SOCKET_CASE(WSAENOTSOCK);
-    __SOCKET_CASE(WSAESHUTDOWN);
-    __SOCKET_CASE(WSAEHOSTUNREACH);
-    __SOCKET_CASE(WSAEACCES);
+      __SOCKET_CASE(WSAEINTR);
+      __SOCKET_CASE(WSAEBADF);
+      __SOCKET_CASE(WSAEACCES);
+      __SOCKET_CASE(WSAEFAULT);
+      __SOCKET_CASE(WSAEINVAL);
+      __SOCKET_CASE(WSAEMFILE);
+      __SOCKET_CASE(WSAEWOULDBLOCK);
+      __SOCKET_CASE(WSAEINPROGRESS);
+      __SOCKET_CASE(WSAEALREADY);
+      __SOCKET_CASE(WSAENOTSOCK);
+      __SOCKET_CASE(WSAEDESTADDRREQ);
+      __SOCKET_CASE(WSAEMSGSIZE);
+      __SOCKET_CASE(WSAEPROTOTYPE);
+      __SOCKET_CASE(WSAENOPROTOOPT);
+      __SOCKET_CASE(WSAEPROTONOSUPPORT);
+      __SOCKET_CASE(WSAEOPNOTSUPP);
+      __SOCKET_CASE(WSAEPFNOSUPPORT);
+      __SOCKET_CASE(WSAEADDRINUSE);
+      __SOCKET_CASE(WSAEADDRNOTAVAIL);
+      __SOCKET_CASE(WSAENETDOWN);
+      __SOCKET_CASE(WSAENETUNREACH);
+      __SOCKET_CASE(WSAENETRESET);
+      __SOCKET_CASE(WSAECONNABORTED);
+      __SOCKET_CASE(WSAECONNRESET);
+      __SOCKET_CASE(WSAENOBUFS);
+      __SOCKET_CASE(WSAEISCONN);
+      __SOCKET_CASE(WSAENOTCONN);
+      __SOCKET_CASE(WSAESHUTDOWN);
+      __SOCKET_CASE(WSAETOOMANYREFS);
+      __SOCKET_CASE(WSAETIMEDOUT);
+      __SOCKET_CASE(WSAECONNREFUSED);
+      __SOCKET_CASE(WSAELOOP);
+      __SOCKET_CASE(WSAENAMETOOLONG);
+      __SOCKET_CASE(WSAEHOSTDOWN);
+      __SOCKET_CASE(WSAEHOSTUNREACH);
+      __SOCKET_CASE(WSAENOTEMPTY);
+      __SOCKET_CASE(WSAEPROCLIM);
+      __SOCKET_CASE(WSASYSNOTREADY);
+      __SOCKET_CASE(WSAVERNOTSUPPORTED);
+      __SOCKET_CASE(WSANOTINITIALISED);
+      __SOCKET_CASE(WSAEDISCON);
 #undef __SOCKET_CASE
-  default:
-    fprintf(stderr, "%s - WSAError %d\n", message, error);
-    return;
+    default:
+      fprintf(stderr, "%s - WSA(%d) WSAError\n", message, error);
+      return;
+    }
+    fprintf(stderr, "%s - WSA(%d) %s\n", message, error, errorstr);
   }
-  fprintf(stderr, "%s - %s\n", message, errorstr);
 }
 inline static void print_socket_error(char *message)
 {
