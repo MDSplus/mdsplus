@@ -258,7 +258,15 @@ Buildarch: noarch
         os.stat('/sign_keys/.gnupg')
         try:
             cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
-            child = pexpect.spawn(cmd, timeout=60, logfile=sys.stdout)
+            try:
+                if sys.version_info < (3,):
+                    bout = sys.stdout
+                else:
+                    bout = sys.stdout.buffer
+            except:
+                child = pexpect.spawn(cmd, timeout=60)
+            else:
+                child = pexpect.spawn(cmd, timeout=60, logfile=bout)
             index = child.expect(["Enter pass phrase: ", pexpect.EOF])
             if index == 0:
                 child.sendline("")
