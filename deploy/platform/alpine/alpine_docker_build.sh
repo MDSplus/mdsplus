@@ -49,14 +49,17 @@ buildrelease() {
   fi
   popd
   if [ -z "$NOMAKE" ]; then
-    rm -Rf /release/${BRANCH}/${ARCH} /release/${BRANCH}/noarch
-    mkdir -p /release/${BRANCH}/${ARCH} /release/${BRANCH}/noarch
+    # build noarch in ${ARCH}-noarch so parallel jobs wont have a race condition
+    mkdir -p /release/${BRANCH}/${ARCH}/noarch
     BUILDROOT=${BUILDROOT} \
       BRANCH=${BRANCH} \
       RELEASE_VERSION=${RELEASE_VERSION} \
       ARCH=${ARCH} \
       DISTNAME=${DISTNAME} \
-      ${srcdir}/deploy/packaging/alpine/build_apks.sh
+      ${srcdir}/deploy/packaging/alpine/build_apks.sh &&
+      mv -n /release/${BRANCH}/${ARCH}/noarch /release/${BRANCH}/
+      # first one to get here successfully moves to /release/${BRANCH}/noarch
+      # others will not move and ok
   fi
 }
 

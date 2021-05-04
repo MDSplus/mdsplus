@@ -143,10 +143,9 @@ EOF
     exit $status
 }
 default_build() {
-    if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]; then
+    if [ "${RELEASE}" = "yes" ]; then
+        rm -Rf ${RELEASEDIR}/${BRANCH}
         mkdir -p ${RELEASEDIR}/${BRANCH}
-    else
-        RELEASEDIR=""
     fi
     if [ "${PUBLISH}" = "yes" ]; then
         mkdir -p ${PUBLISHDIR}/${BRANCH}

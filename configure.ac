@@ -103,10 +103,6 @@ AC_CHECK_TOOL([WINDRES], [windres], [:])
 AC_PROG_YACC
 AM_PROG_LEX
 
-# ln does not always provide the -r (relative) option
-AS_IF([ln --help | grep -- "--relative" &>/dev/null],[AS_VAR_SET([LN_R],["ln -r"])],[AS_VAR_SET([LN_R],["ln"])])
-AC_SUBST([LN_R])
-
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
 AC_MSG_RESULT([before VISIBILITY])
