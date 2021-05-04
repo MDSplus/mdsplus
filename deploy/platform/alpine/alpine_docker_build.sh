@@ -49,17 +49,12 @@ buildrelease() {
   fi
   popd
   if [ -z "$NOMAKE" ]; then
-    # build noarch in ${ARCH}-noarch so parallel jobs wont have a race condition
-    mkdir -p /release/${BRANCH}/${ARCH}/noarch
     BUILDROOT=${BUILDROOT} \
       BRANCH=${BRANCH} \
       RELEASE_VERSION=${RELEASE_VERSION} \
       ARCH=${ARCH} \
       DISTNAME=${DISTNAME} \
-      ${srcdir}/deploy/packaging/alpine/build_apks.sh &&
-      mv -n /release/${BRANCH}/${ARCH}/noarch /release/${BRANCH}/
-      # first one to get here successfully moves to /release/${BRANCH}/noarch
-      # others will not move and ok
+      ${srcdir}/deploy/packaging/alpine/build_apks.sh
   fi
 }
 
@@ -74,8 +69,9 @@ publish() {
   cd $P
   rsync -a $R/${ARCH}/*.apk $P/${ARCH}/ && :
   checkstatus abort "Failure: Problem copying arch apks to publish area!" $?
-  rsync -a $R/noarch/*.apk $P/noarch/ && :
-  checkstatus abort "Failure: Problem copying noarch apks to publish area!" $?
+  if ! rsync -a $R/noarch/*.apk $P/noarch/; then
+    echo "Problem copying noarch apks to publish area, maybe they are there already."
+  fi
   if [ -r $P/${ARCH}/APKINDEX.tar.gz -a ! -r $P/${ARCH}/NEW.tar.gz ]; then
     apk index -x $P/${ARCH}/APKINDEX.tar.gz -o $P/${ARCH}/NEW.tar.gz $P/${ARCH}/*.apk noarch/*.apk
   else
