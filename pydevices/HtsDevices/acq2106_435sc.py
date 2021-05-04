@@ -72,6 +72,24 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     ]
 
     def init(self):
+        uut = self.getUUT()
+
+        freq = int(self.freq.data())
+
+        clock_div = 0
+        if freq == 40000:
+            clock_div = 1
+        elif freq == 20000:
+            clock_div = 2
+        elif freq == 10000:
+            clock_div = 4
+        
+        # For now, the frequency must be a clean division of 40000
+        # This could change when peter works out his arbitrary frequency 'plan' files
+        if clock_div == 0:
+            raise MDSplus.DevBAD_PARAMETER(
+                "FREQ must be 40000, 20000, or 10000, not %d" % (freq,))
+
         self.slots = super(_ACQ2106_435SC, self).getSlots()
         
         for card in self.slots:
@@ -103,6 +121,10 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         # - init(True) => use resampling function:
         # makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
         super(_ACQ2106_435SC, self).init(resampling=True)
+        
+        # Set the clock division in order to generate the desired frequency
+        # The computed frequency will be (40000 / CLKDIV)
+        uut.s1.CLKDIV = clock_div
 
     INIT=init
     
