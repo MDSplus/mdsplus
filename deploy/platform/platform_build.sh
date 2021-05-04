@@ -86,6 +86,7 @@ rundocker() {
         NETWORK=--network=${DOCKER_NETWORK}
       fi
     else
+      DOCKER_NETWORK=bridge
       NETWORK=
     fi
     status=127
@@ -133,7 +134,7 @@ rundocker() {
         rm -f ${WORKSPACE}/${OS}_docker-cid
       fi
     done
-    if [ -z "${DOCKER_NETWORK}" ]; then
+    if [ -z ${DOCKER_NETWORK} ]; then
       docker network rm ${OS}
     fi
     if [ ! "$status" = "0" ]; then
