@@ -85,7 +85,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             clock_div = 4
         
         # For now, the frequency must be a clean division of 40000
-        # This could change when peter works out his arbitrary frequency 'plan' files
+        # This could change when D-Taqc's Peter Milne works out his arbitrary frequency 'plan' files
         if clock_div == 0:
             raise MDSplus.DevBAD_PARAMETER(
                 "FREQ must be 40000, 20000, or 10000, not %d" % (freq,))
@@ -116,15 +116,15 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             
             if self.debug:
                 print("GAINs Committed for site %s" % (card,))
-                
-        # Here, the argument to the init of the superclass:
-        # - init(True) => use resampling function:
-        # makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
-        super(_ACQ2106_435SC, self).init(resampling=True)
         
         # Set the clock division in order to generate the desired frequency
         # The computed frequency will be (40000 / CLKDIV)
         uut.s1.CLKDIV = clock_div
+
+        # Here, the argument to the init of the superclass:
+        # - init(True) => use resampling function:
+        # makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
+        super(_ACQ2106_435SC, self).init(resampling=True)
 
     INIT=init
     
