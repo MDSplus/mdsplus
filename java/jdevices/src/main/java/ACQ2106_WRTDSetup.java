@@ -154,6 +154,8 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jTabbedPane3.getAccessibleContext().setAccessibleDescription("");
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+
+        getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
 
