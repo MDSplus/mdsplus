@@ -77,46 +77,49 @@ rundocker() {
             port_forwarding="-p ${FORWARD_PORT}:${FORWARD_PORT}"
             echo $port_forwarding
         fi
+        if [ -z "${DOCKER_NETWORK}" ]; then
+            docker network create ${OS}
+            NETWORK=${OS}
+        else
+            NETWORK=${DOCKER_NETWORK}
+        fi
         status=127
         loop_count=0
         while [ $status = 127 -a $loop_count -lt 5 ]; do
             let loop_count=$loop_count+1
-            docker run --cap-add=SYS_PTRACE -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid\
-                ${DOCKER_NETWORK:---network=none}\
-                -u $(id -u):$(id -g) --privileged\
-                -h $DISTNAME\
-                -e "srcdir=${DOCKER_SRCDIR}"\
-                -e "ARCH=${arch}"\
-                -e "ARCHES=${ARCH}"\
-                -e "BRANCH"\
-                -e "COLOR"\
-                -e "DISPLAY"\
-                -e "DISTNAME"\
-                -e "GIT_COMMIT"\
-                -e "OS"\
-                -e "PLATFORM"\
-                -e "PUBLISH"\
-                -e "RELEASE"\
-                -e "RELEASE_VERSION"\
-                -e "SANITIZE"\
-                -e "TEST"\
-                -e "TESTFORMAT"\
-                -e "UPDATEPKG"\
-                -e "VALGRIND_TOOLS"\
-                -e "MAKE_JARS"\
-                -e "CONFIGURE_PARAMS"\
-                -e "mdsevent_port=$EVENT_PORT"\
-                -e "HOME=/workspace"\
-                -e "JARS_DIR=$jars_dir"\
-                -e "TEST_TIMEUNIT"\
-                -e "ALPHA_DEBUG_INFO"\
-                -v ${SRCDIR}:${DOCKER_SRCDIR}\
-                -v ${WORKSPACE}:/workspace\
-                $port_forwarding\
-                $(volume "${JARS_DIR}" /jars_dir)\
-                $(volume "${RELEASEDIR}" /release)\
-                $(volume "${PUBLISHDIR}" /publish)\
-                $(volume "${KEYS}" /sign_keys)\
+            docker run --cap-add=SYS_PTRACE -t $stdio \
+                --cidfile=${WORKSPACE}/${OS}_docker-cid \
+                --network=${NETWORK} \
+                -u $(id -u):$(id -g) --privileged -h $DISTNAME -e "srcdir=${DOCKER_SRCDIR}" \
+                -e "ARCH=${arch}" \
+                -e "ARCHES=${ARCH}" \
+                -e "BRANCH" \
+                -e "COLOR" \
+                -e "DISPLAY" \
+                -e "DISTNAME" \
+                -e "GIT_COMMIT" \
+                -e "OS" \
+                -e "PLATFORM" \
+                -e "PUBLISH" \
+                -e "RELEASE" \
+                -e "RELEASE_VERSION" \
+                -e "SANITIZE" \
+                -e "TEST" \
+                -e "TESTFORMAT" \
+                -e "UPDATEPKG" \
+                -e "VALGRIND_TOOLS" \
+                -e "MAKE_JARS" \
+                -e "CONFIGURE_PARAMS" \
+                -e "mdsevent_port=$EVENT_PORT" \
+                -e "HOME=/workspace" \
+                -e "JARS_DIR=$jars_dir" \
+                -e "TEST_TIMEUNIT" \
+                -e "ALPHA_DEBUG_INFO" \
+                -v ${SRCDIR}:${DOCKER_SRCDIR} \
+                -v ${WORKSPACE}:/workspace $port_forwarding $(volume "${JARS_DIR}" /jars_dir) \
+                $(volume "${RELEASEDIR}" /release) \
+                $(volume "${PUBLISHDIR}" /publish) \
+                $(volume "${KEYS}" /sign_keys) \
                 ${image} $program
             status=$?
             if [ -r ${WORKSPACE}/${OS}_docker-cid ]; then
@@ -125,6 +128,9 @@ rundocker() {
                 rm -f ${WORKSPACE}/${OS}_docker-cid
             fi
         done
+        if [ -z "${DOCKER_NETWORK}" ]; then
+            docker network rm ${OS}
+        fi
         if [ ! "$status" = "0" ]; then
             RED
             cat <<EOF >&2
