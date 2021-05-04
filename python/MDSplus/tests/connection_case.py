@@ -182,8 +182,6 @@ class Tests(_common.TreeTests, _common.MdsIp):
         try:
             svr, svr_log = self._start_mdsip(server, server_port, 'tcp')
             try:
-                if svr is not None:
-                    time.sleep(1)
                 self._thread_test(server)
             finally:
                 if svr and svr.poll() is None:

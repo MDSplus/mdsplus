@@ -332,7 +332,6 @@ class MdsIp(object):
             except:
                 log.close()
                 raise
-            time.sleep(.3)
             self._waitIdle(server, 10)  # allow mdsip to launch
         else:
             mdsip, log = None, None
