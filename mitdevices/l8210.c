@@ -352,7 +352,7 @@ EXPORT int l8210__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), s
   };
   int status;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + (nid + L8210_N_MEMORIES);
+  uilnames[0].value = (void *)(intptr_t)(nid + L8210_N_MEMORIES);
   status =
       XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "L8210", uilnames,
 		      XtNumber(uilnames), &dbox);

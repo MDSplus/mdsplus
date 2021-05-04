@@ -444,7 +444,7 @@ EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc __attribute__ ((unus
     name[2] = '0' + i;
     mode_w = XtNameToWidget(w, name);
     XtVaGetValues(mode_w, XmNsubMenuId, &pulldown_w, NULL);
-    XtAddCallback(pulldown_w, XmNentryCallback, (XtCallbackProc) ModeChange, (char *)0 + i);
+    XtAddCallback(pulldown_w, XmNentryCallback, (XtCallbackProc) ModeChange, (void *)(intptr_t)i);
   }
   Reset(w, NULL, NULL);
   return 1;
@@ -459,7 +459,7 @@ static void Reset(Widget w, XtPointer client_data __attribute__ ((unused)), XmAn
     Widget mode_w;
     name[2] = '0' + i;
     mode_w = XtNameToWidget(XtParent(XtParent(XtParent(w))), name);
-    rc_cb.data = (char *)0 + XmdsGetOptionIdx(mode_w);
+    rc_cb.data = (void *)(intptr_t)XmdsGetOptionIdx(mode_w);
     ModeChange(mode_w, i, &rc_cb);
   }
 }

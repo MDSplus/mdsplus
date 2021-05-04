@@ -90,10 +90,7 @@ static double to_doublex(const void *const ptr, const dtype_t dtype,
     return defval;
   }
 }
-inline static double to_double(const void *const ptr, const dtype_t dtype)
-{
-  return to_doublex(ptr, dtype, 0, FALSE);
-}
+
 static int recIsSegmented(const mdsdsc_t *const dsc)
 {
   /* returns nid of the first segmented node found

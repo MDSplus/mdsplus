@@ -160,7 +160,7 @@ EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args,
     MrmFetchWidgetOverride(drm_hierarchy, "channels_1", parent, name, args,
                            argcount, &channels_w, &class);
   XtVaSetValues(XtNameToWidget(channels_w, "this_is_a_DigChans_widget"),
-                XmNuserData, (char *)0 + info.put_on_apply, NULL);
+                XmNuserData, (void *)(intptr_t)info.put_on_apply, NULL);
   rowcol_w = XtNameToWidget(channels_w, "*c_rowcol");
   for (i = 0; i < info.channels; i++)
   {

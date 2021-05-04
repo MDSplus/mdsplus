@@ -561,8 +561,8 @@ static int L8212_SETUP(struct descriptor *niddsc __attribute__ ((unused)), Widge
   };
   int status;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + (nid + L8212_04_N_MEMORIES);
-  uilnames[1].value = (char *)0 + chans;
+  uilnames[0].value = (void *)(intptr_t)(nid + L8212_04_N_MEMORIES);
+  uilnames[1].value = (void *)(intptr_t)chans;
   switch (chans) {
   case 32:{
       for (i = 0; i < XtNumber(clock_vals_slow); i++) {

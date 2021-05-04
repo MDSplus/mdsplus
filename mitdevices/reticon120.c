@@ -125,7 +125,7 @@ EXPORT int reticon120__dw_setup(struct descriptor *niddsc __attribute__ ((unused
   {"PopupPixels", (XtPointer) PopupPixels}
   };
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + (nid + RETICON120_N_PIXEL_SELECT);
+  uilnames[0].value = (void *)(intptr_t)(nid + RETICON120_N_PIXEL_SELECT);
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "RETICON120",
 			 uilnames, XtNumber(uilnames), 0);
 }

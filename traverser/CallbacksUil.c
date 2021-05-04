@@ -1166,7 +1166,7 @@ void RenameNode(Widget w, XtPointer client_data __attribute__((unused)),
       };
       Widget qdlog;
       Widget widg;
-      ok_callback_list[0].closure = (char *)0 + nid;
+      ok_callback_list[0].closure = (void *)(intptr_t)nid;
       qargs[0].value =
           (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
       qargs[1].value =

@@ -141,7 +141,7 @@ EXPORT int b5910a__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), 
   };
   char *title;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + (nid + B5910A_N_EXT_CLOCK);
+  uilnames[0].value = (void *)(intptr_t)(nid + B5910A_N_EXT_CLOCK);
   status =
       XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "B5910A", uilnames,
 		      XtNumber(uilnames), &w);

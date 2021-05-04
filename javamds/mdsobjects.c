@@ -100,7 +100,7 @@ extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims,
                            int *dims, int *numbytes, void **dptr, void **m);
 
 #ifdef DEBUG
-static void printDecompiled(struct descriptor *dsc)
+static void printDecompiled(mdsdsc_t *dsc)
 {
   EMPTYXD(out_xd);
   char decompiled[1024];
@@ -112,7 +112,7 @@ static void printDecompiled(struct descriptor *dsc)
   printf("%s\n", decompiled);
   MdsFree1Dx(&out_xd, 0);
 }
-static void printDecompiled1(void *ctx, struct descriptor *dsc)
+static void printDecompiled1(void *ctx, mdsdsc_t *dsc)
 {
   EMPTYXD(out_xd);
   char decompiled[1024];
@@ -126,7 +126,7 @@ static void printDecompiled1(void *ctx, struct descriptor *dsc)
 }
 #endif
 
-static void FreeDescrip(struct descriptor *desc);
+static void FreeDescrip(mdsdsc_t *desc);
 
 static jintArray getDimensions(JNIEnv *env, void *dsc)
 {
@@ -145,7 +145,7 @@ static jintArray getDimensions(JNIEnv *env, void *dsc)
   return jdims;
 }
 
-static jobject DescripToObject(JNIEnv *env, void *ctx, struct descriptor *desc,
+static jobject DescripToObject(JNIEnv *env, void *ctx, mdsdsc_t *desc,
                                jobject helpObj, jobject unitsObj,
                                jobject errorObj, jobject validationObj)
 {
@@ -167,7 +167,7 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, struct descriptor *desc,
   double *double_buf;
 
   char message[64];
-  struct descriptor_a *array_d;
+  mdsdsc_a_t *array_d;
   struct descriptor_r *record_d;
   char *buf;
   // EMPTYXD(float_xd);
@@ -182,7 +182,7 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, struct descriptor *desc,
   // desc->class);
 
   if (desc->class == CLASS_XD)
-    return DescripToObject(env, ctx, ((struct descriptor_xd *)desc)->pointer,
+    return DescripToObject(env, ctx, ((mdsdsc_xd_t *)desc)->pointer,
                            helpObj, unitsObj, errorObj, validationObj);
   memset(&args, 0, sizeof(args));
   switch (desc->class)
@@ -381,9 +381,9 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, struct descriptor *desc,
     args[4].l = errorObj;
     args[5].l = validationObj;
     if (is_ca)
-      array_d = (struct descriptor_a *)ca_xd.pointer;
+      array_d = (mdsdsc_a_t *)ca_xd.pointer;
     else
-      array_d = (struct descriptor_a *)desc;
+      array_d = (mdsdsc_a_t *)desc;
 
     args[1].l = getDimensions(env, array_d);
     length = (array_d->length != 0) ? array_d->arsize / array_d->length : 0;
@@ -794,7 +794,7 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, struct descriptor *desc,
     args[2].l = unitsObj;
     args[3].l = errorObj;
     args[4].l = validationObj;
-    array_d = (struct descriptor_a *)desc;
+    array_d = (mdsdsc_a_t *)desc;
     length = array_d->arsize / array_d->length;
     switch (desc->dtype)
     {
@@ -819,7 +819,7 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, struct descriptor *desc,
       for (i = 0; i < length; i++)
       {
         if ((curr_obj = DescripToObject(
-                 env, ctx, ((struct descriptor **)array_d->pointer)[i], 0, 0, 0,
+                 env, ctx, ((mdsdsc_t **)array_d->pointer)[i], 0, 0, 0,
                  0)))
           (*env)->SetObjectArrayElement(env, jobjects, i, curr_obj);
       }
@@ -835,11 +835,11 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, struct descriptor *desc,
   return 0;
 }
 
-static struct descriptor *completeDescr(struct descriptor *dataDscPtr,
-                                        struct descriptor *helpDscPtr,
-                                        struct descriptor *unitsDscPtr,
-                                        struct descriptor *errorDscPtr,
-                                        struct descriptor *validationDscPtr)
+static mdsdsc_t *completeDescr(mdsdsc_t *dataDscPtr,
+                                        mdsdsc_t *helpDscPtr,
+                                        mdsdsc_t *unitsDscPtr,
+                                        mdsdsc_t *errorDscPtr,
+                                        mdsdsc_t *validationDscPtr)
 {
   DESCRIPTOR_PARAM(templateParam, 0, 0, 0);
   DESCRIPTOR_WITH_UNITS(templateWithUnits, 0, 0);
@@ -857,7 +857,7 @@ static struct descriptor *completeDescr(struct descriptor *dataDscPtr,
     currWithErrorDsc->error = errorDscPtr;
     currWithErrorDsc->data =
         completeDescr(dataDscPtr, helpDscPtr, unitsDscPtr, 0, validationDscPtr);
-    return (struct descriptor *)currWithErrorDsc;
+    return (mdsdsc_t *)currWithErrorDsc;
   }
   if (unitsDscPtr)
   {
@@ -868,7 +868,7 @@ static struct descriptor *completeDescr(struct descriptor *dataDscPtr,
     currWithUnitsDsc->units = unitsDscPtr;
     currWithUnitsDsc->data =
         completeDescr(dataDscPtr, helpDscPtr, 0, errorDscPtr, validationDscPtr);
-    return (struct descriptor *)currWithUnitsDsc;
+    return (mdsdsc_t *)currWithUnitsDsc;
   }
   if (helpDscPtr || validationDscPtr)
   {
@@ -879,12 +879,12 @@ static struct descriptor *completeDescr(struct descriptor *dataDscPtr,
     currParamDsc->validation = validationDscPtr;
     currParamDsc->value =
         completeDescr(dataDscPtr, 0, unitsDscPtr, errorDscPtr, 0);
-    return (struct descriptor *)currParamDsc;
+    return (mdsdsc_t *)currParamDsc;
   }
   return dataDscPtr;
 }
 
-static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
+static mdsdsc_t *ObjectToDescrip(JNIEnv *env, jobject obj)
 {
   jclass cls;
   jfieldID datum_fid, descs_fid, ndescs_fid, opcode_fid, dtype_fid, dclass_fid,
@@ -893,8 +893,8 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
   static DESCRIPTOR_A_COEFF(template_array, 0, 0, 0, (unsigned char)255, 0);
   ARRAY_COEFF(char, 255) * array_d;
   static DESCRIPTOR_A(template_apd, 0, 0, 0, 0);
-  struct descriptor_a *apd_d;
-  // struct descriptor_a *array_d;
+  mdsdsc_a_t *apd_d;
+  // mdsdsc_a_t *array_d;
   static DESCRIPTOR_R(template_rec, 0, 1);
   struct descriptor_r *record_d;
   int i, ndescs, opcode, dtype, dclass, nDims;
@@ -918,9 +918,9 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
   int maxlen;
   jstring java_string;
   const char *string;
-  struct descriptor *desc;
+  mdsdsc_t *desc;
   jfieldID getUnitsFid, getHelpFid, getValidationFid, getErrorFid;
-  struct descriptor *unitsDscPtr, *helpDscPtr, *validationDscPtr, *errorDscPtr;
+  mdsdsc_t *unitsDscPtr, *helpDscPtr, *validationDscPtr, *errorDscPtr;
 
   //      printf("ObjectTodescrip %x\n", obj);
 
@@ -958,7 +958,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
   switch (dclass)
   {
   case CLASS_S:
-    desc = (struct descriptor *)malloc(sizeof(struct descriptor));
+    desc = (mdsdsc_t *)malloc(sizeof(mdsdsc_t));
     desc->class = dclass;
     desc->dtype = dtype;
 
@@ -1112,7 +1112,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
       array_d->pointer = (char *)malloc(array_d->arsize);
       memcpy(array_d->pointer, bytes, array_d->arsize);
       (*env)->ReleaseByteArrayElements(env, jbytes, bytes, 0);
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     case DTYPE_W:
     case DTYPE_WU:
@@ -1125,7 +1125,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
       array_d->pointer = (char *)malloc(array_d->arsize);
       memcpy(array_d->pointer, shorts, array_d->arsize);
       (*env)->ReleaseShortArrayElements(env, jshorts, shorts, 0);
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     case DTYPE_L:
     case DTYPE_LU:
@@ -1138,7 +1138,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
       array_d->pointer = (char *)malloc(array_d->arsize);
       memcpy(array_d->pointer, ints, array_d->arsize);
       (*env)->ReleaseIntArrayElements(env, jints, ints, 0);
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     case DTYPE_Q:
     case DTYPE_QU:
@@ -1151,7 +1151,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
       array_d->pointer = (char *)malloc(array_d->arsize);
       memcpy(array_d->pointer, longs, array_d->arsize);
       (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     case DTYPE_O:
     case DTYPE_OU:
@@ -1164,7 +1164,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
       array_d->pointer = (char *)malloc(array_d->arsize);
       memcpy(array_d->pointer, longs, array_d->arsize);
       (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     case DTYPE_FLOAT:
       datum_fid = (*env)->GetFieldID(env, cls, "datum", "[F");
@@ -1179,7 +1179,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
         CvtConvertFloat(&floats[i], DTYPE_FS, &((float *)array_d->pointer)[i],
                         array_d->dtype, 0);
       (*env)->ReleaseFloatArrayElements(env, jfloats, floats, 0);
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     case DTYPE_DOUBLE:
       datum_fid = (*env)->GetFieldID(env, cls, "datum", "[D");
@@ -1194,7 +1194,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
         CvtConvertFloat(&doubles[i], DTYPE_DOUBLE,
                         &((double *)array_d->pointer)[i], array_d->dtype, 0);
       (*env)->ReleaseDoubleArrayElements(env, jdoubles, doubles, 0);
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     case DTYPE_T:
       datum_fid = (*env)->GetFieldID(env, cls, "datum", "[Ljava/lang/String;");
@@ -1219,7 +1219,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
       }
       array_d->length = maxlen;
       array_d->arsize = array_d->length * length;
-      return completeDescr((struct descriptor *)array_d, helpDscPtr,
+      return completeDescr((mdsdsc_t *)array_d, helpDscPtr,
                            unitsDscPtr, errorDscPtr, validationDscPtr);
     default:
       printf("\nUnsupported type for CLASS_A: %d\n", dtype);
@@ -1264,7 +1264,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
       record_d->dscptrs[i] =
           ObjectToDescrip(env, (*env)->GetObjectArrayElement(env, jdescs, i));
     }
-    return completeDescr((struct descriptor *)record_d, helpDscPtr, unitsDscPtr,
+    return completeDescr((mdsdsc_t *)record_d, helpDscPtr, unitsDscPtr,
                          errorDscPtr, validationDscPtr);
   case CLASS_APD:
     descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LMDSplus/Data;");
@@ -1272,17 +1272,17 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
     ndescs_fid = (*env)->GetFieldID(env, cls, "nDescs", "I");
     ndescs = (*env)->GetIntField(env, obj, ndescs_fid);
     // ndescs = (*env)->GetArrayLength(env, jdescs);
-    apd_d = (struct descriptor_a *)malloc(sizeof(struct descriptor_a));
-    memcpy(apd_d, &template_apd, sizeof(struct descriptor_a));
+    apd_d = (mdsdsc_a_t *)malloc(sizeof(mdsdsc_a_t));
+    memcpy(apd_d, &template_apd, sizeof(mdsdsc_a_t));
     apd_d->dtype = dtype;
     apd_d->class = CLASS_APD;
-    apd_d->length = sizeof(struct descriptor *);
+    apd_d->length = sizeof(mdsdsc_t *);
     apd_d->arsize = apd_d->length * ndescs;
     apd_d->pointer = (char *)malloc(sizeof(void *) * ndescs);
     for (i = 0; i < ndescs; i++)
-      ((struct descriptor **)(apd_d->pointer))[i] =
+      ((mdsdsc_t **)(apd_d->pointer))[i] =
           ObjectToDescrip(env, (*env)->GetObjectArrayElement(env, jdescs, i));
-    return completeDescr((struct descriptor *)apd_d, helpDscPtr, unitsDscPtr,
+    return completeDescr((mdsdsc_t *)apd_d, helpDscPtr, unitsDscPtr,
                          errorDscPtr, validationDscPtr);
   default:
     printf("\nUnsupported class: %d\n", dclass);
@@ -1290,10 +1290,10 @@ static struct descriptor *ObjectToDescrip(JNIEnv *env, jobject obj)
   return 0;
 }
 
-static void FreeDescrip(struct descriptor *desc)
+static void FreeDescrip(mdsdsc_t *desc)
 {
   struct descriptor_r *record_d;
-  struct descriptor_a *array_d;
+  mdsdsc_a_t *array_d;
   int i;
 
   if (!desc)
@@ -1310,7 +1310,7 @@ static void FreeDescrip(struct descriptor *desc)
     break;
   case CLASS_A:
     if (desc->pointer)
-      free(((struct descriptor_a *)desc)->pointer);
+      free(((mdsdsc_a_t *)desc)->pointer);
     break;
   case CLASS_R:
     record_d = (struct descriptor_r *)desc;
@@ -1320,9 +1320,9 @@ static void FreeDescrip(struct descriptor *desc)
       FreeDescrip(record_d->dscptrs[i]);
     break;
   case CLASS_APD:
-    array_d = (struct descriptor_a *)desc;
+    array_d = (mdsdsc_a_t *)desc;
     for (i = 0; i < (int)array_d->arsize / array_d->length; i++)
-      FreeDescrip(((struct descriptor **)array_d->pointer)[i]);
+      FreeDescrip(((mdsdsc_t **)array_d->pointer)[i]);
     break;
   }
   free(desc);
@@ -1341,8 +1341,8 @@ JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize(JNIEnv *env,
   jclass exc;
   int status;
   char *errorMsg;
-  struct descriptor_a *arrPtr;
-  struct descriptor *dscPtr = ObjectToDescrip(env, obj);
+  mdsdsc_a_t *arrPtr;
+  mdsdsc_t *dscPtr = ObjectToDescrip(env, obj);
   jbyteArray jserialized;
   status = MdsSerializeDscOut(dscPtr, &xd);
   if (STATUS_NOT_OK)
@@ -1352,7 +1352,7 @@ JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize(JNIEnv *env,
     (*env)->ThrowNew(env, exc, errorMsg);
     return NULL;
   }
-  arrPtr = (struct descriptor_a *)xd.pointer;
+  arrPtr = (mdsdsc_a_t *)xd.pointer;
   if (arrPtr->dtype != DTYPE_B && arrPtr->dtype != DTYPE_BU)
   {
     printf("FATAL ERROR: MdsSerializeDscOut returned a wrong type");
@@ -1413,7 +1413,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile(JNIEnv *env,
   const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
   char *error_msg;
   jclass exc;
-  struct descriptor exprD = {0, DTYPE_T, CLASS_S, 0};
+  mdsdsc_t exprD = {0, DTYPE_T, CLASS_S, 0};
   jobject ris;
   jint numArgs;
 
@@ -1460,11 +1460,11 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv *env, jobject jobj,
   EMPTYXD(outXd);
   jstring ris;
   jclass exc;
-  struct descriptor *decD;
+  mdsdsc_t *decD;
   char *buf;
   char *error_msg;
   int status;
-  struct descriptor *dataD;
+  mdsdsc_t *dataD;
   void *ctx = JLONG2PTR(jctx);
 
   dataD = ObjectToDescrip(env, jobj);
@@ -1503,7 +1503,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_cloneData(JNIEnv *env,
                                                       jobject jobj)
 {
 
-  struct descriptor *descr;
+  mdsdsc_t *descr;
   jobject retObj;
   descr = ObjectToDescrip(env, jobj);
   retObj = DescripToObject(env, NULL, descr, 0, 0, 0, 0);
@@ -1528,7 +1528,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute(JNIEnv *env,
   const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
   char *error_msg;
   jclass exc;
-  struct descriptor exprD = {0, DTYPE_T, CLASS_S, 0};
+  mdsdsc_t exprD = {0, DTYPE_T, CLASS_S, 0};
   jobject ris;
   jint numArgs = (*env)->GetArrayLength(env, jargs);
 
@@ -1556,7 +1556,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute(JNIEnv *env,
     (*env)->ThrowNew(env, exc, error_msg);
     return NULL;
   }
-  status = TdiData((struct descriptor *)&outXd, &outXd MDS_END_ARG);
+  status = TdiData((mdsdsc_t *)&outXd, &outXd MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
     error_msg = (char *)MdsGetMsg(status);
@@ -1584,7 +1584,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_dataData(JNIEnv *env, jobject jobj,
   jclass exc;
   int status;
 
-  struct descriptor *descr;
+  mdsdsc_t *descr;
   descr = ObjectToDescrip(env, jobj);
   status = CTXCALLR(TdiData, descr, &xd MDS_END_ARG);
   if (STATUS_NOT_OK)
@@ -1614,7 +1614,7 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_evaluateData(JNIEnv *env,
   char *error_msg;
   jobject retObj;
   jclass exc;
-  struct descriptor *descr = ObjectToDescrip(env, jobj);
+  mdsdsc_t *descr = ObjectToDescrip(env, jobj);
   int status = CTXCALLR(TdiEvaluate, descr, &xd MDS_END_ARG);
   if (STATUS_NOT_OK)
   {
@@ -1951,7 +1951,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeTimeContext(
     JNIEnv *env, jclass cls __attribute__((unused)), jlong jctx, jobject jstart,
     jobject jend, jobject jdelta)
 {
-  struct descriptor *start, *end, *delta;
+  mdsdsc_t *start, *end, *delta;
   int status;
   void *ctx = JLONG2PTR(jctx);
   start = ObjectToDescrip(env, jstart);
@@ -2206,7 +2206,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_compile(JNIEnv *env,
   const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
   char *error_msg;
   jclass exc;
-  struct descriptor exprD = {0, DTYPE_T, CLASS_S, 0};
+  mdsdsc_t exprD = {0, DTYPE_T, CLASS_S, 0};
   jobject ris;
   jint numArgs;
 
@@ -2261,7 +2261,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_execute(JNIEnv *env,
   const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
   char *error_msg;
   jclass exc;
-  struct descriptor exprD = {0, DTYPE_T, CLASS_S, 0};
+  mdsdsc_t exprD = {0, DTYPE_T, CLASS_S, 0};
   jobject ris;
   jint numArgs;
 
@@ -2664,7 +2664,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putData(JNIEnv *env,
                                                      jint nid, jlong jctx,
                                                      jobject jdata)
 {
-  struct descriptor *dataD;
+  mdsdsc_t *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
 
@@ -2708,7 +2708,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setExtendedAttribute(
     JNIEnv *env, jclass class __attribute__((unused)), jint nid, jlong jctx,
     jstring jname, jobject jdata)
 {
-  struct descriptor *dataD;
+  mdsdsc_t *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
@@ -2733,7 +2733,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_deleteData(JNIEnv *env,
   EMPTYXD(emptyXd);
   int status;
   void *ctx = JLONG2PTR(jctx);
-  status = CTXCALLN(TreePutRecord, nid, (struct descriptor *)&emptyXd, 0);
+  status = CTXCALLN(TreePutRecord, nid, (mdsdsc_t *)&emptyXd, 0);
   if (STATUS_NOT_OK)
     throwMdsException(env, status);
 }
@@ -2752,8 +2752,8 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_doMethod(JNIEnv *env,
   const char *method;
   int status;
   void *ctx = JLONG2PTR(jctx);
-  struct descriptor nidD = {sizeof(int), DTYPE_NID, CLASS_S, 0};
-  struct descriptor methodD = {0, DTYPE_T, CLASS_S, 0};
+  mdsdsc_t nidD = {sizeof(int), DTYPE_NID, CLASS_S, 0};
+  mdsdsc_t methodD = {0, DTYPE_T, CLASS_S, 0};
   EMPTYXD(xd);
 
   method = (*env)->GetStringUTFChars(env, jmethod, 0);
@@ -2813,7 +2813,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment(
     jobject jstart, jobject jend, jobject jdim, jobject jdata,
     jint filledRows __attribute__((unused)))
 {
-  struct descriptor *startD, *endD, *dimD, *dataD;
+  mdsdsc_t *startD, *endD, *dimD, *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
 
@@ -2823,7 +2823,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment(
   dataD = ObjectToDescrip(env, jdata);
 
   status = CTXCALLN(TreeMakeSegment, nid, startD, endD, dimD,
-                    (struct descriptor_a *)dataD, -1, filledRows);
+                    (mdsdsc_a_t *)dataD, -1, filledRows);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
@@ -2842,7 +2842,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment(
     JNIEnv *env, jclass cls __attribute__((unused)), jint nid, jlong jctx,
     jobject jstart, jobject jend, jobject jdim, jobject jdata)
 {
-  struct descriptor *startD, *endD, *dimD, *dataD;
+  mdsdsc_t *startD, *endD, *dimD, *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
 
@@ -2852,7 +2852,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment(
   dataD = ObjectToDescrip(env, jdata);
 
   status = CTXCALLN(TreeBeginSegment, nid, startD, endD, dimD,
-                    (struct descriptor_a *)dataD, -1);
+                    (mdsdsc_a_t *)dataD, -1);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
@@ -2871,12 +2871,12 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putSegment(
     JNIEnv *env, jclass cls __attribute__((unused)), jint nid, jlong jctx,
     jobject jdata, jint offset)
 {
-  struct descriptor *dataD;
+  mdsdsc_t *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
 
   dataD = ObjectToDescrip(env, jdata);
-  status = CTXCALLN(TreePutSegment, nid, offset, (struct descriptor_a *)dataD);
+  status = CTXCALLN(TreePutSegment, nid, offset, (mdsdsc_a_t *)dataD);
   FreeDescrip(dataD);
   if (STATUS_NOT_OK)
     throwMdsException(env, status);
@@ -2891,7 +2891,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment(
     JNIEnv *env, jclass cls __attribute__((unused)), jint nid, jlong jctx,
     jint segmentOffset, jobject jstart, jobject jend, jobject jdim)
 {
-  struct descriptor *startD, *endD, *dimD;
+  mdsdsc_t *startD, *endD, *dimD;
   int status;
   void *ctx = JLONG2PTR(jctx);
 
@@ -2916,7 +2916,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment(
     JNIEnv *env, jclass cls __attribute__((unused)), jint nid, jlong jctx,
     jobject jdata)
 {
-  struct descriptor *dataD;
+  mdsdsc_t *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
 
@@ -2924,7 +2924,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment(
 
   //  printDecompiled(dataD);
   status = CTXCALLN(TreeBeginTimestampedSegment, nid,
-                    (struct descriptor_a *)dataD, -1);
+                    (mdsdsc_a_t *)dataD, -1);
   FreeDescrip(dataD);
   if (STATUS_NOT_OK)
     throwMdsException(env, status);
@@ -2937,24 +2937,24 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment(
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment(
     JNIEnv *env, jclass cls __attribute__((unused)), jint nid, jlong jctx,
-    jobject jdata, jlongArray jtimes)
+    jobject jdata, jlongArray jtimesArray)
 {
-  struct descriptor *dataD;
+  mdsdsc_t *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
   int numTimes;
-  int64_t *times;
+  jlong *jtimes;
 
-  numTimes = (*env)->GetArrayLength(env, jtimes);
-  times = (int64_t *)(*env)->GetLongArrayElements(env, jtimes, NULL);
+  numTimes = (*env)->GetArrayLength(env, jtimesArray);
+  jtimes = (*env)->GetLongArrayElements(env, jtimesArray, NULL);
   dataD = ObjectToDescrip(env, jdata);
 
   // printDecompiled(dataD);
 
-  status = CTXCALLN(TreeMakeTimestampedSegment, nid, times,
-                    (struct descriptor_a *)dataD, -1, numTimes);
+  status = CTXCALLN(TreeMakeTimestampedSegment, nid, (int64_t*)jtimes,
+                    (mdsdsc_a_t *)dataD, -1, numTimes);
   FreeDescrip(dataD);
-  (*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
+  (*env)->ReleaseLongArrayElements(env, jtimesArray, jtimes, JNI_ABORT);
   if (STATUS_NOT_OK)
     throwMdsException(env, status);
 }
@@ -2966,25 +2966,23 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment(
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment(
     JNIEnv *env, jclass cls __attribute__((unused)), jint nid, jlong jctx,
-    jobject jdata, jlongArray jtimes)
+    jobject jdata, jlongArray jtimesArray)
 {
-  struct descriptor *dataD;
+  mdsdsc_t *dataD;
   int status;
   void *ctx = JLONG2PTR(jctx);
-  // int numTimes;
-  int64_t *times;
 
-  (*env)->GetArrayLength(env, jtimes);
-  times = (int64_t *)(*env)->GetLongArrayElements(env, jtimes, NULL);
+  jlong *jtimes;
+  if ((*env)->GetArrayLength(env, jtimesArray) < 1)
+    throwMdsException(env, TreeBUFFEROVF);
+  jtimes = (*env)->GetLongArrayElements(env, jtimesArray, NULL);
   dataD = ObjectToDescrip(env, jdata);
 
-  //  printDecompiled(dataD);
-
-  status = CTXCALLN(TreePutTimestampedSegment, nid, times,
-                    (struct descriptor_a *)dataD);
+  status = CTXCALLN(TreePutTimestampedSegment, nid, (int64_t*)jtimes,
+                    (mdsdsc_a_t *)dataD);
 
   FreeDescrip(dataD);
-  (*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
+  (*env)->ReleaseLongArrayElements(env, jtimesArray, jtimes, JNI_ABORT);
   if (STATUS_NOT_OK)
     throwMdsException(env, status);
 }
@@ -3000,13 +2998,13 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow(
     JNIEnv *env, jclass cls __attribute__((unused)), jint nid, jlong jctx,
     jobject jrow, jlong jtime, jint size)
 {
-  struct descriptor *rowD;
+  mdsdsc_t *rowD;
   int status;
   void *ctx = JLONG2PTR(jctx);
 
   rowD = ObjectToDescrip(env, jrow);
   status = CTXCALLN(TreePutRow, nid, size, (int64_t *)&jtime,
-                    (struct descriptor_a *)rowD);
+                    (mdsdsc_a_t *)rowD);
 
   FreeDescrip(rowD);
   if (STATUS_NOT_OK)
@@ -3540,12 +3538,12 @@ JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw(JNIEnv *env,
 JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate(
     JNIEnv *env, jclass cls __attribute__((unused)), jlong time)
 {
-  struct descriptor_d dateDsc = {0, DTYPE_T, CLASS_D, 0};
+  mdsdsc_d_t dateDsc = {0, DTYPE_T, CLASS_D, 0};
   unsigned short len;
   jstring jdate;
   char *date;
 
-  LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)&time);
+  LibSysAscTim(&len, (mdsdsc_t *)&dateDsc, (int *)&time);
   date = malloc(dateDsc.length + 1);
   memcpy(date, dateDsc.pointer, dateDsc.length);
   date[dateDsc.length] = 0;
@@ -3698,17 +3696,17 @@ static int convertType(int mdsType)
   }
 }
 
-static char getDType(struct descriptor *dsc) { return convertType(dsc->dtype); }
+static char getDType(mdsdsc_t *dsc) { return convertType(dsc->dtype); }
 
-static char getNDims(struct descriptor *dsc)
+static char getNDims(mdsdsc_t *dsc)
 {
   if (dsc->class == CLASS_S)
     return 0;
 
-  return ((struct descriptor_a *)dsc)->dimct;
+  return ((mdsdsc_a_t *)dsc)->dimct;
 }
 
-static void getDims(struct descriptor *dsc, int *dims)
+static void getDims(mdsdsc_t *dsc, int *dims)
 {
   ARRAY_BOUNDS(char *, MAX_DIMS) * arrPtr;
   int i;
@@ -3720,14 +3718,14 @@ static void getDims(struct descriptor *dsc, int *dims)
     dims[i] = arrPtr->m[i];
 }
 
-static short getLength(struct descriptor *dsc) { return dsc->length; }
+static short getLength(mdsdsc_t *dsc) { return dsc->length; }
 
-static void *getPtr(struct descriptor *dsc)
+static void *getPtr(mdsdsc_t *dsc)
 {
   if (dsc->class == CLASS_S)
     return dsc->pointer;
 
-  return ((struct descriptor_a *)dsc)->pointer;
+  return ((mdsdsc_a_t *)dsc)->pointer;
 }
 
 /*
@@ -3742,14 +3740,14 @@ Java_MDSplus_Connection_get(JNIEnv *env, jobject obj __attribute__((unused)),
   const char *expr;
   jobject exc, currArg, retObj;
   int nArgs, i, status;
-  struct descriptor **dscs;
+  mdsdsc_t **dscs;
   char dtype, nDims;
   short length;
   void *ptr;
   int dims[MAX_DIMS];
   int numBytes;
   void *mem = 0;
-  struct descriptor scalarDsc = {0, 0, CLASS_S, 0};
+  mdsdsc_t scalarDsc = {0, 0, CLASS_S, 0};
   DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS, 0);
 
   expr = (*env)->GetStringUTFChars(env, jExpr, 0);
@@ -3758,7 +3756,7 @@ Java_MDSplus_Connection_get(JNIEnv *env, jobject obj __attribute__((unused)),
                    (char *)expr);
   (*env)->ReleaseStringUTFChars(env, jExpr, expr);
 
-  dscs = (struct descriptor **)malloc(nArgs * sizeof(struct descriptor *));
+  dscs = (mdsdsc_t **)malloc(nArgs * sizeof(mdsdsc_t *));
   for (i = 0; i < nArgs; i++)
   {
     currArg = (*env)->GetObjectArrayElement(env, jargs, i);
@@ -3889,7 +3887,7 @@ Java_MDSplus_Connection_get(JNIEnv *env, jobject obj __attribute__((unused)),
       return NULL;
     }
     retObj =
-        DescripToObject(env, NULL, (struct descriptor *)&arrayDsc, 0, 0, 0, 0);
+        DescripToObject(env, NULL, (mdsdsc_t *)&arrayDsc, 0, 0, 0, 0);
   }
   if (mem)
     FreeMessage(mem);
@@ -3911,7 +3909,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
   char *path, *putExpr;
   jobject exc, currArg;
   int nArgs, i, status;
-  struct descriptor **dscs;
+  mdsdsc_t **dscs;
   char dtype, nDims;
   short length;
   void *ptr;
@@ -3954,7 +3952,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
                    putExpr);
   free(putExpr);
 
-  dscs = (struct descriptor **)malloc(nArgs * sizeof(struct descriptor *));
+  dscs = (mdsdsc_t **)malloc(nArgs * sizeof(mdsdsc_t *));
   for (i = 0; i < nArgs; i++)
   {
     currArg = (*env)->GetObjectArrayElement(env, jArgs, i);
@@ -3997,7 +3995,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put(
 
 ///////////////////GetDeviceField for Netbeans Builder
 
-EXPORT struct descriptor_xd *getDeviceFields(char *deviceName)
+EXPORT mdsdsc_xd_t *getDeviceFields(char *deviceName)
 {
   int status, nid, curr_nid, i;
   char *names, *path;
@@ -4037,7 +4035,7 @@ EXPORT struct descriptor_xd *getDeviceFields(char *deviceName)
     sprintf(&names[strlen(names)], "%s ", TreeGetMinimumPath(&nid, curr_nid));
   dsc.arsize = strlen(names);
   dsc.pointer = names;
-  MdsCopyDxXd((struct descriptor *)&dsc, &xd);
+  MdsCopyDxXd((mdsdsc_t *)&dsc, &xd);
   printf("%s\n", names);
   free(names);
   status = TreeQuitTree("device_beans", -1);

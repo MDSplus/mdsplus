@@ -557,10 +557,7 @@ static void get_add_rtn_c(void *in)
   free(c->model);
   free(c->image);
 }
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
-// fc21 claims that '__cancel_routine' is clobbered
-// pthread_cleanup_push(get_add_rtn_c,(void*)&c);
+
 static inline int get_add_rtn(char const *congtype, int (**add)())
 {
   static int (*TdiExecute)() = NULL;
@@ -610,7 +607,7 @@ static inline int get_add_rtn(char const *congtype, int (**add)())
   pthread_cleanup_pop(1);
   return status;
 }
-#pragma GCC diagnostic pop
+
 int _TreeAddConglom(void *dbid, char const *path, char const *congtype,
                     int *nid)
 {

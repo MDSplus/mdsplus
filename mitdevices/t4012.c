@@ -454,7 +454,7 @@ EXPORT int t4012__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), s
   static NCI_ITM nci[] =
       { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + nid;
+  uilnames[0].value = (void *)(intptr_t)nid;
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "T4012", uilnames,
 			 XtNumber(uilnames), 0);
 }
