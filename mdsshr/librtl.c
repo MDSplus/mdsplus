@@ -924,46 +924,54 @@ EXPORT int LibResetVmZone(ZoneList **const zone)
   return MDSplusSUCCESS;
 }
 
-
-EXPORT int LibFreeVm(const uint32_t *const len, void **const vm,
-                     ZoneList **const zone)
+static VmList *ZoneList_remove_VmList(ZoneList **zone, void *vm)
 {
-  VmList *list = NULL;
-  if (zone)
+  VmList *list;
+  LOCK_ZONE(*zone);
+  VmList **prev = &(*zone)->vm;
+  for (list = (*zone)->vm; list; prev = &list->next, list = list->next)
   {
-    LOCK_ZONE(*zone);
-    VmList *prev;
-    for (prev = NULL, list = (*zone)->vm; list && (list->ptr != *vm);
-         prev = list, list = list->next)
-      ;
-    if (list)
-    {
-      if (prev)
-        prev->next = list->next;
-      else
-        (*zone)->vm = list->next;
-    }
-    UNLOCK_ZONE(*zone);
+    if (list->ptr == vm)
+      {
+        *prev = list->next;
+        break;
+      }
   }
-  if (len && *len && vm && *vm)
+  UNLOCK_ZONE(*zone);
+  return list;
+}
+
+static void ZoneList_add_VmList(ZoneList **zone, VmList *list)
+{
+  LOCK_ZONE(*zone);
+  list->next = (*zone)->vm;
+  (*zone)->vm = list;
+  UNLOCK_ZONE(*zone);
+}
+
+EXPORT int LibFreeVm(const uint32_t *len, void **vm, ZoneList **zone)
+{
+  (void)len;
+  if (vm && *vm)
+  {
     free(*vm);
-  free(list);
+    if (zone)
+    {
+      free(ZoneList_remove_VmList(zone, *vm));
+    }
+  }
   return MDSplusSUCCESS;
 }
-
-EXPORT int libfreevm_(const uint32_t *const len, void **const vm,
-                      ZoneList **const zone)
+EXPORT int libfreevm_(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibFreeVm(len, vm, zone);
 }
-EXPORT int libfreevm(const uint32_t *const len, void **const vm,
-                     ZoneList **const zone)
+EXPORT int libfreevm(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibFreeVm(len, vm, zone);
 }
 
-EXPORT int LibGetVm(const uint32_t *const len, void **const vm,
-                    ZoneList **const zone)
+EXPORT int LibGetVm(const uint32_t *len, void **vm, ZoneList **zone)
 {
   *vm = malloc(*len);
   if (*vm == NULL)
@@ -975,28 +983,18 @@ EXPORT int LibGetVm(const uint32_t *const len, void **const vm,
   {
     VmList *list = malloc(sizeof(VmList));
     list->ptr = *vm;
-    LOCK_ZONE(*zone);
-    list->next = (*zone)->vm;
-    (*zone)->vm = list;
-    UNLOCK_ZONE(*zone);
+    ZoneList_add_VmList(zone, list);
   }
   return MDSplusSUCCESS;
 }
-EXPORT int libgetvm_(const uint32_t *const len, void **const vm,
-                     ZoneList **const zone)
+EXPORT int libgetvm_(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibGetVm(len, vm, zone);
 }
-EXPORT int libgetvm(const uint32_t *const len, void **const vm,
-                    ZoneList **const zone)
+EXPORT int libgetvm(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibGetVm(len, vm, zone);
 }
-
-// int LibEstablish()
-//{
-//  return 1;
-//}
 
 #define SEC_PER_DAY (60 * 60 * 24)
 
