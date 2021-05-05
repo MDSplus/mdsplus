@@ -272,26 +272,24 @@ VOID CALLBACK ShutdownEvent(PVOID arg __attribute__((unused)),
   exit(0);
 }
 
-static int getSocketHandle(char *name)
+static inline SOCKET get_single_server_socket(char *name)
 {
   HANDLE shutdownEvent, waitHandle;
   HANDLE h;
   int ppid;
   SOCKET psock;
   char shutdownEventName[120];
+  if (name == 0 || sscanf(name, "%d:%d", &ppid, (int *)&psock) != 2)
+  {
+    fprintf(stderr, "Mdsip single connection server can only be started from "
+                    "windows service\n");
+    exit(EXIT_FAILURE);
+  }
   char *logdir = GetLogDir();
   FREE_ON_EXIT(logdir);
   char *portnam = GetPortname();
   char *logfile = malloc(strlen(logdir) + strlen(portnam) + 50);
   FREE_ON_EXIT(logfile);
-  if (name == 0 || sscanf(name, "%d:%d", &ppid, (int *)&psock) != 2)
-  {
-    fprintf(stderr, "Mdsip single connection server can only be started from "
-                    "windows service\n");
-    free(logfile);
-    free(logdir);
-    exit(EXIT_FAILURE);
-  }
   sprintf(logfile, "%s\\MDSIP_%s_%d.log", logdir, portnam, _getpid());
   freopen(logfile, "a", stdout);
   freopen(logfile, "a", stderr);
@@ -315,6 +313,11 @@ static int getSocketHandle(char *name)
   return *(int *)&h;
 }
 #else
+static inline SOCKET get_single_server_socket(char *name)
+{
+  (void)name;
+  return 0;
+}
 static void ChildSignalHandler(int num __attribute__((unused)))
 {
   sigset_t set, oldset;
@@ -460,41 +463,6 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
   return recved;
 }
 
-#ifdef _TCP
-static int io_check(Connection *c)
-{
-  SOCKET sock = getSocket(c);
-  ssize_t err = -1;
-  if (sock != INVALID_SOCKET)
-  {
-    PushSocket(sock);
-    MSG_NOSIGNAL_ALT_PUSH();
-    struct timeval timeout = {0, 0};
-    fd_set readfds;
-    FD_ZERO(&readfds);
-    FD_SET(sock, &readfds);
-    err = select(sock + 1, &readfds, NULL, NULL, &timeout);
-    switch (err)
-    {
-    case -1:
-      break; // Error
-    case 0:
-      break; // Timeout
-    default:
-    { // for select this will be 1
-      char bptr[1];
-      err = RECV(sock, bptr, 1, MSG_NOSIGNAL | MSG_PEEK);
-      err = (err == 1) ? 0 : -1;
-      break;
-    }
-    }
-    MSG_NOSIGNAL_ALT_POP();
-    PopSocket(sock);
-  }
-  return (int)err;
-}
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 //  DISCONNECT  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -596,12 +564,7 @@ static int run_server_mode(Options *options)
 {
   /// SERVER MODE  ///////////////
   /// Handle single connection ///
-#ifdef _WIN32
-  SOCKET sock = getSocketHandle(options->value);
-#else
-  SOCKET sock = 0;
-  (void)options;
-#endif
+  SOCKET sock = get_single_server_socket(options->value);
   int id;
   if (IS_NOT_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, NULL)))
     return C_ERROR;

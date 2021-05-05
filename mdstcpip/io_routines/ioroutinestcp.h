@@ -18,7 +18,7 @@ static int io_flush(Connection *c);
 /// \param s socket to set options to
 /// \param reuse set SO_REUSEADDR to be able to reuse the same address.
 ///
-static void SetSocketOptions(SOCKET s, int reuse)
+static void set_socket_options(SOCKET s, int reuse)
 {
   int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
   int one = 1;
@@ -37,6 +37,39 @@ static void SetSocketOptions(SOCKET s, int reuse)
   if (reuse)
     setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&one, sizeof(one));
   setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *)&one, sizeof(one));
+}
+
+static int io_check(Connection *c)
+{
+  SOCKET sock = getSocket(c);
+  ssize_t err = -1;
+  if (sock != INVALID_SOCKET)
+  {
+    PushSocket(sock);
+    MSG_NOSIGNAL_ALT_PUSH();
+    struct timeval timeout = {0, 0};
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sock, &readfds);
+    err = select(sock + 1, &readfds, NULL, NULL, &timeout);
+    switch (err)
+    {
+    case -1:
+      break; // Error
+    case 0:
+      break; // Timeout
+    default:
+    { // for select this will be 1
+      char bptr[1];
+      err = RECV(sock, bptr, 1, MSG_NOSIGNAL | MSG_PEEK);
+      err = (err == 1) ? 0 : -1;
+      break;
+    }
+    }
+    MSG_NOSIGNAL_ALT_POP();
+    PopSocket(sock);
+  }
+  return (int)err;
 }
 
 /* io_connect()
@@ -164,7 +197,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
     close(sock);
     return C_ERROR;
   }
-  SetSocketOptions(sock, 0);
+  set_socket_options(sock, 0);
   ConnectionSetInfo(c, PROT, sock, NULL, 0);
   return C_OK;
 }
@@ -298,7 +331,7 @@ static int io_listen(int argc, char **argv)
   FD_ZERO(&fdactive);
   FD_SET(ssock, &fdactive);
   // OPTIONS //
-  SetSocketOptions(ssock, 1);
+  set_socket_options(ssock, 1);
   // BIND //
   unsigned short port = getPort(GetPortname());
   struct SOCKADDR_IN sin;
@@ -340,7 +373,7 @@ static int io_listen(int argc, char **argv)
         if (sock == INVALID_SOCKET)
           print_socket_error("Error accepting socket");
         else
-          SetSocketOptions(sock, 0);
+          set_socket_options(sock, 0);
         if (IS_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)))
         {
           // add client to client list //
