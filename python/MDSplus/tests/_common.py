@@ -318,7 +318,7 @@ class MdsIp(object):
             return
         raise Exception("FAILED cleaning up mdsips: %s" % (", ".join(procs),))
 
-    def _start_mdsip(self, server, port, logname, protocol='TCP'):
+    def _start_mdsip(self, server, port, logname, protocol='TCPV6'):
         if port > 0:
             from subprocess import Popen, STDOUT
             logfile = '%s-%s%d.log' % (self.module, logname, self.index)
