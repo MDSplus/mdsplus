@@ -172,7 +172,7 @@ void SaveItem::save() {
       }
       // printf("STREAM %d %s %d %f %f\n", shot, streamName, actSamples,
       // times[0], samples[0]);
-      EventStream::send(shot, streamName, actSamples, times, samples, false);
+      EventStream::send(shot, streamName, false, actSamples, times, 1, &actSamples, samples);
       // EventStream::send(shot, streamName, (float)(period * counter +
       // timeIdx0), sample);
       delete[] samples;
