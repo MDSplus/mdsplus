@@ -23,13 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
 #include <mdsshr.h>
 #include <mdsdescrip.h>
 #include <status.h>
-#include <ipdesc.h>
+
+#include "../mdsip_connections.h"
+
 static int __test_passed = 0, __test_failed = 0;
 
 #define TEST_FATAL(cond, ...)       \
@@ -37,10 +42,11 @@ static int __test_passed = 0, __test_failed = 0;
   {                                 \
     if (cond)                       \
     {                               \
-      fprintf(stderr, __VA_ARGS__); \
-      return 1;                     \
+      fprintf(stderr, "FATAL: " __VA_ARGS__); \
+      exit(1);                      \
     }                               \
   } while (0)
+
 #define TEST_FAIL(...)                       \
   do                                         \
   {                                          \
@@ -53,7 +59,7 @@ static int __test_passed = 0, __test_failed = 0;
     __test_passed++;   \
   } while (0)
 
-static void TEST_TOTAL()
+static inline void TEST_TOTAL()
 {
   if (__test_failed)
   {
@@ -129,17 +135,89 @@ static void test_descr(int c, char *expr, int argn, mdsdsc_t **argv, class_t cls
     test_descr(c, expr, 0, NULL, CLASS_S, DTYPE_##DT, sizeof(v), &v); \
   } while (0)
 
-int main(int argc, char **argv)
+void testio(char server[])
 {
-  (void)test_value;
-  (void)test_descr;
-  atexit(TEST_TOTAL);
-  int c = ConnectToMds((argc > 1) ? argv[1] : "thread://0");
+  fprintf(stdout, "Testing io with '%s'\n", server);
+  int c = ConnectToMds(server);
   TEST_DESCR("-1", L, int, -1);
   TEST_FATAL(c == -1, "MdsConnection failed.\n");
   TEST_VALUE("-1", L, int, -1);
   TEST_VALUE("0xffffffffLU", LU, uint32_t, -1);
   TEST_VALUE("-1W", W, short, -1);
   TEST_VALUE("-1B", B, char, -1);
+}
+
+typedef struct
+{
+  pthread_t thread;
+  IoRoutines *io;
+  char **argv;
+  int argc;
+} mdsip_t;
+
+
+void mdsip_main(void *arg)
+{
+  mdsip_t *param = (mdsip_t *)arg;
+  pthread_exit((void *)(intptr_t)param->io->listen(param->argc, param->argv));
+}
+
+#define MODE_SS 0b00
+#define MODE_MS 0b10
+#define MODE_SM 0b01
+#define MODE_MM 0b11
+
+int start_mdsip(mdsip_t *mdsip, char *prot, int mode, char server[32])
+{
+  char *hostsfile = "mdsip.hosts";
+  FILE *f = fopen(hostsfile, "w+");
+  fprintf(f, (mode & MODE_MS) ? "multi|SELF\n*" : "*|SELF");
+  fclose(f);
+  char *argv[] = {
+      "mdsip",
+      "-P",
+      prot,
+      (mode & MODE_SM) ? "-s" : "-m",
+      "-p",
+      "7357",
+      "-h",
+      hostsfile,
+  };
+  int argc = sizeof(argv) / sizeof(char *);
+  ParseStdArgs(argc, argv, &mdsip->argc, &mdsip->argv);
+  mdsip->io = LoadIo(GetProtocol());
+  TEST_FATAL(!mdsip->io || !mdsip->io->listen, "IoRoutine for protocol '%s' has no listen.", prot);
+  sprintf(server, "localhost:7357");
+  return pthread_create(&mdsip->thread, NULL, (void *)mdsip_main, (void *)mdsip);
+}
+
+int main(int argc, char **argv)
+{
+  (void)test_value;
+  (void)test_descr;
+  atexit(TEST_TOTAL);
+  if (argc > 1)
+  {
+    int i;
+    for (i = 1; i < argc; i++)
+    {
+      testio(argv[i]);
+    }
+  }
+  else
+  {
+    testio("thread://0");
+    testio("local://0");
+    char server[32] = "";
+    mdsip_t mdsip = {0, NULL, NULL, 0};
+    if (!start_mdsip(&mdsip, "TCP", MODE_SS, server))
+    {
+      sleep(1);
+      testio(server);
+      pthread_cancel(mdsip.thread);
+      pthread_join(mdsip.thread, NULL);
+    }
+    free(mdsip.argv);
+  }
   return 0;
 }
