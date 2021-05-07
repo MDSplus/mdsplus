@@ -463,6 +463,15 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
   }
   return recved;
 }
+static inline void Client_cancel(Client *c)
+{
+#ifdef _WIN32
+  shutdown(c->sock, SHUT_RDWR);
+  closesocket(c->sock);
+#else
+  pthread_cancel(*c->thread);
+#endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  DISCONNECT  ////////////////////////////////////////////////////////////////
@@ -470,7 +479,7 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
 static void destroyClient(Client *c)
 {
   MDSDBG("destroyClient");
-  Connection* con = c->connection;
+  Connection *con = c->connection;
   if (con)
   {
     con->io = NULL;
@@ -480,6 +489,7 @@ static void destroyClient(Client *c)
   {
     if (!pthread_equal(*c->thread, pthread_self()))
     {
+      Client_cancel(c);
       pthread_join(*c->thread, NULL);
     }
     else
@@ -504,7 +514,9 @@ static inline void destroyClientList()
   for (; ClientList; ClientList = ClientList->next)
   {
     if (ClientList->thread)
-      pthread_cancel(*ClientList->thread);
+    {
+      Client_cancel(ClientList);
+    }
   }
   pthread_mutex_unlock(&ClientListLock);
   while (cl)

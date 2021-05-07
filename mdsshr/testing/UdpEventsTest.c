@@ -60,8 +60,7 @@ void eventAstFirst(void *arg, int len __attribute__((unused)),
 void eventAstSecond(void *arg, int len __attribute__((unused)),
                     char *buf __attribute__((unused)))
 {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+  printf("received event in thread %ld, name=%s\n", CURRENT_THREAD_ID(), (char *)arg);
   pthread_mutex_lock(&second_lock);
   second = 1;
   pthread_mutex_unlock(&second_lock);

@@ -22,20 +22,21 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <inttypes.h>
-#include <STATICdef.h>
-#include <ipdesc.h>
 #include <mdsplus/mdsconfig.h>
+#include <string.h>
+
+#include <inttypes.h>
+#include <ipdesc.h>
+
 #ifdef _WIN32
 #define BlockSig(arg)
 #define UnBlockSig(arg)
 #else
 #include <signal.h>
-#include <string.h>
 #ifndef NULL
 #define NULL (void *)0
 #endif
-STATIC_ROUTINE int BlockSig(int sig_number)
+static int BlockSig(int sig_number)
 {
   sigset_t newsigset;
 #if defined(sun)
@@ -56,7 +57,7 @@ STATIC_ROUTINE int BlockSig(int sig_number)
   return sigprocmask(SIG_BLOCK, &newsigset, NULL);
 }
 
-STATIC_ROUTINE int UnBlockSig(int sig_number)
+static int UnBlockSig(int sig_number)
 {
   sigset_t newsigset;
   sigemptyset(&newsigset);
@@ -69,7 +70,7 @@ STATIC_ROUTINE int UnBlockSig(int sig_number)
 // Start of Mac Changes
 static short bGUSIInit = 0;
 
-STATIC_ROUTINE void BlockSig(int)
+static void BlockSig(int)
 {
   if (!bGUSIInit)
   {
@@ -79,7 +80,7 @@ STATIC_ROUTINE void BlockSig(int)
   }
 }
 
-STATIC_ROUTINE void UnBlockSig(int) {}
+static void UnBlockSig(int) {}
 
 void main() {}
 

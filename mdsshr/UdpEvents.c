@@ -211,7 +211,7 @@ int MDSUdpEventAstMask(char const *eventName, void (*astadr)(void *, int, char *
   serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   // Allow multiple connections
-  if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)))
+  if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one)))
   {
     print_socket_error("Cannot set REUSEADDR option");
     return MDSplusERROR;

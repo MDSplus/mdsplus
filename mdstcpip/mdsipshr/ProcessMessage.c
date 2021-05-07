@@ -52,6 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr.h>
 #include <treeshr.h>
+#include <socket_port.h>
 
 #include "../tdishr/tdithreadstatic.h"
 #include "../treeshr/treeshrp.h"

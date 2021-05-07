@@ -5,10 +5,12 @@
 #undef _WIN32_WINNT
 #endif
 #define _WIN32_WINNT _WIN32_WINNT_WIN8 // Windows 8.0
+#include <stdio.h>
 #include <io.h>
 #include <process.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include "pthread_port.h"
 typedef int socklen_t;
 #define FIONREAD_TYPE u_long
 #define snprintf _snprintf

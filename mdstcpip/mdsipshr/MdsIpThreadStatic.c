@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <status.h>
 #include <strroutines.h>
+#include <socket_port.h>
 
 #include "../mdsshr/version.h"
 #include "mdsipthreadstatic.h"

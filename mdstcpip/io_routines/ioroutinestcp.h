@@ -220,10 +220,11 @@ static int io_flush(Connection *c)
     fd_set readfds, writefds;
     FD_ZERO(&readfds);
     FD_SET(sock, &readfds);
+    // why write? is this how it detects a disconnection?
     FD_ZERO(&writefds);
     FD_SET(sock, &writefds);
     MSG_NOSIGNAL_ALT_PUSH();
-    while (((((err = select(sock + 1, &readfds, &writefds, 0, &timout)) > 0) &&
+    while (((((err = select(sock + 1, &readfds, NULL, NULL, &timout)) > 0) &&
              FD_ISSET(sock, &readfds)) ||
             (err == -1 && errno == EINTR)) &&
            tries < 10)

@@ -29,9 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#include <pthread_port.h>
-
 #include "../mdsip_connections.h"
+
 
 static void print_help(char *option)
 {
@@ -47,9 +46,9 @@ static void print_help(char *option)
       "[-h hostfile] [-c[level]] [-p port] [protocol-specific-options]\n\n"
       "      -?, --help         This help message\n"
       "      -P protocol        Specifies server protocol, defaults to tcp\n"
-      "        --protocol=protocal-name\n"
+      "          --protocol=protocal-name\n"
       "      -p port|service    Specifies port number or tcp service name\n"
-      "        --port=port|service\n"
+      "          --port=port|service\n"
       "      -m, --multi        Use multi mode\n"
       "                         Accepts multiple connections each with own "
       "context.\n"
@@ -69,11 +68,11 @@ static void print_help(char *option)
       "/etc/mdsip.hosts"
 #endif
       ".\n"
-      "        --hostfile=hostfile\n"
+      "          --hostfile=hostfile\n"
       "      -c[<level>]        Specify maximum zlip compression level\n"
       "                         0: none or 1-9: fastest/least to slowest/most\n"
       "                         defaults to 9 if present and 0 if absent\n"
-      "        --compression[=<level>]\n\n");
+      "          --compression[=<level>]\n\n");
   exit(option ? 1 : 0);
 }
 
@@ -83,7 +82,7 @@ static void print_help(char *option)
 void ParseCommand(int argc, char **argv, Options options[], int more,
                   int *rem_argc, char ***rem_argv)
 {
-  INIT_AS_AND_FREE_ON_EXIT(char **, extra_argv, malloc(argc * sizeof(char *)));
+  char **extra_argv = malloc(argc * sizeof(char *));
   int i;
   int extra_argc = 1;
   extra_argv[0] = argv[0];
@@ -192,7 +191,6 @@ void ParseCommand(int argc, char **argv, Options options[], int more,
   }
   else
     free(extra_argv);
-  FREE_CANCEL();
 }
 
 ///

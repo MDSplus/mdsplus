@@ -22,12 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <libroutines.h>
 #include <status.h>
 #include <stdlib.h>
 
-#include <pthread_port.h>
+#include <libroutines.h>
+
 #include "../mdsip_connections.h"
+#include <pthread_port.h>
 
 /// returns true if message cleanup is handled
 extern int ProcessMessage(Connection *, Message *);

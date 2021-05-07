@@ -35,7 +35,8 @@
 #define MDSERR(...) __MDSMSG(MSG_ERROR, __VA_ARGS__)
 
 #ifdef _WIN32
-#define CURRENT_THREAD_ID() GetCurrentThreadId()
+#include <processthreadsapi.h>
+#define CURRENT_THREAD_ID() (long)GetCurrentThreadId()
 #else
 #include <sys/syscall.h>
 #define CURRENT_THREAD_ID() syscall(__NR_gettid)

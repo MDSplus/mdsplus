@@ -111,7 +111,7 @@ void test_handleMessage()
   serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   // Allow multiple connections
-  TEST0(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
+  TEST0(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one)));
 
   // bind
   TEST0(bind(udpSocket, (void*)&serverAddr, sizeof(serverAddr)));

@@ -7,10 +7,10 @@
 #include <sysexits.h>
 #endif
 
+#include <socket_port.h>
 #include <ipdesc.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <socket_port.h>
 #include <status.h>
 #define MDSIP_MAX_ARGS 256
 #define MDSIP_MAX_COMPRESS 9
