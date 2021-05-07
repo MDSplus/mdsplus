@@ -17,6 +17,7 @@ typedef int socklen_t;
 #define getpid _getpid
 #define SHUT_RDWR 2
 #else
+typedef struct sockaddr SOCKADDR;
 typedef int SOCKET;
 #define INVALID_SOCKET -1
 #define FIONREAD_TYPE int

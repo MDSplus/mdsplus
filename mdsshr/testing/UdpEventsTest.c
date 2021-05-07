@@ -22,22 +22,17 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsshr.h>
-#include <pthread.h>
+#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 #ifdef _WIN32
-#include <windows.h>
 #define syscall(__NR_gettid) GetCurrentThreadId()
 #else
 #include <sys/syscall.h>
 #endif
-#include <time.h>
 
-#include <stdarg.h>
-
+#include <mdsshr.h>
 #include "testing.h"
 
 static pthread_mutex_t astCount_lock;
