@@ -77,7 +77,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor
 #include <tdishr_messages.h>
 #include "servershrp.h"
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 extern int TdiCompletionOf();
 extern int TdiExecute();
@@ -355,7 +355,7 @@ static int check_actions_done(const int s, const int e)
   ActionInfo *actions = table->actions;
   FIND_NEXT_ACTION(s, e, actions[i].dispatched && !actions[i].done, noa);
   FIND_NEXT_ACTION_END(e, noa);
-  DBG("%d -> %d==%d\n", s, i, e);
+  MDSDBG("%d -> %d==%d\n", s, i, e);
   return i >= e;
 }
 
@@ -406,7 +406,7 @@ static void wait_for_actions(int all, int first_g, int last_g,
     clock_gettime(CLOCK_REALTIME, &tp);
     if (c_status == C_OK)
     {
-      DBG("%d, %d\n", g, c);
+      MDSDBG("%d, %d\n", g, c);
 #ifdef DEBUG
       PRINT_ACTIONS;
 #endif
@@ -607,7 +607,7 @@ static void dispatch(int i)
     char server[33];
     ActionInfo *actions = table->actions;
     WRLOCK_ACTION(i, d);
-    DBG(ACTION_PRI "\n", ACTION_VAR(i));
+    MDSDBG(ACTION_PRI "\n", ACTION_VAR(i));
     actions[i].done = 0;
     actions[i].doing = 0;
     actions[i].dispatched = 0;
@@ -744,7 +744,7 @@ static inline void action_done_table_locked(int idx)
 
 static void action_done_do(intptr_t idx)
 {
-  DBG("Action(%d)\n", (int)idx);
+  MDSDBG("Action(%d)\n", (int)idx);
   if (idx >= 0)
   {
     RDLOCK_TABLE;
@@ -822,7 +822,7 @@ static Condition ActionDoneRunningC = CONDITION_INITIALIZER;
 
 static void action_done_exit()
 {
-  DBG("\n");
+  MDSDBG("\n");
   CONDITION_RESET(&ActionDoneRunningC);
 }
 

@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #endif
 #include <sys/time.h>
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 typedef struct _MonitorList
 {
@@ -187,7 +187,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     }
     else
     {
-      DBG("No Client Address.\n");
+      MDSDBG("No Client Address.\n");
       status = DoSrvAction((SrvJob *)&job);
     }
     break;
@@ -207,7 +207,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     }
     else
     {
-      DBG("No Client Address.\n");
+      MDSDBG("No Client Address.\n");
       status = DoSrvClose((SrvJob *)&job);
     }
     break;
@@ -229,7 +229,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     }
     else
     {
-      DBG("No Client Address.\n");
+      MDSDBG("No Client Address.\n");
       status = DoSrvCreatePulse((SrvJob *)&job);
     }
     break;
@@ -257,7 +257,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     }
     else
     {
-      DBG("No Client Address.\n");
+      MDSDBG("No Client Address.\n");
       status = DoSrvCommand((SrvJob *)&job);
     }
     break;
@@ -285,7 +285,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     }
     else
     {
-      DBG("No Client Address.\n");
+      MDSDBG("No Client Address.\n");
       status = MDSplusERROR;
     }
     break;
@@ -318,7 +318,7 @@ static void AbortJob(SrvJob *job)
 // main
 static int QJob(SrvJob *job)
 {
-  DBG("Queued job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+  MDSDBG("Queued job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
   SrvJob *qjob = (SrvJob *)memcpy(malloc(job->h.length), job, job->h.length);
   QUEUE_LOCK;
   if (JobQueueNext)
@@ -731,7 +731,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
   CONDITION_SET(&WorkerRunning);
   while ((job = NextJob(1)))
   {
-    DBG("Starting job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+    MDSDBG("Starting job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
     if (STATIC_Debug)
       fprintf(stderr, "job started.\n");
     char *save_text;
@@ -765,7 +765,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
       break;
     }
     ProgLoc = 7;
-    DBG("Finished job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+    MDSDBG("Finished job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
     SetCurrentJob(NULL);
     ProgLoc = 8;
     FreeJob(job);
@@ -884,7 +884,7 @@ static int send_all(SOCKET sock, char *msg, int len)
 
 static int send_reply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
-  DBG("Job #%d for " IPADDRPRI ":%d : %d\n", job->h.jobid,
+  MDSDBG("Job #%d for " IPADDRPRI ":%d : %d\n", job->h.jobid,
       IPADDRVAR(&job->h.addr), job->h.port, replyType);
   int status;
   status = MDSplusERROR;

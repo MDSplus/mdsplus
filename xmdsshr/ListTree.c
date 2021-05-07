@@ -63,7 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 #define folder_width 16
 #define folder_height 12
@@ -563,7 +563,7 @@ static void InitializeGeometry(ListTreeWidget w)
     w->list.preferredHeight = XtHeight(w) - 2 * Prim_ShadowThickness(w) -
                               2 * Prim_HighlightThickness(w);
   }
-  DBG("prefWidth=%d prefHeight=%d\n", w->list.preferredWidth,
+  MDSDBG("prefWidth=%d prefHeight=%d\n", w->list.preferredWidth,
       w->list.preferredHeight);
 }
 
@@ -710,10 +710,10 @@ static void SetScrollbars(ListTreeWidget w)
       top = w->list.topItemPos;
       bot = w->list.itemCount;
       size = w->list.visibleCount;
-      DBG("BEFORE: top=%d bot=%d size=%d ", top, bot, size);
+      MDSDBG("BEFORE: top=%d bot=%d size=%d ", top, bot, size);
       if (top + size > bot)
         bot = top + size;
-      DBG("  AFTER: bot=%d\n", bot);
+      MDSDBG("  AFTER: bot=%d\n", bot);
 
       XtVaSetValues(w->list.vsb, XmNvalue, top, XmNsliderSize, size,
                     XmNpageIncrement, w->list.visibleCount, XmNmaximum, bot,
@@ -756,7 +756,7 @@ static void SetScrollbars(ListTreeWidget w)
     }
   }
 
-  DBG("item=%d visible=%d\n", w->list.itemCount, w->list.visibleCount);
+  MDSDBG("item=%d visible=%d\n", w->list.itemCount, w->list.visibleCount);
 }
 
 static void VSBCallback(Widget scrollbar, XtPointer client_data,
@@ -767,15 +767,15 @@ static void VSBCallback(Widget scrollbar, XtPointer client_data,
 
   w->list.topItemPos = cbs->value;
 
-  DBG("topItemPos=%d\n", w->list.topItemPos);
+  MDSDBG("topItemPos=%d\n", w->list.topItemPos);
 #if 0
-  DBG( "VSBCallback: cbs->reason=%d ", cbs->reason);
+  MDSDBG( "VSBCallback: cbs->reason=%d ", cbs->reason);
   if (cbs->reason == XmCR_INCREMENT) {
-    DBG( "increment\n");
+    MDSDBG( "increment\n");
   } else if (cbs->reason == XmCR_DECREMENT) {
-    DBG( "decrement\n");
+    MDSDBG( "decrement\n");
   } else if (cbs->reason == XmCR_VALUE_CHANGED) {
-    DBG( "value_changed\n");
+    MDSDBG( "value_changed\n");
     SetScrollbars(w);
   }
 #else
@@ -797,7 +797,7 @@ static void HSBCallback(Widget scrollbar, XtPointer client_data,
   w->list.hsbPos = cbs->value;
   HSB2X(w);
 
-  DBG("XOffset=%d prefWidth=%d viewWidth=%d\n", w->list.XOffset,
+  MDSDBG("XOffset=%d prefWidth=%d viewWidth=%d\n", w->list.XOffset,
       w->list.preferredWidth, w->list.viewWidth);
   if (w->list.XOffset != w->list.lastXOffset)
   {
@@ -824,7 +824,7 @@ static XtGeometryResult QueryGeometry(ListTreeWidget w,
   answer->height = w->list.preferredHeight + 2 * Prim_ShadowThickness(w) +
                    2 * Prim_HighlightThickness(w);
 
-  DBG("w=%d h=%d\n", answer->width, answer->height);
+  MDSDBG("w=%d h=%d\n", answer->width, answer->height);
 
   if (proposed->width >= answer->width && proposed->height >= answer->height)
     return XtGeometryYes;
@@ -1223,7 +1223,7 @@ static void extend_select(Widget aw, XEvent *event, String *params,
       {
         if (item)
         {
-          DBG("Highlighting y=%d item=%s\n", y, item->text);
+          MDSDBG("Highlighting y=%d item=%s\n", y, item->text);
           HighlightItem(w, item, True, True);
           y += item->height + w->list.VSpacing;
         }
@@ -1236,7 +1236,7 @@ static void extend_select(Widget aw, XEvent *event, String *params,
       {
         if (item)
         {
-          DBG("Highlighting y=%d item=%s\n", y, item->text);
+          MDSDBG("Highlighting y=%d item=%s\n", y, item->text);
           HighlightItem(w, item, True, True);
           y -= item->height + w->list.VSpacing;
         }
@@ -1290,7 +1290,7 @@ static void focus_in(Widget aw, XEvent *event, String *params,
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
-  DBG("focus_in");
+  MDSDBG("focus_in");
 
   if (!w->list.HasFocus)
   {
@@ -1306,7 +1306,7 @@ static void focus_out(Widget aw, XEvent *event, String *params,
 {
   ListTreeWidget w = (ListTreeWidget)aw;
 
-  DBG("focus_out");
+  MDSDBG("focus_out");
 
   if (w->list.HasFocus)
   {
@@ -1348,7 +1348,7 @@ XEvent *event;
 String *params;
 Cardinal *num_params;
 {
-  DBG("keypress\n");
+  MDSDBG("keypress\n");
 }
 
 /* ListTree private drawing functions ------------------------------------- */
@@ -1590,14 +1590,14 @@ static void DrawVertical(ListTreeWidget w, ListTreeItem *item)
       else
         yroot = item->parent->y + item->parent->height;
 
-      DBG("parent=%s drawing x=%d y=%d\n", item->parent->text, xroot, yroot);
+      MDSDBG("parent=%s drawing x=%d y=%d\n", item->parent->text, xroot, yroot);
       XDrawLine(XtDisplay(w), XtWindow(w), w->list.drawGC,
                 xroot + w->list.XOffset, yroot, xroot + w->list.XOffset,
                 w->list.exposeBot);
     }
     else
     {
-      DBG("parent=%s  NOT DRAWING\n", item->parent->text);
+      MDSDBG("parent=%s  NOT DRAWING\n", item->parent->text);
     }
 
     item = item->parent;
@@ -1633,7 +1633,7 @@ static void Draw(ListTreeWidget w, int yevent, int hevent)
 
   DrawChildren(w, item, &lastdrawn, y, xbranch, ybranch);
 
-  DBG("lastdrawn=%s\n", lastdrawn->text);
+  MDSDBG("lastdrawn=%s\n", lastdrawn->text);
   w->list.bottomItemPos = lastdrawn->count;
 
   DrawVertical(w, lastdrawn);
@@ -1903,7 +1903,7 @@ static int SearchChildren(ListTreeWidget w, ListTreeItem *item,
 {
   while (item)
   {
-    DBG("searching y=%d item=%s\n", y, item->text);
+    MDSDBG("searching y=%d item=%s\n", y, item->text);
     if (findy >= y && findy <= y + item->height + w->list.VSpacing)
     {
       *finditem = item;
@@ -1977,7 +1977,7 @@ Boolean *found;
 
   while (item)
   {
-    /*              DBG("Checking y=%d  item=%s\n",y,item->text); */
+    /*              MDSDBG("Checking y=%d  item=%s\n",y,item->text); */
     if (item == finditem)
     {
       *found = True;

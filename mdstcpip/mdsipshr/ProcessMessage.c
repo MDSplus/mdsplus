@@ -59,7 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../mdsip_connections.h"
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 extern int TdiRestoreContext(void **);
 extern int TdiSaveContext(void **);
@@ -786,7 +786,7 @@ static int standard_command(Connection *connection, Message *message)
 {
   if (connection->message_id != message->h.message_id)
   {
-    DBG("ProcessMessage: %d NewM %3d (%2d/%2d) : '%.*s'\n",
+    MDSDBG("ProcessMessage: %d NewM %3d (%2d/%2d) : '%.*s'\n",
         connection->id, message->h.message_id, message->h.descriptor_idx, message->h.nargs,
         message->h.length, message->bytes);
     FreeDescriptors(connection);
@@ -808,7 +808,7 @@ static int standard_command(Connection *connection, Message *message)
   {
     MdsFreeDescriptor(d);
     mdsdsc_xd_t xd = MDSDSC_XD_INITIALIZER;
-    DBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial\n",
+    MDSDBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial\n",
         connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
     status = MdsSerializeDscIn(message->bytes, &xd);
     connection->descrip[message->h.descriptor_idx] = d = xd.pointer;
@@ -972,7 +972,7 @@ static int standard_command(Connection *connection, Message *message)
         d->dtype = DTYPE_FTC;
         break;
       }
-      DBG("ProcessMessage: %d NewA %3d (%2d/%2d) : simple\n",
+      MDSDBG("ProcessMessage: %d NewA %3d (%2d/%2d) : simple\n",
           connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
     }
     else
@@ -985,7 +985,7 @@ static int standard_command(Connection *connection, Message *message)
     // CALL EXECUTE MESSAGE //
     if (message->h.descriptor_idx == (message->h.nargs - 1))
     {
-      DBG("ProcessMessage: %d Call %3d (%2d/%2d)\n",
+      MDSDBG("ProcessMessage: %d Call %3d (%2d/%2d)\n",
           connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
       int freed_message = execute_message(connection, message);
       UnlockConnection(connection);

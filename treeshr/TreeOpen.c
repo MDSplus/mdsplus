@@ -68,7 +68,7 @@ inline static char *strndup(const char *src, size_t n)
 #endif
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 int treeshr_errno = 0;
 extern int MDSEventCan();
@@ -644,7 +644,7 @@ EXPORT int _TreeNewDbid(void **dblist)
   PINO_DATABASE *db = (PINO_DATABASE *)calloc(1, sizeof(PINO_DATABASE));
   if (db)
   {
-    DBG("Created DB %" PRIxPTR "\n", (uintptr_t)db);
+    MDSDBG("Created DB %" PRIxPTR "\n", (uintptr_t)db);
     db->timecontext.start.dtype = DTYPE_DSC;
     db->timecontext.start.class = CLASS_XD;
     db->timecontext.end.dtype = DTYPE_DSC;
@@ -1460,7 +1460,7 @@ void TreeFreeDbid(void *dbid)
 {
   if (dbid)
   {
-    DBG("Destroyed DB %" PRIxPTR "\n", (uintptr_t)dbid);
+    MDSDBG("Destroyed DB %" PRIxPTR "\n", (uintptr_t)dbid);
     PINO_DATABASE *db = (PINO_DATABASE *)dbid;
     TreeFreeDbid(db->next);
     CloseTopTree(db, 1);

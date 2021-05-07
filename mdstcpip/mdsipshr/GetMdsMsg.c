@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <unistd.h>
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
                         int to_msec)
@@ -42,7 +42,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
   if (!c || !c->io)
     return MDSplusERROR;
   int id = c->id;
-  DBG("Awaiting %u bytes\n", (uint32_t)bytes_to_recv);
+  MDSDBG("Awaiting %u bytes\n", (uint32_t)bytes_to_recv);
   while (bytes_to_recv > 0)
   {
     ssize_t bytes_recv;
@@ -57,7 +57,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
       bptr += bytes_recv;
       continue;
     } // only exception from here on
-    DBG("Exception %d\n", errno);
+    MDSDBG("Exception %d\n", errno);
     if (errno == ETIMEDOUT)
       return TdiTIMEOUT;
     if (bytes_recv == 0 && to_msec >= 0)
@@ -73,7 +73,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
     }
     return SsINTERNAL;
   }
-  DBG("Got all bytes\n");
+  MDSDBG("Got all bytes\n");
   return MDSplusSUCCESS;
 }
 
@@ -92,7 +92,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
   {
     if (Endian(header.client_type) != Endian(ClientType()))
       FlipHeader(&header);
-    DBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
+    MDSDBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
         "descriptor_idx = %d, message_id = %d, dtype = %d, "
         "client_type = %d, header.ndims = %d)\n",
         header.msglen, header.status, header.length, header.nargs,

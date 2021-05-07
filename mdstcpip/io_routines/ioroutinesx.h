@@ -3,7 +3,7 @@
 
 #include <pthread_port.h>
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
                        int nowait);
@@ -27,7 +27,7 @@ static IoRoutines io_routines = {
 #include <mdsshr.h>
 #include <signal.h>
 #include <inttypes.h>
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 // Connected client definition for client list
 
@@ -469,7 +469,7 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
 ////////////////////////////////////////////////////////////////////////////////
 static void destroyClient(Client *c)
 {
-  DBG("destroyClient");
+  MDSDBG("destroyClient");
   Connection* con = c->connection;
   if (con)
   {

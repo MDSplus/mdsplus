@@ -65,7 +65,7 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 #include <treeshr.h>
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 extern void **TreeCtx();
 
@@ -87,7 +87,7 @@ static inline int TreeDeleteTreeFilesOne(char *tree, int shot, char *treepath)
       status = MDS_IO_OPEN_ONE(treepath, tree, shot, i + TREE_TREEFILE_TYPE,
                                0, 0, &tmp[i], NULL, &src[i]);
       if (STATUS_OK && tmp[i])
-        DBG("%s -x\n", tmp[i]);
+        MDSDBG("%s -x\n", tmp[i]);
     }
     else
       src[i] = -1;

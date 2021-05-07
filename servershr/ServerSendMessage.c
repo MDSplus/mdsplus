@@ -76,7 +76,7 @@ int ServerSendMessage();
 #endif
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 extern short ArgLen();
 
@@ -277,7 +277,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
 static inline void remove_job(Job *j_i)
 {
   // only call this when cond is NULL
-  DBG(JOB_PRI "\n", JOB_VAR(j_i));
+  MDSDBG(JOB_PRI "\n", JOB_VAR(j_i));
   LOCK_JOBS;
   Job *j, *p;
   for (j = Jobs, p = NULL; j; p = j, j = j->next)
@@ -320,7 +320,7 @@ static void do_callback_done(Job *j, int status, int removeJob)
   }
   else if (removeJob && !is_mon)
   {
-    DBG(JOB_PRI "async done\n", JOB_VAR(j));
+    MDSDBG(JOB_PRI "async done\n", JOB_VAR(j));
     remove_job(j);
   }
   MUTEX_LOCK_POP(&job_conds);
@@ -344,7 +344,7 @@ static Job *pop_job_by_jobid(int jobid)
   {
     if (j->jobid == jobid)
     {
-      DBG(JOB_PRI "\n", JOB_VAR(j));
+      MDSDBG(JOB_PRI "\n", JOB_VAR(j));
       *n = j->next;
       break;
     }
@@ -362,7 +362,7 @@ static Job *pop_job_by_conid(int conid)
   {
     if (j->conid == conid)
     {
-      DBG(JOB_PRI "\n", JOB_VAR(j));
+      MDSDBG(JOB_PRI "\n", JOB_VAR(j));
       *n = j->next;
       break;
     }
@@ -405,14 +405,14 @@ static inline int Client_get_conid(Client *client, fd_set *fdactive)
 
 static void Client_remove(Client *c, fd_set *fdactive)
 {
-  DBG(CLIENT_PRI " removed", CLIENT_VAR(c));
+  MDSDBG(CLIENT_PRI " removed", CLIENT_VAR(c));
   int conid = Client_get_conid(c, fdactive);
   for (;;)
   {
     Job *j = pop_job_by_conid(conid);
     if (j)
     {
-      DBG(JOB_PRI " done\n", JOB_VAR(j));
+      MDSDBG(JOB_PRI " done\n", JOB_VAR(j));
       do_callback_done(j, ServerPATH_DOWN, FALSE);
       free(j);
     }
@@ -430,7 +430,7 @@ static void cleanup_job(int status, int jobid)
   DisconnectFromMds(conid);
   do
   {
-    DBG(JOB_PRI " done\n", JOB_VAR(j));
+    MDSDBG(JOB_PRI " done\n", JOB_VAR(j));
     do_callback_done(j, status, FALSE);
     free(j);
     j = pop_job_by_conid(conid);
@@ -443,7 +443,7 @@ static void abandon(void *in)
   if (j && j->cond)
   {
     CONDITION_DESTROY_PTR(j->cond, &job_conds);
-    DBG(JOB_PRI " sync abandoned!\n", JOB_VAR(j));
+    MDSDBG(JOB_PRI " sync abandoned!\n", JOB_VAR(j));
   }
   MUTEX_LOCK_POP(&job_conds);
 }
@@ -459,14 +459,14 @@ EXPORT void ServerWait(int jobid)
   Job *j = get_job_by_jobid(jobid);
   if (j && j->cond)
   {
-    DBG(JOB_PRI " sync pending\n", JOB_VAR(j));
+    MDSDBG(JOB_PRI " sync pending\n", JOB_VAR(j));
     pthread_cleanup_push(abandon, (void *)&j);
     wait_and_remove_job(j);
     pthread_cleanup_pop(0);
-    DBG(JOB_PRI " sync done\n", JOB_VAR(j));
+    MDSDBG(JOB_PRI " sync done\n", JOB_VAR(j));
   }
   else
-    DBG("Job(%d, ?) sync lost!\n", jobid);
+    MDSDBG("Job(%d, ?) sync lost!\n", jobid);
 }
 
 static void do_callback_before(int jobid)
@@ -510,12 +510,12 @@ static int register_job(int *msgid, int *retstatus, pthread_rwlock_t *lock,
     j->cond = malloc(sizeof(Condition));
     CONDITION_INIT(j->cond);
     *msgid = j->jobid;
-    DBG(JOB_PRI " sync registered\n", JOB_VAR(j));
+    MDSDBG(JOB_PRI " sync registered\n", JOB_VAR(j));
   }
   else
   {
     j->cond = NULL;
-    DBG(JOB_PRI " async registered\n", JOB_VAR(j));
+    MDSDBG(JOB_PRI " async registered\n", JOB_VAR(j));
   }
   j->next = Jobs;
   Jobs = j;
@@ -550,7 +550,7 @@ static SOCKET CreatePort(uint16_t *port_out)
       start_port = 8800;
       range_port = 256;
     }
-    DBG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n", start_port,
+    MDSDBG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n", start_port,
         start_port + range_port - 1);
   }
   uint16_t port;
@@ -589,7 +589,7 @@ static SOCKET CreatePort(uint16_t *port_out)
     perror("Error from listen\n");
     return INVALID_SOCKET;
   }
-  DBG("Listener opened on port %u.\n", port);
+  MDSDBG("Listener opened on port %u.\n", port);
   *port_out = port;
   return s;
 }
@@ -634,7 +634,7 @@ static int start_receiver(uint16_t *port_out)
 static void receiver_atexit(void *arg)
 {
   (void)arg;
-  DBG("ServerSendMessage thread exitted\n");
+  MDSDBG("ServerSendMessage thread exitted\n");
   CONDITION_RESET(&ReceiverRunning);
 }
 
@@ -655,7 +655,7 @@ static void reset_fdactive(int rep, SOCKET sock, fd_set *active)
     {
       if (is_broken_socket(c->reply_sock))
       {
-        DBG("removed client in reset_fdactive\n");
+        MDSDBG("removed client in reset_fdactive\n");
         Client__remove(c);
         c = Clients;
       }
@@ -671,7 +671,7 @@ static void reset_fdactive(int rep, SOCKET sock, fd_set *active)
       FD_SET(c->reply_sock, active);
   }
   UNLOCK_CLIENTS;
-  DBG("reset fdactive in reset_fdactive\n");
+  MDSDBG("reset fdactive in reset_fdactive\n");
 }
 
 // fc21 claims 'last_client_port' is clobbered
@@ -730,7 +730,7 @@ static void receiver_thread(void *sockptr)
           if (c)
           {
             FD_CLR(c->reply_sock, &readfds);
-            DBG("Reply from " IPADDRPRI ":%u\n", IPADDRVAR(&c->addr), c->port);
+            MDSDBG("Reply from " IPADDRPRI ":%u\n", IPADDRVAR(&c->addr), c->port);
             Client_do_message(c, &fdactive);
             num--;
           }
@@ -780,7 +780,7 @@ static Client *get_addr_port(char *server, uint32_t *addrp, uint16_t *portp)
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2)
   {
-    DBG("Server '%s' unknown\n", server);
+    MDSDBG("Server '%s' unknown\n", server);
     return NULL;
   }
   addr = LibGetHostAddr(hostpart);
@@ -859,7 +859,7 @@ static void Client_do_message(Client *c, fd_set *fdactive)
   nbytes = recv(c->reply_sock, reply, 60, MSG_WAITALL);
   if (nbytes != 60)
   {
-    DBG("Invalid read %d/60 " CLIENT_PRI "\n", nbytes, CLIENT_VAR(c));
+    MDSDBG("Invalid read %d/60 " CLIENT_PRI "\n", nbytes, CLIENT_VAR(c));
     Client_remove(c, fdactive);
     return;
   }
@@ -891,7 +891,7 @@ static void Client_do_message(Client *c, fd_set *fdactive)
       j = get_job_by_jobid(MonJob);
     if (j)
     {
-      DBG("Job #%d: %d done\n", j->jobid, j->conid);
+      MDSDBG("Job #%d: %d done\n", j->jobid, j->conid);
       do_callback_done(j, status, TRUE);
     }
     break;
@@ -923,7 +923,7 @@ static void add_client(unsigned int addr, uint16_t port, int conid)
     c->next = new;
   else
     Clients = new;
-  DBG("Added connection from " IPADDRPRI ":%d\n", IPADDRVAR(&addr), port);
+  MDSDBG("Added connection from " IPADDRPRI ":%d\n", IPADDRVAR(&addr), port);
   UNLOCK_CLIENTS;
 }
 
@@ -943,12 +943,12 @@ static void accept_client(SOCKET reply_sock, struct sockaddr_in *sin,
   {
     c->reply_sock = reply_sock;
     FD_SET(reply_sock, fdactive);
-    DBG("Accepted connection from " IPADDRPRI ":%d\n", IPADDRVAR(&sin->sin_addr), sin->sin_port);
+    MDSDBG("Accepted connection from " IPADDRPRI ":%d\n", IPADDRVAR(&sin->sin_addr), sin->sin_port);
   }
   else
   {
     shutdown(reply_sock, 2);
     close(reply_sock);
-    DBG("Dropped connection from " IPADDRPRI ":%d\n", IPADDRVAR(&sin->sin_addr), sin->sin_port);
+    MDSDBG("Dropped connection from " IPADDRPRI ":%d\n", IPADDRVAR(&sin->sin_addr), sin->sin_port);
   }
 }

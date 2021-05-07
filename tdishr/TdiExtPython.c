@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 #ifdef DEBUG
 #define DEBUG_GIL_CHECK                                                   \
   if (PyGILState_Check)                                                   \
@@ -182,7 +182,7 @@ inline static void initialize()
       free(lib);
       return;
     }
-    DBG("TdiExtPython: loaded %s\n", lib);
+    MDSDBG("TdiExtPython: loaded %s\n", lib);
     free(lib);
     loadrtn(Py_InitializeEx, 1);
   }
@@ -244,7 +244,7 @@ inline static void initialize()
 
 static void PyGILState_Cleanup(void *GIL)
 {
-  DBG("PyGILState_Cleanup(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL,
+  MDSDBG("PyGILState_Cleanup(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL,
       (uintptr_t)pthread_self());
   if (PyGILState_Check && PyGILState_Check())
   {
@@ -260,13 +260,13 @@ static void PyGILState_Cleanup(void *GIL)
   if (PyGILState_Ensure)                                                       \
   {                                                                            \
     PyThreadState *GIL = PyGILState_Ensure();                                  \
-    DBG("PyGILState_Ensured(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
+    MDSDBG("PyGILState_Ensured(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
         (uintptr_t)pthread_self());                                            \
     pthread_cleanup_push(PyGILState_Cleanup, (void *)GIL); //"
 
 #define PYTHON_CLOSE                                                          \
   PyGILState_Release(GIL);                                                    \
-  DBG("PyGILState_Released(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
+  MDSDBG("PyGILState_Released(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
       (uintptr_t)pthread_self());                                             \
   pthread_cleanup_pop(0);                                                     \
   DEBUG_GIL_CHECK;                                                            \

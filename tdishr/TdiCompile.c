@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define YY_END_OF_BUFFER_CHAR '\0'
 
 // #define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 extern int Tdi1Evaluate();
 extern int tdi_yacc();

@@ -27,14 +27,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _WIN32
-#define get_tid() GetCurrentThreadId()
-#else
-#include <sys/syscall.h>
-#define get_tid() syscall(__NR_gettid)
-#endif
 
 #include "../UdpEvents.c"
+#include <mdsmsg.h>
 #include "testing.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +52,7 @@ pthread_mutex_t astCount_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int astCount = 0;
 void eventAst(void *arg, int len, char *buf)
 {
-  printf("received event in thread %ld, name=%s, len=%d\n", get_tid(), (char*)arg, len);
+  printf("received event in thread %ld, name=%s, len=%d\n", CURRENT_THREAD_ID(), (char*)arg, len);
   char access = 0;
   int i;
   for (i = 0 ; i < len ; i++ )

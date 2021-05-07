@@ -63,7 +63,7 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 #include <treeshr.h>
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 STATIC_ROUTINE int _CopyFile(int src_fd, int dst_fd, int lock_it);
 
@@ -191,7 +191,7 @@ static int TreeCreateTreeFilesOne(char const *tree, int shot, int source_shot,
       if (tmp)
       {
         if (STATUS_OK)
-          DBG("%s ->\n", tmp);
+          MDSDBG("%s ->\n", tmp);
         free(tmp);
         tmp = NULL;
       }
@@ -208,7 +208,7 @@ static int TreeCreateTreeFilesOne(char const *tree, int shot, int source_shot,
       if (tmp)
       {
         if (STATUS_OK)
-          DBG("%s <-\n", tmp);
+          MDSDBG("%s <-\n", tmp);
         free(tmp);
         tmp = NULL;
       }

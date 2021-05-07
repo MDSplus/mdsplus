@@ -66,7 +66,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treeshrp.h"
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 static inline char *replaceBackslashes(char *filename)
 {
@@ -122,7 +122,7 @@ static void host_list_cleanup(const int conid)
     {
       if (host->h.connections <= 0)
       {
-        DBG("Disconnecting %d: %d\n", host->h.conid, host->h.connections);
+        MDSDBG("Disconnecting %d: %d\n", host->h.conid, host->h.connections);
         if (disconnectFromMds && IS_NOT_OK(disconnectFromMds(host->h.conid)))
           fprintf(stderr, "Failed to disconnect Connection %d\n",
                   host->h.conid);
@@ -224,10 +224,10 @@ static int remote_access_connect(char *server, int inc_count,
       if (inc_count)
       {
         host->h.connections++;
-        DBG("Connection %d> %d\n", host->h.conid, host->h.connections);
+        MDSDBG("Connection %d> %d\n", host->h.conid, host->h.connections);
       }
       else
-        DBG("Connection %d= %d\n", host->h.conid, host->h.connections);
+        MDSDBG("Connection %d= %d\n", host->h.conid, host->h.connections);
       break;
     }
   }
@@ -239,7 +239,7 @@ static int remote_access_connect(char *server, int inc_count,
       conid = ConnectToMds(unique);
       if (conid > 0)
       {
-        DBG("New connection %d> %s\n", conid, unique);
+        MDSDBG("New connection %d> %s\n", conid, unique);
         host = malloc(sizeof(host_list_t));
         host->h.conid = conid;
         host->h.connections = inc_count ? 1 : 0;
@@ -283,7 +283,7 @@ static int remote_access_disconnect(int conid, int force)
     else
     {
       host->h.connections--;
-      DBG("Connection %d< %d\n", conid, host->h.connections);
+      MDSDBG("Connection %d< %d\n", conid, host->h.connections);
       if (host->h.connections <= 0 && !host_list_armed)
       {
         // arm host_list_cleaner
@@ -293,7 +293,7 @@ static int remote_access_disconnect(int conid, int force)
     }
   }
   else
-    DBG("Disconnected %d\n", conid);
+    MDSDBG("Disconnected %d\n", conid);
   HOST_LIST_UNLOCK;
   return TreeSUCCESS;
 }
@@ -1655,9 +1655,9 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size,
     err = !UnlockFileEx(h, 0, (DWORD)size, 0, &overlapped);
   }
   if (err)
-    DBG("LOCK_ER %d mode=%d, errorcode=%d\n", fd, mode, (int)GetLastError());
+    MDSDBG("LOCK_ER %d mode=%d, errorcode=%d\n", fd, mode, (int)GetLastError());
   else
-    DBG("LOCK_OK %d mode=%d\n", fd, mode);
+    MDSDBG("LOCK_OK %d mode=%d\n", fd, mode);
   if (deleted)
     *deleted = 0;
 #else

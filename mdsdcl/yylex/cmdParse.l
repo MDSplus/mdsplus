@@ -36,17 +36,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dcl.h>
 #include "dclyacc.h"
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 #ifdef DEBUG
-#undef DBG
-# define DBG(...) do{\
+#undef MDSDBG
+# define MDSDBG(...) do{\
 fprintf(stderr, "cmdParse: ");\
 fprintf(stderr, __VA_ARGS__);\
 fprintf(stderr, "\n");\
 }while(0) //"
 #endif
 
-#define DBGM(RETURN,prefix)	DBG("%-9s -> %-12s : '%s'", #RETURN, #prefix, yytext)
+#define DBGM(RETURN,prefix)	MDSDBG("%-9s -> %-12s : '%s'", #RETURN, #prefix, yytext)
 %}
 
 %x start verb qualifier qualval qualval_list rest_of_line parameter
@@ -138,7 +138,7 @@ qualval {unquoted_value_3}|{quoted_value}
  BEGIN parameter;
  }
 
-<*>(EOL|\n)	DBG("end       parameter    : 0x%02x",(int)yytext[0]);BEGIN parameter;
+<*>(EOL|\n)	MDSDBG("end       parameter    : 0x%02x",(int)yytext[0]);BEGIN parameter;
 
 <parameter>{value} {
  DBGM(P_VALUE,verb);
@@ -150,6 +150,6 @@ qualval {unquoted_value_3}|{quoted_value}
  return(P_VALUE);
  }
 
-<*>.		DBG("any       *           : 0x%02x",(int)yytext[0]);
+<*>.		MDSDBG("any       *           : 0x%02x",(int)yytext[0]);
 
 %%

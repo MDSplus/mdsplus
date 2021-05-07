@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 
 // #define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 #ifdef _WIN32
 #include <process.h>
@@ -1824,10 +1824,10 @@ static size_t findfileloop(ctx_t *const ctx)
       return ctx->stack[ctx->cur_stack].wlen + flen;
     if (ctx->recursive && ISDIRECTORY(ctx))
     {
-      // DBG("path = %s\n", ctx->buffer);
+      // MDSDBG("path = %s\n", ctx->buffer);
       if (++ctx->cur_stack == ctx->max_stack)
       {
-        DBG("max_stack increased = %d\n", ctx->max_stack);
+        MDSDBG("max_stack increased = %d\n", ctx->max_stack);
         findstack_t *old = ctx->stack;
         ctx->max_stack *= 2;
         ctx->stack = malloc(sizeof(findstack_t) * ctx->max_stack);
@@ -1852,7 +1852,7 @@ static inline void *_findfilestart(const char *const envname,
                                    const char *const filename,
                                    const int recursive, const int case_blind)
 {
-  DBG("looking for '%s' in '%s'\n", filename, envname);
+  MDSDBG("looking for '%s' in '%s'\n", filename, envname);
   ctx_t *ctx = (ctx_t *)malloc(sizeof(ctx_t));
   ctx->max_stack = recursive ? 8 : 1;
   ctx->stack = malloc(ctx->max_stack * sizeof(findstack_t));
@@ -2087,12 +2087,12 @@ EXPORT int MdsPutEnv(const char *const cmd)
       if (*value)
       {
         *(value++) = '\0';
-        DBG("setenv %s=%s\n", name, value);
+        MDSDBG("setenv %s=%s\n", name, value);
         status = setenv(name, value, 1);
       }
       else
       {
-        DBG("unsetenv %s\n", name);
+        MDSDBG("unsetenv %s\n", name);
         status = unsetenv(name);
       }
       status = status ? MDSplusERROR : MDSplusSUCCESS;

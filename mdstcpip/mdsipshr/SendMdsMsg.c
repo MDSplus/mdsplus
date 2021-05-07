@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 //#define DEBUG
-#include <mdsdbg.h>
+#include <mdsmsg.h>
 
 static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
                       int options)
@@ -41,7 +41,7 @@ static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
     return MDSplusERROR;
   char *bptr = (char *)buffer;
   int tries = 0;
-  DBG("Sending %u bytes\n", (uint32_t)bytes_to_send);
+  MDSDBG("Sending %u bytes\n", (uint32_t)bytes_to_send);
   while ((bytes_to_send > 0) && (tries < 10))
   {
     ssize_t bytes_sent;
@@ -50,7 +50,7 @@ static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
     {
       if (errno != EINTR)
       {
-        DBG("Exception %d\n", errno);
+        MDSDBG("Exception %d\n", errno);
         perror("send_bytes: Error sending data to remote server");
         return MDSplusERROR;
       }
@@ -74,7 +74,7 @@ static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
     return SsINTERNAL;
   }
 
-  DBG("Sent all bytes\n");
+  MDSDBG("Sent all bytes\n");
   return MDSplusSUCCESS;
 }
 
@@ -115,7 +115,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     cm->h.client_type |= COMPRESSED;
     memcpy(cm->bytes, &cm->h.msglen, 4);
     int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
-    DBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
+    MDSDBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
         "descriptor_idx = %d, message_id = %d, dtype = %d, "
         "client_type = %d, header.ndims = %d)\n",
         cm->h.msglen, cm->h.status, cm->h.length, cm->h.nargs,
