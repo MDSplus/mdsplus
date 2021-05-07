@@ -1,14 +1,6 @@
 #ifndef IPDESC_H
 #define IPDESC_H
 
-#ifdef _WIN32
-#ifndef _WS2DEF_
-#include "windows.h"
-#endif
-#else
-typedef int SOCKET;
-#define INVALID_SOCKET -1
-#endif
 #define MAX_DIMS 8
 #define DTYPE_UCHAR 2
 #define DTYPE_USHORT 3

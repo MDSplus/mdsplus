@@ -10,16 +10,18 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 typedef int socklen_t;
-#define close closesocket
-#define ioctl ioctlsocket
 #define FIONREAD_TYPE u_long
 #define snprintf _snprintf
 #define getpid _getpid
 #define SHUT_RDWR 2
 #else
 typedef struct sockaddr SOCKADDR;
+#define SOCKADDR struct sockaddr
+#define closesocket close
+#define ioctlsocket ioctl
 typedef int SOCKET;
-#define INVALID_SOCKET -1
+#define INVALID_SOCKET (SOCKET)(-1)
+#define SOCKET_ERROR (-1)
 #define FIONREAD_TYPE int
 #include <arpa/inet.h>
 #include <ifaddrs.h>
@@ -31,7 +33,6 @@ typedef int SOCKET;
 #include <sys/socket.h>
 #include <sys/wait.h>
 #endif
-#include <pthread_port.h>
 
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0

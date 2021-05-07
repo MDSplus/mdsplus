@@ -31,10 +31,6 @@ typedef enum
 #define MDS_IO_LOCK_NONE 0x00
 #define MDS_IO_LOCK_NOWAIT 0x08
 
-#ifndef MSG_DONTWAIT
-#define MSG_DONTWAIT 0
-#endif
-
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif

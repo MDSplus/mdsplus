@@ -6,10 +6,11 @@
 #ifndef _WIN32
 #include <sysexits.h>
 #endif
+
 #include <ipdesc.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <pthread_port.h>
+#include <socket_port.h>
 #include <status.h>
 #define MDSIP_MAX_ARGS 256
 #define MDSIP_MAX_COMPRESS 9

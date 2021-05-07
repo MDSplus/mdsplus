@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <mdsshr.h>
 #include <socket_port.h>
+#include <pthread_port.h>
 
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);

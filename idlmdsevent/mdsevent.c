@@ -53,11 +53,14 @@ EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
 Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
-#include <ipdesc.h>
-#include <mdsplus/mdsconfig.h>
-#include <mdsshr.h>
+
 #include <stdlib.h>
 #include <unistd.h>
+
+#include <mdsplus/mdsconfig.h>
+#include <ipdesc.h>
+#include <mdsshr.h>
+#include <socket_port.h>
 
 typedef struct _event_struct
 {

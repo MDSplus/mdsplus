@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <status.h>
 #include <stdlib.h>
 
+#include <pthread_port.h>
 #include "../mdsip_connections.h"
 
 /// returns true if message cleanup is handled

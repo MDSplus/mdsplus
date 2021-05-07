@@ -85,7 +85,7 @@ static void int_select(int signo)
   signal(signo, old_handler);
   raise(signo);
   if (int_sock != INVALID_SOCKET)
-    close(int_sock);
+    closesocket(int_sock);
 }
 #endif
 
@@ -141,7 +141,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
         print_socket_error("Error in connect");
       else
         fprintf(stderr, "Error in connect: timeout ?!\n");
-      close(int_sock);
+      closesocket(int_sock);
       goto error;
     }
     if (FD_ISSET(int_sock, &rdfds))
@@ -150,7 +150,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
       perror("Error in connect");
       goto error;
     }
-    close(int_sock);
+    closesocket(int_sock);
     socklen_t len = sizeof(err);
     getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
   }
@@ -194,7 +194,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
     print_socket_error("Error in connect to service");
   error:;
     shutdown(sock, SHUT_RDWR);
-    close(sock);
+    closesocket(sock);
     return C_ERROR;
   }
   set_socket_options(sock, 0);
@@ -231,7 +231,7 @@ static int io_flush(Connection *c)
       tries++;
       if (FD_ISSET(sock, &readfds))
       {
-        err = ioctl(sock, FIONREAD, &nbytes);
+        err = ioctlsocket(sock, FIONREAD, &nbytes);
         if (nbytes > 0 && err != -1)
         {
           nbytes = recv(sock, buffer,

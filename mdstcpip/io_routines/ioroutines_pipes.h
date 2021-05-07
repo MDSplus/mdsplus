@@ -40,7 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define close_pipe(p) CloseHandle(p)
 #else
 #include <sys/wait.h>
-#define INVALID_SOCKET -1
 #define close_pipe(p) close(p)
 #endif
 

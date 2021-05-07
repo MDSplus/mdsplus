@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <pthread_port.h>
 //#define DEBUG
 #include <mdsdbg.h>
 
@@ -554,7 +555,7 @@ static int io_disconnect(Connection *con)
 #ifdef _TCP
     err = shutdown(sock, SHUT_RDWR);
 #endif
-    err = close(sock);
+    err = closesocket(sock);
   }
   fflush(stdout);
   return err;

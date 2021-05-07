@@ -1,9 +1,5 @@
-#ifdef _WIN32
-#define close closesocket
-#endif
 #undef SOCKET
 #define SOCKET UDTSOCKET
-#define INVALID_SOCKET -1
 #include "udtc.h"
 #define SOCKLEN_T int
 #define GETPEERNAME udt_getpeername
@@ -101,7 +97,7 @@ static int io_listen(int argc, char **argv)
         continue;
       if (udt_bind(ssock, rp->ai_addr, rp->ai_addrlen) == 0)
         break;
-      close(ssock);
+      closesocket(ssock);
     }
     if (ssock == INVALID_SOCKET)
     {

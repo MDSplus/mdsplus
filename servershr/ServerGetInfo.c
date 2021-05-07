@@ -56,11 +56,14 @@ doing.
 
 ------------------------------------------------------------------------------*/
 
-#include <ipdesc.h>
-#include <servershr.h>
-#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
+
+#include <ipdesc.h>
+#include <servershr.h>
+#include <socket_port.h>
+#include "servershrp.h"
+
 
 extern int ServerConnect();
 extern int GetAnswerInfoTS();
