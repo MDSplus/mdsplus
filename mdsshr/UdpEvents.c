@@ -315,10 +315,10 @@ int MDSUdpEventCan(int eventid)
    This however is a race condition so we cancel
    when we can (ifndef _WIN32)
   **********************************************/
+  shutdown(ev->socket, SHUT_RDWR);
   closesocket(ev->socket);
 #else
-  shutdown(ev->socket, SHUT_RDWR);
-  close(ev->socket);
+  pthread_cancel(ev->thread);
 #endif
   pthread_join(ev->thread, NULL);
   free(ev);
