@@ -214,8 +214,12 @@ int main(int argc, char **argv)
     {
       sleep(1);
       testio(server);
+#ifdef _WIN32
+      // TODO: kill?
+#else
       pthread_cancel(mdsip.thread);
       pthread_join(mdsip.thread, NULL);
+#endif
     }
     free(mdsip.argv);
   }
