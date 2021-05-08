@@ -70,10 +70,6 @@ extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
 #define LOCAL "local"
 #define STRLEN 4096
 #define INVALID_ID -1
-/* Variables that stay set between calls */
-static int id = INVALID_ID; /* Mark the conid as unopen */
-static char serv[STRLEN];   /* Current server */
-static EMPTYXD(ans_xd);
 
 /* Connection record */
 typedef struct _connection
@@ -84,6 +80,11 @@ typedef struct _connection
   char serv[STRLEN]; /* Current server */
   struct _connection *next;
 } Connection;
+/* Variables that stay set between calls */
+
+static int id = INVALID_ID; /* Mark the conid as unopen */
+static char serv[STRLEN];   /* Current server */
+static EMPTYXD(ans_xd);
 static Connection *Connections = NULL;
 
 /* Routine definitions */
@@ -250,8 +251,7 @@ EXPORT int rMdsConnect(char *hostin)
   if (!strcmp(host, LOCAL))
   {
     strcpy(serv, LOCAL);
-    id = INVALID_ID;
-    return (id);
+    return INVALID_ID;
   }
   /* If no conid, or server name has changed */
   if ((id == INVALID_ID) || strcmp(host, serv))
@@ -259,7 +259,7 @@ EXPORT int rMdsConnect(char *hostin)
     if ((id = AddConnection(hostin)) == INVALID_ID)
     {
       *serv = '\0';
-      return (0); /* no connection obtained */
+      return id; /* no connection obtained */
     }
     else
     {
