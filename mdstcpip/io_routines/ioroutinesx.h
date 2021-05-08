@@ -43,6 +43,10 @@ typedef struct _client
   char *iphost;
 } Client;
 
+#define CLIENT_PRI "%s"
+#define CLIENT_VAR(c) (c)->iphost
+
+
 // List of clients connected to server instance.
 static pthread_mutex_t ClientListLock = PTHREAD_MUTEX_INITIALIZER;
 static Client *ClientList = NULL;
@@ -625,6 +629,7 @@ static inline int dispatch_client(Client *client)
   }
   else
   {
+    fprintf(stderr, "dispatched client " CLIENT_PRI, CLIENT_VAR(client));
     pthread_mutex_lock(&ClientListLock);
     client->next = ClientList;
     ClientList = client;

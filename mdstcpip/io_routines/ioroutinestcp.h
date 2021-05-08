@@ -4,12 +4,11 @@
 #define SEND send
 #define RECV recv
 // active select file descriptor
-static fd_set fdactive;
 static int io_flush(Connection *c);
 #include "ioroutinesx.h"
-////////////////////////////////////////////////////////////////////////////////
-//  CONNECT  ///////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+
+// CONNECT //
+
 ///
 /// set socket options on the socket s for TCP protocol. This sets the receive
 /// buffer, the send buffer, the SO_OOBINLINE, the SO_KEEPALIVE and TCP_NODELAY
@@ -125,7 +124,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
   err = ioctlsocket(sock, FIONBIO, &ul);
   if (err == 0)
     err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
-  if ((err == -1) && (WSAGetLastError() == WSAEWOULDBLOCK))
+  if ((err == -1) && (WSAGetLastError() == WSAEWOULDBLOCK) && (connectTimer.tv_sec > 0))
   {
     fd_set rdfds, wrfds;
     FD_ZERO(&wrfds);
@@ -137,17 +136,17 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
     signal(SIGINT, old_handler);
     if (err < 1)
     {
-      if (err < 0)
-        print_socket_error("Error in connect");
+      if (err == 0)
+        fprintf(stderr, "Error in connect: timeout\n");
       else
-        fprintf(stderr, "Error in connect: timeout ?!\n");
+        perror("Error in connect");
       closesocket(int_sock);
       goto error;
     }
     if (FD_ISSET(int_sock, &rdfds))
     {
       errno = EINTR;
-      perror("Error in connect");
+      perror("Error in connect: Interrupted");
       goto error;
     }
     closesocket(int_sock);
@@ -161,30 +160,30 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
   {
     err = fcntl(sock, F_SETFL, O_NONBLOCK);
     if (err == 0)
-      err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
-    if ((err == -1) && (errno == EINPROGRESS))
     {
-      fd_set writefds;
-      FD_ZERO(&writefds);
-      FD_SET(sock, &writefds);
-      sigset_t sigmask, origmask;
-      sigemptyset(&sigmask);
-      pthread_sigmask(SIG_SETMASK, &sigmask, &origmask);
-      err = select(sock + 1, NULL, &writefds, NULL, &connectTimer);
-      pthread_sigmask(SIG_SETMASK, &origmask, NULL);
-      if (err < 1)
+      err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
+      if (err == -1)
       {
-        if (err == 0)
-          fprintf(stderr, "Error in connect: timeout\n");
-        else
-          perror("Error in connect");
-        goto error;
+        if (errno == EINPROGRESS)
+        {
+          fd_set writefds;
+          FD_ZERO(&writefds);
+          FD_SET(sock, &writefds);
+          err = select(sock + 1, NULL, &writefds, NULL, &connectTimer);
+          if (err < 1)
+          {
+            if (err == 0)
+              fprintf(stderr, "Error in connect: timeout\n");
+            else
+              perror("Error in connect");
+            goto error;
+          }
+          socklen_t len = sizeof(err);
+          getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
+        }
       }
-      socklen_t len = sizeof(err);
-      getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
-    }
-    if (err != -1)
       fcntl(sock, F_SETFL, 0);
+    }
   }
   else
     err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
@@ -202,9 +201,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
   return C_OK;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  FLUSH  /////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+// FLUSH //
 
 static int io_flush(Connection *c)
 {
@@ -255,11 +252,9 @@ static int io_flush(Connection *c)
   return C_OK;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  LISTEN  ////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+// LISTEN //
 
-static short getPort(char *name)
+static short get_port(char *name)
 {
   short port;
   struct servent *sp;
@@ -322,19 +317,17 @@ static int io_listen(int argc, char **argv)
     exit(EX_NOPERM);
 #endif
   // SOCKET //
-  /* Create the socket and set it up to accept connections. */
+  // Create the socket and set it up to accept connections.
   SOCKET ssock = socket(AF_T, SOCK_STREAM, 0);
   if (ssock == INVALID_SOCKET)
   {
     print_socket_error("Error getting Connection Socket");
     exit(EXIT_FAILURE);
   }
-  FD_ZERO(&fdactive);
-  FD_SET(ssock, &fdactive);
   // OPTIONS //
   set_socket_options(ssock, 1);
   // BIND //
-  unsigned short port = getPort(GetPortname());
+  unsigned short port = get_port(GetPortname());
   struct SOCKADDR_IN sin;
   memset(&sin, 0, sizeof(sin));
   sin.SIN_PORT = port;
@@ -352,24 +345,26 @@ static int io_listen(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
   atexit(destroyClientList);
-  // LISTEN LOOP ///////////////////////////////////////////////////////////
+  // LISTEN LOOP //
   struct timeval readto, timeout = {1, 0};
   fd_set readfds;
+  FD_ZERO(&readfds);
   for (;;)
   {
-    readfds = fdactive;
     readto = timeout;
+    FD_SET(ssock, &readfds);
     int num = select(FD_SETSIZE, &readfds, NULL, NULL, &readto);
+    MDSDBG("io_listen: select = %d.", num);
     if (num == 0)
       continue; // timeout
-    if (num > 0)
+    else if (num > 0)
     { // read ready from socket list
       if (FD_ISSET(ssock, &readfds))
       {
         socklen_t len = sizeof(sin);
         int id = -1;
         char *username;
-        // ACCEPT new connection and register new socket //
+        // ACCEPT new connection and register new socket
         SOCKET sock = accept(ssock, (struct sockaddr *)&sin, &len);
         if (sock == INVALID_SOCKET)
           print_socket_error("Error accepting socket");
@@ -390,8 +385,7 @@ static int io_listen(int argc, char **argv)
     }
     else if (errno == EINTR)
     {
-      continue; // exit(EINTR);// signal interrupt; can be triggered by python
-                // os.system()
+      continue;
     }
     else
     {
