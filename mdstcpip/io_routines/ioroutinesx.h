@@ -483,12 +483,6 @@ static inline void Client_cancel(Client *c)
 static void destroyClient(Client *c)
 {
   MDSDBG("destroyClient");
-  Connection *con = c->connection;
-  if (con)
-  {
-    con->io = NULL;
-    io_disconnect(con);
-  }
   if (c->thread)
   {
     if (!pthread_equal(*c->thread, pthread_self()))
@@ -503,7 +497,15 @@ static void destroyClient(Client *c)
     free(c->thread);
   }
   else
+  {
+    Connection *con = c->connection;
+    if (con)
+    {
+      con->io = NULL;
+      io_disconnect(con);
+    }
     destroyConnection(con);
+  }
   free(c->username);
   free(c->iphost);
   free(c->host);
