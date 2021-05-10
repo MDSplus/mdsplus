@@ -1016,6 +1016,12 @@ AutoReqProv: yes
    <numpy/>
    <java/>
  </external_packages>
+ <external_packages dist="Ubuntu20">
+   <setuptools package="python3-setuptools"/>
+   <numpy package="python3-numpy"/>
+   <xinetd package="busybox"/>
+   <java package="java-runtime"/>
+ </external_packages>
  <external_packages platform="debian">
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>

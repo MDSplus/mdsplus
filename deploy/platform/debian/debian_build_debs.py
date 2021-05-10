@@ -83,14 +83,22 @@ def getPackageFiles(buildroot, includes, excludes):
 def externalPackage(info, root, package):
     ans = None
     for extpackages in root.getiterator('external_packages'):
-        platform = extpackages.attrib['platform']
-        if info['platform'] == platform:
+        try:
+            dist = extpackages.attrib['dist']
+        except:
+            dist = 'no dist'
+        try:
+            platform = extpackages.attrib['platform']
+        except:
+            platform = 'no platform'
+        if info['platform'] == platform or info['dist'] == dist:
             pkg = extpackages.find(package)
             if pkg is not None:
                 if 'package' in pkg.attrib:
                     ans = pkg.attrib['package']
                 else:
                     ans = package
+            break
     return ans
 
 
