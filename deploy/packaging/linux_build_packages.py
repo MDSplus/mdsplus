@@ -7,6 +7,8 @@ def get_info():
     info = dict()
     info['buildroot'] = os.environ['BUILDROOT']
     info['branch'] = os.environ['BRANCH']
+    info['flavor'] = os.environ['FLAVOR']
+    info['rflavor'] = os.environ['BNAME']
     info['dist'] = os.environ['DISTNAME']
     info['platform'] = os.environ['PLATFORM']
     info['arch'] = os.environ['ARCH']
@@ -14,17 +16,6 @@ def get_info():
     info['major'] = int(version[0])
     info['minor'] = int(version[1])
     info['release'] = int(version[2])
-    if info['branch'] == 'stable':
-        flavor = "stable"
-        rflavor = ""
-    elif info['branch'] == 'alpha':
-        flavor = "alpha"
-        rflavor = "-alpha"
-    else:
-        flavor = "other"
-        rflavor = "-other"
-    info['flavor'] = flavor
-    info['rflavor'] = rflavor
     return info
 
 
