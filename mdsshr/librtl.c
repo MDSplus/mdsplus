@@ -932,10 +932,10 @@ static VmList *ZoneList_remove_VmList(ZoneList **zone, void *vm)
   for (list = (*zone)->vm; list; prev = &list->next, list = list->next)
   {
     if (list->ptr == vm)
-      {
-        *prev = list->next;
-        break;
-      }
+    {
+      *prev = list->next;
+      break;
+    }
   }
   UNLOCK_ZONE(*zone);
   return list;

@@ -245,7 +245,7 @@ inline static void initialize()
 static void PyGILState_Cleanup(void *GIL)
 {
   MDSDBG("PyGILState_Cleanup(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL,
-      (uintptr_t)pthread_self());
+         (uintptr_t)pthread_self());
   if (PyGILState_Check && PyGILState_Check())
   {
     fprintf(stderr,
@@ -256,20 +256,20 @@ static void PyGILState_Cleanup(void *GIL)
   }
 }
 
-#define PYTHON_OPEN                                                            \
-  if (PyGILState_Ensure)                                                       \
-  {                                                                            \
-    PyThreadState *GIL = PyGILState_Ensure();                                  \
+#define PYTHON_OPEN                                                               \
+  if (PyGILState_Ensure)                                                          \
+  {                                                                               \
+    PyThreadState *GIL = PyGILState_Ensure();                                     \
     MDSDBG("PyGILState_Ensured(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
-        (uintptr_t)pthread_self());                                            \
+           (uintptr_t)pthread_self());                                            \
     pthread_cleanup_push(PyGILState_Cleanup, (void *)GIL); //"
 
-#define PYTHON_CLOSE                                                          \
-  PyGILState_Release(GIL);                                                    \
+#define PYTHON_CLOSE                                                             \
+  PyGILState_Release(GIL);                                                       \
   MDSDBG("PyGILState_Released(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
-      (uintptr_t)pthread_self());                                             \
-  pthread_cleanup_pop(0);                                                     \
-  DEBUG_GIL_CHECK;                                                            \
+         (uintptr_t)pthread_self());                                             \
+  pthread_cleanup_pop(0);                                                        \
+  DEBUG_GIL_CHECK;                                                               \
   } //"
 
 static void importMDSplus()

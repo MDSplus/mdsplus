@@ -102,8 +102,8 @@ static void *handleMessage(void *info_in)
     socklen_t addrSize = sizeof(clientAddr);
     MSG_NOSIGNAL_ALT_PUSH();
     const ssize_t recBytes = recvfrom(
-      socket, (char *)recBuf, MAX_MSG_LEN, MSG_NOSIGNAL,
-      (struct sockaddr *)&clientAddr, &addrSize);
+        socket, (char *)recBuf, MAX_MSG_LEN, MSG_NOSIGNAL,
+        (struct sockaddr *)&clientAddr, &addrSize);
     MSG_NOSIGNAL_ALT_PUSH();
     if (recBytes <= 0)
     {

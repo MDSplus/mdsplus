@@ -107,8 +107,8 @@ static inline MDSTHREADSTATIC_TYPE *buffer_alloc()
 }
 static inline void buffer_free(MDSTHREADSTATIC_ARG)
 {
-   free(MDS_FIS_ERROR);
-   free(MDSTHREADSTATIC_VAR);
+  free(MDS_FIS_ERROR);
+  free(MDSTHREADSTATIC_VAR);
 }
 
 IMPLEMENT_GETTHREADSTATIC(MDSTHREADSTATIC_TYPE, MdsGetThreadStatic,

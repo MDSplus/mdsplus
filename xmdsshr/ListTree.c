@@ -564,7 +564,7 @@ static void InitializeGeometry(ListTreeWidget w)
                               2 * Prim_HighlightThickness(w);
   }
   MDSDBG("prefWidth=%d prefHeight=%d\n", w->list.preferredWidth,
-      w->list.preferredHeight);
+         w->list.preferredHeight);
 }
 
 static void Initialize(Widget request, Widget tnew, ArgList args,
@@ -798,7 +798,7 @@ static void HSBCallback(Widget scrollbar, XtPointer client_data,
   HSB2X(w);
 
   MDSDBG("XOffset=%d prefWidth=%d viewWidth=%d\n", w->list.XOffset,
-      w->list.preferredWidth, w->list.viewWidth);
+         w->list.preferredWidth, w->list.viewWidth);
   if (w->list.XOffset != w->list.lastXOffset)
   {
     DrawAll(w);

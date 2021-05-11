@@ -52,10 +52,10 @@ pthread_mutex_t astCount_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int astCount = 0;
 void eventAst(void *arg, int len, char *buf)
 {
-  printf("received event in thread %ld, name=%s, len=%d\n", CURRENT_THREAD_ID(), (char*)arg, len);
+  printf("received event in thread %ld, name=%s, len=%d\n", CURRENT_THREAD_ID(), (char *)arg, len);
   char access = 0;
   int i;
-  for (i = 0 ; i < len ; i++ )
+  for (i = 0; i < len; i++)
   { // this will trigger asan if len is invalid
     access ^= buf[i];
   }
@@ -114,7 +114,7 @@ void test_handleMessage()
   TEST0(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one)));
 
   // bind
-  TEST0(bind(udpSocket, (void*)&serverAddr, sizeof(serverAddr)));
+  TEST0(bind(udpSocket, (void *)&serverAddr, sizeof(serverAddr)));
 
   getMulticastAddr(eventName, ipAddress);
   ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);

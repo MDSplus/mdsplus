@@ -836,10 +836,10 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, mdsdsc_t *desc,
 }
 
 static mdsdsc_t *completeDescr(mdsdsc_t *dataDscPtr,
-                                        mdsdsc_t *helpDscPtr,
-                                        mdsdsc_t *unitsDscPtr,
-                                        mdsdsc_t *errorDscPtr,
-                                        mdsdsc_t *validationDscPtr)
+                               mdsdsc_t *helpDscPtr,
+                               mdsdsc_t *unitsDscPtr,
+                               mdsdsc_t *errorDscPtr,
+                               mdsdsc_t *validationDscPtr)
 {
   DESCRIPTOR_PARAM(templateParam, 0, 0, 0);
   DESCRIPTOR_WITH_UNITS(templateWithUnits, 0, 0);
@@ -2951,7 +2951,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment(
 
   // printDecompiled(dataD);
 
-  status = CTXCALLN(TreeMakeTimestampedSegment, nid, (int64_t*)jtimes,
+  status = CTXCALLN(TreeMakeTimestampedSegment, nid, (int64_t *)jtimes,
                     (mdsdsc_a_t *)dataD, -1, numTimes);
   FreeDescrip(dataD);
   (*env)->ReleaseLongArrayElements(env, jtimesArray, jtimes, JNI_ABORT);
@@ -2978,7 +2978,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment(
   jtimes = (*env)->GetLongArrayElements(env, jtimesArray, NULL);
   dataD = ObjectToDescrip(env, jdata);
 
-  status = CTXCALLN(TreePutTimestampedSegment, nid, (int64_t*)jtimes,
+  status = CTXCALLN(TreePutTimestampedSegment, nid, (int64_t *)jtimes,
                     (mdsdsc_a_t *)dataD);
 
   FreeDescrip(dataD);
