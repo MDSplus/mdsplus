@@ -70,13 +70,23 @@ def doRequire(info, out, root, require):
 def build():
     info = common.get_info()
     root = common.get_root()
-    rpmspec = root.find('rpm').find('spec_start').text
-    s = rpmspec.split('\n')
-    for idx in range(len(s)):
-        if len(s[idx].strip()) == 0:
-            s[idx] = ""
-    rpmspec = '\n'.join(s)
-
+    rpmspec = """
+%%define debug_package %%{nil}
+%%global _missing_build_ids_terminate_build 0
+%%global _unpackaged_files_terminate_build 0
+Name: mdsplus%(rflavor)s%(packagename)s
+Version: %(major)d.%(minor)d
+Release: %(release)s.%(dist)s
+License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
+Source: https://github.com/MDSplus/mdsplus/archive/%(branch)s_release-%(major)d-%(minor)d-%(release)d.tar.gz
+URL: http://www.mdsplus.org
+Vendor: Massachusetts Institute of Technology
+Packager: Plasma Science and Fusion Center <mdsplus@www.mdsplus.org>
+Summary: %(summary)s
+Group: Applications/Archiving
+Prefix: /usr/local
+AutoReqProv: yes
+"""
     bin_packages = list()
     noarch_packages = list()
     for package in root.getiterator('package'):
