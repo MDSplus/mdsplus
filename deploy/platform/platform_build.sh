@@ -80,6 +80,7 @@ rundocker() {
     if docker network >/dev/null 2>&1; then
       #docker supports --network
       if [ -z ${DOCKER_NETWORK} ]; then
+        docker network rm ${OS} || :
         docker network create ${OS}
         NETWORK=--network=${OS}
       else
