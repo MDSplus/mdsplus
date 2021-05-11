@@ -46,7 +46,6 @@ typedef struct _client
 #define CLIENT_PRI "%s"
 #define CLIENT_VAR(c) (c)->iphost
 
-
 // List of clients connected to server instance.
 static pthread_mutex_t ClientListLock = PTHREAD_MUTEX_INITIALIZER;
 static Client *ClientList = NULL;

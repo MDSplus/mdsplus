@@ -64,7 +64,6 @@ doing.
 #include <socket_port.h>
 #include "servershrp.h"
 
-
 extern int ServerConnect();
 extern int GetAnswerInfoTS();
 

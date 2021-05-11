@@ -71,7 +71,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
   else
   {
     EMPTYXD(xd);
-    char *newexp = malloc(16 + 8*8 + sizeof(DEF_SERIAL_OUT) + sizeof(DEF_SERIAL_IN));
+    char *newexp = malloc(16 + 8 * 8 + sizeof(DEF_SERIAL_OUT) + sizeof(DEF_SERIAL_IN));
     strcpy(newexp, DEF_SERIAL_IN DEF_SERIAL_OUT "__so(execute($");
     for (i = 0; i < nargs; i++)
       strcat(newexp, ",__si($)");

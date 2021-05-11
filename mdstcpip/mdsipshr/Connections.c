@@ -73,7 +73,7 @@ Connection *PopConnection(int id)
       if (c->state & CON_ACTIVITY)
       {
         MDSDBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " would wait to pop\n",
-            c->id, c->state, CURRENT_THREAD_ID());
+               c->id, c->state, CURRENT_THREAD_ID());
       }
       c = _FindConnection(id, &p, MDSIPTHREADSTATIC_VAR); // we were waiting, so we need to update p
     }
@@ -90,7 +90,7 @@ Connection *PopConnection(int id)
       }
       c->next = NULL;
       MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " popped\n",
-          c->id, c->state, CURRENT_THREAD_ID());
+             c->id, c->state, CURRENT_THREAD_ID());
     }
   }
   return c;
@@ -111,7 +111,7 @@ Connection *FindConnectionSending(int id)
       {
         c->state &= ~CON_REQUEST; // clear sendarg
         MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked sendarg\n",
-            c->id, c->state, CURRENT_THREAD_ID());
+               c->id, c->state, CURRENT_THREAD_ID());
       }
       c = NULL;
     }
@@ -135,7 +135,7 @@ Connection *FindConnectionWithLock(int id, con_t state)
   while (c && (c->state & CON_ACTIVITY) && !(c->state & CON_DISCONNECT))
   {
     MDSDBG("Connections: %02d -- 0x%02x : 0x%" PRIxPTR " is would wait to lock 0x%02x\n",
-        c->id, c->state, CURRENT_THREAD_ID(), state);
+           c->id, c->state, CURRENT_THREAD_ID(), state);
     c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
     if (c && (c->state & CON_DISCONNECT))
     {
@@ -146,7 +146,7 @@ Connection *FindConnectionWithLock(int id, con_t state)
   {
     c->state |= state;
     MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " locked 0x%02x\n",
-        c->id, c->state, CURRENT_THREAD_ID(), state);
+           c->id, c->state, CURRENT_THREAD_ID(), state);
   }
   return c;
 }
@@ -161,7 +161,7 @@ void UnlockConnection(Connection *c_in)
   {
     c->state &= ~CON_ACTIVITY; // clear activity
     MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked 0x%02x\n",
-        c->id, c->state, CURRENT_THREAD_ID(), CON_ACTIVITY);
+           c->id, c->state, CURRENT_THREAD_ID(), CON_ACTIVITY);
   }
 }
 
@@ -246,6 +246,7 @@ Connection *newConnection(char *protocol)
     connection->protocol = strdup(protocol);
     connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
+    connection->compression_level = 0;
     return connection;
   }
   else
@@ -255,7 +256,6 @@ Connection *newConnection(char *protocol)
 ////////////////////////////////////////////////////////////////////////////////
 //  FreeDescriptors  ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
 
 void FreeDescriptors(Connection *c)
 {
@@ -316,19 +316,6 @@ int CloseConnection(int id)
 {
   Connection *const c = PopConnection(id);
   return destroyConnection(c);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  GetConnectionIo  ///////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-IoRoutines *GetConnectionIo(int conid)
-{
-  MDSIPTHREADSTATIC_INIT;
-  IoRoutines *io;
-  Connection *c = _FindConnection(conid, 0, MDSIPTHREADSTATIC_VAR);
-  io = c ? c->io : NULL;
-  return io;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -418,10 +405,6 @@ int GetConnectionCompression(int conid)
   return complv;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  IncrementConnectionMessageId  //////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 unsigned char ConnectionIncMessageId(Connection *c)
 {
   if (c)
@@ -432,26 +415,6 @@ unsigned char ConnectionIncMessageId(Connection *c)
     return c->message_id;
   }
   return 0;
-}
-
-unsigned char IncrementConnectionMessageId(int conid)
-{
-  MDSIPTHREADSTATIC_INIT;
-  unsigned char id;
-  Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  id = ConnectionIncMessageId(c);
-  return id;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  GetConnectionMessageId  ////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-unsigned char GetConnectionMessageId(int conid)
-{
-  MDSIPTHREADSTATIC_INIT;
-  Connection *c = _FindConnection(conid, NULL, MDSIPTHREADSTATIC_VAR);
-  return c ? c->message_id : INVALID_MESSAGE_ID;
 }
 
 ///

@@ -766,15 +766,7 @@ static int execute_message(Connection *connection, Message *message)
     status = execute_command(connection, &ans_xd);
     if (STATUS_NOT_OK)
       GetErrorText(status, &ans_xd);
-    if (GetCompressionLevel() != connection->compression_level)
-    {
-      connection->compression_level = GetCompressionLevel();
-      if (connection->compression_level > GetMaxCompressionLevel())
-      {
-        connection->compression_level = GetMaxCompressionLevel();
-        SetCompressionLevel(connection->compression_level);
-      }
-    }
+    connection->compression_level = GetCompressionLevel();
     freed_message = send_response(connection, message, status, ans_xd.pointer);
     FREEXD_NOW(ans_xd);
   }
@@ -788,8 +780,8 @@ static int standard_command(Connection *connection, Message *message)
   if (connection->message_id != message->h.message_id)
   {
     MDSDBG("ProcessMessage: %d NewM %3d (%2d/%2d) : '%.*s'\n",
-        connection->id, message->h.message_id, message->h.descriptor_idx, message->h.nargs,
-        message->h.length, message->bytes);
+           connection->id, message->h.message_id, message->h.descriptor_idx, message->h.nargs,
+           message->h.length, message->bytes);
     FreeDescriptors(connection);
     if (message->h.nargs < MDSIP_MAX_ARGS - 1)
     {
@@ -810,7 +802,7 @@ static int standard_command(Connection *connection, Message *message)
     MdsFreeDescriptor(d);
     mdsdsc_xd_t xd = MDSDSC_XD_INITIALIZER;
     MDSDBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial\n",
-        connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
+           connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
     status = MdsSerializeDscIn(message->bytes, &xd);
     connection->descrip[message->h.descriptor_idx] = d = xd.pointer;
     if (STATUS_OK && message->h.descriptor_idx == 0 && d->dtype == DTYPE_T)
@@ -974,7 +966,7 @@ static int standard_command(Connection *connection, Message *message)
         break;
       }
       MDSDBG("ProcessMessage: %d NewA %3d (%2d/%2d) : simple\n",
-          connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
+             connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
     }
     else
     {
@@ -987,7 +979,7 @@ static int standard_command(Connection *connection, Message *message)
     if (message->h.descriptor_idx == (message->h.nargs - 1))
     {
       MDSDBG("ProcessMessage: %d Call %3d (%2d/%2d)\n",
-          connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
+             connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
       int freed_message = execute_message(connection, message);
       UnlockConnection(connection);
       return freed_message;

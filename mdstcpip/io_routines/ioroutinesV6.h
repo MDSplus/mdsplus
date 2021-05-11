@@ -25,7 +25,6 @@
 #include <sys/filio.h>
 #endif
 
-
 #include <socket_port.h>
 DEFINE_INITIALIZESOCKETS;
 

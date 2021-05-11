@@ -93,11 +93,11 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
     if (Endian(header.client_type) != Endian(ClientType()))
       FlipHeader(&header);
     MDSDBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
-        "descriptor_idx = %d, message_id = %d, dtype = %d, "
-        "client_type = %d, header.ndims = %d)\n",
-        header.msglen, header.status, header.length, header.nargs,
-        header.descriptor_idx, header.message_id, header.dtype,
-        header.client_type, header.ndims);
+           "descriptor_idx = %d, message_id = %d, dtype = %d, "
+           "client_type = %d, header.ndims = %d)\n",
+           header.msglen, header.status, header.length, header.nargs,
+           header.descriptor_idx, header.message_id, header.dtype,
+           header.client_type, header.ndims);
     uint32_t msglen = (uint32_t)header.msglen;
     if (msglen < sizeof(MsgHdr) || CType(header.client_type) > CRAY_CLIENT ||
         header.ndims > MAX_DIMS)

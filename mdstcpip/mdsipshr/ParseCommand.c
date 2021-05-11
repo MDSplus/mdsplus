@@ -31,7 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../mdsip_connections.h"
 
-
 static void print_help(char *option)
 {
   if (option)

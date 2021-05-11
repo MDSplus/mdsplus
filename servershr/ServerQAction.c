@@ -75,7 +75,7 @@ static void DoSrvMonitor(SrvJob *job_in);
 
 static void RemoveClient(SrvJob *job);
 extern uint32_t MdsGetClientAddr();
-extern char *MdsGetServerPortname();
+extern char *GetPortname();
 static ClientList *Clients = NULL;
 
 static MonitorList *Monitors = NULL;
@@ -338,7 +338,7 @@ static void LogPrefix(char *ans_c)
   if (ans_c)
   {
     char hname[512];
-    char *port = MdsGetServerPortname();
+    char *port = GetPortname();
     gethostname(hname, 512);
     char now[32];
     Now32(now);
@@ -885,7 +885,7 @@ static int send_all(SOCKET sock, char *msg, int len)
 static int send_reply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
   MDSDBG("Job #%d for " IPADDRPRI ":%d : %d\n", job->h.jobid,
-      IPADDRVAR(&job->h.addr), job->h.port, replyType);
+         IPADDRVAR(&job->h.addr), job->h.port, replyType);
   int status;
   status = MDSplusERROR;
   SOCKET sock;

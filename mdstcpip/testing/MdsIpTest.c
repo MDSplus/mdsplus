@@ -37,14 +37,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static int __test_passed = 0, __test_failed = 0;
 
-#define TEST_FATAL(cond, ...)       \
-  do                                \
-  {                                 \
-    if (cond)                       \
-    {                               \
+#define TEST_FATAL(cond, ...)                 \
+  do                                          \
+  {                                           \
+    if (cond)                                 \
+    {                                         \
       fprintf(stderr, "FATAL: " __VA_ARGS__); \
-      exit(1);                      \
-    }                               \
+      exit(1);                                \
+    }                                         \
   } while (0)
 
 #define TEST_FAIL(...)                       \
@@ -154,7 +154,6 @@ typedef struct
   char **argv;
   int argc;
 } mdsip_t;
-
 
 void mdsip_main(void *arg)
 {

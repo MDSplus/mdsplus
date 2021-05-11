@@ -85,7 +85,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
   Message *cm = 0;
   int status;
   int do_swap = 0; /*Added to handle byte swapping with compression */
-  if (len > 0 && GetCompressionLevel() > 0 &&
+  if (len > 0 && c->compression_level > 0 &&
       m->h.client_type != SENDCAPABILITIES)
   {
     clength = len;
@@ -94,7 +94,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
   if (!msg_options && c && c->io && c->io->flush)
     c->io->flush(c);
   if (m->h.client_type == SENDCAPABILITIES)
-    m->h.status = GetCompressionLevel();
+    m->h.status = c->compression_level;
   if ((m->h.client_type & SwapEndianOnServer) != 0)
   {
     if (Endian(m->h.client_type) != Endian(ClientType()))
@@ -108,7 +108,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     m->h.client_type = ClientType();
   if (clength &&
       compress2((unsigned char *)cm->bytes + 4, &clength,
-                (unsigned char *)m->bytes, len, GetCompressionLevel()) == 0 &&
+                (unsigned char *)m->bytes, len, c->compression_level) == 0 &&
       clength < len)
   {
     cm->h = m->h;
@@ -116,11 +116,11 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     memcpy(cm->bytes, &cm->h.msglen, 4);
     int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
     MDSDBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
-        "descriptor_idx = %d, message_id = %d, dtype = %d, "
-        "client_type = %d, header.ndims = %d)\n",
-        cm->h.msglen, cm->h.status, cm->h.length, cm->h.nargs,
-        cm->h.descriptor_idx, cm->h.message_id, cm->h.dtype,
-        cm->h.client_type, cm->h.ndims);
+           "descriptor_idx = %d, message_id = %d, dtype = %d, "
+           "client_type = %d, header.ndims = %d)\n",
+           cm->h.msglen, cm->h.status, cm->h.length, cm->h.nargs,
+           cm->h.descriptor_idx, cm->h.message_id, cm->h.dtype,
+           cm->h.client_type, cm->h.ndims);
     if (do_swap)
       FlipBytes(4, (char *)&cm->h.msglen);
     status = send_bytes(c, (char *)cm, msglen, msg_options);

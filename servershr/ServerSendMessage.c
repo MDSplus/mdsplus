@@ -551,7 +551,7 @@ static SOCKET CreatePort(uint16_t *port_out)
       range_port = 256;
     }
     MDSDBG("Receiver will be using 'MDSIP_PORT_RANGE=%u-%u'.\n", start_port,
-        start_port + range_port - 1);
+           start_port + range_port - 1);
   }
   uint16_t port;
   static struct sockaddr_in sin;

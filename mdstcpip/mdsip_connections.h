@@ -404,35 +404,12 @@ EXPORT void *ConnectionGetInfo(Connection *c, char **info_name, SOCKET *readfd,
 EXPORT void *GetConnectionInfo(int id, char **info_name, SOCKET *readfd,
                                size_t *len);
 
-////////////////////////////////////////////////////////////////////////////////
-///
-/// \brief GetConnectionIo finds the Connection structure in ConnectionList and
-/// returns the ioRoutines structure associated to a given Connection
-/// identified by id.
-///
-/// \param id id of the connection that holds the ioRoutines
-/// \return ioRoutines structure in the io field of Connection element found.
-///
-EXPORT IoRoutines *GetConnectionIo(int id);
-
 EXPORT int GetContextSwitching();
-
 EXPORT int GetFlags();
-
 EXPORT char *GetHostfile();
+#ifdef _WIN32
 EXPORT char *GetLogDir();
-EXPORT int GetMaxCompressionLevel();
-
-////////////////////////////////////////////////////////////////////////////////
-///
-/// Finds connection by id and returns its the message id
-///
-/// \param id the connection id
-/// \return message_id field of selected connection or 0 as no connection found
-///
-EXPORT unsigned char GetConnectionMessageId(int id);
-
-EXPORT int GetMdsConnectTimeout();
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -470,23 +447,9 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec);
 /// multiple connections each with own context)
 ///
 EXPORT unsigned char GetMulti();
-
 EXPORT char *GetPortname();
-
 EXPORT char *GetProtocol();
-
 EXPORT SOCKET GetSocketHandle();
-
-////////////////////////////////////////////////////////////////////////////////
-///
-/// Finds the Connection intance held in the list of connections by id and
-/// increments the connection message id.
-///
-/// \param id id of the connection
-/// \return the incremented connection message id or 0 if connection was not
-///         found.
-///
-EXPORT unsigned char IncrementConnectionMessageId(int id);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -713,10 +676,6 @@ EXPORT int SetFlags(int flags);
 
 EXPORT char *SetHostfile(char *newhostfile);
 
-EXPORT int SetMaxCompressionLevel(int setting);
-
-EXPORT int SetMdsConnectTimeout(int sec);
-
 EXPORT unsigned char SetMulti(unsigned char setting);
 
 EXPORT char *SetPortname(char *);
@@ -731,8 +690,7 @@ EXPORT void UnlockAsts();
 ///
 /// Finds the Connection intance held in the list of connections by id and sets
 /// the compression level indicated in arguments. Compression level spans from
-/// 0 (no compression) to \ref GetMaxCompressionLevel (maximum compression
-/// level usually the integer value 9)
+/// 0 (no compression) to 9
 ///
 /// \param conid id of the Connection to set the compression
 /// \param compression the compression level to set
@@ -782,6 +740,4 @@ EXPORT int ReceiveFromConnection(int id, void *buffer, size_t buflen);
 // Deprecated ipaddr routines
 EXPORT int MdsGetClientAddr();
 EXPORT void MdsSetClientAddr(int);
-EXPORT char *MdsGetServerPortname();
-
 #endif

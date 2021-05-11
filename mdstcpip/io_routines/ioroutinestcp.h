@@ -88,6 +88,14 @@ static void int_select(int signo)
 }
 #endif
 
+static inline long get_timeout_sec()
+{
+  const char *timeout = getenv("MDSIP_CONNECT_TIMEOUT");
+  if (timeout)
+    return strtol(timeout, NULL, 0);
+  return 10;
+}
+
 static int io_connect(Connection *c, char *protocol __attribute__((unused)),
                       char *host)
 {
@@ -105,8 +113,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
     print_socket_error("Error creating socket");
     return C_ERROR;
   }
-  struct timeval connectTimer = {0, 0};
-  connectTimer.tv_sec = GetMdsConnectTimeout();
+  struct timeval connectTimer = {.tv_sec = get_timeout_sec(), .tv_usec = 0};
   int err;
 #ifdef _WIN32
   struct timeval *timeout = connectTimer.tv_sec > 0 ? &connectTimer : NULL;
