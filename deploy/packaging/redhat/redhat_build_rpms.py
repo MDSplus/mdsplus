@@ -86,10 +86,10 @@ def doRequire(info, out, root, require):
     if 'external' in require.attrib:
         pkg = common.external_package(info, root, require.attrib['package'])
         if pkg:
-            os.write(out, "Requires: %s\n" % pkg)
+            common.writeb(out, "Requires: %s\n" % pkg)
     else:
         info['reqpkg'] = require.attrib['package']
-        os.write(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
+        common.writeb(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
 
 
 def build():
@@ -121,30 +121,30 @@ def build():
                 info["packagename"] = ""
             info['summary'] = package.attrib['summary']
             info['description'] = package.attrib['description']
-            out, specfilename = tempfile.mkstemp(text=True)
-            os.write(out, rpmspec % info)
+            out, specfilename = tempfile.mkstemp()
+            common.writeb(out, rpmspec % info)
             for require in package.getiterator("requires"):
                 doRequire(info, out, root, require)
-            os.write(out, pckspec % info)
+            common.writeb(out, pckspec % info)
             for inc in package.getiterator('include'):
                 for inctype in inc.attrib:
                     include = fixFilename(info, inc.attrib[inctype])
                     if inctype == "dironly":
-                        os.write(out, "%%dir %s\n" % include)
+                        common.writeb(out, "%%dir %s\n" % include)
                     else:
-                        os.write(out, "%s\n" % include)
+                        common.writeb(out, "%s\n" % include)
             for exc in package.getiterator('exclude'):
                 for exctype in exc.attrib:
                     exclude = fixFilename(info, exc.attrib[exctype])
-                    os.write(out, "%%exclude %s\n" % exclude)
+                    common.writeb(out, "%%exclude %s\n" % exclude)
             if package.find("exclude_staticlibs") is not None:
-                os.write(out, "%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
+                common.writeb(out, "%%exclude /usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
             if package.find("include_staticlibs") is not None:
-                os.write(out, "/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
-            for s in ("pre", "post", "preun", "postun"):
-                script = package.find(s)
+                common.writeb(out, "/usr/local/mdsplus/lib%(bits)d/*.a\n" % info)
+            for phase in ("pre", "post", "preun", "postun"):
+                script = package.find(phase)
                 if script is not None:
-                    os.write(out, "%%%s\n%s\n" % (s, script.text))
+                    common.writeb(out, "%%%s\n%s\n" % (phase, script.text))
             os.close(out)
             info['specfilename'] = specfilename
             print("Building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
@@ -152,22 +152,18 @@ def build():
             sys.stdout.flush()
             subprocess.Popen("/bin/cat %(specfilename)s" %
                              info, shell=True).wait()
-            for s in ('BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
+            for dir in ('BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
                 try:
-                    os.mkdir('/release/%(flavor)s/' % info + s)
+                    os.mkdir(('/release/%(flavor)s/' % info) + dir)
                 except OSError:
                     pass  # if exists
             p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
                                  info, stdout=subprocess.PIPE, shell=True)
-            messages = p.stdout.readlines()
+            message = p.stdout.read()
             status = p.wait()
             os.remove(specfilename)
             if status != 0:
-                for msg in messages:
-                    if isinstance(msg, str):
-                        sys.stdout.write(msg)
-                    else:
-                        sys.stdout.write(msg.decode())
+                sys.stdout.write(common.s(message))
                 sys.stdout.flush()
                 raise Exception(
                     "Error building rpm for package mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
@@ -182,28 +178,28 @@ def build():
         info['summary'] = package.attrib['summary']
         info['description'] = package.attrib['description']
         out, specfilename = tempfile.mkstemp()
-        os.write(out, rpmspec % info)
+        common.writeb(out, rpmspec % info)
         for require in package.getiterator("requires"):
             doRequire(info, out, root, require)
-        os.write(out, "Buildarch: noarch\n")
-        os.write(out, pckspec % info)
+        common.writeb(out, "Buildarch: noarch\n")
+        common.writeb(out, pckspec % info)
         for inc in package.getiterator('include'):
             for inctype in inc.attrib:
                 include = fixFilename(info, inc.attrib[inctype])
                 if inctype == "dironly":
-                    os.write(out, "%%dir %s\n" % include)
+                    common.writeb(out, "%%dir %s\n" % include)
                 else:
-                    os.write(out, "%s\n" % include)
+                    common.writeb(out, "%s\n" % include)
         for exc in package.getiterator('exclude'):
             for exctype in exc.attrib:
                 exclude = fixFilename(info, exc.attrib[exctype])
-                os.write(out, "%%exclude %s\n" % exclude)
+                common.writeb(out, "%%exclude %s\n" % exclude)
         if package.find("exclude_staticlibs") is not None:
-            os.write(out, "%%exclude /usr/local/mdsplus/lib??/*.a\n" % info)
+            common.writeb(out, "%%exclude /usr/local/mdsplus/lib??/*.a\n" % info)
         for s in ("pre", "post", "preun", "postun"):
             script = package.find(s)
             if script is not None:
-                os.write(out, "%%%s\n%s\n" % (s, script.text))
+                common.writeb(out, "%%%s\n%s\n" % (s, script.text))
         os.close(out)
         info['specfilename'] = specfilename
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
@@ -211,11 +207,11 @@ def build():
         subprocess.Popen("/bin/cat %(specfilename)s" % info, shell=True).wait()
         p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
                              info, stdout=subprocess.PIPE, shell=True)
-        messages = p.stdout.readlines()
+        message = p.stdout.read()
         status = p.wait()
         os.remove(specfilename)
         if status != 0:
-            print(''.join(messages))
+            print(common.s(message))
             raise Exception(
                 "Error building rpm for package mdsplus%(bname)s%(packagename)s.noarch" % info)
         print("Done building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)

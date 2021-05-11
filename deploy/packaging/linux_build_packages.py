@@ -1,7 +1,19 @@
 import os
+import sys
 import xml.etree.ElementTree as ET
 
 srcdir = os.path.realpath(os.path.dirname(__file__)+'/../..')
+
+if sys.version_info < (3,):
+    def b(s): return s
+    def s(b): return b
+    def writeb(f, string): os.write(f, string)
+    def writes(f, string): os.write(f, string)
+else:
+    def b(s): return s.encode() if isinstance(s, str) else s
+    def s(b): return b if isinstance(b, str) else b.decode()
+    def writeb(f, string): os.write(f, b(string))
+    def writes(f, string): os.write(f, s(string))
 
 def get_info():
     info = dict()
