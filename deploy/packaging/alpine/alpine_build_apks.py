@@ -94,7 +94,7 @@ def getPackageFiles(buildroot, includes, excludes):
                 hasuid = True
         excludefiles = getPackageFiles(buildroot, excludes, [])
         if hasuid:
-            print "Found %d" % len(excludefiles)
+            print("Found %d" % len(excludefiles))
             for exclude in excludefiles:
                 print("excluding: %s" % exclude)
         for exclude in excludefiles:
@@ -104,22 +104,31 @@ def getPackageFiles(buildroot, includes, excludes):
 
 
 def externalPackage(info, root, package):
-    ans = None
     for extpackages in root.getiterator('external_packages'):
-        platform = extpackages.attrib['platform']
-        if platform == "alpine":
-            pkg = extpackages.find(package)
-            if pkg is not None:
-                if 'package' in pkg.attrib:
-                    ans = pkg.attrib['package']
-            break
-    return ans
+        dist = extpackages.attrib.get('dist', None)
+        if dist:
+            if info['dist'] != dist:
+                continue
+        else:
+            platform = extpackages.attrib.get('platform', None)
+            if platform:
+                if info['platform'] != platform:
+                    continue
+            else:
+                continue
+        pkg = extpackages.find(package)
+        if pkg:  # found and include dependency
+            return pkg.attrib.get('package', package)
+        # found and dont include dependency
+        return None
+    # not found so dont include dependency
+    return None
 
 
 def doRequire(info, out, root, require):
     if 'external' in require.attrib:
         pkg = externalPackage(info, root, require.attrib['package'])
-        if pkg is not None:
+        if pkg:
             os.write(out, "Requires: %s\n" % pkg)
     else:
         info['reqpkg'] = require.attrib['package']
@@ -135,6 +144,7 @@ def getInfo():
         'minor': int(version[1]),
         'release': int(version[2]),
         'buildroot': os.environ['BUILDROOT'],
+        'platform': 'alpine',
         'dist': os.environ['DISTNAME'],
         'arch': os.environ['ARCH'],
         'flavor': branch,
@@ -188,7 +198,7 @@ def getDependencies(info, root, package):
     for require in package.getiterator("requires"):
         if 'external' in require.attrib:
             pkg = externalPackage(info, root, require.attrib['package'])
-            if pkg is not None:
+            if pkg:
                 depends.append(pkg)
         else:
             depends.append(
@@ -201,7 +211,7 @@ def getScripts(info, package):
     scripts = []
     for s in ("pre-install", "post-install", "pre-deinstall", "post-deinstall", "pre-upgrade", "post-upgrade"):
         scriptcls = package.find(s)
-        if scriptcls is not None and ("type" not in scriptcls.attrib or scriptcls.attrib["type"] != "rpm"):
+        if scriptcls and ("type" not in scriptcls.attrib or scriptcls.attrib["type"] != "rpm"):
             script = scriptname % s
             scripts.append(script)
             with open("/workspace/%s" % script, "w+") as f:
@@ -215,7 +225,6 @@ def buildApks():
     info = getInfo()
     tree = ET.parse(linux_xml)
     root = tree.getroot()
-    apks = []
     noarch = "noarch"
     archdir = "/release/%(flavor)s/%(arch)s" % info
     noarchdir = "/release/%(flavor)s/noarch" % info

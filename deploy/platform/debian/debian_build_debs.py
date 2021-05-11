@@ -81,25 +81,25 @@ def getPackageFiles(buildroot, includes, excludes):
 
 
 def externalPackage(info, root, package):
-    ans = None
     for extpackages in root.getiterator('external_packages'):
-        try:
-            dist = extpackages.attrib['dist']
-        except:
-            dist = 'no dist'
-        try:
-            platform = extpackages.attrib['platform']
-        except:
-            platform = 'no platform'
-        if info['platform'] == platform or info['dist'] == dist:
-            pkg = extpackages.find(package)
-            if pkg is not None:
-                if 'package' in pkg.attrib:
-                    ans = pkg.attrib['package']
-                else:
-                    ans = package
-            break
-    return ans
+        dist = extpackages.attrib.get('dist', None)
+        if dist:
+            if info['dist'] != dist:
+                continue
+        else:
+            platform = extpackages.attrib.get('platform', None)
+            if platform:
+                if info['platform'] != platform:
+                    continue
+            else:
+                continue
+        pkg = extpackages.find(package)
+        if pkg:  # found and include dependency
+            return pkg.attrib.get('package', package)
+        # found and dont include dependency
+        return None
+    # not found so dont include dependency
+    return None
 
 
 def doRequire(info, out, root, require):

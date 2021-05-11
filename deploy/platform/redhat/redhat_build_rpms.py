@@ -44,17 +44,25 @@ def doWrite(out, string):
 
 
 def externalPackage(info, root, package):
-    ans = None
     for extpackages in root.getiterator('external_packages'):
-        platform = extpackages.attrib['platform']
-        if platform == info['platform']:
-            pkg = extpackages.find(package)
-            if pkg is not None:
-                if 'package' in pkg.attrib:
-                    ans = pkg.attrib['package']
-                else:
-                    ans = package
-    return ans
+        dist = extpackages.attrib.get('dist', None)
+        if dist:
+            if info['dist'] != dist:
+                continue
+        else:
+            platform = extpackages.attrib.get('platform', None)
+            if platform:
+                if info['platform'] != platform:
+                    continue
+            else:
+                continue
+        pkg = extpackages.find(package)
+        if pkg:  # found and include dependency
+            return pkg.attrib.get('package', package)
+        # found and dont include dependency
+        return None
+    # not found so dont include dependency
+    return None
 
 
 def fixFilename(info, filename):
@@ -82,13 +90,13 @@ def fixFilename(info, filename):
 def doRequire(info, out, root, require):
     if 'external' in require.attrib:
         pkg = externalPackage(info, root, require.attrib['package'])
-        if pkg is not None:
+        if pkg:
             print('***************** REQUIRES ***********',
                   pkg, '*******************')
             doWrite(out, "Requires: %s\n" % pkg)
     else:
         info['reqpkg'] = require.attrib['package']
-        doWrite(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(distname)s\n" % info)
+        doWrite(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
 
 
 def buildRpms():
@@ -98,15 +106,11 @@ def buildRpms():
     info['major'] = int(version[0])
     info['minor'] = int(version[1])
     info['release'] = int(version[2])
-    info['distname'] = os.environ['DISTNAME']
+    info['dist'] = os.environ['DISTNAME']
     info['buildroot'] = os.environ['BUILDROOT']
     info['bname'] = os.environ['BNAME']
     info['platform'] = os.environ['PLATFORM']
-    print('******** DISTNAME is *************', info['distname'])
-    if info['distname'] != 'el8':
-        tree = ET.parse(srcdir+'/deploy/packaging/linux.xml')
-    else:
-        tree = ET.parse(srcdir+'/deploy/packaging/linux-rhel8.xml')
+    tree = ET.parse(srcdir+'/deploy/packaging/linux.xml')
     root = tree.getroot()
     rpmspec = root.find('rpm').find('spec_start').text
     s = rpmspec.split('\n')
@@ -125,7 +129,7 @@ def buildRpms():
             bin_packages.append(package)
     architectures = [{"target": "x86_64-linux",
                       "bits": 64, "arch_t": ".x86_64"}]
-    if os.environ['DISTNAME'] != 'el8':
+    if info['dist'] != 'el8':
         architectures.append(
             {"target": "i686-linux", "bits": 32, "arch_t": ".i686"})
 
@@ -198,8 +202,7 @@ def buildRpms():
                 sys.stdout.flush()
                 raise Exception(
                     "Error building rpm for package mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
-            print(
-                "Done building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
+            print("Done building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
             sys.stdout.flush()
     for package in noarch_packages:
         info['arch'] = "noarch"
