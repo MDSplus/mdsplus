@@ -100,6 +100,8 @@ rundocker() {
         -e "ARCH=${arch}" \
         -e "ARCHES=${ARCH}" \
         -e "BRANCH" \
+        -e "BNAME" \
+        -e "FLAVOR" \
         -e "COLOR" \
         -e "DISPLAY" \
         -e "DISTNAME" \
@@ -157,10 +159,10 @@ EOF
 default_build() {
   if [ "${RELEASE}" = "yes" ]; then
     rm -Rf ${RELEASEDIR}/${BRANCH}
-    mkdir -p ${RELEASEDIR}/${BRANCH}
+    mkdir -p ${RELEASEDIR}/${FLAVOR}
   fi
   if [ "${PUBLISH}" = "yes" ]; then
-    mkdir -p ${PUBLISHDIR}/${BRANCH}
+    mkdir -p ${PUBLISHDIR}/${FLAVOR}
   fi
 }
 
@@ -169,6 +171,22 @@ if [ "$BRANCH" = "alpha" ]; then
 else
   ALPHA_DEBUG_INFO=
 fi
+
+case "$BRANCH" in
+  stable)
+    export FLAVOR="stable"
+    export BNAME=""
+    ;;
+  alpha)
+    export FLAVOR="alpha"
+    export BNAME="-alpha"
+    ;;
+      *)
+    export FLAVOR="other"
+    export BNAME="-other"
+    ;;
+esac
+
 set +e
 platform_build="${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh"
 if [ -f "${platform_build}" ]; then

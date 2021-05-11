@@ -205,11 +205,6 @@ main(){
       set +e
       make_jars
     fi
-    case "$BRANCH" in
-     stable) export BNAME="";;
-      alpha) export BNAME="-alpha";;
-          *) export BNAME="-other";;
-    esac
     if [ "$RELEASE" = "yes" ]
     then
         set +e

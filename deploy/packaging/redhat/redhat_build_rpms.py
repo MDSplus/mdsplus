@@ -143,10 +143,10 @@ def build():
                              info, shell=True).wait()
             for s in ('BUILD', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
                 try:
-                    os.mkdir('/release/%(branch)s/' % info + s)
+                    os.mkdir('/release/%(flavor)s/' % info + s)
                 except OSError:
                     pass  # if exists
-            p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
+            p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" %
                                  info, stdout=subprocess.PIPE, shell=True)
             messages = p.stdout.readlines()
             status = p.wait()
@@ -204,7 +204,7 @@ Buildarch: noarch
         print("Building rpm for mdsplus%(rflavor)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
         subprocess.Popen("/bin/cat %(specfilename)s" % info, shell=True).wait()
-        p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
+        p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
                              info, stdout=subprocess.PIPE, shell=True)
         messages = p.stdout.readlines()
         status = p.wait()
@@ -218,7 +218,7 @@ Buildarch: noarch
     try:
         os.stat('/sign_keys/.gnupg')
         try:
-            cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            cmd = "/bin/sh -c 'rsync -a /sign_keys /tmp/; HOME=/tmp/sign_keys rpmsign --addsign /release/%(flavor)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             try:
                 if sys.version_info < (3,):
                     bout = sys.stdout
