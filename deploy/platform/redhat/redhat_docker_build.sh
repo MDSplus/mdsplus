@@ -104,7 +104,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
     mkdir -p /release/${FLAVOR}
-    BUILDROOT=${BUILDROOT}
+    BUILDROOT=${BUILDROOT}\
       ${srcdir}/deploy/packaging/${PLATFORM}/${PLATFORM}_build_rpms.py
     do_createrepo /release
     badrpm=0
