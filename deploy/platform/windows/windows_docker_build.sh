@@ -3,10 +3,10 @@
 # windows_docker_build.sh - build windows installer
 #
 # release:
-# /release/$branch/MDSplus-*.exe
+# /release/$flavor/MDSplus-*.exe
 #
 # publish:
-# /publish/$branch/MDSplus-*.exe
+# /publish/$flavor/MDSplus-*.exe
 #
 
 srcdir=$(readlink -e $(dirname ${0})/../..)
@@ -71,11 +71,5 @@ publish() {
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
     minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
     release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-    if [ "${BRANCH}" = "stable" ]
-    then
-        bname=""
-    else
-        bname="-${BRANCH}"
-    fi
-    rsync -a /release/${BRANCH}/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}
+    rsync -a /release/${FLAVOR}/MDSplus${BNAME}-${major}.${minor}-${release}.exe /publish/${FLAVOR}
 }
