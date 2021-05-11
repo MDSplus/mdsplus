@@ -26,13 +26,13 @@
 import subprocess
 import os
 import sys
-import xml.etree.ElementTree as ET
 import fnmatch
-import tempfile
-import shutil
 
-linux_xml = "%s/linux.xml" % (os.path.dirname(
-    os.path.dirname(os.path.realpath(__file__))),)
+
+srcdir = os.path.realpath(os.path.dirname(__file__)+'/../../..')
+sys.path.insert(0, os.path.join(srcdir, 'deploy', 'packaging'))
+import linux_build_packages as common
+
 pkg_exclusions = ('repo', 'gsi', 'gsi_bin', 'idl', 'idl_bin',
                   'labview', 'labview_bin', 'php', 'd3d', 'matlab')
 noarch_builder = "x86_64"
@@ -103,53 +103,15 @@ def getPackageFiles(buildroot, includes, excludes):
     return files
 
 
-def externalPackage(info, root, package):
-    for extpackages in root.getiterator('external_packages'):
-        dist = extpackages.attrib.get('dist', None)
-        if dist:
-            if info['dist'] != dist:
-                continue
-        else:
-            platform = extpackages.attrib.get('platform', None)
-            if platform:
-                if info['platform'] != platform:
-                    continue
-            else:
-                continue
-        pkg = extpackages.find(package)
-        if pkg:  # found and include dependency
-            return pkg.attrib.get('package', package)
-        # found and dont include dependency
-        return None
-    # not found so dont include dependency
-    return None
-
-
 def doRequire(info, out, root, require):
     if 'external' in require.attrib:
-        pkg = externalPackage(info, root, require.attrib['package'])
+        pkg = common.external_package(info, root, require.attrib['package'])
         if pkg:
-            os.write(out, "Requires: %s\n" % pkg)
+            os.write(out, "Depends: %s\n" % pkg)
     else:
         info['reqpkg'] = require.attrib['package']
     os.write(
         out, "Depends: mdsplus%(rflavor)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
-
-
-def getInfo():
-    version = os.environ['RELEASE_VERSION'].split('.')
-    branch = os.environ['BRANCH']
-    return {
-        'major': int(version[0]),
-        'minor': int(version[1]),
-        'release': int(version[2]),
-        'buildroot': os.environ['BUILDROOT'],
-        'platform': 'alpine',
-        'dist': os.environ['DISTNAME'],
-        'arch': os.environ['ARCH'],
-        'flavor': branch,
-        'rflavor': "-%s" % branch if not branch == "stable" else "",
-    }
 
 
 def run_cmd(cmd, quiet=False):
@@ -197,7 +159,7 @@ def getDependencies(info, root, package):
     depends = []
     for require in package.getiterator("requires"):
         if 'external' in require.attrib:
-            pkg = externalPackage(info, root, require.attrib['package'])
+            pkg = common.external_package(info, root, require.attrib['package'])
             if pkg:
                 depends.append(pkg)
         else:
@@ -221,10 +183,9 @@ def getScripts(info, package):
     return 'install="%s"' % " ".join(scripts)
 
 
-def buildApks():
-    info = getInfo()
-    tree = ET.parse(linux_xml)
-    root = tree.getroot()
+def build():
+    info = common.get_info()
+    root = common.get_root()
     noarch = "noarch"
     archdir = "/release/%(flavor)s/%(arch)s" % info
     noarchdir = "/release/%(flavor)s/noarch" % info
@@ -285,5 +246,5 @@ mkdir -p "$pkgdir"
             os.rename("%s/%s" % (archdir, fnm), "%s/%s" % (noarchdir, fnm))
     clean_ws()
 
-
-buildApks()
+if __name__ == "__main__":
+    build()

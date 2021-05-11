@@ -84,7 +84,7 @@ buildrelease() {
       DISTNAME=${DISTNAME} \
       BUILDROOT=${BUILDROOT} \
       PLATFORM=${PLATFORM} \
-      ${srcdir}/deploy/platform/debian/debian_build_debs.py
+      ${srcdir}/deploy/packaging/debian/debian_build_debs.py
     baddeb=0
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${RELEASE_VERSION}_*\.deb"); do
       pkg=$(debtopkg $(basename $deb) "${BNAME}" ${RELEASE_VERSION} ${ARCH})

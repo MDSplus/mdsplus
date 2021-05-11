@@ -110,7 +110,7 @@ EOF
       DISTNAME=${DISTNAME}\
       BUILDROOT=${BUILDROOT}\
       PLATFORM=${PLATFORM}\
-      ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py
+      ${srcdir}/deploy/packaging/${PLATFORM}/${PLATFORM}_build_rpms.py
     do_createrepo /release
     badrpm=0
     for rpm in $(find /release/${BRANCH}/RPMS -name '*\.rpm'); do
