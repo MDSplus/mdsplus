@@ -830,8 +830,8 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  </external_packages>
 
  <external_packages dist="el8">
-   <python package="python2"/>
-   <python-numpy package="python2-numpy"/>
+   <python package="python3"/>
+   <python-numpy package="python3-numpy"/>
    <xinetd/>
    <java/>
  </external_packages>
