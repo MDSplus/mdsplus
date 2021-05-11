@@ -34,6 +34,31 @@ srcdir = os.path.realpath(os.path.dirname(__file__)+'/../../..')
 sys.path.insert(0, os.path.join(srcdir, 'deploy', 'packaging'))
 import linux_build_packages as common
 
+rpmspec = """
+%%define debug_package %%{nil}
+%%global _missing_build_ids_terminate_build 0
+%%global _unpackaged_files_terminate_build 0
+Name: mdsplus%(bname)s%(packagename)s
+Version: %(major)d.%(minor)d
+Release: %(release)s.%(dist)s
+License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
+Source: https://github.com/MDSplus/mdsplus/archive/%(branch)s_release-%(major)d-%(minor)d-%(release)d.tar.gz
+URL: http://www.mdsplus.org
+Vendor: Massachusetts Institute of Technology
+Packager: Plasma Science and Fusion Center <mdsplus@www.mdsplus.org>
+Summary: %(summary)s
+Group: Applications/Archiving
+Prefix: /usr/local
+AutoReqProv: yes
+"""
+
+pckspec = """
+%%description
+%(description)s
+%%clean
+%%files
+%%defattr(-,root,root)
+"""
 
 def fixFilename(info, filename):
     """For binary packages we need to refer to /libnn, /binnn and /uidnn where nn is 32 or 64. For
@@ -64,29 +89,12 @@ def doRequire(info, out, root, require):
             os.write(out, "Requires: %s\n" % pkg)
     else:
         info['reqpkg'] = require.attrib['package']
-        os.write(out, "Requires: mdsplus%(rflavor)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
+        os.write(out, "Requires: mdsplus%(bname)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
 
 
 def build():
     info = common.get_info()
     root = common.get_root()
-    rpmspec = """
-%%define debug_package %%{nil}
-%%global _missing_build_ids_terminate_build 0
-%%global _unpackaged_files_terminate_build 0
-Name: mdsplus%(rflavor)s%(packagename)s
-Version: %(major)d.%(minor)d
-Release: %(release)s.%(dist)s
-License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
-Source: https://github.com/MDSplus/mdsplus/archive/%(branch)s_release-%(major)d-%(minor)d-%(release)d.tar.gz
-URL: http://www.mdsplus.org
-Vendor: Massachusetts Institute of Technology
-Packager: Plasma Science and Fusion Center <mdsplus@www.mdsplus.org>
-Summary: %(summary)s
-Group: Applications/Archiving
-Prefix: /usr/local
-AutoReqProv: yes
-"""
     bin_packages = list()
     noarch_packages = list()
     for package in root.getiterator('package'):
@@ -114,17 +122,10 @@ AutoReqProv: yes
             info['summary'] = package.attrib['summary']
             info['description'] = package.attrib['description']
             out, specfilename = tempfile.mkstemp(text=True)
-            print (info, rpmspec)
             os.write(out, rpmspec % info)
             for require in package.getiterator("requires"):
                 doRequire(info, out, root, require)
-            os.write(out, """
-%%description
-%(description)s
-%%clean
-%%files
-%%defattr(-,root,root)
-""" % info)
+            os.write(out, pckspec % info)
             for inc in package.getiterator('include'):
                 for inctype in inc.attrib:
                     include = fixFilename(info, inc.attrib[inctype])
@@ -146,7 +147,7 @@ AutoReqProv: yes
                     os.write(out, "%%%s\n%s\n" % (s, script.text))
             os.close(out)
             info['specfilename'] = specfilename
-            print("Building rpm for mdsplus%(rflavor)s%(packagename)s%(arch_t)s" % info)
+            print("Building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
 
             sys.stdout.flush()
             subprocess.Popen("/bin/cat %(specfilename)s" %
@@ -169,8 +170,8 @@ AutoReqProv: yes
                         sys.stdout.write(msg.decode())
                 sys.stdout.flush()
                 raise Exception(
-                    "Error building rpm for package mdsplus%(rflavor)s%(packagename)s%(arch_t)s" % info)
-            print("Done building rpm for mdsplus%(rflavor)s%(packagename)s%(arch_t)s" % info)
+                    "Error building rpm for package mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
+            print("Done building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
             sys.stdout.flush()
     for package in noarch_packages:
         info['arch'] = "noarch"
@@ -184,14 +185,8 @@ AutoReqProv: yes
         os.write(out, rpmspec % info)
         for require in package.getiterator("requires"):
             doRequire(info, out, root, require)
-        os.write(out, """
-Buildarch: noarch
-%%description
-%(description)s
-%%clean
-%%files
-%%defattr(-,root,root)
-""" % info)
+        os.write(out, "Buildarch: noarch\n")
+        os.write(out, pckspec % info)
         for inc in package.getiterator('include'):
             for inctype in inc.attrib:
                 include = fixFilename(info, inc.attrib[inctype])
@@ -211,7 +206,7 @@ Buildarch: noarch
                 os.write(out, "%%%s\n%s\n" % (s, script.text))
         os.close(out)
         info['specfilename'] = specfilename
-        print("Building rpm for mdsplus%(rflavor)s%(packagename)s.noarch" % info)
+        print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
         subprocess.Popen("/bin/cat %(specfilename)s" % info, shell=True).wait()
         p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(flavor)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" %
@@ -222,8 +217,8 @@ Buildarch: noarch
         if status != 0:
             print(''.join(messages))
             raise Exception(
-                "Error building rpm for package mdsplus%(rflavor)s%(packagename)s.noarch" % info)
-        print("Done building rpm for mdsplus%(rflavor)s%(packagename)s.noarch" % info)
+                "Error building rpm for package mdsplus%(bname)s%(packagename)s.noarch" % info)
+        print("Done building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
     try:
         os.stat('/sign_keys/.gnupg')

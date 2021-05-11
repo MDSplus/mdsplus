@@ -89,7 +89,7 @@ def doRequire(info, out, root, require):
     else:
         info['reqpkg'] = require.attrib['package']
     os.write(
-        out, "Depends: mdsplus%(rflavor)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
+        out, "Depends: mdsplus%(bname)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
 
 
 def build():
@@ -141,14 +141,14 @@ def build():
                         depends.append(pkg)
                 else:
                     depends.append(
-                        "mdsplus%s-%s" % (info['rflavor'], require.attrib['package'].replace('_', '-')))
+                        "mdsplus%s-%s" % (info['bname'], require.attrib['package'].replace('_', '-')))
             if len(depends) == 0:
                 info['depends'] = ''
             else:
                 info['depends'] = "\nDepends: %s" % ','.join(depends)
             info['name'] = info['packagename'].replace('_', '-')
             f = open("%(tmpdir)s/DEBIAN/control" % info, "w")
-            f.write("""Package: mdsplus%(rflavor)s%(name)s
+            f.write("""Package: mdsplus%(bname)s%(name)s
 Version: %(major)d.%(minor)d.%(release)d
 Section: admin
 Priority: optional
@@ -167,7 +167,7 @@ Description: %(description)s
                         "__INSTALL_PREFIX__", "/usr/local")))
                     f.close()
                     os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info, 0o775)
-            info['debfile'] = "/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
+            info['debfile'] = "/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(bname)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
             if subprocess.Popen("dpkg-deb --build %(tmpdir)s %(debfile)s" % info, shell=True).wait() != 0:
                 for k, v in info.items():
                     print("%s=%s" % (k, v))

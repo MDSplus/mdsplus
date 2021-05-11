@@ -8,7 +8,7 @@ def get_info():
     info['buildroot'] = os.environ['BUILDROOT']
     info['branch'] = os.environ['BRANCH']
     info['flavor'] = os.environ['FLAVOR']
-    info['rflavor'] = os.environ['BNAME']
+    info['bname'] = os.environ['BNAME']
     info['dist'] = os.environ['DISTNAME']
     info['platform'] = os.environ['PLATFORM']
     info['arch'] = os.environ['ARCH']

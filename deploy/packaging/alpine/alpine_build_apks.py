@@ -111,7 +111,7 @@ def doRequire(info, out, root, require):
     else:
         info['reqpkg'] = require.attrib['package']
     os.write(
-        out, "Depends: mdsplus%(rflavor)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
+        out, "Depends: mdsplus%(bname)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
 
 
 def run_cmd(cmd, quiet=False):
@@ -164,12 +164,12 @@ def getDependencies(info, root, package):
                 depends.append(pkg)
         else:
             depends.append(
-                "mdsplus%s-%s" % (info['rflavor'], require.attrib['package'].replace('_', '-')))
+                "mdsplus%s-%s" % (info['bname'], require.attrib['package'].replace('_', '-')))
     return ' '.join(depends)
 
 
 def getScripts(info, package):
-    scriptname = "mdsplus%(rflavor)s%(name)s.%%s" % info
+    scriptname = "mdsplus%(bname)s%(name)s.%%s" % info
     scripts = []
     for s in ("pre-install", "post-install", "pre-deinstall", "post-deinstall", "pre-upgrade", "post-upgrade"):
         scriptcls = package.find(s)
@@ -214,7 +214,7 @@ def build():
         with open("/workspace/APKBUILD", "w+") as f:
             f.write("# Contributor: MDSplus Developer Team\n")
             f.write("#Maintainer: Tom Fredian <twf@mdsplus.org>\n")
-            f.write("pkgname=mdsplus%(rflavor)s%(name)s\n" % info)
+            f.write("pkgname=mdsplus%(bname)s%(name)s\n" % info)
             f.write("pkgver=%(major)d.%(minor)d\n" % info)
             f.write("pkgrel=%(release)d\n" % info)
             f.write('pkgdesc="%(description)s"\n' % info)
@@ -242,7 +242,7 @@ mkdir -p "$pkgdir"
         if not run_cmd("abuild checksum && abuild -cqdP /release/%(flavor)s" % info):
             raise Exception("Problem building package")
         if info['pkg_arch'] == noarch:
-            fnm = "mdsplus%(rflavor)s%(name)s-%(major)d.%(minor)d-r%(release)d.apk" % info
+            fnm = "mdsplus%(bname)s%(name)s-%(major)d.%(minor)d-r%(release)d.apk" % info
             os.rename("%s/%s" % (archdir, fnm), "%s/%s" % (noarchdir, fnm))
     clean_ws()
 
