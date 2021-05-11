@@ -17,13 +17,13 @@ do_createrepo() {
   repodir=$1
   tmpdir=$(mktemp -d)
   trap 'rm -Rf ${tmpdir}' EXIT
-  if [ -d ${repodir}/${BRANCH}/RPMS/repodata ]; then
-    rsync -a ${repodir}/${BRANCH}/RPMS/repodata ${tmpdir}
-    update_args="--update --cachedir ${repodir}/${BRANCH}/cache ${use_deltas}"
+  if [ -d ${repodir}/${FLAVOR}/RPMS/repodata ]; then
+    rsync -a ${repodir}/${FLAVOR}/RPMS/repodata ${tmpdir}
+    update_args="--update --cachedir ${repodir}/${FLAVOR}/cache ${use_deltas}"
   fi
-  : && createrepo -q $update_args -o ${tmpdir} ${repodir}/${BRANCH}/RPMS
+  : && createrepo -q $update_args -o ${tmpdir} ${repodir}/${FLAVOR}/RPMS
   checkstatus abort "Failure: Problem creating rpm repository in ${repodir}!" $?
-  : && rsync -a ${tmpdir}/repodata ${repodir}/${BRANCH}/RPMS/
+  : && rsync -a ${tmpdir}/repodata ${repodir}/${FLAVOR}/RPMS/
 }
 
 srcdir=$(readlink -e $(dirname ${0})/../..)
@@ -58,10 +58,10 @@ buildrelease() {
   RELEASEBLD=/workspace/releasebld
   BUILDROOT=${RELEASEBLD}/buildroot
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
-  rm -Rf ${RELEASEBLD} /release/${BRANCH}
+  rm -Rf ${RELEASEBLD} /release/${FLAVOR}
   mkdir -p ${RELEASEBLD}/64 ${BUILDROOT} ${MDSPLUS_DIR}
   pushd ${RELEASEBLD}/64
-  config ${test64} ${ALPHA_DEBUG_INFO}
+  config ${test64} ${CONFIGURE_EXTRA}
   if [ -z "$NOMAKE" ]; then
     $MAKE
     $MAKE install
@@ -70,7 +70,7 @@ buildrelease() {
   if [ "${ARCHES}" != "amd64" ]; then
     mkdir -p ${RELEASEBLD}/32
     pushd ${RELEASEBLD}/32
-    config ${test32} ${ALPHA_DEBUG_INFO}
+    config ${test32} ${CONFIGURE_EXTRA}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -97,23 +97,18 @@ buildrelease() {
     cat - >${BUILDROOT}/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
 [MDSplus${BNAME}]
 name=MDSplus${BNAME}
-baseurl=http://www.mdsplus.org/dist/${OS}/${BRANCH}/RPMS
+baseurl=http://www.mdsplus.org/dist/${OS}/${FLAVOR}/RPMS
 enabled=1
 gpgcheck=${GPGCHECK}
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
-    mkdir -p /release/${BRANCH}
-    BRANCH=${BRANCH}\
-      RELEASE_VERSION=${RELEASE_VERSION}\
-      BNAME=${BNAME}\
-      DISTNAME=${DISTNAME}\
-      BUILDROOT=${BUILDROOT}\
-      PLATFORM=${PLATFORM}\
+    mkdir -p /release/${FLAVOR}
+    BUILDROOT=${BUILDROOT}
       ${srcdir}/deploy/packaging/${PLATFORM}/${PLATFORM}_build_rpms.py
     do_createrepo /release
     badrpm=0
-    for rpm in $(find /release/${BRANCH}/RPMS -name '*\.rpm'); do
+    for rpm in $(find /release/${FLAVOR}/RPMS -name '*\.rpm'); do
       pkg=$(echo $(basename $rpm) | cut -f3 -d-)
       #
       # Skip main installer which only has package dependencies and no files
@@ -142,8 +137,8 @@ EOF
 
 publish() {
   ### DO NOT CLEAN /publish as it may contain valid older release rpms
-  mkdir -p /publish/${BRANCH}
-  : && rsync -a --exclude=repodata /release/${BRANCH}/* /publish/${BRANCH}
+  mkdir -p /publish/${FLAVOR}
+  : && rsync -a --exclude=repodata /release/${FLAVOR}/* /publish/${FLAVOR}
   checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
   if (createrepo -h | grep '\-\-deltas' >/dev/null); then
     use_deltas="--deltas"

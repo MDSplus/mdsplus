@@ -38,11 +38,13 @@ def external_package(info, root, package):
         if dist:
             if info['dist'] != dist:
                 continue
+            selected = dist
         else:
             platform = extpackages.attrib.get('platform', None)
             if platform:
                 if info['platform'] != platform:
                     continue
+                selected = platform
             else:
                 continue
         pkg = extpackages.find(package)
@@ -50,7 +52,8 @@ def external_package(info, root, package):
             pkg = pkg.attrib.get('package', package)
             print('REQUIRES: %s' % (pkg,))
             return pkg
-        print("found and dont include '%s' dependency" % package)
+        print('REQUIRES: %s but skipped in %s.' % (package, selected))
         return None
     # not found so dont include dependency
+    print('REQUIRES: %s but no fitting external_packages found.' % (package,))
     return None
