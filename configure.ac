@@ -994,13 +994,13 @@ AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
 
 AC_MSG_CHECKING(PyLib)
-DEF_PYLIB=${PyLib:-$($PYTHON -c '
+PYLIB=${PyLib:-$($PYTHON -c '
 import sys,ctypes.util
 name = ("python%d%d" if sys.platform.startswith("win") else "python%d.%d")%sys.version_info[[0:2]]
 name = ctypes.util.find_library(name)
 if not name is None: print(name)
 ')}
-AC_MSG_RESULT($DEF_PYLIB)
+AC_MSG_RESULT($PYLIB)
 
 
 
@@ -1326,7 +1326,7 @@ AC_SUBST(MOTIF_LDARC)
 AC_SUBST(MOTIF_LD_LDSHARE)
 AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
-AC_SUBST(DEF_PYLIB)
+AC_SUBST(PYLIB)
 AC_SUBST(NEED_SEMUN)
 
 AC_SUBST(RELEASE_MAJOR)
