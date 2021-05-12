@@ -42,7 +42,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
   if (!c || !c->io)
     return MDSplusERROR;
   int id = c->id;
-  MDSDBG("Awaiting %u bytes\n", (uint32_t)bytes_to_recv);
+  MDSDBG("Awaiting %u bytes", (uint32_t)bytes_to_recv);
   while (bytes_to_recv > 0)
   {
     ssize_t bytes_recv;
@@ -57,7 +57,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
       bptr += bytes_recv;
       continue;
     } // only exception from here on
-    MDSDBG("Exception %d\n", errno);
+    MDSDBG("Exception %d", errno);
     if (errno == ETIMEDOUT)
       return TdiTIMEOUT;
     if (bytes_recv == 0 && to_msec >= 0)
@@ -73,7 +73,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
     }
     return SsINTERNAL;
   }
-  MDSDBG("Got all bytes\n");
+  MDSDBG("Got all bytes");
   return MDSplusSUCCESS;
 }
 
@@ -94,7 +94,7 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
       FlipHeader(&header);
     MDSDBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
            "descriptor_idx = %d, message_id = %d, dtype = %d, "
-           "client_type = %d, header.ndims = %d)\n",
+           "client_type = %d, header.ndims = %d)",
            header.msglen, header.status, header.length, header.nargs,
            header.descriptor_idx, header.message_id, header.dtype,
            header.client_type, header.ndims);

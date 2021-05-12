@@ -77,11 +77,11 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
       strcat(newexp, ",__si($)");
     strcat(newexp, "))");
     nargs += 2;
-    MDSDBG("%s\n", newexp);
+    MDSDBG(newexp);
     status = SendArg(id, 0, DTYPE_CSTRING, nargs, strlen(newexp), 0, &dim,
                      (char *)newexp);
     free(newexp);
-    MDSDBG("%s\n", expression);
+    MDSDBG(expression);
     struct descriptor_a *arr;
     status = SendArg(id, 1, DTYPE_CSTRING, nargs, strlen(expression), 0, &dim,
                      (char *)expression);
@@ -117,7 +117,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
 EXPORT int _MdsValue(int id, int nargs, struct descrip **arglist,
                      struct descrip *ans_arg)
 {
-  MDSDBG("mdstcpip.MdsValue> '%s'\n", (char *)(**arglist).ptr);
+  MDSDBG("mdstcpip.MdsValue> '%s'", (char *)(**arglist).ptr);
   int i, status = 1;
   for (i = 0; i < nargs && STATUS_OK; i++)
     status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]),

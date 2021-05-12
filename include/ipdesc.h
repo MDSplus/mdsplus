@@ -40,6 +40,7 @@ extern "C"
 #endif
 
 #ifndef __MDSIP_H__
+  #define INVALID_CONNECTION_ID -1
   extern int ConnectToMds(char *host);
   extern int SendArg(int s, unsigned char i, char dtype, unsigned char nargs,
                      short len, char ndims, int *dims, char *ptr);

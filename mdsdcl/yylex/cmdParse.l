@@ -37,15 +37,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "dclyacc.h"
 //#define DEBUG
 #include <mdsmsg.h>
-#ifdef DEBUG
-#undef MDSDBG
-# define MDSDBG(...) do{\
-fprintf(stderr, "cmdParse: ");\
-fprintf(stderr, __VA_ARGS__);\
-fprintf(stderr, "\n");\
-}while(0) //"
-#endif
-
 #define DBGM(RETURN,prefix)	MDSDBG("%-9s -> %-12s : '%s'", #RETURN, #prefix, yytext)
 %}
 

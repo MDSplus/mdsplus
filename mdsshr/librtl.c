@@ -1824,10 +1824,10 @@ static size_t findfileloop(ctx_t *const ctx)
       return ctx->stack[ctx->cur_stack].wlen + flen;
     if (ctx->recursive && ISDIRECTORY(ctx))
     {
-      // MDSDBG("path = %s\n", ctx->buffer);
+      // MDSDBG("path = %s", ctx->buffer);
       if (++ctx->cur_stack == ctx->max_stack)
       {
-        MDSDBG("max_stack increased = %d\n", ctx->max_stack);
+        MDSDBG("max_stack increased = %d", ctx->max_stack);
         findstack_t *old = ctx->stack;
         ctx->max_stack *= 2;
         ctx->stack = malloc(sizeof(findstack_t) * ctx->max_stack);
@@ -1852,7 +1852,7 @@ static inline void *_findfilestart(const char *const envname,
                                    const char *const filename,
                                    const int recursive, const int case_blind)
 {
-  MDSDBG("looking for '%s' in '%s'\n", filename, envname);
+  MDSDBG("looking for '%s' in '%s'", filename, envname);
   ctx_t *ctx = (ctx_t *)malloc(sizeof(ctx_t));
   ctx->max_stack = recursive ? 8 : 1;
   ctx->stack = malloc(ctx->max_stack * sizeof(findstack_t));
@@ -2087,12 +2087,12 @@ EXPORT int MdsPutEnv(const char *const cmd)
       if (*value)
       {
         *(value++) = '\0';
-        MDSDBG("setenv %s=%s\n", name, value);
+        MDSDBG("setenv %s=%s", name, value);
         status = setenv(name, value, 1);
       }
       else
       {
-        MDSDBG("unsetenv %s\n", name);
+        MDSDBG("unsetenv %s", name);
         status = unsetenv(name);
       }
       status = status ? MDSplusERROR : MDSplusSUCCESS;

@@ -41,7 +41,7 @@ static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
     return MDSplusERROR;
   char *bptr = (char *)buffer;
   int tries = 0;
-  MDSDBG("Sending %u bytes\n", (uint32_t)bytes_to_send);
+  MDSDBG("Sending %u bytes", (uint32_t)bytes_to_send);
   while ((bytes_to_send > 0) && (tries < 10))
   {
     ssize_t bytes_sent;
@@ -50,7 +50,7 @@ static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
     {
       if (errno != EINTR)
       {
-        MDSDBG("Exception %d\n", errno);
+        MDSDBG("Exception %d", errno);
         perror("send_bytes: Error sending data to remote server");
         return MDSplusERROR;
       }
@@ -74,7 +74,7 @@ static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send,
     return SsINTERNAL;
   }
 
-  MDSDBG("Sent all bytes\n");
+  MDSDBG("Sent all bytes");
   return MDSplusSUCCESS;
 }
 
@@ -117,7 +117,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
     MDSDBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
            "descriptor_idx = %d, message_id = %d, dtype = %d, "
-           "client_type = %d, header.ndims = %d)\n",
+           "client_type = %d, header.ndims = %d)",
            cm->h.msglen, cm->h.status, cm->h.length, cm->h.nargs,
            cm->h.descriptor_idx, cm->h.message_id, cm->h.dtype,
            cm->h.client_type, cm->h.ndims);

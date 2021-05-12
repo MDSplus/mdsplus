@@ -72,7 +72,7 @@ Connection *PopConnection(int id)
       // while exits if no other task but disconnect or on timeout
       if (c->state & CON_ACTIVITY)
       {
-        MDSDBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " would wait to pop\n",
+        MDSDBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " would wait to pop",
                c->id, c->state, CURRENT_THREAD_ID());
       }
       c = _FindConnection(id, &p, MDSIPTHREADSTATIC_VAR); // we were waiting, so we need to update p
@@ -89,7 +89,7 @@ Connection *PopConnection(int id)
         MDSIP_CONNECTIONS = c->next;
       }
       c->next = NULL;
-      MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " popped\n",
+      MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " popped",
              c->id, c->state, CURRENT_THREAD_ID());
     }
   }
@@ -110,7 +110,7 @@ Connection *FindConnectionSending(int id)
       if (c->state & CON_REQUEST)
       {
         c->state &= ~CON_REQUEST; // clear sendarg
-        MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked sendarg\n",
+        MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked sendarg",
                c->id, c->state, CURRENT_THREAD_ID());
       }
       c = NULL;
@@ -134,7 +134,7 @@ Connection *FindConnectionWithLock(int id, con_t state)
   Connection *c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
   while (c && (c->state & CON_ACTIVITY) && !(c->state & CON_DISCONNECT))
   {
-    MDSDBG("Connections: %02d -- 0x%02x : 0x%" PRIxPTR " is would wait to lock 0x%02x\n",
+    MDSDBG("Connections: %02d -- 0x%02x : 0x%" PRIxPTR " is would wait to lock 0x%02x",
            c->id, c->state, CURRENT_THREAD_ID(), state);
     c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
     if (c && (c->state & CON_DISCONNECT))
@@ -145,7 +145,7 @@ Connection *FindConnectionWithLock(int id, con_t state)
   if (c)
   {
     c->state |= state;
-    MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " locked 0x%02x\n",
+    MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " locked 0x%02x",
            c->id, c->state, CURRENT_THREAD_ID(), state);
   }
   return c;
@@ -160,7 +160,7 @@ void UnlockConnection(Connection *c_in)
   if (c)
   {
     c->state &= ~CON_ACTIVITY; // clear activity
-    MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked 0x%02x\n",
+    MDSDBG("Connections: %02d -> 0x%02x : 0x%" PRIxPTR " unlocked 0x%02x",
            c->id, c->state, CURRENT_THREAD_ID(), CON_ACTIVITY);
   }
 }
@@ -297,7 +297,7 @@ int destroyConnection(Connection *connection)
       free(e);
     }
     TdiDeleteContext(connection->tdicontext);
-    MDSDBG("Connections: %02d disconnected\n", connection->id);
+    MDSDBG("Connections: %02d disconnected", connection->id);
     FreeDescriptors(connection);
   }
   if (connection->io)
@@ -480,7 +480,7 @@ int AddConnection(Connection *c)
   pthread_mutex_unlock(&lock);
   c->next = MDSIP_CONNECTIONS;
   MDSIP_CONNECTIONS = c;
-  MDSDBG("Connections: %02d connected\n", c->id);
+  MDSDBG("Connections: %02d connected", c->id);
   return c->id;
 }
 
