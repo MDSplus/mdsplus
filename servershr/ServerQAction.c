@@ -107,6 +107,7 @@ static SrvJob *CurrentJob = NULL;
 static Condition_p JobQueueCond = CONDITION_INITIALIZER;
 #define JobQueue (JobQueueCond.value)
 
+static pthread_mutex_t STATIC_lock = PTHREAD_MUTEX_INITIALIZER;
 static char *STATIC_current_job_text = NULL;
 static int STATIC_Logging = 1;
 static int STATIC_Debug = 0;
@@ -129,8 +130,11 @@ EXPORT struct descriptor *ServerInfo()
 
 EXPORT int ServerDebug(int setting)
 {
-  int old = STATIC_Debug;
+  int old;
+  pthread_mutex_lock(&STATIC_lock);
+  old = STATIC_Debug;
   STATIC_Debug = setting;
+  pthread_mutex_unlock(&STATIC_lock);
   return old;
 }
 
@@ -236,7 +240,9 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   }
   case SrvSetLogging:
   {
+    pthread_mutex_lock(&STATIC_lock);
     STATIC_Logging = *(int *)p1;
+    pthread_mutex_unlock(&STATIC_lock);
     status = MDSplusSUCCESS;
     break;
   }
@@ -333,7 +339,7 @@ static int QJob(SrvJob *job)
   return StartWorker();
 }
 // main
-static void LogPrefix(char *ans_c)
+static void STATIC_log_prefix_locked(char *ans_c)
 {
   if (ans_c)
   {
@@ -358,12 +364,12 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
 {
   char *ans_c;
   struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
-  QUEUE_LOCK;
+  pthread_mutex_lock(&STATIC_lock);
   char *job_text = STATIC_current_job_text;
   if (job_text == 0)
   {
     ans_c = malloc(1024);
-    LogPrefix(ans_c);
+    STATIC_log_prefix_locked(ans_c);
     strcat(ans_c, "Inactive");
   }
   else
@@ -374,7 +380,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
         ((detail = (*detail_proc)(1)) != 0))
     {
       ans_c = malloc(1024 + strlen(job_text) + strlen(detail));
-      LogPrefix(ans_c);
+      STATIC_log_prefix_locked(ans_c);
       strcat(ans_c, job_text);
       strcat(ans_c, detail);
       free(detail);
@@ -382,11 +388,11 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
     else
     {
       ans_c = malloc(1024 + strlen(job_text));
-      LogPrefix(ans_c);
+      STATIC_log_prefix_locked(ans_c);
       strcat(ans_c, job_text);
     }
   }
-  QUEUE_UNLOCK;
+  pthread_mutex_unlock(&STATIC_lock);
   ans_d.length = strlen(ans_c);
   ans_d.pointer = ans_c;
   MdsCopyDxXd(&ans_d, ans);
@@ -473,13 +479,17 @@ static void SetCurrentJob(SrvJob *job)
 static inline void LockQueue()
 {
   _CONDITION_LOCK(&JobQueueCond);
+  pthread_mutex_lock(&STATIC_lock);
   STATIC_QueueLocked = 1;
+  pthread_mutex_unlock(&STATIC_lock);
 }
 // thread
 static inline void UnlockQueue()
 {
-  STATIC_QueueLocked = 0;
   _CONDITION_UNLOCK(&JobQueueCond);
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_QueueLocked = 0;
+  pthread_mutex_unlock(&STATIC_lock);
 }
 // main
 static int doingNid;
@@ -494,12 +504,14 @@ EXPORT int GetDoingNid()
 // thread
 static int DoSrvAction(SrvJob *job_in)
 {
-  INIT_STATUS_ERROR;
+  int status;
   SrvActionJob *job = (SrvActionJob *)job_in;
   char *job_text, *old_job_text;
   sprintf((job_text = (char *)malloc(100)), "Doing nid %d in %s shot %d",
           job->nid, job->tree, job->shot);
+  pthread_mutex_lock(&STATIC_lock);
   STATIC_current_job_text = job_text;
+  pthread_mutex_unlock(&STATIC_lock);
   void *dbid = NULL;
   status = _TreeNewDbid(&dbid);
   if (STATUS_NOT_OK)
@@ -524,13 +536,14 @@ static int DoSrvAction(SrvJob *job_in)
     job_text = malloc(fullpath.length + 1024);
     sprintf(job_text, "Doing %s in %s shot %d", fullpath.pointer, job->tree,
             job->shot);
-    old_job_text = STATIC_current_job_text;
-    STATIC_current_job_text = job_text;
-    free(old_job_text);
     StrFree1Dx(&fullpath);
     nid_dsc.pointer = (char *)&job->nid;
     ans_dsc.pointer = (char *)&retstatus;
     TreeSetDefaultNid(0);
+    pthread_mutex_lock(&STATIC_lock);
+    old_job_text = STATIC_current_job_text;
+    STATIC_current_job_text = job_text;
+    free(old_job_text);
     if (STATIC_Logging)
     {
       char now[32];
@@ -538,15 +551,18 @@ static int DoSrvAction(SrvJob *job_in)
       printf("%s, %s\n", now, STATIC_current_job_text);
       fflush(stdout);
     }
+    pthread_mutex_unlock(&STATIC_lock);
     status = TdiDoTask(&nid_dsc, &ans_dsc MDS_END_ARG);
+    pthread_mutex_lock(&STATIC_lock);
+    memcpy(STATIC_current_job_text, "Done ", 5);
     if (STATIC_Logging)
     {
       char now[32];
       Now32(now);
-      memcpy(STATIC_current_job_text, "Done ", 5);
       printf("%s, %s\n", now, STATIC_current_job_text);
       fflush(stdout);
     }
+    pthread_mutex_unlock(&STATIC_lock);
     if (STATUS_OK)
       status = retstatus;
   }
@@ -562,7 +578,9 @@ static int DoSrvClose(SrvJob *job_in)
 {
   INIT_STATUS_ERROR;
   char *job_text = strcpy((char *)malloc(32), "Closing trees");
+  pthread_mutex_lock(&STATIC_lock);
   STATIC_current_job_text = job_text;
+  pthread_mutex_unlock(&STATIC_lock);
   do
   {
     status = TreeClose(0, 0);
@@ -575,13 +593,14 @@ static int DoSrvClose(SrvJob *job_in)
 // thread
 static int DoSrvCreatePulse(SrvJob *job_in)
 {
-  INIT_STATUS_ERROR;
   SrvCreatePulseJob *job = (SrvCreatePulseJob *)job_in;
   char *job_text = malloc(100);
   sprintf(job_text, "Creating pulse for %s shot %d",
           ((SrvCreatePulseJob *)job)->tree, ((SrvCreatePulseJob *)job)->shot);
+  pthread_mutex_lock(&STATIC_lock);
   STATIC_current_job_text = job_text;
-  status = TreeCreateTreeFiles(job->tree, job->shot, -1);
+  pthread_mutex_unlock(&STATIC_lock);
+  int status = TreeCreateTreeFiles(job->tree, job->shot, -1);
   if (job_in->h.addr)
     send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
@@ -594,28 +613,20 @@ static int DoSrvCommand(SrvJob *job_in)
   char *set_table = strcpy(malloc(strlen(job->table) + 24), "set command ");
   char *job_text =
       (char *)malloc(strlen(job->command) + strlen(job->table) + 60);
-  ProgLoc = 61;
   sprintf(job_text, "Doing command %s in command table %s", job->command,
           job->table);
-  ProgLoc = 62;
+  pthread_mutex_lock(&STATIC_lock);
   STATIC_current_job_text = job_text;
-  ProgLoc = 63;
+  pthread_mutex_unlock(&STATIC_lock);
   strcat(set_table, job->table);
-  ProgLoc = 64;
   status = mdsdcl_do_command(set_table);
-  ProgLoc = 65;
   free(set_table);
-  ProgLoc = 66;
   if (STATUS_OK)
   {
-    ProgLoc = 67;
     status = mdsdcl_do_command(job->command);
-    // ProgLoc = 68;
   }
-  ProgLoc = 69;
   if (job_in->h.addr)
     send_reply(job_in, SrvJobFINISHED, status, 0, 0);
-  ProgLoc = 70;
   return status;
 }
 // thread
@@ -716,10 +727,12 @@ static void DoSrvMonitor(SrvJob *job_in)
 // thread
 static void WorkerExit(void *arg __attribute__((unused)))
 {
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_WorkerDied++;
   if (STATIC_QueueLocked)
     UnlockQueue();
+  pthread_mutex_unlock(&STATIC_lock);
   CONDITION_RESET(&WorkerRunning);
-  STATIC_WorkerDied++;
   fprintf(stderr, "Worker thread exitted\n");
 }
 // thread
@@ -732,20 +745,16 @@ static void WorkerThread(void *arg __attribute__((unused)))
   while ((job = NextJob(1)))
   {
     MDSDBG("Starting job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+    pthread_mutex_lock(&STATIC_lock);
     if (STATIC_Debug)
       fprintf(stderr, "job started.\n");
-    char *save_text;
-    ProgLoc = 2;
+    pthread_mutex_unlock(&STATIC_lock);
     ServerSetDetailProc(0);
-    ProgLoc = 3;
     SetCurrentJob(job);
-    ProgLoc = 4;
     if ((job->h.flags & SrvJobBEFORE_NOTIFY) != 0)
     {
-      ProgLoc = 5;
       send_reply(job, SrvJobSTARTING, 1, 0, 0);
     }
-    ProgLoc = 6;
     switch (job->h.op)
     {
     case SrvAction:
@@ -767,17 +776,18 @@ static void WorkerThread(void *arg __attribute__((unused)))
     ProgLoc = 7;
     MDSDBG("Finished job %d for " IPADDRPRI ":%d\n", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
     SetCurrentJob(NULL);
-    ProgLoc = 8;
     FreeJob(job);
-    ProgLoc = 9;
-    save_text = STATIC_current_job_text;
-    STATIC_current_job_text = 0;
+    pthread_mutex_lock(&STATIC_lock);
+    char* save_text = STATIC_current_job_text;
+    STATIC_current_job_text = NULL;
     free(save_text);
-    ProgLoc = 10;
     if (STATIC_Debug)
       fprintf(stderr, "job done.\n");
+    pthread_mutex_unlock(&STATIC_lock);
   }
+  pthread_mutex_lock(&STATIC_lock);
   STATIC_LeftWorkerLoop++;
+  pthread_mutex_unlock(&STATIC_lock);
   pthread_cleanup_pop(1);
   pthread_exit(NULL);
 }
@@ -913,7 +923,11 @@ static int send_reply(SrvJob *job, int replyType, int status_in, int length, cha
     if (STATUS_NOT_OK)
     {
       try_again = errno == EPIPE;
-      if (STATIC_Debug)
+      int debug;
+      pthread_mutex_lock(&STATIC_lock);
+      debug = STATIC_Debug;
+      pthread_mutex_unlock(&STATIC_lock);
+      if (debug)
       {
         uint8_t *ip = (uint8_t *)&job->h.addr;
         char now[32];

@@ -52,13 +52,23 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
         Description:
 
 ------------------------------------------------------------------------------*/
-
+#include <pthread.h>
 #include <mdsplus/mdsconfig.h>
 
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static char *(*DetailProc)() = 0;
 EXPORT void ServerSetDetailProc(char *(*detail_proc)())
 {
+  pthread_mutex_lock(&lock);
   DetailProc = detail_proc;
+  pthread_mutex_unlock(&lock);
 }
 
-EXPORT char *(*ServerGetDetailProc())() { return DetailProc; }
+EXPORT char *(*ServerGetDetailProc())()
+{
+  char *(*detail_proc)();
+  pthread_mutex_lock(&lock);
+  detail_proc = DetailProc;
+  pthread_mutex_unlock(&lock);
+  return detail_proc;
+}
