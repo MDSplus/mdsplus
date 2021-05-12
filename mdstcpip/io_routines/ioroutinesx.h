@@ -630,7 +630,7 @@ static inline int dispatch_client(Client *client)
   }
   else
   {
-    fprintf(stderr, "dispatched client " CLIENT_PRI, CLIENT_VAR(client));
+    fprintf(stderr, "dispatched client " CLIENT_PRI "\n", CLIENT_VAR(client));
     pthread_mutex_lock(&ClientListLock);
     client->next = ClientList;
     ClientList = client;
