@@ -670,7 +670,7 @@ static int execute_message(Connection *connection, Message *message)
   const int java = CType(connection->client_type) == JAVA_CLIENT;
   if (!connection->descrip[0])
   {
-    fprintf(stderr, "execute_message: NULL_ptr as first descrip argument\n");
+    MDSWRN("NULL_ptr as first descrip argument");
     freed_message = return_status(connection, message, TdiNULL_PTR);
   }
   else if (StrCompare(connection->descrip[0], (mdsdsc_t *)&eventastreq) == 0)
@@ -779,7 +779,7 @@ static int standard_command(Connection *connection, Message *message)
 {
   if (connection->message_id != message->h.message_id)
   {
-    MDSDBG("ProcessMessage: %d NewM %3d (%2d/%2d) : '%.*s'",
+    MDSDBG("%d NewM %3d (%2d/%2d) : '%.*s'",
            connection->id, message->h.message_id, message->h.descriptor_idx, message->h.nargs,
            message->h.length, message->bytes);
     FreeDescriptors(connection);
@@ -801,7 +801,7 @@ static int standard_command(Connection *connection, Message *message)
   {
     MdsFreeDescriptor(d);
     mdsdsc_xd_t xd = MDSDSC_XD_INITIALIZER;
-    MDSDBG("ProcessMessage: %d NewA %3d (%2d/%2d) : serial",
+    MDSDBG("%d NewA %3d (%2d/%2d) : serial",
            connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
     status = MdsSerializeDscIn(message->bytes, &xd);
     connection->descrip[message->h.descriptor_idx] = d = xd.pointer;
@@ -965,7 +965,7 @@ static int standard_command(Connection *connection, Message *message)
         d->dtype = DTYPE_FTC;
         break;
       }
-      MDSDBG("ProcessMessage: %d NewA %3d (%2d/%2d) : simple",
+      MDSDBG("%d NewA %3d (%2d/%2d) : simple",
              connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
     }
     else
@@ -978,7 +978,7 @@ static int standard_command(Connection *connection, Message *message)
     // CALL EXECUTE MESSAGE //
     if (message->h.descriptor_idx == (message->h.nargs - 1))
     {
-      MDSDBG("ProcessMessage: %d Call %3d (%2d/%2d)",
+      MDSDBG("%d Call %3d (%2d/%2d)",
              connection->id, message->h.message_id, message->h.descriptor_idx + 1, message->h.nargs);
       int freed_message = execute_message(connection, message);
       UnlockConnection(connection);
@@ -1059,7 +1059,7 @@ static inline int mdsio_read_k(Connection *connection, Message *message)
   {
     DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
     if ((size_t)nbytes != count)
-      perror("READ_K wrong byte count");
+      MDSWRN("READ_K wrong byte count");
     freed_message = send_response(connection, message, 1, (mdsdsc_t *)&ans_d);
   }
   else
@@ -1089,7 +1089,7 @@ static inline int mdsio_write_k(Connection *connection, Message *message)
                              (char *)&ans_o};
   SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
   if (ans_o != mdsio->write.count)
-    perror("WRITE_K wrong byte count");
+    MDSWRN("WRITE_K wrong byte count");
   return send_response(connection, message, 1, &ans_d);
 }
 
@@ -1154,7 +1154,7 @@ static inline int mdsio_read_x_k(Connection *connection, Message *message)
   {
     DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
     if ((size_t)nbytes != count)
-      perror("READ_X_K wrong byte count");
+      MDSWRN("READ_X_K wrong byte count");
     freed_message = send_response(connection, message, deleted ? 3 : 1, (mdsdsc_t *)&ans_d);
   }
   else
@@ -1258,10 +1258,10 @@ static int dispatch_command(
     args->connection = connection;
     args->message = message;
     pthread_t thread;
-    if (pthread_create(&thread, NULL, thread_command, (void *)args))
-      perror("pthread_create");
-    else if (pthread_detach(thread))
-      perror("pthread_detach");
+    if ((errno = pthread_create(&thread, NULL, thread_command, (void *)args)))
+      MDSERR("pthread_create");
+    else if ((errno = pthread_detach(thread)))
+      MDSERR("pthread_detach");
     else
       return TRUE;
   }

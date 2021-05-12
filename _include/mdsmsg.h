@@ -7,22 +7,21 @@
   { /**/            \
   } while (0)
 
+#define MSG_DEBUG 'D'
+#define MSG_INFO 'I'
+#define MSG_WARNING 'W'
+#define MSG_ERROR 'E'
 #define __MDSMSG(LV, ...)                                      \
   do                                                           \
   {                                                            \
     struct timespec ts;                                        \
     clock_gettime(CLOCK_REALTIME, &ts);                        \
-    fprintf(stderr, "%s, %u.%09u: %s:%d %s()  ", LV,           \
+    fprintf(stderr, "%c, %u.%09u: %s:%d %s()  ", LV,           \
             (unsigned int)ts.tv_sec, (unsigned int)ts.tv_nsec, \
             __FILE__, __LINE__, __FUNCTION__);                 \
     fprintf(stderr, __VA_ARGS__);                              \
-    fprintf(stderr, "\n");                                     \
+    (LV == MSG_ERROR) ? perror(" ") : fprintf(stderr, "\n");   \
   } while (0)
-
-#define MSG_DEBUG "D"
-#define MSG_INFO "I"
-#define MSG_WARNING "W"
-#define MSG_ERROR "E"
 
 //#define DEBUG
 #ifdef DEBUG

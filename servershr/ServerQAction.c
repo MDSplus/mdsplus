@@ -187,11 +187,12 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.nid = *(int *)p3;
     if (job.h.addr)
     {
+      MDSMSG(SVRACTIONJOB_PRI, SVRACTIONJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSDBG("No Client Address.");
+      MDSWRN(SVRACTIONJOB_PRI " No Addr", SVRACTIONJOB_VAR(&job));
       status = DoSrvAction((SrvJob *)&job);
     }
     break;
@@ -207,11 +208,12 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.h.jobid = *jobid;
     if (job.h.addr)
     {
+      MDSMSG(SVRCLOSEJOB_PRI, SVRCLOSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSDBG("No Client Address.");
+      MDSWRN(SVRCLOSEJOB_PRI " No Addr", SVRCLOSEJOB_VAR(&job));
       status = DoSrvClose((SrvJob *)&job);
     }
     break;
@@ -229,11 +231,12 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.shot = *(int *)p2;
     if (job.h.addr)
     {
+      MDSMSG(SVRCREATEPULSEJOB_PRI, SVRCREATEPULSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSDBG("No Client Address.");
+      MDSWRN(SVRCREATEPULSEJOB_PRI " No Addr", SVRCREATEPULSEJOB_VAR(&job));
       status = DoSrvCreatePulse((SrvJob *)&job);
     }
     break;
@@ -259,11 +262,12 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.command = strcpy(malloc(strlen((char *)p2) + 1), (char *)p2);
     if (job.h.addr)
     {
+      MDSMSG(SVRCOMMANDJOB_PRI, SVRCOMMANDJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSDBG("No Client Address.");
+      MDSWRN(SVRCOMMANDJOB_PRI " No Addr", SVRCOMMANDJOB_VAR(&job));
       status = DoSrvCommand((SrvJob *)&job);
     }
     break;
@@ -287,11 +291,12 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.status = *(int *)p8;
     if (job.h.addr)
     {
+      MDSMSG(SVRMONITORJOB_PRI, SVRMONITORJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
     {
-      MDSDBG("No Client Address.");
+      MDSWRN(SVRMONITORJOB_PRI " No Addr", SVRMONITORJOB_VAR(&job));
       status = MDSplusERROR;
     }
     break;
@@ -894,8 +899,7 @@ static int send_all(SOCKET sock, char *msg, int len)
 
 static int send_reply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
-  MDSDBG("Job #%d for " IPADDRPRI ":%d : %d", job->h.jobid,
-         IPADDRVAR(&job->h.addr), job->h.port, replyType);
+  MDSDBG(SVRJOB_PRI " %d", SVRJOB_VAR(job), replyType);
   int status;
   status = MDSplusERROR;
   SOCKET sock;
