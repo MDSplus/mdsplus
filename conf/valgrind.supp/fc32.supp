@@ -337,6 +337,14 @@
    obj:/usr/lib64/libpython3.8.so.1.0
 }
 {
+   _PyObject_MakeTpCall holds lock on exit
+   Helgrind:Misc
+   fun:open
+   obj:/usr/lib64/libpython3.8.so.1.0
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyObject_MakeTpCall
+}
+{
    lock stil hold in PyDict_SetDefault
    Helgrind:Misc
    obj:/usr/lib64/libpython3.8.so.1.0
