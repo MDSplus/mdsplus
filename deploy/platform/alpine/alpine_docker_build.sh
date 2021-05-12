@@ -42,7 +42,7 @@ buildrelease() {
   rm -Rf ${RELEASEBLD}
   mkdir -p ${RELEASEBLD} ${BUILDROOT} ${MDSPLUS_DIR}
   pushd ${RELEASEBLD}
-  config ${ARCH} ${host} bin lib ${ALPHA_DEBUG_INFO}
+  config ${ARCH} ${host} bin lib ${CONFIGURE_EXTRA}
   if [ -z "$NOMAKE" ]; then
     $MAKE
     $MAKE install
@@ -50,10 +50,6 @@ buildrelease() {
   popd
   if [ -z "$NOMAKE" ]; then
     BUILDROOT=${BUILDROOT} \
-      BRANCH=${BRANCH} \
-      RELEASE_VERSION=${RELEASE_VERSION} \
-      ARCH=${ARCH} \
-      DISTNAME=${DISTNAME} \
       ${srcdir}/deploy/packaging/alpine/build_apks.sh
   fi
 }
@@ -63,8 +59,8 @@ publish() {
   ## this will move new files into publish and update APKINDEX.tar.gz
   # if NEW.tar.gz exists or if an old APKINDEX.tar.gz does not yet exist,
   # it will create a new repository (takes longer, exspecially on a remote fs)
-  R=/release/${BRANCH}
-  P=/publish/${BRANCH}
+  R=/release/${FLAVOR}
+  P=/publish/${FLAVOR}
   mkdir -p $P/${ARCH} $P/noarch
   cd $P
   rsync -a $R/${ARCH}/*.apk $P/${ARCH}/ && :

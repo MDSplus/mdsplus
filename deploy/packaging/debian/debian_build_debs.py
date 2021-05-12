@@ -23,16 +23,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import subprocess
-import os
-import sys
-import xml.etree.ElementTree as ET
 import fnmatch
-import tempfile
+import os
 import shutil
+import subprocess
+import sys
+import tempfile
 
-srcdir = os.path.realpath(os.path.dirname(
-    os.path.realpath(__file__))+'/../../..')
+srcdir = os.path.realpath(os.path.dirname(__file__)+'/../../..')
+sys.path.insert(0, os.path.join(srcdir, 'deploy', 'packaging'))
+import linux_build_packages as common
 
 
 def getPackageFiles(buildroot, includes, excludes):
@@ -80,49 +80,23 @@ def getPackageFiles(buildroot, includes, excludes):
     return files
 
 
-def externalPackage(info, root, package):
-    ans = None
-    for extpackages in root.getiterator('external_packages'):
-        platform = extpackages.attrib['platform']
-        if info['platform'] == platform:
-            pkg = extpackages.find(package)
-            if pkg is not None:
-                if 'package' in pkg.attrib:
-                    ans = pkg.attrib['package']
-                else:
-                    ans = package
-    return ans
-
 
 def doRequire(info, out, root, require):
     if 'external' in require.attrib:
-        pkg = externalPackage(info, root, require.attrib['package'])
-        if pkg is not None:
-            os.write(out, "Requires: %s\n" % pkg)
+        pkg = common.external_package(info, root, require.attrib['package'])
+        if pkg:
+            os.write(out, "Depends: %s\n" % pkg)
     else:
         info['reqpkg'] = require.attrib['package']
     os.write(
-        out, "Depends: mdsplus%(BNAME)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
+        out, "Depends: mdsplus%(bname)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
 
 
-def buildDebs():
-    info = dict()
-    info['buildroot'] = os.environ['BUILDROOT']
-    info['BRANCH'] = os.environ['BRANCH']
-    version = os.environ['RELEASE_VERSION'].split('.')
-    info['dist'] = os.environ['DISTNAME']
-    info['platform'] = os.environ['PLATFORM']
-    info['arch'] = os.environ['ARCH']
-    info['flavor'] = info['BRANCH']
-    info['major'] = int(version[0])
-    info['minor'] = int(version[1])
-    info['release'] = int(version[2])
-    info['BNAME'] = os.environ['BNAME']
-    info['rflavor'] = info['BNAME']
-    tree = ET.parse(srcdir+'/deploy/packaging/linux.xml')
-    root = tree.getroot()
+def build():
+    info = common.get_info()
+    root = common.get_root()
     debs = list()
-    for package in root.getiterator('package'):
+    for package in root.iter('package'):
         pkg = package.attrib['name']
         if pkg == 'MDSplus':
             info['packagename'] = ""
@@ -133,13 +107,13 @@ def buildDebs():
         try:
             os.mkdir("%(tmpdir)s/DEBIAN" % info)
             includes = list()
-            for inc in package.getiterator('include'):
+            for inc in package.iter('include'):
                 for inctype in inc.attrib:
                     include = inc.attrib[inctype]
                     if inctype != "dironly":
                         includes.append(include)
             excludes = list()
-            for exc in package.getiterator('exclude'):
+            for exc in package.iter('exclude'):
                 for exctype in exc.attrib:
                     excludes.append(exc.attrib[exctype])
             if package.find("exclude_staticlibs") is not None:
@@ -159,22 +133,22 @@ def buildDebs():
                     raise Exception("Error building deb")
                 sys.stdout.flush()
             depends = list()
-            for require in package.getiterator("requires"):
+            for require in package.iter("requires"):
                 if 'external' in require.attrib:
-                    pkg = externalPackage(
+                    pkg = common.external_package(
                         info, root, require.attrib['package'])
                     if pkg is not None:
                         depends.append(pkg)
                 else:
                     depends.append(
-                        "mdsplus%s-%s" % (info['rflavor'], require.attrib['package'].replace('_', '-')))
+                        "mdsplus%s-%s" % (info['bname'], require.attrib['package'].replace('_', '-')))
             if len(depends) == 0:
                 info['depends'] = ''
             else:
                 info['depends'] = "\nDepends: %s" % ','.join(depends)
             info['name'] = info['packagename'].replace('_', '-')
             f = open("%(tmpdir)s/DEBIAN/control" % info, "w")
-            f.write("""Package: mdsplus%(rflavor)s%(name)s
+            f.write("""Package: mdsplus%(bname)s%(name)s
 Version: %(major)d.%(minor)d.%(release)d
 Section: admin
 Priority: optional
@@ -193,7 +167,7 @@ Description: %(description)s
                         "__INSTALL_PREFIX__", "/usr/local")))
                     f.close()
                     os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info, 0o775)
-            info['debfile'] = "/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
+            info['debfile'] = "/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(bname)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
             if subprocess.Popen("dpkg-deb --build %(tmpdir)s %(debfile)s" % info, shell=True).wait() != 0:
                 for k, v in info.items():
                     print("%s=%s" % (k, v))
@@ -203,5 +177,5 @@ Description: %(description)s
         finally:
             shutil.rmtree("%(tmpdir)s" % info)
 
-
-buildDebs()
+if __name__ == "__main__":
+    build()

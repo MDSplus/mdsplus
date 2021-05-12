@@ -80,6 +80,7 @@ rundocker() {
     if docker network >/dev/null 2>&1; then
       #docker supports --network
       if [ -z ${DOCKER_NETWORK} ]; then
+        docker network rm ${OS} || :
         docker network create ${OS}
         NETWORK=--network=${OS}
       else
@@ -100,6 +101,8 @@ rundocker() {
         -e "ARCH=${arch}" \
         -e "ARCHES=${ARCH}" \
         -e "BRANCH" \
+        -e "BNAME" \
+        -e "FLAVOR" \
         -e "COLOR" \
         -e "DISPLAY" \
         -e "DISTNAME" \
@@ -120,7 +123,7 @@ rundocker() {
         -e "HOME=/workspace" \
         -e "JARS_DIR=$jars_dir" \
         -e "TEST_TIMEUNIT" \
-        -e "ALPHA_DEBUG_INFO" \
+        -e "CONFIGURE_EXTRA" \
         -v ${SRCDIR}:${DOCKER_SRCDIR} \
         -v ${WORKSPACE}:/workspace $port_forwarding $(volume "${JARS_DIR}" /jars_dir) \
         $(volume "${RELEASEDIR}" /release) \
@@ -156,19 +159,32 @@ EOF
 }
 default_build() {
   if [ "${RELEASE}" = "yes" ]; then
-    rm -Rf ${RELEASEDIR}/${BRANCH}
-    mkdir -p ${RELEASEDIR}/${BRANCH}
+    rm -Rf ${RELEASEDIR}/${FLAVOR}
+    mkdir -p ${RELEASEDIR}/${FLAVOR}
   fi
   if [ "${PUBLISH}" = "yes" ]; then
-    mkdir -p ${PUBLISHDIR}/${BRANCH}
+    mkdir -p ${PUBLISHDIR}/${FLAVOR}
   fi
 }
 
-if [ "$BRANCH" = "alpha" ]; then
-  ALPHA_DEBUG_INFO=--enable-debug=info
-else
-  ALPHA_DEBUG_INFO=
-fi
+case "$BRANCH" in
+  stable)
+    export CONFIGURE_EXTRA=
+    export FLAVOR="stable"
+    export BNAME=""
+    ;;
+  alpha)
+    export CONFIGURE_EXTRA=--enable-debug=info
+    export FLAVOR="alpha"
+    export BNAME="-alpha"
+    ;;
+  *)
+    export CONFIGURE_EXTRA=--enable-debug=info
+    export FLAVOR="other"
+    export BNAME="-other"
+    ;;
+esac
+
 set +e
 platform_build="${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh"
 if [ -f "${platform_build}" ]; then
