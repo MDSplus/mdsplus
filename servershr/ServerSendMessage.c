@@ -477,7 +477,7 @@ static int get_addr_port(char *server, uint32_t *addrp, uint16_t *portp)
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2)
   {
-    MDSWRN("Server '%s' unknown", server);
+    MDSDBG("Server '%s' unknown", server);
     return C_ERROR;
   }
   addr = LibGetHostAddr(hostpart);
