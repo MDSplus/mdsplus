@@ -1,6 +1,13 @@
-#pragma once
 #include <stdio.h>
 #include <time.h>
+
+//#define DEBUG
+//#undef DEBUG
+#ifdef MDSDBG
+#undef MDSDBG
+#undef __MDSMSGTOFUN
+#undef __MDSMSGPREFIX
+#endif
 
 #ifdef _WIN32
 #include <processthreadsapi.h>
@@ -13,6 +20,28 @@
 #define CURRENT_THREAD_ID() (long)syscall(__NR_gettid)
 #endif
 
+#ifdef WITH_DEBUG_SYMBOLS
+#define __MDSMSGTOFUN 70
+#define __MDSMSGPREFIX(LV) (                                  \
+    {                                                         \
+      pos = __FILE__;                                         \
+      while (!strncmp(pos, "../", 3))                         \
+        pos += 3;                                             \
+      pos = msg + sprintf(msg, "%c, %u:%lu, %u.%09u: %s:%d ", \
+                          LV, getpid(), CURRENT_THREAD_ID(),  \
+                          (unsigned int)ts.tv_sec,            \
+                          (unsigned int)ts.tv_nsec,           \
+                          pos, __LINE__);                     \
+    })
+#else
+#define __MDSMSGTOFUN 20
+#define __MDSMSGPREFIX(LV)                \
+  (msg + sprintf(msg, "%c, %u.%03u: ",    \
+                 LV,                      \
+                 (unsigned int)ts.tv_sec, \
+                 (unsigned int)ts.tv_nsec / 1000000))
+#endif
+
 #define MDSNOP(...) \
   do                \
   { /**/            \
@@ -22,35 +51,39 @@
 #define MSG_INFO 'I'
 #define MSG_WARNING 'W'
 #define MSG_ERROR 'E'
-#define __MDSMSG(LV, ...)                                 \
-  do                                                      \
-  {                                                       \
-    char msg[1024];                                       \
-    int pos;                                              \
-    struct timespec ts;                                   \
-    clock_gettime(CLOCK_REALTIME, &ts);                   \
-    pos = sprintf(msg, "%c, %lu, %u.%09u: %s:%d %s()  ", \
-                  LV, CURRENT_THREAD_ID(),                \
-                  (unsigned int)ts.tv_sec,                \
-                  (unsigned int)ts.tv_nsec,               \
-                  __FILE__, __LINE__, __FUNCTION__);      \
-    pos += sprintf(msg + pos, __VA_ARGS__);               \
-    if (LV == MSG_ERROR)                                  \
-    {                                                     \
-      perror(msg);                                        \
-    }                                                     \
-    else                                                  \
-    {                                                     \
-      strcpy(msg + pos, "\n");                            \
-      fputs(msg, stderr);                                 \
-    }                                                     \
+
+#define __MDSMSGTOMSG (__MDSMSGTOFUN + 30)
+#define __MDSMSG(LV, ...)                          \
+  do                                               \
+  {                                                \
+    struct timespec ts;                            \
+    clock_gettime(CLOCK_REALTIME, &ts);            \
+    char msg[1024];                                \
+    char *pos;                                     \
+    pos = __MDSMSGPREFIX(LV);                      \
+    if (pos < msg + __MDSMSGTOFUN)                 \
+    {                                              \
+      memset(pos, ' ', msg + __MDSMSGTOFUN - pos); \
+      pos = msg + __MDSMSGTOFUN;                   \
+    }                                              \
+    pos += sprintf(pos, "%s() ", __FUNCTION__);    \
+    if (pos < msg + __MDSMSGTOMSG)                 \
+    {                                              \
+      memset(pos, ' ', msg + __MDSMSGTOMSG - pos); \
+      pos = msg + __MDSMSGTOMSG;                   \
+    }                                              \
+    pos += sprintf(pos, __VA_ARGS__);              \
+    if (LV == MSG_ERROR)                           \
+    {                                              \
+      perror(msg);                                 \
+    }                                              \
+    else                                           \
+    {                                              \
+      strcpy(pos, "\n");                           \
+      fputs(msg, stderr);                          \
+    }                                              \
   } while (0)
 
-//#define DEBUG
-//#undef DEBUG
-#ifdef MDSDBG
-#undef MDSDBG
-#endif
 #ifdef DEBUG
 #define MDSDBG(...) __MDSMSG(MSG_DEBUG, __VA_ARGS__)
 #else
