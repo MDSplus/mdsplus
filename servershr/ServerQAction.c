@@ -41,6 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #endif
 #include <sys/time.h>
+
+#define DEBUG
 #include <mdsmsg.h>
 
 typedef struct _MonitorList
@@ -110,7 +112,12 @@ static Condition_p JobQueueCond = CONDITION_INITIALIZER;
 static pthread_mutex_t STATIC_lock = PTHREAD_MUTEX_INITIALIZER;
 static char *STATIC_current_job_text = NULL;
 static int STATIC_Logging = 1;
-static int STATIC_Debug = 0;
+static int STATIC_Debug
+#ifdef DEBUG
+    = 1;
+#else
+    = 0;
+#endif
 static int STATIC_QueueLocked = 0;
 static int STATIC_WorkerDied = 0;
 static int STATIC_LeftWorkerLoop = 0;
@@ -354,16 +361,16 @@ static void STATIC_log_prefix_locked(char *ans_c)
     char now[32];
     Now32(now);
     sprintf(ans_c, "%s, %s:%s, %s, ", now, hname, port ? port : "?",
-            STATIC_Logging == 0 ? "logging disabled" : "logging enabled");
+            STATIC_Logging ? "logging enabled" : "logging disabled");
     if (STATIC_Debug)
     {
       sprintf(ans_c + strlen(ans_c),
-              "\nDebug info: QueueLocked = %d ProgLoc = %d WorkerDied = %d"
-              "\n            LeftWorkerLoop = %d CondWStat = %d\n",
+              "\nDebug info: QueueLocked=%d, ProgLoc=%d, WorkerDied=%d, LeftWorkerLoop=%d, CondWStat=%d,\n",
               STATIC_QueueLocked, ProgLoc, STATIC_WorkerDied, STATIC_LeftWorkerLoop, STATIC_CondWStat);
     }
   }
 }
+
 // main
 static int ShowCurrentJob(struct descriptor_xd *ans)
 {
@@ -783,7 +790,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
     SetCurrentJob(NULL);
     FreeJob(job);
     pthread_mutex_lock(&STATIC_lock);
-    char* save_text = STATIC_current_job_text;
+    char *save_text = STATIC_current_job_text;
     STATIC_current_job_text = NULL;
     free(save_text);
     if (STATIC_Debug)

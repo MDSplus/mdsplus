@@ -757,6 +757,7 @@ static void action_done_do(intptr_t idx)
   CONDITION_SET(&JobWaitC);
 }
 
+#define ACTION_DONE_THREAD
 #ifdef ACTION_DONE_THREAD
 typedef struct _complete
 {

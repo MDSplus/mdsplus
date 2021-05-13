@@ -84,7 +84,6 @@ typedef struct _SrvJob
 #define SVRJOB_PRI "SvrJob" JHEADER_PRI
 #define SVRJOB_VAR(j) JHEADER_VAR(&(j)->h)
 
-
 typedef struct
 {
   JHeader h;
