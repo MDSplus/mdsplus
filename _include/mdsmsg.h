@@ -12,6 +12,8 @@
 #ifdef _WIN32
 #include <processthreadsapi.h>
 #define CURRENT_THREAD_ID() (long)GetCurrentThreadId()
+#elif defined(__APPLE__) || defined(__MACH__)
+#define CURRENT_THREAD_ID() (long)0
 #else
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -20,7 +22,7 @@
 #define CURRENT_THREAD_ID() (long)syscall(__NR_gettid)
 #endif
 
-#ifdef WITH_DEBUG_SYMBOLS
+#if defined(WITH_DEBUG_SYMBOLS) && !defined(__APPLE__) && !defined(__MACH__)
 #define __MDSMSGTOFUN 70
 #define __MDSMSGPREFIX(LV) (                                  \
     {                                                         \
