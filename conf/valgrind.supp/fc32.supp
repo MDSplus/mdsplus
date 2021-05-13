@@ -345,10 +345,9 @@
    fun:_PyObject_MakeTpCall
 }
 {
-   lock stil hold in PyDict_SetDefault
+   python still holds a lock somewhere
    Helgrind:Misc
    obj:/usr/lib64/libpython3.8.so.1.0
-   fun:PyDict_SetDefault
 }
 
 # java
