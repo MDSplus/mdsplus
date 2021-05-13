@@ -66,18 +66,20 @@ if [ ! -z $1 ]; then
   LSAN_OPTIONS="$LSAN_OPTIONS,print_suppressions=0"
 
   if [ "$2" == "update" ]; then
-    eval $cmd 2>&1 | grep -v -e '^Data inserted:' \
-      -e '^Length:' \
-      -e '^[DIWE],' \
-      -e '^OS does not support OFD locks' \
+    eval $cmd 2>&1 |
+      grep -v -e '^[DIWE],' \
+        -e '^\s*Data inserted:' \
+        -e '^\s*Length:' \
+        -e '^OS does not support OFD locks' |
       >${srcdir}/$test.ans
   else
     unset ok
     if diff --help | grep side-by-side &>/dev/null; then
-      eval $cmd 2>&1 | tee ${test}-out.log | grep -v -e '^Data inserted:' \
-        -e '^Length:' \
-        -e '^[DIWE],' \
-        -e '^OS does not support OFD locks' |
+      eval $cmd 2>&1 | tee ${test}-out.log |
+        grep -v -e '^[DIWE],' \
+          -e '^\s*Data inserted:' \
+          -e 'Length:' \
+          -e '^OS does not support OFD locks' |
         diff $DIFF_Z --side-by-side -W128 /dev/stdin $srcdir/$test.ans |
         expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
     else
