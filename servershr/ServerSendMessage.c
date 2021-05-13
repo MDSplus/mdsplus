@@ -230,14 +230,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
 
 EXPORT void ServerWait(int jobid)
 {
-  Job *j = Job_get_by_jobid(jobid);
-  if (j && j->cond)
-  {
-    pthread_cleanup_push((void *)Job_abandon, (void *)&j);
-    Job_wait_and_pop(j);
-    pthread_cleanup_pop(0);
-  }
-  else
+  if (Job_wait_and_pop_by_jobid(jobid))
     MDSDBG("Job(%d, ?) sync lost!", jobid);
 }
 

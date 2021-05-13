@@ -10,13 +10,14 @@ typedef struct job
   int conid;
   int *retstatus;
   pthread_rwlock_t *lock;
-  Condition *cond;
   void (*callback_done)();
   void (*callback_before)();
   void *callback_param;
+  pthread_cond_t *cond;
+  int cond_var;
 } Job;
-#define JOB_PRI "Job(jobid=%d, conid=%d, cond=%d, cond.value=%d)"
-#define JOB_VAR(j) (j)->jobid, (j)->conid, !!(j)->cond, (j)->cond ? (j)->cond->value : 0
+#define JOB_PRI "Job(jobid=%d, conid=%d, cond=%d)"
+#define JOB_VAR(j) (j)->jobid, (j)->conid, (j)->cond ? (j)->cond_var : -1
 pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_JOBS MUTEX_LOCK_PUSH(&jobs_mutex)
 #define UNLOCK_JOBS MUTEX_LOCK_POP(&jobs_mutex)
@@ -25,7 +26,6 @@ pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_cleanup_push((void *)pthread_mutex_lock, &jobs_mutex)
 #define LOCK_JOBS_REV pthread_cleanup_pop(1)
 static Job *Jobs = NULL;
-static pthread_mutex_t job_conds = PTHREAD_MUTEX_INITIALIZER;
 static int MonJob = -1;
 
 static Job *newJob(int conid, int *retstatus, pthread_rwlock_t *lock,
@@ -79,14 +79,13 @@ static int Job_register(int *msgid,
   j->jobid = JobId++;
   if (msgid)
   {
-    j->cond = malloc(sizeof(Condition));
-    CONDITION_INIT(j->cond);
+    j->cond = malloc(sizeof(pthread_cond_t));
+    pthread_cond_init(j->cond, NULL);
     *msgid = j->jobid;
     MDSDBG(JOB_PRI " sync registered", JOB_VAR(j));
   }
   else
   {
-    j->cond = NULL;
     MDSDBG(JOB_PRI " async registered", JOB_VAR(j));
   }
   j->next = Jobs;
@@ -127,12 +126,13 @@ static int Job_callback_done(Job *j, int status, int remove)
   if (remove && !is_mon)
   {
     int has_cond;
-    MUTEX_LOCK_PUSH(&job_conds);
+    LOCK_JOBS;
     if ((has_cond = !!j->cond))
     {
-      CONDITION_SET(j->cond);
+      j->cond_var = 1;
+      pthread_cond_broadcast(j->cond);
     }
-    MUTEX_LOCK_POP(&job_conds);
+    UNLOCK_JOBS;
     if (!has_cond)
     {
       Job_pop(j);
@@ -162,21 +162,9 @@ static Job *Job_pop_by_conid(int conid)
   return j;
 }
 
-static void Job_abandon(Job *j)
-{
-  MUTEX_LOCK_PUSH(&job_conds);
-  if (j && j->cond)
-  {
-    CONDITION_DESTROY_PTR(j->cond, &job_conds);
-    MDSDBG(JOB_PRI " sync abandoned!", JOB_VAR(j));
-  }
-  MUTEX_LOCK_POP(&job_conds);
-}
-
-static inline Job *Job_get_by_jobid(int jobid)
+static inline Job *Job_get_by_jobid_locked(int jobid)
 {
   Job *j;
-  LOCK_JOBS;
   for (j = Jobs; j; j = j->next)
   {
     if (j->jobid == jobid)
@@ -184,17 +172,49 @@ static inline Job *Job_get_by_jobid(int jobid)
       break;
     }
   }
-  UNLOCK_JOBS;
   return j;
 }
 
-static inline void Job_wait_and_pop(Job *job)
+static inline Job *Job_get_by_jobid(int jobid)
 {
-  MDSDBG(JOB_PRI " sync pending", JOB_VAR(job));
-  CONDITION_WAIT_SET(job->cond);
-  CONDITION_DESTROY_PTR(job->cond, &job_conds);
-  MDSDBG(JOB_PRI " sync done", JOB_VAR(job));
-  Job_pop(job);
+  Job *job;
+  LOCK_JOBS;
+  job = Job_get_by_jobid_locked(jobid);
+  UNLOCK_JOBS;
+  return job;
+}
+
+static void Job_abandon_locked(Job *job)
+{
+  if (job && job->cond)
+  {
+    pthread_cond_destroy(job->cond);
+    free(job->cond);
+    job->cond = NULL;
+    MDSDBG(JOB_PRI " sync abandoned!", JOB_VAR(j));
+  }
+}
+
+static inline int Job_wait_and_pop_by_jobid(int jobid)
+{
+  int err = B_TRUE;
+  LOCK_JOBS;
+  Job *job = Job_get_by_jobid_locked(jobid);
+  if (job && job->cond)
+  {
+    MDSDBG(JOB_PRI " sync pending", JOB_VAR(job));
+    pthread_cleanup_push((void *)Job_abandon_locked, (void *)job);
+    pthread_cond_wait(job->cond, &jobs_mutex);
+    pthread_cond_destroy(job->cond);
+    free(job->cond);
+    job->cond = NULL;
+    Job_pop_locked(job);
+    MDSDBG(JOB_PRI " sync done", JOB_VAR(job));
+    pthread_cleanup_pop(0);
+    err = B_FALSE;
+  }
+  UNLOCK_JOBS;
+  return err;
 }
 
 static Job *Job_pop_by_jobid(int jobid)
