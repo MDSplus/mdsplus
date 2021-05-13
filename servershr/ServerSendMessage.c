@@ -461,7 +461,7 @@ int is_broken_socket(SOCKET socket)
   return B_TRUE;
 }
 
-static int get_addr_port(char *server, uint32_t *addrp, uint16_t *portp)
+int get_addr_port(char *server, uint32_t *addrp, uint16_t *portp)
 {
   uint32_t addr;
   uint16_t port;

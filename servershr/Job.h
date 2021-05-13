@@ -195,14 +195,8 @@ static void Job_abandon_locked(Job *job)
   }
 }
 
-static inline int Job_wait_and_pop_by_jobid(int jobid)
+static inline void Job_wait_and_pop_locked(Job *job)
 {
-  int err = B_TRUE;
-  LOCK_JOBS;
-  Job *job = Job_get_by_jobid_locked(jobid);
-  if (job && job->cond)
-  {
-    MDSDBG(JOB_PRI " sync pending", JOB_VAR(job));
     pthread_cleanup_push((void *)Job_abandon_locked, (void *)job);
     pthread_cond_wait(job->cond, &jobs_mutex);
     pthread_cond_destroy(job->cond);
@@ -211,6 +205,17 @@ static inline int Job_wait_and_pop_by_jobid(int jobid)
     Job_pop_locked(job);
     MDSDBG(JOB_PRI " sync done", JOB_VAR(job));
     pthread_cleanup_pop(0);
+}
+
+static inline int Job_wait_and_pop_by_jobid(int jobid)
+{
+  int err = B_TRUE;
+  LOCK_JOBS;
+  Job *job = Job_get_by_jobid_locked(jobid);
+  if (job && job->cond)
+  {
+    MDSDBG(JOB_PRI " sync pending", JOB_VAR(job));
+    Job_wait_and_pop_locked(job);
     err = B_FALSE;
   }
   UNLOCK_JOBS;

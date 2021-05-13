@@ -8,11 +8,11 @@
 
 typedef struct _client
 {
+  struct _client *next;
   SOCKET reply_sock;
   int conid;
   uint32_t addr;
   uint16_t port;
-  struct _client *next;
 } Client;
 #ifdef _WIN32
 #define CLIENT_PRI "Client(conid=%d, addr=" IPADDRPRI ", port=%d, reply_sock=%" PRIdPTR ")"
