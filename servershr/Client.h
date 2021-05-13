@@ -158,7 +158,10 @@ static void Client_do_message(Client *c, fd_set *fdactive)
   nbytes = recv(c->reply_sock, reply, 60, MSG_WAITALL);
   if (nbytes != 60)
   {
-    MDSWRN(CLIENT_PRI " Invalid read %d/60", CLIENT_VAR(c), nbytes);
+    if (nbytes != 0)
+      MDSWRN(CLIENT_PRI " Invalid read %d/60", CLIENT_VAR(c), nbytes);
+    else
+      MDSDBG(CLIENT_PRI " Clint disconnected", CLIENT_VAR(c));
     Client_remove(c, fdactive);
     return;
   }
@@ -211,7 +214,7 @@ static void Client_do_message(Client *c, fd_set *fdactive)
     }
     else
     {
-      MDSWRN(CLIENT_PRI " no job to finish", CLIENT_VAR(c));
+      MDSWRN(CLIENT_PRI " no job to start", CLIENT_VAR(c));
     }
     break;
   }

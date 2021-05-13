@@ -106,9 +106,18 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
 {
   uint16_t port = 0;
   int conid = INVALID_CONNECTION_ID;
-  if (start_receiver(&port) || ((conid = ServerConnect(server)) == INVALID_CONNECTION_ID))
+  MDSDBG("%s", server);
+  const int receiver_err = start_receiver(&port);
+  if (receiver_err || ((conid = ServerConnect(server)) == INVALID_CONNECTION_ID))
   {
-    MDSDBG("Got conid = %d", conid);
+    if (receiver_err)
+    {
+      MDSWRN("failed to start receiver");
+    }
+    else
+    {
+      MDSWRN("failed to connect");
+    }
     if (callback_done)
       callback_done(callback_param);
     return ServerPATH_DOWN;
@@ -138,7 +147,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
     addr = *(uint32_t *)&addr_struct.sin_addr;
   if (!addr)
   {
-    MDSWRN("Error getting the address the socket is bound to.");
+    MDSWRN("could not resolve address the socket is bound to");
     if (callback_done)
       callback_done(callback_param);
     return ServerSOCKET_ADDR_ERROR;
@@ -179,14 +188,14 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
       ccmd += sprintf(ccmd, "%d", (int)*(char *)arg->ptr);
       break;
     default:
-      MDSWRN(" Unexpected dtype = %d", arg->dtype);
+      MDSWRN("unexpected dtype = %d", arg->dtype);
     }
   }
   *ccmd++ = ')';
   status = SendArg(conid, 0, DTYPE_CSTRING, 1, (short)(ccmd - cmd), 0, 0, cmd);
   if (STATUS_NOT_OK)
   {
-    MDSWRN("Error sending message to server");
+    MDSWRN("could not sending message to server");
     Job_cleanup(status, jobid);
     return status;
   }
@@ -209,12 +218,13 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus,
   {
     if (STATUS_NOT_OK)
     {
-      MDSWRN("Error: no response from server");
+      MDSWRN("no response from server");
       Job_cleanup(status, jobid);
       return status;
     }
   }
   free(mem);
+  MDSDBG("status=%d", status);
   return status;
 }
 
@@ -389,7 +399,7 @@ static void receiver_thread(void *sockptr)
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   int rep;
-  struct timeval readto, timeout = {1, 0};
+  struct timeval readto, timeout = {10, 0};
   for (rep = 0; rep < 10; rep++)
   {
     for (readfds = fdactive, readto = timeout;;
@@ -531,6 +541,7 @@ EXPORT int ServerConnect(char *server_in)
   uint16_t port = 0;
   if (get_addr_port(server, &addr, &port))
   {
+    MDSWRN("Could not resolve %s", server);
     free(srv);
     return INVALID_CONNECTION_ID;
   }
@@ -539,7 +550,7 @@ EXPORT int ServerConnect(char *server_in)
   if (conid != INVALID_CONNECTION_ID)
   {
     Client *c = newClient(addr, port, conid);
-    MDSWRN(CLIENT_PRI " connected to %s", CLIENT_VAR(c), server);
+    MDSDBG(CLIENT_PRI " connected to %s", CLIENT_VAR(c), server);
     Client_push_locked(c);
   }
   else
@@ -575,8 +586,8 @@ static void accept_client(SOCKET reply_sock, struct sockaddr_in *sin, fd_set *fd
   }
   else
   {
+    MDSWRN("Dropped connection from " IPADDRPRI ":%d", IPADDRVAR(&addr), port);
     shutdown(reply_sock, 2);
     close(reply_sock);
-    MDSWRN("Dropped connection from " IPADDRPRI ":%d", IPADDRVAR(&addr), port);
   }
 }

@@ -45,8 +45,9 @@ static Job *newJob(int conid, int *retstatus, pthread_rwlock_t *lock,
 
 static void Job_pop_locked(Job *job)
 {
-  Job *j = Jobs, **p = &Jobs;
-  for (; j; p = &j->next, j = j->next)
+  Job *j;
+  Job **p = &Jobs;
+  for (j = Jobs; j; p = &j->next, j = j->next)
   {
     if (j == job)
     {
@@ -105,6 +106,7 @@ static void Job_callback_before(Job *job)
     callback_before(callback_param);
 }
 
+/// returns  true if job was popped
 static int Job_callback_done(Job *j, int status, int remove)
 {
   MDSDBG(JOB_PRI " status=%d, remove=%d", JOB_VAR(j), status, remove);
@@ -146,13 +148,13 @@ static Job *Job_pop_by_conid(int conid)
 {
   Job *j;
   LOCK_JOBS;
-  Job **n = &Jobs;
-  for (j = Jobs; j; n = &j->next, j = j->next)
+  Job **p = &Jobs;
+  for (j = Jobs; j; p = &j->next, j = j->next)
   {
     if (j->conid == conid)
     {
       MDSDBG(JOB_PRI, JOB_VAR(j));
-      *n = j->next;
+      *p = j->next;
       break;
     }
   }
@@ -199,13 +201,13 @@ static Job *Job_pop_by_jobid(int jobid)
 {
   Job *j;
   LOCK_JOBS;
-  Job **n = &Jobs;
-  for (j = Jobs; j; n = &j->next, j = j->next)
+  Job **p = &Jobs;
+  for (j = Jobs; j; p = &j->next, j = j->next)
   {
     if (j->jobid == jobid)
     {
       MDSDBG(JOB_PRI, JOB_VAR(j));
-      *n = j->next;
+      *p = j->next;
       break;
     }
   }

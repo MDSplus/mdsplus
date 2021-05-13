@@ -42,7 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include <sys/time.h>
 
-#define DEBUG
+//#define DEBUG
 #include <mdsmsg.h>
 
 typedef struct _MonitorList
@@ -146,10 +146,12 @@ EXPORT int ServerDebug(int setting)
 }
 
 // main
-EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
+EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
                          int *jobid, void *p1, void *p2, void *p3, void *p4,
                          void *p5, void *p6, void *p7, void *p8)
 {
+  uint32_t addr = addrp ? *addrp : MdsGetClientAddr();
+  MDSDBG(IPADDRPRI ":%d", IPADDRVAR(&addr), portp ? *portp : -1);
   int status = ServerINVALID_ACTION_OPERATION;
   switch (*op)
   {
@@ -183,8 +185,8 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   case SrvAction:
   {
     SrvActionJob job;
-    job.h.addr = addr ? *addr : MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
@@ -194,7 +196,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.nid = *(int *)p3;
     if (job.h.addr)
     {
-      MDSMSG(SVRACTIONJOB_PRI, SVRACTIONJOB_VAR(&job));
+      MDSDBG(SVRACTIONJOB_PRI, SVRACTIONJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
@@ -207,15 +209,15 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   case SrvClose:
   {
     SrvCloseJob job;
-    job.h.addr = addr ? *addr : MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
     if (job.h.addr)
     {
-      MDSMSG(SVRCLOSEJOB_PRI, SVRCLOSEJOB_VAR(&job));
+      MDSDBG(SVRCLOSEJOB_PRI, SVRCLOSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
@@ -228,8 +230,8 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   case SrvCreatePulse:
   {
     SrvCreatePulseJob job;
-    job.h.addr = addr ? *addr : MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
@@ -238,7 +240,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.shot = *(int *)p2;
     if (job.h.addr)
     {
-      MDSMSG(SVRCREATEPULSEJOB_PRI, SVRCREATEPULSEJOB_VAR(&job));
+      MDSDBG(SVRCREATEPULSEJOB_PRI, SVRCREATEPULSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
@@ -259,8 +261,8 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   case SrvCommand:
   {
     SrvCommandJob job;
-    job.h.addr = addr ? *addr : MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
@@ -269,7 +271,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.command = strcpy(malloc(strlen((char *)p2) + 1), (char *)p2);
     if (job.h.addr)
     {
-      MDSMSG(SVRCOMMANDJOB_PRI, SVRCOMMANDJOB_VAR(&job));
+      MDSDBG(SVRCOMMANDJOB_PRI, SVRCOMMANDJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
@@ -282,8 +284,8 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   case SrvMonitor:
   {
     SrvMonitorJob job;
-    job.h.addr = addr ? *addr : MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
@@ -298,7 +300,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
     job.status = *(int *)p8;
     if (job.h.addr)
     {
-      MDSMSG(SVRMONITORJOB_PRI, SVRMONITORJOB_VAR(&job));
+      MDSDBG(SVRMONITORJOB_PRI, SVRMONITORJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
     }
     else
@@ -324,6 +326,7 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   }
   return status;
 }
+
 // main
 static void AbortJob(SrvJob *job)
 {
@@ -333,6 +336,7 @@ static void AbortJob(SrvJob *job)
     FreeJob(job);
   }
 }
+
 // main
 static int QJob(SrvJob *job)
 {
@@ -425,8 +429,8 @@ static int RemoveLast()
       JobQueueNext->h.next = 0;
     else
       JobQueue = 0;
+    MDSMSG(SVRJOB_PRI "Removed pending action", SVRJOB_VAR(job));
     FreeJob(job);
-    printf("Removed pending action");
     status = MDSplusSUCCESS;
   }
   else
@@ -745,7 +749,7 @@ static void WorkerExit(void *arg __attribute__((unused)))
     UnlockQueue();
   pthread_mutex_unlock(&STATIC_lock);
   CONDITION_RESET(&WorkerRunning);
-  fprintf(stderr, "Worker thread exitted\n");
+  MDSWRN("Worker thread exitted");
 }
 // thread
 static void WorkerThread(void *arg __attribute__((unused)))
@@ -837,18 +841,20 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port)
   sin.sin_family = AF_INET;
   *(uint32_t *)(&sin.sin_addr) = addr;
   sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock != INVALID_SOCKET)
+  if (sock == INVALID_SOCKET)
+  {
+    MDSERR("Cannot get socket for " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
+  }
+  else
   {
     if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1)
     {
+      MDSERR("Cannot connect to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
       shutdown(sock, 2);
       close(sock);
-      char now[32];
-      Now32(now);
-      fprintf(stderr, "%s, ERROR Cannot connect to " IPADDRPRI ":%u", now, IPADDRVAR(&addr), port);
-      perror(" ");
       return INVALID_SOCKET;
     }
+    MDSDBG("Connected to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
     new = (ClientList *)malloc(sizeof(ClientList));
     l = Clients;
     Clients = new;
@@ -884,7 +890,7 @@ static void RemoveClient(SrvJob *job)
   }
 }
 
-// both
+/// returns the number of bytes sent
 static int send_all(SOCKET sock, char *msg, int len)
 {
   int sent;
@@ -922,10 +928,10 @@ static int send_reply(SrvJob *job, int replyType, int status_in, int length, cha
     if (sock == INVALID_SOCKET)
       break;
     int bytes = send_all(sock, reply, 60);
-    if (bytes > 0)
+    if (bytes == 60)
     {
       bytes = send_all(sock, msg, length);
-      if (bytes > 0)
+      if (bytes == length)
       {
         status = MDSplusSUCCESS;
         break;
@@ -940,12 +946,7 @@ static int send_reply(SrvJob *job, int replyType, int status_in, int length, cha
       pthread_mutex_unlock(&STATIC_lock);
       if (debug)
       {
-        uint8_t *ip = (uint8_t *)&job->h.addr;
-        char now[32];
-        Now32(now);
-        fprintf(stderr, "%s, Dropped connection to %u.%u.%u.%u:%u", now,
-                ip[0], ip[1], ip[2], ip[3], job->h.port);
-        perror(" ");
+        MDSMSG(SVRJOB_PRI " drop connection", SVRJOB_VAR(job));
       }
       RemoveClient(job);
     }

@@ -160,25 +160,27 @@ static pthread_rwlock_t table_lock = PTHREAD_RWLOCK_INITIALIZER;
   {                                   \
   } while (0)
 #endif
-#define XLOCK_ACTION(idx, info, typ) \
-  ({ACTION_DBG(idx, info, typ, '?');               \
-    int r = pthread_rwlock_##typ##lock(&ACTION_LOCK(idx)); \
-    ACTION_DBG(idx, info, typ, '!');               \
-  r; })
+#define XLOCK_ACTION(idx, info, typ)                           \
+  (                                                            \
+      {                                                        \
+        ACTION_DBG(idx, info, typ, '?');                       \
+        int r = pthread_rwlock_##typ##lock(&ACTION_LOCK(idx)); \
+        ACTION_DBG(idx, info, typ, '!');                       \
+        r;                                                     \
+      })
 #define WRLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, wr)
 #define RDLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, rd)
 #define UNLOCK_ACTION(idx, info) XLOCK_ACTION(idx, info, un)
 
-//#define DEBUG
-
-#define ACTION_PRI "Action(%d, %s, p=%d(%d), %d-%d-%d)"
-#define ACTION_VAR(i) i,                                   \
-                      table->actions[i].path,              \
-                      table->actions[i].phase,             \
-                      table->actions[i].condition != NULL, \
-                      table->actions[i].dispatched,        \
-                      table->actions[i].doing,             \
-                      table->actions[i].done
+#define ACTION_PRI "Action(%d, path=%s, phase=%d state=%c%c%c%c"
+#define ACTION_VAR(i)                           \
+  i,                                            \
+      table->actions[i].path,                   \
+      table->actions[i].phase,                  \
+      table->actions[i].condition ? 'C' : 'c',  \
+      table->actions[i].dispatched ? 'D' : 'd', \
+      table->actions[i].doing ? 'S' : 's',      \
+      table->actions[i].done ? 'F' : 'f'
 #define PRINT_ACTIONS                                  \
   {                                                    \
     int i;                                             \
@@ -246,6 +248,7 @@ static void before(int idx)
   if (i < END)                          \
     UNLOCK_ACTION(i, fnae_##info);
 
+/// update range of conditional actions
 static inline void set_action_ranges(int phase, int *first_c, int *last_c)
 {
   int i;
@@ -294,10 +297,7 @@ static inline void set_action_ranges(int phase, int *first_c, int *last_c)
     *last_c = last_s = 0;
   }
   UNLOCK_TABLE;
-#ifdef DEBUG
-  fprintf(stderr, "ActionRange: %d,%d,%d,%d\n", *first_c, *last_c, first_s,
-          last_s);
-#endif
+  MDSDBG("range=[%d, %d], cond=[%d, %d]", first_s, last_s, *first_c, *last_c);
 }
 
 static void abort_range(int s, int e)
@@ -349,13 +349,14 @@ static void set_group(int sync, int first_g, int *last_g)
   *last_g = i;
 }
 
+/// return true if range is complete
 static int check_actions_done(const int s, const int e)
 {
   int i;
   ActionInfo *actions = table->actions;
   FIND_NEXT_ACTION(s, e, actions[i].dispatched && !actions[i].done, noa);
   FIND_NEXT_ACTION_END(e, noa);
-  MDSDBG("%d -> %d==%d", s, i, e);
+  MDSDBG("range=[%d, %d], current=%d", s, e, i);
   return i >= e;
 }
 
@@ -397,16 +398,18 @@ static void wait_for_actions(int all, int first_g, int last_g,
 {
   int c_status = C_OK;
   _CONDITION_LOCK(&JobWaitC);
-  int g, c = 1;
+  int group_done, cond_done = -1;
   while ((c_status == ETIMEDOUT || c_status == C_OK) && !is_abort_in_progress() &&
-         (g = !check_actions_done(first_g, last_g) ||
-              (all && (c = !check_actions_done(first_c, last_c)))))
+         !(group_done = check_actions_done(first_g, last_g) &&
+                        (!all || (cond_done = check_actions_done(first_c, last_c)))))
   {
     struct timespec tp;
     clock_gettime(CLOCK_REALTIME, &tp);
     if (c_status == C_OK)
     {
-      MDSDBG("%d, %d", g, c);
+      MDSDBG("group_done=%c, cond_done=%c",
+             group_done ? 'y' : 'n',
+             cond_done < 0 ? '?' : (cond_done ? 'y' : 'n'));
 #ifdef DEBUG
       PRINT_ACTIONS;
 #endif
@@ -757,7 +760,7 @@ static void action_done_do(intptr_t idx)
   CONDITION_SET(&JobWaitC);
 }
 
-#define ACTION_DONE_THREAD
+//#define ACTION_DONE_THREAD
 #ifdef ACTION_DONE_THREAD
 typedef struct _complete
 {
