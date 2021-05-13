@@ -36,9 +36,12 @@ import time
 from MDSplus.mdsExceptions import MDSplusException
 
 if sys.platform.startswith('win'):
+    iswin = True
     DEFAULT_PROTOCOL = 'TCP'
 else:
+    iswin = False
     DEFAULT_PROTOCOL = 'TCPV6'
+
 
 class logger(object):
     """wrapper class to force flush on each write"""
@@ -238,7 +241,7 @@ class MdsIp(object):
                         (mdsip, command))
 
     def _checkIdle(self, server, **opt):
-        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n" % server
+        show_server = "Checking server: %s\n[^,]+, [^,]+, logging (.|\n)*Inactive\n" % server
         self._doTCLTest('show server %s' %
                         server, out=show_server, regex=True, **opt)
 
@@ -276,7 +279,7 @@ class MdsIp(object):
     def _stop_mdsip(self, *procs_in):
         # filter unused mdsip
         procs = [(svr, server) for svr, server in procs_in if server]
-        for svr, server in procs_in:
+        for svr, server in procs:
             if not svr:  # close trees on externals
                 try:
                     self._doTCLTest(
@@ -326,17 +329,25 @@ class MdsIp(object):
         if port > 0:
             from subprocess import Popen, STDOUT
             logfile = '%s-%s%d.log' % (self.module, logname, self.index)
-            log = open(logfile, 'w')
+            log = open(logfile, 'w') if iswin else None
             try:
                 hosts = '%s/mdsip.hosts' % self.root
                 params = ['mdsip', '-s', '-p',
                           str(port), '-P', protocol, '-h', hosts]
-                print(' '.join(params+['>', logfile, '2>&1']))
-                mdsip = Popen(params, stdout=log, stderr=STDOUT)
+
+                print(' '.join(params + ['&>', logfile]))
+                if not log:
+                    params.extend(['2>&1', '|', 'tee', logfile])
+                mdsip = Popen(params)
             except:
-                log.close()
+                if log:
+                    log.close()
                 raise
-            self._waitIdle(server, 10)  # allow mdsip to launch
+            try:
+                self._waitIdle(server, 10)  # allow mdsip to launch
+            except Exception:
+                mdsip.kill()
+                raise
         else:
             mdsip, log = None, None
         if server:

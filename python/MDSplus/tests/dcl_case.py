@@ -132,8 +132,8 @@ class Tests(_common.TreeTests, _common.MdsIp):
         """ using dispatcher """
         mon, mon_log, svr, svr_log = (None, None, None, None)
         try:
-            mon, mon_log = self._start_mdsip(monitor, monitor_port, 'monitor')
-            svr, svr_log = self._start_mdsip(server, server_port, 'action')
+            mon, mon_log = self._start_mdsip(monitor, monitor_port, 'monitor', 'TCP')
+            svr, svr_log = self._start_mdsip(server, server_port, 'action', 'TCP')
             try:
                 if mon:
                     self.assertEqual(mon.poll(), None)
