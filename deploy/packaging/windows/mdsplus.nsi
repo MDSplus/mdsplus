@@ -1,9 +1,9 @@
-Name   "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
-OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
+Name   "MDSplus${BNAME} ${MAJOR}.${MINOR}-${RELEASE}"
+OutFile ${OUTDIR}/MDSplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}.exe
 ;SetCompress off
 SetCompressor /FINAL LZMA
 ShowInstDetails show
-InstType "Typical" 
+InstType "Typical"
 InstType "Full"
 InstType "Minimal"
 
@@ -21,6 +21,7 @@ InstType "Minimal"
 !define READLINELIB libreadline8.dll
 !define GCC_STDCPP_LIB libstdc++-6.dll
 !define GCC_S_SEH_LIB libgcc_s_seh-1.dll
+!define GCC_S_DW2_LIB libgcc_s_dw2-1.dll
 !define GFORTRAN_LIB libgfortran-5.dll
 !define QUADMATH_LIB libquadmath-0.dll
 !define LIBXML2_LIB libxml2-2.dll
@@ -152,7 +153,7 @@ Function install_core_pre
 	File MDSplus-License.rtf
 
 	# Registry information for add/remove programs
-	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${FLAVOR}"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${BNAME}"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe" /$MultiUser.InstallMode'
 	${WriteKeyStr} "${UNINSTALL_KEY}" "QuietUninstallString" '"$INSTDIR\uninstall.exe" /S /$MultiUser.InstallMode'
 	${WriteKeyStr} "${UNINSTALL_KEY}" "Uninstaller"	"$INSTDIR\uninstall.exe"
@@ -257,6 +258,7 @@ SectionGroup "!core" core
 	File ${MINGWLIB32}/${READLINELIB}
 	File ${MINGWLIB32}/${TERMCAPLIB}
 	File ${MINGWLIB32}/${GCC_STDCPP_LIB}
+	File ${MINGWLIB32}/${GCC_S_DW2_LIB}
 	File ${MINGWLIB32}/${GFORTRAN_LIB}
 	File ${MINGWLIB32}/${QUADMATH_LIB}
 	File ${MINGWLIB32}/${LIBXML2_LIB}
@@ -689,7 +691,7 @@ functionEnd ; un.onInit
 Function un.onGUIEnd
 	SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 FunctionEnd
- 
+
 Section uninstall
 	Push $R0
 	Push $R1

@@ -169,8 +169,7 @@ VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --gen-suppressions=all \
                             --num-callers=64 \
                             --trace-children=yes \
-                            --child-silent-after-fork=yes \
-                            --trace-children-skip-by-arg=*SetMdsplusFileProtection*
+                            --child-silent-after-fork=yes
 
 VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
@@ -322,7 +321,7 @@ MOSTLYCLEANFILES ?=
 MOSTLYCLEANFILES += $(valgrind_log_files)
 '
 
-dnl VALGRIND_CHECK_RULES subsituition 
+dnl VALGRIND_CHECK_RULES subsituition
 AC_SUBST([VALGRIND_CHECK_RULES],["${VALGRIND_CHECK_RULES_PRE} ${VALGRIND_CHECK_RULES}"])
 m4_ifdef([_AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE([VALGRIND_CHECK_RULES])])
 

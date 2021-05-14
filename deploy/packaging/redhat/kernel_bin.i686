@@ -18,7 +18,6 @@
 ./usr/local/mdsplus/bin32/mdsip-server-ssh
 ./usr/local/mdsplus/bin32/mdsip_server
 ./usr/local/mdsplus/bin32/mdsipd
-./usr/local/mdsplus/bin32/mdsiptest
 ./usr/local/mdsplus/bin32/mdstcl
 ./usr/local/mdsplus/bin32/remote_submit
 ./usr/local/mdsplus/bin32/setevent
@@ -29,7 +28,6 @@
 ./usr/local/mdsplus/bin32/wfevent
 ./usr/local/mdsplus/lib32
 ./usr/local/mdsplus/lib32/libMdsIpShr.so
-./usr/local/mdsplus/lib32/libMdsIpSrvShr.so
 ./usr/local/mdsplus/lib32/libMdsIpTCP.so
 ./usr/local/mdsplus/lib32/libMdsIpTCPV6.so
 ./usr/local/mdsplus/lib32/libMdsIpUDT.so

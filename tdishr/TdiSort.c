@@ -60,8 +60,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 
-#define _MOVC3(a, b, c) memcpy(c, b, a)
-
 extern int TdiGetArgs();
 extern int TdiCvtArgs();
 extern int TdiMasterData();
@@ -788,7 +786,7 @@ int Tdi1Union(opcode_t opcode __attribute__((unused)), int narg,
           if (j < len)
           {
             po += len;
-            _MOVC3(len, pi, po);
+            memcpy(po, pi, len);
           }
         }
         break;
@@ -802,7 +800,7 @@ int Tdi1Union(opcode_t opcode __attribute__((unused)), int narg,
           if (j < len)
           {
             po += len;
-            _MOVC3(len, pi, po);
+            memcpy(po, pi, len);
           }
         }
         break;
@@ -816,7 +814,7 @@ int Tdi1Union(opcode_t opcode __attribute__((unused)), int narg,
           if (j < len)
           {
             po += len;
-            _MOVC3(len, pi, po);
+            memcpy(po, pi, len);
           }
         }
         break;

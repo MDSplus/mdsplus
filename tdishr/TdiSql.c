@@ -43,7 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL P-4     (c)1991,1992
 */
 #include <mdstypes.h>
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <math.h> /*for pow definition */

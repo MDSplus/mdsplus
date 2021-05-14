@@ -73,11 +73,12 @@ static void __attribute__((unused)) free_if(void *ptr) { free(*(void **)ptr); }
 #define FREE_IF(ptr, c) pthread_cleanup_pop(c);
 #define FREE_NOW(ptr) FREE_IF(ptr, 1)
 #define FREE_CANCEL(ptr) FREE_IF(ptr, 0)
-#define INIT_AS_AND_FREE_ON_EXIT(type, ptr, value) \
-  type ptr = value;                                \
-  FREE_ON_EXIT(ptr)
 #define INIT_AND_FREE_ON_EXIT(type, ptr) \
-  INIT_AS_AND_FREE_ON_EXIT(type, ptr, NULL)
+  type ptr = NULL;                       \
+  FREE_ON_EXIT(ptr)
+#define INIT_AS_AND_FREE_ON_EXIT(type, ptr, value) \
+  INIT_AND_FREE_ON_EXIT(type, ptr);                \
+  ptr = (type)value;
 
 // FCLOSE
 #include <stdio.h>

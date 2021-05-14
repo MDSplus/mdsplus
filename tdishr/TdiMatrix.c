@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL CTR-7   (c)1990
 */
 
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -72,7 +71,7 @@ static int copy(int len, int n, char *x, int incx, char *y, int incy)
     break;
   default:
     for (; --n >= 0; x += incx, y += incy)
-      _MOVC3(len, x, y);
+      memcpy(y, x, len);
     break;
   }
   return 1;

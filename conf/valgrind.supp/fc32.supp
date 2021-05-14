@@ -40,6 +40,11 @@
    fun:calloc
    fun:_dl_allocate_tls
 }
+{
+   mempcpy e.g. caused by printf
+   Helgrind:Race
+   fun:mempcpy
+}
 
 # python
 
@@ -73,6 +78,14 @@
    fun:PyBytes_FromStringAndSize
 }
 {
+   likely GIL stuff
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   obj:/usr/lib64/libpython3.8.so.1.0
+}
+{
    PyObject_Malloc
    Memcheck:Leak
    match-leak-kinds: possible
@@ -90,6 +103,13 @@
    _PyObject_New
    Memcheck:Leak
    match-leak-kinds: possible
+   fun:malloc
+   fun:_PyObject_New
+}
+{
+   _PyObject_New
+   Memcheck:Leak
+   match-leak-kinds: definite
    fun:malloc
    fun:_PyObject_New
 }
@@ -145,6 +165,13 @@
    match-leak-kinds: possible
    fun:realloc
    fun:_PyBytes_Resize
+}
+{
+   _PyObject_GC_Resize
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   fun:_PyObject_GC_Resize
 }
 {
    _PyLong_New
@@ -247,6 +274,7 @@
    Helgrind:Race
    fun:memmove
    obj:/usr/lib64/libpython3.8.so.1.0
+}
 {
    PyEval_AcquireThread
    Helgrind:Race
@@ -372,4 +400,12 @@
    InlineTree::Compile::ciMethod::JVMState()
    Memcheck:Cond
    fun:_ZN10InlineTreeC1EP7CompilePKS_P8ciMethodP8JVMStateifi
+}
+{
+   os::PlatformEvent::unpark()
+   Helgrind:Misc
+   fun:pthread_cond_signal@@GLIBC_2.3.2
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:_ZN2os13PlatformEvent6unparkEv
 }

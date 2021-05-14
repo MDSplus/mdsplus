@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -725,7 +724,7 @@ int Tdi3DotProduct(struct descriptor_a *in1_ptr, struct descriptor_a *in2_ptr,
         status = TdiSum(in2_ptr, &tmp MDS_END_ARG);
     }
     if (STATUS_OK)
-      _MOVC3(out_ptr->length, tmp.pointer->pointer, out_ptr->pointer);
+      memcpy(out_ptr->pointer, tmp.pointer->pointer, out_ptr->length);
     break;
   }
   MdsFree1Dx(&tmp, 0);

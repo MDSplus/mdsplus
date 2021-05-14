@@ -65,8 +65,8 @@ typedef uint8_t con_t;
 
 typedef struct _connection
 {
-  int id; // unique connection id
   struct _connection *next;
+  int id; // unique connection id
   pthread_cond_t cond;
   con_t state;
   char *protocol;
@@ -77,8 +77,7 @@ typedef struct _connection
   unsigned char message_id;
   int client_type;
   int nargs;
-  struct descriptor
-      *descrip[MDSIP_MAX_ARGS]; // list of descriptors for the message arguments
+  struct descriptor *descrip[MDSIP_MAX_ARGS]; // list for message arguments
   MdsEventList *event;
   void *tdicontext[6];
   int addr;
@@ -257,6 +256,7 @@ EXPORT char ClientType(void);
 /// the server "MdsIpSrvShr" library.
 ///
 EXPORT int CloseConnection(int conid);
+int CloseConnectionC(Connection *connection); // internal use
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -455,8 +455,6 @@ EXPORT Message *GetMdsMsgTO(int id, int *status, int timeout);
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
 Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec);
 
-EXPORT unsigned char GetMode();
-
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// Get multi mode active in this scope. Mutiple connection mode (accepts
@@ -468,11 +466,7 @@ EXPORT char *GetPortname();
 
 EXPORT char *GetProtocol();
 
-EXPORT int GetService();
-
 EXPORT SOCKET GetSocketHandle();
-
-EXPORT int GetWorker();
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -625,8 +619,6 @@ EXPORT void ParseCommand(int argc, char **argv, Options options[], int more,
 EXPORT void ParseStdArgs(int argc, char **argv, int *extra_argc,
                          char ***extra_argv);
 
-EXPORT void PrintHelp(char *);
-
 EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -716,19 +708,13 @@ EXPORT int SetMaxCompressionLevel(int setting);
 
 EXPORT int SetMdsConnectTimeout(int sec);
 
-EXPORT unsigned char SetMode(unsigned char newmode);
-
 EXPORT unsigned char SetMulti(unsigned char setting);
 
 EXPORT char *SetPortname(char *);
 
 EXPORT char *SetProtocol(char *);
 
-EXPORT int SetService(int setting);
-
 EXPORT SOCKET SetSocketHandle(SOCKET handle);
-
-EXPORT int SetWorker(int setting);
 
 EXPORT void UnlockAsts();
 
@@ -788,10 +774,5 @@ EXPORT int ReceiveFromConnection(int id, void *buffer, size_t buflen);
 EXPORT int MdsGetClientAddr();
 EXPORT void MdsSetClientAddr(int);
 EXPORT char *MdsGetServerPortname();
-
-/* MdsIpSrvShr routines */
-
-EXPORT Message *ProcessMessage(Connection *connection, Message *message);
-EXPORT int RemoveConnection(int id);
 
 #endif

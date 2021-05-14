@@ -60,17 +60,17 @@ class MDSplusException(MdsException):
   fac="MDSplus"
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
-  def __new__(cls,*argv):
+  def __new__(cls, *argv):
       if not argv or cls is not MDSplusException:
-          return super(MDSplusException,cls).__new__(cls,*argv)
+          return super(MDSplusException,cls).__new__(cls, *argv)
       status = int(argv[0])
       code   = status & -8
       if code in cls.statusDict:
           cls = cls.statusDict[code]
       else:
           cls = MDSplusUnknown
-      return cls.__new__(cls,*argv)
-  def __init__(self,status=None,message=None):
+      return cls.__new__(cls, *argv)
+  def __init__(self, status=None, message=None):
     if isinstance(status,int):
       self.status = status
     else:
@@ -83,8 +83,8 @@ class MDSplusException(MdsException):
         self.fac='MDSplus'
     if message is not None:
         message = str(message)
-        if len(message)>0:
-            self.message = "%s:%s"%(self.message,message)
+        if message:
+            self.message = message
     self.severity=self.severities[self.status & 7]
     super(Exception,self).__init__(self.message)
 
@@ -312,10 +312,10 @@ def gen_include(root, filename, faclist, msglistm, f_test):
                 msgnum = int(status.get('value'))
                 sev = sevs[status.get('severity').lower()]
                 msgn = (facnum << 16)+(msgnum << 3)+sev
-                text = status.get('text', "")
-                if len(text) == 0:
-                    raise Exception(
-                        "missing or empty text: %s in %s." % (facnam, filename))
+                text = status.get('text', None)
+                if not text:
+                    raise Exception("missing or empty text: %s in %s." % (
+                        facnam, filename))
                 depr = status.get('deprecated', "0")
                 sfacnam = status.get('facnam')
                 facabb = status.get('facabb')
