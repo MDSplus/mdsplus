@@ -57,39 +57,101 @@ class _ACQ2106_423ST(MDSplus.Device):
     """
 
     carrier_parts = [
-        {'path': ':NODE',        'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':COMMENT',     'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':TRIGGER',     'type': 'numeric',
-            'value': 0.0,    'options': ('no_write_shot',)},
-        {'path': ':TRIG_MODE',   'type': 'text',
-            'value': 'master:hard', 'options': ('no_write_shot',)},
-        {'path': ':EXT_CLOCK',   'type': 'axis',
-            'options': ('no_write_shot',)},
-        {'path': ':FREQ',        'type': 'numeric',
-            'value': 16000,  'options': ('no_write_shot',)},
-        {'path': ':DEF_DECIMATE', 'type': 'numeric',
-            'value': 1,      'options': ('no_write_shot',)},
-        {'path': ':SEG_LENGTH',  'type': 'numeric',
-            'value': 8000,   'options': ('no_write_shot',)},
-        {'path': ':MAX_SEGMENTS', 'type': 'numeric',
-            'value': 1000,   'options': ('no_write_shot',)},
-        {'path': ':SEG_EVENT',   'type': 'text',
-            'value': 'STREAM', 'options': ('no_write_shot',)},
-        {'path': ':TRIG_TIME',   'type': 'numeric',
-            'options': ('write_shot',)},
-        {'path': ':TRIG_STR',    'type': 'text',
-            'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)", 'options': ('nowrite_shot',)},
-        {'path': ':RUNNING',     'type': 'numeric',
-            'options': ('no_write_model',)},
-        {'path': ':LOG_FILE',    'type': 'text',   'options': ('write_once',)},
-        {'path': ':LOG_OUTPUT',  'type': 'text',   'options': (
-            'no_write_model', 'write_once', 'write_shot',)},
-        {'path': ':INIT_ACTION', 'type': 'action',
-            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))", 'options': ('no_write_shot',)},
-        {'path': ':STOP_ACTION', 'type': 'action',
-            'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options': ('no_write_shot',)},
+        {
+            'path': ':NODE',        
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':COMMENT',     
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIGGER',     
+            'type': 'numeric',
+            'value': 0.0,    
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_MODE',   
+            'type': 'text',
+            'value': 'master:hard', 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':EXT_CLOCK',   
+            'type': 'axis',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':FREQ',        
+            'type': 'numeric',
+            'value': 16000,  
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':DEF_DECIMATE', 
+            'type': 'numeric',
+            'value': 1,      
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_LENGTH',  
+            'type': 'numeric',
+            'value': 8000,   
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':MAX_SEGMENTS', 
+            'type': 'numeric',
+            'value': 1000,   
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_EVENT',   
+            'type': 'text',
+            'value': 'STREAM', 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_TIME',   
+            'type': 'numeric',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_STR',    
+            'type': 'text',
+            'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)", 
+            'options': ('nowrite_shot',)
+        },
+        {
+            'path': ':RUNNING',     
+            'type': 'numeric',
+            'options': ('no_write_model',)
+        },
+        {
+            'path': ':LOG_FILE',    
+            'type': 'text',   
+            'options': ('write_once',)
+        },
+        {
+            'path': ':LOG_OUTPUT',  
+            'type': 'text',   
+            'options': ('no_write_model', 'write_once', 'write_shot',)
+        },
+        {
+            'path': ':INIT_ACTION', 
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))", 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':STOP_ACTION', 
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      
+            'options': ('no_write_shot',)
+        },
     ]
 
     data_socket = -1
@@ -255,7 +317,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                         else:
                             self.full_buffers.put(buf)
 
-    def init(self):
+    def init(self, armed_by_transient = False):
         import acq400_hapi
         MIN_FREQUENCY = 10000
 
@@ -313,8 +375,13 @@ class _ACQ2106_423ST(MDSplus.Device):
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
 
         self.running.on = True
-        thread = self.MDSWorker(self)
-        thread.start()
+
+        if not armed_by_transient:
+            # Then, the following will armed by this super-class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
     INIT = init
 
     def stop(self):
@@ -337,14 +404,29 @@ def assemble(cls):
     cls.parts = list(_ACQ2106_423ST.carrier_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path': ':INPUT_%3.3d' % (i+1,),            'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (
-                i+1,), 'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:DECIMATE' % (
-                i+1,),   'type': 'NUMERIC', 'valueExpr': 'head.def_decimate',            'options': ('no_write_shot',)},
-            {'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
+            {
+                'path': ':INPUT_%3.3d' % (i+1,),            
+                'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (i+1,), 
+                'options': ('no_write_model', 'write_once',)
+            },
+
+            {
+                'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),   
+                'type': 'NUMERIC', 'valueExpr': 'head.def_decimate',            
+                'options': ('no_write_shot',)
+            },
+
+            {
+                'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
+
+            {
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),    
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
         ]
 
 
