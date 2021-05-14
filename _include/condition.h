@@ -39,14 +39,14 @@ typedef struct _Condition_p
 #define _CONDITION_WAIT_RESET(input) \
   while ((input)->value)             \
   _CONDITION_WAIT(input)
-#define _CONDITION_WAIT_1SEC(input, status)                              \
-  do                                                                     \
-  {                                                                      \
-    struct timespec tp;                                                  \
-    clock_gettime(CLOCK_REALTIME, &tp);                                  \
-    tp.tv_sec++;                                                         \
-    status pthread_cond_timedwait(&(input)->cond, &(input)->mutex, &tp); \
-  } while (0)
+#define _CONDITION_WAIT_1SEC(input)                                   \
+  (                                                                   \
+      {                                                               \
+        struct timespec tp;                                           \
+        clock_gettime(CLOCK_REALTIME, &tp);                           \
+        tp.tv_sec++;                                                  \
+        pthread_cond_timedwait(&(input)->cond, &(input)->mutex, &tp); \
+      })
 #define CONDITION_SET_TO(input, value_in) \
   do                                      \
   {                                       \
@@ -68,7 +68,7 @@ typedef struct _Condition_p
   do                               \
   {                                \
     _CONDITION_LOCK(input);        \
-    _CONDITION_WAIT_1SEC(input, ); \
+    _CONDITION_WAIT_1SEC(input);   \
     _CONDITION_UNLOCK(input);      \
   } while (0)
 #define CONDITION_DESTROY(input, destroy_lock) \

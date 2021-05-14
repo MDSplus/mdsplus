@@ -756,7 +756,6 @@ static void WorkerThread(void *arg __attribute__((unused)))
 {
   SrvJob *job;
   pthread_cleanup_push(WorkerExit, NULL);
-  ProgLoc = 1;
   CONDITION_SET(&WorkerRunning);
   while ((job = NextJob(1)))
   {
@@ -764,6 +763,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
     pthread_mutex_lock(&STATIC_lock);
     if (STATIC_Debug)
       fprintf(stderr, "job started.\n");
+    ProgLoc = 1;
     pthread_mutex_unlock(&STATIC_lock);
     ServerSetDetailProc(0);
     SetCurrentJob(job);
@@ -789,11 +789,11 @@ static void WorkerThread(void *arg __attribute__((unused)))
       DoSrvMonitor(job);
       break;
     }
-    ProgLoc = 7;
     MDSDBG("Finished job %d for " IPADDRPRI ":%d", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
     SetCurrentJob(NULL);
     FreeJob(job);
     pthread_mutex_lock(&STATIC_lock);
+    ProgLoc = 7;
     char *save_text = STATIC_current_job_text;
     STATIC_current_job_text = NULL;
     free(save_text);
@@ -803,6 +803,7 @@ static void WorkerThread(void *arg __attribute__((unused)))
   }
   pthread_mutex_lock(&STATIC_lock);
   STATIC_LeftWorkerLoop++;
+  ProgLoc = 9;
   pthread_mutex_unlock(&STATIC_lock);
   pthread_cleanup_pop(1);
   pthread_exit(NULL);
@@ -819,10 +820,18 @@ static int StartWorker()
 // main
 static void KillWorker()
 {
+  MDSDBG("enter");
   _CONDITION_LOCK(&WorkerRunning);
   if (WorkerRunning.value)
   {
-    pthread_cancel(Worker);
+#ifndef WIN32
+    MDSDBG("cancel");
+    if (pthread_cancel(Worker))
+#endif
+    {
+      MDSWRN("kill");
+      pthread_kill(Worker, SIGINT);
+    }
     _CONDITION_WAIT_RESET(&WorkerRunning);
   }
   _CONDITION_UNLOCK(&WorkerRunning);

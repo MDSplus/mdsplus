@@ -197,14 +197,14 @@ static void Job_abandon_locked(Job *job)
 
 static inline void Job_wait_and_pop_locked(Job *job)
 {
-    pthread_cleanup_push((void *)Job_abandon_locked, (void *)job);
-    pthread_cond_wait(job->cond, &jobs_mutex);
-    pthread_cond_destroy(job->cond);
-    free(job->cond);
-    job->cond = NULL;
-    Job_pop_locked(job);
-    MDSDBG(JOB_PRI " sync done", JOB_VAR(job));
-    pthread_cleanup_pop(0);
+  pthread_cleanup_push((void *)Job_abandon_locked, (void *)job);
+  pthread_cond_wait(job->cond, &jobs_mutex);
+  pthread_cond_destroy(job->cond);
+  free(job->cond);
+  job->cond = NULL;
+  Job_pop_locked(job);
+  MDSDBG(JOB_PRI " sync done", JOB_VAR(job));
+  pthread_cleanup_pop(0);
 }
 
 static inline int Job_wait_and_pop_by_jobid(int jobid)
