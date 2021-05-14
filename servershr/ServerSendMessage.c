@@ -525,19 +525,10 @@ EXPORT int ServerDisconnect(char *server_in)
   return status;
 }
 
-EXPORT int ServerConnect(char *server_in)
+
+static inline int server_connect(char *server, uint32_t addr, uint16_t port)
 {
-  int conid = INVALID_CONNECTION_ID;
-  char *srv = TranslateLogical(server_in);
-  char *server = srv ? srv : server_in;
-  uint32_t addr;
-  uint16_t port = 0;
-  if (get_addr_port(server, &addr, &port))
-  {
-    MDSWRN("Could not resolve %s", server);
-    free(srv);
-    return INVALID_CONNECTION_ID;
-  }
+  int conid;
   LOCK_CLIENTS;
   conid = ConnectToMds(server);
   if (conid != INVALID_CONNECTION_ID)
@@ -551,6 +542,23 @@ EXPORT int ServerConnect(char *server_in)
     MDSWRN("Could not connect to %s (" IPADDRPRI ":%d)", server, IPADDRVAR(&addr), port);
   }
   UNLOCK_CLIENTS;
+  return conid;
+}
+
+EXPORT int ServerConnect(char *server_in)
+{
+
+  char *srv = TranslateLogical(server_in);
+  char *server = srv ? srv : server_in;
+  uint32_t addr;
+  uint16_t port = 0;
+  if (get_addr_port(server, &addr, &port))
+  {
+    MDSWRN("Could not resolve %s", server);
+    free(srv);
+    return INVALID_CONNECTION_ID;
+  }
+  int conid = server_connect(server, addr, port);
   free(srv);
   return conid;
 }
