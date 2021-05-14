@@ -778,7 +778,6 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
-    <requires package="python" external=""/>
     <requires package="python-numpy" external=""/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
@@ -823,39 +822,33 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
  <!-- dist first -->
  <external_packages dist="Ubuntu20">
-   <python package="python3"/>
    <python-numpy package="python3-numpy"/>
-   <xinetd package="busybox"/>
    <java package="java-runtime"/>
+   <xinetd package="busybox"/>
  </external_packages>
 
  <external_packages dist="el8">
-   <python package="python3"/>
    <python-numpy package="python3-numpy"/>
-   <xinetd/>
    <java/>
+   <xinetd/>
  </external_packages>
 
  <!-- platform last -->
  <external_packages platform="redhat">
-   <python/>
    <python-numpy/>
-   <xinetd/>
    <java/>
+   <xinetd/>
  </external_packages>
 
  <external_packages platform="alpine">
-   <python/>
-   <python-numpy package="numpy"/>
-   <xinetd/>
-   <java/>
+   <python-numpy package="py-numpy"/>
+   <java package="java-jre"/>
  </external_packages>
 
  <external_packages platform="debian">
-   <python/>
    <python-numpy package="python-numpy"/>
-   <xinetd package="busybox"/>
    <java package="java-runtime"/>
+   <xinetd package="busybox"/>
  </external_packages>
 
 </deploy>
