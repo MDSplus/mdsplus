@@ -209,7 +209,7 @@ static inline void Job_wait_and_pop_locked(Job *job)
 
 static inline int Job_wait_and_pop_by_jobid(int jobid)
 {
-  int err = B_TRUE;
+  int err;
   LOCK_JOBS;
   Job *job = Job_get_by_jobid_locked(jobid);
   if (job && job->cond)
@@ -217,6 +217,10 @@ static inline int Job_wait_and_pop_by_jobid(int jobid)
     MDSDBG(JOB_PRI " sync pending", JOB_VAR(job));
     Job_wait_and_pop_locked(job);
     err = B_FALSE;
+  }
+  else
+  {
+    err = B_TRUE;
   }
   UNLOCK_JOBS;
   return err;
