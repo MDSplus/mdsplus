@@ -15,7 +15,7 @@ int server_epoll = -1;
 static int io_connect(Connection *c, char *protocol __attribute__((unused)),
                       char *host)
 {
-  struct SOCKADDR_IN sin;
+  struct sockaddr sin;
   UDTSOCKET sock;
   if (IS_OK(GetHostAndPort(host, &sin)))
   {
@@ -25,7 +25,7 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
       perror("Error in (udt) connect");
       return C_ERROR;
     }
-    if (udt_connect(sock, (struct sockaddr *)&sin, sizeof(sin)))
+    if (udt_connect(sock, &sin, sizeof(sin)))
     {
       print_socket_error("Error in connect to service");
       return C_ERROR;
@@ -69,7 +69,6 @@ static int io_listen(int argc, char **argv)
     // multiple connections with own context /////////////////////////////////
     struct addrinfo *result, *rp;
     UDTSOCKET ssock = INVALID_SOCKET;
-    struct SOCKADDR_IN sin;
     UDTSOCKET readfds[1024];
     int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
     int gai_stat;
@@ -105,7 +104,6 @@ static int io_listen(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
     udt_epoll_add_usock(server_epoll, ssock, &events);
-    memset(&sin, 0, sizeof(sin));
     if (udt_listen(ssock, 128) < 0)
     {
       fprintf(stderr, "Error from udt_listen: %s\n", udt_getlasterror_desc());
@@ -120,6 +118,7 @@ static int io_listen(int argc, char **argv)
         continue;
       if (readfds[0] == ssock)
       {
+        struct sockaddr sin;
         int len = sizeof(sin);
         int id = -1;
         char *username = NULL;
@@ -131,8 +130,11 @@ static int io_listen(int argc, char **argv)
           client->connection = PopConnection(id);
           client->sock = sock;
           client->username = username;
-          client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
           client->iphost = getHostInfo(sock, &client->host);
+          if (sin.sa_family == AF_INET)
+          {
+            client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
+          }
           dispatch_client(client);
         }
         else

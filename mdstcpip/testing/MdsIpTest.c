@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <status.h>
 
 #include "../mdsip_connections.h"
+#include <mdsmsg.h>
 
 static int __test_passed = 0, __test_failed = 0;
 
@@ -42,7 +43,7 @@ static int __test_passed = 0, __test_failed = 0;
   {                                           \
     if (cond)                                 \
     {                                         \
-      fprintf(stderr, "FATAL: " __VA_ARGS__); \
+      MDSWRN("FATAL:  " __VA_ARGS__); \
       exit(1);                                \
     }                                         \
   } while (0)
@@ -50,7 +51,7 @@ static int __test_passed = 0, __test_failed = 0;
 #define TEST_FAIL(...)                       \
   do                                         \
   {                                          \
-    fprintf(stderr, "FAILED: " __VA_ARGS__); \
+    MDSWRN("FAILED: " __VA_ARGS__); \
     __test_failed++;                         \
   } while (0)
 #define TEST_PASS(...) \
@@ -166,7 +167,7 @@ void mdsip_main(void *arg)
 #define MODE_SM 0b01
 #define MODE_MM 0b11
 
-int start_mdsip(mdsip_t *mdsip, char *prot, int mode, char server[32])
+int start_mdsip(mdsip_t *mdsip, char *prot, int mode, char server[32], char* port)
 {
   char *hostsfile = "mdsip.hosts";
   FILE *f = fopen(hostsfile, "w+");
@@ -178,7 +179,7 @@ int start_mdsip(mdsip_t *mdsip, char *prot, int mode, char server[32])
       prot,
       (mode & MODE_SM) ? "-s" : "-m",
       "-p",
-      "7357",
+      port,
       "-h",
       hostsfile,
   };
@@ -186,7 +187,7 @@ int start_mdsip(mdsip_t *mdsip, char *prot, int mode, char server[32])
   ParseStdArgs(argc, argv, &mdsip->argc, &mdsip->argv);
   mdsip->io = LoadIo(GetProtocol());
   TEST_FATAL(!mdsip->io || !mdsip->io->listen, "IoRoutine for protocol '%s' has no listen.", prot);
-  sprintf(server, "localhost:7357");
+  sprintf(server, "localhost:%s", port);
   return pthread_create(&mdsip->thread, NULL, (void *)mdsip_main, (void *)mdsip);
 }
 
@@ -209,9 +210,9 @@ int main(int argc, char **argv)
     testio("local://0");
     char server[32] = "";
     mdsip_t mdsip = {0, NULL, NULL, 0};
-    if (!start_mdsip(&mdsip, "TCP", MODE_SS, server))
+    if (!start_mdsip(&mdsip, "Tcp", MODE_SS, server, "12345"))
     {
-      sleep(1);
+      sleep(3);
       testio(server);
 #ifdef _WIN32
       // TODO: kill?

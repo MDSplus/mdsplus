@@ -32,6 +32,10 @@ static IoRoutines io_routines = {
 #include <inttypes.h>
 #include <mdsmsg.h>
 
+#define ACCESS_NOMATCH 0
+#define ACCESS_GRANTED 1
+#define ACCESS_DENIED 2
+
 // Connected client definition for client list
 
 typedef struct _client
@@ -39,11 +43,11 @@ typedef struct _client
   struct _client *next;
   Connection *connection;
   pthread_t *thread;
-  uint32_t addr;
-  SOCKET sock;
   char *username;
   char *host;
   char *iphost;
+  SOCKET sock;
+  uint32_t addr;
 } Client;
 
 #define CLIENT_PRI "%s"
@@ -164,28 +168,28 @@ static void PopSocket(SOCKET socket)
   UNLOCK_SOCKET_LIST;
 }
 
-static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin)
+static int GetHostAndPort(char *hostin, struct sockaddr *sin)
 {
   int status;
   char *port = strchr(hostin, PORTDELIM);
-  sin->SIN_FAMILY = AF_T;
+  sin->sa_family = AF_T;
   if (port)
   {
     int hostlen = port - hostin;
     char *host = memcpy(malloc(hostlen+1), hostin, hostlen);
     FREE_ON_EXIT(host);
     host[hostlen] = 0;
-    status = _LibGetHostAddr(host, port + 1, (struct sockaddr *)sin)
+    status = _LibGetHostAddr(host, port + 1, sin)
             ? MDSplusERROR
             : MDSplusSUCCESS;
     FREE_NOW(host);
   }
   else
   {
-    status = _LibGetHostAddr(hostin, NULL, (struct sockaddr *)sin)
+    status = _LibGetHostAddr(hostin, NULL, sin)
                  ? MDSplusERROR
                  : MDSplusSUCCESS;
-    sin->SIN_PORT = htons(8000);
+    ((struct SOCKADDR_IN*)sin)->SIN_PORT = htons(8000);
   }
   return status;
 }

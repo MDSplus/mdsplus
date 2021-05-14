@@ -3,7 +3,6 @@
 #define PORTDELIM '#'
 #define SOCKADDR_IN sockaddr_in6
 #define SIN_FAMILY sin6_family
-#define SIN_ADDR sin6_addr
 #define SIN_PORT sin6_port
 #define _INADDR_ANY in6addr_any
 #define GET_IPHOST(sin)          \
@@ -29,13 +28,14 @@
 DEFINE_INITIALIZESOCKETS;
 
 #include "../mdsip_connections.h"
+#include <mdsmsg.h>
 
-static int GetHostAndPort(char *hostin, struct sockaddr_in6 *sin);
+static int GetHostAndPort(char *hostin, struct sockaddr *sin);
 
 static int io_reuseCheck(char *host, char *unique, size_t buflen)
 {
   struct sockaddr_in6 sin;
-  if (IS_OK(GetHostAndPort(host, &sin)))
+  if (IS_OK(GetHostAndPort(host, (struct sockaddr*)&sin)))
   {
     uint16_t *addr = (uint16_t *)&sin.sin6_addr;
     snprintf(unique, buflen,
