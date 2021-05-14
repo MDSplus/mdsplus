@@ -166,7 +166,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Channel: "/>
                         <Property name="numCols" type="int" value="12"/>
-                        <Property name="offsetNid" type="int" value="37"/>
+                        <Property name="offsetNid" type="int" value="38"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
