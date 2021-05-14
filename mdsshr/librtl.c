@@ -289,7 +289,7 @@ EXPORT int _LibGetHostAddr(const char *name, const char *portstr, struct sockadd
   const struct addrinfo hints = {0, sin->sa_family, 0, 0, 0, NULL, NULL, NULL};
   uint32_t port = 0;
   const char *service = portstr;
-  if (sin->sa_family == AF_INET || sin->sa_family == AF_INET6)
+  if (portstr && (sin->sa_family == AF_INET || sin->sa_family == AF_INET6))
   {
     port = (uint32_t)strtol(portstr, NULL, 0);
     if (port && port <= 0xFFFF)

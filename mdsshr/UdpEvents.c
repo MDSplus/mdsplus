@@ -323,7 +323,7 @@ int MDSUdpEventCan(int eventid)
 #endif
   pthread_join(ev->thread, NULL);
   free(ev);
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 static SOCKET send_socket = INVALID_SOCKET;
@@ -354,7 +354,9 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   udpSocket = send_socket;
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
-  _LibGetHostAddr(multiIp, (struct sockaddr *)&sin);
+  sin.sin_addr.s_addr = INADDR_ANY;
+  if (_LibGetHostAddr(multiIp, NULL, (struct sockaddr *)&sin))
+    return MDSplusERROR;
   sin.sin_port = htons(sendPort);
   nameLen = (unsigned int)strlen(eventName);
   if (bufLen < MAX_MSG_LEN - (4u + 4u + nameLen))
@@ -394,10 +396,10 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
       -1)
   {
     print_socket_error("Error sending UDP message");
-    status = 0;
+    status = MDSplusERROR;
   }
   else
-    status = 1;
+    status = MDSplusSUCCESS;
   free(msg);
   pthread_mutex_unlock(&sendEventMutex);
   return status;

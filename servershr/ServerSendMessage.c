@@ -466,8 +466,9 @@ int get_addr_port(char *hostin, uint32_t *addrp, uint16_t *portp)
 {
   int err;
   char *port = strchr(hostin, ':');
-  struct sockaddr_in sin = {};
+  struct sockaddr_in sin;
   sin.sin_family = AF_INET;
+  sin.sin_addr.s_addr = INADDR_ANY;
   if (port)
   {
     int hostlen = port - hostin;
@@ -478,7 +479,8 @@ int get_addr_port(char *hostin, uint32_t *addrp, uint16_t *portp)
     FREE_NOW(host);
     if (!err)
     {
-      *addrp = *(uint32_t*)&sin.sin_addr;
+      *portp = ntohs(sin.sin_port);
+      *addrp = sin.sin_addr.s_addr;
     }
   }
   else
@@ -487,7 +489,7 @@ int get_addr_port(char *hostin, uint32_t *addrp, uint16_t *portp)
     if (!err)
     {
       *portp = 8000;
-      *addrp = *(uint32_t*)&sin.sin_addr;
+      *addrp = sin.sin_addr.s_addr;
     }
   }
   return err;
