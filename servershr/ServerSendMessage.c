@@ -68,6 +68,7 @@ int ServerSendMessage();
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
+#include <_mdsshr.h>
 #include <libroutines.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
@@ -461,41 +462,35 @@ int is_broken_socket(SOCKET socket)
   return B_TRUE;
 }
 
-int get_addr_port(char *server, uint32_t *addrp, uint16_t *portp)
+int get_addr_port(char *hostin, uint32_t *addrp, uint16_t *portp)
 {
-  uint32_t addr;
-  uint16_t port;
-  char hostpart[256] = {0};
-  char portpart[32] = {0};
-  int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
-  if (num != 2)
+  int err;
+  char *port = strchr(hostin, ':');
+  struct sockaddr_in sin = {};
+  sin.sin_family = AF_INET;
+  if (port)
   {
-    MDSDBG("Server '%s' unknown", server);
-    return C_ERROR;
-  }
-  addr = LibGetHostAddr(hostpart);
-  if (!addr)
-  {
-    MDSDBG("hostpart '%s' could not be resolved", hostpart);
-    return C_ERROR;
-  }
-  if (strtol(portpart, NULL, 0) == 0)
-  {
-    struct servent *sp = getservbyname(portpart, "tcp");
-    if (sp)
-      port = sp->s_port;
-    else
+    int hostlen = port - hostin;
+    char *host = memcpy(malloc(hostlen + 1), hostin, hostlen);
+    FREE_ON_EXIT(host);
+    host[hostlen] = 0;
+    err = _LibGetHostAddr(host, port + 1, (struct sockaddr *)&sin);
+    FREE_NOW(host);
+    if (!err)
     {
-      char *portnam = getenv(portpart);
-      portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
-      port = htons((uint16_t)strtol(portnam, NULL, 0));
+      *addrp = *(uint32_t*)&sin.sin_addr;
     }
   }
   else
-    port = htons((uint16_t)strtol(portpart, NULL, 0));
-  *addrp = addr;
-  *portp = port;
-  return C_OK;
+  {
+    err = _LibGetHostAddr(hostin, NULL, (struct sockaddr *)&sin);
+    if (!err)
+    {
+      *portp = 8000;
+      *addrp = *(uint32_t*)&sin.sin_addr;
+    }
+  }
+  return err;
 }
 
 EXPORT int ServerDisconnect(char *server_in)
@@ -524,7 +519,6 @@ EXPORT int ServerDisconnect(char *server_in)
   UNLOCK_CLIENTS;
   return status;
 }
-
 
 static inline int server_connect(char *server, uint32_t addr, uint16_t port)
 {

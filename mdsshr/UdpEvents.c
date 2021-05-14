@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <socket_port.h>
 #include <pthread_port.h>
+#include <_mdsshr.h>
 
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);
@@ -340,7 +341,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   char multiIp[64];
   uint32_t buflen_net_order = (uint32_t)htonl(bufLen);
   SOCKET udpSocket;
-  static struct sockaddr_in sin;
+  struct sockaddr_in sin;
   char *msg = 0, *currPtr;
   unsigned int msgLen, nameLen = (unsigned int)strlen(eventName), actBufLen;
   uint32_t namelen_net_order = (uint32_t)htonl(nameLen);
@@ -353,7 +354,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   udpSocket = send_socket;
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
-  *(int *)&sin.sin_addr = LibGetHostAddr(multiIp);
+  _LibGetHostAddr(multiIp, (struct sockaddr *)&sin);
   sin.sin_port = htons(sendPort);
   nameLen = (unsigned int)strlen(eventName);
   if (bufLen < MAX_MSG_LEN - (4u + 4u + nameLen))

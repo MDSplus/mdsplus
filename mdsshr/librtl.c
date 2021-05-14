@@ -38,6 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <mdsshr.h>
+#include <_mdsshr.h>
 
 // #define DEBUG
 #include <mdsmsg.h>
@@ -280,26 +282,51 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
 }
 
 DEFINE_INITIALIZESOCKETS;
-EXPORT uint32_t LibGetHostAddr(const char *const name)
+EXPORT int _LibGetHostAddr(const char *name, const char *portstr, struct sockaddr *sin)
 {
   INITIALIZESOCKETS;
-  uint32_t addr = 0;
   struct addrinfo *entry, *info = NULL;
-  const struct addrinfo hints = {0, AF_INET, SOCK_STREAM, 0,
-                                 0, NULL, NULL, NULL};
-  if (!getaddrinfo(name, NULL, &hints, &info))
+  const struct addrinfo hints = {0, sin->sa_family, 0, 0, 0, NULL, NULL, NULL};
+  uint32_t port = 0;
+  const char *service = portstr;
+  if (sin->sa_family == AF_INET || sin->sa_family == AF_INET6)
   {
-    for (entry = info; entry && !entry->ai_addr; entry = entry->ai_next)
-      ;
-    if (entry)
+    port = (uint32_t)strtol(portstr, NULL, 0);
+    if (port && port <= 0xFFFF)
     {
-      const struct sockaddr_in *addrin = (struct sockaddr_in *)entry->ai_addr;
-      addr = *(uint32_t *)&addrin->sin_addr;
+      port = htons(port);
+      service = NULL;
     }
-    if (info)
-      freeaddrinfo(info);
+    else
+    {
+      port = 0;
+    }
   }
-  return addr == 0xffffffff ? 0 : addr;
+  if (!getaddrinfo(name, service, &hints, &info) && info)
+  {
+    for (entry = info; entry; entry = entry->ai_next)
+    {
+      if (entry->ai_addr)
+      {
+        *sin = *entry->ai_addr;
+        if (port)
+        {
+          if (sin->sa_family == AF_INET)
+          {
+            ((struct sockaddr_in *)sin)->sin_port = port;
+          }
+          else if (sin->sa_family == AF_INET6)
+          {
+            ((struct sockaddr_in6 *)sin)->sin6_port = port;
+          }
+        }
+        break;
+      }
+    }
+    freeaddrinfo(info);
+    return C_OK;
+  }
+  return C_ERROR;
 }
 
 #ifdef _WIN32
@@ -1329,8 +1356,7 @@ static int MdsInsertTree(struct bbtree_info *const bbtree_ptr)
     return MDSplusERROR;
   }
   save_current = currentNode;
-  if ((in_balance = (*(bbtree_ptr->compare_routine))(
-           bbtree_ptr->keyname, currentNode, bbtree_ptr->user_context)) <= 0)
+  if ((in_balance = (*(bbtree_ptr->compare_routine))(bbtree_ptr->keyname, currentNode, bbtree_ptr->user_context)) <= 0)
   {
     if ((in_balance == 0) && (!(bbtree_ptr->controlflags & 1)))
     {

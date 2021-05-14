@@ -1,7 +1,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <socket_port.h>
 #include <pthread_port.h>
+#include <_mdsshr.h>
+
 //#define DEBUG
 #include <mdsmsg.h>
 
@@ -164,58 +167,26 @@ static void PopSocket(SOCKET socket)
 static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin)
 {
   int status;
-  INITIALIZESOCKETS;
-  char *host = strdup(hostin);
-  FREE_ON_EXIT(host);
-  char *service = NULL;
-  size_t i;
-  for (i = 0; i < strlen(host) && host[i] != PORTDELIM; i++)
-    ;
-  if (i < strlen(host))
+  char *port = strchr(hostin, PORTDELIM);
+  sin->SIN_FAMILY = AF_T;
+  if (port)
   {
-    host[i] = '\0';
-    service = &host[i + 1];
+    int hostlen = port - hostin;
+    char *host = memcpy(malloc(hostlen+1), hostin, hostlen);
+    FREE_ON_EXIT(host);
+    host[hostlen] = 0;
+    status = _LibGetHostAddr(host, port + 1, (struct sockaddr *)sin)
+            ? MDSplusERROR
+            : MDSplusSUCCESS;
+    FREE_NOW(host);
   }
   else
   {
-    service = "mdsip";
+    status = _LibGetHostAddr(hostin, NULL, (struct sockaddr *)sin)
+                 ? MDSplusERROR
+                 : MDSplusSUCCESS;
+    sin->SIN_PORT = htons(8000);
   }
-  if (strtol(service, NULL, 0) == 0)
-  {
-    if (!getservbyname(service, "tcp"))
-    {
-      char *env_service = getenv(service);
-      if (env_service == NULL)
-      {
-        if (strcmp(service, "mdsip") == 0)
-        {
-          service = "8000";
-        }
-      }
-      else
-      {
-        service = env_service;
-      }
-    }
-  }
-  struct addrinfo *info = NULL;
-  static const struct addrinfo hints = {0, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0};
-  int err = getaddrinfo(host, service, &hints, &info);
-  if (err)
-  {
-    status = MDSplusERROR;
-    fprintf(stderr, "Error connecting to host: %s, port %s error=%s\n", host,
-            service, gai_strerror(err));
-  }
-  else
-  {
-    memcpy(sin, info->ai_addr,
-           sizeof(*sin) < info->ai_addrlen ? sizeof(*sin) : info->ai_addrlen);
-    status = MDSplusSUCCESS;
-  }
-  if (info)
-    freeaddrinfo(info);
-  FREE_NOW(host);
   return status;
 }
 

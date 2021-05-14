@@ -62,8 +62,6 @@ extern int LibTraverseTree(LibTreeNode **treehead, int (*user_rtn)(),
 extern int LibWait(const float *const secs);
 extern int libffs(const int *const position, const int *const size,
                   const char *const base, int *const find_position);
-extern uint32_t LibGetHostAddr(const char *const host);
-
 /// @}
 
 #endif
