@@ -178,6 +178,11 @@ class RFX_RPADC(Device):
                 print('Cannot get decimation')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             print('CLOCK')
+            try:
+                trig = self.trigger.getData()
+            except:
+                print('Cannot get trigger')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             if self.clock_mode.data() != 'INTERNAL':
                 try:
                     if self.clock_mode.data() == 'HIGHWAY':
@@ -229,6 +234,8 @@ class RFX_RPADC(Device):
 
     def start_store(self):
         try:
+            self.raw_a.deleteData()
+            self.raw_b.deleteData()
             worker = self.AsynchStore()
             worker.configure(self.conf)
             worker.daemon = True
@@ -246,10 +253,10 @@ class RFX_RPADC(Device):
     def stop_store(self):
         try:
             self.conf.lib.rpadcStop(self.conf.fd)
-            try:
-                RFX_RPADC.triggerEv.cancel()
-            except:
-                pass
+            #try:
+                #RFX_RPADC.triggerEv.cancel()
+            #except:
+                #pass
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
