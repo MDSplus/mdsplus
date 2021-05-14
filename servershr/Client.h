@@ -136,11 +136,11 @@ static void Client_remove_locked(Client *c, fd_set *fdactive)
   Client_cleanup_jobs(c, fdactive);
 }
 
-static void Client_remove(Client *c, fd_set *fdactive)
+static void Client_remove(Client *client, fd_set *fdactive)
 {
-  MDSDBG(CLIENT_PRI " removed", CLIENT_VAR(c));
+  Client *c;
   LOCK_CLIENTS;
-  c = Client_pop_locked(c);
+  c = Client_pop_locked(client);
   UNLOCK_CLIENTS;
   Client_cleanup_jobs(c, fdactive);
 }
