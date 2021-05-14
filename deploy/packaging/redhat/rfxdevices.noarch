@@ -57,6 +57,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_LEV_CTRLR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_MAGNET.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_RABBIT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_RAPTOR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_TANK.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SPIDER_CAL.py
