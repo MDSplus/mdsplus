@@ -191,7 +191,7 @@ static void Job_abandon_locked(Job *job)
     pthread_cond_destroy(job->cond);
     free(job->cond);
     job->cond = NULL;
-    MDSDBG(JOB_PRI " sync abandoned!", JOB_VAR(j));
+    MDSDBG(JOB_PRI " sync abandoned!", JOB_VAR(job));
   }
 }
 
