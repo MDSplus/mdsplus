@@ -35,7 +35,7 @@ static int GetHostAndPort(char *hostin, struct sockaddr *sin);
 static int io_reuseCheck(char *host, char *unique, size_t buflen)
 {
   struct sockaddr_in6 sin;
-  if (IS_OK(GetHostAndPort(host, (struct sockaddr*)&sin)))
+  if (IS_OK(GetHostAndPort(host, (struct sockaddr *)&sin)))
   {
     uint16_t *addr = (uint16_t *)&sin.sin6_addr;
     snprintf(unique, buflen,

@@ -133,8 +133,8 @@ static void int_cleanup(void *null)
 }
 
 int interruptable_select(int nfds, fd_set *restrict readfds,
-                  fd_set *restrict writefds, fd_set *restrict exceptfds,
-                  struct timeval *restrict timeout)
+                         fd_set *restrict writefds, fd_set *restrict exceptfds,
+                         struct timeval *restrict timeout)
 {
   int err, lerrno;
   static fd_set rd;
@@ -167,13 +167,13 @@ int interruptable_select(int nfds, fd_set *restrict readfds,
   return err;
 }
 #define IS_EINPROGRESS (WSAGetLastError() == WSAEWOULDBLOCK)
-#define socket_set_nonblocking(sock) ({u_long ul = TRUE;  ioctlsocket(sock, FIONBIO, &ul);})
-#define socket_set_blocking(sock)    ({u_long ul = FALSE; ioctlsocket(sock, FIONBIO, &ul);})
+#define socket_set_nonblocking(sock) ({u_long ul = TRUE;  ioctlsocket(sock, FIONBIO, &ul); })
+#define socket_set_blocking(sock) ({u_long ul = FALSE; ioctlsocket(sock, FIONBIO, &ul); })
 #else
 #define IS_EINPROGRESS (errno == EINPROGRESS)
 #define interruptable_select select
 #define socket_set_nonblocking(sock) fcntl(sock, F_SETFL, O_NONBLOCK)
-#define socket_set_blocking(sock)    fcntl(sock, F_SETFL, 0)
+#define socket_set_blocking(sock) fcntl(sock, F_SETFL, 0)
 #endif
 
 static inline long get_timeout_sec()
@@ -314,7 +314,6 @@ static uint16_t get_nport(char *name)
   }
   return sp->s_port;
 }
-
 
 static inline void listen_loop(SOCKET ssock, int *go)
 {

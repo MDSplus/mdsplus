@@ -103,7 +103,6 @@ char *SetHostfile(char *newhostfile)
   return SET_THREAD_SAFE(hostfile, newhostfile);
 }
 
-
 /// Set multi mode active in this scope.
 /// Mutiple connection mode (accepts multiple connections each with own context)
 static unsigned char multi = 0;
@@ -152,7 +151,6 @@ void MdsSetClientAddr(int addr)
   MDSIP_CLIENTADDR = addr;
   MDSDBG("SET CLIENT " IPADDRPRI, IPADDRVAR(&MDSIP_CLIENTADDR));
 }
-
 
 #ifdef _WIN32
 char *GetLogDir()

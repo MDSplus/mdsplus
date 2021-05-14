@@ -38,21 +38,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static int __test_passed = 0, __test_failed = 0;
 
-#define TEST_FATAL(cond, ...)                 \
-  do                                          \
-  {                                           \
-    if (cond)                                 \
-    {                                         \
+#define TEST_FATAL(cond, ...)         \
+  do                                  \
+  {                                   \
+    if (cond)                         \
+    {                                 \
       MDSWRN("FATAL:  " __VA_ARGS__); \
-      exit(1);                                \
-    }                                         \
+      exit(1);                        \
+    }                                 \
   } while (0)
 
-#define TEST_FAIL(...)                       \
-  do                                         \
-  {                                          \
+#define TEST_FAIL(...)              \
+  do                                \
+  {                                 \
     MDSWRN("FAILED: " __VA_ARGS__); \
-    __test_failed++;                         \
+    __test_failed++;                \
   } while (0)
 #define TEST_PASS(...) \
   do                   \
@@ -167,7 +167,7 @@ void mdsip_main(void *arg)
 #define MODE_SM 0b01
 #define MODE_MM 0b11
 
-int start_mdsip(mdsip_t *mdsip, char *prot, int mode, char server[32], char* port)
+int start_mdsip(mdsip_t *mdsip, char *prot, int mode, char server[32], char *port)
 {
   char *hostsfile = "mdsip.hosts";
   FILE *f = fopen(hostsfile, "w+");

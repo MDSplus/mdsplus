@@ -176,12 +176,12 @@ static int GetHostAndPort(char *hostin, struct sockaddr *sin)
   if (port)
   {
     int hostlen = port - hostin;
-    char *host = memcpy(malloc(hostlen+1), hostin, hostlen);
+    char *host = memcpy(malloc(hostlen + 1), hostin, hostlen);
     FREE_ON_EXIT(host);
     host[hostlen] = 0;
     status = _LibGetHostAddr(host, port + 1, sin)
-            ? MDSplusERROR
-            : MDSplusSUCCESS;
+                 ? MDSplusERROR
+                 : MDSplusSUCCESS;
     FREE_NOW(host);
   }
   else
@@ -189,7 +189,7 @@ static int GetHostAndPort(char *hostin, struct sockaddr *sin)
     status = _LibGetHostAddr(hostin, NULL, sin)
                  ? MDSplusERROR
                  : MDSplusSUCCESS;
-    ((struct SOCKADDR_IN*)sin)->SIN_PORT = htons(8000);
+    ((struct SOCKADDR_IN *)sin)->SIN_PORT = htons(8000);
   }
   return status;
 }

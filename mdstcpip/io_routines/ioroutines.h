@@ -33,10 +33,10 @@ static int GetHostAndPort(char *hostin, struct sockaddr *sin);
 static int io_reuseCheck(char *host, char *unique, size_t buflen)
 {
   struct sockaddr_in sin;
-  if (IS_OK(GetHostAndPort(host, (struct sockaddr*)&sin)))
+  if (IS_OK(GetHostAndPort(host, (struct sockaddr *)&sin)))
   {
     snprintf(unique, buflen, "%s://" IPADDRPRI ":%u",
-      PROT, IPADDRVAR(&sin.sin_addr), (unsigned)ntohs(sin.sin_port));
+             PROT, IPADDRVAR(&sin.sin_addr), (unsigned)ntohs(sin.sin_port));
     return C_OK;
   }
   *unique = 0;
