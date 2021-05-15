@@ -149,6 +149,7 @@ int interruptable_select(int nfds, fd_set *restrict readfds,
   if (sock >= nfds)
     nfds = sock + 1;
   err = select(nfds, readfds, writefds, exceptfds, timeout);
+  lerrno = errno;
   if (FD_ISSET(sock, readfds))
   {
     FD_CLR(sock, readfds);
@@ -157,10 +158,6 @@ int interruptable_select(int nfds, fd_set *restrict readfds,
       lerrno = EINTR;
       err = -1;
     }
-  }
-  else
-  {
-    lerrno = errno;
   }
   pthread_cleanup_pop(1);
   errno = lerrno;
