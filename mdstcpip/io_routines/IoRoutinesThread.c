@@ -112,7 +112,12 @@ inline static int io_connect(Connection *c,
   pp->in = pipe_up[0];
   pp->out = pipe_dn[1];
   pp->pth = PARENT_THREAD;
-  if (pthread_create(&p.pth, NULL, (void *)io_listen, pp))
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, 0x40000);
+  const int err = pthread_create(&p.pth, &attr, (void *)io_listen, (void *)pp);
+  pthread_attr_destroy(&attr);
+  if (err)
   {
 #endif
     close_pipe(p.in);

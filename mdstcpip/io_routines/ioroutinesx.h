@@ -593,7 +593,11 @@ static void *client_thread(void *args)
 static inline int dispatch_client(Client *client)
 {
   client->thread = (pthread_t *)malloc(sizeof(pthread_t));
-  const int err = pthread_create(client->thread, NULL, client_thread, (void *)client);
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, 0x40000);
+  const int err = pthread_create(client->thread, &attr, client_thread, (void *)client);
+  pthread_attr_destroy(&attr);
   if (err)
   {
     errno = err;

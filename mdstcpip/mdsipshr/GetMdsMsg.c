@@ -45,31 +45,35 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
   MDSDBG("Awaiting %u bytes", (uint32_t)bytes_to_recv);
   while (bytes_to_recv > 0)
   {
-    ssize_t bytes_recv;
-    if (c->io->recv_to &&
-        to_msec >= 0) // don't use timeout if not available or requested
-      bytes_recv = c->io->recv_to(c, bptr, bytes_to_recv, to_msec);
+    ssize_t ans;
+    errno = 0;
+    // don't use timeout if not available or requested
+    if (c->io->recv_to && to_msec >= 0)
+      ans = c->io->recv_to(c, bptr, bytes_to_recv, to_msec);
     else
-      bytes_recv = c->io->recv(c, bptr, bytes_to_recv);
-    if (bytes_recv > 0)
+      ans = c->io->recv(c, bptr, bytes_to_recv);
+    if (ans > 0)
     {
-      bytes_to_recv -= bytes_recv;
-      bptr += bytes_recv;
+      bytes_to_recv -= ans;
+      bptr += ans;
       continue;
     } // only exception from here on
-    MDSDBG("Exception %d", errno);
-    if (errno == ETIMEDOUT)
-      return TdiTIMEOUT;
-    if (bytes_recv == 0 && to_msec >= 0)
-      return TdiTIMEOUT;
-    if (errno == EINTR)
-      return MDSplusERROR;
-    if (errno == EINVAL)
-      return SsINTERNAL;
-    if (errno)
+    ssize_t received = bptr - (char *)buffer;
+    if (ans < 0)
     {
-      fprintf(stderr, "Connection %d ", id);
-      perror("possibly lost");
+      MDSERR("Connection %d error %ld/%ld",
+             id, (long)received, (long)(received + bytes_to_recv));
+      if (errno == ETIMEDOUT)
+        return TdiTIMEOUT;
+      if (errno == EINTR)
+        return MDSplusERROR;
+      if (errno == EINVAL)
+        return SsINTERNAL;
+    }
+    else
+    {
+      MDSWRN("Connection %d closed %ld/%ld",
+             id, (long)received, (long)(received + bytes_to_recv));
     }
     return SsINTERNAL;
   }

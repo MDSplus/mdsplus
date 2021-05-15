@@ -115,9 +115,13 @@ int main(int const argc, char const *const argv[])
   }
   TEST_STATUS(_TreeWriteTree(&DBID, NULL, 0));
   TEST_STATUS(_TreeCleanDatafile(&DBID, tree, shot)); // includes close
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, 0x40000);
   pthread_t threads[NUM_THREADS];
   for (i = 0; i < NUM_THREADS; i++)
-    pthread_create(&threads[i], NULL, job, (void *)(intptr_t)i);
+    pthread_create(&threads[i], &attr, job, (void *)(intptr_t)i);
+  pthread_attr_destroy(&attr);
   pthread_mutex_lock(&mutex);
   go = 1;
   pthread_cond_broadcast(&cond);
