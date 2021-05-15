@@ -35,12 +35,9 @@ import time
 
 from MDSplus.mdsExceptions import MDSplusException
 
-if sys.platform.startswith('win'):
-    iswin = True
-    DEFAULT_PROTOCOL = 'TCP'
-else:
-    iswin = False
-    DEFAULT_PROTOCOL = 'TCPV6'
+
+iswin = sys.platform.startswith('win')
+MDSIP_PROTOCOL = getenv('MDSIP_PROTOCOL','TCP')
 
 
 class logger(object):
@@ -325,7 +322,7 @@ class MdsIp(object):
             return
         raise Exception("FAILED cleaning up mdsips: %s" % (", ".join(procs),))
 
-    def _start_mdsip(self, server, port, logname, protocol=DEFAULT_PROTOCOL):
+    def _start_mdsip(self, server, port, logname, protocol=MDSIP_PROTOCOL):
         if port > 0:
             from subprocess import Popen, STDOUT
             logfile = '%s-%s%d.log' % (self.module, logname, self.index)
