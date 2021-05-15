@@ -22,6 +22,14 @@ fi
 
 status=0
 
+run() {
+  eval $1 2>&1 | tee ${2-/dev/null} |
+    grep -v -e '^[DIWE],' \
+      -e '^\s*Data inserted:' \
+      -e 'Length:' \
+      -e '^OS does not support OFD locks'
+}
+
 if [ ! -z $1 ]; then
   if [[ "$test" == *"tab"* ]]; then
     cmd="$TDITEST <    $srcdir/$test.tdi"
@@ -66,27 +74,16 @@ if [ ! -z $1 ]; then
   LSAN_OPTIONS="$LSAN_OPTIONS,print_suppressions=0"
 
   if [ "$2" == "update" ]; then
-    eval $cmd 2>&1 |
-      grep -v -e '^[DIWE],' \
-        -e '^\s*Data inserted:' \
-        -e '^\s*Length:' \
-        -e '^OS does not support OFD locks' |
-      >${srcdir}/$test.ans
+    run "${cmd}" >"${srcdir}/$test.ans"
   else
     unset ok
     if diff --help | grep side-by-side &>/dev/null; then
-      eval $cmd 2>&1 | tee ${test}-out.log |
-        grep -v -e '^[DIWE],' \
-          -e '^\s*Data inserted:' \
-          -e 'Length:' \
-          -e '^OS does not support OFD locks' |
-        diff $DIFF_Z --side-by-side -W128 /dev/stdin $srcdir/$test.ans |
+      run "${cmd}" "${test}-out.log" |
+        diff $DIFF_Z --side-by-side -W128 /dev/stdin ${srcdir}/$test.ans |
         expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
     else
-      eval $cmd 2>&1 |
-        grep -v 'Data inserted:' |
-        grep -v 'Length:' |
-        diff $DIFF_Z /dev/stdin $srcdir/$test.ans && ok=1
+      run "${cmd}" "${test}-out.log" |
+        diff $DIFF_Z /dev/stdin ${srcdir}/$test.ans && ok=1
     fi
     echo ok=$ok
     if [ -z $ok ]; then
