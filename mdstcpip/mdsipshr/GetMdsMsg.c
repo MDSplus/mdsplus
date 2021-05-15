@@ -72,7 +72,7 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
     }
     else
     {
-      MDSWRN("Connection %d closed %ld/%ld",
+      MDSDBG("Connection %d closed %ld/%ld",
              id, (long)received, (long)(received + bytes_to_recv));
     }
     return SsINTERNAL;
