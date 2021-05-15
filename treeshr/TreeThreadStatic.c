@@ -40,6 +40,22 @@ extern int _TreeNewDbid(void **dblist);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 static void *DBID = NULL, *G_DBID = NULL;
 
+void destroy_host_list_t(host_list_t *host)
+{
+  static int (*disconnectFromMds)(int) = NULL;
+  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds",
+                                     &disconnectFromMds)))
+  {
+    fprintf(stderr, "FATAL: could not load MdsIpShr->DisconnectFromMds()!");
+  }
+  else
+  {
+    disconnectFromMds(host->h.conid);
+  }
+  free(host->h.unique);
+  free(host);
+}
+
 static void buffer_free(TREETHREADSTATIC_ARG)
 {
   if (TREE_DBID)
@@ -66,6 +82,13 @@ static void buffer_free(TREETHREADSTATIC_ARG)
       }
       pthread_rwlock_unlock(&treectx_lock);
       TreeFreeDbid(TREE_DBID);
+    }
+    host_list_t *host, *this;
+    for (host = TREE_HOSTLIST; host;)
+    {
+      this = host;
+      host = host->next;
+      destroy_host_list_t(this);
     }
   }
   free(TREETHREADSTATIC_VAR);

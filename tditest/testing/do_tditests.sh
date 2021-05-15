@@ -26,8 +26,7 @@ run() {
   eval $1 2>&1 | tee ${2-/dev/null} |
     grep -v -e '^[DIWE],' \
       -e '^\s*Data inserted:' \
-      -e 'Length:' \
-      -e '^OS does not support OFD locks'
+      -e 'Length:'
 }
 
 if [ ! -z $1 ]; then
