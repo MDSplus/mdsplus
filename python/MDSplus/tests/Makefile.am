@@ -54,6 +54,7 @@ connection_thick_test.py \
 connection_thread_test.py \
 connection_tunnel_test.py \
 connection_tcp_test.py \
+connection_write_test.py \
 dcl_interface_test.py
 if !MINGW
 TESTS += dcl_dispatcher_test.py

@@ -199,61 +199,57 @@ class Tests(_common.TreeTests, _common.MdsIp):
 
     def write(self):
         count = 100
-
-        def mdsip(hostfile):
-            with open(hostfile, "w") as f:
-                f.write("multi|SELF\n*")
-            process = subprocess.Popen((
-                'mdsip', '-m',
-                '-p', '8000',
-                '-P', 'TCP',
-                '-h', hostfile,
-            ))
-            time.sleep(1)
-            return process
-
         def thread(test, name, node, count):
-            start = time.time()
             i = -1
+            max_period = 0
+            last = start = time.time()
             for i in range(count):
                 data = Float32([i*10+1])
                 now = Float32([time.time()])
                 node.makeSegment(now[0], now[0], data, now)
-            end = time.time()
+                end = time.time()
+                max_period = max(end-last, max_period)
+                last = end
             i += 1
             test.assertEqual(i, count)
-            print("%s: rate %f" % (name, i / (end-start)))
+            print("%s: rate=%f, max_period=%f" % (name, i / (end-start), max_period))
 
+        server, server_port = self._setup_mdsip(
+            'ACTION_SERVER', 'ACTION_PORT', 7010+self.index, True)
         tempdir = tempfile.mkdtemp()
         try:
-            server = mdsip(os.path.join(tempdir, "mdsip.hosts"))
+            svr = svr_log = None
             try:
-                con = Connection('127.0.0.1')
-
-                def check(line, *args):
-                    sts = con.get(line, *args)
-                    self.assertTrue(sts & 1, "error %d in '%s'" % (sts, line))
-                check("setenv('test_path='//$)", tempdir)
-                for line in (
-                    "TreeOpenNew('test', 1)",
-                    "TreeAddNode('EV1', _, 6)",
-                    "TreeAddNode('EV2', _, 6)",
-                    "TreeWrite()",
-                    "TreeClose()",
-                ):
-                    check(line)
-                setenv("test_path", "127.0.0.1::" + tempdir)
-                tree = Tree("test", 1)
-                _common.TestThread.assertRun(
-                    _common.TestThread('EV1', thread, self,
-                                       'EV1', tree.EV1.copy(), count),
-                    _common.TestThread('EV2', thread, self,
-                                       'EV2', tree.EV2.copy(), count),
-                )
+                svr, svr_log = self._start_mdsip(server, server_port, 'tcp')
+                try:
+                    con = Connection(server)
+                    def check(line, *args):
+                        sts = con.get(line, *args)
+                        self.assertTrue(sts & 1, "error %d in '%s'" % (sts, line))
+                    check("setenv('test_path='//$)", tempdir)
+                    for line in (
+                        "TreeOpenNew('test', 1)",
+                        "TreeAddNode('EV1', _, 6)",
+                        "TreeAddNode('EV2', _, 6)",
+                        "TreeWrite()",
+                        "TreeClose()",
+                    ):
+                        check(line)
+                    setenv("test_path", "%s::%s" % (server, tempdir))
+                    tree = Tree("test", 1)
+                    _common.TestThread.assertRun(
+                        _common.TestThread('EV1', thread, self,
+                                        'EV1', tree.EV1.copy(), count),
+                        _common.TestThread('EV2', thread, self,
+                                        'EV2', tree.EV2.copy(), count),
+                    )
+                finally:
+                    if svr and svr.poll() is None:
+                        svr.terminate()
+                        svr.wait()
             finally:
-                if server:
-                    server.kill()
-                    server.wait()
+                if svr_log:
+                    svr_log.close()
         finally:
             shutil.rmtree(tempdir, ignore_errors=False, onerror=None)
 
