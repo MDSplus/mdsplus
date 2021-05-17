@@ -22,9 +22,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #define PROTOCOL "tunnel"
 #define PROT_TUNNEL
 #include "ioroutines_pipes.h"
+//#define DEBUG
+#include <mdsmsg.h>
 
 static int io_disconnect(Connection *c)
 {
@@ -247,6 +250,7 @@ err:;
     fcntl(pipe_p2c.rd, F_SETFD, FD_CLOEXEC);
     close(pipe_c2p.rd);
     fcntl(pipe_c2p.wr, F_SETFD, FD_CLOEXEC);
+    MDSDBG("Starting client process for protocol '%s'", protocol);
     int err = execvp(localcmd, arglist) ? errno : 0;
     if (err == 2)
     {
@@ -257,6 +261,10 @@ err:;
     }
     else if ((errno = err))
       perror("Client process terminated");
+    else
+    {
+      MDSDBG("Client process terminated");
+    }
     exit(err);
   }
 #endif
@@ -270,14 +278,19 @@ static int io_listen(int argc __attribute__((unused)),
 #ifdef _WIN32
   pipes.in = GetStdHandle(STD_INPUT_HANDLE);
   pipes.out = GetStdHandle(STD_OUTPUT_HANDLE);
+  // redirect regular stdout to stderr
+  HANDLE pid = GetCurrentProcess();
+  HANDLE err = GetStdHandle(STD_ERROR_HANDLE);
+  HANDLE out;
+  DuplicateHandle(pid, err, pid, &out, 0, TRUE, DUPLICATE_SAME_ACCESS);
+  SetStdHandle(STD_OUTPUT_HANDLE, out);
 #else
-  pipes.in = dup(0);
-  pipes.out = dup(1);
+  pipes.in = 0;       // use stdin directly
+  pipes.out = dup(1); // use copy of stdout so we can redirect to stderr
+  close(1);
+  dup2(2, 1);
   fcntl(pipes.in, F_SETFD, FD_CLOEXEC);
   fcntl(pipes.out, F_SETFD, FD_CLOEXEC);
-  fcntl(0, F_SETFD, FD_CLOEXEC);
-  close(1); // fcntl(1,F_SETFD,FD_CLOEXEC);
-  dup2(2, 1);
 #endif
   int id;
   int status = AcceptConnection(
