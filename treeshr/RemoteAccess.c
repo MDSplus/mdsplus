@@ -45,11 +45,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define F_OFD_SETLKW 38
 #endif
 #endif
-#include <STATICdef.h>
 #include <ctype.h>
-#include <dbidef.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+
+#include <dbidef.h>
 #include <inttypes.h>
 #include <libroutines.h>
 #include <mds_stdarg.h>
@@ -57,17 +62,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <mdstypes.h>
 #include <ncidef.h>
-#include <pthread.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <time.h>
+
 #include <treeshr.h>
 #include "treeshrp.h"
 #include "treethreadstatic.h"
 
 //#define DEBUG
-#include <mdsmsg.h>
+#include <_mdsshr.h>
 
 static inline char *replaceBackslashes(char *filename)
 {
@@ -77,105 +78,93 @@ static inline char *replaceBackslashes(char *filename)
   return filename;
 }
 
-static int remote_access_connect(char *server, int inc_count,
-                                 void *dbid __attribute__((unused)))
+static int remote_access_connect(char *server, int inc_count)
 {
-  static int (*ReuseCheck)(char *, char *, int) = NULL;
-  char unique[128] = "\0";
-  if (IS_OK(LibFindImageSymbol_C("MdsIpShr", "ReuseCheck", &ReuseCheck)))
+#define CONMSG(TYP, PRI, ...) TYP("Connection server='%s', unique='%s', conid=%d" PRI, server, unique, conid, __VA_ARGS__);
+  int conid = -1;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ReuseCheck, return conid, int, (char *, char *, int));
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ConnectToMds, return conid, int, (char *));
+  char unique[128] = "";
+  if (ReuseCheck(server, unique, 128) < 0)
   {
-    if (ReuseCheck(server, unique, 128) < 0)
-      return -1; // TODO: check if this is required / desired
-  }
-  else
-  {
-    int i;
-    for (i = 0; server[i] && i < 127; i++)
-      unique[i] = tolower(server[i]);
-    unique[127] = '\0';
-  }
-  TREETHREADSTATIC_INIT;
-  int conid;
-  host_list_t *host;
-  for (host = TREE_HOSTLIST; host; host = host->next)
-  {
-    if (!strcmp(host->h.unique, unique))
+    conid = ConnectToMds(server);
+    if (conid == -1)
     {
-      if (inc_count)
-      {
-        host->h.connections++;
-        MDSDBG("Connection %d> %d\n", host->h.conid, host->h.connections);
-      }
-      else
-        MDSDBG("Connection %d= %d\n", host->h.conid, host->h.connections);
-      break;
-    }
-  }
-  static int (*ConnectToMds)(char *) = NULL;
-  if (!host)
-  {
-    if (IS_OK(LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &ConnectToMds)))
-    {
-      conid = ConnectToMds(unique);
-      if (conid > 0)
-      {
-        MDSDBG("New connection %d> %s\n", conid, unique);
-        host = malloc(sizeof(host_list_t));
-        host->h.conid = conid;
-        host->h.connections = inc_count ? 1 : 0;
-        host->h.unique = strdup(unique);
-        host->next = TREE_HOSTLIST;
-        TREE_HOSTLIST = host;
-      }
+      CONMSG(MDSWRN, ": %s", "error");
     }
     else
-      conid = -1;
+    {
+      CONMSG(MDSDBG, ": %s", "new");
+    }
   }
   else
-    conid = host->h.conid;
+  {
+    host_list_t *host = NULL;
+    TREETHREADSTATIC_INIT;
+    for (host = TREE_HOSTLIST; host; host = host->next)
+    {
+      if (!strcmp(host->h.unique, unique))
+      {
+        conid = host->h.conid;
+        host->h.connections++;
+        CONMSG(MDSDBG, ", connections=%d: found", host->h.connections);
+        return conid;
+      }
+    }
+    conid = ConnectToMds(unique);
+    if (conid == -1)
+    {
+      CONMSG(MDSWRN, ": %s", "error");
+    }
+    else
+    {
+      host = malloc(sizeof(host_list_t));
+      host->h.conid = conid;
+      host->h.connections = !!inc_count;
+      host->h.unique = strdup(unique);
+      host->next = TREE_HOSTLIST;
+      TREE_HOSTLIST = host;
+      CONMSG(MDSDBG, ", connections=%d: new", host->h.connections);
+    }
+  }
   return conid;
 }
 
 /** remote_access_disconnect
- * Used to close a connection either forcefulle or indirect by reducing the
+ * Used to close a connection either forcefully or indirect by reducing the
  * connection counter. If the counter drops to 0, this method shall arm the
  * cleanup cycle. If the cleanup cycle is already armed, it is not required to
  * reset it.
  */
 static int remote_access_disconnect(int conid, int force)
 {
+  if (conid == -1)
+    return TreeSUCCESS;
   TREETHREADSTATIC_INIT;
   host_list_t **prev = &TREE_HOSTLIST, *host = TREE_HOSTLIST;
-  while (host)
+  for (; host; prev = &host->next, host = host->next)
   {
-    if (conid >= 0 && host->h.conid != conid)
-    {
-      prev = &host->next;
-      host = host->next;
-    }
-    else
+    if (host->h.conid == conid)
     {
       host->h.connections--;
-      MDSDBG("Connection %d< %d\n", conid, host->h.connections);
-      if (host->h.connections <= 0 || force)
+      if (host->h.connections > 0 && !force)
       {
-        if (force)
-        {
-          MDSWRN("Connection %d: forcefully disconnecting %d links",
-                 conid, host->h.connections);
-        }
-        *prev = host->next;
-        destroy_host_list_t(host);
-        host = *prev;
-        MDSDBG("Disconnected %d", conid);
+        MDSDBG("Connection %d<%d: kept", conid, host->h.connections);
+        return TreeSUCCESS;
       }
       else
       {
-        MDSDBG("Connection %d< %d", conid, host->h.connections);
+        MDSWRN("Connection %d<%d: disconnected, forced=%c",
+               conid, host->h.connections, force ? 'y' : 'n');
+        *prev = host->next;
+        host->next = NULL;
+        destroy_host_list_t(host);
+        host = *prev;
       }
       return TreeSUCCESS;
     }
   }
+  MDSDBG("Connection %d=?: not found", conid);
   return TreeSUCCESS;
 }
 
@@ -197,45 +186,29 @@ struct descrip
   (struct descrip) { DTYPE_T, 0, {0}, strlen(str), (char *)str }
 static int MdsValue(int conid, char *exp, ...)
 {
-  static int (*_mds_value)() = NULL;
-  int status =
-      LibFindImageSymbol_C("MdsIpShr", "_MdsValue", (void **)&_mds_value);
-  if (STATUS_NOT_OK)
-  {
-    fprintf(stderr, "Error loadig symbol MdsIpShr->_MdsValue: %d\n", status);
-    return status;
-  }
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, _MdsValue, return status, int, ());
   int nargs;
   struct descrip *arglist[256];
   VA_LIST_NULL(arglist, nargs, 1, -1, exp);
   struct descrip expd = STR2DESCRIP(exp);
   arglist[0] = &expd;
-  return _mds_value(conid, nargs, arglist, arglist[nargs]);
+  return _MdsValue(conid, nargs, arglist, arglist[nargs]);
 }
 
 static int MdsValueDsc(int conid, char *exp, ...)
 {
-  static int (*_mds_value_dsc)() = NULL;
-  int status = LibFindImageSymbol_C("MdsIpShr", "MdsIpGetDescriptor",
-                                    (void **)&_mds_value_dsc);
-  if (STATUS_NOT_OK)
-  {
-    fprintf(stderr, "Error loadig symbol MdsIpShr->MdsIpGetDescriptor: %d\n",
-            status);
-    return status;
-  }
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, MdsIpGetDescriptor, return status, int, ());
   int nargs;
   struct descrip *arglist[256];
   VA_LIST_NULL(arglist, nargs, 0, -1, exp);
-  return _mds_value_dsc(conid, exp, nargs, arglist, arglist[nargs]);
+  return MdsIpGetDescriptor(conid, exp, nargs, arglist, arglist[nargs]);
 }
 
 inline static void MdsIpFree(void *ptr)
 {
   // used to free ans.ptr returned by MdsValue
   static void (*mdsIpFree)(void *) = NULL;
-  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFree", &mdsIpFree)))
-    return;
+  MDSSHR_LOAD_LIBROUTINE(mdsIpFree, MdsIpShr, MdsIpFree, abort());
   mdsIpFree(ptr);
 }
 
@@ -243,8 +216,7 @@ inline static void MdsIpFreeDsc(struct descriptor_xd *xd)
 {
   // used to free ans.ptr returned by MdsValueDsc
   static void (*mdsIpFreeDsc)(struct descriptor_xd *) = NULL;
-  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "MdsIpFreeDsc", (void **)&mdsIpFreeDsc)))
-    return;
+  MDSSHR_LOAD_LIBROUTINE(mdsIpFreeDsc, MdsIpShr, MdsIpFreeDsc, abort());
   mdsIpFreeDsc(xd);
 }
 
@@ -272,7 +244,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char const *tree,
   int conid;
   logname[strlen(logname) - 2] = '\0';
   int status = TreeSUCCESS;
-  conid = remote_access_connect(logname, 1, (void *)dblist);
+  conid = remote_access_connect(logname, 1);
   if (conid != -1)
   {
     status = tree_open(dblist, conid, subtree_list ? subtree_list : tree);
@@ -952,7 +924,7 @@ int TreeTurnOffRemote(PINO_DATABASE *dblist, int nid)
 int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 {
   int status = TreeFAILURE;
-  int channel = remote_access_connect(path, 0, 0);
+  int channel = remote_access_connect(path, 0);
   if (channel > 0)
   {
     struct descrip ans = {0};
@@ -974,7 +946,7 @@ int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 {
   int status = 0;
-  int channel = remote_access_connect(path, 0, 0);
+  int channel = remote_access_connect(path, 0);
   if (channel > 0)
   {
     struct descrip ans = {0};
@@ -1220,7 +1192,7 @@ inline static int io_open_remote(char *host, char *filename, int options,
   if (options & O_RDWR)
     mdsio.open.options |= MDS_IO_O_RDWR;
   if (*conid == -1)
-    *conid = remote_access_connect(host, 1, 0);
+    *conid = remote_access_connect(host, 1);
   if (*conid != -1)
   {
     fd =
@@ -1579,7 +1551,7 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size,
     *deleted = stat.st_nlink <= 0;
 #endif
   MDSDBG("O fd=%d, offset=%" PRIu64 ", size=%" PRIu64 ", mode=%d, err=%d",
-         fdinfo.fd, offset, size, mode_in, err);
+         fdinfo.fd, (uint64_t)offset, (uint64_t)size, mode_in, err);
   return err ? TreeLOCK_FAILURE : TreeSUCCESS;
 }
 
@@ -1600,7 +1572,7 @@ inline static int io_exists_remote(char *host, char *filename)
 {
   int ret;
   INIT_AND_FREE_ON_EXIT(void *, msg);
-  int conid = remote_access_connect(host, 1, 0);
+  int conid = remote_access_connect(host, 1);
   if (conid != -1)
   {
     mdsio_t mdsio = {.exists = {.length = strlen(filename) + 1}};
@@ -1641,7 +1613,7 @@ inline static int io_remove_remote(char *host, char *filename)
 {
   int ret;
   INIT_AND_FREE_ON_EXIT(void *, msg);
-  int conid = remote_access_connect(host, 1, 0);
+  int conid = remote_access_connect(host, 1);
   if (conid != -1)
   {
     mdsio_t mdsio = {.remove = {.length = strlen(filename) + 1}};
@@ -1679,7 +1651,7 @@ inline static int io_rename_remote(char *host, char *filename_old,
 {
   int ret;
   int conid;
-  conid = remote_access_connect(host, 1, 0);
+  conid = remote_access_connect(host, 1);
   if (conid != -1)
   {
     INIT_AND_FREE_ON_EXIT(char *, names);
@@ -1832,7 +1804,7 @@ inline static int io_open_one_remote(char *host, char *filepath,
                                 &GetConnectionVersion);
   do
   {
-    *conid = remote_access_connect(host, 1, NULL);
+    *conid = remote_access_connect(host, 1);
     if (*conid != -1)
     {
       if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE)
