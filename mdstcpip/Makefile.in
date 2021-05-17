@@ -74,9 +74,10 @@ UDTV6_OBJECTS = $(UDTV6_SOURCES:$(srcdir)/%.c=%.o)
 $(TCP_OBJECTS) $(TCPV6_OBJECTS): $(TCP_HEADERS) | --io_routines-dir
 $(UDT_OBJECTS) $(UDTV6_OBJECTS): $(UDT_HEADERS) $(UDT4_OBJECTS) | --io_routines-dir
 
-PIPE_SOURCES = $(addprefix @srcdir@/io_routines/, IoRoutinesTunnel.c IoRoutinesThread.c)
-PIPE_OBJECTS = $(PIPE_SOURCES:@srcdir@/%.c=%.o)
-$(PIPE_OBJECTS): | --io_routines-dir
+PIPE_SOURCES = $(addprefix $(io_srcdir)/,IoRoutinesTunnel.c IoRoutinesThread.c)
+PIPE_OBJECTS = $(PIPE_SOURCES:$(srcdir)/%.c=%.o)
+PIPE_HEADERS = $(io_srcdir)/ioroutines_pipes.h
+$(PIPE_OBJECTS): $(PIPE_HEADERS) | --io_routines-dir
 LIB_SOURCES += $(PIPE_SOURCES)
 LIB_OBJECTS += $(PIPE_OBJECTS)
 
