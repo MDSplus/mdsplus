@@ -26,7 +26,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PROTOCOL "tunnel"
 #define PROT_TUNNEL
 #include "ioroutines_pipes.h"
-//#define DEBUG
+
+// #define DEBUG
 #include <mdsmsg.h>
 
 static int io_disconnect(Connection *c)
@@ -34,7 +35,7 @@ static int io_disconnect(Connection *c)
   io_pipes_t *p = get_pipes(c);
   if (p)
   {
-#ifdef _WIN32
+#ifdef WIN32
     if (p->pid)
     {
       DWORD exitcode;
@@ -67,7 +68,7 @@ static int io_disconnect(Connection *c)
   return C_OK;
 }
 
-#ifndef _WIN32
+#ifndef WIN32
 static void ChildSignalHandler(int num __attribute__((unused)))
 {
   // Ensure that the handler does not spoil errno.
@@ -104,7 +105,7 @@ static void ChildSignalHandler(int num __attribute__((unused)))
 
 static int io_connect(Connection *c, char *protocol, char *host)
 {
-#ifdef _WIN32
+#ifdef WIN32
   size_t len = strlen(protocol) * 2 + strlen(host) + 512;
   char *cmd = (char *)malloc(len);
   _snprintf_s(cmd, len, len - 1,
@@ -189,7 +190,7 @@ err:;
   int err_c2p = pipe((int *)&pipe_c2p);
   if (err_p2c || err_c2p)
   {
-    perror("Error in mdsip io_connect creating pipes\n");
+    perror("Error in mdsip io_connect creating pipes");
     if (!err_p2c)
     {
       close(pipe_p2c.rd);
@@ -205,7 +206,7 @@ err:;
   pid_t pid = fork();
   if (pid < 0)
   { // error
-    fprintf(stderr, "Error %d from fork()\n", errno);
+    perror("Error from fork()");
     close(pipe_c2p.rd);
     close(pipe_c2p.wr);
     close(pipe_p2c.rd);
@@ -250,6 +251,7 @@ err:;
     fcntl(pipe_p2c.rd, F_SETFD, FD_CLOEXEC);
     close(pipe_c2p.rd);
     fcntl(pipe_c2p.wr, F_SETFD, FD_CLOEXEC);
+    // sleep(1); // uncomment to simulate slow clients
     MDSDBG("Starting client process for protocol '%s'", protocol);
     int err = execvp(localcmd, arglist) ? errno : 0;
     if (err == 2)
@@ -275,7 +277,7 @@ static int io_listen(int argc __attribute__((unused)),
 {
   io_pipes_t pipes;
   memset(&pipes, 0, sizeof(pipes));
-#ifdef _WIN32
+#ifdef WIN32
   pipes.in = GetStdHandle(STD_INPUT_HANDLE);
   pipes.out = GetStdHandle(STD_OUTPUT_HANDLE);
   // redirect regular stdout to stderr

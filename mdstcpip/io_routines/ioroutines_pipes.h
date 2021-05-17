@@ -22,20 +22,18 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "../mdsip_connections.h"
+#include <mdsplus/mdsconfig.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <pthread_port.h>
 #include <signal.h>
-#include <status.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef _WIN32
+#ifdef WIN32
 #include <process.h>
 #define close_pipe(p) CloseHandle(p)
 #else
@@ -43,9 +41,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define close_pipe(p) close(p)
 #endif
 
+#include "../mdsip_connections.h"
+#include <pthread_port.h>
+#include <status.h>
+
+// #define DEBUG
+#include <mdsmsg.h>
+
 typedef struct
 {
-#ifdef _WIN32
+#ifdef WIN32
   HANDLE out;
   HANDLE in;
   HANDLE pid;
@@ -69,7 +74,7 @@ static io_pipes_t *get_pipes(Connection *c)
   return (info_name && !strcmp(PROTOCOL, info_name) &&
           len == sizeof(io_pipes_t))
              ? p
-             : 0;
+             : NULL;
 }
 
 static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
@@ -78,21 +83,28 @@ static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
   io_pipes_t *p = get_pipes(c);
   if (!p)
     return -1;
-#ifdef _WIN32
-  ssize_t num = 0;
-  return WriteFile(p->out, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
+  ssize_t ans = 0;
+  errno = 0;
+#ifdef WIN32
+  if (!WriteFile(p->out, buffer, buflen, (DWORD *)&ans, NULL))
+    ans = -1;
 #else
-  return write(p->out, buffer, buflen);
+  ans = write(p->out, buffer, buflen);
 #endif
+  MDSDBG("conid=%d, ans=%" PRId64 ", errno=%d: %s",
+         c->id, (int64_t)ans, errno, strerror(errno));
+  return ans;
 }
 
 static ssize_t io_recv_to(Connection *c, void *buffer, size_t buflen,
-                          int to_msec)
+                          const int to_msec)
 {
   io_pipes_t *p = get_pipes(c);
   if (!p)
     return -1;
-#ifdef _WIN32
+  ssize_t ans = 0;
+  errno = 0;
+#ifdef WIN32
   DWORD toval;
   if (to_msec < 0)
     toval = 0;
@@ -102,8 +114,8 @@ static ssize_t io_recv_to(Connection *c, void *buffer, size_t buflen,
     toval = to_msec;
   COMMTIMEOUTS timeouts = {0, 0, toval, 0, 0};
   SetCommTimeouts(p->in, &timeouts);
-  ssize_t num = 0;
-  return ReadFile(p->in, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
+  if (!ReadFile(p->in, buffer, buflen, (DWORD *)&ans, NULL))
+    ans = -1;
 #else
   struct timeval to, timeout;
   if (to_msec < 0)
@@ -116,24 +128,42 @@ static ssize_t io_recv_to(Connection *c, void *buffer, size_t buflen,
     timeout.tv_sec = to_msec / 1000;
     timeout.tv_usec = (to_msec % 1000) * 1000;
   }
-  int sel, fd = p->in;
-  fd_set rf, readfds;
+  int fd = p->in;
+  fd_set readfds;
   FD_ZERO(&readfds);
-  FD_SET(fd, &readfds);
-  do
+  to = timeout;
+  for (;;)
   { // loop even for nowait for responsiveness
+    FD_SET(fd, &readfds);
+    ans = select(fd + 1, &readfds, NULL, NULL, &to);
+    MDSDBG("select %d, conid=%d, ans=%" PRId64 ", errno=%d: %s",
+           fd, c->id, (int64_t)ans, errno, strerror(errno));
+    if (ans > 0) // good to go
+    {
+      ans = read(fd, buffer, buflen);
+      MDSDBG("read %d, conid=%d, ans=%" PRId64 ", errno=%d: %s",
+             fd, c->id, (int64_t)ans, errno, strerror(errno));
+      break;
+    }
+    else if (ans < 0)
+    {
+      if (errno == EINTR)
+        continue;
+      if (errno != EAGAIN)
+        break;
+    }
+    if (to_msec >= 0)
+    {
+      ans = 0;
+      errno = ETIMEDOUT;
+      break;
+    }
     to = timeout;
-    rf = readfds;
-    sel = select(fd + 1, &rf, NULL, NULL, &to);
-    if (sel > 0) // good to go
-      return read(fd, buffer, buflen);
-    if (errno == EAGAIN)
-      continue;
-    if (sel < 0) // Error
-      return sel;
-  } while (to_msec < 0);
-  return 0; // timeout
+  }
 #endif
+  MDSDBG("conid=%d, ans=%" PRId64 ", errno=%d: %s",
+         c->id, (int64_t)ans, errno, strerror(errno));
+  return ans;
 }
 
 static ssize_t io_recv(Connection *c, void *buffer, size_t buflen)
