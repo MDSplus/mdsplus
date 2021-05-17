@@ -104,7 +104,8 @@ class Tests(_common.TreeTests, _common.MdsIp):
                 local_filename = local.getFileName()
                 thick_filename = thick.getFileName()
                 self.assertTrue("::" in thick_filename, thick_filename)
-                self.assertTrue(local_filename, thick_filename.split("::", 1)[1])
+                self.assertTrue(
+                    local_filename, thick_filename.split("::", 1)[1])
                 """ TreeTurnOff / TreeTurnOn """
                 thick.S.on = False
                 self.assertEqual(local.S.on, False)
@@ -212,10 +213,11 @@ class Tests(_common.TreeTests, _common.MdsIp):
                 last = end
             i += 1
             test.assertEqual(i, count)
-            print("%s: rate=%f, max_period=%f" % (name, i / (end-start), max_period))
+            print("%s: rate=%f, max_period=%f" %
+                  (name, i / (end-start), max_period))
 
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 7010+self.index, True)
+            'ACTION_SERVER', 'ACTION_PORT', 7020+self.index, True)
         tempdir = tempfile.mkdtemp()
         try:
             svr = svr_log = None
@@ -223,9 +225,11 @@ class Tests(_common.TreeTests, _common.MdsIp):
                 svr, svr_log = self._start_mdsip(server, server_port, 'tcp')
                 try:
                     con = Connection(server)
+
                     def check(line, *args):
                         sts = con.get(line, *args)
-                        self.assertTrue(sts & 1, "error %d in '%s'" % (sts, line))
+                        self.assertTrue(
+                            sts & 1, "error %d in '%s'" % (sts, line))
                     check("setenv('test_path='//$)", tempdir)
                     for line in (
                         "TreeOpenNew('test', 1)",
@@ -239,9 +243,9 @@ class Tests(_common.TreeTests, _common.MdsIp):
                     tree = Tree("test", 1)
                     _common.TestThread.assertRun(
                         _common.TestThread('EV1', thread, self,
-                                        'EV1', tree.EV1.copy(), count),
+                                           'EV1', tree.EV1.copy(), count),
                         _common.TestThread('EV2', thread, self,
-                                        'EV2', tree.EV2.copy(), count),
+                                           'EV2', tree.EV2.copy(), count),
                     )
                 finally:
                     if svr and svr.poll() is None:

@@ -361,6 +361,7 @@ class TreeTests(Tests):
     instances = 0
     trees = []
     tree = None
+    tmpdir = None
 
     @property
     def shot(self):
