@@ -145,8 +145,11 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         jPanel34 = new javax.swing.JPanel();
         deviceChoice31 = new DeviceChoice();
         deviceField49 = new DeviceField();
+        jPanel35 = new javax.swing.JPanel();
+        deviceChoice32 = new DeviceChoice();
+        deviceField51 = new DeviceField();
 
-        setDeviceProvider("scdevail:8100");
+        setDeviceProvider("spilds:8100");
         setDeviceTitle("MARTe2 Type Conversion GAM");
         setDeviceType("MARTE2_CONVERSION");
         setHeight(400);
@@ -571,14 +574,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice18.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice18.setIdentifier("");
         deviceChoice18.setLabelString("Type: ");
-        deviceChoice18.setOffsetNid(135);
+        deviceChoice18.setOffsetNid(136);
         deviceChoice18.setUpdateIdentifier("");
         jPanel21.add(deviceChoice18);
 
         deviceField36.setIdentifier("");
         deviceField36.setLabelString("Segment Len.(0 to disable write): ");
         deviceField36.setNumCols(4);
-        deviceField36.setOffsetNid(138);
+        deviceField36.setOffsetNid(139);
         jPanel21.add(deviceField36);
 
         jPanel19.add(jPanel21);
@@ -588,14 +591,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice19.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("Type: ");
-        deviceChoice19.setOffsetNid(143);
+        deviceChoice19.setOffsetNid(145);
         deviceChoice19.setUpdateIdentifier("");
         jPanel22.add(deviceChoice19);
 
         deviceField37.setIdentifier("");
         deviceField37.setLabelString("Segment Len.(0 to disable write): ");
         deviceField37.setNumCols(4);
-        deviceField37.setOffsetNid(146);
+        deviceField37.setOffsetNid(148);
         jPanel22.add(deviceField37);
 
         jPanel19.add(jPanel22);
@@ -605,14 +608,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice20.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice20.setIdentifier("");
         deviceChoice20.setLabelString("Type: ");
-        deviceChoice20.setOffsetNid(151);
+        deviceChoice20.setOffsetNid(154);
         deviceChoice20.setUpdateIdentifier("");
         jPanel23.add(deviceChoice20);
 
         deviceField38.setIdentifier("");
         deviceField38.setLabelString("Segment Len.(0 to disable write): ");
         deviceField38.setNumCols(4);
-        deviceField38.setOffsetNid(154);
+        deviceField38.setOffsetNid(157);
         jPanel23.add(deviceField38);
 
         jPanel19.add(jPanel23);
@@ -622,14 +625,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice21.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("Type: ");
-        deviceChoice21.setOffsetNid(159);
+        deviceChoice21.setOffsetNid(163);
         deviceChoice21.setUpdateIdentifier("");
         jPanel24.add(deviceChoice21);
 
         deviceField39.setIdentifier("");
         deviceField39.setLabelString("Segment Len.(0 to disable write): ");
         deviceField39.setNumCols(4);
-        deviceField39.setOffsetNid(162);
+        deviceField39.setOffsetNid(166);
         jPanel24.add(deviceField39);
 
         jPanel19.add(jPanel24);
@@ -639,14 +642,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice22.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Type: ");
-        deviceChoice22.setOffsetNid(167);
+        deviceChoice22.setOffsetNid(172);
         deviceChoice22.setUpdateIdentifier("");
         jPanel25.add(deviceChoice22);
 
         deviceField40.setIdentifier("");
         deviceField40.setLabelString("Segment Len.(0 to disable write): ");
         deviceField40.setNumCols(4);
-        deviceField40.setOffsetNid(170);
+        deviceField40.setOffsetNid(175);
         jPanel25.add(deviceField40);
 
         jPanel19.add(jPanel25);
@@ -656,14 +659,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice23.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice23.setIdentifier("");
         deviceChoice23.setLabelString("Type: ");
-        deviceChoice23.setOffsetNid(175);
+        deviceChoice23.setOffsetNid(181);
         deviceChoice23.setUpdateIdentifier("");
         jPanel26.add(deviceChoice23);
 
         deviceField41.setIdentifier("");
         deviceField41.setLabelString("Segment Len.(0 to disable write): ");
         deviceField41.setNumCols(4);
-        deviceField41.setOffsetNid(178);
+        deviceField41.setOffsetNid(184);
         jPanel26.add(deviceField41);
 
         jPanel19.add(jPanel26);
@@ -673,14 +676,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice24.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("Type: ");
-        deviceChoice24.setOffsetNid(183);
+        deviceChoice24.setOffsetNid(190);
         deviceChoice24.setUpdateIdentifier("");
         jPanel27.add(deviceChoice24);
 
         deviceField42.setIdentifier("");
         deviceField42.setLabelString("Segment Len.(0 to disable write): ");
         deviceField42.setNumCols(4);
-        deviceField42.setOffsetNid(186);
+        deviceField42.setOffsetNid(193);
         jPanel27.add(deviceField42);
 
         jPanel19.add(jPanel27);
@@ -690,14 +693,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice25.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice25.setIdentifier("");
         deviceChoice25.setLabelString("Type: ");
-        deviceChoice25.setOffsetNid(191);
+        deviceChoice25.setOffsetNid(199);
         deviceChoice25.setUpdateIdentifier("");
         jPanel28.add(deviceChoice25);
 
         deviceField43.setIdentifier("");
         deviceField43.setLabelString("Segment Len.(0 to disable write): ");
         deviceField43.setNumCols(4);
-        deviceField43.setOffsetNid(194);
+        deviceField43.setOffsetNid(202);
         jPanel28.add(deviceField43);
 
         jPanel19.add(jPanel28);
@@ -707,14 +710,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice26.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice26.setIdentifier("");
         deviceChoice26.setLabelString("Type: ");
-        deviceChoice26.setOffsetNid(199);
+        deviceChoice26.setOffsetNid(208);
         deviceChoice26.setUpdateIdentifier("");
         jPanel29.add(deviceChoice26);
 
         deviceField44.setIdentifier("");
         deviceField44.setLabelString("Segment Len.(0 to disable write): ");
         deviceField44.setNumCols(4);
-        deviceField44.setOffsetNid(202);
+        deviceField44.setOffsetNid(211);
         jPanel29.add(deviceField44);
 
         jPanel19.add(jPanel29);
@@ -724,14 +727,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice27.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("Type: ");
-        deviceChoice27.setOffsetNid(207);
+        deviceChoice27.setOffsetNid(217);
         deviceChoice27.setUpdateIdentifier("");
         jPanel30.add(deviceChoice27);
 
         deviceField45.setIdentifier("");
         deviceField45.setLabelString("Segment Len.(0 to disable write): ");
         deviceField45.setNumCols(4);
-        deviceField45.setOffsetNid(210);
+        deviceField45.setOffsetNid(220);
         jPanel30.add(deviceField45);
 
         jPanel19.add(jPanel30);
@@ -741,14 +744,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice28.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice28.setIdentifier("");
         deviceChoice28.setLabelString("Type: ");
-        deviceChoice28.setOffsetNid(215);
+        deviceChoice28.setOffsetNid(227);
         deviceChoice28.setUpdateIdentifier("");
         jPanel31.add(deviceChoice28);
 
         deviceField46.setIdentifier("");
         deviceField46.setLabelString("Segment Len.(0 to disable write): ");
         deviceField46.setNumCols(4);
-        deviceField46.setOffsetNid(218);
+        deviceField46.setOffsetNid(229);
         jPanel31.add(deviceField46);
 
         jPanel19.add(jPanel31);
@@ -758,14 +761,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice29.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice29.setIdentifier("");
         deviceChoice29.setLabelString("Type: ");
-        deviceChoice29.setOffsetNid(223);
+        deviceChoice29.setOffsetNid(235);
         deviceChoice29.setUpdateIdentifier("");
         jPanel32.add(deviceChoice29);
 
         deviceField47.setIdentifier("");
         deviceField47.setLabelString("Segment Len.(0 to disable write): ");
         deviceField47.setNumCols(4);
-        deviceField47.setOffsetNid(226);
+        deviceField47.setOffsetNid(238);
         jPanel32.add(deviceField47);
 
         jPanel19.add(jPanel32);
@@ -775,14 +778,14 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice30.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice30.setIdentifier("");
         deviceChoice30.setLabelString("Type: ");
-        deviceChoice30.setOffsetNid(239);
+        deviceChoice30.setOffsetNid(244);
         deviceChoice30.setUpdateIdentifier("");
         jPanel33.add(deviceChoice30);
 
         deviceField48.setIdentifier("");
         deviceField48.setLabelString("Segment Len.(0 to disable write): ");
         deviceField48.setNumCols(4);
-        deviceField48.setOffsetNid(242);
+        deviceField48.setOffsetNid(247);
         jPanel33.add(deviceField48);
 
         jPanel19.add(jPanel33);
@@ -792,17 +795,34 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
         deviceChoice31.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
         deviceChoice31.setIdentifier("");
         deviceChoice31.setLabelString("Type: ");
-        deviceChoice31.setOffsetNid(247);
+        deviceChoice31.setOffsetNid(253);
         deviceChoice31.setUpdateIdentifier("");
         jPanel34.add(deviceChoice31);
 
         deviceField49.setIdentifier("");
         deviceField49.setLabelString("Segment Len.(0 to disable write): ");
         deviceField49.setNumCols(4);
-        deviceField49.setOffsetNid(250);
+        deviceField49.setOffsetNid(256);
         jPanel34.add(deviceField49);
 
         jPanel19.add(jPanel34);
+
+        jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("Out16"));
+
+        deviceChoice32.setChoiceItems(new String[] {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"});
+        deviceChoice32.setIdentifier("");
+        deviceChoice32.setLabelString("Type: ");
+        deviceChoice32.setOffsetNid(262);
+        deviceChoice32.setUpdateIdentifier("");
+        jPanel35.add(deviceChoice32);
+
+        deviceField51.setIdentifier("");
+        deviceField51.setLabelString("Segment Len.(0 to disable write): ");
+        deviceField51.setNumCols(4);
+        deviceField51.setOffsetNid(265);
+        jPanel35.add(deviceField51);
+
+        jPanel19.add(jPanel35);
 
         jScrollPane2.setViewportView(jPanel19);
 
@@ -839,6 +859,7 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice30;
     private DeviceChoice deviceChoice31;
+    private DeviceChoice deviceChoice32;
     private DeviceChoice deviceChoice4;
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice6;
@@ -891,6 +912,7 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
     private DeviceField deviceField49;
     private DeviceField deviceField5;
     private DeviceField deviceField50;
+    private DeviceField deviceField51;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
@@ -923,6 +945,7 @@ public class MARTE2_CONVERSIONSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
     private javax.swing.JPanel jPanel34;
+    private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;

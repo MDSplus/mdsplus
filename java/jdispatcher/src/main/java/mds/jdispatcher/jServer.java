@@ -351,7 +351,7 @@ public class jServer extends MdsIp
 		int status = 0;
 		try
 		{
-			if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot)
+			if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot || !mdsTree.isOpen())
 			{
 				if (mdsTree != null)
 					mdsTree.close();
@@ -367,6 +367,7 @@ public class jServer extends MdsIp
 			catch (final MdsException exc)
 			{
 				logServer("Cannot Find Node ", name, " : ", exc);
+				logServer("Tree: ", mdsTree.getName(), " Shot: ", mdsTree.getShot());
 				return 0x80000000;
 			}
 			doingNid = node.getNid();

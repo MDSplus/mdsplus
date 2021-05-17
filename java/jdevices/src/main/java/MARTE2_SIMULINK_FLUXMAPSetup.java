@@ -8,12 +8,12 @@
  *
  * @author mdsplus
  */
-public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
+public class MARTE2_SIMULINK_FLUXMAPSetup extends DeviceSetup {
 
     /**
-     * Creates new form MARTE2_SIMULINK_RAPTORSetup
+     * Creates new form MARTE2_SIMULINK_FLUXMAPSetup
      */
-    public MARTE2_SIMULINK_RAPTORSetup() {
+    public MARTE2_SIMULINK_FLUXMAPSetup() {
         initComponents();
     }
 
@@ -27,41 +27,39 @@ public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
     private void initComponents() {
 
         deviceButtons1 = new DeviceButtons();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         deviceInputs1 = new DeviceInputs();
         deviceOutputs1 = new DeviceOutputs();
         deviceParameters1 = new DeviceParameters();
+        jPanel1 = new javax.swing.JPanel();
+        deviceField1 = new DeviceField();
 
         setDeviceProvider("spilds:8100");
-        setDeviceTitle("MARTe2 RAPTOR");
-        setDeviceType("MARTE2_SIMULINK_RAPTOR");
-        setHeight(800);
+        setDeviceTitle("Fluxmap");
+        setDeviceType("MARTE2_SIMULINK_FLUXMAP");
+        setHeight(400);
         setUpdateEvent("");
-        setWidth(800);
+        setWidth(500);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase: ");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(3);
-        jPanel2.add(deviceField1);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
-
-        deviceInputs1.setOffsetNid(449);
+        deviceInputs1.setOffsetNid(50);
         jTabbedPane1.addTab("Inputs", deviceInputs1);
 
-        deviceOutputs1.setOffsetNid(1250);
+        deviceOutputs1.setOffsetNid(171);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
-        deviceParameters1.setNumParameters(144);
+        deviceParameters1.setNumParameters(10);
         deviceParameters1.setOffsetNid(4);
-        deviceParameters1.setParameterOffset(4);
+        deviceParameters1.setParameterOffset(5);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+
+        deviceField1.setIdentifier("");
+        deviceField1.setOffsetNid(3);
+        jPanel1.add(deviceField1);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -71,7 +69,7 @@ public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
     private DeviceParameters deviceParameters1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }

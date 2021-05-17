@@ -8,12 +8,12 @@
  *
  * @author mdsplus
  */
-public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
+public class MARTE2_SIMULINK_RABBITSetup extends DeviceSetup {
 
     /**
-     * Creates new form MARTE2_SIMULINK_RAPTORSetup
+     * Creates new form MARTE2_SIMULINK_RABBITSetup
      */
-    public MARTE2_SIMULINK_RAPTORSetup() {
+    public MARTE2_SIMULINK_RABBITSetup() {
         initComponents();
     }
 
@@ -35,28 +35,27 @@ public class MARTE2_SIMULINK_RAPTORSetup extends DeviceSetup {
         deviceParameters1 = new DeviceParameters();
 
         setDeviceProvider("spilds:8100");
-        setDeviceTitle("MARTe2 RAPTOR");
-        setDeviceType("MARTE2_SIMULINK_RAPTOR");
-        setHeight(800);
+        setDeviceTitle("Rabbit Setup");
+        setDeviceType("MARTE2_SIMULINK_RABBIT");
+        setHeight(400);
         setUpdateEvent("");
-        setWidth(800);
+        setWidth(500);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Timebase: ");
-        deviceField1.setNumCols(20);
         deviceField1.setOffsetNid(3);
         jPanel2.add(deviceField1);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
-        deviceInputs1.setOffsetNid(449);
+        deviceInputs1.setOffsetNid(32);
         jTabbedPane1.addTab("Inputs", deviceInputs1);
 
-        deviceOutputs1.setOffsetNid(1250);
+        deviceOutputs1.setOffsetNid(353);
         jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
-        deviceParameters1.setNumParameters(144);
+        deviceParameters1.setNumParameters(5);
         deviceParameters1.setOffsetNid(4);
         deviceParameters1.setParameterOffset(4);
         jTabbedPane1.addTab("Parameters", deviceParameters1);
