@@ -80,7 +80,7 @@ static inline char *replaceBackslashes(char *filename)
 
 static int remote_access_connect(char *server, int inc_count)
 {
-#define CONMSG(TYP, PRI, ...) TYP("Connection server='%s', unique='%s', conid=%d" PRI, server, unique, conid, __VA_ARGS__);
+#define CONMSG(TYP, PRI, ...) TYP("Connection conid=%d, server='%s', unique='%s'" PRI, conid, server, unique, __VA_ARGS__)
   int conid = -1;
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ReuseCheck, return conid, int, (char *, char *, int));
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ConnectToMds, return conid, int, (char *));
@@ -128,6 +128,7 @@ static int remote_access_connect(char *server, int inc_count)
     }
   }
   return conid;
+#undef CONMSG
 }
 
 /** remote_access_disconnect
@@ -138,6 +139,7 @@ static int remote_access_connect(char *server, int inc_count)
  */
 static int remote_access_disconnect(int conid, int force)
 {
+#define CONMSG(TYP, PRI, ...) TYP("Connection conid=%d" PRI, conid, __VA_ARGS__)
   if (conid == -1)
     return TreeSUCCESS;
   TREETHREADSTATIC_INIT;
@@ -149,13 +151,18 @@ static int remote_access_disconnect(int conid, int force)
       host->h.connections--;
       if (host->h.connections > 0 && !force)
       {
-        MDSDBG("Connection %d<%d: kept", conid, host->h.connections);
-        return TreeSUCCESS;
+        CONMSG(MDSDBG, ", connections=%d: kept", host->h.connections);
       }
       else
       {
-        MDSWRN("Connection %d<%d: disconnected, forced=%c",
-               conid, host->h.connections, force ? 'y' : 'n');
+        if (force)
+        {
+          CONMSG(MDSWRN, ", connections=%d: disconnected", host->h.connections);
+        }
+        else
+        {
+          CONMSG(MDSDBG, ": %s", "disconnected");
+        }
         *prev = host->next;
         host->next = NULL;
         destroy_host_list_t(host);
@@ -164,8 +171,9 @@ static int remote_access_disconnect(int conid, int force)
       return TreeSUCCESS;
     }
   }
-  MDSDBG("Connection %d=?: not found", conid);
+  CONMSG(MDSDBG, ": %s", "not found, may be owned by different thread");
   return TreeSUCCESS;
+#undef CONMSG
 }
 
 ///////////////////////////////////////////////////////////////////

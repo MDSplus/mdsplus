@@ -58,13 +58,13 @@ Connection *PopConnection(int id)
   MDSIPTHREADSTATIC_INIT;
   Connection *p, *c;
   c = _FindConnection(id, &p, MDSIPTHREADSTATIC_VAR);
-  if (c && c->state & CON_DETACHED)
+  if (c && !(c->state & CON_INLIST))
     c = NULL;
   else if (c)
   {
-    c->state |= CON_DETACHED; // sets disconnect
+    c->state &= CON_ACTIVITY; // clears  INLIST
     if (c->state & CON_ACTIVITY)
-    { // if any task but disconnect
+    { // if any oustanding task
       struct timespec tp;
       clock_gettime(CLOCK_REALTIME, &tp);
       tp.tv_sec += 10;
@@ -105,12 +105,12 @@ Connection *FindConnectionSending(int id)
   c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
   if (c)
   {
-    if ((c->state & CON_ACTIVITY & ~CON_REQUEST) && !(c->state & CON_DISCONNECT))
+    if ((c->state & CON_ACTIVITY & ~CON_REQUEST) && (c->state & CON_INLIST))
     {
       if (c->state & CON_REQUEST)
       {
-        c->state &= ~CON_REQUEST; // clear sendarg
-        MDSDBG("Connection %02d -> 0x%02x : 0x%" PRIxPTR " unlocked sendarg",
+        c->state &= ~CON_REQUEST; // clear request
+        MDSDBG("Connection %02d -> 0x%02x : 0x%" PRIxPTR " unlocked request",
                c->id, c->state, CURRENT_THREAD_ID());
       }
       c = NULL;
@@ -132,19 +132,19 @@ Connection *FindConnectionWithLock(int id, con_t state)
 {
   MDSIPTHREADSTATIC_INIT;
   Connection *c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
-  while (c && (c->state & CON_ACTIVITY) && !(c->state & CON_DISCONNECT))
+  while (c && (c->state & CON_ACTIVITY) && (c->state & CON_INLIST))
   {
     MDSDBG("Connection %02d -- 0x%02x : 0x%" PRIxPTR " is would wait to lock 0x%02x",
            c->id, c->state, CURRENT_THREAD_ID(), state);
     c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
-    if (c && (c->state & CON_DISCONNECT))
+    if (c && !(c->state & CON_INLIST))
     {
       c = NULL;
     }
   }
   if (c)
   {
-    c->state |= state;
+    c->state |= state & CON_ACTIVITY;
     MDSDBG("Connection %02d -> 0x%02x : 0x%" PRIxPTR " locked 0x%02x",
            c->id, c->state, CURRENT_THREAD_ID(), state);
   }
@@ -281,11 +281,13 @@ int destroyConnection(Connection *connection)
     return MDSplusERROR;
   if (connection->id != INVALID_CONNECTION_ID)
   {
-    if (connection->state != CON_DETACHED)
-    { // connection should not have been in list at this point
-      if (connection != PopConnection(connection->id))
-        fprintf(stderr, "Connection %02d not detached but not found\n",
-                connection->id);
+    if (connection->state & CON_INLIST)
+    {
+      MDSIPTHREADSTATIC_INIT;
+      if (connection == _FindConnection(connection->id, NULL, MDSIPTHREADSTATIC_VAR))
+      {
+        PopConnection(connection->id);
+      }
     }
     MdsEventList *e, *nexte;
     for (e = connection->event; e; e = nexte)
@@ -297,7 +299,8 @@ int destroyConnection(Connection *connection)
       free(e);
     }
     TdiDeleteContext(connection->tdicontext);
-    MDSDBG("Connection %02d disconnected", connection->id);
+    MDSDBG("Connection %02d (0x%02x) disconnected",
+           connection->id, connection->state);
     FreeDescriptors(connection);
   }
   if (connection->io)
@@ -478,6 +481,7 @@ int AddConnection(Connection *c)
   } while (id == INVALID_CONNECTION_ID && _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR));
   c->id = id;
   pthread_mutex_unlock(&lock);
+  c->state |= CON_INLIST;
   c->next = MDSIP_CONNECTIONS;
   MDSIP_CONNECTIONS = c;
   MDSDBG("Connection %02d connected", c->id);

@@ -100,8 +100,7 @@ typedef struct _connection
 #define CON_RECV (con_t)0x10
 #define CON_REQUEST (con_t)0x20
 #define CON_USER (con_t)0x40
-#define CON_DETACHED (con_t)0x80
-#define CON_DISCONNECT (con_t)0x80
+#define CON_INLIST (con_t)0x80
 
 #if defined(__CRAY) || defined(CRAY)
 int errno = 0;
@@ -310,7 +309,6 @@ EXPORT int DisconnectFromMds(int id);
 ///
 EXPORT int DoMessage(int id);
 EXPORT int ConnectionDoMessage(Connection *connection);
-EXPORT int destroyConnection(Connection *connection);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -724,7 +722,7 @@ EXPORT int GetConnectionCompression(int conid);
 ///
 
 Connection *newConnection(char *protocol);
-int destroyConnection(Connection *c);
+EXPORT int destroyConnection(Connection *c);
 unsigned char ConnectionIncMessageId(Connection *c);
 int AddConnection(Connection *c);
 
