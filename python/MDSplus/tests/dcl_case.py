@@ -134,39 +134,33 @@ class Tests(_common.TreeTests, _common.MdsIp):
         try:
             mon, mon_log = self._start_mdsip(monitor, monitor_port, 'monitor', 'TCP')
             svr, svr_log = self._start_mdsip(server, server_port, 'action', 'TCP')
-            try:
-                if mon:
-                    self.assertEqual(mon.poll(), None)
-                if svr:
-                    self.assertEqual(svr.poll(), None)
-                """ tcl dispatch """
-                self._testDispatchCommand(server, 'type test')
-                env = "%s_path" % self.tree
-                self._doTCLTest('env ' + env, '%s=%s\n' %
-                                (env, self.envx[env]))
-                self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
-                self._doTCLTest('dispatch/build%s' % monitor_opt)
-                self._doTCLTest('dispatch/phase%s INIT' % monitor_opt)
-                self._waitIdle(server, 3)
-                self._doTCLTest('dispatch/phase%s PULSE' % monitor_opt)
-                self._waitIdle(server, 3)
-                self._doTCLTest('dispatch/phase%s STORE' % monitor_opt)
-                self._waitIdle(server, 3)
-                """ tcl exceptions """
-                self._doExceptionTest(
-                    'dispatch/command/server=%s ' % server, Exc.MdsdclIVVERB)
-                """ tcl check if still alive """
-                if mon:
-                    self.assertEqual(mon.poll(), None)
-                if svr:
-                    self.assertEqual(svr.poll(), None)
-            finally:
-                self._stop_mdsip((svr, server), (mon, monitor))
+            """ tcl dispatch """
+            self._testDispatchCommand(server, 'type test')
+            env = "%s_path" % self.tree
+            self._doTCLTest('env ' + env, '%s=%s\n' %
+                            (env, self.envx[env]))
+            self._doTCLTest('set tree %(EXPT)s/shot=%(SHOT)d' % fmt)
+            self._doTCLTest('dispatch/build%s' % monitor_opt)
+            self._doTCLTest('dispatch/phase%s INIT' % monitor_opt)
+            self._waitIdle(server, 3)
+            self._doTCLTest('dispatch/phase%s PULSE' % monitor_opt)
+            self._waitIdle(server, 3)
+            self._doTCLTest('dispatch/phase%s STORE' % monitor_opt)
+            self._waitIdle(server, 3)
+            """ tcl exceptions """
+            self._doExceptionTest(
+                'dispatch/command/server=%s ' % server, Exc.MdsdclIVVERB)
+            """ tcl check if still alive """
+            if mon:
+                self.assertEqual(mon.poll(), None)
+            if svr:
+                self.assertEqual(svr.poll(), None)
         finally:
             if svr_log:
                 svr_log.close()
             if mon_log:
                 mon_log.close()
+            self._stop_mdsip((svr, server), (mon, monitor))
             self._doTCLTest('close/all')
         pytree.readonly()
         self.assertTrue(pytree.TESTDEVICE_I.INIT1_DONE.record <=
@@ -199,32 +193,31 @@ class Tests(_common.TreeTests, _common.MdsIp):
             c.get(expr, **kv)
         server, server_port = self._setup_mdsip(
             'ACTION_SERVER', 'ACTION_PORT', 7120+self.index, True)
-        svr = svr_log = None
+
+        svr, svr_log = self._start_mdsip(server, server_port, 'timeout')
         try:
-            svr, svr_log = self._start_mdsip(server, server_port, 'timeout')
-            try:
-                if svr:
-                    self.assertEqual(svr.poll(), None)
-                c = Connection(server)
-                test_normal(c, "py('1')")  # preload MDSplus on server
-                test_timeout(c, "wait(3)", 1000)  # break tdi wait
-                # break python sleep
-                test_timeout(c, "py('from time import sleep;sleep(3)')", 1500)
-                if full:  # timing too unreliable for standard test
-                    test_timeout(c, "for(;1;) ;", 100)  # break tdi inf.loop
-                    # break python inf.loop
-                    test_timeout(c, "py('while 1: pass')", 500)
-                test_normal(c, "1", timeout=1000)
-                # TODO: make this work under fc29 (python3.7?)
-                if sys.version_info < (3, 7):
-                    # verify locks are released
-                    test_normal(c, "py('1')", timeout=1000)
-                self._doTCLTest('stop server %s' % server)
-            finally:
-                self._stop_mdsip((svr, server))
+            if svr:
+                self.assertEqual(svr.poll(), None)
+            c = Connection(server)
+            test_normal(c, "py('1')")  # preload MDSplus on server
+            test_timeout(c, "wait(3)", 1000)  # break tdi wait
+            # break python sleep
+            test_timeout(c, "py('from time import sleep;sleep(3)')", 1500)
+            if full:  # timing too unreliable for standard test
+                test_timeout(c, "for(;1;) ;", 100)  # break tdi inf.loop
+                # break python inf.loop
+                test_timeout(c, "py('while 1: pass')", 500)
+            test_normal(c, "1", timeout=1000)
+            # TODO: make this work under fc29 (python3.7?)
+            if sys.version_info < (3, 7):
+                # verify locks are released
+                test_normal(c, "py('1')", timeout=1000)
+            self._doTCLTest('stop server %s' % server)
         finally:
             if svr_log:
                 svr_log.close()
+            self._stop_mdsip((svr, server))
+
 
     def timeoutfull(self): self.timeout(full=True)
 
