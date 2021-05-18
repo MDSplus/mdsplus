@@ -198,7 +198,10 @@ static void Job_abandon_locked(Job *job)
 static inline void Job_wait_and_pop_locked(Job *job)
 {
   pthread_cleanup_push((void *)Job_abandon_locked, (void *)job);
-  pthread_cond_wait(job->cond, &jobs_mutex);
+  if (!job->cond_var)
+  {
+    pthread_cond_wait(job->cond, &jobs_mutex);
+  }
   pthread_cond_destroy(job->cond);
   free(job->cond);
   job->cond = NULL;
