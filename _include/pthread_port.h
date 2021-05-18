@@ -6,7 +6,6 @@
   } while (0)
 
 #define _GNU_SOURCE
-#include <STATICdef.h>
 #include <status.h>
 #include <stdlib.h>
 #ifdef _WIN32

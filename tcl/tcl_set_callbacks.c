@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <sys/time.h>
 
-#include <STATICdef.h>
 #include <mdsshr.h>
 
 #include "tcl_p.h"
@@ -64,10 +63,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void (*ErrorOut)();
 static void (*TextOut)();
-STATIC_ROUTINE void (*NodeTouched)();
-STATIC_THREADSAFE char *saved_output = 0;
-STATIC_THREADSAFE pthread_mutex_t saved_output_mutex;
-STATIC_THREADSAFE int initialized = 0;
+static void (*NodeTouched)();
+static char *saved_output = 0;
+static pthread_mutex_t saved_output_mutex;
+static int initialized = 0;
 
 /***************************************************************
  * TclSetCallbacks:
@@ -105,7 +104,7 @@ EXPORT void TclNodeTouched(        /* Returns: void                        */
     (*NodeTouched)(nid, type);
 }
 
-STATIC_ROUTINE void AppendOut(char *text)
+static void AppendOut(char *text)
 {
   char *msg = text ? text : "";
   size_t len = strlen(msg);
@@ -128,7 +127,7 @@ STATIC_ROUTINE void AppendOut(char *text)
   pthread_mutex_unlock(&saved_output_mutex);
 }
 
-STATIC_ROUTINE void StatusOut(int status) { AppendOut(MdsGetMsg(status)); }
+static void StatusOut(int status) { AppendOut(MdsGetMsg(status)); }
 
 EXPORT void TclSaveOut()
 {

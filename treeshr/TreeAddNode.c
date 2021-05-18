@@ -25,7 +25,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EMPTY_NODE
 #define EMPTY_NCI
 #include "treeshrp.h" /*must be first or off_t is misdefined */
-#include <STATICdef.h>
 
 #include <ctype.h>
 #include <errno.h>
@@ -51,9 +50,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define node_to_node_number(node_ptr) node_ptr - dblist->tree_info->node
 
 extern void **TreeCtx();
-STATIC_ROUTINE int TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr,
+static int TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr,
                                NODE **trn_node_ptrptr);
-STATIC_ROUTINE int TreeWriteNci(TREE_INFO *info);
+static int TreeWriteNci(TREE_INFO *info);
 
 int TreeAddNode(char const *name, int *nid_out, char usage)
 {
@@ -336,7 +335,7 @@ int TreeInsertMember(NODE *parent_ptr, NODE *member_ptr, int sort)
   return TreeSUCCESS; /* return the status */
 }
 
-STATIC_ROUTINE int TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr,
+static int TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr,
                                NODE **trn_node_ptrptr)
 {
   INIT_STATUS_AS TreeSUCCESS;
@@ -398,12 +397,12 @@ int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes)
   TREE_EDIT *edit_ptr;
   int i;
   NCI *nciptr;
-  STATIC_CONSTANT NCI empty_nci;
+  static NCI empty_nci;
   int vm_bytes; // TODO: 2GB limit
   int nodes;
   int ncis;
-  STATIC_CONSTANT size_t empty_node_size = sizeof(NODE) * EXTEND_NODES;
-  STATIC_CONSTANT size_t empty_nci_size = sizeof(NCI) * EXTEND_NODES;
+  static size_t empty_node_size = sizeof(NODE) * EXTEND_NODES;
+  static size_t empty_nci_size = sizeof(NCI) * EXTEND_NODES;
 
   if (!empty_node_array)
   {
@@ -786,10 +785,10 @@ int _TreeEndConglomerate(void *dbid)
     return TreeSUCCESS;
 }
 
-STATIC_ROUTINE void trim_excess_nodes(TREE_INFO *info_ptr);
+static void trim_excess_nodes(TREE_INFO *info_ptr);
 
 #ifdef WORDS_BIGENDIAN
-STATIC_ROUTINE TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
+static TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
 {
   TREE_HEADER *ans = (TREE_HEADER *)malloc(sizeof(TREE_HEADER));
   ((char *)ans)[1] =
@@ -801,7 +800,7 @@ STATIC_ROUTINE TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
   return ans;
 }
 
-STATIC_ROUTINE void FreeHeaderOut(TREE_HEADER *hdr) { free(hdr); }
+static void FreeHeaderOut(TREE_HEADER *hdr) { free(hdr); }
 
 #else
 #define HeaderOut(in) in
@@ -959,7 +958,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
   return status;
 }
 
-STATIC_ROUTINE void trim_excess_nodes(TREE_INFO *info_ptr)
+static void trim_excess_nodes(TREE_INFO *info_ptr)
 {
   int *nodecount_ptr = (int *)&info_ptr->header->nodes;
   int *free_ptr = (int *)&info_ptr->header->free;
@@ -1011,7 +1010,7 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO *info_ptr)
   }
 }
 
-STATIC_ROUTINE int TreeWriteNci(TREE_INFO *info)
+static int TreeWriteNci(TREE_INFO *info)
 {
   INIT_STATUS_AS TreeSUCCESS;
   if (info->header->nodes > info->edit->first_in_mem)

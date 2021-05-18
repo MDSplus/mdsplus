@@ -45,7 +45,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef SIZEOF_LONG
 #endif
 
-#include <STATICdef.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <mdsplus/mdsconfig.h>

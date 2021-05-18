@@ -62,7 +62,6 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor
 #include <sys/time.h>
 #include <time.h>
 
-#include <STATICdef.h>
 #include <condition.h>
 #include <mdsdescrip.h>
 #include <ipdesc.h>
@@ -508,7 +507,7 @@ EXPORT int ServerDispatchPhase(int *id __attribute__((unused)), void *vtable,
   int phase;
   int first_g, last_g = 0, first_c, last_c;
   DESCRIPTOR_LONG(phase_d, 0);
-  STATIC_CONSTANT DESCRIPTOR(phase_lookup, "PHASE_NUMBER_LOOKUP($)");
+  static DESCRIPTOR(phase_lookup, "PHASE_NUMBER_LOOKUP($)");
   struct descriptor phasenam_d = {0, DTYPE_T, CLASS_S, 0};
   phase_d.pointer = (char *)&phase;
   Output = output_rtn;

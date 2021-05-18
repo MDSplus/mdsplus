@@ -87,7 +87,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "mdsshrp.h"
-#include <STATICdef.h>
 #include <limits.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -123,8 +122,8 @@ struct HEADER
   int e;
 };
 
-STATIC_CONSTANT signed char FIELDSY = BITSY + BITSX;
-STATIC_CONSTANT int FIELDSX = 2;
+static signed char FIELDSY = BITSY + BITSX;
+static int FIELDSX = 2;
 
 int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
              mdsdsc_a_t *const pack_dsc_ptr, int *const bit_ptr)
@@ -151,7 +150,7 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
   signed char yn_c;
   signed char ye_c;
   int diff[MAXX], exce[MAXX];
-  STATIC_CONSTANT int signif[65] = {
+  static int signif[65] = {
       0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5,
       5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
       6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7};

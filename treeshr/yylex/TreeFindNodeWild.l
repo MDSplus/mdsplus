@@ -3,15 +3,14 @@
 %option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
 %option never-interactive reentrant
 %{
-#include <STATICdef.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <treeshr_messages.h>
 #include "treeshrp.h"
 
-STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str);
+static void addSearchTerm(yyscan_t scanner, int type, char *str);
 
-STATIC_ROUTINE void upcaseAndTrim(char *str)
+static void upcaseAndTrim(char *str)
 {
   char *p=str;
   for (p=str; *p; p++) {
@@ -19,7 +18,7 @@ STATIC_ROUTINE void upcaseAndTrim(char *str)
   }
 }
 
-STATIC_ROUTINE int isPunctuation(char c)
+static int isPunctuation(char c)
 {
   return ((c == '.') || (c == ':') || (c=='-') || (c=='~') | (c=='^'));
 }
@@ -92,7 +91,7 @@ newline \n
 }
 %%
 /*
-STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ)
+static const char  *SearchTypeName(enum yytreepathtokentype typ)
 {
   const char * names[] = {
     "TAG_TREE",
@@ -111,7 +110,7 @@ STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ)
   return names[typ-TAG_TREE];
 }
 
-STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx)
+static void PrintCtx(SEARCH_CTX *ctx)
 {
   SEARCH_TERM *ptr;
   printf ("Print Context for %s\n", ctx->wildcard);
@@ -123,7 +122,7 @@ STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx)
 }
 */
 
-STATIC_ROUTINE SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
+static SEARCH_TERM *SquishSearches(SEARCH_TERM *terms) {
   SEARCH_TERM *ptr = terms;
   SEARCH_TERM *tmp;
   for (;ptr && ptr->next; ptr = ptr->next) {
@@ -203,7 +202,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
   return(status ==0) ? TreeSUCCESS : TreeINVPATH;
 }
 
-STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
+static void addSearchTerm(yyscan_t scanner, int type, char *str)
 {
 
   SEARCH_TERM *ptr, *p;

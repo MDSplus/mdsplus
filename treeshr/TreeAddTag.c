@@ -51,7 +51,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 +-----------------------------------------------------------------------------*/
 #include "treeshrp.h"
-#include <STATICdef.h>
 #include <ctype.h>
 #include <mdsdescrip.h>
 #include <stdlib.h>

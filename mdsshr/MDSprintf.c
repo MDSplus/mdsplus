@@ -63,7 +63,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************/
 
-#include <STATICdef.h>
 #include <mdsshr.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -72,9 +71,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*=====================================================
  * Static variables ...
  *====================================================*/
-STATIC_THREADSAFE int (*MDSvprintf)() =
+static int (*MDSvprintf)() =
     vprintf; /* not really threadsafe but ok */
-STATIC_THREADSAFE int (*MDSvfprintf)() =
+static int (*MDSvfprintf)() =
     vfprintf; /* not really threadsafe but ok */
 
 /******************************************************************
@@ -134,7 +133,7 @@ void MdsGetOutputFunctions(void **const CURvprintf, void **const CURvfprintf)
  * main:
  ****************************************************************/
 
-STATIC_ROUTINE int woof(const char *const fmt, va_list ap)
+static int woof(const char *const fmt, va_list ap)
 {
   char xxfmt[80];
 
@@ -142,7 +141,7 @@ STATIC_ROUTINE int woof(const char *const fmt, va_list ap)
   return (vprintf(xxfmt, ap));
 }
 
-STATIC_ROUTINE int tweet(FILE *fp, const char *const fmt, va_list ap)
+static int tweet(FILE *fp, const char *const fmt, va_list ap)
 {
   char xxfmt[80];
 

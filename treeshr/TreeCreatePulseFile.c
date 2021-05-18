@@ -52,7 +52,6 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 
 ------------------------------------------------------------------------------*/
 #include "treeshrp.h" /* must be first or off_t is defined wrong */
-#include <STATICdef.h>
 #include <ctype.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -65,7 +64,7 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 //#define DEBUG
 #include <mdsmsg.h>
 
-STATIC_ROUTINE int _CopyFile(int src_fd, int dst_fd, int lock_it);
+static int _CopyFile(int src_fd, int dst_fd, int lock_it);
 
 extern void **TreeCtx();
 
@@ -238,7 +237,7 @@ int TreeCreateTreeFiles(char const *tree, int shot, int source_shot)
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
 #define MAX(a, b) ((a) > (b)) ? (a) : (b)
 
-STATIC_ROUTINE int _CopyFile(int src_fd, int dst_fd, int lock_it)
+static int _CopyFile(int src_fd, int dst_fd, int lock_it)
 {
   INIT_STATUS_ERROR;
   if (src_fd != -1)

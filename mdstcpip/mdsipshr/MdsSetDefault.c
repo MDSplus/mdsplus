@@ -24,7 +24,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "../mdsip_connections.h"
-#include <STATICdef.h>
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +34,7 @@ int MdsSetDefault(int id, char *node)
 {
   struct descrip nodearg;
   struct descrip ansarg;
-  STATIC_CONSTANT char *expression = "TreeSetDefault($)";
+  static char *expression = "TreeSetDefault($)";
   int status =
       MdsValue(id, expression, MakeDescrip(&nodearg, DTYPE_CSTRING, 0, 0, node),
                &ansarg, NULL);

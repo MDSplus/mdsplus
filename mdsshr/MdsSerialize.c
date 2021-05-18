@@ -22,7 +22,6 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mdsshr_messages.h>
@@ -131,7 +130,7 @@ union __bswap {
 
 #endif
 
-STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, mdsdsc_xd_t *out_dsc_ptr,
+static int copy_rec_dx(char const *in_ptr, mdsdsc_xd_t *out_dsc_ptr,
                                l_length_t *b_out, l_length_t *b_in)
 {
   int status = 1;
@@ -561,7 +560,7 @@ EXPORT int MdsSerializeDscIn(char const *in, mdsdsc_xd_t *out)
   return status;
 }
 
-STATIC_ROUTINE int copy_dx_rec(const mdsdsc_t *in_ptr, char *out_ptr,
+static int copy_dx_rec(const mdsdsc_t *in_ptr, char *out_ptr,
                                l_length_t *b_out, l_length_t *b_in)
 {
   int status = MDSplusSUCCESS;
@@ -964,7 +963,7 @@ STATIC_ROUTINE int copy_dx_rec(const mdsdsc_t *in_ptr, char *out_ptr,
   return status;
 }
 
-STATIC_ROUTINE int Dsc2Rec(const mdsdsc_t *inp, mdsdsc_xd_t *out_ptr,
+static int Dsc2Rec(const mdsdsc_t *inp, mdsdsc_xd_t *out_ptr,
                            arsize_t *reclen)
 {
   arsize_t size_out, size_in;
@@ -988,7 +987,7 @@ STATIC_ROUTINE int Dsc2Rec(const mdsdsc_t *inp, mdsdsc_xd_t *out_ptr,
   return status;
 }
 
-STATIC_CONSTANT int PointerToOffset(mdsdsc_t *dsc_ptr, l_length_t *length)
+static int PointerToOffset(mdsdsc_t *dsc_ptr, l_length_t *length)
 {
   int status = 1;
   if ((dsc_ptr->dtype == DTYPE_DSC) && (dsc_ptr->class != CLASS_A) &&

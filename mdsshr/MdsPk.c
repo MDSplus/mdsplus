@@ -53,9 +53,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    3.40 Unpack Macro timings				3.01 3.07
    3.02
 */
-#include <STATICdef.h>
 #include <mdsplus/mdsconfig.h>
-STATIC_CONSTANT unsigned int masks[33] = {
+static unsigned int masks[33] = {
     0,
     0x1,
     0x3,
@@ -94,7 +93,7 @@ STATIC_CONSTANT unsigned int masks[33] = {
 #include <mdsdescrip.h>
 #include <string.h>
 
-STATIC_ROUTINE int SwapBytes(char *in_c)
+static int SwapBytes(char *in_c)
 {
   int out;
   char *out_c = (char *)&out;

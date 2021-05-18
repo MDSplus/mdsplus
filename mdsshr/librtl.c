@@ -54,7 +54,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/wait.h>
 #endif
 
-#include <STATICdef.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -129,7 +128,7 @@ static inline time_t get_tz_offset(time_t *const time)
 #endif
 }
 
-STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
+static int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
 ///
 /// Waits for the specified time in seconds. Supports fractions of seconds.
