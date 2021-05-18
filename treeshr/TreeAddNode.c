@@ -878,8 +878,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
       FREE_ON_EXIT(nfilenam);
       int ntreefd;
       TREE_INFO *info_ptr = (*dblist)->tree_info;
-      nfilenam =
-          strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
+      nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
       _TreeDeleteNodesWrite(*dbid);
       trim_excess_nodes(info_ptr);
       header_pages = (sizeof(TREE_HEADER) + 511u) / 512u;

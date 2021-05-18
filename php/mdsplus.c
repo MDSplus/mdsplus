@@ -128,7 +128,7 @@ static void mdsplus_replace_error(char *msg, int do_not_copy)
   if (do_not_copy)
     mdsplus_error_msg = msg;
   else
-    mdsplus_error_msg = strcpy(malloc(strlen(msg) + 1), msg);
+    mdsplus_error_msg = strdup(msg);
 }
 
 static char *mdsplus_translate_status(int socket, int status)
@@ -245,7 +245,7 @@ PHP_FUNCTION(mdsplus_connect)
         free(lastHost);
         lastHost = 0;
       }
-      lastHost = strcpy(malloc(strlen(arg) + 1), arg);
+      lastHost = strdup(arg);
       persistentConnection = handle;
     }
     RETURN_LONG(handle);

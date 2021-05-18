@@ -191,7 +191,7 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.tree = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
+    job.tree = strdup((char *)p1);
     job.shot = *(int *)p2;
     job.nid = *(int *)p3;
     if (job.h.addr)
@@ -236,7 +236,7 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.tree = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
+    job.tree = strdup((char *)p1);
     job.shot = *(int *)p2;
     if (job.h.addr)
     {
@@ -267,8 +267,8 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.table = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
-    job.command = strcpy(malloc(strlen((char *)p2) + 1), (char *)p2);
+    job.table = strdup((char *)p1);
+    job.command = strdup((char *)p2);
     if (job.h.addr)
     {
       MDSDBG(SVRCOMMANDJOB_PRI, SVRCOMMANDJOB_VAR(&job));
@@ -290,13 +290,13 @@ EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.tree = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
+    job.tree = strdup((char *)p1);
     job.shot = *(int *)p2;
     job.phase = *(int *)p3;
     job.nid = *(int *)p4;
     job.on = *(int *)p5;
     job.mode = *(int *)p6;
-    job.server = strcpy(malloc(strlen((char *)p7) + 1), (char *)p7);
+    job.server = strdup((char *)p7);
     job.status = *(int *)p8;
     if (job.h.addr)
     {

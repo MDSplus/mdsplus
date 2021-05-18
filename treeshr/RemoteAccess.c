@@ -269,7 +269,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char const *tree,
           info->blockid = TreeBLOCKID;
           info->flush = (dblist->shotid == -1);
           info->header = (TREE_HEADER *)&info[1];
-          info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
+          info->treenam = strdup(tree);
           TreeCallHookFun("TreeHook", "OpenTree", tree, dblist->shotid, NULL);
           TreeCallHook(OpenTree, info, 0);
           info->channel = conid;
@@ -492,7 +492,7 @@ char *AbsPathRemote(PINO_DATABASE *dblist, char const *inpatharg)
   if (ans.ptr)
   {
     if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0))
-      retans = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
+      retans = strdup(ans.ptr);
     MdsIpFree(ans.ptr);
   }
   return retans;

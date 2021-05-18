@@ -68,7 +68,7 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
     case DbiNAME:
 
       CheckOpen(db);
-      string = strcpy(malloc(strlen(db->main_treenam) + 1), db->main_treenam);
+      string = strdup(db->main_treenam);
       break;
 
     case DbiSHOTID:

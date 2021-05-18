@@ -355,7 +355,7 @@ void ConnectionSetInfo(Connection *c, char *info_name, SOCKET readfd,
 {
   if (c)
   {
-    c->info_name = strcpy(malloc(strlen(info_name) + 1), info_name);
+    c->info_name = strdup(info_name);
     if (info)
     {
       c->info = memcpy(malloc(len), info, len);

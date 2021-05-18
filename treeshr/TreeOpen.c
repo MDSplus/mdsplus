@@ -918,7 +918,7 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
       if ((strlen(tilde + 2) > 1) ||
           ((strlen(tilde + 2) == 1) && (tilde[2] != '\\')))
       {
-        tmp = strcpy(malloc(strlen(tilde + 2) + 1), tilde + 2);
+        tmp = strdup(tilde + 2);
         tmp2 = strcpy(malloc(strlen(path) + 1 + fname_len), path);
         strcpy(tmp2 + (tilde - path) + fname_len, tmp);
         free(tmp);
@@ -933,7 +933,7 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
       path = tmp2;
       break;
     case 't':
-      tmp = strcpy(malloc(strlen(tilde + 2) + 1), tilde + 2);
+      tmp = strdup(tilde + 2);
       const size_t tree_len = strlen(tree);
       tmp2 = strcpy(malloc(strlen(path) + 1 + tree_len), path);
       strcpy(tmp2 + (tilde - path) + tree_len, tmp);
@@ -1205,7 +1205,7 @@ void *_TreeSaveContext(void *dbid)
   {
     ctx = malloc(sizeof(struct context));
     ctx->expt =
-        strcpy(malloc(strlen(dblist->experiment) + 1), dblist->experiment);
+        strdup(dblist->experiment);
     ctx->shot = dblist->shotid;
     ctx->edit = dblist->open_for_edit;
     ctx->readonly = dblist->open_readonly;

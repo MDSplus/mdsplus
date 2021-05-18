@@ -77,7 +77,7 @@ EXPORT char *ServerFindServers(void **ctx, char *wild_match)
       struct dirent *entry = readdir(dir);
       if (entry)
       {
-        char *ans_c = strcpy(malloc(strlen(entry->d_name) + 1), entry->d_name);
+        char *ans_c = strdup(entry->d_name);
         if ((strcmp(ans_c, ".") == 0) || (strcmp(ans_c, "..") == 0))
           continue;
         else
