@@ -60,6 +60,9 @@ if !MINGW
 TESTS += dcl_dispatcher_test.py
 endif
 
+# connection_write_test.py causes valgrind to hang?
+VALGRIND_TESTS = $(filter-out connection_write_test.py,$(TESTS))
+
 VALGRIND_SUPPRESSIONS_FILES =
 
 # Skipping child programs that are launched inside python classes
