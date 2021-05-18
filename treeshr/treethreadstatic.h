@@ -2,20 +2,17 @@
 #include "../mdsshr/mdsthreadstatic.h"
 #include "treeshrp.h"
 
-typedef struct
+typedef struct host
 {
+  struct host *next;
   int conid;
-  int connections;
+  int links;
   char *unique;
-} host_t;
+} Host;
+#define HOST_PRI "Host(conid=%d, links=%d, unique='%s')"
+#define HOST_VAR(h) (h)->conid, (h)->links, (h)->unique
 
-typedef struct host_list
-{
-  struct host_list *next;
-  host_t h;
-} host_list_t;
-
-void destroy_host_list_t(host_list_t *host);
+void destroy_host(Host *host);
 
 #define TREETHREADSTATIC_VAR TreeThreadStatic_p
 #define TREETHREADSTATIC_TYPE TreeThreadStatic_t
@@ -25,7 +22,7 @@ void destroy_host_list_t(host_list_t *host);
 typedef struct
 {
   void *dbid;
-  host_list_t *hostlist;
+  Host *hostlist;
   int64_t view_date;
   NCI temp_nci;
   int private_ctx;

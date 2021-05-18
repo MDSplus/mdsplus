@@ -32,27 +32,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <status.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <_mdsshr.h>
 
 #include "../mdsshr/version.h"
 #include "treethreadstatic.h"
+
+// #define DEBUG
+#include <mdsmsg.h>
 
 extern int _TreeNewDbid(void **dblist);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 static void *DBID = NULL, *G_DBID = NULL;
 
-void destroy_host_list_t(host_list_t *host)
+void destroy_host(Host *host)
 {
-  static int (*disconnectFromMds)(int) = NULL;
-  if (IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds",
-                                     &disconnectFromMds)))
-  {
-    fprintf(stderr, "FATAL: could not load MdsIpShr->DisconnectFromMds()!");
-  }
-  else
-  {
-    disconnectFromMds(host->h.conid);
-  }
-  free(host->h.unique);
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, DisconnectFromMds, abort(), void, (int));
+  MDSDBG(HOST_PRI, HOST_VAR(host));
+  DisconnectFromMds(host->conid);
+  free(host->unique);
   free(host);
 }
 
@@ -83,13 +80,13 @@ static void buffer_free(TREETHREADSTATIC_ARG)
       pthread_rwlock_unlock(&treectx_lock);
       TreeFreeDbid(TREE_DBID);
     }
-    host_list_t *host, *this;
-    for (host = TREE_HOSTLIST; host;)
-    {
-      this = host;
-      host = host->next;
-      destroy_host_list_t(this);
-    }
+  }
+  Host *host;
+  while (TREE_HOSTLIST)
+  {
+    host = TREE_HOSTLIST;
+    TREE_HOSTLIST = TREE_HOSTLIST->next;
+    destroy_host(host);
   }
   free(TREETHREADSTATIC_VAR);
 }
