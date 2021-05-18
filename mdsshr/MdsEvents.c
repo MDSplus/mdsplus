@@ -31,14 +31,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
 
 #include <mds_stdarg.h>
 #include <libroutines.h>
 #include "../mdstcpip/mdsip_connections.h"
 #include "mdsshrp.h"
+#include <_mdsshr.h>
 
 #ifdef _WIN32
 #define pipe(fds) _pipe(fds, 4096, _O_BINARY)
@@ -54,160 +52,104 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EVENT_THREAD_STACK_SIZE_MIN 102400
 #endif
 
-static int receive_ids[256];       /* Connection to receive external events  */
-static int send_ids[256];          /* Connection to send external events  */
-static int receive_sockets[256];   /* Socket to receive external events  */
-static int send_sockets[256];      /* Socket to send external events  */
-static char *receive_servers[256]; /* Receive server names */
-static char *send_servers[256];    /* Send server names */
-static int external_shutdown =
-    0;                              /* flag to request remote events thread termination */
+static int receive_ids[256];        /* Connection to receive external events  */
+static int send_ids[256];           /* Connection to send external events  */
+static int receive_sockets[256];    /* Socket to receive external events  */
+static int send_sockets[256];       /* Socket to send external events  */
+static char *receive_servers[256];  /* Receive server names */
+static char *send_servers[256];     /* Send server names */
+static int external_shutdown = 0;   /* request remote events thread termination */
 static int external_count = 0;      /* remote event pendings count */
 static int num_receive_servers = 0; /* numer of external event sources */
 static int num_send_servers = 0;    /* numer of external event destination */
 
-static int external_thread_created =
-    0;             /* Thread for remot event handling flag */
-static int fds[2]; /* file descriptors used by the pipe */
+static int external_thread_created = 0; /* Thread for remot event handling flag */
+static int fds[2];                      /* file descriptors used by the pipe */
 
 static int eventAstRemote(char const *eventnam, void (*astadr)(), void *astprm,
                           int *eventid);
 static void initializeRemote(int receive_events);
 
-static int ConnectToMds_(const char *const host)
+static int ConnectToMds_(const char *host)
 {
-  static int (*rtn)(const char *const host) = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "ConnectToMds",
-                                                 (void **)&rtn)
-                          : 1;
-  if (STATUS_OK)
-  {
-    return rtn(host);
-  }
-  return -1;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ConnectToMds, return -1, int, (const char *));
+  return ConnectToMds(host);
 }
 
-static int DisconnectFromMds_(const int id)
+static int DisconnectFromMds_(int id)
 {
-  static int (*rtn)() = 0;
-  int status =
-      (rtn == 0)
-          ? LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", (void **)&rtn)
-          : 1;
-  if (STATUS_OK)
-  {
-    return rtn(id);
-  }
-  return -1;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, DisconnectFromMds, return -1, int, (int));
+  return DisconnectFromMds(id);
 }
 
-static void *GetConnectionInfo_(const int id, char **const name,
-                                int *const readfd, size_t *const len)
+static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t *len)
 {
-  static void *(*rtn)() = 0;
-  int status =
-      (rtn == 0)
-          ? LibFindImageSymbol_C("MdsIpShr", "GetConnectionInfo", (void **)&rtn)
-          : 1;
-  if (STATUS_OK)
-  {
-    return rtn(id, name, readfd, len);
-  }
-  return 0;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, GetConnectionInfo, return NULL, void *, ());
+  return GetConnectionInfo(id, name, readfd, len);
 }
 
-static int MdsEventAst_(const int conid, char const *const eventnam,
-                        void (*const astadr)(), void *const astprm,
-                        int *const eventid)
+static int MdsEventAst_(int conid, const char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
-  static int (*rtn)() = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst",
-                                                 (void **)&rtn)
-                          : 1;
-  if (STATUS_OK)
-  {
-    return rtn(conid, eventnam, astadr, astprm, eventid);
-  }
-  return 0;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, MdsEventAst, return 0, int, ());
+  return MdsEventAst(conid, eventnam, astadr, astprm, eventid);
 }
 
 static Message *GetMdsMsg_(const int id, const int *const stat)
 {
-  static Message *(*rtn)() = 0;
-  int status =
-      (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsg", (void **)&rtn)
-                 : 1;
-  if (STATUS_OK)
-  {
-    return rtn(id, stat);
-  }
-  return 0;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, GetMdsMsg, return NULL, Message *, ());
+  return GetMdsMsg(id, stat);
 }
 
 static int MdsEventCan_(const int id, const int eid)
 {
-  static int (*rtn)() = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventCan",
-                                                 (void **)&rtn)
-                          : 1;
-  if (STATUS_OK)
-  {
-    return rtn(id, eid);
-  }
-  return 0;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, MdsEventCan, return 0, int, ());
+  return MdsEventCan(id, eid);
 }
 
 static int MdsValue_(const int id, const char *const exp,
                      struct descrip *const d1, struct descrip *const d2,
                      struct descrip *const d3)
 {
-  static int (*rtn)() = 0;
-  int status = (rtn == 0)
-                   ? LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&rtn)
-                   : 1;
-  if (STATUS_OK)
-  {
-    return rtn(id, exp, d1, d2, d3);
-  }
-  return 0;
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, MdsValue, return 0, int, ());
+  return MdsValue(id, exp, d1, d2, d3);
 }
 
 #ifdef GLOBUS
 static int RegisterRead_(const int conid)
 {
-  int status = 1;
-  static int (*rtn)(int) = 0;
-  if (rtn == 0)
-    status = LibFindImageSymbol_C("MdsIpShr", "RegisterRead", (void **)&rtn);
-  if (STATUS_NOT_OK)
-  {
-    printf("%s\n", MdsGetMsg(status));
-    return status;
-  }
-  return rtn(conid);
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, RegisterRead, return status, int, ());
+  return RegisterRead(conid);
 }
 #endif
 
-static char *eventName(const char *const eventnam_in)
+/// concat on ' ', cast to uppercase and return new strlen
+static inline int fixup_eventname(char *in)
 {
-  size_t i, j;
-  char *eventnam = 0;
-  if (eventnam_in)
+  char *src = in;
+  char *out = in;
+  for (; *src; src++)
   {
-    eventnam = strdup(eventnam_in);
-    for (i = 0, j = 0; i < strlen(eventnam); i++)
-    {
-      if (eventnam[i] != 32)
-        eventnam[j++] = (char)toupper(eventnam[i]);
-    }
-    eventnam[j] = 0;
-    if (strlen(eventnam) == 0)
-    {
-      free(eventnam);
-      eventnam = 0;
-    }
+    if (*src != ' ')
+      *(out++) = (char)toupper(*src);
   }
-  return eventnam;
+  *out = '\0';
+  return out - in;
+}
+
+static char *alloc_eventname(const char *const in)
+{
+  if (!in)
+    return NULL;
+  char *out = strdup(in);
+  if (!out)
+    return NULL;
+  int len = fixup_eventname(out);
+  if (len == 0)
+  {
+    free(out);
+    return NULL;
+  }
+  return realloc(out, len + 1);
 }
 
 #ifndef HAVE_VXWORKS_H
@@ -376,7 +318,7 @@ static void getServerDefinition(char const *env_var, char **servers,
       curr_name[j] = envname[i];
     curr_name[j] = 0;
     i++;
-    servers[*num_servers] = malloc(strlen(curr_name) + 1);
+    servers[*num_servers] = strdup(curr_name);
     strcpy(servers[*num_servers], curr_name);
     (*num_servers)++;
   }
@@ -881,19 +823,18 @@ retry:
   return state;
 }
 
-int RemoteMDSEventAst(const char *const eventnam_in, void (*const astadr)(),
-                      void *const astprm, int *const eventid)
+int RemoteMDSEventAst(const char *eventNameIn, void (*astadr)(), void *astprm, int *eventid)
 {
-  int status = 0;
-  char *eventnam = eventName(eventnam_in);
   *eventid = -1;
-  if (eventnam)
+  char *eventName = alloc_eventname(eventNameIn);
+  if (eventName)
   {
     initializeRemote(1);
-    status = eventAstRemote(eventnam, astadr, astprm, eventid);
-    free(eventnam);
+    int status = eventAstRemote(eventName, astadr, astprm, eventid);
+    free(eventName);
+    return status;
   }
-  return status;
+  return 0;
 }
 
 static int canEventRemote(const int eventid)
@@ -977,23 +918,17 @@ static int sendRemoteEvent(const char *const evname, const int data_len,
   return status;
 }
 
-static inline void fixup_eventname(char *eventName)
-{
-  int i, j, len = strlen(eventName);
-  for (i = 0, j = 0; i < len; i++)
-  {
-    if (eventName[i] != 32)
-      eventName[j++] = (char)toupper(eventName[i]);
-  }
-  eventName[j] = 0;
-}
-
 int RemoteMDSEvent(const char *eventNameIn, int data_len, char *data)
 {
-  char *eventName = alloca(strlen(eventNameIn) + 1);
-  fixup_eventname(eventName);
-  initializeRemote(0);
-  return sendRemoteEvent(eventName, data_len, data);
+  char *eventName = alloc_eventname(eventNameIn);
+  if (eventName)
+  {
+    initializeRemote(0);
+    int status = sendRemoteEvent(eventName, data_len, data);
+    free(eventName);
+    return status;
+  }
+  return 0;
 }
 
 #endif
@@ -1002,41 +937,53 @@ EXPORT int MDSEventAst(const char *const eventNameIn,
                        void (*const astadr)(void *, int, char *),
                        void *const astprm, int *const eventid)
 {
-  char *eventName = alloca(strlen(eventNameIn) + 1);
-  fixup_eventname(eventName);
-  int status;
-  if (getenv("mds_event_server"))
-    status = RemoteMDSEventAst(eventName, astadr, astprm, eventid);
-  else
-    status = MDSUdpEventAst(eventName, astadr, astprm, eventid);
-  return status;
+  char *eventName = alloc_eventname(eventNameIn);
+  if (eventName)
+  {
+    int status;
+    if (getenv("mds_event_server"))
+      status = RemoteMDSEventAst(eventName, astadr, astprm, eventid);
+    else
+      status = MDSUdpEventAst(eventName, astadr, astprm, eventid);
+    free(eventName);
+    return status;
+  }
+  return 0;
 }
 
 EXPORT int MDSEventAstMask(const char *const eventNameIn,
                            void (*const astadr)(void *, int, char *),
                            void *const astprm, int *const eventid, unsigned int cpuMask)
 {
-  char *eventName = alloca(strlen(eventNameIn) + 1);
-  fixup_eventname(eventName);
-  int status;
-  if (getenv("mds_event_server"))
-    status = RemoteMDSEventAst(eventName, astadr, astprm, eventid);
-  else
-    status = MDSUdpEventAstMask(eventName, astadr, astprm, eventid, cpuMask);
-  return status;
+  char *eventName = alloc_eventname(eventNameIn);
+  if (eventName)
+  {
+    int status;
+    if (getenv("mds_event_server"))
+      status = RemoteMDSEventAst(eventName, astadr, astprm, eventid);
+    else
+      status = MDSUdpEventAstMask(eventName, astadr, astprm, eventid, cpuMask);
+    free(eventName);
+    return status;
+  }
+  return 0;
 }
 
 EXPORT int MDSEvent(const char *const eventNameIn, const int bufLen,
                     char *const buf)
 {
-  char *eventName = alloca(strlen(eventNameIn) + 1);
-  fixup_eventname(eventName);
-  int status;
-  if (getenv("mds_event_target"))
-    status = RemoteMDSEvent(eventName, bufLen, buf);
-  else
-    status = MDSUdpEvent(eventName, bufLen, buf);
-  return status;
+  char *eventName = alloc_eventname(eventNameIn);
+  if (eventName)
+  {
+    int status;
+    if (getenv("mds_event_target"))
+      status = RemoteMDSEvent(eventName, bufLen, buf);
+    else
+      status = MDSUdpEvent(eventName, bufLen, buf);
+    free(eventName);
+    return status;
+  }
+  return 0;
 }
 
 EXPORT int MDSEventCan(const int id)
