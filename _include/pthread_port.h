@@ -1,5 +1,8 @@
 #ifndef PTHREAD_PORT_H
 #define PTHREAD_PORT_H
+
+#include <mdsplus/mdsconfig.h>
+
 #define NOP() \
   do          \
   {           \
@@ -8,7 +11,7 @@
 #define _GNU_SOURCE
 #include <status.h>
 #include <stdlib.h>
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 #include <pthread.h>
@@ -59,16 +62,27 @@
 #include <time.h>
 
 #if defined(__MACH__) && !defined(CLOCK_REALTIME)
+#include <mach/clock.h>
+#include <mach/mach.h>
+#ifndef CLOCK_REALTIME
 #define CLOCK_REALTIME 0
-// clock_gettime is not implemented on older versions of OS X (< 10.12).
-// If implemented, CLOCK_REALTIME will have already been defined.
-#define clock_gettime(clk_id_unused, timespec)         \
-  {                                                    \
-    struct timeval now;                                \
-    int rv = gettimeofday(&now, NULL);                 \
-    (timespec)->tv_sec = rv ? 0 : now.tv_sec;          \
-    (timespec)->tv_nsec = rv ? 0 : now.tv_usec * 1000; \
-  }
+#endif
+static inline void clock_gettime(clk_id_unused, struct timespec *ts)
+{
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+  ts->tv_sec = mts.tv_sec;
+  ts->tv_nsec = mts.tv_nsec;
+}
+#elif !defined(HAVE_CLOCK_GETTIME)
+static inline void clock_gettime(clk_id_unused, struct timespec *ts)
+{
+  ts->tv_sec = time(0);
+  ts->tv_nsec = 0;
+}
 #endif
 
 // FREE

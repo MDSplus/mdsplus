@@ -26,15 +26,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <errno.h>
 #include <fcntl.h>
-#include <mdsshr.h>
-#include <status.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "../mdstcpip/mdsip_connections.h"
+#include <pthread_port.h>
+#include <mdsshr.h>
+#include <status.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
-#include "../mdstcpip/mdsip_connections.h"
 #include "mdsshrp.h"
 #include <_mdsshr.h>
 
@@ -784,12 +785,7 @@ retry:
         if (timeout > 0)
         {
           static struct timespec abstime;
-#ifdef HAVE_CLOCK_GETTIME
           clock_gettime(CLOCK_REALTIME, &abstime);
-#else
-          abstime.tv_sec = time(0);
-          abstime.tv_nsec = 0;
-#endif
           abstime.tv_sec += timeout;
           state = pthread_cond_timedwait(&qh->cond, &qh->mutex, &abstime) == 0;
         }
