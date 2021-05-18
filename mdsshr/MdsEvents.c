@@ -22,12 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "../mdstcpip/mdsip_connections.h"
+#include <mdsplus/mdsconfig.h>
+
 #include <errno.h>
 #include <fcntl.h>
-#include <libroutines.h>
-#include <mds_stdarg.h>
-#include <mdsplus/mdsconfig.h>
 #include <mdsshr.h>
 #include <status.h>
 #include <stdio.h>
@@ -36,6 +34,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
+
+#include <mds_stdarg.h>
+#include <libroutines.h>
+#include "../mdstcpip/mdsip_connections.h"
 #include "mdsshrp.h"
 
 #ifdef _WIN32
@@ -45,8 +47,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _GNU_SOURCE /* glibc2 needs this */
 #include <ctype.h>
 #include <sys/types.h>
-#define MAX_ACTIVE_EVENTS \
-  2000 /* Maximum number events concurrently dealt with by processes */
+/// Maximum number events concurrently dealt with by processes
+#define MAX_ACTIVE_EVENTS 2000
 
 #ifndef EVENT_THREAD_STACK_SIZE_MIN
 #define EVENT_THREAD_STACK_SIZE_MIN 102400
@@ -975,24 +977,23 @@ static int sendRemoteEvent(const char *const evname, const int data_len,
   return status;
 }
 
-int RemoteMDSEvent(const char *const evname_in, const int data_len,
-                   char *const data)
+static inline void fixup_eventname(char *eventName)
 {
-  int j;
-  unsigned int u;
-  char *evname;
-  int status = 1;
-  initializeRemote(0);
-  evname = strdup(evname_in);
-  for (u = 0, j = 0; u < strlen(evname); u++)
+  int i, j, len = strlen(eventName);
+  for (i = 0, j = 0; i < len; i++)
   {
-    if (evname[u] != 32)
-      evname[j++] = (char)toupper(evname[u]);
+    if (eventName[i] != 32)
+      eventName[j++] = (char)toupper(eventName[i]);
   }
-  evname[j] = 0;
-  status = sendRemoteEvent(evname, data_len, data);
-  free(evname);
-  return status;
+  eventName[j] = 0;
+}
+
+int RemoteMDSEvent(const char *eventNameIn, int data_len, char *data)
+{
+  char *eventName = alloca(strlen(eventNameIn) + 1);
+  fixup_eventname(eventName);
+  initializeRemote(0);
+  return sendRemoteEvent(eventName, data_len, data);
 }
 
 #endif
@@ -1001,20 +1002,13 @@ EXPORT int MDSEventAst(const char *const eventNameIn,
                        void (*const astadr)(void *, int, char *),
                        void *const astprm, int *const eventid)
 {
-  char *eventName = malloc(strlen(eventNameIn) + 1);
-  unsigned int i, j;
+  char *eventName = alloca(strlen(eventNameIn) + 1);
+  fixup_eventname(eventName);
   int status;
-  for (i = 0, j = 0; i < strlen(eventNameIn); i++)
-  {
-    if (eventNameIn[i] != 32)
-      eventName[j++] = (char)toupper(eventNameIn[i]);
-  }
-  eventName[j] = 0;
   if (getenv("mds_event_server"))
     status = RemoteMDSEventAst(eventName, astadr, astprm, eventid);
   else
     status = MDSUdpEventAst(eventName, astadr, astprm, eventid);
-  free(eventName);
   return status;
 }
 
@@ -1022,20 +1016,13 @@ EXPORT int MDSEventAstMask(const char *const eventNameIn,
                            void (*const astadr)(void *, int, char *),
                            void *const astprm, int *const eventid, unsigned int cpuMask)
 {
-  char *eventName = malloc(strlen(eventNameIn) + 1);
-  unsigned int i, j;
+  char *eventName = alloca(strlen(eventNameIn) + 1);
+  fixup_eventname(eventName);
   int status;
-  for (i = 0, j = 0; i < strlen(eventNameIn); i++)
-  {
-    if (eventNameIn[i] != 32)
-      eventName[j++] = (char)toupper(eventNameIn[i]);
-  }
-  eventName[j] = 0;
   if (getenv("mds_event_server"))
     status = RemoteMDSEventAst(eventName, astadr, astprm, eventid);
   else
     status = MDSUdpEventAstMask(eventName, astadr, astprm, eventid, cpuMask);
-  free(eventName);
   return status;
 }
 
@@ -1043,14 +1030,8 @@ EXPORT int MDSEvent(const char *const eventNameIn, const int bufLen,
                     char *const buf)
 {
   char *eventName = alloca(strlen(eventNameIn) + 1);
-  unsigned int i, j;
+  fixup_eventname(eventName);
   int status;
-  for (i = 0, j = 0; i < strlen(eventNameIn); i++)
-  {
-    if (eventNameIn[i] != 32)
-      eventName[j++] = (char)toupper(eventNameIn[i]);
-  }
-  eventName[j] = 0;
   if (getenv("mds_event_target"))
     status = RemoteMDSEvent(eventName, bufLen, buf);
   else
