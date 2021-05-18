@@ -1230,34 +1230,31 @@ static inline void mdsdcl_alloc_docdef(dclDocListPtr doc_l,
 }
 EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 {
-  size_t i;
-  char *name = 0;
   char *commands;
-  char *commands_part;
+  char *tmp;
   xmlDocPtr doc;
   dclDocListPtr doc_l, doc_p;
   char *mdsplus_dir;
   char *filename = 0;
   int status = 0;
-  name = strdup(name_in);
-
-  /* convert the name to lowercase. The table xml files should always be named
-     as tablename_commands.xml all lowercase. */
-
-  for (i = 0; i < strlen(name); i++)
-    name[i] = tolower(name[i]);
-
-  /* see if the caller included the "_commands" suffix in the name and if not
-     add it */
-
-  commands_part = strstr(name, "_commands");
-  if (commands_part &&
-      ((name + strlen(name_in) - strlen("_commands")) == commands_part))
-    commands_part[0] = '\0';
-  commands = strcpy(malloc(strlen(name) + strlen("_commands") + 1), name);
-  strcat(commands, "_commands");
-  free(name);
-
+  commands = strdup(name_in);
+  // convert the name to lowercase
+  // NOTE: table xml filenames should match "[a-z]+_commands.xml"
+  for (tmp = commands; *tmp; tmp++)
+    *tmp = tolower(*tmp);
+  size_t cmd_len = tmp - commands;
+  // check if caller included "_commands" suffix, add it otherwise
+  tmp = strstr(commands, "_commands");
+  if (!tmp || *(tmp + sizeof("_commands") - 1))
+  {
+    // append '_commands'
+    char *newcmd = realloc(commands, cmd_len + sizeof("_commands"));
+    if (newcmd)
+    {
+      commands = newcmd;
+      memcpy(commands + cmd_len, "_commands", sizeof("_commands"));
+    }
+  }
   /* See if that command table has already been loaded in the private list. If
      it has, pop that table to the top of the stack and return */
   DCLTHREADSTATIC_INIT;
