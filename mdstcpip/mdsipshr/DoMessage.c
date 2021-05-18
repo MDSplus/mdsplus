@@ -25,10 +25,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <status.h>
 #include <stdlib.h>
 
-#include <libroutines.h>
-
 #include "../mdsip_connections.h"
 #include <pthread_port.h>
+#include <libroutines.h>
 
 /// returns true if message cleanup is handled
 extern int ProcessMessage(Connection *, Message *);

@@ -36,12 +36,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../mdsshr/version.h"
 #include "mdsipthreadstatic.h"
 
+#define DEBUG
+#include <mdsmsg.h>
+
 static void buffer_free(MDSIPTHREADSTATIC_ARG)
 {
   Connection *c;
   while ((c = MDSIP_CONNECTIONS))
   {
     MDSIP_CONNECTIONS = c->next;
+    MDSDBG(CON_PRI, CON_VAR(c));
     destroyConnection(c);
   }
   free(MDSIPTHREADSTATIC_VAR);

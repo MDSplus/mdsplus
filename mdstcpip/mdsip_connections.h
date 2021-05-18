@@ -72,21 +72,22 @@ typedef struct _connection
   con_t state;
   char *protocol;
   char *info_name;
+  uint16_t version;
+  char *rm_user;
   void *info;
   size_t info_len;
-  unsigned char message_id;
+  uint8_t message_id;
   client_t client_type;
   int nargs;
   mdsdsc_t *descrip[MDSIP_MAX_ARGS]; // list for message arguments
   MdsEventList *event;
   void *tdicontext[6];
-  int addr;
   int compression_level;
   SOCKET readfd;
   struct _io_routines *io;
-  unsigned short version;
-  char *rm_user;
 } Connection;
+#define CON_PRI "Connection(id=%d, state=0x%02x, protocol='%s', info_name='%s', version=%u, user='%s')"
+#define CON_VAR(c) (c)->id, (c)->state, (c)->protocol, (c)->info_name, (c)->version, (c)->rm_user
 
 #define INVALID_CONNECTION_ID -1
 #define INVALID_MESSAGE_ID 0
