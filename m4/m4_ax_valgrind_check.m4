@@ -169,7 +169,8 @@ VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --gen-suppressions=all \
                             --num-callers=64 \
                             --trace-children=yes \
-                            --child-silent-after-fork=yes
+                            --child-silent-after-fork=yes \
+							--trace-children-skip-by-arg='*SetMdsplusFileProtection*'
 
 VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
