@@ -170,7 +170,7 @@ class Tests(_common.TreeTests, _common.MdsIp):
                 self.assertEqual(
                     c.get("[$,$,$,$,$,$,$,$,$,$]", *args).tolist(), args)
         connection = Connection(server)
-        _common.TestThread.assertRun(*(
+        _common.TestThread.assertRun(100, *(
             _common.TestThread("T%d" % idx, requests, self, connection, idx)
             for idx in range(5)
         ))
@@ -193,7 +193,7 @@ class Tests(_common.TreeTests, _common.MdsIp):
         self._thread_test('thread://threads')
 
     def write(self):
-        count = 10
+        count = 100
 
         def thread(test, name, node, count):
             i = -1
@@ -201,8 +201,8 @@ class Tests(_common.TreeTests, _common.MdsIp):
             last = start = time.time()
             for i in range(count):
                 data = Float32([i*10+1])
-                now = Float32([time.time()])
-                node.makeSegment(now[0], now[0], data, now)
+                dim = Float32([last])
+                node.makeSegment(dim[0], dim[0], data, dim)
                 end = time.time()
                 max_period = max(end-last, max_period)
                 last = end
@@ -236,6 +236,7 @@ class Tests(_common.TreeTests, _common.MdsIp):
                 setenv("test_path", "%s::%s" % (server, tempdir))
                 tree = Tree("test", 1)
                 _common.TestThread.assertRun(
+                    100,
                     _common.TestThread('EV1', thread, self,
                                        'EV1', tree.EV1.copy(), count),
                     _common.TestThread('EV2', thread, self,

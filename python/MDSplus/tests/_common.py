@@ -61,17 +61,24 @@ class TestThread(threading.Thread):
     """ Run Tests in parralel and evaluate """
 
     @staticmethod
-    def assertRun(*threads):
+    def assertRun(timeout, *threads):
         for thread in threads:
             thread.start()
+        last = time.time()
         for thread in threads:
-            thread.join()
+            if timeout > 0:
+                thread.join(timeout)
+                now = time.time()
+                timeout -= now - last
+                last = now
+            else:
+                thread.join(0)
         for thread in threads:
             thread.check()
 
     def __init__(self, name, test, *args, **kwargs):
         super(TestThread, self).__init__(name=name)
-        self.exc = None
+        self.exc = threading.ThreadError(name + " still running")
         self.test = test
         self.args = args
         self.kwargs = kwargs
@@ -83,6 +90,8 @@ class TestThread(threading.Thread):
             if not hasattr(exc, "__traceback__"):
                 _, _, exc.__traceback__ = sys.exc_info()
             self.exc = exc
+        else:
+            self.exc = None
 
     def check(self):
         if self.exc:
