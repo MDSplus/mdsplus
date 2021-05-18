@@ -44,11 +44,13 @@ endif #SHARETYPE
 
 
 ## MdsIpShr sources ##
-LIB_SOURCES = $(wildcard @srcdir@/mdsipshr/*.c)
-LIB_OBJECTS = $(LIB_SOURCES:@srcdir@/%.c=%.o)
-$(LIB_OBJECTS): | --mdsipshr-dir
+shr_srcdir = $(srcdir)/mdsipshr
 --mdsipshr-dir:
 	@$(MKDIR_P) mdsipshr
+LIB_SOURCES = $(wildcard $(shr_srcdir)/*.c)
+LIB_OBJECTS = $(LIB_SOURCES:$(srcdir)/%.c=%.o)
+LIB_HEADERS = $(srcdir)/mdsip_connections.h
+$(LIB_OBJECTS): $(LIB_HEADERS) | --mdsipshr-dir
 
 SERVER_SOURCES = mdsip.c
 SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
