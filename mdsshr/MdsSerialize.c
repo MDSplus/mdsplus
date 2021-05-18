@@ -131,7 +131,7 @@ union __bswap {
 #endif
 
 static int copy_rec_dx(char const *in_ptr, mdsdsc_xd_t *out_dsc_ptr,
-                               l_length_t *b_out, l_length_t *b_in)
+                       l_length_t *b_out, l_length_t *b_in)
 {
   int status = 1;
   uint32_t bytes_out = 0, bytes_in = 0, i, j, size_out, size_in;
@@ -561,7 +561,7 @@ EXPORT int MdsSerializeDscIn(char const *in, mdsdsc_xd_t *out)
 }
 
 static int copy_dx_rec(const mdsdsc_t *in_ptr, char *out_ptr,
-                               l_length_t *b_out, l_length_t *b_in)
+                       l_length_t *b_out, l_length_t *b_in)
 {
   int status = MDSplusSUCCESS;
   unsigned bytes_out = 0, bytes_in = 0, j, size_out, size_in, num_dsc;
@@ -964,7 +964,7 @@ static int copy_dx_rec(const mdsdsc_t *in_ptr, char *out_ptr,
 }
 
 static int Dsc2Rec(const mdsdsc_t *inp, mdsdsc_xd_t *out_ptr,
-                           arsize_t *reclen)
+                   arsize_t *reclen)
 {
   arsize_t size_out, size_in;
   static const dtype_t b_dtype = DTYPE_B;

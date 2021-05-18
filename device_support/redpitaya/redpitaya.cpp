@@ -9,7 +9,6 @@
 #include <signal.h>
 #include <AsyncStoreManager.h>
 
-
 extern "C"
 {
   void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
@@ -226,7 +225,7 @@ static void adcTrigger(int fd)
   ioctl(fd, RFX_STREAM_SET_COMMAND_REGISTER, &command);
 
   ioctl(fd, RFX_STREAM_GET_DRIVER_BUFLEN, &command);
-  std::cout<<"DATA FIFO LEN: " << command << std::endl;
+  std::cout << "DATA FIFO LEN: " << command << std::endl;
   //    ioctl(fd, RFX_STREAM_GET_DATA_FIFO_VAL, &command);
   //   ioctl(fd, RFX_STREAM_GET_TIME_FIFO_LEN, &command);
   //   ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &command);
@@ -261,8 +260,9 @@ static void writeSegment(MDSplus::Tree *t, MDSplus::TreeNode *chan1,
                          double *endTimes, int segmentSamples,
                          int blocksInSegment, double freq, SaveList *saveList)
 {
-std::cout << "WRITE SEGMENT " << segmentSamples;
-if(segmentSamples == 0) return;
+  std::cout << "WRITE SEGMENT " << segmentSamples;
+  if (segmentSamples == 0)
+    return;
   short *chan1Samples, *chan2Samples;
   //std::cout << "WRITE SEGMENT SAMPLES: " << segmentSamples << std::endl;
   chan1Samples = new short[segmentSamples];
@@ -273,12 +273,12 @@ if(segmentSamples == 0) return;
     chan1Samples[i] = dataSamples[i] & 0x0000ffff;
     chan2Samples[i] = (dataSamples[i] >> 16) & 0x0000ffff;
   }
-  
-  saveList->addItem(chan1Samples, segmentSamples, chan1, triggerTime, t, 
-               startTimes, endTimes, freq, blocksInSegment);
 
-  saveList->addItem(chan2Samples, segmentSamples, chan2, triggerTime, t, 
-               startTimes, endTimes, freq, blocksInSegment);
+  saveList->addItem(chan1Samples, segmentSamples, chan1, triggerTime, t,
+                    startTimes, endTimes, freq, blocksInSegment);
+
+  saveList->addItem(chan2Samples, segmentSamples, chan2, triggerTime, t,
+                    startTimes, endTimes, freq, blocksInSegment);
 }
 // Stop
 void rpadcStop(int fd)
@@ -372,7 +372,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
   trig_lev_count++;
   ioctl(fd, RFX_STREAM_SET_LEV_TRIG_COUNT, &trig_lev_count);
-  
+
   while (true)
   {
     for (int currBlock = 0; currBlock < blocksInSegment; currBlock++)
@@ -382,7 +382,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
       {
         int rb = read(fd, &dataSamples[currBlock * blockSamples + currSample],
                       (blockSamples - currSample) * sizeof(int));
-//std::cout << "READ " << rb << std::endl;
+        //std::cout << "READ " << rb << std::endl;
         currSample += rb / sizeof(int);
 
         if (stopped) // May happen when block readout has terminated or in the
@@ -424,7 +424,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
                 ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
                 currTime = (unsigned long long)time1 |
                            (((unsigned long long)time2) << 32);
-                std::cout << "MULTIPLE 2 "<< currBlock << std::endl;
+                std::cout << "MULTIPLE 2 " << currBlock << std::endl;
                 startTimes[currBlock] = (currTime - preSamples) / freq;
                 endTimes[currBlock] =
                     (currTime + postSamples - 1) / freq; // include last sample

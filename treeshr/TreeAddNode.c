@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern void **TreeCtx();
 static int TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr,
-                               NODE **trn_node_ptrptr);
+                       NODE **trn_node_ptrptr);
 static int TreeWriteNci(TREE_INFO *info);
 
 int TreeAddNode(char const *name, int *nid_out, char usage)
@@ -336,7 +336,7 @@ int TreeInsertMember(NODE *parent_ptr, NODE *member_ptr, int sort)
 }
 
 static int TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr,
-                               NODE **trn_node_ptrptr)
+                       NODE **trn_node_ptrptr)
 {
   INIT_STATUS_AS TreeSUCCESS;
   NODE *node_ptr;

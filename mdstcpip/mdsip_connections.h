@@ -148,7 +148,6 @@ typedef struct
                        (c)->h.nargs, (c)->h.descriptor_idx, (c)->h.message_id, \
                        (c)->h.dtype, (c)->h.client_type, (c)->h.ndims
 
-
 /// \brief Structure for Protocol plugin anchor function
 ///
 /// | function ptr | description                     |

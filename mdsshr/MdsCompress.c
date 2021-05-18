@@ -86,11 +86,11 @@ typedef ARRAY_COEFF(char, 1) array_coef;
 typedef RECORD(4) mds_decompress_t;
 static opcode_t OpcDECOMPRESS = OPC_DECOMPRESS;
 static mds_decompress_t rec0 = {sizeof(opcode_t),
-                                         DTYPE_FUNCTION,
-                                         CLASS_R,
-                                         (uint8_t *)&OpcDECOMPRESS,
-                                         4,
-                                         __fill_value__{0, 0, 0, 0}};
+                                DTYPE_FUNCTION,
+                                CLASS_R,
+                                (uint8_t *)&OpcDECOMPRESS,
+                                4,
+                                __fill_value__{0, 0, 0, 0}};
 static DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
 static mdsdsc_d_t EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
 
@@ -100,8 +100,8 @@ static EMPTYXD(EMPTY_XD);
         If successful returns 1, if unsuccessful returns NORMAL.
 */
 static int compress(const mdsdsc_t *const pcimage,
-                            const mdsdsc_t *const pcentry, const int64_t delta,
-                            mdsdsc_t *const pwork)
+                    const mdsdsc_t *const pcentry, const int64_t delta,
+                    mdsdsc_t *const pwork)
 {
   int j, stat1, status = 1;
   unsigned int bit = 0;
