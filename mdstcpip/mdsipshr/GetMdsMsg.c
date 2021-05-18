@@ -35,14 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define DEBUG
 #include <mdsmsg.h>
 
-static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
-                        int to_msec)
+static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv, int to_msec)
 {
   char *bptr = (char *)buffer;
   if (!c || !c->io)
     return MDSplusERROR;
-  int id = c->id;
-  MDSDBG("Awaiting %u bytes", (uint32_t)bytes_to_recv);
+  MDSDBG(CON_PRI " awaiting %ld bytes", CON_VAR(c), (long)bytes_to_recv);
   while (bytes_to_recv > 0)
   {
     ssize_t ans;
@@ -61,8 +59,8 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
     ssize_t received = bptr - (char *)buffer;
     if (ans < 0)
     {
-      MDSERR("Connection %d error %ld/%ld",
-             id, (long)received, (long)(received + bytes_to_recv));
+      MDSERR(CON_PRI " error %ld/%ld", CON_VAR(c),
+             (long)received, (long)(received + bytes_to_recv));
       if (errno == ETIMEDOUT)
         return TdiTIMEOUT;
       if (errno == EINTR)
@@ -72,12 +70,12 @@ static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
     }
     else
     {
-      MDSDBG("Connection %d closed %ld/%ld",
-             id, (long)received, (long)(received + bytes_to_recv));
+      MDSDBG(CON_PRI " closed %ld/%ld", CON_VAR(c),
+             (long)received, (long)(received + bytes_to_recv));
     }
     return SsINTERNAL;
   }
-  MDSDBG("Got all bytes");
+  MDSDBG(CON_PRI "got all bytes", CON_VAR(c));
   return MDSplusSUCCESS;
 }
 

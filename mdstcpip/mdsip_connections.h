@@ -141,8 +141,14 @@ typedef struct
   MsgHdr h;
   char bytes[0];
 } Message, *MsgPtr;
+#define MESSAGE_PRI "Message(msglen=%d, status=%d, length=%d, "    \
+                    "nargs=%d, descriptor_idx=%d, message_id=%d, " \
+                    "dtype=%d, client_type=%d, header.ndims=%d)"
+#define MESSAGE_VAR(c) (c)->h.msglen, (c)->h.status, (c)->h.length,            \
+                       (c)->h.nargs, (c)->h.descriptor_idx, (c)->h.message_id, \
+                       (c)->h.dtype, (c)->h.client_type, (c)->h.ndims
 
-///
+
 /// \brief Structure for Protocol plugin anchor function
 ///
 /// | function ptr | description                     |
