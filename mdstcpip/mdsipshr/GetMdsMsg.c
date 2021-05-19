@@ -32,46 +32,51 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <tdishr_messages.h>
 #include <unistd.h>
+//#define DEBUG
+#include <mdsmsg.h>
 
-static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv,
-                        int to_msec)
+static int get_bytes_to(Connection *c, void *buffer, size_t bytes_to_recv, int to_msec)
 {
   char *bptr = (char *)buffer;
-  if (c && c->io)
+  if (!c || !c->io)
+    return MDSplusERROR;
+  MDSDBG(CON_PRI " awaiting %ld bytes", CON_VAR(c), (long)bytes_to_recv);
+  while (bytes_to_recv > 0)
   {
-    int id = c->id;
-    while (bytes_to_recv > 0)
+    ssize_t ans;
+    errno = 0;
+    // don't use timeout if not available or requested
+    if (c->io->recv_to && to_msec >= 0)
+      ans = c->io->recv_to(c, bptr, bytes_to_recv, to_msec);
+    else
+      ans = c->io->recv(c, bptr, bytes_to_recv);
+    if (ans > 0)
     {
-      ssize_t bytes_recv;
-      if (c->io->recv_to &&
-          to_msec >= 0) // don't use timeout if not available or requested
-        bytes_recv = c->io->recv_to(c, bptr, bytes_to_recv, to_msec);
-      else
-        bytes_recv = c->io->recv(c, bptr, bytes_to_recv);
-      if (bytes_recv > 0)
-      {
-        bytes_to_recv -= bytes_recv;
-        bptr += bytes_recv;
-        continue;
-      } // only exception from here on
+      bytes_to_recv -= ans;
+      bptr += ans;
+      continue;
+    } // only exception from here on
+    ssize_t received = bptr - (char *)buffer;
+    if (ans < 0)
+    {
+      MDSERR(CON_PRI " error %ld/%ld", CON_VAR(c),
+             (long)received, (long)(received + bytes_to_recv));
       if (errno == ETIMEDOUT)
-        return TdiTIMEOUT;
-      if (bytes_recv == 0 && to_msec >= 0)
         return TdiTIMEOUT;
       if (errno == EINTR)
         return MDSplusERROR;
       if (errno == EINVAL)
         return SsINTERNAL;
-      if (errno)
-      {
-        fprintf(stderr, "Connection %d ", id);
-        perror("possibly lost");
-      }
-      return SsINTERNAL;
     }
-    return MDSplusSUCCESS;
+    else
+    {
+      MDSDBG(CON_PRI " closed %ld/%ld", CON_VAR(c),
+             (long)received, (long)(received + bytes_to_recv));
+    }
+    return SsINTERNAL;
   }
-  return MDSplusERROR;
+  MDSDBG(CON_PRI "got all bytes", CON_VAR(c));
+  return MDSplusSUCCESS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,20 +94,18 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
   {
     if (Endian(header.client_type) != Endian(ClientType()))
       FlipHeader(&header);
-#ifdef DEBUG
-    printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = "
-           "%d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
+    MDSDBG("Message(msglen = %d, status = %d, length = %d, nargs = %d, "
+           "descriptor_idx = %d, message_id = %d, dtype = %d, "
+           "client_type = %d, header.ndims = %d)",
            header.msglen, header.status, header.length, header.nargs,
-           header.descriptor_idx, header.message_id, header.dtype);
-    printf("client_type = %d\nndims = %d\n", header.client_type,
-           header.ndims);
-#endif
+           header.descriptor_idx, header.message_id, header.dtype,
+           header.client_type, header.ndims);
     uint32_t msglen = (uint32_t)header.msglen;
     if (msglen < sizeof(MsgHdr) || CType(header.client_type) > CRAY_CLIENT ||
         header.ndims > MAX_DIMS)
     {
       fprintf(stderr,
-              "\rGetMdsMsg shutdown connection %d: bad msg header, "
+              "\nGetMdsMsg shutdown connection %d: bad msg header, "
               "header.ndims=%d, client_type=%d\n",
               c->id, header.ndims, CType(header.client_type));
       *status = SsINTERNAL;
@@ -141,12 +144,13 @@ Message *GetMdsMsgTOC(Connection *c, int *status, int to_msec)
 
 Message *GetMdsMsgTO(int id, int *status, int to_msec)
 {
-  Connection *c = FindConnection(id, NULL);
+  Connection *c = FindConnectionWithLock(id, CON_RECV);
   Message *msg = GetMdsMsgTOC(c, status, to_msec);
+  UnlockConnection(c);
   if (!msg && *status == SsINTERNAL)
   {
     // not for ETIMEDOUT or EINTR like exceptions
-    DisconnectConnection(id);
+    CloseConnection(id);
     *status = MDSplusERROR;
   }
   return msg;

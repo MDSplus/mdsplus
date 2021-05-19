@@ -112,29 +112,58 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
   return 1;
 }
 
-int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int get_routine(int narg, mdsdsc_t *list[], int (**proutine)())
 {
-  INIT_STATUS;
-  mds_function_t *pfun;
-  mdsdsc_xd_t image = EMPTY_XD, entry = EMPTY_XD, tmp[255];
-  int j, max = 0, ntmp = 0, (*routine)();
-  char result[8] = {0}; // we need up to 8 bytes
-  unsigned short code;
-  mdsdsc_t *newdsc[256] = {0};
-  mdsdsc_t dx = {0, rtype == DTYPE_C ? DTYPE_T : rtype, CLASS_S, result};
-  unsigned char origin[255];
+  mdsdsc_xd_t image = EMPTY_XD, entry = EMPTY_XD;
   if (narg > 255 + 2)
-    status = TdiNDIM_OVER;
-  else
-    status = TdiData(list[0], &image MDS_END_ARG);
+    return TdiNDIM_OVER;
+  int status = TdiData(list[0], &image MDS_END_ARG);
   if (STATUS_OK)
     status = TdiData(list[1], &entry MDS_END_ARG);
   if (STATUS_OK)
-    status = TdiFindImageSymbol(image.pointer, entry.pointer, &routine);
+    status = TdiFindImageSymbol(image.pointer, entry.pointer, proutine);
   if (STATUS_NOT_OK)
     printf("%s\n", LibFindImageSymbolErrString());
   MdsFree1Dx(&entry, NULL);
   MdsFree1Dx(&image, NULL);
+  return status;
+}
+
+typedef struct cleanup_tdi_call
+{
+  int count;
+  mdsdsc_xd_t xds[255];
+} cleanup_tdi_call_t;
+
+static void cleanup_tdi_call(void *arg)
+{
+  cleanup_tdi_call_t *c = (cleanup_tdi_call_t *)arg;
+  int i;
+  for (i = 0; i < c->count; ++i)
+  {
+    MdsFree1Dx(&c->xds[i], NULL);
+  }
+}
+#define CUR_POS (c->count - 1)
+#define CUR_XD c->xds[CUR_POS]
+#define NEW_XD()                     \
+  do                                 \
+  {                                  \
+    c->xds[(c->count++)] = EMPTY_XD; \
+  } while (0)
+
+int tdi_call(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, cleanup_tdi_call_t *c)
+{
+  int (*routine)();
+  int status = get_routine(narg, list, &routine);
+  RETURN_IF_STATUS_NOT_OK;
+  mds_function_t *pfun;
+  int j, max = 0;
+  char result[8] = {0}; // we need up to 8 bytes
+  unsigned short code;
+  mdsdsc_t dx = {0, rtype == DTYPE_C ? DTYPE_T : rtype, CLASS_S, result};
+  unsigned char origin[255];
+  mdsdsc_t *newdsc[256] = {0};
   *(int *)&newdsc[0] = narg - 2;
   for (j = 2; j < narg && STATUS_OK; ++j)
   {
@@ -146,25 +175,25 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       code = *(unsigned short *)pfun->pointer;
       if (code == OPC_DESCR)
       {
-        tmp[ntmp] = EMPTY_XD;
-        status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
-        newdsc[j - 1] = (mdsdsc_t *)tmp[ntmp].pointer;
-        origin[ntmp++] = (unsigned char)j;
+        NEW_XD();
+        origin[CUR_POS] = (unsigned char)j;
+        status = TdiData(pfun->arguments[0], &CUR_XD MDS_END_ARG);
+        newdsc[j - 1] = (mdsdsc_t *)CUR_XD.pointer;
       }
       else if (code == OPC_REF)
       {
-        tmp[ntmp] = EMPTY_XD;
-        status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
-        if (tmp[ntmp].pointer)
+        NEW_XD();
+        origin[CUR_POS] = (unsigned char)j;
+        status = TdiData(pfun->arguments[0], &CUR_XD MDS_END_ARG);
+        if (CUR_XD.pointer)
         {
-          if (tmp[ntmp].pointer->dtype == DTYPE_T)
+          if (CUR_XD.pointer->dtype == DTYPE_T)
           {
             DESCRIPTOR(zero, "\0");
-            TdiConcat(&tmp[ntmp], &zero, &tmp[ntmp] MDS_END_ARG);
+            TdiConcat(&CUR_XD, &zero, &CUR_XD MDS_END_ARG);
           }
-          newdsc[j - 1] = (mdsdsc_t *)tmp[ntmp].pointer->pointer;
+          newdsc[j - 1] = (mdsdsc_t *)CUR_XD.pointer->pointer;
         }
-        origin[ntmp++] = (unsigned char)j;
       }
       else if (code == OPC_VAL)
       {
@@ -184,11 +213,9 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       }
       else if (code == OPC_XD)
       {
-        tmp[ntmp] = EMPTY_XD;
-        status =
-            TdiEvaluate(pfun->arguments[0],
-                        newdsc[j - 1] = (mdsdsc_t *)&tmp[ntmp] MDS_END_ARG);
-        origin[ntmp++] = (unsigned char)j;
+        NEW_XD();
+        origin[CUR_POS] = (unsigned char)j;
+        status = TdiEvaluate(pfun->arguments[0], newdsc[j - 1] = (mdsdsc_t *)&CUR_XD MDS_END_ARG);
       }
       else
         goto fort;
@@ -199,10 +226,11 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     else
     {
     fort:
-      tmp[ntmp] = EMPTY_XD;
+      NEW_XD();
+      origin[CUR_POS] = (unsigned char)j;
       if (list[j])
-        status = TdiData(list[j], &tmp[ntmp] MDS_END_ARG);
-      newdsc[j - 1] = tmp[ntmp].pointer;
+        status = TdiData(list[j], &CUR_XD MDS_END_ARG);
+      newdsc[j - 1] = CUR_XD.pointer;
       if (newdsc[j - 1])
       {
         if (newdsc[j - 1]->dtype != DTYPE_T)
@@ -210,11 +238,10 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
         else
         {
           DESCRIPTOR(zero_dsc, "\0");
-          TdiConcat(&tmp[ntmp], &zero_dsc, &tmp[ntmp] MDS_END_ARG);
-          newdsc[j - 1] = (mdsdsc_t *)tmp[ntmp].pointer->pointer;
+          TdiConcat(&CUR_XD, &zero_dsc, &CUR_XD MDS_END_ARG);
+          newdsc[j - 1] = (mdsdsc_t *)CUR_XD.pointer->pointer;
         }
       }
-      origin[ntmp++] = (unsigned char)j;
     }
   }
   if (STATUS_OK)
@@ -276,7 +303,7 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
   if (rtype == DTYPE_C)
     free(*(char **)result); // free result
 skip:
-  for (j = 0; j < ntmp; ++j)
+  for (j = 0; j <= CUR_POS; ++j)
   {
     for (pfun = (mds_function_t *)list[origin[j]];
          pfun && pfun->dtype == DTYPE_DSC;)
@@ -287,10 +314,19 @@ skip:
       if (code == OPC_DESCR || code == OPC_REF || code == OPC_XD)
         pfun = (mds_function_t *)pfun->arguments[0];
       if (pfun && pfun->dtype == DTYPE_IDENT)
-        tdi_put_ident(pfun, &tmp[j]);
+        tdi_put_ident(pfun, &c->xds[j]);
     }
-    if (tmp[j].pointer)
-      MdsFree1Dx(&tmp[j], NULL);
   }
+  return status;
+}
+
+int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+{
+  int status;
+  cleanup_tdi_call_t c;
+  c.count = 0;
+  pthread_cleanup_push(cleanup_tdi_call, (void *)&c);
+  status = tdi_call(rtype, narg, list, out_ptr, &c);
+  pthread_cleanup_pop(1);
   return status;
 }

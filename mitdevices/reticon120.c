@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <ncidef.h>
 
@@ -125,7 +125,7 @@ EXPORT int reticon120__dw_setup(struct descriptor *niddsc __attribute__ ((unused
   {"PopupPixels", (XtPointer) PopupPixels}
   };
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + (nid + RETICON120_N_PIXEL_SELECT);
+  uilnames[0].value = (void *)(intptr_t)(nid + RETICON120_N_PIXEL_SELECT);
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "RETICON120",
 			 uilnames, XtNumber(uilnames), 0);
 }
@@ -230,7 +230,7 @@ static int Apply(Widget w)
   }
   if (do_put) {
     status = TreePutRecord(nid, (struct descriptor *)&pixels_d, 0) & 1;
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       XmdsComplain(XtParent(w), "Error writing pixel selections");
   }
   return status;
@@ -290,17 +290,17 @@ EXPORT int reticon120___store(struct descriptor *niddsc_ptr __attribute__ ((unus
     short *bptr;
     latch_time = 0.0;
     bptr = (short *)(buffer = malloc(words * sizeof(*buffer)));
-    for (; words_to_read && (status & 1); words_to_read -= iosb.bytcnt / 2) {
+    for (; words_to_read && (STATUS_OK); words_to_read -= iosb.bytcnt / 2) {
       int count = min(words_to_read, 32767);
       if (fast && words_to_read < 32767)
 	status = CamFStopw(setup->memory_name, 0, 0, count, bptr, 16, (unsigned short *)&iosb);
       else
 	status = CamStopw(setup->memory_name, 0, 0, count, bptr, 16, (unsigned short *)&iosb);
       bptr += iosb.bytcnt / 2;
-      status = status & 1 ? iosb.status : status;
+      status = STATUS_OK ? iosb.status : status;
     }
     for (i = 0, is_time = 0, frame_count = 0, pixel_count = 0, frame_size = 0, latch_time = 0, j =
-	 0; i < words && (status & 1); i++) {
+	 0; i < words && (STATUS_OK); i++) {
       if (buffer[i].frame_start) {
 	if (is_time) {
 	  if (frame_count >= 8192) {
@@ -331,9 +331,9 @@ EXPORT int reticon120___store(struct descriptor *niddsc_ptr __attribute__ ((unus
     }
     while ((frame_count * frame_size) > words)
       frame_count--;
-    for (i = j; status & 1 && i < (frame_count * frame_size); i++)
+    for (i = j; STATUS_OK && i < (frame_count * frame_size); i++)
       data[i] = 0;
-    if (status & 1) {
+    if (STATUS_OK) {
       static DESCRIPTOR_A(time_array, sizeof(float), DTYPE_NATIVE_FLOAT, times, 0);
       static DESCRIPTOR_A(frame_idx_array, sizeof(short), DTYPE_W, frame_index, 0);
       static DESCRIPTOR(seconds, "sec");
@@ -357,9 +357,9 @@ EXPORT int reticon120___store(struct descriptor *niddsc_ptr __attribute__ ((unus
       data_array.m[0] = frame_size;
       data_array.m[1] = frame_count;
       status = TreePutRecord(data_nid, (struct descriptor *)&signal, 0);
-      if (status & 1) {
+      if (STATUS_OK) {
 	status = TreePutRecord(frame_index_nid, (struct descriptor *)&frame_idx_array, 0);
-	if ((status & 1) && (latch_time != 0.0)) {
+	if ((STATUS_OK) && (latch_time != 0.0)) {
 	  DESCRIPTOR_FLOAT(latch, &latch_time);
 	  status = TreePutRecord(event_latch_nid, &latch, 0);
 	}

@@ -3,7 +3,7 @@ include @top_builddir@/Makefile.inc
 LIBPREFIX=Mds
 
 srcdir=@srcdir@
-builddir=@builddir@ 
+builddir=@builddir@
 VPATH=@srcdir@
 MKDIR_P=@MKDIR_P@
 @AX_RECONFIGURE_TARGET@
@@ -44,8 +44,8 @@ SOURCES = \
         UdpEvents.c \
         UdpEventSettings.c
 
-OBJECTS = $(SOURCES:.c=.o) 
-           
+OBJECTS = $(SOURCES:.c=.o)
+
 ## Version info for git needs to be checked for tag each time
 .PHONY: MdsVersionInfo.o
 MdsVersionInfo.o: CFLAGS := $(CFLAGS) -D_GIT_TAG=$(GIT_TAG)

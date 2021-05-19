@@ -590,11 +590,11 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value, uint32_t input_type,
 **          Cray floating point
 **
 **      The input value pointed to by *input_value will be interpreted as being
-**      of type input_type (types are defined in CVTDEF.H).  CvtConvertFloat
+**      of type input_type.  CvtConvertFloat
 **      will convert *input_value to output_type and store the result in
 **      *output_value.  The conversion may be influenced by several options.
 **      The options are specified by setting specific bits in the options
-**      parameter (these bits are also defined in CVTDEF.H).
+**      parameter.
 **
 ** INPUT PARAMETERS:
 **

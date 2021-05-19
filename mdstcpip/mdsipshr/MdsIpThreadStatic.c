@@ -22,47 +22,41 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <libroutines.h>
+#include <mdsplus/mdsconfig.h>
+
 #include <stdlib.h>
+#include <string.h>
 
-#include "../mdsip_connections.h"
+#include <libroutines.h>
+#include <mdsshr.h>
+#include <status.h>
+#include <strroutines.h>
+#include <socket_port.h>
 
-extern int _TreeClose();
-extern int TdiSaveContext();
-extern int TdiDeleteContext();
-extern int TdiRestoreContext();
-extern int MDSEventCan();
+#include "../mdsshr/version.h"
+#include "mdsipthreadstatic.h"
 
-int CloseConnectionC(Connection *connection)
+#define DEBUG
+#include <mdsmsg.h>
+
+static void buffer_free(MDSIPTHREADSTATIC_ARG)
 {
-  int status = 0;
-  if (connection)
+  Connection *c;
+  while ((c = MDSIP_CONNECTIONS))
   {
-    void *tdi_context[6];
-    MdsEventList *e, *nexte;
-    FreeDescriptors(connection);
-    for (e = connection->event; e; e = nexte)
-    {
-      nexte = e->next;
-      /**/ MDSEventCan(e->eventid);
-      /**/ if (e->info_len > 0)
-        free(e->info);
-      free(e);
-    }
-    do
-    {
-      status = _TreeClose(&connection->DBID, 0, 0);
-    } while (STATUS_OK);
-    TdiSaveContext(tdi_context);
-    TdiDeleteContext(connection->tdicontext);
-    TdiRestoreContext(tdi_context);
-    status = DisconnectConnection(connection->id);
+    MDSIP_CONNECTIONS = c->next;
+    MDSDBG(CON_PRI, CON_VAR(c));
+    destroyConnection(c);
   }
-  return status;
+  free(MDSIPTHREADSTATIC_VAR);
+}
+static inline MDSIPTHREADSTATIC_TYPE *buffer_alloc()
+{
+  MDSIPTHREADSTATIC_ARG =
+      (MDSIPTHREADSTATIC_TYPE *)calloc(1, sizeof(MDSIPTHREADSTATIC_TYPE));
+
+  return MDSIPTHREADSTATIC_VAR;
 }
 
-int CloseConnection(int id)
-{
-  Connection *connection = FindConnection(id, NULL);
-  return CloseConnectionC(connection);
-}
+IMPLEMENT_GETTHREADSTATIC(MDSIPTHREADSTATIC_TYPE, MdsIpGetThreadStatic,
+                          THREADSTATIC_MDSIP, buffer_alloc, buffer_free)

@@ -117,7 +117,7 @@ static int GetNidNCI(int nid, char *expr)
   DESCRIPTOR_NID(nid_dsc, &nid);
   DESCRIPTOR_FROM_CSTRING(getnci, expr);
   status = TdiExecute(&getnci, &nid_dsc, &ans_xd MDS_END_ARG);
-  if (status & 1)
+  if (STATUS_OK)
   {
     struct descriptor *d_ptr;
     for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
@@ -198,7 +198,7 @@ static char *GetNidString(int nid, char *expr)
   static EMPTYXD(ans_xd);
   int status;
   status = TdiExecute(&expr_d, &nid_dsc, &ans_xd MDS_END_ARG);
-  if (status & 1)
+  if (STATUS_OK)
   {
     struct descriptor *d_ptr;
     for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
@@ -239,7 +239,7 @@ static int is_child(int nid)
 
 void ExitOnMDSError(int status, const char *msg)
 {
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     fprintf(stderr, "MDS Error\n%s\n%s\n", msg, MdsGetMsg(status));
     exit(0);
@@ -454,10 +454,10 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
   {
     static EMPTYXD(xd3);
     status = TdiEvaluate(d_ptr, &xd3 MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
     {
       status = TdiData((struct descriptor *)&xd3, &xd3 MDS_END_ARG);
-      if (status & 1)
+      if (STATUS_OK)
       {
         for (d_ptr = (struct descriptor *)&xd3; d_ptr->dtype == DTYPE_DSC;
              d_ptr = (struct descriptor *)d_ptr->pointer)
@@ -523,7 +523,7 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
     {
       //       static EMPTYXD(xd2);
       //      status = TdiData(d_ptr, &xd2);
-      //      if (status & 1)
+      //      if (STATUS_OK)
       //        WriteData(parent, name, &xd2);
     }
     }
@@ -556,7 +556,7 @@ static void WriteDataNID(hid_t parent, char *name, int nid)
   DESCRIPTOR_NID(nid_dsc, &nid);
   int status;
   status = TdiEvaluate(&nid_dsc, &xd MDS_END_ARG);
-  if (status & 1)
+  if (STATUS_OK)
   {
     WriteData(parent, name, (struct descriptor *)&xd);
   }

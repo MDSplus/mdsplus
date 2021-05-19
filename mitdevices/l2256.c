@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <strroutines.h>
 #include <treeshr.h>
@@ -137,7 +137,7 @@ EXPORT int l2256___store(struct descriptor *niddsc __attribute__ ((unused)), InS
     raw.arsize = sizeof(channel_data);
     raw.a0 = (char *)(channel_data - raw.bounds[0].l);
     fstopw(2, 0, 1024, channel_data);
-    if (status & 1)
+    if (STATUS_OK)
       status = TreePutRecord(channel_nid, (struct descriptor *)&signal, 0);
   }
   return status;

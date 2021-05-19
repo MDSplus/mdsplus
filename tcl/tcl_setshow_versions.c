@@ -53,7 +53,7 @@ EXPORT int TclSetVersions(void *ctx, char **error,
     status = TreeSetDbiItm(DbiVERSIONS_IN_MODEL, 0);
     break;
   }
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     goto error;
   switch (cli_present(ctx, "SHOT"))
   {
@@ -65,7 +65,7 @@ EXPORT int TclSetVersions(void *ctx, char **error,
     break;
   }
 error:
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);
@@ -86,7 +86,7 @@ EXPORT int TclShowVersions(void *ctx __attribute__((unused)),
                       {4, DbiVERSIONS_IN_PULSE, &in_pulse, 0},
                       {0, 0, 0, 0}};
   status = TreeGetDbi(itmlst);
-  if (status & 1)
+  if (STATUS_OK)
   {
     *output = malloc(500);
     sprintf(*output,

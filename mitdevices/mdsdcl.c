@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <ncidef.h>
@@ -77,7 +77,7 @@ EXPORT int mdsdcl__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), 
  Executable:                                                                  */
 
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + (nid + MDSDCL_N_VERBS);
+  uilnames[0].value = (void *)(intptr_t)(nid + MDSDCL_N_VERBS);
   XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "MDSDCL", uilnames,
 		  XtNumber(uilnames), 0);
   return 1;
@@ -133,7 +133,7 @@ static int Apply(Widget w)
   XtFree(old_list);
   if (status)
     XmdsApplyAllXds(XtParent(w));
-  return status & 1;
+  return STATUS_OK;
 }
 
 static void Reset(Widget w)

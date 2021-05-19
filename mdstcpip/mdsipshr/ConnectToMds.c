@@ -26,18 +26,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <status.h>
 
+#include <status.h>
 #include <socket_port.h>
 #include <getusername.h>
 #include "../mdsip_connections.h"
 #include "../mdsIo.h"
 
-////////////////////////////////////////////////////////////////////////////////
-//  Parse Host  ////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-static void parseHost(char *hostin, char **protocol, char **host)
+static void parse_host(char *hostin, char **protocol, char **host)
 {
   size_t i;
   *protocol = strcpy((char *)malloc(strlen(hostin) + 10), "");
@@ -64,81 +60,72 @@ static void parseHost(char *hostin, char **protocol, char **host)
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  Do Login  //////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-///
 /// Execute login inside server using given connection
 ///
 /// \param id of connection (on client) to be used
 /// \return status o login into server 1 if success, MDSplusERROR if not authorized or error
 /// occurred
-///
-static int doLogin(Connection *c)
+static int do_login(Connection *c)
 {
-  INIT_STATUS;
-  Message *m;
-  static char *user_p;
+  static char *user_p = NULL;
   GETUSERNAME(user_p);
-  unsigned int length = strlen(user_p);
-  m = calloc(1, sizeof(MsgHdr) + length);
-  m->h.client_type = SENDCAPABILITIES;
-  m->h.length = (short)length;
-  m->h.msglen = sizeof(MsgHdr) + length;
-  m->h.dtype = DTYPE_CSTRING;
-  m->h.status = c->compression_level;
-  m->h.ndims = 1;
-  m->h.dims[0] = MDSIP_VERSION;
-  memcpy(m->bytes, user_p, length);
-  status = SendMdsMsgC(c, m, 0);
-  free(m);
-  if (STATUS_OK)
+  uint32_t length = strlen(user_p);
+  Message *msend = calloc(1, sizeof(MsgHdr) + length);
+  msend->h.client_type = SENDCAPABILITIES;
+  msend->h.length = (short)length;
+  msend->h.msglen = sizeof(MsgHdr) + length;
+  msend->h.dtype = DTYPE_CSTRING;
+  msend->h.status = c->compression_level;
+  msend->h.ndims = 1;
+  msend->h.dims[0] = MDSIP_VERSION;
+  memcpy(msend->bytes, user_p, length);
+  int status = SendMdsMsgC(c, msend, 0);
+  int err;
+  free(msend);
+  if (STATUS_NOT_OK)
   {
-    m = GetMdsMsgTOC(c, &status, 10000);
-    if (!m || STATUS_NOT_OK)
-    {
-      printf("Error in connect\n");
-      return MDSplusERROR;
-    }
-    else
-    {
-      if (IS_NOT_OK(m->h.status))
-      {
-        printf("Error in connect: Access denied\n");
-        free(m);
-        return MDSplusERROR;
-      }
-      // SET CLIENT COMPRESSION FROM SERVER //
-      c->compression_level = (m->h.status & 0x1e) >> 1;
-      c->client_type = m->h.client_type;
-      if (m->h.ndims > 0)
-        c->version = m->h.dims[0];
-    }
-    free(m);
+    perror("Error during login: send");
+    err = C_ERROR;
   }
   else
   {
-    fprintf(stderr, "Error connecting to server (DoLogin)\n");
-    fflush(stderr);
-    return MDSplusERROR;
+    Message *mrecv = GetMdsMsgTOC(c, &status, 10000);
+    if (STATUS_NOT_OK)
+    {
+      perror("Error during login: recv");
+      err = C_ERROR;
+    }
+    else if (!mrecv)
+    {
+      fputs("Error during login: recv NULL\n", stderr);
+      err = C_ERROR;
+    }
+    else if (IS_NOT_OK(mrecv->h.status))
+    {
+      fputs("Error during login: Access denied\n", stderr);
+      err = C_ERROR;
+    }
+    else
+    {
+      // SET CLIENT COMPRESSION FROM SERVER
+      c->compression_level = (mrecv->h.status & 0x1e) >> 1;
+      c->client_type = mrecv->h.client_type;
+      if (mrecv->h.ndims > 0)
+        c->version = mrecv->h.dims[0];
+      err = C_OK;
+    }
+    free(mrecv);
   }
-  return status;
+  return err;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  Reuse Check  ///////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-///
 /// Trigger reuse check funcion for IoRoutines on host.
-///
-int ReuseCheck(char *hostin, char *unique, size_t buflen)
+EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen)
 {
   int ok = -1;
   char *host = 0;
   char *protocol = 0;
-  parseHost(hostin, &protocol, &host);
+  parse_host(hostin, &protocol, &host);
   IoRoutines *io = LoadIo(protocol);
   if (io)
   {
@@ -157,27 +144,23 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
   return ok;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  ConnectToMds  //////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-int ConnectToMds(char *hostin)
+EXPORT int ConnectToMds(char *hostin)
 {
-  int id = -1;
+  int id = INVALID_CONNECTION_ID;
   char *host = 0;
   char *protocol = 0;
   if (hostin == 0)
     return id;
-  parseHost(hostin, &protocol, &host);
-  Connection *c = NewConnectionC(protocol);
+  parse_host(hostin, &protocol, &host);
+  Connection *c = newConnection(protocol);
   if (c)
   {
     if (c->io && c->io->connect)
     {
       c->compression_level = GetCompressionLevel();
-      if (c->io->connect(c, protocol, host) < 0 || IS_NOT_OK(doLogin(c)))
+      if (c->io->connect(c, protocol, host) < 0 || do_login(c))
       {
-        DisconnectConnectionC(c);
+        destroyConnection(c);
       }
       else
       {
@@ -190,12 +173,12 @@ int ConnectToMds(char *hostin)
   return id;
 }
 
-int DisconnectFromMds(int id)
+EXPORT int DisconnectFromMds(int id)
 {
-  return DisconnectConnection(id);
+  return CloseConnection(id);
 }
 
-void FreeMessage(void *m)
+EXPORT void FreeMessage(void *m)
 {
   free(m);
 }

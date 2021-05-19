@@ -73,7 +73,7 @@ static void printDecompiled(struct descriptor *inD)
   char *buf;
 
   status = TdiDecompile(inD, &out_xd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     printf("%s\n", MdsGetMsg(status));
     return;
@@ -262,7 +262,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
     }
   case CLASS_CA:
     status = TdiData(desc, &ca_xd MDS_END_ARG);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       printf("Cannot evaluate CA descriptor\n");
       return NULL;
@@ -936,7 +936,7 @@ JNIEXPORT jstring JNICALL Java_mdsdata_Data_decompile(JNIEnv *env,
   struct descriptor *data_d = ObjectToDescrip(env, obj);
 
   status = TdiDecompile(data_d, &out_xd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     printf("Error decompiling expression: %s\n", MdsGetMsg(status));
     return NULL;
@@ -1014,7 +1014,7 @@ JNIEXPORT jobject JNICALL Java_mdsdata_Data_evaluate(JNIEnv *env, jobject obj)
   jclass exc;
 
   status = TdiData(dataD, &xd MDS_END_ARG);
-  if (!(status & 1) || !xd.pointer)
+  if (STATUS_NOT_OK || !xd.pointer)
   {
     exc = (*env)->FindClass(env, "mdsdata/DataException");
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));
@@ -1066,7 +1066,7 @@ JNIEXPORT jstring JNICALL Java_mdstree_MdsTree_getFullPath(JNIEnv *env,
                                {NciEND_OF_LIST, 0, 0, 0}};
 
   status = TreeGetNci(nid, nci_list);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
     return NULL;
@@ -1088,7 +1088,7 @@ JNIEXPORT jobject JNICALL Java_mdstree_MdsTree_getData(JNIEnv *env, jclass cls,
   jobject retObj;
 
   status = TreeGetRecord(nid, &xd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
     return NULL;
@@ -1111,7 +1111,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_deleteData(JNIEnv *env, jclass cls,
   int status;
 
   status = TreePutRecord(nid, (struct descriptor *)&xd, 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
   }
@@ -1129,7 +1129,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_putData(JNIEnv *env, jclass cls,
   struct descriptor *dataD = ObjectToDescrip(env, jData);
 
   status = TreePutRecord(nid, dataD, 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
   }
@@ -1145,7 +1145,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_turnOn(JNIEnv *env, jclass cls,
                                                    jint nid)
 {
   int status = TreeTurnOn(nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
   }
@@ -1160,7 +1160,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_turnOff(JNIEnv *env, jclass cls,
                                                     jint nid)
 {
   int status = TreeTurnOff(nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
   }
@@ -1175,7 +1175,7 @@ JNIEXPORT jboolean JNICALL Java_mdstree_MdsTree_isOn(JNIEnv *env, jclass cls,
                                                      jint nid)
 {
   int status = TreeIsOn(nid);
-  return (status & 1);
+  return (STATUS_OK);
 }
 
 static void convertTime(int *time, char *retTime)
@@ -1206,7 +1206,7 @@ JNIEXPORT jstring JNICALL Java_mdstree_MdsTree_getInsertionDate(JNIEnv *env,
   struct nci_itm nciList[] = {{8, NciTIME_INSERTED, timeInserted, &timeLen},
                               {NciEND_OF_LIST, 0, 0, 0}};
   int status = TreeGetNci(nid, nciList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 
   convertTime(timeInserted, ascTim);
@@ -1228,7 +1228,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_open(JNIEnv *env, jclass cls,
   char *experiment = (char *)(*env)->GetStringUTFChars(env, jexperiment, 0);
   int status = TreeOpen(experiment, shot, 0);
   (*env)->ReleaseStringUTFChars(env, jexperiment, experiment);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1245,7 +1245,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_close(JNIEnv *env, jclass cls,
   char *experiment = (char *)(*env)->GetStringUTFChars(env, jexperiment, 0);
   int status = TreeClose(experiment, shot);
   (*env)->ReleaseStringUTFChars(env, jexperiment, experiment);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1262,7 +1262,7 @@ JNIEXPORT jint JNICALL Java_mdstree_MdsTree_find(JNIEnv *env, jclass cls,
 
   status = TreeFindNode(path, &nid);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
   return nid;
 }
@@ -1319,7 +1319,7 @@ JNIEXPORT jintArray JNICALL Java_mdstree_MdsTree_getMembersOf(JNIEnv *env,
                                 {NciEND_OF_LIST, 0, 0, 0}};
 
   status = TreeGetNci(nid, nci_list1);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
     return NULL;
@@ -1331,7 +1331,7 @@ JNIEXPORT jintArray JNICALL Java_mdstree_MdsTree_getMembersOf(JNIEnv *env,
     nci_list2[0].buffer_length = sizeof(int) * numNids;
     nci_list2[0].pointer = nids;
     status = TreeGetNci(nid, nci_list2);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       RaiseException(env, MdsGetMsg(status), status);
       return NULL;
@@ -1362,7 +1362,7 @@ JNIEXPORT jintArray JNICALL Java_mdstree_MdsTree_getChildrenOf(JNIEnv *env,
                                 {NciEND_OF_LIST, 0, 0, 0}};
 
   status = TreeGetNci(nid, nci_list1);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
     return NULL;
@@ -1374,7 +1374,7 @@ JNIEXPORT jintArray JNICALL Java_mdstree_MdsTree_getChildrenOf(JNIEnv *env,
     nci_list2[0].buffer_length = sizeof(int) * numNids;
     nci_list2[0].pointer = nids;
     status = TreeGetNci(nid, nci_list2);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       RaiseException(env, MdsGetMsg(status), status);
       return NULL;
@@ -1400,7 +1400,7 @@ JNIEXPORT jint JNICALL Java_mdstree_MdsTree_getParent(JNIEnv *env, jclass cls,
                               {NciEND_OF_LIST, 0, 0, 0}};
 
   int status = TreeGetNci(nid, nciList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
   return parentNid;
 }
@@ -1416,7 +1416,7 @@ JNIEXPORT jint JNICALL Java_mdstree_MdsTree_getDefault(JNIEnv *env,
   int defaultNid, status;
 
   status = TreeGetDefaultNid(&defaultNid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
   return defaultNid;
 }
@@ -1430,7 +1430,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_setDefault(JNIEnv *env, jclass cls,
                                                        jint nid)
 {
   int status = TreeSetDefaultNid(nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1457,7 +1457,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_beginSegment(
   freeDescrip(endD);
   freeDescrip(dimD);
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1479,7 +1479,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_putRow(JNIEnv *env, jclass cls,
   dataD = ObjectToDescrip(env, data);
   status = TreePutRow(nid, BUFSIZE, &time, (struct descriptor_a *)dataD);
   freeDescrip(dataD);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1504,7 +1504,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_beginCachedSegment(
   freeDescrip(startD);
   freeDescrip(endD);
   freeDescrip(dimD);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     freeDescrip(dataD);
     RaiseException(env, MdsGetMsg(status), status);
@@ -1512,7 +1512,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_beginCachedSegment(
   status = RTreePutSegment(nid, -1, (struct descriptor_a *)dataD, WRITE_BUFFER);
   freeDescrip(dataD);
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1537,7 +1537,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_putCachedRow(JNIEnv *env,
   status = RTreePutRow(nid, BUFSIZE, &time, (struct descriptor_a *)dataD,
                        (isLast) ? WRITE_LAST : WRITE_BUFFER);
   freeDescrip(dataD);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1554,7 +1554,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_openCached(JNIEnv *env, jclass cls,
   char *experiment = (char *)(*env)->GetStringUTFChars(env, jexperiment, 0);
   int status = RTreeOpen(experiment, shot);
   (*env)->ReleaseStringUTFChars(env, jexperiment, experiment);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1571,7 +1571,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_closeCached(JNIEnv *env, jclass cls,
   char *experiment = (char *)(*env)->GetStringUTFChars(env, jexperiment, 0);
   int status = TreeClose(experiment, shot);
   (*env)->ReleaseStringUTFChars(env, jexperiment, experiment);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1616,7 +1616,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_putCachedData(JNIEnv *env,
   dataD = ObjectToDescrip(env, data);
   status = RTreePutRecord(nid, dataD, WRITE_BACK);
   freeDescrip(dataD);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     RaiseException(env, MdsGetMsg(status), status);
 }
 
@@ -1634,7 +1634,7 @@ JNIEXPORT jobject JNICALL Java_mdstree_MdsTree_getCachedData(JNIEnv *env,
   jobject retObj;
 
   status = RTreeGetRecord(nid, &xd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     RaiseException(env, MdsGetMsg(status), status);
     return NULL;

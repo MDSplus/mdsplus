@@ -1,7 +1,7 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@ 
+builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
@@ -206,7 +206,7 @@ u_of_m_spect_gen.c u_of_m_spect.c
 
 IO_SOURCES = \
 io.c\
-curvefit.c 
+curvefit.c
 
 OBJECTS = $(SOURCES:.c=.o)
 
@@ -269,7 +269,7 @@ endif
 l8590_mem.c: l8590_sclr_gen.c
 %_gen.c: %.gen
 	@MAKEBINDIR@/gen_device $< sx _gen
-	$(SED) -i.tmp $$'1s/^/#include <mitdevices_msg.h>\\\n/' $@; $(RM) $@.tmp
+	$(SED) -i.tmp $$'1s/^/#include "mitdevices_msg.h"\\\n/' $@; $(RM) $@.tmp
 
 @MAKEBINDIR@daq_server : daq_server
 	cp ${srcdir}/daq_server @MAKEBINDIR@daq_server
@@ -334,4 +334,3 @@ dc1394_support2.o : dc1394_support2.c
 	cp $< $@
 
 .NOTPARALLEL:
-

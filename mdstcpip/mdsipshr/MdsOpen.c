@@ -23,7 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "../mdsip_connections.h"
-#include <STATICdef.h>
 #include <ipdesc.h>
 #include <stdlib.h>
 
@@ -41,7 +40,7 @@ int MdsOpen(int id, char *tree, int shot)
       MakeDescrip((struct descrip *)&treearg, DTYPE_CSTRING, 0, 0, tree),
       MakeDescrip((struct descrip *)&shotarg, DTYPE_LONG, 0, 0, &shot),
       (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
+  if ((STATUS_OK) && (ansarg.dtype == DTYPE_LONG))
     status = *(int *)ansarg.ptr;
   free(ansarg.ptr);
   return status;

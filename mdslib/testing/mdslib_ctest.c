@@ -23,10 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+
 #include <mdslib.h>
 #include <treeshr.h>
-#include <stdio.h>
+#include <socket_port.h>
 #define BUFFLEN 10
 
 int status;
@@ -71,7 +73,7 @@ int testScalarString(char *expression, char *expected)
   int dsc = descr(&dtype_cstring, string, &null, &lenalloc);
   returnlength = 0;
   status = MdsValue(expression, &dsc, &null, &returnlength);
-  if (status & 1)
+  if (STATUS_OK)
   {
     fprintf(stderr, "testScalarString(%.*s -- %s  %d)\n", returnlength, string, expected, returnlength);
     status =
@@ -89,7 +91,7 @@ int testNull(char *expression)
   int bufflen = BUFFLEN;
   int dsc = descr(&dtype_cstring, buf, &null, &bufflen);
   status = MdsValue(expression, &dsc, &null, &returnlength);
-  return ((status & 1) == 0 && (returnlength == 0));
+  return ((STATUS_OK) == 0 && (returnlength == 0));
 }
 
 int testPut1Dsc(char *node, char *expression, int dsc)
@@ -138,7 +140,7 @@ void TestTdi()
   dsc = descr(&dtype_float, result, &sresult, &null);
   status = MdsValue("2. : 20. : 2.", &dsc, &null, &returnlength);
   status = (status && (returnlength == 10));
-  if (status & 1)
+  if (STATUS_OK)
   {
     for (i = 0; i < returnlength; i++)
       status = status && (result[i] == 2. * (i + 1));
@@ -150,7 +152,7 @@ void TestTdi()
   dsc = descr(&dtype_float, &result1, &null);
   status = MdsValue("$ * $", &dsc1, &dsc2, &dsc, &null, &returnlength);
   status = status && (returnlength == 1);
-  if (status & 1)
+  if (STATUS_OK)
     status = status && (sqrt(result1 * result1) - (arg1 * arg2) < 1.e-7);
   TEST(status);
 
@@ -175,10 +177,10 @@ void TestArray1D()
 
   dsc = descr(&dtype_float, compare, &size, &null);
   status = MdsValue("\\TOP:A", &dsc, &null, &returnlength);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = (returnlength == size);
-    if (status & 1)
+    if (STATUS_OK)
     {
       int i;
       for (i = 0; i < size; i++)
@@ -226,10 +228,10 @@ void TestArray2D()
 
   dsc = descr(&dtype_float, compare, &sx, &sy, &null);
   status = MdsValue("\\TOP:A", &dsc, &null, &returnlength);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = (returnlength == sx * sy);
-    if (status & 1)
+    if (STATUS_OK)
     {
       int i;
       for (i = 0; i < sx; i++)
@@ -245,10 +247,10 @@ void TestArray2D()
   TEST(status);
   dsc = descr(&dtype_float, compareBigger, &sxx, &syy, &null);
   status = MdsValue("\\TOP:A", &dsc, &null, &returnlength);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = (returnlength == sx * sy);
-    if (status & 1)
+    if (STATUS_OK)
     {
       int i;
       for (i = 0; i < sx; i++)

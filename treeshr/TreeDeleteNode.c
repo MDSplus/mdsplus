@@ -53,14 +53,13 @@ int TreeDeleteNodeInitialize(NID *nid,int *count,reset)
 
 ------------------------------------------------------------------------------*/
 #include "treeshrp.h"
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <treeshr.h>
 
 extern void **TreeCtx();
 
-STATIC_ROUTINE void check_nid(PINO_DATABASE *dblist, NID *nid, int *count);
+static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count);
 
 int TreeDeleteNodeGetNid(int *nid)
 {
@@ -131,7 +130,7 @@ static inline void setbit(PINO_DATABASE *dblist, int bitnum)
       (unsigned char)(dblist->delete_list[bitnum / 8] | (1 << bitnum % 8));
 }
 
-STATIC_ROUTINE void check_nid(PINO_DATABASE *dblist, NID *nid, int *count)
+static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count)
 {
   int bitnum = nid->node;
   if (!getbit(dblist, bitnum))

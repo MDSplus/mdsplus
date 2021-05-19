@@ -622,17 +622,17 @@ PasteComplete(Widget w, int stub, Atom *selection __attribute__((unused)),
       */
       XtGetSelectionValue(w, XA_PRIMARY, XA_X_AXIS,
                           (XtSelectionCallbackProc)PasteComplete,
-                          (XtPointer)((char *)0 + stub),
+                          (XtPointer)(void *)(intptr_t)stub,
                           XtLastTimestampProcessed(XtDisplay(w)));
       XtGetSelectionValue(w, XA_PRIMARY, XA_Y_AXIS,
                           (XtSelectionCallbackProc)PasteComplete,
-                          (XtPointer)((char *)0 + stub),
+                          (XtPointer)(void *)(intptr_t)stub,
                           XtLastTimestampProcessed(XtDisplay(w)));
     }
     else if (supports_string_paste)
       XtGetSelectionValue(w, XA_PRIMARY, XA_STRING,
                           (XtSelectionCallbackProc)PasteComplete,
-                          (XtPointer)((char *)0 + stub),
+                          (XtPointer)(void *)(intptr_t)stub,
                           XtLastTimestampProcessed(XtDisplay(w)));
     XtFree((String)values);
   }
@@ -651,7 +651,7 @@ static void Paste(Widget w, int stub,
   }
   XtGetSelectionValue(
       w, XA_PRIMARY, XA_TARGETS, (XtSelectionCallbackProc)PasteComplete,
-      (XtPointer)((char *)0 + stub), XtLastTimestampProcessed(XtDisplay(w)));
+      (XtPointer)((void *)(intptr_t)stub), XtLastTimestampProcessed(XtDisplay(w)));
 }
 
 static void LoseSelection(Widget w, Atom *selection __attribute__((unused)))

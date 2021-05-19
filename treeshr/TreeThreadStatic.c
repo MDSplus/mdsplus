@@ -32,13 +32,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <status.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <_mdsshr.h>
 
 #include "../mdsshr/version.h"
 #include "treethreadstatic.h"
 
+// #define DEBUG
+#include <mdsmsg.h>
+
 extern int _TreeNewDbid(void **dblist);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 static void *DBID = NULL, *G_DBID = NULL;
+
+void destroy_host(Host *host)
+{
+  MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, DisconnectFromMds, abort(), void, (int));
+  MDSDBG(HOST_PRI, HOST_VAR(host));
+  DisconnectFromMds(host->conid);
+  free(host->unique);
+  free(host);
+}
 
 static void buffer_free(TREETHREADSTATIC_ARG)
 {
@@ -67,6 +80,13 @@ static void buffer_free(TREETHREADSTATIC_ARG)
       pthread_rwlock_unlock(&treectx_lock);
       TreeFreeDbid(TREE_DBID);
     }
+  }
+  Host *host;
+  while (TREE_HOSTLIST)
+  {
+    host = TREE_HOSTLIST;
+    TREE_HOSTLIST = TREE_HOSTLIST->next;
+    destroy_host(host);
   }
   free(TREETHREADSTATIC_VAR);
 }

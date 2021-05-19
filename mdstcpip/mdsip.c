@@ -25,8 +25,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "mdsip_connections.h"
+#include <socket_port.h>
 #include <pthread_port.h>
+#include "mdsip_connections.h"
 
 int main(int argc, char **argv)
 {

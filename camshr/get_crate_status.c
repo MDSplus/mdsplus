@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
-
+#include <status.h>
 #include "common.h"
 #include "crate.h"
 #include "prototypes.h"
@@ -76,7 +76,7 @@ int get_crate_status(char *crate_name, int *ptr_crate_status)
                    &iosb       // *iosb
   );
 
-  *ptr_crate_status = (short)((status & 1) ? SCCdata : 0) & 0x0ffff;
+  *ptr_crate_status = (short)((STATUS_OK) ? SCCdata : 0) & 0x0ffff;
 
   if (MSGLVL(DETAILS))
     printf(

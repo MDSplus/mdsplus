@@ -656,7 +656,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       read_nci;
       lstr = MdsDtypeString(nci.dtype);
-      string = strcpy(malloc(strlen(lstr) + 1), lstr);
+      string = strdup(lstr);
       break;
     }
 
@@ -666,7 +666,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       read_nci;
       lstr = MdsClassString(nci.class);
-      string = strcpy(malloc(strlen(lstr) + 1), lstr);
+      string = strdup(lstr);
       break;
     }
 
@@ -675,7 +675,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       char *lstr;
       break_on_no_node;
       lstr = MdsUsageString(node->usage);
-      string = strcpy(malloc(strlen(lstr) + 1), lstr);
+      string = strdup(lstr);
       break;
     }
 

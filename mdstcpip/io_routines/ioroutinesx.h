@@ -1,6 +1,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <socket_port.h>
+#include <pthread_port.h>
+#include <_mdsshr.h>
+
+//#define DEBUG
+#include <mdsmsg.h>
+
 static ssize_t io_send(Connection *c, const void *buffer, size_t buflen,
                        int nowait);
 static int io_disconnect(Connection *c);
@@ -23,25 +30,31 @@ static IoRoutines io_routines = {
 #include <mdsshr.h>
 #include <signal.h>
 #include <inttypes.h>
+#include <mdsmsg.h>
 
-#define IP(addr) ((uint8_t *)&addr)
-#define ADDR2IP(a) IP(a) \
-                   [0], IP(a)[1], IP(a)[2], IP(a)[3]
+#define ACCESS_NOMATCH 0
+#define ACCESS_GRANTED 1
+#define ACCESS_DENIED 2
 
 // Connected client definition for client list
 
 typedef struct _client
 {
   struct _client *next;
-  SOCKET sock;
-  int id;
+  Connection *connection;
+  pthread_t *thread;
   char *username;
-  uint32_t addr;
   char *host;
   char *iphost;
+  SOCKET sock;
+  uint32_t addr;
 } Client;
 
+#define CLIENT_PRI "%s"
+#define CLIENT_VAR(c) (c)->iphost
+
 // List of clients connected to server instance.
+static pthread_mutex_t ClientListLock = PTHREAD_MUTEX_INITIALIZER;
 static Client *ClientList = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,16 +78,13 @@ static SOCKET getSocket(Connection *c)
   size_t len;
   char *info_name;
   SOCKET readfd;
-  GetConnectionInfoC(c, &info_name, &readfd, &len);
+  ConnectionGetInfo(c, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, PROT) == 0) ? readfd : INVALID_SOCKET;
 }
 
 static pthread_mutex_t socket_list_mutex = PTHREAD_MUTEX_INITIALIZER;
-static void unlock_socket_list() { pthread_mutex_unlock(&socket_list_mutex); }
-#define LOCK_SOCKET_LIST                  \
-  pthread_mutex_lock(&socket_list_mutex); \
-  pthread_cleanup_push(unlock_socket_list, NULL);
-#define UNLOCK_SOCKET_LIST pthread_cleanup_pop(1);
+#define LOCK_SOCKET_LIST MUTEX_LOCK_PUSH(&socket_list_mutex)
+#define UNLOCK_SOCKET_LIST MUTEX_LOCK_POP(&socket_list_mutex)
 
 #ifdef _TCP
 static void socket_list_cleanup()
@@ -158,61 +168,29 @@ static void PopSocket(SOCKET socket)
   UNLOCK_SOCKET_LIST;
 }
 
-static int GetHostAndPort(char *hostin, struct SOCKADDR_IN *sin)
+static int GetHostAndPort(char *hostin, struct sockaddr *sin)
 {
   int status;
-  INITIALIZESOCKETS;
-  char *host = strdup(hostin);
-  FREE_ON_EXIT(host);
-  char *service = NULL;
-  size_t i;
-  for (i = 0; i < strlen(host) && host[i] != PORTDELIM; i++)
-    ;
-  if (i < strlen(host))
+  char *port = strchr(hostin, PORTDELIM);
+  sin->sa_family = AF_T;
+  if (port)
   {
-    host[i] = '\0';
-    service = &host[i + 1];
+    int hostlen = port - hostin;
+    char *host = memcpy(malloc(hostlen + 1), hostin, hostlen);
+    FREE_ON_EXIT(host);
+    host[hostlen] = 0;
+    status = _LibGetHostAddr(host, port + 1, sin)
+                 ? MDSplusERROR
+                 : MDSplusSUCCESS;
+    FREE_NOW(host);
   }
   else
   {
-    service = "mdsip";
+    status = _LibGetHostAddr(hostin, NULL, sin)
+                 ? MDSplusERROR
+                 : MDSplusSUCCESS;
+    ((struct SOCKADDR_IN *)sin)->SIN_PORT = htons(8000);
   }
-  if (strtol(service, NULL, 0) == 0)
-  {
-    if (!getservbyname(service, "tcp"))
-    {
-      char *env_service = getenv(service);
-      if ((env_service == NULL))
-      {
-        if (strcmp(service, "mdsip") == 0)
-        {
-          service = "8000";
-        }
-      }
-      else
-      {
-        service = env_service;
-      }
-    }
-  }
-  struct addrinfo *info = NULL;
-  static const struct addrinfo hints = {0, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0};
-  int err = getaddrinfo(host, service, &hints, &info);
-  if (err)
-  {
-    status = MDSplusERROR;
-    fprintf(stderr, "Error connecting to host: %s, port %s error=%s\n", host,
-            service, gai_strerror(err));
-  }
-  else
-  {
-    memcpy(sin, info->ai_addr,
-           sizeof(*sin) < info->ai_addrlen ? sizeof(*sin) : info->ai_addrlen);
-    status = MDSplusSUCCESS;
-  }
-  if (info)
-    freeaddrinfo(info);
-  FREE_NOW(host);
   return status;
 }
 
@@ -273,26 +251,24 @@ VOID CALLBACK ShutdownEvent(PVOID arg __attribute__((unused)),
   exit(0);
 }
 
-static int getSocketHandle(char *name)
+static inline SOCKET get_single_server_socket(char *name)
 {
   HANDLE shutdownEvent, waitHandle;
   HANDLE h;
   int ppid;
   SOCKET psock;
   char shutdownEventName[120];
+  if (name == 0 || sscanf(name, "%d:%d", &ppid, (int *)&psock) != 2)
+  {
+    fprintf(stderr, "Mdsip single connection server can only be started from "
+                    "windows service\n");
+    exit(EXIT_FAILURE);
+  }
   char *logdir = GetLogDir();
   FREE_ON_EXIT(logdir);
   char *portnam = GetPortname();
   char *logfile = malloc(strlen(logdir) + strlen(portnam) + 50);
   FREE_ON_EXIT(logfile);
-  if (name == 0 || sscanf(name, "%d:%d", &ppid, (int *)&psock) != 2)
-  {
-    fprintf(stderr, "Mdsip single connection server can only be started from "
-                    "windows service\n");
-    free(logfile);
-    free(logdir);
-    exit(EXIT_FAILURE);
-  }
   sprintf(logfile, "%s\\MDSIP_%s_%d.log", logdir, portnam, _getpid());
   freopen(logfile, "a", stdout);
   freopen(logfile, "a", stderr);
@@ -316,6 +292,11 @@ static int getSocketHandle(char *name)
   return *(int *)&h;
 }
 #else
+static inline SOCKET get_single_server_socket(char *name)
+{
+  (void)name;
+  return 0;
+}
 static void ChildSignalHandler(int num __attribute__((unused)))
 {
   sigset_t set, oldset;
@@ -354,8 +335,8 @@ static int io_authorize(Connection *c, char *username)
   Now32(now);
   if ((iphost = getHostInfo(sock, &hoststr)))
   {
-    printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", now,
-           (int)sock, getpid(), username, hoststr, iphost);
+    fprintf(stdout, "%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n",
+            now, (int)sock, getpid(), username, hoststr, iphost);
     char *matchString[2] = {NULL, NULL};
     FREE_ON_EXIT(matchString[0]);
     FREE_ON_EXIT(matchString[1]);
@@ -377,7 +358,7 @@ static int io_authorize(Connection *c, char *username)
     FREE_NOW(matchString[0]);
   }
   else
-    PERROR("error getting hostinfo");
+    print_socket_error("error getting hostinfo");
   FREE_NOW(iphost);
   FREE_NOW(hoststr);
   fflush(stdout);
@@ -389,14 +370,17 @@ static int io_authorize(Connection *c, char *username)
 //  SEND  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static ssize_t io_send(Connection *c, const void *bptr, size_t num,
-                       int nowait)
+static ssize_t io_send(Connection *c, const void *bptr, size_t num, int nowait)
 {
   SOCKET sock = getSocket(c);
-  int options = nowait ? MSG_DONTWAIT : 0;
-  if (sock != INVALID_SOCKET)
-    return SEND(sock, bptr, num, options | MSG_NOSIGNAL);
-  return -1; // sent
+  if (sock == INVALID_SOCKET)
+    return -1;
+  int sent;
+  int options = nowait ? MSG_DONTWAIT | MSG_NOSIGNAL : MSG_NOSIGNAL;
+  MSG_NOSIGNAL_ALT_PUSH();
+  sent = SEND(sock, bptr, num, options);
+  MSG_NOSIGNAL_ALT_POP();
+  return sent;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -410,6 +394,7 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
   if (sock != INVALID_SOCKET)
   {
     PushSocket(sock);
+    MSG_NOSIGNAL_ALT_PUSH();
 #ifdef _TCP
     struct timeval to, timeout;
     if (to_msec < 0)
@@ -451,87 +436,120 @@ static ssize_t io_recv_to(Connection *c, void *bptr, size_t num, int to_msec)
         break; // Error
       }
     } while (to_msec < 0); // else timeout
+    MSG_NOSIGNAL_ALT_POP();
     PopSocket(sock);
   }
   return recved;
 }
-
-#ifdef _TCP
-static int io_check(Connection *c)
+static inline void Client_cancel(Client *c)
 {
-  SOCKET sock = getSocket(c);
-  ssize_t err = -1;
-  if (sock != INVALID_SOCKET)
-  {
-    PushSocket(sock);
-    struct timeval timeout = {0, 0};
-    fd_set readfds;
-    FD_ZERO(&readfds);
-    FD_SET(sock, &readfds);
-    err = select(sock + 1, &readfds, NULL, NULL, &timeout);
-    switch (err)
-    {
-    case -1:
-      break; // Error
-    case 0:
-      break; // Timeout
-    default:
-    { // for select this will be 1
-      char bptr[1];
-      err = RECV(sock, bptr, 1, MSG_NOSIGNAL || MSG_PEEK);
-      err = (err == 1) ? 0 : -1;
-      break;
-    }
-    }
-    PopSocket(sock);
-  }
-  return (int)err;
-}
+#ifdef _WIN32
+  shutdown(c->sock, SHUT_RDWR);
+  closesocket(c->sock);
+#else
+  pthread_cancel(*c->thread);
 #endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  DISCONNECT  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+static void destroyClient(Client *c)
+{
+  MDSDBG("destroyClient");
+  if (c->thread)
+  {
+    if (!pthread_equal(*c->thread, pthread_self()))
+    {
+      Client_cancel(c);
+      pthread_join(*c->thread, NULL);
+    }
+    else
+    {
+      pthread_detach(*c->thread);
+    }
+    free(c->thread);
+  }
+  else
+  {
+    Connection *con = c->connection;
+    if (con)
+    {
+      con->io = NULL;
+      io_disconnect(con);
+    }
+    destroyConnection(con);
+  }
+  free(c->username);
+  free(c->iphost);
+  free(c->host);
+  free(c);
+}
+
+static inline void destroyClientList()
+{
+  Client *cl;
+  pthread_mutex_lock(&ClientListLock);
+  cl = ClientList;
+  for (; ClientList; ClientList = ClientList->next)
+  {
+    if (ClientList->thread)
+    {
+      Client_cancel(ClientList);
+    }
+  }
+  pthread_mutex_unlock(&ClientListLock);
+  while (cl)
+  {
+    Client *const c = cl;
+    cl = cl->next;
+    destroyClient(c);
+  }
+}
+
+inline static Client *pop_client(Connection *con)
+{
+  Client *c, *p;
+  pthread_mutex_lock(&ClientListLock);
+  for (p = NULL, c = ClientList;
+       c;
+       p = c, c = c->next)
+  {
+    if (c->connection == con)
+    {
+      if (p)
+        p->next = c->next;
+      else
+        ClientList = c->next;
+      break;
+    }
+  }
+  pthread_mutex_unlock(&ClientListLock);
+  return c;
+}
 
 static int io_disconnect(Connection *con)
 {
-  SOCKET sock = getSocket(con);
   int err = C_OK;
-  char now[32];
-  Now32(now);
+  SOCKET sock = getSocket(con);
+  Client *c = pop_client(con);
+  if (c)
+  {
+    char now[32];
+    Now32(now);
+    fprintf(stdout, "%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
+            now, (int)sock, getpid(), c->username, c->host, c->iphost);
+    c->connection = NULL;
+    destroyClient(c);
+  }
   if (sock != INVALID_SOCKET)
   {
-    Client *c, **p;
-    for (p = &ClientList, c = ClientList; c && c->id != con->id;
-         p = &c->next, c = c->next)
-      ;
-    if (c)
-    {
-      *p = c->next;
-#ifdef _TCP
-      if (FD_ISSET(sock, &fdactive))
-      {
-        FD_CLR(sock, &fdactive);
-#else
-      if (server_epoll != -1)
-      {
-        udt_epoll_remove_usock(server_epoll, sock);
-#endif
-        printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
-               now, (int)sock, getpid(), c->username, c->host, c->iphost);
-      }
-      free(c->username);
-      free(c->iphost);
-      free(c->host);
-      free(c);
-    }
 #ifdef _TCP
     err = shutdown(sock, SHUT_RDWR);
 #endif
-    err = close(sock);
+    err = closesocket(sock);
   }
   fflush(stdout);
-  fflush(stderr);
   return err;
 }
 
@@ -539,34 +557,63 @@ static int run_server_mode(Options *options)
 {
   /// SERVER MODE  ///////////////
   /// Handle single connection ///
-#ifdef _WIN32
-  SOCKET sock = getSocketHandle(options->value);
-#else
-  SOCKET sock = 0;
-  (void)options;
-#endif
+  SOCKET sock = get_single_server_socket(options->value);
   int id;
-  char *username;
-  if (IS_NOT_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)))
+  if (IS_NOT_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, NULL)))
     return C_ERROR;
   struct SOCKADDR_IN sin;
   SOCKLEN_T len = sizeof(sin);
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in *)&sin)->sin_addr.s_addr);
-  Client *client = calloc(1, sizeof(Client));
-  client->id = id;
-  client->sock = sock;
-  client->next = ClientList;
-  client->username = username;
-  client->iphost = getHostInfo(sock, &client->host);
-  ClientList = client;
-#ifdef _TCP
-  FD_SET(sock, &fdactive);
-#endif
+  Connection *connection = PopConnection(id);
+  pthread_cleanup_push((void *)destroyConnection, (void *)connection);
+  int status;
+  do
+    status = ConnectionDoMessage(connection);
+  while (STATUS_OK);
+  pthread_cleanup_pop(1);
+  return C_ERROR;
+}
+
+static void *client_thread(void *args)
+{
+  Client *client = (Client *)args;
+  Connection *connection = client->connection;
+  MdsSetClientAddr(client->addr);
+  pthread_cleanup_push((void *)destroyConnection, (void *)connection);
   int status;
   do
   {
-    status = DoMessage(id);
+    status = ConnectionDoMessage(connection);
   } while (STATUS_OK);
-  return C_ERROR;
+  pthread_cleanup_pop(1);
+  return NULL;
+}
+
+static inline int dispatch_client(Client *client)
+{
+  client->thread = (pthread_t *)malloc(sizeof(pthread_t));
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, 0x40000);
+  const int err = pthread_create(client->thread, &attr, client_thread, (void *)client);
+  pthread_attr_destroy(&attr);
+  if (err)
+  {
+    errno = err;
+    perror("dispatch_client");
+    free(client->thread);
+    client->thread = NULL;
+    client->connection->id = INVALID_CONNECTION_ID;
+    destroyClient(client);
+  }
+  else
+  {
+    fprintf(stderr, "dispatched client " CLIENT_PRI "\n", CLIENT_VAR(client));
+    pthread_mutex_lock(&ClientListLock);
+    client->next = ClientList;
+    ClientList = client;
+    pthread_mutex_unlock(&ClientListLock);
+  }
+  return err;
 }

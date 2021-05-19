@@ -89,7 +89,7 @@ int _TreeSetDbi(void *dbid, DBI_ITM *dbi_itm_ptr)
 
   if (dblist->remote)
     return SetDbiRemote(dbid, dbi_itm_ptr);
-  for (itm_ptr = dbi_itm_ptr; itm_ptr->code != NciEND_OF_LIST && status & 1;
+  for (itm_ptr = dbi_itm_ptr; itm_ptr->code != NciEND_OF_LIST && STATUS_OK;
        itm_ptr++)
   {
     switch (itm_ptr->code)

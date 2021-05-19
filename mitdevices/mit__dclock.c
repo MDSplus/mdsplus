@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <string.h>
@@ -46,7 +46,7 @@ EXPORT int mit__dclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((
   static int output_nid;
   static DESCRIPTOR_NID(output_dsc, (char *)&output_nid);
   status = mit__dclock___get_setup(niddsc_ptr, &s);
-  if (status & 1) {
+  if (STATUS_OK) {
     int start_low_nid = s.head_nid + MIT__DCLOCK_N_START_LOW;
     int invert = TreeIsOn(start_low_nid);
     float max_period;

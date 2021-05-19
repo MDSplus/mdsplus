@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static int one = 1;
 static short zero = 0;
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
-#define do_if_no_error(f,retstatus) if (status & 1) retstatus = f;
+#define do_if_no_error(f,retstatus) if (STATUS_OK) retstatus = f;
 #define pio(f,a,d)  status = DevCamChk(CamPiow(setup->name,a,f,d,16,0),&one,&one);
 #define pion(f,a,d)  do_if_no_error(DevCamChk(CamPiow(setup->name,a,f,d,16,0),&one,&one),status);
 
@@ -78,9 +78,9 @@ EXPORT int j221___init(struct descriptor *nid __attribute__ ((unused)), InInitSt
   merge_status = merge_data(setup->head_nid + J221_N_OUTPUT_01, &bit, &time, &num);
   if (num) {
     int start_trig_nid = setup->head_nid + J221_N_START_TRIG;
-    if (status & 1) {
+    if (STATUS_OK) {
       int i;
-      for (i = 0, status = 0; (i < 10) && !(status & 1); i++) {
+      for (i = 0, status = 0; (i < 10) && STATUS_NOT_OK; i++) {
 	pio(16, 2, &zero);	/* Clear the memory address */
 	if (status)
 	  status = CamStopw(setup->name, 1, 16, num, time, 24, 0);	/* Load trigger times */
@@ -88,9 +88,9 @@ EXPORT int j221___init(struct descriptor *nid __attribute__ ((unused)), InInitSt
       if (i > 1)
 	printf("******J221 needed %d tries on the first STOPW******\n", i);
     }
-    if (status & 1) {
+    if (STATUS_OK) {
       int i;
-      for (i = 0, status = 0; (i < 10) && !(status & 1); i++) {
+      for (i = 0, status = 0; (i < 10) && STATUS_NOT_OK; i++) {
 	static short zero = 0;
 	pio(16, 2, &zero);	/* Clear the memory address */
 	if (status)
@@ -108,7 +108,7 @@ EXPORT int j221___init(struct descriptor *nid __attribute__ ((unused)), InInitSt
     free(time);
     free(bit);
   }
-  return status & 1 ? merge_status : status;
+  return STATUS_OK ? merge_status : status;
 }
 
 static int merge_data(int nid, int **data, int **times, int *ndata)
@@ -221,7 +221,7 @@ EXPORT int j221___add(int *head_nid)
   int status;
   c_nid = *head_nid + J221_N_OUTPUT_01;
   status = TdiExecute((struct descriptor *)&check, &nid_dsc, &len_dsc MDS_END_ARG);
-  if ((status & 1) && (len > 0))
+  if ((STATUS_OK) && (len > 0))
     return status;
   for (i = 0; i < 12; i++) {
     static DESCRIPTOR(trigs, "I_TO_X(BUILD_DIM(,$1),($2 > 0 ? $3 : $3[0:*:2]) ) * $4 + $5");

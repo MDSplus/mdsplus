@@ -64,16 +64,16 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
   struct descriptor_d dsc_string = {0, DTYPE_T, CLASS_D, 0};
   cli_get_value(ctx, "NODE", &node);
   status = TreeFindNode(node, &nid);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = cli_get_value(ctx, "NAME", &attr);
-    if (status & 1)
+    if (STATUS_OK)
     {
       status = TreeGetXNci(nid, attr, &xd);
-      if (status & 1)
+      if (STATUS_OK)
       {
         status = TdiDecompile(&xd, &dsc_string MDS_END_ARG);
-        if (status & 1)
+        if (STATUS_OK)
         {
           *output = strncpy(malloc(dsc_string.length + 100), dsc_string.pointer,
                             dsc_string.length);
@@ -116,7 +116,7 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
       status = 1;
     }
   }
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + strlen(node) + 100);

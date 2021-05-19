@@ -56,8 +56,8 @@ int J1819_TRIGGER(struct descriptor *niddsc);
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <strroutines.h>
@@ -77,7 +77,7 @@ static int one = 1;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 24, 0), &one, 0),status)
 #define stop(f,a,n,d)  return_on_error(DevCamChk(CamStopw(setup->name, a, f, n, d, 24, 0), &one, 0),status)
 #define fstop(f,a,n,d)  return_on_error(DevCamChk(CamFStopw(setup->name, a, f, n, d, 24, 0), &one, 0),status)
-#define return_on_error(func,statret) status = func; if (!(status & 1)) return statret
+#define return_on_error(func,statret) status = func; if (STATUS_NOT_OK) return statret
 
 EXPORT int j1819___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {

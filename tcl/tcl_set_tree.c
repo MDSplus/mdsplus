@@ -59,7 +59,7 @@ int tclStringToShot(char *str, int *shot_out, char **error)
         DESCRIPTOR_LONG(dsc_shot, &shot);
         struct descriptor str_d = {strlen(str), DTYPE_T, CLASS_S, str};
         status = TdiExecute(&str_d, &dsc_shot MDS_END_ARG);
-        if (!(status & 1))
+        if (STATUS_NOT_OK)
         {
           *error = malloc(strlen(str) + 100);
           sprintf(*error,
@@ -69,7 +69,7 @@ int tclStringToShot(char *str, int *shot_out, char **error)
         }
       }
     }
-    if ((status & 1) && (shot < -1))
+    if ((STATUS_OK) && (shot < -1))
     {
       *error = malloc(100);
       sprintf(*error, "Error: Invalid shot number specified - %d\n", shot);
@@ -78,7 +78,7 @@ int tclStringToShot(char *str, int *shot_out, char **error)
   }
   else
     *error = strdup("Error: Zero length shot string specified\n");
-  if (status & 1)
+  if (STATUS_OK)
     *shot_out = shot;
   return status;
 }

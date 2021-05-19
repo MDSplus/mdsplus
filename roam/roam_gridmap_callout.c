@@ -173,7 +173,7 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap)
     expression_d.length = strlen(expression);
     expression_d.pointer = expression;
     status = TdiExecute(&expression_d, &local_user_d MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
     {
       rc = GLOBUS_SUCCESS;
       local_identity = strncpy((char *)malloc(local_user_d.length + 1),

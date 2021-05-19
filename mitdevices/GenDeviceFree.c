@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 EXPORT int GenDeviceFree(CommonInStruct * in_struct)
 {
   int i, status = 1;
-  for (i = 0; (status & 1) && (i < in_struct->num_xds); i++)
+  for (i = 0; (STATUS_OK) && (i < in_struct->num_xds); i++)
     status = MdsFree1Dx(&in_struct->xds[i], 0);
   if (in_struct->num_xds) {
     free(in_struct->xds);

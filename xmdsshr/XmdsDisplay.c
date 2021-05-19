@@ -136,10 +136,10 @@ EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args,
     int status;
     nid_dsc.pointer = (char *)&nid;
     status = TdiEvaluate(&nid_dsc, &xd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
     {
       status = TdiDecompile(&xd, &display_dsc MDS_END_ARG);
-      if (status & 1)
+      if (STATUS_OK)
       {
         static DESCRIPTOR(zero_dsc, "\0");
         StrConcat((struct descriptor *)&display_dsc,

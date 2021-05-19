@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <libroutines.h>
 
-#include "../mdsshr/version.h"
 #include "../mdsip_connections.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +42,7 @@ IoRoutines *LoadIo(char *protocol_in)
 {
   if (protocol_in == 0)
     protocol_in = "TCP";
-  char *protocol = strcpy((char *)malloc(strlen(protocol_in) + 1), protocol_in);
+  char *protocol = strdup(protocol_in);
   size_t i;
   for (i = 0; i < strlen(protocol); i++)
     protocol[i] = toupper(protocol[i]);

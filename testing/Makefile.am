@@ -53,17 +53,18 @@ endif
 PYTHON_TEST_DIRS = \
 	python/MDSplus/tests
 
-C_TEST_DIRS = \
-	mdsshr/testing \
-	treeshr/testing \
-	mdslib/testing \
-	mdsobjects/cpp/testing \
-	tditest/testing
+C_TEST_DIRS =\
+	mdsshr/testing\
+	treeshr/testing\
+	mdslib/testing\
+	mdstcpip/testing\
+	tditest/testing\
+	mdsobjects/cpp/testing
 #	testing/selftest
 
-TEST_DIRS ?= \
-	$(PYTHON_TEST_DIRS) \
-	$(C_TEST_DIRS) \
+TEST_DIRS ?=\
+	$(C_TEST_DIRS)\
+	$(PYTHON_TEST_DIRS)\
 	$(JAVA_TEST_DIRS)
 
 TEST_OUTDIR  ?= ${top_builddir}/testing

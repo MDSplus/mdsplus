@@ -48,14 +48,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdilex.h"
 #define YY_END_OF_BUFFER_CHAR '\0'
 
-#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
+// #define DEBUG
+#include <mdsmsg.h>
 
 extern int Tdi1Evaluate();
 extern int tdi_yacc();

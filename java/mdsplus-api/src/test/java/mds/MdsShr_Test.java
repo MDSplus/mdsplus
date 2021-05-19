@@ -51,7 +51,7 @@ public class MdsShr_Test
 	@Test
 	public final void testMdsEvent() throws MdsException
 	{
-		Assert.assertEquals(1, MdsShr_Test.mdsshr.mdsEvent(null, "myevent"));
+		Assert.assertEquals(1, MdsShr_Test.mdsshr.mdsEvent(null, "myevent") & 1);
 	}
 
 	@Test

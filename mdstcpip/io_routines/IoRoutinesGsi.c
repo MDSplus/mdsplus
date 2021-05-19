@@ -45,7 +45,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef SIZEOF_LONG
 #endif
 
-#include <STATICdef.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <mdsplus/mdsconfig.h>
@@ -122,7 +121,7 @@ static GSI_INFO *getGsiInfoC(Connection *c)
   size_t len;
   char *info_name;
   int readfd;
-  GSI_INFO *info = (GSI_INFO *)GetConnectionInfoC(c, &info_name, &readfd, &len);
+  GSI_INFO *info = (GSI_INFO *)ConnectionGetInfo(c, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "gsi") == 0) && len == sizeof(GSI_INFO)
              ? info
              : 0;
@@ -397,7 +396,7 @@ static int gsi_connect(Connection *c, char *protocol __attribute__((unused)),
        "GSI Set KEEPALIVE", return C_ERROR);
   doit(result, globus_xio_open(info.xio_handle, contact_string, attr),
        "Error connecting", return C_ERROR);
-  SetConnectionInfoC(c, "gsi", 0, &info, sizeof(info));
+  ConnectionSetInfo(c, "gsi", 0, &info, sizeof(info));
   return C_OK;
 }
 
@@ -567,9 +566,8 @@ static int gsi_listen(int argc, char **argv)
     testStatus(res, "get handle to connection");
     status =
         AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-    if (STATUS_OK)
-      while (DoMessage(id))
-        ;
+    while (STATUS_OK)
+      status = DoMessage(id);
   }
   return C_OK;
 }

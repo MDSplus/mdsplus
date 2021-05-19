@@ -39,7 +39,7 @@ testarch(){
 config() {
     if [ -z "$JARS_DIR" ]
     then
-	JAVA_OPTS=
+    JAVA_OPTS=
     else
 	JAVA_OPTS="--with-jars=${JARS_DIR}"
     fi

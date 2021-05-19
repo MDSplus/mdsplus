@@ -22,22 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsshr.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
-#ifdef _WIN32
-#include <windows.h>
-#define syscall(__NR_gettid) GetCurrentThreadId()
-#else
-#include <sys/syscall.h>
-#endif
-#include <time.h>
-
 #include <stdarg.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
 
+#include <mdsshr.h>
+#include <mdsmsg.h>
 #include "testing.h"
 
 static pthread_mutex_t astCount_lock;
@@ -49,8 +40,7 @@ static int astCount = 0;
 void eventAst(void *arg, int len __attribute__((unused)),
               char *buf __attribute__((unused)))
 {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+  printf("received event in thread %ld, name=%s\n", CURRENT_THREAD_ID(), (char *)arg);
   pthread_mutex_lock(&astCount_lock);
   astCount++;
   pthread_mutex_unlock(&astCount_lock);
@@ -61,8 +51,7 @@ static int first = 0, second = 0;
 void eventAstFirst(void *arg, int len __attribute__((unused)),
                    char *buf __attribute__((unused)))
 {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+  printf("received event in thread %ld, name=%s\n", CURRENT_THREAD_ID(), (char *)arg);
   pthread_mutex_lock(&first_lock);
   first = 1;
   pthread_mutex_unlock(&first_lock);
@@ -71,8 +60,7 @@ void eventAstFirst(void *arg, int len __attribute__((unused)),
 void eventAstSecond(void *arg, int len __attribute__((unused)),
                     char *buf __attribute__((unused)))
 {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+  printf("received event in thread %ld, name=%s\n", CURRENT_THREAD_ID(), (char *)arg);
   pthread_mutex_lock(&second_lock);
   second = 1;
   pthread_mutex_unlock(&second_lock);
@@ -142,5 +130,5 @@ int main(int argc, char **args)
   status = MDSEventCan(id2);
 
   END_TESTING;
-  return (status & 1) == 0;
+  return (STATUS_OK) == 0;
 }

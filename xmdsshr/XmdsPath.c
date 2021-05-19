@@ -140,7 +140,7 @@ EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args,
     nci[0].code =
         (info.path_type == NciABSOLUTE_PATH) ? NciFULLPATH : NciMINPATH;
     status = TreeGetNci(nid, nci);
-    if (status & 1)
+    if (STATUS_OK)
     {
       lab_args[0].value = (long)XmStringCreateSimple(nci[0].pointer);
       TreeFree(nci[0].pointer);

@@ -38,7 +38,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *1    19-OCT-1995 13:38:16 TWF "XD handling" */
 /*  CMS REPLACEMENT HISTORY, Element MDSXDROUTINES.C */
 #include "mdsshrp.h"
-#include <STATICdef.h>
 #include <libroutines.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>

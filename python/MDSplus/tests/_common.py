@@ -33,6 +33,12 @@ import os
 import sys
 import time
 
+from MDSplus.mdsExceptions import MDSplusException
+
+
+iswin = sys.platform.startswith('win')
+MDSIP_PROTOCOL = getenv('MDSIP_PROTOCOL','TCP')
+
 
 class logger(object):
     """wrapper class to force flush on each write"""
@@ -55,17 +61,24 @@ class TestThread(threading.Thread):
     """ Run Tests in parralel and evaluate """
 
     @staticmethod
-    def assertRun(*threads):
+    def assertRun(timeout, *threads):
         for thread in threads:
             thread.start()
+        last = time.time()
         for thread in threads:
-            thread.join()
+            if timeout > 0:
+                thread.join(timeout)
+                now = time.time()
+                timeout -= now - last
+                last = now
+            else:
+                thread.join(0)
         for thread in threads:
             thread.check()
 
     def __init__(self, name, test, *args, **kwargs):
         super(TestThread, self).__init__(name=name)
-        self.exc = None
+        self.exc = threading.ThreadError(name + " still running")
         self.test = test
         self.args = args
         self.kwargs = kwargs
@@ -77,6 +90,8 @@ class TestThread(threading.Thread):
             if not hasattr(exc, "__traceback__"):
                 _, _, exc.__traceback__ = sys.exc_info()
             self.exc = exc
+        else:
+            self.exc = None
 
     def check(self):
         if self.exc:
@@ -96,7 +111,7 @@ class Tests(TestCase):
     @classmethod
     def getTests(cls):
         if cls.__module__.endswith("_test"):
-            _, test=cls.__module__[:-5].split('_', 1)
+            _, test = cls.__module__[:-5].split('_', 1)
             return [test]
         if not cls.inThread:
             return list(cls.TESTS)
@@ -196,29 +211,29 @@ class Tests(TestCase):
                 cls.runTests()
             else:
                 print('Available tests: %s' % (' '.join(cls.getTests())))
-    envx={}
-    env={}
+    envx = {}
+    env = {}
 
     @classmethod
     def _setenv(cls, name, value):
-        value=str(value)
-        cls.env[name]=value
-        cls.envx[name]=value
+        value = str(value)
+        cls.env[name] = value
+        cls.envx[name] = value
         setenv(name, value)
 
 
 class MdsIp(object):
-    root=os.path.dirname(os.path.realpath(__file__))
+    root = os.path.dirname(os.path.realpath(__file__))
 
     @staticmethod
     def _setup_mdsip(server_env, port_env, default_port, fix0):
-        host=getenv(server_env, '')
-        if len(host) > 0:
+        host = getenv(server_env, '')
+        if host:
             return host, 0
-        port=int(getenv(port_env, default_port))
+        port = int(getenv(port_env, default_port))
         if port == 0:
             if fix0:
-                port=default_port
+                port = default_port
             else:
                 return None, 0
         return 'localhost:%d' % (port,), port
@@ -232,12 +247,12 @@ class MdsIp(object):
                         (mdsip, command))
 
     def _checkIdle(self, server, **opt):
-        show_server="Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n" % server
+        show_server = "Checking server: %s\n[^,]+, [^,]+, logging (.|\n)*Inactive\n" % server
         self._doTCLTest('show server %s' %
                         server, out=show_server, regex=True, **opt)
 
     def _waitIdle(self, server, timeout):
-        timeout=time.time()+timeout
+        timeout = time.time()+timeout
         while 1:
             time.sleep(.3)
             try:
@@ -253,12 +268,12 @@ class MdsIp(object):
         if to <= 0:
             return svr.poll()
         if sys.version_info < (3, 3):
-            rtn=svr.poll()
+            rtn = svr.poll()
             for _ in range(int(10*to)):
                 if rtn is not None:
                     break
                 time.sleep(.1)
-                rtn=svr.poll()
+                rtn = svr.poll()
             return rtn
         try:
             svr.wait(to)
@@ -268,36 +283,40 @@ class MdsIp(object):
             return svr.poll()
 
     def _stop_mdsip(self, *procs_in):
-        for svr, server in procs_in:
-            if svr is None:  # close trees on externals
+        # filter unused mdsip
+        procs = [(svr, server) for svr, server in procs_in if server]
+        for svr, server in procs:
+            if not svr:  # close trees on externals
                 try:
                     self._doTCLTest(
                         'dispatch/command/wait/server=%s close/all' % server)
-                except:
+                except MDSplusException:
                     pass
         # filter external mdsip
-        procs=[(svr, server) for svr, server in procs_in if svr is not None]
+        procs = [(svr, server) for svr, server in procs if svr]
         # filter terminated
-        procs=[(svr, server) for svr, server in procs if svr.poll() is None]
+        procs = [(svr, server) for svr, server in procs if svr.poll() is None]
         if len(procs) == 0:
             return
+        """
         # stop server
         for svr, server in procs:
             try:
                 self._doTCLTest('stop server %s' % server)
-            except:
+            except MDSplusException:
                 pass
-        t=time.time()+6
-        procs=[(svr, server)
+        t = time.time()+6
+        procs = [(svr, server)
                  for svr, server in procs if self._wait(svr, t-time.time()) is None]
         if len(procs) == 0:
             return
+        """
         # terminate server
         for svr, server in procs:
             sys.stderr.write("sending SIGTERM to %s" % server)
             svr.terminate()
-        t=time.time()+3
-        procs=[(svr, server)
+        t = time.time()+3
+        procs = [(svr, server)
                  for svr, server in procs if self._wait(svr, t-time.time()) is None]
         if len(procs) == 0:
             return
@@ -305,44 +324,53 @@ class MdsIp(object):
         for svr, server in procs:
             sys.stderr.write("sending SIGKILL to %s" % server)
             svr.kill()
-        t=time.time()+3
-        procs=[server for svr, server in procs if self._wait(
+        t = time.time()+3
+        procs = [server for svr, server in procs if self._wait(
             svr, t-time.time()) is None]
         if len(procs) == 0:
             return
         raise Exception("FAILED cleaning up mdsips: %s" % (", ".join(procs),))
 
-    def _start_mdsip(self, server, port, logname, protocol='TCP'):
+    def _start_mdsip(self, server, port, logname, protocol=MDSIP_PROTOCOL):
         if port > 0:
             from subprocess import Popen, STDOUT
-            logfile='%s-%s%d.log' % (self.module, logname, self.index)
-            log=open(logfile, 'w')
+            logfile = '%s-%s%d.log' % (self.module, logname, self.index)
+            log = open(logfile, 'w') if iswin else None
             try:
-                hosts='%s/mdsip.hosts' % self.root
-                params=['mdsip', '-s', '-p',
+                hosts = '%s/mdsip.hosts' % self.root
+                params = ['mdsip', '-s', '-p',
                           str(port), '-P', protocol, '-h', hosts]
-                print(' '.join(params+['>', logfile, '2>&1']))
-                mdsip=Popen(params, stdout=log, stderr=STDOUT)
+
+                print(' '.join(params + ['&>', logfile]))
+                if not log:
+                    params.extend(['2>&1', '|', 'tee', logfile])
+                mdsip = Popen(params)
             except:
-                log.close()
+                if log:
+                    log.close()
                 raise
-            time.sleep(.3)
-            self._waitIdle(server, 10)  # allow mdsip to launch
+            try:
+                self._waitIdle(server, 10)  # allow mdsip to launch
+            except Exception:
+                mdsip.kill()
+                raise
         else:
-            mdsip, log=None, None
-        c=Connection(server)
-        for envpair in self.envx.items():
-            checkStatus(c.get('setenv($//"="//$)', *envpair))
-        c.get('tcl($)', 'set verify')
+            mdsip, log = None, None
+        if server:
+            c = Connection(server)
+            for envpair in self.envx.items():
+                checkStatus(c.get('setenv($//"="//$)', *envpair))
+            c.get('tcl($)', 'set verify')
         return mdsip, log
 
 
 class TreeTests(Tests):
-    lock=threading.RLock()
-    shotinc=1
-    instances=0
-    trees=[]
-    tree=None
+    lock = threading.RLock()
+    shotinc = 1
+    instances = 0
+    trees = []
+    tree = None
+    tmpdir = None
 
     @property
     def shot(self):
@@ -355,19 +383,20 @@ class TreeTests(Tests):
                 gc.collect()
                 from tempfile import mkdtemp
                 if getenv("TEST_DISTRIBUTED_TREES") is not None:
-                    treepath="thread://tree::%s"
+                    treepath = "thread://tree::%s"
                 else:
-                    treepath="%s"
-                cls.tmpdir=mkdtemp()
-                cls.root=os.path.dirname(os.path.realpath(__file__))
-                cls.topsrc=os.path.realpath(
+                    treepath = "%s"
+                cls.tmpdir = mkdtemp()
+                cls.root = os.path.dirname(os.path.realpath(__file__))
+                cls.topsrc = os.path.realpath(
                     cls.root+"%s..%s..%s.." % tuple([os.sep]*3))
-                cls.env=dict((k, str(v)) for k, v in os.environ.items())
-                cls.envx={}
+                cls.env = dict((k, str(v)) for k, v in os.environ.items())
+                cls.envx = {}
                 cls._setenv('PyLib', getenv('PyLib'))
                 cls._setenv("MDS_PYDEVICE_PATH",
                             '%s/pydevices;%s/devices' % (cls.topsrc, cls.root))
-                trees = cls.trees if cls.tree is None else set(cls.trees).union([cls.tree])
+                trees = cls.trees if cls.tree is None else set(
+                    cls.trees).union([cls.tree])
                 for treename in trees:
                     cls._setenv("%s_path" % treename, treepath % cls.tmpdir)
                 if getenv("testing_path") is None:
@@ -394,7 +423,7 @@ class TreeTests(Tests):
             except Exception as e:
                 print(e)
                 return False
-        trees=[o for o in gc.get_objects() if is_tree(o)]
+        trees = [o for o in gc.get_objects() if is_tree(o)]
         for t in trees:
             try:
                 t.close()

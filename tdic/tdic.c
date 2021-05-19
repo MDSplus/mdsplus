@@ -379,7 +379,7 @@ int main(int argc, char **argv)
               expr[expr_dsc.length++] = ')';
         */
         status = BTdiExecute(&expr_dsc, &ans MDS_END_ARG);
-        if (status & 1)
+        if (STATUS_OK)
         {
           if (!comment)
             BTdiExecute(&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);

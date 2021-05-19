@@ -53,11 +53,14 @@ EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
 Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
-#include <ipdesc.h>
-#include <mdsplus/mdsconfig.h>
-#include <mdsshr.h>
+
 #include <stdlib.h>
 #include <unistd.h>
+
+#include <mdsplus/mdsconfig.h>
+#include <ipdesc.h>
+#include <mdsshr.h>
+#include <socket_port.h>
 
 typedef struct _event_struct
 {
@@ -120,8 +123,8 @@ EXPORT int IDLMdsEventCan(int argc, void **argv)
   if (argc == 2)
   {
     EventStruct *e, *p;
-    SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
-    int eventid = (unsigned int)((char *)argv[1] - (char *)0);
+    SOCKET sock = (SOCKET)((intptr_t)argv[0]);
+    int eventid = (int)((intptr_t)argv[1]);
     BlockSig(SIGALRM);
     status = (sock >= 0) ? MdsEventCan(sock, eventid) : MDSEventCan(eventid);
     UnBlockSig(SIGALRM);
@@ -148,7 +151,7 @@ EXPORT int IDLMdsGetevi(int argc, void **argv)
 {
   if (argc == 2)
   {
-    int eventid = (unsigned int)((char *)argv[0] - (char *)0);
+    int eventid = (int)((intptr_t)argv[0]);
     EventStruct *e;
     for (e = EventList; e && e->loc_event_id != eventid; e = e->next)
       ;
@@ -218,7 +221,7 @@ EXPORT int IDLMdsEvent(int argc, void **argv)
 {
   if (argc == 4)
   {
-    SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
+    SOCKET sock = (SOCKET)(intptr_t)argv[0];
     int *base_id = (int *)argv[1];
     int *stub_id = (int *)argv[2];
     char *name = (char *)argv[3];
@@ -252,7 +255,7 @@ EXPORT int IDLMdsEvent(int argc, void **argv)
           {
             XtAppAddInput(XtWidgetToApplicationContext(w1), sock,
                           (XtPointer)XtInputExceptMask, MdsDispatchEvent,
-                          (char *)0 + sock);
+                          (void *)(intptr_t)sock);
           }
           if (pipe(event_pipe) == -1)
             perror("Error creating event pipes\n");

@@ -59,7 +59,7 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
   PINO_DATABASE *db = (PINO_DATABASE *)dbid;
   struct dbi_itm *lst = itmlst;
   int status = TreeSUCCESS;
-  while ((lst->code != 0) && (status & 1))
+  while ((lst->code != 0) && (STATUS_OK))
   {
     char *string = NULL;
     unsigned short retlen = 0;
@@ -68,7 +68,7 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
     case DbiNAME:
 
       CheckOpen(db);
-      string = strcpy(malloc(strlen(db->main_treenam) + 1), db->main_treenam);
+      string = strdup(db->main_treenam);
       break;
 
     case DbiSHOTID:

@@ -267,7 +267,7 @@ EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid,
   }
 done:
   FreeSearchCtx(&ctx);
-  return (status & 1) ? TreeSUCCESS : status;
+  return (STATUS_OK) ? TreeSUCCESS : status;
 }
 
 EXPORT int _TreeFindNodeEnd(void *dbid __attribute__((unused)), void **ctx)
@@ -807,7 +807,7 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node,
     else
     {
       status = _TreeFindNode(dblist, parent_name, (int *)&nid);
-      if (status & 1)
+      if (STATUS_OK)
       {
         *node = nid_to_node(dblist, &nid);
       }

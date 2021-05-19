@@ -373,7 +373,7 @@ EXPORT struct descriptor *XmdsExprGetXd(Widget w)
       TreeSetDefaultNid(def_nid);
     }
     status = (*ew->expr.compile)(&text_dsc, ans MDS_END_ARG);
-    if ((status & 1) == 0)
+    if ((STATUS_OK) == 0)
     {
       TdiComplain(w);
       XtFree((char *)ans);
@@ -413,7 +413,7 @@ EXPORT Boolean XmdsExprPut(Widget w)
       XtFree((char *)new_xd);
     }
   }
-  return status & 1;
+  return STATUS_OK;
 }
 
 EXPORT Boolean XmdsExprFieldApply(Widget w) { return XmdsExprApply(w); }
@@ -485,7 +485,7 @@ EXPORT void XmdsExprSetNid(Widget w, int nid, int offset)
 
   new_nid = ew->expr.nid + offset;
   status = TreeGetRecord(new_nid, ew->expr.xd);
-  if (status & 1)
+  if (STATUS_OK)
     LoadExpr(ew, (struct descriptor *)ew->expr.xd);
   else
     LoadExpr(ew, 0);
@@ -755,7 +755,7 @@ static void LoadExpr(XmdsExprWidget w, struct descriptor *dsc)
       }
       status = (*w->expr.decompile)(xd, &text MDS_END_ARG);
       w->expr.is_text = 0;
-      if (status & 1)
+      if (STATUS_OK)
       {
         char *c_text = DescToNull((struct descriptor_s *)&text);
         SetString(w->expr.text_widget, c_text);

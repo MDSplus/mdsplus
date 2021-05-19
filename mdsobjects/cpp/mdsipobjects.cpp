@@ -328,14 +328,14 @@ void Connection::openTree(char *tree, int shot)
 {
   int status = MdsOpen(sockId, tree, shot);
   //	std::cout << "SOCK ID: " << sockId << std::endl;
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 void Connection::closeAllTrees()
 {
   int status = MdsClose(sockId);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
@@ -363,7 +363,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   //	lockGlobal();
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
                    std::string(expr).size(), 0, 0, (char *)expr);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     unlockLocal();
     throw MdsException(status);
@@ -375,7 +375,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
     status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs + 1, length,
                      nDims, dims, (char *)ptr);
     delete[] dims;
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       unlockLocal();
       throw MdsException(status);
@@ -385,7 +385,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes,
                            &ptr, &mem);
   unlockLocal();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     throw MdsException(status);
   }
@@ -514,7 +514,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1, putExpr.length(), 0,
                    0, const_cast<char *>(putExpr.c_str()));
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     unlockLocal();
     throw MdsException(status);
@@ -525,7 +525,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
     args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
     status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs + 1, length,
                      nDims, dims, (char *)ptr);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       unlockLocal();
       throw MdsException(status);
@@ -539,19 +539,19 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes,
                            &ptr, &mem);
   unlockLocal();
-  if ((status & 1) && dtype == DTYPE_LONG_IP && nDims == 0 &&
+  if ((STATUS_OK) && dtype == DTYPE_LONG_IP && nDims == 0 &&
       numBytes == sizeof(int))
     status = *(reinterpret_cast<int *>(ptr));
   if (mem)
     FreeMessage(mem);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 void Connection::setDefault(char *path)
 {
   int status = MdsSetDefault(sockId, path);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 

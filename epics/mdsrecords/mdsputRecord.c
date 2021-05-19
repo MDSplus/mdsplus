@@ -366,6 +366,6 @@ static void checkAlarms(mdsputRecord *prec)
     return;
   }
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     recGblSetSevr(prec, WRITE_ALARM, MAJOR_ALARM);
 }

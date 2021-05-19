@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -45,7 +45,7 @@ EXPORT int hv4032a1__get_settings(struct descriptor *niddsc_ptr __attribute__ ((
   if (max_chans != HV4032A1_K_CHANS)
     return HV4032$_WRONG_POD_TYPE;
   status = hv4032a1___get_settings(niddsc_ptr, &setup);
-  if (status & 1) {
+  if (STATUS_OK) {
     int i;
     for (i = 0; i < HV4032A1_K_CHANS; i++) {
       int nid = setup.head_nid + HV4032A1_N_VOLTAGE_1 + i;

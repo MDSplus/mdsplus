@@ -74,11 +74,15 @@ typedef struct
   int flags;
   int jobid;
 } JHeader;
+#define JHEADER_PRI "(op=%d, jobid=%d, addr=" IPADDRPRI ", port=%d)"
+#define JHEADER_VAR(h) (h)->op, (h)->jobid, IPADDRVAR(&(h)->addr), (h)->port
 
 typedef struct _SrvJob
 {
   JHeader h;
 } SrvJob;
+#define SVRJOB_PRI "SvrJob" JHEADER_PRI
+#define SVRJOB_VAR(j) JHEADER_VAR(&(j)->h)
 
 typedef struct
 {
@@ -87,11 +91,15 @@ typedef struct
   int shot;
   int nid;
 } SrvActionJob;
+#define SVRACTIONJOB_PRI "SrvActionJob(" JHEADER_PRI ", tree='%s', shot=%d, nid=%d)"
+#define SVRACTIONJOB_VAR(j) JHEADER_VAR(&(j)->h), (j)->tree, (j)->shot, (j)->nid
 
 typedef struct
 {
   JHeader h;
 } SrvCloseJob;
+#define SVRCLOSEJOB_PRI "SrvCloseJob(" JHEADER_PRI ")"
+#define SVRCLOSEJOB_VAR(j) JHEADER_VAR(&(j)->h)
 
 typedef struct
 {
@@ -99,6 +107,8 @@ typedef struct
   char *tree;
   int shot;
 } SrvCreatePulseJob;
+#define SVRCREATEPULSEJOB_PRI "SrvCreatePulseJob(" JHEADER_PRI ", tree='%s', shot=%d)"
+#define SVRCREATEPULSEJOB_VAR(j) JHEADER_VAR(&(j)->h), (j)->tree, (j)->shot
 
 typedef struct
 {
@@ -106,6 +116,8 @@ typedef struct
   char *table;
   char *command;
 } SrvCommandJob;
+#define SVRCOMMANDJOB_PRI "SrvCommandJob(" JHEADER_PRI ", table='%s', command='%s')"
+#define SVRCOMMANDJOB_VAR(j) JHEADER_VAR(&(j)->h), (j)->table, (j)->command
 
 typedef struct
 {
@@ -119,6 +131,8 @@ typedef struct
   char *server;
   int status;
 } SrvMonitorJob;
+#define SVRMONITORJOB_PRI "SrvMonitorJob(" JHEADER_PRI ", tree='%s', shot=%d, phase=%d, nid=%d, on=%d, mode=%d, server='%s', status=%d)"
+#define SVRMONITORJOB_VAR(j) JHEADER_VAR(&(j)->h), (j)->tree, (j)->shot, (j)->phase, (j)->nid, (j)->on, (j)->mode, (j)->server, (j)->status
 
 typedef struct
 {

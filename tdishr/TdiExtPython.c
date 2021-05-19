@@ -37,8 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 //#define DEBUG
+#include <mdsmsg.h>
 #ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
 #define DEBUG_GIL_CHECK                                                   \
   if (PyGILState_Check)                                                   \
     fprintf(stderr,                                                       \
@@ -46,9 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             (uintptr_t)pthread_self(), (uintptr_t)GIL,                    \
             "ny"[PyGILState_Check() != 0]);
 #else
-#define DBG(...) \
-  { /**/         \
-  }
 #define DEBUG_GIL_CHECK
 #endif
 
@@ -185,7 +182,7 @@ inline static void initialize()
       free(lib);
       return;
     }
-    DBG("TdiExtPython: loaded %s\n", lib);
+    MDSDBG("TdiExtPython: loaded %s\n", lib);
     free(lib);
     loadrtn(Py_InitializeEx, 1);
   }
@@ -247,8 +244,8 @@ inline static void initialize()
 
 static void PyGILState_Cleanup(void *GIL)
 {
-  DBG("PyGILState_Cleanup(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL,
-      (uintptr_t)pthread_self());
+  MDSDBG("PyGILState_Cleanup(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL,
+         (uintptr_t)pthread_self());
   if (PyGILState_Check && PyGILState_Check())
   {
     fprintf(stderr,
@@ -259,20 +256,20 @@ static void PyGILState_Cleanup(void *GIL)
   }
 }
 
-#define PYTHON_OPEN                                                            \
-  if (PyGILState_Ensure)                                                       \
-  {                                                                            \
-    PyThreadState *GIL = PyGILState_Ensure();                                  \
-    DBG("PyGILState_Ensured(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
-        (uintptr_t)pthread_self());                                            \
+#define PYTHON_OPEN                                                               \
+  if (PyGILState_Ensure)                                                          \
+  {                                                                               \
+    PyThreadState *GIL = PyGILState_Ensure();                                     \
+    MDSDBG("PyGILState_Ensured(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
+           (uintptr_t)pthread_self());                                            \
     pthread_cleanup_push(PyGILState_Cleanup, (void *)GIL); //"
 
-#define PYTHON_CLOSE                                                          \
-  PyGILState_Release(GIL);                                                    \
-  DBG("PyGILState_Released(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
-      (uintptr_t)pthread_self());                                             \
-  pthread_cleanup_pop(0);                                                     \
-  DEBUG_GIL_CHECK;                                                            \
+#define PYTHON_CLOSE                                                             \
+  PyGILState_Release(GIL);                                                       \
+  MDSDBG("PyGILState_Released(0x%" PRIxPTR ") 0x%" PRIxPTR "\n", (uintptr_t)GIL, \
+         (uintptr_t)pthread_self());                                             \
+  pthread_cleanup_pop(0);                                                        \
+  DEBUG_GIL_CHECK;                                                               \
   } //"
 
 static void importMDSplus()

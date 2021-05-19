@@ -73,18 +73,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 // #define DEBUG
-#ifdef DEBUG
-#define DBG(...)                  \
-  do                              \
-  {                               \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stdout, __VA_ARGS__); \
-  } while (0)
-#else
-#define DBG(...) \
-  {              \
-  }
-#endif
+#include <mdsmsg.h>
 
 extern int TdiFaultHandler();
 extern int TdiData();
@@ -765,7 +754,7 @@ static int compile_fun(const mdsdsc_t *const entry, const char *const file)
     return TdiUNKNOWN_VAR;
   int status;
   INIT_AND_FREEXD_ON_EXIT(tmp);
-  DBG("compile: %s\n", file);
+  MDSDBG("compile: %s\n", file);
   FILE *unit = fopen(file, "rb");
   if (unit)
   {
@@ -1338,7 +1327,7 @@ int Tdi1ShowPrivate(opcode_t opcode __attribute__((unused)), int narg,
                     mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   TDITHREADSTATIC_INIT;
-  DBG("TdiShowPrivate: %" PRIxPTR "\n", (uintptr_t)(void *)_private.head);
+  MDSDBG("TdiShowPrivate: %" PRIxPTR "\n", (uintptr_t)(void *)_private.head);
   return wild((int (*)())show_one, narg, list, &_private, out_ptr,
               TDITHREADSTATIC_VAR);
 }
@@ -1369,7 +1358,7 @@ extern EXPORT int TdiSaveContext(void *ptr[6])
   ptr[4] = _public.head_zone;
   ptr[5] = _public.data_zone;
   UNLOCK_PUBLIC;
-  DBG("TdiSaveContext: %" PRIxPTR "\n", (uintptr_t)ptr[0]);
+  MDSDBG("TdiSaveContext: %" PRIxPTR "\n", (uintptr_t)ptr[0]);
   return 1;
 }
 
@@ -1397,7 +1386,7 @@ extern EXPORT int TdiDeleteContext(void *ptr[6])
 extern EXPORT int TdiRestoreContext(void *const ptr[6])
 {
   TDITHREADSTATIC_INIT;
-  DBG("TdiRestoreContext: %" PRIxPTR "\n", (uintptr_t)ptr[0]);
+  MDSDBG("TdiRestoreContext: %" PRIxPTR "\n", (uintptr_t)ptr[0]);
   _private.head = (node_type *)ptr[0];
   _private.head_zone = ptr[1];
   _private.data_zone = ptr[2];

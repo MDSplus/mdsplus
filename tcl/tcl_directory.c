@@ -311,7 +311,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
   int status;
   vers = version;
   status = TreeGetNci(nid, full_list);
-  if (status & 1)
+  if (STATUS_OK)
   {
     if (version == 0)
     {

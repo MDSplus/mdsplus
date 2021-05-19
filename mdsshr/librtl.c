@@ -38,15 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <mdsshr.h>
+#include <_mdsshr.h>
 
 // #define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
+#include <mdsmsg.h>
 
 #ifdef _WIN32
 #include <process.h>
@@ -58,13 +54,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/wait.h>
 #endif
 
-#include <STATICdef.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mdsshr_messages.h>
 #include <mdstypes.h>
 #include <strroutines.h>
+#include "mdsthreadstatic.h"
 
 #define LIBRTL_SRC
 
@@ -132,7 +128,7 @@ static inline time_t get_tz_offset(time_t *const time)
 #endif
 }
 
-STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
+static int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
 ///
 /// Waits for the specified time in seconds. Supports fractions of seconds.
@@ -285,26 +281,51 @@ EXPORT void *LibCallg(void **const a, void *(*const routine)())
 }
 
 DEFINE_INITIALIZESOCKETS;
-EXPORT uint32_t LibGetHostAddr(const char *const name)
+EXPORT int _LibGetHostAddr(const char *name, const char *portstr, struct sockaddr *sin)
 {
   INITIALIZESOCKETS;
-  uint32_t addr = 0;
   struct addrinfo *entry, *info = NULL;
-  const struct addrinfo hints = {0, AF_INET, SOCK_STREAM, 0,
-                                 0, NULL, NULL, NULL};
-  if (!getaddrinfo(name, NULL, &hints, &info))
+  const struct addrinfo hints = {0, sin->sa_family, 0, 0, 0, NULL, NULL, NULL};
+  uint32_t port = 0;
+  const char *service = portstr;
+  if (portstr && (sin->sa_family == AF_INET || sin->sa_family == AF_INET6))
   {
-    for (entry = info; entry && !entry->ai_addr; entry = entry->ai_next)
-      ;
-    if (entry)
+    port = (uint32_t)strtol(portstr, NULL, 0);
+    if (port && port <= 0xFFFF)
     {
-      const struct sockaddr_in *addrin = (struct sockaddr_in *)entry->ai_addr;
-      addr = *(uint32_t *)&addrin->sin_addr;
+      port = htons(port);
+      service = NULL;
     }
-    if (info)
-      freeaddrinfo(info);
+    else
+    {
+      port = 0;
+    }
   }
-  return addr == 0xffffffff ? 0 : addr;
+  if (!getaddrinfo(name, service, &hints, &info) && info)
+  {
+    for (entry = info; entry; entry = entry->ai_next)
+    {
+      if (entry->ai_addr)
+      {
+        *sin = *entry->ai_addr;
+        if (port)
+        {
+          if (sin->sa_family == AF_INET)
+          {
+            ((struct sockaddr_in *)sin)->sin_port = port;
+          }
+          else if (sin->sa_family == AF_INET6)
+          {
+            ((struct sockaddr_in6 *)sin)->sin6_port = port;
+          }
+        }
+        break;
+      }
+    }
+    freeaddrinfo(info);
+    return C_OK;
+  }
+  return C_ERROR;
 }
 
 #ifdef _WIN32
@@ -497,6 +518,18 @@ EXPORT int TranslateLogicalXd(const mdsdsc_t *const in,
 
 EXPORT void MdsFree(void *const ptr) { free(ptr); }
 
+EXPORT void MdsFreeDescriptor(mdsdsc_t *d)
+{
+  if (d)
+  {
+    if (d->class == CLASS_XD)
+      MdsFree1Dx((mdsdsc_xd_t *)d, NULL);
+    else if (d->class == CLASS_D)
+      free(d->pointer);
+    free(d);
+  }
+}
+
 EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
 {
   char *out = malloc((size_t)in->length + 1);
@@ -506,17 +539,14 @@ EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
   return out;
 }
 
-// int LibSigToRet()
-//{
-//  return 1;
-//}
+EXPORT char *LibFindImageSymbolErrString()
+{
+  MDSTHREADSTATIC_INIT;
+  return MDS_FIS_ERROR;
+}
 
-STATIC_THREADSAFE char *FIS_Error = "";
-
-EXPORT char *LibFindImageSymbolErrString() { return FIS_Error; }
-
-static void *loadLib(const char *const dirspec, const char *const filename,
-                     char *errorstr)
+static void *load_lib(const char *const dirspec, const char *const filename,
+                      char *errorstr)
 {
   void *handle = NULL;
   char *full_filename = alloca(strlen(dirspec) + strlen(filename) + 10);
@@ -535,7 +565,7 @@ static void *loadLib(const char *const dirspec, const char *const filename,
   {
     strcpy(full_filename, filename);
   }
-#ifndef _WIN32
+#ifdef RTLD_NOLOAD
   handle = dlopen(full_filename, RTLD_NOLOAD | RTLD_LAZY);
   if (!handle)
 #endif
@@ -552,9 +582,8 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
                                 const char *const symbol, void **symbol_value)
 {
   int status;
-  static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&dlopen_mutex);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)&dlopen_mutex);
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  MUTEX_LOCK_PUSH(&lock);
   if (*symbol_value) // already loaded
     status = 1;
   else
@@ -582,7 +611,7 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
     {
       strcat(filename, SHARELIB_TYPE);
     }
-    handle = loadLib("", filename, errorstr);
+    handle = load_lib("", filename, errorstr);
     if (handle == NULL && (strchr(filename, '/') == 0) &&
         (strchr(filename, '\\') == 0))
     {
@@ -596,7 +625,7 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
           char *dptr = strchr(libpath + offset, delim);
           if (dptr)
             *dptr = '\0';
-          handle = loadLib(libpath + offset, filename, errorstr);
+          handle = load_lib(libpath + offset, filename, errorstr);
           if (handle)
             break;
           offset = offset + strlen(libpath + offset) + 1;
@@ -610,7 +639,7 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
         {
           char *libdir = alloca(strlen(mdir) + 10);
           sprintf(libdir, "%s/%s", mdir, "lib");
-          handle = loadLib(libdir, filename, errorstr);
+          handle = load_lib(libdir, filename, errorstr);
         }
       }
     }
@@ -623,20 +652,20 @@ EXPORT int LibFindImageSymbol_C(const char *const filename_in,
                  "Error: %s\n", dlerror());
       }
     }
-    if (strlen(FIS_Error) > 0)
-    {
-      free(FIS_Error);
-      FIS_Error = "";
-    }
+    MDSTHREADSTATIC_INIT;
+    free(MDS_FIS_ERROR);
     if (*symbol_value == NULL)
     {
-      FIS_Error = strdup(errorstr);
+      MDS_FIS_ERROR = strdup(errorstr);
       status = LibKEYNOTFOU;
     }
     else
+    {
+      MDS_FIS_ERROR = NULL;
       status = 1;
+    }
   }
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&lock);
   return status;
 }
 
@@ -843,15 +872,11 @@ EXPORT int StrRight(mdsdsc_t *const out, const mdsdsc_t *const in,
 }
 
 static pthread_mutex_t zones_lock = PTHREAD_MUTEX_INITIALIZER;
-#define LOCK_ZONES                 \
-  pthread_mutex_lock(&zones_lock); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &zones_lock)
-#define UNLOCK_ZONES pthread_cleanup_pop(1);
+#define LOCK_ZONES MUTEX_LOCK_PUSH(&zones_lock)
+#define UNLOCK_ZONES MUTEX_LOCK_POP(&zones_lock)
 ZoneList *MdsZones = NULL;
-#define LOCK_ZONE(zone)              \
-  pthread_mutex_lock(&(zone)->lock); \
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &(zone)->lock)
-#define UNLOCK_ZONE(zone) pthread_cleanup_pop(1);
+#define LOCK_ZONE(zone) MUTEX_LOCK_PUSH(&(zone)->lock)
+#define UNLOCK_ZONE(zone) MUTEX_LOCK_POP(&(zone)->lock)
 
 EXPORT int LibCreateVmZone(ZoneList **const zone)
 {
@@ -925,49 +950,54 @@ EXPORT int LibResetVmZone(ZoneList **const zone)
   return MDSplusSUCCESS;
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclobbered"
-
-EXPORT int LibFreeVm(const uint32_t *const len, void **const vm,
-                     ZoneList **const zone)
+static VmList *ZoneList_remove_VmList(ZoneList **zone, void *vm)
 {
-  VmList *list = NULL;
-  if (zone)
+  VmList *list;
+  LOCK_ZONE(*zone);
+  VmList **prev = &(*zone)->vm;
+  for (list = (*zone)->vm; list; prev = &list->next, list = list->next)
   {
-    LOCK_ZONE(*zone);
-    VmList *prev;
-    for (prev = NULL, list = (*zone)->vm; list && (list->ptr != *vm);
-         prev = list, list = list->next)
-      ;
-    if (list)
+    if (list->ptr == vm)
     {
-      if (prev)
-        prev->next = list->next;
-      else
-        (*zone)->vm = list->next;
+      *prev = list->next;
+      break;
     }
-    UNLOCK_ZONE(*zone);
   }
-  if (len && *len && vm && *vm)
+  UNLOCK_ZONE(*zone);
+  return list;
+}
+
+static void ZoneList_add_VmList(ZoneList **zone, VmList *list)
+{
+  LOCK_ZONE(*zone);
+  list->next = (*zone)->vm;
+  (*zone)->vm = list;
+  UNLOCK_ZONE(*zone);
+}
+
+EXPORT int LibFreeVm(const uint32_t *len, void **vm, ZoneList **zone)
+{
+  (void)len;
+  if (vm && *vm)
+  {
     free(*vm);
-  free(list);
+    if (zone)
+    {
+      free(ZoneList_remove_VmList(zone, *vm));
+    }
+  }
   return MDSplusSUCCESS;
 }
-#pragma GCC diagnostic pop
-
-EXPORT int libfreevm_(const uint32_t *const len, void **const vm,
-                      ZoneList **const zone)
+EXPORT int libfreevm_(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibFreeVm(len, vm, zone);
 }
-EXPORT int libfreevm(const uint32_t *const len, void **const vm,
-                     ZoneList **const zone)
+EXPORT int libfreevm(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibFreeVm(len, vm, zone);
 }
 
-EXPORT int LibGetVm(const uint32_t *const len, void **const vm,
-                    ZoneList **const zone)
+EXPORT int LibGetVm(const uint32_t *len, void **vm, ZoneList **zone)
 {
   *vm = malloc(*len);
   if (*vm == NULL)
@@ -979,28 +1009,18 @@ EXPORT int LibGetVm(const uint32_t *const len, void **const vm,
   {
     VmList *list = malloc(sizeof(VmList));
     list->ptr = *vm;
-    LOCK_ZONE(*zone);
-    list->next = (*zone)->vm;
-    (*zone)->vm = list;
-    UNLOCK_ZONE(*zone);
+    ZoneList_add_VmList(zone, list);
   }
   return MDSplusSUCCESS;
 }
-EXPORT int libgetvm_(const uint32_t *const len, void **const vm,
-                     ZoneList **const zone)
+EXPORT int libgetvm_(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibGetVm(len, vm, zone);
 }
-EXPORT int libgetvm(const uint32_t *const len, void **const vm,
-                    ZoneList **const zone)
+EXPORT int libgetvm(const uint32_t *len, void **vm, ZoneList **zone)
 {
   return LibGetVm(len, vm, zone);
 }
-
-// int LibEstablish()
-//{
-//  return 1;
-//}
 
 #define SEC_PER_DAY (60 * 60 * 24)
 
@@ -1335,8 +1355,7 @@ static int MdsInsertTree(struct bbtree_info *const bbtree_ptr)
     return MDSplusERROR;
   }
   save_current = currentNode;
-  if ((in_balance = (*(bbtree_ptr->compare_routine))(
-           bbtree_ptr->keyname, currentNode, bbtree_ptr->user_context)) <= 0)
+  if ((in_balance = (*(bbtree_ptr->compare_routine))(bbtree_ptr->keyname, currentNode, bbtree_ptr->user_context)) <= 0)
   {
     if ((in_balance == 0) && (!(bbtree_ptr->controlflags & 1)))
     {
@@ -1830,10 +1849,10 @@ static size_t findfileloop(ctx_t *const ctx)
       return ctx->stack[ctx->cur_stack].wlen + flen;
     if (ctx->recursive && ISDIRECTORY(ctx))
     {
-      // DBG("path = %s\n", ctx->buffer);
+      // MDSDBG("path = %s", ctx->buffer);
       if (++ctx->cur_stack == ctx->max_stack)
       {
-        DBG("max_stack increased = %d\n", ctx->max_stack);
+        MDSDBG("max_stack increased = %d", ctx->max_stack);
         findstack_t *old = ctx->stack;
         ctx->max_stack *= 2;
         ctx->stack = malloc(sizeof(findstack_t) * ctx->max_stack);
@@ -1858,7 +1877,7 @@ static inline void *_findfilestart(const char *const envname,
                                    const char *const filename,
                                    const int recursive, const int case_blind)
 {
-  DBG("looking for '%s' in '%s'\n", filename, envname);
+  MDSDBG("looking for '%s' in '%s'", filename, envname);
   ctx_t *ctx = (ctx_t *)malloc(sizeof(ctx_t));
   ctx->max_stack = recursive ? 8 : 1;
   ctx->stack = malloc(ctx->max_stack * sizeof(findstack_t));
@@ -2074,51 +2093,6 @@ EXPORT int LibFindFileCaseBlind(const mdsdsc_t *const filespec,
 
 EXPORT void TranslateLogicalFree(char *const value) { free(value); }
 
-#ifdef LOBYTE
-#undef LOBYTE
-#endif
-#ifdef HIBYTE
-#undef HIBYTE
-#endif
-#define LOBYTE(x) ((x)&0xFF)
-#define HIBYTE(x) (((x) >> 8) & 0xFF)
-
-/*
-// Cyclic redundancy check but seems unused
-static uint16_t icrc1(const uint16_t crc)
-{
-  int i;
-  uint32_t ans = crc;
-  for (i = 0; i < 8; i++) {
-    if (ans & 0x8000) {
-      ans <<= 1;
-      ans = ans ^ 4129;
-    } else
-      ans <<= 1;
-  }
-  return (uint16_t)ans;
-}
-uint16_t Crc(const uint32_t len, uint8_t *const bufptr)
-{
-  STATIC_THREADSAFE pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  STATIC_THREADSAFE uint16_t icrctb[256], init = 0;
-  pthread_mutex_lock(&mutex);
-  //  STATIC_THREADSAFE unsigned char rchr[256];
-  //STATIC_CONSTANT unsigned it[16] = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13,
-3, 11, 7, 15 }; if (!init) { init = 1; int i; for (i = 0; i < 256; i++) {
-      icrctb[i] = icrc1((uint16_t)(i << 8));
-      //  rchr[i] = (unsigned char)(it[i & 0xF] << 4 | it[i >> 4]);
-    }
-  }
-  int cword = 0;
-  uint32_t j;
-  for (j = 0; j < len; j++)
-    cword = icrctb[bufptr[j] ^ HIBYTE(cword)] ^ LOBYTE(cword) << 8;
-  pthread_mutex_unlock(&mutex);
-  return (uint16_t)cword;
-}
-*/
-
 EXPORT int MdsPutEnv(const char *const cmd)
 {
   /* cmd		action
@@ -2138,12 +2112,12 @@ EXPORT int MdsPutEnv(const char *const cmd)
       if (*value)
       {
         *(value++) = '\0';
-        DBG("setenv %s=%s\n", name, value);
+        MDSDBG("setenv %s=%s", name, value);
         status = setenv(name, value, 1);
       }
       else
       {
-        DBG("unsetenv %s\n", name);
+        MDSDBG("unsetenv %s", name);
         status = unsetenv(name);
       }
       status = status ? MDSplusERROR : MDSplusSUCCESS;

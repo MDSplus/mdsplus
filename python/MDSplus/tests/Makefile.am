@@ -54,9 +54,14 @@ connection_thick_test.py \
 connection_thread_test.py \
 connection_tunnel_test.py \
 connection_tcp_test.py \
-dcl_interface_test.py \
-dcl_dispatcher_test.py
+connection_write_test.py \
+dcl_interface_test.py
+if !MINGW
+TESTS += dcl_dispatcher_test.py
+endif
 
+# connection_write_test.py causes valgrind to hang?
+VALGRIND_TESTS = $(filter-out connection_write_test.py,$(TESTS))
 
 VALGRIND_SUPPRESSIONS_FILES =
 

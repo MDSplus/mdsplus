@@ -342,7 +342,8 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[],
     pin -= len * *px[0];
     row = arr.m[0] * sizeof(int);
   inner:
-    for (j = 0; j < row; j += sizeof(int)) {
+    for (j = 0; j < row; j += sizeof(int))
+    {
       memcpy(pout, pin + len * *(int *)((char *)px[0] + j), len);
       pout += len;
     }

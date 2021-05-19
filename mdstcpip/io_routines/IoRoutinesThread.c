@@ -37,62 +37,45 @@ static int io_disconnect(Connection *c)
   if (p && p->pth != PARENT_THREAD)
   {
 #ifdef _WIN32
-    if (WaitForSingleObject(p->pid, 0) == WAIT_TIMEOUT)
+    close_pipe(p->in);
+    close_pipe(p->out);
+    if (WaitForSingleObject(p->pid, 100) == WAIT_TIMEOUT)
       TerminateThread(p->pid, 0);
     CloseHandle(p->pid);
 #else
     pthread_cancel(p->pth);
     pthread_join(p->pth, NULL);
-#endif
     close_pipe(p->in);
     close_pipe(p->out);
+#endif
   }
   return C_OK;
 }
 
-static void io_cleanup(void *pp)
-{
-  void *ctx = (void *)-1;
-  int id;
-  char *info_name;
-  io_pipes_t *info;
-  size_t info_len = 0;
-  pthread_t me = pthread_self();
-  while ((id = NextConnection(&ctx, &info_name, (void *)&info, &info_len)) !=
-         INVALID_CONNECTION_ID)
-  {
-    if (info_name && strcmp(info_name, PROTOCOL) == 0 &&
-        pthread_equal(info->pth, me))
-    {
-      DisconnectConnection(id);
-      break;
-    }
-  }
-  free(pp);
-}
-
 static void io_listen(void *pp)
 {
-  int id, status;
-  pthread_cleanup_push(io_cleanup, pp);
-  INIT_AND_FREE_ON_EXIT(char *, username);
-  status = AcceptConnection("thread", "thread", 0, pp, sizeof(io_pipes_t), &id,
-                            &username);
-  FREE_NOW(username);
-
-  while (STATUS_OK)
-    status = DoMessage(id);
-  close_pipe(((io_pipes_t *)pp)->in);
-  close_pipe(((io_pipes_t *)pp)->out);
-  pthread_cleanup_pop(1);
+  int id;
+  int status = AcceptConnection(
+      PROTOCOL, PROTOCOL, 0, pp, sizeof(io_pipes_t), &id, NULL);
+  free(pp);
+  if (STATUS_OK)
+  {
+    Connection *connection = PopConnection(id);
+    pthread_cleanup_push((void *)destroyConnection, (void *)connection);
+    do
+      status = ConnectionDoMessage(connection);
+    while (STATUS_OK);
+    pthread_cleanup_pop(1);
+  }
 }
 
 inline static int io_connect(Connection *c,
                              char *protocol __attribute__((unused)),
                              char *host __attribute__((unused)))
 {
+  io_pipes_t p, *pp = calloc(1, sizeof(p));
+  memset(&p, 0, sizeof(p));
 #ifdef _WIN32
-  io_pipes_t p = {NULL, NULL, NULL, 0}, *pp = calloc(sizeof(p), 1);
   pp->pth = PARENT_THREAD;
   SECURITY_ATTRIBUTES saAttr;
   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -106,7 +89,6 @@ inline static int io_connect(Connection *c,
                              NULL)))
   {
 #else
-  io_pipes_t p, *pp = malloc(sizeof(p));
   int pipe_up[2], pipe_dn[2], ok_up, ok_dn;
   ok_up = pipe(pipe_up);
   ok_dn = pipe(pipe_dn);
@@ -130,16 +112,22 @@ inline static int io_connect(Connection *c,
   pp->in = pipe_up[0];
   pp->out = pipe_dn[1];
   pp->pth = PARENT_THREAD;
-  if (pthread_create(&p.pth, NULL, (void *)io_listen, pp))
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, 0x40000);
+  const int err = pthread_create(&p.pth, &attr, (void *)io_listen, (void *)pp);
+  pthread_attr_destroy(&attr);
+  if (err)
   {
 #endif
     close_pipe(p.in);
     close_pipe(p.out);
     close_pipe(pp->out);
     close_pipe(pp->in);
+    free(pp);
     return C_ERROR;
   }
-  SetConnectionInfoC(c, PROTOCOL, 0, &p, sizeof(p));
+  ConnectionSetInfo(c, PROTOCOL, 0, &p, sizeof(p));
   return C_OK;
 }
 

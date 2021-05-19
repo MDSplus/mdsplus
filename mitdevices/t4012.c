@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 
 #include <treeshr.h>
@@ -160,7 +160,7 @@ EXPORT int t4012___init(struct descriptor *nid __attribute__ ((unused)), InInitS
     pio(9, 0, 0);
     retry_on_error(AccessTraq((InStoreStruct *) setup, 14, 16, 0, 0), status);
     pio(0, 0, &sampling);
-    for (try = 0; (try < 30) && (!(CamQ(0) & 1)) && (status & 1); try++) {
+    for (try = 0; (try < 30) && (!(CamQ(0) & 1)) && (STATUS_OK); try++) {
       DevWait((float).001);
       pio(0, 0, &sampling);
     }
@@ -303,19 +303,19 @@ EXPORT int t4012___store(int *niddsc __attribute__ ((unused)), InStoreStruct * s
   TreeFree(nodename);
   strcat(digname, ":T28%%_%%");
   status = TreeFindNodeWild(digname, &dig_nid, &ctx, 1 << TreeUSAGE_DEVICE);
-  for (dig = 1, channels_read = 0; (channels_read < channels) && (status & 1); dig++) {
+  for (dig = 1, channels_read = 0; (channels_read < channels) && (STATUS_OK); dig++) {
     static int dig_nids[1 + 8 * T28XX_K_NODES_PER_INP];
     static int nidlen;
     static NCI_ITM itmlst[] =
 	{ {sizeof(dig_nids), NciCONGLOMERATE_NIDS, (unsigned char *)&dig_nids, &nidlen},
     {0, NciEND_OF_LIST, 0, 0}
     };
-    if (status & 1) {
+    if (STATUS_OK) {
       int i;
       int digchannels;
       status = TreeGetNci(dig_nid, itmlst);
       digchannels = (nidlen / sizeof(dig_nid) - 1) / T28XX_K_NODES_PER_INP;
-      for (i = 0; i < digchannels && (status & 1) && channels_read < channels; i++) {
+      for (i = 0; i < digchannels && (STATUS_OK) && channels_read < channels; i++) {
 	if (TreeIsOn(CNID(i, HEAD)) & 1) {
 	  int channel_select = 0x0A000 | (channels_read + 1);
 	  AccessTraq(setup, channel_select, 24, 0, 0);
@@ -342,7 +342,7 @@ EXPORT int t4012___store(int *niddsc __attribute__ ((unused)), InStoreStruct * s
 	    status =
 		ReadChannel(setup, chunk, *acoef + chunk_offset, mem, &points_read,
 			    &CNID(i, CALIBRATION), calib);
-	    if (status & 1) {
+	    if (STATUS_OK) {
 	      offset = calib[0];
 	      if (calib[0] == calib[1])
 		coefficient = (offset > 1000) ? 10. / 4096 : 5. / 4096.;
@@ -359,7 +359,7 @@ EXPORT int t4012___store(int *niddsc __attribute__ ((unused)), InStoreStruct * s
 	channels_read++;
       }
     }
-    if (channels_read < channels && (status & 1))
+    if (channels_read < channels && (STATUS_OK))
       status = TreeFindNodeWild(digname, &dig_nid, &ctx, 1 << TreeUSAGE_DEVICE);
   }
   TreeFindNodeEnd(&ctx);
@@ -385,7 +385,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
   int points_to_read;
   int status = 1;
   //int tries;
-  for (points_to_read = chunksize; status & 1 && points_to_read; points_to_read = chunksize) {
+  for (points_to_read = chunksize; STATUS_OK && points_to_read; points_to_read = chunksize) {
     struct {
       unsigned short status;
       unsigned short bytcnt;
@@ -401,7 +401,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
     arglist[0] = (void *)(sizeof(arglist) / sizeof(arglist[0]));
     AccessTraq(setup, chunk_address, 24, arglist, TdiData);
     pio(8, 0, 0);
-    for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (status & 1); try++) {
+    for (try = 0; (try < 20) && (!(CamQ(0) & 1)) && (STATUS_OK); try++) {
       pio(8, 0, 0);
     }
     pio(10, 0, 0);
@@ -409,7 +409,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
 		    (CamQstopw
 		     (setup->name, 0, 2, points_to_read, buffer + *samples_read, 16,
 		      (unsigned short *)&iosb), &one, 0), status);
-    status = status & 1 ? iosb.status : status;
+    status = STATUS_OK ? iosb.status : status;
     *samples_read += iosb.bytcnt / 2;
     if (iosb.bytcnt / 2 != points_to_read)
       break;
@@ -431,7 +431,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
     }
   }
   piomem(17, 0, &data, memsize);
-  for (try = 0; (try < 30) && (!(CamQ(0) & 1)) && (status & 1); try++) {
+  for (try = 0; (try < 30) && (!(CamQ(0) & 1)) && (STATUS_OK); try++) {
     if (arglist && !called) {
       called = 1;
       LibCallg(arglist, routine);
@@ -454,7 +454,7 @@ EXPORT int t4012__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), s
   static NCI_ITM nci[] =
       { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + nid;
+  uilnames[0].value = (void *)(intptr_t)nid;
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "T4012", uilnames,
 			 XtNumber(uilnames), 0);
 }
@@ -483,7 +483,7 @@ static void Load(Widget w)
     dignam[len++] = '0' + (i % 10);
     dignam[len++] = 0;
     status = TreeFindNode(dignam, &dig_nid);
-    if (status & 1) {
+    if (STATUS_OK) {
       NCI_ITM itmlst[] = { {512, NciNODE_NAME, 0, 0}
       , {0, 0, 0, 0}
       };

@@ -22,17 +22,21 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
 #include <mdsplus/mdsconfig.h>
-#include <socket_port.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
+#include <socket_port.h>
+#include <pthread_port.h>
 
 //#define DEBUG
 
@@ -309,8 +313,7 @@ DEFINE_INITIALIZESOCKETS;
 EXPORT void InitializeEventSettings()
 {
   INITIALIZESOCKETS;
-  pthread_mutex_lock(&init_lock);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &init_lock);
+  MUTEX_LOCK_PUSH(&init_lock);
   int i, missing = 0;
   xmlInitParser_supp();
   for (i = 0; i < NUM_SETTINGS; i++)
@@ -414,5 +417,5 @@ EXPORT void InitializeEventSettings()
     fprintf(stderr, "\n");
 #endif
   }
-  pthread_cleanup_pop(1);
+  MUTEX_LOCK_POP(&init_lock);
 }

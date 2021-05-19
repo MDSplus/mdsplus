@@ -930,10 +930,10 @@ rest_of_line:
   if (cmdDef->image)
     image = cmdDef->image;
   status = LibFindImageSymbol_C(image, cmdDef->routine, &handler);
-  if (status & 1)
+  if (STATUS_OK)
   {
     status = handler(cmd, error, output, getline, getlineinfo);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
     {
       if ((*error == 0) && (status != 0))
       {
@@ -1230,34 +1230,31 @@ static inline void mdsdcl_alloc_docdef(dclDocListPtr doc_l,
 }
 EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 {
-  size_t i;
-  char *name = 0;
   char *commands;
-  char *commands_part;
+  char *tmp;
   xmlDocPtr doc;
   dclDocListPtr doc_l, doc_p;
   char *mdsplus_dir;
   char *filename = 0;
   int status = 0;
-  name = strdup(name_in);
-
-  /* convert the name to lowercase. The table xml files should always be named
-     as tablename_commands.xml all lowercase. */
-
-  for (i = 0; i < strlen(name); i++)
-    name[i] = tolower(name[i]);
-
-  /* see if the caller included the "_commands" suffix in the name and if not
-     add it */
-
-  commands_part = strstr(name, "_commands");
-  if (commands_part &&
-      ((name + strlen(name_in) - strlen("_commands")) == commands_part))
-    commands_part[0] = '\0';
-  commands = strcpy(malloc(strlen(name) + strlen("_commands") + 1), name);
-  strcat(commands, "_commands");
-  free(name);
-
+  commands = strdup(name_in);
+  // convert the name to lowercase
+  // NOTE: table xml filenames should match "[a-z]+_commands.xml"
+  for (tmp = commands; *tmp; tmp++)
+    *tmp = tolower(*tmp);
+  size_t cmd_len = tmp - commands;
+  // check if caller included "_commands" suffix, add it otherwise
+  tmp = strstr(commands, "_commands");
+  if (!tmp || *(tmp + sizeof("_commands") - 1))
+  {
+    // append '_commands'
+    char *newcmd = realloc(commands, cmd_len + sizeof("_commands"));
+    if (newcmd)
+    {
+      commands = newcmd;
+      memcpy(commands + cmd_len, "_commands", sizeof("_commands"));
+    }
+  }
   /* See if that command table has already been loaded in the private list. If
      it has, pop that table to the top of the stack and return */
   DCLTHREADSTATIC_INIT;
@@ -1456,7 +1453,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
       status =
           processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt,
                          &error_tmp, &output_tmp, getline, getlineinfo);
-      if (status & 1)
+      if (STATUS_OK)
       {
         free(error);
         error = error_tmp;
@@ -1521,7 +1518,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
       free(prompt);
     }
   }
-  if ((prompt == NULL) && (error == 0) && (!(status & 1)))
+  if ((prompt == NULL) && (error == 0) && (STATUS_NOT_OK))
   {
     if (status == MdsdclIVVERB && error == NULL)
     {

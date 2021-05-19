@@ -3,11 +3,10 @@
 pthread_mutex_t globalMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t segmentMutex = PTHREAD_MUTEX_INITIALIZER;
 
-
-SaveItem::SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode, 
-                   MDSplus::Data *triggerTime, void *treePtr, 
-                  double *startTimes, double *endTimes, double freq, int blocksInSegment,
-                  MDSplus::TreeNode *resampledNode)
+SaveItem::SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,
+                   MDSplus::Data *triggerTime, void *treePtr,
+                   double *startTimes, double *endTimes, double freq, int blocksInSegment,
+                   MDSplus::TreeNode *resampledNode)
 {
   this->buffer = buffer;
   this->segmentSamples = segmentSamples;
@@ -17,16 +16,15 @@ SaveItem::SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNod
   this->blocksInSegment = blocksInSegment;
   this->startTimes = new double[blocksInSegment];
   this->endTimes = new double[blocksInSegment];
-  for(int i = 0; i < blocksInSegment; i++)
+  for (int i = 0; i < blocksInSegment; i++)
   {
-      this->startTimes[i] = startTimes[i];
-      this->endTimes[i] = endTimes[i];
+    this->startTimes[i] = startTimes[i];
+    this->endTimes[i] = endTimes[i];
   }
   this->freq = freq;
   this->resampledNode = resampledNode;
   nxt = 0;
 }
-
 
 void SaveItem::save()
 {
@@ -62,7 +60,7 @@ void SaveItem::save()
       MDSplus::compileWithArgs("$1+$2", treePtr, 2, endData, triggerTime);
   try
   {
-    std::cout << "MAKE SEGMENT  SAMPLES:"<< segmentSamples << std::endl;
+    std::cout << "MAKE SEGMENT  SAMPLES:" << segmentSamples << std::endl;
     dataNode->makeSegment(startSegData, endSegData, timebase, chanData);
   }
   catch (MDSplus::MdsException &exc)
@@ -76,10 +74,10 @@ void SaveItem::save()
   MDSplus::deleteData(startSegData);
   MDSplus::deleteData(endSegData);
   delete[] buffer;
-  delete [] startTimes;
-  delete [] endTimes;
-}  
-  
+  delete[] startTimes;
+  delete[] endTimes;
+}
+
 SaveList::SaveList()
 {
   int status = pthread_mutex_init(&mutex, NULL);
@@ -90,13 +88,13 @@ SaveList::SaveList()
 }
 
 void SaveList::addItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,
-               MDSplus::Data *triggerTime, void *treePtr, 
-               double *startTimes, double *endTimes, double freq, int blocksInSegment,
-               MDSplus::TreeNode *resampledNode)
+                       MDSplus::Data *triggerTime, void *treePtr,
+                       double *startTimes, double *endTimes, double freq, int blocksInSegment,
+                       MDSplus::TreeNode *resampledNode)
 
 {
   SaveItem *newItem = new SaveItem(
-        buffer, segmentSamples, dataNode, triggerTime, treePtr, startTimes, endTimes, freq, blocksInSegment, resampledNode);
+      buffer, segmentSamples, dataNode, triggerTime, treePtr, startTimes, endTimes, freq, blocksInSegment, resampledNode);
   pthread_mutex_lock(&mutex);
 
   if (saveHead == NULL)

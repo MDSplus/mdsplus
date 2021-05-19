@@ -147,7 +147,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
     TreeCallHookFun("TreeNidDataHook", "PutDataFull", info_ptr->treenam,
                     info_ptr->shot, nid, descriptor_ptr, NULL);
     status = TreeCallHook(PutData, info_ptr, nid);
-    if (status && !(status & 1))
+    if (status && STATUS_NOT_OK)
       return status;
     TreeGetViewDate(&saved_viewdate);
     int locked_nci = 0;
@@ -218,14 +218,14 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
                   : nci->DATA_INFO.DATA_LOCATION.record_length;
           if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
             status = TreeNOOVERWRITE;
-          if ((status & 1) &&
+          if ((STATUS_OK) &&
               (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
             status = TreeNOWRITESHOT;
-          if ((status & 1) &&
+          if ((STATUS_OK) &&
               (!shot_open && (nci->flags & NciM_NO_WRITE_MODEL)))
             status = TreeNOWRITEMODEL;
         }
-        if (status & 1)
+        if (STATUS_OK)
         {
           unsigned char tree = (unsigned char)nid_ptr->tree;
           int compressible;
@@ -250,9 +250,9 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
           bitassign(compressible, nci->flags, NciM_COMPRESSIBLE);
           bitassign_c(data_in_altbuf, nci->flags2, NciM_DATA_IN_ATT_BLOCK);
         }
-        if ((status & 1) && nci->length && (!utility_update))
+        if ((STATUS_OK) && nci->length && (!utility_update))
           status = check_usage(dblist, nid_ptr, nci);
-        if (status & 1)
+        if (STATUS_OK)
         {
           if (nci->flags2 & NciM_DATA_IN_ATT_BLOCK &&
               !(nci->flags & NciM_VERSIONS) && !extended)
@@ -270,14 +270,14 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
                   &attributes.facility_length[STANDARD_RECORD_FACILITY],
                   (compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) &&
                       !(nci->flags & NciM_DO_NOT_COMPRESS));
-              if (status & 1)
+              if (STATUS_OK)
               {
                 attributes.facility_offset[SEGMENTED_RECORD_FACILITY] = -1;
                 attributes.facility_length[SEGMENTED_RECORD_FACILITY] = 0;
                 status = TreePutExtendedAttributes(info_ptr, &attributes,
                                                    &extended_offset);
               }
-              if (status & 1)
+              if (STATUS_OK)
               {
                 bitassign(0, nci->flags, NciM_SEGMENTED);
                 tree_put_nci(info_ptr, nidx, nci, &locked_nci);
@@ -674,7 +674,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
   int deleted = 1;
   if (!info->header->readonly)
   {
-    while (deleted && status & 1)
+    while (deleted && STATUS_OK)
     {
       status =
           MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put,

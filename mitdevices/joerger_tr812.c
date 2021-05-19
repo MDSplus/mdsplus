@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 
 #include <treeshr.h>
@@ -160,7 +160,7 @@ static int Store(InStoreStruct * setup, int partial)
   pio(1, 1, (short *)&f1a1);
   min_idx = ((long)f0a0.pretrigger * (long)-4096) / ((long)f0a0.act_memory + 1);
   max_idx = (long)4096 *((long)f0a0.act_memory + 1) + min_idx - 1;
-  for (chan = 0; ((chan < 8) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < 8) && (STATUS_OK)); chan++) {
     int data_nid =
 	setup->head_nid + JOERGER_TR812_N_CHANNEL_1 + (JOERGER_TR812_N_CHANNEL_2 -
 						       JOERGER_TR812_N_CHANNEL_1) * chan;
@@ -168,13 +168,13 @@ static int Store(InStoreStruct * setup, int partial)
     int end_nid = data_nid + JOERGER_TR812_N_CHANNEL_1_ENDIDX - JOERGER_TR812_N_CHANNEL_1;
     if (TreeIsOn(data_nid) & 1) {
       status = DevLong(&start_nid, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&end_nid, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(raw.bounds[0].l, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -183,7 +183,7 @@ static int Store(InStoreStruct * setup, int partial)
       if (raw.m[0] > 0) {
 	samples_to_read = raw.bounds[0].u - min_idx + 1;
 	status = ReadChannel(partial, &f0a0, setup, &chan, &samples_to_read, channel_data);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  int gain = 1 << ((f1a1 >> (chan * 2)) & 3);
 	  coefficient = 20.0 / 4096 / gain;
 	  raw.pointer = (char *)(channel_data + (raw.bounds[0].l - min_idx));

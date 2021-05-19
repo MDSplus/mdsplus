@@ -2061,7 +2061,7 @@ fallback:;
   status = LibFindImageSymbol_C("TdiShr", "_TdiCompile", &_TdiCompile);
   if (STATUS_OK)
   {
-    STATIC_CONSTANT DESCRIPTOR(
+    static DESCRIPTOR(
         expression, "execute('$1[$2 : $2+$3-1]',$1,lbound($1,-1),$2)");
     DESCRIPTOR_LONG(row_d, &filled_rows);
     status = _TdiCompile(&dbid, &expression, dim, &row_d, dim MDS_END_ARG);
@@ -2792,7 +2792,7 @@ inline static int is_segment_in_range(vars_t *vars, mdsdsc_t *start,
   {
     if ((start && start->pointer) && (end && end->pointer))
     {
-      STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
+      static DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
       ans &= IS_OK(_TdiExecute(&vars->dblist, &expression, start, &segend,
                                end, &segstart, &ans_d MDS_END_ARG));
     }
@@ -2800,13 +2800,13 @@ inline static int is_segment_in_range(vars_t *vars, mdsdsc_t *start,
     {
       if (start && start->pointer)
       {
-        STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $)");
+        static DESCRIPTOR(expression, "($ <= $)");
         ans &= IS_OK(_TdiExecute(&vars->dblist, &expression, start, &segend,
                                  &ans_d MDS_END_ARG));
       }
       else
       {
-        STATIC_CONSTANT DESCRIPTOR(expression, "($ >= $)");
+        static DESCRIPTOR(expression, "($ >= $)");
         ans &= (_TdiExecute(&vars->dblist, &expression, end, &segstart,
                             &ans_d MDS_END_ARG));
       }
@@ -3300,7 +3300,7 @@ int _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start,
   DESCRIPTOR_LONG(nRowsD, &nRows);
   DESCRIPTOR_NID(resNidD, &resampledNid);
   DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
-  STATIC_CONSTANT DESCRIPTOR(
+  static DESCRIPTOR(
       expression, "BUILD_RANGE($1,$2-$3*($4-$5)/$6, $7*($8-$9)/$10)");
   EMPTYXD(dimXd);
 
@@ -3439,9 +3439,9 @@ int _TreeMakeSegmentMinMax(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *end,
   DESCRIPTOR_LONG(nRowsD, &nRows);
   DESCRIPTOR_NID(resNidD, &resampledNid);
   DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
-  STATIC_CONSTANT DESCRIPTOR(
+  static DESCRIPTOR(
       expression, "BUILD_RANGE($1,$2-$3/2.*($4-$5)/$6, ($7/2.)*($8-$9)/$10)");
-  STATIC_CONSTANT DESCRIPTOR(minMaxD, "MinMax");
+  static DESCRIPTOR(minMaxD, "MinMax");
   EMPTYXD(dimXd);
 
   resampleArrayDsc(initialValue, &resD, resFactor, &rowSize, &nRows, &nResRows,

@@ -3614,13 +3614,15 @@ namespace MDSplus
     // version
     virtual void makeSegmentResampled(Data *start, Data *end, Data *time,
                                       Array *initialData,
-                                      TreeNode *resampledNode)
+                                      TreeNode *resampledNode,
+                                      int resFactor = 100)
     {
       (void)start;
       (void)end;
       (void)initialData;
       (void)time;
       (void)resampledNode;
+      (void)resFactor;
       throw MdsException(
           "makeSegmentResampled() not supported for TreeNodeThinClient object");
     }
