@@ -63,7 +63,7 @@ _SendArg.argtypes = [ctypes.c_int32, ctypes.c_ubyte, ctypes.c_ubyte,
 
 
 INVALID_CONNECTION_ID = -1
-class _ConnectionLocal:
+class _Connection:
 
     _conid = INVALID_CONNECTION_ID
 
@@ -215,26 +215,26 @@ class Connection(object):
     """Implements an MDSip connection to an MDSplus server"""
 
     @property
-    def local(self):
+    def conn(self):
         try:
-            local = self._local.local
+            conn = self._local.conn
         except AttributeError:
-            local = self._local.local = _ConnectionLocal(self.hostspec)
-        return local
+            conn = self._local.conn = _Connection(self.hostspec)
+        return conn
 
-    @local.deleter
-    def local(self):
+    @conn.deleter
+    def conn(self):
         try:
-            local = self._local.local
+            conn = self._local.conn
         except AttributeError:
             pass
         else:
-            del(self._local.local)
-            local.disconnect()
+            del(self._local.conn)
+            conn.disconnect()
 
     def __enter__(self):
         """ Used for with statement. """
-        self.local.__enter__()
+        self.conn.__enter__()
         return self
 
     def __exit__(self, type, value, traceback):
@@ -247,10 +247,10 @@ class Connection(object):
         self.connect()
 
     def connect(self):
-        self.local.connect()
+        self.conn.connect()
 
     def disconnect(self):
-        del(self.local)
+        del(self.conn)
 
     def reconnect(self):
         self.disconnect()
@@ -314,7 +314,7 @@ class Connection(object):
         @return: result of evaluating the expression on the remote server
         @rtype: Scalar or Array
         """
-        return self.local.get(exp, *args, **kwargs)
+        return self.conn.get(exp, *args, **kwargs)
 
     def getObject(self, exp, *args, **kwargs):
         return self.get('serializeout(`(%s;))' % exp, *args, **kwargs).deserialize()
