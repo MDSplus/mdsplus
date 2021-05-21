@@ -351,7 +351,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
         freq = int(self.freq.data())
         # D-Tacq Recommendation: the minimum sample rate is 10kHz.
-        if freq < MIN_FREQUENCY:
+        if freq < self.MIN_FREQUENCY:
             raise MDSplus.DevBAD_PARAMETER(
                 " Sample rate should be greater or equal than 10kHz")
 
