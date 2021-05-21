@@ -146,7 +146,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {
             'path': ':TRIG_STR',
             'type': 'text',
-            'options': ('nowrite_shot',), 
+            'options': ('no_write_shot',), 
             'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"
         },
         {
