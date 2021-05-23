@@ -341,9 +341,7 @@ class _ACQ2106_423ST(MDSplus.Device):
     ]
 
     def init(self):
-        import acq400_hapi
-
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
         if self.ext_clock.length > 0:
@@ -426,10 +424,14 @@ class _ACQ2106_423ST(MDSplus.Device):
     STOP = stop
 
     def trig(self):
-        import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut = self.getUUT()
         uut.s0.set_knob('soft_trigger', '1')
     TRIG = trig
+
+    def getUUT(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        return uut
 
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
