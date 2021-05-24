@@ -57,39 +57,102 @@ class _ACQ2106_423ST(MDSplus.Device):
     """
 
     carrier_parts = [
-        {'path': ':NODE',        'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':COMMENT',     'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':TRIGGER',     'type': 'numeric',
-            'value': 0.0,    'options': ('no_write_shot',)},
-        {'path': ':TRIG_MODE',   'type': 'text',
-            'value': 'master:hard', 'options': ('no_write_shot',)},
-        {'path': ':EXT_CLOCK',   'type': 'axis',
-            'options': ('no_write_shot',)},
-        {'path': ':FREQ',        'type': 'numeric',
-            'value': 16000,  'options': ('no_write_shot',)},
-        {'path': ':DEF_DECIMATE', 'type': 'numeric',
-            'value': 1,      'options': ('no_write_shot',)},
-        {'path': ':SEG_LENGTH',  'type': 'numeric',
-            'value': 8000,   'options': ('no_write_shot',)},
-        {'path': ':MAX_SEGMENTS', 'type': 'numeric',
-            'value': 1000,   'options': ('no_write_shot',)},
-        {'path': ':SEG_EVENT',   'type': 'text',
-            'value': 'STREAM', 'options': ('no_write_shot',)},
-        {'path': ':TRIG_TIME',   'type': 'numeric',
-            'options': ('write_shot',)},
-        {'path': ':TRIG_STR',    'type': 'text',
-            'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)", 'options': ('nowrite_shot',)},
-        {'path': ':RUNNING',     'type': 'numeric',
-            'options': ('no_write_model',)},
-        {'path': ':LOG_FILE',    'type': 'text',   'options': ('write_once',)},
-        {'path': ':LOG_OUTPUT',  'type': 'text',   'options': (
-            'no_write_model', 'write_once', 'write_shot',)},
-        {'path': ':INIT_ACTION', 'type': 'action',
-            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))", 'options': ('no_write_shot',)},
-        {'path': ':STOP_ACTION', 'type': 'action',
-            'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options': ('no_write_shot',)},
+        {
+            'path': ':NODE',        
+            'type': 'text',
+            'value': '192.168.0.254',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':COMMENT',     
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIGGER',     
+            'type': 'numeric',
+            'value': 0.0,    
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_MODE',   
+            'type': 'text',
+            'value': 'master:hard', 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':EXT_CLOCK',   
+            'type': 'axis',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':FREQ',        
+            'type': 'numeric',
+            'value': 16000,  
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':DEF_DECIMATE', 
+            'type': 'numeric',
+            'value': 1,      
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_LENGTH',  
+            'type': 'numeric',
+            'value': 8000,   
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':MAX_SEGMENTS', 
+            'type': 'numeric',
+            'value': 1000,   
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':SEG_EVENT',   
+            'type': 'text',
+            'value': 'STREAM', 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_TIME',   
+            'type': 'numeric',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_STR',    
+            'type': 'text',
+            'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)", 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':RUNNING',     
+            'type': 'numeric',
+            'options': ('no_write_model',)
+        },
+        {
+            'path': ':LOG_FILE',    
+            'type': 'text',   
+            'options': ('write_once',)
+        },
+        {
+            'path': ':LOG_OUTPUT',  
+            'type': 'text',   
+            'options': ('no_write_model', 'write_once', 'write_shot',)
+        },
+        {
+            'path': ':INIT_ACTION', 
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))", 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':STOP_ACTION', 
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      
+            'options': ('no_write_shot',)
+        },
     ]
 
     data_socket = -1
@@ -254,12 +317,31 @@ class _ACQ2106_423ST(MDSplus.Device):
                             break
                         else:
                             self.full_buffers.put(buf)
+    # The minimum frequency we can operate at                   
+    MIN_FREQUENCY = 10000
+
+    # These are partial lists of the options we support.
+    # For a complete list, consult D-Tacq
+
+    # Trigger Source Options for Signal Highway d0
+    TRIG_SRC_OPTS_0 = [
+        'ext',          # External Trigger
+        'hdmi',         # HDMI Trigger
+        'gpg0',         # Gateway Pulse Generator Trigger
+        'wrtt0'         # White Rabbit Trigger
+    ]
+
+    # Trigger Source Options for Signal Highway d1
+    TRIG_SRC_OPTS_1 = [
+        'strig',        # Software Trigger
+        'hdmi_gpio',    # HDMI General Purpose I/O Trigger
+        'gpg1',         # Gateway Pulse Generator Trigger
+        'fp_sync',      # Front Panel SYNC
+        'wrtt1'         # White Rabbit Trigger
+    ]
 
     def init(self):
-        import acq400_hapi
-        MIN_FREQUENCY = 10000
-
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
         if self.ext_clock.length > 0:
@@ -267,11 +349,11 @@ class _ACQ2106_423ST(MDSplus.Device):
 
         freq = int(self.freq.data())
         # D-Tacq Recommendation: the minimum sample rate is 10kHz.
-        if freq < MIN_FREQUENCY:
+        if freq < self.MIN_FREQUENCY:
             raise MDSplus.DevBAD_PARAMETER(
                 " Sample rate should be greater or equal than 10kHz")
 
-        mode = self.trig_mode.data()
+        mode = str(self.trig_mode.data()).lower()
         if mode == 'hard':
             role = 'master'
             trg = 'hard'
@@ -280,22 +362,42 @@ class _ACQ2106_423ST(MDSplus.Device):
             trg = 'soft'
         else:
             role = mode.split(":")[0]
-            trg = mode.split(":")[1]
+            trg  = mode.split(":")[1]
 
-        print("Role is {} and {} trigger".format(role, trg))
+        if self.debug:
+            print("Role is %s and %s trigger" % (role, trg))
+
+        src_trg_0 = None
+        src_trg_1 = None
 
         if trg == 'hard':
             trg_dx = 'd0'
-        elif trg == 'automatic':
+            src_trg_0 = 'EXT' # External Trigger
+        elif trg == 'soft' or trg == 'automatic':
             trg_dx = 'd1'
-        elif trg == 'soft':
+            src_trg_1 = 'STRIG' # Soft Trigger
+        elif trg in self.TRIG_SRC_OPTS_0:
+            trg_dx = 'd0'
+            src_trg_0 = trg
+        elif trg in self.TRIG_SRC_OPTS_1:
             trg_dx = 'd1'
+            src_trg_1 = trg
+        elif trg != 'none':
+            raise MDSplus.DevBAD_PARAMETER("TRIG_MODE does not contain a valid trigger source")
 
         # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]
         uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
+
+        # snyc_role will set a default trigger source, we need to override it to the selected trigger source
+        # These must be uppercase
+        if src_trg_0:
+            uut.s0.SIG_SRC_TRG_0 = src_trg_0.upper()
+
+        if src_trg_1:
+            uut.s0.SIG_SRC_TRG_1 = src_trg_1.upper()
 
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
@@ -322,10 +424,14 @@ class _ACQ2106_423ST(MDSplus.Device):
     STOP = stop
 
     def trig(self):
-        import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut = self.getUUT()
         uut.s0.set_knob('soft_trigger', '1')
     TRIG = trig
+
+    def getUUT(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        return uut
 
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
@@ -337,14 +443,26 @@ def assemble(cls):
     cls.parts = list(_ACQ2106_423ST.carrier_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path': ':INPUT_%3.3d' % (i+1,),            'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (
-                i+1,), 'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:DECIMATE' % (
-                i+1,),   'type': 'NUMERIC', 'valueExpr': 'head.def_decimate',            'options': ('no_write_shot',)},
-            {'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
-            {'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     'type': 'NUMERIC',
-             'options': ('no_write_model', 'write_once',)},
+            {
+                'path': ':INPUT_%3.3d' % (i+1,),            
+                'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (i+1,), 
+                'options': ('no_write_model', 'write_once',)
+            },
+            {
+                'path': ':INPUT_%3.3d:DECIMATE' % (i+1,),   
+                'type': 'NUMERIC', 'valueExpr': 'head.def_decimate',            
+                'options': ('no_write_shot',)
+            },
+            {
+                'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
+            {
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     
+                'type': 'NUMERIC',
+                'options': ('no_write_model', 'write_once',)
+            },
         ]
 
 

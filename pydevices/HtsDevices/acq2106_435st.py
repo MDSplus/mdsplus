@@ -146,7 +146,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {
             'path': ':TRIG_STR',
             'type': 'text',
-            'options': ('nowrite_shot',), 
+            'options': ('no_write_shot',), 
             'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"
         },
         {
@@ -536,7 +536,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     def getUUT(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False, has_wr=True)
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         return uut
 
     def setChanScale(self, num):
