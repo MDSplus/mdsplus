@@ -37,6 +37,8 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel8 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
+        jPanel10 = new javax.swing.JPanel();
+        deviceField11 = new DeviceField();
         jPanel7 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         jPanel9 = new javax.swing.JPanel();
@@ -108,6 +110,13 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel8.add(deviceField3);
 
         jTabbedPane2.addTab("Global ID", jPanel8);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("PG Site N message ID");
+        deviceField11.setOffsetNid(19);
+        jPanel10.add(deviceField11);
+
+        jTabbedPane2.addTab("PG Site ID", jPanel10);
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("DELTA NS [msec]");
@@ -194,6 +203,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
+    private DeviceField deviceField11;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -203,6 +213,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
