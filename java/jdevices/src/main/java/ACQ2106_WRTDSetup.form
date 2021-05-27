@@ -25,7 +25,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-111,0,0,5,70"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-111,0,0,6,27"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
@@ -77,7 +77,7 @@
         <Component class="DeviceChoice" name="deviceChoice2">
           <Properties>
             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-              <StringArray count="8">
+              <StringArray count="10">
                 <StringItem index="0" value="d0"/>
                 <StringItem index="1" value="d1"/>
                 <StringItem index="2" value="d2"/>
@@ -86,6 +86,8 @@
                 <StringItem index="5" value="d5"/>
                 <StringItem index="6" value="d6"/>
                 <StringItem index="7" value="d7"/>
+                <StringItem index="8" value="TRGIN"/>
+                <StringItem index="9" value="WRTT"/>
               </StringArray>
             </Property>
             <Property name="identifier" type="java.lang.String" value=""/>
@@ -93,6 +95,32 @@
             <Property name="offsetNid" type="int" value="9"/>
             <Property name="updateIdentifier" type="java.lang.String" value=""/>
           </Properties>
+        </Component>
+        <Component class="DeviceChoice" name="deviceChoice3">
+          <Properties>
+            <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+              <PropertyValue value="[0, 1, 2, 3, 4, 5, 6]"/>
+            </Property>
+            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+              <StringArray count="7">
+                <StringItem index="0" value="0"/>
+                <StringItem index="1" value="1"/>
+                <StringItem index="2" value="2"/>
+                <StringItem index="3" value="3"/>
+                <StringItem index="4" value="4"/>
+                <StringItem index="5" value="5"/>
+                <StringItem index="6" value="6"/>
+              </StringArray>
+            </Property>
+            <Property name="identifier" type="java.lang.String" value=""/>
+            <Property name="labelString" type="java.lang.String" value="DIO Site #"/>
+            <Property name="offsetNid" type="int" value="8"/>
+            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+          </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="This is also WRTD_TX_MASK selects the DIO units that respond"/>
+          </AccessibilityProperties>
         </Component>
         <Component class="DeviceDispatch" name="deviceDispatch1">
         </Component>
@@ -122,52 +150,73 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
           <SubComponents>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="WRTD DNS"/>
-                <Property name="offsetNid" type="int" value="12"/>
-              </Properties>
+            <Container class="javax.swing.JPanel" name="jPanel7">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Delta ns">
-                    <Property name="tabTitle" type="java.lang.String" value="Delta ns"/>
-                  </JTabbedPaneConstraints>
-                </Constraint>
-              </Constraints>
-            </Component>
-            <Component class="DeviceField" name="deviceField3">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Global ID message"/>
-                <Property name="numCols" type="int" value="20"/>
-                <Property name="offsetNid" type="int" value="18"/>
-                <Property name="textOnly" type="boolean" value="true"/>
-              </Properties>
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Global ID" toolTip="">
-                    <Property name="tabTitle" type="java.lang.String" value="Global ID"/>
+                  <JTabbedPaneConstraints tabName="DELTA NS" toolTip="">
+                    <Property name="tabTitle" type="java.lang.String" value="DELTA NS"/>
                     <Property name="tabToolTip" type="java.lang.String" value=""/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
-            </Component>
-            <Component class="DeviceField" name="deviceField9">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Global ID message for TIGA"/>
-                <Property name="offsetNid" type="int" value="19"/>
-                <Property name="textOnly" type="boolean" value="true"/>
-              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField2">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="DELTA NS [msec]"/>
+                    <Property name="offsetNid" type="int" value="12"/>
+                  </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec "/>
+                  </AccessibilityProperties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel8">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Global TIGA ID">
-                    <Property name="tabTitle" type="java.lang.String" value="Global TIGA ID"/>
+                  <JTabbedPaneConstraints tabName="Global ID">
+                    <Property name="tabTitle" type="java.lang.String" value="Global ID"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
-            </Component>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField3">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Message ID"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="18"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel9">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="TIGA ID">
+                    <Property name="tabTitle" type="java.lang.String" value="TIGA ID"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField9">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="DIO Site X ID message"/>
+                    <Property name="offsetNid" type="int" value="19"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JTabbedPane" name="jTabbedPane3">
@@ -230,8 +279,8 @@
             <Container class="javax.swing.JPanel" name="jPanel4">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="RX M1">
-                    <Property name="tabTitle" type="java.lang.String" value="RX M1"/>
+                  <JTabbedPaneConstraints tabName="RX M0">
+                    <Property name="tabTitle" type="java.lang.String" value="RX M0"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -241,19 +290,22 @@
                 <Component class="DeviceField" name="deviceField6">
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="RX Message 1"/>
+                    <Property name="labelString" type="java.lang.String" value="RX Matches for WRTT0"/>
                     <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="14"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="match any of these triggers to initiate WRTT0"/>
+                  </AccessibilityProperties>
                 </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel5">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="RX M2">
-                    <Property name="tabTitle" type="java.lang.String" value="RX M2"/>
+                  <JTabbedPaneConstraints tabName="RX M1">
+                    <Property name="tabTitle" type="java.lang.String" value="RX M1"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -263,11 +315,14 @@
                 <Component class="DeviceField" name="deviceField7">
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="RX Message 2"/>
+                    <Property name="labelString" type="java.lang.String" value="RX Matches for WRTT1"/>
                     <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="15"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="match any of these triggers to initiate WRTT1"/>
+                  </AccessibilityProperties>
                 </Component>
               </SubComponents>
             </Container>
@@ -282,6 +337,13 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
               <SubComponents>
+                <Component class="DeviceField" name="deviceField10">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Delay [nsec]"/>
+                    <Property name="offsetNid" type="int" value="17"/>
+                  </Properties>
+                </Component>
                 <Component class="DeviceField" name="deviceField8">
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>

@@ -31,11 +31,15 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceField1 = new DeviceField();
         deviceChoice1 = new DeviceChoice();
         deviceChoice2 = new DeviceChoice();
+        deviceChoice3 = new DeviceChoice();
         deviceDispatch1 = new DeviceDispatch();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jTabbedPane2 = new javax.swing.JTabbedPane();
+        jPanel7 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
+        jPanel8 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
+        jPanel9 = new javax.swing.JPanel();
         deviceField9 = new DeviceField();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
@@ -47,6 +51,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel5 = new javax.swing.JPanel();
         deviceField7 = new DeviceField();
         jPanel6 = new javax.swing.JPanel();
+        deviceField10 = new DeviceField();
         deviceField8 = new DeviceField();
 
         setDeviceProvider("172.20.240.104:9998");
@@ -74,33 +79,51 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceChoice1.setUpdateIdentifier("");
         jPanel1.add(deviceChoice1);
 
-        deviceChoice2.setChoiceItems(new String[] {"d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7"});
+        deviceChoice2.setChoiceItems(new String[] {"d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "TRGIN", "WRTT"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Pulse Generator Trigger Source");
         deviceChoice2.setOffsetNid(9);
         deviceChoice2.setUpdateIdentifier("");
         jPanel1.add(deviceChoice2);
+
+        deviceChoice3.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5, 6});
+        deviceChoice3.setChoiceItems(new String[] {"0", "1", "2", "3", "4", "5", "6"});
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("DIO Site #");
+        deviceChoice3.setOffsetNid(8);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel1.add(deviceChoice3);
+        deviceChoice3.getAccessibleContext().setAccessibleName("");
+        deviceChoice3.getAccessibleContext().setAccessibleDescription("This is also WRTD_TX_MASK selects the DIO units that respond");
+
         jPanel1.add(deviceDispatch1);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("WRTD DNS");
+        deviceField2.setLabelString("DELTA NS [msec]");
         deviceField2.setOffsetNid(12);
-        jTabbedPane2.addTab("Delta ns", deviceField2);
+        jPanel7.add(deviceField2);
+        deviceField2.getAccessibleContext().setAccessibleDescription("Sets WR \"safe time for broadcasts\" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec ");
+
+        jTabbedPane2.addTab("DELTA NS", null, jPanel7, "");
 
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Global ID message");
+        deviceField3.setLabelString("Message ID");
         deviceField3.setNumCols(20);
         deviceField3.setOffsetNid(18);
         deviceField3.setTextOnly(true);
-        jTabbedPane2.addTab("Global ID", null, deviceField3, "");
+        jPanel8.add(deviceField3);
+
+        jTabbedPane2.addTab("Global ID", jPanel8);
 
         deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Global ID message for TIGA");
+        deviceField9.setLabelString("DIO Site X ID message");
         deviceField9.setOffsetNid(19);
         deviceField9.setTextOnly(true);
-        jTabbedPane2.addTab("Global TIGA ID", deviceField9);
+        jPanel9.add(deviceField9);
+
+        jTabbedPane2.addTab("TIGA ID", jPanel9);
 
         jTabbedPane1.addTab("WR Global Initialization", jTabbedPane2);
         jTabbedPane2.getAccessibleContext().setAccessibleName("WRTD ID Global");
@@ -123,22 +146,29 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jTabbedPane3.addTab("WRTD TX", jPanel3);
 
         deviceField6.setIdentifier("");
-        deviceField6.setLabelString("RX Message 1");
+        deviceField6.setLabelString("RX Matches for WRTT0");
         deviceField6.setNumCols(20);
         deviceField6.setOffsetNid(14);
         deviceField6.setTextOnly(true);
         jPanel4.add(deviceField6);
+        deviceField6.getAccessibleContext().setAccessibleDescription("match any of these triggers to initiate WRTT0");
 
-        jTabbedPane3.addTab("RX M1", jPanel4);
+        jTabbedPane3.addTab("RX M0", jPanel4);
 
         deviceField7.setIdentifier("");
-        deviceField7.setLabelString("RX Message 2");
+        deviceField7.setLabelString("RX Matches for WRTT1");
         deviceField7.setNumCols(20);
         deviceField7.setOffsetNid(15);
         deviceField7.setTextOnly(true);
         jPanel5.add(deviceField7);
+        deviceField7.getAccessibleContext().setAccessibleDescription("match any of these triggers to initiate WRTT1");
 
-        jTabbedPane3.addTab("RX M2", jPanel5);
+        jTabbedPane3.addTab("RX M1", jPanel5);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("Delay [nsec]");
+        deviceField10.setOffsetNid(17);
+        jPanel6.add(deviceField10);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Double Tap Message");
@@ -163,8 +193,10 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -179,6 +211,9 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
