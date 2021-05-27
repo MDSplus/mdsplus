@@ -150,6 +150,28 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
           <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel8">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Global ID">
+                    <Property name="tabTitle" type="java.lang.String" value="Global ID"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField3">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Message ID to Transmit"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="18"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
             <Container class="javax.swing.JPanel" name="jPanel7">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -174,33 +196,11 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel8">
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Global ID">
-                    <Property name="tabTitle" type="java.lang.String" value="Global ID"/>
-                  </JTabbedPaneConstraints>
-                </Constraint>
-              </Constraints>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceField" name="deviceField3">
-                  <Properties>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Message ID"/>
-                    <Property name="numCols" type="int" value="20"/>
-                    <Property name="offsetNid" type="int" value="18"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
             <Container class="javax.swing.JPanel" name="jPanel9">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="TIGA ID">
-                    <Property name="tabTitle" type="java.lang.String" value="TIGA ID"/>
+                  <JTabbedPaneConstraints tabName="TICKNS">
+                    <Property name="tabTitle" type="java.lang.String" value="TICKNS"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
@@ -209,10 +209,7 @@
               <SubComponents>
                 <Component class="DeviceField" name="deviceField9">
                   <Properties>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="DIO Site X ID message"/>
-                    <Property name="offsetNid" type="int" value="19"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="nsec per tick [nsec]"/>
                   </Properties>
                 </Component>
               </SubComponents>

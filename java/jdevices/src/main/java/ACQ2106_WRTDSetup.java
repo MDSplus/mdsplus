@@ -35,10 +35,10 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceDispatch1 = new DeviceDispatch();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jTabbedPane2 = new javax.swing.JTabbedPane();
-        jPanel7 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
         jPanel8 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
+        jPanel7 = new javax.swing.JPanel();
+        deviceField2 = new DeviceField();
         jPanel9 = new javax.swing.JPanel();
         deviceField9 = new DeviceField();
         jTabbedPane3 = new javax.swing.JTabbedPane();
@@ -100,6 +100,15 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("Message ID to Transmit");
+        deviceField3.setNumCols(20);
+        deviceField3.setOffsetNid(18);
+        deviceField3.setTextOnly(true);
+        jPanel8.add(deviceField3);
+
+        jTabbedPane2.addTab("Global ID", jPanel8);
+
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("DELTA NS [msec]");
         deviceField2.setOffsetNid(12);
@@ -108,22 +117,10 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         jTabbedPane2.addTab("DELTA NS", null, jPanel7, "");
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Message ID");
-        deviceField3.setNumCols(20);
-        deviceField3.setOffsetNid(18);
-        deviceField3.setTextOnly(true);
-        jPanel8.add(deviceField3);
-
-        jTabbedPane2.addTab("Global ID", jPanel8);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("DIO Site X ID message");
-        deviceField9.setOffsetNid(19);
-        deviceField9.setTextOnly(true);
+        deviceField9.setLabelString("nsec per tick [nsec]");
         jPanel9.add(deviceField9);
 
-        jTabbedPane2.addTab("TIGA ID", jPanel9);
+        jTabbedPane2.addTab("TICKNS", jPanel9);
 
         jTabbedPane1.addTab("WR Global Initialization", jTabbedPane2);
         jTabbedPane2.getAccessibleContext().setAccessibleName("WRTD ID Global");
