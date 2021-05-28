@@ -53,7 +53,7 @@ typedef struct nci
   class_t class;
   dtype_t dtype;
   l_length_t length;
-  unsigned char spare2;
+  unsigned char compression_method;
   unsigned int status;
   union {
     struct

@@ -283,6 +283,12 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       }
       *(unsigned int *)itm->pointer = owner;
       break;
+    case NciCOMPRESSION_METHOD:
+      break_on_no_node;
+      read_nci;
+      set_retlen(sizeof(nci.compression_method));
+      *(unsigned char *)itm->pointer = nci.compression_method;
+      break;
     case NciCLASS:
       break_on_no_node;
       read_nci;

@@ -78,6 +78,30 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       setnci[0].pointer = (unsigned char *)&statval;
       TreeSetNci(nid, setnci);
     }
+    if (cli_present(ctx, "COMPRESSION_METHOD"))
+    {
+      char *compression_method_str = 0;
+      if(cli_get_value("COMPRESSION_METHOD", &compression_method_str) & 1)
+      {
+        int i;
+        unsigned char compression_method=0;
+        for (i=0 i < N_ELEMENTS(compression_methods), i++)
+        {
+          if(strcmp(compression_method, compression_methods[i]) == 0)
+            compression_method=i;
+          if(i >= N_ELEMENTS(compression_methods))
+          {
+        *error = malloc(strlen(nodename) + strlen(compression_method_str) + 100);
+        sprintf(*error,
+                "Warning: Problem setting compression method for node %s\n"
+                "\t%s not a valid compression method\n",
+                nodename, compression_method_str);            
+          }
+        }
+        free(compression_method_str);
+      }
+    }
+ 
     switch (cli_present(ctx, "SUBTREE"))
     {
     case MdsdclPRESENT:

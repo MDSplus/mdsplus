@@ -20,6 +20,8 @@
 #define ENDDEF(type, name) name
 #endif
 
+const char *compression_methods["standard", "gzip"];
+
 TYPEDEF(4){
     NciM_STATE = 0x00000001,
     NciM_PARENT_STATE = 0x00000002,
@@ -38,7 +40,7 @@ TYPEDEF(4){
     NciM_NID_REFERENCE = 0x00004000,
     NciM_INCLUDE_IN_PULSE = 0x00008000,
     NciM_COMPRESS_SEGMENTS = 0x00010000,
-} ENDDEF(uint32_t, ncim_t);
+ } ENDDEF(uint32_t, ncim_t);
 TYPEDEF(4){
     NciK_IS_CHILD = 1,
     NciK_IS_MEMBER = 2,
@@ -84,6 +86,7 @@ TYPEDEF(4){
     NciUSAGE_STR = 39,
     NciCLASS_STR = 40,
     NciVERSION = 41,
+    NciCOMPRESSION_METHOD = 42,
 } ENDDEF(int16_t, nci_t);
 #undef TYPEDEF
 #undef ENDDEF
