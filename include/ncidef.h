@@ -20,6 +20,8 @@
 #define ENDDEF(type, name) name
 #endif
 
+const char *compression_methods["standard", "gzip"];
+
 TYPEDEF(4){
     NciM_STATE = 0x00000001,
     NciM_PARENT_STATE = 0x00000002,
