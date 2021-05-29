@@ -185,7 +185,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         jTabbedPane3.addTab("RX DTP", jPanel6);
 
-        jTabbedPane1.addTab("WR Device Initialization", jTabbedPane3);
+        jTabbedPane1.addTab("WR RX/TX", jTabbedPane3);
         jTabbedPane3.getAccessibleContext().setAccessibleName("WRTF RX");
         jTabbedPane3.getAccessibleContext().setAccessibleDescription("");
 
