@@ -482,14 +482,7 @@ static inline int _send_response(Connection *connection, Message *message, Messa
   const unsigned char message_id = connection->message_id;
   Message *m = NULL;
   int serial = STATUS_NOT_OK || (connection->descrip[0] && connection->descrip[0]->dtype == DTYPE_SERIAL);
-  mdsdsc_t *sd = NULL;
-  if (!serial && SupportsCompression(message->h.status))
-  {
-    EMPTYXD(xd);
-    status = MdsSerializeDscOut(d, &xd);
-    sd = d = xd.pointer;
-    serial = 1;
-  }
+  (void)message;
   if (serial && STATUS_OK && d->class == CLASS_A)
   {
     mdsdsc_a_t *array = (mdsdsc_a_t *)d;
@@ -555,7 +548,6 @@ static inline int _send_response(Connection *connection, Message *message, Messa
       break;
     }
   }
-  free(sd);
   return SendMdsMsgC(connection, m, 0);
 }
 
