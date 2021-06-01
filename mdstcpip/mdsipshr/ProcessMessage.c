@@ -476,24 +476,17 @@ static inline void convert_default(Message *m, int num, const mdsdsc_t *d, uint3
   }
 }
 
-static inline int _send_response(Connection *connection, Message **message, int status, mdsdsc_t *d)
+static inline int _send_response(Connection *connection, Message *message, Message **message_out, int status, mdsdsc_t *d)
 {
   const int client_type = connection->client_type;
   const unsigned char message_id = connection->message_id;
   Message *m = NULL;
   int serial = STATUS_NOT_OK || (connection->descrip[0] && connection->descrip[0]->dtype == DTYPE_SERIAL);
-  if (!serial && SupportsCompression(client_type))
-  {
-    EMPTYXD(xd);
-    status = MdsSerializeDscOut(d, &xd);
-    MdsFreeDescriptor(d);
-    d = xd.pointer;
-    serial = 1;
-  }
+  (void)message;
   if (serial && STATUS_OK && d->class == CLASS_A)
   {
     mdsdsc_a_t *array = (mdsdsc_a_t *)d;
-    *message = m = malloc(sizeof(MsgHdr) + array->arsize);
+    *message_out = m = malloc(sizeof(MsgHdr) + array->arsize);
     memset(&m->h, 0, sizeof(MsgHdr));
     m->h.msglen = sizeof(MsgHdr) + array->arsize;
     m->h.client_type = client_type;
@@ -510,7 +503,7 @@ static inline int _send_response(Connection *connection, Message **message, int 
     uint16_t length;
     uint32_t num;
     uint32_t nbytes = get_nbytes(&length, &num, client_type, d);
-    *message = m = malloc(sizeof(MsgHdr) + nbytes);
+    *message_out = m = malloc(sizeof(MsgHdr) + nbytes);
     memset(&m->h, 0, sizeof(MsgHdr));
     m->h.msglen = sizeof(MsgHdr) + nbytes;
     m->h.client_type = client_type;
@@ -563,7 +556,7 @@ static int send_response(Connection *connection, Message *message, const int sta
 {
   int status;
   INIT_AND_FREE_ON_EXIT(Message *, m);
-  status = _send_response(connection, &m, status_in, d);
+  status = _send_response(connection, message, &m, status_in, d);
   FREE_NOW(m);
   if (STATUS_NOT_OK)
     return FALSE; // no good close connection
