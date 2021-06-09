@@ -25,3 +25,13 @@ extern int CamPiow(char *name, int a, int f, void *data, int mem,
 extern int CamPioQrepw(char *name, int a, int f, void *data, int mem,
                        unsigned short *iosb);
 extern int CamVerbose(int mode);
+
+typedef struct
+{
+  char scsi_port;
+  char scsi_address;
+  char slot;
+  char crate;
+} CamKey;
+
+extern int CamXlateLogicalname(char *Name, CamKey *key);
