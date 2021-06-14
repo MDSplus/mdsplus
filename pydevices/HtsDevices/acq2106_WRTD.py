@@ -75,8 +75,8 @@ class ACQ2106_WRTD(MDSplus.Device):
         # uut.cC.WRTD_RX_MATCHES1: match any of these triggers to initiate WRTT1
         {'path': ':WR_INIT:WRTD_RX_M1',  'type': 'text',
          'value': "acq2106_999", 'options': ('write_shot',)},
-        # From uut.cC.WRTD_DELAY01: WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
-        # Double Tap, which is:
+        # WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
+        # Double Tap, which means that:
         # 1. WRTT0
         # 2. Delay WRTD_DELAY01 nsec.
         # 3. WRTT1
@@ -108,6 +108,9 @@ class ACQ2106_WRTD(MDSplus.Device):
 
     def init(self):
         uut = self.getUUT()
+
+        # Sets WRTD TICKNS in nsecs: defined by 1/MBCLK
+        uut.cC.WRTD_TICKNS = self.wr_init_wrtd_tickns.data()
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
