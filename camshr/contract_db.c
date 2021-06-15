@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -68,7 +68,7 @@ int contract_db(int dbType, int numOfEntries)
 {
   char *FileName;
   int FileIncr, newCount;
-  int status = SUCCESS;		// optimistic, aren't we ... :>
+  int status = SUCCESS; // optimistic, aren't we ... :>
   char tmpfile[1024];
   strcpy(tmpfile, get_file_name("mdscts_temp_file_XXXXXX"));
 
@@ -76,7 +76,8 @@ int contract_db(int dbType, int numOfEntries)
     printf("contract_db()\n");
 
   // assimilate db specific information ...
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     FileName = CTS_DB_FILE;
     FileIncr = CTS_DB_INCREMENT;
@@ -95,25 +96,30 @@ int contract_db(int dbType, int numOfEntries)
   newCount = (((int)numOfEntries / FileIncr) + 1) * FileIncr;
 
   // create a TMP file
-  if ((status = create_tmp_file(dbType, newCount, tmpfile)) != SUCCESS) {
+  if ((status = create_tmp_file(dbType, newCount, tmpfile)) != SUCCESS)
+  {
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "error creating TMP file\n");
 
     goto ContractDB_Exit;
   }
   // only need to copy old data if there is any
-  if (numOfEntries) {		// copy current db file to TMP file
-    if ((status = copy(dbType, FileName, tmpfile, numOfEntries)) != SUCCESS) {
+  if (numOfEntries)
+  { // copy current db file to TMP file
+    if ((status = copy(dbType, FileName, tmpfile, numOfEntries)) != SUCCESS)
+    {
       if (MSGLVL(ALWAYS))
-	fprintf(stderr, "error copying db to TMP file\n");
+        fprintf(stderr, "error copying db to TMP file\n");
 
       goto ContractDB_Exit;
     }
     // remove old db file
-    if (Remove(FileName)) {	// non-zero is an error
-      if (MSGLVL(ALWAYS)) {
-	fprintf(stderr, "error removing old db file\n");
-	perror("remove()");
+    if (Remove(FileName))
+    { // non-zero is an error
+      if (MSGLVL(ALWAYS))
+      {
+        fprintf(stderr, "error removing old db file\n");
+        perror("remove()");
       }
 
       status = CONTRACT_ERROR;
@@ -121,8 +127,10 @@ int contract_db(int dbType, int numOfEntries)
     }
   }
 
-  if (rename(tmpfile, get_file_name(FileName))) {	// non-zero is an error
-    if (MSGLVL(ALWAYS)) {
+  if (rename(tmpfile, get_file_name(FileName)))
+  { // non-zero is an error
+    if (MSGLVL(ALWAYS))
+    {
       fprintf(stderr, "error renaming temp db file\n");
       perror("rename()");
     }
@@ -132,7 +140,8 @@ int contract_db(int dbType, int numOfEntries)
   }
   chmod(get_file_name(FileName), O666);
   // re-map file
-  if (map_data_file(dbType) != SUCCESS) {
+  if (map_data_file(dbType) != SUCCESS)
+  {
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "unable to map contracted file\n");
 
@@ -140,8 +149,9 @@ int contract_db(int dbType, int numOfEntries)
     goto ContractDB_Exit;
   }
 
- ContractDB_Exit:
-  if (MSGLVL(DETAILS)) {
+ContractDB_Exit:
+  if (MSGLVL(DETAILS))
+  {
     printf("contract_db('%s'): ", get_file_name(FileName));
     ShowStatus(status);
   }

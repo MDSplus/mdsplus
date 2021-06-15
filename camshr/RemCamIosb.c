@@ -22,16 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mdsplus/mdsconfig.h>
 
 extern unsigned short RemCamLastIosb[4];
 
-int RemCamVerbose(int flag __attribute__ ((unused)))
-{
-  return 1;
-}
+int RemCamVerbose(int flag __attribute__((unused))) { return 1; }
 
 int RemCamBytcnt(unsigned short *iosb)
 {
@@ -41,9 +38,8 @@ int RemCamBytcnt(unsigned short *iosb)
 int RemCamError(int *xexp, int *qexp, unsigned short *iosb_in)
 {
   unsigned short *iosb = iosb_in ? iosb_in : RemCamLastIosb;
-  return ((!(iosb[0] & 1)) ||
-	  (xexp && ((*xexp & 1) != (iosb[2] & 1))) ||
-	  (qexp && ((*qexp & 1) != ((iosb[2] >> 1) & 1))));
+  return ((!(iosb[0] & 1)) || (xexp && ((*xexp & 1) != (iosb[2] & 1))) ||
+          (qexp && ((*qexp & 1) != ((iosb[2] >> 1) & 1))));
 }
 
 int RemCamX(unsigned short *iosb_in)

@@ -5,15 +5,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSOKBUTTONS.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsOkButtons.H
+                Name:   XmdsOkButtons.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   24-FEB-1993
+                Date:   24-FEB-1993
 
-		Purpose: Public declarations for  okbutton widget
+                Purpose: Public declarations for  okbutton widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -32,9 +32,13 @@ Widget XmdsCreateCancelButton();
 Widget XmdsCreateOkButton();
 Widget XmdsCreateResetButton();
 #else
-Widget XmdsCreateApplyButton(Widget parent, String name, ArgList args, Cardinal numargs);
-Widget XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal numargs);
-Widget XmdsCreateOkButton(Widget parent, String name, ArgList args, Cardinal numargs);
-Widget XmdsCreateResetButton(Widget parent, String name, ArgList args, Cardinal numargs);
+Widget XmdsCreateApplyButton(Widget parent, String name, ArgList args,
+                             Cardinal numargs);
+Widget XmdsCreateCancelButton(Widget parent, String name, ArgList args,
+                              Cardinal numargs);
+Widget XmdsCreateOkButton(Widget parent, String name, ArgList args,
+                          Cardinal numargs);
+Widget XmdsCreateResetButton(Widget parent, String name, ArgList args,
+                             Cardinal numargs);
 #endif
 #endif

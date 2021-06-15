@@ -24,21 +24,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$MONITOR_CHECKIN
+                Name:   SERVER$MONITOR_CHECKIN
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   23-APR-1992
+                Date:   23-APR-1992
 
-		Purpose: Checkin routine for action monitor
+                Purpose: Checkin routine for action monitor
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int astparam, void (*link_down)())
+int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int
+astparam, void (*link_down)())
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -48,56 +49,74 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <pthread_port.h>
 #include <mdsshr.h>
 #include <ipdesc.h>
 #include <servershr.h>
 #include "servershrp.h"
 
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static void (*appAst)() = 0;
+static int usingEvents = -1;
 
-static void eventAst(void *astprm, int msglen __attribute__ ((unused)), char *msg) {
-  (*appAst)(astprm,msg);
+static void event_ast(void *astprm, int msglen __attribute__((unused)), char *msg)
+{
+  void (*ast)();
+  pthread_mutex_lock(&lock);
+  ast = appAst;
+  pthread_mutex_unlock(&lock);
+  (*ast)(astprm, msg);
 }
 
-EXPORT int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
+#define EVENT_PREFIX "event:"
+#define EVENT_PREFIX_LEN (sizeof(EVENT_PREFIX) - 1)
+static inline int using_events(char *server, void (*ast)(), void *astprm)
 {
-  static int usingEvents = -1;
-  const char*        event_str = "event:";
-  const unsigned int event_len = strlen(event_str);
-  if (usingEvents==-1) {
+  int yesno;
+  pthread_mutex_lock(&lock);
+  if (usingEvents == -1)
+  {
     char *svr_env = getenv(server);
     if (!svr_env)
       svr_env = server;
-    if ((strlen(svr_env) > event_len)
-     && (strncasecmp(svr_env,event_str,event_len) == 0)) {
+    if ((strlen(svr_env) > EVENT_PREFIX_LEN) &&
+        (strncasecmp(svr_env, EVENT_PREFIX, EVENT_PREFIX_LEN) == 0))
+    {
       int evid;
-      appAst=ast;
-      usingEvents = MDSEventAst(strdup(svr_env+event_len), eventAst, astprm, &evid) & 1;
-    } else
+      appAst = ast;
+      usingEvents = IS_OK(MDSEventAst(svr_env + EVENT_PREFIX_LEN, event_ast, astprm, &evid));
+    }
+    else
       usingEvents = B_FALSE;
   }
-  if (usingEvents)
+  yesno = usingEvents;
+  pthread_mutex_unlock(&lock);
+  return yesno;
+}
+
+EXPORT int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm)
+{
+  if (using_events(server, ast, astprm))
     return MDSplusSUCCESS;
-  else {
-    struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
-    char *cstring = "";
-    int zero = 0;
-    int mode = MonitorCheckin;
-    return ServerSendMessage(0, server, SrvMonitor, NULL, NULL, NULL, ast, astprm, NULL, 8,
-			MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cstring),
-			MakeDescrip(&p2, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p3, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p4, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p5, DTYPE_LONG, 0, 0, &zero),
-			MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
-			MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, cstring),
-			MakeDescrip(&p8, DTYPE_LONG, 0, 0, &zero));
-  }
+  struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
+  char *cstring = "";
+  int zero = 0;
+  int mode = MonitorCheckin;
+  return ServerSendMessage(0, server, SrvMonitor, NULL, NULL, NULL, ast,
+                           astprm, NULL, 8,
+                           MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cstring),
+                           MakeDescrip(&p2, DTYPE_LONG, 0, 0, &zero),
+                           MakeDescrip(&p3, DTYPE_LONG, 0, 0, &zero),
+                           MakeDescrip(&p4, DTYPE_LONG, 0, 0, &zero),
+                           MakeDescrip(&p5, DTYPE_LONG, 0, 0, &zero),
+                           MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
+                           MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, cstring),
+                           MakeDescrip(&p8, DTYPE_LONG, 0, 0, &zero));
 }

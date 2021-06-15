@@ -8,32 +8,36 @@ call 'cat /tmp/compound_tail.py >> python/MDSplus/compound.py'
 import os
 import sys
 
-forceref = ('$EXPT','$SHOT','$SHOTNAME','$DEFAULT','GETNCI',
-  'MAKE_FUNCTION','BUILD_FUNCTION','EXT_FUNCTION'
-  'MAKE_PROCEDURE','BUILD_PROCEDURE',
-  'MAKE_ROUTINE','BUILD_ROUTINE',
-  'MAKE_CALL','BUILD_CALL',
-  'COMPILE','EXECUTE',
-)
+forceref = ('$EXPT', '$SHOT', '$SHOTNAME', '$DEFAULT', 'GETNCI',
+            'MAKE_FUNCTION', 'BUILD_FUNCTION', 'EXT_FUNCTION'
+            'MAKE_PROCEDURE', 'BUILD_PROCEDURE',
+            'MAKE_ROUTINE', 'BUILD_ROUTINE',
+            'MAKE_CALL', 'BUILD_CALL',
+            'COMPILE', 'EXECUTE',
+            )
 
 srcdir = os.path.realpath(os.path.dirname(__file__) + '/..')
 filepath = srcdir + '/include/opcbuiltins.h'
 target = srcdir + '/python/MDSplus/compound.py'
-print('Parsing %s to genarate %s.' % (filepath, target))
+print('Parsing %s to generate %s.' % (filepath, target))
+
+
 def opc(f=sys.stdout):
-    opcnames = ('name', 'NAME', 'f1', 'f2', 'f3', 'i1', 'i2', 'o1', 'o2', 'm1', 'm2', 'token') 
+    opcnames = ('name', 'NAME', 'f1', 'f2', 'f3', 'i1',
+                'i2', 'o1', 'o2', 'm1', 'm2', 'token')
     opcode = 0
     f.write('MAX_DIMS = 8\n')
     with open(filepath, 'r') as opcf:
         for line in opcf:
             if not line.startswith('OPC ('):
                 continue
-            args = line[5:].split(')',2)[0].split(',',12)
-            vars = dict(zip(opcnames,tuple(arg.strip('\t ') for arg in args)))
+            args = line[5:].split(')', 2)[0].split(',', 12)
+            vars = dict(zip(opcnames, tuple(arg.strip('\t ') for arg in args)))
             vars['opcode'] = opcode
-            vars['dNAME'] = vars['NAME'].replace("$","d")
-            has_m2 = int(eval(vars['m2'].replace('MAX_DIMS','8'))) > 0
-            vars['min_args_def'] = ('    min_args = %(m1)s\n' % vars) if has_m2 else ''
+            vars['dNAME'] = vars['NAME'].replace("$", "d")
+            has_m2 = int(eval(vars['m2'].replace('MAX_DIMS', '8'))) > 0
+            vars['min_args_def'] = (
+                '    min_args = %(m1)s\n' % vars) if has_m2 else ''
             if vars['NAME'] in forceref:
                 vars['Function'] = '_dat.TreeRef, Function'
             elif has_m2:
@@ -46,7 +50,7 @@ def opc(f=sys.stdout):
                     '    opcode = %(opcode)d\n'
                     '%(min_args_def)s'
                     '    max_args = %(m2)s\n'
-            ) % vars)
+                    ) % vars)
             if vars['NAME'] in ('BUILD_RANGE', 'MAKE_RANGE'):
                 f.write((
                     '    def __init__(self, *args):\n'
@@ -65,7 +69,7 @@ def opc(f=sys.stdout):
                 )
             else:
                 f.write('\n')
-            opcode+=1
+            opcode += 1
     f.write(
         '_c = None\n'
         'for _c in globals().values():\n'
@@ -73,15 +77,16 @@ def opc(f=sys.stdout):
         '         Function.opcodeToClass[_c.opcode]=_c\n'
         'del(_c)\n'
     )
-#       better but not for python 2.6 
+#       better but not for python 2.6
 #        'Function.opcodeToClass.update({\n'
 #        '    (c.opcode, c)\n'
 #        '    for c in globals().values()\n'
 #        '    if isinstance(c, Function.__class__) and issubclass(c, Function) and c is not Function\n'
 #        '})\n'
 
-with open(target,'w+') as f:
-    with open(target+'.in','r') as i:
+
+with open(target, 'w+') as f:
+    with open(target+'.in', 'r') as i:
         for line in i:
             f.write(line)
     f.write('\n')

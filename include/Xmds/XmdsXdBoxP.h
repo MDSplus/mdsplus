@@ -11,15 +11,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSXDBOXP.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsXdBoxP.H
+                Name:   XmdsXdBoxP.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   12-NOV-1991
+                Date:   12-NOV-1991
 
-		Purpose: Private declarations for  XdBox widget class widgets.
+                Purpose: Private declarations for  XdBox widget class widgets.
 
 ------------------------------------------------------------------------------
    Copyright (c) 1991
@@ -32,10 +32,10 @@
 #ifndef XmdsXdBoxP_H
 #define XmdsXdBoxP_H
 
-#include <Xmds/XmdsXdBox.h>
+#include <Mrm/MrmPublic.h>
 #include <Xm/XmP.h>
 #include <Xmds/XmdsCallbacks.h>
-#include <Mrm/MrmPublic.h>
+#include <Xmds/XmdsXdBox.h>
 
 #ifndef XmMANAGER
 #include <Xm/ManagerP.h>
@@ -43,12 +43,14 @@
 
 /* New fields for the  Xd Widget record */
 
-typedef struct _XmdsXdUserPart {
-  void (*load_dlog_proc) ();
-  struct descriptor_xd *(*unload_dlog_proc) ();
+typedef struct _XmdsXdUserPart
+{
+  void (*load_dlog_proc)();
+  struct descriptor_xd *(*unload_dlog_proc)();
 } XmdsXdUserPart;
 
-typedef struct _XmdsXdBoxPart {
+typedef struct _XmdsXdBoxPart
+{
   int nid;
   int nid_offset;
   int default_nid;
@@ -81,12 +83,13 @@ typedef struct _XmdsXdBoxPart {
 /*
  * now define the actual widget data struct
  */
-typedef struct _XmdsXdBoxWidgetRec {
-  CorePart core;		/*  basic widget */
-  CompositePart composite;	/*  composite specific data */
+typedef struct _XmdsXdBoxWidgetRec
+{
+  CorePart core;           /*  basic widget */
+  CompositePart composite; /*  composite specific data */
   ConstraintPart constraint;
   XmManagerPart manager;
-  XmdsXdBoxPart xdbox;		/*  Xd specific */
+  XmdsXdBoxPart xdbox; /*  Xd specific */
 } XmdsXdBoxWidgetRec;
 
 /*
@@ -94,16 +97,18 @@ typedef struct _XmdsXdBoxWidgetRec {
  * dialog box.
  */
 
-typedef struct _XmdsXdBoxClassPart {
+typedef struct _XmdsXdBoxClassPart
+{
   MrmHierarchy drm;
-  caddr_t extension;		/* Pointer to extension record */
+  caddr_t extension; /* Pointer to extension record */
 } XmdsXdBoxClassPart;
 
 /*
  * The XdBox Class record is a composite class plus
  * the XdBoxClassPart
-*/
-typedef struct _XmdsXdBoxClassRec {
+ */
+typedef struct _XmdsXdBoxClassRec
+{
   CoreClassPart core_class;
   CompositeClassPart composite_class;
   ConstraintClassPart constraint_class;
@@ -113,5 +118,5 @@ typedef struct _XmdsXdBoxClassRec {
 
 externalref XmdsXdBoxClassRec xmdsXdBoxClassRec;
 
-#endif				/* XmdsXdBoxP_H */
+#endif /* XmdsXdBoxP_H */
 /* DON'T ADD STUFF AFTER THIS #endif */

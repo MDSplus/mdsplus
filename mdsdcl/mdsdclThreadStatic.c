@@ -30,21 +30,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mdsshr.h>
 
-#include "mdsdclthreadstatic.h"
 #include "../mdsshr/version.h"
+#include "mdsdclthreadstatic.h"
 
-static inline DCLTHREADSTATIC_TYPE *buffer_alloc() {
+static inline DCLTHREADSTATIC_TYPE *buffer_alloc()
+{
   return (DCLTHREADSTATIC_TYPE *)calloc(1, sizeof(DCLTHREADSTATIC_TYPE));
 }
-static void buffer_free(DCLTHREADSTATIC_ARG) {
+static void buffer_free(DCLTHREADSTATIC_ARG)
+{
   free(DCL_PROMPT);
   free(DCL_DEFFILE);
-  dclDocListPtr next,dcl;
-  for (dcl = DCL_DOCS ; dcl ; dcl = next) {
+  dclDocListPtr next, dcl;
+  for (dcl = DCL_DOCS; dcl; dcl = next)
+  {
     next = dcl->next;
     free(dcl);
   }
   free(DCLTHREADSTATIC_VAR);
 }
 
-IMPLEMENT_GETTHREADSTATIC(DCLTHREADSTATIC_TYPE,DclGetThreadStatic,THREADSTATIC_DCLSHR,buffer_alloc,buffer_free)
+IMPLEMENT_GETTHREADSTATIC(DCLTHREADSTATIC_TYPE, DclGetThreadStatic,
+                          THREADSTATIC_DCLSHR, buffer_alloc, buffer_free)

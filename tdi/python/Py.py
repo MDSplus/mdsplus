@@ -26,6 +26,7 @@
 import traceback as _tb
 import MDSplus
 
+
 def Py(cmds, *arg):
     """
     Execute python commands passed as a string or string array in cmds argument.
@@ -44,26 +45,26 @@ def Py(cmds, *arg):
 
     The lock argument is no longer used but retained for compatibility.
     """
-    varname = arg[0] if len(arg)>0 else None
+    varname = arg[0] if len(arg) > 0 else None
     #isglobal= arg[1] if len(arg)>1 else False
-    arg     = arg[3:]if len(arg)>3 else []
+    arg = arg[3:]if len(arg) > 3 else []
     MDSplus.DEALLOCATE('public _py_exception')
-    cmdlist=list()
-    ans=1
+    cmdlist = list()
+    ans = 1
     for cmd in cmds:
         cmdlist.append(MDSplus.version.tostr(cmd))
-    cmds="\n".join(cmdlist)
-    env = {"arg":arg,'MDSplus':MDSplus}
+    cmds = "\n".join(cmdlist)
+    env = {"arg": arg, 'MDSplus': MDSplus}
     try:
-        exec(compile(cmds,'<string>','exec'),env,env)
+        exec(compile(cmds, '<string>', 'exec'), env, env)
     except Exception as exc:
         _tb.print_exc()
         MDSplus.String(exc).setTdiVar("_py_exception")
         ans = 0
     if varname is not None:
-        varname=MDSplus.version.tostr(varname)
+        varname = MDSplus.version.tostr(varname)
         if varname in env:
-            ans=env[varname]
+            ans = env[varname]
         else:
-            ans=None
+            ans = None
     return ans

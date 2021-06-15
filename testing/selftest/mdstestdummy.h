@@ -2,17 +2,16 @@
 #define MDSTESTDUMMY_H
 
 #if defined __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void generate_false_assert();
+  void generate_false_assert();
 
-void generate_true_assert();
+  void generate_true_assert();
 
 #if defined __cplusplus
 }
 #endif
 
-
 #endif // MDSTESTDUMMY_H
-

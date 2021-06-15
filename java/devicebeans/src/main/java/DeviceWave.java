@@ -821,7 +821,7 @@ public class DeviceWave extends DeviceComponent
 			else
 				retExpr += vals[i];
 		}
-		return retExpr + "]";
+		return "[" + retExpr + "]";
 	}
 
 	@Override
@@ -830,7 +830,7 @@ public class DeviceWave extends DeviceComponent
 //System.out.println("waveY length " + waveY.length);
 		final String dims = getArrayExpr(waveX);
 		final String values = getArrayExpr(waveY);
-		return "BUIILD_SIGNAL(" + values + ",," + dims + ")";
+		return "BUILD_SIGNAL(" + values + ",," + dims + ")";
 	}
 
 	@Override
@@ -1071,6 +1071,78 @@ public class DeviceWave extends DeviceComponent
 
 	public void setWaveEditable(boolean editable)
 	{ waveEditable = editable; }
+
+    	public void updateXLimit(float minX, float maxX)
+    	{
+        
+        if( this.maxX == maxX && this.minX == minX )
+            return;
+        
+        if( waveX[0] > minX )
+            waveX[0] = minX;
+
+        if( waveX[waveX.length - 1] < maxX )
+            waveX[waveX.length - 1] = maxX;
+        
+        
+        if(waveX[0] < minX - (float)MIN_STEP || waveX[waveX.length - 1] > maxX + (float)MIN_STEP)
+        {
+            int minIndex=0;
+            int maxIndex=waveX.length;
+            
+            for( int i = 0; i < waveX.length; i++ )
+            {
+                if( waveX[i] <= minX - (float)MIN_STEP )
+                {
+                    minIndex=i+1;
+                    continue;                           
+                }
+                if( waveX[i] >= maxX + (float)MIN_STEP )
+                {
+                    maxIndex=i;
+                    break;
+                }
+            }
+            int newLen = maxIndex - minIndex;
+            int extremePoint = 0, stIdx = 0; 
+            if(minIndex > 0)
+            {
+                extremePoint++;
+                stIdx=1;
+            }
+            if(maxIndex < waveX.length)
+                extremePoint++;
+            
+            float newX[] = new float[newLen+extremePoint];
+            float newY[] = new float[newLen+extremePoint];
+
+            System.arraycopy(waveX, minIndex, newX, stIdx, newLen);
+            System.arraycopy(waveY, minIndex, newY, stIdx, newLen);
+            
+            if(minIndex > 0)
+            {
+                newX[0] = minX;
+                newY[0] = 0;
+            }
+            
+            if(maxIndex < waveX.length)
+            {
+                newX[newX.length-1] = maxX;
+                newY[newX.length-1] = 0;
+            }
+            waveX = newX;
+            waveY = newY;
+            
+        }
+        this.minX = minX;
+        this.maxX = maxX;            
+        if(maxXVisible) {maxXField.setText(""+maxX);}
+        if(minXVisible) {minXField.setText(""+minX);}
+        waveEditor.setWaveform(waveX, waveY, minY, maxY);
+        table.repaint();
+        waveEditor.repaint();
+        repaint();
+    	}
 
 	protected void updateLimits()
 	{

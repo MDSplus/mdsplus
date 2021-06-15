@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -67,15 +67,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-------------------------------------------------------------------------
 int commit_entry(int dbType)
 {
-  void *dbptr;			// generic pointer to dbs
-  int status = SUCCESS;		// assume the best
-  extern struct MODULE *CTSdb;	// pointer to in-memory copy of data file
-  extern struct CRATE *CRATEdb;	//   "     "     "       "   "   "    "
+  void *dbptr;                  // generic pointer to dbs
+  int status = SUCCESS;         // assume the best
+  extern struct MODULE *CTSdb;  // pointer to in-memory copy of data file
+  extern struct CRATE *CRATEdb; //   "     "     "       "   "   "    "
 
   if (MSGLVL(FUNCTION_NAME))
     printf("commit_entry()\n");
 
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     dbptr = (void *)CTSdb;
     break;
@@ -92,7 +93,8 @@ int commit_entry(int dbType)
   if (msync(dbptr, 0, MS_SYNC | MS_INVALIDATE) == ERROR)
     status = COMMIT_ERROR;
 
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("commit_entry(): ");
     ShowStatus(status);
   }

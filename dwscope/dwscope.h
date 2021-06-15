@@ -4,7 +4,8 @@
 /*  *2    25-NOV-1991 10:32:07 TWF "add show mode" */
 /*  *1    12-NOV-1991 14:55:30 TWF "Data structures for DWSCOPE" */
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element DWSCOPE.H */
-typedef struct _WaveInfo {
+typedef struct _WaveInfo
+{
   Boolean update;
   Boolean x_grid_labels;
   Boolean y_grid_labels;
@@ -27,65 +28,66 @@ typedef struct _WaveInfo {
   String pad_label;
   union {
     int global_defaults;
-    struct {
-      unsigned update:1;
+    struct
+    {
+      unsigned update : 1;
 #define B_update 0
 #define M_update (1 << B_update)
-      unsigned x_grid_labels:1;
-#define B_x_grid_labels  1
+      unsigned x_grid_labels : 1;
+#define B_x_grid_labels 1
 #define M_x_grid_labels (1 << B_x_grid_labels)
-      unsigned y_grid_labels:1;
+      unsigned y_grid_labels : 1;
 #define B_y_grid_labels 2
 #define M_y_grid_labels (1 << B_y_grid_labels)
-      unsigned show_mode:1;
+      unsigned show_mode : 1;
 #define B_show_mode 3
 #define M_show_mode (1 << B_show_mode)
-      unsigned step_plot:1;
+      unsigned step_plot : 1;
 #define B_step_plot 4
 #define M_step_plot (1 << B_step_plot)
-      unsigned x_grid_lines:1;
+      unsigned x_grid_lines : 1;
 #define B_x_grid_lines 5
 #define M_x_grid_lines (1 << B_x_grid_lines)
-      unsigned y_grid_lines:1;
+      unsigned y_grid_lines : 1;
 #define B_y_grid_lines 6
 #define M_y_grid_lines (1 << B_y_grid_lines)
-      unsigned database:1;
+      unsigned database : 1;
 #define B_database 7
 #define M_database (1 << B_database)
-      unsigned shot:1;
+      unsigned shot : 1;
 #define B_shot 8
 #define M_shot (1 << B_shot)
-      unsigned default_node:1;
+      unsigned default_node : 1;
 #define B_default_node 9
 #define M_default_node (1 << B_default_node)
-      unsigned x:1;
+      unsigned x : 1;
 #define B_x 10
 #define M_x (1 << B_x)
-      unsigned y:1;
+      unsigned y : 1;
 #define B_y 11
 #define M_y (1 << B_y)
-      unsigned xmin:1;
+      unsigned xmin : 1;
 #define B_xmin 12
 #define M_xmin (1 << B_xmin)
-      unsigned xmax:1;
+      unsigned xmax : 1;
 #define B_xmax 13
 #define M_xmax (1 << B_xmax)
-      unsigned ymin:1;
+      unsigned ymin : 1;
 #define B_ymin 14
 #define M_ymin (1 << B_ymin)
-      unsigned ymax:1;
+      unsigned ymax : 1;
 #define B_ymax 15
 #define M_ymax (1 << B_ymax)
-      unsigned title:1;
+      unsigned title : 1;
 #define B_title 16
 #define M_title (1 << B_title)
-      unsigned event:1;
+      unsigned event : 1;
 #define B_event 17
 #define M_event (1 << B_event)
-      unsigned print_title:1;
+      unsigned print_title : 1;
 #define B_print_title 18
 #define M_print_title (1 << B_print_title)
-      unsigned pad_label:1;
+      unsigned pad_label : 1;
 #define B_pad_label 19
 #define M_pad_label (1 << B_pad_label)
     } global;
@@ -97,10 +99,13 @@ typedef struct _WaveInfo {
   String print_title_evaluated;
 } WaveInfo;
 
-#define DefaultDefaults (M_update | M_x_grid_labels | M_y_grid_labels | M_show_mode | M_step_plot | M_x_grid_lines |\
-	                 M_y_grid_lines | M_database | M_shot | M_default_node | M_xmin | M_xmax | M_ymin | M_ymax )
+#define DefaultDefaults                                                       \
+  (M_update | M_x_grid_labels | M_y_grid_labels | M_show_mode | M_step_plot | \
+   M_x_grid_lines | M_y_grid_lines | M_database | M_shot | M_default_node |   \
+   M_xmin | M_xmax | M_ymin | M_ymax)
 
-typedef struct _CutHeader {
+typedef struct _CutHeader
+{
   Boolean update;
   Boolean x_grid_labels;
   Boolean y_grid_labels;

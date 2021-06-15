@@ -142,6 +142,12 @@ OPTIONS
        all builds based on docker images to pull the latest docker
        images from dockerhub.com.
 
+    --docker-srcdir=dir
+       Specify the directory to use inside the docker containers used to build
+       the code. If not specified the docker containers will use the
+       full directory spec of the parent directory of the build.sh
+       on the host.
+
     --keys=dir
        Specifies a directory containing signing keys and certificates
        use when building official MDSplus installers. Note the keys
@@ -160,7 +166,7 @@ EOF
 SRCDIR=$(realpath $(dirname ${0})/..)
 export GIT_DIR=${SRCDIR}/.git
 export GIT_WORK_TREE=${SRCDIR}
-
+BUILD_OPTS=""
 opts=""
 parsecmd() {
     for i in $1
@@ -229,13 +235,19 @@ parsecmd() {
                 ;;
             --dockerpull)
                 opts="${opts} ${i}"
+                BUILD_OPTS="${BUILD_OPTS} ${i}"
                 ;;
             --color)
                 opts="${opts} ${i}"
+                BUILD_OPTS="${BUILD_OPTS} ${i}"
                 COLOR=yes
                 ;;
             --promoted=*)
                 PROMOTED=${i#*=}
+                ;;
+            --docker-srcdir=*)
+                opts="${opts} ${i}"
+                BUILD_OPTS="${BUILD_OPTS} ${i}"
                 ;;
             *)
                 unknownopts="${unknownopts} $i"
@@ -459,7 +471,7 @@ fi
 
 if [ ! -z "${BOOTSTRAP}" ]
 then
-    if ( ! ${SRCDIR}/deploy/build.sh --os=bootstrap --workspace=${SRCDIR} )
+    if ( ! ${SRCDIR}/deploy/build.sh --os=bootstrap --workspace=${SRCDIR} ${BUILD_OPTS} )
     then
         RED
         cat <<EOF >&2
@@ -477,7 +489,7 @@ fi
 
 if [ ! -z "${MAKE_JARS}" ]
 then
-    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} ${BUILD_OPTS} )
     then
         RED
         cat <<EOF >&2
@@ -494,7 +506,7 @@ fi
 
 if [ ! -z "${MAKE_EPYDOCS}" ]
 then
-    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc )
+    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc ${BUILD_OPTS} )
     then
         RED
         cat <<EOF >&2

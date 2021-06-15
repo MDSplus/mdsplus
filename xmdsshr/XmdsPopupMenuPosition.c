@@ -25,23 +25,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSPOPUPMENUPOSITION.C */
 /*  *3    22-FEB-1994 14:34:25 TWF "Remove NO_X_GBLS" */
 /*  *2    25-FEB-1993 10:39:55 JAS "port to decc" */
-/*  *1     8-OCT-1991 13:36:31 TWF "Position popup menu putting menu history widget under pointer" */
+/*  *1     8-OCT-1991 13:36:31 TWF "Position popup menu putting menu history
+ * widget under pointer" */
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSPOPUPMENUPOSITION.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSPOPUPMENUPOSITION
+                Name:   XMDSPOPUPMENUPOSITION
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:    8-OCT-1991
+                Date:    8-OCT-1991
 
-		Purpose: Position popup menus according to menu history
+                Purpose: Position popup menus according to menu history
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
 
@@ -53,7 +54,7 @@ void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -84,7 +85,7 @@ void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
 
  Executable:                                                                  */
 
-EXPORT void XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent * event)
+EXPORT void XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
 {
   Widget option = w->row_column.memory_subwidget;
   XtX(w) = event->x_root - (option ? XtX(option) + XtWidth(option) / 2 : 0);

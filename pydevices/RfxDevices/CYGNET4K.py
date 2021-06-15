@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-__version__=(2016,10,26,16,00)
+__version__ = (2016, 10, 26, 16, 00)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
@@ -32,79 +32,106 @@ from ctypes import CDLL, byref, c_ushort, c_uint32, c_int, c_char_p, c_long, c_d
 from time import sleep, time
 from sys import exc_info, version_info
 from platform import uname
-if version_info[0]<3:
+if version_info[0] < 3:
     from Queue import Queue
 else:
     from queue import Queue
+
+
 def error(msg):
     from sys import stderr
-    stderr.write('ERROR: %s\n'%msg)
+    stderr.write('ERROR: %s\n' % msg)
+
 
 class CYGNET4K(Device):
     """Cygnet 4K sCMOS Camera"""
-    parts=[
-      {'path':':CONF_FILE', 'type':'text','options':('no_write_shot',)},
-      {'path':':COMMENT', 'type':'text'},
-      {'path':':DEVICE_ID', 'type':'numeric', 'valueExpr':"Int32(1)",'options':('no_write_shot',)},
-      {'path':':TRIGGER_TIME', 'type':'numeric', 'valueExpr':"Float64(0).setUnits('s')",'options':('no_write_shot',)},
-      {'path':':DURATION', 'type':'numeric', 'valueExpr':"Float64(1).setUnits('s')",'options':('no_write_shot',)},
-      {'path':':EXPOSURE', 'type':'numeric', 'valueExpr':"Float64(4).setUnits('ms')",'options':('no_write_shot',)}, # msec
-      {'path':':FRAME_MODE', 'type':'text', 'value':'EXTERNAL RISING','options':('no_write_shot',)},
-      {'path':':FRAME_RATE', 'type':'numeric', 'valueExpr':"Float64(10).setUnits('Hz')",'options':('no_write_shot',)}, # Hz
-      {'path':'.TREND', 'type':'structure'},
-      {'path':'.TREND:TREE', 'type':'text','options':('no_write_shot',)},
-      {'path':'.TREND:SHOT', 'type':'numeric','options':('no_write_shot',)},
-      {'path':'.TREND:PCB', 'type':'text','options':('no_write_shot',)},
-      {'path':'.TREND:CMOS', 'type':'text','options':('no_write_shot',)},
-      {'path':'.TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
-      {'path':'.TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'trend_start',head))",'options':('no_write_shot','write_once','disabled')},
-      {'path':'.TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',50,None),Method(None,'trend_stop',head))",'options':('no_write_shot','write_once','disabled')},
-      {'path':':ACTIONSERVER', 'type':'text','options':('no_write_shot','write_once')},
-      {'path':':ACTIONSERVER:INIT', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',20,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACTIONSERVER:START','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'start',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACTIONSERVER:STOP', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'DEINIT',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACTIONSERVER:STORE','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',90,None),Method(None,'store',head))",'options':('no_write_shot','write_once')},
-      {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
-      {'path':':ROI_RECT', 'type':'numeric','options':('no_write_model','write_once')},
-      {'path':':TEMP_CMOS', 'type':'numeric','options':('no_write_model','write_once')},
-      {'path':':TEMP_PCB', 'type':'numeric','options':('no_write_model','write_once')},
-      {'path':':FRAMES', 'type':'signal','options':('no_write_model','write_once')},
+    parts = [
+        {'path': ':CONF_FILE', 'type': 'text', 'options': ('no_write_shot',)},
+        {'path': ':COMMENT', 'type': 'text'},
+        {'path': ':DEVICE_ID', 'type': 'numeric',
+            'valueExpr': "Int32(1)", 'options': ('no_write_shot',)},
+        {'path': ':TRIGGER_TIME', 'type': 'numeric',
+            'valueExpr': "Float64(0).setUnits('s')", 'options': ('no_write_shot',)},
+        {'path': ':DURATION', 'type': 'numeric',
+            'valueExpr': "Float64(1).setUnits('s')", 'options': ('no_write_shot',)},
+        {'path': ':EXPOSURE', 'type': 'numeric',
+            'valueExpr': "Float64(4).setUnits('ms')", 'options': ('no_write_shot',)},  # msec
+        {'path': ':FRAME_MODE', 'type': 'text',
+            'value': 'EXTERNAL RISING', 'options': ('no_write_shot',)},
+        {'path': ':FRAME_RATE', 'type': 'numeric',
+            'valueExpr': "Float64(10).setUnits('Hz')", 'options': ('no_write_shot',)},  # Hz
+        {'path': '.TREND', 'type': 'structure'},
+        {'path': '.TREND:TREE', 'type': 'text', 'options': ('no_write_shot',)},
+        {'path': '.TREND:SHOT', 'type': 'numeric',
+         'options': ('no_write_shot',)},
+        {'path': '.TREND:PCB', 'type': 'text', 'options': ('no_write_shot',)},
+        {'path': '.TREND:CMOS', 'type': 'text', 'options': ('no_write_shot',)},
+        {'path': '.TREND:PERIOD', 'type': 'numeric',
+         'valueExpr': "Float32(1.).setUnits('s')", 'options': ('no_write_shot',)},
+        {'path': '.TREND:ACT_START', 'type': 'action', 'valueExpr': "Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'trend_start',head))", 'options': (
+            'no_write_shot', 'write_once', 'disabled')},
+        {'path': '.TREND:ACT_STOP', 'type': 'action', 'valueExpr': "Action(Dispatch(head.actionserver,'STORE',50,None),Method(None,'trend_stop',head))", 'options': (
+            'no_write_shot', 'write_once', 'disabled')},
+        {'path': ':ACTIONSERVER', 'type': 'text',
+         'options': ('no_write_shot', 'write_once')},
+        {'path': ':ACTIONSERVER:INIT', 'type': 'action',
+            'valueExpr': "Action(Dispatch(head.actionserver,'INIT',20,None),Method(None,'init',head))", 'options': ('no_write_shot', 'write_once')},
+        {'path': ':ACTIONSERVER:START', 'type': 'action',
+            'valueExpr': "Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'start',head))", 'options': ('no_write_shot', 'write_once')},
+        {'path': ':ACTIONSERVER:STOP', 'type': 'action',
+            'valueExpr': "Action(Dispatch(head.actionserver,'DEINIT',20,None),Method(None,'stop',head))", 'options': ('no_write_shot', 'write_once')},
+        {'path': ':ACTIONSERVER:STORE', 'type': 'action',
+            'valueExpr': "Action(Dispatch(head.actionserver,'STORE',90,None),Method(None,'store',head))", 'options': ('no_write_shot', 'write_once')},
+        {'path': ':BINNING', 'type': 'text', 'options': (
+            'no_write_model', 'write_once')},
+        {'path': ':ROI_RECT', 'type': 'numeric',
+         'options': ('no_write_model', 'write_once')},
+        {'path': ':TEMP_CMOS', 'type': 'numeric',
+         'options': ('no_write_model', 'write_once')},
+        {'path': ':TEMP_PCB', 'type': 'numeric',
+         'options': ('no_write_model', 'write_once')},
+        {'path': ':FRAMES', 'type': 'signal',
+         'options': ('no_write_model', 'write_once')},
     ]
     trigModes = {'EXTERNAL RISING':    0b11001000,
                  'EXTERNAL FALLING':   0b01001000,
-                 'INTEGRATE THEN READ':0b00001100,
+                 'INTEGRATE THEN READ': 0b00001100,
                  'FIXED FRAME RATE':   0b00001110}
 
     class _xclib(CDLL):
         serialErr = {
-        '0x50':'ETX',
-        '0x51':'ETX_SER_TIMEOUT',
-        '0x52':'ETX_CK_SUM_ERR',
-        '0x53':'ETX_I2C_ERR',
-        '0x54':'ETX_UNKNOWN_CMD',
-        '0x55':'ETX_DONE_LOW'}
+            '0x50': 'ETX',
+            '0x51': 'ETX_SER_TIMEOUT',
+            '0x52': 'ETX_CK_SUM_ERR',
+            '0x53': 'ETX_I2C_ERR',
+            '0x54': 'ETX_UNKNOWN_CMD',
+            '0x55': 'ETX_DONE_LOW'}
         STREAM = True
         device_id = 1
-        DRIVERPARMS = '-XU 1 -DM %d'  # allow other applications to share use of imaging boards previously opened for use by the first application
+        # allow other applications to share use of imaging boards previously opened for use by the first application
+        DRIVERPARMS = '-XU 1 -DM %d'
         FORMAT = 'DEFAULT'
         isOpen = False
         isInitSerial = False
         queue = None
         stream = None
-        secPerTick = 4E-3;
+        secPerTick = 4E-3
 
         class _streamer(Thread):
             """a thread class that will stream frames to MDSplus tree"""
-            def __init__ (self, node):
-                Thread.__init__ (self)
+
+            def __init__(self, node):
+                Thread.__init__(self)
                 self.node = node
                 self.daemon = True
 
             def run(self):
                 while True:  # run until None is send
                     frameset = CYGNET4K.xclib.queue.get()
-                    if frameset is None: break
-                    CYGNET4K.xclib.storeFrame(self.node,frameset[0],frameset[1])
+                    if frameset is None:
+                        break
+                    CYGNET4K.xclib.storeFrame(
+                        self.node, frameset[0], frameset[1])
                     CYGNET4K.xclib.queue.task_done()
                 CYGNET4K.xclib.queue.task_done()
 
@@ -112,63 +139,72 @@ class CYGNET4K(Device):
             try:
                 postfix = uname()[4]
                 name = '_'.join(['xclib']+[postfix])+'.so'
-                super(CYGNET4K._xclib,self).__init__(name)
+                super(CYGNET4K._xclib, self).__init__(name)
                 self.pxd_mesgErrorCode.restype = c_char_p
             except OSError:
-                error('xclib: '+ str(exc_info()[1]))
+                error('xclib: ' + str(exc_info()[1]))
 
         def __del__(self):
             if self.isOpen:
                 self.pxd_PIXCIclose()
 
-        def printErrorMsg(self,status):
+        def printErrorMsg(self, status):
             error(self.pxd_mesgErrorCode(status))
             self.pxd_mesgFault(0xFF)
 
         def closeDevice(self):
-            self.pxd_PIXCIclose();
-            CYGNET4K.isOpen = False;
+            self.pxd_PIXCIclose()
+            CYGNET4K.isOpen = False
 
-        def openDevice(self,dev_id,formatFile=""):
+        def openDevice(self, dev_id, formatFile=""):
             """configFile includes exposure time which seems to take precedence over later serial commands"""
-            if CYGNET4K.isOpen: return self.device_id==int(dev_id)
+            if CYGNET4K.isOpen:
+                return self.device_id == int(dev_id)
             self.device_id = int(dev_id)
-            DRIVERPARMS = self.DRIVERPARMS % (1<<(dev_id-1))
+            DRIVERPARMS = self.DRIVERPARMS % (1 << (dev_id-1))
             if Device.debug:
-                print("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % (DRIVERPARMS,))
-            status = self.pxd_PIXCIopen(c_char_p(DRIVERPARMS), c_char_p(self.FORMAT), c_char_p(formatFile))
-            if status<0:
+                print("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % (
+                    DRIVERPARMS,))
+            status = self.pxd_PIXCIopen(c_char_p(DRIVERPARMS), c_char_p(
+                self.FORMAT), c_char_p(formatFile))
+            if status < 0:
                 self.printErrorMsg(status)
                 CYGNET4K.isOpen = False
                 return False
-            if Device.debug: print("Open OK")
+            if Device.debug:
+                print("Open OK")
             CYGNET4K.isOpen = True
             self.serialUseAck = self.serialUseChk = True
             status = self.getSystemStateP()
             self.serialUseAck = status['ack']
             self.serialUseChk = status['chksum']
-            self.nUnits  = self.pxd_infoUnits()
-            self.memSize = [self.pxd_infoMemsize(c_int(1<<i)) for i in range(self.nUnits)]
+            self.nUnits = self.pxd_infoUnits()
+            self.memSize = [self.pxd_infoMemsize(
+                c_int(1 << i)) for i in range(self.nUnits)]
             self.nBuffer = self.pxd_imageZdim()
             self.PixelsX = self.pxd_imageXdim()
             self.PixelsY = self.pxd_imageYdim()
-            self.Colors  = self.pxd_imageCdim()
+            self.Colors = self.pxd_imageCdim()
             self.ColorBits = self.pxd_imageBdim()
             self.PixelsToRead = self.PixelsX * self.PixelsY
             if Device.debug:
                 print("number of boards:   %d" % self.nUnits)
-                print("buffer memory size: %.1f MB" % (self.memSize[0]/1048576.))
+                print("buffer memory size: %.1f MB" %
+                      (self.memSize[0]/1048576.))
                 print("frame buffers:      %d" % self.nBuffer)
-                print("image resolution:   %d x %d" % (self.PixelsX, self.PixelsY))
+                print("image resolution:   %d x %d" %
+                      (self.PixelsX, self.PixelsY))
                 print("colors:             %d" % self.Colors)
                 print("bits per pixel:     %d" % (self.Colors*self.ColorBits))
             ticku = (c_uint32*2)()
             if self.pxd_infoSysTicksUnits(ticku) == 0:
-                self.secPerTick = ticku[0] / ticku[1] * 1E-6;
-                if Device.debug: print("Microseconds per tick: %.1f" % (self.secPerTick * 1E6))
+                self.secPerTick = ticku[0] / ticku[1] * 1E-6
+                if Device.debug:
+                    print("Microseconds per tick: %.1f" %
+                          (self.secPerTick * 1E6))
             return True
 
-        def startVideoCapture(self,node):
+        def startVideoCapture(self, node):
             if self.goneLive:
                 error('Cannot go live again. Re-init first!')
                 raise mdsExceptions.DevERROR_DOING_INIT
@@ -179,105 +215,131 @@ class CYGNET4K(Device):
             else:
                 self.queue = []
             status = self.pxd_goLivePair(1, c_long(1), c_long(2))
-            if status<0:
+            if status < 0:
                 self.printErrorMsg(status)
                 raise mdsExceptions.DevERROR_DOING_INIT
-            self.lastCaptured = self.pxd_buffersFieldCount(1,self.pxd_capturedBuffer(1))
+            self.lastCaptured = self.pxd_buffersFieldCount(
+                1, self.pxd_capturedBuffer(1))
             self.currTime = 0
             self.Frames = 0
             for i in range(10):
-                if self.goneLive: break
-                else:            sleep(.3)
+                if self.goneLive:
+                    break
+                else:
+                    sleep(.3)
             if self.goneLive:
-                if Device.debug: print("Video capture started.")
+                if Device.debug:
+                    print("Video capture started.")
             else:
                 error('Timeout!')
                 raise mdsExceptions.DevERROR_DOING_INIT
 
         def _goneLive(self):
-            return not self.pxd_goneLive(1,0)==0
+            return not self.pxd_goneLive(1, 0) == 0
         goneLive = property(_goneLive)
 
         def captureFrame(self, TriggerTime):
             currBuffer = self.pxd_capturedBuffer(1)
-            currCaptured = self.pxd_buffersFieldCount(1,currBuffer)
+            currCaptured = self.pxd_buffersFieldCount(1, currBuffer)
             if currCaptured != self.lastCaptured:  # A new frame arrived
-                currTicks = self.pxd_buffersSysTicks(1, currBuffer)  # get internal clock of that buffer
-                if Device.debug>3: print("%d -> %d @ %d" % (self.lastCaptured, currCaptured, currTicks))
+                # get internal clock of that buffer
+                currTicks = self.pxd_buffersSysTicks(1, currBuffer)
+                if Device.debug > 3:
+                    print("%d -> %d @ %d" %
+                          (self.lastCaptured, currCaptured, currTicks))
                 if self.Frames == 0:  # first frame
-                    self.baseTicks = currTicks;
-                currTime = (currTicks - (self.baseTicks)) * self.secPerTick + TriggerTime;
-                self.lastCaptured = currCaptured;
+                    self.baseTicks = currTicks
+                currTime = (currTicks - (self.baseTicks)) * \
+                    self.secPerTick + TriggerTime
+                self.lastCaptured = currCaptured
                 usFrame = (c_ushort*self.PixelsToRead)()  # allocate frame
-                PixelsRead = self.pxd_readushort(1, c_long(currBuffer), 0, 0, self.PixelsX, self.PixelsY, byref(usFrame), self.PixelsToRead, c_char_p("Grey"))  # get frame
+                PixelsRead = self.pxd_readushort(1, c_long(currBuffer), 0, 0, self.PixelsX, self.PixelsY, byref(
+                    usFrame), self.PixelsToRead, c_char_p("Grey"))  # get frame
                 if PixelsRead != self.PixelsToRead:
                     error('ERROR READ USHORT')
-                    if PixelsRead < 0: self.printErrorMsg(PixelsRead)
-                    else: error("pxd_readushort error: %d != %d" % (PixelsRead, self.PixelsToRead))
+                    if PixelsRead < 0:
+                        self.printErrorMsg(PixelsRead)
+                    else:
+                        error("pxd_readushort error: %d != %d" %
+                              (PixelsRead, self.PixelsToRead))
                     return False
-                if Device.debug: print("FRAME %d READ AT TIME %f" % (self.Frames,currTime))
-                if isinstance(self.queue,Queue):
-                    self.queue.put((currTime,usFrame))
+                if Device.debug:
+                    print("FRAME %d READ AT TIME %f" % (self.Frames, currTime))
+                if isinstance(self.queue, Queue):
+                    self.queue.put((currTime, usFrame))
                 else:
-                    self.queue.append((currTime,usFrame))
+                    self.queue.append((currTime, usFrame))
                 self.Frames += 1
                 return True
             else:  # No new frame
                 return False
 
-        def storeFrames(self,node):
-            if isinstance(self.queue,Queue):
+        def storeFrames(self, node):
+            if isinstance(self.queue, Queue):
                 self.stream.join()
             else:
                 for frameset in self.queue:
-                    self.storeFrame(node,frameset[0],frameset[1])
+                    self.storeFrame(node, frameset[0], frameset[1])
 
-        def storeFrame(self,node,dim,frame):
+        def storeFrame(self, node, dim, frame):
             dims = Float32Array([dim]).setUnits('s')
-            data = Int16Array(array(frame,'int16').reshape([1,self.PixelsX,self.PixelsY]))
-            if Device.debug: print('storeFrame',node.minpath,dim,data.shape)
-            node.makeSegment(dim,dim,dims,data)
+            data = Int16Array(array(frame, 'int16').reshape(
+                [1, self.PixelsX, self.PixelsY]))
+            if Device.debug:
+                print('storeFrame', node.minpath, dim, data.shape)
+            node.makeSegment(dim, dim, dims, data)
 
         def stopVideoCapture(self):
             self.pxd_goUnLive(1)
-            if isinstance(self.queue,Queue):
+            if isinstance(self.queue, Queue):
                 self.queue.put(None)  # invoke stream closure
-            if Device.debug: print("Video capture stopped.")
+            if Device.debug:
+                print("Video capture stopped.")
 
         def serialIO(self, writeBuf, BytesToRead=0):
             BytesToWrite = len(writeBuf)
             check = 0
-            for i in range(BytesToWrite): check ^= ord(writeBuf[i])
+            for i in range(BytesToWrite):
+                check ^= ord(writeBuf[i])
             writeBuf += chr(check)
             if not self.isInitSerial:
-                status = self.pxd_serialConfigure(1, 0, c_double(115200.), 8, 0, 1, 0, 0, 0)
-                if status<0:
+                status = self.pxd_serialConfigure(
+                    1, 0, c_double(115200.), 8, 0, 1, 0, 0, 0)
+                if status < 0:
                     error("ERROR CONFIGURING SERIAL CAMERALINK PORT")
                     self.printErrorMsg(status)
                     raise mdsExceptions.DevCOMM_ERROR
                 self.isInitSerial = True
                 sleep(0.02)
-            if Device.debug>3: print('serial write: '+' '.join(['%02x' % ord(c) for c  in writeBuf]),BytesToRead)
-            while self.pxd_serialRead(1, 0, create_string_buffer(1), 1): pass
-            BytesRead = self.pxd_serialWrite(1, 0, c_char_p(writeBuf), BytesToWrite+1)
+            if Device.debug > 3:
+                print('serial write: ' +
+                      ' '.join(['%02x' % ord(c) for c in writeBuf]), BytesToRead)
+            while self.pxd_serialRead(1, 0, create_string_buffer(1), 1):
+                pass
+            BytesRead = self.pxd_serialWrite(
+                1, 0, c_char_p(writeBuf), BytesToWrite+1)
             if BytesRead < 0:
-                error("ERROR IN SERIAL WRITE");
+                error("ERROR IN SERIAL WRITE")
                 self.printErrorMsg(BytesRead)
                 raise mdsExceptions.DevCOMM_ERROR
-            if BytesToRead is None: return  # no response e.g. for resetMicro
-            EOC = int(self.serialUseAck)+int(self.serialUseChk)  # ETX and optional check sum
+            if BytesToRead is None:
+                return  # no response e.g. for resetMicro
+            # ETX and optional check sum
+            EOC = int(self.serialUseAck)+int(self.serialUseChk)
             expected = BytesToRead+EOC
             cReadBuf = create_string_buffer(expected)
-            timeout = time()+.01;out=[]
-            while timeout>time() and expected>0:
+            timeout = time()+.01
+            out = []
+            while timeout > time() and expected > 0:
                 BytesRead = self.pxd_serialRead(1, 0, cReadBuf, expected)
                 if BytesRead < 0:
-                    error("ERROR IN SERIAL READ\n");
+                    error("ERROR IN SERIAL READ\n")
                     self.printErrorMsg(BytesRead)
                     raise mdsExceptions.DevCOMM_ERROR
-                out+= cReadBuf.raw[0:BytesRead]
-                expected-= BytesRead
-            if Device.debug: print("SERIAL READ: %d of %d" % (len(out)-EOC, BytesToRead))
+                out += cReadBuf.raw[0:BytesRead]
+                expected -= BytesRead
+            if Device.debug:
+                print("SERIAL READ: %d of %d" % (len(out)-EOC, BytesToRead))
             return out[0:BytesToRead]
 
         '''Set Commands'''
@@ -285,12 +347,12 @@ class CYGNET4K(Device):
         def setValue(self, addrlist, value, useExtReg=False):
             shift = 8*len(addrlist)-8
             for addr in addrlist:
-                byte = chr((value>>shift) & 0xFF)
+                byte = chr((value >> shift) & 0xFF)
                 shift -= 8
                 if useExtReg:  # set addr of extended register
-                    self.serialIO(b'\x53\xE0\x02\xF3'+addr+b'\x50');
+                    self.serialIO(b'\x53\xE0\x02\xF3'+addr+b'\x50')
                     addr = b'\xF4'
-                self.serialIO(b'\x53\xE0\x02'+addr+byte+b'\x50');
+                self.serialIO(b'\x53\xE0\x02'+addr+byte+b'\x50')
             return self
 
         def resetMicro(self):
@@ -299,10 +361,11 @@ class CYGNET4K(Device):
             self.serialIO(b'\x55\x99\x66\x11\x50\EB', None)
             return self
 
-        def setSystemState(self,byte):
+        def setSystemState(self, byte):
             self.serialIO(b'\x4F'+chr(byte)+b'\x50')
             return self
-        def setSystemStateP(self,chksum,ack,FPGAboot,FPGAcom):
+
+        def setSystemStateP(self, chksum, ack, FPGAboot, FPGAcom):
             """
             setSystemState(chksum,ack,FPGAreset,FPGAcomms)
             chksum   Bit 6 = 1 to enable check sum mode
@@ -311,16 +374,21 @@ class CYGNET4K(Device):
             FPGAcom  Bit 0 = 1 to enable comms to FPGA EPROM
             """
             byte = 0
-            if chksum:   byte |= 1<<6
-            if ack:      byte |= 1<<4
-            if FPGAboot: byte |= 1<<1
-            if FPGAcom:  byte |= 1<<0
+            if chksum:
+                byte |= 1 << 6
+            if ack:
+                byte |= 1 << 4
+            if FPGAboot:
+                byte |= 1 << 1
+            if FPGAcom:
+                byte |= 1 << 0
             return self.setSystemState(byte)
 
-        def setFpgaCtrlReg(self,byte):
+        def setFpgaCtrlReg(self, byte):
             """setFpgaCtrlReg(byte)"""
-            return self.setValue(b'\x00',byte)
-        def setFpgaCtrlRegP(self,enableTEC):
+            return self.setValue(b'\x00', byte)
+
+        def setFpgaCtrlRegP(self, enableTEC):
             """setFpgaCtrlRegP(enableTEC)"""
             return self.setFpgaCtrlReg(1 if enableTEC else 0)
 
@@ -347,17 +415,23 @@ class CYGNET4K(Device):
             fixed   Bit 1 = 1 to enable Fixed frame rate, 0 for continuous ITR (Default=0)
             snap    Bit 0 = 1 for snapshot, self-clearing bit (Default=0)
             """
-            return self.setValue(b'\xD4',byte)
+            return self.setValue(b'\xD4', byte)
 
         def setTrigModeP(self, raising, ext, abort, cont, fixed, snap):
             """setTrigModeP(raising,ext,abort,cont,fixed,snap)"""
             byte = 0
-            if raising: byte |= 1<<7
-            if ext:     byte |= 1<<6
-            if abort:   byte |= 1<<3
-            if cont:    byte |= 1<<2
-            if fixed:   byte |= 1<<1
-            if snap:    byte |= 1<<0
+            if raising:
+                byte |= 1 << 7
+            if ext:
+                byte |= 1 << 6
+            if abort:
+                byte |= 1 << 3
+            if cont:
+                byte |= 1 << 2
+            if fixed:
+                byte |= 1 << 1
+            if snap:
+                byte |= 1 << 0
             return self.setTrigMode(byte)
 
         def setDigitalVideoGain(self, gain):
@@ -368,68 +442,73 @@ class CYGNET4K(Device):
 
         def setBinning(self, binning):
             """setBinning(N) for NxN,  N in [1,2,4]"""
-            if   binning == 1: byte = 0x00  # 1*1
-            elif binning == 2: byte = 0x11  # 2*2
-            elif binning == 4: byte = 0x22  # 4*4
-            else: raise mdsExceptions.DevINV_SETUP
-            return self.setValue(b'\xDB',byte)
+            if binning == 1:
+                byte = 0x00  # 1*1
+            elif binning == 2:
+                byte = 0x11  # 2*2
+            elif binning == 4:
+                byte = 0x22  # 4*4
+            else:
+                raise mdsExceptions.DevINV_SETUP
+            return self.setValue(b'\xDB', byte)
 
         def setRoiXSize(self, value):
             """set ROI X size as 12-bit value"""
-            return self.setValue(b'\xD7\xD8',min(0xFFF,value))
+            return self.setValue(b'\xD7\xD8', min(0xFFF, value))
 
         def setRoiXOffset(self, value):
             """set ROI X offset as 12-bit value"""
-            return self.setValue(b'\81\x82',min(0xFFF,value),True)
+            return self.setValue(b'\81\x82', min(0xFFF, value), True)
 
         def setRoiYSize(self, value):
             """set ROI Y size as 12-bit value"""
-            return self.setValue(b'\x83\x84',min(0xFFF,value),True)
+            return self.setValue(b'\x83\x84', min(0xFFF, value), True)
 
         def setRoiYOffset(self, value):
             """set ROI Y offset as 12-bit value"""
-            return self.setValue(b'\xD7\xD8',min(0xFFF,value))
+            return self.setValue(b'\xD7\xD8', min(0xFFF, value))
 
         '''Query Commands'''
 
         def getSystemState(self):
             """get system state byte"""
-            return  ord(self.serialIO(b'\x49\x50',1)[0])
+            return ord(self.serialIO(b'\x49\x50', 1)[0])
 
         def getSystemStateP(self):
             """get system state as dict"""
             byte = self.getSystemState()
             return {
-            'chksum':  bool(byte & 1<<6),
-            'ack':     bool(byte & 1<<4),
-            'FPGAboot':bool(byte & 1<<2),
-            'FPGAhold':bool(byte & 1<<1),
-            'FPGAcomm':bool(byte & 1<<0)}
+                'chksum':  bool(byte & 1 << 6),
+                'ack':     bool(byte & 1 << 4),
+                'FPGAboot': bool(byte & 1 << 2),
+                'FPGAhold': bool(byte & 1 << 1),
+                'FPGAcomm': bool(byte & 1 << 0)}
 
-        def getByte(self,n=1):
+        def getByte(self, n=1):
             return ord(self.serialIO(b'\x53\xE1\x01\x50', n)[0])
 
         def getValue(self, addrlist, rc=1, useExtReg=False):
             value = 0
-            for i,addr in enumerate(addrlist):
+            for i, addr in enumerate(addrlist):
                 if useExtReg:
-                    self.setValue(addr,0x00,True)
+                    self.setValue(addr, 0x00, True)
                     addr = '\x73'
                 self.serialIO(b'\x53\xE0\x01'+addr+b'\x50', rc-1)
                 byte = self.getByte(rc)
                 if useExtReg:  # LSBF
                     value |= byte << (i*8)
                 else:  # MSBF
-                    value = value<<8 | byte
+                    value = value << 8 | byte
             return value
 
         def getFpgaCtrlReg(self):
             """byte = getFpgaCtrlReg()"""
             """TEC bit 0 = 1 enabled"""
             return self.getValue(b'\x00')
+
         def getFpgaCtrlRegP(self):
             """status = getFpgaCtrlRegP()"""
-            return {'TEC':bool(self.getFpgaCtrlReg & 1<<0)}
+            return {'TEC': bool(self.getFpgaCtrlReg & 1 << 0)}
 
         def getFrameRate(self):
             """get frameRate in Hz"""
@@ -437,31 +516,31 @@ class CYGNET4K(Device):
 
         def getExposure(self):
             """get exposure in ms"""
-            return self.getValue(b'\xED\xEE\xEF\xF0\xF1')/6E4;
+            return self.getValue(b'\xED\xEE\xEF\xF0\xF1')/6E4
 
         def getDigitalVideoGain(self):
             """get digital video gain"""
-            return self.getValue(b'\xD5\xD6',2)/512.
+            return self.getValue(b'\xD5\xD6', 2)/512.
 
         def getPcbTemp(self):
             """get temperature of pc board in degC"""
-            self.setValue(b'\x70',0)
+            self.setValue(b'\x70', 0)
             value = self.getByte() & 0xF
-            self.setValue(b'\x71',0)
-            value = value<<8 | self.getByte()
+            self.setValue(b'\x71', 0)
+            value = value << 8 | self.getByte()
             return value/16.
 
         def getCmosTemp(self):
             """get temperature of CMOS chip (raw word)"""
-            return self.getValue(b'\x7E\x7F',1,True)
+            return self.getValue(b'\x7E\x7F', 1, True)
 
         def getMicroVersion(self):
             """major,minor = getMicroVersion()"""
-            return tuple(map(ord,self.serialIO(b'\x56\x50',2)[0:2]))
+            return tuple(map(ord, self.serialIO(b'\x56\x50', 2)[0:2]))
 
         def getFpgaVersion(self):
             """major,minor = getFpgaVersion()"""
-            return self.getValue(b'\x7E'),self.getValue(b'\x7F')
+            return self.getValue(b'\x7E'), self.getValue(b'\x7F')
 
         def getTrigMode(self):
             """
@@ -479,16 +558,16 @@ class CYGNET4K(Device):
             """get trigger mode as dict"""
             byte = self.getTrigMode()
             return {
-            'raising': bool(byte & 1<<7),
-            'ext':     bool(byte & 1<<6),
-            'abort':   bool(byte & 1<<3),
-            'cont':    bool(byte & 1<<2),
-            'fixed':   bool(byte & 1<<1),
-            'snap':    bool(byte & 1<<0)}
+                'raising': bool(byte & 1 << 7),
+                'ext':     bool(byte & 1 << 6),
+                'abort':   bool(byte & 1 << 3),
+                'cont':    bool(byte & 1 << 2),
+                'fixed':   bool(byte & 1 << 1),
+                'snap':    bool(byte & 1 << 0)}
 
         def getBinning(self):
             """n = getBinning(), => binning: nxn"""
-            return 1<<(self.getValue(b'\xDB')&3)
+            return 1 << (self.getValue(b'\xDB') & 3)
 
         def getRoiXSize(self):
             """get width of ROI"""
@@ -500,11 +579,11 @@ class CYGNET4K(Device):
 
         def getRoiYSize(self):
             """get height of ROI"""
-            return self.getValue(b'\x01\x02',1,True)
+            return self.getValue(b'\x01\x02', 1, True)
 
         def getRoiYOffset(self):
             """get Y offset of ROI"""
-            return self.getValue(b'\x03\x04',1,True)
+            return self.getValue(b'\x03\x04', 1, True)
 
         ''' currently unsupported: returns error code 0x53 ETX_I2C_ERR
         def getUnitSerialNumber(self):
@@ -543,13 +622,13 @@ class CYGNET4K(Device):
             self.setTrigMode(trigMode)
 
         def getConfiguration(self):
-            self.binning    = self.getBinning()
-            self.roiXSize   = self.getRoiXSize()
+            self.binning = self.getBinning()
+            self.roiXSize = self.getRoiXSize()
             self.roiXOffset = self.getRoiXOffset()
-            self.roiYSize   = self.getRoiYSize()
+            self.roiYSize = self.getRoiYSize()
             self.roiYOffset = self.getRoiYOffset()
-            self.exposure   = self.getExposure()
-            self.frameRate  = self.getFrameRate()
+            self.exposure = self.getExposure()
+            self.frameRate = self.getFrameRate()
 
     isInitialized = {}
     trendworkers = {}
@@ -565,32 +644,37 @@ class CYGNET4K(Device):
     """methods for action nodes"""
 
     def init(self):
-        def validate(node,value):
+        def validate(node, value):
             node.write_once = node.no_write_shot = False
             node.record = node.record.setValidation(value)
             node.write_once = node.no_write_shot = True
 
         dev_id = int(self.device_id.data())
-        if dev_id<=0:
+        if dev_id <= 0:
             error('Wrong value for DEVICE_ID, must be a positive integer.')
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary()
         CYGNET4K.xclib.closeDevice()  # as config file might have changed we re-open
-        CYGNET4K.xclib.openDevice(dev_id,self.conf_file.data(""))  # use config file if defined else ""
+        # use config file if defined else ""
+        CYGNET4K.xclib.openDevice(dev_id, self.conf_file.data(""))
         if not CYGNET4K.isOpen:
             error('Could not open camera. No camera connected?.')
             raise mdsExceptions.DevCOMM_ERROR
         exposure = self.exposure.data()
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
-        if Device.debug: print('TriggerMode: %s' % trigMode)
-        try:    trigMode = CYGNET4K.trigModes[trigMode.upper()]
-        except: raise mdsExceptions.DevBAD_MODE
-        CYGNET4K.xclib.setConfiguration(exposure,frameRate,trigMode)
+        if Device.debug:
+            print('TriggerMode: %s' % trigMode)
+        try:
+            trigMode = CYGNET4K.trigModes[trigMode.upper()]
+        except:
+            raise mdsExceptions.DevBAD_MODE
+        CYGNET4K.xclib.setConfiguration(exposure, frameRate, trigMode)
         CYGNET4K.xclib.getConfiguration()
         CYGNET4K.isInitialized[dev_id] = True
-        roiRect = (CYGNET4K.xclib.roiXOffset,CYGNET4K.xclib.roiYOffset,CYGNET4K.xclib.roiXSize,CYGNET4K.xclib.roiYSize)
-        binning = '%dx%d' % (CYGNET4K.xclib.binning,CYGNET4K.xclib.binning)
+        roiRect = (CYGNET4K.xclib.roiXOffset, CYGNET4K.xclib.roiYOffset,
+                   CYGNET4K.xclib.roiXSize, CYGNET4K.xclib.roiYSize)
+        binning = '%dx%d' % (CYGNET4K.xclib.binning, CYGNET4K.xclib.binning)
         if Device.debug:
             print('binning:    %s' % binning)
             print('ROI:        [%d, %d, %d, %d]' % roiRect)
@@ -600,19 +684,19 @@ class CYGNET4K(Device):
         try:
             self.binning.record = binning
             self.roi_rect.record = roiRect
-            validate(self.exposure,CYGNET4K.xclib.exposure)
-            validate(self.frame_rate,CYGNET4K.xclib.frameRate)
+            validate(self.exposure, CYGNET4K.xclib.exposure)
+            validate(self.frame_rate, CYGNET4K.xclib.frameRate)
         except mdsExceptions.TreeNOOVERWRITE:
             if not (self.binning.data() == binning) and all(self.roi_rect.data() == roiRect):
                 error('Re-initialization error: Parameter mismatch!')
                 raise mdsExceptions.DevINV_SETUP
 
-    def start(self,stream=None):
+    def start(self, stream=None):
         dev_id = int(self.device_id.data())
         if dev_id < 0:
             error('Wrong value of DEVICE_ID, must be greater than 0.')
             raise mdsExceptions.DevINV_SETUP
-        if not CYGNET4K.isInitialized.get(dev_id,False):
+        if not CYGNET4K.isInitialized.get(dev_id, False):
             error("Device not initialized: Run 'init' first.")
             raise mdsExceptions.DevINV_SETUP
         if stream is not None:
@@ -622,8 +706,10 @@ class CYGNET4K(Device):
         self.saveWorker()
         self.worker.start()
         for i in range(10):
-            if self.worker.running: return
-            else:                   sleep(.3)
+            if self.worker.running:
+                return
+            else:
+                sleep(.3)
         raise mdsExceptions.MDSplusERROR
 
     def stop(self):
@@ -632,24 +718,26 @@ class CYGNET4K(Device):
             raise mdsExceptions.MDSplusERROR
         self.worker.stop()
         for i in range(10):
-            if self.worker.running: sleep(.3)
-            else:                   return
+            if self.worker.running:
+                sleep(.3)
+            else:
+                return
         error('stop - worker stopping time out!')
         raise mdsExceptions.MDSplusERROR
 
-    def store(self,timeout=None):
+    def store(self, timeout=None):
         if not self.restoreWorker():
             error('store - cannot restore worker')
             raise mdsExceptions.MDSplusERROR
         if (timeout is None):
-            self.worker.join() # wait w/o timeout
+            self.worker.join()  # wait w/o timeout
         else:
             self.worker.join(float(timeout))  # wait for it to complete
             if self.worker.isAlive():  # error on timeout
                 error('store - worker join time out!')
                 raise mdsExceptions.MDSplusERROR
 
-    def trend_start(self,ns=0):
+    def trend_start(self, ns=0):
         dev_id = int(self.device_id.data())
         if dev_id < 0:
             error('Wrong value for DEVICE_ID, must be greater than 0')
@@ -675,14 +763,19 @@ class CYGNET4K(Device):
         except:
             error('Check TREND_TREE and TREND_SHOT.')
             raise mdsExceptions.TreeNODATA
-        try:    ns = bool(int(ns))
-        except: ns = False
-        self.trendWorker = self.AsynchTrend(self, trendTree, trendShot, trendPcb, trendCmos, ns)
+        try:
+            ns = bool(int(ns))
+        except:
+            ns = False
+        self.trendWorker = self.AsynchTrend(
+            self, trendTree, trendShot, trendPcb, trendCmos, ns)
         self.saveTrendWorker()
         self.trendWorker.start()
         for i in range(10):
-            if self.trendWorker.running: return
-            else:                        sleep(.3)
+            if self.trendWorker.running:
+                return
+            else:
+                sleep(.3)
         raise mdsExceptions.MDSplusERROR
 
     def trend_stop(self):
@@ -725,7 +818,6 @@ class CYGNET4K(Device):
         error('Cannot restore worker!!\nMaybe no worker has been started.')
         return False
 
-
     class AsynchStore(Thread):
         def __init__(self, device):
             Thread.__init__(self)
@@ -738,8 +830,8 @@ class CYGNET4K(Device):
 
         def run(self):
             """capture temps before"""
-            self.pcbTemp =  [CYGNET4K.xclib.getPcbTemp(),0.]
-            self.cmosTemp = [CYGNET4K.xclib.getCmosTemp(),0.]
+            self.pcbTemp = [CYGNET4K.xclib.getPcbTemp(), 0.]
+            self.cmosTemp = [CYGNET4K.xclib.getCmosTemp(), 0.]
             """start capturing frames"""
             CYGNET4K.xclib.startVideoCapture(self.device.frames)
             self.running = True
@@ -750,7 +842,7 @@ class CYGNET4K(Device):
             CYGNET4K.xclib.stopVideoCapture()
             self.running = False
             """capture temps after"""
-            self.pcbTemp[1]  = CYGNET4K.xclib.getPcbTemp()
+            self.pcbTemp[1] = CYGNET4K.xclib.getPcbTemp()
             self.cmosTemp[1] = CYGNET4K.xclib.getCmosTemp()
             print('storing')
             self.store()  # already start upload to save time
@@ -761,7 +853,7 @@ class CYGNET4K(Device):
 
         def store(self):
             """transfer data to tree"""
-            self.device.temp_pcb.record  = Float32Array(self.pcbTemp)
+            self.device.temp_pcb.record = Float32Array(self.pcbTemp)
             self.device.temp_cmos.record = Int16Array(self.cmosTemp)
             CYGNET4K.xclib.storeFrames(self.device.frames)
 
@@ -798,33 +890,44 @@ class CYGNET4K(Device):
                 error('Cannot access trend tree. Check TREND:TREE and TREND_SHOT.')
                 raise mdsExceptions.TreeTNF
             if self.pcb is None and self.cmos is None:
-                error('Cannot access any node for trend. Check TREND:PCB, TREND:CMOS on. Nodes must exist on %s.' % repr(tree))
+                error(
+                    'Cannot access any node for trend. Check TREND:PCB, TREND:CMOS on. Nodes must exist on %s.' % repr(tree))
                 raise mdsExceptions.TreeNNF
             if self.pcb is None:
-                error('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
+                error(
+                    'Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
             elif self.cmos is None:
-                error('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
-            print('started trend writing to %s - %s and %s every %fs' % (self.tree,self.pcb,self.cmos,self.period))
+                error(
+                    'Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
+            print('started trend writing to %s - %s and %s every %fs' %
+                  (self.tree, self.pcb, self.cmos, self.period))
             self.running = True
             while (not self.stopReq):
                 timeTillNextMeasurement = self.period-(time() % self.period)
-                if timeTillNextMeasurement>0.6:
+                if timeTillNextMeasurement > 0.6:
                     sleep(.5)  # listen to stopReq
                 else:
-                    sleep(timeTillNextMeasurement);  # wait remaining period unit self.period
-                    currTime = int(int(time()/self.period+.1)*self.period*1000);  # currTime in steps of self.period
-                    if self.ns: currTime*= 1000000 # time in nano seconds
+                    # wait remaining period unit self.period
+                    sleep(timeTillNextMeasurement)
+                    # currTime in steps of self.period
+                    currTime = int(int(time()/self.period+.1)*self.period*1000)
+                    if self.ns:
+                        currTime *= 1000000  # time in nano seconds
                     try:
-                        if self.shot==0:
+                        if self.shot == 0:
                             if Tree.getCurrent(self.tree) != tree.shot:
                                 tree = Tree(self.tree, self.shot)
                         if self.pcb is not None:
                             pcbTemp = CYGNET4K.xclib.getPcbTemp()
-                            tree.getNode(self.pcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp).setUnits('oC'),-1)
+                            tree.getNode(self.pcb).makeSegment(currTime, currTime, Dimension(
+                                None, Uint64Array(currTime)), Float32Array(pcbTemp).setUnits('oC'), -1)
                         if self.cmos is not None:
                             cmosTemp = CYGNET4K.xclib.getCmosTemp()
-                            tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
-                        if Device.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
+                            tree.getNode(self.cmos).makeSegment(currTime, currTime, Dimension(
+                                None, Uint64Array(currTime)), Uint16Array(cmosTemp), -1)
+                        if Device.debug:
+                            print(tree.tree, tree.shot,
+                                  currTime, pcbTemp, cmosTemp)
                     except Exception:
                         error(exc_info()[1])
                         error('failure during temperature readout')

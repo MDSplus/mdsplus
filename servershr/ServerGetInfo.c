@@ -24,21 +24,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$GET_INFO
+                Name:   SERVER$GET_INFO
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Find out what server is doing
+                Purpose: Find out what server is doing
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct dsc$descriptor *response)
+int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct
+dsc$descriptor *response)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -48,54 +49,86 @@ int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct dsc$descripto
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 Send Ast message to server asking server to tell what it is currently
 doing.
 
 ------------------------------------------------------------------------------*/
 
-#include <ipdesc.h>
-#include <servershr.h>
-#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 
-extern int ServerConnect();
-extern int GetAnswerInfoTS();
+#include <mdsshr.h>
+#include <ipdesc.h>
+#include <servershr.h>
+#include <socket_port.h>
+#include "servershrp.h"
 
-EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
+#include <mdsmsg.h>
+
+extern int GetAnswerInfoTS();
+extern int get_addr_port(char *server, uint32_t *addrp, uint16_t *portp);
+
+EXPORT char *ServerGetInfo(int full __attribute__((unused)), char *server_in)
+{
   char *cmd = "MdsServerShr->ServerInfo:dsc()";
   char *ans;
   char *ansret;
   short len = 0;
   void *mem = 0;
-  SOCKET sock = ServerConnect(server);
-  if (sock != INVALID_SOCKET) {
-    int status = SendArg(sock,(unsigned char)0,(char)DTYPE_CSTRING,(unsigned char)1,(short)strlen(cmd),0,0,cmd);
-    if STATUS_OK {
-      char dtype;
-      char ndims;
-      int dims[8];
-      int numbytes;
-      char *reply;
-      status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&reply, &mem, 10);
-      if (STATUS_OK && (dtype == DTYPE_CSTRING))
-	ans = reply;
-      else {
-	ans = "Invalid response from server";
-	len = strlen(ans);
-      }
-    } else {
-      ans = "No response from server";
+  char *srv = TranslateLogical(server_in);
+  char *server = srv ? srv : server_in;
+  uint32_t addr;
+  uint16_t port = 0;
+  if (get_addr_port(server, &addr, &port))
+  {
+    free(srv);
+    ans = "Could not resolve server";
+    len = strlen(ans);
+  }
+  else
+  {
+    int conid = ConnectToMds(server);
+    free(srv);
+    if (conid == INVALID_CONNECTION_ID)
+    {
+      ans = "Error connecting to server";
       len = strlen(ans);
     }
-  } else {
-    ans = "Error connecting to server";
-    len = strlen(ans);
+    else
+    {
+      pthread_cleanup_push((void *)DisconnectFromMds, (void *)(intptr_t)conid);
+      if (IS_NOT_OK(SendArg(conid, (unsigned char)0, (char)DTYPE_CSTRING,
+                            (unsigned char)1, (short)strlen(cmd), 0, 0, cmd)))
+      {
+        ans = "No response from server";
+        len = strlen(ans);
+      }
+      else
+      {
+        char dtype;
+        char ndims;
+        int dims[8];
+        int numbytes;
+        char *reply;
+        if (IS_NOT_OK(GetAnswerInfoTS(
+                conid, &dtype, &len, &ndims, dims, &numbytes, &reply, &mem, 10)) ||
+            (dtype != DTYPE_CSTRING))
+        {
+          ans = "Invalid response from server";
+          len = strlen(ans);
+        }
+        else
+        {
+          ans = reply;
+        }
+      }
+      pthread_cleanup_pop(0);
+    }
   }
   ansret = strncpy((char *)malloc(len + 1), ans, len);
   free(mem);
   ansret[len] = 0;
-  return (ansret);
+  return ansret;
 }

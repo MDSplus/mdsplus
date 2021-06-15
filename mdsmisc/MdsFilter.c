@@ -32,32 +32,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *4    21-NOV-1994 14:08:37 MDSPLUS "Boh?" */
 /*  *3    21-NOV-1994 14:07:40 MDSPLUS "Boh?" */
 /*  *2    21-NOV-1994 13:53:26 MDSPLUS "Boh?" */
-/*  *1    21-NOV-1994 13:11:53 MDSPLUS "Low pass filter (10 poles Butterworth)" */
+/*  *1    21-NOV-1994 13:11:53 MDSPLUS "Low pass filter (10 poles Butterworth)"
+ */
 /*  DEC/CMS REPLACEMENT HISTORY, Element MDS$FILTER.C */
 /*------------------------------------------------------------------------------
 
-	Name:	MDS$FILTER
+        Name:	MDS$FILTER
 
-	Type:   C function
+        Type:   C function
 
-	Author:	Gabriele Manduchi
-		Istituto Gas Ionizzati del CNR - Padova (Italy)
+        Author:	Gabriele Manduchi
+                Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-	Date:   21-NOV-1994
+        Date:   21-NOV-1994
 
-	Purpose: Filter a signal using a 10 poles Butterworth filter and Impulse Invariance Method
--------------------------------------------------------------------------------- */
+        Purpose: Filter a signal using a 10 poles Butterworth filter and Impulse
+Invariance Method
+--------------------------------------------------------------------------------
+*/
+#include "filter.h"
+#include <math.h>
 #include <mdsdescrip.h>
-#include <stdlib.h>
 #include <mdsshr.h>
 #include <stdio.h>
-#include <math.h>
-#include "filter.h"
+#include <stdlib.h>
 
-EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off,
-				int *num_in_poles)
+EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
+                                       float *cut_off, int *num_in_poles)
 {
-  static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+  static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 
   DESCRIPTOR_A(data_d, sizeof(float), DTYPE_FLOAT, 0, 0);
   DESCRIPTOR_SIGNAL(signal_d, 1, 0, 0);
@@ -65,12 +68,12 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   DESCRIPTOR_WINDOW(window_d, 0, 0, 0);
   DESCRIPTOR_RANGE(range_d, 0, 0, 0);
 
-  struct descriptor start_d = { sizeof(float), DTYPE_FLOAT, CLASS_S, 0 }, end_d = {
-  sizeof(float), DTYPE_FLOAT, CLASS_S, 0}, delta_d = {
-  sizeof(float), DTYPE_FLOAT, CLASS_S, 0}, start_idx_d = {
-  sizeof(int), DTYPE_L, CLASS_S, 0}, end_idx_d = {
-  sizeof(int), DTYPE_L, CLASS_S, 0}, time_at_0_d = {
-  sizeof(float), DTYPE_FLOAT, CLASS_S, 0};
+  struct descriptor start_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0},
+                    end_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0},
+                    delta_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0},
+                    start_idx_d = {sizeof(int), DTYPE_L, CLASS_S, 0},
+                    end_idx_d = {sizeof(int), DTYPE_L, CLASS_S, 0},
+                    time_at_0_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0};
 
   int num_samples, num_poles, start_idx, end_idx, i;
   float fc, delta, dummy, *filtered_data, start, end, time_at_0;
@@ -110,9 +113,13 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   float phs[1000];
   TestFilter(filter, fc, 1000, mod, phs);
 
-  for (i = 1; i < 1000 - 1 && !isnan(phs[i]) && !isnan(phs[i + 1]) && phs[i] > phs[i + 1]; i++) ;
+  for (i = 1; i < 1000 - 1 && !isnan(phs[i]) && !isnan(phs[i + 1]) &&
+              phs[i] > phs[i + 1];
+       i++)
+    ;
 
-  if (i > 1) {
+  if (i > 1)
+  {
     phs_steep = (phs[1] - phs[i]) / ((i / 1000.) * fc / 2.);
     delay = phs_steep / (2 * PI);
   }
@@ -134,20 +141,20 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   return &out_xd;
 }
 
-EXPORT void PrintFilter(Filter * filter)
+EXPORT void PrintFilter(Filter *filter)
 {
   int i, j;
 
-  for (i = 0; i < filter->num_parallels; i++) {
-    //if(filter->units[i].den_degree > 0)
+  for (i = 0; i < filter->num_parallels; i++)
+  {
+    // if(filter->units[i].den_degree > 0)
     {
       for (j = 0; j < filter->units[i].num_degree; j++)
-	printf("%f ", filter->units[i].num[j]);
+        printf("%f ", filter->units[i].num[j]);
       for (j = 0; j < filter->units[i].den_degree; j++)
-	printf("%f ", filter->units[i].den[j]);
+        printf("%f ", filter->units[i].den[j]);
 
       printf("\n");
     }
   }
 }
-

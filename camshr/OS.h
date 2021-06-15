@@ -3,9 +3,9 @@
 #define __OS_H
 
 // possible OS'es
-#define LINUX	1
+#define LINUX 1
 
 // what operating system are we using ...
-#define OS	LINUX
+#define OS LINUX
 
 #endif

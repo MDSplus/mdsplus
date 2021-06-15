@@ -14,7 +14,8 @@
 #define COMPLEX_H
 #define PI 3.1415926535898
 
-typedef struct {
+typedef struct
+{
   double re;
   double im;
 } Complex;

@@ -32,16 +32,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace testing;
 
-
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused)))
 {
-    BEGIN_TESTING(Apd);
-    SKIP_TEST("Apd test is not implemented yet");
+  BEGIN_TESTING(Apd);
+  SKIP_TEST("Apd test is not implemented yet");
 
-    // NOTE: Apd does not increment reference counting !! //
-    // TO BE CONTINUED ... //
+  // NOTE: Apd does not increment reference counting !! //
+  // TO BE CONTINUED ... //
 
-    END_TESTING;
+  END_TESTING;
 }
-
-

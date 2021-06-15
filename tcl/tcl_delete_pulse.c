@@ -22,24 +22,25 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
+#include <dcl.h>
+#include <mdsshr.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <mdsshr.h>
+#include <string.h>
 #include <treeshr.h>
-#include <dcl.h>
 
 /**********************************************************************
-* TCL_DELETE_PULSE.C --
-*
-* TclDeletePulse:  Delete a whole pulse
-*
-* History:
-*  27-Apr-1998  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
+ * TCL_DELETE_PULSE.C --
+ *
+ * TclDeletePulse:  Delete a whole pulse
+ *
+ * History:
+ *  27-Apr-1998  TRG  Create.  Ported from original mds code.
+ *
+ ************************************************************************/
 
-EXPORT int TclDeletePulse(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclDeletePulse(void *ctx, char **error,
+                          char **output __attribute__((unused)))
 {
   char *asciiShot = 0;
   int shot;
@@ -50,10 +51,14 @@ EXPORT int TclDeletePulse(void *ctx, char **error, char **output __attribute__ (
   sscanf(asciiShot, "%d", &shot);
   free(asciiShot);
   sts = TreeDeletePulseFile(shot, delete_all);
-  if (~sts & 1) {
+  if (~sts & 1)
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + 100);
-    sprintf(*error, "Error: Could not delete pulse file %d\n" "Error message was: %s\n", shot, msg);
+    sprintf(*error,
+            "Error: Could not delete pulse file %d\n"
+            "Error message was: %s\n",
+            shot, msg);
   }
   return sts;
 }

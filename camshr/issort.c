@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 //-------------------------------------------------------------------------
 // issort()
@@ -67,8 +67,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                                              O'Reilly & Associates, (c) 1999
 //                                              ISBN: 1-56592-453-3
 //-------------------------------------------------------------------------
-int issort(void *data, int size, int esize, int (*compare) (const void *key1, const void *key2)
-    )
+int issort(void *data, int size, int esize,
+           int (*compare)(const void *key1, const void *key2))
 {
   void *key;
   char *a = data;
@@ -79,12 +79,14 @@ int issort(void *data, int size, int esize, int (*compare) (const void *key1, co
     return -1;
 
   //  Repeatedly insert a key element among the sorted elements.
-  for (j = 1; j < size; ++j) {
+  for (j = 1; j < size; ++j)
+  {
     memcpy(key, &a[j * esize], esize);
     i = j - 1;
 
     //  Determine the position at which to insert the key element.
-    while (i >= 0 && compare(&a[i * esize], key) > 0) {
+    while (i >= 0 && compare(&a[i * esize], key) > 0)
+    {
       memcpy(&a[(i + 1) * esize], &a[i * esize], esize);
       i--;
     }

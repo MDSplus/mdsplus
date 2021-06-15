@@ -22,20 +22,25 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdio.h>
 #include <mdsdescrip.h>
-#include <usagedef.h>
-#include <STATICdef.h>
 #include <mdsshr.h>
+#include <stdio.h>
+#include <usagedef.h>
 
-#define checkString(S)     case(S): return #S ;
-#define checkAltStr(A, S)  case(A): return #S ;
+#define checkString(S) \
+  case (S):            \
+    return #S;
+#define checkAltStr(A, S) \
+  case (A):               \
+    return #S;
 
-EXPORT char *MdsDtypeString(const dtype_t id){
-  static char dtypeString[24];	/* not really threadsafe but should be ok */
-  switch(id){
-#define DEFINE(name,...) checkString(DTYPE_##name)
-# include <dtypedef.h>
+EXPORT char *MdsDtypeString(const dtype_t id)
+{
+  static char dtypeString[24]; /* not really threadsafe but should be ok */
+  switch (id)
+  {
+#define DEFINE(name, ...) checkString(DTYPE_##name)
+#include <dtypedef.h>
 #undef DEFINE
   default:
     sprintf(dtypeString, "DTYPE_?_0x%02X", id);
@@ -43,11 +48,13 @@ EXPORT char *MdsDtypeString(const dtype_t id){
   }
 }
 
-EXPORT char *MdsClassString(const class_t id){
-  static char classString[24];	/* not really threadsafe but ok */
-  switch(id){
-#define DEFINE(name,...) checkString(CLASS_##name)
-# include <classdef.h>
+EXPORT char *MdsClassString(const class_t id)
+{
+  static char classString[24]; /* not really threadsafe but ok */
+  switch (id)
+  {
+#define DEFINE(name, ...) checkString(CLASS_##name)
+#include <classdef.h>
 #undef DEFINE
   default:
     sprintf(classString, "CLASS_?_0x%02X", id);
@@ -55,26 +62,22 @@ EXPORT char *MdsClassString(const class_t id){
   }
 }
 
-EXPORT char *MdsUsageString(const usage_t id){
-  static char usageString[24];	/* not really threadsafe but should be ok */
-  switch(id){
-  checkString(TreeUSAGE_ANY)
-  checkString(TreeUSAGE_STRUCTURE)
-  checkString(TreeUSAGE_ACTION)
-  checkString(TreeUSAGE_DEVICE)
-  checkString(TreeUSAGE_DISPATCH)
-  checkString(TreeUSAGE_NUMERIC)
-  checkString(TreeUSAGE_SIGNAL)
-  checkString(TreeUSAGE_TASK)
-  checkString(TreeUSAGE_TEXT)
-  checkString(TreeUSAGE_WINDOW)
-  checkString(TreeUSAGE_AXIS)
-  checkString(TreeUSAGE_SUBTREE)
-  checkAltStr(TreeUSAGE_SUBTREE_REF, TreeUSAGE_SUBTREE)
-  checkAltStr(TreeUSAGE_SUBTREE_TOP, TreeUSAGE_SUBTREE)
-  checkString(TreeUSAGE_COMPOUND_DATA)
-  default:
-    sprintf(usageString, "TreeUSAGE_?_0x%02X", id);
+EXPORT char *MdsUsageString(const usage_t id)
+{
+  static char usageString[24]; /* not really threadsafe but should be ok */
+  switch (id)
+  {
+    checkString(TreeUSAGE_ANY) checkString(TreeUSAGE_STRUCTURE)
+        checkString(TreeUSAGE_ACTION) checkString(TreeUSAGE_DEVICE) checkString(
+            TreeUSAGE_DISPATCH) checkString(TreeUSAGE_NUMERIC)
+            checkString(TreeUSAGE_SIGNAL) checkString(TreeUSAGE_TASK)
+                checkString(TreeUSAGE_TEXT) checkString(TreeUSAGE_WINDOW)
+                    checkString(TreeUSAGE_AXIS) checkString(TreeUSAGE_SUBTREE)
+                        checkAltStr(TreeUSAGE_SUBTREE_REF, TreeUSAGE_SUBTREE)
+                            checkAltStr(TreeUSAGE_SUBTREE_TOP,
+                                        TreeUSAGE_SUBTREE)
+                                checkString(TreeUSAGE_COMPOUND_DATA) default
+        : sprintf(usageString, "TreeUSAGE_?_0x%02X", id);
     return usageString;
   }
 }

@@ -1271,7 +1271,7 @@ public class TreeManager extends JPanel
 		return this.addMds(mds);
 	}
 
-	public final void openTree(final String expt, final int shot, final int mode)
+	public final void openTree(final String expt, final int shot, final TREE.MODE mode)
 	{
 		this.opentree_dialog.setFields(expt, shot);
 		final MdsView mdsview = this.getCurrentMdsView();

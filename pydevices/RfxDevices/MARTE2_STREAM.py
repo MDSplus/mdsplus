@@ -30,61 +30,35 @@ MC = __import__('MARTE2_COMPONENT', globals())
 
 @MC.BUILDER('StreamOut', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_STREAM(MC.MARTE2_COMPONENT):
-    inputs = [
-        {'name': 'OutStream01', 'type': 'int32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH01'}]},
-        {'name': 'OutStream02', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH02'}]},
-        {'name': 'OutStream03', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH03'}]},
-        {'name': 'OutStream04', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH04'}]},
-        {'name': 'OutStream05', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH05'}]},
-        {'name': 'OutStream06', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH06'}]},
-        {'name': 'OutStream07', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH07'}]},
-        {'name': 'OutStream08', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH08'}]},
-        {'name': 'OutStream09', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH09'}]},
-        {'name': 'OutStream10', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH10'}]},
-        {'name': 'OutStream11', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH11'}]},
-        {'name': 'OutStream12', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH12'}]},
-        {'name': 'OutStream13', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH13'}]},
-        {'name': 'OutStream14', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH14'}]},
-        {'name': 'OutStream15', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH15'}]},
-        {'name': 'OutStream16', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH16'}]},
-
-    ]
+    inputs = []
+    for i in range(128):
+        inputs.append(
+            {'name': 'OutStream'+format(i+1, '03d'), 'type': 'int32', 'dimensions': 0, 'seg_len': 100, 'parameters': [
+                {'name': 'Channel', 'type': 'string', 'value': 'CH'+format(i+1, '03d')}]})
     parameters = [
-        {'name':'EventDivision', 'type': 'float32'},
-        {'name':'ShotNumber', 'type': 'int32'},
-        {'name':'TimeIdx', 'type': 'int32', 'value':0},
-        {'name':'TimeStreaming', 'type': 'int32', 'value':1},
-        {'name':'CpuMask', 'type': 'int32', 'value':15},
-        {'name':'StackSize', 'type': 'int32', 'value':10000000},
-        {'name':'NumberOfBuffers', 'type': 'int32', 'value':10},
+        {'name': 'EventDivision', 'type': 'float32'},
+        {'name': 'PulseNumber', 'type': 'int32'},
+        {'name': 'TimeIdx', 'type': 'int32', 'value': 0},
+        {'name': 'TimeStreaming', 'type': 'int32', 'value': 1},
+        {'name': 'CpuMask', 'type': 'int32', 'value': 15},
+        {'name': 'StackSize', 'type': 'int32', 'value': 10000000},
+        {'name': 'NumberOfBuffers', 'type': 'int32', 'value': 10},
     ]
     parts = []
 
     def prepareMarteInfo(self):
-      if self.parameters_par_4_value.data() == 0: #If oscilloscope mode
-        for chanIdx in range(8):
-          currInput = getattr(self, 'inputs_outstream%d_value'%(chanIdx+1))
-          info = self.getInputChanInfo(currInput)
-          if info != None:
-            getattr(self, 'inputs_outstream%d_type'%(chanIdx+1)).putData(info['type'])
-            if info['samples']!= None and info['samples'] > 1:
-              getattr(self, 'inputs_outstream%d_dimensions'%(chanIdx+1)).putData(Data.compile('[$]', info['samples']))
-            else:
-              if info['dimensions']!= None:
-                getattr(self, 'inputs_outstream%d_dimensions'%(chanIdx+1)).putData(info['dimensions'])
+        if self.parameters_par_4_value.data() == 0:  # If oscilloscope mode
+            for chanIdx in range(8):
+                currInput = getattr(
+                    self, 'inputs_outstream%d_value' % (chanIdx+1))
+                info = self.getInputChanInfo(currInput)
+                if info != None:
+                    getattr(self, 'inputs_outstream%d_type' %
+                            (chanIdx+1)).putData(info['type'])
+                    if info['samples'] != None and info['samples'] > 1:
+                        getattr(self, 'inputs_outstream%d_dimensions' % (
+                            chanIdx+1)).putData(Data.compile('[$]', info['samples']))
+                    else:
+                        if info['dimensions'] != None:
+                            getattr(self, 'inputs_outstream%d_dimensions' %
+                                    (chanIdx+1)).putData(info['dimensions'])

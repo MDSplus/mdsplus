@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <libroutines.h>
 #include <stdlib.h>
@@ -46,9 +46,9 @@ static void InitIdl()
     DESCRIPTOR(execute_d, "execute");
     int status;
     status = LibFindImageSymbol(&image, &execute_d, &execute);
-    if (status & 1)
+    if (STATUS_OK)
       status = (*execute) ("print,'IDL Activated'") == 0;
-    if (status & 1)
+    if (STATUS_OK)
       idl_initialized = 1;
     else
       printf("Error activating IDL");

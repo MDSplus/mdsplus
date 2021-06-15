@@ -39,24 +39,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSONOFFTOGGLEBUTTON.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsOnOffToggleButton
+                Name:   XmdsOnOffToggleButton
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   14-JAN-1992
+                Date:   14-JAN-1992
 
-		Purpose:  On/Off Toggle button Pseudo-widget
+                Purpose:  On/Off Toggle button Pseudo-widget
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount);
-Boolean XmdsIsOnOffToggleButton(Widget w);
-void XmdsOnOffToggleButtonReset(Widget w);
-int XmdsOnOffToggleButtonPut(Widget w);
+Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args,
+Cardinal argcount); Boolean XmdsIsOnOffToggleButton(Widget w); void
+XmdsOnOffToggleButtonReset(Widget w); int XmdsOnOffToggleButtonPut(Widget w);
 int XmdsOnOffToggleButtonApply(Widget w);
 
 ------------------------------------------------------------------------------
@@ -67,7 +66,7 @@ int XmdsOnOffToggleButtonApply(Widget w);
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 #include <mdsplus/mdsconfig.h>
@@ -79,13 +78,15 @@ int XmdsOnOffToggleButtonApply(Widget w);
 #include <Xmds/XmdsOnOffToggleButton.h>
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
-Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount);
+Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args,
+                                   Cardinal argcount);
 Boolean XmdsIsOnOffToggleButton(Widget w);
 void XmdsOnOffToggleButtonReset(Widget w);
 int XmdsOnOffToggleButtonPut(Widget w);
 int XmdsOnOffToggleButtonApply(Widget w);
 
-typedef struct _Resources {
+typedef struct _Resources
+{
   int nid;
   int nid_offset;
   Boolean show_path;
@@ -94,32 +95,33 @@ typedef struct _Resources {
 } Resources;
 
 static Resources *GetResources(Widget w);
-static void Destroy(Widget w, Resources * info, XtPointer cb);
+static void Destroy(Widget w, Resources *info, XtPointer cb);
 
 static XtResource resources[] = {
-  {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid), XmRImmediate, 0},
-  {XmdsNnidOffset, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid_offset), XmRImmediate, 0},
-  {XmdsNshowPath, "ShowPath", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, show_path),
-   XmRImmediate, 0}
-  ,
-  {XmNlabelString, "LabelString", XmRString, sizeof(XmString), XtOffsetOf(Resources, label),
-   XmRImmediate, 0}
-  ,
-  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),
-   XmRImmediate, (void *)1}
-};
+    {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid),
+     XmRImmediate, 0},
+    {XmdsNnidOffset, "Nid", XmRInt, sizeof(int),
+     XtOffsetOf(Resources, nid_offset), XmRImmediate, 0},
+    {XmdsNshowPath, "ShowPath", XmRBoolean, sizeof(Boolean),
+     XtOffsetOf(Resources, show_path), XmRImmediate, 0},
+    {XmNlabelString, "LabelString", XmRString, sizeof(XmString),
+     XtOffsetOf(Resources, label), XmRImmediate, 0},
+    {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean),
+     XtOffsetOf(Resources, put_on_apply), XmRImmediate, (void *)1}};
 
-EXPORT Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateOnOffToggleButton(Widget parent, String name,
+                                          ArgList args, Cardinal argcount)
 {
   Widget w;
-  Resources *info = (Resources *) XtMalloc(sizeof(Resources));
-  Resources default_info = { 0, 0, 0, 0, 1 };
+  Resources *info = (Resources *)XtMalloc(sizeof(Resources));
+  Resources default_info = {0, 0, 0, 0, 1};
   *info = default_info;
   XmdsSetSubvalues(info, resources, XtNumber(resources), args, argcount);
   if (info->nid == -1)
     info->nid = XmdsGetDeviceNid();
   w = XmCreateToggleButton(parent, name, args, argcount);
-  if (info->show_path && info->nid + info->nid_offset) {
+  if (info->show_path && info->nid + info->nid_offset)
+  {
     char *path_c;
     XmString path;
     path_c = TreeGetMinimumPath(0, info->nid + info->nid_offset);
@@ -127,15 +129,16 @@ EXPORT Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList ar
     TreeFree(path_c);
     XtVaSetValues(w, XmNlabelString, path, NULL);
     XmStringFree(path);
-  } else if (info->label)
+  }
+  else if (info->label)
     XtVaSetValues(w, XmNlabelString, info->label, NULL);
 
-  XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, info);
+  XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc)Destroy, info);
   XmdsOnOffToggleButtonReset(w);
   return w;
 }
 
-static void Destroy(Widget w, Resources * info, XtPointer cb)
+static void Destroy(Widget w, Resources *info, XtPointer cb)
 {
   XtFree((char *)info);
 }
@@ -148,14 +151,18 @@ EXPORT Boolean XmdsIsOnOffToggleButton(Widget w)
 static Resources *GetResources(Widget w)
 {
   Resources *answer = 0;
-  if (XmIsToggleButton(w) && (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome)) {
+  if (XmIsToggleButton(w) &&
+      (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome))
+  {
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNdestroyCallback, &callbacks, NULL);
-    for (;
-	 callbacks->callback
-	 && !(answer =
-	      (Resources *) ((callbacks->callback == (XtCallbackProc) Destroy) ? callbacks->
-			     closure : 0)); callbacks = callbacks + 1) ;
+    for (; callbacks->callback &&
+           !(answer =
+                 (Resources *)((callbacks->callback == (XtCallbackProc)Destroy)
+                                   ? callbacks->closure
+                                   : 0));
+         callbacks = callbacks + 1)
+      ;
   }
   return answer;
 }

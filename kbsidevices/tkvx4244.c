@@ -26,12 +26,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *This file created using Driver Wizard version 1.8 and instrtmp.c
  */
 
-#include <string.h>		/* ANSI C string support */
-#include <stdlib.h>		/* ANSI C support */
-#include <stdio.h>		/* ANSI C support */
-#include <visa.h>		/* VISA support */
-#include <time.h>		/* used to support delay */
-#include "tkvx4244.h"		/* Prototypes for this Driver */
+#include "tkvx4244.h" /* Prototypes for this Driver */
+#include <stdio.h>    /* ANSI C support */
+#include <stdlib.h>   /* ANSI C support */
+#include <string.h>   /* ANSI C string support */
+#include <time.h>     /* used to support delay */
+#include <visa.h>     /* VISA support */
 
 /***************************************************************************
  * Tektronix VX4244 16-Channel Digitizer Module
@@ -42,60 +42,62 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Compatible with Instrument Firmware Version 1.4 or later
  *
  */
- /***************************************************************************
-  * Revision History: Original release 2.0.1
-  * Revision 2.1.0:Nv 1998.
-  * 1. Wrote a new function named tkvx4244_getBinaryData to retrieve binary data.
-  * (solves the  LabView transfer problem). Maintained the old function
-  * for backward compatibility. Old function is not in the function panel file.
-  * 2. Wrote a new function named tkvx4244_getFDCData to retrieve FDC data.
-  * (solves the  LabView transfer problem). Maintained the old function
-  * for backward compatibility. Old function is not in the function panel file.
-  * 3. Eliminated all references to VTL or vtl in comments.
-  * 4. Eliminated all references to VXIplug&play specifications.
-  * 5. Exposed the tkvx4244_write and tkvx4244_read functions in the function panel.
-  * 6. Corrected all signed/unsigned mismatch warnings.
-  * 7. Removed all unnecessary line termination escape characters '\'.
-  * 8. Corrected the error_query function by having it return the appropriate
-  *    value.
-  */
-#define tkvx4244_FIRMWARE		1.4
-#define tkvx4244_DRVREV      	2.1
-#define tkvx4244_DRVREV_MINOR   0
-#define	tkvx4244_CMD_STRLEN		VI_FIND_BUFLEN
-#define	tkvx4244_RCV_STRLEN		VI_FIND_BUFLEN
-#define	tkvx4244_MAX_NUM_OF_LA	256
-#define	tkvx4244_MANF_ID		0xffd
-#define	tkvx4244_MAX_INSTR		12
+/***************************************************************************
+ * Revision History: Original release 2.0.1
+ * Revision 2.1.0:Nv 1998.
+ * 1. Wrote a new function named tkvx4244_getBinaryData to retrieve binary data.
+ * (solves the  LabView transfer problem). Maintained the old function
+ * for backward compatibility. Old function is not in the function panel file.
+ * 2. Wrote a new function named tkvx4244_getFDCData to retrieve FDC data.
+ * (solves the  LabView transfer problem). Maintained the old function
+ * for backward compatibility. Old function is not in the function panel file.
+ * 3. Eliminated all references to VTL or vtl in comments.
+ * 4. Eliminated all references to VXIplug&play specifications.
+ * 5. Exposed the tkvx4244_write and tkvx4244_read functions in the function
+ * panel.
+ * 6. Corrected all signed/unsigned mismatch warnings.
+ * 7. Removed all unnecessary line termination escape characters '\'.
+ * 8. Corrected the error_query function by having it return the appropriate
+ *    value.
+ */
+#define tkvx4244_FIRMWARE 1.4
+#define tkvx4244_DRVREV 2.1
+#define tkvx4244_DRVREV_MINOR 0
+#define tkvx4244_CMD_STRLEN VI_FIND_BUFLEN
+#define tkvx4244_RCV_STRLEN VI_FIND_BUFLEN
+#define tkvx4244_MAX_NUM_OF_LA 256
+#define tkvx4244_MANF_ID 0xffd
+#define tkvx4244_MAX_INSTR 12
 
 /***************************************************************************
  * The following array is used to support multiple model codes with a
  * single driver.
  */
 
-ViUInt16 tkvx4244_modelCodes[] = { 0x70b };
+ViUInt16 tkvx4244_modelCodes[] = {0x70b};
 
-#define tkvx4244_NUM_MODEL_CODES (sizeof(tkvx4244_modelCodes)/sizeof(ViUInt16))
+#define tkvx4244_NUM_MODEL_CODES \
+  (sizeof(tkvx4244_modelCodes) / sizeof(ViUInt16))
 
 /***************************************************************************
  * Instrument name which can be inserted in strings
  */
 
-#define	tkvx4244_NAME "tkvx4244"
+#define tkvx4244_NAME "tkvx4244"
 
 /***************************************************************************
  * The default VXIbus timeout to use
  */
 
-#define	tkvx4244_DEFAULT_TIMEOUT	10000
+#define tkvx4244_DEFAULT_TIMEOUT 10000
 
 /***************************************************************************
  * Encapsulates what search strings looks like
  */
 
-#define	tkvx4244_VXI_SEARCH		"VXI?*INSTR"
-#define	tkvx4244_GPIB_VXI_SEARCH	"GPIB-VXI?*INSTR"
-#define	tkvx4244_GLOBAL_SEARCH	"?*INSTR"
+#define tkvx4244_VXI_SEARCH "VXI?*INSTR"
+#define tkvx4244_GPIB_VXI_SEARCH "GPIB-VXI?*INSTR"
+#define tkvx4244_GLOBAL_SEARCH "?*INSTR"
 
 /***************************************************************************
  TDI Function "_VI_FUNC" is unknown, so Trick part
@@ -107,9 +109,10 @@ ViUInt16 tkvx4244_modelCodes[] = { 0x70b };
  * a per instrument basis
  */
 
-typedef struct {
-  ViString instrDesc;		/* ASCII instrument descriptor string */
-  ViReal64 tkvx4244_version;	/* Instrument firmware version */
+typedef struct
+{
+  ViString instrDesc;        /* ASCII instrument descriptor string */
+  ViReal64 tkvx4244_version; /* Instrument firmware version */
   ViInt16 tkvx4244_chOneActive;
   ViInt16 tkvx4244_chTwoActive;
   ViInt16 tkvx4244_chThreeActive;
@@ -135,266 +138,267 @@ typedef tkvx4244_drvrStruct tkvx4244_VI_PTR tkvx4244_PdrvrStruct;
  * Error Macros (private to driver)
  */
 
-#define tkvx4244_GENERIC_ERROR  (_VI_ERROR+0x3FFC0800L)
-#define tkvx4244_ERROR_VERSION_INVALID 	(1+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_NO_CHAN_SELECTED_ERROR	(2+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_NO_GRPS_SELECTED_ERROR	(3+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_THREE_CHAN_IN_GP_ERROR	(4+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_NUM_SAMPS_RANGE_ERROR	(5+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_FREQ_RANGE_ERROR	(6+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_ONE (7+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_TWO (8+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_THREE (9+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_FOUR (10+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_FIVE (11+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_SIX (12+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_SEVEN (13+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_EIGHT (14+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_NINE (15+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_TEN (16+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_ELEVEN (17+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_TWELVE (18+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_THIRTEEN (19+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_FOURTEEN (20+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_FIFTEEN (21+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CHAN_SIXTEEN (22+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_ALL_CHAN (23+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_OPEN_CLOSE (24+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_GP_ONE (25+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_GP_TWO (26+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_GP_THREE (27+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_GP_FOUR (28+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_ALL_GROUPS (29+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_INIT_TYPE (30+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_INIT_DELAY (31+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_EXT_ARM_CMD (32+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TRIG_OUT_QUERY (33+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_MASTER_CLK_SRC (34+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TRIG_SRC_QUERY (35+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TRIG_ACTIVE_EDGE (36+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_EXT_TRIG (37+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_IMM_TRIG (38+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_THRE_TRIG (39+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_VXI_TRIG (40+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL0_TRIG (41+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL1_TRIG (42+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL2_TRIG (43+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL3_TRIG (44+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL4_TRIG (45+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL5_TRIG (46+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL6_TRIG (47+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TTL7_TRIG (48+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TRIG_LOGIC (49+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_TRIG_SRC_CHOICE (50+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_SYNC_CLK_SRC (51+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_SYNC_CLK_DEF (52+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_SAMP_CNT (53+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_FETCH_CHL (54+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_BEGIN_MEM (55+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_GROUP_RANGE (56+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_SYNC_CLK_QUERY (57+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_ACT_CHNL_QUERY (58+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_ARM_SRC_QUERY (59+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_VOLT_RANGE_QUERY (60+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CLOCK_SLOPE_QUERY (61+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_CLOCK_TTAG_QUERY (62+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_EVENT_REC_ENAB (63+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_4882_QUERY (64+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_DATA_BEG_MEM (65+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_DATA_SAMPS (66+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_DATA_TYPE (67+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_DATA_CHAN (68+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_OUT_TRG_TYPE (69+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_OUT_TRG_LOGIC (70+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_OUT_TRG_SLOPE (71+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_THRESH_LEVEL (72+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_THRESH_TYPE (73+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_EXT_ARM_SLP (74+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_EXT_ARM_ZERO (75+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_GROUP (76+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_INPUT_VOLT (77+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_FREQ (78+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_EXT_FREQ (79+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_FREQ_TYPE (80+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_FDC_MODE (81+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_FDC_CHAN (82+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_FDC_QUERY (83+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_MEM_ADDR (84+tkvx4244_GENERIC_ERROR)
-#define tkvx4244_ERROR_FDC_BUF_SIZE (85+tkvx4244_GENERIC_ERROR)
+#define tkvx4244_GENERIC_ERROR (_VI_ERROR + 0x3FFC0800L)
+#define tkvx4244_ERROR_VERSION_INVALID (1 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_NO_CHAN_SELECTED_ERROR (2 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_NO_GRPS_SELECTED_ERROR (3 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_THREE_CHAN_IN_GP_ERROR (4 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_NUM_SAMPS_RANGE_ERROR (5 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_FREQ_RANGE_ERROR (6 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_ONE (7 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_TWO (8 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_THREE (9 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_FOUR (10 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_FIVE (11 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_SIX (12 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_SEVEN (13 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_EIGHT (14 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_NINE (15 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_TEN (16 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_ELEVEN (17 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_TWELVE (18 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_THIRTEEN (19 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_FOURTEEN (20 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_FIFTEEN (21 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CHAN_SIXTEEN (22 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_ALL_CHAN (23 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_OPEN_CLOSE (24 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_GP_ONE (25 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_GP_TWO (26 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_GP_THREE (27 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_GP_FOUR (28 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_ALL_GROUPS (29 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_INIT_TYPE (30 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_INIT_DELAY (31 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_EXT_ARM_CMD (32 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TRIG_OUT_QUERY (33 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_MASTER_CLK_SRC (34 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TRIG_SRC_QUERY (35 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TRIG_ACTIVE_EDGE (36 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_EXT_TRIG (37 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_IMM_TRIG (38 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_THRE_TRIG (39 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_VXI_TRIG (40 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL0_TRIG (41 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL1_TRIG (42 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL2_TRIG (43 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL3_TRIG (44 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL4_TRIG (45 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL5_TRIG (46 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL6_TRIG (47 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TTL7_TRIG (48 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TRIG_LOGIC (49 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_TRIG_SRC_CHOICE (50 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_SYNC_CLK_SRC (51 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_SYNC_CLK_DEF (52 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_SAMP_CNT (53 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_FETCH_CHL (54 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_BEGIN_MEM (55 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_GROUP_RANGE (56 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_SYNC_CLK_QUERY (57 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_ACT_CHNL_QUERY (58 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_ARM_SRC_QUERY (59 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_VOLT_RANGE_QUERY (60 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CLOCK_SLOPE_QUERY (61 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_CLOCK_TTAG_QUERY (62 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_EVENT_REC_ENAB (63 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_4882_QUERY (64 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_DATA_BEG_MEM (65 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_DATA_SAMPS (66 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_DATA_TYPE (67 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_DATA_CHAN (68 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_OUT_TRG_TYPE (69 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_OUT_TRG_LOGIC (70 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_OUT_TRG_SLOPE (71 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_THRESH_LEVEL (72 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_THRESH_TYPE (73 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_EXT_ARM_SLP (74 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_EXT_ARM_ZERO (75 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_GROUP (76 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_INPUT_VOLT (77 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_FREQ (78 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_EXT_FREQ (79 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_FREQ_TYPE (80 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_FDC_MODE (81 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_FDC_CHAN (82 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_FDC_QUERY (83 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_MEM_ADDR (84 + tkvx4244_GENERIC_ERROR)
+#define tkvx4244_ERROR_FDC_BUF_SIZE (85 + tkvx4244_GENERIC_ERROR)
 /* Setup error messages, must be in same order as error codes above */
 
 ViString tkvx4244_errorStrings[] = {
-  "Generic error",
-  "Firmware version is not compatible with this software driver.",
-  "No channels selected",
-  "No groups selected",
-  "An attempt was made to enable three channels in a group (only 1,2 or 4 may be enabled).",
-  "Parameter 2 (sample count) is out of range.",
-  "Parameter 2 (freq) is out of range.",
-  "Channel One Parameter is out of range.",
-  "Channel Two Parameter is out of range.",
-  "Channel Three Parameter is out of range.",
-  "Channel Four Parameter is out of range.",
-  "Channel Five Parameter is out of range.",
-  "Channel Six Parameter is out of range.",
-  "Channel Seven Parameter is out of range.",
-  "Channel Eight Parameter is out of range.",
-  "Channel Nine Parameter is out of range.",
-  "Channel Ten Parameter is out of range.",
-  "Channel Eleven Parameter is out of range.",
-  "Channel Twelve Parameter is out of range.",
-  "Channel Thirteen Parameter is out of range.",
-  "Channel Fourteen Parameter is out of range.",
-  "Channel Fifteen Parameter is out of range.",
-  "Channel Sixteen Parameter is out of range.",
-  "All Channel Parameter is out of range.",
-  "Open Close Parameter is out of range.",
-  "Group One Parameter is out of range.",
-  "Group Two Parameter is out of range.",
-  "Group Three Parameter is out of range.",
-  "Group Four Parameter is out of range.",
-  "All Groups Parameter is out of range.",
-  "Type Init Parameter is out of range.",
-  "Init Delay Parameter is out of range.",
-  "External Trigger Slope Parameter is out of range.",
-  "Output Trigger Query Parameter is out of range.",
-  "Master Clock Source Parameter is out of range.",
-  "Trigger source type query Parameter is out of range.",
-  "Active edge Parameter is out of range.",
-  "External trigger Parameter is out of range.",
-  "Immediate trigger Parameter is out of range.",
-  "Threshold trigger Parameter is out of range.",
-  "VXI trigger Parameter is out of range.",
-  "TTLTRG0 trigger Parameter is out of range.",
-  "TTLTRG1 trigger Parameter is out of range.",
-  "TTLTRG2 trigger Parameter is out of range.",
-  "TTLTRG3 trigger Parameter is out of range.",
-  "TTLTRG4 trigger Parameter is out of range.",
-  "TTLTRG5 trigger Parameter is out of range.",
-  "TTLTRG6 trigger Parameter is out of range.",
-  "TTLTRG7 trigger Parameter is out of range.",
-  "Trigger logic Parameter is out of range.",
-  "No trigger source was chosen.",
-  "Synch clock source parameter is out of range.",
-  "Synch clock definition parameter is out of range.",
-  "Number of samples parameter out of range.",
-  "Channel number parameter out of range.",
-  "Beginning memory location parameter out of range.",
-  "Group selection parameter out of range.",
-  "Synch clock query type parameter out of range.",
-  "Active channel query type parameter out of range.",
-  "Arm source query type parameter out of range.",
-  "Volt range query type parameter out of range.",
-  "Clock slope query type parameter out of range.",
-  "Clock time tag query type parameter out of range.",
-  "Event request enable parameter out of range.",
-  "488.2 query parameter out of range.",
-  "Fetch measurement begining memory location parameter out of range.",
-  "Fetch measurement number of samples parameter out of range.",
-  "Fetch measurement type parameter out of range.",
-  "Fetch measurement channel parameter out of range.",
-  "Output trigger type parameter out of range.",
-  "Output trigger logic parameter out of range.",
-  "Output trigger slope parameter out of range.",
-  "Trigger threshold level parameter out of range.",
-  "Trigger threshold type parameter out of range.",
-  "External arm slope parameter out of range.",
-  "External arm zero parameter out of range.",
-  "Group number parameter out of range.",
-  "Input voltage range parameter out of range.",
-  "Frequency parameter out of range.",
-  "External frequency parameter out of range.",
-  "Frequency type parameter out of range.",
-  "FDC mode parameter out of range.",
-  "FDC Channel parameter (fdcGroup) out of range.",
-  "FDC Query parameter out of range.",
-  "FDC starting memory address out of range.",
-  "Invalid FDC buffer size."
-};
+    "Generic error",
+    "Firmware version is not compatible with this software driver.",
+    "No channels selected",
+    "No groups selected",
+    "An attempt was made to enable three channels in a group (only 1,2 or 4 "
+    "may be enabled).",
+    "Parameter 2 (sample count) is out of range.",
+    "Parameter 2 (freq) is out of range.",
+    "Channel One Parameter is out of range.",
+    "Channel Two Parameter is out of range.",
+    "Channel Three Parameter is out of range.",
+    "Channel Four Parameter is out of range.",
+    "Channel Five Parameter is out of range.",
+    "Channel Six Parameter is out of range.",
+    "Channel Seven Parameter is out of range.",
+    "Channel Eight Parameter is out of range.",
+    "Channel Nine Parameter is out of range.",
+    "Channel Ten Parameter is out of range.",
+    "Channel Eleven Parameter is out of range.",
+    "Channel Twelve Parameter is out of range.",
+    "Channel Thirteen Parameter is out of range.",
+    "Channel Fourteen Parameter is out of range.",
+    "Channel Fifteen Parameter is out of range.",
+    "Channel Sixteen Parameter is out of range.",
+    "All Channel Parameter is out of range.",
+    "Open Close Parameter is out of range.",
+    "Group One Parameter is out of range.",
+    "Group Two Parameter is out of range.",
+    "Group Three Parameter is out of range.",
+    "Group Four Parameter is out of range.",
+    "All Groups Parameter is out of range.",
+    "Type Init Parameter is out of range.",
+    "Init Delay Parameter is out of range.",
+    "External Trigger Slope Parameter is out of range.",
+    "Output Trigger Query Parameter is out of range.",
+    "Master Clock Source Parameter is out of range.",
+    "Trigger source type query Parameter is out of range.",
+    "Active edge Parameter is out of range.",
+    "External trigger Parameter is out of range.",
+    "Immediate trigger Parameter is out of range.",
+    "Threshold trigger Parameter is out of range.",
+    "VXI trigger Parameter is out of range.",
+    "TTLTRG0 trigger Parameter is out of range.",
+    "TTLTRG1 trigger Parameter is out of range.",
+    "TTLTRG2 trigger Parameter is out of range.",
+    "TTLTRG3 trigger Parameter is out of range.",
+    "TTLTRG4 trigger Parameter is out of range.",
+    "TTLTRG5 trigger Parameter is out of range.",
+    "TTLTRG6 trigger Parameter is out of range.",
+    "TTLTRG7 trigger Parameter is out of range.",
+    "Trigger logic Parameter is out of range.",
+    "No trigger source was chosen.",
+    "Synch clock source parameter is out of range.",
+    "Synch clock definition parameter is out of range.",
+    "Number of samples parameter out of range.",
+    "Channel number parameter out of range.",
+    "Beginning memory location parameter out of range.",
+    "Group selection parameter out of range.",
+    "Synch clock query type parameter out of range.",
+    "Active channel query type parameter out of range.",
+    "Arm source query type parameter out of range.",
+    "Volt range query type parameter out of range.",
+    "Clock slope query type parameter out of range.",
+    "Clock time tag query type parameter out of range.",
+    "Event request enable parameter out of range.",
+    "488.2 query parameter out of range.",
+    "Fetch measurement begining memory location parameter out of range.",
+    "Fetch measurement number of samples parameter out of range.",
+    "Fetch measurement type parameter out of range.",
+    "Fetch measurement channel parameter out of range.",
+    "Output trigger type parameter out of range.",
+    "Output trigger logic parameter out of range.",
+    "Output trigger slope parameter out of range.",
+    "Trigger threshold level parameter out of range.",
+    "Trigger threshold type parameter out of range.",
+    "External arm slope parameter out of range.",
+    "External arm zero parameter out of range.",
+    "Group number parameter out of range.",
+    "Input voltage range parameter out of range.",
+    "Frequency parameter out of range.",
+    "External frequency parameter out of range.",
+    "Frequency type parameter out of range.",
+    "FDC mode parameter out of range.",
+    "FDC Channel parameter (fdcGroup) out of range.",
+    "FDC Query parameter out of range.",
+    "FDC starting memory address out of range.",
+    "Invalid FDC buffer size."};
 
-#define tkvx4244_NUMBER_OF_ERRORS (sizeof(tkvx4244_errorStrings)/sizeof(ViString))
+#define tkvx4244_NUMBER_OF_ERRORS \
+  (sizeof(tkvx4244_errorStrings) / sizeof(ViString))
 /***************************************************************************
  * INSTRUMENT-DEPENDENT COMMAND ARRAYS
  */
 
-	/*synch clock query */
-ViString synch_clk[] = { "TTLT?", "LEVE?" };
+/*synch clock query */
+ViString synch_clk[] = {"TTLT?", "LEVE?"};
 
-	/*output trigger query */
-ViString out_trig_qu[] = { "TRIG:SLOP?", "TRIG:TTLT?", "TRIG:LOGI?", "TRIG:MASK?" };
+/*output trigger query */
+ViString out_trig_qu[] = {"TRIG:SLOP?", "TRIG:TTLT?", "TRIG:LOGI?",
+                          "TRIG:MASK?"};
 
-	/*trigger source and logic */
-ViString trig_sorce[] = { "LOGI", "MASK", "SOUR" };
+/*trigger source and logic */
+ViString trig_sorce[] = {"LOGI", "MASK", "SOUR"};
 
-	/*Trigger arm slope */
-ViString active_edge[] = { "POS", "NEG" };
+/*Trigger arm slope */
+ViString active_edge[] = {"POS", "NEG"};
 
-	/*arm source query */
-ViString arm_src_type[] = { "SOUR?", "ZERO?" };
+/*arm source query */
+ViString arm_src_type[] = {"SOUR?", "ZERO?"};
 
-	/*sample rate query */
-ViString samp_rate_defs[] = { "TINT", "RANG", "SOUR" };
+/*sample rate query */
+ViString samp_rate_defs[] = {"TINT", "RANG", "SOUR"};
 
-	/*volt range query */
-ViString vlt_type[] = { "UPP", "LOW" };
+/*volt range query */
+ViString vlt_type[] = {"UPP", "LOW"};
 
-	/*channel query */
-ViString ch_cond[] = { "OPEN? (ALL)", "CLOS? (ALL)", "STAT?" };
+/*channel query */
+ViString ch_cond[] = {"OPEN? (ALL)", "CLOS? (ALL)", "STAT?"};
 
-    /* input range commands */
-ViReal64 range[] = { 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0 };
+/* input range commands */
+ViReal64 range[] = {0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0};
 
-    /*event setup */
-ViString event_req[] = { "*SRE", "*ESE" };
+/*event setup */
+ViString event_req[] = {"*SRE", "*ESE"};
 
-    /*read status */
-ViString read_status[] = { "*IDN?", "*STB?", "*SRE?", "*ESR?", "*ESE?" };
+/*read status */
+ViString read_status[] = {"*IDN?", "*STB?", "*SRE?", "*ESR?", "*ESE?"};
 
-    /*External Arm */
-ViString ext[] = { "EXT", "IMM" };
+/*External Arm */
+ViString ext[] = {"EXT", "IMM"};
 
-	/*Trig thresh channels */
-ViString gp1[] = { "1,", "2,", "3,", "4,", "" };
-ViString gp2[] = { "5,", "6,", "7,", "8,", "" };
-ViString gp3[] = { "9,", "10,", "11,", "12,", "" };
-ViString gp4[] = { "13,", "14,", "15,", "16,", "" };
+/*Trig thresh channels */
+ViString gp1[] = {"1,", "2,", "3,", "4,", ""};
+ViString gp2[] = {"5,", "6,", "7,", "8,", ""};
+ViString gp3[] = {"9,", "10,", "11,", "12,", ""};
+ViString gp4[] = {"13,", "14,", "15,", "16,", ""};
 
-	/*master trigger out */
-ViString out_select[] = { "TTLT 0", "TTLT 1", "TTLT 2", "TTLT 3", "TTLT 4",
-  "TTLT 5", "TTLT 6", "TTLT 7", "TTLT 8"
-};
+/*master trigger out */
+ViString out_select[] = {"TTLT 0", "TTLT 1", "TTLT 2", "TTLT 3", "TTLT 4",
+                         "TTLT 5", "TTLT 6", "TTLT 7", "TTLT 8"};
 
-    /* sample clock */
-ViString smpclk[] = { "EXT", "INT" };
-ViString freqinval[] = { "TINT", "RANG" };
+/* sample clock */
+ViString smpclk[] = {"EXT", "INT"};
+ViString freqinval[] = {"TINT", "RANG"};
 
-    /* arm commands */
-ViString arm_slopZ[] = { "SLOP POS", "SLOP NEG", "ZERO 1", "ZERO 0" };
+/* arm commands */
+ViString arm_slopZ[] = {"SLOP POS", "SLOP NEG", "ZERO 1", "ZERO 0"};
 
-    /* trig source and logic commands */
-ViString trgsrcL[] = { "LOGI AND", "LOGI OR", "SOUR EXT", "SOUR IMM",
-  "SOUR TTL 0", "SOUR TTL 1", "SOUR TTL 2", "SOUR TTL 3", "SOUR TTL 4",
-  "SOUR TTL 5", "SOUR TTL 6", "SOUR TTL 7", "SOUR THRE", "SOUR VXICMD"
-};
+/* trig source and logic commands */
+ViString trgsrcL[] = {"LOGI AND", "LOGI OR", "SOUR EXT", "SOUR IMM",
+                      "SOUR TTL 0", "SOUR TTL 1", "SOUR TTL 2", "SOUR TTL 3",
+                      "SOUR TTL 4", "SOUR TTL 5", "SOUR TTL 6", "SOUR TTL 7",
+                      "SOUR THRE", "SOUR VXICMD"};
 
-    /* threshold trigger descriptor commands */
-ViString thrshCmd[] = { "PSL", "NSL", "GTL", "LTL" };
+/* threshold trigger descriptor commands */
+ViString thrshCmd[] = {"PSL", "NSL", "GTL", "LTL"};
 
-    /* clock Synch Commands */
-ViString clksynch[] = { "LEVEL POS", "LEVEL NEG", "LEVEL NEG", "IMM",
-  "TTL 8", "TTL 1", "TTL 2", "TTL 3", "TTL 4", "TTL 5", "TTL 6", "TTL 7"
-};
+/* clock Synch Commands */
+ViString clksynch[] = {"LEVEL POS", "LEVEL NEG", "LEVEL NEG", "IMM",
+                       "TTL 8", "TTL 1", "TTL 2", "TTL 3",
+                       "TTL 4", "TTL 5", "TTL 6", "TTL 7"};
 
-    /* postprocess commands */
-ViString process[] = { "MIN", "MAX", "AVE", "PTR", "NTR", "TRMS" };
+/* postprocess commands */
+ViString process[] = {"MIN", "MAX", "AVE", "PTR", "NTR", "TRMS"};
 
-    /* master clock commands */
-ViString mstr[] = { "CLK10", "INT" };
+/* master clock commands */
+ViString mstr[] = {"CLK10", "INT"};
 
-    /* external sample clock slope and time tag source commands */
-ViString slopett[] = { "SLOP POS", "SLOP NEG", "TIME CLK10", "TIME ROSC" };
-ViString fdc_mode[] = { "imm", "auto", "off" };
-ViString fdcQuery[] = { "MODE", "TRANS", "QUE" };
+/* external sample clock slope and time tag source commands */
+ViString slopett[] = {"SLOP POS", "SLOP NEG", "TIME CLK10", "TIME ROSC"};
+ViString fdc_mode[] = {"imm", "auto", "off"};
+ViString fdcQuery[] = {"MODE", "TRANS", "QUE"};
 
 /***************************************************************************
  * The following variables are used to keep track of available instruments.
@@ -406,32 +410,40 @@ ViString fdcQuery[] = { "MODE", "TRANS", "QUE" };
 
 ViInt16 tkvx4244_gNumberFound = 0;
 
-struct {
-  ViInt16 logAdr;		/* Instrument logical address */
-  ViInt16 slot;			/* Instrument slot # */
-  ViChar instrDesc[tkvx4244_CMD_STRLEN];	/* ASCII instrument descriptor string */
+struct
+{
+  ViInt16 logAdr; /* Instrument logical address */
+  ViInt16 slot;   /* Instrument slot # */
+  ViChar
+      instrDesc[tkvx4244_CMD_STRLEN]; /* ASCII instrument descriptor string */
 } tkvx4244_instrAttr[tkvx4244_MAX_INSTR];
 
 /***************************************************************************
  * UTILITY ROUTINE PROTOTYPES (private to driver)
  */
 
-ViStatus tkvx4244_invalidLongRange(ViInt32 val, ViInt32 min, ViInt32 max, ViStatus retError);
-ViStatus tkvx4244_invalidRealRange(ViReal64 val, ViReal64 min, ViReal64 max, ViStatus retError);
-ViStatus tkvx4244_invalidShortRange(ViInt16 val, ViInt16 min, ViInt16 max, ViStatus retError);
+ViStatus tkvx4244_invalidLongRange(ViInt32 val, ViInt32 min, ViInt32 max,
+                                   ViStatus retError);
+ViStatus tkvx4244_invalidRealRange(ViReal64 val, ViReal64 min, ViReal64 max,
+                                   ViStatus retError);
+ViStatus tkvx4244_invalidShortRange(ViInt16 val, ViInt16 min, ViInt16 max,
+                                    ViStatus retError);
 ViStatus tkvx4244_setupArrays(void);
 ViStatus tkvx4244_findInstruments(ViSession resMgr, ViString searchString);
 
-ViStatus tkvx4244_tryAutoConnect(ViInt16 slot, ViInt16 logAdr, ViPSession instrumentHandle);
+ViStatus tkvx4244_tryAutoConnect(ViInt16 slot, ViInt16 logAdr,
+                                 ViPSession instrumentHandle);
 ViStatus tkvx4244_verifyID(ViSession instrumentHandle);
-ViStatus tkvx4244_returnDescriptor(ViInt16 theSlot, ViInt16 theLogAdr, ViString * descriptor);
+ViStatus tkvx4244_returnDescriptor(ViInt16 theSlot, ViInt16 theLogAdr,
+                                   ViString *descriptor);
 ViStatus tkvx4244_variableInitialize(ViSession instrumentHandle);
 ViStatus tkvx4244_chlst_parse(ViInt16 c1, ViInt16 c2, ViInt16 c3, ViInt16 c4,
-			      ViInt16 c5, ViInt16 c6, ViInt16 c7, ViInt16 c8, ViInt16 c9,
-			      ViInt16 c10, ViInt16 c11, ViInt16 c12, ViInt16 c13, ViInt16 c14,
-			      ViInt16 c15, ViInt16 c16, ViInt16 ca, ViChar buf[]);
-ViStatus tkvx4244_gplist_parse(ViInt16 g1, ViInt16 g2, ViInt16 g3, ViInt16 g4, ViInt16 ga,
-			       ViChar buf[]);
+                              ViInt16 c5, ViInt16 c6, ViInt16 c7, ViInt16 c8,
+                              ViInt16 c9, ViInt16 c10, ViInt16 c11, ViInt16 c12,
+                              ViInt16 c13, ViInt16 c14, ViInt16 c15,
+                              ViInt16 c16, ViInt16 ca, ViChar buf[]);
+ViStatus tkvx4244_gplist_parse(ViInt16 g1, ViInt16 g2, ViInt16 g3, ViInt16 g4,
+                               ViInt16 ga, ViChar buf[]);
 /***************************************************************************
  *	User accessible routines follow. These routines provide the interface
  *	to the driver for user programs.
@@ -446,40 +458,50 @@ ViStatus tkvx4244_gplist_parse(ViInt16 g1, ViInt16 g2, ViInt16 g3, ViInt16 g4, V
  *	Connect to all tkvx4244 instruments found.
  *
  * Parameters:
- *	ViSession instrumentHndlArray[]: Array of VISA instrument handles used to access
- *		instrument specific data. One handle initialized by this routine
- *		for each instrument found.
- *	ViInt16 arrayLength: Number of entries which can be put in instrArray
- *	ViPInt16 numberConnected: Number of valid entries in instrArray upon return
+ *	ViSession instrumentHndlArray[]: Array of VISA instrument handles used
+ *to access instrument specific data. One handle initialized by this routine for
+ *each instrument found. ViInt16 arrayLength: Number of entries which can be put
+ *in instrArray ViPInt16 numberConnected: Number of valid entries in instrArray
+ *upon return
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
 ViStatus _VI_FUNC tkvx4244_autoConnectToAll(ViSession instrumentHndlArray[],
-					    ViInt16 arrayLength, ViPInt16 numberConnected)
+                                            ViInt16 arrayLength,
+                                            ViPInt16 numberConnected)
 {
-  ViStatus retError;		/* Returned error status */
-  ViInt16 numFound;		/* # instrs found */
-  ViInt16 theLogAdr[tkvx4244_MAX_NUM_OF_LA];	/* temporary storage for LAs */
-  ViInt16 ii;			/* loop count */
+  ViStatus retError;                         /* Returned error status */
+  ViInt16 numFound;                          /* # instrs found */
+  ViInt16 theLogAdr[tkvx4244_MAX_NUM_OF_LA]; /* temporary storage for LAs */
+  ViInt16 ii;                                /* loop count */
 
   *numberConnected = 0;
 
-  retError = tkvx4244_getSlotandLAList(VI_NULL, theLogAdr, tkvx4244_RCV_STRLEN, &numFound);
+  retError = tkvx4244_getSlotandLAList(VI_NULL, theLogAdr, tkvx4244_RCV_STRLEN,
+                                       &numFound);
 
-  if (retError < VI_SUCCESS) {
+  if (retError < VI_SUCCESS)
+  {
     return retError;
-  } else if (numFound == 0) {
+  }
+  else if (numFound == 0)
+  {
     return VI_ERROR_RSRC_NFOUND;
-  } else if (numFound > arrayLength) {
+  }
+  else if (numFound > arrayLength)
+  {
     numFound = arrayLength;
   }
 
-  for (ii = 0; ii < numFound; ii++) {
-    retError = tkvx4244_tryAutoConnect(VI_NULL, theLogAdr[ii], &instrumentHndlArray[ii]);
+  for (ii = 0; ii < numFound; ii++)
+  {
+    retError = tkvx4244_tryAutoConnect(VI_NULL, theLogAdr[ii],
+                                       &instrumentHndlArray[ii]);
 
-    if (retError < VI_SUCCESS) {
+    if (retError < VI_SUCCESS)
+    {
       return retError;
     }
 
@@ -497,8 +519,8 @@ ViStatus _VI_FUNC tkvx4244_autoConnectToAll(ViSession instrumentHndlArray[],
  *
  * Parameters:
  *	ViPSession instrumentHandle: Address of VISA instrument handle used to
- *						access instrument specific data. Initialized by
- *						this routine.
+ *						access instrument specific data.
+ *Initialized by this routine.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
@@ -506,14 +528,17 @@ ViStatus _VI_FUNC tkvx4244_autoConnectToAll(ViSession instrumentHndlArray[],
 
 ViStatus _VI_FUNC tkvx4244_autoConnectToFirst(ViPSession instrumentHandle)
 {
-  ViStatus retError;		/* Returned error status */
-  ViInt16 numFound;		/* # instrs found */
-  ViInt16 theLogAdr;		/* logical address */
+  ViStatus retError; /* Returned error status */
+  ViInt16 numFound;  /* # instrs found */
+  ViInt16 theLogAdr; /* logical address */
 
   retError = tkvx4244_getSlotandLAList(VI_NULL, &theLogAdr, 1, &numFound);
-  if (retError < VI_SUCCESS) {
+  if (retError < VI_SUCCESS)
+  {
     return retError;
-  } else if (numFound == 0) {
+  }
+  else if (numFound == 0)
+  {
     return VI_ERROR_RSRC_NFOUND;
   }
 
@@ -531,17 +556,18 @@ ViStatus _VI_FUNC tkvx4244_autoConnectToFirst(ViPSession instrumentHandle)
  *
  * Parameters:
  *	ViPSession instrumentHandle: Address of VISA instrument handle used to
- *						access instrument specific data. Initialized by
- *						this routine.
- *	ViInt16 logicalAddress: Logical address to connect to
+ *						access instrument specific data.
+ *Initialized by this routine. ViInt16 logicalAddress: Logical address to
+ *connect to
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_autoConnectToLA(ViPSession instrumentHandle, ViInt16 logicalAddress)
+ViStatus _VI_FUNC tkvx4244_autoConnectToLA(ViPSession instrumentHandle,
+                                           ViInt16 logicalAddress)
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
   retError = tkvx4244_tryAutoConnect(VI_NULL, logicalAddress, instrumentHandle);
   if (retError < VI_SUCCESS)
@@ -570,30 +596,37 @@ ViStatus _VI_FUNC tkvx4244_autoConnectToLA(ViPSession instrumentHandle, ViInt16 
  */
 
 ViStatus _VI_FUNC tkvx4244_autoConnectToSlot(ViSession instrumentArray[],
-					     ViInt16 arrayLength, ViPInt16 numberConnected,
-					     ViInt16 slot)
+                                             ViInt16 arrayLength,
+                                             ViPInt16 numberConnected,
+                                             ViInt16 slot)
 {
-  ViStatus retError;		/* Returned error status */
-  ViInt16 numFound;		/* Temporary storage for # instrs found */
+  ViStatus retError; /* Returned error status */
+  ViInt16 numFound;  /* Temporary storage for # instrs found */
   ViInt16 theSlotPtr[tkvx4244_RCV_STRLEN];
   ViInt16 theLogAdr[tkvx4244_RCV_STRLEN];
-  ViInt16 ii;			/* loop count */
+  ViInt16 ii; /* loop count */
 
   *numberConnected = 0;
 
-  retError = tkvx4244_getSlotandLAList(theSlotPtr, theLogAdr, tkvx4244_RCV_STRLEN, &numFound);
-  if (retError < VI_SUCCESS) {
+  retError = tkvx4244_getSlotandLAList(theSlotPtr, theLogAdr,
+                                       tkvx4244_RCV_STRLEN, &numFound);
+  if (retError < VI_SUCCESS)
+  {
     return retError;
-  } else if (numFound == 0) {
+  }
+  else if (numFound == 0)
+  {
     return VI_ERROR_RSRC_NFOUND;
   }
 
-  for (ii = 0; ii < numFound; ii++) {
-    if (theSlotPtr[ii] == slot) {
+  for (ii = 0; ii < numFound; ii++)
+  {
+    if (theSlotPtr[ii] == slot)
+    {
       retError = tkvx4244_tryAutoConnect(VI_NULL, theLogAdr[ii],
-					 &instrumentArray[*numberConnected]);
+                                         &instrumentArray[*numberConnected]);
       if (retError < VI_SUCCESS)
-	return retError;
+        return retError;
 
       (*numberConnected)++;
     }
@@ -602,9 +635,12 @@ ViStatus _VI_FUNC tkvx4244_autoConnectToSlot(ViSession instrumentArray[],
       break;
   }
 
-  if (*numberConnected == 0) {
+  if (*numberConnected == 0)
+  {
     return VI_ERROR_RSRC_NFOUND;
-  } else {
+  }
+  else
+  {
     return VI_SUCCESS;
   }
 }
@@ -620,8 +656,8 @@ ViStatus _VI_FUNC tkvx4244_autoConnectToSlot(ViSession instrumentArray[],
  *	data structures added to the driver structure.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *						specific data.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
@@ -633,18 +669,20 @@ ViStatus _VI_FUNC tkvx4244_autoConnectToSlot(ViSession instrumentArray[],
 
 ViStatus _VI_FUNC tkvx4244_close(ViSession instrumentHandle)
 {
-  ViStatus retError;		/* Returned error status */
-  ViAddr userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViStatus retError;            /* Returned error status */
+  ViAddr userData;              /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
-  if (instrumentHandle != VI_NULL) {
+  if (instrumentHandle != VI_NULL)
+  {
     retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
     if (retError < VI_SUCCESS)
       return retError;
 
-    drvrHdl = (tkvx4244_PdrvrStruct) userData;
+    drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
-    if (drvrHdl != NULL) {
+    if (drvrHdl != NULL)
+    {
       /* Free any mallocs in the tkvx4244_instr_array struct */
       free(drvrHdl->instrDesc);
 
@@ -653,7 +691,9 @@ ViStatus _VI_FUNC tkvx4244_close(ViSession instrumentHandle)
 
     retError = viClose(instrumentHandle);
     return retError;
-  } else {
+  }
+  else
+  {
     return VI_SUCCESS;
   }
 }
@@ -669,9 +709,8 @@ ViStatus _VI_FUNC tkvx4244_close(ViSession instrumentHandle)
  *	ViRsrc resourceName: Instrument search expression,
  *	ViBoolean IDQuery: Boolean flag, VI_TRUE -> verify correct instrument
  *	ViBoolean resetDevice: Boolean flag, VI_TRUE -> reset instrument
- *	ViPSession instrumentHandle: VISA instrument handle used to access instrument
- *						 specific data. The handle is initialized by
- *						 this routine.
+ *	ViPSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. The handle is initialized by this routine.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
@@ -679,11 +718,12 @@ ViStatus _VI_FUNC tkvx4244_close(ViSession instrumentHandle)
  */
 
 ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
-				ViBoolean resetDevice, ViPSession instrumentHandle)
+                                ViBoolean resetDevice,
+                                ViPSession instrumentHandle)
 {
-  ViSession resMgr;		/* Resource Manager Session */
-  ViStatus retError;		/* Returned error status */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViSession resMgr;             /* Resource Manager Session */
+  ViStatus retError;            /* Returned error status */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
   /* Initialize Instrument-Dependent Command arrays. */
 
@@ -692,21 +732,25 @@ ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
   /* Open Instrument */
 
   retError = viGetDefaultRM(&resMgr);
-  if (retError < VI_SUCCESS) {
+  if (retError < VI_SUCCESS)
+  {
     *instrumentHandle = VI_NULL;
     return retError;
   }
 
   retError = viOpen(resMgr, resourceName, VI_NULL, VI_NULL, instrumentHandle);
-  if (retError < VI_SUCCESS) {
+  if (retError < VI_SUCCESS)
+  {
     *instrumentHandle = VI_NULL;
     return retError;
   }
 
   /* No user data yet, so null it out */
 
-  retError = viSetAttribute(*instrumentHandle, VI_ATTR_USER_DATA, (ViAttr) VI_NULL);
-  if (retError < VI_SUCCESS) {
+  retError =
+      viSetAttribute(*instrumentHandle, VI_ATTR_USER_DATA, (ViAttr)VI_NULL);
+  if (retError < VI_SUCCESS)
+  {
     tkvx4244_close(*instrumentHandle);
     *instrumentHandle = VI_NULL;
     return retError;
@@ -714,9 +758,11 @@ ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
 
   /* Perform ID Query */
 
-  if (IDQuery) {
+  if (IDQuery)
+  {
     retError = tkvx4244_verifyID(*instrumentHandle);
-    if (retError < VI_SUCCESS) {
+    if (retError < VI_SUCCESS)
+    {
       tkvx4244_close(*instrumentHandle);
       *instrumentHandle = VI_NULL;
       return retError;
@@ -724,9 +770,11 @@ ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
   }
 
   /* Initialize the instrument to a known state. */
-  if (resetDevice) {
+  if (resetDevice)
+  {
     retError = tkvx4244_reset(*instrumentHandle);
-    if (retError < VI_SUCCESS) {
+    if (retError < VI_SUCCESS)
+    {
       tkvx4244_close(*instrumentHandle);
       *instrumentHandle = VI_NULL;
       return retError;
@@ -735,8 +783,10 @@ ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
 
   /* Set default timeout */
 
-  retError = viSetAttribute(*instrumentHandle, VI_ATTR_TMO_VALUE, tkvx4244_DEFAULT_TIMEOUT);
-  if (retError < VI_SUCCESS) {
+  retError = viSetAttribute(*instrumentHandle, VI_ATTR_TMO_VALUE,
+                            tkvx4244_DEFAULT_TIMEOUT);
+  if (retError < VI_SUCCESS)
+  {
     tkvx4244_close(*instrumentHandle);
     *instrumentHandle = VI_NULL;
     return retError;
@@ -744,22 +794,26 @@ ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
 
   /* Initialize interface for instrument. */
 
-  drvrHdl = (tkvx4244_PdrvrStruct) malloc(sizeof(tkvx4244_drvrStruct));
-  if (drvrHdl == NULL) {
+  drvrHdl = (tkvx4244_PdrvrStruct)malloc(sizeof(tkvx4244_drvrStruct));
+  if (drvrHdl == NULL)
+  {
     tkvx4244_close(*instrumentHandle);
     *instrumentHandle = VI_NULL;
     return VI_ERROR_ALLOC;
   }
 
-  retError = viSetAttribute(*instrumentHandle, VI_ATTR_USER_DATA, (ViAttr) drvrHdl);
-  if (retError < VI_SUCCESS) {
+  retError =
+      viSetAttribute(*instrumentHandle, VI_ATTR_USER_DATA, (ViAttr)drvrHdl);
+  if (retError < VI_SUCCESS)
+  {
     tkvx4244_close(*instrumentHandle);
     *instrumentHandle = VI_NULL;
     return retError;
   }
 
-  drvrHdl->instrDesc = (ViString) malloc(strlen(resourceName) + 1);
-  if (drvrHdl->instrDesc == NULL) {
+  drvrHdl->instrDesc = (ViString)malloc(strlen(resourceName) + 1);
+  if (drvrHdl->instrDesc == NULL)
+  {
     tkvx4244_close(*instrumentHandle);
     *instrumentHandle = VI_NULL;
     return VI_ERROR_ALLOC;
@@ -770,7 +824,7 @@ ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
   /* CHANGE:  Add instrument specific initialization here */
   retError = tkvx4244_variableInitialize(*instrumentHandle);
   /*if(retError) */
-  return VI_SUCCESS;		/* return */
+  return VI_SUCCESS; /* return */
 }
 
 /*********************************************************************************
@@ -779,21 +833,20 @@ ViStatus _VI_FUNC tkvx4244_init(ViRsrc resourceName, ViBoolean IDQuery,
  * Purpose: Initialize instrument specific structure elements to power
  *         up condition.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4240_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4240_init() prior to use.
  * Returns:
  *	VI_VI_SUCCESS if no errors occurred, error code otherwise
  */
 ViStatus tkvx4244_variableInitialize(ViSession instrumentHandle)
 {
 
-  ViStatus retError;		/* Returned error status */
-  ViAddr userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViStatus retError;            /* Returned error status */
+  ViAddr userData;              /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   drvrHdl->tkvx4244_chOneActive = tkvx4244_CH_ONE_ENABLE;
   drvrHdl->tkvx4244_chTwoActive = tkvx4244_CH_TWO_DISABLE;
@@ -823,63 +876,71 @@ ViStatus tkvx4244_variableInitialize(ViSession instrumentHandle)
  *	driver error code.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViStatus errorCode: error code to check
- *	ViChar errorMessage[]: Returned error string
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViStatus errorCode: error code to check ViChar
+ *errorMessage[]: Returned error string
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_error_message(ViSession instrumentHandle, ViStatus errorCode,
-					 ViChar errorMessage[])
+ViStatus _VI_FUNC tkvx4244_error_message(ViSession instrumentHandle,
+                                         ViStatus errorCode,
+                                         ViChar errorMessage[])
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
   retError = VI_SUCCESS;
 
-  if ((errorCode >= tkvx4244_GENERIC_ERROR) && (errorCode <= 0xBFFC0FFFL)
-      && (errorCode < VI_SUCCESS)) {
+  if ((errorCode >= tkvx4244_GENERIC_ERROR) && (errorCode <= 0xBFFC0FFFL) &&
+      (errorCode < VI_SUCCESS))
+  {
     errorCode -= tkvx4244_GENERIC_ERROR;
 
-    if (errorCode < tkvx4244_NUMBER_OF_ERRORS) {
-      sprintf(errorMessage, "%s Error: %s", tkvx4244_NAME, tkvx4244_errorStrings[errorCode]);
-    } else {
-      sprintf(errorMessage, "%s Error: Unrecognized error %ld",
-	      tkvx4244_NAME, errorCode + tkvx4244_GENERIC_ERROR);
+    if (errorCode < tkvx4244_NUMBER_OF_ERRORS)
+    {
+      sprintf(errorMessage, "%s Error: %s", tkvx4244_NAME,
+              tkvx4244_errorStrings[errorCode]);
     }
-  } else {
-    switch (errorCode) {
+    else
+    {
+      sprintf(errorMessage, "%s Error: Unrecognized error %ld", tkvx4244_NAME,
+              errorCode + tkvx4244_GENERIC_ERROR);
+    }
+  }
+  else
+  {
+    switch (errorCode)
+    {
     case VI_WARN_NSUP_ID_QUERY:
-      {
-	strcpy(errorMessage, "Warning: ID query is not supported.");
-	break;
-      }
+    {
+      strcpy(errorMessage, "Warning: ID query is not supported.");
+      break;
+    }
     case VI_WARN_NSUP_RESET:
-      {
-	strcpy(errorMessage, "Warning: reset is not supported.");
-	break;
-      }
+    {
+      strcpy(errorMessage, "Warning: reset is not supported.");
+      break;
+    }
     case VI_WARN_NSUP_SELF_TEST:
-      {
-	strcpy(errorMessage, "Warning: self-test is not supported.");
-	break;
-      }
+    {
+      strcpy(errorMessage, "Warning: self-test is not supported.");
+      break;
+    }
     case VI_WARN_NSUP_ERROR_QUERY:
-      {
-	strcpy(errorMessage, "Warning: error query is not supported.");
-	break;
-      }
+    {
+      strcpy(errorMessage, "Warning: error query is not supported.");
+      break;
+    }
     case VI_WARN_NSUP_REV_QUERY:
-      {
-	strcpy(errorMessage, "Warning: revision query is not supported.");
-	break;
-      }
+    {
+      strcpy(errorMessage, "Warning: revision query is not supported.");
+      break;
+    }
     default:
-      {
-	retError = viStatusDesc(instrumentHandle, errorCode, errorMessage);
-      }
+    {
+      retError = viStatusDesc(instrumentHandle, errorCode, errorMessage);
+    }
     }
   }
 
@@ -893,38 +954,41 @@ ViStatus _VI_FUNC tkvx4244_error_message(ViSession instrumentHandle, ViStatus er
  *	This function queries the instrument for errors.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *			specific data.
- *	ViPStatus errorCode: Instrument error code returned
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViPStatus errorCode: Instrument error code returned
  *	ViChar errorMessage[]: Textual version of returned error code
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_error_query(ViSession instrumentHandle, ViPInt32 errorCode,
-				       ViChar errorMessage[])
+ViStatus _VI_FUNC tkvx4244_error_query(ViSession instrumentHandle,
+                                       ViPInt32 errorCode,
+                                       ViChar errorMessage[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* Instrument command string */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* Instrument receive string */
-  ViInt32 retCnt;		/* VISA return count */
-  ViStatus retError;		/* Returned error status */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* Instrument command string */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* Instrument receive string */
+  ViInt32 retCnt;                  /* VISA return count */
+  ViStatus retError;               /* Returned error status */
 
   strcpy(cmd, "SYSTEM:ERROR?");
   cmd[strlen(cmd)] = '\0';
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
 
   rcv[retCnt] = '\0';
 
-  *errorCode = (ViInt32) strtod(&rcv[0], (char **)NULL);
+  *errorCode = (ViInt32)strtod(&rcv[0], (char **)NULL);
   strcpy(errorMessage, rcv);
 
-  return VI_SUCCESS;;
+  return VI_SUCCESS;
+  ;
 }
 
 /***************************************************************************
@@ -934,27 +998,29 @@ ViStatus _VI_FUNC tkvx4244_error_query(ViSession instrumentHandle, ViPInt32 erro
  *	Return instrument descriptor string of instrument
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViChar instrumentDescriptor[]: Storage for returned instrument descriptor
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViChar instrumentDescriptor[]: Storage for returned
+ *instrument descriptor
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_getInstrDesc(ViSession instrumentHandle, ViChar instrumentDescriptor[])
+ViStatus _VI_FUNC tkvx4244_getInstrDesc(ViSession instrumentHandle,
+                                        ViChar instrumentDescriptor[])
 {
-  ViStatus retError;		/* Returned error status */
-  ViAddr userData;		/* User data attribute value */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViStatus retError;            /* Returned error status */
+  ViAddr userData;              /* User data attribute value */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
 
-  if (retError < VI_SUCCESS) {
+  if (retError < VI_SUCCESS)
+  {
     return retError;
   }
 
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /*
    * get the descriptor
@@ -972,17 +1038,18 @@ ViStatus _VI_FUNC tkvx4244_getInstrDesc(ViSession instrumentHandle, ViChar instr
  *	Return logical address of instrument
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViPInt16 logicalAddress: Storage for returned logical address #
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViPInt16 logicalAddress: Storage for returned
+ *logical address #
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_getLogicalAddress(ViSession instrumentHandle, ViPInt16 logicalAddress)
+ViStatus _VI_FUNC tkvx4244_getLogicalAddress(ViSession instrumentHandle,
+                                             ViPInt16 logicalAddress)
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_VXI_LA, logicalAddress);
 
@@ -996,20 +1063,21 @@ ViStatus _VI_FUNC tkvx4244_getLogicalAddress(ViSession instrumentHandle, ViPInt1
  *	Returns manufacturer ID of instrument
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViPInt16 manufacturerIdentification: pointer to storage for ID
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViPInt16 manufacturerIdentification: pointer to
+ *storage for ID
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_getManufacturerID(ViSession instrumentHandle,
-					     ViPInt16 manufacturerIdentification)
+ViStatus _VI_FUNC tkvx4244_getManufacturerID(
+    ViSession instrumentHandle, ViPInt16 manufacturerIdentification)
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
-  retError = viGetAttribute(instrumentHandle, VI_ATTR_MANF_ID, manufacturerIdentification);
+  retError = viGetAttribute(instrumentHandle, VI_ATTR_MANF_ID,
+                            manufacturerIdentification);
 
   *manufacturerIdentification &= 0xfff;
 
@@ -1030,9 +1098,10 @@ ViStatus _VI_FUNC tkvx4244_getManufacturerID(ViSession instrumentHandle,
  * VI_INTF_TCPIP (6)
  * VI_INTF_USB (7)
  */
-ViStatus _VI_FUNC tkvx4244_getInterfaceType(ViSession instrumentHandle, ViPUInt16 interface)
+ViStatus _VI_FUNC tkvx4244_getInterfaceType(ViSession instrumentHandle,
+                                            ViPUInt16 interface)
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_INTF_TYPE, interface);
 
@@ -1046,17 +1115,17 @@ ViStatus _VI_FUNC tkvx4244_getInterfaceType(ViSession instrumentHandle, ViPUInt1
  *	Returns model code of instrument
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViPInt16 modelCode: pointer to storage for code
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViPInt16 modelCode: pointer to storage for code
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_getModelCode(ViSession instrumentHandle, ViPInt16 modelCode)
+ViStatus _VI_FUNC tkvx4244_getModelCode(ViSession instrumentHandle,
+                                        ViPInt16 modelCode)
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_MODEL_CODE, modelCode);
 
@@ -1073,18 +1142,20 @@ ViStatus _VI_FUNC tkvx4244_getModelCode(ViSession instrumentHandle, ViPInt16 mod
  *	ViInt16 slotArray[]: array of slot #s
  *	ViInt16 logicalAddressArray[]: array of logical addresses
  *	ViInt16  arrayLength: length of these arrays
- *	ViPInt16 numberFound: Return value for number of matching instruments found
+ *	ViPInt16 numberFound: Return value for number of matching instruments
+ *found
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
 ViStatus _VI_FUNC tkvx4244_getSlotandLAList(ViInt16 slotArray[],
-					    ViInt16 logicalAddressArray[], ViInt16 arrayLength,
-					    ViPInt16 numberFound)
+                                            ViInt16 logicalAddressArray[],
+                                            ViInt16 arrayLength,
+                                            ViPInt16 numberFound)
 {
-  ViStatus retError;		/* Returned error status */
-  ViInt16 ii;			/* loop count */
+  ViStatus retError; /* Returned error status */
+  ViInt16 ii;        /* loop count */
 
   /* Initialize Instrument-Dependent Command arrays. */
 
@@ -1093,28 +1164,37 @@ ViStatus _VI_FUNC tkvx4244_getSlotandLAList(ViInt16 slotArray[],
   if (retError < VI_SUCCESS)
     return retError;
 
-  if (tkvx4244_gNumberFound == 0) {
+  if (tkvx4244_gNumberFound == 0)
+  {
     return VI_ERROR_RSRC_NFOUND;
-  } else if (tkvx4244_gNumberFound > arrayLength) {
+  }
+  else if (tkvx4244_gNumberFound > arrayLength)
+  {
     *numberFound = arrayLength;
-  } else {
+  }
+  else
+  {
     *numberFound = tkvx4244_gNumberFound;
   }
 
-  if ((slotArray == NULL) && (logicalAddressArray == NULL)) {
+  if ((slotArray == NULL) && (logicalAddressArray == NULL))
+  {
     *numberFound = 0;
   }
 
-  for (ii = 0; ii < *numberFound; ii++) {
+  for (ii = 0; ii < *numberFound; ii++)
+  {
     /*
      * Add instrument slot number and logical address to arrays
      */
 
-    if (slotArray != NULL) {
+    if (slotArray != NULL)
+    {
       slotArray[ii] = tkvx4244_instrAttr[ii].slot;
     }
 
-    if (logicalAddressArray != NULL) {
+    if (logicalAddressArray != NULL)
+    {
       logicalAddressArray[ii] = tkvx4244_instrAttr[ii].logAdr;
     }
   }
@@ -1129,18 +1209,18 @@ ViStatus _VI_FUNC tkvx4244_getSlotandLAList(ViInt16 slotArray[],
  *	Return slot number of instrument
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *	ViPInt16 slot: Storage for returned slot #
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_getSlotNumber(ViSession instrumentHandle, ViPInt16 slot)
+ViStatus _VI_FUNC tkvx4244_getSlotNumber(ViSession instrumentHandle,
+                                         ViPInt16 slot)
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_SLOT, slot);
 
@@ -1156,18 +1236,21 @@ ViStatus _VI_FUNC tkvx4244_getSlotNumber(ViSession instrumentHandle, ViPInt16 sl
  * Parameters:
  *	ViInt16 slotArray[]: array of slot #s
  *	ViInt16  slotArrayLength: length of these arrays
- *	ViPInt16 numberFound: Return value for number of matching instruments found
+ *	ViPInt16 numberFound: Return value for number of matching instruments
+ *found
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_getSlotList(ViInt16 slotArray[], ViInt16 slotArrayLength,
-				       ViPInt16 numberFound)
+ViStatus _VI_FUNC tkvx4244_getSlotList(ViInt16 slotArray[],
+                                       ViInt16 slotArrayLength,
+                                       ViPInt16 numberFound)
 {
-  ViStatus retError;		/* Returned error status */
+  ViStatus retError; /* Returned error status */
 
-  retError = tkvx4244_getSlotandLAList(slotArray, VI_NULL, slotArrayLength, numberFound);
+  retError = tkvx4244_getSlotandLAList(slotArray, VI_NULL, slotArrayLength,
+                                       numberFound);
 
   return retError;
 }
@@ -1179,49 +1262,55 @@ ViStatus _VI_FUNC tkvx4244_getSlotList(ViInt16 slotArray[], ViInt16 slotArrayLen
  *	Return visa revison as an ASCII string
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *	ViChar revision[]: Storage for returned instrument descriptor
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_getVisaRev(ViSession instrumentHandle, ViChar revision[])
+ViStatus _VI_FUNC tkvx4244_getVisaRev(ViSession instrumentHandle,
+                                      ViChar revision[])
 {
-  ViStatus retError;		/* Returned error status */
-  ViVersion tmpRev;		/* VISA revision attribute */
-  ViInt16 tmpMajor;		/* VISA major revison digits */
-  ViInt16 tmpMinor;		/* VISA minor revison digits */
-  ViInt16 tmpSubMinor;		/* VISA subMinor revison digits */
+  ViStatus retError;   /* Returned error status */
+  ViVersion tmpRev;    /* VISA revision attribute */
+  ViInt16 tmpMajor;    /* VISA major revison digits */
+  ViInt16 tmpMinor;    /* VISA minor revison digits */
+  ViInt16 tmpSubMinor; /* VISA subMinor revison digits */
   ViChar vtl[10];
   /*
    * get the descriptor
    */
-  retError = viGetAttribute(instrumentHandle, VI_ATTR_RSRC_SPEC_VERSION, &tmpRev);
+  retError =
+      viGetAttribute(instrumentHandle, VI_ATTR_RSRC_SPEC_VERSION, &tmpRev);
 
-  if (retError < VI_SUCCESS) {
+  if (retError < VI_SUCCESS)
+  {
     return retError;
   }
 
-  tmpMajor = (ViInt16) (tmpRev >> 16);
-  tmpMinor = (ViInt16) (tmpRev & 0xff00);
-  tmpMinor = (ViInt16) (tmpMinor >> 8);
-  tmpSubMinor = (ViInt16) (tmpRev & 0x00ff);
+  tmpMajor = (ViInt16)(tmpRev >> 16);
+  tmpMinor = (ViInt16)(tmpRev & 0xff00);
+  tmpMinor = (ViInt16)(tmpMinor >> 8);
+  tmpSubMinor = (ViInt16)(tmpRev & 0x00ff);
 
   if (tmpMajor < 4)
     strcpy(vtl, "VTL ");
-  else {
+  else
+  {
     strcpy(vtl, "");
-    tmpMajor = (ViInt16) VI_VERSION_MAJOR(tmpRev);
-    tmpMinor = (ViInt16) VI_VERSION_MINOR(tmpRev);
-    tmpSubMinor = (ViInt16) VI_VERSION_SUBMINOR(tmpRev);
+    tmpMajor = (ViInt16)VI_VERSION_MAJOR(tmpRev);
+    tmpMinor = (ViInt16)VI_VERSION_MINOR(tmpRev);
+    tmpSubMinor = (ViInt16)VI_VERSION_SUBMINOR(tmpRev);
   }
 
-  if (tmpSubMinor == 0) {
+  if (tmpSubMinor == 0)
+  {
     sprintf(revision, "%s%hd.%hd", vtl, tmpMajor, tmpMinor);
-  } else {
+  }
+  else
+  {
     sprintf(revision, "%s%hd.%hd.%hd", vtl, tmpMajor, tmpMinor, tmpSubMinor);
   }
 
@@ -1235,8 +1324,8 @@ ViStatus _VI_FUNC tkvx4244_getVisaRev(ViSession instrumentHandle, ViChar revisio
  *	This function resets the instrument.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
@@ -1244,12 +1333,13 @@ ViStatus _VI_FUNC tkvx4244_getVisaRev(ViSession instrumentHandle, ViChar revisio
 
 ViStatus _VI_FUNC tkvx4244_reset(ViSession instrumentHandle)
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* Instrument command string */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* VISA return count */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* Instrument command string */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* VISA return count */
 
   sprintf(cmd, "*RST");
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
 
   /*  CHANGE: If reset is not supported return the following
 
@@ -1265,35 +1355,37 @@ ViStatus _VI_FUNC tkvx4244_reset(ViSession instrumentHandle)
  *	This function returns the driver and instrument revisions.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViChar driverRevision[]: Revision string for driver
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViChar driverRevision[]: Revision string for driver
  *	ViChar instrumentRevision[]: Revison string for instrument firmware
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_revision_query(ViSession instrumentHandle, ViChar driverRevision[],
-					  ViChar instrumentRevision[])
+ViStatus _VI_FUNC tkvx4244_revision_query(ViSession instrumentHandle,
+                                          ViChar driverRevision[],
+                                          ViChar instrumentRevision[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* Instrument command string */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* Instrument receive string */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* VISA return count */
-  ViAddr userData;		/* User data attribute value */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* Instrument command string */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* Instrument receive string */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* VISA return count */
+  ViAddr userData;                 /* User data attribute value */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   sprintf(driverRevision, "%2.1f%hd", tkvx4244_DRVREV, tkvx4244_DRVREV_MINOR);
 
   strcpy(cmd, "*IDN?\n");
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -1313,42 +1405,50 @@ ViStatus _VI_FUNC tkvx4244_revision_query(ViSession instrumentHandle, ViChar dri
  *	This function executes the instrument self-test and returns the result.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViPInt16 selfTestResult: Boolean flag specifying self-test status
- *	ViChar selfTestMessage[]: Textual description of self-test status
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViPInt16 selfTestResult: Boolean flag specifying
+ *self-test status ViChar selfTestMessage[]: Textual description of self-test
+ *status
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_self_test(ViSession instrumentHandle, ViPInt16 selfTestResult,
-				     ViChar selfTestMessage[])
+ViStatus _VI_FUNC tkvx4244_self_test(ViSession instrumentHandle,
+                                     ViPInt16 selfTestResult,
+                                     ViChar selfTestMessage[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* Instrument command string */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* Instrument receive string */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* VISA return count */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* Instrument command string */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* Instrument receive string */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* VISA return count */
 
   strcpy(cmd, "*TST\n");
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   tkvx4244_sleep(30);
   strcpy(cmd, "*TST?");
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
 
-  if (rcv[0] == '0') {
+  if (rcv[0] == '0')
+  {
     *selfTestResult = VI_FALSE;
     sprintf(selfTestMessage, "Self Test Passed");
-  } else {
+  }
+  else
+  {
     *selfTestResult = VI_TRUE;
-    sprintf(selfTestMessage, "Self Test Failed\n\rUse Error query to check failures");
+    sprintf(selfTestMessage,
+            "Self Test Failed\n\rUse Error query to check failures");
   }
 
   return VI_SUCCESS;
@@ -1366,42 +1466,50 @@ ViStatus _VI_FUNC tkvx4244_self_test(ViSession instrumentHandle, ViPInt16 selfTe
  *	This function executes the instrument self-test and returns the result.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViPStatus selfTestResult: Boolean flag specifying self-test status
- *	ViChar selfTestMessage[]: Textual description of self-test status
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViPStatus selfTestResult: Boolean flag specifying
+ *self-test status ViChar selfTestMessage[]: Textual description of self-test
+ *status
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus _VI_FUNC tkvx4244_perform_self_test(ViSession instrumentHandle, ViPStatus selfTestResult,
-					     ViChar selfTestMessage[])
+ViStatus _VI_FUNC tkvx4244_perform_self_test(ViSession instrumentHandle,
+                                             ViPStatus selfTestResult,
+                                             ViChar selfTestMessage[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* Instrument command string */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* Instrument receive string */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* VISA return count */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* Instrument command string */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* Instrument receive string */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* VISA return count */
 
   strcpy(cmd, "*TST\n");
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   tkvx4244_sleep(30);
   strcpy(cmd, "*TST?");
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
 
-  if (rcv[0] == '0') {
+  if (rcv[0] == '0')
+  {
     *selfTestResult = VI_FALSE;
     sprintf(selfTestMessage, "Self Test Passed");
-  } else {
+  }
+  else
+  {
     *selfTestResult = VI_TRUE;
-    sprintf(selfTestMessage, "Self Test Failed\n\rUse Error query to check failures");
+    sprintf(selfTestMessage,
+            "Self Test Failed\n\rUse Error query to check failures");
   }
 
   return VI_SUCCESS;
@@ -1422,14 +1530,16 @@ ViStatus _VI_FUNC tkvx4244_perform_self_test(ViSession instrumentHandle, ViPStat
 
 ViStatus _VI_FUNC tkvx4244_sleep(ViInt32 secondsToDelay)
 {
-  time_t start;			/* time of entry into this routine */
-  time_t current;		/* Updated time as routine progresses */
+  time_t start;   /* time of entry into this routine */
+  time_t current; /* Updated time as routine progresses */
 
-  time(&start);			/* initialize start time */
-  time(&current);		/* initialize update time */
+  time(&start);   /* initialize start time */
+  time(&current); /* initialize update time */
 
-  while ((current - start) < (time_t) secondsToDelay) {	/* has delay completed? */
-    time(&current);		/* no, update */
+  while ((current - start) <
+         (time_t)secondsToDelay)
+  {                 /* has delay completed? */
+    time(&current); /* no, update */
   }
   return VI_SUCCESS;
 }
@@ -1441,9 +1551,9 @@ ViStatus _VI_FUNC tkvx4244_sleep(ViInt32 secondsToDelay)
  *	This function writes to an instrument.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViString command:	String that is passed to an instrument.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViString command:	String that is passed to an
+ *instrument.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
@@ -1451,12 +1561,13 @@ ViStatus _VI_FUNC tkvx4244_sleep(ViInt32 secondsToDelay)
 
 ViStatus _VI_FUNC tkvx4244_write(ViSession instrumentHandle, ViString command)
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* Instrument command string */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* VISA return count */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* Instrument command string */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* VISA return count */
 
   sprintf(cmd, "%s", command);
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
 
@@ -1470,9 +1581,8 @@ ViStatus _VI_FUNC tkvx4244_write(ViSession instrumentHandle, ViString command)
  *	This function executes a read.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
- *	ViChar message[]:	Returns the read string.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. ViChar message[]:	Returns the read string.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
@@ -1480,11 +1590,12 @@ ViStatus _VI_FUNC tkvx4244_write(ViSession instrumentHandle, ViString command)
 
 ViStatus _VI_FUNC tkvx4244_read(ViSession instrumentHandle, ViChar message[])
 {
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* Instrument receive string */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* VISA return count */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* Instrument receive string */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* VISA return count */
 
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -1519,27 +1630,28 @@ ViStatus _VI_FUNC tkvx4244_read(ViSession instrumentHandle, ViChar message[])
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_measCaptureReturnData(ViSession instrumentHandle, ViInt16 channel,
-			       ViInt16 voltageRange, ViInt16 intervalFrequency,
-			       ViReal64 * samplingRate, ViInt32 startingAddress,
-			       ViInt16 numberOfSamples, ViChar dataArray[])
+ViStatus _VI_FUNC tkvx4244_measCaptureReturnData(
+    ViSession instrumentHandle, ViInt16 channel, ViInt16 voltageRange,
+    ViInt16 intervalFrequency, ViReal64 *samplingRate, ViInt32 startingAddress,
+    ViInt16 numberOfSamples, ViChar dataArray[])
 {
   ViInt16 gpch1, gpch2, gpch3, gpch4;
   ViInt16 gone, gtwo, gthree, gfour;
-  ViStatus retError;		/* Returned error status */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViStatus retError;            /* Returned error status */
+  ViAttrState userData;         /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   retError = tkvx4244_invalidShortRange(channel, tkvx4244_ANALYZE_CH1,
-					tkvx4244_ANALYZE_CH16, tkvx4244_ERROR_FETCH_CHL);
+                                        tkvx4244_ANALYZE_CH16,
+                                        tkvx4244_ERROR_FETCH_CHL);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
-					tkvx4244_VOLT_RANGE_20VOLT, tkvx4244_ERROR_INPUT_VOLT);
+                                        tkvx4244_VOLT_RANGE_20VOLT,
+                                        tkvx4244_ERROR_INPUT_VOLT);
   if (retError)
     return retError;
 
@@ -1550,14 +1662,15 @@ tkvx4244_measCaptureReturnData(ViSession instrumentHandle, ViInt16 channel,
   if (retError)
     return retError;
   /*open all channels in Group 1(ch 1) */
-  retError = tkvx4244_confGroupOneChannels(instrumentHandle,
-					   tkvx4244_CH_ONE_ENABLE, tkvx4244_CH_TWO_ENABLE,
-					   tkvx4244_CH_THREE_ENABLE, tkvx4244_CH_FOUR_ENABLE,
-					   tkvx4244_SELECT_DISABLE);
+  retError = tkvx4244_confGroupOneChannels(
+      instrumentHandle, tkvx4244_CH_ONE_ENABLE, tkvx4244_CH_TWO_ENABLE,
+      tkvx4244_CH_THREE_ENABLE, tkvx4244_CH_FOUR_ENABLE,
+      tkvx4244_SELECT_DISABLE);
   if (retError)
     return retError;
   /*Define and enable the selected channel. Set up selected parameters */
-  if (channel < tkvx4244_ANALYZE_CH5) {
+  if (channel < tkvx4244_ANALYZE_CH5)
+  {
     gone = VI_TRUE;
     if (channel == tkvx4244_ANALYZE_CH1)
       gpch1 = 1;
@@ -1567,32 +1680,33 @@ tkvx4244_measCaptureReturnData(ViSession instrumentHandle, ViInt16 channel,
       gpch3 = 1;
     if (channel == tkvx4244_ANALYZE_CH4)
       gpch4 = 1;
-    retError = tkvx4244_confGroupOneChannels(instrumentHandle, gpch1,
-					     gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
+    retError = tkvx4244_confGroupOneChannels(
+        instrumentHandle, gpch1, gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confGpOneVoltageRange(instrumentHandle, gpch1,
-					      gpch2, gpch3, gpch4, voltageRange);
+    retError = tkvx4244_confGpOneVoltageRange(instrumentHandle, gpch1, gpch2,
+                                              gpch3, gpch4, voltageRange);
     if (retError)
       return retError;
-    retError = tkvx4244_confSamplingInterval(instrumentHandle,
-					     tkvx4244_CLOCK_INTERNAL, intervalFrequency,
-					     samplingRate, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confSamplingInterval(
+        instrumentHandle, tkvx4244_CLOCK_INTERNAL, intervalFrequency,
+        samplingRate, gone, gtwo, gthree, gfour, tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone,
+                                             gtwo, gthree, gfour,
+                                             tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_initMeasurementCycle(instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
+    retError = tkvx4244_initMeasurementCycle(
+        instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
+        tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
     if (retError)
       return retError;
-
   }
 
-  if ((channel > tkvx4244_ANALYZE_CH4) && (channel < tkvx4244_ANALYZE_CH9)) {
+  if ((channel > tkvx4244_ANALYZE_CH4) && (channel < tkvx4244_ANALYZE_CH9))
+  {
     gtwo = VI_TRUE;
     if (channel == tkvx4244_ANALYZE_CH5)
       gpch1 = 1;
@@ -1602,30 +1716,32 @@ tkvx4244_measCaptureReturnData(ViSession instrumentHandle, ViInt16 channel,
       gpch3 = 1;
     if (channel == tkvx4244_ANALYZE_CH8)
       gpch4 = 1;
-    retError = tkvx4244_confGroupTwoChannels(instrumentHandle, gpch1,
-					     gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
+    retError = tkvx4244_confGroupTwoChannels(
+        instrumentHandle, gpch1, gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confGpTwoVoltageRange(instrumentHandle, gpch1,
-					      gpch2, gpch3, gpch4, voltageRange);
+    retError = tkvx4244_confGpTwoVoltageRange(instrumentHandle, gpch1, gpch2,
+                                              gpch3, gpch4, voltageRange);
     if (retError)
       return retError;
-    retError = tkvx4244_confSamplingInterval(instrumentHandle,
-					     tkvx4244_CLOCK_INTERNAL, intervalFrequency,
-					     samplingRate, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confSamplingInterval(
+        instrumentHandle, tkvx4244_CLOCK_INTERNAL, intervalFrequency,
+        samplingRate, gone, gtwo, gthree, gfour, tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone,
+                                             gtwo, gthree, gfour,
+                                             tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_initMeasurementCycle(instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
+    retError = tkvx4244_initMeasurementCycle(
+        instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
+        tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
     if (retError)
       return retError;
   }
-  if ((channel > tkvx4244_ANALYZE_CH8) && (channel < tkvx4244_ANALYZE_CH13)) {
+  if ((channel > tkvx4244_ANALYZE_CH8) && (channel < tkvx4244_ANALYZE_CH13))
+  {
     gthree = VI_TRUE;
     if (channel == tkvx4244_ANALYZE_CH9)
       gpch1 = 1;
@@ -1635,30 +1751,32 @@ tkvx4244_measCaptureReturnData(ViSession instrumentHandle, ViInt16 channel,
       gpch3 = 1;
     if (channel == tkvx4244_ANALYZE_CH12)
       gpch4 = 1;
-    retError = tkvx4244_confGroupThreeChannels(instrumentHandle, gpch1,
-					       gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
+    retError = tkvx4244_confGroupThreeChannels(
+        instrumentHandle, gpch1, gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confGpThreeVoltageRange(instrumentHandle, gpch1,
-						gpch2, gpch3, gpch4, voltageRange);
+    retError = tkvx4244_confGpThreeVoltageRange(instrumentHandle, gpch1, gpch2,
+                                                gpch3, gpch4, voltageRange);
     if (retError)
       return retError;
-    retError = tkvx4244_confSamplingInterval(instrumentHandle,
-					     tkvx4244_CLOCK_INTERNAL, intervalFrequency,
-					     samplingRate, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confSamplingInterval(
+        instrumentHandle, tkvx4244_CLOCK_INTERNAL, intervalFrequency,
+        samplingRate, gone, gtwo, gthree, gfour, tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone,
+                                             gtwo, gthree, gfour,
+                                             tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_initMeasurementCycle(instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
+    retError = tkvx4244_initMeasurementCycle(
+        instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
+        tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
     if (retError)
       return retError;
   }
-  if (channel > tkvx4244_ANALYZE_CH12) {
+  if (channel > tkvx4244_ANALYZE_CH12)
+  {
     gfour = VI_TRUE;
     if (channel == tkvx4244_ANALYZE_CH13)
       gpch1 = 1;
@@ -1668,31 +1786,32 @@ tkvx4244_measCaptureReturnData(ViSession instrumentHandle, ViInt16 channel,
       gpch3 = 1;
     if (channel == tkvx4244_ANALYZE_CH16)
       gpch4 = 1;
-    retError = tkvx4244_confGroupFourChannels(instrumentHandle, gpch1,
-					      gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
+    retError = tkvx4244_confGroupFourChannels(
+        instrumentHandle, gpch1, gpch2, gpch3, gpch4, tkvx4244_SELECT_ENABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confGpFourVoltageRange(instrumentHandle, gpch1,
-					       gpch2, gpch3, gpch4, voltageRange);
+    retError = tkvx4244_confGpFourVoltageRange(instrumentHandle, gpch1, gpch2,
+                                               gpch3, gpch4, voltageRange);
     if (retError)
       return retError;
-    retError = tkvx4244_confSamplingInterval(instrumentHandle,
-					     tkvx4244_CLOCK_INTERNAL, intervalFrequency,
-					     samplingRate, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confSamplingInterval(
+        instrumentHandle, tkvx4244_CLOCK_INTERNAL, intervalFrequency,
+        samplingRate, gone, gtwo, gthree, gfour, tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE);
+    retError = tkvx4244_confDataCollectCount(instrumentHandle, 131072, gone,
+                                             gtwo, gthree, gfour,
+                                             tkvx4244_ALL_GROUPS_DISABLE);
     if (retError)
       return retError;
-    retError = tkvx4244_initMeasurementCycle(instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
-					     tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
+    retError = tkvx4244_initMeasurementCycle(
+        instrumentHandle, VI_FALSE, gone, gtwo, gthree, gfour,
+        tkvx4244_ALL_GROUPS_DISABLE, tkvx4244_INIT_IMM);
     if (retError)
       return retError;
   }
   retError = tkvx4244_readASCIIData(instrumentHandle, numberOfSamples,
-				    startingAddress, channel, dataArray);
+                                    startingAddress, channel, dataArray);
   if (retError)
     return retError;
 
@@ -1712,36 +1831,34 @@ tkvx4244_measCaptureReturnData(ViSession instrumentHandle, ViInt16 channel,
  *this function in WIN Framework 4.0 compliant drivers.
  *  This function sets various trigger parameters for logic and source.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 ext,imm,thre,vxi-- ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7
  *  ViInt16 gp1,gp2,gp3,gp4,gpa
  *  ViInt16 logic
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC tkvx4244_confTriggerSrcAndLogic(ViSession instrumentHandle, ViInt16 logic,
-						  ViInt16 ext, ViInt16 imm, ViInt16 thre,
-						  ViInt16 vxi, ViInt16 ttl0, ViInt16 ttl1,
-						  ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4,
-						  ViInt16 ttl5, ViInt16 ttl6, ViInt16 ttl7,
-						  ViInt16 gp1, ViInt16 gp2, ViInt16 gp3,
-						  ViInt16 gp4, ViInt16 gpa)
+ViStatus _VI_FUNC tkvx4244_confTriggerSrcAndLogic(
+    ViSession instrumentHandle, ViInt16 logic, ViInt16 ext, ViInt16 imm,
+    ViInt16 thre, ViInt16 vxi, ViInt16 ttl0, ViInt16 ttl1, ViInt16 ttl2,
+    ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5, ViInt16 ttl6, ViInt16 ttl7,
+    ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt16 gpa)
 {
   ViChar gplst[10];
   ViChar mask[10];
   int temp;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for VISA calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for VISA calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the Command */
-  if ((ext + imm + thre + vxi + ttl0 + ttl1 + ttl2 + ttl3 + ttl4 + ttl5 + ttl6 + ttl7) == 0)
+  if ((ext + imm + thre + vxi + ttl0 + ttl1 + ttl2 + ttl3 + ttl4 + ttl5 + ttl6 +
+       ttl7) == 0)
     return tkvx4244_ERROR_TRIG_SRC_CHOICE;
   if (gpa + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
     return tkvx4244_NO_GRPS_SELECTED_ERROR;
@@ -1924,13 +2041,15 @@ ViStatus _VI_FUNC tkvx4244_confTriggerSrcAndLogic(ViSession instrumentHandle, Vi
   /* Build the command string */
   sprintf(cmd, "TRIG:%s (%s)\n", trgsrcL[logic], gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "TRIG:MASK %s (%s)\n", mask, gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -1953,77 +2072,89 @@ ViStatus _VI_FUNC tkvx4244_confTriggerSrcAndLogic(ViSession instrumentHandle, Vi
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpOneTrigSrcLogic(ViSession instrumentHandle,
-			       ViInt16 logic, ViInt16 external, ViInt16 immediate,
-			       ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0, ViInt16 ttl1,
-			       ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5, ViInt16 ttl6,
-			       ViInt16 ttl7)
+ViStatus _VI_FUNC tkvx4244_confGpOneTrigSrcLogic(
+    ViSession instrumentHandle, ViInt16 logic, ViInt16 external,
+    ViInt16 immediate, ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0,
+    ViInt16 ttl1, ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5,
+    ViInt16 ttl6, ViInt16 ttl7)
 {
   ViChar mask[10];
   int temp;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for VISA calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for VISA calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the Command */
-  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 + ttl4 + ttl5 + ttl6 +
-       ttl7) == 0)
+  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 +
+       ttl4 + ttl5 + ttl6 + ttl7) == 0)
     return tkvx4244_ERROR_TRIG_SRC_CHOICE;
   retError = tkvx4244_invalidShortRange(logic, tkvx4244_TRIGGER_LOGIC_AND,
-					tkvx4244_TRIGGER_LOGIC_OR, tkvx4244_ERROR_TRIG_LOGIC);
+                                        tkvx4244_TRIGGER_LOGIC_OR,
+                                        tkvx4244_ERROR_TRIG_LOGIC);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(external, tkvx4244_TRIGGER_EXT_DISABLE,
-					tkvx4244_TRIGGER_EXT_ENABLE, tkvx4244_ERROR_EXT_TRIG);
+                                        tkvx4244_TRIGGER_EXT_ENABLE,
+                                        tkvx4244_ERROR_EXT_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(immediate, tkvx4244_TRIGGER_IMM_DISABLE,
-					tkvx4244_TRIGGER_IMM_ENABLE, tkvx4244_ERROR_IMM_TRIG);
+                                        tkvx4244_TRIGGER_IMM_ENABLE,
+                                        tkvx4244_ERROR_IMM_TRIG);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
-					tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
+  retError = tkvx4244_invalidShortRange(
+      threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
+      tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(vxicmd, tkvx4244_TRIGGER_VXI_DISABLE,
-					tkvx4244_TRIGGER_VXI_ENABLE, tkvx4244_ERROR_VXI_TRIG);
+                                        tkvx4244_TRIGGER_VXI_ENABLE,
+                                        tkvx4244_ERROR_VXI_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl0, tkvx4244_TRIGGER_TTL0_DISABLE,
-					tkvx4244_TRIGGER_TTL0_ENABLE, tkvx4244_ERROR_TTL0_TRIG);
+                                        tkvx4244_TRIGGER_TTL0_ENABLE,
+                                        tkvx4244_ERROR_TTL0_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl1, tkvx4244_TRIGGER_TTL1_DISABLE,
-					tkvx4244_TRIGGER_TTL1_ENABLE, tkvx4244_ERROR_TTL1_TRIG);
+                                        tkvx4244_TRIGGER_TTL1_ENABLE,
+                                        tkvx4244_ERROR_TTL1_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl2, tkvx4244_TRIGGER_TTL2_DISABLE,
-					tkvx4244_TRIGGER_TTL2_ENABLE, tkvx4244_ERROR_TTL2_TRIG);
+                                        tkvx4244_TRIGGER_TTL2_ENABLE,
+                                        tkvx4244_ERROR_TTL2_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl3, tkvx4244_TRIGGER_TTL3_DISABLE,
-					tkvx4244_TRIGGER_TTL3_ENABLE, tkvx4244_ERROR_TTL3_TRIG);
+                                        tkvx4244_TRIGGER_TTL3_ENABLE,
+                                        tkvx4244_ERROR_TTL3_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl4, tkvx4244_TRIGGER_TTL4_DISABLE,
-					tkvx4244_TRIGGER_TTL4_ENABLE, tkvx4244_ERROR_TTL4_TRIG);
+                                        tkvx4244_TRIGGER_TTL4_ENABLE,
+                                        tkvx4244_ERROR_TTL4_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl5, tkvx4244_TRIGGER_TTL5_DISABLE,
-					tkvx4244_TRIGGER_TTL5_ENABLE, tkvx4244_ERROR_TTL5_TRIG);
+                                        tkvx4244_TRIGGER_TTL5_ENABLE,
+                                        tkvx4244_ERROR_TTL5_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl6, tkvx4244_TRIGGER_TTL6_DISABLE,
-					tkvx4244_TRIGGER_TTL6_ENABLE, tkvx4244_ERROR_TTL6_TRIG);
+                                        tkvx4244_TRIGGER_TTL6_ENABLE,
+                                        tkvx4244_ERROR_TTL6_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl7, tkvx4244_TRIGGER_TTL7_DISABLE,
-					tkvx4244_TRIGGER_TTL7_ENABLE, tkvx4244_ERROR_TTL7_TRIG);
+                                        tkvx4244_TRIGGER_TTL7_ENABLE,
+                                        tkvx4244_ERROR_TTL7_TRIG);
   if (retError)
     return retError;
 
@@ -2149,13 +2280,15 @@ tkvx4244_confGpOneTrigSrcLogic(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "TRIG:%s (@1)\n", trgsrcL[logic]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "TRIG:MASK %s (@1)\n", mask);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -2169,85 +2302,95 @@ tkvx4244_confGpOneTrigSrcLogic(ViSession instrumentHandle,
  *  This function sets various trigger parameters for logic
  *  and source for Group 2.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
- *  ViInt16 external,immediate,threshold,vxicmd-- ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7
- *  ViInt16 logic
- *  Returns:
- *		VI_SUCCESS if no errors occurred, error code otherwise
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
+ *  ViInt16 external,immediate,threshold,vxicmd--
+ *ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7 ViInt16 logic Returns: VI_SUCCESS if
+ *no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpTwoTrigSrcLogic(ViSession instrumentHandle,
-			       ViInt16 logic, ViInt16 external, ViInt16 immediate,
-			       ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0, ViInt16 ttl1,
-			       ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5, ViInt16 ttl6,
-			       ViInt16 ttl7)
+ViStatus _VI_FUNC tkvx4244_confGpTwoTrigSrcLogic(
+    ViSession instrumentHandle, ViInt16 logic, ViInt16 external,
+    ViInt16 immediate, ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0,
+    ViInt16 ttl1, ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5,
+    ViInt16 ttl6, ViInt16 ttl7)
 {
   ViChar mask[10];
   int temp;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for VISA calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for VISA calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the Command */
-  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 + ttl4 + ttl5 + ttl6 +
-       ttl7) == 0)
+  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 +
+       ttl4 + ttl5 + ttl6 + ttl7) == 0)
     return tkvx4244_ERROR_TRIG_SRC_CHOICE;
   retError = tkvx4244_invalidShortRange(logic, tkvx4244_TRIGGER_LOGIC_AND,
-					tkvx4244_TRIGGER_LOGIC_OR, tkvx4244_ERROR_TRIG_LOGIC);
+                                        tkvx4244_TRIGGER_LOGIC_OR,
+                                        tkvx4244_ERROR_TRIG_LOGIC);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(external, tkvx4244_TRIGGER_EXT_DISABLE,
-					tkvx4244_TRIGGER_EXT_ENABLE, tkvx4244_ERROR_EXT_TRIG);
+                                        tkvx4244_TRIGGER_EXT_ENABLE,
+                                        tkvx4244_ERROR_EXT_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(immediate, tkvx4244_TRIGGER_IMM_DISABLE,
-					tkvx4244_TRIGGER_IMM_ENABLE, tkvx4244_ERROR_IMM_TRIG);
+                                        tkvx4244_TRIGGER_IMM_ENABLE,
+                                        tkvx4244_ERROR_IMM_TRIG);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
-					tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
+  retError = tkvx4244_invalidShortRange(
+      threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
+      tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(vxicmd, tkvx4244_TRIGGER_VXI_DISABLE,
-					tkvx4244_TRIGGER_VXI_ENABLE, tkvx4244_ERROR_VXI_TRIG);
+                                        tkvx4244_TRIGGER_VXI_ENABLE,
+                                        tkvx4244_ERROR_VXI_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl0, tkvx4244_TRIGGER_TTL0_DISABLE,
-					tkvx4244_TRIGGER_TTL0_ENABLE, tkvx4244_ERROR_TTL0_TRIG);
+                                        tkvx4244_TRIGGER_TTL0_ENABLE,
+                                        tkvx4244_ERROR_TTL0_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl1, tkvx4244_TRIGGER_TTL1_DISABLE,
-					tkvx4244_TRIGGER_TTL1_ENABLE, tkvx4244_ERROR_TTL1_TRIG);
+                                        tkvx4244_TRIGGER_TTL1_ENABLE,
+                                        tkvx4244_ERROR_TTL1_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl2, tkvx4244_TRIGGER_TTL2_DISABLE,
-					tkvx4244_TRIGGER_TTL2_ENABLE, tkvx4244_ERROR_TTL2_TRIG);
+                                        tkvx4244_TRIGGER_TTL2_ENABLE,
+                                        tkvx4244_ERROR_TTL2_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl3, tkvx4244_TRIGGER_TTL3_DISABLE,
-					tkvx4244_TRIGGER_TTL3_ENABLE, tkvx4244_ERROR_TTL3_TRIG);
+                                        tkvx4244_TRIGGER_TTL3_ENABLE,
+                                        tkvx4244_ERROR_TTL3_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl4, tkvx4244_TRIGGER_TTL4_DISABLE,
-					tkvx4244_TRIGGER_TTL4_ENABLE, tkvx4244_ERROR_TTL4_TRIG);
+                                        tkvx4244_TRIGGER_TTL4_ENABLE,
+                                        tkvx4244_ERROR_TTL4_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl5, tkvx4244_TRIGGER_TTL5_DISABLE,
-					tkvx4244_TRIGGER_TTL5_ENABLE, tkvx4244_ERROR_TTL5_TRIG);
+                                        tkvx4244_TRIGGER_TTL5_ENABLE,
+                                        tkvx4244_ERROR_TTL5_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl6, tkvx4244_TRIGGER_TTL6_DISABLE,
-					tkvx4244_TRIGGER_TTL6_ENABLE, tkvx4244_ERROR_TTL6_TRIG);
+                                        tkvx4244_TRIGGER_TTL6_ENABLE,
+                                        tkvx4244_ERROR_TTL6_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl7, tkvx4244_TRIGGER_TTL7_DISABLE,
-					tkvx4244_TRIGGER_TTL7_ENABLE, tkvx4244_ERROR_TTL7_TRIG);
+                                        tkvx4244_TRIGGER_TTL7_ENABLE,
+                                        tkvx4244_ERROR_TTL7_TRIG);
   if (retError)
     return retError;
 
@@ -2373,13 +2516,15 @@ tkvx4244_confGpTwoTrigSrcLogic(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "TRIG:%s (@2)\n", trgsrcL[logic]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "TRIG:MASK %s (@2)\n", mask);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -2393,85 +2538,95 @@ tkvx4244_confGpTwoTrigSrcLogic(ViSession instrumentHandle,
  *  This function sets various trigger parameters for logic
  *  and source for Group 3.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
- *  ViInt16 external,immediate,threshold,vxicmd-- ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7
- *  ViInt16 logic
- *  Returns:
- *		VI_SUCCESS if no errors occurred, error code otherwise
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
+ *  ViInt16 external,immediate,threshold,vxicmd--
+ *ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7 ViInt16 logic Returns: VI_SUCCESS if
+ *no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpThreeTrigSrcLogic(ViSession instrumentHandle,
-				 ViInt16 logic, ViInt16 external, ViInt16 immediate,
-				 ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0, ViInt16 ttl1,
-				 ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5,
-				 ViInt16 ttl6, ViInt16 ttl7)
+ViStatus _VI_FUNC tkvx4244_confGpThreeTrigSrcLogic(
+    ViSession instrumentHandle, ViInt16 logic, ViInt16 external,
+    ViInt16 immediate, ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0,
+    ViInt16 ttl1, ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5,
+    ViInt16 ttl6, ViInt16 ttl7)
 {
   ViChar mask[10];
   int temp;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the Command */
-  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 + ttl4 + ttl5 + ttl6 +
-       ttl7) == 0)
+  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 +
+       ttl4 + ttl5 + ttl6 + ttl7) == 0)
     return tkvx4244_ERROR_TRIG_SRC_CHOICE;
   retError = tkvx4244_invalidShortRange(logic, tkvx4244_TRIGGER_LOGIC_AND,
-					tkvx4244_TRIGGER_LOGIC_OR, tkvx4244_ERROR_TRIG_LOGIC);
+                                        tkvx4244_TRIGGER_LOGIC_OR,
+                                        tkvx4244_ERROR_TRIG_LOGIC);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(external, tkvx4244_TRIGGER_EXT_DISABLE,
-					tkvx4244_TRIGGER_EXT_ENABLE, tkvx4244_ERROR_EXT_TRIG);
+                                        tkvx4244_TRIGGER_EXT_ENABLE,
+                                        tkvx4244_ERROR_EXT_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(immediate, tkvx4244_TRIGGER_IMM_DISABLE,
-					tkvx4244_TRIGGER_IMM_ENABLE, tkvx4244_ERROR_IMM_TRIG);
+                                        tkvx4244_TRIGGER_IMM_ENABLE,
+                                        tkvx4244_ERROR_IMM_TRIG);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
-					tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
+  retError = tkvx4244_invalidShortRange(
+      threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
+      tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(vxicmd, tkvx4244_TRIGGER_VXI_DISABLE,
-					tkvx4244_TRIGGER_VXI_ENABLE, tkvx4244_ERROR_VXI_TRIG);
+                                        tkvx4244_TRIGGER_VXI_ENABLE,
+                                        tkvx4244_ERROR_VXI_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl0, tkvx4244_TRIGGER_TTL0_DISABLE,
-					tkvx4244_TRIGGER_TTL0_ENABLE, tkvx4244_ERROR_TTL0_TRIG);
+                                        tkvx4244_TRIGGER_TTL0_ENABLE,
+                                        tkvx4244_ERROR_TTL0_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl1, tkvx4244_TRIGGER_TTL1_DISABLE,
-					tkvx4244_TRIGGER_TTL1_ENABLE, tkvx4244_ERROR_TTL1_TRIG);
+                                        tkvx4244_TRIGGER_TTL1_ENABLE,
+                                        tkvx4244_ERROR_TTL1_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl2, tkvx4244_TRIGGER_TTL2_DISABLE,
-					tkvx4244_TRIGGER_TTL2_ENABLE, tkvx4244_ERROR_TTL2_TRIG);
+                                        tkvx4244_TRIGGER_TTL2_ENABLE,
+                                        tkvx4244_ERROR_TTL2_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl3, tkvx4244_TRIGGER_TTL3_DISABLE,
-					tkvx4244_TRIGGER_TTL3_ENABLE, tkvx4244_ERROR_TTL3_TRIG);
+                                        tkvx4244_TRIGGER_TTL3_ENABLE,
+                                        tkvx4244_ERROR_TTL3_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl4, tkvx4244_TRIGGER_TTL4_DISABLE,
-					tkvx4244_TRIGGER_TTL4_ENABLE, tkvx4244_ERROR_TTL4_TRIG);
+                                        tkvx4244_TRIGGER_TTL4_ENABLE,
+                                        tkvx4244_ERROR_TTL4_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl5, tkvx4244_TRIGGER_TTL5_DISABLE,
-					tkvx4244_TRIGGER_TTL5_ENABLE, tkvx4244_ERROR_TTL5_TRIG);
+                                        tkvx4244_TRIGGER_TTL5_ENABLE,
+                                        tkvx4244_ERROR_TTL5_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl6, tkvx4244_TRIGGER_TTL6_DISABLE,
-					tkvx4244_TRIGGER_TTL6_ENABLE, tkvx4244_ERROR_TTL6_TRIG);
+                                        tkvx4244_TRIGGER_TTL6_ENABLE,
+                                        tkvx4244_ERROR_TTL6_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl7, tkvx4244_TRIGGER_TTL7_DISABLE,
-					tkvx4244_TRIGGER_TTL7_ENABLE, tkvx4244_ERROR_TTL7_TRIG);
+                                        tkvx4244_TRIGGER_TTL7_ENABLE,
+                                        tkvx4244_ERROR_TTL7_TRIG);
   if (retError)
     return retError;
 
@@ -2597,13 +2752,15 @@ tkvx4244_confGpThreeTrigSrcLogic(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "TRIG:%s (@3)\n", trgsrcL[logic]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "TRIG:MASK %s (@3)\n", mask);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -2617,85 +2774,95 @@ tkvx4244_confGpThreeTrigSrcLogic(ViSession instrumentHandle,
  *  This function sets various trigger parameters for logic
  *  and source for Group 4.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
- *  ViInt16 external,immediate,threshold,vxicmd-- ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7
- *  ViInt16 logic
- *  Returns:
- *		VI_SUCCESS if no errors occurred, error code otherwise
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
+ *  ViInt16 external,immediate,threshold,vxicmd--
+ *ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7 ViInt16 logic Returns: VI_SUCCESS if
+ *no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpFourTrigSrcLogic(ViSession instrumentHandle,
-				ViInt16 logic, ViInt16 external, ViInt16 immediate,
-				ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0, ViInt16 ttl1,
-				ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5,
-				ViInt16 ttl6, ViInt16 ttl7)
+ViStatus _VI_FUNC tkvx4244_confGpFourTrigSrcLogic(
+    ViSession instrumentHandle, ViInt16 logic, ViInt16 external,
+    ViInt16 immediate, ViInt16 threshold, ViInt16 vxicmd, ViInt16 ttl0,
+    ViInt16 ttl1, ViInt16 ttl2, ViInt16 ttl3, ViInt16 ttl4, ViInt16 ttl5,
+    ViInt16 ttl6, ViInt16 ttl7)
 {
   ViChar mask[10];
   int temp;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the Command */
-  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 + ttl4 + ttl5 + ttl6 +
-       ttl7) == 0)
+  if ((external + immediate + threshold + vxicmd + ttl0 + ttl1 + ttl2 + ttl3 +
+       ttl4 + ttl5 + ttl6 + ttl7) == 0)
     return tkvx4244_ERROR_TRIG_SRC_CHOICE;
   retError = tkvx4244_invalidShortRange(logic, tkvx4244_TRIGGER_LOGIC_AND,
-					tkvx4244_TRIGGER_LOGIC_OR, tkvx4244_ERROR_TRIG_LOGIC);
+                                        tkvx4244_TRIGGER_LOGIC_OR,
+                                        tkvx4244_ERROR_TRIG_LOGIC);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(external, tkvx4244_TRIGGER_EXT_DISABLE,
-					tkvx4244_TRIGGER_EXT_ENABLE, tkvx4244_ERROR_EXT_TRIG);
+                                        tkvx4244_TRIGGER_EXT_ENABLE,
+                                        tkvx4244_ERROR_EXT_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(immediate, tkvx4244_TRIGGER_IMM_DISABLE,
-					tkvx4244_TRIGGER_IMM_ENABLE, tkvx4244_ERROR_IMM_TRIG);
+                                        tkvx4244_TRIGGER_IMM_ENABLE,
+                                        tkvx4244_ERROR_IMM_TRIG);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
-					tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
+  retError = tkvx4244_invalidShortRange(
+      threshold, tkvx4244_TRIGGER_THRESH_DISABLE,
+      tkvx4244_TRIGGER_THRESH_ENABLE, tkvx4244_ERROR_THRE_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(vxicmd, tkvx4244_TRIGGER_VXI_DISABLE,
-					tkvx4244_TRIGGER_VXI_ENABLE, tkvx4244_ERROR_VXI_TRIG);
+                                        tkvx4244_TRIGGER_VXI_ENABLE,
+                                        tkvx4244_ERROR_VXI_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl0, tkvx4244_TRIGGER_TTL0_DISABLE,
-					tkvx4244_TRIGGER_TTL0_ENABLE, tkvx4244_ERROR_TTL0_TRIG);
+                                        tkvx4244_TRIGGER_TTL0_ENABLE,
+                                        tkvx4244_ERROR_TTL0_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl1, tkvx4244_TRIGGER_TTL1_DISABLE,
-					tkvx4244_TRIGGER_TTL1_ENABLE, tkvx4244_ERROR_TTL1_TRIG);
+                                        tkvx4244_TRIGGER_TTL1_ENABLE,
+                                        tkvx4244_ERROR_TTL1_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl2, tkvx4244_TRIGGER_TTL2_DISABLE,
-					tkvx4244_TRIGGER_TTL2_ENABLE, tkvx4244_ERROR_TTL2_TRIG);
+                                        tkvx4244_TRIGGER_TTL2_ENABLE,
+                                        tkvx4244_ERROR_TTL2_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl3, tkvx4244_TRIGGER_TTL3_DISABLE,
-					tkvx4244_TRIGGER_TTL3_ENABLE, tkvx4244_ERROR_TTL3_TRIG);
+                                        tkvx4244_TRIGGER_TTL3_ENABLE,
+                                        tkvx4244_ERROR_TTL3_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl4, tkvx4244_TRIGGER_TTL4_DISABLE,
-					tkvx4244_TRIGGER_TTL4_ENABLE, tkvx4244_ERROR_TTL4_TRIG);
+                                        tkvx4244_TRIGGER_TTL4_ENABLE,
+                                        tkvx4244_ERROR_TTL4_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl5, tkvx4244_TRIGGER_TTL5_DISABLE,
-					tkvx4244_TRIGGER_TTL5_ENABLE, tkvx4244_ERROR_TTL5_TRIG);
+                                        tkvx4244_TRIGGER_TTL5_ENABLE,
+                                        tkvx4244_ERROR_TTL5_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl6, tkvx4244_TRIGGER_TTL6_DISABLE,
-					tkvx4244_TRIGGER_TTL6_ENABLE, tkvx4244_ERROR_TTL6_TRIG);
+                                        tkvx4244_TRIGGER_TTL6_ENABLE,
+                                        tkvx4244_ERROR_TTL6_TRIG);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttl7, tkvx4244_TRIGGER_TTL7_DISABLE,
-					tkvx4244_TRIGGER_TTL7_ENABLE, tkvx4244_ERROR_TTL7_TRIG);
+                                        tkvx4244_TRIGGER_TTL7_ENABLE,
+                                        tkvx4244_ERROR_TTL7_TRIG);
   if (retError)
     return retError;
 
@@ -2821,13 +2988,15 @@ tkvx4244_confGpFourTrigSrcLogic(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "TRIG:%s (@4)\n", trgsrcL[logic]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "TRIG:MASK %s (@4)\n", mask);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -2840,43 +3009,47 @@ tkvx4244_confGpFourTrigSrcLogic(ViSession instrumentHandle,
  * Purpose:
  *  This function synchronizes the clocks for the channel groups.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 source, ttlSource
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
 ViStatus _VI_FUNC tkvx4244_confSynchronousClocks(ViSession instrumentHandle,
-						 ViInt16 source, ViInt16 ttlSource)
+                                                 ViInt16 source,
+                                                 ViInt16 ttlSource)
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the Command */
   retError = tkvx4244_invalidShortRange(source, tkvx4244_CLK_SYNC_POS,
-					tkvx4244_CLK_SYNC_IMM, tkvx4244_ERROR_SYNC_CLK_SRC);
+                                        tkvx4244_CLK_SYNC_IMM,
+                                        tkvx4244_ERROR_SYNC_CLK_SRC);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(ttlSource, tkvx4244_CLK_SYNC_TTLOFF,
-					tkvx4244_CLK_SYNC_TTL7, tkvx4244_ERROR_SYNC_CLK_DEF);
+                                        tkvx4244_CLK_SYNC_TTL7,
+                                        tkvx4244_ERROR_SYNC_CLK_DEF);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "FREQ:SYNC:%s\n", clksynch[source]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "FREQ:SYNC:%s\n", clksynch[ttlSource]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -2889,9 +3062,8 @@ ViStatus _VI_FUNC tkvx4244_confSynchronousClocks(ViSession instrumentHandle,
  * Purpose:
  *  This function allows retrieval of raw data in ASCII.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt32 startingAddress
  *  ViInt16 numberOfSamples, channel
  *  ViChar dataArray
@@ -2899,31 +3071,34 @@ ViStatus _VI_FUNC tkvx4244_confSynchronousClocks(ViSession instrumentHandle,
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
 ViStatus _VI_FUNC tkvx4244_readASCIIData(ViSession instrumentHandle,
-					 ViInt16 numberOfSamples, ViInt32 startingAddress,
-					 ViInt16 channel, ViChar dataArray[])
+                                         ViInt16 numberOfSamples,
+                                         ViInt32 startingAddress,
+                                         ViInt16 channel, ViChar dataArray[])
 {
   static char rdd[12288];
   static int dtt[1000];
   time_t delaytime;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate Command */
-  retError = tkvx4244_invalidShortRange(numberOfSamples, VI_TRUE, 1000, tkvx4244_ERROR_SAMP_CNT);
+  retError = tkvx4244_invalidShortRange(numberOfSamples, VI_TRUE, 1000,
+                                        tkvx4244_ERROR_SAMP_CNT);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(channel, tkvx4244_ANALYZE_CH1,
-					tkvx4244_ANALYZE_CH16, tkvx4244_ERROR_FETCH_CHL);
+                                        tkvx4244_ANALYZE_CH16,
+                                        tkvx4244_ERROR_FETCH_CHL);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidLongRange(startingAddress, -262044L,
-				       262144L, tkvx4244_ERROR_BEGIN_MEM);
+  retError = tkvx4244_invalidLongRange(startingAddress, -262044L, 262144L,
+                                       tkvx4244_ERROR_BEGIN_MEM);
   if (retError)
     return retError;
   if (numberOfSamples < 200)
@@ -2940,14 +3115,16 @@ ViStatus _VI_FUNC tkvx4244_readASCIIData(ViSession instrumentHandle,
   if (numberOfSamples > 700)
     delaytime = 12;
   /* Build the command string */
-  sprintf(cmd, "FETCH:DAT?%hd,%ld(@%hd)\n", numberOfSamples, startingAddress, channel);
+  sprintf(cmd, "FETCH:DAT?%hd,%ld(@%hd)\n", numberOfSamples, startingAddress,
+          channel);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   tkvx4244_sleep(delaytime);
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rdd, 12288, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rdd, 12288, (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   strcpy(dataArray, rdd);
@@ -2961,9 +3138,8 @@ ViStatus _VI_FUNC tkvx4244_readASCIIData(ViSession instrumentHandle,
  * Purpose:
  *  This function allows retrieval of raw data in Binary.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 numberOfSamples:
  *  ViInt32 startingAddress:
  *  ViInt16 channel:
@@ -2972,39 +3148,44 @@ ViStatus _VI_FUNC tkvx4244_readASCIIData(ViSession instrumentHandle,
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
 ViStatus _VI_FUNC tkvx4244_getBinaryData(ViSession instrumentHandle,
-					 ViInt16 numberOfSamples, ViInt32 startingAddress,
-					 ViInt16 channel, ViInt16 response[])
+                                         ViInt16 numberOfSamples,
+                                         ViInt32 startingAddress,
+                                         ViInt16 channel, ViInt16 response[])
 {
   ViInt16 btcnt;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   ViPChar pData;
   ViInt32 i, j;
   ViChar redata;
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate Command */
-  retError = tkvx4244_invalidShortRange(numberOfSamples, 1, 5000, tkvx4244_ERROR_SAMP_CNT);
+  retError = tkvx4244_invalidShortRange(numberOfSamples, 1, 5000,
+                                        tkvx4244_ERROR_SAMP_CNT);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(channel, tkvx4244_ANALYZE_CH1,
-					tkvx4244_ANALYZE_CH16, tkvx4244_ERROR_FETCH_CHL);
+                                        tkvx4244_ANALYZE_CH16,
+                                        tkvx4244_ERROR_FETCH_CHL);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidLongRange(startingAddress, -262044L,
-				       262144L, tkvx4244_ERROR_BEGIN_MEM);
+  retError = tkvx4244_invalidLongRange(startingAddress, -262044L, 262144L,
+                                       tkvx4244_ERROR_BEGIN_MEM);
   if (retError)
     return retError;
   /* Build the command string */
-  sprintf(cmd, "FETCH:BIN?%hd,%ld (@%hd)\n", numberOfSamples, startingAddress, channel);
+  sprintf(cmd, "FETCH:BIN?%hd,%ld (@%hd)\n", numberOfSamples, startingAddress,
+          channel);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -3013,11 +3194,13 @@ ViStatus _VI_FUNC tkvx4244_getBinaryData(ViSession instrumentHandle,
 
   /* Get the response from the instrument */
   viSetAttribute(instrumentHandle, VI_ATTR_TERMCHAR_EN, VI_FALSE);
-  retError = viRead(instrumentHandle, (ViPBuf) response, btcnt, (ViPUInt32) & retCnt);
+  retError =
+      viRead(instrumentHandle, (ViPBuf)response, btcnt, (ViPUInt32)&retCnt);
 
   retCnt /= 2;
-  pData = (char *)response;	/* short(2Byte) array data -> char(1Byte) array */
-  for (i = 0; i < retCnt; i++) {
+  pData = (char *)response; /* short(2Byte) array data -> char(1Byte) array */
+  for (i = 0; i < retCnt; i++)
+  {
     j = 2 * i;
     redata = pData[j];
     pData[j] = pData[j + 1];
@@ -3027,7 +3210,6 @@ ViStatus _VI_FUNC tkvx4244_getBinaryData(ViSession instrumentHandle,
     return retError;
 
   return VI_SUCCESS;
-
 }
 
 /***************************************************************************
@@ -3036,9 +3218,8 @@ ViStatus _VI_FUNC tkvx4244_getBinaryData(ViSession instrumentHandle,
  * Purpose:
  *  This function allows retrieval of raw data in Binary using ViInt16 array.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 numberOfSamples:
  *  ViInt32 startingAddress:
  *  ViInt16 channel:
@@ -3047,49 +3228,56 @@ ViStatus _VI_FUNC tkvx4244_getBinaryData(ViSession instrumentHandle,
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
 ViStatus _VI_FUNC tkvx4244_getBinaryDataSFP(ViSession instrumentHandle,
-					    ViInt16 numberOfSamples, ViInt32 startingAddress,
-					    ViInt16 channel, ViInt16 response[])
+                                            ViInt16 numberOfSamples,
+                                            ViInt32 startingAddress,
+                                            ViInt16 channel,
+                                            ViInt16 response[])
 {
   ViInt16 btcnt;
   ViInt32 ii;
   static ViChar *rdd;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate Command */
-  retError = tkvx4244_invalidShortRange(numberOfSamples, 1, 5000, tkvx4244_ERROR_SAMP_CNT);
+  retError = tkvx4244_invalidShortRange(numberOfSamples, 1, 5000,
+                                        tkvx4244_ERROR_SAMP_CNT);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(channel, tkvx4244_ANALYZE_CH1,
-					tkvx4244_ANALYZE_CH16, tkvx4244_ERROR_FETCH_CHL);
+                                        tkvx4244_ANALYZE_CH16,
+                                        tkvx4244_ERROR_FETCH_CHL);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidLongRange(startingAddress, -262044L,
-				       262144L, tkvx4244_ERROR_BEGIN_MEM);
+  retError = tkvx4244_invalidLongRange(startingAddress, -262044L, 262144L,
+                                       tkvx4244_ERROR_BEGIN_MEM);
   if (retError)
     return retError;
   /* Build the command string */
-  sprintf(cmd, "FETCH:BIN?%hd,%ld (@%hd)\n", numberOfSamples, startingAddress, channel);
+  sprintf(cmd, "FETCH:BIN?%hd,%ld (@%hd)\n", numberOfSamples, startingAddress,
+          channel);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
   /* Get byte count and malloc buffer to fill binary data with */
   btcnt = 2 * numberOfSamples;
 
-  rdd = (ViChar *) malloc(btcnt + 10);
+  rdd = (ViChar *)malloc(btcnt + 10);
 
   /* Get the response from the instrument */
   viSetAttribute(instrumentHandle, VI_ATTR_TERMCHAR_EN, VI_FALSE);
-  retError = viRead(instrumentHandle, (ViPBuf) rdd, btcnt, (ViPUInt32) & retCnt);
-  if (retError < VI_SUCCESS) {
+  retError = viRead(instrumentHandle, (ViPBuf)rdd, btcnt, (ViPUInt32)&retCnt);
+  if (retError < VI_SUCCESS)
+  {
     free(rdd);
     return retError;
   }
@@ -3100,7 +3288,6 @@ ViStatus _VI_FUNC tkvx4244_getBinaryDataSFP(ViSession instrumentHandle,
   free(rdd);
 
   return VI_SUCCESS;
-
 }
 
 /***************************************************************************
@@ -3112,9 +3299,8 @@ ViStatus _VI_FUNC tkvx4244_getBinaryDataSFP(ViSession instrumentHandle,
  * Purpose:
  *  This function allows retrieval of raw data in Binary.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 numberOfSamples:
  *  ViInt32 startingAddress:
  *  ViInt16 channel:
@@ -3122,51 +3308,55 @@ ViStatus _VI_FUNC tkvx4244_getBinaryDataSFP(ViSession instrumentHandle,
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readBinaryData(ViSession instrumentHandle, ViInt16 numberOfSamples,
-			ViInt32 startingAddress, ViInt16 channel, ViChar response[])
+ViStatus _VI_FUNC tkvx4244_readBinaryData(ViSession instrumentHandle,
+                                          ViInt16 numberOfSamples,
+                                          ViInt32 startingAddress,
+                                          ViInt16 channel, ViChar response[])
 {
   ViInt16 btcnt;
   static ViChar rdd[10000];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   btcnt = 2 * numberOfSamples;
   /* Validate Command */
-  retError = tkvx4244_invalidShortRange(numberOfSamples, 1, 5000, tkvx4244_ERROR_SAMP_CNT);
+  retError = tkvx4244_invalidShortRange(numberOfSamples, 1, 5000,
+                                        tkvx4244_ERROR_SAMP_CNT);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(channel, tkvx4244_ANALYZE_CH1,
-					tkvx4244_ANALYZE_CH16, tkvx4244_ERROR_FETCH_CHL);
+                                        tkvx4244_ANALYZE_CH16,
+                                        tkvx4244_ERROR_FETCH_CHL);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidLongRange(startingAddress, -262044L,
-				       262144L, tkvx4244_ERROR_BEGIN_MEM);
+  retError = tkvx4244_invalidLongRange(startingAddress, -262044L, 262144L,
+                                       tkvx4244_ERROR_BEGIN_MEM);
   if (retError)
     return retError;
   /* Build the command string */
-  sprintf(cmd, "FETCH:BIN?%hd,%ld (@%hd)\n", numberOfSamples, startingAddress, channel);
+  sprintf(cmd, "FETCH:BIN?%hd,%ld (@%hd)\n", numberOfSamples, startingAddress,
+          channel);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /*tkvx4244_sleep(VI_TRUE); */
   /* Get the response from the instrument */
   viSetAttribute(instrumentHandle, VI_ATTR_TERMCHAR_EN, VI_FALSE);
-  retError = viRead(instrumentHandle, (ViBuf) rdd, btcnt, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViBuf)rdd, btcnt, (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
 
   memcpy(response, rdd, btcnt);
 
   return VI_SUCCESS;
-
 }
 
 /***************************************************************************
@@ -3175,48 +3365,52 @@ tkvx4244_readBinaryData(ViSession instrumentHandle, ViInt16 numberOfSamples,
  * Purpose:
  *  This function reads the time tag values of the specified group(s).
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 gp1-gp4,all
  *  ViChar timeTag[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readTimetag(ViSession instrumentHandle, ViInt16 gp1, ViInt16 gp2,
-		     ViInt16 gp3, ViInt16 gp4, ViInt16 all, ViChar timeTag[])
+ViStatus _VI_FUNC tkvx4244_readTimetag(ViSession instrumentHandle, ViInt16 gp1,
+                                       ViInt16 gp2, ViInt16 gp3, ViInt16 gp4,
+                                       ViInt16 all, ViChar timeTag[])
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -3226,11 +3420,13 @@ tkvx4244_readTimetag(ViSession instrumentHandle, ViInt16 gp1, ViInt16 gp2,
   /* Build the command string */
   sprintf(cmd, "FETCH:TIME?(%s)\n", gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   strcpy(timeTag, rcv);
@@ -3246,46 +3442,50 @@ tkvx4244_readTimetag(ViSession instrumentHandle, ViInt16 gp1, ViInt16 gp2,
  *  clock outputs.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 groupNumber
  *  ViChar groupOutput[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC tkvx4244_confFrontPanelOutTrig(ViSession instrumentHandle, ViInt16 groupNumber,
-						 ViChar groupOutput[])
+ViStatus _VI_FUNC tkvx4244_confFrontPanelOutTrig(ViSession instrumentHandle,
+                                                 ViInt16 groupNumber,
+                                                 ViChar groupOutput[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate command */
   retError = tkvx4244_invalidShortRange(groupNumber, tkvx4244_GROUP_ONE,
-					tkvx4244_GROUP_FOUR, tkvx4244_ERROR_GROUP_RANGE);
+                                        tkvx4244_GROUP_FOUR,
+                                        tkvx4244_ERROR_GROUP_RANGE);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "OUTP:GROU %hd\n", groupNumber);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "OUTPUT:GROUP?\n");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3301,39 +3501,42 @@ ViStatus _VI_FUNC tkvx4244_confFrontPanelOutTrig(ViSession instrumentHandle, ViI
  * This function queries the instrument for synch clock setups.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 synchronize
  *  ViChar activeLevel[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readSyncClkSource(ViSession instrumentHandle, ViInt16 synchronize, ViChar activeLevel[])
+ViStatus _VI_FUNC tkvx4244_readSyncClkSource(ViSession instrumentHandle,
+                                             ViInt16 synchronize,
+                                             ViChar activeLevel[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /* Validate command */
   retError = tkvx4244_invalidShortRange(synchronize, tkvx4244_SYNC_QUERY_TTL,
-					tkvx4244_SYNC_QUERY_LEVEL, tkvx4244_ERROR_SYNC_CLK_QUERY);
+                                        tkvx4244_SYNC_QUERY_LEVEL,
+                                        tkvx4244_ERROR_SYNC_CLK_QUERY);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "FREQ:SYNC:%s\n", synch_clk[synchronize]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   strcpy(activeLevel, rcv);
@@ -3347,40 +3550,42 @@ tkvx4244_readSyncClkSource(ViSession instrumentHandle, ViInt16 synchronize, ViCh
  * This function queries the instrument for the active channels.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 queryCondition
  *  ViChar list[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readActiveChannels(ViSession instrumentHandle, ViInt16 queryCondition, ViChar list[])
+ViStatus _VI_FUNC tkvx4244_readActiveChannels(ViSession instrumentHandle,
+                                              ViInt16 queryCondition,
+                                              ViChar list[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /* Validate command */
-  retError =
-      tkvx4244_invalidShortRange(queryCondition, tkvx4244_CHAN_QUERY_OPEN,
-				 tkvx4244_CHAN_QUERY_STATE, tkvx4244_ERROR_ACT_CHNL_QUERY);
+  retError = tkvx4244_invalidShortRange(
+      queryCondition, tkvx4244_CHAN_QUERY_OPEN, tkvx4244_CHAN_QUERY_STATE,
+      tkvx4244_ERROR_ACT_CHNL_QUERY);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "ROUT:%s\n", ch_cond[queryCondition]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3404,45 +3609,52 @@ tkvx4244_readActiveChannels(ViSession instrumentHandle, ViInt16 queryCondition, 
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readSampleRates(ViSession instrumentHandle,
-			 ViInt16 definitions, ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4,
-			 ViInt16 all, ViChar response[])
+ViStatus _VI_FUNC tkvx4244_readSampleRates(ViSession instrumentHandle,
+                                           ViInt16 definitions, ViInt16 gp1,
+                                           ViInt16 gp2, ViInt16 gp3,
+                                           ViInt16 gp4, ViInt16 all,
+                                           ViChar response[])
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate command */
-  retError = tkvx4244_invalidShortRange(definitions, tkvx4244_RATE_QUERY_INTERVAL,
-					tkvx4244_RATE_QUERY_SRC, tkvx4244_ERROR_ACT_CHNL_QUERY);
+  retError = tkvx4244_invalidShortRange(
+      definitions, tkvx4244_RATE_QUERY_INTERVAL, tkvx4244_RATE_QUERY_SRC,
+      tkvx4244_ERROR_ACT_CHNL_QUERY);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -3452,11 +3664,13 @@ tkvx4244_readSampleRates(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "FREQ:%s?(%s)\n", samp_rate_defs[definitions], gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3471,49 +3685,53 @@ tkvx4244_readSampleRates(ViSession instrumentHandle,
  * This function reads the collection setup of the specified group(s).
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViChar count[]
  *  ViInt16 gp1-gp4,all
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readCollectionCount(ViSession instrumentHandle,
-			     ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt16 all,
-			     ViChar count[])
+ViStatus _VI_FUNC tkvx4244_readCollectionCount(ViSession instrumentHandle,
+                                               ViInt16 gp1, ViInt16 gp2,
+                                               ViInt16 gp3, ViInt16 gp4,
+                                               ViInt16 all, ViChar count[])
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -3523,11 +3741,13 @@ tkvx4244_readCollectionCount(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "SWEEP:POINTS?(%s)\n", gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3543,53 +3763,59 @@ tkvx4244_readCollectionCount(ViSession instrumentHandle,
  *  specified group(s).
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 armSourceOrMemoryZero
  *  ViChar armOrMemoryZeroResponse[]
  *  ViInt16 gp1-gp4,all
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readArmSrcZero(ViSession instrumentHandle,
-			ViInt16 armSourceOrMemoryZero, ViInt16 gp1, ViInt16 gp2, ViInt16 gp3,
-			ViInt16 gp4, ViInt16 all, ViChar armOrMemoryZeroResponse[])
+ViStatus _VI_FUNC tkvx4244_readArmSrcZero(ViSession instrumentHandle,
+                                          ViInt16 armSourceOrMemoryZero,
+                                          ViInt16 gp1, ViInt16 gp2, ViInt16 gp3,
+                                          ViInt16 gp4, ViInt16 all,
+                                          ViChar armOrMemoryZeroResponse[])
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate command */
-  retError = tkvx4244_invalidShortRange(armSourceOrMemoryZero, 0, 1, tkvx4244_ERROR_ARM_SRC_QUERY);
+  retError = tkvx4244_invalidShortRange(armSourceOrMemoryZero, 0, 1,
+                                        tkvx4244_ERROR_ARM_SRC_QUERY);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -3599,11 +3825,13 @@ tkvx4244_readArmSrcZero(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "ARM:%s (%s)\n", arm_src_type[armSourceOrMemoryZero], gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3618,47 +3846,50 @@ tkvx4244_readArmSrcZero(ViSession instrumentHandle,
  *  This function queries the input voltage ranges of the channels.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 rangeQuery
  *  ViChar inputVoltage[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readInputVoltageSettings(ViSession instrumentHandle,
-				  ViInt16 rangeQuery, ViChar inputVoltage[])
+ViStatus _VI_FUNC tkvx4244_readInputVoltageSettings(ViSession instrumentHandle,
+                                                    ViInt16 rangeQuery,
+                                                    ViChar inputVoltage[])
 {
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(rangeQuery, tkvx4244_VOLT_RANGE_UPPER,
-					tkvx4244_VOLT_RANGE_LOWER, tkvx4244_ERROR_VOLT_RANGE_QUERY);
+                                        tkvx4244_VOLT_RANGE_LOWER,
+                                        tkvx4244_ERROR_VOLT_RANGE_QUERY);
   if (retError)
     return retError;
 
   /* Parse the ch list */
   tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_TRUE, chan);
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_TRUE, chan);
   /* Build the command string */
   sprintf(cmd, "VOLT:RANG:%s? (%s)\n", vlt_type[rangeQuery], chan);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3682,35 +3913,34 @@ tkvx4244_readInputVoltageSettings(ViSession instrumentHandle,
  *  This function queries the input voltage ranges of the channels.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 rang
  *  ViChar answer[]
  *  ViInt16 c1-c16,ca
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC tkvx4244_volt_rang_query(ViSession instrumentHandle, ViInt16 rang, ViInt16 c1,
-					   ViInt16 c2, ViInt16 c3, ViInt16 c4, ViInt16 c5,
-					   ViInt16 c6, ViInt16 c7, ViInt16 c8, ViInt16 c9,
-					   ViInt16 c10, ViInt16 c11, ViInt16 c12, ViInt16 c13,
-					   ViInt16 c14, ViInt16 c15, ViInt16 c16, ViInt16 ca,
-					   ViChar answer[])
+ViStatus _VI_FUNC tkvx4244_volt_rang_query(
+    ViSession instrumentHandle, ViInt16 rang, ViInt16 c1, ViInt16 c2,
+    ViInt16 c3, ViInt16 c4, ViInt16 c5, ViInt16 c6, ViInt16 c7, ViInt16 c8,
+    ViInt16 c9, ViInt16 c10, ViInt16 c11, ViInt16 c12, ViInt16 c13, ViInt16 c14,
+    ViInt16 c15, ViInt16 c16, ViInt16 ca, ViChar answer[])
 {
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError = tkvx4244_invalidShortRange(rang, 0, 1, tkvx4244_ERROR_VOLT_RANGE_QUERY);
+  retError =
+      tkvx4244_invalidShortRange(rang, 0, 1, tkvx4244_ERROR_VOLT_RANGE_QUERY);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(c1, 0, 1, tkvx4244_ERROR_CHAN_ONE);
@@ -3749,10 +3979,12 @@ ViStatus _VI_FUNC tkvx4244_volt_rang_query(ViSession instrumentHandle, ViInt16 r
   retError = tkvx4244_invalidShortRange(c12, 0, 1, tkvx4244_ERROR_CHAN_TWELVE);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(c13, 0, 1, tkvx4244_ERROR_CHAN_THIRTEEN);
+  retError =
+      tkvx4244_invalidShortRange(c13, 0, 1, tkvx4244_ERROR_CHAN_THIRTEEN);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(c14, 0, 1, tkvx4244_ERROR_CHAN_FOURTEEN);
+  retError =
+      tkvx4244_invalidShortRange(c14, 0, 1, tkvx4244_ERROR_CHAN_FOURTEEN);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(c15, 0, 1, tkvx4244_ERROR_CHAN_FIFTEEN);
@@ -3764,20 +3996,23 @@ ViStatus _VI_FUNC tkvx4244_volt_rang_query(ViSession instrumentHandle, ViInt16 r
   retError = tkvx4244_invalidShortRange(ca, 0, 1, tkvx4244_ERROR_ALL_CHAN);
   if (retError)
     return retError;
-  if (ca + c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 + c12 + c13 + c14 + c15 + c16 ==
+  if (ca + c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 + c12 + c13 +
+          c14 + c15 + c16 ==
       VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   /* Parse the ch list */
-  tkvx4244_chlst_parse(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, ca,
-		       chan);
+  tkvx4244_chlst_parse(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13,
+                       c14, c15, c16, ca, chan);
   /* Build the command string */
   sprintf(cmd, "VOLT:RANG:%s? (%s)\n", vlt_type[rang], chan);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3792,9 +4027,8 @@ ViStatus _VI_FUNC tkvx4244_volt_rang_query(ViSession instrumentHandle, ViInt16 r
  * This function sets the active edge of the external clock to either
  * pos true or neg true.  It also sets the source of the Timetag clk.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 slope
  *  ViInt16 timeTag
  *  ViChar clockSlope[],
@@ -3802,52 +4036,58 @@ ViStatus _VI_FUNC tkvx4244_volt_rang_query(ViSession instrumentHandle, ViInt16 r
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confExtClkSlopAndTtag(ViSession instrumentHandle,
-			       ViInt16 slope, ViInt16 timeTag, ViChar clockSlope[],
-			       ViChar timeTagSource[])
+ViStatus _VI_FUNC tkvx4244_confExtClkSlopAndTtag(ViSession instrumentHandle,
+                                                 ViInt16 slope, ViInt16 timeTag,
+                                                 ViChar clockSlope[],
+                                                 ViChar timeTagSource[])
 {
 
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /*Validate command */
-  retError = tkvx4244_invalidShortRange(slope, tkvx4244_SLOPE_POS,
-					tkvx4244_SLOPE_NEG, tkvx4244_ERROR_CLOCK_SLOPE_QUERY);
+  retError =
+      tkvx4244_invalidShortRange(slope, tkvx4244_SLOPE_POS, tkvx4244_SLOPE_NEG,
+                                 tkvx4244_ERROR_CLOCK_SLOPE_QUERY);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(timeTag, tkvx4244_TT_CLK10,
-					tkvx4244_TT_ROSC, tkvx4244_ERROR_CLOCK_TTAG_QUERY);
+  retError =
+      tkvx4244_invalidShortRange(timeTag, tkvx4244_TT_CLK10, tkvx4244_TT_ROSC,
+                                 tkvx4244_ERROR_CLOCK_TTAG_QUERY);
   if (retError)
     return retError;
 
   /* Build the command string */
   sprintf(cmd, "FREQ:%s\n", slopett[slope]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "FREQ:%s\n", slopett[timeTag]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "FREQ:SLOP? \n");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3855,11 +4095,13 @@ tkvx4244_confExtClkSlopAndTtag(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "FREQ:TIME? \n");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3874,35 +4116,36 @@ tkvx4244_confExtClkSlopAndTtag(ViSession instrumentHandle,
  *  This function defines the mask for event status reporting and for
  *  generating VXI Request True interrupts.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 requestEventEnab
  *  ViInt16 maskDefinition
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_eventReqEnable(ViSession instrumentHandle,
-			ViInt16 requestEventEnab, ViInt16 maskDefinition)
+ViStatus _VI_FUNC tkvx4244_eventReqEnable(ViSession instrumentHandle,
+                                          ViInt16 requestEventEnab,
+                                          ViInt16 maskDefinition)
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /* Validate command */
   retError = tkvx4244_invalidShortRange(requestEventEnab, tkvx4244_ENABLE_SRE,
-					tkvx4244_ENABLE_ESE, tkvx4244_ERROR_EVENT_REC_ENAB);
+                                        tkvx4244_ENABLE_ESE,
+                                        tkvx4244_ERROR_EVENT_REC_ENAB);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "%s %hd\n", event_req[requestEventEnab], maskDefinition);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
@@ -3915,39 +4158,42 @@ tkvx4244_eventReqEnable(ViSession instrumentHandle,
  *	This function returns the results of some standard 488.2 queries.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 select4882Command
  *  ViChar get4882Status[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readStatus(ViSession instrumentHandle, ViInt16 select4882Command, ViChar get4882Status[])
+ViStatus _VI_FUNC tkvx4244_readStatus(ViSession instrumentHandle,
+                                      ViInt16 select4882Command,
+                                      ViChar get4882Status[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /* Validate command */
-  retError = tkvx4244_invalidShortRange(select4882Command, tkvx4244_QUERY_IDN,
-					tkvx4244_QUERY_ESE, tkvx4244_ERROR_4882_QUERY);
+  retError =
+      tkvx4244_invalidShortRange(select4882Command, tkvx4244_QUERY_IDN,
+                                 tkvx4244_QUERY_ESE, tkvx4244_ERROR_4882_QUERY);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "%s\n", read_status[select4882Command]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -3963,9 +4209,8 @@ tkvx4244_readStatus(ViSession instrumentHandle, ViInt16 select4882Command, ViCha
  *  parameters are maximum, minimum, average, positive transition and
  *  negative transition.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 measurement:
  *  ViInt32 numberOfSamples:
  *  ViInt32 startingAddress:
@@ -3974,47 +4219,51 @@ tkvx4244_readStatus(ViSession instrumentHandle, ViInt16 select4882Command, ViCha
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readPostprocessCalc(ViSession instrumentHandle,
-			     ViInt16 measurement, ViInt32 numberOfSamples, ViInt32 startingAddress,
-			     ViInt16 channel, ViChar response[])
+ViStatus _VI_FUNC tkvx4244_readPostprocessCalc(
+    ViSession instrumentHandle, ViInt16 measurement, ViInt32 numberOfSamples,
+    ViInt32 startingAddress, ViInt16 channel, ViChar response[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate command */
-  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144L, tkvx4244_ERROR_DATA_BEG_MEM);
+  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144L,
+                                       tkvx4244_ERROR_DATA_BEG_MEM);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidLongRange(startingAddress, -262000L,
-				       262144L, tkvx4244_ERROR_DATA_SAMPS);
+  retError = tkvx4244_invalidLongRange(startingAddress, -262000L, 262144L,
+                                       tkvx4244_ERROR_DATA_SAMPS);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(measurement, tkvx4244_ANALYZE_MIN,
-					tkvx4244_ANALYZE_TRMS, tkvx4244_ERROR_DATA_TYPE);
+                                        tkvx4244_ANALYZE_TRMS,
+                                        tkvx4244_ERROR_DATA_TYPE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(channel, tkvx4244_ANALYZE_CH1,
-					tkvx4244_ANALYZE_CH16, tkvx4244_ERROR_DATA_CHAN);
+                                        tkvx4244_ANALYZE_CH16,
+                                        tkvx4244_ERROR_DATA_CHAN);
   if (retError)
     return retError;
 
   /* Build the command string */
   sprintf(cmd, "FETCH:%s? %ld,%ld(@%hd)\n", process[measurement],
-	  numberOfSamples, startingAddress, channel);
+          numberOfSamples, startingAddress, channel);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   tkvx4244_sleep(1);
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -4028,46 +4277,51 @@ tkvx4244_readPostprocessCalc(ViSession instrumentHandle,
  * Purpose:
  *  This function aborts the collection process on the designated groups.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 gp1-gp4,all
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_initStopMeasurementCycle(ViSession instrumentHandle,
-				  ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt16 all)
+ViStatus _VI_FUNC tkvx4244_initStopMeasurementCycle(ViSession instrumentHandle,
+                                                    ViInt16 gp1, ViInt16 gp2,
+                                                    ViInt16 gp3, ViInt16 gp4,
+                                                    ViInt16 all)
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -4077,7 +4331,8 @@ tkvx4244_initStopMeasurementCycle(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "ABORT (%s)\n", gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
@@ -4099,49 +4354,57 @@ tkvx4244_initStopMeasurementCycle(ViSession instrumentHandle,
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confMastertrigOut(ViSession instrumentHandle,
-			   ViInt16 outputSelect, ViInt16 logic, ViInt16 slope, ViInt16 gp1,
-			   ViInt16 gp2, ViInt16 gp3, ViInt16 gp4)
+ViStatus _VI_FUNC tkvx4244_confMastertrigOut(ViSession instrumentHandle,
+                                             ViInt16 outputSelect,
+                                             ViInt16 logic, ViInt16 slope,
+                                             ViInt16 gp1, ViInt16 gp2,
+                                             ViInt16 gp3, ViInt16 gp4)
 {
   ViChar slpp[5];
   ViChar mask[10];
   ViInt16 temp;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate command */
   retError = tkvx4244_invalidShortRange(outputSelect, tkvx4244_TTLTRIG0,
-					tkvx4244_TTL_TRIGGER_OFF, tkvx4244_ERROR_OUT_TRG_TYPE);
+                                        tkvx4244_TTL_TRIGGER_OFF,
+                                        tkvx4244_ERROR_OUT_TRG_TYPE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(logic, tkvx4244_TRIGGER_LOGIC_AND,
-					tkvx4244_TRIGGER_LOGIC_OR, tkvx4244_ERROR_OUT_TRG_LOGIC);
+                                        tkvx4244_TRIGGER_LOGIC_OR,
+                                        tkvx4244_ERROR_OUT_TRG_LOGIC);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(slope, tkvx4244_SLOPE_POS,
-					tkvx4244_SLOPE_NEG, tkvx4244_ERROR_OUT_TRG_SLOPE);
+  retError =
+      tkvx4244_invalidShortRange(slope, tkvx4244_SLOPE_POS, tkvx4244_SLOPE_NEG,
+                                 tkvx4244_ERROR_OUT_TRG_SLOPE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   if (gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -4197,35 +4460,39 @@ tkvx4244_confMastertrigOut(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "OUTP:TRIG:%s\n", trgsrcL[logic]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "OUTP:TRIG:MASK %s\n", mask);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "OUTP:TRIG:SLOP %s\n", slpp);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "OUTP:TRIG:%s\n", out_select[outputSelect]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "OUTP:TRIG:LOAD\n");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
-
 }
 
 /***************************************************************************
@@ -4246,46 +4513,53 @@ tkvx4244_confMastertrigOut(ViSession instrumentHandle,
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confTriggerThreshold(ViSession instrumentHandle, ViInt16 thresholdDescriptor,
-			      ViReal64 voltageLevel, ViInt16 group1, ViInt16 group2, ViInt16 group3,
-			      ViInt16 group4)
+ViStatus _VI_FUNC tkvx4244_confTriggerThreshold(ViSession instrumentHandle,
+                                                ViInt16 thresholdDescriptor,
+                                                ViReal64 voltageLevel,
+                                                ViInt16 group1, ViInt16 group2,
+                                                ViInt16 group3,
+                                                ViInt16 group4)
 {
   ViChar loc[20];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(group1, tkvx4244_GROUP_CHAN_ONE,
-					tkvx4244_GROUP_CHAN_OFF, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_CHAN_OFF,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(group2, tkvx4244_GROUP_CHAN_ONE,
-					tkvx4244_GROUP_CHAN_OFF, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_CHAN_OFF,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(group3, tkvx4244_GROUP_CHAN_ONE,
-					tkvx4244_GROUP_CHAN_OFF, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_CHAN_OFF,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(group4, tkvx4244_GROUP_CHAN_ONE,
-					tkvx4244_GROUP_CHAN_OFF, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_CHAN_OFF,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   if (group1 + group2 + group3 + group4 == 16)
     return tkvx4244_NO_GRPS_SELECTED_ERROR;
-  retError = tkvx4244_invalidShortRange(thresholdDescriptor,
-					tkvx4244_THRESH_POS_SLOPE, tkvx4244_THRESH_LESS_THAN,
-					tkvx4244_ERROR_THRESH_TYPE);
+  retError = tkvx4244_invalidShortRange(
+      thresholdDescriptor, tkvx4244_THRESH_POS_SLOPE, tkvx4244_THRESH_LESS_THAN,
+      tkvx4244_ERROR_THRESH_TYPE);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidRealRange(voltageLevel, -20.0, 20.0, tkvx4244_ERROR_THRESH_LEVEL);
+  retError = tkvx4244_invalidRealRange(voltageLevel, -20.0, 20.0,
+                                       tkvx4244_ERROR_THRESH_LEVEL);
   if (retError)
     return retError;
 
@@ -4293,13 +4567,14 @@ tkvx4244_confTriggerThreshold(ViSession instrumentHandle, ViInt16 thresholdDescr
   if (strlen(loc) < 2)
     return -3;
   /* Build the command string */
-  sprintf(cmd, "TRIG:THRE:%s %f (@%s)\n", thrshCmd[thresholdDescriptor], voltageLevel, loc);
+  sprintf(cmd, "TRIG:THRE:%s %f (@%s)\n", thrshCmd[thresholdDescriptor],
+          voltageLevel, loc);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
-
 }
 
 /***************************************************************************
@@ -4308,59 +4583,64 @@ tkvx4244_confTriggerThreshold(ViSession instrumentHandle, ViInt16 thresholdDescr
  * Purpose:
  *  This function defines various conditions for arming the group triggers .
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 source
  *  ViInt16 memoryZero
  *  ViInt16 gp1-gp4,allGroups
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confArmSrcMemZero(ViSession instrumentHandle, ViInt16 source,
-			   ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt16 allGroups,
-			   ViInt16 memoryZero)
+ViStatus _VI_FUNC tkvx4244_confArmSrcMemZero(ViSession instrumentHandle,
+                                             ViInt16 source, ViInt16 gp1,
+                                             ViInt16 gp2, ViInt16 gp3,
+                                             ViInt16 gp4, ViInt16 allGroups,
+                                             ViInt16 memoryZero)
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(source, tkvx4244_EXTERNAL_ARM, tkvx4244_IMMEDIATE_ARM,
-				 tkvx4244_ERROR_EXT_ARM_SLP);
+  retError = tkvx4244_invalidShortRange(source, tkvx4244_EXTERNAL_ARM,
+                                        tkvx4244_IMMEDIATE_ARM,
+                                        tkvx4244_ERROR_EXT_ARM_SLP);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(memoryZero, tkvx4244_MEMORY_ZERO_ON, tkvx4244_MEMORY_ZERO_OFF,
-				 tkvx4244_ERROR_EXT_ARM_ZERO);
+  retError = tkvx4244_invalidShortRange(memoryZero, tkvx4244_MEMORY_ZERO_ON,
+                                        tkvx4244_MEMORY_ZERO_OFF,
+                                        tkvx4244_ERROR_EXT_ARM_ZERO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(allGroups, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (allGroups + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -4370,13 +4650,15 @@ tkvx4244_confArmSrcMemZero(ViSession instrumentHandle, ViInt16 source,
   /* Build the command string */
   sprintf(cmd, "ARM:%s (%s)\n", arm_slopZ[memoryZero], gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "ARM:SOUR %s (%s)\n", ext[source], gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
@@ -4388,47 +4670,50 @@ tkvx4244_confArmSrcMemZero(ViSession instrumentHandle, ViInt16 source,
  * Purpose:
  *  This function controls the LED display on the face plate of the card.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViChar groupDisplayed[]
  *  ViInt16 groupNumber
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confFrontPanelDisplay(ViSession instrumentHandle,
-			       ViInt16 groupNumber, ViChar groupDisplayed[])
+ViStatus _VI_FUNC tkvx4244_confFrontPanelDisplay(ViSession instrumentHandle,
+                                                 ViInt16 groupNumber,
+                                                 ViChar groupDisplayed[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate command */
-  retError = tkvx4244_invalidShortRange(groupNumber, tkvx4244_GROUP_ONE,
-					tkvx4244_GROUP_FOUR, tkvx4244_ERROR_GROUP);
+  retError =
+      tkvx4244_invalidShortRange(groupNumber, tkvx4244_GROUP_ONE,
+                                 tkvx4244_GROUP_FOUR, tkvx4244_ERROR_GROUP);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "DISP:GROUP%hd\n", groupNumber);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "DISP:GROUP?\n");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -4443,63 +4728,64 @@ tkvx4244_confFrontPanelDisplay(ViSession instrumentHandle,
  *  This function sets the input voltage ranges of the channels
  *  in Group 1.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 voltageRange,ch1-ch4
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpOneVoltageRange(ViSession instrumentHandle,
-			       ViInt16 ch1, ViInt16 ch2, ViInt16 ch3, ViInt16 ch4,
-			       ViInt16 voltageRange)
+ViStatus _VI_FUNC tkvx4244_confGpOneVoltageRange(ViSession instrumentHandle,
+                                                 ViInt16 ch1, ViInt16 ch2,
+                                                 ViInt16 ch3, ViInt16 ch4,
+                                                 ViInt16 voltageRange)
 {
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
-					tkvx4244_VOLT_RANGE_20VOLT, tkvx4244_ERROR_INPUT_VOLT);
+                                        tkvx4244_VOLT_RANGE_20VOLT,
+                                        tkvx4244_ERROR_INPUT_VOLT);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch1, tkvx4244_CH_ONE_DISABLE, tkvx4244_CH_ONE_ENABLE,
-				 tkvx4244_ERROR_CHAN_ONE);
+  retError = tkvx4244_invalidShortRange(ch1, tkvx4244_CH_ONE_DISABLE,
+                                        tkvx4244_CH_ONE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_ONE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch2, tkvx4244_CH_TWO_DISABLE, tkvx4244_CH_TWO_ENABLE,
-				 tkvx4244_ERROR_CHAN_TWO);
+  retError = tkvx4244_invalidShortRange(ch2, tkvx4244_CH_TWO_DISABLE,
+                                        tkvx4244_CH_TWO_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TWO);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch3, tkvx4244_CH_THREE_DISABLE, tkvx4244_CH_THREE_ENABLE,
-				 tkvx4244_ERROR_CHAN_THREE);
+  retError = tkvx4244_invalidShortRange(ch3, tkvx4244_CH_THREE_DISABLE,
+                                        tkvx4244_CH_THREE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_THREE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch4, tkvx4244_CH_FOUR_DISABLE, tkvx4244_CH_FOUR_ENABLE,
-				 tkvx4244_ERROR_CHAN_FOUR);
+  retError = tkvx4244_invalidShortRange(ch4, tkvx4244_CH_FOUR_DISABLE,
+                                        tkvx4244_CH_FOUR_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FOUR);
   if (retError)
     return retError;
   if ((ch1 + ch2 + ch3 + ch4) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
-/* Parse the ch list */
-  tkvx4244_chlst_parse(ch1, ch2, ch3, ch4, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
+  /* Parse the ch list */
+  tkvx4244_chlst_parse(ch1, ch2, ch3, ch4, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
 
   sprintf(cmd, "VOLT:RANG %3.1f (%s)\n", range[voltageRange], chan);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
@@ -4512,64 +4798,64 @@ tkvx4244_confGpOneVoltageRange(ViSession instrumentHandle,
  *  This function sets the input voltage ranges of the channels
  *  in Group 2.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 voltageRange,ch5-ch8
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpTwoVoltageRange(ViSession instrumentHandle,
-			       ViInt16 ch5, ViInt16 ch6, ViInt16 ch7, ViInt16 ch8,
-			       ViInt16 voltageRange)
+ViStatus _VI_FUNC tkvx4244_confGpTwoVoltageRange(ViSession instrumentHandle,
+                                                 ViInt16 ch5, ViInt16 ch6,
+                                                 ViInt16 ch7, ViInt16 ch8,
+                                                 ViInt16 voltageRange)
 {
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
-				 tkvx4244_VOLT_RANGE_20VOLT, tkvx4244_ERROR_INPUT_VOLT);
+  retError = tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
+                                        tkvx4244_VOLT_RANGE_20VOLT,
+                                        tkvx4244_ERROR_INPUT_VOLT);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch5, tkvx4244_CH_FIVE_DISABLE, tkvx4244_CH_FIVE_ENABLE,
-				 tkvx4244_ERROR_CHAN_FIVE);
+  retError = tkvx4244_invalidShortRange(ch5, tkvx4244_CH_FIVE_DISABLE,
+                                        tkvx4244_CH_FIVE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FIVE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch6, tkvx4244_CH_SIX_DISABLE, tkvx4244_CH_SIX_ENABLE,
-				 tkvx4244_ERROR_CHAN_SIX);
+  retError = tkvx4244_invalidShortRange(ch6, tkvx4244_CH_SIX_DISABLE,
+                                        tkvx4244_CH_SIX_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SIX);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch7, tkvx4244_CH_SEVEN_DISABLE, tkvx4244_CH_SEVEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_SEVEN);
+  retError = tkvx4244_invalidShortRange(ch7, tkvx4244_CH_SEVEN_DISABLE,
+                                        tkvx4244_CH_SEVEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SEVEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch8, tkvx4244_CH_EIGHT_DISABLE, tkvx4244_CH_EIGHT_ENABLE,
-				 tkvx4244_ERROR_CHAN_EIGHT);
+  retError = tkvx4244_invalidShortRange(ch8, tkvx4244_CH_EIGHT_DISABLE,
+                                        tkvx4244_CH_EIGHT_ENABLE,
+                                        tkvx4244_ERROR_CHAN_EIGHT);
   if (retError)
     return retError;
   if ((ch5 + ch6 + ch7 + ch8) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   /* Parse the ch list */
-  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       ch5, ch6, ch7, ch8, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
+  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, ch5, ch6, ch7,
+                       ch8, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
 
   sprintf(cmd, "VOLT:RANG %f (%s)\n", range[voltageRange], chan);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
@@ -4582,64 +4868,64 @@ tkvx4244_confGpTwoVoltageRange(ViSession instrumentHandle,
  *  This function sets the input voltage ranges of the channels
  *  in Group 3.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 voltageRange,ch9-ch12
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpThreeVoltageRange(ViSession instrumentHandle,
-				 ViInt16 ch9, ViInt16 ch10, ViInt16 ch11, ViInt16 ch12,
-				 ViInt16 voltageRange)
+ViStatus _VI_FUNC tkvx4244_confGpThreeVoltageRange(ViSession instrumentHandle,
+                                                   ViInt16 ch9, ViInt16 ch10,
+                                                   ViInt16 ch11, ViInt16 ch12,
+                                                   ViInt16 voltageRange)
 {
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
-				 tkvx4244_VOLT_RANGE_20VOLT, tkvx4244_ERROR_INPUT_VOLT);
+  retError = tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
+                                        tkvx4244_VOLT_RANGE_20VOLT,
+                                        tkvx4244_ERROR_INPUT_VOLT);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch9, tkvx4244_CH_NINE_DISABLE, tkvx4244_CH_NINE_ENABLE,
-				 tkvx4244_ERROR_CHAN_NINE);
+  retError = tkvx4244_invalidShortRange(ch9, tkvx4244_CH_NINE_DISABLE,
+                                        tkvx4244_CH_NINE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_NINE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch10, tkvx4244_CH_TEN_DISABLE, tkvx4244_CH_TEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_TEN);
+  retError = tkvx4244_invalidShortRange(ch10, tkvx4244_CH_TEN_DISABLE,
+                                        tkvx4244_CH_TEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch11, tkvx4244_CH_ELEVEN_DISABLE, tkvx4244_CH_ELEVEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_ELEVEN);
+  retError = tkvx4244_invalidShortRange(ch11, tkvx4244_CH_ELEVEN_DISABLE,
+                                        tkvx4244_CH_ELEVEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_ELEVEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch12, tkvx4244_CH_TWELVE_DISABLE, tkvx4244_CH_TWELVE_ENABLE,
-				 tkvx4244_ERROR_CHAN_TWELVE);
+  retError = tkvx4244_invalidShortRange(ch12, tkvx4244_CH_TWELVE_DISABLE,
+                                        tkvx4244_CH_TWELVE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TWELVE);
   if (retError)
     return retError;
   if ((ch9 + ch10 + ch11 + ch12) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   /* Parse the ch list */
-  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, ch9, ch10, ch11, ch12,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
+  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, ch9, ch10, ch11, ch12,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
 
   sprintf(cmd, "VOLT:RANG %f (%s)\n", range[voltageRange], chan);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
@@ -4652,64 +4938,65 @@ tkvx4244_confGpThreeVoltageRange(ViSession instrumentHandle,
  *  This function sets the input voltage ranges of the channels
  *  in Group 4.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 voltageRange,ch13-ch16
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGpFourVoltageRange(ViSession instrumentHandle,
-				ViInt16 ch13, ViInt16 ch14, ViInt16 ch15, ViInt16 ch16,
-				ViInt16 voltageRange)
+ViStatus _VI_FUNC tkvx4244_confGpFourVoltageRange(ViSession instrumentHandle,
+                                                  ViInt16 ch13, ViInt16 ch14,
+                                                  ViInt16 ch15, ViInt16 ch16,
+                                                  ViInt16 voltageRange)
 {
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
-				 tkvx4244_VOLT_RANGE_20VOLT, tkvx4244_ERROR_INPUT_VOLT);
+  retError = tkvx4244_invalidShortRange(voltageRange, tkvx4244_VOLT_RANGE_200MV,
+                                        tkvx4244_VOLT_RANGE_20VOLT,
+                                        tkvx4244_ERROR_INPUT_VOLT);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch13, tkvx4244_CH_THIRTEEN_DISABLE, tkvx4244_CH_THIRTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_THIRTEEN);
+  retError = tkvx4244_invalidShortRange(ch13, tkvx4244_CH_THIRTEEN_DISABLE,
+                                        tkvx4244_CH_THIRTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_THIRTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch14, tkvx4244_CH_FOURTEEN_DISABLE, tkvx4244_CH_FOURTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_FOURTEEN);
+  retError = tkvx4244_invalidShortRange(ch14, tkvx4244_CH_FOURTEEN_DISABLE,
+                                        tkvx4244_CH_FOURTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FOURTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch15, tkvx4244_CH_FIFTEEN_DISABLE, tkvx4244_CH_FIFTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_FIFTEEN);
+  retError = tkvx4244_invalidShortRange(ch15, tkvx4244_CH_FIFTEEN_DISABLE,
+                                        tkvx4244_CH_FIFTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FIFTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch16, tkvx4244_CH_SIXTEEN_DISABLE, tkvx4244_CH_SIXTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_SIXTEEN);
+  retError = tkvx4244_invalidShortRange(ch16, tkvx4244_CH_SIXTEEN_DISABLE,
+                                        tkvx4244_CH_SIXTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SIXTEEN);
   if (retError)
     return retError;
   if ((ch13 + ch14 + ch15 + ch16) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   /* Parse the ch list */
-  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, ch13, ch14, ch15, ch16, VI_FALSE, chan);
+  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, ch13, ch14, ch15, ch16, VI_FALSE,
+                       chan);
 
   sprintf(cmd, "VOLT:RANG %f (%s)\n", range[voltageRange], chan);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
@@ -4729,28 +5016,29 @@ tkvx4244_confGpFourVoltageRange(ViSession instrumentHandle,
  *
  *  This function sets the input voltage ranges of the channels.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 vlts,c1-c16,ca
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC tkvx4244_volt_rang(ViSession instrumentHandle, ViInt16 vlts, ViInt16 c1,
-				     ViInt16 c2, ViInt16 c3, ViInt16 c4, ViInt16 c5, ViInt16 c6,
-				     ViInt16 c7, ViInt16 c8, ViInt16 c9, ViInt16 c10, ViInt16 c11,
-				     ViInt16 c12, ViInt16 c13, ViInt16 c14, ViInt16 c15,
-				     ViInt16 c16, ViInt16 ca)
+ViStatus _VI_FUNC tkvx4244_volt_rang(ViSession instrumentHandle, ViInt16 vlts,
+                                     ViInt16 c1, ViInt16 c2, ViInt16 c3,
+                                     ViInt16 c4, ViInt16 c5, ViInt16 c6,
+                                     ViInt16 c7, ViInt16 c8, ViInt16 c9,
+                                     ViInt16 c10, ViInt16 c11, ViInt16 c12,
+                                     ViInt16 c13, ViInt16 c14, ViInt16 c15,
+                                     ViInt16 c16, ViInt16 ca)
 {
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(vlts, 0, 6, tkvx4244_ERROR_INPUT_VOLT);
@@ -4792,10 +5080,12 @@ ViStatus _VI_FUNC tkvx4244_volt_rang(ViSession instrumentHandle, ViInt16 vlts, V
   retError = tkvx4244_invalidShortRange(c12, 0, 1, tkvx4244_ERROR_CHAN_TWELVE);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(c13, 0, 1, tkvx4244_ERROR_CHAN_THIRTEEN);
+  retError =
+      tkvx4244_invalidShortRange(c13, 0, 1, tkvx4244_ERROR_CHAN_THIRTEEN);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(c14, 0, 1, tkvx4244_ERROR_CHAN_FOURTEEN);
+  retError =
+      tkvx4244_invalidShortRange(c14, 0, 1, tkvx4244_ERROR_CHAN_FOURTEEN);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(c15, 0, 1, tkvx4244_ERROR_CHAN_FIFTEEN);
@@ -4807,20 +5097,21 @@ ViStatus _VI_FUNC tkvx4244_volt_rang(ViSession instrumentHandle, ViInt16 vlts, V
   retError = tkvx4244_invalidShortRange(ca, 0, 1, tkvx4244_ERROR_ALL_CHAN);
   if (retError)
     return retError;
-  if (ca + c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 + c12 + c13 + c14 + c15 + c16 ==
+  if (ca + c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 + c12 + c13 +
+          c14 + c15 + c16 ==
       VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   /* Parse the ch list */
-  tkvx4244_chlst_parse(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, ca,
-		       chan);
+  tkvx4244_chlst_parse(c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13,
+                       c14, c15, c16, ca, chan);
   /* Build the command string */
   sprintf(cmd, "VOLT:RANG %f (%s)\n", range[vlts], chan);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   return VI_SUCCESS;
-
 }
 
 /***************************************************************************
@@ -4829,9 +5120,8 @@ ViStatus _VI_FUNC tkvx4244_volt_rang(ViSession instrumentHandle, ViInt16 vlts, V
  * Purpose:
  *  This function sets the Interval or frequency for the selected groups.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 source:
  *  ViInt16 intervalFrequency:
  *  ViReal64 samplingRate:
@@ -4839,56 +5129,67 @@ ViStatus _VI_FUNC tkvx4244_volt_rang(ViSession instrumentHandle, ViInt16 vlts, V
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confSamplingInterval(ViSession instrumentHandle,
-			      ViInt16 source, ViInt16 intervalFrequency, ViReal64 * samplingRate,
-			      ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt16 allGroups)
+ViStatus _VI_FUNC tkvx4244_confSamplingInterval(
+    ViSession instrumentHandle, ViInt16 source, ViInt16 intervalFrequency,
+    ViReal64 *samplingRate, ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4,
+    ViInt16 allGroups)
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
   retError = tkvx4244_invalidShortRange(source, 0, 1, tkvx4244_ERROR_EXT_FREQ);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(intervalFrequency, 0, 1, tkvx4244_ERROR_FREQ_TYPE);
+  retError = tkvx4244_invalidShortRange(intervalFrequency, 0, 1,
+                                        tkvx4244_ERROR_FREQ_TYPE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(allGroups, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (allGroups + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
     return tkvx4244_NO_GRPS_SELECTED_ERROR;
-  if (*samplingRate > 1.0) {
-    retError = tkvx4244_invalidRealRange(*samplingRate, 30.6372, 200000.0, tkvx4244_ERROR_FREQ);
+  if (*samplingRate > 1.0)
+  {
+    retError = tkvx4244_invalidRealRange(*samplingRate, 30.6372, 200000.0,
+                                         tkvx4244_ERROR_FREQ);
     if (retError)
       return retError;
-  } else {
-    retError = tkvx4244_invalidRealRange(*samplingRate, 0.000005, 0.03264, tkvx4244_ERROR_FREQ);
+  }
+  else
+  {
+    retError = tkvx4244_invalidRealRange(*samplingRate, 0.000005, 0.03264,
+                                         tkvx4244_ERROR_FREQ);
     if (retError)
       return retError;
   }
@@ -4899,24 +5200,31 @@ tkvx4244_confSamplingInterval(ViSession instrumentHandle,
   /* Parse the gp list */
   tkvx4244_gplist_parse(gp1, gp2, gp3, gp4, allGroups, gplst);
 
-  if (source) {
+  if (source)
+  {
     /* Build the command string */
     sprintf(cmd, "FREQ:SOUR %s (%s)\n", smpclk[source], gplst);
     /* Send the command string */
-    retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+    retError =
+        viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
     if (retError)
       return retError;
     /* Build the command string */
-    sprintf(cmd, "FREQ:%s%f (%s)\n", freqinval[intervalFrequency], *samplingRate, gplst);
+    sprintf(cmd, "FREQ:%s%f (%s)\n", freqinval[intervalFrequency],
+            *samplingRate, gplst);
     /* Send the command string */
-    retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+    retError =
+        viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
     if (retError)
       return retError;
-  } else {
+  }
+  else
+  {
     /* Build the command string */
     sprintf(cmd, "FREQ:SOUR %s (%s)\n", smpclk[source], gplst);
     /* Send the command string */
-    retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+    retError =
+        viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
     if (retError)
       return retError;
   }
@@ -4930,62 +5238,68 @@ tkvx4244_confSamplingInterval(ViSession instrumentHandle,
  *    This function sets up the digitizer for FDC protocol.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *		ViInt16 FDCmode
- *		ViInt16 gp1,ViInt16 gp2,ViInt16 gp3,ViInt16 gp4,ViInt16 allGroups
- *		ViInt32 fdcBufferSize
- *      ViInt32 startingAddress
- *  Returns:
- *		VI_SUCCESS if no errors occurred, error code otherwise
+ *		ViInt16 gp1,ViInt16 gp2,ViInt16 gp3,ViInt16 gp4,ViInt16
+ *allGroups ViInt32 fdcBufferSize ViInt32 startingAddress Returns: VI_SUCCESS if
+ *no errors occurred, error code otherwise
  */
 ViStatus _VI_FUNC tkvx4244_confFDCTransfer(ViSession instrumentHandle,
-					   ViInt16 fdcMode, ViInt16 gp1, ViInt16 gp2, ViInt16 gp3,
-					   ViInt16 gp4, ViInt16 allGroups, ViInt32 fdcBufferSize,
-					   ViInt32 startingAddress)
+                                           ViInt16 fdcMode, ViInt16 gp1,
+                                           ViInt16 gp2, ViInt16 gp3,
+                                           ViInt16 gp4, ViInt16 allGroups,
+                                           ViInt32 fdcBufferSize,
+                                           ViInt32 startingAddress)
 {
 
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
   if (retError < VI_SUCCESS)
     return retError;
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
-  retError = tkvx4244_invalidShortRange(fdcMode, tkvx4244_FDC_IMM,
-					tkvx4244_FDC_OFF, tkvx4244_ERROR_FDC_MODE);
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
+  retError = tkvx4244_invalidShortRange(
+      fdcMode, tkvx4244_FDC_IMM, tkvx4244_FDC_OFF, tkvx4244_ERROR_FDC_MODE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(allGroups, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   retError = tkvx4244_invalidLongRange(fdcBufferSize, tkvx4244_FDC_BUF_2K,
-				       tkvx4244_FDC_BUF_256K, tkvx4244_ERROR_FDC_BUF_SIZE);
+                                       tkvx4244_FDC_BUF_256K,
+                                       tkvx4244_ERROR_FDC_BUF_SIZE);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidLongRange(startingAddress, -262143, 262145, tkvx4244_ERROR_MEM_ADDR);
+  retError = tkvx4244_invalidLongRange(startingAddress, -262143, 262145,
+                                       tkvx4244_ERROR_MEM_ADDR);
   if (retError)
     return retError;
 
@@ -4996,18 +5310,20 @@ ViStatus _VI_FUNC tkvx4244_confFDCTransfer(ViSession instrumentHandle,
 
   if (fdcMode <= 1)
     sprintf(cmd, "vxi:fdc:mode %s %ld,%ld (%s)\n", fdc_mode[fdcMode],
-	    fdcBufferSize, startingAddress, gplst);
+            fdcBufferSize, startingAddress, gplst);
   else
     sprintf(cmd, "vxi:fdc:mode %s (%s)\n", fdc_mode[fdcMode], gplst);
 
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
 
   return VI_SUCCESS;
 }
 
-ViStatus _VI_FUNC tkvx4244_getFDCAttribute(ViSession instrumentHandle, ViUInt16 attr[])
+ViStatus _VI_FUNC tkvx4244_getFDCAttribute(ViSession instrumentHandle,
+                                           ViUInt16 attr[])
 {
   ViStatus retError;
 
@@ -5046,45 +5362,46 @@ ViStatus _VI_FUNC tkvx4244_getFDCAttribute(ViSession instrumentHandle, ViUInt16 
  *    This function reads FDC data into a short integer array.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 fdcGroup:
  *  ViInt32 numberOfSamples:
  *  ViInt16 dataArray[]:
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_getFDCData(ViSession instrumentHandle, ViInt16 fdcGroup,
-		    ViInt32 numberOfSamples, ViInt16 dataArray[])
+ViStatus _VI_FUNC tkvx4244_getFDCData(ViSession instrumentHandle,
+                                      ViInt16 fdcGroup, ViInt32 numberOfSamples,
+                                      ViInt16 dataArray[])
 {
 
   ViInt16 intface;
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViStatus retError;            /* Returned error status */
+  ViInt32 retCnt;               /* required parameter for visa calls */
+  ViAttrState userData;         /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
   if (retError < VI_SUCCESS)
     return retError;
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   retError = viGetAttribute(instrumentHandle, VI_ATTR_INTF_TYPE, &intface);
   if (retError < VI_SUCCESS)
     return retError;
   if (intface != VI_INTF_VXI)
     return VI_ERROR_INV_ACC_MODE;
-  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144, tkvx4244_NUM_SAMPS_RANGE_ERROR);
+  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144,
+                                       tkvx4244_NUM_SAMPS_RANGE_ERROR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(fdcGroup, tkvx4244_GROUP_CHAN_ONE,
-					tkvx4244_GROUP_CHAN_FOUR, tkvx4244_ERROR_FDC_CHAN);
+                                        tkvx4244_GROUP_CHAN_FOUR,
+                                        tkvx4244_ERROR_FDC_CHAN);
   if (retError)
     return retError;
-/*	retError = viSetAttribute (instrumentHandle, VI_ATTR_FDC_MODE, VI_FDC_STREAM);
-	   if (retError<VI_SUCCESS) return retError;
-*/
+  /*	retError = viSetAttribute (instrumentHandle, VI_ATTR_FDC_MODE,
+     VI_FDC_STREAM); if (retError<VI_SUCCESS) return retError;
+  */
   retError = viSetAttribute(instrumentHandle, VI_ATTR_FDC_CHNL, fdcGroup);
   if (retError < VI_SUCCESS)
     return retError;
@@ -5092,9 +5409,10 @@ tkvx4244_getFDCData(ViSession instrumentHandle, ViInt16 fdcGroup,
   if (retError < VI_SUCCESS)
     return retError;
 
-  retError =
-      viRead(instrumentHandle, (ViPBuf) dataArray, (2 * numberOfSamples), (ViPUInt32) & retCnt);
-  if (retError < VI_SUCCESS) {
+  retError = viRead(instrumentHandle, (ViPBuf)dataArray, (2 * numberOfSamples),
+                    (ViPUInt32)&retCnt);
+  if (retError < VI_SUCCESS)
+  {
     viSetAttribute(instrumentHandle, VI_ATTR_IO_PROT, VI_NORMAL);
     return retError;
   }
@@ -5111,40 +5429,42 @@ tkvx4244_getFDCData(ViSession instrumentHandle, ViInt16 fdcGroup,
  *    This function reads FDC data.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 fdcGroup:
  *  ViInt32 numberOfSamples:
  *  ViChar dataArray[]:
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readFDCData(ViSession instrumentHandle, ViInt16 fdcGroup,
-		     ViInt32 numberOfSamples, ViChar dataArray[])
+ViStatus _VI_FUNC tkvx4244_readFDCData(ViSession instrumentHandle,
+                                       ViInt16 fdcGroup,
+                                       ViInt32 numberOfSamples,
+                                       ViChar dataArray[])
 {
 
   ViInt16 intface;
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViStatus retError;            /* Returned error status */
+  ViInt32 retCnt;               /* required parameter for visa calls */
+  ViAttrState userData;         /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
   if (retError < VI_SUCCESS)
     return retError;
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   retError = viGetAttribute(instrumentHandle, VI_ATTR_INTF_TYPE, &intface);
   if (retError < VI_SUCCESS)
     return retError;
   if (intface != VI_INTF_VXI)
     return VI_ERROR_INV_ACC_MODE;
-  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144, tkvx4244_NUM_SAMPS_RANGE_ERROR);
+  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144,
+                                       tkvx4244_NUM_SAMPS_RANGE_ERROR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(fdcGroup, tkvx4244_GROUP_CHAN_ONE,
-					tkvx4244_GROUP_CHAN_FOUR, tkvx4244_ERROR_FDC_CHAN);
+                                        tkvx4244_GROUP_CHAN_FOUR,
+                                        tkvx4244_ERROR_FDC_CHAN);
   if (retError)
     return retError;
   retError = viSetAttribute(instrumentHandle, VI_ATTR_FDC_CHNL, fdcGroup);
@@ -5154,9 +5474,10 @@ tkvx4244_readFDCData(ViSession instrumentHandle, ViInt16 fdcGroup,
   if (retError < VI_SUCCESS)
     return retError;
 
-  retError =
-      viRead(instrumentHandle, (ViPBuf) dataArray, (2 * numberOfSamples), (ViPUInt32) & retCnt);
-  if (retError < VI_SUCCESS) {
+  retError = viRead(instrumentHandle, (ViPBuf)dataArray, (2 * numberOfSamples),
+                    (ViPUInt32)&retCnt);
+  if (retError < VI_SUCCESS)
+  {
     viSetAttribute(instrumentHandle, VI_ATTR_IO_PROT, VI_NORMAL);
     return retError;
   }
@@ -5174,52 +5495,59 @@ tkvx4244_readFDCData(ViSession instrumentHandle, ViInt16 fdcGroup,
  *    This function reads FDC state information.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 stateQuery, gp1,gp2,gp3,gp4,all:
  *  ViChar fdcQueryResponse[]:
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readFDCState(ViSession instrumentHandle, ViInt16 stateQuery, ViInt16 gp1,
-		      ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt16 all, ViChar fdcQueryResponse[])
+ViStatus _VI_FUNC tkvx4244_readFDCState(ViSession instrumentHandle,
+                                        ViInt16 stateQuery, ViInt16 gp1,
+                                        ViInt16 gp2, ViInt16 gp3, ViInt16 gp4,
+                                        ViInt16 all,
+                                        ViChar fdcQueryResponse[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
   ViChar rcv[tkvx4244_RCV_STRLEN];
   ViChar gplst[10];
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViStatus retError;            /* Returned error status */
+  ViInt32 retCnt;               /* required parameter for visa calls */
+  ViAttrState userData;         /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl; /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
   if (retError < VI_SUCCESS)
     return retError;
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   retError = tkvx4244_invalidShortRange(stateQuery, tkvx4244_FDC_QUERY_MODE,
-					tkvx4244_FDC_QUERY_QUE, tkvx4244_ERROR_FDC_QUERY);
+                                        tkvx4244_FDC_QUERY_QUE,
+                                        tkvx4244_ERROR_FDC_QUERY);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -5227,11 +5555,13 @@ tkvx4244_readFDCState(ViSession instrumentHandle, ViInt16 stateQuery, ViInt16 gp
   tkvx4244_gplist_parse(gp1, gp2, gp3, gp4, all, gplst);
 
   sprintf(cmd, "VXI:FDC:%s? (%s)", fdcQuery[stateQuery], gplst);
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
 
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -5248,56 +5578,56 @@ tkvx4244_readFDCState(ViSession instrumentHandle, ViInt16 stateQuery, ViInt16 gp
  *    in group 1.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *		ViInt16 select, ch1-ch4
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGroupOneChannels(ViSession instrumentHandle,
-			      ViInt16 ch1, ViInt16 ch2, ViInt16 ch3, ViInt16 ch4, ViInt16 select)
+ViStatus _VI_FUNC tkvx4244_confGroupOneChannels(ViSession instrumentHandle,
+                                                ViInt16 ch1, ViInt16 ch2,
+                                                ViInt16 ch3, ViInt16 ch4,
+                                                ViInt16 select)
 {
   ViChar cond[6];
   ViChar chan[40];
   ViInt16 chan1, chan2, chan3, chan4;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAddr userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAddr userData;                 /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE, tkvx4244_SELECT_ENABLE,
-				 tkvx4244_ERROR_OPEN_CLOSE);
+  retError = tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE,
+                                        tkvx4244_SELECT_ENABLE,
+                                        tkvx4244_ERROR_OPEN_CLOSE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch1, tkvx4244_CH_ONE_DISABLE, tkvx4244_CH_ONE_ENABLE,
-				 tkvx4244_ERROR_CHAN_ONE);
+  retError = tkvx4244_invalidShortRange(ch1, tkvx4244_CH_ONE_DISABLE,
+                                        tkvx4244_CH_ONE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_ONE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch2, tkvx4244_CH_TWO_DISABLE, tkvx4244_CH_TWO_ENABLE,
-				 tkvx4244_ERROR_CHAN_TWO);
+  retError = tkvx4244_invalidShortRange(ch2, tkvx4244_CH_TWO_DISABLE,
+                                        tkvx4244_CH_TWO_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TWO);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch3, tkvx4244_CH_THREE_DISABLE, tkvx4244_CH_THREE_ENABLE,
-				 tkvx4244_ERROR_CHAN_THREE);
+  retError = tkvx4244_invalidShortRange(ch3, tkvx4244_CH_THREE_DISABLE,
+                                        tkvx4244_CH_THREE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_THREE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch4, tkvx4244_CH_FOUR_DISABLE, tkvx4244_CH_FOUR_ENABLE,
-				 tkvx4244_ERROR_CHAN_FOUR);
+  retError = tkvx4244_invalidShortRange(ch4, tkvx4244_CH_FOUR_DISABLE,
+                                        tkvx4244_CH_FOUR_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FOUR);
   if (retError)
     return retError;
-/* no channels chosen */
+  /* no channels chosen */
   if ((ch1 + ch2 + ch3 + ch4) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   chan1 = drvrHdl->tkvx4244_chOneActive;
@@ -5326,10 +5656,10 @@ tkvx4244_confGroupOneChannels(ViSession instrumentHandle,
     chan4 = tkvx4244_CH_FOUR_DISABLE;
   if ((chan1 + chan2 + chan3 + chan4) == 3)
     return tkvx4244_THREE_CHAN_IN_GP_ERROR;
-/* Parse the ch list */
-  tkvx4244_chlst_parse(ch1, ch2, ch3, ch4, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
+  /* Parse the ch list */
+  tkvx4244_chlst_parse(ch1, ch2, ch3, ch4, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
   /* Build the command string */
   if (select == tkvx4244_SELECT_ENABLE)
     sprintf(cond, "CLOSE");
@@ -5338,7 +5668,8 @@ tkvx4244_confGroupOneChannels(ViSession instrumentHandle,
   sprintf(cmd, "ROUTE:%s (%s)\n", cond, chan);
   cmd[strlen(cmd)] = '\0';
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -5373,56 +5704,56 @@ tkvx4244_confGroupOneChannels(ViSession instrumentHandle,
  *    in group 2.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *		ViInt16 select, ch5-ch8
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGroupTwoChannels(ViSession instrumentHandle,
-			      ViInt16 ch5, ViInt16 ch6, ViInt16 ch7, ViInt16 ch8, ViInt16 select)
+ViStatus _VI_FUNC tkvx4244_confGroupTwoChannels(ViSession instrumentHandle,
+                                                ViInt16 ch5, ViInt16 ch6,
+                                                ViInt16 ch7, ViInt16 ch8,
+                                                ViInt16 select)
 {
   ViChar cond[6];
   ViChar chan[40];
   ViInt16 chan5, chan6, chan7, chan8;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAddr userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAddr userData;                 /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE, tkvx4244_SELECT_ENABLE,
-				 tkvx4244_ERROR_OPEN_CLOSE);
+  retError = tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE,
+                                        tkvx4244_SELECT_ENABLE,
+                                        tkvx4244_ERROR_OPEN_CLOSE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch5, tkvx4244_CH_FIVE_DISABLE, tkvx4244_CH_FIVE_ENABLE,
-				 tkvx4244_ERROR_CHAN_FIVE);
+  retError = tkvx4244_invalidShortRange(ch5, tkvx4244_CH_FIVE_DISABLE,
+                                        tkvx4244_CH_FIVE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FIVE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch6, tkvx4244_CH_SIX_DISABLE, tkvx4244_CH_SIX_ENABLE,
-				 tkvx4244_ERROR_CHAN_SIX);
+  retError = tkvx4244_invalidShortRange(ch6, tkvx4244_CH_SIX_DISABLE,
+                                        tkvx4244_CH_SIX_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SIX);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch7, tkvx4244_CH_SEVEN_DISABLE, tkvx4244_CH_SEVEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_SEVEN);
+  retError = tkvx4244_invalidShortRange(ch7, tkvx4244_CH_SEVEN_DISABLE,
+                                        tkvx4244_CH_SEVEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SEVEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch8, tkvx4244_CH_EIGHT_DISABLE, tkvx4244_CH_EIGHT_ENABLE,
-				 tkvx4244_ERROR_CHAN_EIGHT);
+  retError = tkvx4244_invalidShortRange(ch8, tkvx4244_CH_EIGHT_DISABLE,
+                                        tkvx4244_CH_EIGHT_ENABLE,
+                                        tkvx4244_ERROR_CHAN_EIGHT);
   if (retError)
     return retError;
-/* no channels chosen */
+  /* no channels chosen */
   if ((ch5 + ch6 + ch7 + ch8) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   chan5 = drvrHdl->tkvx4244_chFiveActive;
@@ -5454,9 +5785,9 @@ tkvx4244_confGroupTwoChannels(ViSession instrumentHandle,
     return tkvx4244_THREE_CHAN_IN_GP_ERROR;
 
   /* Parse the ch list */
-  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       ch5, ch6, ch7, ch8, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
+  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, ch5, ch6, ch7,
+                       ch8, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
   /* Build the command string */
   if (select == 1)
     sprintf(cond, "CLOSE");
@@ -5465,7 +5796,8 @@ tkvx4244_confGroupTwoChannels(ViSession instrumentHandle,
   sprintf(cmd, "ROUTE:%s (%s)\n", cond, chan);
   cmd[strlen(cmd)] = '\0';
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -5499,57 +5831,56 @@ tkvx4244_confGroupTwoChannels(ViSession instrumentHandle,
  *    in group 3.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *		ViInt16 select, ch9-ch12
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGroupThreeChannels(ViSession instrumentHandle,
-				ViInt16 ch9, ViInt16 ch10, ViInt16 ch11, ViInt16 ch12,
-				ViInt16 select)
+ViStatus _VI_FUNC tkvx4244_confGroupThreeChannels(ViSession instrumentHandle,
+                                                  ViInt16 ch9, ViInt16 ch10,
+                                                  ViInt16 ch11, ViInt16 ch12,
+                                                  ViInt16 select)
 {
   ViChar cond[6];
   ViChar chan[40];
   ViInt16 chan9, chan10, chan11, chan12;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAddr userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAddr userData;                 /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE, tkvx4244_SELECT_ENABLE,
-				 tkvx4244_ERROR_OPEN_CLOSE);
+  retError = tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE,
+                                        tkvx4244_SELECT_ENABLE,
+                                        tkvx4244_ERROR_OPEN_CLOSE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch9, tkvx4244_CH_NINE_DISABLE, tkvx4244_CH_NINE_ENABLE,
-				 tkvx4244_ERROR_CHAN_NINE);
+  retError = tkvx4244_invalidShortRange(ch9, tkvx4244_CH_NINE_DISABLE,
+                                        tkvx4244_CH_NINE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_NINE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch10, tkvx4244_CH_TEN_DISABLE, tkvx4244_CH_TEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_TEN);
+  retError = tkvx4244_invalidShortRange(ch10, tkvx4244_CH_TEN_DISABLE,
+                                        tkvx4244_CH_TEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch11, tkvx4244_CH_ELEVEN_DISABLE, tkvx4244_CH_ELEVEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_ELEVEN);
+  retError = tkvx4244_invalidShortRange(ch11, tkvx4244_CH_ELEVEN_DISABLE,
+                                        tkvx4244_CH_ELEVEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_ELEVEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch12, tkvx4244_CH_TWELVE_DISABLE, tkvx4244_CH_TWELVE_ENABLE,
-				 tkvx4244_ERROR_CHAN_TWELVE);
+  retError = tkvx4244_invalidShortRange(ch12, tkvx4244_CH_TWELVE_DISABLE,
+                                        tkvx4244_CH_TWELVE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TWELVE);
   if (retError)
     return retError;
-/* no channels chosen */
+  /* no channels chosen */
   if ((ch9 + ch10 + ch11 + ch12) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
 
@@ -5582,9 +5913,9 @@ tkvx4244_confGroupThreeChannels(ViSession instrumentHandle,
     return tkvx4244_THREE_CHAN_IN_GP_ERROR;
 
   /* Parse the ch list */
-  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, ch9, ch10, ch11, ch12,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
+  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, ch9, ch10, ch11, ch12,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, chan);
   /* Build the command string */
   if (select == 1)
     sprintf(cond, "CLOSE");
@@ -5593,7 +5924,8 @@ tkvx4244_confGroupThreeChannels(ViSession instrumentHandle,
   sprintf(cmd, "ROUTE:%s (%s)\n", cond, chan);
   cmd[strlen(cmd)] = '\0';
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -5628,57 +5960,56 @@ tkvx4244_confGroupThreeChannels(ViSession instrumentHandle,
  *    in group 4.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *		ViInt16 select, ch13-ch16
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confGroupFourChannels(ViSession instrumentHandle,
-			       ViInt16 ch13, ViInt16 ch14, ViInt16 ch15, ViInt16 ch16,
-			       ViInt16 select)
+ViStatus _VI_FUNC tkvx4244_confGroupFourChannels(ViSession instrumentHandle,
+                                                 ViInt16 ch13, ViInt16 ch14,
+                                                 ViInt16 ch15, ViInt16 ch16,
+                                                 ViInt16 select)
 {
   ViChar cond[6];
   ViChar chan[40];
   ViInt16 chan13, chan14, chan15, chan16;
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAddr userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAddr userData;                 /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE, tkvx4244_SELECT_ENABLE,
-				 tkvx4244_ERROR_OPEN_CLOSE);
+  retError = tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE,
+                                        tkvx4244_SELECT_ENABLE,
+                                        tkvx4244_ERROR_OPEN_CLOSE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch13, tkvx4244_CH_THIRTEEN_DISABLE, tkvx4244_CH_THIRTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_THIRTEEN);
+  retError = tkvx4244_invalidShortRange(ch13, tkvx4244_CH_THIRTEEN_DISABLE,
+                                        tkvx4244_CH_THIRTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_THIRTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch14, tkvx4244_CH_FOURTEEN_DISABLE, tkvx4244_CH_FOURTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_FOURTEEN);
+  retError = tkvx4244_invalidShortRange(ch14, tkvx4244_CH_FOURTEEN_DISABLE,
+                                        tkvx4244_CH_FOURTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FOURTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch15, tkvx4244_CH_FIFTEEN_DISABLE, tkvx4244_CH_FIFTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_FIFTEEN);
+  retError = tkvx4244_invalidShortRange(ch15, tkvx4244_CH_FIFTEEN_DISABLE,
+                                        tkvx4244_CH_FIFTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FIFTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch16, tkvx4244_CH_SIXTEEN_DISABLE, tkvx4244_CH_SIXTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_SIXTEEN);
+  retError = tkvx4244_invalidShortRange(ch16, tkvx4244_CH_SIXTEEN_DISABLE,
+                                        tkvx4244_CH_SIXTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SIXTEEN);
   if (retError)
     return retError;
-/* no channels chosen */
+  /* no channels chosen */
   if ((ch13 + ch14 + ch15 + ch16) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
 
@@ -5692,17 +6023,21 @@ tkvx4244_confGroupFourChannels(ViSession instrumentHandle,
   if (ch13 == tkvx4244_CH_NINE_ENABLE && (select == tkvx4244_SELECT_DISABLE))
     chan13 = tkvx4244_CH_NINE_DISABLE;
 
-  if ((ch14 == tkvx4244_CH_FOURTEEN_ENABLE) && (select == tkvx4244_SELECT_ENABLE))
+  if ((ch14 == tkvx4244_CH_FOURTEEN_ENABLE) &&
+      (select == tkvx4244_SELECT_ENABLE))
     chan14 = tkvx4244_CH_FOURTEEN_ENABLE;
-  if (ch14 == tkvx4244_CH_FOURTEEN_ENABLE && (select == tkvx4244_SELECT_DISABLE))
+  if (ch14 == tkvx4244_CH_FOURTEEN_ENABLE &&
+      (select == tkvx4244_SELECT_DISABLE))
     chan14 = tkvx4244_CH_FOURTEEN_DISABLE;
 
-  if ((ch15 == tkvx4244_CH_FIFTEEN_ENABLE) && (select == tkvx4244_SELECT_ENABLE))
+  if ((ch15 == tkvx4244_CH_FIFTEEN_ENABLE) &&
+      (select == tkvx4244_SELECT_ENABLE))
     chan15 = tkvx4244_CH_FIFTEEN_ENABLE;
   if (ch15 == tkvx4244_CH_FIFTEEN_ENABLE && (select == tkvx4244_SELECT_DISABLE))
     chan15 = tkvx4244_CH_FIFTEEN_DISABLE;
 
-  if ((ch16 == tkvx4244_CH_SIXTEEN_ENABLE) && (select == tkvx4244_SELECT_ENABLE))
+  if ((ch16 == tkvx4244_CH_SIXTEEN_ENABLE) &&
+      (select == tkvx4244_SELECT_ENABLE))
     chan16 = tkvx4244_CH_SIXTEEN_ENABLE;
   if (ch16 == tkvx4244_CH_SIXTEEN_ENABLE && (select == tkvx4244_SELECT_DISABLE))
     chan16 = tkvx4244_CH_SIXTEEN_DISABLE;
@@ -5711,9 +6046,10 @@ tkvx4244_confGroupFourChannels(ViSession instrumentHandle,
     return tkvx4244_THREE_CHAN_IN_GP_ERROR;
 
   /* Parse the ch list */
-  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
-		       VI_FALSE, VI_FALSE, ch13, ch14, ch15, ch16, VI_FALSE, chan);
+  tkvx4244_chlst_parse(VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE, VI_FALSE,
+                       VI_FALSE, VI_FALSE, ch13, ch14, ch15, ch16, VI_FALSE,
+                       chan);
   /* Build the command string */
   if (select == 1)
     sprintf(cond, "CLOSE");
@@ -5722,26 +6058,33 @@ tkvx4244_confGroupFourChannels(ViSession instrumentHandle,
   sprintf(cmd, "ROUTE:%s (%s)\n", cond, chan);
   cmd[strlen(cmd)] = '\0';
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
-  if ((ch13 == tkvx4244_CH_THIRTEEN_ENABLE) && (select == tkvx4244_SELECT_ENABLE))
+  if ((ch13 == tkvx4244_CH_THIRTEEN_ENABLE) &&
+      (select == tkvx4244_SELECT_ENABLE))
     drvrHdl->tkvx4244_chThirteenActive = tkvx4244_CH_THIRTEEN_ENABLE;
-  if (ch13 == tkvx4244_CH_THIRTEEN_ENABLE && (select == tkvx4244_SELECT_DISABLE))
+  if (ch13 == tkvx4244_CH_THIRTEEN_ENABLE &&
+      (select == tkvx4244_SELECT_DISABLE))
     drvrHdl->tkvx4244_chThirteenActive = tkvx4244_CH_THIRTEEN_DISABLE;
 
-  if ((ch14 == tkvx4244_CH_FOURTEEN_ENABLE) && (select == tkvx4244_SELECT_ENABLE))
+  if ((ch14 == tkvx4244_CH_FOURTEEN_ENABLE) &&
+      (select == tkvx4244_SELECT_ENABLE))
     drvrHdl->tkvx4244_chFourteenActive = tkvx4244_CH_FOURTEEN_ENABLE;
-  if (ch14 == tkvx4244_CH_FOURTEEN_ENABLE && (select == tkvx4244_SELECT_DISABLE))
+  if (ch14 == tkvx4244_CH_FOURTEEN_ENABLE &&
+      (select == tkvx4244_SELECT_DISABLE))
     drvrHdl->tkvx4244_chFourteenActive = tkvx4244_CH_FOURTEEN_DISABLE;
 
-  if ((ch15 == tkvx4244_CH_FIFTEEN_ENABLE) && (select == tkvx4244_SELECT_ENABLE))
+  if ((ch15 == tkvx4244_CH_FIFTEEN_ENABLE) &&
+      (select == tkvx4244_SELECT_ENABLE))
     drvrHdl->tkvx4244_chFifteenActive = tkvx4244_CH_FIFTEEN_ENABLE;
   if (ch15 == tkvx4244_CH_FIFTEEN_ENABLE && (select == tkvx4244_SELECT_DISABLE))
     drvrHdl->tkvx4244_chFifteenActive = tkvx4244_CH_FIFTEEN_DISABLE;
 
-  if ((ch16 == tkvx4244_CH_SIXTEEN_ENABLE) && (select == tkvx4244_SELECT_ENABLE))
+  if ((ch16 == tkvx4244_CH_SIXTEEN_ENABLE) &&
+      (select == tkvx4244_SELECT_ENABLE))
     drvrHdl->tkvx4244_chSixteenActive = tkvx4244_CH_SIXTEEN_ENABLE;
   if (ch16 == tkvx4244_CH_SIXTEEN_ENABLE && (select == tkvx4244_SELECT_DISABLE))
     drvrHdl->tkvx4244_chSixteenActive = tkvx4244_CH_SIXTEEN_DISABLE;
@@ -5766,133 +6109,134 @@ tkvx4244_confGroupFourChannels(ViSession instrumentHandle,
  *    include in dll but not in function panel file.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *		ViInt16 opn_cls, c1-c16, ca
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC tkvx4244_chanlist(ViSession instrumentHandle, ViInt16 select, ViInt16 ch1,
-				    ViInt16 ch2, ViInt16 ch3, ViInt16 ch4, ViInt16 ch5, ViInt16 ch6,
-				    ViInt16 ch7, ViInt16 ch8, ViInt16 ch9, ViInt16 ch10,
-				    ViInt16 ch11, ViInt16 ch12, ViInt16 ch13, ViInt16 ch14,
-				    ViInt16 ch15, ViInt16 ch16, ViInt16 all)
+ViStatus _VI_FUNC tkvx4244_chanlist(ViSession instrumentHandle, ViInt16 select,
+                                    ViInt16 ch1, ViInt16 ch2, ViInt16 ch3,
+                                    ViInt16 ch4, ViInt16 ch5, ViInt16 ch6,
+                                    ViInt16 ch7, ViInt16 ch8, ViInt16 ch9,
+                                    ViInt16 ch10, ViInt16 ch11, ViInt16 ch12,
+                                    ViInt16 ch13, ViInt16 ch14, ViInt16 ch15,
+                                    ViInt16 ch16, ViInt16 all)
 {
   ViChar cond[6];
   ViChar chan[40];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAddr userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAddr userData;                 /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError =
-      tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE, tkvx4244_SELECT_ENABLE,
-				 tkvx4244_ERROR_OPEN_CLOSE);
+  retError = tkvx4244_invalidShortRange(select, tkvx4244_SELECT_DISABLE,
+                                        tkvx4244_SELECT_ENABLE,
+                                        tkvx4244_ERROR_OPEN_CLOSE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch1, tkvx4244_CH_ONE_DISABLE, tkvx4244_CH_ONE_ENABLE,
-				 tkvx4244_ERROR_CHAN_ONE);
+  retError = tkvx4244_invalidShortRange(ch1, tkvx4244_CH_ONE_DISABLE,
+                                        tkvx4244_CH_ONE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_ONE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch2, tkvx4244_CH_TWO_DISABLE, tkvx4244_CH_TWO_ENABLE,
-				 tkvx4244_ERROR_CHAN_TWO);
+  retError = tkvx4244_invalidShortRange(ch2, tkvx4244_CH_TWO_DISABLE,
+                                        tkvx4244_CH_TWO_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TWO);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch3, tkvx4244_CH_THREE_DISABLE, tkvx4244_CH_THREE_ENABLE,
-				 tkvx4244_ERROR_CHAN_THREE);
+  retError = tkvx4244_invalidShortRange(ch3, tkvx4244_CH_THREE_DISABLE,
+                                        tkvx4244_CH_THREE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_THREE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch4, tkvx4244_CH_FOUR_DISABLE, tkvx4244_CH_FOUR_ENABLE,
-				 tkvx4244_ERROR_CHAN_FOUR);
+  retError = tkvx4244_invalidShortRange(ch4, tkvx4244_CH_FOUR_DISABLE,
+                                        tkvx4244_CH_FOUR_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FOUR);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch5, tkvx4244_CH_FIVE_DISABLE, tkvx4244_CH_FIVE_ENABLE,
-				 tkvx4244_ERROR_CHAN_FIVE);
+  retError = tkvx4244_invalidShortRange(ch5, tkvx4244_CH_FIVE_DISABLE,
+                                        tkvx4244_CH_FIVE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FIVE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch6, tkvx4244_CH_SIX_DISABLE, tkvx4244_CH_SIX_ENABLE,
-				 tkvx4244_ERROR_CHAN_SIX);
+  retError = tkvx4244_invalidShortRange(ch6, tkvx4244_CH_SIX_DISABLE,
+                                        tkvx4244_CH_SIX_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SIX);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch7, tkvx4244_CH_SEVEN_DISABLE, tkvx4244_CH_SEVEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_SEVEN);
+  retError = tkvx4244_invalidShortRange(ch7, tkvx4244_CH_SEVEN_DISABLE,
+                                        tkvx4244_CH_SEVEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SEVEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch8, tkvx4244_CH_EIGHT_DISABLE, tkvx4244_CH_EIGHT_ENABLE,
-				 tkvx4244_ERROR_CHAN_EIGHT);
+  retError = tkvx4244_invalidShortRange(ch8, tkvx4244_CH_EIGHT_DISABLE,
+                                        tkvx4244_CH_EIGHT_ENABLE,
+                                        tkvx4244_ERROR_CHAN_EIGHT);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch9, tkvx4244_CH_NINE_DISABLE, tkvx4244_CH_NINE_ENABLE,
-				 tkvx4244_ERROR_CHAN_NINE);
+  retError = tkvx4244_invalidShortRange(ch9, tkvx4244_CH_NINE_DISABLE,
+                                        tkvx4244_CH_NINE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_NINE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch10, tkvx4244_CH_TEN_DISABLE, tkvx4244_CH_TEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_TEN);
+  retError = tkvx4244_invalidShortRange(ch10, tkvx4244_CH_TEN_DISABLE,
+                                        tkvx4244_CH_TEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch11, tkvx4244_CH_ELEVEN_DISABLE, tkvx4244_CH_ELEVEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_ELEVEN);
+  retError = tkvx4244_invalidShortRange(ch11, tkvx4244_CH_ELEVEN_DISABLE,
+                                        tkvx4244_CH_ELEVEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_ELEVEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch12, tkvx4244_CH_TWELVE_DISABLE, tkvx4244_CH_TWELVE_ENABLE,
-				 tkvx4244_ERROR_CHAN_TWELVE);
+  retError = tkvx4244_invalidShortRange(ch12, tkvx4244_CH_TWELVE_DISABLE,
+                                        tkvx4244_CH_TWELVE_ENABLE,
+                                        tkvx4244_ERROR_CHAN_TWELVE);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch13, tkvx4244_CH_THIRTEEN_DISABLE, tkvx4244_CH_THIRTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_THIRTEEN);
+  retError = tkvx4244_invalidShortRange(ch13, tkvx4244_CH_THIRTEEN_DISABLE,
+                                        tkvx4244_CH_THIRTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_THIRTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch14, tkvx4244_CH_FOURTEEN_DISABLE, tkvx4244_CH_FOURTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_FOURTEEN);
+  retError = tkvx4244_invalidShortRange(ch14, tkvx4244_CH_FOURTEEN_DISABLE,
+                                        tkvx4244_CH_FOURTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FOURTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch15, tkvx4244_CH_FIFTEEN_DISABLE, tkvx4244_CH_FIFTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_FIFTEEN);
+  retError = tkvx4244_invalidShortRange(ch15, tkvx4244_CH_FIFTEEN_DISABLE,
+                                        tkvx4244_CH_FIFTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_FIFTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(ch16, tkvx4244_CH_SIXTEEN_DISABLE, tkvx4244_CH_SIXTEEN_ENABLE,
-				 tkvx4244_ERROR_CHAN_SIXTEEN);
+  retError = tkvx4244_invalidShortRange(ch16, tkvx4244_CH_SIXTEEN_DISABLE,
+                                        tkvx4244_CH_SIXTEEN_ENABLE,
+                                        tkvx4244_ERROR_CHAN_SIXTEEN);
   if (retError)
     return retError;
-  retError =
-      tkvx4244_invalidShortRange(all, tkvx4244_DONT_SELECT_ALL_CHANNELS,
-				 tkvx4244_SELECT_ALL_CHANNELS, tkvx4244_ERROR_ALL_CHAN);
+  retError = tkvx4244_invalidShortRange(all, tkvx4244_DONT_SELECT_ALL_CHANNELS,
+                                        tkvx4244_SELECT_ALL_CHANNELS,
+                                        tkvx4244_ERROR_ALL_CHAN);
   if (retError)
     return retError;
 
   /* no channels chosen */
-  if ((all + ch1 + ch2 + ch3 + ch4 + ch5 + ch6 + ch7 + ch8 + ch9 + ch10 + ch11 + ch12 + ch13 +
-       ch14 + ch15 + ch16) == VI_FALSE)
+  if ((all + ch1 + ch2 + ch3 + ch4 + ch5 + ch6 + ch7 + ch8 + ch9 + ch10 + ch11 +
+       ch12 + ch13 + ch14 + ch15 + ch16) == VI_FALSE)
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   /* attempt to enable 3 channels in a group */
-  if (((ch1 + ch2 + ch3 + ch4) == 3) || ((ch5 + ch6 + ch7 + ch8) == 3)
-      || ((ch9 + ch10 + ch11 + ch12) == 3) || ((ch13 + ch14 + ch15 + ch16) == 3))
+  if (((ch1 + ch2 + ch3 + ch4) == 3) || ((ch5 + ch6 + ch7 + ch8) == 3) ||
+      ((ch9 + ch10 + ch11 + ch12) == 3) || ((ch13 + ch14 + ch15 + ch16) == 3))
     return tkvx4244_THREE_CHAN_IN_GP_ERROR;
   /* Parse the ch list */
-  tkvx4244_chlst_parse(ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, ch9, ch10, ch11, ch12, ch13, ch14,
-		       ch15, ch16, all, chan);
+  tkvx4244_chlst_parse(ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, ch9, ch10, ch11,
+                       ch12, ch13, ch14, ch15, ch16, all, chan);
   /* Build the command string */
   if (select == 1)
     sprintf(cond, "CLOSE");
@@ -5901,7 +6245,8 @@ ViStatus _VI_FUNC tkvx4244_chanlist(ViSession instrumentHandle, ViInt16 select, 
   sprintf(cmd, "ROUTE:%s (%s)\n", cond, chan);
   cmd[strlen(cmd)] = '\0';
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -5913,11 +6258,12 @@ ViStatus _VI_FUNC tkvx4244_arm(ViSession instrumentHandle, ViUInt16 Protocol)
   ViStatus retError;
   ViInt16 trig_id;
   ViChar buf[256];
-//      retError = viSetAttribute (handle, VI_ATTR_TRIG_ID, VI_TRIG_SW);
+  //      retError = viSetAttribute (handle, VI_ATTR_TRIG_ID, VI_TRIG_SW);
   retError = viGetAttribute(instrumentHandle, VI_ATTR_TRIG_ID, &trig_id);
   printf("After get Attribute %d\n", retError);
   printf("TRIG ID: %d\n", trig_id);
-  if (retError) {
+  if (retError)
+  {
     viStatusDesc(instrumentHandle, retError, buf);
     printf("%s\n", buf);
     return retError;
@@ -5933,55 +6279,62 @@ ViStatus _VI_FUNC tkvx4244_arm(ViSession instrumentHandle, ViUInt16 Protocol)
  *  This function Begins the collection process on the designated
  *  groups.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *      ViReal64 delay - sets a delay before digitizing if desired.
  *		ViInt16 gp1-gp4,all,initiate
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_initMeasurementCycle(ViSession instrumentHandle,
-			      ViReal64 * delay, ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4,
-			      ViInt16 all, ViInt16 initiate)
+ViStatus _VI_FUNC tkvx4244_initMeasurementCycle(ViSession instrumentHandle,
+                                                ViReal64 *delay, ViInt16 gp1,
+                                                ViInt16 gp2, ViInt16 gp3,
+                                                ViInt16 gp4, ViInt16 all,
+                                                ViInt16 initiate)
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError = tkvx4244_invalidRealRange(*delay, 0L, 1.0E9, tkvx4244_ERROR_INIT_DELAY);
+  retError =
+      tkvx4244_invalidRealRange(*delay, 0L, 1.0E9, tkvx4244_ERROR_INIT_DELAY);
   if (retError)
     return retError;
-  retError = tkvx4244_invalidShortRange(initiate, tkvx4244_INIT_IMM,
-					tkvx4244_INIT_CONT, tkvx4244_ERROR_INIT_TYPE);
+  retError =
+      tkvx4244_invalidShortRange(initiate, tkvx4244_INIT_IMM,
+                                 tkvx4244_INIT_CONT, tkvx4244_ERROR_INIT_TYPE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -5989,7 +6342,8 @@ tkvx4244_initMeasurementCycle(ViSession instrumentHandle,
   /* Parse the gp list */
   tkvx4244_gplist_parse(gp1, gp2, gp3, gp4, all, gplst);
   /* Build the command string */
-  switch (initiate) {
+  switch (initiate)
+  {
   case 0:
     sprintf(cmd, "INIT:IMM (%s)\n", gplst);
     break;
@@ -6001,7 +6355,8 @@ tkvx4244_initMeasurementCycle(ViSession instrumentHandle,
     break;
   }
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -6017,51 +6372,57 @@ tkvx4244_initMeasurementCycle(ViSession instrumentHandle,
  *  to is defined. Long count is the number of samples and char gplst
  *  the group or groups.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt32 numberOfSamples-number of samples.
  *  ViInt16 gp1-gp4,allGroups
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confDataCollectCount(ViSession instrumentHandle,
-			      ViInt32 numberOfSamples, ViInt16 gp1, ViInt16 gp2, ViInt16 gp3,
-			      ViInt16 gp4, ViInt16 allGroups)
+ViStatus _VI_FUNC tkvx4244_confDataCollectCount(ViSession instrumentHandle,
+                                                ViInt32 numberOfSamples,
+                                                ViInt16 gp1, ViInt16 gp2,
+                                                ViInt16 gp3, ViInt16 gp4,
+                                                ViInt16 allGroups)
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144, tkvx4244_NUM_SAMPS_RANGE_ERROR);
+  retError = tkvx4244_invalidLongRange(numberOfSamples, 1L, 262144,
+                                       tkvx4244_NUM_SAMPS_RANGE_ERROR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(allGroups, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
 
@@ -6072,12 +6433,12 @@ tkvx4244_confDataCollectCount(ViSession instrumentHandle,
   /* Build the command string */
   sprintf(cmd, "SWEEP:POINTS %ld(%s)\n", numberOfSamples, gplst);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
   return VI_SUCCESS;
-
 }
 
 /***************************************************************************
@@ -6086,45 +6447,49 @@ tkvx4244_confDataCollectCount(ViSession instrumentHandle,
  * Purpose:
  *  This function programs the active edge of the external arm input.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 slope
  *  ViChar slopeVerification[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confExternalArmSlope(ViSession instrumentHandle, ViInt16 slope, ViChar slopeVerification[])
+ViStatus _VI_FUNC tkvx4244_confExternalArmSlope(ViSession instrumentHandle,
+                                                ViInt16 slope,
+                                                ViChar slopeVerification[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*validate command */
-  retError = tkvx4244_invalidShortRange(slope, tkvx4244_SLOPE_POS,
-					tkvx4244_SLOPE_NEG, tkvx4244_ERROR_EXT_ARM_CMD);
+  retError =
+      tkvx4244_invalidShortRange(slope, tkvx4244_SLOPE_POS, tkvx4244_SLOPE_NEG,
+                                 tkvx4244_ERROR_EXT_ARM_CMD);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "ARM:%s\n", arm_slopZ[slope]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "ARM:SLOPE?\n");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -6139,41 +6504,43 @@ tkvx4244_confExternalArmSlope(ViSession instrumentHandle, ViInt16 slope, ViChar 
  * Purpose:
  *  This function queries the instrument for output trig setups.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 outputTrigger
  *  ViChar masterOutputtrigger[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readMasterOutTrigger(ViSession instrumentHandle,
-			      ViInt16 outputTrigger, ViChar masterOutputtrigger[])
+ViStatus _VI_FUNC tkvx4244_readMasterOutTrigger(ViSession instrumentHandle,
+                                                ViInt16 outputTrigger,
+                                                ViChar masterOutputtrigger[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the command */
   retError = tkvx4244_invalidShortRange(outputTrigger, tkvx4244_OUT_QUERY_SLOPE,
-					tkvx4244_OUT_QUERY_MASK, tkvx4244_ERROR_TRIG_OUT_QUERY);
+                                        tkvx4244_OUT_QUERY_MASK,
+                                        tkvx4244_ERROR_TRIG_OUT_QUERY);
   if (retError)
     return retError;
 
   /* Build the command string */
   sprintf(cmd, "OUTP:%s\n", out_trig_qu[outputTrigger]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -6188,9 +6555,8 @@ tkvx4244_readMasterOutTrigger(ViSession instrumentHandle,
  * Purpose:
  *  This function defines the master sample rate clock
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViReal64 frequency
  *  ViInt16 source
  *  ViChar masterClockSource[]
@@ -6198,40 +6564,44 @@ tkvx4244_readMasterOutTrigger(ViSession instrumentHandle,
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confMasterClock(ViSession instrumentHandle,
-			 ViReal64 frequency, ViInt16 source, ViChar masterClockSource[],
-			 ViChar masterClockFrequency[])
+ViStatus _VI_FUNC tkvx4244_confMasterClock(ViSession instrumentHandle,
+                                           ViReal64 frequency, ViInt16 source,
+                                           ViChar masterClockSource[],
+                                           ViChar masterClockFrequency[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   /*Validate the Command */
   retError = tkvx4244_invalidShortRange(source, tkvx4244_CLOCK_EXTERNAL,
-					tkvx4244_CLOCK_INTERNAL, tkvx4244_ERROR_MASTER_CLK_SRC);
+                                        tkvx4244_CLOCK_INTERNAL,
+                                        tkvx4244_ERROR_MASTER_CLK_SRC);
   if (retError)
     return retError;
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
-  if (!source) {
-    if (tkvx4244_invalidRealRange(frequency, 30.6372, 2000000.0, tkvx4244_FREQ_RANGE_ERROR) != 0)
+  if (!source)
+  {
+    if (tkvx4244_invalidRealRange(frequency, 30.6372, 2000000.0,
+                                  tkvx4244_FREQ_RANGE_ERROR) != 0)
       return retError;
-  } else
-      if (tkvx4244_invalidRealRange
-	  (frequency, 76.59310000000001, 5000000.0, tkvx4244_FREQ_RANGE_ERROR) != 0)
+  }
+  else if (tkvx4244_invalidRealRange(frequency, 76.59310000000001, 5000000.0,
+                                     tkvx4244_FREQ_RANGE_ERROR) != 0)
     return retError;
 
   /* Build the command string */
   sprintf(cmd, "ROSC:SOUR %s\n", mstr[source]);
 
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -6239,7 +6609,8 @@ tkvx4244_confMasterClock(ViSession instrumentHandle,
   sprintf(cmd, "ROSC:FREQ %f\n", frequency);
 
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
@@ -6247,12 +6618,14 @@ tkvx4244_confMasterClock(ViSession instrumentHandle,
   sprintf(cmd, "ROSC:SOUR?\n");
 
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -6262,12 +6635,14 @@ tkvx4244_confMasterClock(ViSession instrumentHandle,
   sprintf(cmd, "ROSC:FREQ?");
 
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
   /* Get the response from the instrument */
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -6282,33 +6657,35 @@ tkvx4244_confMasterClock(ViSession instrumentHandle,
  * Purpose:
  *  This function queries trigger threshold settings.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *
  *  ViChar threshold[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC tkvx4244_readTrigThreshold(ViSession instrumentHandle, ViChar threshold[])
+ViStatus _VI_FUNC tkvx4244_readTrigThreshold(ViSession instrumentHandle,
+                                             ViChar threshold[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /* Build the command string */
   sprintf(cmd, "TRIG:THRE?;");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -6323,54 +6700,61 @@ ViStatus _VI_FUNC tkvx4244_readTrigThreshold(ViSession instrumentHandle, ViChar 
  * Purpose:
  *  This function queries various trigger parameters for logic and source.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 sourceAndLogic
  *  ViInt16 gp1-gp4,all
  *  ViChar triggerSettings[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_readTrigSrcAndLogic(ViSession instrumentHandle,
-			     ViInt16 sourceAndLogic, ViInt16 gp1, ViInt16 gp2, ViInt16 gp3,
-			     ViInt16 gp4, ViInt16 all, ViChar triggerSettings[])
+ViStatus _VI_FUNC tkvx4244_readTrigSrcAndLogic(ViSession instrumentHandle,
+                                               ViInt16 sourceAndLogic,
+                                               ViInt16 gp1, ViInt16 gp2,
+                                               ViInt16 gp3, ViInt16 gp4,
+                                               ViInt16 all,
+                                               ViChar triggerSettings[])
 {
   ViChar gplst[10];
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
 
   /* Validate the command */
-  retError = tkvx4244_invalidShortRange(sourceAndLogic, tkvx4244_TRIG_QUERY_LOGIC,
-					tkvx4244_TRIG_QUERY_SOURCE, tkvx4244_ERROR_TRIG_SRC_QUERY);
+  retError = tkvx4244_invalidShortRange(
+      sourceAndLogic, tkvx4244_TRIG_QUERY_LOGIC, tkvx4244_TRIG_QUERY_SOURCE,
+      tkvx4244_ERROR_TRIG_SRC_QUERY);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp1, tkvx4244_GROUP_ONE_DISABLE,
-					tkvx4244_GROUP_ONE_ENABLE, tkvx4244_ERROR_GP_ONE);
+                                        tkvx4244_GROUP_ONE_ENABLE,
+                                        tkvx4244_ERROR_GP_ONE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp2, tkvx4244_GROUP_TWO_DISABLE,
-					tkvx4244_GROUP_TWO_ENABLE, tkvx4244_ERROR_GP_TWO);
+                                        tkvx4244_GROUP_TWO_ENABLE,
+                                        tkvx4244_ERROR_GP_TWO);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp3, tkvx4244_GROUP_THREE_DISABLE,
-					tkvx4244_GROUP_THREE_ENABLE, tkvx4244_ERROR_GP_THREE);
+                                        tkvx4244_GROUP_THREE_ENABLE,
+                                        tkvx4244_ERROR_GP_THREE);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(gp4, tkvx4244_GROUP_FOUR_DISABLE,
-					tkvx4244_GROUP_FOUR_ENABLE, tkvx4244_ERROR_GP_FOUR);
+                                        tkvx4244_GROUP_FOUR_ENABLE,
+                                        tkvx4244_ERROR_GP_FOUR);
   if (retError)
     return retError;
   retError = tkvx4244_invalidShortRange(all, tkvx4244_ALL_GROUPS_DISABLE,
-					tkvx4244_ALL_GROUPS_ENABLE, tkvx4244_ERROR_ALL_GROUPS);
+                                        tkvx4244_ALL_GROUPS_ENABLE,
+                                        tkvx4244_ERROR_ALL_GROUPS);
   if (retError)
     return retError;
   if (all + gp1 + gp2 + gp3 + gp4 == VI_FALSE)
@@ -6382,11 +6766,13 @@ tkvx4244_readTrigSrcAndLogic(ViSession instrumentHandle,
   sprintf(cmd, "TRIG:%s? (%s)\n", trig_sorce[sourceAndLogic], gplst);
   cmd[strlen(cmd)] = '\0';
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -6401,46 +6787,50 @@ tkvx4244_readTrigSrcAndLogic(ViSession instrumentHandle,
  * Purpose:
  *  This function queries the instrument for the trigger slope settings.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data. Must be initialized by tkvx4244_init()
- *		prior to use.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data. Must be initialized by tkvx4244_init() prior to use.
  *  ViInt16 acttiveEdge
  *  ViChar slope[]
  *  Returns:
  *		VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus _VI_FUNC
-tkvx4244_confTriggerSlope(ViSession instrumentHandle, ViInt16 activeEdge, ViChar slope[])
+ViStatus _VI_FUNC tkvx4244_confTriggerSlope(ViSession instrumentHandle,
+                                            ViInt16 activeEdge,
+                                            ViChar slope[])
 {
-  ViChar cmd[tkvx4244_CMD_STRLEN];	/* storage for instrument command strings */
-  ViChar rcv[tkvx4244_RCV_STRLEN];	/* storage for instrument receive strings */
-  ViStatus retError;		/* Returned error status */
-  ViInt32 retCnt;		/* required parameter for visa calls */
-  ViAttrState userData;		/* User data stored in VI_ATTR_USER_DATA */
-  tkvx4244_PdrvrStruct drvrHdl;	/* pointer to instrument specific data */
+  ViChar cmd[tkvx4244_CMD_STRLEN]; /* storage for instrument command strings */
+  ViChar rcv[tkvx4244_RCV_STRLEN]; /* storage for instrument receive strings */
+  ViStatus retError;               /* Returned error status */
+  ViInt32 retCnt;                  /* required parameter for visa calls */
+  ViAttrState userData;            /* User data stored in VI_ATTR_USER_DATA */
+  tkvx4244_PdrvrStruct drvrHdl;    /* pointer to instrument specific data */
 
   retError = viGetAttribute(instrumentHandle, VI_ATTR_USER_DATA, &userData);
-  drvrHdl = (tkvx4244_PdrvrStruct) userData;
+  drvrHdl = (tkvx4244_PdrvrStruct)userData;
   /*Validate the Command */
   retError = tkvx4244_invalidShortRange(activeEdge, tkvx4244_SLOPE_POS,
-					tkvx4244_SLOPE_NEG, tkvx4244_ERROR_TRIG_ACTIVE_EDGE);
+                                        tkvx4244_SLOPE_NEG,
+                                        tkvx4244_ERROR_TRIG_ACTIVE_EDGE);
   if (retError)
     return retError;
 
   /* Build the command string */
   sprintf(cmd, "TRIG:SLOP %s\n", active_edge[activeEdge]);
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
   /* Build the command string */
   sprintf(cmd, "TRIG:SLOP?\n");
   /* Send the command string */
-  retError = viWrite(instrumentHandle, (ViBuf) cmd, strlen(cmd), (ViPUInt32) & retCnt);
+  retError =
+      viWrite(instrumentHandle, (ViBuf)cmd, strlen(cmd), (ViPUInt32)&retCnt);
   if (retError)
     return retError;
 
-  retError = viRead(instrumentHandle, (ViPBuf) rcv, tkvx4244_RCV_STRLEN, (ViPUInt32) & retCnt);
+  retError = viRead(instrumentHandle, (ViPBuf)rcv, tkvx4244_RCV_STRLEN,
+                    (ViPUInt32)&retCnt);
   if (retError < VI_SUCCESS)
     return retError;
   rcv[retCnt] = '\0';
@@ -6462,8 +6852,8 @@ tkvx4244_confTriggerSlope(ViSession instrumentHandle, ViInt16 activeEdge, ViChar
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus
-tkvx4244_gplist_parse(ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt16 gpa, ViChar buf[])
+ViStatus tkvx4244_gplist_parse(ViInt16 gp1, ViInt16 gp2, ViInt16 gp3,
+                               ViInt16 gp4, ViInt16 gpa, ViChar buf[])
 {
   ViChar gplst[10];
 
@@ -6477,12 +6867,14 @@ tkvx4244_gplist_parse(ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt1
     strcat(gplst, "3,");
   if (gp4 == 1)
     strcat(gplst, "4,");
-  if (!gpa && !gplst[0]) {
+  if (!gpa && !gplst[0])
+  {
     return tkvx4244_NO_GRPS_SELECTED_ERROR;
   }
   if (gpa == 1)
     sprintf(buf, "all");
-  else {
+  else
+  {
     gplst[strlen(gplst) - 1] = 0;
     sprintf(buf, "@");
     strcat(buf, gplst);
@@ -6503,11 +6895,11 @@ tkvx4244_gplist_parse(ViInt16 gp1, ViInt16 gp2, ViInt16 gp3, ViInt16 gp4, ViInt1
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
-ViStatus
-tkvx4244_chlst_parse(ViInt16 c1, ViInt16 c2, ViInt16 c3,
-		     ViInt16 c4, ViInt16 c5, ViInt16 c6, ViInt16 c7, ViInt16 c8, ViInt16 c9,
-		     ViInt16 c10, ViInt16 c11, ViInt16 c12, ViInt16 c13, ViInt16 c14,
-		     ViInt16 c15, ViInt16 c16, ViInt16 ca, ViChar buf[])
+ViStatus tkvx4244_chlst_parse(ViInt16 c1, ViInt16 c2, ViInt16 c3, ViInt16 c4,
+                              ViInt16 c5, ViInt16 c6, ViInt16 c7, ViInt16 c8,
+                              ViInt16 c9, ViInt16 c10, ViInt16 c11, ViInt16 c12,
+                              ViInt16 c13, ViInt16 c14, ViInt16 c15,
+                              ViInt16 c16, ViInt16 ca, ViChar buf[])
 {
   ViChar chan[40];
 
@@ -6549,7 +6941,8 @@ tkvx4244_chlst_parse(ViInt16 c1, ViInt16 c2, ViInt16 c3,
     return tkvx4244_NO_CHAN_SELECTED_ERROR;
   if (ca == 1)
     sprintf(buf, "all");
-  else {
+  else
+  {
     chan[(strlen(chan)) - 1] = 0;
     sprintf(buf, "@%s", chan);
   }
@@ -6573,7 +6966,8 @@ tkvx4244_chlst_parse(ViInt16 c1, ViInt16 c2, ViInt16 c3,
  *	User defined error code if value out of range, else VI_SUCCESS
  */
 
-ViStatus tkvx4244_invalidLongRange(ViInt32 val, ViInt32 min, ViInt32 max, ViStatus retError)
+ViStatus tkvx4244_invalidLongRange(ViInt32 val, ViInt32 min, ViInt32 max,
+                                   ViStatus retError)
 {
   if (val < min || val > max)
     return retError;
@@ -6597,7 +6991,8 @@ ViStatus tkvx4244_invalidLongRange(ViInt32 val, ViInt32 min, ViInt32 max, ViStat
  *	User defined error code if value out of range, else VI_SUCCESS
  */
 
-ViStatus tkvx4244_invalidRealRange(ViReal64 val, ViReal64 min, ViReal64 max, ViStatus retError)
+ViStatus tkvx4244_invalidRealRange(ViReal64 val, ViReal64 min, ViReal64 max,
+                                   ViStatus retError)
 {
   if ((val < min) || (val > max))
     return retError;
@@ -6621,7 +7016,8 @@ ViStatus tkvx4244_invalidRealRange(ViReal64 val, ViReal64 min, ViReal64 max, ViS
  *	User defined error code if value out of range, else VI_SUCCESS
  */
 
-ViStatus tkvx4244_invalidShortRange(ViInt16 val, ViInt16 min, ViInt16 max, ViStatus retError)
+ViStatus tkvx4244_invalidShortRange(ViInt16 val, ViInt16 min, ViInt16 max,
+                                    ViStatus retError)
 {
   if (val < min || val > max)
     return retError;
@@ -6643,41 +7039,51 @@ ViStatus tkvx4244_invalidShortRange(ViInt16 val, ViInt16 min, ViInt16 max, ViSta
 
 ViStatus tkvx4244_setupArrays(void)
 {
-  ViSession resMgr;		/* Resource Manager Session */
-  ViStatus retError;		/* Returned error status */
+  ViSession resMgr;  /* Resource Manager Session */
+  ViStatus retError; /* Returned error status */
 
-  if (tkvx4244_gNumberFound == 0) {	/* note that tkvx4244_gNumberFound is a global */
-		/*************************************************************************
-		 * Find all available tkvx4244s and store an instrument descriptor string
-		 * for each.  This technique allows for faster autoconnects.
-		 *
-		 * Note: Both VXI and GPIB interfaces are searched for instruments.
-		 */
+  if (tkvx4244_gNumberFound ==
+      0)
+  { /* note that tkvx4244_gNumberFound is a global */
+    /*************************************************************************
+     * Find all available tkvx4244s and store an instrument descriptor string
+     * for each.  This technique allows for faster autoconnects.
+     *
+     * Note: Both VXI and GPIB interfaces are searched for instruments.
+     */
 
     retError = viGetDefaultRM(&resMgr);
-    if (retError >= VI_SUCCESS) {
+    if (retError >= VI_SUCCESS)
+    {
       retError = tkvx4244_findInstruments(resMgr, tkvx4244_VXI_SEARCH);
       if ((retError < VI_SUCCESS) && (retError != VI_ERROR_RSRC_NFOUND) &&
-	  (retError != VI_ERROR_SYSTEM_ERROR)) {
-	viClose(resMgr);
-	return retError;
+          (retError != VI_ERROR_SYSTEM_ERROR))
+      {
+        viClose(resMgr);
+        return retError;
       }
 
       retError = tkvx4244_findInstruments(resMgr, tkvx4244_GPIB_VXI_SEARCH);
-      if ((retError < VI_SUCCESS) && (retError != VI_ERROR_RSRC_NFOUND)) {
-	viClose(resMgr);
-	return retError;
+      if ((retError < VI_SUCCESS) && (retError != VI_ERROR_RSRC_NFOUND))
+      {
+        viClose(resMgr);
+        return retError;
       }
     }
 
     viClose(resMgr);
 
-    if (tkvx4244_gNumberFound > 0) {
+    if (tkvx4244_gNumberFound > 0)
+    {
       return VI_SUCCESS;
-    } else {
+    }
+    else
+    {
       return VI_ERROR_RSRC_NFOUND;
     }
-  } else {
+  }
+  else
+  {
     return VI_SUCCESS;
   }
 }
@@ -6698,25 +7104,26 @@ ViStatus tkvx4244_setupArrays(void)
  * Parameters:
  *	ViSession resMgr: Default resource manager to communicate with.
  * ViChar searchString[]: Search string which specifies which interfaces
- *								to search for instruments
- * Returns:
- *	VI_SUCCESS if no errors occurred, error code otherwise
+ *								to search for
+ *instruments Returns: VI_SUCCESS if no errors occurred, error code otherwise
  */
 
 ViStatus tkvx4244_findInstruments(ViSession resMgr, ViChar searchString[])
 {
-  ViStatus retError;		/* Returned error status */
-  ViSession session;		/* VISA session */
-  ViSession findSession;	/* VISA find session */
-  ViInt32 retCnt;		/* Number of matches made by viFindRsrc */
-  ViChar descriptor[tkvx4244_RCV_STRLEN];	/* instrument descriptor */
-  ViInt16 logAdr;		/* logical address */
-  ViInt16 slot;			/* slot # */
+  ViStatus retError;                      /* Returned error status */
+  ViSession session;                      /* VISA session */
+  ViSession findSession;                  /* VISA find session */
+  ViInt32 retCnt;                         /* Number of matches made by viFindRsrc */
+  ViChar descriptor[tkvx4244_RCV_STRLEN]; /* instrument descriptor */
+  ViInt16 logAdr;                         /* logical address */
+  ViInt16 slot;                           /* slot # */
 
   findSession = VI_NULL;
 
-  retError = viFindRsrc(resMgr, searchString, &findSession, (ViPUInt32) & retCnt, descriptor);
-  if (retError < VI_SUCCESS) {
+  retError = viFindRsrc(resMgr, searchString, &findSession, (ViPUInt32)&retCnt,
+                        descriptor);
+  if (retError < VI_SUCCESS)
+  {
     viClose(findSession);
     return retError;
   }
@@ -6726,33 +7133,38 @@ ViStatus tkvx4244_findInstruments(ViSession resMgr, ViChar searchString[])
    * time a tkvx4244 is located, add it to a list.
    */
 
-  do {
+  do
+  {
     /*
      * get the slot number, manufacture id and model code
      * from the instrument.
      */
 
     retError = viOpen(resMgr, descriptor, VI_NULL, VI_NULL, &session);
-    if (retError < VI_SUCCESS) {
+    if (retError < VI_SUCCESS)
+    {
       viClose(findSession);
       return retError;
     }
 
     retError = tkvx4244_verifyID(session);
 
-    if (retError >= VI_SUCCESS) {
+    if (retError >= VI_SUCCESS)
+    {
       retError = viGetAttribute(session, VI_ATTR_SLOT, &slot);
-      if (retError < VI_SUCCESS) {
-	viClose(session);
-	viClose(findSession);
-	return retError;
+      if (retError < VI_SUCCESS)
+      {
+        viClose(session);
+        viClose(findSession);
+        return retError;
       }
 
       retError = viGetAttribute(session, VI_ATTR_VXI_LA, &logAdr);
-      if (retError < VI_SUCCESS) {
-	viClose(session);
-	viClose(findSession);
-	return retError;
+      if (retError < VI_SUCCESS)
+      {
+        viClose(session);
+        viClose(findSession);
+        return retError;
       }
 
       /*
@@ -6766,11 +7178,15 @@ ViStatus tkvx4244_findInstruments(ViSession resMgr, ViChar searchString[])
       (tkvx4244_gNumberFound)++;
 
       viClose(session);
-    } else if (retError != VI_ERROR_RSRC_NFOUND) {
+    }
+    else if (retError != VI_ERROR_RSRC_NFOUND)
+    {
       viClose(session);
       viClose(findSession);
       return retError;
-    } else {
+    }
+    else
+    {
       viClose(session);
     }
 
@@ -6780,9 +7196,12 @@ ViStatus tkvx4244_findInstruments(ViSession resMgr, ViChar searchString[])
 
   viClose(findSession);
 
-  if (tkvx4244_gNumberFound > 0) {
+  if (tkvx4244_gNumberFound > 0)
+  {
     return VI_SUCCESS;
-  } else {
+  }
+  else
+  {
     return VI_ERROR_RSRC_NFOUND;
   }
 }
@@ -6796,20 +7215,21 @@ ViStatus tkvx4244_findInstruments(ViSession resMgr, ViChar searchString[])
  * Parameters:
  *	ViInt16 slot: slot # to connect to (VI_NULL if not used)
  *	ViInt16 logAdr: logical address to connect to (VI_NULL if not used)
- *	ViPSession instrumentHandle: Pointer to VISA instrument handle used to access
- *		instrument specific data. This handle is initialized by this
- *		routine.  Note that if a slot is specified without a logical
- *		address and multiple instruments reside in the slot, this
- *		routine will connect to the first instrument found in the slot.
+ *	ViPSession instrumentHandle: Pointer to VISA instrument handle used to
+ *access instrument specific data. This handle is initialized by this routine.
+ *Note that if a slot is specified without a logical address and multiple
+ *instruments reside in the slot, this routine will connect to the first
+ *instrument found in the slot.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus tkvx4244_tryAutoConnect(ViInt16 theSlot, ViInt16 theLogAdr, ViPSession instrumentHandle)
+ViStatus tkvx4244_tryAutoConnect(ViInt16 theSlot, ViInt16 theLogAdr,
+                                 ViPSession instrumentHandle)
 {
-  ViStatus retError;		/* Returned error status */
-  ViString descriptor;		/* instrument descriptor */
+  ViStatus retError;   /* Returned error status */
+  ViString descriptor; /* instrument descriptor */
 
   /* Initialize Instrument-Dependent Command arrays. */
   tkvx4244_setupArrays();
@@ -6821,16 +7241,20 @@ ViStatus tkvx4244_tryAutoConnect(ViInt16 theSlot, ViInt16 theLogAdr, ViPSession 
 
   retError = tkvx4244_returnDescriptor(theSlot, theLogAdr, &descriptor);
 
-  if (retError < VI_SUCCESS) {
+  if (retError < VI_SUCCESS)
+  {
     /*
      * return error because instrument is not in theSlot or wrong LA
      */
 
     *instrumentHandle = VI_NULL;
-  } else {
+  }
+  else
+  {
     retError = tkvx4244_init(descriptor, VI_FALSE, VI_TRUE, instrumentHandle);
 
-    if (retError < VI_SUCCESS) {
+    if (retError < VI_SUCCESS)
+    {
       *instrumentHandle = VI_NULL;
     }
   }
@@ -6853,32 +7277,47 @@ ViStatus tkvx4244_tryAutoConnect(ViInt16 theSlot, ViInt16 theLogAdr, ViPSession 
  *	VI_SUCCESS if no errors occurred, error code otherwise
  */
 
-ViStatus tkvx4244_returnDescriptor(ViInt16 theSlot, ViInt16 theLogAdr, ViString * descriptor)
+ViStatus tkvx4244_returnDescriptor(ViInt16 theSlot, ViInt16 theLogAdr,
+                                   ViString *descriptor)
 {
-  ViInt16 ii;			/* loop count */
+  ViInt16 ii; /* loop count */
 
-  if ((theSlot > 0) && (theLogAdr > 0)) {
-    for (ii = 0; ii < tkvx4244_gNumberFound; ii++) {
-      if ((tkvx4244_instrAttr[ii].slot == theSlot) && (tkvx4244_instrAttr[ii].logAdr == theLogAdr)) {
-	*descriptor = tkvx4244_instrAttr[ii].instrDesc;
-	return VI_SUCCESS;
+  if ((theSlot > 0) && (theLogAdr > 0))
+  {
+    for (ii = 0; ii < tkvx4244_gNumberFound; ii++)
+    {
+      if ((tkvx4244_instrAttr[ii].slot == theSlot) &&
+          (tkvx4244_instrAttr[ii].logAdr == theLogAdr))
+      {
+        *descriptor = tkvx4244_instrAttr[ii].instrDesc;
+        return VI_SUCCESS;
       }
     }
-  } else if ((theSlot > 0) && (theLogAdr <= 0)) {
-    for (ii = 0; ii < tkvx4244_gNumberFound; ii++) {
-      if (tkvx4244_instrAttr[ii].slot == theSlot) {
-	*descriptor = tkvx4244_instrAttr[ii].instrDesc;
-	return VI_SUCCESS;
+  }
+  else if ((theSlot > 0) && (theLogAdr <= 0))
+  {
+    for (ii = 0; ii < tkvx4244_gNumberFound; ii++)
+    {
+      if (tkvx4244_instrAttr[ii].slot == theSlot)
+      {
+        *descriptor = tkvx4244_instrAttr[ii].instrDesc;
+        return VI_SUCCESS;
       }
     }
-  } else if ((theSlot <= 0) && (theLogAdr > 0)) {
-    for (ii = 0; ii < tkvx4244_gNumberFound; ii++) {
-      if (tkvx4244_instrAttr[ii].logAdr == theLogAdr) {
-	*descriptor = tkvx4244_instrAttr[ii].instrDesc;
-	return VI_SUCCESS;
+  }
+  else if ((theSlot <= 0) && (theLogAdr > 0))
+  {
+    for (ii = 0; ii < tkvx4244_gNumberFound; ii++)
+    {
+      if (tkvx4244_instrAttr[ii].logAdr == theLogAdr)
+      {
+        *descriptor = tkvx4244_instrAttr[ii].instrDesc;
+        return VI_SUCCESS;
       }
     }
-  } else {
+  }
+  else
+  {
     return VI_ERROR_RSRC_NFOUND;
   }
   return VI_ERROR_RSRC_NFOUND;
@@ -6893,8 +7332,8 @@ ViStatus tkvx4244_returnDescriptor(ViInt16 theSlot, ViInt16 theLogAdr, ViString 
  *	services.
  *
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to access instrument
- *		specific data.
+ *	ViSession instrumentHandle: VISA instrument handle used to access
+ *instrument specific data.
  *
  * Returns:
  *	VI_SUCCESS if no errors occurred, error code otherwise
@@ -6902,10 +7341,10 @@ ViStatus tkvx4244_returnDescriptor(ViInt16 theSlot, ViInt16 theLogAdr, ViString 
 
 ViStatus tkvx4244_verifyID(ViSession instrumentHandle)
 {
-  ViUInt16 manfID;		/* instrument manufacturer ID code */
-  ViUInt16 modelCode;		/* instrument model code */
-  ViStatus retError;		/* Returned error status */
-  ViInt16 ii;			/* loop counter */
+  ViUInt16 manfID;    /* instrument manufacturer ID code */
+  ViUInt16 modelCode; /* instrument model code */
+  ViStatus retError;  /* Returned error status */
+  ViInt16 ii;         /* loop counter */
 
   /* Read the manufacturer ID */
 
@@ -6924,10 +7363,13 @@ ViStatus tkvx4244_verifyID(ViSession instrumentHandle)
   if (tkvx4244_modelCodes[0] < 0x1000)
     modelCode &= 0x0fff;
 
-  if (manfID == tkvx4244_MANF_ID) {
-    for (ii = 0; ii < tkvx4244_NUM_MODEL_CODES; ii++) {
-      if (tkvx4244_modelCodes[ii] == modelCode) {
-	return VI_SUCCESS;
+  if (manfID == tkvx4244_MANF_ID)
+  {
+    for (ii = 0; ii < tkvx4244_NUM_MODEL_CODES; ii++)
+    {
+      if (tkvx4244_modelCodes[ii] == modelCode)
+      {
+        return VI_SUCCESS;
       }
     }
   }
@@ -6939,13 +7381,13 @@ ViStatus tkvx4244_verifyID(ViSession instrumentHandle)
 
 #ifdef tkvx4244_DLL
 #include <windows.h>
-int _VI_FUNC LibMain( /*Handle, WORD, WORD, LPSTR */ )
+int _VI_FUNC LibMain(/*Handle, WORD, WORD, LPSTR */)
 {
   /*
    * Put any initialization code here required
    * by your instrument Driver
    */
-  return 1;			/* signifies success */
+  return 1; /* signifies success */
 }
 
 int _VI_FUNC WEP(ViInt32 arg)
@@ -6954,6 +7396,6 @@ int _VI_FUNC WEP(ViInt32 arg)
    * Put any clean up code required by your
    * driver here.
    */
-  return 1;			/* signifies success */
+  return 1; /* signifies success */
 }
 #endif

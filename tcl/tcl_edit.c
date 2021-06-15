@@ -22,8 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
 #include <mdsshr.h>
@@ -32,20 +32,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tcl_p.h"
 
 /***********************************************************************
-* TCL_EDIT.C --
-*
-* Open a tree for edit.
-*
-* History:
-*  14-Apr-1998  TRG  Create.  Ported from original MDSplus code.
-*
-************************************************************************/
+ * TCL_EDIT.C --
+ *
+ * Open a tree for edit.
+ *
+ * History:
+ *  14-Apr-1998  TRG  Create.  Ported from original MDSplus code.
+ *
+ ************************************************************************/
 
-	/***************************************************************
-	 * TclEdit:
-	 * Open tree for edit
-	 ***************************************************************/
-EXPORT int TclEdit(void *ctx, char **error, char **output __attribute__ ((unused)))
+/***************************************************************
+ * TclEdit:
+ * Open tree for edit
+ ***************************************************************/
+EXPORT int TclEdit(void *ctx, char **error,
+                   char **output __attribute__((unused)))
 {
   int shot;
   int sts;
@@ -61,11 +62,14 @@ EXPORT int TclEdit(void *ctx, char **error, char **output __attribute__ ((unused
     sts = TreeOpenEdit(filnam, shot);
   if (sts & 1)
     TclNodeTouched(0, tree);
-  else {
+  else
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + 100);
-    sprintf(*error, "Error: Unable to edit shot number %d of the '%s' tree\nError msg was: %s\n",
-	    shot, filnam, msg);
+    sprintf(*error,
+            "Error: Unable to edit shot number %d of the '%s' tree\nError msg "
+            "was: %s\n",
+            shot, filnam, msg);
   }
   free(filnam);
   free(asciiShot);

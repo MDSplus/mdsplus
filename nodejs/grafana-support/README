@@ -1,0 +1,118 @@
+*******************Installation of MDSplus grafana plugings*****************
+
+Two MDSPlus aware data plugings are available for grafana: 
+
+- mdsip  - For displaying MDSplus signals *********with absolute time*********
+- stream - For displaying signals send via MDSplus streaming
+
+Required steps for plugins installation:
+
+1) Install grafana on a system that can receive MDSplus streams. Only mdsplus/nodejs is required on such system.
+    see https://grafana.com/docs/grafana/latest/installation/rpm/
+    
+2) Install nodeJS 14
+    
+    
+3) Install yarn
+    npm install --global yarn
+    
+    
+4) Create a directory named grafana-plugins
+
+5) Set the 'plugins' property in the grafana configuration file (/etc/grafana/grafana.ini) to the 
+   path of the newly created grafana-plugins directory
+   
+   [paths]
+   plugins = "/path/to/grafana-plugins"
+
+6) In grafana-plugins install Websocket 
+
+  npm install websocket
+
+   
+7) In grafana-plugins directory create mdsip and streams plugins from template with the following commands:
+
+    npx @grafana/toolkit plugin:create mdsip
+    npx @grafana/toolkit plugin:create streams
+    
+    when prompted during installation:
+    1) select 'Datasource Plugin'
+    2) Use default value (mdsip/streams) as Plugin name
+    3) type mds for Organization
+    4) type return for all the other requested fields
+
+    
+8)  In each created directory (mdsip and streams), download necessary dependencies
+    
+    yarn install
+    
+    
+    
+9) copy files from MDSplus distribution 
+    
+    cp /opt/mdsplus/nodejs/grafana-support/mdsip/*     <grafana-plugins-path>/mdsip/src
+    cp /opt/mdsplus/nodejs/grafana-support/streams/*   <grafana-plugins-path>/streams/src
+
+10) PATCH: the latest grafana distribution introduced an incompatibility between rxjs libraries
+   It can be solved with the following command, issued within  <grafana-plugins-path>/mdsip
+   and <grafana-plugins-path>/streams
+   
+  cp -r node_modules/@grafana/data/node_modules/rxjs node_modules/
+    
+    
+11) In each created directory (mdsip and streams), build the plugin
+
+    yarn dev
+    
+12) Restart grafana
+
+   /bin/systemctl restart grafana-server.service
+
+    
+13) In /opt/mdsplus/nodejs launch Node js program mds-bridge
+
+    node mds-bridge
+    
+    This program starts a WebSocket server that is used by the grafana pugins (running at the web 
+    browser side) to access MDSplus data and streams. By defaulti, the WebSocket server listens at port 8020, but 
+    the port number can be changed in fil mds-bridge.json. Currently, the following configuration parameters can 
+    be defined in mds-bridge.json:
+      - port : the port at which the WebServer is listening
+      - refresh : the refresh interval (in ms) for the stream data source. The default is 2000 (2 secs) 
+                  Shorter intervals may overload the web server especially when several signals are displayed.
+      - debug : the debug level (0: no messages, except errors, 1: connection and request messages shown, 2: exchanged 
+                messages shown)
+      
+    
+
+mdsip and streams should now be visible in the data sorces list in the grafana interface, and can be selected 
+when building a panel. In both mdsip and stream data source configurations field 'WS port' specifies the port
+at which the WebSocket is listening. This value (defaut 8020) must be consistent with the "port" field of mds-bridge.json.
+Clicking 'Save & Test' button, a connection is established with the WebSocket server.
+In addition, for the mdsip plugin the 'Save & Test' button establishes a mdsip connection with the 
+mdsip server listed in 'Mdsip address' field. 
+
+
+When the corresponding data plugin has been select in the panel configuration, the setup fields will be shown, namely:
+- for mdsip plugin: Experiment, Shot, Signal
+- for streams plugin: Signal, Label (shown in the plots) 
+In both cases the configuration is entered by hitting the Apply button.
+
+
+HACKS for latest version
+for Marte DataSource add in marte/package.json
+    "@grafana/runtime": "latest",
+and then yarn install
+
+remove rxjs library  
+rm -rf /opt/mdsplus/nodejs/grafana-plugins/marte/node_modules/rxjs
+and replace it with 
+cp -r /opt/mdsplus/nodejs/grafana-plugins/marte/node_modules/@grafana/data/node_modules/rxjs /opt/mdsplus/nodejs/grafana-plugins/marte/node_modules/
+
+then yarn dev
+
+
+
+
+    
+    

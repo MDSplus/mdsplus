@@ -3,10 +3,10 @@
 # windows_docker_build.sh - build windows installer
 #
 # release:
-# /release/$branch/MDSplus-*.exe
+# /release/$flavor/MDSplus-*.exe
 #
 # publish:
-# /publish/$branch/MDSplus-*.exe
+# /publish/$flavor/MDSplus-*.exe
 #
 
 srcdir=$(readlink -e $(dirname ${0})/../..)
@@ -18,6 +18,13 @@ test64="64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64 --with-winebottle=/workspace
 mkdir -p /workspace/winebottle32
 test32="32 i686-w64-mingw32   bin_x86    bin_x86    --with-winebottle=/workspace/winebottle32"
 
+runtests() {
+    # run tests with the platform specific params read from test32 and test64
+    testarch ${test64}
+    testarch ${test32};
+    checktests;
+}
+
 buildrelease() {
     abort=0
     ### Clean up workspace
@@ -28,7 +35,7 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
-    config ${test64} ${ALPHA_DEBUG_INFO}
+    config ${test64} ${CONFIGURE_EXTRA}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -36,7 +43,7 @@ buildrelease() {
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
-    config ${test32} ${ALPHA_DEBUG_INFO}
+    config ${test32} ${CONFIGURE_EXTRA}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -64,11 +71,5 @@ publish() {
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
     minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
     release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-    if [ "${BRANCH}" = "stable" ]
-    then
-        bname=""
-    else
-        bname="-${BRANCH}"
-    fi
-    rsync -a /release/${BRANCH}/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}
+    rsync -a /release/${FLAVOR}/MDSplus${BNAME}-${major}.${minor}-${release}.exe /publish/${FLAVOR}
 }

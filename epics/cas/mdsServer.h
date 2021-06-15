@@ -1,16 +1,16 @@
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
-#include "gddAppFuncTable.h"
-#include "smartGDDPointer.h"
-#include "epicsTime.h"
 #include "casdef.h"
 #include "epicsAssert.h"
+#include "epicsTime.h"
+#include "gddAppFuncTable.h"
 #include "resourceLib.h"
+#include "smartGDDPointer.h"
 #include "tsMinMax.h"
 
 #ifndef NELEMENTS
-#define NELEMENTS(A) (sizeof(A)/sizeof(A[0]))
+#define NELEMENTS(A) (sizeof(A) / sizeof(A[0]))
 #endif
 
 #include <mdsobjects.h>
@@ -28,26 +28,29 @@ class mdsServer;
 // with several of this class all referencing
 // the same pv info class
 //
-class pvEntry:public stringId, public tsSLNode < pvEntry > {
- public:
-  pvEntry(mdsPV & pvIn, mdsServer & casIn, const char *pAliasName);
+class pvEntry : public stringId, public tsSLNode<pvEntry>
+{
+public:
+  pvEntry(mdsPV &pvIn, mdsServer &casIn, const char *pAliasName);
   ~pvEntry();
   void destroy();
   mdsPV *getPV();
- private:
-   mdsPV & pv;
-   mdsServer & cas;
-   pvEntry & operator =(const pvEntry &);
-   pvEntry(const pvEntry &);
+
+private:
+  mdsPV &pv;
+  mdsServer &cas;
+  pvEntry &operator=(const pvEntry &);
+  pvEntry(const pvEntry &);
 };
 
 //
 // mdsPV
 //
-class mdsPV:public casPV, public tsSLNode < mdsPV > {
- public:
-  mdsPV(mdsServer & cas, char *name, Tree * tree, TreeNode * topNode, bool append);
-   virtual ~ mdsPV();
+class mdsPV : public casPV, public tsSLNode<mdsPV>
+{
+public:
+  mdsPV(mdsServer &cas, char *name, Tree *tree, TreeNode *topNode, bool append);
+  virtual ~mdsPV();
 
   // Called by the server libary each time that it wishes to
   // subscribe for PV the server tool via postEvent()
@@ -60,8 +63,8 @@ class mdsPV:public casPV, public tsSLNode < mdsPV > {
 
   aitEnum bestExternalType() const;
 
-  caStatus read(const casCtx &, gdd & protoIn);
-  caStatus write(const casCtx &, const gdd & value);
+  caStatus read(const casCtx &, gdd &protoIn);
+  caStatus write(const casCtx &, const gdd &value);
   void destroy();
   const char *getName() const;
   static void initFT();
@@ -73,27 +76,24 @@ class mdsPV:public casPV, public tsSLNode < mdsPV > {
   // If the operation must complete asynchronously then return
   // the status code S_casApp_asyncCompletion and then
   // create the casChannel object at some time in the future
-  casChannel *createChannel(const casCtx & ctx, const char *const pUserName,
-			    const char *const pHostName);
+  casChannel *createChannel(const casCtx &ctx, const char *const pUserName,
+                            const char *const pHostName);
 
-  //unsigned maxDimension() const;
-  //aitIndex maxBound(unsigned dimension) const;
-  bool isValid() {
-    return valid;
-  } void reference() {
-    refCount++;
-  }
+  // unsigned maxDimension() const;
+  // aitIndex maxBound(unsigned dimension) const;
+  bool isValid() { return valid; }
+  void reference() { refCount++; }
 
- protected:
+protected:
   const gdd *currValue;
-  mdsServer & cas;
+  mdsServer &cas;
   bool interest;
   bool preCreate;
   static epicsTime currentTime;
-  Data *dataFromGdd(const gdd & inGdd);
+  Data *dataFromGdd(const gdd &inGdd);
   caStatus updateValue(const gdd &);
 
- private:
+private:
   int refCount;
   bool append;
   bool isText;
@@ -103,82 +103,84 @@ class mdsPV:public casPV, public tsSLNode < mdsPV > {
   int nDims;
   int *dims;
 
-  aitFloat64 lopr, hopr, highAlarm, lowAlarm, highWarning, lowWarning, highCtrl, lowCtrl,
-      highGraphic, lowGraphic;
+  aitFloat64 lopr, hopr, highAlarm, lowAlarm, highWarning, lowWarning, highCtrl,
+      lowCtrl, highGraphic, lowGraphic;
 
-  aitFloat64 defHighAlarm, defLowAlarm, defHighWarning, defLowWarning, defHighCtrl, defLowCtrl,
-      defHighGraphic, defLowGraphic;
+  aitFloat64 defHighAlarm, defLowAlarm, defHighWarning, defLowWarning,
+      defHighCtrl, defLowCtrl, defHighGraphic, defLowGraphic;
 
   int precision;
   char *units;
   char **enums;
   int numEnums;
   bool hasOpr, hasAlarm, hasWarning, hasCtrl, hasGraphic;
-  Data *getDataFromGdd(gdd & in);
-  void setGddFromData(Data * data, gdd & outGdd);
+  Data *getDataFromGdd(gdd &in);
+  void setGddFromData(Data *data, gdd &outGdd);
 
   // Std PV Attribute fetch support
-  gddAppFuncTableStatus getPrecision(gdd & value);
-  gddAppFuncTableStatus getHighAlarm(gdd & value);
-  gddAppFuncTableStatus getLowAlarm(gdd & value);
-  gddAppFuncTableStatus getHighWarning(gdd & value);
-  gddAppFuncTableStatus getLowWarning(gdd & value);
-  gddAppFuncTableStatus getHighCtrl(gdd & value);
-  gddAppFuncTableStatus getLowCtrl(gdd & value);
-  gddAppFuncTableStatus getHighGraphic(gdd & value);
-  gddAppFuncTableStatus getLowGraphic(gdd & value);
-  gddAppFuncTableStatus getUnits(gdd & value);
-  gddAppFuncTableStatus getValue(gdd & value);
-  gddAppFuncTableStatus getEnums(gdd & value);
+  gddAppFuncTableStatus getPrecision(gdd &value);
+  gddAppFuncTableStatus getHighAlarm(gdd &value);
+  gddAppFuncTableStatus getLowAlarm(gdd &value);
+  gddAppFuncTableStatus getHighWarning(gdd &value);
+  gddAppFuncTableStatus getLowWarning(gdd &value);
+  gddAppFuncTableStatus getHighCtrl(gdd &value);
+  gddAppFuncTableStatus getLowCtrl(gdd &value);
+  gddAppFuncTableStatus getHighGraphic(gdd &value);
+  gddAppFuncTableStatus getLowGraphic(gdd &value);
+  gddAppFuncTableStatus getUnits(gdd &value);
+  gddAppFuncTableStatus getValue(gdd &value);
+  gddAppFuncTableStatus getEnums(gdd &value);
 
-  mdsPV & operator =(const mdsPV &);
+  mdsPV &operator=(const mdsPV &);
   mdsPV(const mdsPV &);
   Data *getData();
-  static gddAppFuncTable < mdsPV > ft;
+  static gddAppFuncTable<mdsPV> ft;
   static char hasBeenInitialized;
 
   unsigned maxDimension() const;
   aitIndex maxBound(unsigned dimension) const;
   bool valid;
-
 };
 
 //
 // mdsServer
 //
-class mdsServer:private caServer {
- public:
-  mdsServer(Tree * tree, bool append);
+class mdsServer : private caServer
+{
+public:
+  mdsServer(Tree *tree, bool append);
   ~mdsServer();
-  void removeAliasName(pvEntry & entry);
+  void removeAliasName(pvEntry &entry);
   void destroyAllPV();
- private:
-   resTable < pvEntry, stringId > stringResTbl;
+
+private:
+  resTable<pvEntry, stringId> stringResTbl;
   bool append;
-  void installAliasName(mdsPV & info, const char *pAliasName);
-  pvExistReturn pvExistTest(const casCtx &, const caNetAddr &, const char *pPVName);
+  void installAliasName(mdsPV &info, const char *pAliasName);
+  pvExistReturn pvExistTest(const casCtx &, const caNetAddr &,
+                            const char *pPVName);
   pvExistReturn pvExistTest(const casCtx &, const char *pPVName);
   pvAttachReturn pvAttach(const casCtx &, const char *pPVName);
 
-   mdsServer & operator =(const mdsServer &);
-   mdsServer(const mdsServer &);
+  mdsServer &operator=(const mdsServer &);
+  mdsServer(const mdsServer &);
   char *makeUpper(const char *);
 };
 
 //
 // mdsChannel
 //
-class mdsChannel:public casChannel {
- public:
-  mdsChannel(const casCtx & ctxIn);
+class mdsChannel : public casChannel
+{
+public:
+  mdsChannel(const casCtx &ctxIn);
   void setOwner(const char *const pUserName, const char *const pHostName);
   bool readAccess() const;
   bool writeAccess() const;
- private:
-   mdsChannel & operator =(const mdsChannel &);
-   mdsChannel(const mdsChannel &);
+
+private:
+  mdsChannel &operator=(const mdsChannel &);
+  mdsChannel(const mdsChannel &);
 };
 
-inline mdsChannel::mdsChannel(const casCtx & ctxIn):casChannel(ctxIn)
-{
-}
+inline mdsChannel::mdsChannel(const casCtx &ctxIn) : casChannel(ctxIn) {}

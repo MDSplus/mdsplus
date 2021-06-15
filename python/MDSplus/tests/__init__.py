@@ -30,6 +30,8 @@ MDSplus tests
 Tests of MDSplus
 
 """
+
+
 def _mimportSuite(name, level=1):
     try:
         module = __import__(name, globals(), level=level)
@@ -37,16 +39,19 @@ def _mimportSuite(name, level=1):
         module = __import__(name, globals())
     return module.Tests.getTestSuite
 
-from unittest import TestSuite,TextTestRunner
+
+from unittest import TestSuite, TextTestRunner
 import sys
-import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+import gc
+gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
 
 from MDSplus import getenv
 
+
 def test_all(*arg):
     if getenv('waitdbg') is not None:
-      print("Hit return after gdb is connected\n")
-      sys.stdin.readline()
+        print("Hit return after gdb is connected\n")
+        sys.stdin.readline()
     testSuites = [
         'dataUnitTest',
         'dclUnitTest',
@@ -57,16 +62,18 @@ def test_all(*arg):
         'threadsUnitTest',
         'connectionUnitTest',
     ]
-    tests=[]
+    tests = []
     for suite in testSuites:
         try:
             tests.append(_mimportSuite(suite)())
         except Exception as e:
-            print("Could not import %s\n%s"%(suite,e.message))
+            print("Could not import %s\n%s" % (suite, e.message))
     return TestSuite(tests)
+
 
 def run():
     TextTestRunner(verbosity=2).run(test_all())
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     run()

@@ -33,19 +33,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element BOXSMOOTH.C */
 /*------------------------------------------------------------------------------
 
-		Name:   BOXSMOOTH
+                Name:   BOXSMOOTH
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   15-AUG-1990
+                Date:   15-AUG-1990
 
-		Purpose: Smooth a signal using boxcar smoothing
+                Purpose: Smooth a signal using boxcar smoothing
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int boxsmooth(int *num, float *in, int *width, float *out)
 
@@ -57,12 +57,12 @@ int boxsmooth(int *num, float *in, int *width, float *out)
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
-#include <string.h>
 #include <mdsplus/mdsconfig.h>
+#include <string.h>
 
 EXPORT int boxsmooth(int *num, float *in, int *width, float *out)
 {
@@ -74,20 +74,24 @@ EXPORT int boxsmooth(int *num, float *in, int *width, float *out)
   int *out_int = (int *)out;
   if (n <= 0)
     return 0;
-  if (n < w) {
+  if (n < w)
+  {
     memcpy(out, in, n * sizeof(float));
     return 1;
   }
   w += (w % 2) ? 0 : 1;
   memcpy(out, in, w / 2 * sizeof(float));
-  for (i = w / 2; i < n - w / 2; i++) {
+  for (i = w / 2; i < n - w / 2; i++)
+  {
     int div;
     double total = 0.;
-    for (div = 0, j = 0; j < w; j++) {
+    for (div = 0, j = 0; j < w; j++)
+    {
       int idx = i + j - w / 2;
-      if (in_int[idx] != 32768) {
-	total += in[i + j - w / 2];
-	div++;
+      if (in_int[idx] != 32768)
+      {
+        total += in[i + j - w / 2];
+        div++;
       }
     }
     if (div > 0)

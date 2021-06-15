@@ -58,7 +58,7 @@ public final class jTraverserFacade extends JFrame
 	{
 		JOptionPane.setRootFrame(this);
 		this.setTitle("jTraverser - no tree open");
-		int mode = TREE.READONLY;
+		TREE.MODE mode = TREE.READONLY;
 		if (access != null && !access.isEmpty())
 		{
 			access = access.toLowerCase();

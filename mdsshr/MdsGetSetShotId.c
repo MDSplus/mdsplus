@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   MdsGetCurrentShotId
+                Name:   MdsGetCurrentShotId
 
-		Type:   C function
+                Type:   C function
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   11-OCT-1989
+                Date:   11-OCT-1989
 
-		Purpose: Get current shot number
+                Purpose: Get current shot number
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int MdsGetCurrentShotId(experiment,shot)
 
@@ -48,16 +48,17 @@ int MdsGetCurrentShotId(experiment,shot)
    Management.
 ------------------------------------------------------------------------------*/
 #include <stdio.h>
-#include <STATICdef.h>
 
 int MdsGetCurrentShotId()
 {
-  printf("MdsGetCurrentShotId is obsolete, use TreeGetCurrentShotId in TreeShr\n");
+  printf(
+      "MdsGetCurrentShotId is obsolete, use TreeGetCurrentShotId in TreeShr\n");
   return 0;
 }
 
 int MdsSetCurrentShotId()
 {
-  printf("MdsSetCurrentShotId is obsolete, use TreeSetCurrentShotId in TreeShr\n");
+  printf(
+      "MdsSetCurrentShotId is obsolete, use TreeSetCurrentShotId in TreeShr\n");
   return 0;
 }

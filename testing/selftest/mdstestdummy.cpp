@@ -26,12 +26,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 #include "mdstestdummy.h"
 
+void generate_false_assert() { assert("user generated false assert" && 0); }
 
-
-void generate_false_assert() {
-    assert( "user generated false assert"&&0 );
-}
-
-void generate_true_assert() {
-    assert( "user generated true assert"||1 );
-}
+void generate_true_assert() { assert("user generated true assert" || 1); }

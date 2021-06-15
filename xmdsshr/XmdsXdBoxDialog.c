@@ -31,19 +31,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSXDBOXDIALOG.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSXDBOXDIALOG
+                Name:   XMDSXDBOXDIALOG
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:   16-JAN-1992
+                Date:   16-JAN-1992
 
-		Purpose: Convienence routine for XdBoxDialogs
+                Purpose: Convienence routine for XdBoxDialogs
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -67,36 +67,36 @@ extern void XmdsXdBoxLoad();
   resources originalXd, and buttonCallback to setup
   the initial widget.
 ****************************************************/
-EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args,
+                                    Cardinal argcount)
 {
 
   /*------------------------------------------------------------------------------
 
-   External functions or symbols referenced:                                    */
+   External functions or symbols referenced: */
 
   /*------------------------------------------------------------------------------
 
-   Subroutines referenced:                                                      */
+   Subroutines referenced: */
 
   /*------------------------------------------------------------------------------
 
-   Macros:                                                                      */
+   Macros: */
 
   /*------------------------------------------------------------------------------
 
-   Global variables:                                                            */
+   Global variables: */
 
   /*------------------------------------------------------------------------------
 
-   Local variables:                                                             */
+   Local variables: */
 
   Widget hidden;
   Widget widg;
 
-  static Arg shell_args[] = { {XmNallowShellResize, 1},
-  {XmNoverrideRedirect, 0},
-  {XmNdeleteResponse, XmDESTROY}
-  };
+  static Arg shell_args[] = {{XmNallowShellResize, 1},
+                             {XmNoverrideRedirect, 0},
+                             {XmNdeleteResponse, XmDESTROY}};
 
   Arg *sub_args;
   Cardinal i, cnt;
@@ -105,12 +105,13 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
 
   /*------------------------------------------------------------------------------
 
-   Executable:                                                                  */
+   Executable: */
 
   strcpy((char *)new_name, name);
   strcpy((char *)&new_name[strlen(name)], "_popup");
 
-  hidden = XmCreateDialogShell(parent, (char *)new_name, shell_args, XtNumber(shell_args));
+  hidden = XmCreateDialogShell(parent, (char *)new_name, shell_args,
+                               XtNumber(shell_args));
   XtFree(new_name);
   XtSetValues(hidden, args, argcount);
   /**************************************
@@ -121,15 +122,18 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
     first copy the input arguments removing
     XmNx and XmNy
    *************************************/
-  sub_args = (Arg *) XtMalloc(sizeof(Arg) * argcount);
-  for (i = 0, cnt = 0; i < argcount; i++) {
-    if ((strcmp(args[i].name, XmNx) != 0) && (strcmp(args[i].name, XmNy) != 0)) {
+  sub_args = (Arg *)XtMalloc(sizeof(Arg) * argcount);
+  for (i = 0, cnt = 0; i < argcount; i++)
+  {
+    if ((strcmp(args[i].name, XmNx) != 0) &&
+        (strcmp(args[i].name, XmNy) != 0))
+    {
       sub_args[cnt].name = args[i].name;
       sub_args[cnt++].value = args[i].value;
     }
   }
   widg = XtCreateWidget(name, xmdsXdBoxWidgetClass, hidden, sub_args, cnt);
-  XtFree((XtPointer) sub_args);
+  XtFree((XtPointer)sub_args);
 
   /*************************************
      Add a callback to load the dialog
@@ -140,7 +144,8 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
   return widg;
 }
 
-static void LoadDialog(Widget shell, void *xdbw, void *unused __attribute__ ((unused)))
+static void LoadDialog(Widget shell, void *xdbw,
+                       void *unused __attribute__((unused)))
 {
   XmdsXdBoxLoad((Widget)xdbw);
 }

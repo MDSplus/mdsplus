@@ -22,33 +22,37 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include <mds_stdarg.h>
 #include <dbidef.h>
 #include <dcl.h>
+#include <mds_stdarg.h>
+#include <mdsdcl_messages.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include <mdsdcl_messages.h>
 
 /***************************************************************
  * TclSetVersions:
  **************************************************************/
 
-EXPORT int TclSetReadonly(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclSetReadonly(void *ctx, char **error,
+                          char **output __attribute__((unused)))
 {
   int status = 1;
 
   /*--------------------------------------------------------
    * Executable ...
    *-------------------------------------------------------*/
-  status = TreeSetDbiItm(DbiREADONLY, (cli_present(ctx, "OFF")&1)==0);
-  if (!(status & 1)) {
+  status = TreeSetDbiItm(DbiREADONLY, (cli_present(ctx, "OFF") & 1) == 0);
+  if (STATUS_NOT_OK)
+  {
     char *msg = MdsGetMsg(status);
-    *error = malloc(strlen(msg)+100);
-    sprintf(*error,"Error: problem setting tree readonly\n"
-	    "Error message was: %s\n",msg);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error,
+            "Error: problem setting tree readonly\n"
+            "Error message was: %s\n",
+            msg);
   }
   return status;
 }

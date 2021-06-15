@@ -6,6 +6,9 @@ java_resdir = $(srcdir)/src/main/resources
 java_DATA = jTraverser2.jar
 DEPENDENCIES = $(MDSPLUS_API_JAR)
 
+LAUNCHER = jTraverser2 setupDevice
+
+
 if USE_JARS_DIR
 
 $(java_DATA): @JARS_DIR@/java/jtraverser2/jTraverser2.jar
@@ -23,11 +26,11 @@ $(java_DATA): $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 endif
 
 if MINGW
-bin_SCRIPTS += jTraverser2.bat
+bin_SCRIPTS += $(LAUNCHER:=.bat)
 else
-bin_SCRIPTS += jTraverser2
-EXTRA_DIST = jTraverser2.template
-jTraverser2: $(srcdir)/jTraverser2.template
+bin_SCRIPTS += $(LAUNCHER)
+EXTRA_DIST = $(LAUNCHER:=.template)
+$(LAUNCHER): % : $(srcdir)/%.template
 	cp $< $@
 endif
 

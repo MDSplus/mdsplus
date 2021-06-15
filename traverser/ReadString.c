@@ -22,13 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-//static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-#include <mdsdescrip.h>
-#include <string.h>
-#include <stdlib.h>
-#include <mdsshr.h>
+// static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
 #include <status.h>
+#include <stdlib.h>
+#include <string.h>
 
 extern int TdiData();
 extern int TdiCompile();
@@ -36,15 +36,16 @@ extern int TdiExecute();
 char *ReadString(char *expr, ...)
 {
   INIT_STATUS;
-  static struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+  static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, 0};
   char *ans;
-  static struct descriptor_xd ans_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+  static struct descriptor_xd ans_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
   expr_dsc.length = strlen(expr);
   expr_dsc.pointer = expr;
   int numargs;
   struct descriptor *dsc_ptrs[3];
-  VA_LIST_MDS_END_ARG(dsc_ptrs,numargs,0,0,expr);
-  switch (numargs) {
+  VA_LIST_MDS_END_ARG(dsc_ptrs, numargs, 0, 0, expr);
+  switch (numargs)
+  {
   case 0:
     status = TdiExecute(&expr_dsc, &ans_xd MDS_END_ARG);
     break;
@@ -52,27 +53,35 @@ char *ReadString(char *expr, ...)
     status = TdiExecute(&expr_dsc, dsc_ptrs[0], &ans_xd MDS_END_ARG);
     break;
   case 2:
-    status = TdiExecute(&expr_dsc, dsc_ptrs[0], dsc_ptrs[1], &ans_xd MDS_END_ARG);
+    status =
+        TdiExecute(&expr_dsc, dsc_ptrs[0], dsc_ptrs[1], &ans_xd MDS_END_ARG);
     break;
   default:
     return 0;
   }
-  if STATUS_OK {
+  if (STATUS_OK)
+  {
     /*    status = TdiData(&ans_xd, &ans_xd); */
-    if STATUS_OK {
+    if (STATUS_OK)
+    {
       struct descriptor *d_ptr;
-      for (d_ptr = (struct descriptor *)&ans_xd;
-	   d_ptr->dtype == DTYPE_DSC; d_ptr = (struct descriptor *)d_ptr->pointer) ;
-      if (d_ptr->dtype == DTYPE_T) {
-	ans = (char *)malloc((d_ptr->length + 1) * sizeof(char));
-	strncpy(ans, d_ptr->pointer, d_ptr->length);
-	ans[d_ptr->length] = 0;
-      } else
-	ans = 0;
-    } else
+      for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
+           d_ptr = (struct descriptor *)d_ptr->pointer)
+        ;
+      if (d_ptr->dtype == DTYPE_T)
+      {
+        ans = (char *)malloc((d_ptr->length + 1) * sizeof(char));
+        strncpy(ans, d_ptr->pointer, d_ptr->length);
+        ans[d_ptr->length] = 0;
+      }
+      else
+        ans = 0;
+    }
+    else
       ans = 0;
     MdsFree1Dx(&ans_xd, 0);
-  } else
+  }
+  else
     ans = 0;
   return ans;
 }

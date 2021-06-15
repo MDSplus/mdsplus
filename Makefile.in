@@ -192,6 +192,7 @@ install: $(install_DIRS)
 		--exclude=__pycache__ \
 		--exclude=python/MDSplus/build \
 		--exclude=python/MDSplus/docs \
+		--exclude=python/MDSplus/tests/*_test.py \
                 --exclude=tdi/*Devices/build \
 		--exclude='*egg-info' \
 		--exclude='*\.in' \

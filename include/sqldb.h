@@ -2,33 +2,34 @@
 #define _INC_SQLDB
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /*****************************************************************************
-*                                                                            *
-*       SQLDB.H - DB-Library header file for the Microsoft SQL Server.       *
-*                                                                            *
-*     Copyright (c) 1989 - 1995 by Microsoft Corp.  All rights reserved.     *
-*                                                                            *
-*****************************************************************************/
+ *                                                                            *
+ *       SQLDB.H - DB-Library header file for the Microsoft SQL Server.       *
+ *                                                                            *
+ *     Copyright (c) 1989 - 1995 by Microsoft Corp.  All rights reserved.     *
+ *                                                                            *
+ *****************************************************************************/
 
 // Macros for setting the PLOGINREC
-#define DBSETLHOST(a,b)    dbsetlname   ((a), (b), DBSETHOST)
-#define DBSETLUSER(a,b)    dbsetlname   ((a), (b), DBSETUSER)
-#define DBSETLPWD(a,b)     dbsetlname   ((a), (b), DBSETPWD)
-#define DBSETLAPP(a,b)     dbsetlname   ((a), (b), DBSETAPP)
-#define BCP_SETL(a,b)      bcp_setl     ((a), (b))
-#define DBSETLNATLANG(a,b) dbsetlname   ((a), (b), DBSETLANG)
-#define DBSETLPACKET(a,b)  dbsetlpacket ((a), (b))
-#define DBSETLSECURE(a)    dbsetlname   ((a), 0,   DBSETSECURE)
-#define DBSETLVERSION(a,b) dbsetlname   ((a), 0,  (b))
-#define DBSETLTIME(a,b)		dbsetlname    ((a), (LPCSTR)(ULONG)(b), DBSETLOGINTIME)
-#define DBSETLFALLBACK(a,b) dbsetlname   ((a), (b),   DBSETFALLBACK)
+#define DBSETLHOST(a, b) dbsetlname((a), (b), DBSETHOST)
+#define DBSETLUSER(a, b) dbsetlname((a), (b), DBSETUSER)
+#define DBSETLPWD(a, b) dbsetlname((a), (b), DBSETPWD)
+#define DBSETLAPP(a, b) dbsetlname((a), (b), DBSETAPP)
+#define BCP_SETL(a, b) bcp_setl((a), (b))
+#define DBSETLNATLANG(a, b) dbsetlname((a), (b), DBSETLANG)
+#define DBSETLPACKET(a, b) dbsetlpacket((a), (b))
+#define DBSETLSECURE(a) dbsetlname((a), 0, DBSETSECURE)
+#define DBSETLVERSION(a, b) dbsetlname((a), 0, (b))
+#define DBSETLTIME(a, b) dbsetlname((a), (LPCSTR)(ULONG)(b), DBSETLOGINTIME)
+#define DBSETLFALLBACK(a, b) dbsetlname((a), (b), DBSETFALLBACK)
 
-/*****************************************************************************
-* Windows 3.x and Non-Windows 3.x differences.                               *
-*****************************************************************************/
+  /*****************************************************************************
+ * Windows 3.x and Non-Windows 3.x differences.                               *
+ *****************************************************************************/
 
 #ifdef DBMSWIN
 
@@ -37,7 +38,7 @@ extern "C" {
   void SQLAPI dblocklib(void);
   void SQLAPI dbunlocklib(void);
 
-#define DBLOCKLIB()   dblocklib()
+#define DBLOCKLIB() dblocklib()
 #define DBUNLOCKLIB() dbunlocklib()
 
 #define DBERRHANDLE_PROC FARPROC
@@ -53,40 +54,41 @@ extern "C" {
 #define DBLOCKLIB()
 #define DBUNLOCKLIB()
 
-  typedef INT(SQLAPI * DBERRHANDLE_PROC) (PDBPROCESS, INT, INT, INT, LPCSTR, LPCSTR);
-  typedef INT(SQLAPI * DBMSGHANDLE_PROC) (PDBPROCESS, DBINT, INT, INT, LPCSTR, LPCSTR, LPCSTR,
-					  DBUSMALLINT);
+typedef INT(SQLAPI *DBERRHANDLE_PROC)(PDBPROCESS, INT, INT, INT, LPCSTR,
+                                      LPCSTR);
+typedef INT(SQLAPI *DBMSGHANDLE_PROC)(PDBPROCESS, DBINT, INT, INT, LPCSTR,
+                                      LPCSTR, LPCSTR, DBUSMALLINT);
 
-  extern DBERRHANDLE_PROC SQLAPI dberrhandle(DBERRHANDLE_PROC);
-  extern DBMSGHANDLE_PROC SQLAPI dbmsghandle(DBMSGHANDLE_PROC);
+extern DBERRHANDLE_PROC SQLAPI dberrhandle(DBERRHANDLE_PROC);
+extern DBMSGHANDLE_PROC SQLAPI dbmsghandle(DBMSGHANDLE_PROC);
 
-  extern DBERRHANDLE_PROC SQLAPI dbprocerrhandle(PDBHANDLE, DBERRHANDLE_PROC);
-  extern DBMSGHANDLE_PROC SQLAPI dbprocmsghandle(PDBHANDLE, DBMSGHANDLE_PROC);
+extern DBERRHANDLE_PROC SQLAPI dbprocerrhandle(PDBHANDLE, DBERRHANDLE_PROC);
+extern DBMSGHANDLE_PROC SQLAPI dbprocmsghandle(PDBHANDLE, DBMSGHANDLE_PROC);
 
 #endif
 
 /*****************************************************************************
-* Function Prototypes                                                        *
-*****************************************************************************/
+ * Function Prototypes                                                        *
+ *****************************************************************************/
 
 // Functions macros
-#define DBCMDROW(a)      dbcmdrow(a)
-#define DBCOUNT(a)       dbcount (a)
-#define DBCURCMD(a)      dbcurcmd(a)
-#define DBCURROW(a)      dbcurrow(a)
-#define DBDEAD(a)        dbdead(a)
-#define DBFIRSTROW(a)    dbfirstrow(a)
-#define DBGETTIME()      dbgettime()
-#define DBISAVAIL(a)     dbisavail(a)
-#define DBLASTROW(a)     dblastrow(a)
-#define DBMORECMDS(a)    dbmorecmds(a)
-#define DBNUMORDERS(a)   dbnumorders(a)
-#define dbrbuf(a)        ((DBINT)dbdataready(a))
-#define DBRBUF(a)        ((DBINT)dbdataready(a))
-#define DBROWS(a)        dbrows (a)
-#define DBROWTYPE(a)     dbrowtype (a)
+#define DBCMDROW(a) dbcmdrow(a)
+#define DBCOUNT(a) dbcount(a)
+#define DBCURCMD(a) dbcurcmd(a)
+#define DBCURROW(a) dbcurrow(a)
+#define DBDEAD(a) dbdead(a)
+#define DBFIRSTROW(a) dbfirstrow(a)
+#define DBGETTIME() dbgettime()
+#define DBISAVAIL(a) dbisavail(a)
+#define DBLASTROW(a) dblastrow(a)
+#define DBMORECMDS(a) dbmorecmds(a)
+#define DBNUMORDERS(a) dbnumorders(a)
+#define dbrbuf(a) ((DBINT)dbdataready(a))
+#define DBRBUF(a) ((DBINT)dbdataready(a))
+#define DBROWS(a) dbrows(a)
+#define DBROWTYPE(a) dbrowtype(a)
 
-// Two-phase commit functions
+  // Two-phase commit functions
   extern RETCODE SQLAPI abort_xact(PDBPROCESS, DBINT);
   extern void SQLAPI build_xact_string(LPCSTR, LPCSTR, DBINT, LPSTR);
   extern void SQLAPI close_commit(PDBPROCESS);
@@ -97,10 +99,12 @@ extern "C" {
   extern DBINT SQLAPI start_xact(PDBPROCESS, LPCSTR, LPCSTR, INT);
   extern INT SQLAPI stat_xact(PDBPROCESS, DBINT);
 
-// BCP functions
+  // BCP functions
   extern DBINT SQLAPI bcp_batch(PDBPROCESS);
-  extern RETCODE SQLAPI bcp_bind(PDBPROCESS, LPCBYTE, INT, DBINT, LPCBYTE, INT, INT, INT);
-  extern RETCODE SQLAPI bcp_colfmt(PDBPROCESS, INT, BYTE, INT, DBINT, LPCBYTE, INT, INT);
+  extern RETCODE SQLAPI bcp_bind(PDBPROCESS, LPCBYTE, INT, DBINT, LPCBYTE, INT,
+                                 INT, INT);
+  extern RETCODE SQLAPI bcp_colfmt(PDBPROCESS, INT, BYTE, INT, DBINT, LPCBYTE,
+                                   INT, INT);
   extern RETCODE SQLAPI bcp_collen(PDBPROCESS, DBINT, INT);
   extern RETCODE SQLAPI bcp_colptr(PDBPROCESS, LPCBYTE, INT);
   extern RETCODE SQLAPI bcp_columns(PDBPROCESS, INT);
@@ -114,7 +118,7 @@ extern "C" {
   extern RETCODE SQLAPI bcp_setl(PLOGINREC, BOOL);
   extern RETCODE SQLAPI bcp_writefmt(PDBPROCESS, LPCSTR);
 
-// Standard DB-Library functions
+  // Standard DB-Library functions
   extern LPCBYTE SQLAPI dbadata(PDBPROCESS, INT, INT);
   extern DBINT SQLAPI dbadlen(PDBPROCESS, INT, INT);
   extern RETCODE SQLAPI dbaltbind(PDBPROCESS, INT, INT, INT, DBINT, LPCBYTE);
@@ -141,19 +145,22 @@ extern "C" {
   extern LPCSTR SQLAPI dbcolsource(PDBPROCESS, INT);
   extern INT SQLAPI dbcoltype(PDBPROCESS, INT);
   extern DBINT SQLAPI dbcolutype(PDBPROCESS, INT);
-  extern INT SQLAPI dbconvert(PDBPROCESS, INT, LPCBYTE, DBINT, INT, LPBYTE, DBINT);
+  extern INT SQLAPI dbconvert(PDBPROCESS, INT, LPCBYTE, DBINT, INT, LPBYTE,
+                              DBINT);
   extern DBINT SQLAPI dbcount(PDBPROCESS);
   extern INT SQLAPI dbcurcmd(PDBPROCESS);
   extern DBINT SQLAPI dbcurrow(PDBPROCESS);
   extern RETCODE SQLAPI dbcursor(PDBCURSOR, INT, INT, LPCSTR, LPCSTR);
   extern RETCODE SQLAPI dbcursorbind(PDBCURSOR, INT, INT, DBINT, LPDBINT, LPBYTE);
   extern RETCODE SQLAPI dbcursorclose(PDBHANDLE);
-  extern RETCODE SQLAPI dbcursorcolinfo(PDBCURSOR, INT, LPSTR, LPINT, LPDBINT, LPINT);
+  extern RETCODE SQLAPI dbcursorcolinfo(PDBCURSOR, INT, LPSTR, LPINT, LPDBINT,
+                                        LPINT);
   extern RETCODE SQLAPI dbcursorfetch(PDBCURSOR, INT, INT);
   extern RETCODE SQLAPI dbcursorfetchex(PDBCURSOR, INT, DBINT, DBINT, DBINT);
   extern RETCODE SQLAPI dbcursorinfo(PDBCURSOR, LPINT, LPDBINT);
   extern RETCODE SQLAPI dbcursorinfoex(PDBCURSOR, LPDBCURSORINFO);
-  extern PDBCURSOR SQLAPI dbcursoropen(PDBPROCESS, LPCSTR, INT, INT, UINT, LPDBINT);
+  extern PDBCURSOR SQLAPI dbcursoropen(PDBPROCESS, LPCSTR, INT, INT, UINT,
+                                       LPDBINT);
   extern LPCBYTE SQLAPI dbdata(PDBPROCESS, INT);
   extern BOOL SQLAPI dbdataready(PDBPROCESS);
   extern RETCODE SQLAPI dbdatecrack(PDBPROCESS, LPDBDATEREC, LPCDBDATETIME);
@@ -209,7 +216,8 @@ extern "C" {
   extern RETCODE SQLAPI dbrows(PDBPROCESS);
   extern STATUS SQLAPI dbrowtype(PDBPROCESS);
   extern RETCODE SQLAPI dbrpcinit(PDBPROCESS, LPCSTR, DBSMALLINT);
-  extern RETCODE SQLAPI dbrpcparam(PDBPROCESS, LPCSTR, BYTE, INT, DBINT, DBINT, LPCBYTE);
+  extern RETCODE SQLAPI dbrpcparam(PDBPROCESS, LPCSTR, BYTE, INT, DBINT, DBINT,
+                                   LPCBYTE);
   extern RETCODE SQLAPI dbrpcsend(PDBPROCESS);
   extern RETCODE SQLAPI dbrpcexec(PDBPROCESS);
   extern void SQLAPI dbrpwclr(PLOGINREC);
@@ -243,13 +251,15 @@ extern "C" {
   extern RETCODE SQLAPI dbuse(PDBPROCESS, LPCSTR);
   extern BOOL SQLAPI dbvarylen(PDBPROCESS, INT);
   extern BOOL SQLAPI dbwillconvert(INT, INT);
-  extern RETCODE SQLAPI dbwritepage(PDBPROCESS, LPCSTR, DBINT, DBINT, DBINT, LPBYTE);
-  extern RETCODE SQLAPI dbwritetext(PDBPROCESS, LPCSTR, LPCDBBINARY, DBTINYINT, LPCDBBINARY, BOOL,
-				    DBINT, LPCBYTE);
-  extern RETCODE SQLAPI dbupdatetext(PDBPROCESS, LPCSTR, LPCDBBINARY, LPCDBBINARY, INT, DBINT,
-				     DBINT, LPCSTR, DBINT, LPCDBBINARY);
+  extern RETCODE SQLAPI dbwritepage(PDBPROCESS, LPCSTR, DBINT, DBINT, DBINT,
+                                    LPBYTE);
+  extern RETCODE SQLAPI dbwritetext(PDBPROCESS, LPCSTR, LPCDBBINARY, DBTINYINT,
+                                    LPCDBBINARY, BOOL, DBINT, LPCBYTE);
+  extern RETCODE SQLAPI dbupdatetext(PDBPROCESS, LPCSTR, LPCDBBINARY, LPCDBBINARY,
+                                     INT, DBINT, DBINT, LPCSTR, DBINT,
+                                     LPCDBBINARY);
 
 #ifdef __cplusplus
 }
 #endif
-#endif				// _INC_SQLDB
+#endif // _INC_SQLDB

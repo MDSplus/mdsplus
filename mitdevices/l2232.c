@@ -53,8 +53,8 @@ EXPORT int L2232__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>

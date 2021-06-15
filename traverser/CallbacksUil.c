@@ -38,28 +38,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _AIX
 #include <strings.h>
 #endif
-#include <dcl.h>
-#include <ctype.h>
-#include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
-#include <Xm/RowColumn.h>
+#include <X11/Intrinsic.h>
 #include <Xm/List.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
+#include <Xm/RowColumn.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
-#include <X11/Intrinsic.h>
-#include <xmdsshr.h>
+#include <Xm/Xm.h>
 #include <Xmds/ListTree.h>
+#include <Xmds/XmdsCallbacks.h>
 #include <Xmds/XmdsXdBox.h>
 #include <Xmds/XmdsXdBoxDialog.h>
-#include <Xmds/XmdsCallbacks.h>
-#include <tdishr_messages.h>
+#include <ctype.h>
+#include <dcl.h>
 #include <mdsshr.h>
+#include <tdishr_messages.h>
+#include <xmdsshr.h>
 extern int mdsdcl_do_command();
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+_Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 /*
  * Standard includes for builtins.
@@ -75,31 +75,31 @@ extern int mdsdcl_do_command();
  * support routines
  */
 #include "support.h"
-/*
- *  MDS routines not in any includes
- */
-extern int TdiModelOf();
+    /*
+     *  MDS routines not in any includes
+     */
+    extern int TdiModelOf();
 /*
  * Macros to make code look nicer between ANSI and K&R.
  */
 #ifndef ARGLIST
 #if (NeedFunctionPrototypes == 0)
-#define PROTOTYPE(p)	()
-#define ARGLIST(p)	p
-#define ARG(a, b)	a b;
-#define GRA(a, b)	a b;
-#define UARG(a, b)      a b;
-#define GRAU(a, b)      a b;
+#define PROTOTYPE(p) ()
+#define ARGLIST(p) p
+#define ARG(a, b) a b;
+#define GRA(a, b) a b;
+#define UARG(a, b) a b;
+#define GRAU(a, b) a b;
 #else
-#define PROTOTYPE(p)	p
+#define PROTOTYPE(p) p
 #define ARGLIST(p)	(
-#define ARG(a, b)	a b,
+#define ARG(a, b) a b,
 #define GRA(a, b)	a b)
 #ifdef __cplusplus
-#define UARG(a, b)      a,
+#define UARG(a, b) a,
 #define GRAU(a, b)      a)
 #else
-#define UARG(a, b)      a b,
+#define UARG(a, b) a b,
 #define GRAU(a, b)      a b)
 #endif
 #endif
@@ -108,9 +108,9 @@ extern int TdiModelOf();
 Widget BxFindTopShell PROTOTYPE((Widget));
 WidgetList BxWidgetIdsFromNames PROTOTYPE((Widget, char *, char *));
 
-#include <stdlib.h>
-#include <mdsdescrip.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <stdlib.h>
 static Pixmap *icons;
 static Pixmap *off_icons;
 #define MAX_SELECTIONS 10
@@ -122,52 +122,63 @@ static Atom XA_TARGETS = 0;
 
 static ListTreeItem *add_target;
 
-struct node {
+struct node
+{
   int nid;
   int usage;
   char *name;
   int populated;
 };
 
-typedef enum { on_off, rename_node, delete, new, tree, set_def } NodeTouchType;
+typedef enum
+{
+  on_off,
+  rename_node,
+  delete,
+  new,
+  tree,
+  set_def
+} NodeTouchType;
 
 static char *get_node_name(int nid)
 {
   char *name;
-  //char *ans;
-  //int def_nid;
-  //int status;
+  // char *ans;
+  // int def_nid;
+  // int status;
   static int c_nid;
   static DESCRIPTOR_NID(nid_dsc, &c_nid);
   static char *getnci =
-      "TRIM((GETNCI($1, 'IS_CHILD') ? '.' : '')//GETNCI($1, 'NODE_NAME'))//(((GETNCI($1, 'NUMBER_OF_CHILDREN')+GETNCI($1, 'NUMBER_OF_MEMBERS')) > 0) ? '...' : '')";
+      "TRIM((GETNCI($1, 'IS_CHILD') ? '.' : '')//GETNCI($1, "
+      "'NODE_NAME'))//(((GETNCI($1, 'NUMBER_OF_CHILDREN')+GETNCI($1, "
+      "'NUMBER_OF_MEMBERS')) > 0) ? '...' : '')";
   c_nid = nid;
   name = ReadString(getnci, &nid_dsc MDS_END_ARG);
   return name;
 }
 
-static void set_name(ListTreeItem * item, char *name)
+static void set_name(ListTreeItem *item, char *name)
 {
   struct node *nd;
   nd = (struct node *)item->user_data;
   nd->name = name;
 }
 
-static void set_nid(ListTreeItem * item, int nid)
+static void set_nid(ListTreeItem *item, int nid)
 {
   struct node *nd;
   nd = (struct node *)item->user_data;
   nd->nid = nid;
 }
 
-static void set_usage(ListTreeItem * item, int usage)
+static void set_usage(ListTreeItem *item, int usage)
 {
   struct node *nd;
   nd = (struct node *)item->user_data;
   nd->usage = usage;
 }
 
-static int get_nid(ListTreeItem * item)
+static int get_nid(ListTreeItem *item)
 {
   struct node *nd;
   nd = (struct node *)item->user_data;
@@ -177,21 +188,21 @@ static int get_nid(ListTreeItem * item)
     return -1;
 }
 
-static int get_usage(ListTreeItem * item)
+static int get_usage(ListTreeItem *item)
 {
   struct node *nd;
   nd = (struct node *)item->user_data;
   return nd->usage;
 }
 
-static void set_populated(ListTreeItem * item, int populated)
+static void set_populated(ListTreeItem *item, int populated)
 {
   struct node *nd;
   nd = (struct node *)item->user_data;
   nd->populated = populated;
 }
 
-static int is_populated(ListTreeItem * item)
+static int is_populated(ListTreeItem *item)
 {
   struct node *nd;
   nd = (struct node *)item->user_data;
@@ -207,58 +218,72 @@ static int parent_nid(int nid)
   return ReadInt(getparent, &nid_dsc MDS_END_ARG);
 }
 
-static Boolean convert_proc(Widget w, Atom * selection __attribute__ ((unused)), Atom * target, Atom * type_return,
-			    XtPointer * value_return, unsigned long *length_return,
-			    int *format_return)
+static Boolean convert_proc(Widget w, Atom *selection __attribute__((unused)),
+                            Atom *target, Atom *type_return,
+                            XtPointer *value_return,
+                            unsigned long *length_return, int *format_return)
 {
   int status = 1;
   if (!XA_TARGETS)
     XA_TARGETS = XInternAtom(XtDisplay(w), "TARGETS", 0);
-  if (*target == XA_TARGETS) {
+  if (*target == XA_TARGETS)
+  {
     status = 1;
     *type_return = *target;
     *value_return = XtMalloc(sizeof(Atom));
-    ((Atom *) * value_return)[0] = XA_STRING;
+    ((Atom *)*value_return)[0] = XA_STRING;
     *length_return = 1;
     *format_return = 32;
-  } else if (*target == XA_STRING) {
-    if (num_selected > 0) {
+  }
+  else if (*target == XA_STRING)
+  {
+    if (num_selected > 0)
+    {
       int i;
       char *ans = 0;
       status = 1;
-      for (i = 0; i < num_selected; i++) {
-	static char *getnci = "GETNCI($, 'FULLPATH')";
-	static int c_nid;
-	static DESCRIPTOR_NID(nid_dsc, &c_nid);
-	char *fullpath;
-	c_nid = get_nid(selections[i]);
-	fullpath = ReadString(getnci, &nid_dsc MDS_END_ARG);
-	if (i == 0) {
-	  ans = malloc(strlen(fullpath) + 1);
-	  strcpy(ans, fullpath);
-	} else {
-	  static char *cr = "\r";
-	  char *tmp = malloc(strlen(ans) + strlen(fullpath) + 1 + 1);	/* room for the previous stuff + new + \r + \0 */
-	  strcpy(tmp, ans);
-	  strcat(tmp, cr);
-	  strcat(tmp, fullpath);
-	  free(ans);
-	  ans = tmp;
-	}
-	free(fullpath);
+      for (i = 0; i < num_selected; i++)
+      {
+        static char *getnci = "GETNCI($, 'FULLPATH')";
+        static int c_nid;
+        static DESCRIPTOR_NID(nid_dsc, &c_nid);
+        char *fullpath;
+        c_nid = get_nid(selections[i]);
+        fullpath = ReadString(getnci, &nid_dsc MDS_END_ARG);
+        if (i == 0)
+        {
+          ans = malloc(strlen(fullpath) + 1);
+          strcpy(ans, fullpath);
+        }
+        else
+        {
+          static char *cr = "\r";
+          char *tmp =
+              malloc(strlen(ans) + strlen(fullpath) + 1 +
+                     1); /* room for the previous stuff + new + \r + \0 */
+          strcpy(tmp, ans);
+          strcat(tmp, cr);
+          strcat(tmp, fullpath);
+          free(ans);
+          ans = tmp;
+        }
+        free(fullpath);
       }
       *value_return = ans;
       *length_return = strlen(ans);
       *type_return = *target;
       *format_return = 8;
-    } else
+    }
+    else
       status = 0;
-  } else
+  }
+  else
     status = 0;
   return status;
 }
 
-static void loose_selection_proc(Widget w, Atom * selection __attribute__ ((unused)))
+static void loose_selection_proc(Widget w,
+                                 Atom *selection __attribute__((unused)))
 {
   int i;
   for (i = 0; i < num_selected; i++)
@@ -267,17 +292,19 @@ static void loose_selection_proc(Widget w, Atom * selection __attribute__ ((unus
   ListTreeRefresh(w);
 }
 
-void add_to_selected(ListTreeItem * item, Boolean first)
+void add_to_selected(ListTreeItem *item, Boolean first)
 {
   if (first)
     num_selected = 0;
-  if (num_selected < MAX_SELECTIONS) {
+  if (num_selected < MAX_SELECTIONS)
+  {
     selections[num_selected++] = item;
-  } else
+  }
+  else
     item->highlighted = 0;
 }
 
-static void FixPixMap(Widget w, ListTreeItem * itm)
+static void FixPixMap(Widget w, ListTreeItem *itm)
 {
   static char *get_on = "GETNCI($, 'ON')";
   int usage = get_usage(itm);
@@ -292,7 +319,7 @@ static void FixPixMap(Widget w, ListTreeItem * itm)
     ListTreeSetItemPixmaps(w, itm, off_icons[usage], off_icons[usage]);
 }
 
-static void FixPixMaps(Widget w, ListTreeItem * itm)
+static void FixPixMaps(Widget w, ListTreeItem *itm)
 {
   ListTreeItem *tmp;
   FixPixMap(w, itm);
@@ -300,7 +327,7 @@ static void FixPixMaps(Widget w, ListTreeItem * itm)
     FixPixMaps(w, tmp);
 }
 
-static ListTreeItem *add_item(Widget tree, ListTreeItem * parent, int nid)
+static ListTreeItem *add_item(Widget tree, ListTreeItem *parent, int nid)
 {
   static char *get_usage = "GETNCI($, 'USAGE')";
   static int c_nid;
@@ -311,7 +338,7 @@ static ListTreeItem *add_item(Widget tree, ListTreeItem * parent, int nid)
   c_nid = nid;
   name = get_node_name(nid);
   item = ListTreeAdd(tree, parent, name);
-  item->user_data = (XtPointer) malloc(sizeof(struct node));
+  item->user_data = (XtPointer)malloc(sizeof(struct node));
   set_nid(item, nid);
   set_name(item, name);
   if (name[strlen(name) - 1] == '.')
@@ -324,7 +351,7 @@ static ListTreeItem *add_item(Widget tree, ListTreeItem * parent, int nid)
   return item;
 }
 
-void add_descendents(Widget tree, ListTreeItem * item, int nid)
+void add_descendents(Widget tree, ListTreeItem *item, int nid)
 {
   static int c_nid;
   static DESCRIPTOR_NID(nid_dsc, &c_nid);
@@ -342,34 +369,42 @@ void add_descendents(Widget tree, ListTreeItem * item, int nid)
 
   item->open = 1;
   num = ReadInt(get_num_members, &nid_dsc MDS_END_ARG);
-  for (i = 0; i < num; i++) {
-    mem_nid = ReadInt((i == 0) ? get_mem_nid : get_bro_nid, &nid_dsc MDS_END_ARG);
+  for (i = 0; i < num; i++)
+  {
+    mem_nid =
+        ReadInt((i == 0) ? get_mem_nid : get_bro_nid, &nid_dsc MDS_END_ARG);
     add_item(tree, item, mem_nid);
     c_nid = mem_nid;
   }
 
   c_nid = nid;
   num = ReadInt(get_num_children, &nid_dsc MDS_END_ARG);
-  for (i = 0; i < num; i++) {
-    child_nid = ReadInt((i == 0) ? get_child_nid : get_bro_nid, &nid_dsc MDS_END_ARG);
+  for (i = 0; i < num; i++)
+  {
+    child_nid =
+        ReadInt((i == 0) ? get_child_nid : get_bro_nid, &nid_dsc MDS_END_ARG);
     add_item(tree, item, child_nid);
     c_nid = child_nid;
   }
   set_populated(item, 1);
 }
 
-static ListTreeItem *insert_item(Widget tree, ListTreeItem * parent, int nid)
+static ListTreeItem *insert_item(Widget tree, ListTreeItem *parent, int nid)
 {
   ListTreeItem *itm;
   char *node_name = get_node_name(nid);
   itm = ListTreeFindChildName(tree, parent, node_name);
-  if (itm == NULL) {
-    if (!is_populated(parent)) {
+  if (itm == NULL)
+  {
+    if (!is_populated(parent))
+    {
       ListTreeRefreshOff(tree);
       add_descendents(tree, parent, get_nid(parent));
       ListTreeRefreshOn(tree);
       itm = ListTreeFindChildName(tree, parent, node_name);
-    } else {
+    }
+    else
+    {
       itm = add_item(tree, parent, nid);
       ListTreeOrderChildren(tree, parent);
     }
@@ -380,66 +415,76 @@ static ListTreeItem *insert_item(Widget tree, ListTreeItem * parent, int nid)
     int parent_nid = get_nid(parent);
     char *name = get_node_name(parent_nid);
     status = TreeGetDefaultNid(&def_nid);
-    if ((status & 1) && (parent_nid == def_nid)) {
+    if ((STATUS_OK) && (parent_nid == def_nid))
+    {
       char *tmp = malloc(strlen(name) + 3 + 3 + 1);
       strcpy(tmp, "<<<");
       strcat(tmp, name);
       strcat(tmp, ">>>");
       ListTreeRenameItem(tree, parent, tmp);
       free(tmp);
-    } else
+    }
+    else
       ListTreeRenameItem(tree, parent, name);
   }
   return itm;
 }
 
-void HighlightCallback(Widget w, XtPointer client __attribute__ ((unused)), XtPointer call)
+void HighlightCallback(Widget w, XtPointer client __attribute__((unused)),
+                       XtPointer call)
 {
   ListTreeMultiReturnStruct *ret;
   ListTreeItem *item;
   int i;
 
-  ret = (ListTreeMultiReturnStruct *) call;
-  for (i = 0; i < ret->count; i++) {
+  ret = (ListTreeMultiReturnStruct *)call;
+  for (i = 0; i < ret->count; i++)
+  {
     item = ret->items[i];
     add_to_selected(item, i == 0);
-    while (item->parent) {
+    while (item->parent)
+    {
       item = item->parent;
     }
   }
-/*        XtOwnSelection(w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)), convert_proc, loose_selection_proc, NULL); */
-  XtOwnSelection(w, XA_PRIMARY, CurrentTime, convert_proc, loose_selection_proc, NULL);
+  /*        XtOwnSelection(w, XA_PRIMARY,
+   * XtLastTimestampProcessed(XtDisplay(w)), convert_proc, loose_selection_proc,
+   * NULL); */
+  XtOwnSelection(w, XA_PRIMARY, CurrentTime, convert_proc, loose_selection_proc,
+                 NULL);
   menu_item = 0;
 }
 
-void MenuCallback(w, client, call)
-Widget w;
-XtPointer client __attribute__ ((unused));
-XtPointer call __attribute__ ((unused));
+void MenuCallback(w, client, call) Widget w;
+XtPointer client __attribute__((unused));
+XtPointer call __attribute__((unused));
 {
-  ListTreeItemReturnStruct *ret = (ListTreeItemReturnStruct *) call;
+  ListTreeItemReturnStruct *ret = (ListTreeItemReturnStruct *)call;
   Widget popup = XtNameToWidget(BxFindTopShell(w), "*.rightButtonMenu");
   menu_item = ret->item;
-  XmMenuPosition(popup, (XButtonPressedEvent *) ret->event);
+  XmMenuPosition(popup, (XButtonPressedEvent *)ret->event);
   XtManageChild(popup);
 }
 
-void ActivateCallback(Widget w, XtPointer client __attribute__ ((unused)), XtPointer call)
+void ActivateCallback(Widget w, XtPointer client __attribute__((unused)),
+                      XtPointer call)
 {
   ListTreeActivateStruct *ret;
-  //ListTreeMultiReturnStruct ret2;
-  //ListTreeItem *item;
+  // ListTreeMultiReturnStruct ret2;
+  // ListTreeItem *item;
   int count;
-  //struct node *node_ptr;
-  //int nid;
+  // struct node *node_ptr;
+  // int nid;
 
-  ret = (ListTreeActivateStruct *) call;
+  ret = (ListTreeActivateStruct *)call;
   count = 0;
-  while (count < ret->count) {
+  while (count < ret->count)
+  {
     count++;
   }
-  //node_ptr = (struct node *)(ret->path[count - 1]->user_data);
-  if (!is_populated(ret->path[count - 1])) {
+  // node_ptr = (struct node *)(ret->path[count - 1]->user_data);
+  if (!is_populated(ret->path[count - 1]))
+  {
     ListTreeRefreshOff(w);
     add_descendents(w, ret->path[count - 1], get_nid(ret->path[count - 1]));
     ListTreeRefreshOn(w);
@@ -451,37 +496,43 @@ static ListTreeItem *Open(Widget tree, int nid)
 {
   ListTreeItem *parent_item, *item;
   int parent;
-  if (nid == 0) {
+  if (nid == 0)
+  {
     item = ListTreeFirstItem(tree);
-    if (item) {
+    if (item)
+    {
       if (!item->open)
-	add_descendents(tree, item, nid);
-    } else
-      item = add_item(tree, NULL, 0);	/* add the top with no parent */
+        add_descendents(tree, item, nid);
+    }
+    else
+      item = add_item(tree, NULL, 0); /* add the top with no parent */
     return item;
   }
   parent = parent_nid(nid);
   parent_item = Open(tree, parent);
-  for (item = parent_item->firstchild; ((item != NULL) && (get_nid(item) != nid));
-       item = item->nextsibling) ;
+  for (item = parent_item->firstchild;
+       ((item != NULL) && (get_nid(item) != nid)); item = item->nextsibling)
+    ;
   if (item)
     if (!item->open)
       add_descendents(tree, item, nid);
   return (item == NULL) ? parent_item : item;
 }
 
-static void set_default(Widget w, ListTreeItem * item)
+static void set_default(Widget w, ListTreeItem *item)
 {
   int status;
-  //int old_def;
+  // int old_def;
   int nid = get_nid(item);
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
-  if (default_item != NULL) {
+  if (default_item != NULL)
+  {
     char *name = get_node_name(get_nid(default_item));
     ListTreeRenameItem(tree, default_item, name);
   }
   status = TreeSetDefaultNid(nid);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     char *name = get_node_name(nid);
     char *new_name = malloc(strlen(name) + 3 + 3 + 1);
     strcpy(new_name, "<<<");
@@ -490,7 +541,8 @@ static void set_default(Widget w, ListTreeItem * item)
     ListTreeRenameItem(tree, item, new_name);
     free(new_name);
     default_item = item;
-  } else
+  }
+  else
     XmdsComplain(w, "Error setting default Nid");
 }
 
@@ -500,30 +552,36 @@ static void Init(Widget tree)
   ListTreeItem *item;
   char *getdbi = "GETDBI('NUMBER_OPENED')";
   int num = ReadInt(getdbi MDS_END_ARG);
-  if (num > 0) {
+  if (num > 0)
+  {
     int status;
     int nid;
     ListTreeRefreshOff(tree);
-    item = add_item(tree, NULL, 0);	/* add the top with no parent */
+    item = add_item(tree, NULL, 0); /* add the top with no parent */
     default_item = 0;
     status = TreeGetDefaultNid(&nid);
-    if (status & 1) {
+    if (STATUS_OK)
+    {
       item = Open(tree, nid);
       set_default(tree, item);
     }
     ListTreeRefreshOn(tree);
-  } else {
+  }
+  else
+  {
     if (ClosingWindow)
       exit(0);
   }
   num_selected = 0;
 }
 
-static void CommandLineOpen(Display * display __attribute__ ((unused)), Widget tree)
+static void CommandLineOpen(Display *display __attribute__((unused)),
+                            Widget tree)
 {
   char chars[132] = {0};
-  //int status;
-  typedef struct {
+  // int status;
+  typedef struct
+  {
     int shot;
     Boolean edit;
     Boolean read_only;
@@ -532,44 +590,50 @@ static void CommandLineOpen(Display * display __attribute__ ((unused)), Widget t
 
   static OptionsRec options;
   static XtResource resources[] = {
-    {"tree", "Tree", XtRString, sizeof(String), XtOffsetOf(OptionsRec, tree), XtRString, NULL}
-    ,
-    {"shot", "Shot", XtRInt, sizeof(int), XtOffsetOf(OptionsRec, shot), XtRImmediate,
-     (XtPointer) - 1},
-    {"edit", "Edit", XtRBoolean, sizeof(Boolean), XtOffsetOf(OptionsRec, edit), XtRImmediate,
-     (XtPointer) FALSE}
-    ,
-    {"read_only", "Read_only", XtRBoolean, sizeof(Boolean), XtOffsetOf(OptionsRec, read_only),
-     XtRImmediate, (XtPointer) FALSE}
-  };
+      {"tree", "Tree", XtRString, sizeof(String), XtOffsetOf(OptionsRec, tree),
+       XtRString, NULL},
+      {"shot", "Shot", XtRInt, sizeof(int), XtOffsetOf(OptionsRec, shot),
+       XtRImmediate, (XtPointer)-1},
+      {"edit", "Edit", XtRBoolean, sizeof(Boolean),
+       XtOffsetOf(OptionsRec, edit), XtRImmediate, (XtPointer)FALSE},
+      {"read_only", "Read_only", XtRBoolean, sizeof(Boolean),
+       XtOffsetOf(OptionsRec, read_only), XtRImmediate, (XtPointer)FALSE}};
 
-  XtGetApplicationResources(BxFindTopShell(tree), (XtPointer) & options, resources,
-			    XtNumber(resources), (Arg *) NULL, 0);
+  XtGetApplicationResources(BxFindTopShell(tree), (XtPointer)&options,
+                            resources, XtNumber(resources), (Arg *)NULL, 0);
   {
     int status;
-    if (options.tree != NULL) {
-      if (options.edit) {
-	status = TreeOpenEdit(options.tree, options.shot);
-	if (status == TreeFILE_NOT_FOUND || status == TreeFOPENW) {
-	  printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ", options.tree, options.shot);
-	  if ((scanf("%1s",chars) > 0) && ((chars[0] == 'y') || (chars[0] == 'Y'))) {
-	    status = TreeOpenNew(options.tree, options.shot);
-	  }
-	}
-      } else
-	status = TreeOpen(options.tree, options.shot, options.read_only);
-      if (status & 1)
-	Init(tree);
+    if (options.tree != NULL)
+    {
+      if (options.edit)
+      {
+        status = TreeOpenEdit(options.tree, options.shot);
+        if (status == TreeFILE_NOT_FOUND || status == TreeFOPENW)
+        {
+          printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ",
+                 options.tree, options.shot);
+          if ((scanf("%1s", chars) > 0) &&
+              ((chars[0] == 'y') || (chars[0] == 'Y')))
+          {
+            status = TreeOpenNew(options.tree, options.shot);
+          }
+        }
+      }
+      else
+        status = TreeOpen(options.tree, options.shot, options.read_only);
+      if (STATUS_OK)
+        Init(tree);
     }
   }
 }
 
-static ListTreeItem *FindItemByNid(ListTreeItem * parent, int nid)
+static ListTreeItem *FindItemByNid(ListTreeItem *parent, int nid)
 {
   ListTreeItem *itm;
   if (get_nid(parent) == nid)
     return parent;
-  for (itm = parent->firstchild; itm; itm = itm->nextsibling) {
+  for (itm = parent->firstchild; itm; itm = itm->nextsibling)
+  {
     ListTreeItem *ans;
     if ((ans = FindItemByNid(itm, nid)) != NULL)
       return ans;
@@ -588,14 +652,16 @@ static ListTreeItem *FindParentItemByNid(Widget tree, int nid)
   return Open(tree, (parent_nid > 0) ? parent_nid : 0);
 }
 
-static ListTreeItem *FindChildItemByNid(Widget tree __attribute__ ((unused)), ListTreeItem * parent, int nid)
+static ListTreeItem *FindChildItemByNid(Widget tree __attribute__((unused)),
+                                        ListTreeItem *parent, int nid)
 {
   ListTreeItem *itm;
   Boolean found = 0;
 
   if (nid == 0)
     return parent;
-  for (itm = parent->firstchild; itm && !found;) {
+  for (itm = parent->firstchild; itm && !found;)
+  {
     found = get_nid(itm) == nid;
     if (!found)
       itm = itm->nextsibling;
@@ -607,73 +673,84 @@ static Widget toplevel;
 
 static Boolean notify_on = TRUE;
 
-static void FixUpName(Widget tree, ListTreeItem * itm)
+static void FixUpName(Widget tree, ListTreeItem *itm)
 {
   int nid = get_nid(itm);
   char *name = get_node_name(nid);
   int def_nid = -1;
   TreeGetDefaultNid(&def_nid);
-  if (nid == def_nid) {
+  if (nid == def_nid)
+  {
     char *str = malloc(strlen(name) + 3 + 3 + 1);
     strcpy(str, "<<<");
     strcat(str, name);
     strcat(str, ">>>");
     ListTreeRenameItem(tree, itm, str);
     free(str);
-  } else
+  }
+  else
     ListTreeRenameItem(tree, itm, name);
 }
 
 static void NodeTouched(int nid, NodeTouchType type)
 {
-  if (notify_on) {
+  if (notify_on)
+  {
     Widget treew = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
     ListTreeItem *this_item;
     ListTreeRefreshOff(treew);
-    if (type == tree) {
+    if (type == tree)
+    {
       ListTreeItem *top = ListTreeFirstItem(treew);
       ListTreeRefreshOff(treew);
       if (top != NULL)
-	ListTreeDelete(treew, top);
+        ListTreeDelete(treew, top);
       Init(treew);
-    } else {
+    }
+    else
+    {
       this_item = FindParentItemByNid(treew, nid);
-      if (this_item != NULL) {
-	switch (type) {
-	case on_off:
-	  FixPixMaps(treew, this_item);
-	  break;
-	case set_def:
-	  set_default(toplevel, FindChildItemByNid(treew, this_item, nid));
-	  break;
-	case new:
-	  {
-	    //ListTreeItem *itm;
-	    insert_item(treew, this_item, nid);
-	    FixUpName(treew, this_item);
-	    break;
-	  }
-	case rename_node:
-	  {
-	    ListTreeItem *itm;
-	    if ((itm = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL) {
-	      ListTreeDelete(treew, itm);
-	    }
-	    itm = insert_item(treew, this_item, nid);
-	    FixUpName(treew, this_item);
-	  }
-	  break;
-	case delete:
-	  if ((this_item = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL) {
-	    int pnid = parent_nid(nid);
-	    ListTreeItem *pitem = FindItemByNid(ListTreeFirstItem(treew), pnid);
-	    ListTreeDelete(treew, this_item);
-	    FixUpName(treew, pitem);
-	  }
-	  break;
-	default:
-	  break;
-	}
+      if (this_item != NULL)
+      {
+        switch (type)
+        {
+        case on_off:
+          FixPixMaps(treew, this_item);
+          break;
+        case set_def:
+          set_default(toplevel, FindChildItemByNid(treew, this_item, nid));
+          break;
+        case new:
+        {
+          // ListTreeItem *itm;
+          insert_item(treew, this_item, nid);
+          FixUpName(treew, this_item);
+          break;
+        }
+        case rename_node:
+        {
+          ListTreeItem *itm;
+          if ((itm = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL)
+          {
+            ListTreeDelete(treew, itm);
+          }
+          itm = insert_item(treew, this_item, nid);
+          FixUpName(treew, this_item);
+        }
+        break;
+        case delete:
+          if ((this_item = FindItemByNid(ListTreeFirstItem(treew), nid)) !=
+              NULL)
+          {
+            int pnid = parent_nid(nid);
+            ListTreeItem *pitem = FindItemByNid(ListTreeFirstItem(treew), pnid);
+            ListTreeDelete(treew, this_item);
+            FixUpName(treew, pitem);
+          }
+          break;
+        default:
+          break;
+        }
       }
     }
     ListTreeRefreshOn(treew);
@@ -719,10 +796,12 @@ static void TCLOutput(char *text)
 static void InitializeCommandInterface(Widget w)
 {
   int status = mdsdcl_do_command("set command tcl");
-  if (status & 1) {
-    int (*set_callbacks) () = NULL;
-    status = LibFindImageSymbol_C("tcl_commands", "TclSetCallbacks", &set_callbacks);
-    if (status & 1)
+  if (STATUS_OK)
+  {
+    int (*set_callbacks)() = NULL;
+    status =
+        LibFindImageSymbol_C("tcl_commands", "TclSetCallbacks", &set_callbacks);
+    if (STATUS_OK)
       status = set_callbacks(TCLOutput, TCLOutput, NodeTouched);
   }
   toplevel = BxFindTopShell(w);
@@ -730,27 +809,25 @@ static void InitializeCommandInterface(Widget w)
 
 static Widget TREE;
 
-void AddListTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void AddListTree(Widget w, XtPointer client_data __attribute__((unused)),
+                 XtPointer call_data __attribute__((unused)))
 {
   Widget tree;
-  //ListTreeItem *item;
+  // ListTreeItem *item;
   tree = XtCreateWidget("tree", listtreeWidgetClass, w, NULL, 0);
   TREE = tree;
-  XtVaSetValues(tree,
-		XtNheight, (Dimension) 200,
-		XtNwidth, (Dimension) 150,
-		XtNhorizontalSpacing, 5,
-		XtNverticalSpacing, 5,
-		XtNhighlightPath, False,
-		XtNdoIncrementalHighlightCallback, True, XtNclickPixmapToOpen, False, NULL);
+  XtVaSetValues(tree, XtNheight, (Dimension)200, XtNwidth, (Dimension)150,
+                XtNhorizontalSpacing, 5, XtNverticalSpacing, 5,
+                XtNhighlightPath, False, XtNdoIncrementalHighlightCallback,
+                True, XtNclickPixmapToOpen, False, NULL);
   XtManageChild(tree);
   XmMainWindowSetAreas(w, NULL, NULL, NULL, NULL, tree);
   XmdsUsageIconsInitialize(w);
   icons = XmdsUsageIcons();
   off_icons = XmdsUsageGrayIcons();
-  XtAddCallback(tree, XtNhighlightCallback, HighlightCallback, (XtPointer) NULL);
-  XtAddCallback(tree, XtNactivateCallback, ActivateCallback, (XtPointer) NULL);
-  XtAddCallback(tree, XtNmenuCallback, MenuCallback, (XtPointer) NULL);
+  XtAddCallback(tree, XtNhighlightCallback, HighlightCallback, (XtPointer)NULL);
+  XtAddCallback(tree, XtNactivateCallback, ActivateCallback, (XtPointer)NULL);
+  XtAddCallback(tree, XtNmenuCallback, MenuCallback, (XtPointer)NULL);
   CommandLineOpen(XtDisplay(tree), tree);
   InitializeCommandInterface(w);
 }
@@ -766,13 +843,12 @@ void AddListTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPoi
  *			XtPointer	call:	the call data (unused).
  */
 
-
 extern void CloseWindow();
 /* ARGSUSED */
-void
-BxExitCB ARGLIST((w, client, call)) UARG(Widget, w) ARG(XtPointer, client) GRAU(XtPointer, call)
+void BxExitCB ARGLIST((w, client, call)) UARG(Widget, w) ARG(XtPointer, client)
+    GRAU(XtPointer, call)
 {
-  //int *exitValue = (int *)client;
+  // int *exitValue = (int *)client;
   CloseWindow(w, client, call);
 }
 
@@ -793,8 +869,8 @@ BxExitCB ARGLIST((w, client, call)) UARG(Widget, w) ARG(XtPointer, client) GRAU(
  */
 
 /* ARGSUSED */
-void
-BxManageCB ARGLIST((w, client, call)) ARG(Widget, w) ARG(XtPointer, client) GRAU(XtPointer, call __attribute__ ((unused)))
+void BxManageCB ARGLIST((w, client, call)) ARG(Widget, w) ARG(XtPointer, client)
+    GRAU(XtPointer, call __attribute__((unused)))
 {
   WidgetList widgets;
   int i;
@@ -803,10 +879,11 @@ BxManageCB ARGLIST((w, client, call)) ARG(Widget, w) ARG(XtPointer, client) GRAU
    * This function returns a NULL terminated WidgetList.  The memory for
    * the list needs to be freed when it is no longer needed.
    */
-  widgets = BxWidgetIdsFromNames(w, "BxManageCB", (String) client);
+  widgets = BxWidgetIdsFromNames(w, "BxManageCB", (String)client);
 
   i = 0;
-  while (widgets && widgets[i] != NULL) {
+  while (widgets && widgets[i] != NULL)
+  {
     XtManageChild(widgets[i]);
     i++;
   }
@@ -818,7 +895,8 @@ static void makeNoEdit(Widget w)
   WidgetList children;
   Cardinal count = 0;
   Cardinal i;
-  if (strcmp(XtClass(w)->core_class.class_name, "XmScrollBar")) {
+  if (strcmp(XtClass(w)->core_class.class_name, "XmScrollBar"))
+  {
     XtVaGetValues(w, XmNchildren, &children, XmNnumChildren, &count, NULL);
     XtVaSetValues(w, XmNeditable, False, NULL);
     for (i = 0; i < count; i++)
@@ -829,52 +907,57 @@ static void makeNoEdit(Widget w)
 static void display_data(Widget w, int nid, int count)
 {
   static int x, y;
-  Arg args[] = {
-    {XmdsNnid, 0},
-    {XmNx, 0},
-    {XmNy, 0},
-    {XmdsNdisplayOnly, 1},
-    {XmNdefaultPosition, 1},
-    {XmdsNautoPut, 1},
-    {XmdsNautoDestroy, 1}
-  };
+  Arg args[] = {{XmdsNnid, 0},
+                {XmNx, 0},
+                {XmNy, 0},
+                {XmdsNdisplayOnly, 1},
+                {XmNdefaultPosition, 1},
+                {XmdsNautoPut, 1},
+                {XmdsNautoDestroy, 1}};
   args[0].value = nid;
   args[1].value = x;
   args[2].value = y;
-  if (count == 0) {
-    XtManageChild(w =
-		  XmdsCreateXdBoxDialog(BxFindTopShell(w), "Display Data", args,
-					XtNumber(args) - 2));
+  if (count == 0)
+  {
+    XtManageChild(w = XmdsCreateXdBoxDialog(BxFindTopShell(w), "Display Data",
+                                            args, XtNumber(args) - 2));
     XtVaGetValues(w, XmNx, &x, XmNy, &y, NULL);
-  } else {
+  }
+  else
+  {
     x += 20;
     y += 20;
     args[3].value = 0;
-    XtManageChild(w =
-		  XmdsCreateXdBoxDialog(BxFindTopShell(w), "Display Data", args, XtNumber(args)));
+    XtManageChild(w = XmdsCreateXdBoxDialog(BxFindTopShell(w), "Display Data",
+                                            args, XtNumber(args)));
   }
   makeNoEdit(w);
 }
 
-void DisplayData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void DisplayData(Widget w, XtPointer client_data __attribute__((unused)),
+                 XtPointer call_data __attribute__((unused)))
 {
   int i;
-  for (i = 0; i < num_selected; i++) {
+  for (i = 0; i < num_selected; i++)
+  {
     int nid = get_nid(selections[i]);
     display_data(w, nid, i);
   }
 }
 
-void TurnOnOff(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
+void TurnOnOff(Widget w, XtPointer client_data,
+               XtPointer call_data __attribute__((unused)))
 {
   int i;
   int on = *(int *)client_data;
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
-  //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
+  // XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
   ListTreeRefreshOff(tree);
-  for (i = 0; i < num_selected; i++) {
+  for (i = 0; i < num_selected; i++)
+  {
     int nid = get_nid(selections[i]);
-    switch (on) {
+    switch (on)
+    {
     case 0:
       TreeTurnOff(nid);
       break;
@@ -890,36 +973,39 @@ void TurnOnOff(Widget w, XtPointer client_data, XtPointer call_data __attribute_
 static void modify_data(Widget w, int nid, int count)
 {
   static int x, y;
-  Arg args[] = {
-    {XmdsNnid, 0},
-    {XmNx, 0},
-    {XmNy, 0},
-    {XmdsNdisplayOnly, 0},
-    {XmNdefaultPosition, 1},
-    {XmdsNautoPut, 1},
-    {XmdsNputOnApply, 1},
-    {XmdsNautoDestroy, 1}
-  };
+  Arg args[] = {{XmdsNnid, 0},
+                {XmNx, 0},
+                {XmNy, 0},
+                {XmdsNdisplayOnly, 0},
+                {XmNdefaultPosition, 1},
+                {XmdsNautoPut, 1},
+                {XmdsNputOnApply, 1},
+                {XmdsNautoDestroy, 1}};
   args[0].value = nid;
   args[1].value = x;
   args[2].value = y;
-  if (count == 0) {
-    XtManageChild(w =
-		  XmdsCreateXdBoxDialog(BxFindTopShell(w), "Modify Data", args, XtNumber(args)));
+  if (count == 0)
+  {
+    XtManageChild(w = XmdsCreateXdBoxDialog(BxFindTopShell(w), "Modify Data",
+                                            args, XtNumber(args)));
     XtVaGetValues(w, XmNx, &x, XmNy, &y, NULL);
-  } else {
+  }
+  else
+  {
     x += 20;
     y += 20;
     args[3].value = 0;
-    XtManageChild(w =
-		  XmdsCreateXdBoxDialog(BxFindTopShell(w), "Modify Data", args, XtNumber(args)));
+    XtManageChild(w = XmdsCreateXdBoxDialog(BxFindTopShell(w), "Modify Data",
+                                            args, XtNumber(args)));
   }
 }
 
-void ModifyData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void ModifyData(Widget w, XtPointer client_data __attribute__((unused)),
+                XtPointer call_data __attribute__((unused)))
 {
   int i;
-  for (i = 0; i < num_selected; i++) {
+  for (i = 0; i < num_selected; i++)
+  {
     int nid = get_nid(selections[i]);
     modify_data(w, nid, i);
   }
@@ -928,7 +1014,8 @@ void ModifyData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPoin
 static int NUM_TO_DELETE = 0;
 static int *NIDS_TO_DELETE = 0;
 
-void DeleteNodeNow(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void DeleteNodeNow(Widget w, XtPointer client_data __attribute__((unused)),
+                   XtPointer call_data __attribute__((unused)))
 {
   int i;
   int status;
@@ -937,7 +1024,8 @@ void DeleteNodeNow(Widget w, XtPointer client_data __attribute__ ((unused)), XtP
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
   ListTreeItem *itm;
   loose_selection_proc(tree, NULL);
-  for (i = 0; i < NUM_TO_DELETE; i++) {
+  for (i = 0; i < NUM_TO_DELETE; i++)
+  {
     int nid = NIDS_TO_DELETE[i];
     ListTreeItem *itm = FindItemByNid(ListTreeFirstItem(tree), nid);
     if (itm != NULL)
@@ -947,21 +1035,26 @@ void DeleteNodeNow(Widget w, XtPointer client_data __attribute__ ((unused)), XtP
   TreeDeleteNodeExecute();
 
   status = TreeGetDefaultNid(&def_nid);
-  if ((status & 1) == 0)
+  if ((STATUS_OK) == 0)
     def_nid = 0;
-  for (i = 0; i < NUM_TO_DELETE; i++) {
+  for (i = 0; i < NUM_TO_DELETE; i++)
+  {
     if (parent_nids[i] != -1)
-      if ((itm = FindItemByNid(ListTreeFirstItem(tree), parent_nids[i])) != NULL) {
-	char *name = get_node_name(parent_nids[i]);
-	if (parent_nids[i] == def_nid) {
-	  char *str = malloc(strlen(name) + 3 + 3 + 1);
-	  strcpy(str, "<<<");
-	  strcat(str, name);
-	  strcat(str, ">>>");
-	  ListTreeRenameItem(tree, itm, str);
-	  free(str);
-	} else
-	  ListTreeRenameItem(tree, itm, name);
+      if ((itm = FindItemByNid(ListTreeFirstItem(tree), parent_nids[i])) !=
+          NULL)
+      {
+        char *name = get_node_name(parent_nids[i]);
+        if (parent_nids[i] == def_nid)
+        {
+          char *str = malloc(strlen(name) + 3 + 3 + 1);
+          strcpy(str, "<<<");
+          strcat(str, name);
+          strcat(str, ">>>");
+          ListTreeRenameItem(tree, itm, str);
+          free(str);
+        }
+        else
+          ListTreeRenameItem(tree, itm, name);
       }
   }
   free(parent_nids);
@@ -976,7 +1069,8 @@ void DeleteNodeConditional()
   Widget delete_ok_box = XtNameToWidget(toplevel, "*delete_ok_box");
   Widget delete_ok_list = XtNameToWidget(delete_ok_box, "*delete_ok_list");
   int nid;
-  if (first_time) {
+  if (first_time)
+  {
     XtManageChild(delete_ok_box);
     XtUnmanageChild(delete_ok_box);
   }
@@ -984,7 +1078,8 @@ void DeleteNodeConditional()
   if (NIDS_TO_DELETE != NULL)
     free(NIDS_TO_DELETE);
   NIDS_TO_DELETE = (int *)malloc(NUM_TO_DELETE * sizeof(int));
-  for (nid = 0; TreeDeleteNodeGetNid(&nid) & 1;) {
+  for (nid = 0; TreeDeleteNodeGetNid(&nid) & 1;)
+  {
     XmString path_str;
     char *c_path = TreeGetPath(nid);
     NIDS_TO_DELETE[idx++] = nid;
@@ -996,23 +1091,29 @@ void DeleteNodeConditional()
   XtManageChild(delete_ok_box);
 }
 
-void DeleteNode(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void DeleteNode(Widget w, XtPointer client_data __attribute__((unused)),
+                XtPointer call_data __attribute__((unused)))
 {
   int i;
   NUM_TO_DELETE = 0;
-  if (num_selected > 0) {
-    for (i = 0; i < num_selected; i++) {
+  if (num_selected > 0)
+  {
+    for (i = 0; i < num_selected; i++)
+    {
       int nid = get_nid(selections[i]);
       TreeDeleteNodeInitialize(nid, &NUM_TO_DELETE, i == 0);
     }
     DeleteNodeConditional();
-  } else
-    XmdsComplain(w, "Please choose one or more nodes\nbefore choosing delete node.");
+  }
+  else
+    XmdsComplain(
+        w, "Please choose one or more nodes\nbefore choosing delete node.");
 }
 
-void RenameNodeNow(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
+void RenameNodeNow(Widget w, XtPointer client_data,
+                   XtPointer call_data __attribute__((unused)))
 {
-  int nid = (int)((char *)client_data - (char *)0);
+  int nid = (int)(intptr_t)client_data;
   Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
   Widget tw = XtNameToWidget(w, "*.new_name");
   char *new_name = (char *)XmTextFieldGetString(tw);
@@ -1020,9 +1121,11 @@ void RenameNodeNow(Widget w, XtPointer client_data, XtPointer call_data __attrib
   int status;
   parent = parent_nid(nid);
   status = TreeRenameNode(nid, new_name);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     int new_parent = parent_nid(nid);
-    if (new_parent != parent) {
+    if (new_parent != parent)
+    {
       ListTreeItem *this_item = FindParentItemByNid(tree, nid);
       ListTreeDelete(tree, FindItemByNid(ListTreeFirstItem(tree), nid));
       FixUpName(tree, FindItemByNid(ListTreeFirstItem(tree), parent));
@@ -1030,50 +1133,62 @@ void RenameNodeNow(Widget w, XtPointer client_data, XtPointer call_data __attrib
     }
     FixUpName(tree, FindItemByNid(ListTreeFirstItem(tree), nid));
     XtDestroyWidget(w);
-  } else
+  }
+  else
     XmdsComplain(w, "Error renaming node");
 }
 
-void RenameNode(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void RenameNode(Widget w, XtPointer client_data __attribute__((unused)),
+                XtPointer call_data __attribute__((unused)))
 {
   int i;
-  if (num_selected > 0) {
-    for (i = 0; i < num_selected; i++) {
+  if (num_selected > 0)
+  {
+    for (i = 0; i < num_selected; i++)
+    {
       int nid = get_nid(selections[i]);
       char *c_path = TreeGetPath(nid);
-      static XtCallbackRec ok_callback_list[] = { {(XtCallbackProc) RenameNodeNow, 0}, {0, 0} };
-      static XtCallbackRec cancel_callback_list[] =
-	  { {(XtCallbackProc) XtDestroyWidget, 0}, {0, 0} };
+      static XtCallbackRec ok_callback_list[] = {
+          {(XtCallbackProc)RenameNodeNow, 0}, {0, 0}};
+      static XtCallbackRec cancel_callback_list[] = {
+          {(XtCallbackProc)XtDestroyWidget, 0}, {0, 0}};
       static Arg qargs[] = {
-	{XmNmessageString, 0},
-	{XmNokLabelString, 0},
-	{XmNokCallback, (long)ok_callback_list},
-	{XmNcancelCallback, (long)cancel_callback_list},
+          {XmNmessageString, 0},
+          {XmNokLabelString, 0},
+          {XmNokCallback, (long)ok_callback_list},
+          {XmNcancelCallback, (long)cancel_callback_list},
       };
       static Arg targs[] = {
-	{XmNvalue, 0},
-	{XmNcolumns, 48},
-	{XmNmarginHeight, 1},
-	{XmNmarginWidth, 1},
+          {XmNvalue, 0},
+          {XmNcolumns, 48},
+          {XmNmarginHeight, 1},
+          {XmNmarginWidth, 1},
       };
       Widget qdlog;
       Widget widg;
-      ok_callback_list[0].closure = (char *)0 + nid;
-      qargs[0].value = (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
-      qargs[1].value = (long)XmStringCreateLtoR("Rename", XmSTRING_DEFAULT_CHARSET);
-      qdlog = XmCreateQuestionDialog(toplevel, "rename", qargs, XtNumber(qargs));
-      XmStringFree((XmString) qargs[0].value);
-      XmStringFree((XmString) qargs[1].value);
+      ok_callback_list[0].closure = (void *)(intptr_t)nid;
+      qargs[0].value =
+          (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
+      qargs[1].value =
+          (long)XmStringCreateLtoR("Rename", XmSTRING_DEFAULT_CHARSET);
+      qdlog =
+          XmCreateQuestionDialog(toplevel, "rename", qargs, XtNumber(qargs));
+      XmStringFree((XmString)qargs[0].value);
+      XmStringFree((XmString)qargs[1].value);
       targs[0].value = (long)c_path;
-      widg = (Widget) XmCreateTextField(qdlog, "new_name", targs, XtNumber(targs));
+      widg =
+          (Widget)XmCreateTextField(qdlog, "new_name", targs, XtNumber(targs));
       XtManageChild(widg);
       XtManageChild(qdlog);
     }
-  } else
-    XmdsComplain(w, "Please choose one or more nodes\nbefore choosing rename node.");
+  }
+  else
+    XmdsComplain(
+        w, "Please choose one or more nodes\nbefore choosing rename node.");
 }
 
-static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method, Widget parent)
+static int DoMethodNoSignal(struct descriptor *niddsc,
+                            struct descriptor *method, Widget parent)
 {
   /*  LibEstablish(LibSigToRet); */
   EMPTYXD(xd);
@@ -1088,75 +1203,86 @@ static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method
 static int setup_device(Widget parent, int nid)
 {
   static DESCRIPTOR(const method, "DW_SETUP");
-  struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, 0 };
+  struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
   volatile int status;
   niddsc.pointer = (char *)&nid;
   status = DoMethodNoSignal(&niddsc, (struct descriptor *)&method, parent);
-  if (status == TreeNOMETHOD) {
+  if (status == TreeNOMETHOD)
+  {
     static char *getnci = "GETNCI($, 'CONGLOMERATE_ELT')";
     static int c_nid;
     static DESCRIPTOR_NID(nid_dsc, &c_nid);
     int conglomerate_elt;
-    static struct descriptor_d model = { 0, DTYPE_T, CLASS_D, 0 };
+    static struct descriptor_d model = {0, DTYPE_T, CLASS_D, 0};
     static int head_nid;
     c_nid = nid;
     conglomerate_elt = ReadInt(getnci, &nid_dsc MDS_END_ARG);
     head_nid = nid + 1 - conglomerate_elt;
     c_nid = head_nid;
-    if (TdiModelOf(&nid_dsc, &model MDS_END_ARG) & 1) {
-      static struct descriptor filename = { 0, DTYPE_T, CLASS_D, 0 };
+    if (TdiModelOf(&nid_dsc, &model MDS_END_ARG) & 1)
+    {
+      static struct descriptor filename = {0, DTYPE_T, CLASS_D, 0};
       /*      static DESCRIPTOR(const prefix, "DECW$SYSTEM_DEFAULTS:"); */
       static DESCRIPTOR(const postfix, ".uid\0");
       static DESCRIPTOR(const zero, "\0");
       StrTrim((struct descriptor *)&model, (struct descriptor *)&model, 0);
       StrUpcase((struct descriptor *)&model, (struct descriptor *)&model);
-      StrConcat(&filename, (struct descriptor *)&model, (struct descriptor *)&postfix MDS_END_ARG);
+      StrConcat(&filename, (struct descriptor *)&model,
+                (struct descriptor *)&postfix MDS_END_ARG);
       StrAppend(&model, (struct descriptor *)&zero);
-      status = XmdsDeviceSetup(parent, &c_nid, &filename.pointer, 1, model.pointer, NULL, 0, 0);
-      switch (status) {
+      status = XmdsDeviceSetup(parent, &c_nid, &filename.pointer, 1,
+                               model.pointer, NULL, 0, 0);
+      switch (status)
+      {
       case MrmSUCCESS:
-	status = 1;
-	break;
+        status = 1;
+        break;
       case MrmNOT_FOUND:
-	status = TreeNOMETHOD;
-	break;
+        status = TreeNOMETHOD;
+        break;
       default:
-	XmdsComplain(parent, "Error in activating setup for this device");
-	status = 1;
+        XmdsComplain(parent, "Error in activating setup for this device");
+        status = 1;
       }
     }
   }
   return status;
 }
 
-void SetupDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void SetupDevice(Widget w, XtPointer client_data __attribute__((unused)),
+                 XtPointer call_data __attribute__((unused)))
 {
   int i;
-  for (i = 0; i < num_selected; i++) {
+  for (i = 0; i < num_selected; i++)
+  {
     int nid = get_nid(selections[i]);
     setup_device(w, nid);
   }
 }
 
-void MenuUnmap(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
-{
-}
+void MenuUnmap(Widget w __attribute__((unused)),
+               XtPointer client_data __attribute__((unused)),
+               XtPointer call_data __attribute__((unused))) {}
 
-void MSetupDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void MSetupDevice(Widget w, XtPointer client_data __attribute__((unused)),
+                  XtPointer call_data __attribute__((unused)))
 {
-  if (menu_item != NULL) {
+  if (menu_item != NULL)
+  {
     int nid = get_nid(menu_item);
     setup_device(w, nid);
     menu_item = NULL;
   }
 }
 
-void MTurnOnOff(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
+void MTurnOnOff(Widget w, XtPointer client_data,
+                XtPointer call_data __attribute__((unused)))
 {
   int on = *(int *)client_data;
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
   ListTreeRefreshOff(tree);
-  if (menu_item != NULL) {
+  if (menu_item != NULL)
+  {
     int nid = get_nid(menu_item);
     if (on)
       TreeTurnOn(nid);
@@ -1168,18 +1294,22 @@ void MTurnOnOff(Widget w, XtPointer client_data, XtPointer call_data __attribute
   ListTreeRefreshOn(tree);
 }
 
-void MDisplayData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void MDisplayData(Widget w, XtPointer client_data __attribute__((unused)),
+                  XtPointer call_data __attribute__((unused)))
 {
-  if (menu_item != NULL) {
+  if (menu_item != NULL)
+  {
     int nid = get_nid(menu_item);
     display_data(w, nid, 0);
     menu_item = NULL;
   }
 }
 
-void MModifyData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void MModifyData(Widget w, XtPointer client_data __attribute__((unused)),
+                 XtPointer call_data __attribute__((unused)))
 {
-  if (menu_item != NULL) {
+  if (menu_item != NULL)
+  {
     int nid = get_nid(menu_item);
     modify_data(w, nid, 0);
   }
@@ -1190,99 +1320,114 @@ static void display_nci(Widget bu, int nid, int count)
   static int x, y;
   XmString label = GetNciString(nid);
   Widget w;
-  static XtCallbackRec ok_callback_list[] = { {(XtCallbackProc) XtDestroyWidget, 0}, {0, 0} };
-  Arg args[] = {
-    {XmNmessageString, 0},
-    {XmNdialogTitle, 0},
-    {XmNokLabelString, 0},
-    {XmNx, 0},
-    {XmNy, 0},
-    {XmNokCallback, (long)ok_callback_list},
-    {XmNmessageAlignment, XmALIGNMENT_BEGINNING},
-    {XmNminimizeButtons, TRUE},
-    {XmNdefaultPosition, 1}
-  };
+  static XtCallbackRec ok_callback_list[] = {
+      {(XtCallbackProc)XtDestroyWidget, 0}, {0, 0}};
+  Arg args[] = {{XmNmessageString, 0},
+                {XmNdialogTitle, 0},
+                {XmNokLabelString, 0},
+                {XmNx, 0},
+                {XmNy, 0},
+                {XmNokCallback, (long)ok_callback_list},
+                {XmNmessageAlignment, XmALIGNMENT_BEGINNING},
+                {XmNminimizeButtons, TRUE},
+                {XmNdefaultPosition, 1}};
   args[0].value = (long)label;
-  args[1].value =
-      (long)XmStringCreateLtoR("Display Node Characteristics", XmSTRING_DEFAULT_CHARSET);
+  args[1].value = (long)XmStringCreateLtoR("Display Node Characteristics",
+                                           XmSTRING_DEFAULT_CHARSET);
   args[2].value = (long)XmStringCreateLtoR("Dismiss", XmSTRING_DEFAULT_CHARSET);
   args[3].value = x;
   args[4].value = y;
-  if (count == 0) {
-    XtManageChild(w =
-		  XmCreateInformationDialog(BxFindTopShell(bu), "Display Nci", args,
-					    XtNumber(args) - 2));
+  if (count == 0)
+  {
+    XtManageChild(w = XmCreateInformationDialog(BxFindTopShell(bu),
+                                                "Display Nci", args,
+                                                XtNumber(args) - 2));
     XtVaGetValues(w, XmNx, &x, XmNy, &y, NULL);
-  } else {
+  }
+  else
+  {
     x += 20;
     y += 20;
     args[6].value = 0;
-    XtManageChild(w =
-		  XmCreateInformationDialog(BxFindTopShell(bu), "Display Nci", args,
-					    XtNumber(args)));
+    XtManageChild(w = XmCreateInformationDialog(
+                      BxFindTopShell(bu), "Display Nci", args, XtNumber(args)));
   }
   XmStringFree(label);
 }
 
-void DisplayNci(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void DisplayNci(Widget w, XtPointer client_data __attribute__((unused)),
+                XtPointer call_data __attribute__((unused)))
 {
   int i;
-  for (i = 0; i < num_selected; i++) {
+  for (i = 0; i < num_selected; i++)
+  {
     int nid = get_nid(selections[i]);
     display_nci(w, nid, i);
   }
 }
 
-void MDisplayNci(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void MDisplayNci(Widget w, XtPointer client_data __attribute__((unused)),
+                 XtPointer call_data __attribute__((unused)))
 {
-  if (menu_item != NULL) {
+  if (menu_item != NULL)
+  {
     int nid = get_nid(menu_item);
     display_nci(w, nid, 0);
     menu_item = NULL;
   }
 }
 
-void CloseTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void CloseTree(Widget w, XtPointer client_data __attribute__((unused)),
+               XtPointer call_data __attribute__((unused)))
 {
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
   ListTreeItem *top = ListTreeFirstItem(tree);
   static char *getediting = "GETDBI('OPEN_FOR_EDIT') &&  GETDBI('MODIFIED')";
-  if (ReadInt(getediting MDS_END_ARG)) {
+  if (ReadInt(getediting MDS_END_ARG))
+  {
     Widget write_dlog = XtNameToWidget(BxFindTopShell(w), "*.writeDialog");
     XtManageChild(write_dlog);
-  } else {
+  }
+  else
+  {
     int status = TreeClose(NULL, 0);
     ListTreeRefreshOff(tree);
-    if ((status & 1) && (top != NULL))
+    if ((STATUS_OK) && (top != NULL))
       ListTreeDelete(tree, top);
     Init(tree);
     ListTreeRefreshOn(tree);
   }
 }
 
-void WriteTree(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
+void WriteTree(Widget w, XtPointer client_data,
+               XtPointer call_data __attribute__((unused)))
 {
   int status;
   int write = *(int *)client_data;
-  if (write) {
+  if (write)
+  {
     status = TreeWriteTree(0, 0);
     if (status)
       status = TreeClose(NULL, 0);
-  } else
+  }
+  else
     status = TreeQuitTree(0, 0);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
     ListTreeRefreshOff(tree);
-    if ((status & 1) && (top != NULL))
+    if ((STATUS_OK) && (top != NULL))
       ListTreeDelete(tree, top);
     Init(tree);
     ListTreeRefreshOn(tree);
-  } else
+  }
+  else
     XmdsComplain(BxFindTopShell(w), "Error writing or quiting from tree");
 }
 
-struct tree_id {
+struct tree_id
+{
   char *tree;
   int shot;
 };
@@ -1294,11 +1439,12 @@ static void AskCreate(Widget w, char *tree, int shot)
   treeid->shot = shot;
   treeid->tree = (char *)malloc(strlen(tree) + 1);
   strcpy(treeid->tree, tree);
-  XtVaSetValues(ask_dlog, XmNuserData, (XtPointer) treeid, NULL);
+  XtVaSetValues(ask_dlog, XmNuserData, (XtPointer)treeid, NULL);
   XtManageChild(ask_dlog);
 }
 
-void CreateTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void CreateTree(Widget w, XtPointer client_data __attribute__((unused)),
+                XtPointer call_data __attribute__((unused)))
 {
   int status = 1;
   struct tree_id *treeid;
@@ -1306,7 +1452,8 @@ void CreateTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPoin
   status = TreeOpenNew(treeid->tree, treeid->shot);
   free(treeid->tree);
   free(treeid);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     Widget tree = TREE;
     ListTreeItem *top = ListTreeFirstItem(tree);
     ListTreeRefreshOff(tree);
@@ -1321,15 +1468,19 @@ void open_tree(Widget w, char *tree, int shot)
 {
   int status;
   Widget edit = XtNameToWidget(BxFindTopShell(w), "*.edit_toggle");
-  if (XmToggleButtonGetState(edit)) {
+  if (XmToggleButtonGetState(edit))
+  {
     status = TreeOpenEdit(tree, shot);
     if (status == TreeFILE_NOT_FOUND)
       AskCreate(w, tree, shot);
-  } else {
+  }
+  else
+  {
     Widget r_o = XtNameToWidget(BxFindTopShell(w), "*.r_o_toggle");
     status = TreeOpen(tree, shot, XmToggleButtonGetState(r_o));
   }
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
     ListTreeRefreshOff(tree);
@@ -1340,75 +1491,92 @@ void open_tree(Widget w, char *tree, int shot)
   }
 }
 
-void OpenTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void OpenTree(Widget w, XtPointer client_data __attribute__((unused)),
+              XtPointer call_data __attribute__((unused)))
 {
   Widget parentw = XtParent(w);
   Widget treew = XtNameToWidget(parentw, "tree_name");
   char *tree = XmTextGetString(treew);
   Widget shotw = XtNameToWidget(parentw, "shot_name");
-  char *shot_str = XmTextGetString(shotw);;
-  if (tree && strlen(tree) && shot_str && strlen(shot_str)) {
+  char *shot_str = XmTextGetString(shotw);
+  ;
+  if (tree && strlen(tree) && shot_str && strlen(shot_str))
+  {
     int lshot;
     int status = sscanf(shot_str, "%d", &lshot);
     if (status)
       open_tree(w, tree, lshot);
     else
       XmdsComplain(parentw,
-		   "shot specifed as /%s/\nmust be an integer\nPlease reeenter or choose \"Cancel\"",
-		   shot_str);
-  } else
-    XmdsComplain(parentw,
-		 "Specify both a tree and a shot\nbefore choosing \"Ok\"\nUse \"Cancel\" to abort operation");
+                   "shot specifed as /%s/\nmust be an integer\nPlease reeenter "
+                   "or choose \"Cancel\"",
+                   shot_str);
+  }
+  else
+    XmdsComplain(parentw, "Specify both a tree and a shot\nbefore choosing "
+                          "\"Ok\"\nUse \"Cancel\" to abort operation");
 }
 
-void MDoAction(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void MDoAction(Widget w __attribute__((unused)),
+               XtPointer client_data __attribute__((unused)),
+               XtPointer call_data __attribute__((unused)))
 {
-  //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
+  // XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
 }
 
-void SetDefault(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void SetDefault(Widget w, XtPointer client_data __attribute__((unused)),
+                XtPointer call_data __attribute__((unused)))
 {
   int i;
-  for (i = 0; i < num_selected; i++) {
+  for (i = 0; i < num_selected; i++)
+  {
     set_default(w, selections[i]);
   }
 }
 
-void MSetDefault(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void MSetDefault(Widget w, XtPointer client_data __attribute__((unused)),
+                 XtPointer call_data __attribute__((unused)))
 {
-  if (menu_item != NULL) {
+  if (menu_item != NULL)
+  {
     set_default(w, menu_item);
     menu_item = NULL;
   }
 }
 
-void DoAction(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void DoAction(Widget w __attribute__((unused)),
+              XtPointer client_data __attribute__((unused)),
+              XtPointer call_data __attribute__((unused)))
 {
-  //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
+  // XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
 }
 
 static unsigned int usage = 0;
 static char *device_type = 0;
 
-void AddNodeStart(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void AddNodeStart(Widget w, XtPointer client_data __attribute__((unused)),
+                  XtPointer call_data __attribute__((unused)))
 {
   if (num_selected != 1)
-    XmdsComplain(w, "select exactly one node as parent before choosing add node");
-  else {
+    XmdsComplain(w,
+                 "select exactly one node as parent before choosing add node");
+  else
+  {
     add_target = selections[0];
     XtManageChild(XtNameToWidget(toplevel, "*addDialog"));
-
   }
 }
 
-void AddNodeDismiss(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void AddNodeDismiss(Widget w, XtPointer client_data __attribute__((unused)),
+                    XtPointer call_data __attribute__((unused)))
 {
   XtUnmanageChild(w);
 }
 
 extern int GetSupportedDevices();
 
-Boolean add_node(Widget w, ListTreeItem * parent, char *name, int usage, ListTreeItem ** itm)
+Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage,
+                 ListTreeItem **itm)
 {
   int parent_nid = get_nid(parent);
   char *parent_path;
@@ -1421,9 +1589,10 @@ Boolean add_node(Widget w, ListTreeItem * parent, char *name, int usage, ListTre
   c_nid = parent_nid;
   parent_path = ReadString(getnci, &nid_dsc MDS_END_ARG);
   full_path = realloc(parent_path, strlen(parent_path) + 1 + strlen(name) + 1);
-  if (usage == TreeUSAGE_SUBTREE) {
-    XmdsComplain(BxFindTopShell(w),
-		 "Non Motif traverser does not\nyet support adding subtrees to the tree");
+  if (usage == TreeUSAGE_SUBTREE)
+  {
+    XmdsComplain(BxFindTopShell(w), "Non Motif traverser does not\nyet support "
+                                    "adding subtrees to the tree");
     return 0;
   }
 
@@ -1432,111 +1601,139 @@ Boolean add_node(Widget w, ListTreeItem * parent, char *name, int usage, ListTre
   else
     strcat(full_path, ":");
   strcat(full_path, name);
-  if (usage == TreeUSAGE_DEVICE) {
+  if (usage == TreeUSAGE_DEVICE)
+  {
     status = 0;
-    if (device_type) {
+    if (device_type)
+    {
       notify_on = FALSE;
       status = TreeAddConglom(full_path, device_type, &new_nid);
       notify_on = TRUE;
-      if (!(status & 1))
-	XmdsComplain(BxFindTopShell(w), "Error adding device");
-    } else
-      XmdsComplain(BxFindTopShell(w), "Select a device type before choosing add");
-  } else {
+      if (STATUS_NOT_OK)
+        XmdsComplain(BxFindTopShell(w), "Error adding device");
+    }
+    else
+      XmdsComplain(BxFindTopShell(w),
+                   "Select a device type before choosing add");
+  }
+  else
+  {
     status = TreeAddNode(full_path, &new_nid, usage);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       XmdsComplain(BxFindTopShell(w), "Error adding node");
   }
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     *itm = insert_item(tree, parent, new_nid);
   }
-  return status & 1;
+  return STATUS_OK;
 }
 
-void add_tags(ListTreeItem * itm __attribute__ ((unused)), char *tags __attribute__ ((unused)))
-{
-}
+void add_tags(ListTreeItem *itm __attribute__((unused)),
+              char *tags __attribute__((unused))) {}
 
 Boolean AddNodeApply(Widget w)
 {
   Boolean status = 0;
-  if (TreeEditing()) {
-    if (usage != 0) {
+  if (TreeEditing())
+  {
+    if (usage != 0)
+    {
       Widget name_w = XtNameToWidget(XtParent(w), "*.nodeName");
       char *name_c = XmTextGetString(name_w);
-      if (strlen(name_c) > 0) {
-	if ((index(name_c, '.') == name_c) || (index(name_c, ':') == name_c))
-	  XmdsComplain(w, "Remove leading punctuation");
-	else {
-	  if (strlen(name_c) > 12)
-	    XmdsComplain(w, "Node names must be no more than 12 characters long");
-	  else {
-	    ListTreeItem *ret_itm;
-	    status = add_node(w, add_target, name_c, usage, &ret_itm);
-	    if (status) {
-	      Widget tag_w = XtNameToWidget(XtParent(w), "*.nodeTags");
-	      char *tags_c = XmTextGetString(tag_w);
-	      if (strlen(tags_c) > 0)
-		add_tags(ret_itm, tags_c);
-	    }
-	    status = TRUE;
-	  }
-	}
-      } else
-	XmdsComplain(w, "Specifiy a name before \"Ok\"");
-    } else
+      if (strlen(name_c) > 0)
+      {
+        if ((index(name_c, '.') == name_c) || (index(name_c, ':') == name_c))
+          XmdsComplain(w, "Remove leading punctuation");
+        else
+        {
+          if (strlen(name_c) > 12)
+            XmdsComplain(w,
+                         "Node names must be no more than 12 characters long");
+          else
+          {
+            ListTreeItem *ret_itm;
+            status = add_node(w, add_target, name_c, usage, &ret_itm);
+            if (status)
+            {
+              Widget tag_w = XtNameToWidget(XtParent(w), "*.nodeTags");
+              char *tags_c = XmTextGetString(tag_w);
+              if (strlen(tags_c) > 0)
+                add_tags(ret_itm, tags_c);
+            }
+            status = TRUE;
+          }
+        }
+      }
+      else
+        XmdsComplain(w, "Specifiy a name before \"Ok\"");
+    }
+    else
       XmdsComplain(w, "Please choose a usage before pressing \"Ok\"");
-  } else
+  }
+  else
     XmdsComplain(w, "Tree not open for edit");
   return status;
 }
 
-void AddNode(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void AddNode(Widget w, XtPointer client_data __attribute__((unused)),
+             XtPointer call_data __attribute__((unused)))
 {
   if (AddNodeApply(w))
     XtUnmanageChild(w);
 }
 
-void SetUsage(Widget w __attribute__ ((unused)), XtPointer client_data, XtPointer call_data)
+void SetUsage(Widget w __attribute__((unused)), XtPointer client_data,
+              XtPointer call_data)
 {
-  XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *) call_data;
+  XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *)call_data;
   if (cb->set)
     usage = *(int *)client_data;
 }
 
-void SetDeviceType(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void SetDeviceType(Widget w, XtPointer client_data __attribute__((unused)),
+                   XtPointer call_data __attribute__((unused)))
 {
   char *sptr, *dptr;
-  //XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *) call_data;
+  // XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *)
+  // call_data;
   device_type = realloc(device_type, strlen(w->core.name) + 1);
-  for (sptr = w->core.name, dptr = device_type; *sptr; *dptr++ = tolower(*sptr++)) ;
+  for (sptr = w->core.name, dptr = device_type; *sptr;
+       *dptr++ = tolower(*sptr++))
+    ;
   *dptr = '\0';
   /*   strcpy(device_type, w->core.name); */
 }
 
-void CommandEntered(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data)
+void CommandEntered(Widget w __attribute__((unused)),
+                    XtPointer client_data __attribute__((unused)),
+                    XtPointer call_data)
 {
-  XmCommandCallbackStruct *cb = (XmCommandCallbackStruct *) call_data;
+  XmCommandCallbackStruct *cb = (XmCommandCallbackStruct *)call_data;
   char *cmd;
-  char *output=0;
-  char *error=0;
-  //int status;
-  cmd = XmStringUnparse(cb->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+  char *output = 0;
+  char *error = 0;
+  // int status;
+  cmd = XmStringUnparse(cb->value, NULL, 0, XmCHARSET_TEXT, NULL, 0,
+                        XmOUTPUT_ALL);
   mdsdcl_do_command_extra_args(cmd, 0, &error, &output, 0, 0);
-  if (output != NULL) {
+  if (output != NULL)
+  {
     if (strlen(output) > 1)
       TOutput(output);
     free(output);
   }
-  if (error != NULL) {
+  if (error != NULL)
+  {
     if (strlen(error) > 1)
       TOutput(error);
     free(error);
   }
 }
 
-void CreateAddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void CreateAddDevice(Widget w, XtPointer client_data __attribute__((unused)),
+                     XtPointer call_data __attribute__((unused)))
 {
   static Boolean devices_loaded = False;
   char **devnames;
@@ -1544,25 +1741,28 @@ void CreateAddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), X
   Widget top;
   usage = TreeUSAGE_DEVICE;
   if (num_selected != 1)
-    XmdsComplain(w, "select exactly one node as parent before choosing add node");
-  else {
+    XmdsComplain(w,
+                 "select exactly one node as parent before choosing add node");
+  else
+  {
     add_target = selections[0];
     top = XtNameToWidget(BxFindTopShell(w), "*.addDeviceDialog");
-    if (!devices_loaded) {
-      static Arg args[] = {
-	{XmNarmCallback, 0}
-      };
+    if (!devices_loaded)
+    {
+      static Arg args[] = {{XmNarmCallback, 0}};
       int i;
       Widget rb;
-      static XtCallbackRec device_changed_list[] = { {(XtCallbackProc) SetDeviceType, 0}, {0, 0} };
+      static XtCallbackRec device_changed_list[] = {
+          {(XtCallbackProc)SetDeviceType, 0}, {0, 0}};
       args[0].value = (long)device_changed_list;
       rb = XtNameToWidget(top, "*.ad_radioBox1");
       GetSupportedDevices(&devnames, &num);
-      for (i = 0; i < num; i++) {
+      for (i = 0; i < num; i++)
+      {
 
-	Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
-	free(devnames[i]);
-	XtManageChild(w);
+        Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
+        free(devnames[i]);
+        XtManageChild(w);
       }
       free(devnames);
       devices_loaded = True;
@@ -1571,12 +1771,14 @@ void CreateAddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), X
   }
 }
 
-void AddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void AddDevice(Widget w, XtPointer client_data __attribute__((unused)),
+               XtPointer call_data __attribute__((unused)))
 {
   XtUnmanageChild(w);
 }
 
-void AddDeviceDismiss(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
+void AddDeviceDismiss(Widget w, XtPointer client_data __attribute__((unused)),
+                      XtPointer call_data __attribute__((unused)))
 {
   XtUnmanageChild(w);
 }
@@ -1590,15 +1792,20 @@ static Boolean TagsApply(Widget w, int nid)
   int num_items;
   int i;
   TreeRemoveNodesTags(nid);
-  XtVaGetValues(list_widget, XmNitems, &item_list, XmNitemCount, &num_items, NULL);
-  for (i = 0; i < num_items; i++) {
+  XtVaGetValues(list_widget, XmNitems, &item_list, XmNitemCount, &num_items,
+                NULL);
+  for (i = 0; i < num_items; i++)
+  {
     char *tag_txt;
-    tag_txt = XmStringUnparse(item_list[i], NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
-    if (tag_txt) {
+    tag_txt = XmStringUnparse(item_list[i], NULL, 0, XmCHARSET_TEXT, NULL, 0,
+                              XmOUTPUT_ALL);
+    if (tag_txt)
+    {
       status = TreeAddTag(nid, tag_txt);
-      if (!(status & 1)) {
-	retstatus = status;
-	XmdsComplain(toplevel, "Error Adding tag\n%s", tag_txt);
+      if (STATUS_NOT_OK)
+      {
+        retstatus = status;
+        XmdsComplain(toplevel, "Error Adding tag\n%s", tag_txt);
       }
       XtFree(tag_txt);
     }
@@ -1610,7 +1817,7 @@ static void TagsReset(Widget w, int nid)
 {
   char *path;
   char *tag;
-  //int status;
+  // int status;
   XmString path_str;
   Widget list_widget;
   void *ctx;
@@ -1618,9 +1825,11 @@ static void TagsReset(Widget w, int nid)
   XmListDeleteAllItems(list_widget);
   path = TreeGetPath(nid);
   path_str = XmStringCreateLtoR(path, XmSTRING_DEFAULT_CHARSET);
-  XtVaSetValues(XtNameToWidget(w, "tag_node_label"), XmNlabelString, path_str, NULL);
+  XtVaSetValues(XtNameToWidget(w, "tag_node_label"), XmNlabelString, path_str,
+                NULL);
   XmStringFree(path_str);
-  for (ctx = 0; (tag = TreeFindNodeTags(nid, &ctx)) != NULL;) {
+  for (ctx = 0; (tag = TreeFindNodeTags(nid, &ctx)) != NULL;)
+  {
     XmString tag_str = XmStringCreateLtoR(tag, XmSTRING_DEFAULT_CHARSET);
     XmListAddItemUnselected(list_widget, tag_str, 0);
     XmStringFree(tag_str);
@@ -1639,9 +1848,10 @@ void tag_button_proc(Widget w, int *tag)
   Widget tag_widget = XtParent(w);
   XtPointer temp;
   int nid;
-  XtVaGetValues(tag_widget, XmNuserData, (XtArgVal) & temp, NULL);
-  nid = (intptr_t) temp;
-  switch (*tag) {
+  XtVaGetValues(tag_widget, XmNuserData, (XtArgVal)&temp, NULL);
+  nid = (intptr_t)temp;
+  switch (*tag)
+  {
   case TAGS_OK:
     if (TagsApply(tag_widget, nid) & 1)
       XtUnmanageChild(tag_widget);
@@ -1656,51 +1866,63 @@ void tag_button_proc(Widget w, int *tag)
     XtUnmanageChild(tag_widget);
     break;
   case TAGS_ADD:
+  {
+    char *new_tag = (char *)XmTextFieldGetString(
+        XtNameToWidget(tag_widget, "tag_current_text"));
+    if (strlen(new_tag))
     {
-      char *new_tag = (char *)XmTextFieldGetString(XtNameToWidget(tag_widget, "tag_current_text"));
-      if (strlen(new_tag)) {
-	XmString new_tag_str = XmStringCreateSimple(new_tag);
-	Widget list_widget = XtNameToWidget(tag_widget, "*.tag_list");
-	XmListAddItemUnselected(list_widget, new_tag_str, 0);
-	XmStringFree(new_tag_str);
-	XtFree(new_tag);
-      }
-    }
-    break;
-  case TAGS_REMOVE:
-    {
-      int *pos_list;
-      int pos_count;
+      XmString new_tag_str = XmStringCreateSimple(new_tag);
       Widget list_widget = XtNameToWidget(tag_widget, "*.tag_list");
-      if (XmListGetSelectedPos(list_widget, &pos_list, &pos_count))
-	XmListDeletePos(list_widget, pos_list[0]);
+      XmListAddItemUnselected(list_widget, new_tag_str, 0);
+      XmStringFree(new_tag_str);
+      XtFree(new_tag);
     }
-    break;
+  }
+  break;
+  case TAGS_REMOVE:
+  {
+    int *pos_list;
+    int pos_count;
+    Widget list_widget = XtNameToWidget(tag_widget, "*.tag_list");
+    if (XmListGetSelectedPos(list_widget, &pos_list, &pos_count))
+      XmListDeletePos(list_widget, pos_list[0]);
+  }
+  break;
   }
 }
 
-void tag_selection_proc(Widget w, int *tag __attribute__ ((unused)), XmListCallbackStruct * reason)
+void tag_selection_proc(Widget w, int *tag __attribute__((unused)),
+                        XmListCallbackStruct *reason)
 {
   Widget tag_widget = XtParent(w);
   char *tag_txt;
-  tag_txt = XmStringUnparse(reason->item, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
-  XmTextFieldSetString(XtNameToWidget(tag_widget->core.parent, "*.tag_current_text"), tag_txt);
+  tag_txt = XmStringUnparse(reason->item, NULL, 0, XmCHARSET_TEXT, NULL, 0,
+                            XmOUTPUT_ALL);
+  XmTextFieldSetString(
+      XtNameToWidget(tag_widget->core.parent, "*.tag_current_text"), tag_txt);
   XtFree(tag_txt);
 }
 
-void ModifyTags(Widget w, XtPointer client_data __attribute__ ((unused)), XmListCallbackStruct * reason __attribute__ ((unused)))
+void ModifyTags(Widget w, XtPointer client_data __attribute__((unused)),
+                XmListCallbackStruct *reason __attribute__((unused)))
 {
   Widget tagsw = XtNameToWidget(BxFindTopShell(w), "*.tags_box");
-  if (!XtIsManaged(tagsw)) {
-    if (num_selected == 1) {
+  if (!XtIsManaged(tagsw))
+  {
+    if (num_selected == 1)
+    {
       int nid = get_nid(selections[0]);
-      XtVaSetValues(tagsw, XmNuserData, (XtArgVal) nid, NULL);
+      XtVaSetValues(tagsw, XmNuserData, (XtArgVal)nid, NULL);
       TagsReset(tagsw, nid);
       XtManageChild(tagsw);
-    } else {
+    }
+    else
+    {
       XmdsComplain(w, "Please select exactly one node before modifying tags");
     }
-  } else {
+  }
+  else
+  {
     XmdsComplain(w, "Please modify only one node's tags at a time");
   }
 }

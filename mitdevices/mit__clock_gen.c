@@ -22,8 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mitdevices_msg.h>
-#include <mds_gendevice.h>
+#include "mitdevices_msg.h"
+#include "mds_gendevice.h"
 #include "mit__clock_gen.h"
 EXPORT int mit__clock__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
@@ -38,21 +38,21 @@ EXPORT int mit__clock__add(struct descriptor *name_d_ptr, struct descriptor *dum
   flag_itm[0].pointer = (unsigned char *)&flags;
   name_ptr[name_d_ptr->length] = 0;
   status = TreeStartConglomerate(MIT__CLOCK_K_CONG_NODES);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeAddNode(name_ptr, &head_nid, usage);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   *nid_ptr = head_nid;
   status = TreeSetNci(head_nid, flag_itm);
   status = TreePutRecord(head_nid, (struct descriptor *)&conglom_d, 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeGetDefaultNid(&old_nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = TreeSetDefaultNid(head_nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
  ADD_NODE(:COMMENT, TreeUSAGE_TEXT)
 #define expr " 1000.     "
@@ -85,7 +85,7 @@ EXPORT int mit__clock__add(struct descriptor *name_d_ptr, struct descriptor *dum
       flags |= NciM_WRITE_ONCE;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   return (TreeSetDefaultNid(old_nid));
 }
@@ -97,7 +97,7 @@ EXPORT int mit__clock__part_name(struct descriptor *nid_d_ptr __attribute__ ((un
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
   nci_list[0].pointer = (unsigned char *)&element;
   status = TreeGetNci(*(int *)nid_d_ptr->pointer, nci_list);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   switch (element) {
   case (MIT__CLOCK_N_HEAD + 1):

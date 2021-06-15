@@ -22,27 +22,27 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <assert.h>
 #include "testing.h"
+#include <assert.h>
 
 // #include "mdstestdummy.h"
 // extern void generate_false_assert();
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused)))
 {
-    BEGIN_TESTING(ok);
-    int a=1;
-    TEST1(a==1);
-    END_TESTING;
+  BEGIN_TESTING(ok);
+  int a = 1;
+  TEST1(a == 1);
+  END_TESTING;
 
-    BEGIN_TESTING(test direct assert);
-    int a=1;
-    assert( a==0 );
-    assert( "test direct assert"&&0 );
-    END_TESTING;
+  BEGIN_TESTING(test direct assert);
+  int a = 1;
+  assert(a == 0);
+  assert("test direct assert" && 0);
+  END_TESTING;
 
-//    BEGIN_TESTING(test lib assert);
-//    generate_false_assert();
-//    END_TESTING;
+  //    BEGIN_TESTING(test lib assert);
+  //    generate_false_assert();
+  //    END_TESTING;
 }
-

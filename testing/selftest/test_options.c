@@ -22,26 +22,25 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdio.h>
 #include "testing.h"
+#include <stdio.h>
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused)))
 {
-    BEGIN_TESTING(1);
-    TEST1(1);
-    END_TESTING;
+  BEGIN_TESTING(1);
+  TEST1(1);
+  END_TESTING;
 
-    printf("pappa\n");
+  printf("pappa\n");
 
-    BEGIN_TESTING(2);
-    TEST1(1);
-    END_TESTING;
+  BEGIN_TESTING(2);
+  TEST1(1);
+  END_TESTING;
 
-    printf("pappa\n");
+  printf("pappa\n");
 
-    BEGIN_TESTING(3);
-    TEST1(1);
-    END_TESTING;
+  BEGIN_TESTING(3);
+  TEST1(1);
+  END_TESTING;
 }
-
-

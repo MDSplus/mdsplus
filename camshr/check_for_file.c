@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -71,16 +71,18 @@ int check_for_file(char *FileName)
   if (MSGLVL(FUNCTION_NAME))
     printf("check_for_file('%s')\n", FileName);
 
-  if ((fd = Open(FileName, O_RDONLY)) < 0) {	// file does not exist, yet
-    status = FILE_ERROR;	// :<
+  if ((fd = Open(FileName, O_RDONLY)) < 0)
+  {                      // file does not exist, yet
+    status = FILE_ERROR; // :<
     goto Filecheck_Exit;
   }
   // things are good !
   close(fd);
-  status = SUCCESS;		// :>
+  status = SUCCESS; // :>
 
- Filecheck_Exit:
-  if (MSGLVL(DETAILS)) {
+Filecheck_Exit:
+  if (MSGLVL(DETAILS))
+  {
     printf("check_for_file('%s'): ", FileName);
     ShowStatus(status);
   }

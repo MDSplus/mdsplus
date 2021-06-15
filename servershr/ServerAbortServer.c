@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$ABORT_SERVER
+                Name:   SERVER$ABORT_SERVER
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Abort job that server is currently working on
+                Purpose: Abort job that server is currently working on
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 
@@ -48,7 +48,7 @@ int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -59,6 +59,6 @@ int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 EXPORT int ServerAbortServer(char *server, int flush)
 {
   struct descrip p1;
-  return ServerSendMessage(0, server, SrvAbort, NULL, NULL, NULL, NULL, NULL, NULL, 1,
-			   MakeDescrip(&p1, DTYPE_LONG, 0, 0, &flush));
+  return ServerSendMessage(0, server, SrvAbort, NULL, NULL, NULL, NULL, NULL,
+                           NULL, 1, MakeDescrip(&p1, DTYPE_LONG, 0, 0, &flush));
 }

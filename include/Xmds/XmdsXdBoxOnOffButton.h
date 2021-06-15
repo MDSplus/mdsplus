@@ -5,15 +5,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSXDBOXONOFFBUTTON.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsXdBoxOnOffButton.H
+                Name:   XmdsXdBoxOnOffButton.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   15-JAN-1992
+                Date:   15-JAN-1992
 
-		Purpose: Public declarations for XmdsXdBoxOnOffButton widget
+                Purpose: Public declarations for XmdsXdBoxOnOffButton widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -32,12 +32,14 @@
 
 /* Resources */
 
-#define XmdsNnid               "nid"	/* Nid */
-#define XmdsNnidOffset         "nidOffset"	/* Nid offset */
-#define XmdsNputOnApply        "putOnApply"	/* Put when a XmdsApplyAllXds is called */
+#define XmdsNnid "nid"             /* Nid */
+#define XmdsNnidOffset "nidOffset" /* Nid offset */
+#define XmdsNputOnApply                                \
+  "putOnApply" /* Put when a XmdsApplyAllXds is called \
+                */
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreateXdBoxOnOffButton();
@@ -46,15 +48,15 @@ extern int XmdsXdBoxOnOffButtonApply();
 extern int XmdsXdBoxOnOffButtonPut();
 extern void XmdsXdBoxOnOffButtonReset();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name, ArgList args,
-					 Cardinal argcount);
+extern Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name,
+                                         ArgList args, Cardinal argcount);
 extern Boolean XmdsIsXdBoxOnOffButton(Widget w);
 extern int XmdsXdBoxOnOffButtonApply(Widget w);
 extern int XmdsXdBoxOnOffButtonPut(Widget w);
 extern void XmdsXdBoxOnOffButtonReset(Widget w);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
-#endif				/* _XmdsXdBoxOnOffButton */
+#endif /* _XmdsXdBoxOnOffButton */

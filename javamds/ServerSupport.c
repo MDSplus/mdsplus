@@ -24,51 +24,53 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-	Name:	JAVA$RESAMPLE
+        Name:	JAVA$RESAMPLE
 
-	Type:   C function
+        Type:   C function
 
-	Author:	Gabriele Manduchi
+        Author:	Gabriele Manduchi
 
-		Istituto Gas Ionizzati del CNR - Padova (Italy)
+                Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-	Date:   7-JAN-1998
+        Date:   7-JAN-1998
 
-	Purpose: Resample a given signal into a vector of equally spaced samples
+        Purpose: Resample a given signal into a vector of equally spaced samples
 
-		 DO NOT interpolate when the total number of points is less than
+                 DO NOT interpolate when the total number of points is less than
 
-		 the required one
+                 the required one
 
 --------------------------------------------------------------------------------
 
  Input  arguments:  struct descriptor *in : descriptor of the input signal
 
-		    float *start : start time of resampling
+                    float *start : start time of resampling
 
-		    float *freq: resampling frequency
+                    float *freq: resampling frequency
 
-		    int *max_samples: maximum number of samples
+                    int *max_samples: maximum number of samples
 
-		    if *freq == 0, then freq and start time are adjusted such that all the
+                    if *freq == 0, then freq and start time are adjusted such
+that all the
 
-		    time range of the signal fits into max_samples
+                    time range of the signal fits into max_samples
 
 
- Output arguments: float *out: output vector, already allocated (max_samples elements)
+ Output arguments: float *out: output vector, already allocated (max_samples
+elements)
 
-		   float *ret_start: returned start time
+                   float *ret_start: returned start time
 
-		   int *out_samples: returned number of samples (<= max_samples)
+                   int *out_samples: returned number of samples (<= max_samples)
 
 -------------------------------------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <mdsdescrip.h>
-#include <string.h>
-#include <mdsshr.h>
-#include <stdlib.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <treeshr.h>
 
 extern int TdiData();
@@ -77,8 +79,8 @@ extern int TdiDimOf();
 extern int TdiCompile();
 #define MAX_POINTS 1000
 
-
-EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax, float *dt)
+EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
+                                          float *dt)
 {
   static EMPTYXD(xd);
   static EMPTYXD(emptyXd);
@@ -89,7 +91,7 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   int numSegments, status, currSegment, currIdx, outIdx;
   int nid = *nidPtr;
   double segStart, segEnd, actMin, actMax, actDelta, currMin, currMax;
-  int outSamples, minSegment=0, maxSegment;
+  int outSamples, minSegment = 0, maxSegment;
   float *outData, *outTimes, *currTimes, *currData, currSamples;
   double *currDataDouble, *currTimesDouble, currTime;
   int isDouble, isTimeDouble;
@@ -99,30 +101,36 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   DESCRIPTOR_SIGNAL_1(retSigDsc, &dataDsc, NULL, &timesDsc);
   printf("JavaResample %d %f %f %f\n", nid, *xmin, *xmax, *dt);
   status = TreeGetNumSegments(nid, &numSegments);
-  if (!(status & 1) || numSegments < 1) {
+  if (STATUS_NOT_OK || numSegments < 1)
+  {
     printf("JavaResample: Unexpected Non Segmented Item!!\n");
     return &emptyXd;
   }
-  //Find true xmin and xmax
+  // Find true xmin and xmax
   actMin = *xmin;
   actMax = *xmax;
   actDelta = *dt;
   maxSegment = numSegments - 1;
-  for (currSegment = 0; currSegment < numSegments; currSegment++) {
+  for (currSegment = 0; currSegment < numSegments; currSegment++)
+  {
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiData(&startXd, &startXd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiFloat(&startXd, &startXd MDS_END_ARG);
-    if (!(status & 1) || startXd.pointer == NULL || startXd.pointer->class != CLASS_S) {
+    if (STATUS_NOT_OK || startXd.pointer == NULL ||
+        startXd.pointer->class != CLASS_S)
+    {
       printf("Cannot get segment start!!\n");
       return &xd;
     }
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiData(&endXd, &endXd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiFloat(&endXd, &endXd MDS_END_ARG);
-    if (!(status & 1) || endXd.pointer == NULL || endXd.pointer->class != CLASS_S) {
+    if (STATUS_NOT_OK || endXd.pointer == NULL ||
+        endXd.pointer->class != CLASS_S)
+    {
       printf("Cannot get segment end!!\n");
       return &xd;
     }
@@ -137,38 +145,42 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
     MdsFree1Dx(&startXd, 0);
     MdsFree1Dx(&endXd, 0);
     if (currSegment == 0 && actMax < segStart)
-      return &emptyXd;		//Window out
+      return &emptyXd; // Window out
     if (currSegment == 0 && actMin < segStart)
       actMin = segStart;
     if (currSegment == numSegments - 1 && actMin > segEnd)
-      return &emptyXd;		//Window out
+      return &emptyXd; // Window out
     if (currSegment == numSegments - 1 && actMax > segEnd)
       actMax = segEnd;
     if (actMin <= segEnd && actMin >= segStart)
       minSegment = currSegment;
-    if (actMax >= segStart && actMax <= segEnd) {
+    if (actMax >= segStart && actMax <= segEnd)
+    {
       maxSegment = currSegment;
       break;
     }
   }
-  //Take into account rounding errors and the fact that a sample more could be for each segment
+  // Take into account rounding errors and the fact that a sample more could be
+  // for each segment
   outSamples = ((actMax - actMin) / actDelta + 1 + numSegments) * 2;
   outData = malloc(outSamples * sizeof(float));
   outTimes = malloc(outSamples * sizeof(float));
   outIdx = 0;
 
-  for (currSegment = minSegment; currSegment <= maxSegment; currSegment++) {
+  for (currSegment = minSegment; currSegment <= maxSegment; currSegment++)
+  {
     status = TreeGetSegment(nid, currSegment, &segDataXd, &segTimesXd);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiData(&segDataXd, &segDataXd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiFloat(&segDataXd, &segDataXd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiData(&segTimesXd, &segTimesXd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiFloat(&segTimesXd, &segTimesXd MDS_END_ARG);
-    if (!(status & 1) || segDataXd.pointer->class != CLASS_A
-	|| segTimesXd.pointer->class != CLASS_A) {
+    if (STATUS_NOT_OK || segDataXd.pointer->class != CLASS_A ||
+        segTimesXd.pointer->class != CLASS_A)
+    {
       printf("Cannot Get segment %d\n", currSegment);
       return &emptyXd;
     }
@@ -183,43 +195,56 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
     currTimes = (float *)arrDsc->pointer;
     currTimesDouble = (double *)arrDsc->pointer;
     isTimeDouble = (arrDsc->length == sizeof(double));
-    if (currSegment == minSegment) {
-      for (currIdx = 0; currIdx < currSamples && currTimes[currIdx] < actMin; currIdx++) ;
-      if (currIdx == currSamples) {
-	printf("INTERNAL ERROR in JavaResample\n");
-	return &emptyXd;
+    if (currSegment == minSegment)
+    {
+      for (currIdx = 0; currIdx < currSamples && currTimes[currIdx] < actMin;
+           currIdx++)
+        ;
+      if (currIdx == currSamples)
+      {
+        printf("INTERNAL ERROR in JavaResample\n");
+        return &emptyXd;
       }
-    } else
+    }
+    else
       currIdx = 0;
 
-    while (currIdx < currSamples) {
+    while (currIdx < currSamples)
+    {
       if (isTimeDouble)
-	currTime = currTimesDouble[currIdx];
+        currTime = currTimesDouble[currIdx];
       else
-	currTime = currTimes[currIdx];
-      if (isDouble) {
-	currMin = currMax = currDataDouble[currIdx];
-	while (currIdx < currSamples && currTime < actMin + (outIdx + 1) * actDelta) {
-	  if (currDataDouble[currIdx] > currMax)
-	    currMax = currDataDouble[currIdx];
-	  if (currDataDouble[currIdx] < currMin)
-	    currMin = currDataDouble[currIdx];
-	  currIdx++;
-	}
-      } else {
-	currMin = currMax = currData[currIdx];
-	while (currIdx < currSamples && currTime < actMin + (outIdx + 1) * actDelta) {
-	  if (currData[currIdx] > currMax)
-	    currMax = currData[currIdx];
-	  if (currData[currIdx] < currMin)
-	    currMin = currData[currIdx];
-	  currIdx++;
-	}
+        currTime = currTimes[currIdx];
+      if (isDouble)
+      {
+        currMin = currMax = currDataDouble[currIdx];
+        while (currIdx < currSamples &&
+               currTime < actMin + (outIdx + 1) * actDelta)
+        {
+          if (currDataDouble[currIdx] > currMax)
+            currMax = currDataDouble[currIdx];
+          if (currDataDouble[currIdx] < currMin)
+            currMin = currDataDouble[currIdx];
+          currIdx++;
+        }
+      }
+      else
+      {
+        currMin = currMax = currData[currIdx];
+        while (currIdx < currSamples &&
+               currTime < actMin + (outIdx + 1) * actDelta)
+        {
+          if (currData[currIdx] > currMax)
+            currMax = currData[currIdx];
+          if (currData[currIdx] < currMin)
+            currMin = currData[currIdx];
+          currIdx++;
+        }
       }
       outData[2 * outIdx] = currMin;
       outData[2 * outIdx + 1] = currMax;
       if (actMin + (outIdx + 1) * actDelta > actMax)
-	break;
+        break;
       outTimes[2 * outIdx] = actMin + (outIdx + 0.5) * actDelta;
       outTimes[2 * outIdx + 1] = actMin + (outIdx + 1) * actDelta;
       outIdx++;
@@ -237,11 +262,12 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   return &xd;
 }
 
-#define QUITE_SIMILAR(x,y) ((x)>(y)*(1-1E-10)&&(x)<(y)*(1+1E-10))
+#define QUITE_SIMILAR(x, y) ((x) > (y) * (1 - 1E-10) && (x) < (y) * (1 + 1E-10))
 
-EXPORT struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float *in_xmax)
+EXPORT struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin,
+                                     float *in_xmax)
 {
-  static struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+  static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
   DESCRIPTOR_A(a_d, sizeof(float), DTYPE_FLOAT, 0, 0);
   int x_points, act_points, start_idx, end_idx, curr_idx, out_idx;
   float out_array[3 * MAX_POINTS + 1], xmin, xmax, delta;
@@ -255,23 +281,31 @@ EXPORT struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin,
     xmin = x[0];
   if (xmax > x[x_points - 1])
     xmax = x[x_points - 1];
-  for (start_idx = 0; x[start_idx] < xmin; start_idx++) ;
-  for (end_idx = 0; x[end_idx] < xmax; end_idx++) ;
+  for (start_idx = 0; x[start_idx] < xmin; start_idx++)
+    ;
+  for (end_idx = 0; x[end_idx] < xmax; end_idx++)
+    ;
   act_points = end_idx - start_idx + 1;
-  if (act_points < MAX_POINTS) {	/*Code time axis */
+  if (act_points < MAX_POINTS)
+  { /*Code time axis */
     curr_idx = start_idx + 1;
     out_idx = 1;
-    while (curr_idx <= end_idx) {
+    while (curr_idx <= end_idx)
+    {
       out_array[out_idx++] = x[curr_idx - 1];
       delta = x[curr_idx + 1] - x[curr_idx];
-      for (; curr_idx <= end_idx && QUITE_SIMILAR(x[curr_idx], x[curr_idx - 1] + delta);
-	   curr_idx++) ;
+      for (; curr_idx <= end_idx &&
+             QUITE_SIMILAR(x[curr_idx], x[curr_idx - 1] + delta);
+           curr_idx++)
+        ;
       out_array[out_idx++] = x[curr_idx - 1];
       out_array[out_idx++] = delta;
       curr_idx++;
     }
     out_array[0] = 1;
-  } else {			/*Resample */
+  }
+  else
+  { /*Resample */
 
     out_idx = 1;
     out_array[out_idx++] = x[start_idx];
@@ -279,7 +313,8 @@ EXPORT struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin,
     out_array[out_idx++] = (x[end_idx] - x[start_idx]) / (MAX_POINTS - 1);
     out_array[0] = 1;
   }
-  if (out_idx >= act_points) {	/* Coding is not convenient */
+  if (out_idx >= act_points)
+  { /* Coding is not convenient */
     out_array[0] = -1;
     out_idx = 1;
     for (curr_idx = start_idx; curr_idx <= end_idx; curr_idx++)
@@ -293,7 +328,8 @@ EXPORT struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin,
 
 static int traverseNodeMinMax(int nid, float *xMin, float *xMax);
 
-static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
+static int traverseExprMinMax(struct descriptor *dsc, float *xMin,
+                              float *xMax)
 {
   int status, nid, size, i, isUpdated;
   struct descriptor_a *arrD;
@@ -304,31 +340,35 @@ static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
 
   if (!dsc)
     return 0;
-  switch (dsc->class) {
+  switch (dsc->class)
+  {
   case CLASS_XD:
-    return traverseExprMinMax(((struct descriptor_xd *)dsc)->pointer, xMin, xMax);
+    return traverseExprMinMax(((struct descriptor_xd *)dsc)->pointer, xMin,
+                              xMax);
   case CLASS_S:
   case CLASS_D:
-    switch (dsc->dtype) {
+    switch (dsc->dtype)
+    {
     case DTYPE_PATH:
       currName = malloc(dsc->length + 1);
       memcpy(currName, dsc->pointer, dsc->length);
       currName[dsc->length] = 0;
       status = TreeFindNode(currName, &nid);
       free(currName);
-      if (status & 1)
-	return traverseNodeMinMax(nid, xMin, xMax);
+      if (STATUS_OK)
+        return traverseNodeMinMax(nid, xMin, xMax);
       return 0;
     case DTYPE_NID:
       return traverseNodeMinMax(*((int *)dsc->pointer), xMin, xMax);
     default:
-      return 0;			//Other Scalar values do not affect limits
+      return 0; // Other Scalar values do not affect limits
     }
     break;
   case CLASS_A:
     arrD = (struct descriptor_a *)dsc;
     size = arrD->arsize / arrD->length;
-    switch (arrD->dtype) {
+    switch (arrD->dtype)
+    {
     case DTYPE_B:
       *xMin = ((char *)arrD->pointer)[0];
       *xMax = ((char *)arrD->pointer)[size - 1];
@@ -354,12 +394,12 @@ static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
       *xMax = ((unsigned int *)arrD->pointer)[size - 1];
       break;
     case DTYPE_Q:
-      *xMin = ((int64_t *) arrD->pointer)[0];
-      *xMax = ((int64_t *) arrD->pointer)[size - 1];
+      *xMin = ((int64_t *)arrD->pointer)[0];
+      *xMax = ((int64_t *)arrD->pointer)[size - 1];
       break;
     case DTYPE_QU:
-      *xMin = ((uint64_t *) arrD->pointer)[0];
-      *xMax = ((uint64_t *) arrD->pointer)[size - 1];
+      *xMin = ((uint64_t *)arrD->pointer)[0];
+      *xMax = ((uint64_t *)arrD->pointer)[size - 1];
       break;
     case DTYPE_FLOAT:
       *xMin = ((float *)arrD->pointer)[0];
@@ -381,34 +421,38 @@ static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
     min = -1E30;
     max = 1E30;
     isUpdated = 0;
-    switch (recD->dtype) {
+    switch (recD->dtype)
+    {
     case DTYPE_PARAM:
     case DTYPE_WITH_UNITS:
     case DTYPE_WITH_ERROR:
-      return (recD->dscptrs[0]) ? traverseExprMinMax(recD->dscptrs[0], xMin, xMax) : 0;
+      return (recD->dscptrs[0])
+                 ? traverseExprMinMax(recD->dscptrs[0], xMin, xMax)
+                 : 0;
     case DTYPE_SIGNAL:
       if (!recD->dscptrs[2])
-	return 0;
+        return 0;
       status = TdiData(recD->dscptrs[2], &xd MDS_END_ARG);
-      if (!(status & 1) || !xd.pointer)
-	return 0;
+      if (STATUS_NOT_OK || !xd.pointer)
+        return 0;
       status = traverseExprMinMax(xd.pointer, xMin, xMax);
       MdsFree1Dx(&xd, 0);
       return status;
     case DTYPE_FUNCTION:
-      for (i = 0; i < size; i++) {
-	status = traverseExprMinMax(recD->dscptrs[i], &currMin, &currMax);
-	if (status)		//something meaningful has been returned
-	{
-	  if (currMin > min)
-	    min = currMin;
-	  if (currMax < max)
-	    max = currMax;
-	  isUpdated = 1;
-	}
+      for (i = 0; i < size; i++)
+      {
+        status = traverseExprMinMax(recD->dscptrs[i], &currMin, &currMax);
+        if (status) // something meaningful has been returned
+        {
+          if (currMin > min)
+            min = currMin;
+          if (currMax < max)
+            max = currMax;
+          isUpdated = 1;
+        }
       }
       if (!isUpdated)
-	return 0;
+        return 0;
       *xMin = min;
       *xMax = max;
       return 1;
@@ -429,23 +473,24 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   int numSegments, status;
 
   status = TreeGetNumSegments(nid, &numSegments);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
-  if (numSegments == 0) {
+  if (numSegments == 0)
+  {
     status = TreeGetRecord(nid, &xd);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return 0;
     status = traverseExprMinMax(xd.pointer, xMin, xMax);
     MdsFree1Dx(&xd, 0);
     return status;
   }
   status = TreeGetSegmentLimits(nid, 0, &startXd, &endXd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
   status = TdiData(&startXd, &startXd MDS_END_ARG);
-  if (status & 1)
+  if (STATUS_OK)
     status = TdiFloat(&startXd, &startXd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
   if (startXd.pointer->length == 8)
     *xMin = *((double *)startXd.pointer->pointer);
@@ -454,12 +499,12 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   MdsFree1Dx(&startXd, 0);
   MdsFree1Dx(&endXd, 0);
   status = TreeGetSegmentLimits(nid, numSegments - 1, &startXd, &endXd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
   status = TdiData(&endXd, &endXd MDS_END_ARG);
-  if (status & 1)
+  if (STATUS_OK)
     status = TdiFloat(&endXd, &endXd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
   if (endXd.pointer->length == 8)
     *xMax = *((double *)endXd.pointer->pointer);
@@ -470,15 +515,15 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   return 1;
 }
 
-//Find minimum and maximum time for an expression involving signals
+// Find minimum and maximum time for an expression involving signals
 EXPORT int JavaGetMinMax(char *sigExpr, float *xMin, float *xMax)
 {
   EMPTYXD(xd);
   int status;
-  struct descriptor sigD = { strlen(sigExpr), DTYPE_T, CLASS_S, sigExpr };
+  struct descriptor sigD = {strlen(sigExpr), DTYPE_T, CLASS_S, sigExpr};
 
   status = TdiCompile(&sigD, &xd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
 
   status = traverseExprMinMax(xd.pointer, xMin, xMax);
@@ -486,8 +531,10 @@ EXPORT int JavaGetMinMax(char *sigExpr, float *xMin, float *xMax)
   return status;
 }
 
-//Find estimated (by defect) number of points for segmented and not segmented signal
-EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax, int *nLimit)
+// Find estimated (by defect) number of points for segmented and not segmented
+// signal
+EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax,
+                            int *nLimit)
 {
   EMPTYXD(xd);
   EMPTYXD(startXd);
@@ -496,39 +543,43 @@ EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax, int *nLimit
   struct descriptor_a *arrayPtr;
   float currStart, currEnd;
   int status, nid, numSegments, numPoints, currSegment;
-  struct descriptor sigD = { strlen(sigExpr), DTYPE_T, CLASS_S, sigExpr };
+  struct descriptor sigD = {strlen(sigExpr), DTYPE_T, CLASS_S, sigExpr};
   char dtype, dimct;
   int dims[16], next_row;
   status = TdiCompile(&sigD, &xd MDS_END_ARG);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
-  if (xd.pointer->dtype != DTYPE_NID) {
+  if (xd.pointer->dtype != DTYPE_NID)
+  {
     printf("JavaGetNumPoints: Not a NID\n");
     return 0;
   }
   nid = *((int *)xd.pointer->pointer);
   status = TreeGetNumSegments(nid, &numSegments);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return 0;
-  if (numSegments == 0) {
+  if (numSegments == 0)
+  {
     status = TdiData(&xd, &xd MDS_END_ARG);
-    if (!(status & 1) || !xd.pointer || xd.pointer->class != CLASS_A)
+    if (STATUS_NOT_OK || !xd.pointer || xd.pointer->class != CLASS_A)
       numPoints = 0;
-    else {
+    else
+    {
       arrayPtr = (struct descriptor_a *)xd.pointer;
       numPoints = arrayPtr->arsize / arrayPtr->length;
     }
     MdsFree1Dx(&xd, 0);
     return numPoints;
   }
-  for (currSegment = 0; currSegment < numSegments; currSegment++) {
+  for (currSegment = 0; currSegment < numSegments; currSegment++)
+  {
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return 0;
     status = TdiData(&startXd, &startXd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiFloat(&startXd, &startXd MDS_END_ARG);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return 0;
     if (startXd.pointer->length == 8)
       currStart = *((double *)startXd.pointer->pointer);
@@ -539,14 +590,15 @@ EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax, int *nLimit
     if (currStart >= *xMin)
       break;
   }
-  for (numPoints = 0; currSegment < numSegments; currSegment++) {
+  for (numPoints = 0; currSegment < numSegments; currSegment++)
+  {
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return 0;
     status = TdiData(&endXd, &endXd MDS_END_ARG);
-    if (status & 1)
+    if (STATUS_OK)
       status = TdiFloat(&endXd, &endXd MDS_END_ARG);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return 0;
     if (endXd.pointer->length == 8)
       currEnd = *((double *)endXd.pointer->pointer);
@@ -557,8 +609,9 @@ EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax, int *nLimit
 
     if (currEnd >= *xMax)
       break;
-    status = TreeGetSegmentInfo(nid, currSegment, &dtype, &dimct, dims, &next_row);
-    if (!(status & 1))
+    status =
+        TreeGetSegmentInfo(nid, currSegment, &dtype, &dimct, dims, &next_row);
+    if (STATUS_NOT_OK)
       return 0;
     numPoints += dims[0];
     if (numPoints > nThreshold)

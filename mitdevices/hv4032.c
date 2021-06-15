@@ -121,8 +121,8 @@ Assumptions:
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -192,14 +192,14 @@ static void GetPodSettings(int nid, int *settings)
 {
   static int dev_nid;
   int status = DevNid(&nid, &dev_nid);
-  if (status & 1) {
+  if (STATUS_OK) {
     static DESCRIPTOR(get_settings, "GET_SETTINGS");
     static DESCRIPTOR_NID(nid_dsc, &dev_nid);
     status =
 	TreeDoMethod(&nid_dsc, (struct descriptor *)&get_settings, HV4032_K_CHANS_PER_POD,
 		     settings MDS_END_ARG);
   }
-  if ((status & 1) == 0) {
+  if ((STATUS_OK) == 0) {
     int i;
     for (i = 0; i < HV4032_K_CHANS_PER_POD; i++)
       settings[i] = 0;

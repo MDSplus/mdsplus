@@ -55,26 +55,28 @@ static char *scsimsg = "Attached devices: none";
 int ScsiSystemStatus(void)
 {
   char line[80], *pline;
-  int scsiSystemStatus = 0;	// assume the worst :(
+  int scsiSystemStatus = 0; // assume the worst :(
   FILE *fp, *fopen();
 
   if (MSGLVL(FUNCTION_NAME))
     printf("ScsiSystemStatus()\n");
 
-  if ((fp = fopen(PROC_FILE, "r")) == NULL) {
+  if ((fp = fopen(PROC_FILE, "r")) == NULL)
+  {
     fprintf(stderr, "can't open '%s' for read\n", PROC_FILE);
     scsiSystemStatus = 0;
     goto ScsiSystemStatus_Exit;
   }
 
   pline = &line[0];
-  if ((pline = fgets(line, sizeof(line), fp)) != NULL) {
+  if ((pline = fgets(line, sizeof(line), fp)) != NULL)
+  {
     if (strncmp(pline, scsimsg, strlen(scsimsg)))
-      scsiSystemStatus = 1;	// something is attached
+      scsiSystemStatus = 1; // something is attached
   }
 
- ScsiSystemStatus_Exit:
-  if (fp)			// still open
+ScsiSystemStatus_Exit:
+  if (fp) // still open
     fclose(fp);
 
   return scsiSystemStatus;

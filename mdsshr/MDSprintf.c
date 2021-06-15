@@ -23,95 +23,99 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*
-* MDSprintf.c --
-*
-* Functions to allow re-direction of
-*    "printf(...)" and
-*    "fprintf(stderr, ...)"
-*
-* Usage:
-*   int MDSprintf( char *fmt , ... )
-*     - Use like printf()
-*
-*   int MDSfprintf( FILE *fp , char *fmt , ... )
-*     - Use like fprintf().  Affects only stderr and stdout
-*
-*   void  MdsSetOutputFunctions(
-*       int (*NEWvprintf)()
-*      ,int (*NEWvfprintf)()
-*      )
-*     - Set addr of functions called via MDSprintf and MDSfprintf.
-*       Special values:
-*          0 :  suppress output
-*         -1 :  restore default (vprintf / vfprintf)
-*
-*       Functions, if specified, must handle variable-length arg lists.
-*       Defaults are:
-*         o vprintf( char *fmt , va_list ap )           and
-*         o vfprintf( FILE *fp , char *fmt , va_list ap )
-*             Note: called only for "fp" stderr and stdout.
-*       Any user-written function should follow these prototypes.
-*
-*   void  MdsGetOutputFunctions(
-*        void **CURvprintf
-*       ,void **CURvfprintf
-*       )
-*      - Get addresses of current functions (see above).
-*
-* History:
-*  14-Feb-2001  TRG  Create.
-*
-*********************************************************************/
+ * MDSprintf.c --
+ *
+ * Functions to allow re-direction of
+ *    "printf(...)" and
+ *    "fprintf(stderr, ...)"
+ *
+ * Usage:
+ *   int MDSprintf( char *fmt , ... )
+ *     - Use like printf()
+ *
+ *   int MDSfprintf( FILE *fp , char *fmt , ... )
+ *     - Use like fprintf().  Affects only stderr and stdout
+ *
+ *   void  MdsSetOutputFunctions(
+ *       int (*NEWvprintf)()
+ *      ,int (*NEWvfprintf)()
+ *      )
+ *     - Set addr of functions called via MDSprintf and MDSfprintf.
+ *       Special values:
+ *          0 :  suppress output
+ *         -1 :  restore default (vprintf / vfprintf)
+ *
+ *       Functions, if specified, must handle variable-length arg lists.
+ *       Defaults are:
+ *         o vprintf( char *fmt , va_list ap )           and
+ *         o vfprintf( FILE *fp , char *fmt , va_list ap )
+ *             Note: called only for "fp" stderr and stdout.
+ *       Any user-written function should follow these prototypes.
+ *
+ *   void  MdsGetOutputFunctions(
+ *        void **CURvprintf
+ *       ,void **CURvfprintf
+ *       )
+ *      - Get addresses of current functions (see above).
+ *
+ * History:
+ *  14-Feb-2001  TRG  Create.
+ *
+ *********************************************************************/
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <STATICdef.h>
 #include <mdsshr.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-		/*=====================================================
-		 * Static variables ...
-		 *====================================================*/
-STATIC_THREADSAFE int (*MDSvprintf) () = vprintf;	/* not really threadsafe but ok */
-STATIC_THREADSAFE int (*MDSvfprintf) () = vfprintf;	/* not really threadsafe but ok */
+/*=====================================================
+ * Static variables ...
+ *====================================================*/
+static int (*MDSvprintf)() =
+    vprintf; /* not really threadsafe but ok */
+static int (*MDSvfprintf)() =
+    vfprintf; /* not really threadsafe but ok */
 
-	/******************************************************************
-	 * MDSprintf:
-	 ******************************************************************/
+/******************************************************************
+ * MDSprintf:
+ ******************************************************************/
 EXPORT int MDSprintf(const char *const fmt, ...)
 {
   va_list ap;
 
   if (!MDSvprintf)
     return (0);
-  va_start(ap, fmt);		/* initialize "ap"              */
-  return ((*MDSvprintf) (fmt, ap));
+  va_start(ap, fmt); /* initialize "ap"              */
+  return ((*MDSvprintf)(fmt, ap));
 }
 
-	/******************************************************************
-	 * MDSfprintf:
-	 ******************************************************************/
+/******************************************************************
+ * MDSfprintf:
+ ******************************************************************/
 int MDSfprintf(FILE *const fp, const char *const fmt, ...)
 {
   va_list ap;
 
-  va_start(ap, fmt);		/* initialize "ap"              */
+  va_start(ap, fmt); /* initialize "ap"              */
   if (fp != stderr && fp != stdout)
     return (vfprintf(fp, fmt, ap));
   if (!MDSvfprintf)
     return (0);
-  return ((*MDSvfprintf) (fp, fmt, ap));
+  return ((*MDSvfprintf)(fp, fmt, ap));
 }
 
-	/***************************************************************
-	 * MdsSetOutputFunctions:
-	 * MdsGetOutputFunctions:
-	 ***************************************************************/
-void MdsSetOutputFunctions(int (*const NEWvprintf)         (const char *, void *),
-			   int (*const NEWvfprintf)(FILE *, const char *, void *))
+/***************************************************************
+ * MdsSetOutputFunctions:
+ * MdsGetOutputFunctions:
+ ***************************************************************/
+void MdsSetOutputFunctions(int (*const NEWvprintf)(const char *, void *),
+                           int (*const NEWvfprintf)(FILE *, const char *,
+                                                    void *))
 {
-  MDSvprintf = ((void *)NEWvprintf == (void *)-1) ? (int (*)())vprintf : (int (*)())NEWvprintf;
-  MDSvfprintf = ((void *)NEWvfprintf == (void *)-1) ? (int (*)())vfprintf : (int (*)())NEWvfprintf;
+  MDSvprintf = ((void *)NEWvprintf == (void *)-1) ? (int (*)())vprintf
+                                                  : (int (*)())NEWvprintf;
+  MDSvfprintf = ((void *)NEWvfprintf == (void *)-1) ? (int (*)())vfprintf
+                                                    : (int (*)())NEWvfprintf;
   return;
 }
 
@@ -125,11 +129,11 @@ void MdsGetOutputFunctions(void **const CURvprintf, void **const CURvfprintf)
 }
 
 #ifdef Main
-	/****************************************************************
-	 * main:
-	 ****************************************************************/
+/****************************************************************
+ * main:
+ ****************************************************************/
 
-STATIC_ROUTINE int woof(const char *const fmt, va_list ap)
+static int woof(const char *const fmt, va_list ap)
 {
   char xxfmt[80];
 
@@ -137,7 +141,7 @@ STATIC_ROUTINE int woof(const char *const fmt, va_list ap)
   return (vprintf(xxfmt, ap));
 }
 
-STATIC_ROUTINE int tweet(FILE * fp, const char *const fmt, va_list ap)
+static int tweet(FILE *fp, const char *const fmt, va_list ap)
 {
   char xxfmt[80];
 

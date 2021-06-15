@@ -23,18 +23,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import sys
-import traceback
-from MDSplus import TreeNode, Device
-from MDSplus import TreeNOMETHOD, MDSplusException, PyUNHANDLED_EXCEPTION
 
+def PyDoMethod(n, method, *args):
+    import sys
+    import traceback
+    import MDSplus
 
-def PyDoMethod(n,method,*args):
-    def is_property(obj): return len(args) == 0 and not hasattr(obj,'__call__')
+    def is_property(obj):
+        """Has no args and is not callable."""
+        return not (args or hasattr(obj, '__call__'))
+
     method = str(method)
     model = n.__class__.__name__
     try:
-        if method in TreeNode.__dict__:
+        if method in MDSplus.TreeNode.__dict__:
             methodobj = n.__getattribute__(method)
             if is_property(methodobj):
                 return methodobj
@@ -42,31 +44,31 @@ def PyDoMethod(n,method,*args):
             device = n.conglomerate_nids[0]
             c = device.record
             model = str(c.model)
-            if not isinstance(device, (Device,)):
+            if not isinstance(device, (MDSplus.Device,)):
                 device = c.getDevice(device)
             try:
                 methodobj = device.__getattribute__(method)
             except AttributeError:
-                raise TreeNOMETHOD
+                raise MDSplus.TreeNOMETHOD
             if is_property(methodobj):
                 return methodobj
-            if not method in Device.__dict__:
+            if method not in MDSplus.Device.__dict__:
                 print("doing %s(%s).%s(%s)" % (
-                    device, model, method,','.join(map(str,args))))
+                    device, model, method, ','.join(map(str, args))))
         try:
             return methodobj(*args)
         except TypeError as exc:
-            if args or not (method+'()') in str(exc):
+            if args or not (method + '()') in str(exc):
                 raise
             print("""
 Your device method %s.%s requires at least one argument.
 No argument has been provided as it is probably not required by the method.
 MDSplus does not require device methods to accept an argument anymore.
-""" % (model,method))
+""" % (model, method))
             return methodobj(None)
-    except MDSplusException:
+    except MDSplus.MDSplusException:
         raise
     except Exception:
-        print("error doing %s(%s).%s:" % (n,model,method))
+        print("error doing %s(%s).%s:" % (n, model, method))
         traceback.print_exc(file=sys.stdout)
-        raise PyUNHANDLED_EXCEPTION
+        raise MDSplus.PyUNHANDLED_EXCEPTION

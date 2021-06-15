@@ -93,7 +93,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern char *stpcpy(char *dest, const char *src);
 #endif
 
-extern unsigned short OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
+extern unsigned short OpcShape, OpcSize, OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
 
 extern int tdilex();
 extern int tdi_lex_path();
@@ -116,7 +116,7 @@ int yydebug = YYDEBUG;
 //"
 
 #define YYMAXDEPTH	250
-#define __RUN(method)	do{if IS_NOT_OK(TDI_REFZONE.l_status = method) {yyerror(TDITHREADSTATIC_VAR,"method failed"); return YY_ASIS;} else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
+#define __RUN(method)	do{if (IS_NOT_OK(TDI_REFZONE.l_status = method)) {yyerror(TDITHREADSTATIC_VAR,"method failed"); return YY_ASIS;} else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
 
 #define _RESOLVE(arg)				__RUN(tdi_yacc_RESOLVE(&arg.rptr, TDITHREADSTATIC_VAR))
 
@@ -364,6 +364,8 @@ using:
 ;
 postX:
   primaX
+| postX '[' RANGE ']'	{_JUST1(OPC_FLATTEN,$1,$$);}
+| postX '[' RANGE RANGE ']' {_JUST1(OPC_SQUEEZE,$1,$$);}
 | postX '[' sub ']'	{int j;
 			$$=$3;
 			$$.rptr->pointer= (uint8_t *)&OpcSubscript;

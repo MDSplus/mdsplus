@@ -4,16 +4,16 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSINPUT.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsInput
+                Name:   XmdsInput
 
-		Type:   C include file
+                Type:   C include file
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:    24-FEB-1993
+                Date:    24-FEB-1993
 
-		Purpose: Defines the data structures and routines for
-	                 generic Input or Channel support.
+                Purpose: Defines the data structures and routines for
+                         generic Input or Channel support.
 
 --------------------------------------------------------------------------------
 
@@ -41,7 +41,8 @@ extern void XmdsInputPut();
 
 #else
 
-extern Widget XmdsCreateInput(Widget parent, char *name, ArgList args, int argcount);
+extern Widget XmdsCreateInput(Widget parent, char *name, ArgList args,
+                              int argcount);
 extern void XmdsInputSetNid(Widget w, int nid);
 extern void XmdsInputReset(Widget w);
 extern void XmdsInputPut(Widget w);

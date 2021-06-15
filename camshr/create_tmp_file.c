@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -75,8 +75,10 @@ int create_tmp_file(int dbType, int count, char *filename)
   if (MSGLVL(FUNCTION_NAME))
     printf("create_tmp_file()\n");
 
-  if ((fd = mkstemp(filename)) == -1) {
-    if (MSGLVL(ALWAYS)) {
+  if ((fd = mkstemp(filename)) == -1)
+  {
+    if (MSGLVL(ALWAYS))
+    {
       fprintf(stderr, "create_tmp_file(): file error %d\n", fd);
       perror("creat()");
     }
@@ -86,7 +88,8 @@ int create_tmp_file(int dbType, int count, char *filename)
   }
   chmod(filename, 0666);
   // figure out size of each entry
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     entrySize = MODULE_ENTRY;
     break;
@@ -109,21 +112,24 @@ int create_tmp_file(int dbType, int count, char *filename)
     // 'blank' entry
     sprintf(line, fmt, " ");
 
-    for (i = 0; i < count; ++i) {
-      if (write(fd, line, entrySize) != entrySize) {
-	if (MSGLVL(ALWAYS))
-	  perror("write()");
+    for (i = 0; i < count; ++i)
+    {
+      if (write(fd, line, entrySize) != entrySize)
+      {
+        if (MSGLVL(ALWAYS))
+          perror("write()");
 
-	status = EXPAND_ERROR;
-	goto CreateTmpFile_Exit;
+        status = EXPAND_ERROR;
+        goto CreateTmpFile_Exit;
       }
     }
   }
 
-  close(fd);			// only get here if all is OK
+  close(fd); // only get here if all is OK
 
- CreateTmpFile_Exit:
-  if (MSGLVL(DETAILS)) {
+CreateTmpFile_Exit:
+  if (MSGLVL(DETAILS))
+  {
     printf("create_tmp_file(): ");
     ShowStatus(status);
   }

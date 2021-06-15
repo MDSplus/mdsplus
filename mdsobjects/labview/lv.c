@@ -33,38 +33,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *   Josh Stillerman 10/19/12
  */
-#include <mdsplus/mdsconfig.h>
-#include <stdint.h>
-#include <platdefines.h>
 #include <extcode.h>
 #include <fundtypes.h>
-#include <mdsdescrip.h>
 #include <libroutines.h>
-#include <stdio.h>
+#include <mdsdescrip.h>
+#include <mdsplus/mdsconfig.h>
 #include <mdsshr.h>
+#include <platdefines.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #pragma pack(1)
 
-EXPORT extern void MoveBlock(const void *src, void *dest, size_t siz){
-  void (*LVMoveBlock) () = NULL;
+EXPORT extern void MoveBlock(const void *src, void *dest, size_t siz)
+{
+  void (*LVMoveBlock)() = NULL;
   LibFindImageSymbol_C("LVRT_10", "MoveBlock", &LVMoveBlock);
-  if (LVMoveBlock) LVMoveBlock(src, dest, siz);
+  if (LVMoveBlock)
+    LVMoveBlock(src, dest, siz);
 }
 
-EXPORT extern UHandle DSNewHandle(size_t siz){
-  static UHandle(*LVDSNewHandle) () = NULL;
+EXPORT extern UHandle DSNewHandle(size_t siz)
+{
+  static UHandle (*LVDSNewHandle)() = NULL;
   LibFindImageSymbol_C("LVMemoryManager_10", "DSNewHandle", &LVDSNewHandle);
-  if (LVDSNewHandle)  return LVDSNewHandle(siz);
-  return (UHandle) - 1;
+  if (LVDSNewHandle)
+    return LVDSNewHandle(siz);
+  return (UHandle)-1;
 }
 
-EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle * h, size_t siz){
-  static MgErr(*LVNumericArrayResize) () = NULL;
+EXPORT MgErr NumericArrayResize(int32 a, int32 b, UHandle *h, size_t siz)
+{
+  static MgErr (*LVNumericArrayResize)() = NULL;
   LibFindImageSymbol_C("LVRT_10", "NumericArrayResize", &LVNumericArrayResize);
-  if (LVNumericArrayResize) return LVNumericArrayResize(a, b, h, siz);
+  if (LVNumericArrayResize)
+    return LVNumericArrayResize(a, b, h, siz);
   return -1;
 }
 
-EXPORT MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle * h, size_t siz){
-  return NumericArrayResize(a,b,h,siz);
+EXPORT MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle *h, size_t siz)
+{
+  return NumericArrayResize(a, b, h, siz);
 }

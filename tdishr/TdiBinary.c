@@ -37,26 +37,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Type:    C function
 
        Author:  Mark London
-	       MIT Plasma Fusion Center
+               MIT Plasma Fusion Center
 
        Date:    7-SEP-1993
 
        Purpose: Checks descriptors for valid classes and equal lengths.
-	        Returns the count of the number of elements if the
-	        descriptors points to an array, else returns 1 for scalar
-	        or string.
+                Returns the count of the number of elements if the
+                descriptors points to an array, else returns 1 for scalar
+                or string.
 
        Call sequence:
-	       struct descriptor *in1_ptr;
-	       struct descriptor *in2_ptr;
-	       struct descriptor *out_ptr;
-	       int  *out_count;
+               struct descriptor *in1_ptr;
+               struct descriptor *in2_ptr;
+               struct descriptor *out_ptr;
+               int  *out_count;
 
-	       status = TdiBinary(in1_ptr,in2_ptr,out_ptr,out_count);
+               status = TdiBinary(in1_ptr,in2_ptr,out_ptr,out_count);
        returns:
-	        TdiINVCLADSC - if unsupported class
-	        TdiINV_SIZE - if descriptor length mismatch
-	        1 - if supported class and lengths match
+                TdiINVCLADSC - if unsupported class
+                TdiINV_SIZE - if descriptor length mismatch
+                1 - if supported class and lengths match
 
 ------------------------------------------------------------------------------
        Copyright (c) 1993
@@ -68,13 +68,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 
-
-
 int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
-	      struct descriptor *out_ptr, unsigned int *out_count)
+              struct descriptor *out_ptr, unsigned int *out_count)
 {
   struct descriptor_a *a;
-  switch (out_ptr->class) {
+  switch (out_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     *out_count = 1;
@@ -88,7 +87,8 @@ int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
     return TdiINVCLADSC;
   }
 
-  switch (in1_ptr->class) {
+  switch (in1_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     break;
@@ -101,7 +101,8 @@ int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
     return TdiINVCLADSC;
   }
 
-  switch (in2_ptr->class) {
+  switch (in2_ptr->class)
+  {
   case CLASS_S:
   case CLASS_D:
     break;

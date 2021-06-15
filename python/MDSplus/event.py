@@ -23,40 +23,48 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
+
 import time as _time
 import threading as _threading
 import ctypes as _C
 import numpy as _N
+import json
 
-_dat=_mimport('mdsdata')
-_arr=_mimport('mdsarray')
-_sca=_mimport('mdsscalar')
-_mds=_mimport('_mdsshr')
-_exc=_mimport('mdsExceptions')
-_ver=_mimport('version')
+_dat = _mimport('mdsdata')
+_arr = _mimport('mdsarray')
+_sca = _mimport('mdsscalar')
+_mds = _mimport('_mdsshr')
+_exc = _mimport('mdsExceptions')
+_ver = _mimport('version')
+
 
 class MdsshrException(_exc.MDSplusException):
     pass
 
+
 class MdsInvalidEvent(MdsshrException):
     pass
+
 
 class MdsTimeout(MdsshrException):
     pass
 #
 #############################################
 
+
 #### Load Shared Libraries Referenced #######
 #
-_MdsShr=_ver.load_library('MdsShr')
+_MdsShr = _ver.load_library('MdsShr')
 #
 #############################################
+
 
 class Event(_threading.Thread):
     """Thread to wait for event
@@ -142,7 +150,7 @@ the e.join() would return exiting the problem.
         return self.event
 
     @staticmethod
-    def setevent(event,data=None):
+    def setevent(event, data=None):
         """Issue an MDSplus event
         @param event: event name
         @type event: str
@@ -150,12 +158,12 @@ the e.join() would return exiting the problem.
         @type data: Data
         """
         if data is None:
-            Event.seteventRaw(event,None)
+            Event.seteventRaw(event, None)
         else:
-            Event.seteventRaw(event,_dat.Data(data).serialize())
+            Event.seteventRaw(event, _dat.Data(data).serialize())
 
     @staticmethod
-    def seteventRaw(event,buffer=None):
+    def seteventRaw(event, buffer=None):
         """Issue an MDSplus event
         @param event: event name
         @type event: str
@@ -164,8 +172,9 @@ the e.join() would return exiting the problem.
         """
         if buffer is None:
             from numpy import array
-            buffer=array([])
-        status=_MdsShr.MDSEvent(_ver.tobytes(event),_C.c_int32(len(buffer)),_C.c_void_p(buffer.ctypes.data))
+            buffer = array([])
+        status = _MdsShr.MDSEvent(_ver.tobytes(event), _C.c_int32(
+            len(buffer)), _C.c_void_p(buffer.ctypes.data))
         if not ((status & 1) == 1):
             raise _exc.MDSplusException(status)
 
@@ -175,13 +184,13 @@ the e.join() would return exiting the problem.
         @param event: event name
         @rtype: Data
         """
-        buffer=_N.uint8(0).repeat(repeats=4096)
-        numbytes=_C.c_int32(0)
-        status=_MdsShr.MDSWfeventTimed(_ver.tobytes(event),
-                                       _C.c_int32(len(buffer)),
-                                       _C.c_void_p(buffer.ctypes.data),
-                                       _C.pointer(numbytes),
-                                       _C.c_int32(timeout))
+        buffer = _N.uint8(0).repeat(repeats=4096)
+        numbytes = _C.c_int32(0)
+        status = _MdsShr.MDSWfeventTimed(_ver.tobytes(event),
+                                         _C.c_int32(len(buffer)),
+                                         _C.c_void_p(buffer.ctypes.data),
+                                         _C.pointer(numbytes),
+                                         _C.c_int32(timeout))
         if (status & 1):
             if numbytes.value == 0:
                 return _sca.Uint8([])
@@ -193,7 +202,7 @@ the e.join() would return exiting the problem.
             raise _exc.MDSplusException(status)
 
     @staticmethod
-    def wfevent(event,timeout=0):
+    def wfevent(event, timeout=0):
         """Wait for an event
         @param event: event name
         @rtype: Data
@@ -209,8 +218,9 @@ the e.join() would return exiting the problem.
         @return: eventid used in MDSGetEventQueue, and MDSEventCan
         @rtype: int
         """
-        eventid=_C.c_int32(0)
-        _exc.checkStatus(_MdsShr.MDSQueueEvent(_ver.tobytes(event),_C.pointer(eventid)))
+        eventid = _C.c_int32(0)
+        _exc.checkStatus(_MdsShr.MDSQueueEvent(
+            _ver.tobytes(event), _C.pointer(eventid)))
         return eventid.value
 
     @staticmethod
@@ -225,33 +235,30 @@ the e.join() would return exiting the problem.
         @param sampleData: Data samples 
         @type sampleData: Data
         """
-        payload = str(shot) + ' '+ signal
-        if isinstance(timeData, _sca.Int64) or isinstance(timeData, _sca.Uint64) or isinstance(timeData, _arr.Int64Array) or isinstance(timeData, _arr.Uint64Array):
-            payload +=  ' L '
+        if isinstance(timeData, _sca.Uint64) or isinstance(timeData, _arr.Uint64Array) or isinstance(timeData, _sca.Int64) or isinstance(timeData, _arr.Int64Array):
+            times = timeData.data()
+            if _N.isscalar(times):
+                times = [int(times)]
+            else:
+                times = times.astype(int).tolist()
+            isAbsoluteTime = 1
         else:
-            payload += ' F '
-        times = timeData.data()
+            times = timeData.data()
+            if _N.isscalar(times):
+                times = [times.astype(float)]
+            else:
+                times = times.astype(float).tolist()
+            isAbsoluteTime = 0
         samples = sampleData.data()
-        if isinstance(timeData, _arr.Array):
-            nTimes = len(times)
+        if _N.isscalar(samples):
+            samples = [samples.astype(float)]
         else:
-            nTimes = 1
-        if isinstance(sampleData, _arr.Array):
-            nSamples = len(samples)
-        else:
-            nSamples = 1
-        if(nTimes < nSamples):
-            nSamples = nTimes
-        payload += str(nSamples)  
-        if nSamples == 1:
-            payload += ' '+ str(times) + ' ' + str(samples)
-        else:
-            for i in range(0, nSamples):
-                payload += ' '+str(times[i])
-            for i in range(0, nSamples):
-                payload += ' '+str(samples[i])
-        Event.seteventRaw('STREAMING', _N.uint8(bytearray(payload, 'utf8')))
+            samples = samples.astype(float).tolist()
+        payloadDict = {'name': signal, 'shot':shot, 'samples': samples, 'times': times,
+            'timestamp':0, 'absolute_time': isAbsoluteTime}
 
+        payload = json.dumps(payloadDict)
+        Event.seteventRaw(signal, _N.uint8(bytearray(payload, 'utf8')))
 
     def getQueue(self):
         """Retrieve event occurrence.
@@ -265,22 +272,24 @@ the e.join() would return exiting the problem.
         @return: event data
         @rtype: Uint8Array
         """
-        dlen=_C.c_int32(0)
-        bptr=_C.c_void_p(0)
-        status=_MdsShr.MDSGetEventQueue(_C.c_int32(self.eventid),_C.c_int32(self.timeout),_C.pointer(dlen),_C.pointer(bptr))
-        if status==1:
-            if dlen.value>0:
-                ans = _arr.Uint8Array(_N.ndarray(shape=[dlen.value],buffer=_ver.buffer(_C.cast(bptr,_C.POINTER((_C.c_byte * dlen.value))).contents),dtype=_N.uint8))
+        dlen = _C.c_int32(0)
+        bptr = _C.c_void_p(0)
+        status = _MdsShr.MDSGetEventQueue(_C.c_int32(self.eventid), _C.c_int32(
+            self.timeout), _C.pointer(dlen), _C.pointer(bptr))
+        if status == 1:
+            if dlen.value > 0:
+                ans = _arr.Uint8Array(_N.ndarray(shape=[dlen.value], buffer=_ver.buffer(
+                    _C.cast(bptr, _C.POINTER((_C.c_byte * dlen.value))).contents), dtype=_N.uint8))
                 _MdsShr.MdsFree(bptr)
                 return ans
             else:
                 return _arr.Uint8Array([])
-        elif status==0:
+        elif status == 0:
             if self.timeout > 0:
                 raise MdsTimeout("Timeout")
             else:
                 raise _exc.MdsNoMoreEvents("No more events")
-        elif status==2:
+        elif status == 2:
             raise MdsInvalidEvent("Invalid eventid")
         else:
             raise _exc.MDSplusException(status)
@@ -288,14 +297,14 @@ the e.join() would return exiting the problem.
     def _event_run(self):
         while True:
             try:
-                self.raw=self.getQueue()
-                self.exception=None
+                self.raw = self.getQueue()
+                self.exception = None
             except MdsInvalidEvent:
                 return
             except Exception as exc:
-                self.exception=exc
-            self.time=_time.time()
-            self.qtime=_mds.DateToQuad("now")
+                self.exception = exc
+            self.time = _time.time()
+            self.qtime = _mds.DateToQuad("now")
             self.subclass_run()
             _time.sleep(.01)
 
@@ -304,17 +313,17 @@ the e.join() would return exiting the problem.
         """
         _exc.checkStatus(_MdsShr.MDSEventCan(_C.c_int32(self.eventid)))
 
-    def __init__(self,event,timeout=0):
+    def __init__(self, event, timeout=0):
         """Saves event name and starts wfevent thread
         @param event: name of event to monitor
         @type event: str
         """
-        super(Event,self).__init__()
-        self.event=event
-        self.exception=None
-        self.timeout=timeout
-        self.eventid=self.queueEvent(event)
-        self.subclass_run=self.run
-        self.run=self._event_run
+        super(Event, self).__init__()
+        self.event = event
+        self.exception = None
+        self.timeout = timeout
+        self.eventid = self.queueEvent(event)
+        self.subclass_run = self.run
+        self.run = self._event_run
         self.setDaemon(True)
         self.start()

@@ -24,13 +24,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef _WIN32
 #define DYNreadline "libreadline.so"
-#define DYNcurses   "libcurses.so"
+#define DYNcurses "libcurses.so"
 #define DYNTdiShr "libTdiShr.so"
 #endif
-#include <string.h>
-#include <stdio.h>
-#include <mdsdescrip.h>
 #include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <stdio.h>
+#include <string.h>
 
 #define MAXEXPR 16384
 
@@ -38,14 +38,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/stat.h>
 
 #ifdef HAVE_READLINE_READLINE_H
-#include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/readline.h>
 #endif
 
 #include <dlfcn.h>
 #ifdef DYNTdiShr
 static void *TDIhandle = NULL;
-int (*BTdiExecute) () = NULL;
+int (*BTdiExecute)() = NULL;
 #else
 extern int TdiExecute();
 #define BTdiExecute TdiExecute
@@ -58,12 +58,13 @@ static void *CURSEShandle = NULL;
 #ifndef PARAMS
 #define PARAMS(gub) gub
 #endif
-void (*Busing_history) PARAMS((void)) = NULL;
-int (*Bread_history) PARAMS((const char *)) = NULL;
-int (*Bwrite_history) PARAMS((const char *)) = NULL;
-void (*Badd_history) PARAMS((const char *)) = NULL;
-int (*Bhistory_truncate_file) PARAMS((const char *, int)) = NULL;
-char *(*Breadline) PARAMS((const char *)) = NULL;;
+void(*Busing_history) PARAMS((void)) = NULL;
+int(*Bread_history) PARAMS((const char *)) = NULL;
+int(*Bwrite_history) PARAMS((const char *)) = NULL;
+void(*Badd_history) PARAMS((const char *)) = NULL;
+int(*Bhistory_truncate_file) PARAMS((const char *, int)) = NULL;
+char *(*Breadline)PARAMS((const char *)) = NULL;
+;
 #else
 #define Busing_history using_history
 #define Bread_history read_history
@@ -75,7 +76,8 @@ char *(*Breadline) PARAMS((const char *)) = NULL;;
 
 #define HFILE "/.tdic"
 
-char *bfgets(char *s, int size, FILE * stream, char *prompt);	/* fgets replacement */
+char *bfgets(char *s, int size, FILE *stream,
+             char *prompt); /* fgets replacement */
 #define PROMPT "TDI> "
 #define MDSPATH "MDS_PATH"
 /*
@@ -87,8 +89,9 @@ void *dlsymget(void *handle, char *sym)
   char *error;
   void *ret = NULL;
   ret = dlsym(handle, sym);
-  dlerror();			/* Clear any existing error */
-  if ((error = dlerror()) != NULL) {
+  dlerror(); /* Clear any existing error */
+  if ((error = dlerror()) != NULL)
+  {
     fprintf(stderr, "%s\n", error);
     exit(1);
   }
@@ -101,13 +104,13 @@ int main(int argc, char **argv)
 {
   FILE *in = stdin;
   int status;
-  char temp[MAXEXPR];		/* temp strings for command */
+  char temp[MAXEXPR]; /* temp strings for command */
 
-/*
-  static char expr[MAXEXPR] = "WRITE(_OUTPUT_UNIT,`DECOMPILE(`";
-*/
+  /*
+    static char expr[MAXEXPR] = "WRITE(_OUTPUT_UNIT,`DECOMPILE(`";
+  */
   static char expr[MAXEXPR] = "";
-  static struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, (char *)expr };
+  static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, (char *)expr};
   static EMPTYXD(ans);
   static EMPTYXD(output_unit);
   static DESCRIPTOR(out_unit_stdout, "PUBLIC _OUTPUT_UNIT=*");
@@ -124,9 +127,11 @@ int main(int argc, char **argv)
   strcat(hfile, HFILE);
 #endif
 #ifdef DYNTdiShr
-  if (TDIhandle == NULL) {
+  if (TDIhandle == NULL)
+  {
     TDIhandle = dlopen(DYNTdiShr, RTLD_LAZY);
-    if (!TDIhandle) {
+    if (!TDIhandle)
+    {
       fprintf(stderr, "%s\n", dlerror());
       exit(1);
     }
@@ -135,12 +140,14 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef DYNreadline
-  if (READhandle == NULL) {
+  if (READhandle == NULL)
+  {
     CURSEShandle = dlopen(DYNcurses, RTLD_NOW | RTLD_GLOBAL);
     READhandle = dlopen(DYNreadline, RTLD_LAZY);
-//      READhandle = dlopen(DYNreadline, RTLD_NOW);
-//      READhandle = dlopen(DYNreadline, RTLD_NOW | RTLD_GLOBAL);
-    if (!READhandle) {
+    //      READhandle = dlopen(DYNreadline, RTLD_NOW);
+    //      READhandle = dlopen(DYNreadline, RTLD_NOW | RTLD_GLOBAL);
+    if (!READhandle)
+    {
       fprintf(stderr, "%s\n", dlerror());
       exit(1);
     }
@@ -148,193 +155,237 @@ int main(int argc, char **argv)
     *(void **)(&Bread_history) = dlsymget(READhandle, "read_history");
     *(void **)(&Bwrite_history) = dlsymget(READhandle, "write_history");
     *(void **)(&Badd_history) = dlsymget(READhandle, "add_history");
-    *(void **)(&Bhistory_truncate_file) = dlsymget(READhandle, "history_truncate_file");
+    *(void **)(&Bhistory_truncate_file) =
+        dlsymget(READhandle, "history_truncate_file");
     *(void **)(&Breadline) = dlsymget(READhandle, "readline");
   }
 #endif
   Busing_history();
   *last_line = 0;
-/* get input from file */
-  if (argc > 1) {
+  /* get input from file */
+  if (argc > 1)
+  {
     in = fopen(argv[1], "r");
-    if (in == (FILE *) 0) {
+    if (in == (FILE *)0)
+    {
       printf("Error opening input file /%s/\n", argv[1]);
       return (0);
     }
   }
-/* if specified, output to a file, defaults to stdout */
-  if (argc > 2) {
-    struct descriptor out_d = { 0, DTYPE_T, CLASS_S, 0 };
+  /* if specified, output to a file, defaults to stdout */
+  if (argc > 2)
+  {
+    struct descriptor out_d = {0, DTYPE_T, CLASS_S, 0};
     out_d.length = (unsigned short)strlen(argv[2]);
     out_d.pointer = argv[2];
     BTdiExecute(&out_unit_other, &out_d, &output_unit MDS_END_ARG);
-  } else {
+  }
+  else
+  {
     BTdiExecute(&out_unit_stdout, &output_unit MDS_END_ARG);
   }
-/* get history loaded */
+  /* get history loaded */
   Bread_history(hfile);
-/* main loop to get characters */
-  while (bfgets(line_in, MAXEXPR, in, PROMPT) != NULL) {
-    int comment = line_in[0] == '%';	/* is a comment */
-    int len = strlen(line_in);	/* get first line of command */
-    if (!comment) {
+  /* main loop to get characters */
+  while (bfgets(line_in, MAXEXPR, in, PROMPT) != NULL)
+  {
+    int comment = line_in[0] == '%'; /* is a comment */
+    int len = strlen(line_in);       /* get first line of command */
+    if (!comment)
+    {
       BTdiExecute(&reset_output_unit, &output_unit, &ans MDS_END_ARG);
-/*	 tdiputs(line_in);*/
+      /*	 tdiputs(line_in);*/
     }
-/* if a continuation, keep getting the rest of the command */
-    while (line_in[len - 1] == '\\') {
+    /* if a continuation, keep getting the rest of the command */
+    while (line_in[len - 1] == '\\')
+    {
       bfgets(&line_in[len - 1], MAXEXPR - len + 1, in, "> ");
-/*	 if (!comment) tdiputs(&line_in[len-1]);*/
+      /*	 if (!comment) tdiputs(&line_in[len-1]);*/
       len = strlen(line_in);
     }
-    if (!comment) {
+    if (!comment)
+    {
       static DESCRIPTOR(error_out, "_MSG=DEBUG(0),DEBUG(4),WRITE($,_MSG)");
       static DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
 #ifdef OLDHIST
-      if (!strcmp(line_in, last_line) || (*line_in == ' ')) {
-/*		printf("Removing [%d]\n",Bwhere_history());*/
-	HIST_ENTRY *entry = Bremove_history(Bwhere_history());
-	if (entry) {
-	  free(entry->line);
-	  free(entry);
-	}
-      } else
-	strcpy(last_line, line_in);
+      if (!strcmp(line_in, last_line) || (*line_in == ' '))
+      {
+        /*		printf("Removing [%d]\n",Bwhere_history());*/
+        HIST_ENTRY *entry = Bremove_history(Bwhere_history());
+        if (entry)
+        {
+          free(entry->line);
+          free(entry);
+        }
+      }
+      else
+        strcpy(last_line, line_in);
 #else
-      if (*line_in && (*line_in != ' ') && strcmp(line_in, last_line)) {
-	Badd_history(line_in);
-	strcpy(last_line, line_in);
+      if (*line_in && (*line_in != ' ') && strcmp(line_in, last_line))
+      {
+        Badd_history(line_in);
+        strcpy(last_line, line_in);
       }
 #endif
-/* Check the special TDIC options */
-      if (!strcmp(line_in, "exit") || !strcmp(line_in, "quit")) {
-	Bwrite_history(hfile);
-	if (getenv("HISTFILESIZE")) {
-	  int i;
-	  sscanf(getenv("HISTFILESIZE"), "%d", &i);
-	  Bhistory_truncate_file(hfile, i);
-	}
-	exit(1);
-      } else if (*line_in == '!') {
-	*line_in = ' ';		/* replace by a space */
-	system(line_in);
-      } else if (!strcmp(line_in, "help") || !strcmp(line_in, "man")) {
-	printf("TDI(C) reference (October 1999)\n");
-	printf("      help func <help function>\n");
-	printf("      help func* <lists 1st line of each help>\n");
-	printf("      use func* <lists lines in comment starting with [call:]>\n");
-	printf("      type func(*) <type/p all the functions requested>\n");
-	printf("      tcl <TCL command>\n      open <shot#>\n");
-	printf("      !<shell command>\n      man [TDI intrinsic]\n");
-	printf("      exit (guess)\n      ; behaves as in MatLab\n");
-      } else if (!strncmp(line_in, "type ", 5)) {
-	char *nameStart, *nameEnd, *mdspath, *tpath;
-	struct stat statf;
-	strcpy(temp, line_in + 5);	/* copy the target */
-/* Check the path name for finding file */
-	mdspath = getenv(MDSPATH);	/* get pointer */
-	if (mdspath == NULL) {
-	  printf("Path [%s] not defined !\n", MDSPATH);
-	  return (0);
-	}
-/* Strip the name down before appending it to command */
-	nameStart = temp;
-	while (*nameStart == ' ')
-	  nameStart++;
-/* Find end of name */
-	if ((nameEnd = strchr(nameStart, '.')) == NULL)
-	  nameEnd = nameStart + strlen(nameStart);
-	else
-	  nameEnd--;
-	while (*nameEnd == ' ' && nameEnd >= nameStart)
-	  nameEnd--;
-/* Zero end of string */
-	*++nameEnd = '\0';
-/* If there is anything left, scan the path */
-	if (strlen(nameStart))
-	  do {
-	    strcpy(line_in, "more ");
-	    if ((tpath = strchr(mdspath, ';')) == NULL) {
-	      strcat(line_in, mdspath);
-	    } else {
-	      strncat(line_in, mdspath, tpath - mdspath);
-	      mdspath = tpath + 1;	/* put to next char */
-	    }
-	    strcat(line_in, "/");
-	    strcat(line_in, nameStart);	/* put back the target */
-	    strcat(line_in, ".fun");
-	    if (!stat(line_in + 5, &statf)) {
-	      printf("Found <%s>\n", line_in + 5);
-	      system(line_in);
-	      tpath = NULL;
-	    }
-	  } while (tpath != NULL);
-      } else if (!strncmp(line_in, "man ", 4)) {
-	strcpy(temp, line_in + 4);	/* copy the target */
-	strcpy(line_in, "man ");
-	strcat(line_in, temp);	/* put back the target */
-	system(line_in);
-      } else if (!strncmp(line_in, "tcl", 3)) {
-	strcpy(line_in, "$MDSPLUS/bin/tcl");	/* move the text to the left */
-	system(line_in);
+      /* Check the special TDIC options */
+      if (!strcmp(line_in, "exit") || !strcmp(line_in, "quit"))
+      {
+        Bwrite_history(hfile);
+        if (getenv("HISTFILESIZE"))
+        {
+          int i;
+          sscanf(getenv("HISTFILESIZE"), "%d", &i);
+          Bhistory_truncate_file(hfile, i);
+        }
+        exit(1);
+      }
+      else if (*line_in == '!')
+      {
+        *line_in = ' '; /* replace by a space */
+        system(line_in);
+      }
+      else if (!strcmp(line_in, "help") || !strcmp(line_in, "man"))
+      {
+        printf("TDI(C) reference (October 1999)\n");
+        printf("      help func <help function>\n");
+        printf("      help func* <lists 1st line of each help>\n");
+        printf(
+            "      use func* <lists lines in comment starting with [call:]>\n");
+        printf("      type func(*) <type/p all the functions requested>\n");
+        printf("      tcl <TCL command>\n      open <shot#>\n");
+        printf("      !<shell command>\n      man [TDI intrinsic]\n");
+        printf("      exit (guess)\n      ; behaves as in MatLab\n");
+      }
+      else if (!strncmp(line_in, "type ", 5))
+      {
+        char *nameStart, *nameEnd, *mdspath, *tpath;
+        struct stat statf;
+        strcpy(temp, line_in + 5); /* copy the target */
+                                   /* Check the path name for finding file */
+        mdspath = getenv(MDSPATH); /* get pointer */
+        if (mdspath == NULL)
+        {
+          printf("Path [%s] not defined !\n", MDSPATH);
+          return (0);
+        }
+        /* Strip the name down before appending it to command */
+        nameStart = temp;
+        while (*nameStart == ' ')
+          nameStart++;
+        /* Find end of name */
+        if ((nameEnd = strchr(nameStart, '.')) == NULL)
+          nameEnd = nameStart + strlen(nameStart);
+        else
+          nameEnd--;
+        while (*nameEnd == ' ' && nameEnd >= nameStart)
+          nameEnd--;
+        /* Zero end of string */
+        *++nameEnd = '\0';
+        /* If there is anything left, scan the path */
+        if (strlen(nameStart))
+          do
+          {
+            strcpy(line_in, "more ");
+            if ((tpath = strchr(mdspath, ';')) == NULL)
+            {
+              strcat(line_in, mdspath);
+            }
+            else
+            {
+              strncat(line_in, mdspath, tpath - mdspath);
+              mdspath = tpath + 1; /* put to next char */
+            }
+            strcat(line_in, "/");
+            strcat(line_in, nameStart); /* put back the target */
+            strcat(line_in, ".fun");
+            if (!stat(line_in + 5, &statf))
+            {
+              printf("Found <%s>\n", line_in + 5);
+              system(line_in);
+              tpath = NULL;
+            }
+          } while (tpath != NULL);
+      }
+      else if (!strncmp(line_in, "man ", 4))
+      {
+        strcpy(temp, line_in + 4); /* copy the target */
+        strcpy(line_in, "man ");
+        strcat(line_in, temp); /* put back the target */
+        system(line_in);
+      }
+      else if (!strncmp(line_in, "tcl", 3))
+      {
+        strcpy(line_in, "$MDSPLUS/bin/tcl"); /* move the text to the left */
+        system(line_in);
       }
 #ifdef NEVER
-      else if (!strncmp(line_in, "tcl", 3)) {
-	strcpy(line_in, line_in + 4);	/* move the text to the left */
-	mdsdcl$do(&Dtcl, &Dcommand);
-      } else if (!strncmp(line_in, "open", 4)) {
-	strcpy(temp, line_in + 5);	/* copy shot number into temp */
-	strcpy(line_in, "set tree tcv_shot/shot=");
-	strcat(line_in, temp);	/* concantenate the number */
-	mdsdcl$do(&Dtcl, &Dcommand);
+      else if (!strncmp(line_in, "tcl", 3))
+      {
+        strcpy(line_in, line_in + 4); /* move the text to the left */
+        mdsdcl$do(&Dtcl, &Dcommand);
+      }
+      else if (!strncmp(line_in, "open", 4))
+      {
+        strcpy(temp, line_in + 5); /* copy shot number into temp */
+        strcpy(line_in, "set tree tcv_shot/shot=");
+        strcat(line_in, temp); /* concantenate the number */
+        mdsdcl$do(&Dtcl, &Dcommand);
       }
 #endif
-      else {
+      else
+      {
 #ifdef NEVER
-	else
-      if (!strncmp(line_in, "use ", 4)) {
-	strcpy(temp, line_in + 4);	/* copy the target */
-	strcpy(line_in, "help('");
-	strcat(line_in, temp);
-	strcat(line_in, "',,1)");
-      } else if (line_in[length] != ';') {
-	strcpy(temp, line_in);	/* copy string */
-	strcpy(line_in, "write(*,");
-	strcat(line_in, temp);
-	strcat(line_in, ")");
-      }
+        else if (!strncmp(line_in, "use ", 4))
+        {
+          strcpy(temp, line_in + 4); /* copy the target */
+          strcpy(line_in, "help('");
+          strcat(line_in, temp);
+          strcat(line_in, "',,1)");
+        }
+        else if (line_in[length] != ';')
+        {
+          strcpy(temp, line_in); /* copy string */
+          strcpy(line_in, "write(*,");
+          strcat(line_in, temp);
+          strcat(line_in, ")");
+        }
 #endif
-      if (!strncmp(line_in, "help ", 5)) {
-	strcpy(temp, line_in + 5);	/* copy the target */
-	strcpy(line_in, "help('");
-	strcat(line_in, temp);
-	strcat(line_in, "');");
-      } else if (!strncmp(line_in, "open", 4)) {
-	strcpy(temp, line_in + 5);	/* copy shot number into temp */
-	strcpy(line_in, "TreeOpen('tcv_shot',");
-	strcat(line_in, temp);	/* concantenate the number */
-	strcat(line_in, ")");	/* concantenate the number */
-      }
-	len = strlen(line_in);
-      expr[prefixlen] = 0;
-      strcat(expr, line_in);
-      if (!(comment = line_in[len - 1] == ';'))
-	  strcat(line_in, " = ");
-	expr_dsc.length = strlen(expr);
-/*
-      expr_dsc.length = strlen(expr)-1;
-      expr_dsc.length = strlen(expr)-1;
-      expr[expr_dsc.length++] = ')';
-      expr[expr_dsc.length++] = ')';
-      expr[expr_dsc.length++] = ')';
-      expr[expr_dsc.length++] = ')';
-*/
-	status = BTdiExecute(&expr_dsc, &ans MDS_END_ARG);
-	if (status & 1) {
-	  if (!comment)
-	    BTdiExecute(&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
-	} else
-	  BTdiExecute(&error_out, &output_unit, &ans MDS_END_ARG);
+        if (!strncmp(line_in, "help ", 5))
+        {
+          strcpy(temp, line_in + 5); /* copy the target */
+          strcpy(line_in, "help('");
+          strcat(line_in, temp);
+          strcat(line_in, "');");
+        }
+        else if (!strncmp(line_in, "open", 4))
+        {
+          strcpy(temp, line_in + 5); /* copy shot number into temp */
+          strcpy(line_in, "TreeOpen('tcv_shot',");
+          strcat(line_in, temp); /* concantenate the number */
+          strcat(line_in, ")");  /* concantenate the number */
+        }
+        len = strlen(line_in);
+        expr[prefixlen] = 0;
+        strcat(expr, line_in);
+        if (!(comment = line_in[len - 1] == ';'))
+          strcat(line_in, " = ");
+        expr_dsc.length = strlen(expr);
+        /*
+              expr_dsc.length = strlen(expr)-1;
+              expr_dsc.length = strlen(expr)-1;
+              expr[expr_dsc.length++] = ')';
+              expr[expr_dsc.length++] = ')';
+              expr[expr_dsc.length++] = ')';
+              expr[expr_dsc.length++] = ')';
+        */
+        status = BTdiExecute(&expr_dsc, &ans MDS_END_ARG);
+        if (STATUS_OK)
+        {
+          if (!comment)
+            BTdiExecute(&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
+        }
+        else
+          BTdiExecute(&error_out, &output_unit, &ans MDS_END_ARG);
       }
     }
   }
@@ -362,25 +413,24 @@ static char *Breadline(char *prompt)
   return fgets(malloc(1024), 1023, stdin);
 }
 
-static void Badd_history(char *string)
-{
-  return;
-}
+static void Badd_history(char *string) { return; }
 #endif
-char *bfgets(char *s, int size, FILE * stream, char *prompt)
+char *bfgets(char *s, int size, FILE *stream, char *prompt)
 {
   char *rep;
-/* if not stdin, read from file */
-  if (stream == stdin) {
+  /* if not stdin, read from file */
+  if (stream == stdin)
+  {
     rep = Breadline(prompt);
-    strncpy(s, rep ? rep : "", size - 1);	/* Copy respecting the size limit */
+    strncpy(s, rep ? rep : "", size - 1); /* Copy respecting the size limit */
 #ifdef OLDHIST
-    if (rep && *rep)		/* Add to history if interesting */
+    if (rep && *rep) /* Add to history if interesting */
       Badd_history(rep);
 #endif
     free(rep);
-    s[size - 1] = '\0';		/* null terminate if necessary */
+    s[size - 1] = '\0'; /* null terminate if necessary */
     return (s);
-  } else
+  }
+  else
     return (fgets(s, size, stream));
 }

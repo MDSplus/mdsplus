@@ -22,8 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <dcl.h>
 #include <mdsshr.h>
@@ -31,24 +31,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
-
 /***********************************************************************
-* TCL_SET_CURRENT.C --
-*
-* TclSetCurrent:  set current Experiment and Shot
-*
-* History:
-*  15-Jan-1998  TRG  Created.  Ported from original code.
-*
-************************************************************************/
-
+ * TCL_SET_CURRENT.C --
+ *
+ * TclSetCurrent:  set current Experiment and Shot
+ *
+ * History:
+ *  15-Jan-1998  TRG  Created.  Ported from original code.
+ *
+ ************************************************************************/
 
 extern int TdiExecute();
 
-	/*****************************************************************
-	 * TclSetCurrent:
-	 *****************************************************************/
-EXPORT int TclSetCurrent(void *ctx, char **error, char **output __attribute__ ((unused)))
+/*****************************************************************
+ * TclSetCurrent:
+ *****************************************************************/
+EXPORT int TclSetCurrent(void *ctx, char **error,
+                         char **output __attribute__((unused)))
 {
   int sts;
   char *experiment = 0;
@@ -56,22 +55,28 @@ EXPORT int TclSetCurrent(void *ctx, char **error, char **output __attribute__ ((
   int shot;
 
   cli_get_value(ctx, "EXPERIMENT", &experiment);
-  if (cli_present(ctx, "INCREMENT") & 1) {
+  if (cli_present(ctx, "INCREMENT") & 1)
+  {
     shot = TreeGetCurrentShotId(experiment);
     shot++;
     sts = TreeSetCurrentShotId(experiment, shot);
-  } else {
+  }
+  else
+  {
     cli_get_value(ctx, "SHOT", &shotasc);
-    sts = tclStringToShot(shotasc,&shot, error);
+    sts = tclStringToShot(shotasc, &shot, error);
     free(shotasc);
     sts = TreeSetCurrentShotId(experiment, shot);
   }
 
-  if (((sts & 1) != 1) && (*error == NULL)) {
+  if (((sts & 1) != 1) && (*error == NULL))
+  {
     char *msg = MdsGetMsg(sts);
-    *error = malloc(strlen(msg)+100);
-    sprintf(*error, "Error: Unable to change current shot\n"
-	    "Error message was: %s\n",msg);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error,
+            "Error: Unable to change current shot\n"
+            "Error message was: %s\n",
+            msg);
   }
   free(experiment);
   return sts;

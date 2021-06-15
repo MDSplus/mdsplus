@@ -249,7 +249,7 @@ public class OpenTreeDialog extends JDialog
 				return;
 			}
 		this.setVisible(false);
-		final int mode;
+		final TREE.MODE mode;
 		if (this.edit.isSelected())
 			mode = TREE.EDITABLE;
 		else if (this.readonly.isSelected())

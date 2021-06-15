@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "prototypes.h"
 #include "crate.h"
+#include "prototypes.h"
 
 //-------------------------------------------------------------------------
 // parse_crate_db()
@@ -76,16 +76,17 @@ void parse_crate_db(struct CRATE *in, struct Crate_ *out)
     printf("parse_crate_db()\n");
 
   // build full physical crate name, eg. 'GKB509'
-  sprintf(out->name, "%.2s%c%c%.2s", in->Phys_Name.prefix,	// 'GK'
-	  in->Phys_Name.Adapter,	// SCSI host adapter
-	  in->Phys_Name.Id,	// SCSI id number
-	  in->Phys_Name.Crate	// CAMAC crate number
-      );
+  sprintf(out->name, "%.2s%c%c%.2s", in->Phys_Name.prefix, // 'GK'
+          in->Phys_Name.Adapter,                           // SCSI host adapter
+          in->Phys_Name.Id,                                // SCSI id number
+          in->Phys_Name.Crate                              // CAMAC crate number
+  );
 
-  out->device = (in->DSFname[0] != '.') ? strtol(in->DSFname,NULL,0)	// valid /dev/sg#
-      : -1;			// in-valid
+  out->device = (in->DSFname[0] != '.')
+                    ? strtol(in->DSFname, NULL, 0) // valid /dev/sg#
+                    : -1;                          // in-valid
 
-  out->type = in->HwyType;	// highway type
+  out->type = in->HwyType; // highway type
   out->enhanced = in->enhanced == '1';
   out->online = in->online == '1';
 }

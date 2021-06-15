@@ -22,9 +22,7 @@ library_include_HEADERS = \
            type_traits.h \
            unique_ptr.h \
            vector_test.h \
-           Threads.h \
            MdsIpInstancer.h
-
 _SOURCES = \
            testutils.cpp \
            mdsipmain.c
@@ -51,8 +49,7 @@ libMdsTestUtils_a_SOURCES = $(_SOURCES)
 #
 libMdsTestDummy.so: testutils.cpp
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
-	
+
 MOSTLYCLEANFILES = libMdsTestDummy.so
 
 all-local: libMdsTestDummy.so
-

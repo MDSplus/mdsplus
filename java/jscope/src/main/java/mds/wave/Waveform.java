@@ -2860,6 +2860,12 @@ public class Waveform extends JComponent implements SignalListener
 				waveform_signal.showYZ((float) curr_x);
 				not_drawn = true;
 			}
+			if (waveform_signal.getType() == Signal.TYPE_2D && waveform_signal.getMode2D() == Signal.MODE_XZ)
+			{
+				waveform_signal.showXZ((double) curr_y);
+				not_drawn = false;
+				
+			}
 			paintImmediately(0, 0, d.width, d.height);
 		}
 		else

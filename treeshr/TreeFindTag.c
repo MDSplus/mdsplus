@@ -22,18 +22,18 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsplus/mdsconfig.h>
-#include <stdlib.h>
-#include <string.h>
-#include <mdsplus/mdsplus.h>
-#include <strroutines.h>
-#include <treeshr.h>
 #include "treeshrp.h"
 #include <ctype.h>
+#include <mdsplus/mdsconfig.h>
+#include <mdsplus/mdsplus.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strroutines.h>
+#include <treeshr.h>
 
 extern void **TreeCtx();
 
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 static int BsearchCompare(const void *this_one, const void *compare_one);
 
@@ -42,20 +42,21 @@ char *TreeFindNodeTags(int nid_in, void **ctx_ptr)
   return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr);
 }
 
-
 int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *) * TreeCtx();
+  PINO_DATABASE *dblist = (PINO_DATABASE *)*TreeCtx();
   NODE *nodeptr;
-  return _TreeFindTag(*TreeCtx(), dblist->default_node, (short)strlen(treename), treename,
-		      (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
+  return _TreeFindTag(*TreeCtx(), dblist->default_node, (short)strlen(treename),
+                      treename, (short)strlen(tagnam), tagnam, &nodeptr,
+                      tagidx);
 }
 
 int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
 {
   char *tagname = TreeFindNodeTags(nid_in, ctx_ptr);
-  if (!tagname) return TreeTNF;
-  DESCRIPTOR_FROM_CSTRING(tagd,tagname);
+  if (!tagname)
+    return TreeTNF;
+  DESCRIPTOR_FROM_CSTRING(tagd, tagname);
   StrCopyDx(tag, &tagd);
   free(tagname);
   return TreeSUCCESS;
@@ -63,8 +64,8 @@ int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
 
 char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  NID *nid = (NID *) & nid_in;
+  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
+  NID *nid = (NID *)&nid_in;
   TREE_INFO *info_ptr;
   NODE *node_ptr;
   int *ctx = (int *)ctx_ptr;
@@ -73,61 +74,71 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
   if (dblist->remote)
     return FindNodeTagsRemote(dblist, nid_in, ctx_ptr);
 
-/*******************************************************
- First we must find the tree to which the node belongs.
- The tags associated with a node are linked together
- in a linked list. The tags are indexed by TAG_LINK
- fields in the node structure and the tag information
- structure. The TAG_LINK is an index into the array of
- tag information blocks of the tree using 1 to designate
- the first tag. Since a node may have more than one tag
- this routine must be called repetitively to return all
- the tag names. A context input/output argument of the
- routine is used to maintain the context between subsequent
- calls.
-**********************************************************/
-
-  nid_to_tree(dblist, nid, info_ptr);
-  if (info_ptr) {
-
-  /*********************************************************
-   If the context argument is zero then begin at the nodes
-   tag link. If the context argument is -1 then this must
-   just be the last of a sequence of calls and we must just
-   return NO MORE TAGS. Otherwise we assume the context pointer
-   is the tag index of the next tag to be returned to the called.
+  /*******************************************************
+   First we must find the tree to which the node belongs.
+   The tags associated with a node are linked together
+   in a linked list. The tags are indexed by TAG_LINK
+   fields in the node structure and the tag information
+   structure. The TAG_LINK is an index into the array of
+   tag information blocks of the tree using 1 to designate
+   the first tag. Since a node may have more than one tag
+   this routine must be called repetitively to return all
+   the tag names. A context input/output argument of the
+   routine is used to maintain the context between subsequent
+   calls.
   **********************************************************/
 
-    if (*ctx == 0) {
+  nid_to_tree(dblist, nid, info_ptr);
+  if (info_ptr)
+  {
+
+    /*********************************************************
+     If the context argument is zero then begin at the nodes
+     tag link. If the context argument is -1 then this must
+     just be the last of a sequence of calls and we must just
+     return NO MORE TAGS. Otherwise we assume the context pointer
+     is the tag index of the next tag to be returned to the called.
+    **********************************************************/
+
+    if (*ctx == 0)
+    {
       node_ptr = nid_to_node(dblist, nid);
-      loadint32(ctx,&node_ptr->tag_link);
-    } else if (*ctx == -1) {
+      loadint32(ctx, &node_ptr->tag_link);
+    }
+    else if (*ctx == -1)
+    {
       *ctx = 0;
     }
-    if ((*ctx > 0) && (*ctx <= info_ptr->header->tags)) {
+    if ((*ctx > 0) && (*ctx <= info_ptr->header->tags))
+    {
       unsigned int i;
       char *name = (char *)(info_ptr->tag_info + *ctx - 1)->name;
-      for (i = 0; i < sizeof(TAG_NAME) && name[i] != ' '; i++) ;
+      for (i = 0; i < sizeof(TAG_NAME) && name[i] != ' '; i++)
+        ;
       char *answer = strncpy(malloc(i + 1), name, i);
       answer[i] = '\0';
-      loadint32(ctx,&(info_ptr->tag_info + *ctx - 1)->tag_link);
+      loadint32(ctx, &(info_ptr->tag_info + *ctx - 1)->tag_link);
       if (*ctx == 0)
-	*ctx = -1;
+        *ctx = -1;
       return answer;
-    } else
+    }
+    else
       *ctx = 0;
-  } else
+  }
+  else
     *ctx = 0;
   return NULL;
 }
 
-struct tag_search {
+struct tag_search
+{
   TAG_NAME tag;
   TREE_INFO *info;
 };
 
-int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
-		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx)
+int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen,
+                 const char *tree, short taglen, const char *tagnam,
+                 NODE **nodeptr, int *tagidx)
 {
   int len = min(taglen, (short)sizeof(TAG_NAME));
   int i;
@@ -138,37 +149,46 @@ int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const c
   for (i = 0; i < len; i++)
     tsearch.tag[i] = (char)toupper(tagnam[i]);
   *nodeptr = NULL;
-/********************************************
- To locate a tag we must first find which tree
- is being referenced. If the tree name is not
- explicitly provided, the tree is determined
- by the current default node.
-*********************************************/
+  /********************************************
+   To locate a tag we must first find which tree
+   is being referenced. If the tree name is not
+   explicitly provided, the tree is determined
+   by the current default node.
+  *********************************************/
 
-  for (tsearch.info = db->tree_info; tsearch.info; tsearch.info = tsearch.info->next_info) {
-    if (tree) {
+  for (tsearch.info = db->tree_info; tsearch.info;
+       tsearch.info = tsearch.info->next_info)
+  {
+    if (tree)
+    {
       size_t len = strlen(tsearch.info->treenam);
-      if ((len == (size_t) treelen) && strncmp(tsearch.info->treenam, tree, len) == 0)
-	break;
-    } else if ((default_node >= tsearch.info->node) &&
-	       (default_node < tsearch.info->node + tsearch.info->header->nodes))
+      if ((len == (size_t)treelen) &&
+          strncmp(tsearch.info->treenam, tree, len) == 0)
+        break;
+    }
+    else if ((default_node >= tsearch.info->node) &&
+             (default_node <
+              tsearch.info->node + tsearch.info->header->nodes))
       break;
   }
   if (tsearch.info == NULL)
     return TreeTNF;
 
-	  /***********************************************
-	  If the tag name specified is the reserved name
-	  "TOP", then return the root pointer of the
-	  tree being referenced.
-	  Otherwise we must look up the tagname in the
-	  tagname table of the tree.
-      ***********************************************/
-  if (taglen == 3 && strncmp(tagnam, "TOP", 3) == 0) {
+  /***********************************************
+  If the tag name specified is the reserved name
+  "TOP", then return the root pointer of the
+  tree being referenced.
+  Otherwise we must look up the tagname in the
+  tagname table of the tree.
+***********************************************/
+  if (taglen == 3 && strncmp(tagnam, "TOP", 3) == 0)
+  {
     *nodeptr = tsearch.info->root;
     *tagidx = 0;
     return TreeSUCCESS;
-  } else {
+  }
+  else
+  {
     /******************************************************
      To look up the tag in the tag table we will use a
      binary search. If there are no tags defined, just return
@@ -178,48 +198,60 @@ int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const c
      we will just use the C binary search routine to find the
      tag in the table.
     ********************************************************/
-    switch (tsearch.info->header->tags) {
+    switch (tsearch.info->header->tags)
+    {
     case 0:
       status = TreeTNF;
       break;
     case 1:
-      if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0) {
-	*nodeptr = tsearch.info->node + swapint32(&tsearch.info->tag_info->node_idx);
-	*tagidx = 1;
-	return TreeSUCCESS;
-      } else
-	status = TreeTNF;
+      if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0)
+      {
+        *nodeptr =
+            tsearch.info->node + swapint32(&tsearch.info->tag_info->node_idx);
+        *tagidx = 1;
+        return TreeSUCCESS;
+      }
+      else
+        status = TreeTNF;
       break;
     default:
-      if ((idx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags,
-			 (size_t)tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0) {
-	*nodeptr =
-	    tsearch.info->node +
-	    swapint32(&(tsearch.info->tag_info + swapint32(idx))->node_idx);
-	*tagidx = swapint32(idx) + 1;
-	return TreeSUCCESS;
-      } else
-	status = TreeTNF;
+      if ((idx =
+               bsearch((const void *)&tsearch, (const void *)tsearch.info->tags,
+                       (size_t)tsearch.info->header->tags, sizeof(int),
+                       BsearchCompare)) != 0)
+      {
+        *nodeptr =
+            tsearch.info->node +
+            swapint32(&(tsearch.info->tag_info + swapint32(idx))->node_idx);
+        *tagidx = swapint32(idx) + 1;
+        return TreeSUCCESS;
+      }
+      else
+        status = TreeTNF;
       break;
     }
-    if (status == TreeTNF && tree == 0) {
+    if (status == TreeTNF && tree == 0)
+    {
       char *tag;
       void *ctx = 0;
       int nid;
       NODE *node;
-      NID *nidptr = (NID *) & nid;
+      NID *nidptr = (NID *)&nid;
       unsigned int i;
-      for (i = 0; i < sizeof(tsearch.tag); i++) {
-	if (tsearch.tag[i] == ' ') {
-	  tsearch.tag[i] = '\0';
-	  break;
-	}
+      for (i = 0; i < sizeof(tsearch.tag); i++)
+      {
+        if (tsearch.tag[i] == ' ')
+        {
+          tsearch.tag[i] = '\0';
+          break;
+        }
       }
       tag = _TreeFindTagWild(db, tsearch.tag, &nid, &ctx);
-      if (tag) {
-	status = TreeSUCCESS;
-	node = nid_to_node(db, nidptr);
-	*nodeptr = node;
+      if (tag)
+      {
+        status = TreeSUCCESS;
+        node = nid_to_node(db, nidptr);
+        *nodeptr = node;
       }
       TreeFindTagEnd(&ctx);
     }
@@ -232,13 +264,13 @@ static int BsearchCompare(const void *this_one, const void *compare_one)
   struct tag_search *tsearch = (struct tag_search *)this_one;
   char *tag = (tsearch->info->tag_info + swapint32(compare_one))->name;
 
-/******************************************
- This routine is called by bsearch during
- binary searches of the tag table. The first
- argument is the info block and tag name to check and the
- second argument is the index into the tag
- info block array.
-*******************************************/
+  /******************************************
+   This routine is called by bsearch during
+   binary searches of the tag table. The first
+   argument is the info block and tag name to check and the
+   second argument is the index into the tag
+   info block array.
+  *******************************************/
 
   return strncmp((char *)tsearch->tag, (char *)tag, sizeof(TAG_NAME));
 }

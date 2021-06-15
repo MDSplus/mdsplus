@@ -23,13 +23,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
+from MDSplus import Device, Data, Action, Dispatch, Method, makeArray, Range, Signal, Window, Dimension
 import acq200
 import transport
 
 from time import sleep
 import os
 import numpy
+
 
 class DT132(Device):
     """
@@ -74,67 +75,91 @@ class DT132(Device):
      STORE_ACTION - dispatching information for STORE
     """
 
-    parts=[
-        {'path':':HOSTIP','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
-        {'path':':BOARDIP','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
-        {'path':':COMMENT','type':'text'},
-        ]
+    parts = [
+        {'path': ':HOSTIP', 'type': 'text',
+            'value': '192.168.0.254', 'options': ('no_write_shot',)},
+        {'path': ':BOARDIP', 'type': 'text',
+            'value': '192.168.0.0', 'options': ('no_write_shot',)},
+        {'path': ':COMMENT', 'type': 'text'},
+    ]
     for i in range(6):
-        parts.append({'path':':DI%1.1d'%(i,),'type':'numeric','options':('no_write_shot',)})
-        parts.append({'path':':DI%1.1d:BUS'%(i,),'type':'text','options':('no_write_shot',)})
-        parts.append({'path':':DI%1.1d:WIRE'%(i,),'type':'text','options':('no_write_shot',)})
-    parts2=[
-        {'path':':ACTIVE_CHANS','type':'numeric','value':32,'options':('no_write_shot',)},
-        {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},
-        {'path':':TRIG_SRC','type':'numeric','valueExpr':'head.di3','options':('no_write_shot',)},
-        {'path':':TRIG_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
-        {'path':':CLOCK_SRC','type':'numeric','valueExpr':'head.int_clock','options':('no_write_shot',)},
-        {'path':':CLOCK_DIV','type':'numeric','value':1,'options':('no_write_shot',)},
-        {'path':':CLOCK_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
-        {'path':':CLOCK_FREQ','type':'numeric','value':1000000,'options':('no_write_shot',)},
-        {'path':':PRE_TRIG','type':'numeric','value':0,'options':('no_write_shot',)},
-        {'path':':POST_TRIG','type':'numeric','value':128,'options':('no_write_shot',)},
-        {'path':':SEGMENTS','type':'numeric','value':1,'options':('no_write_shot',)},
-        {'path':':CLOCK','type':'axis','options':('no_write_model','write_once')},
-        {'path':':RANGES','type':'numeric','options':('no_write_model','write_once')},
-        {'path':':STATUS_CMDS','type':'text','value':makeArray(['cat /proc/cmdline', 'get.d-tacq.release']),'options':('no_write_shot',)},
-        {'path':':BOARD_STATUS','type':'SIGNAL','options':('no_write_model','write_once')},
-        ]
+        parts.append({'path': ':DI%1.1d' % (
+            i,), 'type': 'numeric', 'options': ('no_write_shot',)})
+        parts.append({'path': ':DI%1.1d:BUS' % (
+            i,), 'type': 'text', 'options': ('no_write_shot',)})
+        parts.append({'path': ':DI%1.1d:WIRE' % (
+            i,), 'type': 'text', 'options': ('no_write_shot',)})
+    parts2 = [
+        {'path': ':ACTIVE_CHANS', 'type': 'numeric',
+            'value': 32, 'options': ('no_write_shot',)},
+        {'path': ':INT_CLOCK', 'type': 'axis',
+            'options': ('no_write_model', 'write_once')},
+        {'path': ':TRIG_SRC', 'type': 'numeric',
+            'valueExpr': 'head.di3', 'options': ('no_write_shot',)},
+        {'path': ':TRIG_EDGE', 'type': 'text',
+            'value': 'rising', 'options': ('no_write_shot',)},
+        {'path': ':CLOCK_SRC', 'type': 'numeric',
+            'valueExpr': 'head.int_clock', 'options': ('no_write_shot',)},
+        {'path': ':CLOCK_DIV', 'type': 'numeric',
+            'value': 1, 'options': ('no_write_shot',)},
+        {'path': ':CLOCK_EDGE', 'type': 'text',
+            'value': 'rising', 'options': ('no_write_shot',)},
+        {'path': ':CLOCK_FREQ', 'type': 'numeric',
+            'value': 1000000, 'options': ('no_write_shot',)},
+        {'path': ':PRE_TRIG', 'type': 'numeric',
+            'value': 0, 'options': ('no_write_shot',)},
+        {'path': ':POST_TRIG', 'type': 'numeric',
+            'value': 128, 'options': ('no_write_shot',)},
+        {'path': ':SEGMENTS', 'type': 'numeric',
+            'value': 1, 'options': ('no_write_shot',)},
+        {'path': ':CLOCK', 'type': 'axis', 'options': (
+            'no_write_model', 'write_once')},
+        {'path': ':RANGES', 'type': 'numeric',
+            'options': ('no_write_model', 'write_once')},
+        {'path': ':STATUS_CMDS', 'type': 'text', 'value': makeArray(
+            ['cat /proc/cmdline', 'get.d-tacq.release']), 'options':('no_write_shot',)},
+        {'path': ':BOARD_STATUS', 'type': 'SIGNAL',
+            'options': ('no_write_model', 'write_once')},
+    ]
     parts.extend(parts2)
     del parts2
     for i in range(32):
-        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
-        parts.append({'path':':INPUT_%2.2d:RAW'%(i+1,),'type':'SIGNAL', 'options':('no_write_model','write_once')})
-        parts.append({'path':':INPUT_%2.2d:START_IDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:END_IDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-    parts.append({'path':':INIT_ACTION','type':'action',
-                  'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
-                  'options':('no_write_shot',)})
-    parts.append({'path':':STORE_ACTION','type':'action',
-                  'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
-                  'options':('no_write_shot',)})
+        parts.append({'path': ':INPUT_%2.2d' % (i+1,), 'type': 'signal',
+                      'options': ('no_write_model', 'write_once',)})
+        parts.append({'path': ':INPUT_%2.2d:RAW' % (
+            i+1,), 'type': 'SIGNAL', 'options': ('no_write_model', 'write_once')})
+        parts.append({'path': ':INPUT_%2.2d:START_IDX' % (i+1,),
+                      'type': 'NUMERIC', 'options': ('no_write_shot')})
+        parts.append({'path': ':INPUT_%2.2d:END_IDX' % (i+1,),
+                      'type': 'NUMERIC', 'options': ('no_write_shot')})
+        parts.append({'path': ':INPUT_%2.2d:INC' % (i+1,),
+                      'type': 'NUMERIC', 'options': ('no_write_shot')})
+    parts.append({'path': ':INIT_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                  'options': ('no_write_shot',)})
+    parts.append({'path': ':STORE_ACTION', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                  'options': ('no_write_shot',)})
 
-    clock_edges=['rising', 'falling']
+    clock_edges = ['rising', 'falling']
     trigger_edges = clock_edges
-    trig_sources=[ 'DI0',
-                   'DI1',
-                   'DI2',
-                   'DI3',
-                   'DI4',
-                   'DI5',
-                   ]
+    trig_sources = ['DI0',
+                    'DI1',
+                    'DI2',
+                    'DI3',
+                    'DI4',
+                    'DI5',
+                    ]
     clock_sources = trig_sources
     clock_sources.append('INT_CLOCK')
 
     masks = {8: '11110000000000001111000000000000',
-             16:'11111111000000001111111100000000',
-             32:'11111111111111111111111111111111',
+             16: '11111111000000001111111100000000',
+             32: '11111111111111111111111111111111',
              }
-    wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
+    wires = ['fpga', 'mezz', 'rio', 'pxi', 'lemo', 'none', 'fpga pxi']
 
     del i
-
 
     def init(self, arg):
         """
@@ -143,48 +168,50 @@ class DT132(Device):
         Arm hardware
         """
 
-        debug=os.getenv("DEBUG_DEVICES")
+        debug = os.getenv("DEBUG_DEVICES")
         try:
-            error="Must specify a board ipaddress"
-            boardip=str(self.boardip.record)
-            error=None
-            error="Must specify active chans as int in (8,16,32)"
+            error = "Must specify a board ipaddress"
+            boardip = str(self.boardip.record)
+            error = None
+            error = "Must specify active chans as int in (8,16,32)"
             active_chans = int(self.active_chans)
-            error=None
-            if active_chans not in (8,16,32) :
+            error = None
+            if active_chans not in (8, 16, 32):
                 print("active chans must be in (8, 16, 32)")
                 active_chans = 32
-            error="Trig source must be a string"
-            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
-            error=None
+            error = "Trig source must be a string"
+            trig_src = str(self.trig_src.record.getOriginalPartName())[1:]
+            error = None
             if debug:
                 print("trig_src is %s\n" % trig_src)
             if not trig_src in self.trig_sources:
-                raise Exception("Trig_src must be in %s" % str(self.trig_sources))
-            error='Trig edge must be a string'
-            trig_edge=self.trig_edge.record.getString()
-            error=None
-            error="Clock source must be a string"
-            clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
-            error=None
+                raise Exception("Trig_src must be in %s" %
+                                str(self.trig_sources))
+            error = 'Trig edge must be a string'
+            trig_edge = self.trig_edge.record.getString()
+            error = None
+            error = "Clock source must be a string"
+            clock_src = str(self.clock_src.record.getOriginalPartName())[1:]
+            error = None
             if debug:
                 print("clock_src is %s\n" % clock_src)
             if not clock_src in self.clock_sources:
-                raise Exception("Clock_src must be in %s" % str(self.clock_sources))
+                raise Exception("Clock_src must be in %s" %
+                                str(self.clock_sources))
             if (clock_src == 'INT_CLOCK'):
-                error="Must specify a frequency for internal clock"
+                error = "Must specify a frequency for internal clock"
                 clock_freq = int(self.clock_freq)
-                error=None
+                error = None
             else:
-                error="Must specify a frequency for external clock"
+                error = "Must specify a frequency for external clock"
                 clock_freq = int(self.clock_freq)
-                error="Must specify a divisor for external clock"
+                error = "Must specify a divisor for external clock"
                 clock_div = int(self.clock_div)
-                error=None
-            error="Must specify pre trigger samples"
-            pre_trig=int(self.pre_trig.data()*1024)
-            error="Must specify post trigger samples"
-            post_trig=int(self.post_trig.data()*1024)
+                error = None
+            error = "Must specify pre trigger samples"
+            pre_trig = int(self.pre_trig.data()*1024)
+            error = "Must specify post trigger samples"
+            post_trig = int(self.post_trig.data()*1024)
             UUT = acq200.ACQ200(transport.factory(boardip))
             UUT.set_abort()
             UUT.clear_routes()
@@ -192,15 +219,16 @@ class DT132(Device):
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
-                    wire = str(self.__getattr__('di%1.1d_wire'%i).record)
-                    if wire not in self.wires :
-                        print("DI%d:wire must be in %s" % (i, str(self.wires), ))
+                    wire = str(self.__getattr__('di%1.1d_wire' % i).record)
+                    if wire not in self.wires:
+                        print("DI%d:wire must be in %s" %
+                              (i, str(self.wires), ))
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
                 try:
-                    bus = str(self.__getattr__('di%1.1d_bus'%i).record)
-                    if bus not in self.wires :
+                    bus = str(self.__getattr__('di%1.1d_bus' % i).record)
+                    if bus not in self.wires:
                         print("DI%d:bus must be in %s" % (i, str(self.wires),))
                         bus = ''
                 except:
@@ -208,21 +236,22 @@ class DT132(Device):
                 UUT.set_route(line, 'in %s out %s' % (wire, bus,))
             UUT.setChannelCount(active_chans)
 
-            if clock_src == 'INT_CLOCK' :
+            if clock_src == 'INT_CLOCK':
                 UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
             else:
-                 UUT.uut.acqcmd("-- setExternalClock --fin %d --fout %d DI0" % (clock_freq/1000, clock_freq/1000,))
+                UUT.uut.acqcmd("-- setExternalClock --fin %d --fout %d DI0" %
+                               (clock_freq/1000, clock_freq/1000,))
             UUT.setPrePostMode(pre_trig, post_trig, trig_src, trig_edge)
             UUT.set_arm()
-            return  1
+            return 1
 
         except Exception as e:
             if error is not None:
-                e=error
+                e = error
             print("%s\n" % (str(e),))
             return 0
 
-    INIT=init
+    INIT = init
 
     def getVins(self, UUT):
         vins = UUT.uut.acq2sh('get.vin 1:32')
@@ -230,12 +259,11 @@ class DT132(Device):
         vins = vins[:-1]
         return makeArray(numpy.array(vins.split()).astype('int'))
 
-
     def getInternalClock(self, UUT):
         clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
         print("clock_str is -%s-" % clock_str)
         freq = int(clock_str)
-        if freq > 16000000 :
+        if freq > 16000000:
             freq = 2000000
         return freq
 
@@ -250,12 +278,11 @@ class DT132(Device):
         store the expression into the data nodes
         """
 
-
-        debug=os.getenv("DEBUG_DEVICES")
+        debug = os.getenv("DEBUG_DEVICES")
         try:
-            error="Must specify a board ipaddress"
-            boardip=str(self.boardip.record)
-            error=None
+            error = "Must specify a board ipaddress"
+            boardip = str(self.boardip.record)
+            error = None
             UUT = acq200.ACQ200(transport.factory(boardip))
             try:
                 ans = []
@@ -264,20 +291,22 @@ class DT132(Device):
                     print(cmd)
                     a = UUT.uut.acq2sh(cmd)
                     ans.append(a)
-                self.board_status.record = Signal(makeArray(ans),None,makeArray(cmds))
+                self.board_status.record = Signal(
+                    makeArray(ans), None, makeArray(cmds))
             except Exception:
                 pass
 
             complete = 0
             tries = 0
-            while not complete and tries < 60 :
-                if UUT.get_state().split()[-1] == "ST_POSTPROCESS" :
-                    tries +=1
+            while not complete and tries < 60:
+                if UUT.get_state().split()[-1] == "ST_POSTPROCESS":
+                    tries += 1
                     sleep(1)
                 else:
-                    complete=1
-            if UUT.get_state().split()[-1] != "ST_STOP" :
-                raise Exception("Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1])
+                    complete = 1
+            if UUT.get_state().split()[-1] != "ST_STOP":
+                raise Exception(
+                    "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1])
             if debug:
                 print("about to get the vins\n")
             vins = self.getVins(UUT)
@@ -286,10 +315,10 @@ class DT132(Device):
             pre = int(pre)*-1
             post = int(post)-1
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
-            error="Clock source must be a string"
-            clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
-            error=None
-            if clock_src == 'INT_CLOCK' :
+            error = "Clock source must be a string"
+            clock_src = str(self.clock_src.record.getOriginalPartName())[1:]
+            error = None
+            if clock_src == 'INT_CLOCK':
                 self.clock.record = Range(delta=1./self.getInternalClock(UUT))
             else:
                 self.clock.record = self.clock_src
@@ -300,75 +329,82 @@ class DT132(Device):
             UUT.uut.acq2sh("mdsConnect %s" % str(self.hostip.record))
             if debug:
                 print("about to ask it to mdsopen")
-            UUT.uut.acq2sh('mdsOpen %s %d'  % (self.boardip.tree.name, self.boardip.tree.shot,))
+            UUT.uut.acq2sh('mdsOpen %s %d' %
+                           (self.boardip.tree.name, self.boardip.tree.shot,))
             for chan in range(32):
                 if debug:
                     print("working on channel %d" % chan)
                 chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
                 chan_raw_node = self.__getattr__('input_%2.2d_raw' % (chan+1,))
-                if chan_node.on :
+                if chan_node.on:
                     if debug:
                         print("it is on so ...")
-                    if mask[chan:chan+1] == '1' :
+                    if mask[chan:chan+1] == '1':
                         try:
-                            start = max(int(self.__getattr__('input_%2.2d_start_idx'%(chan+1))), pre)
-                            print("start = %d" %start)
+                            start = max(int(self.__getattr__(
+                                'input_%2.2d_start_idx' % (chan+1))), pre)
+                            print("start = %d" % start)
                         except:
                             start = pre
                         try:
-                            end = min(int(self.__getattr__('input_%2.2d_end_idx'%(chan+1))), post)
+                            end = min(int(self.__getattr__(
+                                'input_%2.2d_end_idx' % (chan+1))), post)
                             print("end = %d" % end)
                         except:
                             end = post
                         try:
-                            inc = int(self.__getattr__('input_%2.2d_inc'%(chan+1)))
+                            inc = int(self.__getattr__(
+                                'input_%2.2d_inc' % (chan+1)))
                             print("inc = %d" % inc)
                         except:
                             inc = 1
                         if debug:
                             print("build the command")
-                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (chan_node.getFullPath(), int(start-pre), int(end-pre), int(inc), chan+1)
-                        command = command.replace('\\','\\\\')
+                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (
+                            chan_node.getFullPath(), int(start-pre), int(end-pre), int(inc), chan+1)
+                        command = command.replace('\\', '\\\\')
                         if debug:
                             print("about to execute %s" % command)
                         UUT.uut.acq2sh(command)
-                        if inc > 1 :
-                            clk=''
-                            delta=''
-                            begin=''
-                            end=''
-                            try :
+                        if inc > 1:
+                            clk = ''
+                            delta = ''
+                            begin = ''
+                            end = ''
+                            try:
                                 clk = self.clock.evaluate()
                                 delta = clk.delta
                                 begin = clk.begin
                                 ending = clk.end
                             except:
                                 pass
-                            if delta :
+                            if delta:
                                 axis = Range(begin, ending, delta/inc)
-                                window = Window(start/inc, end/inc, self.trig_src)
+                                window = Window(
+                                    start/inc, end/inc, self.trig_src)
                                 dim = Dimension(window, axis)
                             else:
-                                dim = Data.Compile('Map($,$)', Dimension(Window(start/inc, end/inc, self.trig_src), clock), Range(start, end, inc))
+                                dim = Data.Compile('Map($,$)', Dimension(
+                                    Window(start/inc, end/inc, self.trig_src), clock), Range(start, end, inc))
                                 raw = Data.compile('data($)', chan_raw_node)
                                 chan_node.record = Signal(raw, None, dim)
                         else:
                             raw = Data.compile('data($)', chan_raw_node)
-                            chan_node.record = Signal(raw, None, Dimension(Window(start, end, self.trig_src), clock))
+                            chan_node.record = Signal(raw, None, Dimension(
+                                Window(start, end, self.trig_src), clock))
 
             UUT.uut.acq2sh('mdsClose %s' % (self.boardip.tree.name,))
-        except Exception as e :
+        except Exception as e:
             if error is not None:
-                e=error
-            print("Error storing DT132 Device\n%s" % ( str(e), ))
+                e = error
+            print("Error storing DT132 Device\n%s" % (str(e), ))
             return 0
 
         return 1
 
-    STORE=store
+    STORE = store
 
     def help(self, arg):
         """ Help method to describe the methods and nodes of the DTAO32 module type """
         help(DT132)
         return 1
-

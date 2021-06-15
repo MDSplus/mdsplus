@@ -11,5 +11,5 @@ package MDSplus;
  */
 public interface DataStreamListener
 {
-	void dataReceived(Data samples, Data times);
+	void dataReceived(java.lang.String streamName, int shot, Data times, Data samples);
 }

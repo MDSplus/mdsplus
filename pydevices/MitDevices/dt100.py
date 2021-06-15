@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
@@ -37,13 +37,16 @@ if os.getenv("LOGCMD", "NO") == "YES":
 else:
     logcmd = 0
 
+
 def lprint(s):
     if logcmd:
         print(s)
 
+
 def dprint(s):
     if debug:
         print(s)
+
 
 class Connection:
     def __init__(self, _p):
@@ -66,8 +69,8 @@ class DT100(transport.Transport):
     def _connect(self):
         import pexpect
         hp = self.host.split(":")
-        if len(hp)==2:
-# it's a tunnel ...
+        if len(hp) == 2:
+            # it's a tunnel ...
             target = hp[0] + ' ' + hp[1]
         else:
             target = self.host + ' ' + '53504'
@@ -79,8 +82,8 @@ class DT100(transport.Transport):
         self.acq = self._connect()
         self.acq.p.expect('MasterInterpreter')
         self.acq.p.sendline('dt100 open master 1')
-        i = self.acq.p.expect("DT100:\r", timeout=60);
-        if i==0:
+        i = self.acq.p.expect("DT100:\r", timeout=60)
+        if i == 0:
             dprint("OK")
         else:
             print("Timeout")
@@ -90,8 +93,8 @@ class DT100(transport.Transport):
         self.sh = self._connect()
         self.sh.p.expect('MasterInterpreter')
         self.sh.p.sendline('dt100 open shell 1')
-        i = self.sh.p.expect("DT100:\r", timeout=60);
-        if i==0:
+        i = self.sh.p.expect("DT100:\r", timeout=60)
+        if i == 0:
             dprint("OK")
         else:
             print("Timeout")
@@ -99,7 +102,7 @@ class DT100(transport.Transport):
     def connectStatemon(self):
         import pexpect
         hp = self.host.split(":")
-        if len(hp)==2:
+        if len(hp) == 2:
             # it's a tunnel ...
             port = int(hp[1]) + 1
             target = hp[0] + ' ' + str(port)
@@ -120,9 +123,9 @@ class DT100(transport.Transport):
         ch.p.expect('MasterInterpreter')
         dprint("sendline dt100 open data1 " + channel_dev)
         ch.p.sendline('dt100 open data1 ' + channel_dev)
-        dprint("expect:");
-        i = ch.p.expect("DT100:\r", timeout=60);
-        if i==0:
+        dprint("expect:")
+        i = ch.p.expect("DT100:\r", timeout=60)
+        if i == 0:
             dprint("OK")
         else:
             print("Timeout")
@@ -133,8 +136,8 @@ class DT100(transport.Transport):
         self.logtx(tx)
         self.acq.p.sendline(tx)
         self.acq.m = re.compile('ACQ32:(.*)\r')
-        i = self.acq.p.expect(self.acq.m, timeout=60);
-        if i==0:
+        i = self.acq.p.expect(self.acq.m, timeout=60)
+        if i == 0:
             self.logrx(self.acq.p.match.group(0))
             return self.acq.p.match.group(1)
         else:
@@ -145,8 +148,8 @@ class DT100(transport.Transport):
         self.logtx(command)
         self.sh.p.sendline(command)
         self.sh.m = re.compile('(.*)\r\nEOF(.*)\r\n')
-        i = self.sh.p.expect(self.sh.m, timeout=60);
-        if i==0:
+        i = self.sh.p.expect(self.sh.m, timeout=60)
+        if i == 0:
             dprint("OK")
             return self.sh.p.match.group(1)
         else:
@@ -202,8 +205,6 @@ class DT100(transport.Transport):
         else:
             dprint("ERROR")
             return "ERROR"
-
-
 
     def __init__(self, _host):
         'create a transport host is a DNS name, or \'.D\' in A.B.C.D where $SUBNET=A.B.C'

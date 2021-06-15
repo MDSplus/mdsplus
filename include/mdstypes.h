@@ -22,5 +22,4 @@ typedef off_t _off_t;
 
 #endif
 
-
-#endif				/* MDSTYPES_H */
+#endif /* MDSTYPES_H */

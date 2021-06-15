@@ -5,15 +5,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSEXPRFIELD.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsExprField.H
+                Name:   XmdsExprField.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   23-NOV-1989
+                Date:   23-NOV-1989
 
-		Purpose: Public declarations for  XmdsExprField widget
+                Purpose: Public declarations for  XmdsExprField widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -32,7 +32,7 @@
 
 #ifndef XmdsIsExprField
 #define XmdsIsExprField(w) XtIsSubclass(w, xmdsExprFieldWidgetClass)
-#endif				/* XmdsIsExprField */
+#endif /* XmdsIsExprField */
 
 /* XmdsExprField Widget Class */
 externalref WidgetClass xmdsExprFieldWidgetClass;
@@ -52,9 +52,10 @@ extern void XmdsExprFieldSetDefaultNid();
 extern void XmdsExprFieldSetNid();
 extern void XmdsExprFieldSetXd();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateExprField(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern Widget XmdsCreateExprField(Widget parent, char *name, ArgList args,
+                                  Cardinal argcount);
 extern Boolean XmdsExprFieldApply(Widget w);
 extern struct descriptor *XmdsExprFieldGetXd(Widget w);
 extern Boolean XmdsExprFieldPut(Widget w);
@@ -64,7 +65,7 @@ extern void XmdsExprFieldSetDefaultNid(Widget w, int nid);
 extern void XmdsExprFieldSetNid(Widget w, int nid, int offset);
 extern void XmdsExprFieldSetXd(Widget w, struct descriptor *dsc);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
 /* Resources */
 
@@ -82,5 +83,5 @@ extern void XmdsExprFieldSetXd(Widget w, struct descriptor *dsc);
 
 externalref WidgetClass xmdsExprFieldWidgetClass;
 
-#endif				/* _XmdsExprField_H */
+#endif /* _XmdsExprField_H */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

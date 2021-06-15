@@ -26,14 +26,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string.h>
 
-#include <mdsdescrip.h>
 #include <getusername.h>
+#include <mdsdescrip.h>
 
 EXPORT struct descriptor *whoami()
 {
-  static struct descriptor ans = { 0 , DTYPE_T, CLASS_S, 0 };
+  static struct descriptor ans = {0, DTYPE_T, CLASS_S, 0};
   GETUSERNAME_BEGIN(ans.pointer);
-  ans.length  = (unsigned short)strlen(ans.pointer);
+  ans.length = (unsigned short)strlen(ans.pointer);
   GETUSERNAME_END;
   return &ans;
 }

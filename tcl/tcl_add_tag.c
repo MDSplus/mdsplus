@@ -22,28 +22,30 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsshr.h>
-#include <string.h>
-#include <stdlib.h>
 #include <dcl.h>
+#include <mdsshr.h>
+#include <stdlib.h>
+#include <string.h>
 #include <treeshr.h>
 
 /**********************************************************************
-* TCL_ADD_TAG.C --
-*
-* TclAddTag:  Add a tag name to a node
-*
-* History:
-*  30-Jan-1998  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
+ * TCL_ADD_TAG.C --
+ *
+ * TclAddTag:  Add a tag name to a node
+ *
+ * History:
+ *  30-Jan-1998  TRG  Create.  Ported from original mds code.
+ *
+ ************************************************************************/
 
-	/*****************************************************************
-	 * TclAddTag:
-	 * Add a tag name to a node
-	 *****************************************************************/
-EXPORT int TclAddTag(void *ctx, char **error, char **output __attribute__ ((unused)))
-{				/* Return: status                 */
+/*****************************************************************
+ * TclAddTag:
+ * Add a tag name to a node
+ *****************************************************************/
+EXPORT int TclAddTag(void *ctx, char **error,
+                     char **output
+                     __attribute__((unused)))
+{ /* Return: status */
   int nid;
   int sts;
   char *nodnam = 0;
@@ -54,10 +56,12 @@ EXPORT int TclAddTag(void *ctx, char **error, char **output __attribute__ ((unus
   sts = TreeFindNode(nodnam, &nid);
   if (sts & 1)
     sts = TreeAddTag(nid, tagnam);
-  if (!(sts & 1)) {
+  if (!(sts & 1))
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(tagnam) + strlen(msg) + 100);
-    sprintf(*error, "Error adding tag %s\nError message was: %s\n", tagnam, msg);
+    sprintf(*error, "Error adding tag %s\nError message was: %s\n", tagnam,
+            msg);
   }
   free(nodnam);
   free(tagnam);

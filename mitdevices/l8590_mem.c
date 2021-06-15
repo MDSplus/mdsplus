@@ -24,8 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*  CMS REPLACEMENT HISTORY, Element L8590_MEM.C */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <stdlib.h>
@@ -166,12 +166,12 @@ int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), In
 	int end_nid = data_nid + L8590_SCLR_N_INPUT_1_ENDIDX - L8590_SCLR_N_INPUT_1;
 	if (TreeIsOn(data_nid) & 1) {
 	  status = DevLong(&start_nid, (int *)&raw.bounds[0].l);
-	  if (status & 1)
+	  if (STATUS_OK)
 	    raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
 	  else
 	    raw.bounds[0].l = min_idx;
 	  status = DevLong(&end_nid, (int *)&raw.bounds[0].u);
-	  if (status & 1)
+	  if (STATUS_OK)
 	    raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
 	  else
 	    raw.bounds[0].u = max_idx;
@@ -201,7 +201,7 @@ EXPORT int l8590_mem__dw_setup(struct descriptor *niddsc __attribute__ ((unused)
   static NCI_ITM nci[] =
       { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + nid;
+  uilnames[0].value = (void *)(intptr_t)nid;
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "L8590_MEM",
 			 uilnames, XtNumber(uilnames), 0);
 }
@@ -227,7 +227,7 @@ static void Load(Widget w)
     char digname[512];
     sprintf(digname, "%s:L8590_%d", l8590_memname, i);
     status = TreeFindNode(digname, &dig_nid);
-    if (status & 1) {
+    if (STATUS_OK) {
       TreeGetNci(dig_nid, itmlst);
       item = XmStringCreateSimple(nodename);
       XmListAddItem(w, item, 0);

@@ -1,0 +1,6 @@
+leak:*libpython*
+leak:*numpy*
+leak:python*/lib-dynload
+leak:libjvm.so
+leak:libjli.so
+leak:libz.so

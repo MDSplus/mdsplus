@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -70,32 +70,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-------------------------------------------------------------------------
 int add_entry(int dbType, char *newEntry)
 {
-  void *dbptr;			// re-usable pointer for dbs
+  void *dbptr; // re-usable pointer for dbs
   int entrySize, i, numOfEntries;
-  int status = SUCCESS;		// assume the best
-  extern struct MODULE *CTSdb;	// pointer to in-memory copy of data file
-  extern struct CRATE *CRATEdb;	// pointer to in-memory copy of data file
+  int status = SUCCESS;         // assume the best
+  extern struct MODULE *CTSdb;  // pointer to in-memory copy of data file
+  extern struct CRATE *CRATEdb; // pointer to in-memory copy of data file
 
   if (MSGLVL(FUNCTION_NAME))
     printf("add_entry()\n");
 
-//----------------------------
-//      adding an entry
-//----------------------------
-//-- 'critical section' start
-//----------------------------
+  //----------------------------
+  //      adding an entry
+  //----------------------------
+  //-- 'critical section' start
+  //----------------------------
   // 'lock' with semaphore
-  if (lock_file() != SUCCESS) {
+  if (lock_file() != SUCCESS)
+  {
     status = LOCK_ERROR;
     goto AddEntry_Exit;
   }
   // get current number of entries
-  if ((numOfEntries = get_file_count(dbType)) < 0) {
+  if ((numOfEntries = get_file_count(dbType)) < 0)
+  {
     status = FILE_ERROR;
     goto AddEntry_Exit;
   }
   // cull db specific info
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     dbptr = (void *)CTSdb;
     entrySize = MODULE_ENTRY;
@@ -112,21 +115,24 @@ int add_entry(int dbType, char *newEntry)
   }
 
   // shift current entries by one
-  if (numOfEntries)		// ... only if any entries exist
+  if (numOfEntries) // ... only if any entries exist
     for (i = numOfEntries - 1; i >= 0; --i)
-      memcpy((char *)dbptr + ((i + 1) * entrySize), (char *)dbptr + (i * entrySize), entrySize);
+      memcpy((char *)dbptr + ((i + 1) * entrySize),
+             (char *)dbptr + (i * entrySize), entrySize);
 
   // put new entry at head of list
   memcpy((char *)dbptr, newEntry, entrySize);
 
   // insertion sort
-  if (numOfEntries > 0)		// only insert if more than one entry exists already
-    if (issort(dbptr, numOfEntries + 1, entrySize, compare_str) != 0) {
+  if (numOfEntries > 0) // only insert if more than one entry exists already
+    if (issort(dbptr, numOfEntries + 1, entrySize, compare_str) != 0)
+    {
       status = ERROR;
       goto AddEntry_Exit;
     }
   // commit change to file
-  if (commit_entry(dbType) != SUCCESS) {
+  if (commit_entry(dbType) != SUCCESS)
+  {
     status = COMMIT_ERROR;
     goto AddEntry_Exit;
   }
@@ -134,12 +140,13 @@ int add_entry(int dbType, char *newEntry)
   if (unlock_file() != SUCCESS)
     status = UNLOCK_ERROR;
 
-//----------------------------
-//-- 'critical section' finish
-//----------------------------
+  //----------------------------
+  //-- 'critical section' finish
+  //----------------------------
 
- AddEntry_Exit:
-  if (MSGLVL(DETAILS)) {
+AddEntry_Exit:
+  if (MSGLVL(DETAILS))
+  {
     printf("add_entry(): ");
     ShowStatus(status);
   }

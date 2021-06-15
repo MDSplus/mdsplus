@@ -25,26 +25,55 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsobjects.h"
 #include <string>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <errno.h>
+#include <semaphore.h>
+#endif
+
 using namespace MDSplus;
 using namespace std;
 
-
 #define MAX_ARGS 512
 
-extern "C" {
-int64_t convertAsciiToTime(const char *ascTime);
-int MDSEventAst(const char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
-int MDSEventCan(int id);
-int MDSEvent(const char *eventNameIn, int bufLen, char *buf);
-void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg);
-void  MdsEventRemoveListener(void *eventId);
-int MdsEventTrigger(char *name, char *buf, int size);
-int MdsEventTriggerAndWait(char *name, char *buf, int size);
+extern "C"
+{
+  int64_t convertAsciiToTime(const char *ascTime);
+  int MDSEventAst(const char *eventNameIn, void (*astadr)(void *, int, char *),
+                  void *astprm, int *eventid);
+  int MDSEventAstMask(const char *eventNameIn, void (*astadr)(void *, int, char *),
+                      void *astprm, int *eventid, unsigned int cpuMask);
+  int MDSEventCan(int id);
+  int MDSEvent(const char *eventNameIn, int bufLen, char *buf);
+  void *MdsEventAddListener(char *name,
+                            void (*callback)(char *, char *, int, void *),
+                            void *callbackArg);
+  void MdsEventRemoveListener(void *eventId);
+  int MdsEventTrigger(char *name, char *buf, int size);
+  int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
-namespace MDSplus {
-void eventAst(void *arg, int len, char *buf)
+#ifdef _WIN32
+static bool critSectInitialized = false;
+static CRITICAL_SECTION critSect;
+#else
+static pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
+namespace MDSplus
 {
+
+  void eventAst(void *arg, int len, char *buf)
+  {
+#ifdef _WIN32
+    EnterCriticalSection(&critSect);
+#else
+    pthread_mutex_lock(&evMutex);
+#endif
     Event *ev = (Event *)arg;
     ev->eventBuf.assign(buf, len);
     ev->eventTime = convertAsciiToTime("now");
@@ -52,103 +81,94 @@ void eventAst(void *arg, int len, char *buf)
 
     // notify all waiting threads //
     ev->notify();
-}
-} // MDSplus
-
-
+#ifdef _WIN32
+    LeaveCriticalSection(&critSect);
+#else
+    pthread_mutex_unlock(&evMutex);
+#endif
+  }
+} // namespace MDSplus
 
 void Event::connectToEvents()
 {
-    if ( !MDSEventAst(this->getName(), MDSplus::eventAst, this, &eventId) )
-	throw MdsException("failed to connect to event listener");
+#ifdef _WIN32
+  if (!critSectInitialized)
+  {
+    critSectInitialized = true;
+    InitializeCriticalSection(&critSect);
+  }
+#endif
+  if (!MDSEventAstMask(this->getName(), MDSplus::eventAst, this, &eventId, cpuMask))
+    throw MdsException("failed to connect to event listener");
 }
 
 void Event::disconnectFromEvents()
 {
-    if( !MDSEventCan(eventId) )
-	throw MdsException("failed to close event listener");
+  if (!MDSEventCan(eventId))
+    throw MdsException("failed to close event listener");
 }
 
-void Event::run(){}
+void Event::run() {}
 
-Event::Event(const char *name) :
-    eventName(name),
-    eventId(-1),
-    eventTime(convertAsciiToTime("now"))
-{}
+Event::Event(const char *name, unsigned int cpuMask)
+    : eventName(name), eventId(-1), cpuMask(cpuMask), eventTime(convertAsciiToTime("now")) {}
 
-Event::~Event()
+Event::Event(const char *name)
+    : eventName(name), eventId(-1), cpuMask(0), eventTime(convertAsciiToTime("now")) {}
+
+Event::~Event() { stop(); }
+
+Data *Event::getData() const
 {
-    stop();
-}
-
-Data * Event::getData() const
-{
-    if(eventBuf.length() == 0) return NULL;
-    return deserialize(eventBuf.c_str());
+  if (eventBuf.length() == 0)
+    return NULL;
+  return deserialize(eventBuf.c_str());
 }
 
 const char *Event::getRaw(size_t *size) const
 {
-    *size = eventBuf.length();
-    return eventBuf.c_str();
+  *size = eventBuf.length();
+  return eventBuf.c_str();
 }
 
-Uint64 *Event::getTime() const
-{
-    return new Uint64(eventTime);
-}
+Uint64 *Event::getTime() const { return new Uint64(eventTime); }
 
-const char *Event::getName() const
-{
-    return eventName.c_str();
-}
+const char *Event::getName() const { return eventName.c_str(); }
 
-void Event::start()
-{
-    connectToEvents();
-}
+void Event::start() { connectToEvents(); }
 
 void Event::stop()
 {
-    if(eventId > -1) {
-	disconnectFromEvents();
-	eventId = -1;
-    }
+  if (eventId > -1)
+  {
+    disconnectFromEvents();
+    eventId = -1;
+  }
 }
 
-bool Event::isStarted() const
-{
-    return eventId > -1;
-}
-
+bool Event::isStarted() const { return eventId > -1; }
 
 void Event::wait(size_t secs)
 {
-    if( !isStarted() ) start();
-    if (secs == 0) condition.wait();
-    else if (condition.waitTimeout(secs * 1000) == false)
-	throw MdsException("Timeout Occurred");
+  if (!isStarted())
+    start();
+  if (secs == 0)
+    condition.wait();
+  else if (condition.waitTimeout(secs * 1000) == false)
+    throw MdsException("Timeout Occurred");
 }
 
-void Event::notify()
-{
-    condition.notify();
-}
-
-
-
+void Event::notify() { condition.notify(); }
 
 void Event::setEvent(const char *evName, Data *evData)
 {
-    int bufLen;
-    char *buf = evData->serialize(&bufLen);
-    setEventRaw(evName, bufLen, buf);
-    delete[] buf;
+  int bufLen;
+  char *buf = evData->serialize(&bufLen);
+  setEventRaw(evName, bufLen, buf);
+  delete[] buf;
 }
 
 void Event::setEventRaw(const char *evName, int bufLen, char *buf)
 {
-    MDSEvent(evName, bufLen, buf);
+  MDSEvent(evName, bufLen, buf);
 }
-

@@ -59,10 +59,12 @@ int MSGLVL(int level)
   char *c;
   int dbglvl;
 
-  c = getenv(DEBUG_VAR_NAME);	// get debug variable
-  if (c) {			// if not NULL ...
-    dbglvl = strtol(c,NULL,0);		// convert to numeric
+  c = getenv(DEBUG_VAR_NAME); // get debug variable
+  if (c)
+  {                              // if not NULL ...
+    dbglvl = strtol(c, NULL, 0); // convert to numeric
     return (dbglvl >= level) ? TRUE : FALSE;
-  } else			// ... is not set
+  }
+  else // ... is not set
     return FALSE;
 }

@@ -103,10 +103,6 @@ AC_CHECK_TOOL([WINDRES], [windres], [:])
 AC_PROG_YACC
 AM_PROG_LEX
 
-# ln does not always provide the -r (relative) option
-AS_IF([ln --help | grep -- "--relative" &>/dev/null],[AS_VAR_SET([LN_R],["ln -r"])],[AS_VAR_SET([LN_R],["ln"])])
-AC_SUBST([LN_R])
-
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
 AC_MSG_RESULT([before VISIBILITY])
@@ -172,78 +168,60 @@ AS_CASE([$enable_perf],
         [yes], [AC_DEFINE([USE_PERF], [], [Define if you want to collect performance statistics -- linux only])])
 AC_MSG_RESULT([$enable_perf])
 
-dnl AC_ARG_ENABLE([universal],
-dnl              [AS_HELP_STRING([--enable-universal],
-dnl                              [Build MacOSX Universal Binary])],
-dnl              [],
-dnl              [AS_VAR_SET([enable_universal], [no])])
-dnl
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  JAVA  ///////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 AC_MSG_CHECKING([whether to build the java components])
 AC_ARG_ENABLE([java],
-              [AS_HELP_STRING([--disable-java],
-                              [Do not build java libraries and applications])],
+              [AS_HELP_STRING([--disable-java], [Do not build java libraries and applications])],
               [],
-              [AS_VAR_SET([enable_java], [yes])])
+              [AS_VAR_SET([enable_java], [yes])]
+)
 AM_CONDITIONAL([ENABLE_JAVA],[AS_VAR_TEST_SET([enable_java])])
+AC_MSG_RESULT([$enable_java])
 
-dnl this new java section hoses macos x... why not use the autoconf java macros?
-dnl I'm faking a disable so I can enable by hand later...
-dnl AS_CASE([$host_vendor],
-dnl        [apple], dnl the java section breaks with macos x due to different structure
-dnl                 dnl this disables it for now..  is there a AC_PROG_JAVA?
-dnl                 [AS_VAR_SET([enable_java], [no])]
-dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O3 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
-dnl                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
-dnl                                                       [F77=fort77])])
-dnl AC_MSG_RESULT([$enable_java])
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  JDK   ///////////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-dnl This is a workaround to maintain both JAVA_HOME and JDK_DIR env
-AS_VAR_SET_IF([JDK_DIR],
-              [AS_VAR_SET([JAVA_HOME],[${JDK_DIR}])])
-AC_CHECK_JAVA_HOME
-AS_VAR_SET([JDK_DIR],[${JAVA_HOME}])
-
-AC_ARG_WITH([jdk],
-            [AS_HELP_STRING([--with-jdk=JDKDIR],
-                            [specify location of java jdk])],
-            [],
-            [AS_VAR_SET_IF([JDK_DIR],
-                           [AS_VAR_SET([with_jdk], [$JDK_DIR])],
-                           [AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])])])
-
-AC_ARG_WITH([java_target],
-	    [AS_HELP_STRING([--with-java_target=version],
-                            [specify version of compiled mdsobjects classes (i.e. 6)])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" -target $withval"])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" -target \$(JAVASOURCE)"])])
-
-AC_ARG_WITH([java_bootclasspath],
-	    [AS_HELP_STRING([--with-java_bootclasspath=bootclasspath],
-                            [specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" -bootclasspath $withval"])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" \$(JAVABOOTCLASSPATH)"])])
-
-AS_CASE([$enable_java],
-        [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
-                ## AS_IF([test ! -d $with_jdk/jre], ##
-		## AS_IF([test ! -d $with_jdk], ##
-		AS_IF([test ! -d $with_jdk ${JRE}],
-                      [AC_MSG_RESULT([not found])
-                       AC_MSG_WARN([YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA])
-                       AC_MSG_WARN([The jdk directory can be specified by either defining a JDK_DIR environment])
-                       AC_MSG_WARN([variable or by using the --with-jdk=DIR option.])
-                       AC_MSG_WARN([You can disable java by using the --disable-java option.])
-                       AS_EXIT])
-                AC_MSG_RESULT([$with_jdk])
-                AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
-
+AS_CASE([$enable_java], [yes], [
+	dnl This is a workaround to maintain both JAVA_HOME and JDK_DIR env
+	AS_VAR_SET_IF([JDK_DIR], [AS_VAR_SET([JAVA_HOME],[${JDK_DIR}])])
+	AC_CHECK_JAVA_HOME
+	AS_VAR_SET([JDK_DIR],[${JAVA_HOME}])
+	AC_ARG_WITH([jdk],
+		[AS_HELP_STRING([--with-jdk=JDKDIR],
+		[specify location of java jdk])],
+		[],
+		[
+			AS_VAR_SET_IF([JDK_DIR],
+				[AS_VAR_SET([with_jdk], [$JDK_DIR])],
+				[AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])
+		])
+	])
+	AC_ARG_WITH([java_target],
+		[AS_HELP_STRING([--with-java_target=version],
+		[specify version of compiled mdsobjects classes (i.e. 6)])],
+		[AS_VAR_APPEND([JAVACFLAGS], [" -target $withval"])],
+		[AS_VAR_APPEND([JAVACFLAGS], [" -target \$(JAVASOURCE)"])])
+	AC_ARG_WITH([java_bootclasspath], [
+			AS_HELP_STRING(
+				[--with-java_bootclasspath=bootclasspath],
+				[specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)]
+			)
+		],
+		[AS_VAR_APPEND([JAVACFLAGS], [" -bootclasspath $withval"])],
+		[AS_VAR_APPEND([JAVACFLAGS], [" \$(JAVABOOTCLASSPATH)"])]
+	)
+	AC_MSG_CHECKING([for presence of Java Development Kit])
+	AS_IF([test ! -d $with_jdk ${JRE}], [
+		AC_MSG_RESULT([not found])
+		AC_MSG_WARN([YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA])
+		AC_MSG_WARN([The jdk directory can be specified by either defining a JDK_DIR environment])
+		AC_MSG_WARN([variable or by using the --with-jdk=DIR option.])
+		AC_MSG_WARN([You can disable java by using the --disable-java option.])
+		AS_EXIT
+	])
+	AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin:$PATH])
+	AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin:$PATH])
+])
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
 
@@ -298,7 +276,7 @@ AS_CASE([$with_labview],
         [yes],
         [AS_VAR_SET_IF([LABVIEW_DIR],
             [with_labview=$LABVIEW_DIR],
-            [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
+            [AS_IF([test -d ${srcdir}/3rd-party-apis/labview],
                    [with_labview=\${top_srcdir}/3rd-party-apis/labview],
                    [with_labview=no])])])
 
@@ -319,10 +297,10 @@ AC_ARG_WITH([idl],
 AS_CASE([$with_idl],
         [yes], [AS_VAR_SET_IF([IDL_DIR],
                               [AS_VAR_SET([with_idl], [$IDL_DIR])],
-                              [AS_IF([test -r /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
-                                     [test -r /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
-                                     [test -r /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
-                                     [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
+                              [AS_IF([test -d /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
+                                     [test -d /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
+                                     [test -d /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
+                                     [test -d ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
                                      [AS_VAR_SET([with_idl], [no])])])])
 AS_CASE([$with_idl],
         [no], [AS_UNSET([IDL_DIR])
@@ -358,7 +336,7 @@ IDL_LD=""
 LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
-CPPFLAGS="-I\${top_srcdir}/include -I\${top_builddir}/include $CPPFLAGS"
+CPPFLAGS="-I\${top_srcdir}/include -I\${top_srcdir}/_include -I\${top_builddir}/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
 then
@@ -440,7 +418,7 @@ case "$host" in
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
        then
-         if [[ -d /usr/lib64 ]]
+         if [[ -d /usr/lib64 -a "${PLATFORM}" = "redhat" ]]
          then
            D64="64"
          else
@@ -452,10 +430,10 @@ case "$host" in
          uiddir="${uiddir}${D64}"
          MAKELIBDIR="\$(top_builddir)/lib${D64}/"
          MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
-         MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	 MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
 	 MAKEBINDIR="\$(top_builddir)/bin${D64}/"
        else
-         if [[ -d /usr/lib64 ]]
+         if [[ -d /usr/lib64 -a "${PLATFORM}" = "redhat" ]]
          then
            D32="32"
          else
@@ -486,7 +464,7 @@ case "$host" in
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        TAR_EXCLUDE="--exclude";
-       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server"; 
+       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server";
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
@@ -546,41 +524,37 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
-       FCFLAGS="$FCFLAGS -fno-range-check"
-       FORLD="gfortran"
-       FOR_LDFLAGS="-shared"
+       CFLAGS="$CFLAGS -fsigned-char -fno-strict-aliasing -Wl,-rpath,@loader_path/..,-rpath,@executable_path/..,-rpath,$exec_prefix";
+       FCFLAGS="$FCFLAGS -fno-range-check";
+       FORLD="gfortran";
+       FOR_LDFLAGS="-shared";
        FEXECLIBDIR="-L";
-       LD="$CC"
-       LDSHARE="";
+       LD="$CC";
+       LDSHARE="-rpath @loader_path/.. @executable_path/.. $exec_prefix";
        LD_LDSHARE="";
        LDARC="";
        LD_LDARC="";
        UILPATH=${OPENMOTIF-/usr}/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib"
-       dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
-	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
-           FOR_LINKSHARED="$LDFLAGS -shared";
-	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L${OPENMOTIF-/usr}/lib";
+       MOTIF_LD_LDARC="-multiply_defined suppress -L${OPENMOTIF-/usr}/lib";
+       LINKSHARED="$LDFLAGS -dynamiclib -install_name @rpath/lib/\$(@F) -headerpad_max_install_names";
+       FOR_LINKSHARED="$LDFLAGS -shared";
+       LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
        LINKJNI="$LINKSHARED";
+       jni_inc_dir="$JAVA_HOME/include";
+       jni_md_inc_dir="$JAVA_HOME/include/darwin";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
        SHARETYPEMOD=".dylib";
        TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home
-       jni_inc_dir="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers";
-       jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
-       java_enable="yes"
-       LIBPATH="DYLD_LIBRARY_PATH"
-       dnl HDF5_LIBS="-lz -lsz";
-       dnl HDF5_DIR="/usr/local";
+       java_enable="yes";
+       LIBPATH="DYLD_LIBRARY_PATH";
        X_EXTRA_LIBS="-lXmu";;
 esac
 
+# add specific flags for fortran depending on compiler version
+AX_FORTRAN_FLAGS([FCFLAGS])
 
 AC_CHECK_SIZEOF(long)
 
@@ -677,7 +651,7 @@ AC_ARG_ENABLE(d3d,
 	if test "$enableval" = yes; then
           AC_MSG_CHECKING(...D3DLIB_PATH...)
           : ${D3DLIB_PATH:?"You must define D3DLIB_PATH to be the directory containing the libd3 library"}
-          if test -r "$D3DLIB_PATH/libd3.a" -o -r "$D3DLIB_PATH/libd3$SHARETYPE"
+          if test -f "$D3DLIB_PATH/libd3.a" -o -f "$D3DLIB_PATH/libd3$SHARETYPE"
           then
 		 D3D_PACKAGE="\$(D3D_PACKAGE)";
 		 D3DLIB="-L$D3DLIB_PATH";
@@ -744,6 +718,12 @@ else
 fi
 AC_SUBST(LIBLZMA)
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LIBBLAS  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+AC_CHECK_LIB([blas], [cdotu_, caxpy_], [have_blas="yes"], [have_blas=no])
+AM_CONDITIONAL(HAVE_BLAS, test x"$have_blas" = x"yes")
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
@@ -805,7 +785,7 @@ fi
 AC_CHECK_HEADERS([stdint.h])
 
 dnl Check for user specified  hdf5 header and library
-if test -n "$HDF5_DIR" -a -r "$HDF5_DIR"
+if test -n "$HDF5_DIR" -a -d "$HDF5_DIR"
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
@@ -922,7 +902,7 @@ then
     if test "$SYBASE_LIB" = ""
     then
       AC_MSG_CHECKING(for SYBASE open/client or freetds)
-      if test -r "/usr/lib${SYB64}/libsybdb.so"
+      if test -f "/usr/lib${SYB64}/libsybdb.so"
       then
           SYBASE_INC="-DSYBASE"
           SYBASE_LIB="-lsybdb"
@@ -930,14 +910,14 @@ then
           AC_MSG_RESULT(have freetds)
       else
         : ${SYBASE=/usr/local/sybase}
-        if test -r "$SYBASE/lib"
+        if test -d "$SYBASE/lib"
 	then SYBASE_LIBDIR="$SYBASE/lib"
-	elif test -r "$SYBASE/lib${SYB64}"
+	elif test -d "$SYBASE/lib${SYB64}"
 	then SYBASE_LIBDIR="$SYBASE/lib${SYB64}"
 	fi
 	if test "$SYBASE_LIBDIR" != ""
 	then
-	  if test -r "$SYBASE_LIBDIR/libsybdb.a"
+	  if test -f "$SYBASE_LIBDIR/libsybdb.a"
 	  then
 	    SYBASE_LIB="-L$SYBASE_LIBDIR $LD_LDARC -lsybdb $LD_LDSHARE"
 	  else
@@ -1014,13 +994,13 @@ AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
 
 AC_MSG_CHECKING(PyLib)
-DEF_PYLIB=${PyLib:-$($PYTHON -c '
+PYLIB=${PyLib:-$($PYTHON -c '
 import sys,ctypes.util
 name = ("python%d%d" if sys.platform.startswith("win") else "python%d.%d")%sys.version_info[[0:2]]
 name = ctypes.util.find_library(name)
 if not name is None: print(name)
 ')}
-AC_MSG_RESULT($DEF_PYLIB)
+AC_MSG_RESULT($PYLIB)
 
 
 
@@ -1085,7 +1065,7 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 TS_SELECT
 
 ## SKIP JAVA TESTS ##
-AS_VAR_IF([ENABLE_SANITIZE],[no],[],[AS_ECHO(["skipping junit: in sanitize"]); skip_junit=yes])
+# AS_VAR_IF([ENABLE_SANITIZE],[no],[],[AS_ECHO(["skipping junit: in sanitize"]); skip_junit=yes])
 AX_CHECK_JAVA_VERSION([1.8],[],[AS_ECHO(["skipping junit: not JDK 1.8"]); skip_junit=yes])
 TS_CHECK_JAVA([],[],[AS_ECHO(["skipping junit: java not found"]); skip_junit=yes])
 AM_CONDITIONAL([SKIP_JUNIT],[test x${skip_junit} = xyes])
@@ -1275,6 +1255,7 @@ AH_BOTTOM(
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES
 
+AC_SUBST(DISTNAME)
 AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
@@ -1304,6 +1285,7 @@ AC_SUBST(JARS_DIR)
 AC_SUBST(JAVA_ONLY)
 AC_SUBST(JAVA_APS)
 AC_SUBST(JAVA_JAR)
+AC_SUBST(JAVAC)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(JDK_CFLAGS)
 AC_SUBST(JDK_DIR)
@@ -1344,7 +1326,7 @@ AC_SUBST(MOTIF_LDARC)
 AC_SUBST(MOTIF_LD_LDSHARE)
 AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
-AC_SUBST(DEF_PYLIB)
+AC_SUBST(PYLIB)
 AC_SUBST(NEED_SEMUN)
 
 AC_SUBST(RELEASE_MAJOR)
@@ -1393,90 +1375,93 @@ AC_SUBST(JAVA_TARGET_ARCH)
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
-AC_OUTPUT(Makefile.inc
-          Makefile
-          docs/Makefile
-          envsyms
-          actions/Makefile
-          camshr/Makefile
-          ccl/Makefile
-          d3dshr/Makefile
-          dwscope/Makefile
-          hdf5/Makefile
-          idlmdsevent/Makefile
-          idlmdswidgets/Makefile
-          javamds/Makefile
-          java/Makefile
-          java/tests/Makefile
-          java/mdsplus/Makefile
-          java/mdsplus-api/Makefile
-          java/mdsplus-api/tests/Makefile
-          java/mdsobjects/Makefile
-          java/mdsobjects/docs/Makefile
-          java/mdsobjects/tests/Makefile
-          java/jdispatcher/Makefile
-          java/jscope/Makefile
-          java/jtraverser/Makefile
-          java/jtraverser2/Makefile
-          java/jdevices/Makefile
-          java/devicebeans/Makefile
-          LabView/Makefile
-          manpages/Makefile
-          macosx/Makefile
-          math/Makefile
-          mdsdcl/Makefile
-	  mdsdcl/mdsdclVersionInfo.c
-          mdslib/Makefile
-          mdslib/docs/Makefile
-          mdslib/testing/Makefile
-          mdslibidl/Makefile
-          mdsobjects/cpp/Makefile
-          mdsobjects/cpp/docs/Makefile
-          mdsobjects/cpp/testing/Makefile
-          mdsobjects/cpp/testing/testutils/Makefile
-          python/MDSplus/docs/Makefile
-          python/MDSplus/tests/Makefile
-          python/MDSplus/_version.py
-          pydevices/HtsDevices/_version.py
-          pydevices/MitDevices/_version.py
-          pydevices/RfxDevices/_version.py
-          pydevices/W7xDevices/_version.py
-          mdsobjects/labview/Makefile
-          mdsmisc/Makefile
-          mdsshr/Makefile
-	  mdsshr/version.h
-          mdsshr/testing/Makefile
-	  mdsshr/docs/Makefile
-          mdssql/Makefile
-          mdstcpip/Makefile
-          mdstcpip/zlib/Makefile
-          mdstcpip/docs/Makefile
-          mdstcpip/docs/img/Makefile
-          mdsvme/Makefile
-          mitdevices/Makefile
-          remcam/Makefile
-          roam/Makefile
-          rpm/Makefile
-          rpm/envsyms
-          rpm/post_install_script
-          scripts/Makefile
-          servershr/Makefile
-          setevent/Makefile
-          tcl/Makefile
-          tdishr/Makefile
-          tdishr/testing/Makefile
-          tdic/Makefile
-          tditest/Makefile
-          tditest/testing/Makefile
-          testing/Makefile
-          testing/backends/check/Makefile
-          testing/selftest/Makefile
-          traverser/Makefile
-          treeshr/Makefile
-          treeshr/testing/Makefile
-          wfevent/Makefile
-          xmdsshr/Makefile
-          xtreeshr/Makefile
+AC_OUTPUT(
+  Makefile.inc
+  Makefile
+  docs/Makefile
+  envsyms
+  actions/Makefile
+  camshr/Makefile
+  ccl/Makefile
+  d3dshr/Makefile
+  dwscope/Makefile
+  hdf5/Makefile
+  idlmdsevent/Makefile
+  idlmdswidgets/Makefile
+  javamds/Makefile
+  java/Makefile
+  java/tests/Makefile
+  java/mdsplus/Makefile
+  java/mdsplus-api/Makefile
+  java/mdsplus-api/tests/Makefile
+  java/mdsobjects/Makefile
+  java/mdsobjects/docs/Makefile
+  java/mdsobjects/tests/Makefile
+  java/jdispatcher/Makefile
+  java/jscope/Makefile
+  java/jtraverser/Makefile
+  java/jtraverser2/Makefile
+  java/jdevices/Makefile
+  java/devicebeans/Makefile
+  LabView/Makefile
+  manpages/Makefile
+  macosx/Makefile
+  math/Makefile
+  math/testing/Makefile
+  mdsdcl/Makefile
+  mdsdcl/mdsdclVersionInfo.c
+  mdslib/Makefile
+  mdslib/docs/Makefile
+  mdslib/testing/Makefile
+  mdslibidl/Makefile
+  mdsobjects/cpp/Makefile
+  mdsobjects/cpp/docs/Makefile
+  mdsobjects/cpp/testing/Makefile
+  mdsobjects/cpp/testing/testutils/Makefile
+  python/MDSplus/docs/Makefile
+  python/MDSplus/tests/Makefile
+  python/MDSplus/_version.py
+  pydevices/HtsDevices/_version.py
+  pydevices/MitDevices/_version.py
+  pydevices/RfxDevices/_version.py
+  pydevices/W7xDevices/_version.py
+  mdsobjects/labview/Makefile
+  mdsmisc/Makefile
+  mdsshr/Makefile
+  mdsshr/version.h
+  mdsshr/testing/Makefile
+  mdsshr/docs/Makefile
+  mdssql/Makefile
+  mdstcpip/Makefile
+  mdstcpip/testing/Makefile
+  mdstcpip/zlib/Makefile
+  mdstcpip/docs/Makefile
+  mdstcpip/docs/img/Makefile
+  mdsvme/Makefile
+  mitdevices/Makefile
+  remcam/Makefile
+  roam/Makefile
+  rpm/Makefile
+  rpm/envsyms
+  rpm/post_install_script
+  scripts/Makefile
+  servershr/Makefile
+  setevent/Makefile
+  tcl/Makefile
+  tdishr/Makefile
+  tdishr/testing/Makefile
+  tdic/Makefile
+  tditest/Makefile
+  tditest/testing/Makefile
+  testing/Makefile
+  testing/backends/check/Makefile
+  testing/selftest/Makefile
+  traverser/Makefile
+  treeshr/Makefile
+  treeshr/testing/Makefile
+  wfevent/Makefile
+  xmdsshr/Makefile
+  xtreeshr/Makefile
 )
 
 

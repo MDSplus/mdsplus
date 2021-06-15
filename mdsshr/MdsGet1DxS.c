@@ -36,20 +36,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element MdsGet1DxS.C */
 /*------------------------------------------------------------------------------
 
-		Name: MdsGet1DxS
+                Name: MdsGet1DxS
 
-		Type:   C function
+                Type:   C function
 
-		Author:	Thomas W. Fredian
-			MIT Plasma Fusion Center
+                Author:	Thomas W. Fredian
+                        MIT Plasma Fusion Center
 
-		Date:    6-SEP-1988
+                Date:    6-SEP-1988
 
-		Purpose: Get an XD descriptor pointing to an S descriptor
+                Purpose: Get an XD descriptor pointing to an S descriptor
 
 ------------------------------------------------------------------------------
 
-	Call sequence: status = MdsGet1DxS(length_ptr,dtype_ptr,out_dsc_ptr)
+        Call sequence: status = MdsGet1DxS(length_ptr,dtype_ptr,out_dsc_ptr)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1988
@@ -59,19 +59,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 +-----------------------------------------------------------------------------*/
 
-#include <stdlib.h>
-#include <status.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
+#include <status.h>
+#include <stdlib.h>
 
-#define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
+#define align(bytes, size) ((((bytes) + (size)-1) / (size)) * (size))
 
-EXPORT int MdsGet1DxS(const length_t *const length_ptr, const dtype_t *const dtype_ptr, mdsdsc_xd_t *const out_dsc_ptr){
+EXPORT int MdsGet1DxS(const length_t *const length_ptr,
+                      const dtype_t *const dtype_ptr,
+                      mdsdsc_xd_t *const out_dsc_ptr)
+{
   int status;
   uint32_t dsc_size = (uint32_t)sizeof(mdsdsc_t);
   uint32_t align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
@@ -80,7 +82,8 @@ EXPORT int MdsGet1DxS(const length_t *const length_ptr, const dtype_t *const dty
   dsc_size = align(dsc_size, align_size);
   length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);
-  if STATUS_OK {
+  if (STATUS_OK)
+  {
     out_dsc_ptr->pointer->length = *length_ptr;
     out_dsc_ptr->pointer->dtype = *dtype_ptr;
     out_dsc_ptr->pointer->class = CLASS_S;

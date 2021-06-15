@@ -32,14 +32,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace testing;
 
-
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused)))
 {
-    BEGIN_TESTING(Action);
-    SKIP_TEST("Action test is not implemented yet");
-    // TO BE DONE //
-    // ACTION and DISPATCHER is not tested yet //
+  BEGIN_TESTING(Action);
+  SKIP_TEST("Action test is not implemented yet");
+  // TO BE DONE //
+  // ACTION and DISPATCHER is not tested yet //
 
-    END_TESTING;
+  END_TESTING;
 }
-

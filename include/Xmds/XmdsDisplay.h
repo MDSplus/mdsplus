@@ -4,15 +4,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSDISPLAY.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsDisplay.H
+                Name:   XmdsDisplay.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   6-MAY-1992
+                Date:   6-MAY-1992
 
-		Purpose: Public declarations for XmdsDisplay widget
+                Purpose: Public declarations for XmdsDisplay widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -31,21 +31,22 @@
 
 /* Resources */
 
-#define XmdsNnid		    "nid"	/* Nid of first channel */
-#define XmdsNnidOffset		    "nidOffset"	/* Nid offset */
+#define XmdsNnid "nid"             /* Nid of first channel */
+#define XmdsNnidOffset "nidOffset" /* Nid offset */
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreateDisplay();
 extern Boolean XmdsIsDisplay();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount);
+extern Widget XmdsCreateDisplay(Widget parent, String name, ArgList args,
+                                Cardinal argcount);
 extern Boolean XmdsIsDisplay(Widget w);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
-#endif				/* _XmdsDisplay */
+#endif /* _XmdsDisplay */

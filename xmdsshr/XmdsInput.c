@@ -34,22 +34,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSINPUT.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsInput
+                Name:   XmdsInput
 
-		Type:   Widget (actually an attached dialog box widget)
+                Type:   Widget (actually an attached dialog box widget)
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:   24-JUL-1990
+                Date:   24-JUL-1990
 
-		Purpose:Impliments a digitizer input widiget for the control
-			of digitizer channels.
+                Purpose:Impliments a digitizer input widiget for the control
+                        of digitizer channels.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
-  Widget INPUT$CREATE( Widget parent, struct dsc$descriptor *name, ArgList args, int *argcount );
+  Widget INPUT$CREATE( Widget parent, struct dsc$descriptor *name, ArgList args,
+int *argcount );
 
   Widget InputCreate( Widget parent, char *name, ArgList args, int argcount );
   void InputPut(Widget w);
@@ -64,42 +65,43 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
   To use this widget the following identifiers must be registered with
   DwtRegisterNames so that the Reset and Put routines will know the offsets
   in the congomerate from the input head which contain the various pieces
   of the input.
 
-	   data_offset;
-	   end_offset;
-	   idx_time_offset;
-	   start_offset;
+           data_offset;
+           end_offset;
+           idx_time_offset;
+           start_offset;
 
   For example the 8210 DW_SETUP routine contains the following code fragment:
     Arg uilnames[] = {{"Destroy", Destroy},
-		      ...
-		      {"data_offset", L8210$N_INP_HEAD},
-		      {"end_offset", L8210$N_INP_ENDIDX},
-		      {"idx_time_offset", L8210$N_INP_USE_TIMES},
-		      {"start_offset", L8210$N_INP_STARTIDX}};
+                      ...
+                      {"data_offset", L8210$N_INP_HEAD},
+                      {"end_offset", L8210$N_INP_ENDIDX},
+                      {"idx_time_offset", L8210$N_INP_USE_TIMES},
+                      {"start_offset", L8210$N_INP_STARTIDX}};
     MrmRegisterNames(uilnames,XtNumber(uilnames));
     ...
     MrmFetchWidget(...)
     for(chan=0; chan<4; chan++) {
       inputs_name[19] = '1' + chan;
-      InputSetNid(XtNameToWidget(ctx->l8210_w, inputs_name), ctx->nid+L8210$N_INPUTS+chan*L8210$K_NODES_PER_INP);
+      InputSetNid(XtNameToWidget(ctx->l8210_w, inputs_name),
+ctx->nid+L8210$N_INPUTS+chan*L8210$K_NODES_PER_INP);
     }
     ...
 
-    The InputSetNid call attaches an instance of this widget to a particular input
-    nid in the device conglomerate.
+    The InputSetNid call attaches an instance of this widget to a particular
+input nid in the device conglomerate.
 
     The Device Reset routine should call InputReset for each channel.
-    -- Note that the device Reset routine must NOT BE CALLED before the Input widgets
-    are realized or some of the toggle buttons will not function correctly.  A good
-    place to call Reset initially is in the map callback for the top level widget of the
-    device.
+    -- Note that the device Reset routine must NOT BE CALLED before the Input
+widgets are realized or some of the toggle buttons will not function correctly.
+A good place to call Reset initially is in the map callback for the top level
+widget of the device.
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
@@ -138,7 +140,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  Local variables:                                                             */
 
-
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
@@ -148,14 +149,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   InputSetNid, InputReset, and InputPut to attach to
   the nids of a particular channel.
 ****************************************************/
-EXPORT Widget XmdsCreateInput(Widget parent, char *name, ArgList args, int argcount)
+EXPORT Widget XmdsCreateInput(Widget parent, char *name, ArgList args,
+                              int argcount)
 {
   Widget widg;
-  static char *hierarchy_name[] = { "XmdsInput.uid" };
+  static char *hierarchy_name[] = {"XmdsInput.uid"};
   MrmHierarchy hierarchy = 0;
   MrmType class;
   MrmOpenHierarchy(1, hierarchy_name, 0, &hierarchy);
-  MrmFetchWidgetOverride(hierarchy, "input_box", parent, name, args, argcount, &widg, &class);
+  MrmFetchWidgetOverride(hierarchy, "input_box", parent, name, args, argcount,
+                         &widg, &class);
   MrmCloseHierarchy(hierarchy);
   return widg;
 }
@@ -187,13 +190,15 @@ EXPORT void XmdsInputReset(Widget w)
   XtVaGetValues(w, XtNchildren, &children, NULL);
   XmdsResetAllXds(w);
   XtVaGetValues(children[ON_OFF], XmNuserData, &userdata, NULL);
-  nid = (char *)userdata - (char *)0;
-  XmToggleButtonSetState(children[ON_OFF], (TreeIsOn((int)nid) & 1), (Boolean) 0);
+  nid = (int)(intptr_t)userdata;
+  XmToggleButtonSetState(children[ON_OFF], (TreeIsOn((int)nid) & 1),
+                         (Boolean)0);
   XtVaGetValues(children[IDX_TIME], XmNuserData, &userdata, NULL);
-  nid = (char *)userdata - (char *)0;
-  XmToggleButtonSetState(children[IDX_TIME], XmdsGetNidBooleanValue(nid, 1) & 1, (Boolean) 0);
+  nid = (int)(intptr_t)userdata;
+  XmToggleButtonSetState(children[IDX_TIME], XmdsGetNidBooleanValue(nid, 1) & 1,
+                         (Boolean)0);
   XtVaGetValues(children[PATH], XmNuserData, &userdata, NULL);
-  nid = (char *)userdata - (char *)0;
+  nid = (int)(intptr_t)userdata;
   label = XmStringCreateSimple(path = TreeGetMinimumPath(0, nid));
   TreeFree(path);
   XtVaSetValues(children[PATH], XmNlabelString, label, NULL);
@@ -207,11 +212,12 @@ EXPORT void XmdsInputPut(Widget w)
   int nid;
   XtVaGetValues(w, XtNchildren, &children, NULL);
   XtVaGetValues(children[ON_OFF], XmNuserData, &userdata, NULL);
-  nid = (char *)userdata - (char *)0;
+  nid = (int)(intptr_t)userdata;
   XmdsSetState(nid, children[ON_OFF]);
   XtVaGetValues(children[IDX_TIME], XmNuserData, &userdata, NULL);
-  nid = (char *)userdata - (char *)0;
-  XmdsPutNidToggleButton(children[IDX_TIME], nid, 1 & XmdsGetNidBooleanValue(nid, 1));
+  nid = (int)(intptr_t)userdata;
+  XmdsPutNidToggleButton(children[IDX_TIME], nid,
+                         1 & XmdsGetNidBooleanValue(nid, 1));
   XmdsExprPut(children[START_IDX]);
   XmdsExprPut(children[END_IDX]);
 }

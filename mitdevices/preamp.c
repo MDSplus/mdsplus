@@ -56,8 +56,8 @@ EXPORT int PREAMP_ADD(struct descriptor *name,
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <ncidef.h>
@@ -151,9 +151,9 @@ static Boolean ask_incaa_button(Widget w)
   XtVaGetValues(w, XmNuserData, &device_nid, XmNtextString, &incaa_string, NULL);
   incaa_name = XmStringUnparse(incaa_string, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
   status = TreeFindNode(incaa_name, &incaa_nid);
-  if (status & 1) {
+  if (STATUS_OK) {
     status = DevNids(&incaa_nid_dsc, sizeof(c_nids), c_nids);
-    if (status & 1) {
+    if (STATUS_OK) {
       for (i = 1; i <= 16; i++) {
 	DESCRIPTOR_NID(nid_dsc, 0);
 	char name[] = { '*', '.', 'o', 'u', 't', 'p', 'u', 't', '_', '0', '0', 0 };
@@ -168,7 +168,7 @@ static Boolean ask_incaa_button(Widget w)
       XmdsComplain(parent, "Could not find specified INCAA");
   } else
     XmdsComplain(parent, "Could not find specified INCAA");
-  return status & 1;
+  return STATUS_OK;
 }
 
 static int one = 1;

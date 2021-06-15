@@ -28,19 +28,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 
 /**********************************************************************
-* TCL_SETEVENT.C --
-*
-* Set MDSplus event.
-*
-* History:
-*  6-Sep-2000  TWF  Create.  Ported from original mdsPlus code.
-*
-***********************************************************************/
+ * TCL_SETEVENT.C --
+ *
+ * Set MDSplus event.
+ *
+ * History:
+ *  6-Sep-2000  TWF  Create.  Ported from original mdsPlus code.
+ *
+ ***********************************************************************/
 
-	/***************************************************************
-	 * TclSetevent:
-	 * Close tree file(s).
-	 ***************************************************************/
+/***************************************************************
+ * TclSetevent:
+ * Close tree file(s).
+ ***************************************************************/
 EXPORT int TclSetEvent(void *ctx)
 {
   char *event = 0;

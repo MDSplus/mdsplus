@@ -40,15 +40,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSWAVEFORMP.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsWaveformP.H
+                Name:   XmdsWaveformP.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   9-OCT-1991
+                Date:   9-OCT-1991
 
-		Purpose: Private declarations for WAVEFORM widget
+                Purpose: Private declarations for WAVEFORM widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -61,8 +61,8 @@
 #ifndef _XmdsWaveformP_h
 #define _XmdsWaveformP_h
 
-#include <Xmds/XmdsWaveform.h>
 #include <Xm/XmP.h>
+#include <Xmds/XmdsWaveform.h>
 
 #ifndef XmPRIMITIVE
 #include <Xm/PrimitiveP.h>
@@ -72,46 +72,57 @@
 
 /* New fields for the Waveform widget class record */
 
-#ifndef XmInheritBorderHighlight	/* Motif 1.1 */
-#define XmInheritBorderHighlight     ((XtWidgetProc) _XtInherit)
-#define XmInheritBorderUnhighlight   ((XtWidgetProc) _XtInherit)
-#define XmInheritArmAndActivate      ((XtWidgetProc) _XtInherit)
+#ifndef XmInheritBorderHighlight /* Motif 1.1 */
+#define XmInheritBorderHighlight ((XtWidgetProc)_XtInherit)
+#define XmInheritBorderUnhighlight ((XtWidgetProc)_XtInherit)
+#define XmInheritArmAndActivate ((XtWidgetProc)_XtInherit)
 #endif
 
-#define XmdsInheritTranslations ((XtTranslations) _XtInherit)
-#define XmdsInheritUpdate ((void (*)(Widget, XmdsWaveformValStruct *, XmdsWaveformValStruct *, char *,\
-	                             float *, float *, float *, float *,Boolean)) _XtInherit)
-#define XmdsInheritSetCrosshairs ((void (*)(Widget, float *, float *, Boolean)) _XtInherit)
-#define XmdsInheritSetPointerMode ((void (*)(Widget, int)) _XtInherit)
-#define XmdsInheritPrint   ((void (*)(Widget, FILE *, int, int, int, char *, char *, int)) _XtInherit)
-#define XmdsInheritReverse ((void (*)(Widget, int)) _XtInherit)
-#define XmdsInheritSetWave ((void (*)(Widget, int, float *, float *, Boolean *, Boolean *, Boolean, Boolean)) _XtInherit)
+#define XmdsInheritTranslations ((XtTranslations)_XtInherit)
+#define XmdsInheritUpdate                                                      \
+  ((void (*)(Widget, XmdsWaveformValStruct *, XmdsWaveformValStruct *, char *, \
+             float *, float *, float *, float *, Boolean))_XtInherit)
+#define XmdsInheritSetCrosshairs \
+  ((void (*)(Widget, float *, float *, Boolean))_XtInherit)
+#define XmdsInheritSetPointerMode ((void (*)(Widget, int))_XtInherit)
+#define XmdsInheritPrint \
+  ((void (*)(Widget, FILE *, int, int, int, char *, char *, int))_XtInherit)
+#define XmdsInheritReverse ((void (*)(Widget, int))_XtInherit)
+#define XmdsInheritSetWave                                                 \
+  ((void (*)(Widget, int, float *, float *, Boolean *, Boolean *, Boolean, \
+             Boolean))_XtInherit)
 
-typedef struct _WaveformClassPart {
+typedef struct _WaveformClassPart
+{
   XtTranslations default_trans;
   XtTranslations zoom_trans;
   XtTranslations drag_trans;
   XtTranslations point_trans;
   XtTranslations edit_trans;
-  void (*update_proc) (Widget, XmdsWaveformValStruct *, XmdsWaveformValStruct *, char *, float *,
-		       float *, float *, float *, Boolean);
-  /* WaveformUpdate(widget w,WaveformValStruct *x,WaveformValStruct *y,char *title,Boolean autoscale) */
-  void (*set_crosshairs_proc) (Widget, float *, float *, Boolean);
+  void (*update_proc)(Widget, XmdsWaveformValStruct *, XmdsWaveformValStruct *,
+                      char *, float *, float *, float *, float *, Boolean);
+  /* WaveformUpdate(widget w,WaveformValStruct *x,WaveformValStruct *y,char
+   * *title,Boolean autoscale) */
+  void (*set_crosshairs_proc)(Widget, float *, float *, Boolean);
   /* WaveformSetCrosshairs(widget w,float *x,float *y, Boolean attach) */
-  void (*set_pointer_mode_proc) (Widget, int);
+  void (*set_pointer_mode_proc)(Widget, int);
   /* WaveformSetPointerMode(widget w,int mode) */
-  void (*print_proc) (Widget, FILE *, int, int, int, char *, char *, int);
-  /* WaveformPrint(widget w, FILE *filefid, int inp_total_width, int inp_total_height, int inp_rotate, char *title,
-     char *window_title, int inp_resolution); */
-  void (*reverse_proc) (Widget, int);
+  void (*print_proc)(Widget, FILE *, int, int, int, char *, char *, int);
+  /* WaveformPrint(widget w, FILE *filefid, int inp_total_width, int
+     inp_total_height, int inp_rotate, char *title, char *window_title, int
+     inp_resolution); */
+  void (*reverse_proc)(Widget, int);
   /* WaveformReverse(widget w,int reverse) */
-  void (*set_wave_proc) (Widget, int, float *, float *, Boolean *, Boolean *, Boolean, Boolean);
-  /* WaveformSetWave(widget w, int count, float *x, float *y, Boolean *select, Boolean *pendown, Boolean autoscale, Boolean defer) */
+  void (*set_wave_proc)(Widget, int, float *, float *, Boolean *, Boolean *,
+                        Boolean, Boolean);
+  /* WaveformSetWave(widget w, int count, float *x, float *y, Boolean *select,
+   * Boolean *pendown, Boolean autoscale, Boolean defer) */
   caddr_t extension;
 } XmdsWaveformClassPart;
 /* Full class record declaration */
 
-typedef struct _XmdsWaveformClassRec {
+typedef struct _XmdsWaveformClassRec
+{
   CoreClassPart core_class;
   XmPrimitiveClassPart primitive_class;
   XmdsWaveformClassPart waveform_class;
@@ -122,7 +133,8 @@ externalref XmdsWaveformClassRec xmdsWaveformClassRec;
 
 /* Fields describing each axis */
 
-typedef struct _XmdsWaveformAxis {
+typedef struct _XmdsWaveformAxis
+{
   float *minval;
   float *maxval;
   double crosshair;
@@ -138,7 +150,8 @@ typedef struct _XmdsWaveformAxis {
 } XmdsWaveformAxis;
 /* Fields global to widget */
 
-typedef struct _WaveformPart {
+typedef struct _WaveformPart
+{
   char *title;
   int pointer_mode;
   int grid_style;
@@ -187,11 +200,12 @@ typedef struct _WaveformPart {
  *
  ****************************************************************/
 
-typedef struct _XmdsWaveformRec {
+typedef struct _XmdsWaveformRec
+{
   CorePart core;
   XmPrimitivePart primitive;
   XmdsWaveformPart waveform;
 } XmdsWaveformRec;
 
-#endif				/* _XmdsWaveformP_h */
+#endif /* _XmdsWaveformP_h */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

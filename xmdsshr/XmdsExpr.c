@@ -78,7 +78,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *27   19-NOV-1992 14:43:02 TWF "Try out XmScrolledText" */
 /*  *26   19-NOV-1992 14:03:40 TWF "Try out XmScrolledText" */
 /*  *25   19-NOV-1992 14:03:17 TWF "Try out XmScrolledText" */
-/*  *24   19-NOV-1992 13:51:57 TWF "Move quotes out only if DTYPE_S or DTYPE_D" */
+/*  *24   19-NOV-1992 13:51:57 TWF "Move quotes out only if DTYPE_S or DTYPE_D"
+ */
 /*  *23   14-APR-1992 12:33:26 JAS "Initialize status for Put" */
 /*  *22   30-JAN-1992 17:38:33 JAS "fix the resizing behavior" */
 /*  *21   21-JAN-1992 10:42:54 JAS "add XmdsGetDeviceNid if nid == -1" */
@@ -93,8 +94,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *12   10-JAN-1992 13:01:11 JAS "Add put on apply and fix some stuff" */
 /*  *11   10-JAN-1992 10:45:30 JAS "More stuff about size ..." */
 /*  *10    9-JAN-1992 17:44:13 JAS "Add Geometry Stuff" */
-/*  *9    16-DEC-1991 19:06:15 JAS "make the text smaller instead of getting bigger" */
-/*  *8    16-DEC-1991 19:00:35 JAS "make the text smaller instead of getting bigger" */
+/*  *9    16-DEC-1991 19:06:15 JAS "make the text smaller instead of getting
+ * bigger" */
+/*  *8    16-DEC-1991 19:00:35 JAS "make the text smaller instead of getting
+ * bigger" */
 /*  *7     9-DEC-1991 12:50:05 TWF "Fix SetNid" */
 /*  *6     9-DEC-1991 12:46:20 TWF "Fix SetNid" */
 /*  *5     9-DEC-1991 12:20:28 TWF "Check out XmdsExprSetNid" */
@@ -105,25 +108,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element XMDSEXPR.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsExpr
+                Name:   XmdsExpr
 
-		Type:   C function
+                Type:   C function
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   23-OCT-1989
+                Date:   23-OCT-1989
 
-		Purpose: This module impliments an  XmdsExpr
-			widget.
+                Purpose: This module impliments an  XmdsExpr
+                        widget.
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
-  Widget XmdsCreateExpr( Widget parent, char *name, ArgList args, Cardinal argcount );
-  struct descriptor *XmdsExprGetXd (Widget w);
-  Boolean XmdsExprPut(Widget w);
-  Boolean XmdsExprApply(Widget w);
-  void XmdsExprRegister();
+        Call sequence:
+  Widget XmdsCreateExpr( Widget parent, char *name, ArgList args, Cardinal
+argcount ); struct descriptor *XmdsExprGetXd (Widget w); Boolean
+XmdsExprPut(Widget w); Boolean XmdsExprApply(Widget w); void XmdsExprRegister();
   void XmdsExprReset(Widget w);
   void XmdsExprSetDefaultNid(Widget w, int nid);
   void XmdsExprSetNid(Widget w, int nid, int offset);
@@ -137,7 +138,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -175,15 +176,19 @@ extern int MdsCompareXd();
  Internal functions or symbols:                                              */
 
 static void ChangeQuotes(Widget q_w, XmdsExprWidget e_w);
-static void InitializeExprField(Widget req, Widget new, ArgList args, Cardinal * num_args);
-static void InitializeExpr(Widget req, Widget new, ArgList args, Cardinal * num_args);
-static void Initialize(Widget req, Widget new, ArgList args, Cardinal * num_args, Boolean is_field);
-static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry * desired,
-					XtWidgetGeometry * allowed);
+static void InitializeExprField(Widget req, Widget new, ArgList args,
+                                Cardinal *num_args);
+static void InitializeExpr(Widget req, Widget new, ArgList args,
+                           Cardinal *num_args);
+static void Initialize(Widget req, Widget new, ArgList args, Cardinal *num_args,
+                       Boolean is_field);
+static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry *desired,
+                                        XtWidgetGeometry *allowed);
 static void LoadExpr(XmdsExprWidget w, struct descriptor *dsc);
 static int GetDefaultNid(XmdsExprWidget ew);
 static void SetEnclosures(XmdsExprWidget w, struct descriptor *dsc);
-static Boolean SetValues(Widget old, Widget req, Widget new, ArgList args, Cardinal * arg_count);
+static Boolean SetValues(Widget old, Widget req, Widget new, ArgList args,
+                         Cardinal *arg_count);
 static void Resize(Widget w);
 /*------------------------------------------------------------------------------
 
@@ -193,120 +198,113 @@ static void Resize(Widget w);
 
  Macros:                                                                      */
 
-#define IsText(ptr) ( (ptr->dtype == DTYPE_T) &&\
-	              ((ptr->class == CLASS_S) || (ptr->class == CLASS_D)) )
+#define IsText(ptr)           \
+  ((ptr->dtype == DTYPE_T) && \
+   ((ptr->class == CLASS_S) || (ptr->class == CLASS_D)))
 
 /*------------------------------------------------------------------------------
 
  Local variables:                                                             */
 
-static struct descriptor_xd const empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+static struct descriptor_xd const empty_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 
 /*------------------------------------------------------------------------------
 
  Global variables:                                                            */
 
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+_Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-static void Focus_In(Widget w, XEvent * event, String * params, Cardinal num_params);
-static XtActionsRec actions[] = { {"Focus_In", (XtActionProc) Focus_In} };
+    static void Focus_In(Widget w, XEvent *event, String *params,
+                         Cardinal num_params);
+static XtActionsRec actions[] = {{"Focus_In", (XtActionProc)Focus_In}};
 
 static XtResource resources[] = {
-  {XmdsNxd, "Xd", XtRPointer, sizeof(struct descriptor_xd *), XtOffset(XmdsExprWidget, expr.xd),
-   XtRImmediate, (void *)0},
-  {XmdsNdefaultNid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.default_nid),
-   XtRImmediate, (XtPointer) - 1},
-  {XmdsNnid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid), XtRImmediate,
-   (XtPointer) 0},
-  {XmdsNnidOffset, "NidOffset", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid_offset),
-   XtRImmediate, (XtPointer) 0},
-  {XmdsNcompile, "Compile", XtRFunction, sizeof(int (*)()), XtOffset(XmdsExprWidget, expr.compile),
-   XtRImmediate, (XtPointer) TdiCompile},
-  {XmdsNdecompile, "Decompile", XtRFunction, sizeof(int (*)()),
-   XtOffset(XmdsExprWidget, expr.decompile), XtRImmediate, (XtPointer) TdiDecompile},
-  {XmdsNautoQuote, "AutoQuote", XtRBoolean, sizeof(Boolean),
-   XtOffset(XmdsExprWidget, expr.auto_quote), XtRImmediate, (XtPointer) False}
-  ,
-  {XmdsNdefaultQuote, "DefaultQuote", XtRBoolean, sizeof(Boolean),
-   XtOffset(XmdsExprWidget, expr.default_quote), XtRImmediate,
-   (XtPointer) True}
-  ,
-  {XmdsNputOnApply, "PutOnApply", XtRBoolean, sizeof(Boolean),
-   XtOffset(XmdsExprWidget, expr.put_on_apply), XtRImmediate, (XtPointer) True}
-};
-
+    {XmdsNxd, "Xd", XtRPointer, sizeof(struct descriptor_xd *),
+     XtOffset(XmdsExprWidget, expr.xd), XtRImmediate, (void *)0},
+    {XmdsNdefaultNid, "Nid", XtRInt, sizeof(int),
+     XtOffset(XmdsExprWidget, expr.default_nid), XtRImmediate, (XtPointer)-1},
+    {XmdsNnid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid),
+     XtRImmediate, (XtPointer)0},
+    {XmdsNnidOffset, "NidOffset", XtRInt, sizeof(int),
+     XtOffset(XmdsExprWidget, expr.nid_offset), XtRImmediate, (XtPointer)0},
+    {XmdsNcompile, "Compile", XtRFunction, sizeof(int (*)()),
+     XtOffset(XmdsExprWidget, expr.compile), XtRImmediate,
+     (XtPointer)TdiCompile},
+    {XmdsNdecompile, "Decompile", XtRFunction, sizeof(int (*)()),
+     XtOffset(XmdsExprWidget, expr.decompile), XtRImmediate,
+     (XtPointer)TdiDecompile},
+    {XmdsNautoQuote, "AutoQuote", XtRBoolean, sizeof(Boolean),
+     XtOffset(XmdsExprWidget, expr.auto_quote), XtRImmediate, (XtPointer)False},
+    {XmdsNdefaultQuote, "DefaultQuote", XtRBoolean, sizeof(Boolean),
+     XtOffset(XmdsExprWidget, expr.default_quote), XtRImmediate,
+     (XtPointer)True},
+    {XmdsNputOnApply, "PutOnApply", XtRBoolean, sizeof(Boolean),
+     XtOffset(XmdsExprWidget, expr.put_on_apply), XtRImmediate,
+     (XtPointer)True}};
 
 XmdsExprClassRec xmdsExprClassRec = {
-  {				/* core_class */
-   /*   superclass:           */ (WidgetClass) & xmManagerClassRec,
-   /*   class_name:           */ "XmdsExpr",
-   /*   widget_size:          */ sizeof(XmdsExprWidgetRec),
-   /*   class_initialize:     */ NULL,
-   /*   class_part_initialize: */ NULL,
-   /*   class_inited:         */ FALSE,
-   /*   initialize:           */ InitializeExpr,
-   /*   initialize_hook:      */ NULL,
-   /*   realize:              */ XtInheritRealize,
-   /*   actions:              */ actions,
-   /*   num_actions:          */ XtNumber(actions),
-   /*   resources:            */ resources,
-   /*   num_resources:        */ XtNumber(resources),
-   /*   xrm_class:            */ NULLQUARK,
-   /*   compress_motion:      */ TRUE,
-   /*   compress_exposure:    */ TRUE,
-   /*   compress_enterleave:  */ TRUE,
-   /*   visible_interest:     */ FALSE,
-   /*   destroy:              */ NULL,
-   /*   resize:               */ Resize,
-   /*   expose:               */ XtInheritExpose,
-   /*   set_values:           */ SetValues,
-   /*   set_values_hook:      */ NULL,
-   /*   set_values_almost:    */ XtInheritSetValuesAlmost,
-   /*   get_values_hook:      */ NULL,
-   /*   accept_focus:         */ NULL,
-   /*   version:              */ XtVersionDontCheck,
-   /*   callback_private:     */ NULL,
-   /*   tm_table:             */ "<FocusIn>:Focus_In()\n",
-   /*   query_geometry:       */ XtInheritQueryGeometry,
-   /*   display_accelerator:  */ XtInheritDisplayAccelerator,
-   /*   extension:            */ NULL
-   }
-  ,
-  {				/* composite_class */
-   /*   geometry_manager      */ GeometryManager,
-   /*   change_managed:       */ XtInheritChangeManaged,
-   /*   insert_child:         */ XtInheritInsertChild,
-   /*   delete_child:         */ XtInheritDeleteChild,
-					/*   extension:            */ NULL
-					/* (char *)&composite_extension */
-   }
-  ,
-  {				/* constraint_class */
-   /* constraint resource list */ NULL,
-   /* num_resources            */ 0,
-   /* constraint_size;         */ 0,
-   /* initialize               */ NULL,
-   /* destroy                  */ NULL,
-   /* set_values               */ NULL,
-   /* extension                */ NULL
-   }
-  ,
-  {				/* ManagerClassPart */
-   /* translations             */ NULL,
-   /* syn_resources            */ NULL,
-   /* num_syn_resources        */ 0,
-   /* syn_constraint_resources */ NULL,
-   /* num_syn_constraint_resources */ 0,
-   /* parent_process           */ XmInheritParentProcess,
-   /* extension                */ 0
-   }
-  ,
-  {				/*   expr_class */
-   /*   extension        */ 0
-   }
-};
+    {/* core_class */
+     /*   superclass:           */ (WidgetClass)&xmManagerClassRec,
+     /*   class_name:           */ "XmdsExpr",
+     /*   widget_size:          */ sizeof(XmdsExprWidgetRec),
+     /*   class_initialize:     */ NULL,
+     /*   class_part_initialize: */ NULL,
+     /*   class_inited:         */ FALSE,
+     /*   initialize:           */ InitializeExpr,
+     /*   initialize_hook:      */ NULL,
+     /*   realize:              */ XtInheritRealize,
+     /*   actions:              */ actions,
+     /*   num_actions:          */ XtNumber(actions),
+     /*   resources:            */ resources,
+     /*   num_resources:        */ XtNumber(resources),
+     /*   xrm_class:            */ NULLQUARK,
+     /*   compress_motion:      */ TRUE,
+     /*   compress_exposure:    */ TRUE,
+     /*   compress_enterleave:  */ TRUE,
+     /*   visible_interest:     */ FALSE,
+     /*   destroy:              */ NULL,
+     /*   resize:               */ Resize,
+     /*   expose:               */ XtInheritExpose,
+     /*   set_values:           */ SetValues,
+     /*   set_values_hook:      */ NULL,
+     /*   set_values_almost:    */ XtInheritSetValuesAlmost,
+     /*   get_values_hook:      */ NULL,
+     /*   accept_focus:         */ NULL,
+     /*   version:              */ XtVersionDontCheck,
+     /*   callback_private:     */ NULL,
+     /*   tm_table:             */ "<FocusIn>:Focus_In()\n",
+     /*   query_geometry:       */ XtInheritQueryGeometry,
+     /*   display_accelerator:  */ XtInheritDisplayAccelerator,
+     /*   extension:            */ NULL},
+    {
+        /* composite_class */
+        /*   geometry_manager      */ GeometryManager,
+        /*   change_managed:       */ XtInheritChangeManaged,
+        /*   insert_child:         */ XtInheritInsertChild,
+        /*   delete_child:         */ XtInheritDeleteChild,
+        /*   extension:            */ NULL
+        /* (char *)&composite_extension */
+    },
+    {/* constraint_class */
+     /* constraint resource list */ NULL,
+     /* num_resources            */ 0,
+     /* constraint_size;         */ 0,
+     /* initialize               */ NULL,
+     /* destroy                  */ NULL,
+     /* set_values               */ NULL,
+     /* extension                */ NULL},
+    {/* ManagerClassPart */
+     /* translations             */ NULL,
+     /* syn_resources            */ NULL,
+     /* num_syn_resources        */ 0,
+     /* syn_constraint_resources */ NULL,
+     /* num_syn_constraint_resources */ 0,
+     /* parent_process           */ XmInheritParentProcess,
+     /* extension                */ 0},
+    {/*   expr_class */
+     /*   extension        */ 0}};
 
 WidgetClass xmdsExprWidgetClass;
 WidgetClass xmdsExprFieldWidgetClass;
@@ -320,24 +318,31 @@ WidgetClass xmdsExprFieldWidgetClass;
   resources originalXd, and buttonCallback to setup
   the initial widget.
 ****************************************************/
-EXPORT Widget XmdsCreateExpr(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateExpr(Widget parent, char *name, ArgList args,
+                             Cardinal argcount)
 {
   Widget widg;
-  widg = XtCreateWidget(name, (WidgetClass) & xmdsExprClassRec, parent, args, argcount);
+  widg = XtCreateWidget(name, (WidgetClass)&xmdsExprClassRec, parent, args,
+                        argcount);
   return widg;
 }
 
-EXPORT Widget XmdsCreateExprField(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateExprField(Widget parent, char *name, ArgList args,
+                                  Cardinal argcount)
 {
   Widget widg;
   xmdsExprClassRec.core_class.initialize = InitializeExprField;
-  widg = XtCreateWidget(name, (WidgetClass) & xmdsExprClassRec, parent, args, argcount);
+  widg = XtCreateWidget(name, (WidgetClass)&xmdsExprClassRec, parent, args,
+                        argcount);
   xmdsExprClassRec.core_class.initialize = InitializeExpr;
   return widg;
 }
 
-#define GetString(w) (XmIsTextField(w) ? XmTextFieldGetString(w) : XmTextGetString(w))
-#define SetString(w,string) (XmIsTextField(w) ? XmTextFieldSetString(w,string) : XmTextSetString(w,string))
+#define GetString(w) \
+  (XmIsTextField(w) ? XmTextFieldGetString(w) : XmTextGetString(w))
+#define SetString(w, string)                          \
+  (XmIsTextField(w) ? XmTextFieldSetString(w, string) \
+                    : XmTextSetString(w, string))
 
 EXPORT struct descriptor *XmdsExprFieldGetXd(Widget w)
 {
@@ -346,26 +351,30 @@ EXPORT struct descriptor *XmdsExprFieldGetXd(Widget w)
 
 EXPORT struct descriptor *XmdsExprGetXd(Widget w)
 {
-  struct descriptor_xd *ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
-  XmdsExprWidget ew = (XmdsExprWidget) w;
+  struct descriptor_xd *ans =
+      (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
+  XmdsExprWidget ew = (XmdsExprWidget)w;
   char *text = GetString(ew->expr.text_widget);
-  struct descriptor_s text_dsc = { 0, DTYPE_T, CLASS_S, (char *)0 };
+  struct descriptor_s text_dsc = {0, DTYPE_T, CLASS_S, (char *)0};
   text_dsc.length = strlen(text);
   text_dsc.pointer = text;
   ResetErrors();
   *ans = empty_xd;
   if (ew->expr.is_text)
     MdsCopyDxXd((struct descriptor *)&text_dsc, ans);
-  else {
+  else
+  {
     int status;
     int old_def;
     int def_nid = GetDefaultNid(ew);
-    if (def_nid != -1) {
+    if (def_nid != -1)
+    {
       TreeGetDefaultNid(&old_def);
       TreeSetDefaultNid(def_nid);
     }
-    status = (*ew->expr.compile) (&text_dsc, ans MDS_END_ARG);
-    if ((status & 1) == 0) {
+    status = (*ew->expr.compile)(&text_dsc, ans MDS_END_ARG);
+    if ((STATUS_OK) == 0)
+    {
       TdiComplain(w);
       XtFree((char *)ans);
       ans = 0;
@@ -376,43 +385,42 @@ EXPORT struct descriptor *XmdsExprGetXd(Widget w)
   return (struct descriptor *)ans;
 }
 
-EXPORT Boolean XmdsExprFieldPut(Widget w)
-{
-  return XmdsExprPut(w);
-}
+EXPORT Boolean XmdsExprFieldPut(Widget w) { return XmdsExprPut(w); }
 
 EXPORT Boolean XmdsExprPut(Widget w)
 {
   int status = 1;
-  XmdsExprWidget ew = (XmdsExprWidget) w;
+  XmdsExprWidget ew = (XmdsExprWidget)w;
   int nid = ew->expr.nid + ew->expr.nid_offset;
-  if (nid) {
-    struct descriptor_xd *new_xd = (struct descriptor_xd *)XmdsExprGetXd((Widget) ew);
-    if (new_xd) {
+  if (nid)
+  {
+    struct descriptor_xd *new_xd =
+        (struct descriptor_xd *)XmdsExprGetXd((Widget)ew);
+    if (new_xd)
+    {
       struct descriptor_xd *old_xd;
       old_xd = (struct descriptor_xd *)TdiGet(nid);
-      if ((!old_xd && new_xd->l_length)
-	  || !MdsCompareXd((struct descriptor *)new_xd, (struct descriptor *)old_xd))
-	status = TreePutRecord(nid, (struct descriptor *)new_xd, 0);
-      if (old_xd) {
-	MdsFree1Dx(old_xd, 0);
-	XtFree((char *)old_xd);
+      if ((!old_xd && new_xd->l_length) ||
+          !MdsCompareXd((struct descriptor *)new_xd,
+                        (struct descriptor *)old_xd))
+        status = TreePutRecord(nid, (struct descriptor *)new_xd, 0);
+      if (old_xd)
+      {
+        MdsFree1Dx(old_xd, 0);
+        XtFree((char *)old_xd);
       }
       MdsFree1Dx(new_xd, 0);
       XtFree((char *)new_xd);
     }
   }
-  return status & 1;
+  return STATUS_OK;
 }
 
-EXPORT Boolean XmdsExprFieldApply(Widget w)
-{
-  return XmdsExprApply(w);
-}
+EXPORT Boolean XmdsExprFieldApply(Widget w) { return XmdsExprApply(w); }
 
 EXPORT Boolean XmdsExprApply(Widget w)
 {
-  XmdsExprWidget ew = (XmdsExprWidget) w;
+  XmdsExprWidget ew = (XmdsExprWidget)w;
   return ew->expr.put_on_apply ? XmdsExprPut(w) : 1;
 }
 
@@ -423,37 +431,34 @@ EXPORT void XmdsExprFieldSetDefaultNid(Widget w, int nid)
 
 EXPORT void XmdsExprSetDefaultNid(Widget w, int nid)
 {
-  XmdsExprWidget ew = (XmdsExprWidget) w;
-  if (nid != ew->expr.default_nid) {
+  XmdsExprWidget ew = (XmdsExprWidget)w;
+  if (nid != ew->expr.default_nid)
+  {
     ew->expr.default_nid = nid;
     LoadExpr(ew, (struct descriptor *)ew->expr.xd);
-    Resize((Widget) ew);
+    Resize((Widget)ew);
   }
 }
 
-EXPORT void XmdsExprFieldRegister()
-{
-  XmdsExprRegister();
-}
+EXPORT void XmdsExprFieldRegister() { XmdsExprRegister(); }
 
 EXPORT void XmdsExprRegister()
 {
-  MrmRegisterClass(1, "XmdsExprWidget", "XmdsCreateExpr", (Widget (*)(void))XmdsCreateExpr, xmdsExprWidgetClass);
+  MrmRegisterClass(1, "XmdsExprWidget", "XmdsCreateExpr",
+                   (Widget(*)(void))XmdsCreateExpr, xmdsExprWidgetClass);
 }
 
-EXPORT void XmdsExprFieldReset(Widget w)
-{
-  XmdsExprReset(w);
-}
+EXPORT void XmdsExprFieldReset(Widget w) { XmdsExprReset(w); }
 
 EXPORT void XmdsExprReset(Widget w)
 {
-  XmdsExprWidget ew = (XmdsExprWidget) w;
+  XmdsExprWidget ew = (XmdsExprWidget)w;
   if (ew->expr.nid)
     XmdsExprSetNid(w, ew->expr.nid, ew->expr.nid_offset);
-  else {
+  else
+  {
     LoadExpr(ew, (struct descriptor *)ew->expr.xd);
-    Resize((Widget) ew);
+    Resize((Widget)ew);
   }
 }
 
@@ -464,13 +469,15 @@ EXPORT void XmdsExprFieldSetNid(Widget w, int nid, int offset)
 
 EXPORT void XmdsExprSetNid(Widget w, int nid, int offset)
 {
-  XmdsExprWidget ew = (XmdsExprWidget) w;
+  XmdsExprWidget ew = (XmdsExprWidget)w;
   int new_nid;
   int status;
   if (ew->expr.xd)
     MdsFree1Dx(ew->expr.xd, 0);
-  else {
-    ew->expr.xd = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
+  else
+  {
+    ew->expr.xd =
+        (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
     *ew->expr.xd = empty_xd;
   }
   if (nid == -1)
@@ -478,11 +485,11 @@ EXPORT void XmdsExprSetNid(Widget w, int nid, int offset)
 
   new_nid = ew->expr.nid + offset;
   status = TreeGetRecord(new_nid, ew->expr.xd);
-  if (status & 1)
+  if (STATUS_OK)
     LoadExpr(ew, (struct descriptor *)ew->expr.xd);
   else
     LoadExpr(ew, 0);
-  Resize((Widget) ew);
+  Resize((Widget)ew);
   ew->expr.nid_offset = offset;
 }
 
@@ -493,70 +500,75 @@ EXPORT void XmdsExprFieldSetXd(Widget w, struct descriptor *dsc)
 
 EXPORT void XmdsExprSetXd(Widget w, struct descriptor *dsc)
 {
-  XmdsExprWidget ew = (XmdsExprWidget) w;
+  XmdsExprWidget ew = (XmdsExprWidget)w;
   if (ew->expr.xd)
     MdsFree1Dx(ew->expr.xd, 0);
-  else {
-    ew->expr.xd = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
+  else
+  {
+    ew->expr.xd =
+        (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
     *ew->expr.xd = empty_xd;
   }
   MdsCopyDxXd(dsc, ew->expr.xd);
   LoadExpr(ew, (struct descriptor *)ew->expr.xd);
-  Resize((Widget) ew);
+  Resize((Widget)ew);
 }
 
-static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry * desired,
-					XtWidgetGeometry * allowed)
+static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry *desired,
+                                        XtWidgetGeometry *allowed)
 {
   return XtGeometryYes;
 }
 
-static void InitializeExpr(Widget req, Widget new, ArgList args, Cardinal * num_args)
+static void InitializeExpr(Widget req, Widget new, ArgList args,
+                           Cardinal *num_args)
 {
   Initialize(req, new, args, num_args, 0);
 }
 
-static void InitializeExprField(Widget req, Widget new, ArgList args, Cardinal * num_args)
+static void InitializeExprField(Widget req, Widget new, ArgList args,
+                                Cardinal *num_args)
 {
   Initialize(req, new, args, num_args, 1);
 }
 
-static void Initialize(Widget req, Widget new, ArgList args, Cardinal * num_args, Boolean is_field)
+static void Initialize(Widget req, Widget new, ArgList args, Cardinal *num_args,
+                       Boolean is_field)
 {
   XmdsExprWidget w = (XmdsExprWidget) new;
-  static XtCallbackRec change_quotes_callback_list[] =
-      { {(XtCallbackProc) ChangeQuotes, (XtPointer) 0}, {0, 0} };
-  Arg text_args[] = { {XmNnavigationType, XmTAB_GROUP} };
-  ArgList new_args = XtMergeArgLists(args, *num_args, text_args, XtNumber(text_args));
+  static XtCallbackRec change_quotes_callback_list[] = {
+      {(XtCallbackProc)ChangeQuotes, (XtPointer)0}, {0, 0}};
+  Arg text_args[] = {{XmNnavigationType, XmTAB_GROUP}};
+  ArgList new_args =
+      XtMergeArgLists(args, *num_args, text_args, XtNumber(text_args));
   int nid;
-  change_quotes_callback_list[0].closure = (XtPointer) w;
+  change_quotes_callback_list[0].closure = (XtPointer)w;
   w->manager.navigation_type = XmTAB_GROUP;
-  if (w->expr.auto_quote) {
+  if (w->expr.auto_quote)
+  {
     static Arg quote_args[] = {
-      {XmNlabelString, 0},
-      {XmNx, 0},
-      {XmNheight, 20},
-      {XmNactivateCallback, (XtArgVal) change_quotes_callback_list},
-      {XmNtraversalOn, FALSE}
-    };
-    quote_args[0].value = (XtArgVal) XmStringCreateSimple("\"");
-    w->expr.open_quote_widget =
-	XmCreatePushButton((Widget) w, "open_quote", quote_args, XtNumber(quote_args));
-    w->expr.close_quote_widget =
-	XmCreatePushButton((Widget) w, "close_quote", quote_args, XtNumber(quote_args));
-    XmStringFree((XmString) quote_args[0].value);
-  } else {
+        {XmNlabelString, 0},
+        {XmNx, 0},
+        {XmNheight, 20},
+        {XmNactivateCallback, (XtArgVal)change_quotes_callback_list},
+        {XmNtraversalOn, FALSE}};
+    quote_args[0].value = (XtArgVal)XmStringCreateSimple("\"");
+    w->expr.open_quote_widget = XmCreatePushButton(
+        (Widget)w, "open_quote", quote_args, XtNumber(quote_args));
+    w->expr.close_quote_widget = XmCreatePushButton(
+        (Widget)w, "close_quote", quote_args, XtNumber(quote_args));
+    XmStringFree((XmString)quote_args[0].value);
+  }
+  else
+  {
     w->expr.open_quote_widget = 0;
     w->expr.close_quote_widget = 0;
   }
   w->expr.text_widget =
-      is_field ? XmCreateTextField((Widget) w, "expr_text", new_args,
-				   *num_args +
-				   XtNumber(text_args)) : XmCreateScrolledText((Widget) w,
-									       "expr_text",
-									       new_args,
-									       *num_args +
-									       XtNumber(text_args));
+      is_field ? XmCreateTextField((Widget)w, "expr_text", new_args,
+                                   *num_args + XtNumber(text_args))
+               : XmCreateScrolledText((Widget)w, "expr_text", new_args,
+                                      *num_args + XtNumber(text_args));
   XtFree((char *)new_args);
   XtManageChild(w->expr.text_widget);
   if (w->expr.nid == -1)
@@ -564,8 +576,9 @@ static void Initialize(Widget req, Widget new, ArgList args, Cardinal * num_args
   nid = w->expr.nid + w->expr.nid_offset;
   if (nid)
     w->expr.xd = (struct descriptor_xd *)TdiGet(nid);
-  else if (w->expr.xd) {
-    XmdsExprWidget req_e_w = (XmdsExprWidget) req;
+  else if (w->expr.xd)
+  {
+    XmdsExprWidget req_e_w = (XmdsExprWidget)req;
     w->expr.xd = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
     *w->expr.xd = empty_xd;
     MdsCopyDxXd((struct descriptor *)req_e_w->expr.xd, w->expr.xd);
@@ -575,83 +588,98 @@ static void Initialize(Widget req, Widget new, ArgList args, Cardinal * num_args
       XtWidth(w->expr.text_widget) +
       (w->expr.is_text ? 2 * (1 + XtWidth(w->expr.open_quote_widget)) : 0);
   XtHeight(w) = XtHeight(w->expr.text_widget);
-  Resize((Widget) w);
+  Resize((Widget)w);
 }
 
 static void Resize(Widget w)
 {
-  XmdsExprWidget ew = (XmdsExprWidget) w;
-  Widget tw =
-      XmIsTextField(ew->expr.text_widget) ? ew->expr.text_widget : XtParent(ew->expr.text_widget);
-  if (ew->expr.is_text) {
-    Dimension text_width = XtWidth(ew) - 2 * (1 + XtWidth(ew->expr.open_quote_widget));
+  XmdsExprWidget ew = (XmdsExprWidget)w;
+  Widget tw = XmIsTextField(ew->expr.text_widget)
+                  ? ew->expr.text_widget
+                  : XtParent(ew->expr.text_widget);
+  if (ew->expr.is_text)
+  {
+    Dimension text_width =
+        XtWidth(ew) - 2 * (1 + XtWidth(ew->expr.open_quote_widget));
     XtResizeWidget(tw, text_width, XtHeight(ew), 0);
     XtMoveWidget(tw, XtWidth(ew->expr.close_quote_widget) + 1, 0);
-    XtMoveWidget(ew->expr.close_quote_widget, XtWidth(ew) - XtWidth(ew->expr.close_quote_widget),
-		 0);
+    XtMoveWidget(ew->expr.close_quote_widget,
+                 XtWidth(ew) - XtWidth(ew->expr.close_quote_widget), 0);
     XtManageChild(ew->expr.open_quote_widget);
     XtManageChild(ew->expr.close_quote_widget);
-  } else {
+  }
+  else
+  {
     XtMoveWidget(tw, 0, 0);
     XtResizeWidget(tw, XtWidth(ew), XtHeight(ew), 0);
-    if (ew->expr.open_quote_widget) {
+    if (ew->expr.open_quote_widget)
+    {
       XtUnmanageChild(ew->expr.open_quote_widget);
       XtUnmanageChild(ew->expr.close_quote_widget);
-      XtMoveWidget(ew->expr.close_quote_widget, XtWidth(ew) - XtWidth(ew->expr.close_quote_widget),
-		   0);
+      XtMoveWidget(ew->expr.close_quote_widget,
+                   XtWidth(ew) - XtWidth(ew->expr.close_quote_widget), 0);
     }
   }
 }
 
-static Boolean SetValues(Widget old, Widget req, Widget new, ArgList args, Cardinal * arg_count)
+static Boolean SetValues(Widget old, Widget req, Widget new, ArgList args,
+                         Cardinal *arg_count)
 {
-  XmdsExprWidget old_ew = (XmdsExprWidget) old;
-  XmdsExprWidget req_ew = (XmdsExprWidget) req;
+  XmdsExprWidget old_ew = (XmdsExprWidget)old;
+  XmdsExprWidget req_ew = (XmdsExprWidget)req;
   XmdsExprWidget new_ew = (XmdsExprWidget) new;
   XtSetValues(new_ew->expr.text_widget, args, *arg_count);
   if ((old_ew->expr.nid != req_ew->expr.nid) ||
       (old_ew->expr.nid_offset != req_ew->expr.nid_offset))
-    XmdsExprSetNid((Widget) new_ew, new_ew->expr.nid, new_ew->expr.nid_offset);
-  else if (old_ew->expr.default_nid != req_ew->expr.default_nid) {
+    XmdsExprSetNid((Widget)new_ew, new_ew->expr.nid, new_ew->expr.nid_offset);
+  else if (old_ew->expr.default_nid != req_ew->expr.default_nid)
+  {
     new_ew->expr.default_nid = 0;
-    XmdsExprSetDefaultNid((Widget) new_ew, req_ew->expr.default_nid);
-  } else if (old_ew->expr.xd != req_ew->expr.xd) {
-    if (old_ew->expr.xd) {
+    XmdsExprSetDefaultNid((Widget)new_ew, req_ew->expr.default_nid);
+  }
+  else if (old_ew->expr.xd != req_ew->expr.xd)
+  {
+    if (old_ew->expr.xd)
+    {
       MdsFree1Dx(old_ew->expr.xd, 0);
       XtFree((char *)old_ew->expr.xd);
     };
     new_ew->expr.xd = 0;
-    XmdsExprSetXd((Widget) new_ew, (struct descriptor *)req_ew->expr.xd);
+    XmdsExprSetXd((Widget)new_ew, (struct descriptor *)req_ew->expr.xd);
   }
-  if (req_ew->expr.auto_quote != old_ew->expr.auto_quote) {
-    if (req_ew->expr.auto_quote == 0) {
+  if (req_ew->expr.auto_quote != old_ew->expr.auto_quote)
+  {
+    if (req_ew->expr.auto_quote == 0)
+    {
       XtDestroyWidget(new_ew->expr.open_quote_widget);
       XtDestroyWidget(new_ew->expr.close_quote_widget);
       new_ew->expr.open_quote_widget = 0;
       new_ew->expr.close_quote_widget = 0;
-    } else {
-      static XtCallbackRec change_quotes_callback_list[] =
-	  { {(XtCallbackProc) ChangeQuotes, (XtPointer) 0}, {0, 0} };
+    }
+    else
+    {
+      static XtCallbackRec change_quotes_callback_list[] = {
+          {(XtCallbackProc)ChangeQuotes, (XtPointer)0}, {0, 0}};
       static Arg quote_args[] = {
-	{XmNlabelString, 0},
-	{XmNx, 0},
-	{XmNheight, 20},
-	{XmNactivateCallback, (XtArgVal) change_quotes_callback_list},
-	{XmNtraversalOn, FALSE}
-      };
-      change_quotes_callback_list[0].closure = (XtPointer) new_ew;
-      quote_args[0].value = (XtArgVal) XmStringCreateSimple("\"");
-      new_ew->expr.open_quote_widget =
-	  XmCreatePushButton((Widget) new_ew, "open_quote", quote_args, XtNumber(quote_args));
-      new_ew->expr.close_quote_widget =
-	  XmCreatePushButton((Widget) new_ew, "open_quote", quote_args, XtNumber(quote_args));
-      XmStringFree((XmString) quote_args[0].value);
+          {XmNlabelString, 0},
+          {XmNx, 0},
+          {XmNheight, 20},
+          {XmNactivateCallback, (XtArgVal)change_quotes_callback_list},
+          {XmNtraversalOn, FALSE}};
+      change_quotes_callback_list[0].closure = (XtPointer)new_ew;
+      quote_args[0].value = (XtArgVal)XmStringCreateSimple("\"");
+      new_ew->expr.open_quote_widget = XmCreatePushButton(
+          (Widget)new_ew, "open_quote", quote_args, XtNumber(quote_args));
+      new_ew->expr.close_quote_widget = XmCreatePushButton(
+          (Widget)new_ew, "open_quote", quote_args, XtNumber(quote_args));
+      XmStringFree((XmString)quote_args[0].value);
       SetEnclosures(new_ew, (struct descriptor *)new_ew->expr.xd);
     }
-    if (req_ew->expr.default_quote != old_ew->expr.default_quote && new_ew->expr.auto_quote)
+    if (req_ew->expr.default_quote != old_ew->expr.default_quote &&
+        new_ew->expr.auto_quote)
       SetEnclosures(new_ew, (struct descriptor *)new_ew->expr.xd);
   }
-  Resize((Widget) new_ew);
+  Resize((Widget)new_ew);
   return 0;
 }
 
@@ -668,65 +696,81 @@ static void ChangeQuotes(Widget q_w, XmdsExprWidget e_w)
   XtFree(new_text);
   XtFree(text);
   e_w->expr.is_text = 0;
-  Resize((Widget) e_w);
+  Resize((Widget)e_w);
 }
 
 static int GetDefaultNid(XmdsExprWidget ew)
 {
   int ans = ew->expr.default_nid;
-  if (ans == -1) {
+  if (ans == -1)
+  {
     int nid = ew->expr.nid + ew->expr.nid_offset;
-    if (nid) {
+    if (nid)
+    {
       if (ConglomerateElt(nid))
-	ans = NodeParent(ConglomerateHead(nid));
+        ans = NodeParent(ConglomerateHead(nid));
       else
-	ans = NodeParent(nid);
+        ans = NodeParent(nid);
     }
   }
   return ans;
 }
 
-static void Focus_In(Widget w, XEvent * event, String * params, Cardinal num_params)
+static void Focus_In(Widget w, XEvent *event, String *params,
+                     Cardinal num_params)
 {
-  XmdsExprWidget ew = (XmdsExprWidget) w;
-  XtCallActionProc(ew->expr.text_widget, "grab-focus", event, params, num_params);
+  XmdsExprWidget ew = (XmdsExprWidget)w;
+  XtCallActionProc(ew->expr.text_widget, "grab-focus", event, params,
+                   num_params);
 }
 
 static void LoadExpr(XmdsExprWidget w, struct descriptor *dsc)
 {
   struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
   int status;
-  for (; xd && xd->dtype == DTYPE_DSC; xd = (struct descriptor_xd *)xd->pointer) ;
-  if (xd && ((xd->class == CLASS_R) ||
-	     (((xd->class == CLASS_XD) || (xd->class == CLASS_XS)) ? xd->l_length : xd->length))) {
-    if (w->expr.auto_quote && IsText(xd)) {
+  for (; xd && xd->dtype == DTYPE_DSC; xd = (struct descriptor_xd *)xd->pointer)
+    ;
+  if (xd &&
+      ((xd->class == CLASS_R) ||
+       (((xd->class == CLASS_XD) || (xd->class == CLASS_XS)) ? xd->l_length
+                                                             : xd->length)))
+  {
+    if (w->expr.auto_quote && IsText(xd))
+    {
       char *c_text = DescToNull((struct descriptor_s *)xd);
       w->expr.is_text = 1;
       SetString(w->expr.text_widget, c_text);
-      XmTextSetInsertionPosition(w->expr.text_widget, (XmTextPosition) 0);
+      XmTextSetInsertionPosition(w->expr.text_widget, (XmTextPosition)0);
       XtFree(c_text);
-    } else {
-      static struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
+    }
+    else
+    {
+      static struct descriptor_d text = {0, DTYPE_T, CLASS_D, 0};
       int old_def;
       int def_nid = GetDefaultNid(w);
-      if (def_nid != -1) {
-	TreeGetDefaultNid(&old_def);
-	TreeSetDefaultNid(def_nid);
+      if (def_nid != -1)
+      {
+        TreeGetDefaultNid(&old_def);
+        TreeSetDefaultNid(def_nid);
       }
-      status = (*w->expr.decompile) (xd, &text MDS_END_ARG);
+      status = (*w->expr.decompile)(xd, &text MDS_END_ARG);
       w->expr.is_text = 0;
-      if (status & 1) {
-	char *c_text = DescToNull((struct descriptor_s *)&text);
-	SetString(w->expr.text_widget, c_text);
-	XmTextSetInsertionPosition(w->expr.text_widget, (XmTextPosition) 0);
-	XtFree(c_text);
-      } else
-	SetString(w->expr.text_widget, "");
+      if (STATUS_OK)
+      {
+        char *c_text = DescToNull((struct descriptor_s *)&text);
+        SetString(w->expr.text_widget, c_text);
+        XmTextSetInsertionPosition(w->expr.text_widget, (XmTextPosition)0);
+        XtFree(c_text);
+      }
+      else
+        SetString(w->expr.text_widget, "");
       StrFree1Dx(&text);
       if (def_nid != -1)
-	TreeSetDefaultNid(old_def);
+        TreeSetDefaultNid(old_def);
     }
-  } else {
+  }
+  else
+  {
     SetString(w->expr.text_widget, "");
     w->expr.is_text = w->expr.auto_quote && w->expr.default_quote;
   }
@@ -735,11 +779,16 @@ static void LoadExpr(XmdsExprWidget w, struct descriptor *dsc)
 static void SetEnclosures(XmdsExprWidget w, struct descriptor *dsc)
 {
   struct descriptor *ptr;
-  for (ptr = dsc; ptr && (ptr->dtype == DTYPE_DSC); ptr = (struct descriptor *)ptr->pointer) ;
-  w->expr.is_text = (ptr && IsText(ptr)) || ((ptr == 0) && w->expr.default_quote);
-  if (w->expr.is_text) {
+  for (ptr = dsc; ptr && (ptr->dtype == DTYPE_DSC);
+       ptr = (struct descriptor *)ptr->pointer)
+    ;
+  w->expr.is_text =
+      (ptr && IsText(ptr)) || ((ptr == 0) && w->expr.default_quote);
+  if (w->expr.is_text)
+  {
     char *chrs = GetString(w->expr.text_widget);
-    if (chrs && strlen(chrs)) {
+    if (chrs && strlen(chrs))
+    {
       chrs[strlen(chrs) - 1] = 0;
       SetString(w->expr.text_widget, &chrs[1]);
       XtFree(chrs);
@@ -749,7 +798,8 @@ static void SetEnclosures(XmdsExprWidget w, struct descriptor *dsc)
 
 char *DescToNull(struct descriptor_s *text)
 {
-  char *answer = memcpy(XtMalloc(text->length + 1), text->pointer, text->length);
+  char *answer =
+      memcpy(XtMalloc(text->length + 1), text->pointer, text->length);
   answer[text->length] = '\0';
   return answer;
 }

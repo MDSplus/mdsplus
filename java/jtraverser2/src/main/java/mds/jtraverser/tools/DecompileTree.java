@@ -74,10 +74,11 @@ public class DecompileTree
 	public final int decompile(final String provider, final String expt, final int shot, final String filename,
 			final boolean isFull) throws MdsException
 	{
-		final TREE subtree = new TREE(new MdsIp(provider), expt, shot);
-		subtree.open();
-		final int result = this.decompile(subtree, filename, isFull);
-		subtree.close();
+		final int result;
+		try(final TREE subtree = new TREE(new MdsIp(provider), expt, shot, TREE.READONLY))
+		{
+			result = this.decompile(subtree, filename, isFull);
+		}
 		return result;
 	}
 

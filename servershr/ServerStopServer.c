@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$STOP_SERVER
+                Name:   SERVER$STOP_SERVER
 
-		Type:   C function
+                Type:   C function
 
-		Author:	TOM FREDIAN
+                Author:	TOM FREDIAN
 
-		Date:   17-APR-1992
+                Date:   17-APR-1992
 
-		Purpose: Stop a server process
+                Purpose: Stop a server process
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 
@@ -48,7 +48,7 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -56,6 +56,8 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 #include <servershr.h>
 #include "servershrp.h"
 
-EXPORT int ServerStopServer(char *server){
-  return ServerSendMessage(0, server, SrvStop, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+EXPORT int ServerStopServer(char *server)
+{
+  return ServerSendMessage(0, server, SrvStop, NULL, NULL, NULL, NULL, NULL,
+                           NULL, 0, NULL);
 }

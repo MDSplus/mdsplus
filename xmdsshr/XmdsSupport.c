@@ -32,19 +32,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSSUPPORT.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSSUPPORT
+                Name:   XMDSSUPPORT
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:   16-JAN-1992
+                Date:   16-JAN-1992
 
-		Purpose: Support routines for Xmdsxd* widgets
+                Purpose: Support routines for Xmdsxd* widgets
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
 
 extern Boolean ConglomerateElt(int nid);
 extern int ConglomerateHead(int nid);
@@ -63,7 +63,7 @@ extern Boolean PutIfChanged(int nid, struct dsc$descriptor_xd *xd);
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -97,7 +97,7 @@ extern int TdiDebug();
 
  Local variables:                                                             */
 
-static struct descriptor_xd empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+static struct descriptor_xd empty_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 
 /*------------------------------------------------------------------------------
 
@@ -105,10 +105,11 @@ static struct descriptor_xd empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
 Boolean ConglomerateElt(int nid)
 {
   static unsigned short cong_elt;
-  static NCI_ITM lst[] =
-      { {sizeof(cong_elt), NciCONGLOMERATE_ELT, (unsigned char *)&cong_elt, 0}, {0, 0, 0, 0} };
+  static NCI_ITM lst[] = {
+      {sizeof(cong_elt), NciCONGLOMERATE_ELT, (unsigned char *)&cong_elt, 0},
+      {0, 0, 0, 0}};
   int status = TreeGetNci(nid, lst);
-  if (status & 1)
+  if (STATUS_OK)
     return (cong_elt != 0);
   else
     return 0;
@@ -117,10 +118,11 @@ Boolean ConglomerateElt(int nid)
 int ConglomerateHead(int nid)
 {
   static unsigned int head_nid;
-  static NCI_ITM lst[] =
-      { {sizeof(head_nid), NciCONGLOMERATE_NIDS, (unsigned char *)&head_nid, 0}, {0, 0, 0, 0} };
+  static NCI_ITM lst[] = {
+      {sizeof(head_nid), NciCONGLOMERATE_NIDS, (unsigned char *)&head_nid, 0},
+      {0, 0, 0, 0}};
   int status = TreeGetNci(nid, lst);
-  if (status & 1)
+  if (STATUS_OK)
     return head_nid;
   else
     return 0;
@@ -139,10 +141,11 @@ int DefaultNid(int nid)
 int NodeParent(int nid)
 {
   static int parent_nid;
-  static NCI_ITM lst[] =
-      { {sizeof(parent_nid), NciPARENT, (unsigned char *)&parent_nid, 0}, {0, 0, 0, 0} };
+  static NCI_ITM lst[] = {
+      {sizeof(parent_nid), NciPARENT, (unsigned char *)&parent_nid, 0},
+      {0, 0, 0, 0}};
   int status = TreeGetNci(nid, lst);
-  if (status & 1)
+  if (STATUS_OK)
     return parent_nid;
   else
     return 0;
@@ -151,20 +154,22 @@ int NodeParent(int nid)
 void ResetErrors()
 {
   static int four = 4;
-  static struct descriptor clear_messages = { 4, DTYPE_L, CLASS_S, (char *)&four };
-  static struct descriptor_d messages = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor clear_messages = {4, DTYPE_L, CLASS_S,
+                                             (char *)&four};
+  static struct descriptor_d messages = {0, DTYPE_T, CLASS_D, 0};
   TdiDebug(&clear_messages, &messages MDS_END_ARG);
   StrFree1Dx(&messages);
 }
 
 void TdiComplain(Widget w)
 {
-  static struct descriptor_d messages = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor_d messages = {0, DTYPE_T, CLASS_D, 0};
   static DESCRIPTOR(null, "\0");
   static int one = 1;
-  static struct descriptor get_messages = { 4, DTYPE_L, CLASS_S, (char *)&one };
+  static struct descriptor get_messages = {4, DTYPE_L, CLASS_S, (char *)&one};
   TdiDebug(&get_messages, &messages MDS_END_ARG);
-  if (messages.length) {
+  if (messages.length)
+  {
     StrAppend(&messages, (struct descriptor *)&null);
     XmdsComplain(w, messages.pointer);
     StrFree1Dx(&messages);
@@ -173,11 +178,13 @@ void TdiComplain(Widget w)
 
 struct descriptor *TdiGet(int nid)
 {
-  struct descriptor_xd *answer = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
+  struct descriptor_xd *answer =
+      (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   int status;
   *answer = empty_xd;
   status = TreeGetRecord(nid, answer);
-  if ((status & 1) == 0) {
+  if ((STATUS_OK) == 0)
+  {
     XtFree((char *)answer);
     answer = 0;
   }
@@ -187,17 +194,20 @@ struct descriptor *TdiGet(int nid)
 Boolean PutIfChanged(int nid, struct descriptor_xd *xd)
 {
   int status = 1;
-  if (nid) {
-    if (xd) {
+  if (nid)
+  {
+    if (xd)
+    {
       struct descriptor_xd *old_xd = (struct descriptor_xd *)TdiGet(nid);
-      if ((!old_xd && xd->l_length)
-	  || !MdsCompareXd((struct descriptor *)xd, (struct descriptor *)old_xd))
-	status = TreePutRecord(nid, (struct descriptor *)xd, 0);
-      if (old_xd) {
-	MdsFree1Dx(old_xd, 0);
-	XtFree((char *)old_xd);
+      if ((!old_xd && xd->l_length) ||
+          !MdsCompareXd((struct descriptor *)xd, (struct descriptor *)old_xd))
+        status = TreePutRecord(nid, (struct descriptor *)xd, 0);
+      if (old_xd)
+      {
+        MdsFree1Dx(old_xd, 0);
+        XtFree((char *)old_xd);
       }
     }
   }
-  return status & 1;
+  return STATUS_OK;
 }

@@ -284,7 +284,17 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 					return;
 				try
 				{
-					currnode.rename(name);
+				     String path = currnode.getFullPath();
+				     int idx;
+				     for(idx = path.length() - 1; idx >= 0; idx--)
+				     {
+					char c = path.charAt(idx);
+					if(c == '.' || c == ':' || c == '\\')
+					    break;
+				     }
+				     path = path.substring(idx+1);
+				     path = path + name;
+				     currnode.rename(path);
 				}
 				catch (final Exception exc)
 				{
@@ -1473,7 +1483,14 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 		try
 		{
 			if (editable)
-				curr_experiment = new MDSplus.Tree(exp, shot, "EDIT");
+			{
+                            try {
+                                    curr_experiment = new MDSplus.Tree(exp, shot, "EDIT");
+                            }catch(Exception exc)
+                            {
+                                    curr_experiment = new MDSplus.Tree(exp, shot, "NEW");
+                            }
+			}
 			else if (readonly)
 				curr_experiment = new MDSplus.Tree(exp, shot, "READONLY");
 			else
@@ -1481,7 +1498,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 		}
 		catch (final Exception exc)
 		{
-			jTraverser.stderr("Error in RMI communication", exc);
+			JOptionPane.showMessageDialog(FrameRepository.frame, exc,
+					"Error OPENING TREE", JOptionPane.WARNING_MESSAGE);
+                        return;
 		}
 		try
 		{

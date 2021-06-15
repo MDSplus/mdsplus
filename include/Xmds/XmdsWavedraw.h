@@ -16,15 +16,15 @@
 /*  CMS REPLACEMENT HISTORY, Element XMDSWAVEDRAW.H */
 /*------------------------------------------------------------------------------
 
-		Name:   WAVEDRAW.H
+                Name:   WAVEDRAW.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   29-MAY-1990
+                Date:   29-MAY-1990
 
-		Purpose: Public declarations for WAVEDRAW widget
+                Purpose: Public declarations for WAVEDRAW widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -47,31 +47,32 @@
 
 /* Resources */
 
-#define XmdsNmoveCallback        "moveCallback"
-#define XmdsNselectCallback      "selectCallback"
-#define XmdsNdeselectCallback    "deselectCallback"
-#define XmdsNaddPointCallback    "addPointCallback"
+#define XmdsNmoveCallback "moveCallback"
+#define XmdsNselectCallback "selectCallback"
+#define XmdsNdeselectCallback "deselectCallback"
+#define XmdsNaddPointCallback "addPointCallback"
 #define XmdsNdeletePointCallback "deletePointCallback"
-#define XmdsNfitCallback         "fitCallback"
-#define XmdsNdeleteOnlySelected  "deleteOnlySelected"
-#define XmdsNlowX		 "lowX"
-#define XmdsNlowY		 "lowY"
-#define XmdsNhighX               "highX"
-#define XmdsNhighY		 "highY"
-#define XmdsNxMinDistance	 "xMinDistance"
-#define XmdsNyMinDistance	 "yMinDistance"
-#define XmdsNxIncreasing         "xIncreasing"
-#define XmdsNyIncreasing         "yIncreasing"
-#define XmdsNxNumChoices	 "xNumChoices"
-#define XmdsNxChoices		 "xChoices"
-#define XmdsNyNumChoices	 "yNumChoices"
-#define XmdsNyChoices		 "yChoices"
-#define XmdsNxGridSnap		 "xGridSnap"
-#define XmdsNyGridSnap		 "yGridSnap"
+#define XmdsNfitCallback "fitCallback"
+#define XmdsNdeleteOnlySelected "deleteOnlySelected"
+#define XmdsNlowX "lowX"
+#define XmdsNlowY "lowY"
+#define XmdsNhighX "highX"
+#define XmdsNhighY "highY"
+#define XmdsNxMinDistance "xMinDistance"
+#define XmdsNyMinDistance "yMinDistance"
+#define XmdsNxIncreasing "xIncreasing"
+#define XmdsNyIncreasing "yIncreasing"
+#define XmdsNxNumChoices "xNumChoices"
+#define XmdsNxChoices "xChoices"
+#define XmdsNyNumChoices "yNumChoices"
+#define XmdsNyChoices "yChoices"
+#define XmdsNxGridSnap "xGridSnap"
+#define XmdsNyGridSnap "yGridSnap"
 
 /* Callback structures */
 
-typedef struct {
+typedef struct
+{
   int reason;
   XEvent *event;
   int idx;
@@ -85,7 +86,8 @@ typedef struct {
   Boolean *selected;
 } XmdsWavedrawValueCBStruct;
 
-typedef struct {
+typedef struct
+{
   int reason;
   XEvent *event;
   int count;
@@ -98,19 +100,19 @@ typedef struct {
 /* Callback reasons */
 
 #define XmdsCRMovePointBegin 10
-#define XmdsCRMovePoint      11
-#define XmdsCRMovePointEnd   12
-#define XmdsCRSelectPoint    13
-#define XmdsCRDeselectPoint  14
-#define XmdsCRAddPoint       15
-#define XmdsCRDeletePoint    16
-#define XmdsCRSetPen         17
+#define XmdsCRMovePoint 11
+#define XmdsCRMovePointEnd 12
+#define XmdsCRSelectPoint 13
+#define XmdsCRDeselectPoint 14
+#define XmdsCRAddPoint 15
+#define XmdsCRDeletePoint 16
+#define XmdsCRSetPen 17
 
-#define XmdsPOINTER_MODE_DRAW1         6
-#define XmdsPOINTER_MODE_SELECT        6
-#define XmdsPOINTER_MODE_DRAW2         7
-#define XmdsPOINTER_MODE_ADD_DELETE    7
-#define XmdsPOINTER_MODE_SET_PEN       8
+#define XmdsPOINTER_MODE_DRAW1 6
+#define XmdsPOINTER_MODE_SELECT 6
+#define XmdsPOINTER_MODE_DRAW2 7
+#define XmdsPOINTER_MODE_ADD_DELETE 7
+#define XmdsPOINTER_MODE_SET_PEN 8
 #define XmdsPOINTER_MODE_SLIDE_STRETCH 9
 
 /* Class record pointer */
@@ -123,11 +125,11 @@ typedef struct _XmdsWavedrawRec *XmdsWavedrawWidget;
 
 /* fast XtIsSubclass define */
 #ifndef XmdsIsWavedraw
-#define XmdsIsWavedraw(w) XtIsSubclass (w, xmdsWavedrawWidgetClass)
+#define XmdsIsWavedraw(w) XtIsSubclass(w, xmdsWavedrawWidgetClass)
 #endif
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO_
 
 extern Widget XmdsCreateWavedraw();
@@ -135,17 +137,19 @@ extern Boolean XmdsWavedrawAddPoint();
 extern void XmdsWavedrawDeletePoint();
 extern Boolean XmdsWavedrawMovePoint();
 
-#else				/* _NO_PROTO_ */
+#else /* _NO_PROTO_ */
 
-extern Widget XmdsCreateWavedraw(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern Widget XmdsCreateWavedraw(Widget parent, char *name, ArgList args,
+                                 Cardinal argcount);
 extern Boolean XmdsWavedrawAddPoint(Widget w, int idx, float *newx, float *newy,
-				    Boolean callcallbacks,
-				    enum XmdsWaveformMotionRestriction motion);
+                                    Boolean callcallbacks,
+                                    enum XmdsWaveformMotionRestriction motion);
 extern void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks);
-extern Boolean XmdsWavedrawMovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
-				     float *desired_y, float *new_x, float *new_y,
-				     Boolean callcallbacks, XEvent * event);
+extern Boolean XmdsWavedrawMovePoint(XmdsWavedrawWidget w, int idx,
+                                     float *desired_x, float *desired_y,
+                                     float *new_x, float *new_y,
+                                     Boolean callcallbacks, XEvent *event);
 
-#endif				/* _NO_PROTO_ */
+#endif /* _NO_PROTO_ */
 
-#endif				/* _XmdsWavedraw */
+#endif /* _XmdsWavedraw */

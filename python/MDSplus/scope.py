@@ -23,18 +23,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
-_data=_mimport('mdsdata')
+
+_data = _mimport('mdsdata')
+
 
 class Scope(object):
     """The Scope class utilizes the jScope java implementation to generate plots of MDSplus data"""
 
-    def __init__(self,title='',x=100,y=100,width=400,height=300):
+    def __init__(self, title='', x=100, y=100, width=400, height=300):
         """Initialize a Scope instance
         @param title: Title of scop window
         @type title: string
@@ -48,19 +51,20 @@ class Scope(object):
         @type height: int
         @rtype: None
         """
-        self.idx=_data.Data.execute("JavaNewWindow($,-1)",title)
-        self.x=x
-        self.y=y
-        self.width=width
-        self.height=height
+        self.idx = _data.Data.execute("JavaNewWindow($,-1)", title)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
     def show(self):
         """Show the scope window
         @rtype: None
         """
-        _data.Data.execute("JavaShowWindow($,$,$,$,$)",self.idx,self.x,self.y,self.width,self.height)
+        _data.Data.execute("JavaShowWindow($,$,$,$,$)",
+                           self.idx, self.x, self.y, self.width, self.height)
 
-    def plot(self,y,x=None,row=1,col=1,color="black", label=""):
+    def plot(self, y, x=None, row=1, col=1, color="black", label=""):
         """Plot data in scope panel
         @param y: Y-axis of the data to plot
         @type y: Array
@@ -77,10 +81,11 @@ class Scope(object):
         @rtype: None
         """
         if x is None:
-            x=_data.Data.dim_of(y)
-        _data.Data.execute("JavaReplaceSignal($,$,$,$,$,$,$)",self.idx,y,x,row,col,color,label)
+            x = _data.Data.dim_of(y)
+        _data.Data.execute("JavaReplaceSignal($,$,$,$,$,$,$)",
+                           self.idx, y, x, row, col, color, label)
 
-    def oplot(self,y,x=None,row=1,col=1,color="black", label=""):
+    def oplot(self, y, x=None, row=1, col=1, color="black", label=""):
         """Overplot data in scope panel
         @param y: Y-axis of the data to plot
         @type y: Array
@@ -97,7 +102,6 @@ class Scope(object):
         @rtype: None
         """
         if x is None:
-            x=_data.Data.dim_of(y)
-        _data.Data.execute("JavaAddSignal($,$,$,$,$,$,$)",self.idx,y,x,row,col,color,label)
-
-
+            x = _data.Data.dim_of(y)
+        _data.Data.execute("JavaAddSignal($,$,$,$,$,$,$)",
+                           self.idx, y, x, row, col, color, label)

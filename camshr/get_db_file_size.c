@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
 #include "prototypes.h"
@@ -72,10 +72,12 @@ int get_db_file_size(char *FileName)
   if (MSGLVL(FUNCTION_NAME))
     printf("get_db_file_size('%s')\n", FileName);
 
-  if (Stat(FileName, &sbuf) == ERROR) {
+  if (Stat(FileName, &sbuf) == ERROR)
+  {
     perror("stat()");
-    retval = FAILURE;		// error code is negative and odd
-  } else
+    retval = FAILURE; // error code is negative and odd
+  }
+  else
     retval = sbuf.st_size;
 
   if (MSGLVL(DETAILS))

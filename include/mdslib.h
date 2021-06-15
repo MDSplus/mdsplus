@@ -3,13 +3,14 @@
 
 #include <ipdesc.h>
 
-#include <stdio.h>
 #include <mds_stdarg.h>
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #ifndef MDSLIB_NO_PROTOS
@@ -23,7 +24,7 @@ extern "C" {
   int MdsPut(char *node, char *expression, ...);
   int MdsValue2(char *expression, ...);
   int MdsPut2(char *node, char *expression, ...);
-  int MdsSetSocket(int * socket);
+  int MdsSetSocket(int *socket);
   void MdsDisconnect();
   int MdsConnectR(char *host);
   int MdsOpenR(int *conid, char *tree, int *shot);
@@ -36,7 +37,7 @@ extern "C" {
   void MdsDisconnectR(int *conid);
 #endif
 #ifdef __cplusplus
-}				// extern "C"
+} // extern "C"
 #endif
 extern int mdsSocket;
 

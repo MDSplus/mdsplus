@@ -26,19 +26,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #ifdef XIO
 #include "globus_common.h"
-#include "gssapi.h"
-#include "globus_gss_assist.h"
 #include "globus_gridmap_callout_error.h"
-#include <stdlib.h>
+#include "globus_gss_assist.h"
 #include "globus_xio.h"
-#include "globus_xio_tcp_driver.h"
 #include "globus_xio_gsi.h"
 #include "globus_xio_http.h"
+#include "globus_xio_tcp_driver.h"
+#include "gssapi.h"
+#include <stdlib.h>
 #define LINE_LEN 1024
 #else
 #include <curl/curl.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #endif
 
@@ -49,13 +49,19 @@ static char *urlencode(char *in)
   int j = 0;
   int inlen = strlen(in);
   ans = malloc(inlen * 3);
-  for (i = 0, j = 0; i < inlen; i++) {
-    if ((in[i] >= '0' && in[i] <= '9') ||
-	(in[i] >= 'A' && in[i] <= 'Z') || (in[i] >= 'a' && in[i] <= 'z')) {
+  for (i = 0, j = 0; i < inlen; i++)
+  {
+    if ((in[i] >= '0' && in[i] <= '9') || (in[i] >= 'A' && in[i] <= 'Z') ||
+        (in[i] >= 'a' && in[i] <= 'z'))
+    {
       ans[j++] = in[i];
-    } else if (in[i] == ' ') {
+    }
+    else if (in[i] == ' ')
+    {
       ans[j++] = '+';
-    } else {
+    }
+    else
+    {
       ans[j++] = '%';
       sprintf(&ans[j], "%2X", (unsigned int)in[i]);
       j += 2;
@@ -66,8 +72,9 @@ static char *urlencode(char *in)
 }
 
 #ifdef XIO
-EXPORT int roam_check_access(char *host, int https, char *resource, char *permit, char *dn,
-		      struct descriptor_xd *aux)
+EXPORT int roam_check_access(char *host, int https, char *resource,
+                             char *permit, char *dn,
+                             struct descriptor_xd *aux)
 {
   globus_xio_driver_t tcp_driver;
   globus_xio_driver_t gsi_driver;
@@ -82,7 +89,8 @@ EXPORT int roam_check_access(char *host, int https, char *resource, char *permit
   char *ans = 0;
   int status = GLOBUS_FAILURE;
 
-  url = malloc(strlen(host) + 30 + (strlen(resource) + strlen(permit) + strlen(dn)) * 3);
+  url = malloc(strlen(host) + 30 +
+               (strlen(resource) + strlen(permit) + strlen(dn)) * 3);
   strcpy(url, https ? "https://" : "http://");
   strcat(url, host);
   strcat(url, "/%2fcheck_access_aux.php?");
@@ -99,44 +107,54 @@ EXPORT int roam_check_access(char *host, int https, char *resource, char *permit
   globus_xio_stack_init(&stack, NULL);
   globus_xio_driver_load("tcp", &tcp_driver);
   globus_xio_stack_push_driver(stack, tcp_driver);
-  if (https) {
+  if (https)
+  {
     globus_xio_driver_load("gsi", &gsi_driver);
     globus_xio_stack_push_driver(stack, gsi_driver);
   }
   globus_xio_driver_load("http", &http_driver);
   globus_xio_stack_push_driver(stack, http_driver);
   globus_xio_attr_init(&attr);
-  if (https) {
-    globus_xio_attr_cntl(attr, gsi_driver, GLOBUS_XIO_GSI_SET_SSL_COMPATIBLE, GLOBUS_TRUE);
+  if (https)
+  {
+    globus_xio_attr_cntl(attr, gsi_driver, GLOBUS_XIO_GSI_SET_SSL_COMPATIBLE,
+                         GLOBUS_TRUE);
   }
   res = globus_xio_handle_create(&xio_handle, stack);
   //  test_res(res);
   res = globus_xio_open(xio_handle, url, attr);
-  //test_res(res);
-  while (res == GLOBUS_SUCCESS) {
+  // test_res(res);
+  while (res == GLOBUS_SUCCESS)
+  {
     nbytes = 0;
     res = globus_xio_read(xio_handle, line, LINE_LEN, 1, &nbytes, NULL);
-    if (nbytes > 0) {
-      if (ans) {
-	int newlen = strlen(ans) + nbytes;
-	ans = strncat(realloc(ans, newlen + 1), line, nbytes);
-	ans[newlen] = 0;
-      } else {
-	ans = strncpy(malloc(nbytes + 1), line, nbytes);
-	ans[nbytes] = 0;
+    if (nbytes > 0)
+    {
+      if (ans)
+      {
+        int newlen = strlen(ans) + nbytes;
+        ans = strncat(realloc(ans, newlen + 1), line, nbytes);
+        ans[newlen] = 0;
+      }
+      else
+      {
+        ans = strncpy(malloc(nbytes + 1), line, nbytes);
+        ans[nbytes] = 0;
       }
     }
     if (res)
       break;
   }
-  if (ans && strlen(ans) > 4) {
-    if (strncmp(ans, "yes", 3) == 0) {
-      struct descriptor accnt = { 0, DTYPE_T, CLASS_S, 0 };
+  if (ans && strlen(ans) > 4)
+  {
+    if (strncmp(ans, "yes", 3) == 0)
+    {
+      struct descriptor accnt = {0, DTYPE_T, CLASS_S, 0};
       status = GLOBUS_SUCCESS;
       accnt.pointer = malloc(strlen(ans) - 4);
       if (strlen(ans) > 5)
-	strncpy(accnt.pointer, &ans[4], strlen(ans) - 4);
-      accnt.pointer =[strlen(ans) - 5] = 0;
+        strncpy(accnt.pointer, &ans[4], strlen(ans) - 4);
+      accnt.pointer = [strlen(ans) - 5] = 0;
       accnt.length = strlen(accnt.pointer);
       MdsCopyXdDx(&accnt, aux);
       free(accnt.pointer);
@@ -149,7 +167,8 @@ EXPORT int roam_check_access(char *host, int https, char *resource, char *permit
 }
 #else
 
-struct _buf {
+struct _buf
+{
   size_t size;
   char *ptr;
 };
@@ -158,10 +177,13 @@ static size_t callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
   char *ptr = (char *)contents;
   struct _buf *buf = (struct _buf *)userp;
-  if (buf->size == 0) {
+  if (buf->size == 0)
+  {
     buf->ptr = malloc(size * nmemb + 1);
     memcpy(buf->ptr, ptr, size * nmemb);
-  } else {
+  }
+  else
+  {
     buf->ptr = realloc(buf->ptr, buf->size + size * nmemb + 1);
     memcpy(buf->ptr + buf->size, ptr, size * nmemb);
   }
@@ -170,18 +192,21 @@ static size_t callback(void *contents, size_t size, size_t nmemb, void *userp)
   return size * nmemb;
 }
 
-EXPORT int roam_check_access(char *host, int https, char *resource, char *permit, char *dn,
-		      struct descriptor_xd *aux)
+EXPORT int roam_check_access(char *host, int https, char *resource,
+                             char *permit, char *dn,
+                             struct descriptor_xd *aux)
 {
   CURL *ctx = curl_easy_init();
   CURLcode status;
-  struct _buf buf = { 0, 0 };
-  char *url = malloc(strlen(host) + 100 + (strlen(resource) + strlen(permit) + strlen(dn)) * 3);
+  struct _buf buf = {0, 0};
+  char *url = malloc(strlen(host) + 100 +
+                     (strlen(resource) + strlen(permit) + strlen(dn)) * 3);
   char *res = urlencode(resource);
   char *perm = urlencode(permit);
   char *uname = urlencode(dn);
-  sprintf(url, "http%s://%s/roam.php?check_access&rname=%s&permission=%s&uname=%s",
-	  https ? "s" : "", host, res, perm, uname);
+  sprintf(url,
+          "http%s://%s/roam.php?check_access&rname=%s&permission=%s&uname=%s",
+          https ? "s" : "", host, res, perm, uname);
   free(res);
   free(perm);
   free(uname);
@@ -193,20 +218,26 @@ EXPORT int roam_check_access(char *host, int https, char *resource, char *permit
   curl_easy_setopt(ctx, CURLOPT_CAPATH, "/etc/grid-security/certificates");
   status = curl_easy_perform(ctx);
   curl_easy_cleanup(ctx);
-  if (status == 0 && buf.size >= 4) {
-    if (strncmp(buf.ptr, "yes", 3) == 0) {
-      if (buf.size > 4) {
-	struct descriptor accnt = { 0, DTYPE_T, CLASS_S, 0 };
-	accnt.pointer = malloc(buf.size - 4);
-	if (buf.size > 5)
-	  strncpy(accnt.pointer, &buf.ptr[4], buf.size - 4);
-	accnt.pointer[buf.size - 4] = 0;
-	accnt.length = strlen(accnt.pointer);
-	MdsCopyDxXd(&accnt, aux);
+  if (status == 0 && buf.size >= 4)
+  {
+    if (strncmp(buf.ptr, "yes", 3) == 0)
+    {
+      if (buf.size > 4)
+      {
+        struct descriptor accnt = {0, DTYPE_T, CLASS_S, 0};
+        accnt.pointer = malloc(buf.size - 4);
+        if (buf.size > 5)
+          strncpy(accnt.pointer, &buf.ptr[4], buf.size - 4);
+        accnt.pointer[buf.size - 4] = 0;
+        accnt.length = strlen(accnt.pointer);
+        MdsCopyDxXd(&accnt, aux);
       }
-    } else
+    }
+    else
       status = -2;
-  } else {
+  }
+  else
+  {
     status = -1;
   }
   free(buf.ptr);

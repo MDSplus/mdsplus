@@ -1,0 +1,36 @@
+{
+   xmlInitParser_supp
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:xmlInitParser_supp
+}
+{
+   pthread_once false positive
+   Helgrind:Race
+   fun:MDSplusThreadStatic
+}
+{
+   pthread_once is meant to be thrad safe and blocking
+   Helgrind:Race
+   fun:*
+   fun:__pthread_once_slow
+}
+{
+   PyGIL locked on exit
+   Helgrind:Misc
+   fun:raise
+   fun:abort
+   fun:PyGILState_Cleanup
+}
+{
+   unresolved issue in TclDispatch_show_server
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   fun:TclDispatch_show_server
+}

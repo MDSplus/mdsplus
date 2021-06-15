@@ -96,7 +96,7 @@ AC_DEFUN([TS_WINE_ENV],[
 
   dnl # launch boot in wine bottle (creating new one if it does not exist)
   AS_VAR_SET_IF([HAVE_WINEBOOT],,[AC_CHECK_PROG(HAVE_WINEBOOT,wineboot,yes,no)])
-  AS_VAR_IF([HAVE_WINEBOOT],[yes],	 
+  AS_VAR_IF([HAVE_WINEBOOT],[yes],
 	 [# Creating bottle using wineboot
 	  # WINEDLLOVERRIDES prevents asking to install mono and geko here
 	  AS_IF([test -d ${$1}],
@@ -142,7 +142,7 @@ AC_DEFUN([TS_CHECK_JAVA],[
   # AS_VAR_SET([JDK_VERSION],["$(java -d64 -version 2>&1 )"])
   # AC_PATH_PROG([JAVAC_PATH_NAME], [javac])
   AC_PATH_PROG([JAVA_PATH_NAME], [java])
-  AS_IF([${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} -version 2>&1> /dev/null],
+  AS_IF([${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} -version 2>&1 > /dev/null],
     [$2],
     [$3])
 ])
@@ -239,11 +239,11 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PYDEVICE_PATH='\$(abs_top_srcdir)/pydevices;\$(abs_top_srcdir)/python/MDSplus/tests/devices' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"main_path='.;\$(abs_top_srcdir)/trees' ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"subtree_path='.;\$(abs_top_srcdir)/trees/subtree' ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib=${PyLib:-$DEF_PYLIB} ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHON=$PYTHON ")
-   AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\${${LIBPATH}:+:\${${LIBPATH}}} ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/python\${PYTHONPATH:+:\${PYTHONPATH}} PYTHONDONTWRITEBYTECODE=yes ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib=\${PYLIB} ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHON=\${PYTHON} ")
+   AS_VAR_APPEND([PY_LOG_COMPILER],  ["\${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  ],
  #
  # OTHER
@@ -316,4 +316,3 @@ dnl tr.run(tests);
 dnl #prova:
 dnl #	echo $(TEST_LOGS);
 dnl #	python -c "${_tap_py_execute}" pyex1;
-

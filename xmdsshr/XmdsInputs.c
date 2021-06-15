@@ -37,19 +37,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSINPUTS.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsInputs
+                Name:   XmdsInputs
 
-		Type:   C function
+                Type:   C function
 
-		Author:	JOSH STILLERMAN
+                Author:	JOSH STILLERMAN
 
-		Date:    2-APR-1990
+                Date:    2-APR-1990
 
-		Purpose: Routines to handle digitizer channels (INPUTS)
+                Purpose: Routines to handle digitizer channels (INPUTS)
 
 ------------------------------------------------------------------------------
 
-	Call sequence:
+        Call sequence:
   void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx)
   void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
   void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
@@ -63,7 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
-	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------
@@ -80,7 +80,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Xmds/XmdsInputs.h>
 #include <Xmds/XmdsExpr.h>
 
-
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
@@ -94,8 +93,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************/
 void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx)
 {
-  XmdsExprSetNid(w, ctx->inputs_nid + ctx->nodes_per_input * (XmdsWidgetToNumber(w, "input_") - 1),
-		 (strcmp(XtName(w), "start_idx") ? ctx->end_offset : ctx->start_offset));
+  XmdsExprSetNid(
+      w,
+      ctx->inputs_nid +
+          ctx->nodes_per_input * (XmdsWidgetToNumber(w, "input_") - 1),
+      (strcmp(XtName(w), "start_idx") ? ctx->end_offset : ctx->start_offset));
 }
 
 /*************************************************************
@@ -108,11 +110,13 @@ void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
   Widget input_w;
   sprintf(input_name, "*input_%d", chan);
   input_w = XtNameToWidget(chans_dlog, input_name);
-  if (input_w) {
+  if (input_w)
+  {
     int input_nid = ctx->inputs_nid + (chan - 1) * ctx->nodes_per_input;
     char *path;
     XmString label;
-    XmToggleButtonSetState(XtNameToWidget(input_w, "onoff"), TreeIsOn(input_nid) & 1, (Boolean) 0);
+    XmToggleButtonSetState(XtNameToWidget(input_w, "onoff"),
+                           TreeIsOn(input_nid) & 1, (Boolean)0);
     path = TreeGetMinimumPath(0, input_nid + ctx->data_offset);
     label = XmStringCreateSimple(path);
     TreeFree(path);
@@ -132,7 +136,8 @@ EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
   Widget input_w;
   sprintf(input_name, "*input_%d", chan);
   input_w = XtNameToWidget(inputs_dlog, input_name);
-  if (input_w) {
+  if (input_w)
+  {
     int nid = ctx->inputs_nid + (chan - 1) * ctx->nodes_per_input;
     XmdsExprPut(XtNameToWidget(input_w, "start_idx"));
     XmdsExprPut(XtNameToWidget(input_w, "end_idx"));
@@ -149,14 +154,17 @@ EXPORT int XmdsWidgetToNumber(Widget w, String prefix)
   int number = -1;
   int length = strlen(prefix);
   char *endptr;
-  for (widg = w; widg; widg = XtParent(widg)) {
+  for (widg = w; widg; widg = XtParent(widg))
+  {
     String name = XtName(widg);
     int namelen = strlen(name);
-    if (namelen > length) {
-      if (!strncmp(prefix, name, length)) {
-	number = strtol(name + length, &endptr, 10);
-	if (endptr >= (name + namelen))
-	  break;
+    if (namelen > length)
+    {
+      if (!strncmp(prefix, name, length))
+      {
+        number = strtol(name + length, &endptr, 10);
+        if (endptr >= (name + namelen))
+          break;
       }
     }
   }

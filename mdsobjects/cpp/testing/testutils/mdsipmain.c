@@ -23,9 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "mdstcpip/mdsip_connections.h"
 
@@ -43,7 +42,8 @@ int mdsip_main(int argc, char **argv)
   io = LoadIo(GetProtocol());
   if (io && io->listen)
     io->listen(extra_argc, extra_argv);
-  else {
+  else
+  {
     fprintf(stderr, "Protocol %s does not support servers\n", GetProtocol());
     return 1;
   }

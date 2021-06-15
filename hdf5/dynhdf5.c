@@ -22,37 +22,40 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsdescrip.h>
 #include <hdf5.h>
+#include <mdsdescrip.h>
 
-static herr_t(*H5Aclose_dyn) (hid_t) = 0;
-static hid_t(*H5Aget_space_dyn) (hid_t) = 0;
-static hid_t(*H5Aget_type_dyn) (hid_t) = 0;
-static herr_t(*H5Aiterate_dyn) (hid_t, unsigned *, H5A_operator_t, void *) = 0;
-static hid_t(*H5Aopen_name_dyn) (hid_t, const char *name) = 0;
-static hid_t(*H5Aread_dyn) (hid_t, hid_t, void *) = 0;
-static herr_t(*H5Dclose_dyn) (hid_t) = 0;
-static hid_t(*H5Dget_space_dyn) (hid_t) = 0;
-static hid_t(*H5Dget_type_dyn) (hid_t) = 0;
-static hid_t(*H5Dopen_dyn) (hid_t, const char *name) = 0;
-static herr_t(*H5Dread_dyn) (hid_t, hid_t, hid_t, hid_t, hid_t, void *) = 0;
-static herr_t(*H5Eget_auto_dyn) (H5E_auto_t *, void **client_data) = 0;
-static herr_t(*H5Eset_auto_dyn) (H5E_auto_t func, void *client_data) = 0;
-static herr_t(*H5Gget_objinfo_dyn) (hid_t loc_id, const char *name,
-				    hbool_t follow_link, H5G_stat_t * statbuf) = 0;
-static hid_t(*H5Gopen_dyn) (hid_t loc_id, const char *name) = 0;
-static hid_t(*H5Gclose_dyn) (hid_t group) = 0;
-static herr_t(*H5Giterate_dyn) (hid_t loc_id, const char *name, int *idx, H5G_iterate_t op,
-				void *op_data) = 0;
-static hid_t(*H5Fopen_dyn) (const char *filename, unsigned flags, hid_t access_plist) = 0;
-static hid_t(*H5Fclose_dyn) (hid_t) = 0;
-static herr_t(*H5Sclose_dyn) (hid_t) = 0;
-static int (*H5Sget_simple_extent_dims_dyn) (hid_t space_id, hsize_t dims[], hsize_t maxdims[]) = 0;
-static hid_t(*H5Tclose_dyn) (hid_t type_id) = 0;
-static H5T_class_t(*H5Tget_class_dyn) (hid_t type_id) = 0;
-static size_t(*H5Tget_precision_dyn) (hid_t type_id) = 0;
-static H5T_sign_t(*H5Tget_sign_dyn) (hid_t type_id) = 0;
-static herr_t(*H5open_dyn) (void) = 0;
+static herr_t (*H5Aclose_dyn)(hid_t) = 0;
+static hid_t (*H5Aget_space_dyn)(hid_t) = 0;
+static hid_t (*H5Aget_type_dyn)(hid_t) = 0;
+static herr_t (*H5Aiterate_dyn)(hid_t, unsigned *, H5A_operator_t, void *) = 0;
+static hid_t (*H5Aopen_name_dyn)(hid_t, const char *name) = 0;
+static hid_t (*H5Aread_dyn)(hid_t, hid_t, void *) = 0;
+static herr_t (*H5Dclose_dyn)(hid_t) = 0;
+static hid_t (*H5Dget_space_dyn)(hid_t) = 0;
+static hid_t (*H5Dget_type_dyn)(hid_t) = 0;
+static hid_t (*H5Dopen_dyn)(hid_t, const char *name) = 0;
+static herr_t (*H5Dread_dyn)(hid_t, hid_t, hid_t, hid_t, hid_t, void *) = 0;
+static herr_t (*H5Eget_auto_dyn)(H5E_auto_t *, void **client_data) = 0;
+static herr_t (*H5Eset_auto_dyn)(H5E_auto_t func, void *client_data) = 0;
+static herr_t (*H5Gget_objinfo_dyn)(hid_t loc_id, const char *name,
+                                    hbool_t follow_link,
+                                    H5G_stat_t *statbuf) = 0;
+static hid_t (*H5Gopen_dyn)(hid_t loc_id, const char *name) = 0;
+static hid_t (*H5Gclose_dyn)(hid_t group) = 0;
+static herr_t (*H5Giterate_dyn)(hid_t loc_id, const char *name, int *idx,
+                                H5G_iterate_t op, void *op_data) = 0;
+static hid_t (*H5Fopen_dyn)(const char *filename, unsigned flags,
+                            hid_t access_plist) = 0;
+static hid_t (*H5Fclose_dyn)(hid_t) = 0;
+static herr_t (*H5Sclose_dyn)(hid_t) = 0;
+static int (*H5Sget_simple_extent_dims_dyn)(hid_t space_id, hsize_t dims[],
+                                            hsize_t maxdims[]) = 0;
+static hid_t (*H5Tclose_dyn)(hid_t type_id) = 0;
+static H5T_class_t (*H5Tget_class_dyn)(hid_t type_id) = 0;
+static size_t (*H5Tget_precision_dyn)(hid_t type_id) = 0;
+static H5T_sign_t (*H5Tget_sign_dyn)(hid_t type_id) = 0;
+static herr_t (*H5open_dyn)(void) = 0;
 
 hid_t H5T_NATIVE_SCHAR_g;
 hid_t H5T_NATIVE_UCHAR_g;
@@ -67,14 +70,15 @@ hid_t H5T_NATIVE_DOUBLE_g;
 
 static int Initialized = 0;
 
-#define Find(name) name##_dyn=FindSymbol(#name)
-#define FindGlobal(name) name=(hid_t)FindSymbol(#name)
+#define Find(name) name##_dyn = FindSymbol(#name)
+#define FindGlobal(name) name = (hid_t)FindSymbol(#name)
 
 static void *FindSymbol(char *name)
 {
   void *rtn = NULL;
   int status = LibFindImageSymbol_C("hdf5", name, &rtn);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     printf("Error activating hdf5 shared library\n");
     exit(1);
   }
@@ -83,7 +87,8 @@ static void *FindSymbol(char *name)
 
 static void Initialize()
 {
-  if (!Initialized) {
+  if (!Initialized)
+  {
     Find(H5Aclose);
     Find(H5Aget_space);
     Find(H5Aget_type);
@@ -124,140 +129,109 @@ static void Initialize()
   }
 }
 
-herr_t H5Aclose(hid_t attr_id)
-{
-  return (H5Aclose_dyn) (attr_id);
-}
+herr_t H5Aclose(hid_t attr_id) { return (H5Aclose_dyn)(attr_id); }
 
-hid_t H5Aget_space(hid_t attr_id)
-{
-  return (H5Aget_space_dyn) (attr_id);
-}
+hid_t H5Aget_space(hid_t attr_id) { return (H5Aget_space_dyn)(attr_id); }
 
-hid_t H5Aget_type(hid_t attr_id)
-{
-  return (H5Aget_type_dyn) (attr_id);
-}
+hid_t H5Aget_type(hid_t attr_id) { return (H5Aget_type_dyn)(attr_id); }
 
-herr_t H5Aiterate(hid_t loc_id, unsigned *attr_num, H5A_operator_t op, void *op_data)
+herr_t H5Aiterate(hid_t loc_id, unsigned *attr_num, H5A_operator_t op,
+                  void *op_data)
 {
-  return (H5Aiterate_dyn) (loc_id, attr_num, op, op_data);
+  return (H5Aiterate_dyn)(loc_id, attr_num, op, op_data);
 }
 
 hid_t H5Aopen_name(hid_t loc_id, const char *name)
 {
-  return (H5Aopen_name_dyn) (loc_id, name);
+  return (H5Aopen_name_dyn)(loc_id, name);
 }
 
 herr_t H5Aread(hid_t attr_id, hid_t type_id, void *buf)
 {
   Initialize();
-  return (H5Aread_dyn) (attr_id, type_id, buf);
+  return (H5Aread_dyn)(attr_id, type_id, buf);
 }
 
-herr_t H5Dclose(hid_t dset_id)
-{
-  return (H5Dclose_dyn) (dset_id);
-}
+herr_t H5Dclose(hid_t dset_id) { return (H5Dclose_dyn)(dset_id); }
 
-hid_t H5Dget_space(hid_t dset_id)
-{
-  return (H5Dget_space_dyn) (dset_id);
-}
+hid_t H5Dget_space(hid_t dset_id) { return (H5Dget_space_dyn)(dset_id); }
 
-hid_t H5Dget_type(hid_t dset_id)
-{
-  return (H5Dget_type_dyn) (dset_id);
-}
+hid_t H5Dget_type(hid_t dset_id) { return (H5Dget_type_dyn)(dset_id); }
 
 hid_t H5Dopen(hid_t file_id, const char *name)
 {
-  return (H5Dopen_dyn) (file_id, name);
+  return (H5Dopen_dyn)(file_id, name);
 }
 
-herr_t H5Dread(hid_t dset_id, hid_t mem_type, hid_t mem_space_id, hid_t file_space_id,
-	       hid_t plist_id, void *buf)
+herr_t H5Dread(hid_t dset_id, hid_t mem_type, hid_t mem_space_id,
+               hid_t file_space_id, hid_t plist_id, void *buf)
 {
-  return (H5Dread_dyn) (dset_id, mem_type, mem_space_id, file_space_id, plist_id, buf);
+  return (H5Dread_dyn)(dset_id, mem_type, mem_space_id, file_space_id, plist_id,
+                       buf);
 }
 
-herr_t H5Eget_auto(H5E_auto_t * func, void **client_data)
+herr_t H5Eget_auto(H5E_auto_t *func, void **client_data)
 {
   Initialize();
-  return (H5Eget_auto_dyn) (func, client_data);
+  return (H5Eget_auto_dyn)(func, client_data);
 }
 
 herr_t H5Eset_auto(H5E_auto_t func, void *client_data)
 {
   Initialize();
-  return (H5Eset_auto_dyn) (func, client_data);
+  return (H5Eset_auto_dyn)(func, client_data);
 }
 
-herr_t H5Gget_objinfo(hid_t loc_id, const char *name, hbool_t follow_link, H5G_stat_t * statbuf)
+herr_t H5Gget_objinfo(hid_t loc_id, const char *name, hbool_t follow_link,
+                      H5G_stat_t *statbuf)
 {
-  return (H5Gget_objinfo_dyn) (loc_id, name, follow_link, statbuf);
+  return (H5Gget_objinfo_dyn)(loc_id, name, follow_link, statbuf);
 }
 
 hid_t H5Gopen(hid_t loc_id, const char *name)
 {
-  return (H5Gopen_dyn) (loc_id, name);
+  return (H5Gopen_dyn)(loc_id, name);
 }
 
-herr_t H5Gclose(hid_t group)
-{
-  return (H5Gclose_dyn) (group);
-}
+herr_t H5Gclose(hid_t group) { return (H5Gclose_dyn)(group); }
 
-herr_t H5Giterate(hid_t loc_id, const char *name, int *idx, H5G_iterate_t op, void *op_data)
+herr_t H5Giterate(hid_t loc_id, const char *name, int *idx, H5G_iterate_t op,
+                  void *op_data)
 {
-  return (H5Giterate_dyn) (loc_id, name, idx, op, op_data);
+  return (H5Giterate_dyn)(loc_id, name, idx, op, op_data);
 }
 
 hid_t H5Fopen(const char *filename, unsigned flags, hid_t access_plist)
 {
   Initialize();
-  return (H5Fopen_dyn) (filename, flags, access_plist);
+  return (H5Fopen_dyn)(filename, flags, access_plist);
 }
 
-hid_t H5Fclose(hid_t fid)
+hid_t H5Fclose(hid_t fid) { return (H5Fclose_dyn)(fid); }
+
+herr_t H5Sclose(hid_t attr_id) { return (H5Sclose_dyn)(attr_id); }
+
+int H5Sget_simple_extent_dims(hid_t space_id, hsize_t dims[],
+                              hsize_t maxdims[])
 {
-  return (H5Fclose_dyn) (fid);
+  return (H5Sget_simple_extent_dims_dyn)(space_id, dims, maxdims);
 }
 
-herr_t H5Sclose(hid_t attr_id)
-{
-  return (H5Sclose_dyn) (attr_id);
-}
+hid_t H5Tclose(hid_t type_id) { return (H5Tclose_dyn)(type_id); }
 
-int H5Sget_simple_extent_dims(hid_t space_id, hsize_t dims[], hsize_t maxdims[])
-{
-  return (H5Sget_simple_extent_dims_dyn) (space_id, dims, maxdims);
-}
-
-hid_t H5Tclose(hid_t type_id)
-{
-  return (H5Tclose_dyn) (type_id);
-}
-
-H5T_class_t H5Tget_class(hid_t type_id)
-{
-  return (H5Tget_class_dyn) (type_id);
-}
+H5T_class_t H5Tget_class(hid_t type_id) { return (H5Tget_class_dyn)(type_id); }
 
 size_t H5Tget_precision(hid_t type_id)
 {
-  return (H5Tget_precision_dyn) (type_id);
+  return (H5Tget_precision_dyn)(type_id);
 }
 
-H5T_sign_t H5Tget_sign(hid_t type_id)
-{
-  return (H5Tget_sign_dyn) (type_id);
-}
+H5T_sign_t H5Tget_sign(hid_t type_id) { return (H5Tget_sign_dyn)(type_id); }
 
 herr_t H5open(void)
 {
   Initialize();
-  return (H5open_dyn) ();
+  return (H5open_dyn)();
 }
 
 /*

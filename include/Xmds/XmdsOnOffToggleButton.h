@@ -6,15 +6,15 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSONOFFTOGGLEBUTTON.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsOnOffToggleButton.H
+                Name:   XmdsOnOffToggleButton.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Thomas W. Fredian
+                Author:	Thomas W. Fredian
 
-		Date:   14-JAN-1992
+                Date:   14-JAN-1992
 
-		Purpose: Public declarations for XmdsOnOffToggleButton widget
+                Purpose: Public declarations for XmdsOnOffToggleButton widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -33,13 +33,15 @@
 
 /* Resources */
 
-#define XmdsNnid               "nid"	/* Nid */
-#define XmdsNnidOffset         "nidOffset"	/* Nid offset */
-#define XmdsNshowPath          "showPath"	/* Nid */
-#define XmdsNputOnApply        "putOnApply"	/* Put when a XmdsApplyAllXds is called */
+#define XmdsNnid "nid"             /* Nid */
+#define XmdsNnidOffset "nidOffset" /* Nid offset */
+#define XmdsNshowPath "showPath"   /* Nid */
+#define XmdsNputOnApply                                \
+  "putOnApply" /* Put when a XmdsApplyAllXds is called \
+                */
 
 /* External creation routines:
-*/
+ */
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreateOnOffToggleButton();
@@ -48,15 +50,15 @@ extern int XmdsOnOffToggleButtonApply();
 extern int XmdsOnOffToggleButtonPut();
 extern void XmdsOnOffToggleButtonReset();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args,
-					  Cardinal argcount);
+extern Widget XmdsCreateOnOffToggleButton(Widget parent, String name,
+                                          ArgList args, Cardinal argcount);
 extern Boolean XmdsIsOnOffToggleButton(Widget w);
 extern int XmdsOnOffToggleButtonApply(Widget w);
 extern int XmdsOnOffToggleButtonPut(Widget w);
 extern void XmdsOnOffToggleButtonReset(Widget w);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
-#endif				/* _XmdsOnOffToggleButton */
+#endif /* _XmdsOnOffToggleButton */

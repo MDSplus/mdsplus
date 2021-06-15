@@ -13,15 +13,15 @@
 /*  CMS REPLACEMENT HISTORY, Element XMDSEXPR.H */
 /*------------------------------------------------------------------------------
 
-		Name:   EXPR.H
+                Name:   EXPR.H
 
-		Type:   C include
+                Type:   C include
 
-		Author:	Josh Stillerman
+                Author:	Josh Stillerman
 
-		Date:   23-NOV-1989
+                Date:   23-NOV-1989
 
-		Purpose: Public declarations for  expr widget
+                Purpose: Public declarations for  expr widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -38,7 +38,7 @@
 
 #ifndef XmdsIsExpr
 #define XmdsIsExpr(w) XtIsSubclass(w, xmdsExprWidgetClass)
-#endif				/* XmdsIsExpr */
+#endif /* XmdsIsExpr */
 
 /* XmdsExpr Widget Class */
 externalref WidgetClass xmdsExprWidgetClass;
@@ -58,9 +58,10 @@ void XmdsExprSetDefaultNid();
 extern void XmdsExprSetNid();
 extern void XmdsExprSetXd();
 
-#else				/* _NO_PROTO */
+#else /* _NO_PROTO */
 
-extern Widget XmdsCreateExpr(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern Widget XmdsCreateExpr(Widget parent, char *name, ArgList args,
+                             Cardinal argcount);
 extern struct descriptor *XmdsExprGetXd(Widget w);
 extern Boolean XmdsExprPut(Widget w);
 extern Boolean XmdsExprApply(Widget w);
@@ -70,7 +71,7 @@ void XmdsExprSetDefaultNid(Widget w, int nid);
 extern void XmdsExprSetNid(Widget w, int nid, int offset);
 extern void XmdsExprSetXd(Widget w, struct descriptor *dsc);
 
-#endif				/* _NO_PROTO */
+#endif /* _NO_PROTO */
 
 /* Resources */
 
@@ -89,5 +90,5 @@ extern void XmdsExprSetXd(Widget w, struct descriptor *dsc);
 externalref WidgetClass xmdsExprWidgetClass;
 externalref struct _XmdsExprClassRec xmdsExprClassRec;
 
-#endif				/* _XmdsExpr_H */
+#endif /* _XmdsExpr_H */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

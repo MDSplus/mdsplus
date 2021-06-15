@@ -35,6 +35,7 @@ class _ACQ1001_ST(acq400_base._ACQ400_ST_BASE):
     D-Tacq ACQ2106 stream support.
     """
 
+
 class_ch_dict = acq400_base.create_classes(
     _ACQ1001_ST, "ACQ1001_ST",
     list(_ACQ1001_ST.base_parts) + list(_ACQ1001_ST.st_base_parts),

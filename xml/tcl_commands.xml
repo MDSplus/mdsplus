@@ -1231,6 +1231,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       
     </help>
     <routine name="TclSetVersions"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
     <qualifier name="MODEL"/>
     <qualifier name="SHOT"/>
   </syntax>

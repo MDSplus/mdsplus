@@ -108,9 +108,10 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 						mode, action.getDispatch().getIdent().getString(), action.getServerAddress(),
 						action.getStatus());
 			}
-			msgs.add(mds_event);
+			//msgs.add(mds_event);
 			synchronized (MdsMonitor.this)
 			{
+			        msgs.add(mds_event);
 				notify();
 			}
 		}
@@ -194,8 +195,11 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 	{
 		while (true)
 		{
-			while (!msgs.isEmpty())
-			{
+		    synchronized(MdsMonitor.this)
+		    {
+		        try {
+			  while (!msgs.isEmpty())
+			  {
 				final byte[] msg = msgs.remove().toBytes();
 				for (final BufferedOutputStream stream : streams)
 				{
@@ -207,6 +211,12 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 					catch (final Exception exc)
 					{}
 				}
+			    }
+			 } catch(Exception exc)
+			 {
+		            System.out.println("UNEXPECTED EXCPETION ORA");
+			 }
+
 			}
 			try
 			{

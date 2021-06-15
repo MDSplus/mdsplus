@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
+#include "mds_gendevice.h"
 #include "a14_gen.h"
 #include <strroutines.h>
 #include <libroutines.h>
@@ -128,7 +128,7 @@ static int ReadChannel(InStoreStruct * setup, int memptr, int first_idx, int sam
   *samples_read = 0;
   channel_select.channel = channel;
   pio(16, 6, channel_select);
-  while (status & 1 && *samples_read < samples) {
+  while (STATUS_OK && *samples_read < samples) {
     int samples_to_read = min(samples - *samples_read, 32000);
     int smps;
     if (samples_to_read > 1 && (((address + samples_to_read) & 0xff) == 0xff))
@@ -273,7 +273,7 @@ EXPORT int a14___store(struct descriptor *niddsc __attribute__ ((unused)), InSto
   }
   free(raw.pointer);
   raw.pointer = malloc((max_idx - min_idx + 1) * sizeof(short));
-  for (i = 0; i < 6 && status & 1; i++, range = range >> 3) {
+  for (i = 0; i < 6 && STATUS_OK; i++, range = range >> 3) {
     int chan_nid = setup->head_nid + (A14_N_INPUT_2 - A14_N_INPUT_1) * i + A14_N_INPUT_1;
     if (TreeIsOn(chan_nid) & 1) {
       int start_idx_nid = chan_nid + A14_N_INPUT_1_STARTIDX - A14_N_INPUT_1;
@@ -281,12 +281,12 @@ EXPORT int a14___store(struct descriptor *niddsc __attribute__ ((unused)), InSto
       offset = offsets[range & 7];
       coefficient = coeffs[range & 7];
       status = DevLong(&start_idx_nid, &raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
       status = DevLong(&end_idx_nid, &raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(raw.bounds[0].l, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -296,7 +296,7 @@ EXPORT int a14___store(struct descriptor *niddsc __attribute__ ((unused)), InSto
 	status =
 	    ReadChannel(setup, start_addr, raw.bounds[0].l, raw.m[0], i, (short *)raw.pointer,
 			&samples_read);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  raw.a0 = raw.pointer - raw.bounds[0].l * sizeof(short);
 	  raw.arsize = samples_read * sizeof(short);
 	  raw.bounds[0].u = raw.bounds[0].l + samples_read - 1;

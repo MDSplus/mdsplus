@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "prototypes.h"
 #include "module.h"
+#include "prototypes.h"
 
 //-------------------------------------------------------------------------
 // parse_cts_db()
@@ -79,26 +79,27 @@ void parse_cts_db(struct MODULE *in, struct Module_ *out)
   if (MSGLVL(FUNCTION_NAME))
     printf("parse_cts_db()\n");
 
-  sprintf(fmt, "%%.%ds", (int)(MODULE_ENTRY - 1));	// create format string
-  memset(line, ' ', MODULE_ENTRY + 1);	// 2002.02.06
-  sprintf(line, fmt, (char *)in);	// extract first (single) line
+  sprintf(fmt, "%%.%ds", (int)(MODULE_ENTRY - 1)); // create format string
+  memset(line, ' ', MODULE_ENTRY + 1);             // 2002.02.06
+  sprintf(line, fmt, (char *)in);                  // extract first (single) line
 
   // parse ...
-  sscanf(line, "%32s GK%c%1d%02d:N%2d %40c", out->name, &adpt,	// temporary
-	 &out->id, &out->crate, &out->slot, comm	// temporary
-      );
-  out->adapter = adpt - 'A';	// adjustment ...
+  sscanf(line, "%32s GK%c%1d%02d:N%2d %40c", out->name, &adpt, // temporary
+         &out->id, &out->crate, &out->slot, comm               // temporary
+  );
+  out->adapter = adpt - 'A'; // adjustment ...
 
   // find end of comment
-  for (i = sizeof(comm) - 1; i >= 0; --i) {
+  for (i = sizeof(comm) - 1; i >= 0; --i)
+  {
     if (comm[i] != ' ')
       break;
   }
-  comm[i + 1] = '\0';		// 'early' termination
+  comm[i + 1] = '\0'; // 'early' termination
 #pragma GCC diagnostic push
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
+  _Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
 #endif
-  strncpy(out->comment, comm, i);	// 'copy' it over       [2002.02.07]
+      strncpy(out->comment, comm, i); // 'copy' it over       [2002.02.07]
 #pragma GCC diagnostic pop
 }

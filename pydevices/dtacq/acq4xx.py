@@ -21,16 +21,20 @@ import numpy
 if sys.version_info < (3,):
     import Queue as queue
     zipped = zip
-    string = (str, unicode) #analysis:ignore
+    string = (str, unicode)  # analysis:ignore
+
     def nop(arg): return arg
     ABC = object
     s = b = abstractmethod = abstractproperty = nop
 else:
     import queue
     xrange = range
+
     def zipped(*a, **k): return list(zip(*a, **k))
     string = (bytes, str)
+
     def s(b): return b if isinstance(b, str) else b.decode('utf-8')
+
     def b(s): return s if isinstance(s, bytes) else s.encode('utf-8')
     from abc import ABC, abstractmethod, abstractproperty
 
@@ -156,6 +160,7 @@ class nc(object):
     _chain = None
     _server = None
     __stop = None
+
     @staticmethod
     def _tupletostr(value):
         """
@@ -209,6 +214,7 @@ class nc(object):
 
     @property
     def on(self): return not self._nc__stop.is_set()
+
     def stop(self): self._nc__stop.set()
 
     def lines(self, timeout=60):
@@ -246,6 +252,7 @@ class nc(object):
         if cmd.startswith('_'):
             traceback.print_stack()
         sock = self.sock
+
         def recvstr(): return s(sock.recv(1024))
         try:
             if debug >= 3:
@@ -469,6 +476,7 @@ class STATE:
     names = [STOP, ARM, PRE, POST, FIN1, FIN2]
     _loggers = {}
     _lock = threading.Lock()
+
     @classmethod
     def get_name(cls, id): return cls.names[int(id)]
 
@@ -514,6 +522,7 @@ class STATE:
 
         @property
         def on(self): return not self._stopped.is_set()
+
         def stop(self): self._stopped.set()
 
         def run(self):
@@ -636,6 +645,7 @@ class _property_aggr(_property_str):
 class _property_bool(_property_str):
     @staticmethod
     def _rcast(val): return int(val) != 0
+
     @staticmethod
     def _wcast(val): return 1 if val else 0
 
@@ -664,6 +674,7 @@ class _property_list_f(_property_str):
 
 class _property_grp(object):
     _parent = None
+
     def getdoc(self): return self.__doc__
 
     def __call__(self, cmd, *a, **kw):
@@ -795,6 +806,7 @@ class hwmon_knobs(object):
     in3 = _property_int('in3', RO)
     in4 = _property_int('in4', RO)
     temp = _property_int('temp', RO)
+
     @property
     def help(self):
         return self('help', timeout=13).split('\n')
@@ -813,6 +825,7 @@ class dtacq_knobs(object):
     MODEL = _property_str('MODEL', RO)
     NCHAN = _property_int('NCHAN', RO)
     SERIAL = _property_str('SERIAL', RO)
+
     @property
     def help(self):
         return self('help', timeout=13).split('\n')
@@ -954,6 +967,7 @@ class carrier_knobs(dtacq_knobs):
 
     @property
     def GPG_CLK_ALL(self): return self.gpg_clk
+
     @GPG_CLK_ALL.setter
     def GPG_CLK_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -967,6 +981,7 @@ class carrier_knobs(dtacq_knobs):
 
     @property
     def GPG_SYNC_ALL(self): return self.gpg_sync
+
     @GPG_SYNC_ALL.setter
     def GPG_SYNC_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -980,6 +995,7 @@ class carrier_knobs(dtacq_knobs):
 
     @property
     def GPG_TRG_ALL(self): return self.gpg_trg
+
     @GPG_TRG_ALL.setter
     def GPG_TRG_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -991,7 +1007,8 @@ class carrier_knobs(dtacq_knobs):
                              doc="Live mode {0:off, 1:free-run, 2:pre-post}")
 
     class SIG(_property_grp):
-        class SOFT_TRIGGER(_property_exe): pass  # analysis:ignore
+        class SOFT_TRIGGER(_property_exe):
+            pass  # analysis:ignore
         ZCLK_SRC = _property_str('ZCLK_SRC', doc='INT33M, CLK.d0 - CLK.d7')
 
         class FP(_property_grp):
@@ -1000,28 +1017,56 @@ class carrier_knobs(dtacq_knobs):
             TRG = _property_str('TRG')
 
         class SRC(_property_grp):
-            class CLK(_property_idx): pass  # analysis:ignore
-            class SYNC(_property_idx): pass  # analysis:ignore
-            class TRG(_property_idx): pass  # analysis:ignore
+            class CLK(_property_idx):
+                pass  # analysis:ignore
+
+            class SYNC(_property_idx):
+                pass  # analysis:ignore
+
+            class TRG(_property_idx):
+                pass  # analysis:ignore
 
         class CLK(_property_grp):
-            TRAIN_REQ = _property_int('TRAIN_REQ', RO) # custom  # analysis:ignore
-        class CLK_EXT(_property_cnt): pass  # analysis:ignore
+            # custom  # analysis:ignore
+            TRAIN_REQ = _property_int('TRAIN_REQ', RO)
+
+        class CLK_EXT(_property_cnt):
+            pass  # analysis:ignore
+
         class CLK_MB(_property_cnt):  # analysis:ignore
             FIN = _property_int('FIN', doc='External input frequency')
             SET = _property_int('SET', doc='Set desired MB frequency')
             READY = _property_int('READY', RO, doc='Clock generation ready')
+
         class CLK_S1(_property_grp):  # 1-6  # analysis:ignore
             FREQ = _property_int('FREQ')
-        class EVENT_SRC(_property_idx): pass  # analysis:ignore
-        class EVT_EXT(_property_cnt): pass  # analysis:ignore
-        class EVT_MB(_property_cnt): pass  # analysis:ignore
-        class EVT_S1(_property_cnt): pass  # 1-6  # analysis:ignore
-        class SYN_EXT(_property_cnt): pass  # analysis:ignore
-        class SYN_MB(_property_cnt): pass  # analysis:ignore
-        class SYN_S1(_property_cnt): pass  # 1-6  # analysis:ignore
-        class TRG_MB(_property_cnt): pass  # analysis:ignore
-        class TRG_S1(_property_cnt): pass  # 1-6  # analysis:ignore
+
+        class EVENT_SRC(_property_idx):
+            pass  # analysis:ignore
+
+        class EVT_EXT(_property_cnt):
+            pass  # analysis:ignore
+
+        class EVT_MB(_property_cnt):
+            pass  # analysis:ignore
+
+        class EVT_S1(_property_cnt):
+            pass  # 1-6  # analysis:ignore
+
+        class SYN_EXT(_property_cnt):
+            pass  # analysis:ignore
+
+        class SYN_MB(_property_cnt):
+            pass  # analysis:ignore
+
+        class SYN_S1(_property_cnt):
+            pass  # 1-6  # analysis:ignore
+
+        class TRG_MB(_property_cnt):
+            pass  # analysis:ignore
+
+        class TRG_S1(_property_cnt):
+            pass  # 1-6  # analysis:ignore
 
     def STREAM_OPTS(self, raw=None, subset=None, nowhere=False):  # package.w7x
         if nowhere:
@@ -1081,7 +1126,9 @@ class acq2106_knobs(carrier_knobs):
         cmd = 'load.si5326'
     run0_ready = _property_bool('run0_ready', RO)
     set_si5326_bypass = _property_bool('set_si5326_bypass')
-    class si5326_step_phase(_property_exe): pass  # analysis:ignore
+
+    class si5326_step_phase(_property_exe):
+        pass  # analysis:ignore
     si5326_step_state = _property_state('si5326_step_state')
     si5326bypass = _property_str('si5326bypass', RO)
     si5326config = _property_str('si5326config', RO)
@@ -1098,12 +1145,17 @@ class acq2106_knobs(carrier_knobs):
             LOL = _property_bool('LOL', RO,
                                  doc='Jitter Cleaner - Loss of Lock')
             OE_CLK1_ZYNQ = _property_int('OE_CLK1_ZYNQ')
-            class OE_CLK1_ELF1(_property_exe): pass  # 1-6  # analysis:ignore
+
+            class OE_CLK1_ELF1(_property_exe):
+                pass  # 1-6  # analysis:ignore
+
             class Si5326(_property_grp):  # analysis:ignore
                 PLAN = _property_str('PLAN',
                                      doc='{10M, 20M, 24M, 40M, 50M, 80M}')
                 PLAN_EN = _property_int('PLAN_EN')  # unused? EN for ENABLED?
-            class Si570_OE(_property_exe): pass  # analysis:ignore
+
+            class Si570_OE(_property_exe):
+                pass  # analysis:ignore
 
     class TRANS_ACT(_property_grp):
         class FIND_EV(_property_grp):
@@ -1138,8 +1190,12 @@ class module_knobs(site_knobs):
     CLKDIV = _property_int('CLKDIV')
 
     class SIG(_property_grp):
-        class CLK_COUNT(_property_cnt): pass  # analysis:ignore
-        class sample_count(_property_cnt): pass  # analysis:ignore
+        class CLK_COUNT(_property_cnt):
+            pass  # analysis:ignore
+
+        class sample_count(_property_cnt):
+            pass  # analysis:ignore
+
         class SAMPLE_COUNT(_property_cnt):  # analysis:ignore
             RUNTIME = _property_str('RUNTIME')
     EVENT0 = _property_str('EVENT0', doc='enabled or disabled')
@@ -1159,8 +1215,10 @@ class module_knobs(site_knobs):
     TRG = _property_str('TRG', doc='enabled or disabled')
     TRG_DX = _property_str('TRG:DX', doc='d0 through d7')
     TRG_SENSE = _property_str('TRG:SENSE', doc='1 for rising, 0 for falling')
+
     @property
     def CLK_ALL(self): return self.clk
+
     @CLK_ALL.setter
     def CLK_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -1169,6 +1227,7 @@ class module_knobs(site_knobs):
 
     @property
     def TRG_ALL(self): return self.trg
+
     @TRG_ALL.setter
     def TRG_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -1177,6 +1236,7 @@ class module_knobs(site_knobs):
 
     @property
     def EVENT0_ALL(self): return self.event0
+
     @EVENT0_ALL.setter
     def EVENT0_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -1185,6 +1245,7 @@ class module_knobs(site_knobs):
 
     @property
     def EVENT1_ALL(self): return self.event1
+
     @EVENT1_ALL.setter
     def EVENT1_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -1193,6 +1254,7 @@ class module_knobs(site_knobs):
 
     @property
     def RGM_ALL(self): return self.rgm
+
     @RGM_ALL.setter
     def RGM_ALL(self, value):
         value = tuple(str(e) for e in value[:3])
@@ -1207,7 +1269,10 @@ class acq4xx_knobs(module_knobs):
     simulate = _property_bool('simulate')
     es_enable = _property_int('es_enable',
                               doc='data will include an event sample')
-    class SIG(module_knobs.SIG): pass  # analysis:ignore
+
+    class SIG(module_knobs.SIG):
+        pass  # analysis:ignore
+
     class AI(_property_grp):  # analysis:ignore
         class CAL(_property_cnt):
             ESLO = _property_list_f('ESLO')
@@ -1225,21 +1290,35 @@ class acq480_knobs(acq4xx_knobs):
     acq480_loti = _property_int('acq480_loti', RO,
                                 doc='Jitter Cleaner - Loss of Time')
     train = _property_int('train', RO, doc='Jitter Cleaner - Loss of Time')
+
     class ACQ480(_property_grp):  # analysis:ignore
         TRAIN = _property_str('TRAIN', RO)
+
         class FIR(_property_idx):  # analysis:ignore
             _format_idx = '%02d'
             DECIM = _property_int('DECIM')
+
         class FPGA(_property_grp):  # analysis:ignore
             DECIM = _property_int('DECIM')
-        class INVERT(_property_idx): _format_idx = '%02d'  # analysis:ignore
-        class GAIN(_property_idx): _format_idx = '%02d'  # analysis:ignore
-        class HPF(_property_idx): _format_idx = '%02d'  # analysis:ignore
-        class LFNS(_property_idx): _format_idx = '%02d'  # analysis:ignore
-        class T50R(_property_idx): _format_idx = '%02d'  # analysis:ignore
+
+        class INVERT(_property_idx):
+            _format_idx = '%02d'  # analysis:ignore
+
+        class GAIN(_property_idx):
+            _format_idx = '%02d'  # analysis:ignore
+
+        class HPF(_property_idx):
+            _format_idx = '%02d'  # analysis:ignore
+
+        class LFNS(_property_idx):
+            _format_idx = '%02d'  # analysis:ignore
+
+        class T50R(_property_idx):
+            _format_idx = '%02d'  # analysis:ignore
         T50R_ALL = _property_int('T50R')
     JC_LOL = _property_int('JC_LOL', RO, doc='Jitter Cleaner - Loss of Lock')
     JC_LOS = _property_int('JC_LOS', RO, doc='Jitter Cleaner - Loss of Signal')
+
     class SIG(acq4xx_knobs.SIG):  # analysis:ignore
         class CLK(_property_grp):
             TRAIN_BSY = _property_int('TRAIN_BSY',
@@ -1250,19 +1329,30 @@ class ao420_knobs(module_knobs):
     run = _property_bool('run', RO)
     task_active = _property_bool('task_active', RO)
     ACC = _property_str('ACC')
+
     class AO(_property_grp):  # analysis:ignore
         class GAIN(_property_grp):
-            class CH(_property_idx): pass  # analysis:ignore
+            class CH(_property_idx):
+                pass  # analysis:ignore
+
         class EXPR(_property_grp):  # analysis:ignore
             class CH(_property_idx):
                 @staticmethod
                 def _wcast(val):
                     return repr(str(val))
+
     class AWG(_property_grp):  # analysis:ignore
-        class D(_property_idx): pass  # analysis:ignore
-        class G(_property_idx): pass  # analysis:ignore
-    class D(_property_idx): _idxsep = ''  # analysis:ignore
-    class G(_property_idx): _idxsep = ''  # analysis:ignore
+        class D(_property_idx):
+            pass  # analysis:ignore
+
+        class G(_property_idx):
+            pass  # analysis:ignore
+
+    class D(_property_idx):
+        _idxsep = ''  # analysis:ignore
+
+    class G(_property_idx):
+        _idxsep = ''  # analysis:ignore
 
 
 # --------------------
@@ -1397,7 +1487,9 @@ class carrier(dtacq, carrier_knobs):
         'TRANSIENT:OSAM', 'TRANSIENT:SET_ARM', 'TRANSIENT:SET_ABORT',
         'set_arm', 'set_abort',
     ]
+
     def __init__(self, server): super(carrier, self).__init__(server, 0)
+
     @property
     def log(self):
         if self._log is None:
@@ -1612,8 +1704,10 @@ class module(dtacq, module_knobs):
 
     @property
     def slo(self): return self.AI.CAL.ESLO[1:]
+
     @property
     def off(self): return self.AI.CAL.EOFF[1:]
+
     @property
     def off_slo(self): return zipped(self.off, self.slo)
 
@@ -1649,6 +1743,7 @@ class acq425(module, acq425_knobs):
     class GAIN(_property_idx):
         _format_idx = '%02d'
         _rcast = int
+
         @staticmethod
         def _wcast(val): return '%dV' % (val,)
         ALL = _property_str('ALL')
@@ -1707,10 +1802,13 @@ class acq480(module, acq480_knobs):
         return limit
 
     def _clkdiv_adc(self, fir): return self._FIR_DECIM[fir]
+
     @cached_property
     def _clkdiv_fpga(self): return self.ACQ480.FPGA.DECIM
+
     @cached_property
     def _firmode(self): return self.ACQ480.FIR[1]
+
     def _clkdiv(self, fir): return self._clkdiv_adc(fir)*self._clkdiv_fpga
 
     def _init(self, gain=None, invert=None, hpf=None, lfns=None, t50r=None,
@@ -1809,6 +1907,7 @@ class mgt482(dtacq):
         super(mgt482, self).__init__(server, self._linemap[line])
         self._line = line
     spad = _property_int('spad')
+
     @property
     def aggregator(self):
         sites = self('aggregator').split(' ')[1].split('=')[1]
@@ -1835,6 +1934,7 @@ class mgt_run_shot_logger(threading.Thread):
     """ used by mgtdram """
     _count = -1
     _pid = None
+
     @property
     def error(self):
         with self._error_lock:
@@ -1852,7 +1952,7 @@ class mgt_run_shot_logger(threading.Thread):
 
     def __init__(self, host, autostart=True, debug=False, daemon=True):
         super(mgt_run_shot_logger, self).__init__(
-                name='mgt_run_shot(%s)' % host)
+            name='mgt_run_shot(%s)' % host)
         self.daemon = daemon
         self.mgt = line_logger((host, _mgt_log_port))
         self._busy_lock = threading.Lock()
@@ -1870,7 +1970,7 @@ class mgt_run_shot_logger(threading.Thread):
 
     def run(self):
         re_busy = re.compile(
-                '^BUSY pid ([0-9]+) SIG:SAMPLE_COUNT:COUNT ([0-9]+)')
+            '^BUSY pid ([0-9]+) SIG:SAMPLE_COUNT:COUNT ([0-9]+)')
         re_idle = re.compile('^.* SIG:SAMPLE_COUNT:COUNT ([0-9]+)')
         re_error = re.compile('^ERROR: (.*)')
         for line in self.mgt.lines():
@@ -1934,6 +2034,7 @@ class mgtdram(dtacq):
         self('mgt_run_shot %d' % (int(num_blks),))
 
     def mgt_taskset(self, *args): self('mgt_taskset', *args)
+
     def mgt_abort(self): self.sock.send('mgt_abort\n')
 
 
@@ -1956,6 +2057,7 @@ class STREAM_MODE:
 class _streaming(ABC):
     @abstractmethod
     def get_dt(self): pass
+
     @abstractproperty
     def es_clock_div(self): pass
     active_streams = (0,)
@@ -1963,10 +2065,13 @@ class _streaming(ABC):
     use_eth = False
     use_mgt = False
     has_es = False
+
     @property
     def id(self): return "%s_%03d" % (self._setting_host, self._setting_shot)
+
     @property
     def _streams(self): return self._streaming__streams.get(self.id, None)
+
     @_streams.setter
     def _streams(self, value):
         if isinstance(value, (set,)):
@@ -1978,10 +2083,13 @@ class _streaming(ABC):
         @abstractmethod
         def buffers(self): pass  # generator yielding
         # numpy.array([sample, channel], '<i2', order='C')
+
         @abstractproperty
         def clock(self): pass  # in Hz
+
         @abstractproperty
         def nSamples(self): pass  # chunk size
+
         @abstractproperty
         def nChannels(self): pass  # number of channels
         triggered = False
@@ -1998,8 +2106,10 @@ class _streaming(ABC):
 
         @property
         def on(self): return not self._stopped.is_set()
+
         @property
         def has_es(self): return self.dev.has_es
+
         def stop(self): self._stopped.set()
 
         def store(self, i0, block):
@@ -2050,9 +2160,9 @@ class _streaming(ABC):
                 if a.size == 0:
                     return numpy.empty(0, 'bool')
                 return numpy.nonzero(
-                        (a[:, _es_marker.static] == _es_marker.int16.static)
-                        .all(1)
-                    )[0]
+                    (a[:, _es_marker.static] == _es_marker.int16.static)
+                    .all(1)
+                )[0]
 
             def get_count(a, mark):
                 return int(
@@ -2067,14 +2177,14 @@ class _streaming(ABC):
                         self.trg_count = count
                     else:
                         self.es_remaining = numpy.concatenate(
-                                (self.es_remaining, a[pos:mark, :]), 0)
+                            (self.es_remaining, a[pos:mark, :]), 0)
                         store_if()
                         store_rest()
                         self.cur_idx = (count-self.trg_count)//clock_div
                     pos = mark + 1
                 if pos < self.nSamples:
                     self.es_remaining = numpy.concatenate(
-                            (self.es_remaining, a[pos:, :]), 0)
+                        (self.es_remaining, a[pos:, :]), 0)
                     store_if()
             store_rest()
 
@@ -2134,6 +2244,7 @@ class _streaming(ABC):
 
 class _streaming_eth(_streaming):
     _setting_stream = STREAM_MODE.OFF
+
     @property
     def use_stream(self): return self._setting_stream > 0
 
@@ -2167,7 +2278,6 @@ class _streaming_eth(_streaming):
         nSamples = 0x40000
         nChannels = "set in __init__"
         clock = "set in __init__"
-
 
         def __init__(self, dev, idx, share):
             super(_streaming_eth.eth_stream, self).__init__(dev, "eth", share)
@@ -2286,8 +2396,11 @@ class _streaming_mgt482(_streaming_eth):
             self.mgt[1]._init()
 
     def get_port_name(self, port): return 'AB'[port]
+
     def get_sites(self, i): return self.mgt[i]._sites
+
     def get_devid(self, i): return self.mgt[i]._devid
+
     @cached_property
     def active_streams(self):
         if self.use_mgt:
@@ -2296,9 +2409,12 @@ class _streaming_mgt482(_streaming_eth):
 
     @property
     def use_eth(self): return self._setting_stream == STREAM_MODE.ETH
+
     @property
     def use_mgt(self): return self._setting_stream == STREAM_MODE.MGT
+
     def _blockgrp(self, i): return len(self.get_sites(i))
+
     @classmethod
     def get_mgt_sites(cls):
         ai = set()
@@ -2336,7 +2452,7 @@ class _streaming_mgt482(_streaming_eth):
         def __init__(self, dev, lane, share):
             self.devid = dev.get_devid(lane)
             super(_streaming_mgt482.mgt_stream, self).__init__(
-                    dev, "mgt%d" % self.devid, share)
+                dev, "mgt%d" % self.devid, share)
             self.lane = lane
             self.post = self.dev._setting_post
             self.blockgrp = self.dev._blockgrp(self.lane)
@@ -2356,6 +2472,7 @@ class _streaming_mgt482(_streaming_eth):
 
         def buffers(self):
             def idx2buf(idx): return int((idx*self.blockgrp)//self.nblocks)+1
+
             def idx2blk(idx): return (idx*self.blockgrp) % self.nblocks
 
             def get_bufdir(buf):
@@ -2378,7 +2495,7 @@ class _streaming_mgt482(_streaming_eth):
             params = ['mgt-stream', str(self.devid), str(self.blockgrp)]
             try:
                 self.stream = subprocess.Popen(
-                        params, stdout=log, stderr=subprocess.STDOUT)
+                    params, stdout=log, stderr=subprocess.STDOUT)
             except Exception as e:
                 dprint("[%s] failed to start stream '%s %s %s': %s",
                        self.name, params[0], params[1], params[2], e)
@@ -2535,6 +2652,7 @@ class _carrier(_dtacq, _streaming):
     _setting_post = 0
     ai_sites = None
     ao_sites = None
+
     @property
     def es_clock_div(self): return self._master._clkdiv_fpga
 
@@ -2550,20 +2668,28 @@ class _carrier(_dtacq, _streaming):
                 continue
             setup(*args)
     _nc_class = carrier
+
     @cached_property
     def nc(self): return self._nc_class(self._setting_host)
+
     @property
     def simulate(self): return self._master.nc.simulate
+
     @simulate.setter
     def simulate(self, val): self._master.nc.simulate = val
+
     @property
     def _default_clock(self): self._master._default_clock
+
     @property
     def is_ext_clk(self): return self._setting_clock_src is not None
+
     @property
     def clock_ref(self): return self._setting_clock
+
     @property
     def has_es(self): return self._master._es_enable
+
     @staticmethod
     def setup_class(cls, module, num_modules=1):
         cls.module_class = module
@@ -2571,6 +2697,7 @@ class _carrier(_dtacq, _streaming):
         if module._is_ai:
             def trigger_pre(self): return self._setting_pre
             cls.trigger_pre = property(trigger_pre)
+
             def trigger_post(self): return self._setting_post
             cls.trigger_post = property(trigger_post)
             cls.arm = cls._arm_acq
@@ -2583,18 +2710,21 @@ class _carrier(_dtacq, _streaming):
         cls._channel_offset = []
         for m in range(1, cls.num_modules+1):
             cls._channel_offset.append(cls._num_channels)
+
             def getmodule(self): return self.getmodule(m)
             setattr(cls, 'module%d' % (m), property(getmodule))
             cls._num_channels += module._num_channels
 
     @property
     def max_clk(self): return self._master.max_clk
+
     @cached_property
     def _active_mods(self):
         return tuple(i for i in self.modules if self.getmodule(i).on)
 
     @property
     def modules(self): return range(1, self.num_modules+1)
+
     @cached_property
     def _optimal_sample_chunk(self):
         return self.nc.bufferlen//self.nc.nchan//2
@@ -2620,8 +2750,10 @@ class _carrier(_dtacq, _streaming):
 
     @property
     def _master(self): return self.getmodule(1)
+
     @property
     def state(self): return self.nc.state['state']
+
     def _slice(self, ch): return slice(None, None, 1)
 
     def soft_trigger(self):
@@ -2730,11 +2862,11 @@ class _carrier(_dtacq, _streaming):
 
     @property
     def slo(self): return numpy.concatenate(
-                [self.getmodule(i).data_scales for i in self.modules])
+        [self.getmodule(i).data_scales for i in self.modules])
 
     @property
     def off(self): return numpy.concatenate(
-            [self.getmodule(i).data_offsets for i in self.modules])
+        [self.getmodule(i).data_offsets for i in self.modules])
 
     @property
     def off_slo(self): return self.nc.off_slo(self.modules)
@@ -2790,6 +2922,7 @@ class _carrier(_dtacq, _streaming):
         first = int(i0-pre)
         dt = self.get_dt()
         trg = self._setting_trigger
+
         def dmx(i): return int(i*dt+trg)
 
         def dim(first, last):
@@ -2812,6 +2945,7 @@ class _carrier(_dtacq, _streaming):
             if value is None or not on:
                 continue
             node = self.getchannel(ch)
+
             def scale(x): return x*off_slo[ch-1][1]+off_slo[ch-1][0]
             for slc, start, dimfun, dmx in dims_slice:
                 val = value[slc]
@@ -2894,12 +3028,14 @@ class _carrier(_dtacq, _streaming):
 
 class _acq1001(_carrier, _streaming_eth):
     _nc_class = acq1001
+
     @property
     def _demux(self): return 0 if self.use_stream else 1
 
 
 class _acq2106(_carrier, _streaming_mgt482):
     _nc_class = acq2106
+
     @property
     def _demux(self): return 0 if self.use_mgt or self.use_eth else 1
 
@@ -2966,10 +3102,13 @@ class _module(_dtacq):
         self.site = site
         self._init_done = True
     _nc_class = module
+
     @cached_property
     def nc(self): return self._nc_class(self._setting_host, self.site)
+
     @property
     def _soft_out(self): return self._setting_soft_out
+
     @staticmethod
     def setup_class(cls):
         for ch in range(1, cls._num_channels+1):
@@ -2992,27 +3131,37 @@ class _module(_dtacq):
 
     @property
     def max_clk(self): return self._max_clk
+
     @property
     def _default_clock(self): return self.max_clk
+
     @property
     def is_master(self): return self.site == 1
+
     @property
     def _carrier(self): return self.head  # Node pointing to host carrier nid
+
     @property
     def _trigger(self): return self._carrier._trigger
+
     @cached_property
     def _setting_host(self): return self._carrier._setting_host
+
     @property
     def state(self): return self._carrier.state
+
     @property
     def _setting_pre(self): return int(self._carrier._setting_pre)
+
     @property
     def _setting_post(self): return int(self._carrier._post)
+
     @property
     def max_clk_in(self): return self.getMB_SET(self.max_clk)
 
     # Action methods
     def init(self): self._init(*self.init_args)
+
     def _init(self, *args): self.nc._init(*args)
 
     def init_thread(self):
@@ -3023,6 +3172,7 @@ class _acq4xx(_module):
     """ e.g. acq425 or acq480 but not ao420 """
     _setting_trig_mode = 0
     _setting_trig_mode_translen = 1048576
+
     @property
     def _soft_out(self):
         return (self._setting_soft_out or
@@ -3030,10 +3180,13 @@ class _acq4xx(_module):
 
     @property
     def _es_enable(self): return self.nc.es_enable
+
     @property
     def off(self): return self.nc.off
+
     @property
     def slo(self): return self.nc.slo
+
     @property
     def off_slo(self): return self.nc.off_slo
 
@@ -3059,19 +3212,21 @@ class _acq425(_acq4xx):
         gain = 1
 
     def _setting_gain(self, i): return self.getchannel(i, 'gain')
+
     def getMB_SET(self, clock): return 50000000
     """ Action methods """
     @property
     def init_args(self):
         return ([
-                    self._setting_gain(ch)
-                    for ch in range(1, self._num_channels+1)
-                ], self._carrier._setting_shot)
+            self._setting_gain(ch)
+            for ch in range(1, self._num_channels+1)
+        ], self._carrier._setting_shot)
 
     def init_master(self, pre, soft, clkdiv):
         self.nc._init_master(pre, soft, clkdiv)
 
     def store(self): pass
+
     def store_master(self): pass
 
 
@@ -3094,11 +3249,14 @@ class _acq480(_acq4xx):
 
     @property
     def max_clk(self): return self.nc._max_clk_dram(self.parent.num_modules)
+
     @property
     def _clkdiv_adc(self): return self.nc._clkdiv_adc(self._setting_fir)
+
     @property
     def _clkdiv_fpga(self): return self.nc._clkdiv_fpga
     _setting_fir = 0
+
     def getMB_SET(self, clock): return self.nc._clkdiv(self._setting_fir)*clock
 
     @property
@@ -3119,10 +3277,10 @@ class _acq480(_acq4xx):
 
     def init_master(self, pre, soft, clkdiv):
         self.nc._init_master(
-                pre, soft,
-                self._setting_trig_mode,
-                self._setting_trig_mode_translen,
-                self._setting_fir)
+            pre, soft,
+            self._setting_trig_mode,
+            self._setting_trig_mode_translen,
+            self._setting_fir)
         fir = self.nc.ACQ480.FIR.DECIM
         fpga = self.nc.ACQ480.FPGA.DECIM
         self.clkdiv_fir = fir
@@ -3137,13 +3295,18 @@ class _acq480(_acq4xx):
                             "is %g = %g * %g * %g" % (clk_adc, clk, fpga, fir))
 
     def store(self): pass
+
     def store_master(self): pass
 
     # Channel settings
     def _setting_invert(self, ch): return int(self.getchannel(ch, 'invert'))
+
     def _setting_gain(self, ch): return int(self.getchannel(ch, 'gain'))
+
     def _setting_hpf(self, ch): return int(self.getchannel(ch, 'hpf'))
+
     def _setting_lfns(self, ch): return int(self.getchannel(ch, 'lfns'))
+
     def _setting_t50r(self, ch): return int(self.getchannel(ch, 't50r'))
 
     def _setting_setInvert(self, ch):
@@ -3173,14 +3336,15 @@ class _ao420(_module):
         range = None  # out
 
     def getMB_SET(self, clock): return 50000000
+
     def _channel(self, i): return self.getchannel(i)
 
     @property
     def init_args(self):
         return ([
-                    self._setting_expr(ch)
-                    for ch in range(1, self._num_channels+1)
-                ], self._carrier._setting_shot)
+            self._setting_expr(ch)
+            for ch in range(1, self._num_channels+1)
+        ], self._carrier._setting_shot)
 
     def init_master(self, pre, soft, clkdiv):
         self.nc._init_master(soft, clkdiv)
@@ -3213,39 +3377,78 @@ def assembly(module, num_modules=1):
 
 
 @assembly(_acq425)
-class acq1001_acq425(_acq1001):pass  # analysis:ignore
+class acq1001_acq425(_acq1001):
+    pass  # analysis:ignore
+
+
 @assembly(_acq480)
-class acq1001_acq480(_acq1001):pass  # analysis:ignore
+class acq1001_acq480(_acq1001):
+    pass  # analysis:ignore
+
+
 @assembly(_ao420)
-class acq1001_ao420(_acq1001):pass  # analysis:ignore
+class acq1001_ao420(_acq1001):
+    pass  # analysis:ignore
 
 
 @assembly(_acq425, 1)
-class acq2106_acq425x1(_acq2106):pass  # analysis:ignore
+class acq2106_acq425x1(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq425, 2)
-class acq2106_acq425x2(_acq2106):pass  # analysis:ignore
+class acq2106_acq425x2(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq425, 3)
-class acq2106_acq425x3(_acq2106):pass  # analysis:ignore
+class acq2106_acq425x3(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq425, 4)
-class acq2106_acq425x4(_acq2106):pass  # analysis:ignore
+class acq2106_acq425x4(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq425, 5)
-class acq2106_acq425x5(_acq2106):pass  # analysis:ignore
+class acq2106_acq425x5(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq425, 6)
-class acq2106_acq425x6(_acq2106):pass  # analysis:ignore
+class acq2106_acq425x6(_acq2106):
+    pass  # analysis:ignore
 
 
 @assembly(_acq480, 1)
-class acq2106_acq480x1(_acq2106):pass  # analysis:ignore
+class acq2106_acq480x1(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq480, 2)
-class acq2106_acq480x2(_acq2106):pass  # analysis:ignore
+class acq2106_acq480x2(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq480, 3)
-class acq2106_acq480x3(_acq2106):pass  # analysis:ignore
+class acq2106_acq480x3(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq480, 4)
-class acq2106_acq480x4(_acq2106):pass  # analysis:ignore
+class acq2106_acq480x4(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq480, 5)
-class acq2106_acq480x5(_acq2106):pass  # analysis:ignore
+class acq2106_acq480x5(_acq2106):
+    pass  # analysis:ignore
+
+
 @assembly(_acq480, 6)
-class acq2106_acq480x6(_acq2106):pass  # analysis:ignore
+class acq2106_acq480x6(_acq2106):
+    pass  # analysis:ignore
 
 
 def test_without_mds(mode=STREAM_MODE.OFF, w_ao=True, w_ai=True):
@@ -3298,6 +3501,7 @@ def test_without_mds(mode=STREAM_MODE.OFF, w_ao=True, w_ai=True):
 def test_stream_es():
     if not os.path.exists('/data/2.00'):
         return
+
     class test_streaming(_streaming):
         nChannels = "set in __init__"
         es_clock_div = "set in __init__"
@@ -3324,8 +3528,8 @@ def test_stream_es():
                 for i in range(0, 24, 4):
                     filepath = "/data/2.%02d" % i
                     yield numpy.memmap(
-                            filepath, dtype='int16', mode='r',
-                            shape=(self.nSamples, self.nChannels))
+                        filepath, dtype='int16', mode='r',
+                        shape=(self.nSamples, self.nChannels))
     S = test_streaming(32, 2e6, 10)
     Ss = S.Stream(S, 0, {})
     t = time.time()
@@ -3344,1279 +3548,1327 @@ except Exception:
         test_stream_es()
 else:
 
- # ---------------------------  # analysis:ignore
- #  6 Private MDSplus Devices  # analysis:ignore
- # ---------------------------  # analysis:ignore
- class _STREAMING(_streaming):  # analysis:ignore
-    class Stream(_streaming.Stream):
-        def __init__(self, dev, port, share):
-            super(_STREAMING.Stream, self).__init__(dev, port, share)
-            self.dev = self.dev.copy()
+    # ---------------------------  # analysis:ignore
+    #  6 Private MDSplus Devices  # analysis:ignore
+    # ---------------------------  # analysis:ignore
+    class _STREAMING(_streaming):  # analysis:ignore
+        class Stream(_streaming.Stream):
+            def __init__(self, dev, port, share):
+                super(_STREAMING.Stream, self).__init__(dev, port, share)
+                self.dev = self.dev.copy()
 
-        def store(self, i0, block):
-            i1 = self.dev.get_i1(i0, block.shape[0])
-            dim, dm0, dm1 = self.dev.get_dim_set(i0, i1)
-            for i, idx in enumerate(self.chanlist):
+            def store(self, i0, block):
+                i1 = self.dev.get_i1(i0, block.shape[0])
+                dim, dm0, dm1 = self.dev.get_dim_set(i0, i1)
+                for i, idx in enumerate(self.chanlist):
+                    ch = idx+1
+                    raw = self.dev.getchannel(ch)
+                    if not raw.on:
+                        continue
+                    raw.makeSegment(dm0, dm1, dim, block[:, i])
+
+        def store_scale(self):
+            off_slo = self.off_slo
+            for idx in range(self._num_channels):
                 ch = idx+1
-                raw = self.dev.getchannel(ch)
-                if not raw.on:
-                    continue
-                raw.makeSegment(dm0, dm1, dim, block[:, i])
-
-    def store_scale(self):
-        off_slo = self.off_slo
-        for idx in range(self._num_channels):
-            ch = idx+1
-            node = self.getchannel(ch)
-            if node.on:
-                node.setSegmentScale(
+                node = self.getchannel(ch)
+                if node.on:
+                    node.setSegmentScale(
                         self.get_scale(off_slo[idx][1], off_slo[idx][0]))
 
+    class _STREAMING_ETH(_STREAMING, _streaming_eth):  # analysis:ignore
+        class Stream(_STREAMING.Stream, _streaming_eth.Stream):
+            def __init__(self, dev, port, share):
+                super(_STREAMING_ETH.Stream, self).__init__(dev, port, share)
 
- class _STREAMING_ETH(_STREAMING, _streaming_eth):  # analysis:ignore
-    class Stream(_STREAMING.Stream, _streaming_eth.Stream):
-        def __init__(self, dev, port, share):
-            super(_STREAMING_ETH.Stream, self).__init__(dev, port, share)
-
-    def streaming_eth_store(self):
-        try:
-            self.stop_eth_stream()
-        except (SystemExit, KeyboardInterrupt):
-            raise
-        except Exception:
-            pass
-        self.store_eth_sites()
-        if self._streams is None:
-            raise MDSplus.DevINV_SETUP
-        streams = list(self._streams)
-        triggered = any(stream.triggered for stream in streams)
-        if triggered:
-            self.store_eth_scale()
-        else:
+        def streaming_eth_store(self):
+            try:
+                self.stop_eth_stream()
+            except (SystemExit, KeyboardInterrupt):
+                raise
+            except Exception:
+                pass
+            self.store_eth_sites()
+            if self._streams is None:
+                raise MDSplus.DevINV_SETUP
+            streams = list(self._streams)
+            triggered = any(stream.triggered for stream in streams)
+            if triggered:
+                self.store_eth_scale()
+            else:
+                for stream in streams:
+                    stream.stop()
             for stream in streams:
-                stream.stop()
-        for stream in streams:
-            stream.join()
-        self._streams = None
-        self.deinit_eth_stream()
-        if not triggered:
-            raise MDSplus.DevNOT_TRIGGERED
+                stream.join()
+            self._streams = None
+            self.deinit_eth_stream()
+            if not triggered:
+                raise MDSplus.DevNOT_TRIGGERED
 
- @MDSplus.with_mdsrecords  # analysis:ignore
- class _STREAMING_MGT482(_streaming_mgt482, _STREAMING_ETH):  # analysis:ignore
-    parts = [
-        {'path': ':STREAM.MGT_A',
-         'type': 'numeric',
-         'options': ('no_write_shot', 'write_once'),
-         'help': "Host's device id for lane A",
-         'filter': int,
-         'default': 0,
-        },
-        {'path': ':STREAM.MGT_A:SITES',
-         'type': 'numeric',
-         'options': ('no_write_shot',),
-         'help': "Sites streamed via lane A",
-         'filter': [int],
-         'default': [],
-        },
-        {'path': ':STREAM.MGT_B',
-         'type': 'numeric',
-         'options': ('no_write_shot', 'write_once'),
-         'help': "Host's device id for lane B",
-         'filter': int,
-         'default': 1,
-        },
-        {'path': ':STREAM.MGT_B:SITES',
-         'type': 'numeric',
-         'options': ('no_write_shot',),
-         'help': "Sites streamed via lane B",
-         'filter': [int],
-         'default': [],
-        },
-    ]
+    @MDSplus.with_mdsrecords  # analysis:ignore
+    class _STREAMING_MGT482(_streaming_mgt482, _STREAMING_ETH):  # analysis:ignore
+        parts = [
+            {'path': ':STREAM.MGT_A',
+             'type': 'numeric',
+             'options': ('no_write_shot', 'write_once'),
+             'help': "Host's device id for lane A",
+             'filter': int,
+             'default': 0,
+             },
+            {'path': ':STREAM.MGT_A:SITES',
+             'type': 'numeric',
+             'options': ('no_write_shot',),
+             'help': "Sites streamed via lane A",
+             'filter': [int],
+             'default': [],
+             },
+            {'path': ':STREAM.MGT_B',
+             'type': 'numeric',
+             'options': ('no_write_shot', 'write_once'),
+             'help': "Host's device id for lane B",
+             'filter': int,
+             'default': 1,
+             },
+            {'path': ':STREAM.MGT_B:SITES',
+             'type': 'numeric',
+             'options': ('no_write_shot',),
+             'help': "Sites streamed via lane B",
+             'filter': [int],
+             'default': [],
+             },
+        ]
 
-    def get_devid(self, i):
-        if i == 0:
-            return self._stream_mgt_a
-        return self._stream_mgt_b
+        def get_devid(self, i):
+            if i == 0:
+                return self._stream_mgt_a
+            return self._stream_mgt_b
 
-    def get_sites(self, i):
-        if i == 0:
-            return self._stream_mgt_a_sites
-        return self._stream_mgt_b_sites
+        def get_sites(self, i):
+            if i == 0:
+                return self._stream_mgt_a_sites
+            return self._stream_mgt_b_sites
 
-    class Stream(_STREAMING.Stream, _streaming_mgt482.Stream):
-        def __init__(self, dev, port, share):
-            super(_STREAMING_MGT482.Stream, self).__init__(dev, port, share)
+        class Stream(_STREAMING.Stream, _streaming_mgt482.Stream):
+            def __init__(self, dev, port, share):
+                super(_STREAMING_MGT482.Stream, self).__init__(
+                    dev, port, share)
 
+    class _MDS_EXPRESSIONS(object):  # analysis:ignore
+        def get_dt(self):
+            return MDSplus.DIVIDE(MDSplus.Int64(1e9), self.clock)
 
- class _MDS_EXPRESSIONS(object):  # analysis:ignore
-    def get_dt(self):
-        return MDSplus.DIVIDE(MDSplus.Int64(1e9), self.clock)
-
-    def get_dim(self, i0=None, i1=None, trg=None):
-        if trg is None:
-            trg = self.trigger
-        dt = self.get_dt()
-        return MDSplus.Dimension(
+        def get_dim(self, i0=None, i1=None, trg=None):
+            if trg is None:
+                trg = self.trigger
+            dt = self.get_dt()
+            return MDSplus.Dimension(
                 MDSplus.Window(i0, i1, trg),
                 MDSplus.Range(None, None, dt))
 
-    @staticmethod
-    def update_dim(dim, i0, i1):
-        dim[0][0], dim[0][1] = i0, i1
+        @staticmethod
+        def update_dim(dim, i0, i1):
+            dim[0][0], dim[0][1] = i0, i1
 
-    def get_dmx(self, i0=None, trg=None):
-        if trg is None:
-            trg = self.trigger
-        dt = self.get_dt()
-        return MDSplus.ADD(MDSplus.MULTIPLY(i0, dt), trg)
+        def get_dmx(self, i0=None, trg=None):
+            if trg is None:
+                trg = self.trigger
+            dt = self.get_dt()
+            return MDSplus.ADD(MDSplus.MULTIPLY(i0, dt), trg)
 
-    @staticmethod
-    def update_dmx(dmx, i0):
-        dmx[0][1] = i0
+        @staticmethod
+        def update_dmx(dmx, i0):
+            dmx[0][1] = i0
 
-    @staticmethod
-    def get_i1(i0, length): return i0+length-1
+        @staticmethod
+        def get_i1(i0, length): return i0+length-1
 
-    def get_dim_set(self, i0=None, i1=None, trg=None):
-        return (
-            self.get_dim(i0, i1, trg),
-            self.get_dmx(i0, trg),
-            self.get_dmx(i1, trg),
-        )
+        def get_dim_set(self, i0=None, i1=None, trg=None):
+            return (
+                self.get_dim(i0, i1, trg),
+                self.get_dmx(i0, trg),
+                self.get_dmx(i1, trg),
+            )
 
-    @staticmethod
-    def update_dim_set(dim, dm0, dm1, i0, i1):
-        dim[0][0], dim[0][1] = i0, i1
-        dm0[0][0], dm1[0][1] = i0, i1
+        @staticmethod
+        def update_dim_set(dim, dm0, dm1, i0, i1):
+            dim[0][0], dim[0][1] = i0, i1
+            dm0[0][0], dm1[0][1] = i0, i1
 
-    @staticmethod
-    def get_scale(slope, offset):
-        return MDSplus.ADD(MDSplus.MULTIPLY(MDSplus.dVALUE(), slope), offset)
+        @staticmethod
+        def get_scale(slope, offset):
+            return MDSplus.ADD(MDSplus.MULTIPLY(MDSplus.dVALUE(), slope), offset)
 
-
- class _CARRIER(MDSplus.Device, _carrier, _MDS_EXPRESSIONS):  # analysis:ignore
-    """
-    Class that can set the various knobs (PVs) of the D-TACQ module.
-    PVs are set from the user tree-knobs.
-    """
-    parts = [
-        {'path': ':ACTIONSERVER',
-         'type': 'TEXT',
-         'options': ('no_write_shot', 'write_once'),
-         'filter': str,
-        },
-        {'path': ':ACTIONSERVER:INIT',
-         'type': 'ACTION',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': ('Action('
-                       'Dispatch(head.actionserver,"INIT",31),'
-                       'Method(None,"init",head))')
-        },
-        {'path': ':ACTIONSERVER:ARM',
-         'type': 'ACTION',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': ('Action('
-                       'Dispatch(head.actionserver,"INIT",head.actionserver_init),'
-                       'Method(None,"arm",head))')
-        },
-        {'path': ':ACTIONSERVER:SOFT_TRIGGER',
-         'type': 'ACTION',
-         'options': ('no_write_shot', 'write_once', 'disabled'),
-         'valueExpr': ('Action('
-                       'Dispatch(head.actionserver,"PULSE",1),'
-                       'Method(None,"soft_trigger",head))')
-        },
-        {'path': ':ACTIONSERVER:REBOOT',
-         'type': 'TASK',
-         'options': ('write_once',),
-         'valueExpr': 'Method(None,"reboot",head)',
-        },
-        {'path': ':HOST',
-         'type': 'text',
-         'value': 'localhost',
-         'options': ('no_write_shot',),  # hostname or ip address
-         'filer': str,
-        },
-        {'path': ':STREAM',
-         'type': 'numeric',
-         'valueExpr': 'SUBSCRIPT({"OFF":0,"ETH":1,"MGT":2},"OFF")',
-         'options': ('no_write_shot',),
-         'help': 'Stream Mode: OFF,ETH,MGT',
-        },
-        {'path': ':TRIGGER',
-         'type': 'numeric',
-         'valueExpr': 'Int64(0)',
-         'options': ('no_write_shot',),
-        },
-        {'path': ':TRIGGER:EDGE',
-         'type': 'text',
-         'value': 'rising',
-         'options': ('no_write_shot',),
-         'filer': str,
-        },
-        {'path': ':CLOCK',
-         'type': 'numeric',
-         'valueExpr': 'head._default_clock',
-         'options': ('no_write_shot',),
-         'filer': float,
-        },
-        {'path': ':CLOCK:SRC',
-         'type': 'numeric',
-         'valueExpr': 'head.clock_src_zclk',
-         'options': ('no_write_shot',),
-         'help': "reference to ZCLK or set FPCLK in Hz",
-         'filer': float,
-        },
-        {'path': ':CLOCK:SRC:ZCLK',
-         'type': 'numeric',
-         'valueExpr': 'Int32(33.333e6).setHelp("INT33M")',
-         'options': ('no_write_shot',),
-         'help': 'INT33M',
-        },
-        {'path': ':COMMANDS',
-         'type': 'text',
-         'options': ('no_write_model', 'write_once'),
-         'filer': json.loads,
-        },
-    ]
-
-    @staticmethod
-    def setup_class(cls, module, num_modules=1):
-        _carrier.setup_class(cls, module, num_modules)
-        if module._is_ai:
-            cls.parts = cls.parts + [
-                {'path': ':ACTIONSERVER:STORE',
-                 'type': 'ACTION',
-                 'options': ('no_write_shot', 'write_once'),
-                 'valueExpr': ('Action('
-                               'Dispatch(head.actionserver,"STORE",51),'
-                               'Method(None,"store",head))'),
-                },
-                {'path': ':ACTIONSERVER:DEINIT',
-                 'type': 'ACTION',
-                 'options': ('no_write_shot', 'write_once'),
-                 'valueExpr': ('Action('
-                               'Dispatch(head.actionserver,"DEINIT",31),'
-                               'Method(None,"deinit",head))'),
-                },
-                {'path': ':TRIGGER:PRE',
-                 'type': 'numeric',
-                 'value': 0,
-                 'options': ('no_write_shot',),
-                },
-                {'path': ':TRIGGER:POST',
-                 'type': 'numeric',
-                 'value': 100000,
-                 'options': ('no_write_shot',),
-                },
-            ]
-            @MDSplus.mdsrecord(filter=int)
-            def _setting_pre(self): return self.__getattr__('trigger_pre')
-            cls._setting_pre = _setting_pre
-            @MDSplus.mdsrecord(filter=int)
-            def _setting_post(self): return self.__getattr__('trigger_post')
-            cls._setting_post = _setting_post
-        else:  # is AO420
-            cls.parts = list(_CARRIER.parts)
-            cls._setting_pre = 0
-            cls._setting_post = 0
-        for i in range(num_modules):
-            prefix = ':MODULE%d' % (i+1)
-            cls.parts.extend([
-                {'path': prefix,
-                 'type': 'text',
-                 'value': module.__name__[1:],
-                 'options': ('write_once',),
-                },
-            ])
-            module._addModuleKnobs(cls, prefix, i)
-            if i == 0:
-                module._addMasterKnobs(cls, prefix)
-
-    @property
-    def is_test(self): return self.actionserver_soft_trigger.on
-    @property
-    def is_ext_clk(self):
-        src = self.clock_src.record
-        return not (
-            isinstance(src, MDSplus.TreeNode) and
-            src.nid == self.clock_src_zclk.nid)
-
-    def getmodule(self, site):
-        return self.module_class(
-            self.part_dict["module%d" % site] + self.head.nid,
-            self.tree, self, site=site)
-
-    @cached_property
-    def _setting_host(self):
-        try:
-            host = MDSplus.version.tostr(self.host.data())
-        except (SystemExit, KeyboardInterrupt):
-            raise
-        except Exception as ex:
-            raise MDSplus.DevNO_NAME_SPECIFIED(str(ex))
-        if not host:
-            raise MDSplus.DevNO_NAME_SPECIFIED
-        return host
-
-    @property
-    def _setting_shot(self): return self.tree.shot
-    @MDSplus.mdsrecord(filter=int)
-    def _setting_stream(self): return self.__getattr__('stream')
-    @MDSplus.mdsrecord(filter=int)
-    def _setting_clock_src(self): return self.__getattr__('clock_src')
-    @MDSplus.mdsrecord(filter=int)
-    def _setting_clock(self): return self.__getattr__('clock')
-    @MDSplus.mdsrecord(filter=int)
-    def _setting_trigger(self): return self.__getattr__('trigger')
-
-    def soft_trigger(self):
-        """ACTION METHOD:
-        sends out a trigger on the carrier's internal trigger line (d1)
+    class _CARRIER(MDSplus.Device, _carrier, _MDS_EXPRESSIONS):  # analysis:ignore
         """
-        try:
-            self.nc.soft_trigger()
-        except socket.error as e:
-            raise MDSplus.DevOFFLINE(str(e))
-
-    def reboot(self):
-        try:
-            _carrier.reboot(self)
-        except socket.error as e:
-            raise MDSplus.DevOFFLINE(str(e))
-
-    def store_commands(self, dic):
-        self.commands = json.dumps(dic)
-
-    def init(self):
-        """ACTION METHOD:
-        initialize all device settings
+        Class that can set the various knobs (PVs) of the D-TACQ module.
+        PVs are set from the user tree-knobs.
         """
-        dtacq.add_cache(self._setting_host)
-        try:
-            _carrier._init(self)
-        except socket.error as e:
-            raise MDSplus.DevOFFLINE(str(e))
-        except (SystemExit, KeyboardInterrupt):
-            raise
-        except Exception:
-            traceback.print_exc()
-            raise
-        finally:
-            dic = dtacq.remove_cache(self._setting_host)
-            self.store_commands(self.filter_commands(dic))
-
-    def _arm_acq(self, timeout=50):
-        """ACTION METHOD:
-        arm the device for acq modules
-        """
-        try:
-            super(_CARRIER, self)._arm_acq(timeout)
-        except socket.error as e:
-            raise MDSplus.DevOFFLINE(str(e))
-        except (SystemExit, KeyboardInterrupt):
-            raise
-        except Exception:
-            traceback.print_exc()
-            raise MDSplus.MDSplusERROR('not armed after %d seconds' % timeout)
-
-    def _arm_ao(self):
-        """ACTION METHOD:
-        arm the device for ao modules
-        """
-        try:
-            super(_CARRIER, self)._arm_ao()
-        except socket.error as e:
-            raise MDSplus.DevOFFLINE(str(e))
-
-    def _store_acq(self, abort=False):
-        try:
-            super(_CARRIER, self)._store_acq()
-        except socket.error as e:
-            raise MDSplus.DevOFFLINE(str(e))
-        except (SystemExit, KeyboardInterrupt):
-            raise
-        except Exception:
-            traceback.print_exc()
-            raise MDSplus.DevNOT_TRIGGERED
-
-    def _get_dim_slice(self, i0, start, end, pre, mcdf=1):
-        """
-        calculates the time-vector based on
-        clk-tick t0, dt in ns, start and end
-        """
-        first = int(i0-pre)
-        last = first + end-start-1
-        dim, dm0, dm1 = self.get_dim_set(first, last)
-        return slice(start, end), start, dim, dm0, dm1
-
-    def _store_channels_from_queue(self, dims_slice, queue):
-        """
-        stores data in queue and time_vector to tree with linked segments
-        blk:   list range of the data vector
-        dim:   dimension to the data defined by blk
-        queue: dict of ch:raw data
-        """
-        chunksize = 100000
-        off_slo = self.off_slo
-        for i in range(queue.maxsize):
-            ch, value, on = queue.get()
-            if value is None or not on:
-                continue
-            node = self.getchannel(ch)
-            node.setSegmentScale(
-                    self.get_scale(off_slo[ch-1][1], off_slo[ch-1][0]))
-            for slc, start, dim, dm0, dm1 in dims_slice:
-                val = value[slc]
-                dlen = val.shape[0]
-                for seg, is0 in enumerate(range(0, dlen, chunksize)):
-                    is1 = min(is0+chunksize, dlen)-1
-                    i0, i1 = start+is0, start+is1
-                    self.update_dim_set(dim, dm0, dm1, i0, i1)
-                    if debug > 1:
-                        dprint("segment (%7.1fms,%7.1fms)", dm0/1e6, dm1/1e6)
-                    node.makeSegment(dm0, dm1, dim, val[is0:is1+1])
-
-    def _deinit_acq(self):
-        """ACTION METHOD:
-        abort and go to idle
-        """
-        try:
-            super(_CARRIER, self)._deinit_acq()
-        except socket.error as e:
-            raise MDSplus.DevOFFLINE(str(e))
-
-
- class _ACQ1001(_CARRIER, _STREAMING_ETH, _acq1001):  # analysis:ignore
-    pass
-
-
- class _ACQ2106(_CARRIER, _STREAMING_MGT482, _acq2106):  # analysis:ignore
-    parts = _CARRIER.parts + _STREAMING_MGT482.parts
-
-    def init(self):
-        """ACTION METHOD:
-        initialize all device settings
-        """
-        self.init_mgt(self._stream_mgt_a_sites,
-                      self._stream_mgt_b_sites,
-                      self._stream_mgt_a,
-                      self._stream_mgt_b)
-        super(_ACQ2106, self).init()
-
-
- class _MODULE(MDSplus.TreeNode, _module):  # analysis:ignore
-    """
-    MDSplus-dependent superclass covering Gen.4 D-tAcq module device types.
-    PVs are set from the user tree-knobs.
-    """
-
-    def __init__(self, nid, *a, **kw):
-        """ mimics _module.__init__ """
-        if isinstance(nid, _MODULE):
-            return
-        self.site = kw.get('site', None)
-        if self.site is None:
-            raise Exception("No site specified for acq4xx._MODULE class")
-        if isinstance(nid, _MODULE):
-            return
-        super(_MODULE, self).__init__(nid, *a, site=self.site)
-        self._init_done = True
-
-    @classmethod
-    def _addMasterKnobs(cls, carrier, prefix):
-        carrier.parts.extend([
-            {'path': '%s:TRIG_MODE' % (prefix,),
-             'type': 'text',
-             'options': ('no_write_shot',),
-             'help': '*,"RTM","RGM"',
-            },
-            {'path': '%s:TRIG_MODE:TRANSLEN' % (prefix,),
-             'type': 'numeric',
-              'value': 10000,
-             'options': ('no_write_shot',),
-             'help': 'Samples acquired per trigger for RTM',
-            },
-        ])
-
-    @classmethod
-    def _addModuleKnobs(cls, carrier, prefix, idx):
-        carrier.parts.extend([
-            {'path': '%s:CHECK' % (prefix,),
+        parts = [
+            {'path': ':ACTIONSERVER',
+             'type': 'TEXT',
+             'options': ('no_write_shot', 'write_once'),
+             'filter': str,
+             },
+            {'path': ':ACTIONSERVER:INIT',
+             'type': 'ACTION',
+             'options': ('no_write_shot', 'write_once'),
+             'valueExpr': ('Action('
+                           'Dispatch(head.actionserver,"INIT",31),'
+                           'Method(None,"init",head))')
+             },
+            {'path': ':ACTIONSERVER:ARM',
+             'type': 'ACTION',
+             'options': ('no_write_shot', 'write_once'),
+             'valueExpr': ('Action('
+                           'Dispatch(head.actionserver,"INIT",head.actionserver_init),'
+                           'Method(None,"arm",head))')
+             },
+            {'path': ':ACTIONSERVER:SOFT_TRIGGER',
+             'type': 'ACTION',
+             'options': ('no_write_shot', 'write_once', 'disabled'),
+             'valueExpr': ('Action('
+                           'Dispatch(head.actionserver,"PULSE",1),'
+                           'Method(None,"soft_trigger",head))')
+             },
+            {'path': ':ACTIONSERVER:REBOOT',
              'type': 'TASK',
              'options': ('write_once',),
-             'valueExpr': 'Method(None,"check",head)',
-            },
-        ])
+             'valueExpr': 'Method(None,"reboot",head)',
+             },
+            {'path': ':HOST',
+             'type': 'text',
+             'value': 'localhost',
+             'options': ('no_write_shot',),  # hostname or ip address
+             'filer': str,
+             },
+            {'path': ':STREAM',
+             'type': 'numeric',
+             'valueExpr': 'SUBSCRIPT({"OFF":0,"ETH":1,"MGT":2},"OFF")',
+             'options': ('no_write_shot',),
+             'help': 'Stream Mode: OFF,ETH,MGT',
+             },
+            {'path': ':TRIGGER',
+             'type': 'numeric',
+             'valueExpr': 'Int64(0)',
+             'options': ('no_write_shot',),
+             },
+            {'path': ':TRIGGER:EDGE',
+             'type': 'text',
+             'value': 'rising',
+             'options': ('no_write_shot',),
+             'filer': str,
+             },
+            {'path': ':CLOCK',
+             'type': 'numeric',
+             'valueExpr': 'head._default_clock',
+             'options': ('no_write_shot',),
+             'filer': float,
+             },
+            {'path': ':CLOCK:SRC',
+             'type': 'numeric',
+             'valueExpr': 'head.clock_src_zclk',
+             'options': ('no_write_shot',),
+             'help': "reference to ZCLK or set FPCLK in Hz",
+             'filer': float,
+             },
+            {'path': ':CLOCK:SRC:ZCLK',
+             'type': 'numeric',
+             'valueExpr': 'Int32(33.333e6).setHelp("INT33M")',
+             'options': ('no_write_shot',),
+             'help': 'INT33M',
+             },
+            {'path': ':COMMANDS',
+             'type': 'text',
+             'options': ('no_write_model', 'write_once'),
+             'filer': json.loads,
+             },
+        ]
 
-    def __getattr__(self, name):
-        """ redirect Device.part_name to head """
-        partname = "module%d_%s" % (self.site, name)
-        if partname in self.head.part_dict:
-            return self.__class__(
-                    self.head.part_dict[partname]+self.head.nid,
-                    self.tree, self.head, site=self.site)
-        return self.__getattribute__(name)
+        @staticmethod
+        def setup_class(cls, module, num_modules=1):
+            _carrier.setup_class(cls, module, num_modules)
+            if module._is_ai:
+                cls.parts = cls.parts + [
+                    {'path': ':ACTIONSERVER:STORE',
+                     'type': 'ACTION',
+                     'options': ('no_write_shot', 'write_once'),
+                     'valueExpr': ('Action('
+                                   'Dispatch(head.actionserver,"STORE",51),'
+                                   'Method(None,"store",head))'),
+                     },
+                    {'path': ':ACTIONSERVER:DEINIT',
+                     'type': 'ACTION',
+                     'options': ('no_write_shot', 'write_once'),
+                     'valueExpr': ('Action('
+                                   'Dispatch(head.actionserver,"DEINIT",31),'
+                                   'Method(None,"deinit",head))'),
+                     },
+                    {'path': ':TRIGGER:PRE',
+                     'type': 'numeric',
+                     'value': 0,
+                     'options': ('no_write_shot',),
+                     },
+                    {'path': ':TRIGGER:POST',
+                     'type': 'numeric',
+                     'value': 100000,
+                     'options': ('no_write_shot',),
+                     },
+                ]
 
-    def __setattr__(self, name, value):
-        """ redirect Device.part_name to head """
-        if self._init_done:
+                @MDSplus.mdsrecord(filter=int)
+                def _setting_pre(self): return self.__getattr__('trigger_pre')
+                cls._setting_pre = _setting_pre
+
+                @MDSplus.mdsrecord(filter=int)
+                def _setting_post(self): return self.__getattr__(
+                    'trigger_post')
+                cls._setting_post = _setting_post
+            else:  # is AO420
+                cls.parts = list(_CARRIER.parts)
+                cls._setting_pre = 0
+                cls._setting_post = 0
+            for i in range(num_modules):
+                prefix = ':MODULE%d' % (i+1)
+                cls.parts.extend([
+                    {'path': prefix,
+                     'type': 'text',
+                     'value': module.__name__[1:],
+                     'options': ('write_once',),
+                     },
+                ])
+                module._addModuleKnobs(cls, prefix, i)
+                if i == 0:
+                    module._addMasterKnobs(cls, prefix)
+
+        @property
+        def is_test(self): return self.actionserver_soft_trigger.on
+
+        @property
+        def is_ext_clk(self):
+            src = self.clock_src.record
+            return not (
+                isinstance(src, MDSplus.TreeNode) and
+                src.nid == self.clock_src_zclk.nid)
+
+        def getmodule(self, site):
+            return self.module_class(
+                self.part_dict["module%d" % site] + self.head.nid,
+                self.tree, self, site=site)
+
+        @cached_property
+        def _setting_host(self):
+            try:
+                host = MDSplus.version.tostr(self.host.data())
+            except (SystemExit, KeyboardInterrupt):
+                raise
+            except Exception as ex:
+                raise MDSplus.DevNO_NAME_SPECIFIED(str(ex))
+            if not host:
+                raise MDSplus.DevNO_NAME_SPECIFIED
+            return host
+
+        @property
+        def _setting_shot(self): return self.tree.shot
+
+        @MDSplus.mdsrecord(filter=int)
+        def _setting_stream(self): return self.__getattr__('stream')
+
+        @MDSplus.mdsrecord(filter=int)
+        def _setting_clock_src(self): return self.__getattr__('clock_src')
+
+        @MDSplus.mdsrecord(filter=int)
+        def _setting_clock(self): return self.__getattr__('clock')
+
+        @MDSplus.mdsrecord(filter=int)
+        def _setting_trigger(self): return self.__getattr__('trigger')
+
+        def soft_trigger(self):
+            """ACTION METHOD:
+            sends out a trigger on the carrier's internal trigger line (d1)
+            """
+            try:
+                self.nc.soft_trigger()
+            except socket.error as e:
+                raise MDSplus.DevOFFLINE(str(e))
+
+        def reboot(self):
+            try:
+                _carrier.reboot(self)
+            except socket.error as e:
+                raise MDSplus.DevOFFLINE(str(e))
+
+        def store_commands(self, dic):
+            self.commands = json.dumps(dic)
+
+        def init(self):
+            """ACTION METHOD:
+            initialize all device settings
+            """
+            dtacq.add_cache(self._setting_host)
+            try:
+                _carrier._init(self)
+            except socket.error as e:
+                raise MDSplus.DevOFFLINE(str(e))
+            except (SystemExit, KeyboardInterrupt):
+                raise
+            except Exception:
+                traceback.print_exc()
+                raise
+            finally:
+                dic = dtacq.remove_cache(self._setting_host)
+                self.store_commands(self.filter_commands(dic))
+
+        def _arm_acq(self, timeout=50):
+            """ACTION METHOD:
+            arm the device for acq modules
+            """
+            try:
+                super(_CARRIER, self)._arm_acq(timeout)
+            except socket.error as e:
+                raise MDSplus.DevOFFLINE(str(e))
+            except (SystemExit, KeyboardInterrupt):
+                raise
+            except Exception:
+                traceback.print_exc()
+                raise MDSplus.MDSplusERROR(
+                    'not armed after %d seconds' % timeout)
+
+        def _arm_ao(self):
+            """ACTION METHOD:
+            arm the device for ao modules
+            """
+            try:
+                super(_CARRIER, self)._arm_ao()
+            except socket.error as e:
+                raise MDSplus.DevOFFLINE(str(e))
+
+        def _store_acq(self, abort=False):
+            try:
+                super(_CARRIER, self)._store_acq()
+            except socket.error as e:
+                raise MDSplus.DevOFFLINE(str(e))
+            except (SystemExit, KeyboardInterrupt):
+                raise
+            except Exception:
+                traceback.print_exc()
+                raise MDSplus.DevNOT_TRIGGERED
+
+        def _get_dim_slice(self, i0, start, end, pre, mcdf=1):
+            """
+            calculates the time-vector based on
+            clk-tick t0, dt in ns, start and end
+            """
+            first = int(i0-pre)
+            last = first + end-start-1
+            dim, dm0, dm1 = self.get_dim_set(first, last)
+            return slice(start, end), start, dim, dm0, dm1
+
+        def _store_channels_from_queue(self, dims_slice, queue):
+            """
+            stores data in queue and time_vector to tree with linked segments
+            blk:   list range of the data vector
+            dim:   dimension to the data defined by blk
+            queue: dict of ch:raw data
+            """
+            chunksize = 100000
+            off_slo = self.off_slo
+            for i in range(queue.maxsize):
+                ch, value, on = queue.get()
+                if value is None or not on:
+                    continue
+                node = self.getchannel(ch)
+                node.setSegmentScale(
+                    self.get_scale(off_slo[ch-1][1], off_slo[ch-1][0]))
+                for slc, start, dim, dm0, dm1 in dims_slice:
+                    val = value[slc]
+                    dlen = val.shape[0]
+                    for seg, is0 in enumerate(range(0, dlen, chunksize)):
+                        is1 = min(is0+chunksize, dlen)-1
+                        i0, i1 = start+is0, start+is1
+                        self.update_dim_set(dim, dm0, dm1, i0, i1)
+                        if debug > 1:
+                            dprint("segment (%7.1fms,%7.1fms)",
+                                   dm0/1e6, dm1/1e6)
+                        node.makeSegment(dm0, dm1, dim, val[is0:is1+1])
+
+        def _deinit_acq(self):
+            """ACTION METHOD:
+            abort and go to idle
+            """
+            try:
+                super(_CARRIER, self)._deinit_acq()
+            except socket.error as e:
+                raise MDSplus.DevOFFLINE(str(e))
+
+    class _ACQ1001(_CARRIER, _STREAMING_ETH, _acq1001):  # analysis:ignore
+        pass
+
+    class _ACQ2106(_CARRIER, _STREAMING_MGT482, _acq2106):  # analysis:ignore
+        parts = _CARRIER.parts + _STREAMING_MGT482.parts
+
+        def init(self):
+            """ACTION METHOD:
+            initialize all device settings
+            """
+            self.init_mgt(self._stream_mgt_a_sites,
+                          self._stream_mgt_b_sites,
+                          self._stream_mgt_a,
+                          self._stream_mgt_b)
+            super(_ACQ2106, self).init()
+
+    class _MODULE(MDSplus.TreeNode, _module):  # analysis:ignore
+        """
+        MDSplus-dependent superclass covering Gen.4 D-tAcq module device types.
+        PVs are set from the user tree-knobs.
+        """
+
+        def __init__(self, nid, *a, **kw):
+            """ mimics _module.__init__ """
+            if isinstance(nid, _MODULE):
+                return
+            self.site = kw.get('site', None)
+            if self.site is None:
+                raise Exception("No site specified for acq4xx._MODULE class")
+            if isinstance(nid, _MODULE):
+                return
+            super(_MODULE, self).__init__(nid, *a, site=self.site)
+            self._init_done = True
+
+        @classmethod
+        def _addMasterKnobs(cls, carrier, prefix):
+            carrier.parts.extend([
+                {'path': '%s:TRIG_MODE' % (prefix,),
+                 'type': 'text',
+                 'options': ('no_write_shot',),
+                 'help': '*,"RTM","RGM"',
+                 },
+                {'path': '%s:TRIG_MODE:TRANSLEN' % (prefix,),
+                 'type': 'numeric',
+                 'value': 10000,
+                 'options': ('no_write_shot',),
+                 'help': 'Samples acquired per trigger for RTM',
+                 },
+            ])
+
+        @classmethod
+        def _addModuleKnobs(cls, carrier, prefix, idx):
+            carrier.parts.extend([
+                {'path': '%s:CHECK' % (prefix,),
+                 'type': 'TASK',
+                 'options': ('write_once',),
+                 'valueExpr': 'Method(None,"check",head)',
+                 },
+            ])
+
+        def __getattr__(self, name):
+            """ redirect Device.part_name to head """
             partname = "module%d_%s" % (self.site, name)
             if partname in self.head.part_dict:
-                self.head.__setattr__(partname, value)
-                return
-        super(_MODULE, self).__setattr__(name, value)
+                return self.__class__(
+                    self.head.part_dict[partname]+self.head.nid,
+                    self.tree, self.head, site=self.site)
+            return self.__getattribute__(name)
 
-    def getchannel(self, ch, *args):
-        """ mimics _module.getchannel """
-        return self.__getattr__('_'.join([
-            'channel%02d' % (ch+self.head._channel_offset[self.site-1],)
+        def __setattr__(self, name, value):
+            """ redirect Device.part_name to head """
+            if self._init_done:
+                partname = "module%d_%s" % (self.site, name)
+                if partname in self.head.part_dict:
+                    self.head.__setattr__(partname, value)
+                    return
+            super(_MODULE, self).__setattr__(name, value)
+
+        def getchannel(self, ch, *args):
+            """ mimics _module.getchannel """
+            return self.__getattr__('_'.join([
+                'channel%02d' % (ch+self.head._channel_offset[self.site-1],)
             ]+list(args)))
 
-    def setchannel(self, ch, val, *args):
-        """ mimics _module.setchannel """
-        return self.__setattr__('_'.join([
-            'channel%02d' % (ch+self.head._channel_offset[self.site-1],)
+        def setchannel(self, ch, val, *args):
+            """ mimics _module.setchannel """
+            return self.__setattr__('_'.join([
+                'channel%02d' % (ch+self.head._channel_offset[self.site-1],)
             ]+list(args)), val)
 
-    def get_dim(self, ch):
-        # unused TODO: use in store as it supports channels.range
-        """
-        Creates the time dimension array from clock, triggers,
-        and sample counts
-        """
-        from MDSplus import MINUS, SUBTRACT, Window, Dimension
-        pre = self._carrier.trigger_pre
-        post = self._carrier.trigger_post
-        trig = self._carrier.trigger
-        win = Window(MINUS(pre), SUBTRACT(post, 1), trig)
-        rang = self.getchannel(ch, 'range')
-        dim = Dimension(win, rang)
-        return dim
+        def get_dim(self, ch):
+            # unused TODO: use in store as it supports channels.range
+            """
+            Creates the time dimension array from clock, triggers,
+            and sample counts
+            """
+            from MDSplus import MINUS, SUBTRACT, Window, Dimension
+            pre = self._carrier.trigger_pre
+            post = self._carrier.trigger_post
+            trig = self._carrier.trigger
+            win = Window(MINUS(pre), SUBTRACT(post, 1), trig)
+            rang = self.getchannel(ch, 'range')
+            dim = Dimension(win, rang)
+            return dim
 
-    def check(self, *chs):
-        """
-        Can call from action node. Checks if all values are valid.
-        """
-        if not chs:
-            chs = range(1, self._num_channels+1)
-        if self.tree.shot != -1:
-            raise MDSplus.TreeNOWRITESHOT  # only check model trees
-        if self.site == 1 and not self.on:
-            raise MDSplus.DevINV_SETUP  # module 1 is master module
-        pre, post = self._pre, self._post
-        for ch in chs:
-            if not self.getchannel(ch).on:
-                continue
-            rang = self._range(ch)
-            if not isinstance(rang, MDSplus.Range) or rang.delta < 1:
-                raise MDSplus.DevRANGE_MISMATCH
-            if -pre > rang.begin:
-                raise MDSplus.DevBAD_STARTIDX
-            if post < rang.ending:
-                raise MDSplus.DevBAD_ENDIDX
-        return chs
+        def check(self, *chs):
+            """
+            Can call from action node. Checks if all values are valid.
+            """
+            if not chs:
+                chs = range(1, self._num_channels+1)
+            if self.tree.shot != -1:
+                raise MDSplus.TreeNOWRITESHOT  # only check model trees
+            if self.site == 1 and not self.on:
+                raise MDSplus.DevINV_SETUP  # module 1 is master module
+            pre, post = self._pre, self._post
+            for ch in chs:
+                if not self.getchannel(ch).on:
+                    continue
+                rang = self._range(ch)
+                if not isinstance(rang, MDSplus.Range) or rang.delta < 1:
+                    raise MDSplus.DevRANGE_MISMATCH
+                if -pre > rang.begin:
+                    raise MDSplus.DevBAD_STARTIDX
+                if post < rang.ending:
+                    raise MDSplus.DevBAD_ENDIDX
+            return chs
 
-
- class _ACQ425(_MODULE, _acq425):  # analysis:ignore
-    @classmethod
-    def _addMasterKnobs(cls, carrier, prefix):
-        _MODULE._addMasterKnobs(carrier, prefix)
-        carrier.parts.extend([
-            {'path': '%s:CLKDIV' % (prefix,),
-             'type': 'numeric',
-             'options': ('no_write_model',),
-            },
-        ])
-
-    @classmethod
-    def _addModuleKnobs(cls, carrier, prefix, idx):
-        _MODULE._addModuleKnobs(carrier, prefix, idx)
-        start = carrier._channel_offset[idx]+1
-        for i in range(start, start+cls._num_channels):
-            path = '%s:CHANNEL%02d' % (prefix, i)
+    class _ACQ425(_MODULE, _acq425):  # analysis:ignore
+        @classmethod
+        def _addMasterKnobs(cls, carrier, prefix):
+            _MODULE._addMasterKnobs(carrier, prefix)
             carrier.parts.extend([
-                {'path': path,
-                 'type': 'SIGNAL',
-                 'options': ('no_write_model', 'write_once',)
-                },
-                {'path': '%s:RANGE' % (path,),
-                 'type': 'AXIS',
-                 'valueExpr': 'Range(None, None, 1)',
-                 'options': ('no_write_shot'),
-                },
-                {'path': '%s:GAIN' % (path,),
-                 'type': 'NUMERIC',
-                 'value': 10,
-                 'help': '0..12 [dB]',
-                 'options': ('no_write_shot',),
-                },
-                {'path': '%s:OFFSET' % (path,),
-                 'type': 'NUMERIC',
-                 'value': 0.,
-                 'help': '[-1., 1.]',
-                 'options': ('no_write_shot',),
-                },
+                {'path': '%s:CLKDIV' % (prefix,),
+                 'type': 'numeric',
+                 'options': ('no_write_model',),
+                 },
             ])
 
-    def _setting_gain(self, i):
-        return float(self.getchannel(i, 'gain').record.data())
+        @classmethod
+        def _addModuleKnobs(cls, carrier, prefix, idx):
+            _MODULE._addModuleKnobs(carrier, prefix, idx)
+            start = carrier._channel_offset[idx]+1
+            for i in range(start, start+cls._num_channels):
+                path = '%s:CHANNEL%02d' % (prefix, i)
+                carrier.parts.extend([
+                    {'path': path,
+                     'type': 'SIGNAL',
+                     'options': ('no_write_model', 'write_once',)
+                     },
+                    {'path': '%s:RANGE' % (path,),
+                     'type': 'AXIS',
+                     'valueExpr': 'Range(None, None, 1)',
+                     'options': ('no_write_shot'),
+                     },
+                    {'path': '%s:GAIN' % (path,),
+                     'type': 'NUMERIC',
+                     'value': 10,
+                     'help': '0..12 [dB]',
+                     'options': ('no_write_shot',),
+                     },
+                    {'path': '%s:OFFSET' % (path,),
+                     'type': 'NUMERIC',
+                     'value': 0.,
+                     'help': '[-1., 1.]',
+                     'options': ('no_write_shot',),
+                     },
+                ])
 
-    # Action methods
-    def check(self, *chs):
-        chs = super(_ACQ425, self).check(*chs)
-        for ch in chs:
-            if self.getchannel(ch).on:
-                try:
-                    self._offset(ch)
-                except (SystemExit, KeyboardInterrupt):
-                    raise
-                except Exception:
-                    raise MDSplus.DevBAD_OFFSET
-                try:
-                    self._setGain(ch)
-                    if not self._gain(ch) == self.nc.range(ch):
+        def _setting_gain(self, i):
+            return float(self.getchannel(i, 'gain').record.data())
+
+        # Action methods
+        def check(self, *chs):
+            chs = super(_ACQ425, self).check(*chs)
+            for ch in chs:
+                if self.getchannel(ch).on:
+                    try:
+                        self._offset(ch)
+                    except (SystemExit, KeyboardInterrupt):
                         raise
-                except (SystemExit, KeyboardInterrupt):
-                    raise
-                except Exception:
-                    print(ch, self._gain(ch), self.nc.range(ch))
-                    self.nc.GAIN[ch] = 10
-                    raise MDSplus.DevBAD_GAIN
+                    except Exception:
+                        raise MDSplus.DevBAD_OFFSET
+                    try:
+                        self._setGain(ch)
+                        if not self._gain(ch) == self.nc.range(ch):
+                            raise
+                    except (SystemExit, KeyboardInterrupt):
+                        raise
+                    except Exception:
+                        print(ch, self._gain(ch), self.nc.range(ch))
+                        self.nc.GAIN[ch] = 10
+                        raise MDSplus.DevBAD_GAIN
 
+    class _ACQ425(_ACQ425, _acq425):  # analysis:ignore
+        pass
 
- class _ACQ425(_ACQ425, _acq425):  # analysis:ignore
-    pass
+    class _ACQ480(_MODULE, _acq480):  # analysis:ignore
+        @cached_property
+        def _clkdiv_fpga(self):
+            try:
+                return int(self.clkdiv_fpga.record.data())
+            except MDSplus.TreeNODATA:
+                return self.nc._clkdiv_fpga
 
-
- class _ACQ480(_MODULE, _acq480):  # analysis:ignore
-    @cached_property
-    def _clkdiv_fpga(self):
-        try:
-            return int(self.clkdiv_fpga.record.data())
-        except MDSplus.TreeNODATA:
-            return self.nc._clkdiv_fpga
-
-    @classmethod
-    def _addMasterKnobs(cls, carrier, prefix):
-        _MODULE._addMasterKnobs(carrier, prefix)
-        carrier.parts.extend([
-            {'path': '%s:CLKDIV' % (prefix,),
-             'type': 'numeric',
-             'valueExpr': 'MULTIPLY(node.FIR,node.FPGA)',
-             'options': ('write_once', 'no_write_shot'),
-            },
-            {'path': '%s:CLKDIV:FIR' % (prefix,),
-             'type': 'numeric',
-             'options': ('write_once', 'no_write_model'),
-            },
-            {'path': '%s:CLKDIV:FPGA' % (prefix,),
-             'type': 'numeric',
-             'options': ('write_once', 'no_write_model'),
-            },
-            {'path': '%s:FIR' % (prefix,),
-             'type': 'numeric',
-             'value': 0,
-             'help': 'DECIM=[1,2,2,4,4,4,4,2,4,8,1] for FIR=[0,..,10]',
-             'options': ('no_write_shot',),
-            },
-        ])
-
-    @classmethod
-    def _addModuleKnobs(cls, carrier, prefix, idx):
-        start = carrier._channel_offset[idx]+1
-        for i in range(start, start+cls._num_channels):
-            path = '%s:CHANNEL%02d' % (prefix, i)
+        @classmethod
+        def _addMasterKnobs(cls, carrier, prefix):
+            _MODULE._addMasterKnobs(carrier, prefix)
             carrier.parts.extend([
-                {'path': path,
-                 'type': 'signal',
-                 'options': ('no_write_model', 'write_once',),
-                },
-                {'path': '%s:INVERT' % (path,),
+                {'path': '%s:CLKDIV' % (prefix,),
                  'type': 'numeric',
-                 'value': False,
-                 'help': 'bool',
-                 'options': ('no_write_shot',),
-                },
-                {'path': '%s:RANGE' % (path,),
-                 'type': 'axis',
-                 'valueExpr': 'Range(None, None, 1)',
-                 'options': ('no_write_shot'),
-                },
-                {'path': '%s:GAIN' % (path,),
+                 'valueExpr': 'MULTIPLY(node.FIR,node.FPGA)',
+                 'options': ('write_once', 'no_write_shot'),
+                 },
+                {'path': '%s:CLKDIV:FIR' % (prefix,),
+                 'type': 'numeric',
+                 'options': ('write_once', 'no_write_model'),
+                 },
+                {'path': '%s:CLKDIV:FPGA' % (prefix,),
+                 'type': 'numeric',
+                 'options': ('write_once', 'no_write_model'),
+                 },
+                {'path': '%s:FIR' % (prefix,),
                  'type': 'numeric',
                  'value': 0,
-                 'help': '0..12 [dB]',
+                 'help': 'DECIM=[1,2,2,4,4,4,4,2,4,8,1] for FIR=[0,..,10]',
                  'options': ('no_write_shot',),
-                },
-                {'path': '%s:LFNS' % (path,),
-                 'type': 'numeric',
-                 'value': False,
-                 'help': 'bool',
-                 'options': ('no_write_shot',),
-                },
-                {'path': '%s:HPF' % (path,),
-                 'type': 'numeric',
-                 'value': False,
-                 'help': 'bool',
-                 'options': ('no_write_shot',),
-                },
-                {'path': '%s:T50R' % (path,),
-                 'type': 'numeric',
-                 'value': False,
-                 'help': 'bool',
-                 'options': ('no_write_shot',),
-                },
+                 },
             ])
 
-    @MDSplus.mdsrecord(filter=int, default=0)
-    def _setting_trig_mode(self): return self.__getattr__('trig_mode')
-    @MDSplus.mdsrecord(filter=int)
-    def _setting_trig_mode_translen(self):
-        return self.__getattr__('trig_mode_translen')
+        @classmethod
+        def _addModuleKnobs(cls, carrier, prefix, idx):
+            start = carrier._channel_offset[idx]+1
+            for i in range(start, start+cls._num_channels):
+                path = '%s:CHANNEL%02d' % (prefix, i)
+                carrier.parts.extend([
+                    {'path': path,
+                     'type': 'signal',
+                     'options': ('no_write_model', 'write_once',),
+                     },
+                    {'path': '%s:INVERT' % (path,),
+                     'type': 'numeric',
+                     'value': False,
+                     'help': 'bool',
+                     'options': ('no_write_shot',),
+                     },
+                    {'path': '%s:RANGE' % (path,),
+                     'type': 'axis',
+                     'valueExpr': 'Range(None, None, 1)',
+                     'options': ('no_write_shot'),
+                     },
+                    {'path': '%s:GAIN' % (path,),
+                     'type': 'numeric',
+                     'value': 0,
+                     'help': '0..12 [dB]',
+                     'options': ('no_write_shot',),
+                     },
+                    {'path': '%s:LFNS' % (path,),
+                     'type': 'numeric',
+                     'value': False,
+                     'help': 'bool',
+                     'options': ('no_write_shot',),
+                     },
+                    {'path': '%s:HPF' % (path,),
+                     'type': 'numeric',
+                     'value': False,
+                     'help': 'bool',
+                     'options': ('no_write_shot',),
+                     },
+                    {'path': '%s:T50R' % (path,),
+                     'type': 'numeric',
+                     'value': False,
+                     'help': 'bool',
+                     'options': ('no_write_shot',),
+                     },
+                ])
 
-    @MDSplus.mdsrecord(filter=int)
-    def _setting_fir(self): return self.__getattr__('fir')
+        @MDSplus.mdsrecord(filter=int, default=0)
+        def _setting_trig_mode(self): return self.__getattr__('trig_mode')
 
-    @property
-    def init_args(self):
-        return (
-            [self._setting_gain(c) for c in range(1, self._num_channels+1)],
-            [self._setting_invert(c) for c in range(1, self._num_channels+1)],
-            [self._setting_hpf(c) for c in range(1, self._num_channels+1)],
-            [self._setting_lfns(c) for c in range(1, self._num_channels+1)],
-            [self._setting_t50r(c) for c in range(1, self._num_channels+1)],
-            self.tree.shot)
+        @MDSplus.mdsrecord(filter=int)
+        def _setting_trig_mode_translen(self):
+            return self.__getattr__('trig_mode_translen')
 
-    def init_master(self, pre, soft, clkdiv):
-        self.nc._init_master(pre, soft,
-                             self._setting_trig_mode,
-                             self._setting_trig_mode_translen,
-                             self._setting_fir)
-        fir = self.nc.ACQ480.FIR.DECIM
-        fpga = self.nc.ACQ480.FPGA.DECIM
-        self.clkdiv_fir = fir
-        self.clkdiv_fpga = fpga
-        # check clock
-        clk = self._carrier._setting_clock
-        if clk*fpga < 10000000:
-            print('Bus clock must be at least 10MHz')
-            raise MDSplus.DevINV_SETUP
-        if clk*fpga*fir > 80000000:
-            print('ADC clock cannot exceed 80MHz')
-            raise MDSplus.DevINV_SETUP
+        @MDSplus.mdsrecord(filter=int)
+        def _setting_fir(self): return self.__getattr__('fir')
 
-    # Channel settings
-    def _setting_invert(self, ch):
-        return int(self.getchannel(ch, 'invert').record.data())
+        @property
+        def init_args(self):
+            return (
+                [self._setting_gain(c)
+                 for c in range(1, self._num_channels+1)],
+                [self._setting_invert(c)
+                 for c in range(1, self._num_channels+1)],
+                [self._setting_hpf(c) for c in range(1, self._num_channels+1)],
+                [self._setting_lfns(c)
+                 for c in range(1, self._num_channels+1)],
+                [self._setting_t50r(c)
+                 for c in range(1, self._num_channels+1)],
+                self.tree.shot)
 
-    def _setting_gain(self, ch):
-        return int(self.getchannel(ch, 'gain').record.data())
+        def init_master(self, pre, soft, clkdiv):
+            self.nc._init_master(pre, soft,
+                                 self._setting_trig_mode,
+                                 self._setting_trig_mode_translen,
+                                 self._setting_fir)
+            fir = self.nc.ACQ480.FIR.DECIM
+            fpga = self.nc.ACQ480.FPGA.DECIM
+            self.clkdiv_fir = fir
+            self.clkdiv_fpga = fpga
+            # check clock
+            clk = self._carrier._setting_clock
+            if clk*fpga < 10000000:
+                print('Bus clock must be at least 10MHz')
+                raise MDSplus.DevINV_SETUP
+            if clk*fpga*fir > 80000000:
+                print('ADC clock cannot exceed 80MHz')
+                raise MDSplus.DevINV_SETUP
 
-    def _setting_hpf(self, ch):
-        return int(self.getchannel(ch, 'hpf').record.data())
+        # Channel settings
+        def _setting_invert(self, ch):
+            return int(self.getchannel(ch, 'invert').record.data())
 
-    def _setting_lfns(self, ch):
-        return int(self.getchannel(ch, 'lfns').record.data())
+        def _setting_gain(self, ch):
+            return int(self.getchannel(ch, 'gain').record.data())
 
-    def _setting_t50r(self, ch):
-        return int(self.getchannel(ch, 't50r').record.data())
+        def _setting_hpf(self, ch):
+            return int(self.getchannel(ch, 'hpf').record.data())
 
+        def _setting_lfns(self, ch):
+            return int(self.getchannel(ch, 'lfns').record.data())
 
- class _AO420(_MODULE, _ao420):  # analysis:ignore
-    """
-    MDSplus-dependent superclass covering Gen.4 D-tAcq module device types.
-    PVs are set from the user tree-knobs.
-    """
+        def _setting_t50r(self, ch):
+            return int(self.getchannel(ch, 't50r').record.data())
 
-    @classmethod
-    def _addMasterKnobs(cls, carrier, prefix):
-        _MODULE._addMasterKnobs(carrier, prefix)
-        carrier.parts.extend([
-            {'path': '%s:CLKDIV' % (prefix,),
-             'type': 'numeric',
-             'options': ('no_write_model',),
-            },
-        ])
+    class _AO420(_MODULE, _ao420):  # analysis:ignore
+        """
+        MDSplus-dependent superclass covering Gen.4 D-tAcq module device types.
+        PVs are set from the user tree-knobs.
+        """
 
-    @classmethod
-    def _addModuleKnobs(cls, carrier, prefix, idx):
-        start = carrier._channel_offset[idx]+1
-        for i in range(start, start+cls._num_channels):
-            path = '%s:CHANNEL%02d' % (prefix, i)
+        @classmethod
+        def _addMasterKnobs(cls, carrier, prefix):
+            _MODULE._addMasterKnobs(carrier, prefix)
             carrier.parts.extend([
-                {'path': path,
+                {'path': '%s:CLKDIV' % (prefix,),
                  'type': 'numeric',
-                 'valueExpr': 'EXT_FUNCTION(None, "numpy", node.EXPR)',
-                 'options': ('no_write_shot', 'no_write_model', 'write_once'),
-                },
-                {'path': '%s:EXPR' % (path,),
-                 'type': 'text',
-                 'value': 'sin(linspace(0, 2*pi, 100000))*5',
-                 'options': ('no_write_shot',),
-                },
-                {'path': '%s:RANGE' % (path,),
-                 'type': 'text',
-                 'options': ('no_write_model', 'write_once'),
-                },
-                {'path': '%s:GAIN' % (path,),
-                 'type': 'numeric',
-                 'options': ('no_write_model', 'write_once'),
-                },
-                {'path': '%s:OFFSET' % (path,),
-                 'type': 'numeric',
-                 'options': ('no_write_model', 'write_once'),
-                },
+                 'options': ('no_write_model',),
+                 },
             ])
 
-    def _setting_expr(self, ch):
-        return str(self.getchannel(ch, 'expr').record.data())
+        @classmethod
+        def _addModuleKnobs(cls, carrier, prefix, idx):
+            start = carrier._channel_offset[idx]+1
+            for i in range(start, start+cls._num_channels):
+                path = '%s:CHANNEL%02d' % (prefix, i)
+                carrier.parts.extend([
+                    {'path': path,
+                     'type': 'numeric',
+                     'valueExpr': 'EXT_FUNCTION(None, "numpy", node.EXPR)',
+                     'options': ('no_write_shot', 'no_write_model', 'write_once'),
+                     },
+                    {'path': '%s:EXPR' % (path,),
+                     'type': 'text',
+                     'value': 'sin(linspace(0, 2*pi, 100000))*5',
+                     'options': ('no_write_shot',),
+                     },
+                    {'path': '%s:RANGE' % (path,),
+                     'type': 'text',
+                     'options': ('no_write_model', 'write_once'),
+                     },
+                    {'path': '%s:GAIN' % (path,),
+                     'type': 'numeric',
+                     'options': ('no_write_model', 'write_once'),
+                     },
+                    {'path': '%s:OFFSET' % (path,),
+                     'type': 'numeric',
+                     'options': ('no_write_model', 'write_once'),
+                     },
+                ])
 
+        def _setting_expr(self, ch):
+            return str(self.getchannel(ch, 'expr').record.data())
 
- # --------------------------  # analysis:ignore
- #  7 Public MDSplus Devices  # analysis:ignore
- # --------------------------  # analysis:ignore
- def ASSEMBLY(module, num_modules=1, mgt=None):  # analysis:ignore
-    def _(cls):
-        cls.setup_class(cls, module, num_modules)
-        return cls
-    return _
+    # --------------------------  # analysis:ignore
+    #  7 Public MDSplus Devices  # analysis:ignore
+    # --------------------------  # analysis:ignore
+    def ASSEMBLY(module, num_modules=1, mgt=None):  # analysis:ignore
+        def _(cls):
+            cls.setup_class(cls, module, num_modules)
+            return cls
+        return _
 
- # ACQ1001 carrier  # analysis:ignore
- @ASSEMBLY(_ACQ425)  # analysis:ignore
- class ACQ1001_ACQ425(_ACQ1001):pass  # analysis:ignore
- @ASSEMBLY(_ACQ480)  # analysis:ignore
- class ACQ1001_ACQ480(_ACQ1001):pass  # analysis:ignore
- @ASSEMBLY(_AO420)  # analysis:ignore
- class ACQ1001_AO420(_ACQ1001):pass  # analysis:ignore
+    # ACQ1001 carrier  # analysis:ignore
+    @ASSEMBLY(_ACQ425)  # analysis:ignore
+    class ACQ1001_ACQ425(_ACQ1001):
+        pass  # analysis:ignore
 
- # set bank_mask A,AB,ABC (default all, i.e. ABCD) only for ACQ425 for now  # analysis:ignore
- class _ACQ425_4CH(_ACQ425): _num_channels = 4  # analysis:ignore
- @ASSEMBLY(_ACQ425_4CH)  # analysis:ignore
- class ACQ1001_ACQ425_4CH(_ACQ1001):pass  # analysis:ignore
+    @ASSEMBLY(_ACQ480)  # analysis:ignore
+    class ACQ1001_ACQ480(_ACQ1001):
+        pass  # analysis:ignore
 
- class _ACQ425_8CH(_ACQ425): _num_channels = 8  # analysis:ignore
- @ASSEMBLY(_ACQ425_8CH)  # analysis:ignore
- class ACQ1001_ACQ425_8CH(_ACQ1001):pass  # analysis:ignore
+    @ASSEMBLY(_AO420)  # analysis:ignore
+    class ACQ1001_AO420(_ACQ1001):
+        pass  # analysis:ignore
 
- class _ACQ425_12CH(_ACQ425): _num_channels = 12  # analysis:ignore
- @ASSEMBLY(_ACQ425_12CH)  # analysis:ignore
- class ACQ1001_ACQ425_12CH(_ACQ1001):pass  # analysis:ignore
+    # set bank_mask A,AB,ABC (default all, i.e. ABCD) only for ACQ425 for now  # analysis:ignore
+    class _ACQ425_4CH(_ACQ425):
+        _num_channels = 4  # analysis:ignore
 
- # /mnt/fpga.d/ACQ1001_TOP_08_ff_64B-4CH.bit.gz  # analysis:ignore
- # TODO: how to deal with es_enable CH 5&6 ?  # analysis:ignore
- class _ACQ480_4CH(_ACQ480): _num_channels = 4  # analysis:ignore
- @ASSEMBLY(_ACQ480_4CH)  # analysis:ignore
- class ACQ1001_ACQ480_4CH(_ACQ1001):pass  # analysis:ignore
+    @ASSEMBLY(_ACQ425_4CH)  # analysis:ignore
+    class ACQ1001_ACQ425_4CH(_ACQ1001):
+        pass  # analysis:ignore
 
- # ACQ2106 carrier  # analysis:ignore
- @ASSEMBLY(_ACQ425, 1)  # analysis:ignore
- class ACQ2106_ACQ425x1(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ425, 2)  # analysis:ignore
- class ACQ2106_ACQ425x2(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ425, 3)  # analysis:ignore
- class ACQ2106_ACQ425x3(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ425, 4)  # analysis:ignore
- class ACQ2106_ACQ425x4(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ425, 5)  # analysis:ignore
- class ACQ2106_ACQ425x5(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ425, 6)  # analysis:ignore
- class ACQ2106_ACQ425x6(_ACQ2106):pass  # analysis:ignore
+    class _ACQ425_8CH(_ACQ425):
+        _num_channels = 8  # analysis:ignore
 
- @ASSEMBLY(_ACQ480, 1)  # analysis:ignore
- class ACQ2106_ACQ480x1(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ480, 2)  # analysis:ignore
- class ACQ2106_ACQ480x2(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ480, 3)  # analysis:ignore
- class ACQ2106_ACQ480x3(_ACQ2106):pass  # analysis:ignore
- @ASSEMBLY(_ACQ480, 4)  # analysis:ignore
- class ACQ2106_ACQ480x4(_ACQ2106):_max_clk = 14000000  # analysis:ignore
- @ASSEMBLY(_ACQ480, 5)  # analysis:ignore
- class ACQ2106_ACQ480x5(_ACQ2106):_max_clk = 11000000  # analysis:ignore
- @ASSEMBLY(_ACQ480, 6)  # analysis:ignore
- class ACQ2106_ACQ480x6(_ACQ2106):_max_clk =  9000000  # analysis:ignore
+    @ASSEMBLY(_ACQ425_8CH)  # analysis:ignore
+    class ACQ1001_ACQ425_8CH(_ACQ1001):
+        pass  # analysis:ignore
 
+    class _ACQ425_12CH(_ACQ425):
+        _num_channels = 12  # analysis:ignore
 
- # ---------------  # analysis:ignore
- # 8 test drivers  # analysis:ignore
- # ---------------  # analysis:ignore
- from unittest import TestCase, TestSuite, TextTestRunner  # analysis:ignore
- T = [None]  # analysis:ignore
- def out(msg, reset=False):  # analysis:ignore
-    if reset:
-        T[0] = time.time()
-        t = T[0]
-    else:
-        t = T[0]
-        T[0] = time.time()
-    print('%7.3f: %s' % (T[0]-t, msg))
+    @ASSEMBLY(_ACQ425_12CH)  # analysis:ignore
+    class ACQ1001_ACQ425_12CH(_ACQ1001):
+        pass  # analysis:ignore
 
+    # /mnt/fpga.d/ACQ1001_TOP_08_ff_64B-4CH.bit.gz  # analysis:ignore
+    # TODO: how to deal with es_enable CH 5&6 ?  # analysis:ignore
+    class _ACQ480_4CH(_ACQ480):
+        _num_channels = 4  # analysis:ignore
 
- class Tests(TestCase):  # analysis:ignore
-    simulate = False
-    acq2106_480_fpgadecim = 10
-    acq2106_425_host = '192.168.44.255'
-    acq2106_480_host = '192.168.44.255'  # 'acq2106_065'
-    acq1001_420_host = '192.168.44.255'  # 'acq1001_291'
-    acq1001_425_host = '192.168.44.255'
-    acq1001_480_host = '192.168.44.255'  # 'acq1001_316'
-    rp_host = '192.168.44.150'  # 'RP-F046BB'
-    shot = 1000
-    @classmethod
-    def getShotNumber(cls):
-        return cls.shot
-        import datetime
-        d = datetime.datetime.utcnow()
-        return d.month*100000+d.day*1000+d.hour*10
+    @ASSEMBLY(_ACQ480_4CH)  # analysis:ignore
+    class ACQ1001_ACQ480_4CH(_ACQ1001):
+        pass  # analysis:ignore
 
-    @classmethod
-    def setUpClass(cls):
-        from LocalDevices import acq4xx as a, w7x_timing
-        import gc
-        gc.collect(2)
-        cls.shot = cls.getShotNumber()
-        if MDSplus.getenv('test_path', None) is None:
-            MDSplus.setenv('test_path', '/tmp')
-        with MDSplus.Tree('test', -1, 'new') as t:
-            R = w7x_timing.W7X_TIMING.Add(t, 'R')
-            R.host = cls.rp_host
-            # A = ACQ2106_ACQ480x4.Add(t, 'ACQ480')
-            A = a.ACQ2106_ACQ480x4.Add(t, 'ACQ480x4')
-            A.host = cls.acq2106_480_host
-            # A.clock_src = 10000000
-            A.clock = 2000000
-            A.trigger_pre = 0
-            A.trigger_post = 100000
-            A.module1_fir = 3
-            A.stream = STREAM_MODE.ETH
-            A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
-            A = a.ACQ2106_ACQ480x4.Add(t, 'ACQ480x4_M2')
-            A.stream = STREAM_MODE.MGT
-            A.stream_mgt_a = 2
-            A.stream_mgt_b = 3
-            A.stream_mgt_a_sites = MDSplus.Int32([1, 2])
-            A.stream_mgt_b_sites = MDSplus.Int32([3, 4])
-            A.host = cls.acq2106_480_host
-            # A.clock_src = 10000000
-            A.clock = 2000000
-            A.trigger_pre = 0
-            A.trigger_post = 500000
-            A.module1_fir = 3
-            A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
-            A = a.ACQ2106_ACQ425x2.Add(t, 'ACQ425x2')
-            A.host = cls.acq2106_425_host
-            # A.clock_src = 10000000
-            A.clock = 100000
-            A.stream = STREAM_MODE.ETH
-            A.trigger_pre = 0
-            A.trigger_post = 100000
-            A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
-            A = a.ACQ2106_ACQ425x2.Add(t, 'ACQ425x2_M2')
-            A.stream = STREAM_MODE.MGT
-            A.stream_mgt_a_sites = MDSplus.Int32([1])
-            A.stream_mgt_b_sites = MDSplus.Int32([2])
-            A.host = cls.acq2106_425_host
-            # A.clock_src = 10000000
-            A.clock = 1000000
-            A.trigger_pre = 0
-            A.trigger_post = 500000
-            A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
-            A = a.ACQ1001_ACQ425.Add(t, 'ACQ425')
-            A.host = cls.acq1001_425_host
-            # A.clock_src = 10000000
-            A.clock = 1000000
-            A.trigger_pre = 0
-            A.trigger_post = 100000
-            A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
-            A = a.ACQ1001_ACQ480.Add(t, 'ACQ480')
-            A.host = cls.acq1001_480_host
-            # A.clock_src = 10000000
-            A.clock = 2000000
-            A.trigger_pre = 0
-            A.trigger_post = 100000
-            A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
-            A = a.ACQ1001_AO420.Add(t, 'AO420')
-            A.host = cls.acq1001_420_host
-            # A.clock_src = 10000000
-            A.clock = 1000000
-            sin = "sin(linspace(0,pi*2,%d)),0" % 100000
-            cos = "cos(linspace(0,pi*2,%d)),0" % 100000
-            A.getchannel(1, 'expr').record = '1+1*'+sin
-            A.getchannel(2, 'expr').record = '4*'+cos
-            A.getchannel(3, 'expr').record = '-7*'+sin
-            A.getchannel(4, 'expr').record = '-11*'+cos
-            A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
-            t.write()
-        t.cleanDatafile()
+    # ACQ2106 carrier  # analysis:ignore
+    @ASSEMBLY(_ACQ425, 1)  # analysis:ignore
+    class ACQ2106_ACQ425x1(_ACQ2106):
+        pass  # analysis:ignore
 
-    @classmethod
-    def tearDownClass(cls): pass
+    @ASSEMBLY(_ACQ425, 2)  # analysis:ignore
+    class ACQ2106_ACQ425x2(_ACQ2106):
+        pass  # analysis:ignore
 
-    @staticmethod
-    def makeshot(t, shot, dev):
-        out('creating "%s" shot %d' % (t.tree, shot))
-        MDSplus.Tree('test', -1, 'readonly').createPulse(shot)
-        t = MDSplus.Tree('test', shot)
-        A = t.getNode(dev)
-        A.simulate = Tests.simulate
-        try:
-            R = t.R
-        except AttributeError:
-            R = None
-        A.debug = 7
-        out('setup trigger')
-        if R is not None:
-            R.disarm()
-            R.init()
-            R.arm()
-        out('init A')
-        A.init()
-        out('arm A')
-        A.arm()
-        try:
-            out('wait 2sec ')
-            time.sleep(2)
-            out('TRIGGER! ')
-            if R is None:
-                A.soft_trigger()
-            else:
-                R.trig()
-            t = int(A._setting_post/A._setting_clock+1)*2
-            out('wait %dsec' % t)
-            time.sleep(t)
-            if dev.startswith('ACQ'):
-                out('store')
-                A.store()
-        finally:
-            if dev.startswith('ACQ'):
-                A.deinit()
-        out('done')
+    @ASSEMBLY(_ACQ425, 3)  # analysis:ignore
+    class ACQ2106_ACQ425x3(_ACQ2106):
+        pass  # analysis:ignore
 
-    def test420Normal(self):
-        out('start test420Normal', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
+    @ASSEMBLY(_ACQ425, 4)  # analysis:ignore
+    class ACQ2106_ACQ425x4(_ACQ2106):
+        pass  # analysis:ignore
+
+    @ASSEMBLY(_ACQ425, 5)  # analysis:ignore
+    class ACQ2106_ACQ425x5(_ACQ2106):
+        pass  # analysis:ignore
+
+    @ASSEMBLY(_ACQ425, 6)  # analysis:ignore
+    class ACQ2106_ACQ425x6(_ACQ2106):
+        pass  # analysis:ignore
+
+    @ASSEMBLY(_ACQ480, 1)  # analysis:ignore
+    class ACQ2106_ACQ480x1(_ACQ2106):
+        pass  # analysis:ignore
+
+    @ASSEMBLY(_ACQ480, 2)  # analysis:ignore
+    class ACQ2106_ACQ480x2(_ACQ2106):
+        pass  # analysis:ignore
+
+    @ASSEMBLY(_ACQ480, 3)  # analysis:ignore
+    class ACQ2106_ACQ480x3(_ACQ2106):
+        pass  # analysis:ignore
+
+    @ASSEMBLY(_ACQ480, 4)  # analysis:ignore
+    class ACQ2106_ACQ480x4(_ACQ2106):
+        _max_clk = 14000000  # analysis:ignore
+
+    @ASSEMBLY(_ACQ480, 5)  # analysis:ignore
+    class ACQ2106_ACQ480x5(_ACQ2106):
+        _max_clk = 11000000  # analysis:ignore
+
+    @ASSEMBLY(_ACQ480, 6)  # analysis:ignore
+    class ACQ2106_ACQ480x6(_ACQ2106):
+        _max_clk = 9000000  # analysis:ignore
+
+    # ---------------  # analysis:ignore
+    # 8 test drivers  # analysis:ignore
+    # ---------------  # analysis:ignore
+    from unittest import TestCase, TestSuite, TextTestRunner  # analysis:ignore
+    T = [None]  # analysis:ignore
+
+    def out(msg, reset=False):  # analysis:ignore
+        if reset:
+            T[0] = time.time()
+            t = T[0]
         else:
-            R.setup()
-        self.makeshot(t, self.shot+8, 'AO420')
-        t = MDSplus.Tree('test', self.shot+8)
-        rang = ('5V', '5V', '10V', '10V+')
-        gain = (6553, 26214, 22937, 32767)
-        offs = (6553, 0, 0, 0)
-        for i in range(4):
-            self.assertEqual(
-                str(t.AO420.getchannel(i+1, 'range').data()), rang[i])
-            self.assertEqual(
-                int(t.AO420.getchannel(i+1, 'gain').data()), gain[i])
-            self.assertEqual(
-                int(t.AO420.getchannel(i+1, 'offset').data()), offs[i])
-        print(t.AO420.COMMANDS.record)
+            t = T[0]
+            T[0] = time.time()
+        print('%7.3f: %s' % (T[0]-t, msg))
 
-    def test425Normal(self):
-        out('start test425Normal', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup()
-        self.makeshot(t, self.shot+5, 'ACQ425')
+    class Tests(TestCase):  # analysis:ignore
+        simulate = False
+        acq2106_480_fpgadecim = 10
+        acq2106_425_host = '192.168.44.255'
+        acq2106_480_host = '192.168.44.255'  # 'acq2106_065'
+        acq1001_420_host = '192.168.44.255'  # 'acq1001_291'
+        acq1001_425_host = '192.168.44.255'
+        acq1001_480_host = '192.168.44.255'  # 'acq1001_316'
+        rp_host = '192.168.44.150'  # 'RP-F046BB'
+        shot = 1000
 
-    def test425X2Normal(self):
-        out('start test425X2Normal', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup()
-        self.makeshot(t, self.shot+6, 'ACQ425X2')
+        @classmethod
+        def getShotNumber(cls):
+            return cls.shot
+            import datetime
+            d = datetime.datetime.utcnow()
+            return d.month*100000+d.day*1000+d.hour*10
 
-    def test425X2Stream(self):
-        out('start test425X2Stream', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup()
-        self.makeshot(t, self.shot+7, 'ACQ425X2_M2')
+        @classmethod
+        def setUpClass(cls):
+            from LocalDevices import acq4xx as a, w7x_timing
+            import gc
+            gc.collect(2)
+            cls.shot = cls.getShotNumber()
+            if MDSplus.getenv('test_path', None) is None:
+                MDSplus.setenv('test_path', '/tmp')
+            with MDSplus.Tree('test', -1, 'new') as t:
+                R = w7x_timing.W7X_TIMING.Add(t, 'R')
+                R.host = cls.rp_host
+                # A = ACQ2106_ACQ480x4.Add(t, 'ACQ480')
+                A = a.ACQ2106_ACQ480x4.Add(t, 'ACQ480x4')
+                A.host = cls.acq2106_480_host
+                # A.clock_src = 10000000
+                A.clock = 2000000
+                A.trigger_pre = 0
+                A.trigger_post = 100000
+                A.module1_fir = 3
+                A.stream = STREAM_MODE.ETH
+                A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
+                A = a.ACQ2106_ACQ480x4.Add(t, 'ACQ480x4_M2')
+                A.stream = STREAM_MODE.MGT
+                A.stream_mgt_a = 2
+                A.stream_mgt_b = 3
+                A.stream_mgt_a_sites = MDSplus.Int32([1, 2])
+                A.stream_mgt_b_sites = MDSplus.Int32([3, 4])
+                A.host = cls.acq2106_480_host
+                # A.clock_src = 10000000
+                A.clock = 2000000
+                A.trigger_pre = 0
+                A.trigger_post = 500000
+                A.module1_fir = 3
+                A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
+                A = a.ACQ2106_ACQ425x2.Add(t, 'ACQ425x2')
+                A.host = cls.acq2106_425_host
+                # A.clock_src = 10000000
+                A.clock = 100000
+                A.stream = STREAM_MODE.ETH
+                A.trigger_pre = 0
+                A.trigger_post = 100000
+                A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
+                A = a.ACQ2106_ACQ425x2.Add(t, 'ACQ425x2_M2')
+                A.stream = STREAM_MODE.MGT
+                A.stream_mgt_a_sites = MDSplus.Int32([1])
+                A.stream_mgt_b_sites = MDSplus.Int32([2])
+                A.host = cls.acq2106_425_host
+                # A.clock_src = 10000000
+                A.clock = 1000000
+                A.trigger_pre = 0
+                A.trigger_post = 500000
+                A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
+                A = a.ACQ1001_ACQ425.Add(t, 'ACQ425')
+                A.host = cls.acq1001_425_host
+                # A.clock_src = 10000000
+                A.clock = 1000000
+                A.trigger_pre = 0
+                A.trigger_post = 100000
+                A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
+                A = a.ACQ1001_ACQ480.Add(t, 'ACQ480')
+                A.host = cls.acq1001_480_host
+                # A.clock_src = 10000000
+                A.clock = 2000000
+                A.trigger_pre = 0
+                A.trigger_post = 100000
+                A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
+                A = a.ACQ1001_AO420.Add(t, 'AO420')
+                A.host = cls.acq1001_420_host
+                # A.clock_src = 10000000
+                A.clock = 1000000
+                sin = "sin(linspace(0,pi*2,%d)),0" % 100000
+                cos = "cos(linspace(0,pi*2,%d)),0" % 100000
+                A.getchannel(1, 'expr').record = '1+1*'+sin
+                A.getchannel(2, 'expr').record = '4*'+cos
+                A.getchannel(3, 'expr').record = '-7*'+sin
+                A.getchannel(4, 'expr').record = '-11*'+cos
+                A.ACTIONSERVER.SOFT_TRIGGER.on = R is None
+                t.write()
+            t.cleanDatafile()
 
-    def test480Normal(self):
-        out('start test480Normal', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup()
-        self.makeshot(t, self.shot+5, 'ACQ480')
+        @classmethod
+        def tearDownClass(cls): pass
 
-    def test480X4Normal(self):
-        out('start test480X4Normal', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup(width=1000)
-        t.ACQ480X4.module1_trig_mode = None
-        self.makeshot(t, self.shot+1, 'ACQ480X4')
-
-    def test480X4RGM(self):
-        out('start test480X4RGM', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup(width=1000, gate2=range(3), timing=[
-                i*(t.ACQ480X4.trigger_post >> 4)*self.acq2106_480_fpgadecim
-                for i in [0, 1, 2, 4, 5, 8, 9, 13, 14, 19, 20, 100]
-            ])
-        t.ACQ480X4.module1_trig_mode = 'RGM'
-        self.makeshot(t, self.shot+2, 'ACQ480X4')
-
-    def test480X4RTM(self):
-        out('start test480X4RTM', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup(width=100,
-                    period=100000*self.acq2106_480_fpgadecim,
-                    burst=30)
-        t.ACQ480X4.module1_trig_mode = 'RTM'
-        t.ACQ480X4.module1_trig_mode_translen = t.ACQ480X4.trigger_post >> 3
-        self.makeshot(t, self.shot+3, 'ACQ480X4')
-
-    def test480X4Stream(self):
-        out('start test480X4MGT', 1)
-        t = MDSplus.Tree('test')
-        try:
-            R = t.R
-        except AttributeError:
-            pass
-        else:
-            R.setup(width=100)
-        t.ACQ480X4.module1_trig_mode = None
-        self.makeshot(t, self.shot+1, 'ACQ480X4_M2')
-
-    def runTest(self):
-        for test in self.getTests():
-            self.__getattribute__(test)()
-
-    @staticmethod
-    def get480Tests():
-        return ['test480Normal']
-
-    @staticmethod
-    def get480x4Tests():
-        return ['test480X4Normal', 'test480X4RGM', 'test480X4RTM']
-
-    @staticmethod
-    def get425Tests():
-        return ['test425Normal', 'test425X2Normal', 'test425X2Stream']
-
-    @staticmethod
-    def get420Tests():
-        return ['test420Normal']
-
-
- def suite(tests): return TestSuite(map(Tests, tests))  # analysis:ignore
-
- def runTests(tests): TextTestRunner(verbosity=2).run(suite(tests))  # analysis:ignore
- def run480(): runTests(Tests.get480Tests())  # analysis:ignore
- def run480x4(): runTests(Tests.get480x4Tests())  # analysis:ignore
- def run425(): runTests(Tests.get425Tests())  # analysis:ignore
- def run420(): runTests(Tests.get420Tests())  # analysis:ignore
-
- def runmgtdram(blocks=10, uut='localhost'):  # analysis:ignore
-    blocks = int(blocks)
-    m = mgtdram(uut)
-    print("INIT  PHASE RUN")
-    m._init(blocks, log=sys.stdout)
-    print("INIT  PHASE DONE")
-    print("STORE PHASE RUN")
-    m._store(blocks, chans=32)
-    print("STORE PHASE DONE")
-
- if __name__=='__main__':  # analysis:ignore
-    # test generation
-    MDSplus.setenv('acq4xx_path','/tmp')
-    with MDSplus.Tree('acq4xx', -1, 'new') as t:
-        import acq4xx
-        acq4xx.ACQ1001 = t.addNode('ACQ1001')
-        acq4xx.ACQ1001_ACQ425.Add(t,"ACQ1001:ACQ425")
-        acq4xx.ACQ1001_ACQ425_12CH.Add(t,"ACQ1001:ACQ425_12CH")
-        acq4xx.ACQ1001_ACQ425_8CH.Add(t,"ACQ1001:ACQ425_8CH")
-        acq4xx.ACQ1001_ACQ425_4CH.Add(t,"ACQ1001:ACQ425_4CH")
-        acq4xx.ACQ1001_ACQ480.Add(t,"ACQ1001:ACQ480")
-        acq4xx.ACQ1001_ACQ480_4CH.Add(t,"ACQ1001:ACQ480_4CH")
-        acq4xx.ACQ1001_AO420.Add(t,"ACQ1001:AO420")
-        acq4xx.ACQ2106 = t.addNode('ACQ2106')
-        acq4xx.ACQ2106_ACQ425x1.Add(t,"ACQ2106:ACQ425x1")
-        acq4xx.ACQ2106_ACQ425x2.Add(t,"ACQ2106:ACQ425x2")
-        acq4xx.ACQ2106_ACQ425x3.Add(t,"ACQ2106:ACQ425x3")
-        acq4xx.ACQ2106_ACQ425x4.Add(t,"ACQ2106:ACQ425x4")
-        acq4xx.ACQ2106_ACQ425x5.Add(t,"ACQ2106:ACQ425x5")
-        acq4xx.ACQ2106_ACQ425x1.Add(t,"ACQ2106:ACQ425x6")
-        acq4xx.ACQ2106_ACQ480x1.Add(t,"ACQ1001:ACQ480x1")
-        acq4xx.ACQ2106_ACQ480x2.Add(t,"ACQ1001:ACQ480x2")
-        acq4xx.ACQ2106_ACQ480x3.Add(t,"ACQ1001:ACQ480x3")
-        acq4xx.ACQ2106_ACQ480x4.Add(t,"ACQ1001:ACQ480x4")
-        acq4xx.ACQ2106_ACQ480x5.Add(t,"ACQ1001:ACQ480x5")
-        acq4xx.ACQ2106_ACQ480x6.Add(t,"ACQ1001:ACQ480x6")
-        t.write()
-
-    if run_test:
-        Tests.simulate = True
-        t = Tests()
-        t.setUpClass()
-        t.test425X2Normal()
-        t.test425X2Stream()
-        # t.test480X4Stream()
-        # t.test480Normal()
-        t = MDSplus.Tree('test', 1007)
-        rec = t.ACQ425X2_M2.getchannel(1).record
-        pp.plot(rec.dim_of()[:10000], rec.data()[:10000])
-        pp.show()
-    else:
-        if len(sys.argv) <= 1:
-            print('%s test' % sys.argv[0])
-            print('%s test420' % sys.argv[0])
-            print('%s test425' % sys.argv[0])
-            print('%s test480' % sys.argv[0])
-            print('%s test480x4' % sys.argv[0])
-            print('%s testmgtdram <blocks> [uut]' % sys.argv[0])
-            test_stream_es()
-        else:
-            print(sys.argv[1:])
-            if sys.argv[1] == 'test':
-                if len(sys.argv) > 2:
-                    runTests(sys.argv[2:])
+        @staticmethod
+        def makeshot(t, shot, dev):
+            out('creating "%s" shot %d' % (t.tree, shot))
+            MDSplus.Tree('test', -1, 'readonly').createPulse(shot)
+            t = MDSplus.Tree('test', shot)
+            A = t.getNode(dev)
+            A.simulate = Tests.simulate
+            try:
+                R = t.R
+            except AttributeError:
+                R = None
+            A.debug = 7
+            out('setup trigger')
+            if R is not None:
+                R.disarm()
+                R.init()
+                R.arm()
+            out('init A')
+            A.init()
+            out('arm A')
+            A.arm()
+            try:
+                out('wait 2sec ')
+                time.sleep(2)
+                out('TRIGGER! ')
+                if R is None:
+                    A.soft_trigger()
                 else:
-                    ai, ao = test_without_mds()
-            elif sys.argv[1] == 'test480x4':
-                run480x4()
-            elif sys.argv[1] == 'test480':
-                run480()
-            elif sys.argv[1] == 'test425':
-                run425()
-            elif sys.argv[1] == 'test420':
-                run420()
-            elif sys.argv[1] == 'testmgtdram':
-                runmgtdram(*sys.argv[2:])
+                    R.trig()
+                t = int(A._setting_post/A._setting_clock+1)*2
+                out('wait %dsec' % t)
+                time.sleep(t)
+                if dev.startswith('ACQ'):
+                    out('store')
+                    A.store()
+            finally:
+                if dev.startswith('ACQ'):
+                    A.deinit()
+            out('done')
+
+        def test420Normal(self):
+            out('start test420Normal', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup()
+            self.makeshot(t, self.shot+8, 'AO420')
+            t = MDSplus.Tree('test', self.shot+8)
+            rang = ('5V', '5V', '10V', '10V+')
+            gain = (6553, 26214, 22937, 32767)
+            offs = (6553, 0, 0, 0)
+            for i in range(4):
+                self.assertEqual(
+                    str(t.AO420.getchannel(i+1, 'range').data()), rang[i])
+                self.assertEqual(
+                    int(t.AO420.getchannel(i+1, 'gain').data()), gain[i])
+                self.assertEqual(
+                    int(t.AO420.getchannel(i+1, 'offset').data()), offs[i])
+            print(t.AO420.COMMANDS.record)
+
+        def test425Normal(self):
+            out('start test425Normal', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup()
+            self.makeshot(t, self.shot+5, 'ACQ425')
+
+        def test425X2Normal(self):
+            out('start test425X2Normal', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup()
+            self.makeshot(t, self.shot+6, 'ACQ425X2')
+
+        def test425X2Stream(self):
+            out('start test425X2Stream', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup()
+            self.makeshot(t, self.shot+7, 'ACQ425X2_M2')
+
+        def test480Normal(self):
+            out('start test480Normal', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup()
+            self.makeshot(t, self.shot+5, 'ACQ480')
+
+        def test480X4Normal(self):
+            out('start test480X4Normal', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup(width=1000)
+            t.ACQ480X4.module1_trig_mode = None
+            self.makeshot(t, self.shot+1, 'ACQ480X4')
+
+        def test480X4RGM(self):
+            out('start test480X4RGM', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup(width=1000, gate2=range(3), timing=[
+                    i*(t.ACQ480X4.trigger_post >> 4)*self.acq2106_480_fpgadecim
+                    for i in [0, 1, 2, 4, 5, 8, 9, 13, 14, 19, 20, 100]
+                ])
+            t.ACQ480X4.module1_trig_mode = 'RGM'
+            self.makeshot(t, self.shot+2, 'ACQ480X4')
+
+        def test480X4RTM(self):
+            out('start test480X4RTM', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup(width=100,
+                        period=100000*self.acq2106_480_fpgadecim,
+                        burst=30)
+            t.ACQ480X4.module1_trig_mode = 'RTM'
+            t.ACQ480X4.module1_trig_mode_translen = t.ACQ480X4.trigger_post >> 3
+            self.makeshot(t, self.shot+3, 'ACQ480X4')
+
+        def test480X4Stream(self):
+            out('start test480X4MGT', 1)
+            t = MDSplus.Tree('test')
+            try:
+                R = t.R
+            except AttributeError:
+                pass
+            else:
+                R.setup(width=100)
+            t.ACQ480X4.module1_trig_mode = None
+            self.makeshot(t, self.shot+1, 'ACQ480X4_M2')
+
+        def runTest(self):
+            for test in self.getTests():
+                self.__getattribute__(test)()
+
+        @staticmethod
+        def get480Tests():
+            return ['test480Normal']
+
+        @staticmethod
+        def get480x4Tests():
+            return ['test480X4Normal', 'test480X4RGM', 'test480X4RTM']
+
+        @staticmethod
+        def get425Tests():
+            return ['test425Normal', 'test425X2Normal', 'test425X2Stream']
+
+        @staticmethod
+        def get420Tests():
+            return ['test420Normal']
+
+    def suite(tests): return TestSuite(map(Tests, tests))  # analysis:ignore
+
+    def runTests(tests): TextTestRunner(
+        verbosity=2).run(suite(tests))  # analysis:ignore
+
+    def run480(): runTests(Tests.get480Tests())  # analysis:ignore
+
+    def run480x4(): runTests(Tests.get480x4Tests())  # analysis:ignore
+
+    def run425(): runTests(Tests.get425Tests())  # analysis:ignore
+
+    def run420(): runTests(Tests.get420Tests())  # analysis:ignore
+
+    def runmgtdram(blocks=10, uut='localhost'):  # analysis:ignore
+        blocks = int(blocks)
+        m = mgtdram(uut)
+        print("INIT  PHASE RUN")
+        m._init(blocks, log=sys.stdout)
+        print("INIT  PHASE DONE")
+        print("STORE PHASE RUN")
+        m._store(blocks, chans=32)
+        print("STORE PHASE DONE")
+
+    if __name__ == '__main__':  # analysis:ignore
+        # test generation
+        MDSplus.setenv('acq4xx_path', '/tmp')
+        with MDSplus.Tree('acq4xx', -1, 'new') as t:
+            import acq4xx
+            acq4xx.ACQ1001 = t.addNode('ACQ1001')
+            acq4xx.ACQ1001_ACQ425.Add(t, "ACQ1001:ACQ425")
+            acq4xx.ACQ1001_ACQ425_12CH.Add(t, "ACQ1001:ACQ425_12CH")
+            acq4xx.ACQ1001_ACQ425_8CH.Add(t, "ACQ1001:ACQ425_8CH")
+            acq4xx.ACQ1001_ACQ425_4CH.Add(t, "ACQ1001:ACQ425_4CH")
+            acq4xx.ACQ1001_ACQ480.Add(t, "ACQ1001:ACQ480")
+            acq4xx.ACQ1001_ACQ480_4CH.Add(t, "ACQ1001:ACQ480_4CH")
+            acq4xx.ACQ1001_AO420.Add(t, "ACQ1001:AO420")
+            acq4xx.ACQ2106 = t.addNode('ACQ2106')
+            acq4xx.ACQ2106_ACQ425x1.Add(t, "ACQ2106:ACQ425x1")
+            acq4xx.ACQ2106_ACQ425x2.Add(t, "ACQ2106:ACQ425x2")
+            acq4xx.ACQ2106_ACQ425x3.Add(t, "ACQ2106:ACQ425x3")
+            acq4xx.ACQ2106_ACQ425x4.Add(t, "ACQ2106:ACQ425x4")
+            acq4xx.ACQ2106_ACQ425x5.Add(t, "ACQ2106:ACQ425x5")
+            acq4xx.ACQ2106_ACQ425x1.Add(t, "ACQ2106:ACQ425x6")
+            acq4xx.ACQ2106_ACQ480x1.Add(t, "ACQ1001:ACQ480x1")
+            acq4xx.ACQ2106_ACQ480x2.Add(t, "ACQ1001:ACQ480x2")
+            acq4xx.ACQ2106_ACQ480x3.Add(t, "ACQ1001:ACQ480x3")
+            acq4xx.ACQ2106_ACQ480x4.Add(t, "ACQ1001:ACQ480x4")
+            acq4xx.ACQ2106_ACQ480x5.Add(t, "ACQ1001:ACQ480x5")
+            acq4xx.ACQ2106_ACQ480x6.Add(t, "ACQ1001:ACQ480x6")
+            t.write()
+
+        if run_test:
+            Tests.simulate = True
+            t = Tests()
+            t.setUpClass()
+            t.test425X2Normal()
+            t.test425X2Stream()
+            # t.test480X4Stream()
+            # t.test480Normal()
+            t = MDSplus.Tree('test', 1007)
+            rec = t.ACQ425X2_M2.getchannel(1).record
+            pp.plot(rec.dim_of()[:10000], rec.data()[:10000])
+            pp.show()
+        else:
+            if len(sys.argv) <= 1:
+                print('%s test' % sys.argv[0])
+                print('%s test420' % sys.argv[0])
+                print('%s test425' % sys.argv[0])
+                print('%s test480' % sys.argv[0])
+                print('%s test480x4' % sys.argv[0])
+                print('%s testmgtdram <blocks> [uut]' % sys.argv[0])
+                test_stream_es()
+            else:
+                print(sys.argv[1:])
+                if sys.argv[1] == 'test':
+                    if len(sys.argv) > 2:
+                        runTests(sys.argv[2:])
+                    else:
+                        ai, ao = test_without_mds()
+                elif sys.argv[1] == 'test480x4':
+                    run480x4()
+                elif sys.argv[1] == 'test480':
+                    run480()
+                elif sys.argv[1] == 'test425':
+                    run425()
+                elif sys.argv[1] == 'test420':
+                    run420()
+                elif sys.argv[1] == 'testmgtdram':
+                    runmgtdram(*sys.argv[2:])

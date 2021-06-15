@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include "l8100_gen.h"
 #include <libroutines.h>
@@ -123,9 +123,9 @@ static int StoreChannel(InStoreStruct * setup, int chan)
     out_nid_d.pointer = (char *)&output_nid;
     status = TdiCompile
 		((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &mult_d, &value MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK) {
       status = TreePutRecord(input_nid, (struct descriptor *)&value, 0);
-      if ((status & 1) && (IsOn(filter_on_nid))) {
+      if ((STATUS_OK) && (IsOn(filter_on_nid))) {
 	status = TreePutRecord(filter_on_nid, filter, 0);
       }
     }

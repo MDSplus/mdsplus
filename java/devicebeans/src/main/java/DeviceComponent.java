@@ -10,11 +10,11 @@ public abstract class DeviceComponent extends JPanel
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final int DATA = 0, STATE = 1, DISPATCH = 2;
+	public static final int DATA = 0, STATE = 1, DISPATCH = 2, STRUCTURE = 3;
 	Interface subtree;
 	public int mode = DATA;
 	public int baseNid = 0, offsetNid = 0;
-	protected String curr_data, init_data;
+	protected String curr_data = null, init_data;
 	protected boolean curr_on, init_on;
 	protected int nidData;
 	protected int baseNidData;
@@ -53,6 +53,7 @@ public abstract class DeviceComponent extends JPanel
 					throw e;
 				}
 			}
+                        checkRefShot();
 		}
 		if (mode != DISPATCH && supportsState())
 		{
@@ -66,7 +67,6 @@ public abstract class DeviceComponent extends JPanel
 				System.out.println("Error writing device state: " + e);
 			}
 		}
-		checkRefShot();
 	}
 
 	public void apply(int currBaseNid) throws Exception

@@ -43,19 +43,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
-#include "prototypes.h"
 #include "cts_p.h"
+#include "module.h"
+#include "prototypes.h"
 
 //-------------------------------------------------------------------------
 // remove_entry()
@@ -74,23 +74,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-------------------------------------------------------------------------
 int remove_entry(int dbType, int index)
 {
-  void *dbptr;			// re-usable, generic db pointer
+  void *dbptr; // re-usable, generic db pointer
   char fmt[10];
   int entrySize, i, numOfEntries;
   int status = SUCCESS;
-  extern struct MODULE *CTSdb;	// pointer to in-memory copy of data file
-  extern struct CRATE *CRATEdb;	// pointer to in-memory copy of data file
+  extern struct MODULE *CTSdb;  // pointer to in-memory copy of data file
+  extern struct CRATE *CRATEdb; // pointer to in-memory copy of data file
 
   if (MSGLVL(FUNCTION_NAME))
     printf("remove_entry(#:%d)\n", index + 1);
 
-//----------------------------
-//      removing an entry
-//----------------------------
-//-- 'critical section' start
-//----------------------------
+  //----------------------------
+  //      removing an entry
+  //----------------------------
+  //-- 'critical section' start
+  //----------------------------
   // 'lock' with semaphore
-  if (lock_file() == ERROR) {
+  if (lock_file() == ERROR)
+  {
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "error locking file\n");
 
@@ -98,7 +99,9 @@ int remove_entry(int dbType, int index)
     goto RemoveEntry_Exit;
   }
   // get number of current entries
-  if ((numOfEntries = get_file_count(dbType)) == 0) {	// no entries in cts db file
+  if ((numOfEntries = get_file_count(dbType)) ==
+      0)
+  { // no entries in cts db file
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "db file empty, no entries to remove\n");
 
@@ -106,7 +109,8 @@ int remove_entry(int dbType, int index)
     goto RemoveEntry_Exit;
   }
   // cull db specific info
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     dbptr = (void *)CTSdb;
     entrySize = MODULE_ENTRY;
@@ -130,7 +134,8 @@ int remove_entry(int dbType, int index)
 
     // remove entry -- move appropriate entries one earlier in list
     for (i = index; i < numOfEntries; ++i)
-      memcpy((char *)dbptr + (i * entrySize), (char *)dbptr + ((i + 1) * entrySize), entrySize);
+      memcpy((char *)dbptr + (i * entrySize),
+             (char *)dbptr + ((i + 1) * entrySize), entrySize);
 
     // 'blank' out last, old entry
     sprintf(line, fmt, " ");
@@ -138,23 +143,26 @@ int remove_entry(int dbType, int index)
   }
 
   // commit change to file
-  if (commit_entry(dbType) != SUCCESS) {
+  if (commit_entry(dbType) != SUCCESS)
+  {
     status = COMMIT_ERROR;
     goto RemoveEntry_Exit;
   }
   // release semaphore
-  if (unlock_file() == ERROR) {
+  if (unlock_file() == ERROR)
+  {
     if (MSGLVL(ALWAYS))
       fprintf(stderr, "error unlocking file\n");
 
     status = UNLOCK_ERROR;
     goto RemoveEntry_Exit;
   }
-//----------------------------
-//-- 'critical section' finish
-//----------------------------
- RemoveEntry_Exit:
-  if (MSGLVL(DETAILS)) {
+  //----------------------------
+  //-- 'critical section' finish
+  //----------------------------
+RemoveEntry_Exit:
+  if (MSGLVL(DETAILS))
+  {
     printf("remove_entry(): ");
     ShowStatus(status);
   }

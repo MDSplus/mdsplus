@@ -29,17 +29,23 @@ MDSplus.magic
 Once activated with 'import MDSplus.magic' this will add the magic
 '%tcl' and '%tdi' to ipython
 """
+
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
+
+
 from IPython.core.magic import register_line_cell_magic
 import sys
 _dcl = _mimport("mdsdcl")
 _dat = _mimport("mdsdata")
+
+
 @register_line_cell_magic
-def tcl(line,cell=None):
+def tcl(line, cell=None):
     """
       magic to execute one line of TCL code.
 
@@ -57,29 +63,31 @@ def tcl(line,cell=None):
       for example:
          %tcl directory /full
     """
-    toOut=[]
-    toError=[]
-    def doit(line,toOut,toError):
+    toOut = []
+    toError = []
+
+    def doit(line, toOut, toError):
         if len(line) == 0:
             return
-        out,error=_dcl.tcl(line,return_out=True,return_error=True)
+        out, error = _dcl.tcl(line, return_out=True, return_error=True)
         if error is not None and len(str(error)) > 0:
             toError.append(str(error))
         if out is not None and len(str(out)) > 0:
             toOut.append(str(out))
 
     if cell is None:
-        doit(line,toOut,toError)
+        doit(line, toOut, toError)
     else:
         for line in cell.split('\n'):
-            doit(line,toOut,toError)
+            doit(line, toOut, toError)
     if len(toOut) > 0:
         print('\n'.join(toOut))
     if len(toError) > 0:
         sys.stderr.write('\n'.join(toError+['']))
 
+
 @register_line_cell_magic
-def tdi(line,cell=None):
+def tdi(line, cell=None):
     """
       magic to execute one line of TDI code.
 
@@ -97,9 +105,10 @@ def tdi(line,cell=None):
       for example:
          %tdi _a=53+75
     """
-    toOut=[]
-    toError=[]
-    def doit(line,toOut,toError):
+    toOut = []
+    toError = []
+
+    def doit(line, toOut, toError):
         if len(line) == 0:
             return
         try:
@@ -108,10 +117,10 @@ def tdi(line,cell=None):
             toError.append(str(e))
 
     if cell is None:
-        doit(line,toOut,toError)
+        doit(line, toOut, toError)
     else:
         for line in cell.split('\n'):
-            doit(cell,toOut,toError)
+            doit(cell, toOut, toError)
     if len(toOut) > 0:
         print('\n'.join(toOut))
     if len(toError) > 0:

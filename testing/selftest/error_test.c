@@ -24,8 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "testing.h"
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc __attribute__((unused)),
+         char *argv[] __attribute__((unused)))
 {
-    ABORT_TEST( " test abort by user " );
+  ABORT_TEST(" test abort by user ");
 }
-

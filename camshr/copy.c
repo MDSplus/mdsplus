@@ -43,17 +43,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/sem.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "common.h"
-#include "module.h"
 #include "crate.h"
+#include "module.h"
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
@@ -73,13 +73,14 @@ int copy(int dbType, char *inFile, char *outFile, int count)
 {
   int Read_fd, Write_fd;
   int entrySize, i;
-  int status = SUCCESS;		// optimistic
+  int status = SUCCESS; // optimistic
 
   if (MSGLVL(FUNCTION_NAME))
     printf("copy()\n");
 
   // get a read file descriptor
-  if ((Read_fd = Open(inFile, O_RDONLY)) == -1) {
+  if ((Read_fd = Open(inFile, O_RDONLY)) == -1)
+  {
     if (MSGLVL(ALWAYS))
       perror("open(rd)");
 
@@ -87,7 +88,8 @@ int copy(int dbType, char *inFile, char *outFile, int count)
     goto Copy_Exit_1;
   }
   // get a write file descriptor
-  if ((Write_fd = open(outFile, O_WRONLY)) == -1) {
+  if ((Write_fd = open(outFile, O_WRONLY)) == -1)
+  {
     printf("Error opening %s\n", outFile);
     perror("open(wr)");
 
@@ -95,7 +97,8 @@ int copy(int dbType, char *inFile, char *outFile, int count)
     goto Copy_Exit_2;
   }
   // figure out size
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     entrySize = MODULE_ENTRY;
     break;
@@ -112,36 +115,40 @@ int copy(int dbType, char *inFile, char *outFile, int count)
     char line[entrySize];
 
     // read 'n write ...
-    for (i = 0; i < count; ++i) {
+    for (i = 0; i < count; ++i)
+    {
       // read ...
-      if (read(Read_fd, line, entrySize) != entrySize) {
-	if (MSGLVL(ALWAYS))
-	  perror("read()");
+      if (read(Read_fd, line, entrySize) != entrySize)
+      {
+        if (MSGLVL(ALWAYS))
+          perror("read()");
 
-	status = COPY_ERROR;
-	goto Copy_Exit_3;
+        status = COPY_ERROR;
+        goto Copy_Exit_3;
       }
       // ... then write
-      if (write(Write_fd, line, entrySize) != entrySize) {
-	if (MSGLVL(ALWAYS))
-	  perror("write()");
+      if (write(Write_fd, line, entrySize) != entrySize)
+      {
+        if (MSGLVL(ALWAYS))
+          perror("write()");
 
-	status = COPY_ERROR;
-	goto Copy_Exit_3;
+        status = COPY_ERROR;
+        goto Copy_Exit_3;
       }
     }
   }
 
- Copy_Exit_3:
+Copy_Exit_3:
   if (Write_fd != -1)
     close(Write_fd);
 
- Copy_Exit_2:
+Copy_Exit_2:
   if (Read_fd != -1)
     close(Read_fd);
 
- Copy_Exit_1:
-  if (MSGLVL(DETAILS)) {
+Copy_Exit_1:
+  if (MSGLVL(DETAILS))
+  {
     printf("copy(): ");
     ShowStatus(status);
   }
