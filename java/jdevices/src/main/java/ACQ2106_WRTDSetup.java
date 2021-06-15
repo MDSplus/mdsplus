@@ -37,41 +37,40 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel8 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
-        deviceLabel1 = new DeviceLabel();
+        label1 = new java.awt.Label();
         jPanel10 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
-        deviceLabel2 = new DeviceLabel();
+        label2 = new java.awt.Label();
         jPanel7 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
-        deviceLabel3 = new DeviceLabel();
+        label3 = new java.awt.Label();
         jPanel9 = new javax.swing.JPanel();
         deviceField9 = new DeviceField();
-        deviceLabel4 = new DeviceLabel();
+        label4 = new java.awt.Label();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
-        deviceLabel5 = new DeviceLabel();
+        label6 = new java.awt.Label();
         jPanel3 = new javax.swing.JPanel();
         deviceField5 = new DeviceField();
-        deviceLabel6 = new DeviceLabel();
+        label5 = new java.awt.Label();
         jPanel4 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
-        deviceLabel7 = new DeviceLabel();
+        label7 = new java.awt.Label();
         jPanel5 = new javax.swing.JPanel();
         deviceField7 = new DeviceField();
-        deviceLabel8 = new DeviceLabel();
+        label8 = new java.awt.Label();
         jPanel6 = new javax.swing.JPanel();
         deviceField10 = new DeviceField();
         deviceField8 = new DeviceField();
-        deviceLabel9 = new DeviceLabel();
+        label9 = new java.awt.Label();
 
-        // setDeviceProvider("172.20.240.104:9998");
-        setDeviceProvider("localhost");
+        setDeviceProvider("172.20.240.104:9998");
         setDeviceTitle("WRTD for MDSplus");
         setDeviceType("acq2106_WRTD");
-        setHeight(300);
+        setHeight(200);
         setUpdateEvent("");
-        setWidth(1200);
+        setWidth(2000);
         getContentPane().setLayout(new java.awt.BorderLayout(5, 0));
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
@@ -116,11 +115,10 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceField3.setLabelString("Message ID to Transmit");
         deviceField3.setNumCols(20);
         deviceField3.setOffsetNid(18);
-        deviceField3.setTextOnly(true);
         jPanel8.add(deviceField3);
 
-        deviceLabel1.setLabelString("Message ID to be used to trigger devices that are listening to it.");
-        jPanel8.add(deviceLabel1);
+        label1.setText("Message ID to be transmitted.");
+        jPanel8.add(label1);
 
         jTabbedPane2.addTab("Global ID", jPanel8);
 
@@ -129,8 +127,9 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceField11.setOffsetNid(19);
         jPanel10.add(deviceField11);
 
-        deviceLabel2.setLabelString("Message ID associated only to PG site N");
-        jPanel10.add(deviceLabel2);
+        label2.setName(""); // NOI18N
+        label2.setText("Message ID associated only to PG site N");
+        jPanel10.add(label2);
 
         jTabbedPane2.addTab("PG Site ID", jPanel10);
 
@@ -140,16 +139,16 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel7.add(deviceField2);
         deviceField2.getAccessibleContext().setAccessibleDescription("Sets WR \"safe time for broadcasts\" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec ");
 
-        deviceLabel3.setLabelString("Sets WR \"safe time for broadcasts\" the message ID, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS");
-        jPanel7.add(deviceLabel3);
+        label3.setText("Sets WR \"safe time for broadcasts\" the message ID, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS");
+        jPanel7.add(label3);
 
         jTabbedPane2.addTab("DELTA NS", null, jPanel7, "");
 
         deviceField9.setLabelString("nsec per tick [nsec]");
         jPanel9.add(deviceField9);
 
-        deviceLabel4.setLabelString("TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]");
-        jPanel9.add(deviceLabel4);
+        label4.setText("TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]");
+        jPanel9.add(label4);
 
         jTabbedPane2.addTab("TICKNS", jPanel9);
 
@@ -163,8 +162,9 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceField4.setOffsetNid(21);
         jPanel2.add(deviceField4);
 
-        deviceLabel5.setLabelString("Turn on or off the receiver");
-        jPanel2.add(deviceLabel5);
+        label6.setText("Turns on or off the receiver");
+        jPanel2.add(label6);
+        label6.getAccessibleContext().setAccessibleDescription("");
 
         jTabbedPane3.addTab("WRTD RX", jPanel2);
 
@@ -174,8 +174,9 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceField5.setOffsetNid(1);
         jPanel3.add(deviceField5);
 
-        deviceLabel6.setLabelString("Turn on or off the transmitter");
-        jPanel3.add(deviceLabel6);
+        label5.setText("Turns on or off the transmitter");
+        jPanel3.add(label5);
+        label5.getAccessibleContext().setAccessibleName("Turn on or off the transmitter");
 
         jTabbedPane3.addTab("WRTD TX", jPanel3);
 
@@ -187,8 +188,9 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel4.add(deviceField6);
         deviceField6.getAccessibleContext().setAccessibleDescription("match any of these triggers to initiate WRTT0");
 
-        deviceLabel7.setLabelString("Filter which messages will be used to trigger WRTT0. Format: comma separated strings.");
-        jPanel4.add(deviceLabel7);
+        label7.setName(""); // NOI18N
+        label7.setText("Filters which messages will be used to trigger WRTT0. Format: comma separated strings.");
+        jPanel4.add(label7);
 
         jTabbedPane3.addTab("RX M0", jPanel4);
 
@@ -200,8 +202,8 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel5.add(deviceField7);
         deviceField7.getAccessibleContext().setAccessibleDescription("match any of these triggers to initiate WRTT1");
 
-        deviceLabel8.setLabelString("Filter which messages will be used to trigger WRTT1. Format: comma separated strings.");
-        jPanel5.add(deviceLabel8);
+        label8.setText("Filters which messages will be used to trigger WRTT1. Format: comma separated strings.");
+        jPanel5.add(label8);
 
         jTabbedPane3.addTab("RX M1", jPanel5);
 
@@ -217,8 +219,8 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceField8.setTextOnly(true);
         jPanel6.add(deviceField8);
 
-        deviceLabel9.setLabelString("One message, two triggers: first WRTT0, Delay [nsec], then WRTT1");
-        jPanel6.add(deviceLabel9);
+        label9.setText("One message, two triggers: first WRTT0, Delay [nsec], then WRTT1");
+        jPanel6.add(label9);
 
         jTabbedPane3.addTab("RX DTP", jPanel6);
 
@@ -249,15 +251,6 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
-    private DeviceLabel deviceLabel1;
-    private DeviceLabel deviceLabel2;
-    private DeviceLabel deviceLabel3;
-    private DeviceLabel deviceLabel4;
-    private DeviceLabel deviceLabel5;
-    private DeviceLabel deviceLabel6;
-    private DeviceLabel deviceLabel7;
-    private DeviceLabel deviceLabel8;
-    private DeviceLabel deviceLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
@@ -271,5 +264,14 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
+    private java.awt.Label label1;
+    private java.awt.Label label2;
+    private java.awt.Label label3;
+    private java.awt.Label label4;
+    private java.awt.Label label5;
+    private java.awt.Label label6;
+    private java.awt.Label label7;
+    private java.awt.Label label8;
+    private java.awt.Label label9;
     // End of variables declaration//GEN-END:variables
 }

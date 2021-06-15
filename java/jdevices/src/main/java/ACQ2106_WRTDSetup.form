@@ -5,9 +5,9 @@
     <Property name="deviceProvider" type="java.lang.String" value="172.20.240.104:9998"/>
     <Property name="deviceTitle" type="java.lang.String" value="WRTD for MDSplus"/>
     <Property name="deviceType" type="java.lang.String" value="acq2106_WRTD"/>
-    <Property name="height" type="int" value="300"/>
+    <Property name="height" type="int" value="200"/>
     <Property name="updateEvent" type="java.lang.String" value=""/>
-    <Property name="width" type="int" value="1200"/>
+    <Property name="width" type="int" value="2000"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
@@ -25,7 +25,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-111,0,0,6,27"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-111,0,0,7,80"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
@@ -167,12 +167,11 @@
                     <Property name="labelString" type="java.lang.String" value="Message ID to Transmit"/>
                     <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="18"/>
-                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel1">
+                <Component class="java.awt.Label" name="label1">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="Message ID to be used to trigger devices that are listening to it."/>
+                    <Property name="text" type="java.lang.String" value="Message ID to be transmitted."/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -195,9 +194,10 @@
                     <Property name="offsetNid" type="int" value="19"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel2">
+                <Component class="java.awt.Label" name="label2">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="Message ID associated only to PG site N"/>
+                    <Property name="name" type="java.lang.String" value="" noResource="true"/>
+                    <Property name="text" type="java.lang.String" value="Message ID associated only to PG site N"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -224,9 +224,9 @@
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec "/>
                   </AccessibilityProperties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel3">
+                <Component class="java.awt.Label" name="label3">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message ID, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS"/>
+                    <Property name="text" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message ID, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -247,9 +247,9 @@
                     <Property name="labelString" type="java.lang.String" value="nsec per tick [nsec]"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel4">
+                <Component class="java.awt.Label" name="label4">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]"/>
+                    <Property name="text" type="java.lang.String" value="TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -290,10 +290,13 @@
                     <Property name="offsetNid" type="int" value="21"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel5">
+                <Component class="java.awt.Label" name="label6">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="Turn on or off the receiver"/>
+                    <Property name="text" type="java.lang.String" value="Turns on or off the receiver"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
+                  </AccessibilityProperties>
                 </Component>
               </SubComponents>
             </Container>
@@ -316,10 +319,13 @@
                     <Property name="offsetNid" type="int" value="1"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel6">
+                <Component class="java.awt.Label" name="label5">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="Turn on or off the transmitter"/>
+                    <Property name="text" type="java.lang.String" value="Turns on or off the transmitter"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="Turn on or off the transmitter"/>
+                  </AccessibilityProperties>
                 </Component>
               </SubComponents>
             </Container>
@@ -346,9 +352,10 @@
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="match any of these triggers to initiate WRTT0"/>
                   </AccessibilityProperties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel7">
+                <Component class="java.awt.Label" name="label7">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="Filter which messages will be used to trigger WRTT0. Format: comma separated strings."/>
+                    <Property name="name" type="java.lang.String" value="" noResource="true"/>
+                    <Property name="text" type="java.lang.String" value="Filters which messages will be used to trigger WRTT0. Format: comma separated strings."/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -376,9 +383,9 @@
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="match any of these triggers to initiate WRTT1"/>
                   </AccessibilityProperties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel8">
+                <Component class="java.awt.Label" name="label8">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="Filter which messages will be used to trigger WRTT1. Format: comma separated strings."/>
+                    <Property name="text" type="java.lang.String" value="Filters which messages will be used to trigger WRTT1. Format: comma separated strings."/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -410,9 +417,9 @@
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
-                <Component class="DeviceLabel" name="deviceLabel9">
+                <Component class="java.awt.Label" name="label9">
                   <Properties>
-                    <Property name="labelString" type="java.lang.String" value="One message, two triggers: first WRTT0, Delay [nsec], then WRTT1"/>
+                    <Property name="text" type="java.lang.String" value="One message, two triggers: first WRTT0, Delay [nsec], then WRTT1"/>
                   </Properties>
                 </Component>
               </SubComponents>
