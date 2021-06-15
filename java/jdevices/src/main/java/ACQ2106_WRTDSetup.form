@@ -244,7 +244,9 @@
               <SubComponents>
                 <Component class="DeviceField" name="deviceField9">
                   <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="nsec per tick [nsec]"/>
+                    <Property name="offsetNid" type="int" value="11"/>
                   </Properties>
                 </Component>
                 <Component class="java.awt.Label" name="label4">
@@ -286,7 +288,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="RX [1=ON, 0=OFF)"/>
-                    <Property name="numCols" type="int" value="2"/>
+                    <Property name="numCols" type="int" value="1"/>
                     <Property name="offsetNid" type="int" value="21"/>
                   </Properties>
                 </Component>
@@ -315,8 +317,8 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="TX (1=ON, 0=OFF)"/>
-                    <Property name="numCols" type="int" value="2"/>
-                    <Property name="offsetNid" type="int" value="1"/>
+                    <Property name="numCols" type="int" value="1"/>
+                    <Property name="offsetNid" type="int" value="20"/>
                   </Properties>
                 </Component>
                 <Component class="java.awt.Label" name="label5">

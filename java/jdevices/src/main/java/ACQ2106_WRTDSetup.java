@@ -144,7 +144,9 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         jTabbedPane2.addTab("DELTA NS", null, jPanel7, "");
 
+        deviceField9.setIdentifier("");
         deviceField9.setLabelString("nsec per tick [nsec]");
+        deviceField9.setOffsetNid(11);
         jPanel9.add(deviceField9);
 
         label4.setText("TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]");
@@ -158,7 +160,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("RX [1=ON, 0=OFF)");
-        deviceField4.setNumCols(2);
+        deviceField4.setNumCols(1);
         deviceField4.setOffsetNid(21);
         jPanel2.add(deviceField4);
 
@@ -170,8 +172,8 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("TX (1=ON, 0=OFF)");
-        deviceField5.setNumCols(2);
-        deviceField5.setOffsetNid(1);
+        deviceField5.setNumCols(1);
+        deviceField5.setOffsetNid(20);
         jPanel3.add(deviceField5);
 
         label5.setText("Turns on or off the transmitter");
