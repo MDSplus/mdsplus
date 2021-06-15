@@ -170,6 +170,11 @@
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
+                <Component class="DeviceLabel" name="deviceLabel1">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="Message ID to be used to trigger devices that are listening to it."/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel10">
@@ -188,6 +193,11 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PG Site N message ID"/>
                     <Property name="offsetNid" type="int" value="19"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceLabel" name="deviceLabel2">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="Message ID associated only to PG site N"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -214,6 +224,11 @@
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec "/>
                   </AccessibilityProperties>
                 </Component>
+                <Component class="DeviceLabel" name="deviceLabel3">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message ID, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel9">
@@ -230,6 +245,11 @@
                 <Component class="DeviceField" name="deviceField9">
                   <Properties>
                     <Property name="labelString" type="java.lang.String" value="nsec per tick [nsec]"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceLabel" name="deviceLabel4">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -270,6 +290,11 @@
                     <Property name="offsetNid" type="int" value="21"/>
                   </Properties>
                 </Component>
+                <Component class="DeviceLabel" name="deviceLabel5">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="Turn on or off the receiver"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel3">
@@ -289,6 +314,11 @@
                     <Property name="labelString" type="java.lang.String" value="TX (1=ON, 0=OFF)"/>
                     <Property name="numCols" type="int" value="2"/>
                     <Property name="offsetNid" type="int" value="1"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceLabel" name="deviceLabel6">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="Turn on or off the transmitter"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -316,6 +346,11 @@
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="match any of these triggers to initiate WRTT0"/>
                   </AccessibilityProperties>
                 </Component>
+                <Component class="DeviceLabel" name="deviceLabel7">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="Filter which messages will be used to trigger WRTT0. Format: comma separated strings."/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel5">
@@ -340,6 +375,11 @@
                   <AccessibilityProperties>
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="match any of these triggers to initiate WRTT1"/>
                   </AccessibilityProperties>
+                </Component>
+                <Component class="DeviceLabel" name="deviceLabel8">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="Filter which messages will be used to trigger WRTT1. Format: comma separated strings."/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
@@ -368,6 +408,11 @@
                     <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="16"/>
                     <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceLabel" name="deviceLabel9">
+                  <Properties>
+                    <Property name="labelString" type="java.lang.String" value="One message, two triggers: first WRTT0, Delay [nsec], then WRTT1"/>
                   </Properties>
                 </Component>
               </SubComponents>
