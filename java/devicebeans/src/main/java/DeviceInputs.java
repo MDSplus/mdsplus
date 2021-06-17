@@ -246,27 +246,10 @@ public class DeviceInputs extends DeviceComponent
                 {
                     JOptionPane.showMessageDialog(null, ""+exc, "Error in input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
                 }
-                for(int parIdx = 0; parIdx < numParameters[inputIdx]; parIdx++)
-                {
-                    try {
-                        String parVal = parametersTF[inputIdx][parIdx].getText();
-                        if(parametersIsText[inputIdx][parIdx])
-                        {
-                            subtree.putDataExpr(currInputNid + 9 + 3 * parIdx, "\'"+parVal+"\'");
-                        }
-                        else
-                        {
-                            subtree.putDataExpr(currInputNid + 9 + 3 * parIdx, parVal);
-                        }
-                    }catch(Exception exc)
-                    {
-                        JOptionPane.showMessageDialog(null, ""+exc, "Error in paremeter field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
-                    }
-                }
                 for(int fieldIdx = 0; fieldIdx < numFields[inputIdx]; fieldIdx++)
                 {
                     try {
-                       subtree.putDataExpr(currInputNid + 8 + 3 * numParameters[inputIdx] + 8 * fieldIdx +  4, fieldsTF[inputIdx][fieldIdx].getText());
+                       subtree.putDataExpr(currInputNid + 8 + 2 * numParameters[inputIdx] + 6 * fieldIdx +  5, fieldsTF[inputIdx][fieldIdx].getText());
                     }catch(Exception exc)
                     {
                         JOptionPane.showMessageDialog(null, ""+exc, "Error in subfield of input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
