@@ -33,7 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // here to provide the main anchor to tests programs that want to launch a
 // server instance. (obviously MdsIpShr.so must be linked too..)
 
-int mdsip_main(int argc, char **argv) {
+int mdsip_main(int argc, char **argv)
+{
   IoRoutines *io;
   int extra_argc;
   char **extra_argv;
@@ -41,7 +42,8 @@ int mdsip_main(int argc, char **argv) {
   io = LoadIo(GetProtocol());
   if (io && io->listen)
     io->listen(extra_argc, extra_argv);
-  else {
+  else
+  {
     fprintf(stderr, "Protocol %s does not support servers\n", GetProtocol());
     return 1;
   }

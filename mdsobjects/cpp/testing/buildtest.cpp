@@ -30,7 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <limits>
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(build);
 
   TEST1(1);

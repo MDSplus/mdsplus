@@ -166,10 +166,12 @@ mdsshr/testing/Makefile.in
 mdsshr/version.h
 mdstcpip/docs/Makefile.in
 mdstcpip/docs/img/Makefile.in
+mdstcpip/testing/Makefile.in
 mdstcpip/zlib/Makefile.in
 python/MDSplus/docs/Makefile.in
 python/MDSplus/compound.py
 python/MDSplus/mdsExceptions.py
+python/MDSplus/tests/*_test.py
 python/MDSplus/tests/Makefile.in
 rpm/Makefile.in
 scripts/Makefile.in
@@ -185,6 +187,7 @@ testing/Makefile.in
 testing/backends/check/Makefile.in
 testing/selftest/Makefile.in
 treeshr/testing/Makefile.in
+treeshr/TreeFindNodeWild.c
 wfevent/Makefile.in
 
 # Generated Java binaries

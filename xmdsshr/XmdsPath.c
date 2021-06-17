@@ -98,7 +98,8 @@ argcount); Boolean XmdsIsPath(Widget w);
 
  Local variables:                                                             */
 
-typedef struct _PathPart {
+typedef struct _PathPart
+{
   int nid;
   int nid_offset;
   int path_type;
@@ -117,7 +118,8 @@ static XtResource resources[] = {
  Executable:                                                                  */
 
 EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args,
-                             Cardinal argcount) {
+                             Cardinal argcount)
+{
   XmdsPathPart info = {-1, 0, 0};
   Widget w;
   Arg lab_args[] = {{XmNlabelString, 0}, {XmNuserData, PathUserData}};
@@ -131,18 +133,22 @@ EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args,
     nid = info.nid + info.nid_offset;
   else
     nid = -1;
-  if (nid != -1) {
+  if (nid != -1)
+  {
     NCI_ITM nci[] = {{0, 0, 0, 0}, {0, NciEND_OF_LIST, 0, 0}};
     int status;
     nci[0].code =
         (info.path_type == NciABSOLUTE_PATH) ? NciFULLPATH : NciMINPATH;
     status = TreeGetNci(nid, nci);
-    if (status & 1) {
+    if (STATUS_OK)
+    {
       lab_args[0].value = (long)XmStringCreateSimple(nci[0].pointer);
       TreeFree(nci[0].pointer);
-    } else
+    }
+    else
       lab_args[0].value = (long)XmStringCreateSimple("Error getting path");
-  } else
+  }
+  else
     lab_args[0].value = (long)XmStringCreateSimple("No node");
   merged_args = XtMergeArgLists(args, argcount, lab_args, XtNumber(lab_args));
   w = XmCreateLabel(parent, name, merged_args, XtNumber(lab_args) + argcount);
@@ -151,7 +157,8 @@ EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args,
   return w;
 }
 
-EXPORT Boolean XmdsIsPath(Widget w) {
+EXPORT Boolean XmdsIsPath(Widget w)
+{
   XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);
   if (user_data && (user_data == (XtPointer)PathUserData))

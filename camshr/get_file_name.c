@@ -55,7 +55,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Fri Apr 13 12:29:02 EDT 2001
 // Tue Apr 17 11:42:55 EDT 2001 -- more concice processing of '/' character
 //-------------------------------------------------------------------------
-char *get_file_name(char *filename) {
+char *get_file_name(char *filename)
+{
   char *pEnv;                      // pointer to environment var
   static char db_dir[256], *pChar; // needs to be persistant
 

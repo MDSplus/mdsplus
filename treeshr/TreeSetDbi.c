@@ -68,15 +68,17 @@ extern void **TreeCtx();
 
 extern int SetDbiRemote();
 
-int TreeSetDbi(DBI_ITM *dbi_itm_ptr) {
+int TreeSetDbi(DBI_ITM *dbi_itm_ptr)
+{
   return _TreeSetDbi(*TreeCtx(), dbi_itm_ptr);
 }
 
-#define NEED_EDIT                                                              \
-  if (!(IS_OPEN_FOR_EDIT(dblist)))                                             \
+#define NEED_EDIT                  \
+  if (!(IS_OPEN_FOR_EDIT(dblist))) \
     return TreeNOEDIT;
 
-int _TreeSetDbi(void *dbid, DBI_ITM *dbi_itm_ptr) {
+int _TreeSetDbi(void *dbid, DBI_ITM *dbi_itm_ptr)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int status = TreeSUCCESS;
   DBI_ITM *itm_ptr;
@@ -87,9 +89,11 @@ int _TreeSetDbi(void *dbid, DBI_ITM *dbi_itm_ptr) {
 
   if (dblist->remote)
     return SetDbiRemote(dbid, dbi_itm_ptr);
-  for (itm_ptr = dbi_itm_ptr; itm_ptr->code != NciEND_OF_LIST && status & 1;
-       itm_ptr++) {
-    switch (itm_ptr->code) {
+  for (itm_ptr = dbi_itm_ptr; itm_ptr->code != NciEND_OF_LIST && STATUS_OK;
+       itm_ptr++)
+  {
+    switch (itm_ptr->code)
+    {
     case DbiVERSIONS_IN_MODEL:
       NEED_EDIT
       dblist->tree_info->header->versions_in_model =
@@ -115,7 +119,8 @@ int _TreeSetDbi(void *dbid, DBI_ITM *dbi_itm_ptr) {
   return status;
 }
 
-int TreeSetDbiItm(int code, int value) {
+int TreeSetDbiItm(int code, int value)
+{
   DBI_ITM itm[] = {{0, 0, 0, 0}, {0, 0, 0, 0}};
   itm[0].buffer_length = (short)sizeof(int);
   itm[0].code = (short)code;

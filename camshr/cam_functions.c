@@ -131,7 +131,7 @@ static BYTE JorwayModes[2][2][4] = {
       NO_MODE, NO_MODE}}};
 
 #define JORWAY_DISCONNECT 0
-#define JORWAYMODE(mode, enhanced, multisample)                                \
+#define JORWAYMODE(mode, enhanced, multisample) \
   JorwayModes[multisample][enhanced][mode]
 #define KSMODE(mode) mode
 
@@ -152,7 +152,8 @@ static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE *Data, BYTE Mem,
 static int KsMultiIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
                      BYTE Mem, TranslatedIosb *iosb, int dmode, int Enhanced);
 
-typedef struct {
+typedef struct
+{
   __u8 code : 7;
   __u8 valid : 1;
 
@@ -189,8 +190,10 @@ static int Jorway73ATranslateIosb(int datacmd, int reqbytcnt,
 static int KsTranslateIosb(RequestSenseData *sense, int scsi_status);
 
 static int isRemote = -1;
-static int checkRemote() {
-  if (isRemote == -1) {
+static int checkRemote()
+{
+  if (isRemote == -1)
+  {
     isRemote = getenv("camac_server") ? 1 : 0;
   }
   return isRemote;
@@ -224,10 +227,14 @@ extern int RemCamStopw();
 extern int RemCamSetMAXBUF();
 extern int RemCamGetMAXBUF();
 
-EXPORT int CamVerbose(int mode) {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+EXPORT int CamVerbose(int mode)
+{
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamVerbose(mode);
-  } else {
+  }
+  else
+  {
     Verbose = mode;
     return 1;
   }
@@ -235,9 +242,12 @@ EXPORT int CamVerbose(int mode) {
 
 EXPORT int CamQ(TranslatedIosb *iosb) // CAM$Q_SCSI()
 {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamQ(iosb);
-  } else {
+  }
+  else
+  {
     TranslatedIosb *iosb_use;
     iosb_use = (iosb) ? iosb : &LastIosb;
 
@@ -255,9 +265,12 @@ EXPORT int CamQ(TranslatedIosb *iosb) // CAM$Q_SCSI()
 //-----------------------------------------------------------
 EXPORT int CamX(TranslatedIosb *iosb) // CAM$X_SCSI()
 {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamX(iosb);
-  } else {
+  }
+  else
+  {
     TranslatedIosb *iosb_use;
     iosb_use = (iosb) ? iosb : &LastIosb;
 
@@ -276,9 +289,12 @@ EXPORT int CamX(TranslatedIosb *iosb) // CAM$X_SCSI()
 //-----------------------------------------------------------
 EXPORT int CamXandQ(TranslatedIosb *iosb) // CAM$XANDQ_SCSI()
 {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamXandQ(iosb);
-  } else {
+  }
+  else
+  {
     TranslatedIosb *iosb_use;
     iosb_use = (iosb) ? iosb : &LastIosb;
 
@@ -298,9 +314,12 @@ EXPORT int CamXandQ(TranslatedIosb *iosb) // CAM$XANDQ_SCSI()
 //-----------------------------------------------------------
 EXPORT int CamBytcnt(TranslatedIosb *iosb) // CAM$BYTCNT_SCSI()
 {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamBytcnt(iosb);
-  } else {
+  }
+  else
+  {
     TranslatedIosb *iosb_use;
     iosb_use = (iosb) ? iosb : &LastIosb;
 
@@ -319,9 +338,12 @@ EXPORT int CamBytcnt(TranslatedIosb *iosb) // CAM$BYTCNT_SCSI()
 //-----------------------------------------------------------
 EXPORT int CamStatus(TranslatedIosb *iosb) // CAM$STATUS_SCSI()
 {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamStatus(iosb);
-  } else {
+  }
+  else
+  {
     TranslatedIosb *iosb_use;
     iosb_use = (iosb) ? iosb : &LastIosb;
 
@@ -336,9 +358,12 @@ EXPORT int CamStatus(TranslatedIosb *iosb) // CAM$STATUS_SCSI()
 //-----------------------------------------------------------
 EXPORT int CamGetStat(TranslatedIosb *iosb) // CAM$GET_STAT_SCSI()
 {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamGetStat(iosb);
-  } else {
+  }
+  else
+  {
     *iosb = LastIosb;
     // printf("CamGetStatus(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);  //
     // [2002.12.13] printf("CamGetStatus(LastIosb)::->> bytecount= %d\n",
@@ -348,10 +373,14 @@ EXPORT int CamGetStat(TranslatedIosb *iosb) // CAM$GET_STAT_SCSI()
 }
 
 //-----------------------------------------------------------
-EXPORT int CamError(int xexp, int qexp, TranslatedIosb *iosb) {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+EXPORT int CamError(int xexp, int qexp, TranslatedIosb *iosb)
+{
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamError(xexp, qexp, iosb);
-  } else {
+  }
+  else
+  {
     int xexp_use;
     int qexp_use;
     TranslatedIosb *iosb_use;
@@ -385,16 +414,19 @@ EXPORT int CamError(int xexp, int qexp, TranslatedIosb *iosb) {
 //-----------------------------------------------------------
 #define CallSingleIo(pname, dmode)                                             \
   EXPORT int Cam##pname(char *Name, BYTE A, BYTE F, void *Data, BYTE Mem,      \
-                        TranslatedIosb *iosb) {                                \
+                        TranslatedIosb *iosb)                                  \
+  {                                                                            \
     int status;                                                                \
     CamKey Key;                                                                \
     static int debug = -1;                                                     \
                                                                                \
-    if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {                \
+    if ((isRemote == 1 || (isRemote == -1 && checkRemote())))                  \
+    {                                                                          \
       return RemCam##pname(Name, A, F, Data, Mem, iosb);                       \
     }                                                                          \
                                                                                \
-    if (debug == -1) {                                                         \
+    if (debug == -1)                                                           \
+    {                                                                          \
       char *tmp = getenv("CAM_DEBUG");                                         \
       debug = tmp ? 1 : 0;                                                     \
     }                                                                          \
@@ -402,7 +434,8 @@ EXPORT int CamError(int xexp, int qexp, TranslatedIosb *iosb) {
       printf("Cam" #pname ": name=%s, A=%d, F=%d, data=%d, mem=%d\n", Name, A, \
              F, Data ? *(int *)Data : -1, Mem);                                \
     status = CamAssign(Name, &Key);                                            \
-    if (status == SUCCESS) {                                                   \
+    if (status == SUCCESS)                                                     \
+    {                                                                          \
       status = SingleIo(Key, A, F, Data, Mem, iosb, dmode);                    \
     }                                                                          \
                                                                                \
@@ -412,32 +445,36 @@ EXPORT int CamError(int xexp, int qexp, TranslatedIosb *iosb) {
 //-----------------------------------------------------------
 // possibly enhanced modes
 //-----------------------------------------------------------
-#define CallMultiIo(pname, dmode, enhanced)                                    \
-  EXPORT int Cam##pname(char *Name, BYTE A, BYTE F, int Count, void *Data,     \
-                        BYTE Mem, TranslatedIosb *iosb) {                      \
-    int status;                                                                \
-    CamKey Key;                                                                \
-                                                                               \
-    static int debug = -1;                                                     \
-                                                                               \
-    if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {                \
-      return RemCam##pname(Name, A, F, Count, Data, Mem, iosb);                \
-    }                                                                          \
-                                                                               \
-    if (debug == -1) {                                                         \
-      char *tmp = getenv("CAM_DEBUG");                                         \
-      debug = tmp ? 1 : 0;                                                     \
-    }                                                                          \
-    if (debug)                                                                 \
-      printf("Cam" #pname                                                      \
-             ": name=%s, A=%d, F=%d, Count=%d, data=%p, mem=%d\n",             \
-             Name, A, F, Count, Data, Mem);                                    \
-    status = CamAssign(Name, &Key);                                            \
-    if (status == SUCCESS) {                                                   \
-      status = MultiIo(Key, A, F, Count, Data, Mem, iosb, dmode, enhanced);    \
-    }                                                                          \
-                                                                               \
-    return status;                                                             \
+#define CallMultiIo(pname, dmode, enhanced)                                 \
+  EXPORT int Cam##pname(char *Name, BYTE A, BYTE F, int Count, void *Data,  \
+                        BYTE Mem, TranslatedIosb *iosb)                     \
+  {                                                                         \
+    int status;                                                             \
+    CamKey Key;                                                             \
+                                                                            \
+    static int debug = -1;                                                  \
+                                                                            \
+    if ((isRemote == 1 || (isRemote == -1 && checkRemote())))               \
+    {                                                                       \
+      return RemCam##pname(Name, A, F, Count, Data, Mem, iosb);             \
+    }                                                                       \
+                                                                            \
+    if (debug == -1)                                                        \
+    {                                                                       \
+      char *tmp = getenv("CAM_DEBUG");                                      \
+      debug = tmp ? 1 : 0;                                                  \
+    }                                                                       \
+    if (debug)                                                              \
+      printf("Cam" #pname                                                   \
+             ": name=%s, A=%d, F=%d, Count=%d, data=%p, mem=%d\n",          \
+             Name, A, F, Count, Data, Mem);                                 \
+    status = CamAssign(Name, &Key);                                         \
+    if (status == SUCCESS)                                                  \
+    {                                                                       \
+      status = MultiIo(Key, A, F, Count, Data, Mem, iosb, dmode, enhanced); \
+    }                                                                       \
+                                                                            \
+    return status;                                                          \
   }
 
 //-----------------------------------------------------------
@@ -459,17 +496,20 @@ CallSingleIo(Piow, QIgnore)      // yields: int = CamPiow( ... )
     //       : int = CamStopw( ... )                [2001.04.10]
     //-----------------------------------------------------------
     static int SingleIo(CamKey Key, BYTE A, BYTE F, BYTE *Data, BYTE Mem,
-                        TranslatedIosb *iosb, int dmode) {
+                        TranslatedIosb *iosb, int dmode)
+{
   char tmp[9];
   int highwayType, status;
 
   if (MSGLVL(FUNCTION_NAME))
     printf("\033[01;31mSingleIo(F=%d)-->\033[0m", F);
   sprintf(tmp, "GK%c%d", Key.scsi_port, Key.scsi_address);
-  if ((status = QueryHighwayType(tmp)) == SUCCESS) {
+  if ((status = QueryHighwayType(tmp)) == SUCCESS)
+  {
     highwayType = NUMERIC(tmp[5]); // extract type
 
-    switch (highwayType) { // check highway type
+    switch (highwayType)
+    { // check highway type
     case JORWAY:
     case JORWAY_OLD:
       if (MSGLVL(DETAILS))
@@ -525,7 +565,8 @@ CallSingleIo(Piow, QIgnore)      // yields: int = CamPiow( ... )
       break;
     }                          // end of switch()
     if (MSGLVL(FUNCTION_NAME)) // show data, if there is some
-      if (Data) {
+      if (Data)
+      {
         if (Mem == 16)
           printf("\033[01;31mSingleIo(F=%d)-->>%d\033[0m\n", F, *(short *)Data);
         else
@@ -541,7 +582,8 @@ CallSingleIo(Piow, QIgnore)      // yields: int = CamPiow( ... )
 
 //-----------------------------------------------------------
 static int MultiIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data, BYTE Mem,
-                   TranslatedIosb *iosb, int dmode, int Enhanced) {
+                   TranslatedIosb *iosb, int dmode, int Enhanced)
+{
   char tmp[10];
   int highwayType, mode, status;
 
@@ -549,10 +591,12 @@ static int MultiIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data, BYTE Mem,
     printf("\033[01;31mMultiIo(F=%d, count=%d)-->>\033[0m\n", F, Count);
   sprintf(tmp, "GK%c%d", Key.scsi_port, Key.scsi_address);
 
-  if ((status = QueryHighwayType(tmp)) == SUCCESS) {
+  if ((status = QueryHighwayType(tmp)) == SUCCESS)
+  {
     highwayType = NUMERIC(tmp[5]); // extract type
 
-    switch (highwayType) { // check highway type
+    switch (highwayType)
+    { // check highway type
     case JORWAY:
     case JORWAY_OLD:
       if (MSGLVL(DETAILS))
@@ -619,7 +663,8 @@ static int MultiIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data, BYTE Mem,
     } // end of switch()
   }   // end of if()
 
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     if (!iosb)
       printf("MultiIo null iosb ptr");
     else
@@ -631,7 +676,8 @@ static int MultiIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data, BYTE Mem,
 
 //-----------------------------------------------------------
 static int JorwayDoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
-                      BYTE Mem, TranslatedIosb *iosb, int dmode, int Enhanced) {
+                      BYTE Mem, TranslatedIosb *iosb, int dmode, int Enhanced)
+{
   char dev_name[12];
   int IsDataCommand, scsiDevice;
   int status;
@@ -653,7 +699,8 @@ static int JorwayDoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
   // [2002.12.13]
 
   sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
-  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
+  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0)
+  {
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "%s(): error -- no scsi device found for '%s'\n",
               J_ROUTINE_NAME, dev_name);
@@ -672,7 +719,8 @@ static int JorwayDoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
 
   IsDataCommand = (F & 0x08) ? FALSE : TRUE;
 
-  if (IsDataCommand) {
+  if (IsDataCommand)
+  {
     union {
       BYTE b[4];
       unsigned int l;
@@ -706,7 +754,9 @@ static int JorwayDoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
     cmd = (unsigned char *)&DATAcommand;
     cmdlen = sizeof(DATAcommand);
     direction = (F < 8) ? 1 : 2;
-  } else {
+  }
+  else
+  {
     NONDATAcommand.bytes[1] = F;
     NONDATAcommand.bytes[2] = Key.slot;
     NONDATAcommand.bytes[3] = A;
@@ -729,7 +779,8 @@ static int JorwayDoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
     *iosb = LastIosb; // [2002.12.11]
 
 JorwayDoIo_Exit:
-  if (MSGLVL(DETAILS) && (cmd != NULL)) {
+  if (MSGLVL(DETAILS) && (cmd != NULL))
+  {
     printf("%s(): iosb->status [0x%x]\n", J_ROUTINE_NAME, iosb->status);
     printf("%s(): iosb->x      [0x%x]\n", J_ROUTINE_NAME, iosb->x);
     printf("%s(): iosb->q      [0x%x]\n", J_ROUTINE_NAME, iosb->q);
@@ -746,7 +797,8 @@ JorwayDoIo_Exit:
 //-----------------------------------------------------------
 static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
                          BYTE Mem, TranslatedIosb *iosb, int dmode,
-                         int Enhanced __attribute__((unused))) {
+                         int Enhanced __attribute__((unused)))
+{
   char dev_name[12];
   int IsDataCommand, scsiDevice;
   int status;
@@ -760,7 +812,8 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
   int online;
   int enhanced;
 
-  struct {
+  struct
+  {
     __u8 opcode;
 
     __u8 f : 5;
@@ -776,7 +829,8 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
     __u8 transfer_len;
     __u8 zero2;
   } NONDATAcommand = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  struct {
+  struct
+  {
     __u8 opcode;
 
     __u8 f : 5;
@@ -792,7 +846,8 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
     __u8 transfer_len;
     __u8 zero2;
   } ShortDATAcommand = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  struct {
+  struct
+  {
     __u8 opcode;
 
     __u8 zero1 : 5;
@@ -820,7 +875,8 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
   // [2002.12.13]
 
   sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
-  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
+  if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0)
+  {
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "%s(): error -- no scsi device found for '%s'\n",
               J_ROUTINE_NAME, dev_name);
@@ -831,7 +887,8 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
   if (!online && Key.slot != 30)
     return CamOFFLINE;
 
-  if (online && Key.slot == 30 && F == 1 && A == 0) {
+  if (online && Key.slot == 30 && F == 1 && A == 0)
+  {
     *(short *)Data = 0x30;
     return CamDONE_Q;
   }
@@ -841,14 +898,16 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
 
   IsDataCommand = (F & 0x08) ? FALSE : TRUE;
 
-  if (IsDataCommand) {
+  if (IsDataCommand)
+  {
     union {
       BYTE b[4];
       unsigned int l;
     } transfer_len;
     reqbytcnt = transfer_len.l = Count * ((Mem == 24) ? 4 : 2);
     direction = (F < 8) ? 1 : 2;
-    if (reqbytcnt < 256) {
+    if (reqbytcnt < 256)
+    {
       cmd = (unsigned char *)&ShortDATAcommand;
       cmdlen = sizeof(ShortDATAcommand);
       ShortDATAcommand.f = F;
@@ -857,7 +916,9 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
       ShortDATAcommand.m = Count > 1 ? modes[dmode] : singlemodes[dmode];
       ShortDATAcommand.a = A;
       ShortDATAcommand.transfer_len = transfer_len.l;
-    } else {
+    }
+    else
+    {
       cmd = (unsigned char *)&LongDATAcommand;
       cmdlen = sizeof(LongDATAcommand);
       LongDATAcommand.f = F;
@@ -869,7 +930,9 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
       LongDATAcommand.transfer_len[1] = transfer_len.b[1];
       LongDATAcommand.transfer_len[2] = transfer_len.b[0];
     }
-  } else {
+  }
+  else
+  {
     NONDATAcommand.f = F;
     NONDATAcommand.n = Key.slot;
     NONDATAcommand.a = A;
@@ -887,15 +950,19 @@ static int Jorway73ADoIo(CamKey Key, BYTE A, BYTE F, int Count, BYTE *Data,
     *iosb = LastIosb; // [2002.12.11]
 
 Jorway73ADoIo_Exit:
-  if (MSGLVL(FUNCTION_NAME + 1) && (cmd != NULL)) {
+  if (MSGLVL(FUNCTION_NAME + 1) && (cmd != NULL))
+  {
     // This is only rough - depends on the nature of the "overloaded" vars
     printf("scsi_mode opcode=%d, dmode=%d, modes[dmode]=%d, [1]=%d, [3]=%d, "
            "[5]=%d [7]=%d\n",
            cmd[0], dmode, modes[dmode], cmd[1], cmd[3], cmd[5], cmd[7]);
 
-    if (!iosb) {
+    if (!iosb)
+    {
       printf("Jorway73ADoIo_Exit: Null pointer to iosb\n");
-    } else {
+    }
+    else
+    {
       printf("%s(): iosb->status [0x%x]\n", J_ROUTINE_NAME, iosb->status);
       printf("%s(): iosb->x      [0x%x]\n", J_ROUTINE_NAME, iosb->x);
       printf("%s(): iosb->q      [0x%x]\n", J_ROUTINE_NAME, iosb->q);
@@ -921,20 +988,25 @@ Jorway73ADoIo_Exit:
 //-----------------------------------------------------------
 // derive module address parameters
 //-----------------------------------------------------------
-static int CamAssign(char *Name, CamKey *Key) {
+static int CamAssign(char *Name, CamKey *Key)
+{
   static char ha;             // NB! these must be static, or else doesn't work
   static int id, crate, slot; // NB! these must be static, or else doesn't work
   int status;
 
-  if (strchr(Name, ':')) { // physical names contain a ':'
+  if (strchr(Name, ':'))
+  { // physical names contain a ':'
     str2upcase(Name);
     sscanf(Name, "GK%1s%1d%2d:N%d", &ha, &id, &crate, &slot);
     Key->scsi_port = ha;
     Key->scsi_address = id;
     Key->crate = crate;
     Key->slot = slot;
-  } else { // ... logical module name does not
-    if ((status = xlate_logicalname(Name, Key)) != SUCCESS) {
+  }
+  else
+  { // ... logical module name does not
+    if ((status = xlate_logicalname(Name, Key)) != SUCCESS)
+    {
       status = LibNOTFOU;
       goto CamAssign_Exit;
     }
@@ -955,7 +1027,8 @@ CamAssign_Exit:
 // extract CAMAC status info for Jorway highways
 //-----------------------------------------------------------
 static int JorwayTranslateIosb(int reqbytcnt, SenseData *sense, char sensretlen,
-                               unsigned int ret_bytcnt, int scsi_status) {
+                               unsigned int ret_bytcnt, int scsi_status)
+{
   int status;
   int bytcnt = reqbytcnt - ((int)sense->word_count_defect[2]) +
                (((int)sense->word_count_defect[1]) << 8) +
@@ -976,31 +1049,40 @@ static int JorwayTranslateIosb(int reqbytcnt, SenseData *sense, char sensretlen,
   if (MSGLVL(FUNCTION_NAME))
     printf("%s()\n", JT_ROUTINE_NAME);
 
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("%s(): scsi status 0x%x\n", JT_ROUTINE_NAME, scsi_status);
   }
 
   LastIosb.q = !sense->main_status_reg.no_q;
   LastIosb.x = !sense->main_status_reg.no_x;
   status = CamSERTRAERR;
-  switch (scsi_status) {
+  switch (scsi_status)
+  {
   case 0:
     status = 1;
     break;
-  case 1: {
-    switch (sense->sense_key) {
+  case 1:
+  {
+    switch (sense->sense_key)
+    {
     case SENSE_HARDWARE_ERROR:
-      if (sense->additional_sense_code == SENSE2_NOX) {
+      if (sense->additional_sense_code == SENSE2_NOX)
+      {
         LastIosb.q = 0;
         LastIosb.x = 0;
         if (sense->main_status_reg.snex)
           status = CamSCCFAIL;
         else
           status = CamDONE_NOX;
-      } else if (sense->additional_sense_code == SENSE2_NOQ) {
+      }
+      else if (sense->additional_sense_code == SENSE2_NOQ)
+      {
         LastIosb.q = 0;
         status = CamDONE_NOQ;
-      } else {
+      }
+      else
+      {
         LastIosb.err = 1;
         LastIosb.tmo =
             sense->main_status_reg.to | sense->serial_status_reg.timos;
@@ -1031,7 +1113,8 @@ static int JorwayTranslateIosb(int reqbytcnt, SenseData *sense, char sensretlen,
         status = CamDONE_Q;
       break;
     }
-  } break;
+  }
+  break;
   case 2:
     if (!LastIosb.x)
       status = CamDONE_NOX;
@@ -1042,8 +1125,10 @@ static int JorwayTranslateIosb(int reqbytcnt, SenseData *sense, char sensretlen,
     break;
   }
   LastIosb.status = (unsigned short)status & 0xffff;
-  if (Verbose || status == CamSERTRAERR) {
-    if (status == CamSERTRAERR) {
+  if (Verbose || status == CamSERTRAERR)
+  {
+    if (status == CamSERTRAERR)
+    {
       printf(
           "Serial Transmission Error detected, debug information follows \n\n"
           "******************************************************************"
@@ -1081,7 +1166,8 @@ static int JorwayTranslateIosb(int reqbytcnt, SenseData *sense, char sensretlen,
     printf("                  Additional Sense Code=%d,slot=%d,crate=%d\n\n",
            sense->additional_sense_code,
            sense->slot_high_bit * 16 + sense->slot, sense->crate);
-    if (status == CamSERTRAERR) {
+    if (status == CamSERTRAERR)
+    {
       printf("*****************************************************************"
              "*\n\n");
     }
@@ -1092,14 +1178,16 @@ static int JorwayTranslateIosb(int reqbytcnt, SenseData *sense, char sensretlen,
 // extract CAMAC status info for Jorway highways
 //-----------------------------------------------------------
 static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt,
-                                  J73ASenseData *sense, int scsi_status) {
+                                  J73ASenseData *sense, int scsi_status)
+{
   int status;
   int bytcnt =
       reqbytcnt - (int)(((unsigned int)sense->DMA_byte_count[2]) +
                         (((unsigned int)sense->DMA_byte_count[1]) << 8) +
                         (((unsigned int)sense->DMA_byte_count[0]) << 16));
 
-  if (Verbose) {
+  if (Verbose)
+  {
     printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,DMA byte count=%d, "
            "additonal sense code=%d\n\n",
            sense->code, sense->valid, sense->sense_key, bytcnt,
@@ -1139,8 +1227,10 @@ static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt,
   LastIosb.bytcnt = (unsigned short)(bytcnt & 0xffff);
   LastIosb.lbytcnt = (unsigned short)(bytcnt >> 16);
   status = CamSCCFAIL;
-  if (isdatacmd) {
-    switch (scsi_status) {
+  if (isdatacmd)
+  {
+    switch (scsi_status)
+    {
     case 0:
       LastIosb.x = 1;
       LastIosb.q = 1;
@@ -1156,10 +1246,12 @@ static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt,
     case 1:
       LastIosb.x = sense->additional_sense_code != 0x44;
       if (sense->sense_key == 9 ||
-          (sense->sense_key == 4 && sense->additional_sense_code == 0)) {
+          (sense->sense_key == 4 && sense->additional_sense_code == 0))
+      {
         LastIosb.q = 0;
         status = CamDONE_NOQ;
-      } else
+      }
+      else
         LastIosb.q = sense->additional_sense_code != 0x80;
       LastIosb.err = 0;
       LastIosb.lpe = sense->additional_sense_code == 0x47;
@@ -1168,7 +1260,8 @@ static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt,
       LastIosb.tmo = 0;
       LastIosb.adnr = sense->additional_sense_code == 0x4;
       LastIosb.list = 0;
-      switch (sense->additional_sense_code) {
+      switch (sense->additional_sense_code)
+      {
       case 0x44:
         status = CamDONE_NOX;
         break;
@@ -1178,8 +1271,11 @@ static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt,
       }
       break;
     }
-  } else {
-    switch (scsi_status) {
+  }
+  else
+  {
+    switch (scsi_status)
+    {
     case 0:
       LastIosb.x = 1;
       LastIosb.q = 0;
@@ -1202,7 +1298,8 @@ static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt,
       LastIosb.tmo = 0;
       LastIosb.adnr = sense->additional_sense_code == 0x4;
       LastIosb.list = 0;
-      switch (sense->additional_sense_code) {
+      switch (sense->additional_sense_code)
+      {
       case 0x44:
         status = CamDONE_NOX;
         break;
@@ -1239,63 +1336,84 @@ static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt,
 //-----------------------------------------------------------
 
 //-----------------------------------------------------------
-static void str2upcase(char *str) {
+static void str2upcase(char *str)
+{
   char *ptr;
 
   ptr = str;
 
-  while (*ptr) {
+  while (*ptr)
+  {
     *ptr = toupper(*ptr);
     ptr++;
   }
 }
 
 //-----------------------------------------------------------
-static int NOT_SUPPORTED() {
+static int NOT_SUPPORTED()
+{
   printf("reference to unsupported call made\n");
   return FAILURE;
 }
 
-EXPORT int CamSetMAXBUF(char *Name, int new) {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+EXPORT int CamSetMAXBUF(char *Name, int new)
+{
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamSetMAXBUF(Name, new);
-  } else {
+  }
+  else
+  {
     int scsiDevice, enhanced, online;
     CamKey Key;
     int status = CamAssign(Name, &Key);
-    if (status & 1) {
+    if (STATUS_OK)
+    {
       char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address,
               Key.crate);
       if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) <
-          0) {
+          0)
+      {
         return -1;
-      } else
+      }
+      else
         return SGSetMAXBUF(scsiDevice, new);
-    } else {
+    }
+    else
+    {
       printf("Module: %s not defined\n", Name);
       return -1;
     }
   }
 }
 
-EXPORT int CamGetMAXBUF(char *Name) {
-  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+EXPORT int CamGetMAXBUF(char *Name)
+{
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote())))
+  {
     return RemCamGetMAXBUF(Name);
-  } else {
+  }
+  else
+  {
     int scsiDevice, enhanced, online;
     CamKey Key;
     int status = CamAssign(Name, &Key);
-    if (status & 1) {
+    if (STATUS_OK)
+    {
       char dev_name[12];
       sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address,
               Key.crate);
       if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) <
-          0) {
+          0)
+      {
         return -1;
-      } else
+      }
+      else
         return SGGetMAXBUF(scsiDevice);
-    } else {
+    }
+    else
+    {
       printf("Module: %s not defined\n", Name);
       return -1;
     }

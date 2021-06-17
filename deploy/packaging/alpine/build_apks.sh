@@ -1,9 +1,5 @@
 #!/bin/bash
 [ -z "${BUILDROOT}" ] && exit 1
-[ -z "${BRANCH}" ] && exit 1
-[ -z "${RELEASE_VERSION}" ] && exit 1
-[ -z "${ARCH}" ] && exit 1
-[ -z "${DISTNAME}" ] && exit 1
 pckdir=$(dirname $(realpath $0))
 export HOME=/workspace
 cd /workspace
@@ -18,9 +14,5 @@ fi
 # we have to unset srcdir as it is a reserved name in abuild
 # in the process of building the apks it will wipe $srcdir
 srcdir= \
-  BUILDROOT=${BUILDROOT} \
-  BRANCH=${BRANCH} \
-  RELEASE_VERSION=${RELEASE_VERSION} \
-  ARCH=${ARCH} \
-  DISTNAME=${DISTNAME} \
+  BUILDROOT=${BUILDROOT}\
   ${pckdir}/alpine_build_apks.py

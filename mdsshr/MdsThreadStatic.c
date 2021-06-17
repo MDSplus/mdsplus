@@ -35,14 +35,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Key for the thread-specific buffer */
 static pthread_key_t mts_key;
 /* Free the thread-specific buffer */
-static inline void free_buffer(buffer_t *buf) {
+static inline void free_buffer(buffer_t *buf)
+{
   if (!buf)
     return;
   buf->free(buf->buffer);
   free(buf);
 }
-static void free_mts(MDSplusThreadStatic_t *mts) {
-  if (mts->is_owned) {
+
+EXPORT MDSplusThreadStatic_t *newMDSplusThreadStatic()
+{
+  MDSplusThreadStatic_t *mts =
+      (MDSplusThreadStatic_t *)malloc(sizeof(MDSplusThreadStatic_t));
+  mts->is_owned = TRUE;
+  mts->buffers = calloc(THREADSTATIC_SIZE, sizeof(buffer_t *));
+  return mts;
+}
+
+EXPORT void destroyMDSplusThreadStatic(MDSplusThreadStatic_t *mts)
+{
+  if (mts->is_owned)
+  {
     buffer_t **buf, **end = mts->buffers + THREADSTATIC_SIZE;
     for (buf = mts->buffers; buf < end; buf++)
       free_buffer(*buf);
@@ -50,15 +63,18 @@ static void free_mts(MDSplusThreadStatic_t *mts) {
   }
   free(mts);
 }
-static void init_mts_key() { pthread_key_create(&mts_key, (void *)free_mts); }
-EXPORT MDSplusThreadStatic_t *MDSplusThreadStatic(MDSplusThreadStatic_t *in) {
+
+static void init_mts_key() { pthread_key_create(&mts_key, (void *)destroyMDSplusThreadStatic); }
+EXPORT MDSplusThreadStatic_t *MDSplusThreadStatic(MDSplusThreadStatic_t *in)
+{
   // mts = MDSplusThreadStatic(NULL) : get current thread's mts
   // MDSplusThreadStatic(parent_mts) : setup parent mts in thread ; should be
   // first command of thread
   RUN_FUNCTION_ONCE(init_mts_key);
   MDSplusThreadStatic_t *mts =
       (MDSplusThreadStatic_t *)pthread_getspecific(mts_key);
-  if (in) {
+  if (in)
+  {
     // duplicate in and replace
     MDSplusThreadStatic_t *old_mts = mts;
     mts = (MDSplusThreadStatic_t *)malloc(sizeof(MDSplusThreadStatic_t));
@@ -66,20 +82,22 @@ EXPORT MDSplusThreadStatic_t *MDSplusThreadStatic(MDSplusThreadStatic_t *in) {
     mts->buffers = in->buffers;
     pthread_setspecific(mts_key, (void *)mts);
     if (old_mts)
-      free_mts(old_mts);
-  } else {
+      destroyMDSplusThreadStatic(old_mts);
+  }
+  else
+  {
     // create if NULL
-    if (!mts) {
-      mts = (MDSplusThreadStatic_t *)malloc(sizeof(MDSplusThreadStatic_t));
-      mts->is_owned = TRUE;
-      mts->buffers = calloc(THREADSTATIC_SIZE, sizeof(buffer_t *));
+    if (!mts)
+    {
+      mts = newMDSplusThreadStatic();
       pthread_setspecific(mts_key, (void *)mts);
     }
   }
   return mts;
 }
 
-static inline MDSTHREADSTATIC_TYPE *buffer_alloc() {
+static inline MDSTHREADSTATIC_TYPE *buffer_alloc()
+{
   MDSTHREADSTATIC_ARG =
       (MDSTHREADSTATIC_TYPE *)calloc(1, sizeof(MDSTHREADSTATIC_TYPE));
   MDS_MDSGETMSG_DESC.dtype = DTYPE_T;
@@ -87,14 +105,21 @@ static inline MDSTHREADSTATIC_TYPE *buffer_alloc() {
   MDS_MDSGETMSG_DESC.pointer = MDS_MDSGETMSG_CSTR;
   return MDSTHREADSTATIC_VAR;
 }
+static inline void buffer_free(MDSTHREADSTATIC_ARG)
+{
+  free(MDS_FIS_ERROR);
+  free(MDSTHREADSTATIC_VAR);
+}
 
 IMPLEMENT_GETTHREADSTATIC(MDSTHREADSTATIC_TYPE, MdsGetThreadStatic,
-                          THREADSTATIC_MDSSHR, buffer_alloc, free)
+                          THREADSTATIC_MDSSHR, buffer_alloc, buffer_free)
 
-EXPORT void LockMdsShrMutex(pthread_mutex_t *mutex, int *initialized) {
+EXPORT void LockMdsShrMutex(pthread_mutex_t *mutex, int *initialized)
+{
   static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&initMutex);
-  if (!*initialized) {
+  if (!*initialized)
+  {
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
     pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
@@ -105,7 +130,8 @@ EXPORT void LockMdsShrMutex(pthread_mutex_t *mutex, int *initialized) {
   pthread_mutex_lock(mutex);
 }
 
-EXPORT void UnlockMdsShrMutex(pthread_mutex_t *mutex) {
+EXPORT void UnlockMdsShrMutex(pthread_mutex_t *mutex)
+{
   pthread_mutex_unlock(mutex);
 }
 

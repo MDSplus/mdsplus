@@ -30,7 +30,8 @@
 
 #ifndef _XmdsInputs_h
 #define _XmdsInputs_h
-typedef struct _xmdsInputCtx {
+typedef struct _xmdsInputCtx
+{
   int inputs_nid;
   int nodes_per_input;
   int data_offset;

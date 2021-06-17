@@ -58,7 +58,8 @@ $ ACTLOG -monitor monitor-name
 
 #include "actlogp.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   char *monitor = "ACTION_MONITOR";
   int i;
   for (i = 1; i < argc; i++)
@@ -71,7 +72,8 @@ int main(int argc, char **argv) {
 }
 
 const struct timespec ms100 = {0, 100000000}; // 100ms
-static void DoTimer() {
+static void DoTimer()
+{
   while (!nanosleep(&ms100, NULL)) // not interrupted e.g. by Ctrl+C
     _DoTimer();
 }
@@ -79,14 +81,16 @@ static void DoTimer() {
 inline static void EventUpdate(LinkedEvent *event) { _EventUpdate(event); }
 
 static void PutLog(char *time, char *mode, char *status, char *server,
-                   char *path) {
+                   char *path)
+{
   fprintf(stdout, "%s %12d %-10.10s %-44.44s %-20.20s %s\n", time, current_shot,
           mode, status, server, path);
   fflush(stdout);
 }
 
 static void PutError(char *time, char *mode, char *status, char *server,
-                     char *path) {
+                     char *path)
+{
   fprintf(stderr, "%s %12d %-10.10s %-44.44s %-20.20s %s\n", time, current_shot,
           mode, status, server, path);
 }

@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdevail:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 Resampler "/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_RESAMPLER"/>
     <Property name="height" type="int" value="400"/>
@@ -1011,7 +1011,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="147"/>
+                        <Property name="offsetNid" type="int" value="148"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1032,7 +1032,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="155"/>
+                        <Property name="offsetNid" type="int" value="157"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1053,7 +1053,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="163"/>
+                        <Property name="offsetNid" type="int" value="166"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1074,7 +1074,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="171"/>
+                        <Property name="offsetNid" type="int" value="175"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1095,7 +1095,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="179"/>
+                        <Property name="offsetNid" type="int" value="184"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1116,7 +1116,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="187"/>
+                        <Property name="offsetNid" type="int" value="193"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1137,7 +1137,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="195"/>
+                        <Property name="offsetNid" type="int" value="202"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1158,7 +1158,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="203"/>
+                        <Property name="offsetNid" type="int" value="211"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1179,7 +1179,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="211"/>
+                        <Property name="offsetNid" type="int" value="220"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1200,7 +1200,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="219"/>
+                        <Property name="offsetNid" type="int" value="229"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1221,7 +1221,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="227"/>
+                        <Property name="offsetNid" type="int" value="238"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1242,7 +1242,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="235"/>
+                        <Property name="offsetNid" type="int" value="247"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1263,7 +1263,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="243"/>
+                        <Property name="offsetNid" type="int" value="256"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1284,7 +1284,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="251"/>
+                        <Property name="offsetNid" type="int" value="265"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1305,7 +1305,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Segment Len (0 to disable write):"/>
                         <Property name="numCols" type="int" value="6"/>
-                        <Property name="offsetNid" type="int" value="259"/>
+                        <Property name="offsetNid" type="int" value="274"/>
                       </Properties>
                     </Component>
                   </SubComponents>

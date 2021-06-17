@@ -25,8 +25,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include "l8212_04_gen.h"
 #include <ncidef.h>
@@ -207,7 +207,7 @@ static int FreqToClock(int chans, int noc, int freq_nid, int *clock)
   int status = 1;
 
   status = DevFloat(&freq_nid, &freq);
-  if ((status & 1) == 0) {
+  if ((STATUS_OK) == 0) {
     *clock = 0;
     status = 1;
   } else {
@@ -392,19 +392,19 @@ static int L8212__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   status = 1;
   vm_size = samples_per_channel * 2;
   channel_data_ptr = malloc(vm_size);
-  for (chan = 0; ((chan < num_chans) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < num_chans) && (STATUS_OK)); chan++) {
     int chan_head = CHAN_NID(chan, L8212_N_CHAN_HEAD);
     if (TreeIsOn(chan_head) & 1) {
       int chan_start_idx = CHAN_NID(chan, L8212_N_CHAN_STARTIDX);
       int chan_end_idx = CHAN_NID(chan, L8212_N_CHAN_ENDIDX);
       status = DevLong(&chan_start_idx, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&chan_end_idx, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -413,7 +413,7 @@ static int L8212__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
       if (raw.m[0] > 0) {
 	//samples_to_read = raw.bounds[0].u - min_idx + 1;
 	status = ReadChannel(setup->name, samples_per_channel, chan, channel_data_ptr, use_qrep);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  raw.pointer = (char *)(channel_data_ptr + (raw.bounds[0].l - min_idx));
 	  raw.a0 = raw.pointer - raw.bounds[0].l * sizeof(*channel_data_ptr);
 	  raw.arsize = raw.m[0] * 2;
@@ -561,8 +561,8 @@ static int L8212_SETUP(struct descriptor *niddsc __attribute__ ((unused)), Widge
   };
   int status;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + (nid + L8212_04_N_MEMORIES);
-  uilnames[1].value = (char *)0 + chans;
+  uilnames[0].value = (void *)(intptr_t)(nid + L8212_04_N_MEMORIES);
+  uilnames[1].value = (void *)(intptr_t)chans;
   switch (chans) {
   case 32:{
       for (i = 0; i < XtNumber(clock_vals_slow); i++) {
@@ -640,7 +640,7 @@ static void mems_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmSca
   static char header[11];
   static struct descriptor_s header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
   int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     ChangePts(pts_menu, header, reason->value);
   }
 }
@@ -689,7 +689,7 @@ static void header_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmR
   static char header[11];
   static struct descriptor_s header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
   int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     XmScaleGetValue(XtNameToWidget(XtParent(XtParent(w)), "mems_scale"), &mems);
     ChangePts(pts_menu, header, mems);
   }
@@ -816,7 +816,7 @@ static void pts_initialize_proc(Widget pts_menu)
   static char header[11];
   static struct descriptor_s header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
   int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK) {
     XmScaleGetValue(XtNameToWidget(XtParent(pts_menu), "mems_scale"), &mems);
     ChangePts(pts_menu, header, mems);
   }
@@ -838,5 +838,5 @@ static Boolean apply_proc(Widget w)
     XmdsComplain(XtParent(w), "Error writing num memories");
   if (status)
     XmdsApplyAllXds(XtParent(w));
-  return status & 1;
+  return STATUS_OK;
 }

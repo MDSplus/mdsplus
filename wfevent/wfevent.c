@@ -38,7 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Program to wait for MDSPlus event from the command line.
 */
 
-static void printhelp(char *cmd) {
+static void printhelp(char *cmd)
+{
 #ifdef _WIN32
   printf("usage: %s  [/d] [/D] [/t:n] [/?] event-name\n", cmd);
   printf("\n  event-name is the event that you want to wait for."
@@ -60,7 +61,8 @@ static void printhelp(char *cmd) {
 
 extern int TdiDecompile();
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int len;
   char data[MAXDATA];
   int showdata = 0;
@@ -71,9 +73,12 @@ int main(int argc, char **argv) {
 #ifdef _WIN32
   int optind = argc;
   int i;
-  for (i = 1; i < argc; i++) {
-    if (argv[i][0] == '/') {
-      switch (argv[i][1]) {
+  for (i = 1; i < argc; i++)
+  {
+    if (argv[i][0] == '/')
+    {
+      switch (argv[i][1])
+      {
       case '?':
         printhelp(argv[0]);
         return 0;
@@ -94,10 +99,13 @@ int main(int argc, char **argv) {
         return 1;
         break;
       }
-    } else {
+    }
+    else
+    {
       if (optind == argc)
         optind = i;
-      else {
+      else
+      {
         printhelp(argv[0]);
         return 1;
       }
@@ -110,8 +118,10 @@ int main(int argc, char **argv) {
                               {"help", 0, 0, 'h'},
                               {"serialized", 0, 0, 'D'},
                               {0, 0, 0, 0}};
-  while ((opt = getopt_long(argc, argv, "dDht:", longopts, 0)) > -1) {
-    switch (opt) {
+  while ((opt = getopt_long(argc, argv, "dDht:", longopts, 0)) > -1)
+  {
+    switch (opt)
+    {
     case 'h':
       printhelp(argv[0]);
       return 0;
@@ -131,58 +141,75 @@ int main(int argc, char **argv) {
     }
   }
 #endif
-  if (optind == argc) {
+  if (optind == argc)
+  {
     printf("Missing event-name\n");
     printhelp(argv[0]);
     return 1;
   }
   event = argv[optind];
   status = MDSWfeventTimed(event, MAXDATA, data, &len, timeout);
-  if (status & 1) {
-    if (showdata && len) {
+  if (STATUS_OK)
+  {
+    if (showdata && len)
+    {
       int i, istext = 1;
-      if (serialized) {
+      if (serialized)
+      {
         EMPTYXD(xd);
         struct descriptor ans = {0, DTYPE_T, CLASS_D, 0};
         status = MdsSerializeDscIn(data, &xd);
-        if (status & 1) {
+        if (STATUS_OK)
+        {
           TdiDecompile(&xd, &ans MDS_END_ARG);
-          if (ans.pointer) {
+          if (ans.pointer)
+          {
             printf("Event %s occurred with data = %.*s\n", event, ans.length,
                    ans.pointer);
             return 0;
           }
-        } else {
+        }
+        else
+        {
           printf("Event %s occurred with invalid serialized data\n", event);
           return 1;
         }
       }
       if (len > MAXDATA)
         len = MAXDATA;
-      for (; data[len - 1] == 0 && len > 0; len--) {
+      for (; data[len - 1] == 0 && len > 0; len--)
+      {
         ;
       }
-      for (i = 0; i < len; i++) {
-        if (data[i] < 32 || data[i] >= 127) {
+      for (i = 0; i < len; i++)
+      {
+        if (data[i] < 32 || data[i] >= 127)
+        {
           istext = 0;
           break;
         }
       }
       if (istext)
         printf("Event %s occurred with data = \\%.*s\\\n", event, len, data);
-      else {
+      else
+      {
         printf("Event %s occured with data = [", event);
-        for (i = 0; i < len - 1; i++) {
+        for (i = 0; i < len - 1; i++)
+        {
           printf("%0dB,", (int)data[i]);
         }
         printf("%dB]\n", (int)data[i]);
       }
     }
     return (0);
-  } else if (timeout > 0) {
+  }
+  else if (timeout > 0)
+  {
     printf("Event %s timed out.\n", event);
     return 1;
-  } else {
+  }
+  else
+  {
     printf("Unknown error occurred\n");
     return 1;
   }

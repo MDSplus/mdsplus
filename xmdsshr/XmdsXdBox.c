@@ -362,44 +362,53 @@ WidgetClass xmdsXdBoxWidgetClass;
   the initial widget.
 ****************************************************/
 EXPORT Widget XmdsCreateXdBox(Widget parent, char *name, ArgList args,
-                              Cardinal argcount) {
+                              Cardinal argcount)
+{
   return XtCreateWidget(name, (WidgetClass)&xmdsXdBoxClassRec, parent, args,
                         argcount);
 }
 
-EXPORT Boolean XmdsXdBoxApply(Widget w) {
+EXPORT Boolean XmdsXdBoxApply(Widget w)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   return xdbw->xdbox.put_on_apply ? XmdsXdBoxPut(w) : 1;
 }
 
-EXPORT struct descriptor *XmdsXdBoxGetXd(Widget w) {
+EXPORT struct descriptor *XmdsXdBoxGetXd(Widget w)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   return (struct descriptor *)Unload(xdbw->xdbox.specific_dlog);
 }
 
-EXPORT Boolean XmdsXdBoxPut(Widget w) {
+EXPORT Boolean XmdsXdBoxPut(Widget w)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   return Put(xdbw);
 }
 
-EXPORT void XmdsXdBoxReset(Widget w) {
+EXPORT void XmdsXdBoxReset(Widget w)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
-  if (xdbw->xdbox.nid) {
+  if (xdbw->xdbox.nid)
+  {
     int nid = xdbw->xdbox.nid + xdbw->xdbox.nid_offset;
-    if (xdbw->xdbox.xd) {
+    if (xdbw->xdbox.xd)
+    {
       MdsFree1Dx(xdbw->xdbox.xd, 0);
       XtFree((char *)xdbw->xdbox.xd);
     }
     xdbw->xdbox.xd = (struct descriptor_xd *)TdiGet(nid);
     GenericGet(xdbw);
   }
-  if (xdbw->xdbox.loaded) {
+  if (xdbw->xdbox.loaded)
+  {
     GenericLoad(xdbw);
     Load(xdbw->xdbox.specific_dlog, xdbw->xdbox.xd);
   }
 }
 
-EXPORT void XmdsXdBoxSetState(Widget w, Boolean state) {
+EXPORT void XmdsXdBoxSetState(Widget w, Boolean state)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   XmToggleButtonGadgetSetState(
       XtNameToWidget(xdbw->xdbox.xdb_dlog, "generic_box.on_off_toggle"), state,
@@ -407,7 +416,8 @@ EXPORT void XmdsXdBoxSetState(Widget w, Boolean state) {
   xdbw->xdbox.on_off = state;
 }
 
-EXPORT Boolean XmdsXdBoxGetState(Widget w) {
+EXPORT Boolean XmdsXdBoxGetState(Widget w)
+{
   Boolean state;
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   if (!xdbw->xdbox.loaded)
@@ -418,11 +428,13 @@ EXPORT Boolean XmdsXdBoxGetState(Widget w) {
   return state;
 }
 
-void XmdsXdBoxSetNid(Widget w, int nid) {
+void XmdsXdBoxSetNid(Widget w, int nid)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   if (xdbw->xdbox.xd)
     MdsFree1Dx(xdbw->xdbox.xd, 0);
-  else {
+  else
+  {
     xdbw->xdbox.xd =
         (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
     *xdbw->xdbox.xd = empty_xd;
@@ -433,24 +445,28 @@ void XmdsXdBoxSetNid(Widget w, int nid) {
     xdbw->xdbox.nid = nid;
   TreeGetRecord(xdbw->xdbox.nid, xdbw->xdbox.xd);
   GenericGet(xdbw);
-  if (xdbw->xdbox.loaded) {
+  if (xdbw->xdbox.loaded)
+  {
     Load(xdbw->xdbox.specific_dlog, xdbw->xdbox.xd);
     GenericLoad(xdbw);
   }
 }
 
-EXPORT void XmdsXdBoxSetDefaultNid(Widget w, int def_nid) {
+EXPORT void XmdsXdBoxSetDefaultNid(Widget w, int def_nid)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   xdbw->xdbox.default_nid = def_nid;
   SetDefault(w);
 }
 
-EXPORT void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc) {
+EXPORT void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc)
+{
   struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   if (xdbw->xdbox.xd)
     MdsFree1Dx(xdbw->xdbox.xd, 0);
-  else {
+  else
+  {
     xdbw->xdbox.xd =
         (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
     *xdbw->xdbox.xd = empty_xd;
@@ -460,25 +476,30 @@ EXPORT void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc) {
     Load(xdbw->xdbox.specific_dlog, xdbw->xdbox.xd);
 }
 
-EXPORT void XmdsXdBoxLoad(Widget w) {
+EXPORT void XmdsXdBoxLoad(Widget w)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
-  if (!xdbw->xdbox.loaded) {
+  if (!xdbw->xdbox.loaded)
+  {
     xdbw->xdbox.loaded = 1;
     Load(xdbw->xdbox.specific_dlog, xdbw->xdbox.xd);
     GenericLoad(xdbw);
   }
 }
 
-static void ChangeManaged(Widget w) {
+static void ChangeManaged(Widget w)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   XtWidgetGeometry request;
   XtGeometryResult result;
 
   CalculateNewSize(xdbw, &request.width, &request.height);
 
-  if (request.width != XtWidth(xdbw) || request.height != XtHeight(xdbw)) {
+  if (request.width != XtWidth(xdbw) || request.height != XtHeight(xdbw))
+  {
     request.request_mode = CWWidth | CWHeight;
-    do {
+    do
+    {
       result = XtMakeGeometryRequest(w, &request, &request);
     } while (result == XtGeometryAlmost);
   };
@@ -488,7 +509,8 @@ static void ChangeManaged(Widget w) {
   ClassInitialize
     - Opens the DRM Hierarchy and
 **********************************/
-static void ClassInitialize() {
+static void ClassInitialize()
+{
   static MrmRegisterArg routines[] = {
       {"apply_button_proc", (char *)apply_button_proc},
       {"cancel_button_proc", (char *)cancel_button_proc},
@@ -508,12 +530,14 @@ static void ClassInitialize() {
                               XtNumber(routines));
 }
 
-static void Destroy(Widget w) {
+static void Destroy(Widget w)
+{
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget)w;
   Widget par = XtParent(w);
   if (XtIsShell(par))
     XtDestroyWidget(par);
-  if (xdbw->xdbox.xd) {
+  if (xdbw->xdbox.xd)
+  {
     MdsFree1Dx(xdbw->xdbox.xd, 0);
     XtFree((char *)xdbw->xdbox.xd);
     xdbw->xdbox.xd = 0;
@@ -524,16 +548,19 @@ static void Destroy(Widget w) {
     XtFree((char *)xdbw->xdbox.path);
 }
 
-static void Resize(XmdsXdBoxWidget w) {
+static void Resize(XmdsXdBoxWidget w)
+{
   if (w->xdbox.xdb_dlog)
     XtResizeWidget(w->xdbox.xdb_dlog, XtWidth(w), XtHeight(w),
                    XtBorderWidth(w->xdbox.xdb_dlog));
 }
 
 static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry *req,
-                                        XtWidgetGeometry *ret) {
+                                        XtWidgetGeometry *ret)
+{
   XtGeometryResult res = XtMakeGeometryRequest(XtParent(w), req, ret);
-  if (res == XtGeometryYes) {
+  if (res == XtGeometryYes)
+  {
     if (req->request_mode & CWX)
       w->core.x = XtParent(w)->core.x;
     if (req->request_mode & CWY)
@@ -546,13 +573,15 @@ static XtGeometryResult GeometryManager(Widget w, XtWidgetGeometry *req,
       w->core.width = XtParent(w)->core.width;
     if (req->request_mode & CWBorderWidth)
       w->core.border_width = XtParent(w)->core.border_width;
-  } else if (res == XtGeometryAlmost)
+  }
+  else if (res == XtGeometryAlmost)
     res = GeometryManager(w, ret, ret);
   return res;
 }
 
 static void Initialize(Widget req, Widget new, ArgList args,
-                       Cardinal *argcount) {
+                       Cardinal *argcount)
+{
   XmdsXdBoxWidget w = (XmdsXdBoxWidget) new;
   MrmType class;
   int nid = 0;
@@ -560,12 +589,15 @@ static void Initialize(Widget req, Widget new, ArgList args,
 
   w->xdbox.tag_list = 0;
   w->xdbox.path = 0;
-  if (w->xdbox.nid) {
+  if (w->xdbox.nid)
+  {
     if (w->xdbox.nid == -1)
       w->xdbox.nid = XmdsGetDeviceNid();
     nid = w->xdbox.nid + w->xdbox.nid_offset;
     w->xdbox.xd = (struct descriptor_xd *)TdiGet(nid);
-  } else {
+  }
+  else
+  {
     XmdsXdBoxWidget req_xdb = (XmdsXdBoxWidget)req;
     w->xdbox.xd =
         (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
@@ -574,28 +606,36 @@ static void Initialize(Widget req, Widget new, ArgList args,
   }
   MrmFetchWidgetOverride(xmdsXdBoxClassRec.xdbox_class.drm, "xd_box", (Widget)w,
                          "xd_box", args, *argcount, &w->xdbox.xdb_dlog, &class);
-  if (nid == 0) {
+  if (nid == 0)
+  {
     XtVaSetValues(XtNameToWidget(w->xdbox.xdb_dlog, "detail_box"),
                   XmNtopAttachment, XmATTACH_FORM, NULL);
     XtUnmanageChild(XtNameToWidget(w->xdbox.xdb_dlog, "generic_box"));
-  } else {
+  }
+  else
+  {
     GenericGet(w);
   }
   XtManageChild(w->xdbox.xdb_dlog);
-  if (w->xdbox.usage == 0) {
-    if (w->xdbox.nid) {
+  if (w->xdbox.usage == 0)
+  {
+    if (w->xdbox.nid)
+    {
       NCI_ITM itms[] = {{sizeof(w->xdbox.usage), NciUSAGE, 0, 0}, {0, 0, 0, 0}};
       int nid = w->xdbox.nid + w->xdbox.nid_offset;
       int status;
       itms[0].pointer = (unsigned char *)&w->xdbox.usage;
       status = TreeGetNci(nid, itms);
-      if ((status & 1) == 0)
+      if ((STATUS_OK) == 0)
         w->xdbox.usage = 0;
-    } else {
+    }
+    else
+    {
       w->xdbox.usage = 0;
     }
   }
-  switch (w->xdbox.usage) {
+  switch (w->xdbox.usage)
+  {
   case TreeUSAGE_WINDOW:
     WindowCreate(w, args, *argcount);
     break;
@@ -632,7 +672,8 @@ static void Initialize(Widget req, Widget new, ArgList args,
     status = 0;
     break;
   }
-  if (status) {
+  if (status)
+  {
     w->xdbox.loaded = 0;
     Load(w->xdbox.specific_dlog, w->xdbox.xd);
     w->core.width = XtWidth(w->xdbox.xdb_dlog);
@@ -640,23 +681,28 @@ static void Initialize(Widget req, Widget new, ArgList args,
   }
 }
 
-static Boolean SetValues(Widget old, Widget req, Widget new) {
+static Boolean SetValues(Widget old, Widget req, Widget new)
+{
   XmdsXdBoxWidget old_xd_w = (XmdsXdBoxWidget)old;
   XmdsXdBoxWidget req_xd_w = (XmdsXdBoxWidget)req;
   XmdsXdBoxWidget new_xd_w = (XmdsXdBoxWidget) new;
   if ((req_xd_w->xdbox.nid != old_xd_w->xdbox.nid) ||
-      (req_xd_w->xdbox.nid_offset != old_xd_w->xdbox.nid_offset)) {
+      (req_xd_w->xdbox.nid_offset != old_xd_w->xdbox.nid_offset))
+  {
     if (req_xd_w->xdbox.nid == -1)
       new_xd_w->xdbox.nid = XmdsGetDeviceNid();
     XmdsXdBoxSetNid(new, new_xd_w->xdbox.nid + new_xd_w->xdbox.nid_offset);
-  } else if (req_xd_w->xdbox.xd != old_xd_w->xdbox.xd) {
+  }
+  else if (req_xd_w->xdbox.xd != old_xd_w->xdbox.xd)
+  {
     new_xd_w->xdbox.xd = 0;
     XmdsXdBoxSetXd(new, (struct descriptor *)req_xd_w->xdbox.xd);
   }
   return 0;
 }
 
-static void ActionCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
+static void ActionCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+{
   MrmType class;
   XmdsXdUserPart *user_part =
       (XmdsXdUserPart *)XtMalloc(sizeof(XmdsXdUserPart));
@@ -698,7 +744,8 @@ static void ActionCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
   XtManageChild(w->xdbox.specific_dlog);
 }
 
-static void ActionLoad(Widget w, struct descriptor_xd *xd) {
+static void ActionLoad(Widget w, struct descriptor_xd *xd)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor *ptr = (struct descriptor *)xd;
   Widget menu_widget = XtNameToWidget(w, "action_menu");
@@ -710,16 +757,20 @@ static void ActionLoad(Widget w, struct descriptor_xd *xd) {
   for (ptr = (struct descriptor *)xd; ptr && ptr->dtype == DTYPE_DSC;
        ptr = (struct descriptor *)ptr->pointer)
     ;
-  if (ptr) {
+  if (ptr)
+  {
     xd = (struct descriptor_xd *)ptr;
-    if (NotEmptyXd(xd)) {
-      if (xd->dtype == DTYPE_ACTION) {
+    if (NotEmptyXd(xd))
+    {
+      if (xd->dtype == DTYPE_ACTION)
+      {
         Widget dispatch_w = XtNameToWidget(action_widget, "dispatch_dlog");
         Widget task_w = XtNameToWidget(action_widget, "task_dlog");
         struct descriptor_action *a_dsc = (struct descriptor_action *)xd;
         TaskLoad(task_w, (struct descriptor_xd *)a_dsc->task);
         DispatchLoad(dispatch_w, (struct descriptor_xd *)a_dsc->dispatch);
-        if (xdbw->xdbox.loaded) {
+        if (xdbw->xdbox.loaded)
+        {
           static EMPTYXD(xd);
           if (a_dsc->ndesc >= 3)
             XmdsExprSetXd(action_notify, (struct descriptor *)a_dsc->errorlogs);
@@ -731,7 +782,9 @@ static void ActionLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild(action_notify_label);
         XtUnmanageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 1);
-      } else {
+      }
+      else
+      {
         if (xdbw->xdbox.loaded)
           XmdsExprSetXd(expr_widget, (struct descriptor *)xd);
         XtUnmanageChild(action_widget);
@@ -740,14 +793,18 @@ static void ActionLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 2);
       }
-    } else {
+    }
+    else
+    {
       XmdsSetOptionIdx(menu_widget, 0);
       XtUnmanageChild(expr_widget);
       XtUnmanageChild(action_widget);
       XtUnmanageChild(action_notify);
       XtUnmanageChild(action_notify_label);
     }
-  } else {
+  }
+  else
+  {
     XmdsSetOptionIdx(menu_widget, 0);
     XtUnmanageChild(expr_widget);
     XtUnmanageChild(action_widget);
@@ -756,7 +813,8 @@ static void ActionLoad(Widget w, struct descriptor_xd *xd) {
   }
 }
 
-struct descriptor_xd *ActionUnload(Widget w) {
+struct descriptor_xd *ActionUnload(Widget w)
+{
   struct descriptor_xd *ans =
       (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
@@ -765,10 +823,14 @@ struct descriptor_xd *ActionUnload(Widget w) {
 
   *ans = empty_xd;
 
-  if (XtIsManaged(action_expr) || XtIsManaged(action_box)) {
-    if (XtIsManaged(action_expr)) {
+  if (XtIsManaged(action_expr) || XtIsManaged(action_box))
+  {
+    if (XtIsManaged(action_expr))
+    {
       data = (struct descriptor_xd *)XmdsExprGetXd(action_expr);
-    } else if (XtIsManaged(action_box)) {
+    }
+    else if (XtIsManaged(action_box))
+    {
       static DESCRIPTOR(action, "BUILD_ACTION($, $, $)");
       Widget dispatch_w = XtNameToWidget(action_box, "dispatch_dlog");
       Widget task_w = XtNameToWidget(action_box, "task_dlog");
@@ -789,7 +851,8 @@ struct descriptor_xd *ActionUnload(Widget w) {
 /*
  * Routines for Axis type.
  */
-static void AxisCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
+static void AxisCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+{
   MrmType class;
   XmdsXdUserPart *user_part =
       (XmdsXdUserPart *)XtMalloc(sizeof(XmdsXdUserPart));
@@ -809,7 +872,8 @@ static void AxisCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
   XtManageChild(w->xdbox.specific_dlog);
 }
 
-static void AxisLoad(Widget w, struct descriptor_xd *xd) {
+static void AxisLoad(Widget w, struct descriptor_xd *xd)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor *ptr = (struct descriptor *)xd;
   Widget menu_widget = XtNameToWidget(w, "axis_menu");
@@ -821,24 +885,31 @@ static void AxisLoad(Widget w, struct descriptor_xd *xd) {
   for (ptr = (struct descriptor *)xd; ptr && ptr->dtype == DTYPE_DSC;
        ptr = (struct descriptor *)ptr->pointer)
     ;
-  if (ptr) {
-    if (ptr->dtype == DTYPE_WITH_UNITS) {
+  if (ptr)
+  {
+    if (ptr->dtype == DTYPE_WITH_UNITS)
+    {
       struct descriptor_with_units *w_u = (struct descriptor_with_units *)ptr;
       XmdsExprSetXd(units_widget, w_u->units);
       xd = (struct descriptor_xd *)w_u->data;
-    } else {
+    }
+    else
+    {
       XmdsExprSetXd(units_widget, (struct descriptor *)&empty_xd);
       xd = (struct descriptor_xd *)ptr;
     }
-    if (NotEmptyXd(xd)) {
+    if (NotEmptyXd(xd))
+    {
       XtManageChild(units_label_widget);
       XtManageChild(units_widget);
-      if (xd->dtype == DTYPE_RANGE) {
+      if (xd->dtype == DTYPE_RANGE)
+      {
         Widget start_w = XtNameToWidget(axis_widget, "axis_start");
         Widget end_w = XtNameToWidget(axis_widget, "axis_end");
         Widget inc_w = XtNameToWidget(axis_widget, "axis_inc");
         struct descriptor_range *a_dsc = (struct descriptor_range *)xd;
-        if (xdbw->xdbox.loaded) {
+        if (xdbw->xdbox.loaded)
+        {
           XmdsExprFieldSetXd(start_w, a_dsc->begin);
           XmdsExprFieldSetXd(end_w, a_dsc->ending);
           XmdsExprFieldSetXd(inc_w, a_dsc->deltaval);
@@ -846,7 +917,9 @@ static void AxisLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild(axis_widget);
         XtUnmanageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 1);
-      } else {
+      }
+      else
+      {
         if (xdbw->xdbox.loaded)
           XmdsExprSetXd(expr_widget, (struct descriptor *)xd);
         XtUnmanageChild(axis_widget);
@@ -855,14 +928,18 @@ static void AxisLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild(units_label_widget);
         XtManageChild(units_widget);
       }
-    } else {
+    }
+    else
+    {
       XmdsSetOptionIdx(menu_widget, 0);
       XtUnmanageChild(units_label_widget);
       XtUnmanageChild(units_widget);
       XtUnmanageChild(expr_widget);
       XtUnmanageChild(axis_widget);
     }
-  } else {
+  }
+  else
+  {
     XmdsSetOptionIdx(menu_widget, 0);
     XtUnmanageChild(expr_widget);
     XtUnmanageChild(axis_widget);
@@ -871,7 +948,8 @@ static void AxisLoad(Widget w, struct descriptor_xd *xd) {
   }
 }
 
-struct descriptor_xd *AxisUnload(Widget w) {
+struct descriptor_xd *AxisUnload(Widget w)
+{
   struct descriptor_xd *ans =
       (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
@@ -883,11 +961,15 @@ struct descriptor_xd *AxisUnload(Widget w) {
 
   *ans = empty_xd;
 
-  if (XtIsManaged(expr_widget) || XtIsManaged(axis_widget)) {
+  if (XtIsManaged(expr_widget) || XtIsManaged(axis_widget))
+  {
     units = (struct descriptor_xd *)XmdsExprGetXd(units_widget);
-    if (XtIsManaged(expr_widget)) {
+    if (XtIsManaged(expr_widget))
+    {
       data = (struct descriptor_xd *)XmdsExprGetXd(expr_widget);
-    } else if (XtIsManaged(axis_widget)) {
+    }
+    else if (XtIsManaged(axis_widget))
+    {
       static DESCRIPTOR(range, "$ : $ : $");
       Widget start_w = XtNameToWidget(axis_widget, "axis_start");
       Widget end_w = XtNameToWidget(axis_widget, "axis_end");
@@ -903,7 +985,8 @@ struct descriptor_xd *AxisUnload(Widget w) {
       TdiCompile(&range, start, end, inc, data MDS_END_ARG);
     }
     if (units && units->l_length &&
-        (units->pointer->dtype != DTYPE_T || units->pointer->length)) {
+        (units->pointer->dtype != DTYPE_T || units->pointer->length))
+    {
       ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
       *ans = empty_xd;
       TdiCompile(&w_units, data, units, ans MDS_END_ARG);
@@ -911,7 +994,8 @@ struct descriptor_xd *AxisUnload(Widget w) {
       MdsFree1Dx(data, 0);
       XtFree((char *)units);
       XtFree((char *)data);
-    } else
+    }
+    else
       ans = data;
   }
   return ans;
@@ -920,7 +1004,8 @@ struct descriptor_xd *AxisUnload(Widget w) {
 /*
  * Routines for Dispatch type.
  */
-static void DispatchCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
+static void DispatchCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+{
   MrmType class;
   XmdsXdUserPart *user_part =
       (XmdsXdUserPart *)XtMalloc(sizeof(XmdsXdUserPart));
@@ -940,7 +1025,8 @@ static void DispatchCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
   XtManageChild(w->xdbox.specific_dlog);
 }
 
-static void DispatchLoad(Widget w, struct descriptor_xd *xd) {
+static void DispatchLoad(Widget w, struct descriptor_xd *xd)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor_xd *ptr = xd;
   Widget menu_widget = XtNameToWidget(w, "dispatch_menu");
@@ -950,17 +1036,21 @@ static void DispatchLoad(Widget w, struct descriptor_xd *xd) {
   for (ptr = xd; ptr && ptr->dtype == DTYPE_DSC;
        ptr = (struct descriptor_xd *)ptr->pointer)
     ;
-  if (ptr) {
+  if (ptr)
+  {
     xd = ptr;
-    if (NotEmptyXd(xd)) {
-      if (xd->dtype == DTYPE_DISPATCH) {
+    if (NotEmptyXd(xd))
+    {
+      if (xd->dtype == DTYPE_DISPATCH)
+      {
         Widget ident_w = XtNameToWidget(dispatch_widget, "dispatch_ident");
         Widget phase_w = XtNameToWidget(dispatch_widget, "dispatch_phase");
         Widget when_w = XtNameToWidget(dispatch_widget, "dispatch_when");
         Widget completion_w =
             XtNameToWidget(dispatch_widget, "dispatch_completion");
         struct descriptor_dispatch *w_dsc = (struct descriptor_dispatch *)xd;
-        if (xdbw->xdbox.loaded) {
+        if (xdbw->xdbox.loaded)
+        {
           XmdsExprFieldSetXd(ident_w, w_dsc->ident);
           XmdsExprFieldSetXd(when_w, w_dsc->when);
           XmdsExprFieldSetXd(completion_w, w_dsc->completion);
@@ -969,26 +1059,33 @@ static void DispatchLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild(dispatch_widget);
         XtUnmanageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 1);
-      } else {
+      }
+      else
+      {
         if (xdbw->xdbox.loaded)
           XmdsExprSetXd(expr_widget, (struct descriptor *)xd);
         XtUnmanageChild(dispatch_widget);
         XtManageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 2);
       }
-    } else {
+    }
+    else
+    {
       XmdsSetOptionIdx(menu_widget, 0);
       XtUnmanageChild(expr_widget);
       XtUnmanageChild(dispatch_widget);
     }
-  } else {
+  }
+  else
+  {
     XmdsSetOptionIdx(menu_widget, 0);
     XtUnmanageChild(expr_widget);
     XtUnmanageChild(dispatch_widget);
   }
 }
 
-EXPORT struct descriptor_xd *DispatchUnload(Widget w) {
+EXPORT struct descriptor_xd *DispatchUnload(Widget w)
+{
   struct descriptor_xd *ans =
       (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
@@ -997,10 +1094,14 @@ EXPORT struct descriptor_xd *DispatchUnload(Widget w) {
 
   *ans = empty_xd;
 
-  if (XtIsManaged(dispatch_expr) || XtIsManaged(dispatch_box)) {
-    if (XtIsManaged(dispatch_expr)) {
+  if (XtIsManaged(dispatch_expr) || XtIsManaged(dispatch_box))
+  {
+    if (XtIsManaged(dispatch_expr))
+    {
       data = (struct descriptor_xd *)XmdsExprGetXd(dispatch_expr);
-    } else if (XtIsManaged(dispatch_box)) {
+    }
+    else if (XtIsManaged(dispatch_box))
+    {
       static int dispatch_type = 2;
       static struct descriptor_s type = {sizeof(int), DTYPE_L, CLASS_S,
                                          (char *)&dispatch_type};
@@ -1028,7 +1129,8 @@ EXPORT struct descriptor_xd *DispatchUnload(Widget w) {
 }
 
 static void ExpressionCreate(XmdsXdBoxWidget w, ArgList args,
-                             Cardinal argcount) {
+                             Cardinal argcount)
+{
   MrmType class;
   XmdsXdUserPart *user_part =
       (XmdsXdUserPart *)XtMalloc(sizeof(XmdsXdUserPart));
@@ -1048,7 +1150,8 @@ static void ExpressionCreate(XmdsXdBoxWidget w, ArgList args,
   XtManageChild(w->xdbox.specific_dlog);
 }
 
-static void ExpressionLoad(Widget w, struct descriptor_xd *xd) {
+static void ExpressionLoad(Widget w, struct descriptor_xd *xd)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor_xd *ptr = xd;
   Widget menu_widget = XtNameToWidget(w, "expression_menu");
@@ -1059,13 +1162,18 @@ static void ExpressionLoad(Widget w, struct descriptor_xd *xd) {
   for (ptr = xd; ptr && ptr->dtype == DTYPE_DSC;
        ptr = (struct descriptor_xd *)ptr->pointer)
     ;
-  if (ptr) {
-    if (xdbw->xdbox.loaded) {
-      if (ptr->dtype == DTYPE_WITH_UNITS) {
+  if (ptr)
+  {
+    if (xdbw->xdbox.loaded)
+    {
+      if (ptr->dtype == DTYPE_WITH_UNITS)
+      {
         struct descriptor_with_units *w_u = (struct descriptor_with_units *)ptr;
         XmdsExprSetXd(units_widget, w_u->units);
         XmdsExprSetXd(expr_widget, w_u->data);
-      } else {
+      }
+      else
+      {
         XmdsExprSetXd(units_widget, (struct descriptor *)&empty_xd);
         XmdsExprSetXd(expr_widget, (struct descriptor *)xd);
       }
@@ -1074,7 +1182,9 @@ static void ExpressionLoad(Widget w, struct descriptor_xd *xd) {
     XtManageChild(expr_widget);
     XtManageChild(units_widget);
     XtManageChild(units_label_widget);
-  } else {
+  }
+  else
+  {
     XmdsSetOptionIdx(menu_widget, 0);
     XtUnmanageChild(expr_widget);
     XtUnmanageChild(units_widget);
@@ -1082,7 +1192,8 @@ static void ExpressionLoad(Widget w, struct descriptor_xd *xd) {
   }
 }
 
-static struct descriptor_xd *ExpressionUnload(Widget w) {
+static struct descriptor_xd *ExpressionUnload(Widget w)
+{
   struct descriptor_xd *ans = 0;
   struct descriptor_xd *data = 0;
   struct descriptor_xd *units = 0;
@@ -1090,36 +1201,45 @@ static struct descriptor_xd *ExpressionUnload(Widget w) {
   Widget units_widget = XtNameToWidget(w, "expression_units");
   Widget expr_widget = XtNameToWidget(w, "expression_expr");
 
-  if (XtIsManaged(w)) {
+  if (XtIsManaged(w))
+  {
     if (XtIsManaged(units_widget))
       units = (struct descriptor_xd *)XmdsExprGetXd(units_widget);
     if (XtIsManaged(expr_widget))
       data = (struct descriptor_xd *)XmdsExprGetXd(expr_widget);
-    else {
+    else
+    {
       data = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
       memcpy(data, &empty_xd, sizeof(struct descriptor_xd));
     }
     if (data && units && units->l_length &&
-        (units->pointer->dtype != DTYPE_T || units->pointer->length)) {
+        (units->pointer->dtype != DTYPE_T || units->pointer->length))
+    {
       int status;
       ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
       *ans = empty_xd;
       status = TdiCompile(&w_units, data, units, ans MDS_END_ARG);
-      if (!(status & 1)) {
+      if (STATUS_NOT_OK)
+      {
         TdiComplain(w);
         ans = 0;
       }
-      if (units) {
+      if (units)
+      {
         MdsFree1Dx(units, 0);
         XtFree((char *)units);
       }
-      if (data) {
+      if (data)
+      {
         MdsFree1Dx(data, 0);
         XtFree((char *)data);
       }
-    } else
+    }
+    else
       ans = data;
-  } else {
+  }
+  else
+  {
     ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
     *ans = empty_xd;
   }
@@ -1129,7 +1249,8 @@ static struct descriptor_xd *ExpressionUnload(Widget w) {
 /*
  * Routines for Task type.
  */
-static void TaskCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
+static void TaskCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+{
   MrmType class;
   XmdsXdUserPart *user_part =
       (XmdsXdUserPart *)XtMalloc(sizeof(XmdsXdUserPart));
@@ -1149,7 +1270,8 @@ static void TaskCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
   XtManageChild(w->xdbox.specific_dlog);
 }
 
-static void TaskLoad(Widget w, struct descriptor_xd *xd) {
+static void TaskLoad(Widget w, struct descriptor_xd *xd)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   int arg;
   struct descriptor_xd *ptr = xd;
@@ -1162,20 +1284,25 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd) {
   for (ptr = xd; ptr && ptr->dtype == DTYPE_DSC;
        ptr = (struct descriptor_xd *)ptr->pointer)
     ;
-  if (ptr) {
+  if (ptr)
+  {
     xd = ptr;
-    if (NotEmptyXd(xd)) {
-      if (xd->dtype == DTYPE_ROUTINE) {
+    if (NotEmptyXd(xd))
+    {
+      if (xd->dtype == DTYPE_ROUTINE)
+      {
         Widget timeout_w = XtNameToWidget(routine_widget, "routine_timeout");
         Widget image_w = XtNameToWidget(routine_widget, "routine_image");
         Widget routine_w = XtNameToWidget(routine_widget, "routine_routine");
         Widget arg_box_w = XtNameToWidget(routine_widget, "*arg_box");
         struct descriptor_routine *r_dsc = (struct descriptor_routine *)xd;
-        if (xdbw->xdbox.loaded) {
+        if (xdbw->xdbox.loaded)
+        {
           XmdsExprFieldSetXd(timeout_w, r_dsc->time_out);
           XmdsExprFieldSetXd(image_w, r_dsc->image);
           XmdsExprFieldSetXd(routine_w, r_dsc->routine);
-          for (arg = 0; arg < 8; arg++) {
+          for (arg = 0; arg < 8; arg++)
+          {
             char arg_name[] = {'a', 'r', 'g', 0, 0};
             Widget arg_w;
             arg_name[3] = '1' + arg;
@@ -1191,7 +1318,9 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd) {
         XtUnmanageChild((Widget)method_widget);
         XtUnmanageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 2);
-      } else if (xd->dtype == DTYPE_METHOD) {
+      }
+      else if (xd->dtype == DTYPE_METHOD)
+      {
         Widget timeout_w =
             XtNameToWidget((Widget)method_widget, "method_timeout");
         Widget object_w =
@@ -1200,11 +1329,13 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd) {
             XtNameToWidget((Widget)method_widget, "method_method");
         Widget arg_box_w = XtNameToWidget((Widget)method_widget, "*arg_box");
         struct descriptor_method *m_dsc = (struct descriptor_method *)xd;
-        if (xdbw->xdbox.loaded) {
+        if (xdbw->xdbox.loaded)
+        {
           XmdsExprFieldSetXd(timeout_w, m_dsc->time_out);
           XmdsExprFieldSetXd(object_w, m_dsc->object);
           XmdsExprFieldSetXd(method_w, m_dsc->method);
-          for (arg = 0; arg < 8; arg++) {
+          for (arg = 0; arg < 8; arg++)
+          {
             char arg_name[] = {'a', 'r', 'g', 0, 0};
             Widget arg_w;
             arg_name[3] = '1' + arg;
@@ -1220,7 +1351,9 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild((Widget)method_widget);
         XtUnmanageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 1);
-      } else {
+      }
+      else
+      {
         if (xdbw->xdbox.loaded)
           XmdsExprSetXd(expr_widget, (struct descriptor *)xd);
         XtUnmanageChild(routine_widget);
@@ -1228,13 +1361,17 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 3);
       }
-    } else {
+    }
+    else
+    {
       XtUnmanageChild(routine_widget);
       XtUnmanageChild((Widget)method_widget);
       XtUnmanageChild(expr_widget);
       XmdsSetOptionIdx(menu_widget, 0);
     }
-  } else {
+  }
+  else
+  {
     XmdsSetOptionIdx(menu_widget, 0);
     XtUnmanageChild(expr_widget);
     XtUnmanageChild(routine_widget);
@@ -1242,7 +1379,8 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd) {
   }
 }
 
-EXPORT struct descriptor_xd *TaskUnload(Widget w) {
+EXPORT struct descriptor_xd *TaskUnload(Widget w)
+{
   struct descriptor_xd *data = 0;
   Widget expr_widget = XtNameToWidget(w, "task_expr");
   Widget routine_widget = XtNameToWidget(w, "routine_box");
@@ -1250,10 +1388,14 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w) {
       (XmdsXdBoxWidget)XtNameToWidget(w, "method_box");
 
   if (XtIsManaged(expr_widget) || XtIsManaged(routine_widget) ||
-      XtIsManaged((Widget)method_widget)) {
-    if (XtIsManaged(expr_widget)) {
+      XtIsManaged((Widget)method_widget))
+  {
+    if (XtIsManaged(expr_widget))
+    {
       data = (struct descriptor_xd *)XmdsExprGetXd(expr_widget);
-    } else if (XtIsManaged((Widget)method_widget)) {
+    }
+    else if (XtIsManaged((Widget)method_widget))
+    {
       int i;
       int nargs = 0;
       Widget timeout_w =
@@ -1269,7 +1411,8 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w) {
       object = (struct descriptor_xd *)XmdsExprFieldGetXd(object_w);
       method = (struct descriptor_xd *)XmdsExprFieldGetXd(method_w);
       {
-        METHOD(8) method_dsc;
+        METHOD(8)
+        method_dsc;
         method_dsc.length = 0;
         method_dsc.dtype = DTYPE_METHOD;
         method_dsc.class = CLASS_R;
@@ -1277,7 +1420,8 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w) {
         method_dsc.time_out = (struct descriptor *)timeout;
         method_dsc.method = (struct descriptor *)method;
         method_dsc.object = (struct descriptor *)object;
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
           char arg_name[] = {'a', 'r', 'g', 0, 0};
           Widget arg_w;
           arg_name[3] = '1' + i;
@@ -1292,7 +1436,9 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w) {
         *data = empty_xd;
         MdsCopyDxXd((struct descriptor *)&method_dsc, data);
       }
-    } else if (XtIsManaged(routine_widget)) {
+    }
+    else if (XtIsManaged(routine_widget))
+    {
       int i;
       int nargs = 0;
       Widget timeout_w = XtNameToWidget(routine_widget, "routine_timeout");
@@ -1307,7 +1453,8 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w) {
       image = (struct descriptor_xd *)XmdsExprFieldGetXd(image_w);
       routine = (struct descriptor_xd *)XmdsExprFieldGetXd(routine_w);
       {
-        ROUTINE(8) routine_dsc;
+        ROUTINE(8)
+        routine_dsc;
         routine_dsc.length = 0;
         routine_dsc.dtype = DTYPE_ROUTINE;
         routine_dsc.class = CLASS_R;
@@ -1315,7 +1462,8 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w) {
         routine_dsc.time_out = (struct descriptor *)timeout;
         routine_dsc.image = (struct descriptor *)image;
         routine_dsc.routine = (struct descriptor *)routine;
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
           char arg_name[] = {'a', 'r', 'g', 0, 0};
           Widget arg_w;
           arg_name[3] = '1' + i;
@@ -1335,7 +1483,8 @@ EXPORT struct descriptor_xd *TaskUnload(Widget w) {
   return data;
 }
 
-static void WindowCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
+static void WindowCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount)
+{
   MrmType class;
   XmdsXdUserPart *user_part =
       (XmdsXdUserPart *)XtMalloc(sizeof(XmdsXdUserPart));
@@ -1355,7 +1504,8 @@ static void WindowCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount) {
   XtManageChild(w->xdbox.specific_dlog);
 }
 
-static void WindowLoad(Widget w, struct descriptor_xd *xd) {
+static void WindowLoad(Widget w, struct descriptor_xd *xd)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor_xd *ptr = xd;
   Widget menu_widget = XtNameToWidget(w, "window_menu");
@@ -1365,15 +1515,19 @@ static void WindowLoad(Widget w, struct descriptor_xd *xd) {
   for (ptr = xd; ptr && ptr->dtype == DTYPE_DSC;
        ptr = (struct descriptor_xd *)ptr->pointer)
     ;
-  if (ptr) {
+  if (ptr)
+  {
     xd = ptr;
-    if (NotEmptyXd(xd)) {
-      if (xd->dtype == DTYPE_WINDOW) {
+    if (NotEmptyXd(xd))
+    {
+      if (xd->dtype == DTYPE_WINDOW)
+      {
         Widget start_idx_w = XtNameToWidget(window_widget, "window_start_idx");
         Widget end_idx_w = XtNameToWidget(window_widget, "window_end_idx");
         Widget tzero_w = XtNameToWidget(window_widget, "window_tzero");
         struct descriptor_window *w_dsc = (struct descriptor_window *)xd;
-        if (xdbw->xdbox.loaded) {
+        if (xdbw->xdbox.loaded)
+        {
           XmdsExprFieldSetXd(start_idx_w, w_dsc->startidx);
           XmdsExprFieldSetXd(end_idx_w, w_dsc->endingidx);
           XmdsExprFieldSetXd(tzero_w, w_dsc->value_at_idx0);
@@ -1381,26 +1535,33 @@ static void WindowLoad(Widget w, struct descriptor_xd *xd) {
         XtManageChild(window_widget);
         XtUnmanageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 1);
-      } else {
+      }
+      else
+      {
         if (xdbw->xdbox.loaded)
           XmdsExprSetXd(expr_widget, (struct descriptor *)xd);
         XtUnmanageChild(window_widget);
         XtManageChild(expr_widget);
         XmdsSetOptionIdx(menu_widget, 2);
       }
-    } else {
+    }
+    else
+    {
       XmdsSetOptionIdx(menu_widget, 0);
       XtUnmanageChild(expr_widget);
       XtUnmanageChild(window_widget);
     }
-  } else {
+  }
+  else
+  {
     XmdsSetOptionIdx(menu_widget, 0);
     XtUnmanageChild(expr_widget);
     XtUnmanageChild(window_widget);
   }
 }
 
-EXPORT struct descriptor_xd *WindowUnload(Widget w) {
+EXPORT struct descriptor_xd *WindowUnload(Widget w)
+{
   struct descriptor_xd *ans =
       (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
@@ -1409,10 +1570,14 @@ EXPORT struct descriptor_xd *WindowUnload(Widget w) {
 
   *ans = empty_xd;
 
-  if (XtIsManaged(window_expr) || XtIsManaged(window_box)) {
-    if (XtIsManaged(window_expr)) {
+  if (XtIsManaged(window_expr) || XtIsManaged(window_box))
+  {
+    if (XtIsManaged(window_expr))
+    {
       data = (struct descriptor_xd *)XmdsExprGetXd(window_expr);
-    } else if (XtIsManaged(window_box)) {
+    }
+    else if (XtIsManaged(window_box))
+    {
       static DESCRIPTOR(wind, "BUILD_WINDOW($, $, $)");
       Widget start_idx_w = XtNameToWidget(window_box, "window_start_idx");
       Widget end_idx_w = XtNameToWidget(window_box, "window_end_idx");
@@ -1436,11 +1601,15 @@ EXPORT struct descriptor_xd *WindowUnload(Widget w) {
  *  Generic Widget Callbacks.
  */
 
-static void apply_button_proc(Widget w) {
+static void apply_button_proc(Widget w)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
-  if (xdbw) {
-    if (Apply(xdbw)) {
-      if (xdbw->xdbox.apply_callback) {
+  if (xdbw)
+  {
+    if (Apply(xdbw))
+    {
+      if (xdbw->xdbox.apply_callback)
+      {
         XmdsButtonCallbackStruct button_callback_data = {XmCR_APPLY, 0, 0, 0};
         button_callback_data.xd = xdbw->xdbox.xd;
         button_callback_data.on_off = xdbw->xdbox.on_off;
@@ -1451,10 +1620,13 @@ static void apply_button_proc(Widget w) {
   }
 }
 
-static void cancel_button_proc(Widget w) {
+static void cancel_button_proc(Widget w)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
-  if (xdbw) {
-    if (xdbw->xdbox.cancel_callback) {
+  if (xdbw)
+  {
+    if (xdbw->xdbox.cancel_callback)
+    {
       XmdsButtonCallbackStruct button_callback_data = {XmCR_CANCEL, 0, 0, 0};
       button_callback_data.on_off = xdbw->xdbox.on_off;
       XtCallCallbackList((Widget)xdbw, xdbw->xdbox.cancel_callback,
@@ -1462,17 +1634,20 @@ static void cancel_button_proc(Widget w) {
     }
     if (xdbw->xdbox.auto_destroy)
       XtDestroyWidget(XtParent(xdbw));
-    else if (xdbw->xdbox.auto_unmanage) {
+    else if (xdbw->xdbox.auto_unmanage)
+    {
       XtUnmanageChild((Widget)xdbw);
       xdbw->xdbox.loaded = 0;
     }
   }
 }
 
-static void reset_button_proc(Widget w) {
+static void reset_button_proc(Widget w)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   XmdsXdBoxReset((Widget)xdbw);
-  if (xdbw->xdbox.reset_callback) {
+  if (xdbw->xdbox.reset_callback)
+  {
     XmdsButtonCallbackStruct button_callback_data = {XmCR_OK, 0, 0, 0};
     button_callback_data.xd = xdbw->xdbox.xd;
     button_callback_data.on_off = xdbw->xdbox.on_off;
@@ -1481,11 +1656,15 @@ static void reset_button_proc(Widget w) {
   }
 }
 
-static void ok_button_proc(Widget w) {
+static void ok_button_proc(Widget w)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
-  if (xdbw) {
-    if (Apply(xdbw)) {
-      if (xdbw->xdbox.ok_callback) {
+  if (xdbw)
+  {
+    if (Apply(xdbw))
+    {
+      if (xdbw->xdbox.ok_callback)
+      {
         XmdsButtonCallbackStruct button_callback_data = {XmCR_OK, 0, 0, 0};
         button_callback_data.xd = xdbw->xdbox.xd;
         button_callback_data.on_off = xdbw->xdbox.on_off;
@@ -1494,7 +1673,8 @@ static void ok_button_proc(Widget w) {
       }
       if (xdbw->xdbox.auto_destroy)
         XtDestroyWidget(XtParent(xdbw));
-      else if (xdbw->xdbox.auto_unmanage) {
+      else if (xdbw->xdbox.auto_unmanage)
+      {
         XtUnmanageChild((Widget)xdbw);
         xdbw->xdbox.loaded = 0;
       }
@@ -1506,10 +1686,13 @@ static void ok_button_proc(Widget w) {
  *  Type Specific Widget Callbacks.
  */
 
-static void action_change_type_proc(Widget w, int *tag) {
+static void action_change_type_proc(Widget w, int *tag)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
-  if (xdbw) {
-    if (*tag == 1) {
+  if (xdbw)
+  {
+    if (*tag == 1)
+    {
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                    "detail_box.action_dlog.action_box"));
       XtManageChild(XtNameToWidget(
@@ -1518,7 +1701,9 @@ static void action_change_type_proc(Widget w, int *tag) {
                                    "detail_box.action_dlog.action_notify"));
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.action_dlog.action_expr"));
-    } else if (*tag == 2) {
+    }
+    else if (*tag == 2)
+    {
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.action_dlog.action_box"));
       XtUnmanageChild(XtNameToWidget(
@@ -1527,7 +1712,9 @@ static void action_change_type_proc(Widget w, int *tag) {
                                      "detail_box.action_dlog.action_notify"));
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                    "detail_box.action_dlog.action_expr"));
-    } else {
+    }
+    else
+    {
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.action_dlog.action_box"));
       XtUnmanageChild(XtNameToWidget(
@@ -1540,10 +1727,13 @@ static void action_change_type_proc(Widget w, int *tag) {
   }
 }
 
-static void axis_change_type_proc(Widget w, int *tag) {
+static void axis_change_type_proc(Widget w, int *tag)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
-  if (xdbw) {
-    if (*tag == 1) {
+  if (xdbw)
+  {
+    if (*tag == 1)
+    {
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                    "detail_box.axis_dlog.axis_units_label"));
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
@@ -1552,7 +1742,9 @@ static void axis_change_type_proc(Widget w, int *tag) {
                                    "detail_box.axis_dlog.axis_box"));
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.axis_dlog.axis_expr"));
-    } else if (*tag == 2) {
+    }
+    else if (*tag == 2)
+    {
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                    "detail_box.axis_dlog.axis_units_label"));
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
@@ -1561,7 +1753,9 @@ static void axis_change_type_proc(Widget w, int *tag) {
                                      "detail_box.axis_dlog.axis_box"));
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                    "detail_box.axis_dlog.axis_expr"));
-    } else {
+    }
+    else
+    {
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.axis_dlog.axis_units_label"));
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
@@ -1574,45 +1768,58 @@ static void axis_change_type_proc(Widget w, int *tag) {
   }
 }
 
-static int WidgetNameCmp(Widget w, char *string) {
+static int WidgetNameCmp(Widget w, char *string)
+{
   return ((w->core.name == 0) || (w->core.name == (char *)0xffffff) ||
           strcmp(w->core.name, string));
 }
 
-static void dispatch_change_type_proc(Widget w, int *tag) {
+static void dispatch_change_type_proc(Widget w, int *tag)
+{
   Widget dispatch_dlog;
   for (dispatch_dlog = w;
        dispatch_dlog && WidgetNameCmp(dispatch_dlog, "dispatch_dlog");
        dispatch_dlog = dispatch_dlog->core.parent)
     ;
 
-  if (dispatch_dlog) {
-    if (*tag == 1) {
+  if (dispatch_dlog)
+  {
+    if (*tag == 1)
+    {
       XtManageChild(XtNameToWidget(dispatch_dlog, "dispatch_box"));
       XtUnmanageChild(XtNameToWidget(dispatch_dlog, "dispatch_expr"));
-    } else if (*tag == 2) {
+    }
+    else if (*tag == 2)
+    {
       XtUnmanageChild(XtNameToWidget(dispatch_dlog, "dispatch_box"));
       XtManageChild(XtNameToWidget(dispatch_dlog, "dispatch_expr"));
-    } else {
+    }
+    else
+    {
       XtUnmanageChild(XtNameToWidget(dispatch_dlog, "dispatch_box"));
       XtUnmanageChild(XtNameToWidget(dispatch_dlog, "dispatch_expr"));
     }
   }
 }
 
-static void expression_change_type_proc(Widget w, int *tag) {
+static void expression_change_type_proc(Widget w, int *tag)
+{
   Widget expression_dlog;
 
   for (expression_dlog = w;
        expression_dlog && WidgetNameCmp(expression_dlog, "expression_dlog");
        expression_dlog = expression_dlog->core.parent)
     ;
-  if (expression_dlog) {
-    if (*tag) {
+  if (expression_dlog)
+  {
+    if (*tag)
+    {
       XtManageChild(XtNameToWidget(expression_dlog, "expression_units_label"));
       XtManageChild(XtNameToWidget(expression_dlog, "expression_units"));
       XtManageChild(XtNameToWidget(expression_dlog, "expression_expr"));
-    } else {
+    }
+    else
+    {
       XtUnmanageChild(
           XtNameToWidget(expression_dlog, "expression_units_label"));
       XtUnmanageChild(XtNameToWidget(expression_dlog, "expression_units"));
@@ -1621,27 +1828,36 @@ static void expression_change_type_proc(Widget w, int *tag) {
   }
 }
 
-static void task_change_type_proc(Widget w, int *tag) {
+static void task_change_type_proc(Widget w, int *tag)
+{
   Widget task_dlog;
 
   for (task_dlog = w; task_dlog && WidgetNameCmp(task_dlog, "task_dlog");
        task_dlog = task_dlog->core.parent)
     ;
 
-  if (task_dlog) {
-    if (*tag == 1) {
+  if (task_dlog)
+  {
+    if (*tag == 1)
+    {
       XtManageChild(XtNameToWidget(task_dlog, "method_box"));
       XtUnmanageChild(XtNameToWidget(task_dlog, "routine_box"));
       XtUnmanageChild(XtNameToWidget(task_dlog, "task_expr"));
-    } else if (*tag == 2) {
+    }
+    else if (*tag == 2)
+    {
       XtUnmanageChild(XtNameToWidget(task_dlog, "method_box"));
       XtManageChild(XtNameToWidget(task_dlog, "routine_box"));
       XtUnmanageChild(XtNameToWidget(task_dlog, "task_expr"));
-    } else if (*tag == 3) {
+    }
+    else if (*tag == 3)
+    {
       XtUnmanageChild(XtNameToWidget(task_dlog, "method_box"));
       XtUnmanageChild(XtNameToWidget(task_dlog, "routine_box"));
       XtManageChild(XtNameToWidget(task_dlog, "task_expr"));
-    } else {
+    }
+    else
+    {
       XtUnmanageChild(XtNameToWidget(task_dlog, "method_box"));
       XtUnmanageChild(XtNameToWidget(task_dlog, "routine_box"));
       XtUnmanageChild(XtNameToWidget(task_dlog, "task_expr"));
@@ -1649,20 +1865,27 @@ static void task_change_type_proc(Widget w, int *tag) {
   }
 }
 
-static void window_change_type_proc(Widget w, int *tag) {
+static void window_change_type_proc(Widget w, int *tag)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
-  if (xdbw) {
-    if (*tag == 1) {
+  if (xdbw)
+  {
+    if (*tag == 1)
+    {
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                    "detail_box.window_dlog.window_box"));
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.window_dlog.window_expr"));
-    } else if (*tag == 2) {
+    }
+    else if (*tag == 2)
+    {
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.window_dlog.window_box"));
       XtManageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                    "detail_box.window_dlog.window_expr"));
-    } else {
+    }
+    else
+    {
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
                                      "detail_box.window_dlog.window_box"));
       XtUnmanageChild(XtNameToWidget(xdbw->xdbox.xdb_dlog,
@@ -1675,18 +1898,23 @@ static void window_change_type_proc(Widget w, int *tag) {
  *  Support routines.
  */
 
-static Boolean Apply(XmdsXdBoxWidget w) {
+static Boolean Apply(XmdsXdBoxWidget w)
+{
   Boolean status = 1;
-  if (w->xdbox.loaded) {
+  if (w->xdbox.loaded)
+  {
     if (w->xdbox.auto_put && w->xdbox.nid)
       status = Put(w);
-    else {
+    else
+    {
       w->xdbox.xd = Unload(w->xdbox.specific_dlog);
       Load(w->xdbox.specific_dlog, w->xdbox.xd);
-      if (w->xdbox.nid) {
+      if (w->xdbox.nid)
+      {
         w->xdbox.on_off = XmToggleButtonGadgetGetState(
             XtNameToWidget(w->xdbox.xdb_dlog, "generic_box.on_off_toggle"));
-        if (w->xdbox.tag_list) {
+        if (w->xdbox.tag_list)
+        {
           XtFree((char *)w->xdbox.tag_list);
           w->xdbox.tag_list = 0;
         }
@@ -1700,15 +1928,18 @@ static Boolean Apply(XmdsXdBoxWidget w) {
 }
 
 static void CalculateNewSize(XmdsXdBoxWidget w, unsigned short *width,
-                             unsigned short *height) {
+                             unsigned short *height)
+{
   Widget *children;
   int num;
   int right, bottom;
   int i;
   *width = *height = 0;
   XtVaGetValues((Widget)w, XmNchildren, &children, XmNnumChildren, &num, NULL);
-  for (i = 0; i < num; i++) {
-    if (XtIsManaged(children[i])) {
+  for (i = 0; i < num; i++)
+  {
+    if (XtIsManaged(children[i]))
+    {
       right = XtX(children[i]) + XtWidth(children[i]) +
               2 * children[i]->core.border_width;
       bottom = XtY(children[i]) + XtHeight(children[i]) +
@@ -1725,7 +1956,8 @@ static void CalculateNewSize(XmdsXdBoxWidget w, unsigned short *width,
     *width = 5;
 }
 
-static XmdsXdBoxWidget FindXdBoxWidget(Widget w) {
+static XmdsXdBoxWidget FindXdBoxWidget(Widget w)
+{
   Widget xdbw;
   for (xdbw = w; xdbw && WidgetNameCmp(xdbw, "xd_box"); xdbw = XtParent(xdbw))
     ;
@@ -1734,11 +1966,14 @@ static XmdsXdBoxWidget FindXdBoxWidget(Widget w) {
   return (XmdsXdBoxWidget)xdbw;
 }
 
-static void GenericGet(XmdsXdBoxWidget w) {
-  if (w->xdbox.nid) {
+static void GenericGet(XmdsXdBoxWidget w)
+{
+  if (w->xdbox.nid)
+  {
     int nid = w->xdbox.nid + w->xdbox.nid_offset;
     char *path = TreeGetMinimumPath(0, nid);
-    if (path) {
+    if (path)
+    {
       char *tag;
       static struct descriptor_d tags = {0, DTYPE_T, CLASS_D, 0};
       static DESCRIPTOR(comma, ", ");
@@ -1749,32 +1984,42 @@ static void GenericGet(XmdsXdBoxWidget w) {
       w->xdbox.path = strcpy(XtMalloc(strlen(path) + 1), path);
       TreeFree(path);
       status = TreeIsOn(nid);
-      if (status == TreeON) {
+      if (status == TreeON)
+      {
         w->xdbox.on_off = 1;
         w->xdbox.parent_on_off = 1;
-      } else if (status == TreeOFF) {
+      }
+      else if (status == TreeOFF)
+      {
         w->xdbox.on_off = 0;
         w->xdbox.parent_on_off = 1;
-      } else if (status == TreePARENT_OFF) {
+      }
+      else if (status == TreePARENT_OFF)
+      {
         w->xdbox.on_off = 1;
         w->xdbox.parent_on_off = 0;
-      } else if (status == TreeBOTH_OFF) {
+      }
+      else if (status == TreeBOTH_OFF)
+      {
         w->xdbox.on_off = 0;
         w->xdbox.parent_on_off = 0;
       }
 
-      if (w->xdbox.tag_list) {
+      if (w->xdbox.tag_list)
+      {
         XtFree((char *)w->xdbox.tag_list);
         w->xdbox.tag_list = 0;
       }
-      while ((tag = TreeFindNodeTags(nid, &ctx))) {
+      while ((tag = TreeFindNodeTags(nid, &ctx)))
+      {
         static struct descriptor tag_d = {0, DTYPE_T, CLASS_S, 0};
         tag_d.length = strlen(tag);
         tag_d.pointer = tag;
         StrConcat((struct descriptor *)&tags, (struct descriptor *)&tags,
                   &comma, &tag_d MDS_END_ARG);
       }
-      if (tags.length) {
+      if (tags.length)
+      {
         tags.length -= 2;
         tags.pointer += 2;
         w->xdbox.tag_list = DescToNull((struct descriptor_s *)&tags);
@@ -1786,13 +2031,17 @@ static void GenericGet(XmdsXdBoxWidget w) {
   }
 }
 
-static void GenericLoad(XmdsXdBoxWidget w) {
-  if (w->xdbox.path) {
+static void GenericLoad(XmdsXdBoxWidget w)
+{
+  if (w->xdbox.path)
+  {
     XmString path_str = XmStringCreateSimple(w->xdbox.path);
     XtVaSetValues(XtNameToWidget(w->xdbox.xdb_dlog, "generic_box.path_label"),
                   XmNlabelString, path_str, NULL);
     XmStringFree(path_str);
-  } else {
+  }
+  else
+  {
     XmString path_str = XmStringCreateSimple("No Path");
     XtVaSetValues(XtNameToWidget(w->xdbox.xdb_dlog, "generic_box.path_label"),
                   XmNlabelString, path_str, NULL);
@@ -1821,7 +2070,8 @@ static void GenericLoad(XmdsXdBoxWidget w) {
       w->xdbox.parent_on_off, 0);
 }
 
-static void Load(Widget w, struct descriptor_xd *xd) {
+static void Load(Widget w, struct descriptor_xd *xd)
+{
   int old_def = SetDefault(w);
   XmdsXdUserPart *user;
 
@@ -1831,7 +2081,8 @@ static void Load(Widget w, struct descriptor_xd *xd) {
     TreeSetDefaultNid(old_def);
 }
 
-static Boolean NotEmptyXd(struct descriptor_xd *xd) {
+static Boolean NotEmptyXd(struct descriptor_xd *xd)
+{
   Boolean ans;
   if (xd == 0)
     ans = 0;
@@ -1845,30 +2096,36 @@ static Boolean NotEmptyXd(struct descriptor_xd *xd) {
   return ans;
 }
 
-static Boolean Put(XmdsXdBoxWidget w) {
+static Boolean Put(XmdsXdBoxWidget w)
+{
   int status = 1;
   static EMPTYXD(empty_xd);
   int nid = w->xdbox.nid + w->xdbox.nid_offset;
-  if (nid) {
+  if (nid)
+  {
     struct descriptor_xd *xd = 0;
     Boolean node_on;
     Boolean editing = (TreeIsOpen() == TreeOPEN_EDIT);
     char *tag_txt = 0;
 
-    if (w->xdbox.loaded) {
+    if (w->xdbox.loaded)
+    {
       xd = (struct descriptor_xd *)XmdsXdBoxGetXd((Widget)w);
       node_on = XmToggleButtonGadgetGetState(
           XtNameToWidget(w->xdbox.xdb_dlog, "generic_box.on_off_toggle"));
       if (editing)
         tag_txt = XmTextFieldGetString(
             XtNameToWidget(w->xdbox.xdb_dlog, "generic_box.tag_text"));
-    } else {
+    }
+    else
+    {
       xd = w->xdbox.xd ? w->xdbox.xd : &empty_xd;
       node_on = w->xdbox.on_off;
       if (editing)
         tag_txt = w->xdbox.tag_list;
     }
-    if (xd) {
+    if (xd)
+    {
       status = TreeIsOn(nid);
       if (node_on && ((status == TreeOFF) || (status == TreeBOTH_OFF)))
         status = TreeTurnOn(nid);
@@ -1876,64 +2133,82 @@ static Boolean Put(XmdsXdBoxWidget w) {
         status = TreeTurnOff(nid);
       else
         status = 1;
-      if (status) {
+      if (status)
+      {
         status = PutIfChanged(nid, xd);
-        if (status) {
-          if (editing) {
+        if (status)
+        {
+          if (editing)
+          {
             TreeRemoveNodesTags(nid);
             UpdateTags((Widget)w, nid, tag_txt);
           }
-        } else
+        }
+        else
           XmdsComplain((Widget)w, "Error Writing Record to Tree");
-      } else
+      }
+      else
         XmdsComplain((Widget)w, "Error turning node On/Off");
-      if (w->xdbox.loaded) {
+      if (w->xdbox.loaded)
+      {
         MdsFree1Dx(xd, 0);
         XtFree((char *)xd);
       }
-    } else
+    }
+    else
       status = 0;
   }
   return status;
 }
 
-static int SetDefault(Widget widg) {
+static int SetDefault(Widget widg)
+{
   int ans;
   int def_nid = -1;
 
   XmdsXdBoxWidget w = FindXdBoxWidget(widg);
-  if (w) {
-    if (TreeIsOpen() & 1) {
-      if (w->xdbox.nid) {
+  if (w)
+  {
+    if (TreeIsOpen() & 1)
+    {
+      if (w->xdbox.nid)
+      {
         if (w->xdbox.default_nid != -1)
           def_nid = w->xdbox.default_nid;
         else
           def_nid = DefaultNid(w->xdbox.nid + w->xdbox.nid_offset);
       }
     }
-    if (def_nid != -1) {
+    if (def_nid != -1)
+    {
       TreeGetDefaultNid(&ans);
       TreeSetDefaultNid(def_nid);
-    } else
+    }
+    else
       ans = -1;
-  } else
+  }
+  else
     ans = -1;
   return ans;
 }
 
-static struct descriptor_xd *Unload(Widget w) {
+static struct descriptor_xd *Unload(Widget w)
+{
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   static EMPTYXD(empty_xd);
   struct descriptor_xd *ans;
 
-  if (xdbw->xdbox.loaded) {
+  if (xdbw->xdbox.loaded)
+  {
     int old_def = SetDefault(w);
     XmdsXdUserPart *user;
     XtVaGetValues(w, XmNuserData, &user, NULL);
     ans = (*user->unload_dlog_proc)(w);
     if (old_def != -1)
       TreeSetDefaultNid(old_def);
-  } else {
+  }
+  else
+  {
     ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
     *ans = empty_xd;
     MdsCopyDxXd((struct descriptor *)xdbw->xdbox.xd, ans);
@@ -1941,12 +2216,14 @@ static struct descriptor_xd *Unload(Widget w) {
   return ans;
 }
 
-static void UpdateTags(Widget w, int nid, char *tags) {
+static void UpdateTags(Widget w, int nid, char *tags)
+{
   int status;
   char *t_ptr = strtok(tags, ", ");
-  while (t_ptr) {
+  while (t_ptr)
+  {
     status = TreeAddTag(nid, t_ptr);
-    if (!status & 1)
+    if (STATUS_NOT_OK)
       XmdsComplain(w, "Error adding tag %s to node number %d", t_ptr, nid);
     t_ptr = strtok(NULL, ", ");
   }

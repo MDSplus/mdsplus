@@ -33,7 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <xtreeshr.h>
 
-typedef enum {
+typedef enum
+{
   AVERAGE,
   INTERPOLATION,
   CLOSEST,
@@ -56,8 +57,10 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
                                     mdsdsc_xd_t *outSignalXd);
 
 inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
-                                              int *outSamples, dtype_t *isQ) {
-  if (inSignalD->ndesc < 3) {
+                                              int *outSamples, dtype_t *isQ)
+{
+  if (inSignalD->ndesc < 3)
+  {
     ARRAY_COEFF(char *, MAX_DIMS) *dataD = (void *)inSignalD->data;
     if (dataD->dimct == 1)
       *outSamples = dataD->arsize / dataD->length;
@@ -69,22 +72,24 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
   EMPTYXD(currXd);
   int numSamples, i;
   mdsdsc_a_t *currDim = (mdsdsc_a_t *)inSignalD->dimensions[0];
-  if (currDim->class != CLASS_A) {
-    if
-      IS_NOT_OK(TdiData(currDim, &currXd MDS_END_ARG))
-    goto return_out;
+  if (currDim->class != CLASS_A)
+  {
+    if (IS_NOT_OK(TdiData(currDim, &currXd MDS_END_ARG)))
+      goto return_out;
     currDim = (mdsdsc_a_t *)currXd.pointer;
   }
   if (currDim->class != CLASS_A || currDim->arsize == 0)
     goto return_out;
-  if (currDim->dtype == DTYPE_DOUBLE) {
+  if (currDim->dtype == DTYPE_DOUBLE)
+  {
     numSamples = currDim->arsize / currDim->length;
     outPtr = malloc(currDim->arsize);
     memcpy(outPtr, currDim->pointer, currDim->arsize);
     *outSamples = numSamples;
     goto return_out;
   }
-  if (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU) {
+  if (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU)
+  {
     *isQ = currDim->dtype;
     outPtr = malloc(currDim->arsize);
     numSamples = currDim->arsize / currDim->length;
@@ -93,10 +98,10 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
     *outSamples = numSamples;
     goto return_out;
   }
-  if (currDim->dtype != DTYPE_FLOAT) {
-    if
-      IS_NOT_OK(TdiFloat(currDim, &currXd MDS_END_ARG))
-    goto return_out;
+  if (currDim->dtype != DTYPE_FLOAT)
+  {
+    if (IS_NOT_OK(TdiFloat(currDim, &currXd MDS_END_ARG)))
+      goto return_out;
     currDim = (mdsdsc_a_t *)currXd.pointer;
   }
   if (currDim->class != CLASS_A ||
@@ -104,11 +109,13 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
     goto return_out; // Cannot perform conversion
   numSamples = currDim->arsize / currDim->length;
   outPtr = malloc(sizeof(double) * numSamples);
-  if (currDim->dtype == DTYPE_FLOAT) {
+  if (currDim->dtype == DTYPE_FLOAT)
+  {
     const float *floatPtr = (float *)currDim->pointer;
     for (i = 0; i < numSamples; i++)
       outPtr[i] = floatPtr[i];
-  } else // currDim->dtype == DTYPE_DOUBLE)
+  }
+  else // currDim->dtype == DTYPE_DOUBLE)
     memcpy(outPtr, currDim->pointer, currDim->arsize);
   *outSamples = numSamples;
 return_out:;
@@ -118,7 +125,8 @@ return_out:;
 
 EXPORT mdsdsc_xd_t *XTreeResampleClosest(mds_signal_t *inSignalD,
                                          mdsdsc_t *startD, mdsdsc_t *endD,
-                                         mdsdsc_t *deltaD) { // deprecated
+                                         mdsdsc_t *deltaD)
+{ // deprecated
   static EMPTYXD(retXd);
   XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST, &retXd);
   return &retXd;
@@ -126,13 +134,15 @@ EXPORT mdsdsc_xd_t *XTreeResampleClosest(mds_signal_t *inSignalD,
 
 EXPORT mdsdsc_xd_t *XTreeResamplePrevious(mds_signal_t *inSignalD,
                                           mdsdsc_t *startD, mdsdsc_t *endD,
-                                          mdsdsc_t *deltaD) { // deprecated
+                                          mdsdsc_t *deltaD)
+{ // deprecated
   static EMPTYXD(retXd);
   XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS, &retXd);
   return &retXd;
 }
 
-static inline res_mode_t get_default() {
+static inline res_mode_t get_default()
+{
   char *resampleMode = TranslateLogical("MDSPLUS_DEFAULT_RESAMPLE_MODE");
   if (!resampleMode)
     return AVERAGE;
@@ -150,7 +160,8 @@ static inline res_mode_t get_default() {
     default_mode = CLOSEST;
   else if (!strncasecmp(resampleMode, "Previous", len))
     default_mode = PREVIOUS;
-  else {
+  else
+  {
     fprintf(stderr,
             "Error: Resample mode must be one of 'Average', 'MinMax', "
             "'Interpolation', 'Closest', or 'Previous' but was '%s'; using "
@@ -163,18 +174,20 @@ static inline res_mode_t get_default() {
 }
 int XTreeDefaultResample(mds_signal_t *inSignalD, mdsdsc_t *startD,
                          mdsdsc_t *endD, mdsdsc_t *deltaD,
-                         mdsdsc_xd_t *outSignalXd) {
+                         mdsdsc_xd_t *outSignalXd)
+{
   // get_env is cheap compared to what is comming next, we can affort to reload
   // it
   return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD,
                                   get_default(), outSignalXd);
 }
 
-#define RESAMPLE_FUN(name, mode)                                               \
-  int name(mds_signal_t *inSignalD, mdsdsc_t *startD, mdsdsc_t *endD,          \
-           mdsdsc_t *deltaD, mdsdsc_xd_t *outSignalXd) {                       \
-    return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, mode,     \
-                                    outSignalXd);                              \
+#define RESAMPLE_FUN(name, mode)                                           \
+  int name(mds_signal_t *inSignalD, mdsdsc_t *startD, mdsdsc_t *endD,      \
+           mdsdsc_t *deltaD, mdsdsc_xd_t *outSignalXd)                     \
+  {                                                                        \
+    return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, mode, \
+                                    outSignalXd);                          \
   }
 
 EXPORT RESAMPLE_FUN(XTreeAverageResample, AVERAGE) EXPORT
@@ -188,28 +201,32 @@ EXPORT RESAMPLE_FUN(XTreeAverageResample, AVERAGE) EXPORT
 static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
                                     mdsdsc_t *endD, mdsdsc_t *deltaD,
                                     const res_mode_t mode,
-                                    mdsdsc_xd_t *outSignalXd) {
+                                    mdsdsc_xd_t *outSignalXd)
+{
   int status;
 
   // Get shapes(dimensions) for data
   EMPTYXD(dataXd);
   mdsdsc_a_t *dataD;
-  if (inSignalD->data->class == CLASS_A) {
+  if (inSignalD->data->class == CLASS_A)
+  {
     dataD = (mdsdsc_a_t *)inSignalD->data;
-  } else {
+  }
+  else
+  {
     status = TdiData(inSignalD->data, &dataXd MDS_END_ARG);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
     dataD = (mdsdsc_a_t *)dataXd.pointer;
   }
   int dims[MAX_DIMS];
   int numDims;
   status = getShape((mdsdsc_t *)dataD, dims, &numDims);
-  if
-    STATUS_NOT_OK {
-      MdsFree1Dx(&dataXd, 0);
-      return status;
-    }
+  if (STATUS_NOT_OK)
+  {
+    MdsFree1Dx(&dataXd, 0);
+    return status;
+  }
 
   // get timebase
   dtype_t isQ = 0;
@@ -218,10 +235,17 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
                                  ? (int)(dataD->arsize / dataD->length)
                                  : dims[numDims - 1];
   fulltimebase = convertTimebaseToDouble(inSignalD, &numTimebase, &isQ);
-  if (!fulltimebase) {
+  if (!fulltimebase)
+  {
     MdsFree1Dx(&dataXd, 0);
-    MdsCopyDxXd((mdsdsc_t *)&inSignalD, outSignalXd);
+    MdsCopyDxXd((mdsdsc_t *)inSignalD, outSignalXd);
     return 3; // Cannot convert timebase to 64 bit int
+  }
+  if (numData == 0) //If empty segment
+  {
+    MdsFree1Dx(&dataXd, 0);
+    MdsCopyDxXd((mdsdsc_t *)inSignalD, outSignalXd);
+    return 1;
   }
 
   // Check data array too short
@@ -229,29 +253,35 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
     numTimebase = numData;
 
   int startIdx = 0;
-  if (startD) {
+  if (startD)
+  {
     status = XTreeConvertToDouble(startD, &start);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
     if (start < fulltimebase[0])
       start = fulltimebase[0];
     for (; startIdx < numTimebase && fulltimebase[startIdx] < start; startIdx++)
       ;
-  } else
+  }
+  else
     start = fulltimebase[0];
-  if (endD) {
+  if (endD)
+  {
     status = XTreeConvertToDouble(endD, &end);
-    if
-      STATUS_NOT_OK return status;
+    if (STATUS_NOT_OK)
+      return status;
     if (end > fulltimebase[numTimebase - 1])
       end = fulltimebase[numTimebase - 1];
-  } else
+  }
+  else
     end = fulltimebase[numTimebase - 1];
-  if (deltaD) {
+  if (deltaD)
+  {
     status = XTreeConvertToDouble(deltaD, &delta);
-    if
-      STATUS_NOT_OK return status;
-  } else
+    if (STATUS_NOT_OK)
+      return status;
+  }
+  else
     delta = 0;
 
   int i, j;
@@ -260,8 +290,11 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
   int numDataItems = itemSize / dataD->length;
   int outItemSize;
   DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, MAX_DIMS, 0);
-  if (mode == AVERAGE && delta > 0) { // use FLOAT or DOUBLE
-  } else {
+  if (mode == AVERAGE && delta > 0)
+  { // use FLOAT or DOUBLE
+  }
+  else
+  {
     outDataArray.length = dataD->length;
     outDataArray.dtype = dataD->dtype;
   }
@@ -273,11 +306,13 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
   double *timebase = &fulltimebase[startIdx];
   char *data = &dataD->pointer[startIdx * itemSize];
   int outSamples = 0;
-  if (delta > 0 && startIdx < numTimebase) {
+  if (delta > 0 && startIdx < numTimebase)
+  {
     double refTime = start;
     double delta1 = delta / 2;
     double delta2 = delta + delta1;
-    switch (mode) {
+    switch (mode)
+    {
     case MINMAX:
     case AVERAGE:
       refTime += delta;
@@ -287,16 +322,22 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
       break;
     }
     int reqSamples = (int)((end - start) / delta + 1.5);
-    if (mode == AVERAGE) { // use FLOAT or DOUBLE
-      if (dataD->length < 8) {
+    if (mode == AVERAGE)
+    { // use FLOAT or DOUBLE
+      if (dataD->length < 8)
+      {
         outDataArray.length = sizeof(float);
         outDataArray.dtype = DTYPE_FLOAT;
-      } else {
+      }
+      else
+      {
         outDataArray.length = sizeof(double);
         outDataArray.dtype = DTYPE_DOUBLE;
       }
       outItemSize = itemSize * outDataArray.length / dataD->length;
-    } else {
+    }
+    else
+    {
       if (mode == MINMAX)
         reqSamples *= 2; // Make enough room for MINMAX mode
       outItemSize = itemSize;
@@ -306,12 +347,15 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
     outData = malloc(reqSamples * outItemSize);
     outDim = malloc(reqSamples * sizeof(double));
     int prevTimebaseIdx = timebaseIdx;
-    while (refTime <= end) {
+    while (refTime <= end)
+    {
       while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
         timebaseIdx++;
-      switch (mode) {
+      switch (mode)
+      {
       case CLOSEST: // Select closest sample
-        if (timebaseIdx > 0) {
+        if (timebaseIdx > 0)
+        {
           delta1 = timebase[timebaseIdx] - refTime;
           delta2 = refTime - timebase[timebaseIdx - 1];
           if (delta2 < delta1)
@@ -328,7 +372,8 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
         break;
       case INTERPOLATION:
 #define INTERPOLATION_FORLOOP(type)                                            \
-  for (i = 0; i < numDataItems; i++) {                                         \
+  for (i = 0; i < numDataItems; i++)                                           \
+  {                                                                            \
     prevData = ((type *)(&data[(timebaseIdx - 1) * itemSize]))[i];             \
     nextData = ((type *)(&data[timebaseIdx * itemSize]))[i];                   \
     currData = prevData +                                                      \
@@ -338,7 +383,8 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
   }
         if (timebaseIdx <= 0)
           timebaseIdx = 1; // Avoid referring to negative indexes
-        switch (dataD->dtype) {
+        switch (dataD->dtype)
+        {
         case DTYPE_BU:
           INTERPOLATION_FORLOOP(uint8_t);
           break;
@@ -374,21 +420,24 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
         }
         break;
       case MINMAX: // Two points for every (resampled) sample!!!!!!!!!!!
-#define MINMAX_FORLOOP(type)                                                   \
-  for (i = 0; i < numDataItems; i++) {                                         \
-    type currData, minData, maxData;                                           \
-    minData = maxData = ((type *)(&data[(prevTimebaseIdx)*itemSize]))[i];      \
-    for (j = prevTimebaseIdx + 1; j < timebaseIdx && j < numTimebase; j++) {   \
-      currData = ((type *)(&data[j * itemSize]))[i];                           \
-      if (currData > maxData)                                                  \
-        maxData = currData;                                                    \
-      if (currData < minData)                                                  \
-        minData = currData;                                                    \
-    }                                                                          \
-    ((type *)(&outData[(outSamples)*outItemSize]))[i] = minData;               \
-    ((type *)(&outData[(outSamples + 1) * outItemSize]))[i] = maxData;         \
+#define MINMAX_FORLOOP(type)                                               \
+  for (i = 0; i < numDataItems; i++)                                       \
+  {                                                                        \
+    type currData, minData, maxData;                                       \
+    minData = maxData = ((type *)(&data[(prevTimebaseIdx)*itemSize]))[i];  \
+    for (j = prevTimebaseIdx + 1; j < timebaseIdx && j < numTimebase; j++) \
+    {                                                                      \
+      currData = ((type *)(&data[j * itemSize]))[i];                       \
+      if (currData > maxData)                                              \
+        maxData = currData;                                                \
+      if (currData < minData)                                              \
+        minData = currData;                                                \
+    }                                                                      \
+    ((type *)(&outData[(outSamples)*outItemSize]))[i] = minData;           \
+    ((type *)(&outData[(outSamples + 1) * outItemSize]))[i] = maxData;     \
   }
-        switch (dataD->dtype) {
+        switch (dataD->dtype)
+        {
         case DTYPE_BU:
           MINMAX_FORLOOP(uint8_t);
           break;
@@ -424,16 +473,18 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
         }
         break;
       case AVERAGE:
-#define AVERAGE_FORLOOP(type_out, type)                                        \
-  for (i = 0; i < numDataItems; i++) {                                         \
-    type_out accData = ((type *)(&data[(prevTimebaseIdx)*itemSize]))[i];       \
-    for (j = prevTimebaseIdx + 1; j < timebaseIdx; j++)                        \
-      accData += ((type *)(&data[j * itemSize]))[i];                           \
-    const int range = (timebaseIdx - prevTimebaseIdx);                         \
-    ((type_out *)(&outData[outSamples * outItemSize]))[i] =                    \
-        range > 0 ? accData / range : accData;                                 \
+#define AVERAGE_FORLOOP(type_out, type)                                  \
+  for (i = 0; i < numDataItems; i++)                                     \
+  {                                                                      \
+    type_out accData = ((type *)(&data[(prevTimebaseIdx)*itemSize]))[i]; \
+    for (j = prevTimebaseIdx + 1; j < timebaseIdx; j++)                  \
+      accData += ((type *)(&data[j * itemSize]))[i];                     \
+    const int range = (timebaseIdx - prevTimebaseIdx);                   \
+    ((type_out *)(&outData[outSamples * outItemSize]))[i] =              \
+        range > 0 ? accData / range : accData;                           \
   }
-        switch (dataD->dtype) {
+        switch (dataD->dtype)
+        {
         case DTYPE_BU:
           AVERAGE_FORLOOP(float, uint8_t);
           break;
@@ -475,7 +526,8 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
                &data[timebaseIdx * itemSize], itemSize);
         break;
       }
-      switch (mode) {
+      switch (mode)
+      {
       case MINMAX:
       case AVERAGE:
         refTime -= delta1;
@@ -491,7 +543,9 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
       }
       prevTimebaseIdx = timebaseIdx;
     }
-  } else { // delta <= 0
+  }
+  else
+  { // delta <= 0
     while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] <= end)
       timebaseIdx++;
     outData = data;
@@ -513,7 +567,8 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
   outDataArray.m[numDims - 1] = outSamples;
   // If originally float, convert  dimension to float
   int64_t *timebaseQ;
-  if (isQ) {
+  if (isQ)
+  {
     timebaseQ = (int64_t *)malloc(outSamples * sizeof(int64_t));
     for (i = 0; i < outSamples; i++)
       timebaseQ[i] = (int64_t)((outDim[i] * 1e9) + 0.5);
@@ -521,7 +576,9 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
     outDimArray.arsize = sizeof(int64_t) * outSamples;
     outDimArray.dtype = isQ;
     outDimArray.pointer = outDataArray.a0 = (char *)timebaseQ;
-  } else {
+  }
+  else
+  {
     timebaseQ = NULL;
     outDimArray.length = sizeof(double);
     outDimArray.arsize = sizeof(double) * outSamples;
@@ -532,7 +589,8 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t *startD,
   MdsCopyDxXd((mdsdsc_t *)&outSignalD, outSignalXd);
   free(fulltimebase);
   free(timebaseQ);
-  if (timebase != outDim) {
+  if (timebase != outDim)
+  {
     free(outData);
     free(outDim);
   }

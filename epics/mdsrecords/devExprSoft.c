@@ -62,7 +62,8 @@ extern int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers,
                         int retType, void *retBuf, int *retElements,
                         char *errMsg, int isLocal);
 
-struct {
+struct
+{
   long number;
   DEVSUPFUN report;
   DEVSUPFUN init;
@@ -72,7 +73,8 @@ struct {
 } devExprSoft = {5, NULL, NULL, init_record, NULL, read_mp};
 epicsExportAddress(dset, devExprSoft);
 
-static void callbackFunc(CALLBACK *pcallback) {
+static void callbackFunc(CALLBACK *pcallback)
+{
   struct dbCommon *precord;
   rset *prset;
 
@@ -83,7 +85,8 @@ static void callbackFunc(CALLBACK *pcallback) {
   dbScanUnlock(precord);
 }
 
-static long init_record(mdsexprRecord *prec) {
+static long init_record(mdsexprRecord *prec)
+{
   CALLBACK *pcallback;
   pcallback = (CALLBACK *)(calloc(1, sizeof(CALLBACK)));
   callbackSetCallback(callbackFunc, pcallback);
@@ -119,7 +122,8 @@ static long init_record(mdsexprRecord *prec) {
   return 0;
 }
 
-static long asynchRead(CALLBACK *pcallback) {
+static long asynchRead(CALLBACK *pcallback)
+{
   struct dbCommon *precord;
   struct rset *prset;
   mdsexprRecord *prec;
@@ -136,7 +140,8 @@ static long asynchRead(CALLBACK *pcallback) {
   prec = (mdsexprRecord *)precord;
   nRequest = prec->nelm;
 
-  for (i = 0; i < 8; i++) {
+  for (i = 0; i < 8; i++)
+  {
     buffers[i] = malloc(8 * prec->nelm); // Allocate maximum memory
     bufDims[i] = prec->nelm;
   }
@@ -203,10 +208,12 @@ static long asynchRead(CALLBACK *pcallback) {
   return 0;
 }
 
-static long read_mp(mdsexprRecord *prec) {
+static long read_mp(mdsexprRecord *prec)
+{
   long nRequest = prec->nelm;
   CALLBACK *pcallback = (CALLBACK *)prec->dpvt;
-  if (prec->pact) {
+  if (prec->pact)
+  {
     prec->udf = FALSE;
     return 0;
   }
@@ -214,7 +221,8 @@ static long read_mp(mdsexprRecord *prec) {
 
   /*************************Set Intermediate result to 0 UNTIL SET BY
    * asyncRead*********************************/
-  switch (prec->ftvl) {
+  switch (prec->ftvl)
+  {
   case DBF_CHAR:
   case DBF_UCHAR:
     *((char *)prec->bptr) = 0;

@@ -57,47 +57,26 @@ class TestDevice(Device):
         {'path': ':ACTIONSERVER:PULSE',
          'type': 'ACTION',
          'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Action(node.DISPATCH, node.TASK)'
-         },
-        {'path': ':ACTIONSERVER:PULSE:DISPATCH',
-         'type': 'DISPATCH',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Dispatch(head.ACTIONSERVER, "PULSE", 10)'
-         },
-        {'path': ':ACTIONSERVER:PULSE:TASK',
-         'type': 'TASK',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Method(None, "pulse", head)'
+         'valueExpr': (
+             'Action('
+             'Dispatch(head.ACTIONSERVER, "PULSE", 10),'
+             'Method(None, "pulse", head))'),
          },
         {'path': ':ACTIONSERVER:STORE',
          'type': 'ACTION',
          'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Action(node.DISPATCH, node.TASK)',
-         },
-        {'path': ':ACTIONSERVER:STORE:DISPATCH',
-         'type': 'DISPATCH',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Dispatch(head.ACTIONSERVER, "STORE", 10)',
-         },
-        {'path': ':ACTIONSERVER:STORE:TASK',
-         'type': 'TASK',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Method(None,"store",head)',
+         'valueExpr': (
+             'Action('
+             'Dispatch(head.ACTIONSERVER, "STORE", 10),'
+             'Method(None, "store", head))'),
          },
         {'path': ':ACTIONSERVER:MANUAL',
          'type': 'ACTION',
          'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Action(node.DISPATCH,node.TASK)',
-         },
-        {'path': ':ACTIONSERVER:MANUAL:DISPATCH',
-         'type': 'DISPATCH',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Dispatch(head.ACTIONSERVER, "MANUAL", 10)',
-         },
-        {'path': ':ACTIONSERVER:MANUAL:TASK',
-         'type': 'TASK',
-         'options': ('no_write_shot', 'write_once'),
-         'valueExpr': 'Method(None,"manual",head)',
+         'valueExpr': (
+             'Action('
+             'Dispatch(head.ACTIONSERVER, "MANUAL", 10),'
+             'Method(None, "manual", head))'),
          },
         {'path': ':TASK_TEST',
          'type': 'TASK',

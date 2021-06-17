@@ -46,22 +46,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Rename a node or subtree.
  ***************************************************************/
 EXPORT int TclRename(void *ctx, char **error,
-                     char **output __attribute__((unused))) {
+                     char **output __attribute__((unused)))
+{
   int nid;
   int sts = MdsdclIVVERB;
   char *srcnam = 0;
   char *destnam = 0;
 
   cli_get_value(ctx, "SOURCE", &srcnam);
-  if (srcnam && (strlen(srcnam) > 0)) {
+  if (srcnam && (strlen(srcnam) > 0))
+  {
     cli_get_value(ctx, "DEST", &destnam);
-    if (destnam && (strlen(destnam) > 0)) {
+    if (destnam && (strlen(destnam) > 0))
+    {
       sts = TreeFindNode(srcnam, &nid);
-      if (sts & 1) {
+      if (sts & 1)
+      {
         sts = TreeRenameNode(nid, destnam);
         if (sts & 1)
           TclNodeTouched(nid, rename_node);
-        else {
+        else
+        {
           char *msg = MdsGetMsg(sts);
           *error = malloc(strlen(srcnam) + strlen(destnam) + strlen(msg) + 100);
           sprintf(*error,
@@ -69,14 +74,20 @@ EXPORT int TclRename(void *ctx, char **error,
                   "Error message was: %s\n",
                   srcnam, destnam, msg);
         }
-      } else {
+      }
+      else
+      {
         *error = malloc(strlen(srcnam) + 100);
         sprintf(*error, "Error: Cannot find node %s\n", srcnam);
       }
-    } else {
+    }
+    else
+    {
       *error = strdup("Error: destination node parameter missing\n");
     }
-  } else {
+  }
+  else
+  {
     *error = strdup("Error: source node parameter missing\n");
   }
   free(srcnam);

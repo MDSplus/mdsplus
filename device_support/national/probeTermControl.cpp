@@ -39,7 +39,8 @@ using namespace MDSplus;
 
 #define DEVICE_FILE "/dev/pxi6259"
 
-void usage(char *name) {
+void usage(char *name)
+{
   printf(" Usage: %s <device number> <input channel 1 > <input channel 2 > "
          "<frequency> <output channel ref> <ouput channel on/off>\n"
          "Example: %s 0 10 11 10 0 1\n",
@@ -47,7 +48,8 @@ void usage(char *name) {
 }
 
 int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
-                    uint32_t outChanOnOff) {
+                    uint32_t outChanOnOff)
+{
   char filename[256];
   int i;
   pxi6259_ao_conf_t aoConfig;
@@ -56,7 +58,8 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
   // open AO file descriptor
   sprintf(filename, "%s.%u.ao", DEVICE_FILE, deviceNum);
   devFD = open(filename, O_RDWR);
-  if (devFD < 0) {
+  if (devFD < 0)
+  {
     fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
     return -1;
   }
@@ -65,7 +68,8 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
   aoConfig = pxi6259_create_ao_conf();
 
   // configure AO channel reference
-  if (pxi6259_add_ao_channel(&aoConfig, outChanRef, AO_DAC_POLARITY_BIPOLAR)) {
+  if (pxi6259_add_ao_channel(&aoConfig, outChanRef, AO_DAC_POLARITY_BIPOLAR))
+  {
     fprintf(stderr, "Failed to configure channel %d reference! %s\n",
             outChanRef, strerror(errno));
     return -1;
@@ -73,7 +77,8 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
 
   // configure AO channel on/off
   if (pxi6259_add_ao_channel(&aoConfig, outChanOnOff,
-                             AO_DAC_POLARITY_BIPOLAR)) {
+                             AO_DAC_POLARITY_BIPOLAR))
+  {
     fprintf(stderr, "Failed to configure channel %d reference! : %s\n",
             outChanOnOff, strerror(errno));
     return -1;
@@ -81,20 +86,23 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
 
   // enable signal generation
   if (pxi6259_set_ao_attribute(&aoConfig, AO_SIGNAL_GENERATION,
-                               AO_SIGNAL_GENERATION_STATIC)) {
+                               AO_SIGNAL_GENERATION_STATIC))
+  {
     fprintf(stderr, "Failed to enable generating static signal!: %s\n",
             strerror(errno));
     return -1;
   }
 
   // set continuous mode
-  if (pxi6259_set_ao_attribute(&aoConfig, AO_CONTINUOUS, 0)) {
+  if (pxi6259_set_ao_attribute(&aoConfig, AO_CONTINUOUS, 0))
+  {
     fprintf(stderr, "Failed to set continuous mode!: %s\n", strerror(errno));
     return -1;
   }
 
   // load AO configuration and let it apply
-  if (pxi6259_load_ao_conf(devFD, &aoConfig)) {
+  if (pxi6259_load_ao_conf(devFD, &aoConfig))
+  {
     fprintf(stderr, "Failed to load output configuration! : %s\n",
             strerror(errno));
     return -1;
@@ -103,7 +111,8 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
   // open file descriptor for each AO channel
   sprintf(filename, "%s.%u.ao.%u", DEVICE_FILE, deviceNum, outChanRef);
   chanOutFD[0] = open(filename, O_RDWR | O_NONBLOCK);
-  if (*chanOutFD < 0) {
+  if (*chanOutFD < 0)
+  {
     fprintf(stderr, "Failed to open channel %u: %s\n", outChanRef,
             strerror(errno));
     return -1;
@@ -111,14 +120,16 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
 
   sprintf(filename, "%s.%u.ao.%u", DEVICE_FILE, deviceNum, outChanOnOff);
   chanOutFD[1] = open(filename, O_RDWR | O_NONBLOCK);
-  if (*chanOutFD < 0) {
+  if (*chanOutFD < 0)
+  {
     fprintf(stderr, "Failed to open channel %u: %s\n", outChanOnOff,
             strerror(errno));
     return -1;
   }
 
   // start AO segment (signal generation)
-  if (pxi6259_start_ao(devFD)) {
+  if (pxi6259_start_ao(devFD))
+  {
     fprintf(stderr, "Failed to start segment!n");
     return -1;
   }
@@ -127,9 +138,10 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
 }
 
 int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
-                   double frequency, int numChan) {
-  int diffMapChannel[16] = {-1, 0,  1,  2,  3,  4,     5,  6,
-                            7,  16, 17, 18, 19, 20.21, 22, 23};
+                   double frequency, int numChan)
+{
+  int diffMapChannel[16] = {-1, 0, 1, 2, 3, 4, 5, 6,
+                            7, 16, 17, 18, 19, 20.21, 22, 23};
   char filename[256];
   int i;
   pxi6259_ai_conf_t aiConfig;
@@ -139,7 +151,8 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
   // open AI file descriptor
   sprintf(filename, "%s.%u.ai", DEVICE_FILE, deviceNum);
   devFD = open(filename, O_RDWR);
-  if (devFD < 0) {
+  if (devFD < 0)
+  {
     fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
     return -1;
   }
@@ -148,7 +161,8 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
   aiConfig = pxi6259_create_ai_conf();
 
   // configure AI channels 0 - 5 V differential
-  for (int i = 0; i < numChan; i++) {
+  for (int i = 0; i < numChan; i++)
+  {
 
     if (pxi6259_add_ai_channel(&aiConfig, diffMapChannel[inChan[i]],
                                AI_POLARITY_BIPOLAR, 2,
@@ -171,24 +185,28 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
   period = (int)(20000000. / frequency);
   if (pxi6259_set_ai_sample_clk(
           &aiConfig, period, 3, AI_SAMPLE_SELECT_SI_TC,
-          AI_SAMPLE_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE)) {
+          AI_SAMPLE_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE))
+  {
     fprintf(stderr, "Failed to configure AI sampling clock!\n");
     return -1;
   }
 
   // load AI configuration and let it apply
-  if (pxi6259_load_ai_conf(devFD, &aiConfig)) {
+  if (pxi6259_load_ai_conf(devFD, &aiConfig))
+  {
     fprintf(stderr, "Failed to load input configuration!\n");
     return -1;
   }
 
   // open file descriptor for each AI channel
-  for (int i = 0; i < numChan; i++) {
+  for (int i = 0; i < numChan; i++)
+  {
     sprintf(filename, "%s.%u.ai.%u", DEVICE_FILE, deviceNum,
             diffMapChannel[inChan[i]]);
     printf("%s\n", filename);
     chanInFd[i] = open(filename, O_RDWR | O_NONBLOCK);
-    if (chanInFd[i] < 0) {
+    if (chanInFd[i] < 0)
+    {
       fprintf(stderr, "Failed to open channel %u: %s\n", inChan[i],
               strerror(errno));
       return -1;
@@ -196,7 +214,8 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
   }
 
   // start AI segment (data acquisition)
-  if (pxi6259_start_ai(devFD)) {
+  if (pxi6259_start_ai(devFD))
+  {
     fprintf(stderr, "Failed to start data acquisition!\n");
     return -1;
   }
@@ -206,7 +225,8 @@ int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
   return devFD;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   static char log[5] = "|/-\\";
   static int count = 0;
 
@@ -231,7 +251,8 @@ int main(int argc, char **argv) {
   float ZERO_VOLT = 0;
   float FIVE_VOLT = 5.;
 
-  if (argc != 7) {
+  if (argc != 7)
+  {
     usage(argv[0]);
     return 1;
   }
@@ -249,18 +270,21 @@ int main(int argc, char **argv) {
   sem_t *wakeSem_id;
 
   pauseSem_id = sem_open("PauseControl", O_CREAT, 0666, 0);
-  if (pauseSem_id == SEM_FAILED) {
+  if (pauseSem_id == SEM_FAILED)
+  {
     perror("pause Control sem_open");
     exit(1);
   }
 
   wakeSem_id = sem_open("WakeControl", O_CREAT, 0666, 1);
-  if (pauseSem_id == SEM_FAILED) {
+  if (pauseSem_id == SEM_FAILED)
+  {
     perror("wake Control sem_open");
     exit(1);
   }
 
-  try {
+  try
+  {
     time_t rawtime;
     struct tm *timeinfo;
     char strShot[256];
@@ -281,31 +305,40 @@ int main(int argc, char **argv) {
     // strShot, dataFile);
 
     FILE *fd = fopen(dataFile, "r");
-    if (!fd) {
+    if (!fd)
+    {
       t = new Tree((char *)"ipp_tc_trend", -1);
       t->createPulse(shot);
-    } else {
+    }
+    else
+    {
       fclose(fd);
     }
 
     t = new Tree((char *)"ipp_tc_trend", shot);
 
-    for (int i = 0; i < numChan; i++) {
+    for (int i = 0; i < numChan; i++)
+    {
       char path[256];
       sprintf(path, "\\IPP_TC_TREND::TC%d", inChan[i]);
       printf("NODO %s \n", path);
       node[i] = t->getNode(path);
     }
-  } catch (MdsException *exc) {
+  }
+  catch (MdsException *exc)
+  {
     printf("%s\n", exc->what());
     exit(1);
   }
 
-  while (!error) {
+  while (!error)
+  {
 
-    if (!wakeState) {
+    if (!wakeState)
+    {
       printf("WAIT\n");
-      if (sem_wait(pauseSem_id) < 0) {
+      if (sem_wait(pauseSem_id) < 0)
+      {
         perror("Control sem_wait");
         return -1;
       }
@@ -313,13 +346,15 @@ int main(int argc, char **argv) {
     }
 
     if ((devInFD = configureInput(chanInFD, deviceNum, inChan, frequency, 2)) <
-        0) {
+        0)
+    {
       fprintf(stderr, "Error configure input channel!\n");
       return -1;
     }
 
     if ((devOutFD = configureOutput(chanOutFD, deviceNum, outChanRef,
-                                    outChanOnOff)) < 0) {
+                                    outChanOnOff)) < 0)
+    {
       fprintf(stderr, "Error configure ouput channel!\n");
       return -1;
     }
@@ -327,7 +362,8 @@ int main(int argc, char **argv) {
     printf("START controll\n");
 
     // Control tc
-    while (wakeState) {
+    while (wakeState)
+    {
       int n = 0;
       int i = 0;
       int nChRead;
@@ -336,7 +372,8 @@ int main(int argc, char **argv) {
       float voltage;
 
       rc = pxi6259_write_ao(chanOutFD[1], &FIVE_VOLT, 1);
-      if (rc < 0) {
+      if (rc < 0)
+      {
         fprintf(stderr, "Failed to write to AO channel ON/OFF: %u\n",
                 outChanOnOff);
         error = 1;
@@ -345,19 +382,24 @@ int main(int argc, char **argv) {
 
       memset(scans_read, 0, sizeof(scans_read));
       nChRead = 0;
-      while (nChRead < numChan) {
-        if (scans_read[i] <= 0) {
+      while (nChRead < numChan)
+      {
+        if (scans_read[i] <= 0)
+        {
           // printf("read channel %d n chan %d \n", i, nChRead);
           scans_read[i] = pxi6259_read_ai(chanInFD[i], &value[i], 1);
 
-          if (scans_read[i] < 0) {
-            if (errno != EAGAIN) {
+          if (scans_read[i] < 0)
+          {
+            if (errno != EAGAIN)
+            {
               fprintf(stderr, "Failed while reading channel: %u: %s %d\n",
                       inChan[i], strerror(errno), errno);
               error = 1;
               goto out;
             }
-          } else
+          }
+          else
             nChRead++;
         }
         i = (i + 1) % numChan;
@@ -368,7 +410,8 @@ int main(int argc, char **argv) {
       // End control algoritm
 
       rc = pxi6259_write_ao(chanOutFD[0], &voltage, 1);
-      if (rc < 0) {
+      if (rc < 0)
+      {
         fprintf(stderr, "Failed to write to AO channel reference: %u\n",
                 outChanRef);
         error = 1;
@@ -377,20 +420,25 @@ int main(int argc, char **argv) {
 
       struct timeb tb;
       int64_t currTime;
-      try {
+      try
+      {
         ftime(&tb);
         currTime = (int64_t)(tb.time * 1000 + tb.millitm);
-        for (int i = 0; i < numChan; i++) {
+        for (int i = 0; i < numChan; i++)
+        {
           Float32 *currData = new Float32(value[i]);
           node[i]->putRow(currData, &currTime);
         }
-      } catch (MdsException *exc) {
+      }
+      catch (MdsException *exc)
+      {
         printf("%s\n", exc->what());
         error = 1;
         goto out;
       }
 
-      if (sem_getvalue(wakeSem_id, &wakeState) < 0) {
+      if (sem_getvalue(wakeSem_id, &wakeState) < 0)
+      {
         perror("Control sem_open");
         error = 1;
         goto out;
@@ -411,7 +459,8 @@ int main(int argc, char **argv) {
   out:
 
     rc = pxi6259_write_ao(chanOutFD[0], &ZERO_VOLT, 1);
-    if (rc < 0) {
+    if (rc < 0)
+    {
       fprintf(stderr, "Failed to write to AO channel reference: %u\n",
               outChanRef);
       error = 1;
@@ -419,7 +468,8 @@ int main(int argc, char **argv) {
     }
 
     rc = pxi6259_write_ao(chanOutFD[1], &ZERO_VOLT, 1);
-    if (rc < 0) {
+    if (rc < 0)
+    {
       fprintf(stderr, "Failed to write to AO channel ON/OFF: %u\n",
               outChanOnOff);
       error = 1;
@@ -429,7 +479,8 @@ int main(int argc, char **argv) {
     printf("Close open ADC fd\n");
 
     // stop AI segment
-    if (pxi6259_stop_ai(devInFD)) {
+    if (pxi6259_stop_ai(devInFD))
+    {
       fprintf(stderr, "Failed to stop data acquisition!\n");
     }
 
@@ -440,7 +491,8 @@ int main(int argc, char **argv) {
     close(devInFD);
 
     // stop AO segment
-    if (pxi6259_stop_ao(devOutFD)) {
+    if (pxi6259_stop_ao(devOutFD))
+    {
       fprintf(stderr, "Failed to stop generating signal!\n");
       return -1;
     }

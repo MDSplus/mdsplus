@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <strroutines.h>
 #include <treeshr.h>
@@ -177,13 +177,13 @@ EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
     int endidx_nid = setup->head_nid + L8818_N_INPUT_ENDIDX;
     if (TreeIsOn(input_nid) & 1) {
       status = DevLong(&startidx_nid, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&endidx_nid, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -194,13 +194,13 @@ EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	int samps;
 /*      for (samples_to_read = raw.m[0]+start_addr+16; */
 	for (samples_to_read = raw.m[0];
-	     (samples_to_read > 0) && (status & 1); samples_to_read -= samps, data_ptr += samps) {
+	     (samples_to_read > 0) && (STATUS_OK); samples_to_read -= samps, data_ptr += samps) {
 	  int ios;
 	  samps = min(samples_to_read, 65534);
 	  ios = (samps + 1) / 2;
 	  fstop(2, 0, ios, data_ptr);
 	}
-	if (status & 1) {
+	if (STATUS_OK) {
 	  raw.a0 = raw.pointer - raw.bounds[0].l;
 	  raw.arsize = raw.m[0];
 	  status = TreePutRecord(input_nid, (struct descriptor *)&signal, 0);

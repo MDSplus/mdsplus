@@ -101,7 +101,8 @@ XmdsNidOptionMenuApply(Widget w); struct dsc$descriptor_xd
 #include <xmdsshr.h>
 #include <mds_stdarg.h>
 
-typedef struct _Resources {
+typedef struct _Resources
+{
   int nid;
   int nid_offset;
   Boolean put_on_apply;
@@ -135,7 +136,8 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
     EXPORT Widget XmdsCreateNidOptionMenu(Widget parent, String name,
-                                          ArgList args, Cardinal argcount) {
+                                          ArgList args, Cardinal argcount)
+{
   Widget w;
   WidgetList children;
   int num;
@@ -152,7 +154,8 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
   XtAddCallback(info->pulldown, XmNentryCallback, (XtCallbackProc)MenuChanged,
                 info);
   for (idx = 0, s = info->labels, v = info->values; s && *s && v && *v;
-       s++, v++, idx++) {
+       s++, v++, idx++)
+  {
     String expression = "";
     expression = XmStringUnparse(*v, NULL, XmCHARSET_TEXT, XmCHARSET_TEXT, NULL,
                                  0, XmOUTPUT_ALL);
@@ -173,7 +176,7 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
         b = XmCreatePushButtonGadget(info->pulldown, "", arglist,
                                      XtNumber(arglist));
         XtAddCallback(b, XmNactivateCallback, (XtCallbackProc)ButtonPushed,
-                      (XtPointer)(idx + (char *)0));
+                      (XtPointer)(void *)(intptr_t)(idx));
       }
     }
   }
@@ -208,14 +211,16 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
   return w;
 }
 
-static void Destroy(Widget w, Resources *info, XtPointer cb) {
+static void Destroy(Widget w, Resources *info, XtPointer cb)
+{
   int num;
   Widget *labels;
   int i;
   XtVaGetValues(info->pulldown, XtNnumChildren, &num, XtNchildren, &labels,
                 NULL);
   num--;
-  for (i = 0; i < num; i++) {
+  for (i = 0; i < num; i++)
+  {
     struct descriptor_xd *xd;
     XtVaGetValues(labels[i], XmNuserData, &xd, NULL);
     MdsFree1Dx(xd, 0);
@@ -226,22 +231,26 @@ static void Destroy(Widget w, Resources *info, XtPointer cb) {
 
 EXPORT Boolean XmdsIsNidOptionMenu(Widget w) { return GetResources(w) != 0; }
 
-EXPORT int *XmdsNidOptionMenuGetButtons(Widget w, int *num) {
+EXPORT int *XmdsNidOptionMenuGetButtons(Widget w, int *num)
+{
   Widget par;
   int *ans = 0;
   for (par = w; par && !XmdsIsNidOptionMenu(par); par = XtParent(par))
     ;
-  if (par) {
+  if (par)
+  {
     Resources *info = GetResources(par);
     XtVaGetValues(info->pulldown, XmNchildren, &ans, XmNnumChildren, num, NULL);
   }
   return ans;
 }
 
-static Resources *GetResources(Widget w) {
+static Resources *GetResources(Widget w)
+{
   Resources *answer = 0;
   if (XmIsRowColumn(w) &&
-      (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome)) {
+      (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome))
+  {
     XtCallbackList callbacks;
     XtVaGetValues(w, XmNdestroyCallback, &callbacks, NULL);
     for (; callbacks->callback &&
@@ -255,11 +264,14 @@ static Resources *GetResources(Widget w) {
   return answer;
 }
 
-EXPORT void XmdsNidOptionMenuReset(Widget w) {
+EXPORT void XmdsNidOptionMenuReset(Widget w)
+{
   Resources *info = GetResources(w);
-  if (info) {
+  if (info)
+  {
     int nid = info->nid + info->nid_offset;
-    if (nid) {
+    if (nid)
+    {
       int idx;
       int num;
       Widget *labels;
@@ -268,7 +280,8 @@ EXPORT void XmdsNidOptionMenuReset(Widget w) {
                     NULL);
       num--;
       TreeGetRecord(nid, &xd);
-      for (idx = 0; idx < num; idx++) {
+      for (idx = 0; idx < num; idx++)
+      {
         struct descriptor_xd *button_xd;
         XtVaGetValues(labels[idx], XmNuserData, &button_xd, NULL);
         if ((xd.l_length || button_xd->l_length)
@@ -285,16 +298,19 @@ EXPORT void XmdsNidOptionMenuReset(Widget w) {
   return;
 }
 
-EXPORT struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected) {
+EXPORT struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected)
+{
   struct descriptor_xd *xd = 0;
   Resources *info = GetResources(w);
-  if (info) {
+  if (info)
+  {
     int num;
     Widget *buttons;
     XtVaGetValues(info->pulldown, XtNnumChildren, &num, XtNchildren, &buttons,
                   NULL);
     num--;
-    if (selected < num) {
+    if (selected < num)
+    {
       static EMPTYXD(empty);
       struct descriptor_xd *ans =
           (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
@@ -302,24 +318,28 @@ EXPORT struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected) {
       *ans = empty;
       MdsCopyDxXd((struct descriptor *)xd, ans);
       xd = ans;
-    } else
+    }
+    else
       xd = (struct descriptor_xd *)XmdsXdBoxGetXd(XmdsXdBoxDialogButtonGetXdBox(
           XtNameToWidget(info->pulldown, "computed")));
   }
   return xd;
 }
 
-EXPORT struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w) {
+EXPORT struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w)
+{
   struct descriptor_xd *xd = 0;
   Resources *info = GetResources(w);
-  if (info) {
+  if (info)
+  {
     int selected = XmdsGetOptionIdx(w);
     int num;
     Widget *buttons;
     XtVaGetValues(info->pulldown, XtNnumChildren, &num, XtNchildren, &buttons,
                   NULL);
     num--;
-    if (selected < num) {
+    if (selected < num)
+    {
       static EMPTYXD(empty);
       struct descriptor_xd *ans =
           (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
@@ -327,17 +347,20 @@ EXPORT struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w) {
       *ans = empty;
       MdsCopyDxXd((struct descriptor *)xd, ans);
       xd = ans;
-    } else
+    }
+    else
       xd = (struct descriptor_xd *)XmdsXdBoxGetXd(XmdsXdBoxDialogButtonGetXdBox(
           XtNameToWidget(info->pulldown, "computed")));
   }
   return xd;
 }
 
-EXPORT int XmdsNidOptionMenuPut(Widget w) {
+EXPORT int XmdsNidOptionMenuPut(Widget w)
+{
   Resources *info = GetResources(w);
   int status = 0;
-  if (info) {
+  if (info)
+  {
     int selected = XmdsGetOptionIdx(w);
     int num;
     Widget *buttons;
@@ -345,8 +368,10 @@ EXPORT int XmdsNidOptionMenuPut(Widget w) {
     XtVaGetValues(info->pulldown, XtNnumChildren, &num, XtNchildren, &buttons,
                   NULL);
     num--;
-    if (nid) {
-      if (selected < num) {
+    if (nid)
+    {
+      if (selected < num)
+      {
         struct descriptor_xd *button_xd;
         EMPTYXD(xd);
         XtVaGetValues(buttons[selected], XmNuserData, &button_xd, NULL);
@@ -359,7 +384,8 @@ EXPORT int XmdsNidOptionMenuPut(Widget w) {
           status = TreePutRecord(nid, (struct descriptor *)button_xd, 0);
         else
           status = 1;
-      } else
+      }
+      else
         status = XmdsXdBoxDialogButtonPut(
             XtNameToWidget(info->pulldown, "computed"));
     }
@@ -367,10 +393,12 @@ EXPORT int XmdsNidOptionMenuPut(Widget w) {
   return status;
 }
 
-EXPORT int XmdsNidOptionMenuApply(Widget w) {
+EXPORT int XmdsNidOptionMenuApply(Widget w)
+{
   Resources *info = GetResources(w);
   int status = 0;
-  if (info) {
+  if (info)
+  {
     if (info->put_on_apply)
       status = XmdsNidOptionMenuPut(w);
     else
@@ -380,17 +408,20 @@ EXPORT int XmdsNidOptionMenuApply(Widget w) {
 }
 
 static void MenuChanged(Widget w, Resources *info,
-                        XmRowColumnCallbackStruct *cb) {
-  if (cb->reason == XmCR_ACTIVATE) {
+                        XmRowColumnCallbackStruct *cb)
+{
+  if (cb->reason == XmCR_ACTIVATE)
+  {
     int num;
-    int bnum = (char *)cb->data - (char *)0;
+    int bnum = (int)(intptr_t)cb->data;
     Widget *buttons;
     struct descriptor_xd *xd = 0;
     XtVaGetValues(info->pulldown, XtNnumChildren, &num, XtNchildren, &buttons,
                   NULL);
     num--;
     XtCallCallbacks(cb->widget, XmNactivateCallback, cb->data);
-    if (bnum < num) {
+    if (bnum < num)
+    {
       XtVaGetValues(buttons[bnum], XmNuserData, &xd, NULL);
       XmdsXdBoxSetXd(XmdsXdBoxDialogButtonGetXdBox(buttons[num]),
                      (struct descriptor *)xd);
@@ -400,14 +431,16 @@ static void MenuChanged(Widget w, Resources *info,
 
 static void ButtonPushed(Widget w, int index, XmPushButtonCallbackStruct *cb) {}
 
-EXPORT void XmdsNidOptionMenuSetButton(Widget w, int idx, String text) {
+EXPORT void XmdsNidOptionMenuSetButton(Widget w, int idx, String text)
+{
   Resources *info = GetResources(w);
   int num;
   Widget *buttons;
   XtVaGetValues(info->pulldown, XtNnumChildren, &num, XtNchildren, &buttons,
                 NULL);
   num--;
-  if (idx < num) {
+  if (idx < num)
+  {
     XmString label = XmStringCreateSimple(text);
     XtVaSetValues(buttons[idx], XmNlabelString, label, NULL);
     XmStringFree(label);

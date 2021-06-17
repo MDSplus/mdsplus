@@ -54,14 +54,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      To use: e.g.
 //                              if( MSGLVL(1) ) printf("debug info ...\n");
 //-----------------------------------------------------------
-int MSGLVL(int level) {
+int MSGLVL(int level)
+{
   char *c;
   int dbglvl;
 
-  c = getenv(DEBUG_VAR_NAME);    // get debug variable
-  if (c) {                       // if not NULL ...
+  c = getenv(DEBUG_VAR_NAME); // get debug variable
+  if (c)
+  {                              // if not NULL ...
     dbglvl = strtol(c, NULL, 0); // convert to numeric
     return (dbglvl >= level) ? TRUE : FALSE;
-  } else // ... is not set
+  }
+  else // ... is not set
     return FALSE;
 }

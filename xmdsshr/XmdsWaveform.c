@@ -55,13 +55,14 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 /*------------------------------------------------------------------------------
 
  Macros:                                                                      */
+#include <inttypes.h>
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
-#define compare_sign(a, b)                                                     \
+#define compare_sign(a, b) \
   (((a) > 0 && (b) > 0) ? 1 : (((a) < 0 && (b) < 0) ? 1 : 0))
-#define interp(x1, y1, x2, y2, x)                                              \
-  (((y2) - (y1)) * ((x) / ((x2) - (x1))) +                                     \
+#define interp(x1, y1, x2, y2, x)          \
+  (((y2) - (y1)) * ((x) / ((x2) - (x1))) + \
    (((y1) * ((x2) / ((x2) - (x1)))) - ((y2) * ((x1) / ((x2) - (x1))))))
 #define pointsPerIo 1024
 #define recsPerIo 256
@@ -99,7 +100,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 #define waveformPointerMode(widget) ((widget)->waveform.pointer_mode)
 #define waveformGridStyle(widget) ((widget)->waveform.grid_style)
 #define waveformAttachCrosshairs(widget) ((widget)->waveform.attach_crosshairs)
-#define waveformCrosshairsCallbacks(widget)                                    \
+#define waveformCrosshairsCallbacks(widget) \
   ((widget)->waveform.crosshairs_callback)
 #define waveformAlignCallbacks(widget) ((widget)->waveform.align_callback)
 #define waveformButton3Callbacks(widget) ((widget)->waveform.button3_callback)
@@ -114,18 +115,18 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 #define waveformEraseGC(widget) ((widget)->waveform.erase_gc)
 #define waveformCount(widget) ((widget)->waveform.count)
 #define waveformSelectionsValue(widget) ((widget)->waveform.selections)
-#define waveformSelectionsValStruct(widget)                                    \
+#define waveformSelectionsValStruct(widget) \
   ((widget)->waveform.selections_val_struct)
 #define waveformSelectionsValPtr(widget) ((widget)->waveform.selections_val_ptr)
 #define waveformPenDownValue(widget) ((widget)->waveform.pen_down)
-#define waveformPenDownValStruct(widget)                                       \
+#define waveformPenDownValStruct(widget) \
   ((widget)->waveform.pen_down_val_struct)
 #define waveformPenDownValPtr(widget) ((widget)->waveform.pen_down_val_ptr)
 #define waveformPanning(widget) ((widget)->waveform.panning)
 #define waveformPixmap(widget) ((widget)->waveform.pixmap)
 #define waveformDrawable(widget) ((widget)->waveform.drawable)
 #define waveformFontStruct(widget) ((widget)->waveform.font_struct)
-#define waveformCrosshairsPix(widget)                                          \
+#define waveformCrosshairsPix(widget) \
   ((widget)->waveform.cross_box.crosshairs_pix)
 #define waveformBoxPix(widget) ((widget)->waveform.cross_box.rectangle)
 #define waveformPanWith(widget) ((widget)->waveform.pan_with)
@@ -152,7 +153,12 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
  Local variables:                                                             */
 
 static float height_page;
-enum crosshairsmode { move_xh, first_xh, last_xh };
+enum crosshairsmode
+{
+  move_xh,
+  first_xh,
+  last_xh
+};
 
 static void ClassPartInitialize();
 static void Initialize();
@@ -429,15 +435,17 @@ static float resinc;
  Executable:                                                                  */
 
 EXPORT Widget XmdsCreateWaveform(Widget parent, char *name, ArgList args,
-                                 Cardinal argcount) {
+                                 Cardinal argcount)
+{
   return XtCreateWidget(name, xmdsWaveformWidgetClass, parent, args, argcount);
 }
 
-static void ClassPartInitialize(XmdsWaveformWidgetClass class) {
-#define initTrans(field, deftrans)                                             \
-  if (field == XmdsInheritTranslations)                                        \
-    field = XtParseTranslationTable(deftrans);                                 \
-  else                                                                         \
+static void ClassPartInitialize(XmdsWaveformWidgetClass class)
+{
+#define initTrans(field, deftrans)             \
+  if (field == XmdsInheritTranslations)        \
+    field = XtParseTranslationTable(deftrans); \
+  else                                         \
     field = XtParseTranslationTable((const char *)field)
 
   initTrans(class->waveform_class.default_trans,
@@ -470,7 +478,8 @@ static void ClassPartInitialize(XmdsWaveformWidgetClass class) {
 }
 
 static void Initialize(XmdsWaveformWidget req, XmdsWaveformWidget w,
-                       ArgList args, Cardinal *num_args) {
+                       ArgList args, Cardinal *num_args)
+{
   XGCValues values;
   static char dashes[] = {1, 4};
   xMin(w) = xMax(w) = yMin(w) = yMax(w) = (XtPointer)NULL;
@@ -515,9 +524,11 @@ static void Initialize(XmdsWaveformWidget req, XmdsWaveformWidget w,
 }
 
 static void VisibilityChange(XmdsWaveformWidget w, XtPointer dummy,
-                             XVisibilityEvent *event) {
+                             XVisibilityEvent *event)
+{
   if (event->state == VisibilityUnobscured ||
-      event->state == VisibilityPartiallyObscured) {
+      event->state == VisibilityPartiallyObscured)
+  {
     XtRemoveEventHandler((Widget)w, VisibilityChangeMask, False,
                          (void (*)())VisibilityChange, dummy);
     ForceUpdate(w);
@@ -525,24 +536,29 @@ static void VisibilityChange(XmdsWaveformWidget w, XtPointer dummy,
 }
 
 static void Realize(XmdsWaveformWidget w, XtValueMask *mask,
-                    XSetWindowAttributes *attr) {
+                    XSetWindowAttributes *attr)
+{
   *mask |= CWBackingStore;
   attr->backing_store =
       XDoesBackingStore(XtScreen(w->core.parent)) == Always ? Always : 0;
   (*xmPrimitiveClassRec.core_class.realize)((Widget)w, mask, attr);
-  if (attr->backing_store != Always) {
+  if (attr->backing_store != Always)
+  {
     waveformPixmap(w) = waveformDrawable(w) =
         XCreatePixmap(XtDisplay(w), XtWindow(w), XtWidth(w), XtHeight(w),
                       XDefaultDepthOfScreen(XtScreen(w)));
     waveformRedraw(w) = True;
     ForceUpdate(w);
-  } else
+  }
+  else
     waveformDrawable(w) = XtWindow(w);
 }
 
-static void Redisplay(XmdsWaveformWidget w, XExposeEvent *event) {
+static void Redisplay(XmdsWaveformWidget w, XExposeEvent *event)
+{
   XEvent ev;
-  if (event) {
+  if (event)
+  {
     /*
         XEvent visibility_event;
         if
@@ -556,7 +572,8 @@ static void Redisplay(XmdsWaveformWidget w, XExposeEvent *event) {
     */
     while (XCheckWindowEvent(XtDisplay(w), XtWindow(w), ExposureMask, &ev))
       event = (XExposeEvent *)&ev;
-    if (XtIsRealized((Widget)w) && XtIsManaged((Widget)w)) {
+    if (XtIsRealized((Widget)w) && XtIsManaged((Widget)w))
+    {
       if (waveformPixmap(w) && !waveformRedraw(w))
         XCopyArea(XtDisplay(w), waveformPixmap(w), XtWindow(w),
                   waveformPlotGC(w), 0, 0, XtWidth(w), XtHeight(w), 0, 0);
@@ -570,14 +587,18 @@ static void Redisplay(XmdsWaveformWidget w, XExposeEvent *event) {
     /*
         }
     */
-  } else {
+  }
+  else
+  {
     Plot(w, 1);
     SetCursor(w);
   }
 }
 
-static void Resize(XmdsWaveformWidget w) {
-  if (waveformPixmap(w)) {
+static void Resize(XmdsWaveformWidget w)
+{
+  if (waveformPixmap(w))
+  {
     XFreePixmap(XtDisplay(w), waveformPixmap(w));
     waveformPixmap(w) = waveformDrawable(w) =
         XCreatePixmap(XtDisplay(w), XtWindow(w), XtWidth(w), XtHeight(w),
@@ -592,21 +613,24 @@ static void Resize(XmdsWaveformWidget w) {
   */
 }
 
-static void Destroy(XmdsWaveformWidget w) {
+static void Destroy(XmdsWaveformWidget w)
+{
   if (waveformTitle(w))
     XtFree(waveformTitle(w));
   if (waveformPixmap(w))
     XFreePixmap(XtDisplay(w), waveformPixmap(w));
   FreePixVals(w);
 
-#define destroyVal(field)                                                      \
-  if (field##ValStruct(w)) {                                                   \
-    if (field##ValStruct(w)->destroy) {                                        \
-      (*field##ValStruct(w)->destroy)(w, field##ValStruct(w)->destroy_arg);    \
-    }                                                                          \
-    XtFree((char *)field##ValStruct(w));                                       \
-  }                                                                            \
-  if (field##ValPtr(w))                                                        \
+#define destroyVal(field)                                                   \
+  if (field##ValStruct(w))                                                  \
+  {                                                                         \
+    if (field##ValStruct(w)->destroy)                                       \
+    {                                                                       \
+      (*field##ValStruct(w)->destroy)(w, field##ValStruct(w)->destroy_arg); \
+    }                                                                       \
+    XtFree((char *)field##ValStruct(w));                                    \
+  }                                                                         \
+  if (field##ValPtr(w))                                                     \
     XtFree((char *)field##ValPtr(w));
 
   destroyVal(y);
@@ -619,16 +643,20 @@ static void Destroy(XmdsWaveformWidget w) {
   XtReleaseGC((Widget)w, waveformEraseGC(w));
 }
 
-static void Pan(XmdsWaveformWidget w, XButtonEvent *event) {
+static void Pan(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XEvent ev;
   XmdsWaveformWidget pan_w;
   while (XCheckMaskEvent(XtDisplay(w), Button2MotionMask, &ev))
     event = (XButtonEvent *)&ev;
-  for (pan_w = w; pan_w; pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w)) {
-    if (waveformCount(pan_w)) {
+  for (pan_w = w; pan_w; pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w))
+  {
+    if (waveformCount(pan_w))
+    {
       if (event->state & Button2Mask)
         yMotion(pan_w) = event->y;
-      if (waveformPanning(pan_w)) {
+      if (waveformPanning(pan_w))
+      {
         XmdsWaveformLimitsCBStruct limits = {XmdsCRDrag, 0, 0, 0, 0, 0};
         float delta_x =
             ((*xMin(pan_w) - *xMax(pan_w)) / (float)XtWidth(pan_w)) *
@@ -659,7 +687,9 @@ static void Pan(XmdsWaveformWidget w, XButtonEvent *event) {
         *yMin(pan_w) = min(huge, max(-huge, *yMin(pan_w)));
         *yMax(pan_w) = min(huge, max(-huge, *yMax(pan_w)));
         Plot(pan_w, 0);
-      } else {
+      }
+      else
+      {
         waveformPanning(pan_w) = 1;
         xMotion(pan_w) = event->x;
         yMotion(pan_w) = event->y;
@@ -672,11 +702,15 @@ static void Pan(XmdsWaveformWidget w, XButtonEvent *event) {
   }
 }
 
-static void PanEnd(XmdsWaveformWidget w, XButtonEvent *event) {
+static void PanEnd(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XmdsWaveformWidget pan_w;
-  for (pan_w = w; pan_w; pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w)) {
-    if (waveformCount(pan_w)) {
-      if (event->state & ShiftMask) {
+  for (pan_w = w; pan_w; pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w))
+  {
+    if (waveformCount(pan_w))
+    {
+      if (event->state & ShiftMask)
+      {
         XmdsWaveformLimitsCBStruct limits = {XmdsCRDragEnd, 0, 0, 0, 0, 0};
         limits.event = (XEvent *)event;
         limits.xminval = xMin(pan_w);
@@ -693,10 +727,13 @@ static void PanEnd(XmdsWaveformWidget w, XButtonEvent *event) {
         waveformPanning(pan_w) = 0;
         SetResolutions(pan_w);
         Plot(pan_w, 1);
-      } else {
+      }
+      else
+      {
         if (event->state & Button2Mask)
           yMotion(pan_w) = event->y;
-        if (waveformPanning(pan_w)) {
+        if (waveformPanning(pan_w))
+        {
           XmdsWaveformLimitsCBStruct limits = {XmdsCRDragEnd, 0, 0, 0, 0, 0};
           float delta_x =
               ((*xMin(pan_w) - *xMax(pan_w)) / (float)XtWidth(pan_w)) *
@@ -733,9 +770,12 @@ static void PanEnd(XmdsWaveformWidget w, XButtonEvent *event) {
   }
 }
 
-static void DragZoom(XmdsWaveformWidget w, XButtonEvent *event) {
-  if (waveformCount(w)) {
-    if (waveformPanning(w)) {
+static void DragZoom(XmdsWaveformWidget w, XButtonEvent *event)
+{
+  if (waveformCount(w))
+  {
+    if (waveformPanning(w))
+    {
       DrawRectangles(XtDisplay(w), XtWindow(w), waveformFlipGC(w),
                      waveformBoxPix(w), 1, XtWidth(w), XtHeight(w));
       waveformBoxPix(w)[0].x = min(xMotion(w), event->x);
@@ -747,7 +787,9 @@ static void DragZoom(XmdsWaveformWidget w, XButtonEvent *event) {
       if (((max(xMotion(w), event->x) - min(xMotion(w), event->x)) > 2) ||
           ((max(yMotion(w), event->y) - min(yMotion(w), event->y)) > 2))
         waveformPanning(w) = 2;
-    } else {
+    }
+    else
+    {
       xMotion(w) = event->x;
       yMotion(w) = event->y;
       waveformBoxPix(w)[0].x = 0;
@@ -759,15 +801,19 @@ static void DragZoom(XmdsWaveformWidget w, XButtonEvent *event) {
   }
 }
 
-static void ZoomIn(XmdsWaveformWidget w, XButtonEvent *event) {
+static void ZoomIn(XmdsWaveformWidget w, XButtonEvent *event)
+{
   if (!waveformCount(w))
     return;
   if (waveformPanning(w) == 2 &&
       ((max(xMotion(w), event->x) - min(xMotion(w), event->x)) < 5) &&
-      ((max(yMotion(w), event->y) - min(yMotion(w), event->y)) < 5)) {
+      ((max(yMotion(w), event->y) - min(yMotion(w), event->y)) < 5))
+  {
     waveformPanning(w) = 0;
     Plot(w, 1);
-  } else {
+  }
+  else
+  {
     XmdsWaveformLimitsCBStruct limits = {0, 0, 0, 0, 0, 0};
     double xspan = *xMax(w) - *xMin(w);
     double xbase = *xMin(w);
@@ -782,7 +828,8 @@ static void ZoomIn(XmdsWaveformWidget w, XButtonEvent *event) {
     limits.xmaxval = xMax(w);
     limits.yminval = yMin(w);
     limits.ymaxval = yMax(w);
-    if (waveformPanning(w) == 2) {
+    if (waveformPanning(w) == 2)
+    {
       limits.reason = XmdsCRBoxZoom;
       *xMin(w) = xbase + min(xMotion(w), event->x) * (xspan / XtWidth(w));
       *xMax(w) = xbase + max(xMotion(w), event->x) * (xspan / XtWidth(w));
@@ -793,7 +840,9 @@ static void ZoomIn(XmdsWaveformWidget w, XButtonEvent *event) {
           ybase + (double)(XtHeight(w) - (double)min(yMotion(w), event->y)) *
                       (yspan / XtHeight(w));
       waveformPanning(w) = 0;
-    } else {
+    }
+    else
+    {
       limits.reason = XmdsCRZoomIn;
       *xMin(w) = xbase + (event->x - .25 * XtWidth(w)) * (xspan / XtWidth(w));
       *xMax(w) = xbase + (event->x + .25 * XtWidth(w)) * (xspan / XtWidth(w));
@@ -802,11 +851,13 @@ static void ZoomIn(XmdsWaveformWidget w, XButtonEvent *event) {
           ybase + (1.25 * XtHeight(w) - event->y) * (yspan / XtHeight(w));
       waveformPanning(w) = 0;
     }
-    if ((*xMin(w) >= *xMax(w)) || (*xMin(w) < -huge) || (*xMax(w) > huge)) {
+    if ((*xMin(w) >= *xMax(w)) || (*xMin(w) < -huge) || (*xMax(w) > huge))
+    {
       *xMin(w) = xmin_save;
       *xMax(w) = xmax_save;
     }
-    if ((*yMin(w) >= *yMax(w)) || (*yMin(w) < -huge) || (*yMax(w) > huge)) {
+    if ((*yMin(w) >= *yMax(w)) || (*yMin(w) < -huge) || (*yMax(w) > huge))
+    {
       *yMin(w) = ymin_save;
       *yMax(w) = ymax_save;
     }
@@ -819,11 +870,14 @@ static void ZoomIn(XmdsWaveformWidget w, XButtonEvent *event) {
     Plot(w, 1);
     XWarpPointer(XtDisplay(w), None, XtWindow(w), event->x, event->y,
                  XtWidth(w), XtHeight(w), XtWidth(w) / 2, XtHeight(w) / 2);
-    if (event->state & ShiftMask) {
+    if (event->state & ShiftMask)
+    {
       XmdsWaveformWidget pan_w;
       for (pan_w = (XmdsWaveformWidget)waveformPanWith(w); pan_w;
-           pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w)) {
-        if (waveformCount(pan_w)) {
+           pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w))
+      {
+        if (waveformCount(pan_w))
+        {
           XmdsWaveformLimitsCBStruct limits = {XmdsCRZoomIn, 0, 0, 0, 0, 0};
           limits.event = (XEvent *)event;
           limits.xminval = xMin(pan_w);
@@ -849,7 +903,8 @@ static void ZoomIn(XmdsWaveformWidget w, XButtonEvent *event) {
   }
 }
 
-static void ZoomOut(XmdsWaveformWidget w, XButtonEvent *event) {
+static void ZoomOut(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XmdsWaveformLimitsCBStruct limits = {XmdsCRZoomOut, 0, 0, 0, 0, 0};
   double xspan = *xMax(w) - *xMin(w);
   double xbase = *xMin(w);
@@ -881,11 +936,14 @@ static void ZoomOut(XmdsWaveformWidget w, XButtonEvent *event) {
   Plot(w, 1);
   XWarpPointer(XtDisplay(w), None, XtWindow(w), event->x, event->y, XtWidth(w),
                XtHeight(w), XtWidth(w) / 2, XtHeight(w) / 2);
-  if (event->state & ShiftMask) {
+  if (event->state & ShiftMask)
+  {
     XmdsWaveformWidget pan_w;
     for (pan_w = (XmdsWaveformWidget)waveformPanWith(w); pan_w;
-         pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w)) {
-      if (waveformCount(pan_w)) {
+         pan_w = (XmdsWaveformWidget)waveformPanWith(pan_w))
+    {
+      if (waveformCount(pan_w))
+      {
         XmdsWaveformLimitsCBStruct limits = {XmdsCRZoomOut, 0, 0, 0, 0, 0};
         limits.event = (XEvent *)event;
         limits.xminval = xMin(pan_w);
@@ -910,7 +968,8 @@ static void ZoomOut(XmdsWaveformWidget w, XButtonEvent *event) {
   }
 }
 
-static void Point(XmdsWaveformWidget w, XButtonEvent *event) {
+static void Point(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XEvent ev;
   XmdsWaveformCrosshairsCBStruct crosshair = {XmdsCRCrosshairs, 0, 0, 0};
   float x, y;
@@ -932,7 +991,8 @@ static void Point(XmdsWaveformWidget w, XButtonEvent *event) {
   XtCallCallbacks((Widget)w, XmdsNcrosshairsCallback, &crosshair);
 }
 
-static void Align(XmdsWaveformWidget w, XButtonEvent *event) {
+static void Align(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XmdsWaveformLimitsCBStruct limits = {XmdsCRAlign, 0, 0, 0, 0, 0};
   limits.event = (XEvent *)event;
   limits.xminval = xMin(w);
@@ -946,7 +1006,8 @@ static void Align(XmdsWaveformWidget w, XButtonEvent *event) {
 
 static Boolean SetValues(XmdsWaveformWidget old, XmdsWaveformWidget req,
                          XmdsWaveformWidget new, ArgList args,
-                         Cardinal *num_args) {
+                         Cardinal *num_args)
+{
   Boolean values_changed = SetupXandY(old, req, new);
   Boolean limits_changed =
       UpdateLimits(old, xMin(req), xMax(req), yMin(req), yMax(req), new);
@@ -962,7 +1023,8 @@ static Boolean SetValues(XmdsWaveformWidget old, XmdsWaveformWidget req,
 
   waveformPanning(new) = 0;
   FreePixVals(new);
-  if (waveformFontStruct(old) != waveformFontStruct(req)) {
+  if (waveformFontStruct(old) != waveformFontStruct(req))
+  {
     XGCValues values;
     static char dashes[] = {1, 4};
     values.foreground = XBlackPixelOfScreen(XtScreen(req));
@@ -987,7 +1049,8 @@ static Boolean SetValues(XmdsWaveformWidget old, XmdsWaveformWidget req,
     waveformFlipGC(new) =
         XtGetGC((Widget) new, GCFunction | GCPlaneMask | GCFont, &values);
   }
-  if (waveformPointerMode(old) != waveformPointerMode(req)) {
+  if (waveformPointerMode(old) != waveformPointerMode(req))
+  {
     if (waveformPointerMode(old) == XmdsPOINTER_MODE_POINT)
       DrawCrosshairs(new, last_xh);
     else if (waveformPointerMode(new) == XmdsPOINTER_MODE_POINT)
@@ -998,7 +1061,8 @@ static Boolean SetValues(XmdsWaveformWidget old, XmdsWaveformWidget req,
        (!(waveformCount(old) && waveformCount(new)))) ||
       (waveformPointerMode(old) != waveformPointerMode(new)))
     SetTranslations(new);
-  if (waveformTitle(req) != waveformTitle(old)) {
+  if (waveformTitle(req) != waveformTitle(old))
+  {
     if (waveformTitle(old) != 0)
       XtFree(waveformTitle(old));
     waveformTitle(new) =
@@ -1007,7 +1071,8 @@ static Boolean SetValues(XmdsWaveformWidget old, XmdsWaveformWidget req,
   if (waveformDisabled(req) ? 0 : (waveformDisabled(old) ? 1 : plot_changed))
     Plot(new, 1);
   else if (!(waveformDisabled(req)) && ((xCrosshair(old) != xCrosshair(req)) ||
-                                        (yCrosshair(old) != yCrosshair(req)))) {
+                                        (yCrosshair(old) != yCrosshair(req))))
+  {
     float float_x = (float)xCrosshair(new);
     float float_y = (float)yCrosshair(new);
     SetCrosshairs((Widget) new, &float_x, &float_y,
@@ -1016,7 +1081,8 @@ static Boolean SetValues(XmdsWaveformWidget old, XmdsWaveformWidget req,
   return 0;
 }
 
-static void FreePixVals(XmdsWaveformWidget w) {
+static void FreePixVals(XmdsWaveformWidget w)
+{
   if (xPixValue(w))
     XtFree((char *)xPixValue(w));
   if (yPixValue(w))
@@ -1025,7 +1091,8 @@ static void FreePixVals(XmdsWaveformWidget w) {
 }
 
 static void GetPixVals(XmdsWaveformWidget w, Dimension width,
-                       Dimension height) {
+                       Dimension height)
+{
   FreePixVals(w);
   xPixValue(w) = (int *)XtCalloc(waveformCount(w), sizeof(*xPixValue(w)));
   ConvertToPix(waveformCount(w), xMin(w), xMax(w), xValue(w), width,
@@ -1047,18 +1114,21 @@ static void GetPixVals(XmdsWaveformWidget w, Dimension width,
     Boolean pen_down;                                                          \
     if (is_missing)                                                            \
       pen_down = 0;                                                            \
-    else {                                                                     \
+    else                                                                       \
+    {                                                                          \
       int xval = x + xoff;                                                     \
       int yval = y + yoff;                                                     \
       this_point.x = xval;                                                     \
-      if (this_point.x != xval) {                                              \
+      if (this_point.x != xval)                                                \
+      {                                                                        \
         if (xval < -32768)                                                     \
           this_point.x = -32768;                                               \
         else if (xval > 32767)                                                 \
           this_point.x = 32767;                                                \
       }                                                                        \
       this_point.y = yval;                                                     \
-      if (this_point.y != yval) {                                              \
+      if (this_point.y != yval)                                                \
+      {                                                                        \
         if (yval < -32768)                                                     \
           this_point.y = -32768;                                               \
         else if (yval > 32767)                                                 \
@@ -1068,25 +1138,31 @@ static void GetPixVals(XmdsWaveformWidget w, Dimension width,
                    ((this_point.y == 32767) || (this_point.y == -32768));      \
       pen_down = penDown && !is_missing;                                       \
     }                                                                          \
-    if (pen_down || (last_pen_down && idx)) {                                  \
-      if (step && pidx) {                                                      \
+    if (pen_down || (last_pen_down && idx))                                    \
+    {                                                                          \
+      if (step && pidx)                                                        \
+      {                                                                        \
         points[pidx].x = this_point.x;                                         \
         points[pidx].y = points[pidx - 1].y;                                   \
         pidx++;                                                                \
       }                                                                        \
       points[pidx++] = this_point;                                             \
     }                                                                          \
-    if (((pidx + 1 >= maxP) || (!pen_down && pidx >= 2))) {                    \
+    if (((pidx + 1 >= maxP) || (!pen_down && pidx >= 2)))                      \
+    {                                                                          \
       DrawLines(XtDisplay(w), waveformDrawable(w), waveformPlotGC(w), points,  \
                 pidx, XtWidth(w), XtHeight(w));                                \
-      if (pen_down) {                                                          \
+      if (pen_down)                                                            \
+      {                                                                        \
         points[0] = points[pidx - 1];                                          \
         pidx = 1;                                                              \
-      } else                                                                   \
+      }                                                                        \
+      else                                                                     \
         pidx = 0;                                                              \
     }                                                                          \
     last_pen_down = pen_down;                                                  \
-    if (!is_missing && (ss || sm)) {                                           \
+    if (!is_missing && (ss || sm))                                             \
+    {                                                                          \
       if (ss && selections[idx])                                               \
         recs[ridx].height = sss;                                               \
       else if (sm)                                                             \
@@ -1095,12 +1171,14 @@ static void GetPixVals(XmdsWaveformWidget w, Dimension width,
         recs[ridx].height = 0;                                                 \
       if (waveformPrint)                                                       \
         recs[ridx].height *= resinc;                                           \
-      if (recs[ridx].height) {                                                 \
+      if (recs[ridx].height)                                                   \
+      {                                                                        \
         recs[ridx].width = recs[ridx].height;                                  \
         recs[ridx].x = this_point.x - recs[ridx].width / 2;                    \
         recs[ridx].y = this_point.y - recs[ridx].height / 2;                   \
         (ridx)++;                                                              \
-        if (ridx >= maxR) {                                                    \
+        if (ridx >= maxR)                                                      \
+        {                                                                      \
           DrawRectangles(XtDisplay(w), waveformDrawable(w), waveformPlotGC(w), \
                          recs, ridx, XtWidth(w), XtHeight(w));                 \
           recs[0] = recs[ridx - 1];                                            \
@@ -1110,16 +1188,19 @@ static void GetPixVals(XmdsWaveformWidget w, Dimension width,
     }                                                                          \
   }
 
-static void Plot(XmdsWaveformWidget w, Boolean free_mem) {
+static void Plot(XmdsWaveformWidget w, Boolean free_mem)
+{
   waveformRedraw(w) = False;
   if (!XtIsRealized((Widget)w))
     return;
 
-  if (!waveformPrint) {
+  if (!waveformPrint)
+  {
     if (w->core.background_pixmap == XtUnspecifiedPixmap)
       XFillRectangle(XtDisplay(w), waveformDrawable(w), waveformEraseGC(w), 0,
                      0, XtWidth(w), XtHeight(w));
-    else {
+    else
+    {
       int x, y;
       unsigned long root;
       unsigned int width = 0, height = 0, bw, depth;
@@ -1133,7 +1214,8 @@ static void Plot(XmdsWaveformWidget w, Boolean free_mem) {
     XtCallCallbacks((Widget)w, XmdsNunderlayCallback,
                     (void *)waveformDrawable(w));
   }
-  if (waveformCount(w)) {
+  if (waveformCount(w))
+  {
     if (xPixValue(w) == 0 || yPixValue(w) == 0)
       GetPixVals(w, XtWidth(w), XtHeight(w));
     {
@@ -1167,20 +1249,24 @@ static void Plot(XmdsWaveformWidget w, Boolean free_mem) {
       int maxR = max_req / sizeof(XRectangle) > recsPerIo
                      ? recsPerIo
                      : max_req / sizeof(XRectangle);
-      if (waveformPanning(w) > 0) {
+      if (waveformPanning(w) > 0)
+      {
         int j;
         int pix;
         int xmin = -xoff;
         int xmax = XtWidth(w) - xoff;
         for (i = 0; (xp[i] < xmin) && (i < count); i++)
           ;
-        if (i != count) {
+        if (i != count)
+        {
           j = i ? i - 1 : 0;
           if (pd && ((waveformShowMode(w) == XmdsSHOW_MODE_LINE) ||
-                     (waveformShowMode(w) == XmdsSHOW_MODE_BOTH))) {
+                     (waveformShowMode(w) == XmdsSHOW_MODE_BOTH)))
+          {
             LoadPoint(j, pd[j]);
             LoadPoint(i, pd[i]);
-            for (pix = xmin; pix < xmax; pix = max(pix + 1, xp[i])) {
+            for (pix = xmin; pix < xmax; pix = max(pix + 1, xp[i]))
+            {
               for (i++; xp[i] < pix && i < count; i++)
                 ;
               if (i == count)
@@ -1189,12 +1275,15 @@ static void Plot(XmdsWaveformWidget w, Boolean free_mem) {
             }
             i = i < count ? i : count - 1;
             LoadPoint(i, pd[i]);
-          } else {
+          }
+          else
+          {
             Boolean pd = ((waveformShowMode(w) == XmdsSHOW_MODE_LINE) ||
                           (waveformShowMode(w) == XmdsSHOW_MODE_BOTH));
             LoadPoint(j, pd);
             LoadPoint(i, pd);
-            for (pix = xmin; pix < xmax; pix = max(pix + 1, xp[i])) {
+            for (pix = xmin; pix < xmax; pix = max(pix + 1, xp[i]))
+            {
               for (i++; xp[i] < pix && i < count; i++)
                 ;
               if (i == count)
@@ -1205,14 +1294,19 @@ static void Plot(XmdsWaveformWidget w, Boolean free_mem) {
             LoadPoint(i, pd);
           }
         }
-      } else {
+      }
+      else
+      {
         if (pd && ((waveformShowMode(w) == XmdsSHOW_MODE_LINE) ||
-                   (waveformShowMode(w) == XmdsSHOW_MODE_BOTH))) {
+                   (waveformShowMode(w) == XmdsSHOW_MODE_BOTH)))
+        {
           for (i = 0; i < count; i++)
             LoadPoint(i, pd[i]);
           if (waveformClosed(w))
             LoadPoint(0, pd[0]);
-        } else {
+        }
+        else
+        {
           Boolean pd = ((waveformShowMode(w) == XmdsSHOW_MODE_LINE) ||
                         (waveformShowMode(w) == XmdsSHOW_MODE_BOTH));
           for (i = 0; i < count; i++)
@@ -1226,12 +1320,14 @@ static void Plot(XmdsWaveformWidget w, Boolean free_mem) {
     if (free_mem)
       FreePixVals(w);
   }
-  if (!waveformPanning(w)) {
+  if (!waveformPanning(w))
+  {
     DrawGrid(w);
     if (waveformPointerMode(w) == XmdsPOINTER_MODE_POINT && !waveformPrint)
       DrawCrosshairs(w, first_xh);
   }
-  if (!waveformPrint) {
+  if (!waveformPrint)
+  {
     XtCallCallbacks((Widget)w, XmdsNoverlayCallback,
                     (void *)waveformDrawable(w));
     if (waveformReverse(w))
@@ -1244,7 +1340,8 @@ static void Plot(XmdsWaveformWidget w, Boolean free_mem) {
 }
 
 static void Flush(XmdsWaveformWidget w, XPoint *points, int numpoints,
-                  XRectangle *recs, int numrecs) {
+                  XRectangle *recs, int numrecs)
+{
   if (numpoints >= 2)
     DrawLines(XtDisplay(w), waveformDrawable(w), waveformPlotGC(w), points,
               numpoints, XtWidth(w), XtHeight(w));
@@ -1253,7 +1350,8 @@ static void Flush(XmdsWaveformWidget w, XPoint *points, int numpoints,
                    numrecs, XtWidth(w), XtHeight(w));
 }
 
-static void DrawGrid(XmdsWaveformWidget w) {
+static void DrawGrid(XmdsWaveformWidget w)
+{
   int xlines = 0;
   float xfirst;
   float xinc;
@@ -1271,13 +1369,16 @@ static void DrawGrid(XmdsWaveformWidget w) {
   Boolean toosmall = width < 100 || height < 40;
   if (!XtIsRealized((Widget)w) || toosmall)
     return;
-  if (waveformCount(w)) {
-    if (xGridLines(w)) {
+  if (waveformCount(w))
+  {
+    if (xGridLines(w))
+    {
       GridScaling(*xMin(w), *xMax(w), xGridLines(w), (int)XtWidth(w), &xlines,
                   &xfirst, &xinc, &xfirstv, &xvinc);
       {
         float *line = (float *)XtMalloc(xlines * sizeof(float) * 4);
-        for (i = 0; i < xlines * 4; i = i + 4) {
+        for (i = 0; i < xlines * 4; i = i + 4)
+        {
           line[i] = line[i + 1] = xfirst + i / 4 * xinc;
           line[i + 2] = 0;
           line[i + 3] = waveformGridStyle(w) == XmdsGRID_STYLE_TICKS
@@ -1289,8 +1390,10 @@ static void DrawGrid(XmdsWaveformWidget w) {
                          ? waveformPlotGC(w)
                          : waveformGridGC(w),
                      line, xlines);
-        if (waveformGridStyle(w) == XmdsGRID_STYLE_TICKS) {
-          for (i = 0; i < xlines * 4; i = i + 4) {
+        if (waveformGridStyle(w) == XmdsGRID_STYLE_TICKS)
+        {
+          for (i = 0; i < xlines * 4; i = i + 4)
+          {
             line[i] = line[i + 1] = xfirst + i / 4 * xinc;
             line[i + 2] = height - XtHeight(w) * .02;
             line[i + 3] = height;
@@ -1301,12 +1404,14 @@ static void DrawGrid(XmdsWaveformWidget w) {
         XtFree((char *)line);
       }
     }
-    if (yGridLines(w)) {
+    if (yGridLines(w))
+    {
       GridScaling(*yMin(w), *yMax(w), yGridLines(w), (int)XtHeight(w), &ylines,
                   &yfirst, &yinc, &yfirstv, &yvinc);
       {
         float *line = (float *)XtMalloc(ylines * sizeof(float) * 4);
-        for (i = 0; i < ylines * 4; i = i + 4) {
+        for (i = 0; i < ylines * 4; i = i + 4)
+        {
           line[i] = 0;
           line[i + 1] = waveformGridStyle(w) == XmdsGRID_STYLE_TICKS
                             ? XtWidth(w) * .02
@@ -1318,8 +1423,10 @@ static void DrawGrid(XmdsWaveformWidget w) {
                          ? waveformPlotGC(w)
                          : waveformGridGC(w),
                      line, ylines);
-        if (waveformGridStyle(w) == XmdsGRID_STYLE_TICKS) {
-          for (i = 0; i < ylines * 4; i = i + 4) {
+        if (waveformGridStyle(w) == XmdsGRID_STYLE_TICKS)
+        {
+          for (i = 0; i < ylines * 4; i = i + 4)
+          {
             line[i] = width - XtWidth(w) * .02;
             line[i + 1] = width;
             line[i + 2] = line[i + 3] = height - (yfirst + i / 4 * yinc);
@@ -1330,8 +1437,10 @@ static void DrawGrid(XmdsWaveformWidget w) {
         XtFree((char *)line);
       }
     }
-    if (xLabels(w)) {
-      for (i = 0; i < xlines; i++) {
+    if (xLabels(w))
+    {
+      for (i = 0; i < xlines; i++)
+      {
         float x = xfirst + i * xinc, twidth;
         double value = Round(xfirstv + i * xvinc, xResolution(w));
         int length = 0;
@@ -1347,8 +1456,10 @@ static void DrawGrid(XmdsWaveformWidget w) {
                    (float)(XtHeight(w) - 2.), label, length);
       }
     }
-    if (yLabels(w)) {
-      for (i = 0; i < ylines; i++) {
+    if (yLabels(w))
+    {
+      for (i = 0; i < ylines; i++)
+      {
         float y = XtHeight(w) - (yfirst + i * yinc);
         double value = Round(yfirstv + i * yvinc, yResolution(w));
         int length = 0;
@@ -1373,7 +1484,8 @@ static void DrawGrid(XmdsWaveformWidget w) {
       }
     }
   }
-  if (waveformTitle(w)) {
+  if (waveformTitle(w))
+  {
     char *tptr;
     char *eptr;
     int line;
@@ -1382,7 +1494,8 @@ static void DrawGrid(XmdsWaveformWidget w) {
                      waveformFontStruct(w)->max_bounds.descent + 2;
     float lasty = -1E20;
     for (line = 0, tptr = waveformTitle(w), eptr = tptr + strlen(tptr);
-         tptr < eptr; tptr += (length + 1), line++) {
+         tptr < eptr; tptr += (length + 1), line++)
+    {
       char *lf = strchr(tptr, '\n');
       int twidth;
       float x;
@@ -1416,7 +1529,8 @@ static void DrawGrid(XmdsWaveformWidget w) {
 
 static void GridScaling(float min_in, float max_in, int divisions_in, int width,
                         int *divisions_out, float *first_pix, float *pix_inc,
-                        float *first_val, float *val_inc) {
+                        float *first_val, float *val_inc)
+{
   float divlog;
   float grid;
   double power10;
@@ -1435,11 +1549,14 @@ static void GridScaling(float min_in, float max_in, int divisions_in, int width,
       pow(10.0, ((divlog < 0) ? -log10(intinc) : log10(intinc)) + power10);
   grid = ceil(min_in / (*val_inc)) * (*val_inc);
   *divisions_out = floor((max_in - grid + (*val_inc)) / (*val_inc));
-  if (max_in > min_in) {
+  if (max_in > min_in)
+  {
     *first_pix = width * ((grid - min_in) / (max_in - min_in));
     *pix_inc = width * ((*val_inc) / (max_in - min_in));
     *first_val = (*first_pix * ((max_in - min_in) / width)) + min_in;
-  } else {
+  }
+  else
+  {
     *divisions_out = 2;
     *first_pix = 0;
     *pix_inc = width;
@@ -1449,27 +1566,35 @@ static void GridScaling(float min_in, float max_in, int divisions_in, int width,
   return;
 }
 
-static void RemoveZeroes(char *string, int *length) {
+static void RemoveZeroes(char *string, int *length)
+{
   int i;
   int done = 0;
-  while (!done) {
+  while (!done)
+  {
     done = 1;
-    for (i = *length; i > 0; i--) {
+    for (i = *length; i > 0; i--)
+    {
       if (((string[i] == 'e') && (string[i + 1] == '0')) ||
           ((string[i] == '-') && (string[i + 1] == '0')) ||
-          ((string[i] == '+') && (string[i + 1] == '0'))) {
+          ((string[i] == '+') && (string[i + 1] == '0')))
+      {
         int j;
         for (j = i + 1; j < *length; j++)
           string[j] = string[j + 1];
         (*length)--;
         done = 0;
-      } else if ((string[i] == '0') && (string[i + 1] == 'e')) {
+      }
+      else if ((string[i] == '0') && (string[i + 1] == 'e'))
+      {
         int j;
         for (j = i; j < *length; j++)
           string[j] = string[j + 1];
         (*length)--;
         done = 0;
-      } else if ((string[i] == '.') && (string[i + 1] == 'e')) {
+      }
+      else if ((string[i] == '.') && (string[i + 1] == 'e'))
+      {
         int j;
         for (j = i; j < *length; j++)
           string[j] = string[j + 1];
@@ -1480,11 +1605,14 @@ static void RemoveZeroes(char *string, int *length) {
   return;
 }
 
-static void DrawCrosshairs(XmdsWaveformWidget w, enum crosshairsmode mode) {
-  if (xMax(w) && xMin(w) && yMax(w) && yMin(w)) {
+static void DrawCrosshairs(XmdsWaveformWidget w, enum crosshairsmode mode)
+{
+  if (xMax(w) && xMin(w) && yMax(w) && yMin(w))
+  {
     float xspan = *xMax(w) - *xMin(w);
     float yspan = *yMax(w) - *yMin(w);
-    if (xspan > 0 && yspan > 0) {
+    if (xspan > 0 && yspan > 0)
+    {
       unsigned short xpix = max(0, min(XtWidth(w), (xCrosshair(w) - *xMin(w)) *
                                                        (XtWidth(w) / xspan)) +
                                        .499999);
@@ -1510,8 +1638,10 @@ static void DrawCrosshairs(XmdsWaveformWidget w, enum crosshairsmode mode) {
       crosshairs[3].x2 = XtWidth(w);
       crosshairs[3].y2 = ypix;
 
-      if (XtIsRealized((Widget)w)) {
-        switch (mode) {
+      if (XtIsRealized((Widget)w))
+      {
+        switch (mode)
+        {
         case move_xh:
           XDrawSegments(XtDisplay(w), XtWindow(w), waveformFlipGC(w),
                         crosshairs, 4);
@@ -1545,13 +1675,15 @@ static void DrawCrosshairs(XmdsWaveformWidget w, enum crosshairsmode mode) {
   }
 }
 
-static void WaveformButton3(XmdsWaveformWidget w, XButtonEvent *event) {
+static void WaveformButton3(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XmAnyCallbackStruct cb = {XmdsCRButton3, 0};
   cb.event = (XEvent *)event;
   XtCallCallbacks((Widget)w, XmdsNbutton3Callback, &cb);
 }
 
-static void WaveformHelp(XmdsWaveformWidget w, XButtonEvent *event) {
+static void WaveformHelp(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XmAnyCallbackStruct cb = {0, 0};
   cb.event = (XEvent *)event;
   XtCallCallbacks((Widget)w, XmNhelpCallback, &cb);
@@ -1559,31 +1691,41 @@ static void WaveformHelp(XmdsWaveformWidget w, XButtonEvent *event) {
 
 static void ConvertToPix(int num, float *minvalin, float *maxvalin,
                          float *value, unsigned short pixspan, int *pixval,
-                         unsigned int reverse) {
+                         unsigned int reverse)
+{
   int i;
   float minval = *minvalin;
   float maxval = *maxvalin;
   float span = maxval - minval;
   int *ival = (int *)value;
-  if (span) {
+  if (span)
+  {
     float pix_over_span = pixspan / span;
-    if (value) {
-      for (i = 0; i < num; i++) {
+    if (value)
+    {
+      for (i = 0; i < num; i++)
+      {
         if (ival[i] == roprand)
           pixval[i] = missing;
-        else {
+        else
+        {
           float fpixval = (reverse) ? (maxval - value[i]) : (value[i] - minval);
-          if (pix_over_span > 1E9) {
+          if (pix_over_span > 1E9)
+          {
             fpixval = (fpixval > 1)
                           ? 1.1E9
                           : ((fpixval < -1) ? -1.1E9 : fpixval * pix_over_span);
-          } else {
+          }
+          else
+          {
             fpixval *= pix_over_span;
           }
           pixval[i] = fpixval < -1E9 ? -1E9 : (fpixval > 1E9 ? 1E9 : fpixval);
         }
       }
-    } else {
+    }
+    else
+    {
       if (reverse)
         for (i = 0; i < num; i++)
           pixval[i] =
@@ -1597,83 +1739,110 @@ static void ConvertToPix(int num, float *minvalin, float *maxvalin,
 }
 
 static void AutoScale(int num, float *value, float *minval, float *maxval,
-                      float *xval, float *minxval, float *maxxval) {
+                      float *xval, float *minxval, float *maxxval)
+{
   int i;
   float span;
   float vmin;
   float vmax;
   int *ival = (int *)value;
   int *ixval = (int *)xval;
-  if (value) {
+  if (value)
+  {
     vmin = huge;
     vmax = -huge;
-    for (i = 0; i < num; i++) {
-      if ((ival[i] != roprand) && (ixval[i] != roprand)) {
-        if (vmin > value[i]) {
-          if (minxval && maxxval) {
+    for (i = 0; i < num; i++)
+    {
+      if ((ival[i] != roprand) && (ixval[i] != roprand))
+      {
+        if (vmin > value[i])
+        {
+          if (minxval && maxxval)
+          {
             if (xval[i] >= *minxval && xval[i] <= *maxxval)
               vmin = value[i];
-          } else if (minxval) {
+          }
+          else if (minxval)
+          {
             if (xval[i] >= *minxval)
               vmin = value[i];
-          } else if (maxxval) {
+          }
+          else if (maxxval)
+          {
             if (xval[i] <= *maxxval)
               vmin = value[i];
-          } else
+          }
+          else
             vmin = value[i];
         }
-        if (vmax < value[i]) {
-          if (minxval && maxxval) {
+        if (vmax < value[i])
+        {
+          if (minxval && maxxval)
+          {
             if (xval[i] >= *minxval && xval[i] <= *maxxval)
               vmax = value[i];
-          } else if (minxval) {
+          }
+          else if (minxval)
+          {
             if (xval[i] >= *minxval)
               vmax = value[i];
-          } else if (maxxval) {
+          }
+          else if (maxxval)
+          {
             if (xval[i] <= *maxxval)
               vmax = value[i];
-          } else
+          }
+          else
             vmax = value[i];
         }
       }
     }
-    if ((minxval || maxxval) && (vmin > vmax)) {
+    if ((minxval || maxxval) && (vmin > vmax))
+    {
       AutoScale(num, value, minval, maxval, xval, 0, 0);
       return;
     }
-  } else {
+  }
+  else
+  {
     vmin = 0.;
     vmax = num - 1;
   }
   vmin = max(vmin, -huge);
   vmax = max(vmin, min(vmax, huge));
-  if (vmax == vmin) {
+  if (vmax == vmin)
+  {
     if (vmin == huge)
       vmin = vmax = 0.0;
     span = fabs(vmax);
     if (span <= 0.0)
       span = 10.0;
-  } else
+  }
+  else
     span = vmax - vmin;
   *maxval = vmax + span * .1;
   *minval = vmin - span * .1;
 }
 
-static void SetCursor(XmdsWaveformWidget w) {
+static void SetCursor(XmdsWaveformWidget w)
+{
   static Boolean first = 1;
   static Cursor zoom_cursor;
   static Cursor drag_cursor;
   static Cursor point_cursor;
   static Cursor edit_cursor;
-  if (first) {
+  if (first)
+  {
     drag_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
     point_cursor = XCreateFontCursor(XtDisplay(w), XC_crosshair);
     zoom_cursor = XCreateFontCursor(XtDisplay(w), XC_sizing);
     edit_cursor = XCreateFontCursor(XtDisplay(w), XC_exchange);
     first = 0;
   }
-  if (XtWindow(w)) {
-    switch (waveformPointerMode(w)) {
+  if (XtWindow(w))
+  {
+    switch (waveformPointerMode(w))
+    {
     case XmdsPOINTER_MODE_NONE:
       XUndefineCursor(XtDisplay(w), XtWindow(w));
       break;
@@ -1693,7 +1862,8 @@ static void SetCursor(XmdsWaveformWidget w) {
   }
 }
 
-static void SetTranslations(XmdsWaveformWidget w) {
+static void SetTranslations(XmdsWaveformWidget w)
+{
   Arg arglist[] = {{XmNtranslations, 0}};
   int mode = (waveformPointerMode(w) == XmdsPOINTER_MODE_USER)
                  ? XmdsPOINTER_MODE_USER
@@ -1701,7 +1871,8 @@ static void SetTranslations(XmdsWaveformWidget w) {
                         ? XmdsPOINTER_MODE_EDIT
                         : (waveformCount(w) ? waveformPointerMode(w)
                                             : XmdsPOINTER_MODE_NONE));
-  switch (mode) {
+  switch (mode)
+  {
   case XmdsPOINTER_MODE_USER:
     break;
   case XmdsPOINTER_MODE_NONE:
@@ -1732,10 +1903,12 @@ static void SetTranslations(XmdsWaveformWidget w) {
   }
 }
 
-static void SetResolutions(XmdsWaveformWidget w) {
+static void SetResolutions(XmdsWaveformWidget w)
+{
   float divlog;
   if (xMin(w) && xMax(w) && yMin(w) && yMax(w) && (*xMin(w) < *xMax(w)) &&
-      (*yMin(w) < *yMax(w))) {
+      (*yMin(w) < *yMax(w)))
+  {
     divlog = log10(*xMax(w) - *xMin(w));
     xResolution(w) = pow(10.0, (divlog < 0 ? ceil(divlog) : floor(divlog)) - 4);
     divlog = log10(*yMax(w) - *yMin(w));
@@ -1743,18 +1916,22 @@ static void SetResolutions(XmdsWaveformWidget w) {
   }
 }
 
-static double Round(double value, double resolution) {
+static double Round(double value, double resolution)
+{
   return (resolution > 0) ? floor(value / resolution + .4999999) * resolution
                           : value;
 }
 
 static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req,
-                          XmdsWaveformWidget new) {
+                          XmdsWaveformWidget new)
+{
   /*    Macros used in this routine only */
 
 #define destroyValStructIfChanged(field)                                       \
-  if (field##ValStruct(req) != field##ValStruct(old)) {                        \
-    if (field##ValStruct(old)) {                                               \
+  if (field##ValStruct(req) != field##ValStruct(old))                          \
+  {                                                                            \
+    if (field##ValStruct(old))                                                 \
+    {                                                                          \
       if (field##ValStruct(old)->destroy)                                      \
         (*field##ValStruct(old)->destroy)(old,                                 \
                                           field##ValStruct(old)->destroy_arg); \
@@ -1763,29 +1940,36 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req,
     changed = TRUE;                                                            \
   }
 
-#define updateValStruct(field, type, minsize)                                  \
-  if (((!old) || (field##ValStruct(req) != field##ValStruct(old))) &&          \
-      field##ValStruct(req)) {                                                 \
-    field##ValStruct(new) = (XmdsWaveformValStruct *)memcpy(                   \
-        XtNew(XmdsWaveformValStruct), field##ValStruct(req),                   \
-        sizeof(XmdsWaveformValStruct));                                        \
-    waveformCount(new) =                                                       \
-        min((int)(field##ValStruct(req)->size / sizeof(type)), (minsize));     \
-    field##Value(new) = (type *)field##ValStruct(req)->addr;                   \
-    field##ValPtr(new) = (type *)NULL;                                         \
-    changed = TRUE;                                                            \
+#define updateValStruct(field, type, minsize)                              \
+  if (((!old) || (field##ValStruct(req) != field##ValStruct(old))) &&      \
+      field##ValStruct(req))                                               \
+  {                                                                        \
+    field##ValStruct(new) = (XmdsWaveformValStruct *)memcpy(               \
+        XtNew(XmdsWaveformValStruct), field##ValStruct(req),               \
+        sizeof(XmdsWaveformValStruct));                                    \
+    waveformCount(new) =                                                   \
+        min((int)(field##ValStruct(req)->size / sizeof(type)), (minsize)); \
+    field##Value(new) = (type *)field##ValStruct(req)->addr;               \
+    field##ValPtr(new) = (type *)NULL;                                     \
+    changed = TRUE;                                                        \
   }
 
 #define updateValPtr(field, type)                                              \
-  if (field##ValPtr(old) && (field##ValPtr(old) == field##Value(old))) {       \
-    if (old_count != waveformCount(new)) {                                     \
-      if ((field##ValPtr(new) == field##Value(new)) && waveformCount(new)) {   \
+  if (field##ValPtr(old) && (field##ValPtr(old) == field##Value(old)))         \
+  {                                                                            \
+    if (old_count != waveformCount(new))                                       \
+    {                                                                          \
+      if ((field##ValPtr(new) == field##Value(new)) && waveformCount(new))     \
+      {                                                                        \
         field##Value(new) = (type *)XtRealloc((char *)field##Value(new),       \
                                               waveformCount(new) *             \
                                                   sizeof(*field##Value(new))); \
         field##ValPtr(new) = field##Value(new);                                \
-      } else {                                                                 \
-        if (field##ValPtr(new)) {                                              \
+      }                                                                        \
+      else                                                                     \
+      {                                                                        \
+        if (field##ValPtr(new))                                                \
+        {                                                                      \
           field##Value(new) = (type *)XtMalloc(waveformCount(new) *            \
                                                sizeof(*field##Value(new)));    \
           memcpy(field##Value(new), field##ValPtr(req),                        \
@@ -1795,14 +1979,18 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req,
         XtFree((char *)field##ValPtr(old));                                    \
       }                                                                        \
       changed = TRUE;                                                          \
-    } else if (field##ValPtr(new) &&                                           \
-               (field##ValPtr(new) != field##Value(new))) {                    \
+    }                                                                          \
+    else if (field##ValPtr(new) &&                                             \
+             (field##ValPtr(new) != field##Value(new)))                        \
+    {                                                                          \
       memcpy(field##Value(new), field##ValPtr(req),                            \
              waveformCount(new) * sizeof(*field##Value(new)));                 \
       field##ValPtr(new) = field##Value(new);                                  \
       changed = TRUE;                                                          \
     }                                                                          \
-  } else if (field##ValPtr(new)) {                                             \
+  }                                                                            \
+  else if (field##ValPtr(new))                                                 \
+  {                                                                            \
     field##Value(new) =                                                        \
         (type *)XtMalloc(waveformCount(new) * sizeof(*field##Value(new)));     \
     memcpy(field##Value(new), field##ValPtr(req),                              \
@@ -1811,19 +1999,21 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req,
     changed = TRUE;                                                            \
   }
 
-#define initializeValPtr(field, type)                                          \
-  if (field##ValPtr(new)) {                                                    \
-    field##Value(new) =                                                        \
-        (type *)XtMalloc(waveformCount(new) * sizeof(*field##Value(new)));     \
-    memcpy(field##Value(new), field##ValPtr(req),                              \
-           waveformCount(new) * sizeof(*field##Value(new)));                   \
-    field##ValPtr(new) = field##Value(new);                                    \
-    changed = TRUE;                                                            \
+#define initializeValPtr(field, type)                                      \
+  if (field##ValPtr(new))                                                  \
+  {                                                                        \
+    field##Value(new) =                                                    \
+        (type *)XtMalloc(waveformCount(new) * sizeof(*field##Value(new))); \
+    memcpy(field##Value(new), field##ValPtr(req),                          \
+           waveformCount(new) * sizeof(*field##Value(new)));               \
+    field##ValPtr(new) = field##Value(new);                                \
+    changed = TRUE;                                                        \
   }
 
   int old_count = 0;
   Boolean changed = FALSE;
-  if (old) {
+  if (old)
+  {
     old_count = waveformCount(old);
     destroyValStructIfChanged(y);
     destroyValStructIfChanged(x);
@@ -1837,21 +2027,27 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req,
   /*
     waveformCount(new) = (waveformCount(new) > 1) ? waveformCount(new) : 0;
   */
-  if (old) {
+  if (old)
+  {
     if (old_count != waveformCount(new))
       changed = TRUE;
     updateValPtr(y, float);
     updateValPtr(x, float);
     updateValPtr(waveformSelections, Boolean);
     updateValPtr(waveformPenDown, Boolean);
-  } else {
-    if (waveformCount(new)) {
+  }
+  else
+  {
+    if (waveformCount(new))
+    {
       changed = TRUE;
       initializeValPtr(y, float);
       initializeValPtr(x, float);
       initializeValPtr(waveformSelections, Boolean);
       initializeValPtr(waveformPenDown, Boolean);
-    } else {
+    }
+    else
+    {
       yValue(new) = yValPtr(new) = 0;
       xValue(new) = xValPtr(new) = 0;
       waveformSelectionsValue(new) = waveformSelectionsValPtr(new) = 0;
@@ -1864,25 +2060,29 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req,
 EXPORT void XmdsWaveformUpdate(Widget w, XmdsWaveformValStruct *x,
                                XmdsWaveformValStruct *y, char *title,
                                float *xmin, float *xmax, float *ymin,
-                               float *ymax, Boolean defer) {
+                               float *ymax, Boolean defer)
+{
   (((XmdsWaveformWidgetClass)w->core.widget_class)->waveform_class.update_proc)(
       w, x, y, title, xmin, xmax, ymin, ymax, defer);
 }
 
 EXPORT void XmdsWaveformSetCrosshairs(Widget w, float *x, float *y,
-                                      Boolean attach) {
+                                      Boolean attach)
+{
   (((XmdsWaveformWidgetClass)w->core.widget_class)
        ->waveform_class.set_crosshairs_proc)(w, x, y, attach);
 }
 
-EXPORT void XmdsWaveformSetPointerMode(Widget w, int mode) {
+EXPORT void XmdsWaveformSetPointerMode(Widget w, int mode)
+{
   (((XmdsWaveformWidgetClass)w->core.widget_class)
        ->waveform_class.set_pointer_mode_proc)(w, mode);
 }
 
 EXPORT void XmdsWaveformSetWave(Widget w, int count, float *x, float *y,
                                 Boolean *select, Boolean *pendown,
-                                Boolean autoscale, Boolean defer_update) {
+                                Boolean autoscale, Boolean defer_update)
+{
   (((XmdsWaveformWidgetClass)w->core.widget_class)
        ->waveform_class.set_wave_proc)(w, count, x, y, select, pendown,
                                        autoscale, defer_update);
@@ -1891,17 +2091,20 @@ EXPORT void XmdsWaveformSetWave(Widget w, int count, float *x, float *y,
 static void Update(Widget w_in, XmdsWaveformValStruct *x,
                    XmdsWaveformValStruct *y, char *title, float *xmin,
                    float *xmax, float *ymin, float *ymax,
-                   Boolean defer_update) {
+                   Boolean defer_update)
+{
   XmdsWaveformWidget w = (XmdsWaveformWidget)w_in;
   int old_count = waveformCount(w);
   waveformPanning(w) = 0;
   FreePixVals(w);
-  if (xValStruct(w)) {
+  if (xValStruct(w))
+  {
     if (xValStruct(w)->destroy)
       (*xValStruct(w)->destroy)(w, xValStruct(w)->destroy_arg);
     XtFree((char *)xValStruct(w));
   }
-  if (yValStruct(w)) {
+  if (yValStruct(w))
+  {
     if (yValStruct(w)->destroy)
       (*yValStruct(w)->destroy)(w, yValStruct(w)->destroy_arg);
     XtFree((char *)yValStruct(w));
@@ -1933,42 +2136,52 @@ static void Update(Widget w_in, XmdsWaveformValStruct *x,
 
 static void SetWave(Widget w_in, int count, float *x, float *y,
                     Boolean *waveformSelections, Boolean *waveformPenDown,
-                    Boolean autoscale, Boolean defer_update) {
+                    Boolean autoscale, Boolean defer_update)
+{
   XmdsWaveformWidget w = (XmdsWaveformWidget)w_in;
   int old_count = waveformCount(w);
   waveformPanning(w) = 0;
   FreePixVals(w);
   waveformCount(w) = count;
-#define UpdateField(field, type)                                               \
-  if (old_count != count) {                                                    \
-    if (count) {                                                               \
-      field##Value(w) =                                                        \
-          (type *)(old_count ? XtRealloc((char *)field##Value(w),              \
-                                         count * sizeof(*field##Value(w)))     \
-                             : XtMalloc(count * sizeof(*field##Value(w))));    \
-      field##ValPtr(w) = field##Value(w);                                      \
-    } else {                                                                   \
-      XtFree((char *)field##ValPtr(w));                                        \
-      field##Value(w) = 0;                                                     \
-      field##ValPtr(w) = 0;                                                    \
-    }                                                                          \
-  }                                                                            \
-  if (count)                                                                   \
+#define UpdateField(field, type)                                            \
+  if (old_count != count)                                                   \
+  {                                                                         \
+    if (count)                                                              \
+    {                                                                       \
+      field##Value(w) =                                                     \
+          (type *)(old_count ? XtRealloc((char *)field##Value(w),           \
+                                         count * sizeof(*field##Value(w)))  \
+                             : XtMalloc(count * sizeof(*field##Value(w)))); \
+      field##ValPtr(w) = field##Value(w);                                   \
+    }                                                                       \
+    else                                                                    \
+    {                                                                       \
+      XtFree((char *)field##ValPtr(w));                                     \
+      field##Value(w) = 0;                                                  \
+      field##ValPtr(w) = 0;                                                 \
+    }                                                                       \
+  }                                                                         \
+  if (count)                                                                \
     memcpy(field##ValPtr(w), field, count * sizeof(*field##Value(w)));
 
-  if (x) {
+  if (x)
+  {
     UpdateField(x, float);
   }
-  if (y) {
+  if (y)
+  {
     UpdateField(y, float);
   }
-  if (waveformSelections) {
+  if (waveformSelections)
+  {
     UpdateField(waveformSelections, Boolean);
   }
-  if (waveformPenDown) {
+  if (waveformPenDown)
+  {
     UpdateField(waveformPenDown, Boolean);
   }
-  if (count && (autoscale || !(xMin(w) && yMin(w) && xMax(w) && yMax(w)))) {
+  if (count && (autoscale || !(xMin(w) && yMin(w) && xMax(w) && yMax(w))))
+  {
     if (!xMin(w))
       xMin(w) = (float *)XtMalloc(sizeof(float *));
     if (!xMax(w))
@@ -1987,12 +2200,15 @@ static void SetWave(Widget w_in, int count, float *x, float *y,
     Plot(w, 1);
 }
 
-static void SetCrosshairs(Widget w_in, float *x, float *y, Boolean attach) {
+static void SetCrosshairs(Widget w_in, float *x, float *y, Boolean attach)
+{
   XmdsWaveformWidget w = (XmdsWaveformWidget)w_in;
-  if (waveformCount(w)) {
+  if (waveformCount(w))
+  {
     xCrosshair(w) = *x;
     yCrosshair(w) = *y;
-    if (attach) {
+    if (attach)
+    {
       int *xint = (int *)xValue(w);
       int *yint = (int *)yValue(w);
       float *xval = xValue(w);
@@ -2002,17 +2218,21 @@ static void SetCrosshairs(Widget w_in, float *x, float *y, Boolean attach) {
         if ((xint[i] != roprand) && (yint[i] != roprand) &&
             (xCrosshair(w) <= xval[i]))
           break;
-      if ((i == 0) || (i == num)) {
+      if ((i == 0) || (i == num))
+      {
         i = min(i, waveformCount(w) - 1);
         xCrosshair(w) = xint[i] != roprand ? xValue(w)[i] : 0.0;
         yCrosshair(w) = yint[i] != roprand ? yValue(w)[i] : 0.0;
-      } else {
+      }
+      else
+      {
         if (waveformStepPlot(w))
           yCrosshair(w) = yValue(
               w)[i - ((xCrosshair(w) < xValue(w)[i] && yint[i - 1] != roprand)
                           ? 1
                           : 0)];
-        else {
+        else
+        {
           if (xint[i - 1] == roprand || yint[i - 1] == roprand)
             yCrosshair(w) = yValue(w)[i];
           else
@@ -2028,11 +2248,14 @@ static void SetCrosshairs(Widget w_in, float *x, float *y, Boolean attach) {
   }
 }
 
-static void SetPointerMode(XmdsWaveformWidget w, int mode) {
+static void SetPointerMode(XmdsWaveformWidget w, int mode)
+{
   int old_mode = waveformPointerMode(w);
   waveformPointerMode(w) = mode;
-  if (old_mode != waveformPointerMode(w)) {
-    if (waveformCount(w)) {
+  if (old_mode != waveformPointerMode(w))
+  {
+    if (waveformCount(w))
+    {
       if (old_mode == XmdsPOINTER_MODE_POINT)
         DrawCrosshairs(w, last_xh);
       else if (waveformPointerMode(w) == XmdsPOINTER_MODE_POINT)
@@ -2045,25 +2268,29 @@ static void SetPointerMode(XmdsWaveformWidget w, int mode) {
 
 EXPORT void XmdsWaveformPrint(Widget w, FILE *fid, int width, int height,
                               int rotate, char *title, char *window_title,
-                              int inp_resolution) {
+                              int inp_resolution)
+{
   (((XmdsWaveformWidgetClass)w->core.widget_class)->waveform_class.print_proc)(
       w, fid, width, height, rotate, title, window_title, inp_resolution);
 }
 
-static void SetScale(int scaleit) {
+static void SetScale(int scaleit)
+{
   static int scaled = 0;
   if (scaleit == scaled)
     return;
 
   scaled = scaleit;
 
-  if (scaleit) {
+  if (scaleit)
+  {
     fprintf(printfid, "gsave\n");
     fprintf(printfid, "%g %g translate\n", 0., 825. * (1. - scale));
     /* Grid y values are set to ylimit-y (decwindows y are reversed from
        postscript), but the ylimit, normally 825, changes due to scale */
     fprintf(printfid, "%g %g scale\n", scale, scale);
-  } else
+  }
+  else
     fprintf(printfid, "grestore\n");
 }
 
@@ -2097,13 +2324,19 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
   if (printfid == NULL)
     return;
 
-  if (ftell(printfid) == 0) {
+  if (ftell(printfid) == 0)
+  {
     char fontname[80];
-    if (inp_rotate == 1) { /* Portrait */
+    if (inp_rotate == 1)
+    { /* Portrait */
       rotate = 0;
-    } else if (inp_rotate == 2) { /* Landscape */
+    }
+    else if (inp_rotate == 2)
+    { /* Landscape */
       rotate = 90;
-    } else {
+    }
+    else
+    {
       if (((inp_total_height) ? inp_total_height : XtHeight(w)) >=
           ((inp_total_width) ? inp_total_width : XtWidth(w)))
         rotate = 0;
@@ -2116,17 +2349,23 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
 
     resinc = resolution / 75.;
 
-    if (getenv("A4PAPER") == NULL) {
+    if (getenv("A4PAPER") == NULL)
+    {
       width_page = 8.5;
       height_page = 11.;
-    } else {
+    }
+    else
+    {
       width_page = 8.27;
       height_page = 11.69;
     }
-    if (rotate == 0) {
+    if (rotate == 0)
+    {
       width_limit = (width_page - 2. * margin) * resolution;
       height_limit = (height_page - 2. * margin) * resolution;
-    } else {
+    }
+    else
+    {
       width_limit = (height_page - 2. * margin) * resolution;
       height_limit = (width_page - 2. * margin) * resolution;
     }
@@ -2164,9 +2403,11 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
       fatom = XInternAtom(XtDisplay(w), "FAMILY_NAME", False);
       if (!fatom)
         strcpy(fontname, "Courier");
-      else {
+      else
+      {
         for (i = 0; i < fs->n_properties; i++)
-          if (fs->properties[i].name == fatom) {
+          if (fs->properties[i].name == fatom)
+          {
             fontinfo = XGetAtomName(XtDisplay(w), fs->properties[i].card32);
             break;
           }
@@ -2184,35 +2425,41 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
 #pragma GCC diagnostic pop
         fatom = XInternAtom(XtDisplay(w), "WEIGHT_NAME", False);
         for (i = 0; i < fs->n_properties; i++)
-          if (fs->properties[i].name == fatom) {
+          if (fs->properties[i].name == fatom)
+          {
             fontinfo = XGetAtomName(XtDisplay(w), fs->properties[i].card32);
             break;
           }
         if (fontinfo != NULL && strstr(fontinfo, "Bold"))
           strcat(fontname, "-Bold");
-        if (fontinfo != NULL) {
+        if (fontinfo != NULL)
+        {
           XFree(fontinfo);
           fontinfo = NULL;
         }
         fatom = XInternAtom(XtDisplay(w), "FULL_NAME", False);
         for (i = 0; i < fs->n_properties; i++)
-          if (fs->properties[i].name == fatom) {
+          if (fs->properties[i].name == fatom)
+          {
             fontinfo = XGetAtomName(XtDisplay(w), fs->properties[i].card32);
             break;
           }
-        if (fontinfo != NULL && strstr(fontinfo, "Italic")) {
+        if (fontinfo != NULL && strstr(fontinfo, "Italic"))
+        {
           if (!strstr(fontname, "-Bold"))
             strcat(fontname, "-");
           strcat(fontname, "Italic");
         }
-        if (fontinfo != NULL && strstr(fontinfo, "Oblique")) {
+        if (fontinfo != NULL && strstr(fontinfo, "Oblique"))
+        {
           if (!strstr(fontname, "-Bold"))
             strcat(fontname, "-");
           strcat(fontname, "Oblique");
         }
         if (!strcmp(fontname, "Times") || !strcmp(fontname, "NewCenturySchlbk"))
           strcat(fontname, "-Roman");
-        if (fontinfo != NULL) {
+        if (fontinfo != NULL)
+        {
           XFree(fontinfo);
           fontinfo = NULL;
         }
@@ -2244,7 +2491,8 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
                     1.5); /* Specify 13 as fontsize (see note on fontsize) */
         fprintf(printfid, "setfont\n");
 
-        if (rotate != 0) {
+        if (rotate != 0)
+        {
           float y = XtBorderWidth(w) * scale;
           if (!inp_total_height)
             y = -(72. * (height_page - 2. * margin) - height) / 2. -
@@ -2261,7 +2509,9 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
           /* Scale so bottom of plot still at same place, */
           fprintf(printfid, "%g %g scale\n", 1., yscale);
           fprintf(printfid, "%g %g translate\n", 0., y * (yscale - 1));
-        } else {
+        }
+        else
+        {
           fprintf(printfid, "(%s) %g %g centershow\n", window_title,
                   width_limit * 72. / resolution + 72. * 2. * margin,
                   ury - 1.125 * fontsize);
@@ -2289,7 +2539,9 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
             fontsize * 1.5 /
                 scale); /* Specify 13 as fontsize (see note on fontsize) */
     fprintf(printfid, "setfont\n");
-  } else {
+  }
+  else
+  {
     fseek(printfid, -10, 1); /* rewind past showpage command */
   }
 
@@ -2337,7 +2589,8 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
          ((!inp_total_height) ? 1. : (int)(XtBorderWidth(w)) * scale);
 
   if (inp_total_width && (inp_total_width > XtWidth(w) + 4 ||
-                          inp_total_height > XtHeight(w) + 4)) {
+                          inp_total_height > XtHeight(w) + 4))
+  {
     float xtest = xorigin * scale;
     float ytest = yorigin * scale;
 
@@ -2350,42 +2603,53 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
     /* corners and draws them in succession to obtain rounded corners. */
 
     if (xoffset == xtest && intAbs((yoffset / scale + inp_total_height) -
-                                   (yorigin + XtHeight(w))) > 5) {
+                                   (yorigin + XtHeight(w))) > 5)
+    {
       fprintf(printfid, "%g %g moveto\n", xstart, ystart);
       fprintf(printfid, "%g %g lineto\n", xstart, yend);
-      if (yoffset == ytest) {
+      if (yoffset == ytest)
+      {
         fprintf(printfid, "%g %g lineto\n", xend, yend);
         if (intAbs((xoffset / scale + inp_total_width) -
                    (xorigin + XtWidth(w))) < 5)
           fprintf(printfid, "%g %g lineto\n", xend, ystart);
-      } else if (intAbs((xoffset / scale + inp_total_width) -
-                        (xorigin + XtWidth(w))) < 5) {
+      }
+      else if (intAbs((xoffset / scale + inp_total_width) -
+                      (xorigin + XtWidth(w))) < 5)
+      {
         fprintf(printfid, "stroke\n");
         fprintf(printfid, "%g %g moveto\n", xend, yend);
         fprintf(printfid, "%g %g lineto\n", xend, ystart);
       }
       fprintf(printfid, "stroke\n");
-    } else if (yoffset == ytest &&
-               (xoffset != xtest ||
-                intAbs((yoffset / scale + inp_total_height) -
-                       (yorigin + XtHeight(w))) > 5)) {
+    }
+    else if (yoffset == ytest &&
+             (xoffset != xtest ||
+              intAbs((yoffset / scale + inp_total_height) -
+                     (yorigin + XtHeight(w))) > 5))
+    {
       fprintf(printfid, "%g %g moveto\n", xstart, yend);
       fprintf(printfid, "%g %g lineto\n", xend, yend);
       if (intAbs((xoffset / scale + inp_total_width) - (xorigin + XtWidth(w))) <
-          5) {
+          5)
+      {
         fprintf(printfid, "%g %g lineto\n", xend, ystart);
         if (intAbs((yoffset / scale + inp_total_height) -
                    (yorigin + XtHeight(w))) < 5)
           fprintf(printfid, "%g %g lineto\n", xstart, ystart);
-      } else if (intAbs((yoffset / scale + inp_total_height) -
-                        (yorigin + XtHeight(w))) < 5) {
+      }
+      else if (intAbs((yoffset / scale + inp_total_height) -
+                      (yorigin + XtHeight(w))) < 5)
+      {
         fprintf(printfid, "stroke\n");
         fprintf(printfid, "%g %g moveto\n", xstart, ystart);
         fprintf(printfid, "%g %g lineto\n", xend, ystart);
       }
       fprintf(printfid, "stroke\n");
-    } else if (intAbs((xoffset / scale + inp_total_width) -
-                      (xorigin + XtWidth(w))) < 5) {
+    }
+    else if (intAbs((xoffset / scale + inp_total_width) -
+                    (xorigin + XtWidth(w))) < 5)
+    {
       fprintf(printfid, "%g %g moveto\n", xend, yend);
       fprintf(printfid, "%g %g lineto\n", xend, ystart);
       if (intAbs((yoffset / scale + inp_total_height) -
@@ -2394,8 +2658,10 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
       if (xoffset == xtest)
         fprintf(printfid, "%g %g lineto\n", xstart, yend);
       fprintf(printfid, "stroke\n");
-    } else if (intAbs((yoffset / scale + inp_total_height) -
-                      (yorigin + XtHeight(w))) < 5) {
+    }
+    else if (intAbs((yoffset / scale + inp_total_height) -
+                    (yorigin + XtHeight(w))) < 5)
+    {
       fprintf(printfid, "%g %g moveto\n", xend, ystart);
       fprintf(printfid, "%g %g lineto\n", xstart, ystart);
       if (xoffset == xtest)
@@ -2431,7 +2697,8 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
   SetScale(0);
   fprintf(printfid, "grestore\n"); /* To clear clipping region */
 
-  if (title && strlen(title)) {
+  if (title && strlen(title))
+  {
     int length = strlen(title);
     int twidth = XTextWidth(waveformFontStruct(w), title, length);
     float x = max(0, ((int)XtWidth(w) - twidth) / 2);
@@ -2440,7 +2707,8 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
         x + twidth / 2 - XTextWidth(waveformFontStruct(w), title, 1) / 2.;
     int i;
     SetScale(1);
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < length; i++)
+    {
       char c[2];
       fprintf(printfid, "%g %g moveto\n", middle + (x - middle) / scale, y);
       c[0] = title[i];
@@ -2456,9 +2724,11 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
 }
 
 static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
-                      int kp, Dimension pwidth, Dimension pheight) {
+                      int kp, Dimension pwidth, Dimension pheight)
+{
   static int i, imax, imin, ymax, ymin;
-  if (!waveformPrint) {
+  if (!waveformPrint)
+  {
     int kpnew = 0;
     int num_to_left = 0;
     int num_to_right = 0;
@@ -2468,46 +2738,64 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
     short max_y = 0;
     short min_y = 0;
     short leave_y;
-    for (i = 0; i < kp; i++) {
-      if (point[i].x < 0) {
+    for (i = 0; i < kp; i++)
+    {
+      if (point[i].x < 0)
+      {
         num_to_right = 0;
         num_in_middle = 0;
-        if (num_to_left < 2) {
+        if (num_to_left < 2)
+        {
           point[kpnew].x = point[i].x;
           point[kpnew++].y = point[i].y;
-        } else {
+        }
+        else
+        {
           point[kpnew - 1].x = point[i].x;
           point[kpnew - 1].y = point[i].y;
         }
         num_to_left++;
-      } else if (point[i].x > pwidth && num_to_right > 0) {
+      }
+      else if (point[i].x > pwidth && num_to_right > 0)
+      {
         num_to_left = 0;
         num_in_middle = 0;
-        if (num_to_right < 2) {
+        if (num_to_right < 2)
+        {
           point[kpnew].x = point[i].x;
           point[kpnew++].y = point[i].y;
-        } else {
+        }
+        else
+        {
           point[kpnew - 1].x = point[i].x;
           point[kpnew - 1].y = point[i].y;
         }
         num_to_right++;
-      } else {
+      }
+      else
+      {
         num_to_left = 0;
         num_to_right = (point[i].x > pwidth) ? 1 : 0;
-        if (num_in_middle < 1) {
+        if (num_in_middle < 1)
+        {
           point[kpnew].x = lastx = point[i].x;
           point[kpnew++].y = min_y = max_y = enter_y = leave_y = point[i].y;
-        } else if (point[i].x == lastx) {
+        }
+        else if (point[i].x == lastx)
+        {
           leave_y = point[i].y;
           if (point[i].y < min_y)
             min_y = point[i].y;
           else if (point[i].y > max_y)
             max_y = point[i].y;
         }
-        if ((point[i].x != lastx) || (i == kp - 1)) {
-          if (min_y != max_y) {
+        if ((point[i].x != lastx) || (i == kp - 1))
+        {
+          if (min_y != max_y)
+          {
             switch (((enter_y == min_y) * 1) | ((enter_y == max_y) * 2) |
-                    ((min_y == leave_y) * 4) | ((max_y == leave_y) * 8)) {
+                    ((min_y == leave_y) * 4) | ((max_y == leave_y) * 8))
+            {
             case 0:
               point[kpnew].x = lastx;
               point[kpnew++].y = min_y;
@@ -2555,7 +2843,9 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
     }
     XDrawLines(display, win, gc, point, kpnew, CoordModeOrigin);
     return;
-  } else {
+  }
+  else
+  {
 
     int pen_down = 1;
     int plot;
@@ -2564,53 +2854,65 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
     SetScale(0);
     fprintf(printfid, "gsave\n");
     fprintf(printfid, "%g %g scale\n", 1. / resinc, 1. / resinc);
-    for (i = 1; i < kp; i++) {
-      if (pen_down) {
+    for (i = 1; i < kp; i++)
+    {
+      if (pen_down)
+      {
         plot = (point[lastpoint].x != point[i].x ||
                 point[lastpoint].y != point[i].y);
-        if (plot) {
+        if (plot)
+        {
           while (i < kp - 2 && point[i + 1].x == point[i].x &&
                  point[i + 1].y == point[i].y)
             i++;
           if (point[i + 1].x == point[i].x &&
-              point[lastpoint].x == point[i].x) {
+              point[lastpoint].x == point[i].x)
+          {
             ymin = ymax = point[lastpoint].y;
             imin = imax = lastpoint;
-            while (point[i].x == point[i + 1].x && i < kp - 2) {
-              if (ymax < point[i].y) {
+            while (point[i].x == point[i + 1].x && i < kp - 2)
+            {
+              if (ymax < point[i].y)
+              {
                 ymax = point[i].y;
                 imax = i;
               }
-              if (ymin > point[i].y) {
+              if (ymin > point[i].y)
+              {
                 ymin = point[i].y;
                 imin = i;
               }
               i++;
             }
-            if (ymin < point[i].y && imin != lastpoint) {
+            if (ymin < point[i].y && imin != lastpoint)
+            {
               fprintf(printfid, "%d %d\n", point[lastpoint].x - point[imin].x,
                       point[imin].y - point[lastpoint].y);
               np++;
               lastpoint = imin;
-              if (np == 100) {
+              if (np == 100)
+              {
                 fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
                         (int)(height_page * resolution - point[lastpoint].y));
                 np = 0;
               }
             }
-            if (ymax > point[i].y && imax != lastpoint) {
+            if (ymax > point[i].y && imax != lastpoint)
+            {
               fprintf(printfid, "%d %d \n", point[lastpoint].x - point[imax].x,
                       point[imax].y - point[lastpoint].y);
               np++;
               lastpoint = imax;
-              if (np == 100) {
+              if (np == 100)
+              {
                 fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
                         (int)(height_page * resolution - point[lastpoint].y));
                 np = 0;
               }
             }
-          } else if (point[i + 1].y == point[i].y &&
-                     point[lastpoint].y == point[i].y)
+          }
+          else if (point[i + 1].y == point[i].y &&
+                   point[lastpoint].y == point[i].y)
             plot = !compare_sign(point[i + 1].x - point[i].x,
                                  point[i].x - point[lastpoint].x);
           else
@@ -2621,12 +2923,14 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
                         (float)(point[i].x - point[lastpoint].x) /
                             (float)(point[i].y - point[lastpoint].y));
         }
-        if (plot) {
+        if (plot)
+        {
           fprintf(printfid, "%d %d\n", point[lastpoint].x - point[i].x,
                   point[i].y - point[lastpoint].y);
           np++;
           lastpoint = i;
-          if (np == 100) {
+          if (np == 100)
+          {
             fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
                     (int)(height_page * resolution - point[lastpoint].y));
             np = 0;
@@ -2640,8 +2944,10 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
       /* Skip lines that occur outside of grid.  Algorithm eliminates most, but
          not all. */
       {
-        if (np) {
-          if (lastpoint != i) {
+        if (np)
+        {
+          if (lastpoint != i)
+          {
             fprintf(printfid, "%d %d\n", point[lastpoint].x - point[i].x,
                     point[i].y - point[lastpoint].y);
             np++;
@@ -2651,7 +2957,9 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
           np = 0;
         }
         pen_down = 0;
-      } else if (!pen_down) {
+      }
+      else if (!pen_down)
+      {
         fprintf(printfid, "%d %d\n", point[i - 1].x - point[i].x,
                 point[i].y - point[i - 1].y);
         np = 1;
@@ -2659,7 +2967,8 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
         lastpoint = i;
       }
     }
-    if (np) {
+    if (np)
+    {
       fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
               (int)(height_page * resolution - point[lastpoint].y));
     }
@@ -2669,11 +2978,14 @@ static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
 
 static void DrawRectangles(Display *display, Window win, GC gc,
                            XRectangle *rectangle, int num, Dimension pwidth,
-                           Dimension pheight) {
+                           Dimension pheight)
+{
   static int i;
-  if (!waveformPrint) {
+  if (!waveformPrint)
+  {
     int n = 0;
-    for (i = 0; i < num; i++) {
+    for (i = 0; i < num; i++)
+    {
       if (((rectangle[i].x + rectangle[i].width) >= 0) &&
           (rectangle[i].x <= pwidth) &&
           ((rectangle[i].y + rectangle[i].height) >= 0) &&
@@ -2682,11 +2994,14 @@ static void DrawRectangles(Display *display, Window win, GC gc,
     }
     XDrawRectangles(display, win, gc, rectangle, n);
     return;
-  } else {
+  }
+  else
+  {
     SetScale(0);
     fprintf(printfid, "gsave\n");
     fprintf(printfid, "%g %g scale\n", 1. / resinc, 1. / resinc);
-    for (i = 0; i < num; i++) {
+    for (i = 0; i < num; i++)
+    {
       if (((rectangle[i].x >= 0 && rectangle[i].x < width) ||
            (rectangle[i].x + rectangle[i].width >= 0 &&
             rectangle[i].x + rectangle[i].width < width)) &&
@@ -2714,7 +3029,8 @@ static float offset_dashes_ps;
 static GC dash_gc;
 
 static void SetDashes(Display *display, GC gc, int offset, char *dashes,
-                      int num) {
+                      int num)
+{
   int i;
   if (dashes_ps)
     XtFree((char *)dashes_ps);
@@ -2728,11 +3044,14 @@ static void SetDashes(Display *display, GC gc, int offset, char *dashes,
 }
 
 static void DrawSegments(Display *display, Window win, GC gc, float *crosshairs,
-                         int num) {
+                         int num)
+{
   static int i;
-  if (!waveformPrint) {
+  if (!waveformPrint)
+  {
     XSegment *line = (XSegment *)XtMalloc(num * sizeof(XSegment));
-    for (i = 0; i < num * 4; i = i + 4) {
+    for (i = 0; i < num * 4; i = i + 4)
+    {
       line[i / 4].x1 = crosshairs[i];
       line[i / 4].x2 = crosshairs[i + 1];
       line[i / 4].y1 = crosshairs[i + 2];
@@ -2741,7 +3060,9 @@ static void DrawSegments(Display *display, Window win, GC gc, float *crosshairs,
     XDrawSegments(display, win, gc, line, num);
     XtFree((char *)line);
     return;
-  } else {
+  }
+  else
+  {
     float *dashes = (float *)XtMalloc(num_dashes_ps * sizeof(float));
     float offset_dashes = offset_dashes_ps * resinc;
     fprintf(printfid, "gsave\n");
@@ -2754,7 +3075,8 @@ static void DrawSegments(Display *display, Window win, GC gc, float *crosshairs,
     XtFree((char *)dashes);
     fprintf(printfid, "%g %g scale\n", 1. / resinc, 1. / resinc);
     fprintf(printfid, "%g setlinewidth\n", .25); /* Width for grid lines */
-    for (i = 0; i < num * 4; i = i + 4) {
+    for (i = 0; i < num * 4; i = i + 4)
+    {
       fprintf(printfid, "%d %d mv\n", (int)(crosshairs[i] * scale * resinc),
               (int)(height_page * resolution) -
                   (int)(crosshairs[i + 2] * scale * resinc));
@@ -2769,31 +3091,39 @@ static void DrawSegments(Display *display, Window win, GC gc, float *crosshairs,
 }
 
 static void DrawString(XmdsWaveformWidget w, Display *display, Window win,
-                       GC gc, float x, float y, char *label, int length) {
-  if (!waveformPrint) {
+                       GC gc, float x, float y, char *label, int length)
+{
+  if (!waveformPrint)
+  {
     int sx = x;
     int sy = y;
     XDrawString(display, win, gc, sx, sy, label, length);
     return;
-  } else {
+  }
+  else
+  {
     SetScale(1);
     if (x < 0)
       fprintf(printfid, "(%s) %g %g centershow\n", label, -x * 2, 825. - y);
-    else {
+    else
+    {
       fprintf(printfid, "%g %g moveto\n", x, 825. - y);
       fprintf(printfid, "(%s) show\n", label);
     }
   }
 }
 
-EXPORT void XmdsWaveformReverse(Widget w, int reverse) {
+EXPORT void XmdsWaveformReverse(Widget w, int reverse)
+{
   (((XmdsWaveformWidgetClass)w->core.widget_class)
        ->waveform_class.reverse_proc)(w, reverse);
 }
 
-static void Reverse(Widget w_in, int reverse) {
+static void Reverse(Widget w_in, int reverse)
+{
   XmdsWaveformWidget w = (XmdsWaveformWidget)w_in;
-  if (reverse != waveformReverse(w) && XtIsRealized((Widget)w)) {
+  if (reverse != waveformReverse(w) && XtIsRealized((Widget)w))
+  {
     XCopyArea(XtDisplay(w), waveformDrawable(w), waveformDrawable(w),
               waveformFlipGC(w), 0, 0, XtWidth(w), XtHeight(w), 0, 0);
     if (waveformPixmap(w))
@@ -2803,13 +3133,15 @@ static void Reverse(Widget w_in, int reverse) {
   waveformReverse(w) = reverse;
 }
 
-static void Cut(XmdsWaveformWidget w, XButtonEvent *event) {
+static void Cut(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XmAnyCallbackStruct cb = {0, 0};
   cb.event = (XEvent *)event;
   XtCallCallbacks((Widget)w, XmdsNcutCallback, &cb);
 }
 
-static void Paste(XmdsWaveformWidget w, XButtonEvent *event) {
+static void Paste(XmdsWaveformWidget w, XButtonEvent *event)
+{
   XmAnyCallbackStruct cb = {0, 0};
   cb.event = (XEvent *)event;
   XtCallCallbacks((Widget)w, XmdsNpasteCallback, &cb);
@@ -2821,7 +3153,8 @@ static void Paste(XmdsWaveformWidget w, XButtonEvent *event) {
 #include <ssdef.h>
 #include <descrip.h>
 
-int FixupMissing(unsigned sig_args[], unsigned mech_args[]) {
+int FixupMissing(unsigned sig_args[], unsigned mech_args[])
+{
   unsigned code;
   int FixupFault();
   static struct dsc$descriptor_p fixup = {4, DSC$K_DTYPE_L, DSC$K_CLASS_P,
@@ -2842,7 +3175,8 @@ int FixupMissing(unsigned sig_args[], unsigned mech_args[]) {
 union real {
   long l[4];
 };
-struct dcf {
+struct dcf
+{
   unsigned dcfacc : 3;
   unsigned dcftyp : 5;
   unsigned : 24;
@@ -2853,13 +3187,17 @@ int FixupFault(unsigned *opcode, unsigned *ipc, unsigned *psl,
                unsigned regs[16], unsigned *opcount, struct dcf optypes[],
                unsigned short *readops[], union real *writeops[],
                unsigned sig_args[], int sig_routine(), int context, int userarg,
-               unsigned original[16]) {
+               unsigned original[16])
+{
   int n;
   unsigned found = 0;
-  for (n = *opcount; --n >= 0;) {
-    if (writeops[n] != 0) {
+  for (n = *opcount; --n >= 0;)
+  {
+    if (writeops[n] != 0)
+    {
       *psl |= (PSL$M_N | PSL$M_Z | PSL$M_V | PSL$M_C);
-      switch (optypes[n].dcftyp) {
+      switch (optypes[n].dcftyp)
+      {
       case LIB$K_DCFTYP_L:
         (*writeops[n]).l[0] = missing;
         found = 1;
@@ -2881,7 +3219,8 @@ int FixupFault(unsigned *opcode, unsigned *ipc, unsigned *psl,
   /****************************
     Look for a bad input operand.
   ****************************/
-  for (n = *opcount; --n >= 0;) {
+  for (n = *opcount; --n >= 0;)
+  {
     if (readops[n] && (optypes[n].dcftyp >= LIB$K_DCFTYP_F) &&
         (*readops[n] == 0x8000))
       break;
@@ -2890,7 +3229,8 @@ int FixupFault(unsigned *opcode, unsigned *ipc, unsigned *psl,
   /*****************************************
     Set all bits for compare/test of reserved.
   *****************************************/
-  if (n >= 0) {
+  if (n >= 0)
+  {
     *psl |= (PSL$M_N | PSL$M_Z | PSL$M_V | PSL$M_C);
     return SS$_CONTINUE;
   }
@@ -2900,37 +3240,45 @@ int FixupFault(unsigned *opcode, unsigned *ipc, unsigned *psl,
 #endif
 
 static Boolean UpdateLimits(XmdsWaveformWidget old, float *xmin, float *xmax,
-                            float *ymin, float *ymax, XmdsWaveformWidget new) {
+                            float *ymin, float *ymax, XmdsWaveformWidget new)
+{
   Boolean changed = UpdateLimit(xMin(old), xmin, &xMin(new)) |
                     UpdateLimit(xMax(old), xmax, &xMax(new)) |
                     UpdateLimit(yMin(old), ymin, &yMin(new)) |
                     UpdateLimit(yMax(old), ymax, &yMax(new));
-  if (waveformCount(new)) {
-    if (!(xMin(new) && xMax(new))) {
+  if (waveformCount(new))
+  {
+    if (!(xMin(new) && xMax(new)))
+    {
       float _xmin;
       float _xmax;
       AutoScale(waveformCount(new), xValue(new), &_xmin, &_xmax, yValue(new),
                 yMin(new), yMax(new));
-      if (!xMin(new)) {
+      if (!xMin(new))
+      {
         xMin(new) = XtNew(float);
         *xMin(new) = _xmin;
       }
-      if (!xMax(new)) {
+      if (!xMax(new))
+      {
         xMax(new) = XtNew(float);
         *xMax(new) = _xmax;
       }
       changed = TRUE;
     }
-    if (!(yMin(new) && yMax(new))) {
+    if (!(yMin(new) && yMax(new)))
+    {
       float _ymin;
       float _ymax;
       AutoScale(waveformCount(new), yValue(new), &_ymin, &_ymax, xValue(new),
                 xMin(new), xMax(new));
-      if (!yMin(new)) {
+      if (!yMin(new))
+      {
         yMin(new) = XtNew(float);
         *yMin(new) = _ymin;
       }
-      if (!yMax(new)) {
+      if (!yMax(new))
+      {
         yMax(new) = XtNew(float);
         *yMax(new) = _ymax;
       }
@@ -2941,25 +3289,32 @@ static Boolean UpdateLimits(XmdsWaveformWidget old, float *xmin, float *xmax,
   return changed;
 }
 
-static Boolean UpdateLimit(float *old, float *req, float **new) {
+static Boolean UpdateLimit(float *old, float *req, float **new)
+{
   if (old == req)
     return FALSE;
-  else if ((((char *)req - (char *)0) & 0xffffffff) == 0xffffffff) {
+  else if ((((intptr_t)req) & 0xffffffff) == 0xffffffff)
+  {
     *new = old;
     return FALSE;
-  } else {
+  }
+  else
+  {
     if (old)
       XtFree((char *)old);
-    if (req) {
+    if (req)
+    {
       *new = XtNew(float);
       **new = min(huge, max(-huge, *req));
-    } else
+    }
+    else
       *new = req;
   }
   return TRUE;
 }
 
-static void ForceUpdate(XmdsWaveformWidget w) {
+static void ForceUpdate(XmdsWaveformWidget w)
+{
   XEvent event;
   while (XCheckWindowEvent(XtDisplay(w), XtWindow(w), ExposureMask, &event))
     ;

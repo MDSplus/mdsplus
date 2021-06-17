@@ -45,33 +45,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static inline int minInt(int a, int b) { return a < b ? a : b; }
 
-#define read_nci                                                               \
-  if (nci_version != version) {                                                \
-    nid_to_tree_nidx(dblist, (&nid), info, node_number);                       \
-    TreeCallHookFun("TreeNidHook", "GetNci", info->treenam, info->shot, nid,   \
-                    NULL);                                                     \
-    status = TreeCallHook(GetNci, info, nid_in);                               \
-    if (status && STATUS_NOT_OK)                                               \
-      break;                                                                   \
-    {                                                                          \
-      int locked = 0;                                                          \
-      status = tree_get_nci(info, node_number, &nci, version, &locked);        \
-    }                                                                          \
-    if                                                                         \
-      STATUS_OK nci_version = version;                                         \
-    if                                                                         \
-      STATUS_NOT_OK break;                                                     \
+#define read_nci                                                             \
+  if (nci_version != version)                                                \
+  {                                                                          \
+    nid_to_tree_nidx(dblist, (&nid), info, node_number);                     \
+    TreeCallHookFun("TreeNidHook", "GetNci", info->treenam, info->shot, nid, \
+                    NULL);                                                   \
+    status = TreeCallHook(GetNci, info, nid_in);                             \
+    if (status && STATUS_NOT_OK)                                             \
+      break;                                                                 \
+    {                                                                        \
+      int locked = 0;                                                        \
+      status = tree_get_nci(info, node_number, &nci, version, &locked);      \
+    }                                                                        \
+    if (STATUS_OK)                                                           \
+      nci_version = version;                                                 \
+    if (STATUS_NOT_OK)                                                       \
+      break;                                                                 \
   }
-#define break_on_no_node                                                       \
-  if (!node_exists) {                                                          \
-    status = TreeNNF;                                                          \
-    break;                                                                     \
+#define break_on_no_node \
+  if (!node_exists)      \
+  {                      \
+    status = TreeNNF;    \
+    break;               \
   }
-#define set_retlen(length)                                                     \
-  if (itm->buffer_length < (int)(length)) {                                    \
-    status = TreeBUFFEROVF;                                                    \
-    break;                                                                     \
-  } else                                                                       \
+#define set_retlen(length)                \
+  if (itm->buffer_length < (int)(length)) \
+  {                                       \
+    status = TreeBUFFEROVF;               \
+    break;                                \
+  }                                       \
+  else                                    \
     retlen = (length)
 
 #define NODE_NOT_FOUND_NAME "<no-node>   "
@@ -81,7 +85,8 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
 
 extern void **TreeCtx();
 
-static char *Treename(PINO_DATABASE *dblist, int nid_in) {
+static char *Treename(PINO_DATABASE *dblist, int nid_in)
+{
   TREE_INFO *info;
   NID nid = *(NID *)&nid_in;
   unsigned int treenum;
@@ -90,26 +95,36 @@ static char *Treename(PINO_DATABASE *dblist, int nid_in) {
     ;
   return info ? info->treenam : "";
 }
-static char *AbsPath(void *dbid, char const *inpath, int nid_in) {
+static char *AbsPath(void *dbid, char const *inpath, int nid_in)
+{
   char *answer = NULL, *pathptr = NULL;
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   _TreeSetDefaultNid(dbid, nid_in);
   size_t len = strlen(inpath);
-  if (len) {
+  if (len)
+  {
     int nid;
-    if (_TreeFindNode(dbid, inpath, &nid) & 1) {
+    if (_TreeFindNode(dbid, inpath, &nid) & 1)
+    {
       pathptr = _TreeGetPath(dbid, nid);
       len = strlen(pathptr);
-    } else
+    }
+    else
       pathptr = strdup(inpath);
-  } else {
+  }
+  else
+  {
     pathptr = _TreeGetPath(dbid, nid_in);
     len = strlen(pathptr);
   }
-  if (pathptr[0] == '\\') {
-    if (strstr(pathptr, "::")) {
+  if (pathptr[0] == '\\')
+  {
+    if (strstr(pathptr, "::"))
+    {
       answer = strdup(pathptr);
-    } else {
+    }
+    else
+    {
       char *treename = Treename(dblist, nid_in);
       answer = (char *)malloc(strlen(treename) + strlen(pathptr) + 2 + 1);
       strcpy(answer, "\\");
@@ -117,24 +132,31 @@ static char *AbsPath(void *dbid, char const *inpath, int nid_in) {
       strcat(answer, "::");
       strcat(answer, pathptr + 1);
     }
-  } else if ((strstr(pathptr, "-") == pathptr) ||
-             (strstr(pathptr, ".-") == pathptr)) {
+  }
+  else if ((strstr(pathptr, "-") == pathptr) ||
+           (strstr(pathptr, ".-") == pathptr))
+  {
     int nid;
     NODE node;
     NODE *nodeptr = &node;
     NID *nidptr = (NID *)&nid;
     NID *nidinptr = (NID *)&nid_in;
-    if (nid_in) {
+    if (nid_in)
+    {
       nodeptr = nid_to_node(dblist, nidinptr);
       node_to_nid(dblist, parent_of(dblist, nodeptr), nidptr);
       answer = AbsPath(dbid, &pathptr[2], nid);
-    } else
+    }
+    else
       answer = NULL;
-  } else {
+  }
+  else
+  {
     char *tmp = _TreeGetPath(dbid, nid_in);
     answer = strcpy(malloc(strlen(tmp) + strlen(pathptr) + 2), tmp);
     free(tmp);
-    switch (pathptr[0]) {
+    switch (pathptr[0])
+    {
     case '.':
     case ':':
       strcat(answer, pathptr);
@@ -148,7 +170,8 @@ static char *AbsPath(void *dbid, char const *inpath, int nid_in) {
   free(pathptr);
   return answer;
 }
-char *_TreeAbsPath(void *dbid, char const *inpath) {
+char *_TreeAbsPath(void *dbid, char const *inpath)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int nid;
   char *answer;
@@ -161,10 +184,12 @@ char *_TreeAbsPath(void *dbid, char const *inpath) {
   _TreeSetDefaultNid(dbid, nid);
   return answer;
 }
-char *TreeAbsPath(char const *inpath) {
+char *TreeAbsPath(char const *inpath)
+{
   return _TreeAbsPath(*TreeCtx(), inpath);
 }
-int _TreeAbsPathDsc(void *dbid, char const *inpath, mdsdsc_t *out_ptr) {
+int _TreeAbsPathDsc(void *dbid, char const *inpath, mdsdsc_t *out_ptr)
+{
   char *ans_c = _TreeAbsPath(dbid, inpath);
   if (!ans_c)
     return TreeFAILURE;
@@ -173,11 +198,13 @@ int _TreeAbsPathDsc(void *dbid, char const *inpath, mdsdsc_t *out_ptr) {
   free(ans_c);
   return TreeSUCCESS;
 }
-int TreeAbsPathDsc(char const *inpath, mdsdsc_t *out_ptr) {
+int TreeAbsPathDsc(char const *inpath, mdsdsc_t *out_ptr)
+{
   return _TreeAbsPathDsc(*TreeCtx(), inpath, out_ptr);
 }
 
-int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm) {
+int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
+{
   int status;
   CTX_PUSH(&dbid);
   status = TreeGetNci(nid_in, nci_itm);
@@ -185,7 +212,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm) {
   return status;
 }
 
-int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
+int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
+{
   void *dbid = *TreeCtx();
   INIT_STATUS_AS TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
@@ -213,11 +241,13 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
     return GetNciRemote(dbid, nid_in, nci_itm);
   saved_node = nid_to_node(dblist, &nid);
   node_exists = saved_node && (saved_node->name[0] < 'a');
-  for (itm = nci_itm; itm->code != NciEND_OF_LIST && STATUS_OK; itm++) {
+  for (itm = nci_itm; itm->code != NciEND_OF_LIST && STATUS_OK; itm++)
+  {
     char *string = NULL;
     int retlen = 0;
     node = saved_node;
-    switch (itm->code) {
+    switch (itm->code)
+    {
     case NciVERSION:
       break_on_no_node;
       set_retlen(0);
@@ -326,37 +356,45 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
     case NciPARENT:
       break_on_no_node;
       set_retlen(sizeof(NID));
-      if (parent_of(dblist, node)) {
+      if (parent_of(dblist, node))
+      {
         node_to_nid(dblist, parent_of(dblist, node), &out_nid);
         *(NID *)itm->pointer = out_nid;
-      } else
+      }
+      else
         retlen = 0;
       break;
     case NciBROTHER:
       break_on_no_node;
       set_retlen(sizeof(NID));
-      if (brother_of(dblist, node)) {
+      if (brother_of(dblist, node))
+      {
         node_to_nid(dblist, brother_of(dblist, node), (&out_nid));
         *(NID *)itm->pointer = out_nid;
-      } else
+      }
+      else
         retlen = 0;
       break;
     case NciMEMBER:
       break_on_no_node;
       set_retlen(sizeof(NID));
-      if (member_of(node)) {
+      if (member_of(node))
+      {
         node_to_nid(dblist, member_of(node), (&out_nid));
         *(NID *)itm->pointer = out_nid;
-      } else
+      }
+      else
         retlen = 0;
       break;
     case NciCHILD:
       break_on_no_node;
       set_retlen(sizeof(NID));
-      if (child_of(dblist, node)) {
+      if (child_of(dblist, node))
+      {
         node_to_nid(dblist, child_of(dblist, node), (&out_nid));
         *(NID *)itm->pointer = out_nid;
-      } else
+      }
+      else
         retlen = 0;
       break;
     case NciPARENT_RELATIONSHIP:
@@ -367,19 +405,22 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
       break;
     case NciCONGLOMERATE_NIDS:
       break_on_no_node;
-      if (node->conglomerate_elt) {
+      if (node->conglomerate_elt)
+      {
         out_nid = nid;
         out_nid.node -= (swapint16(&node->conglomerate_elt) - 1);
         cng_node = node - swapint16(&node->conglomerate_elt) + 1;
         int len = itm->buffer_length >> 2; // /4;
         for (i = 0; i < len && i < swapint16(&cng_node->conglomerate_elt);
-             i++) {
+             i++)
+        {
           *((NID *)(itm->pointer) + i) = out_nid;
           cng_node++;
           out_nid.node++;
         }
         set_retlen(sizeof(NID) * i);
-      } else
+      }
+      else
         retlen = 0;
       break;
     case NciNUMBER_OF_CHILDREN:
@@ -411,7 +452,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
         ;
       *(int *)(itm->pointer) = count;
       break;
-    case NciCHILDREN_NIDS: {
+    case NciCHILDREN_NIDS:
+    {
       break_on_no_node;
       out_nids = (NID *)itm->pointer;
       end_nids = (NID *)(((char *)itm->pointer) + itm->buffer_length);
@@ -421,7 +463,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
             out_nids++)
           node_to_nid(dblist, node, out_nids);
       retlen = (int)((char *)out_nids - (char *)itm->pointer);
-    } break;
+    }
+    break;
     case NciMEMBER_NIDS:
       break_on_no_node;
       out_nids = (NID *)itm->pointer;
@@ -441,11 +484,13 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
                                                   : node->usage);
       break;
     case NciNODE_NAME:
-      if (node_exists) {
+      if (node_exists)
+      {
         string = strncpy(malloc(sizeof(NODE_NAME) + 1), node->name,
                          sizeof(NODE_NAME));
         string[sizeof(NODE_NAME)] = '\0';
-      } else
+      }
+      else
         string = strdup(NODE_NOT_FOUND_NAME);
       break;
     case NciPATH:
@@ -456,20 +501,23 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
       break;
     case NciORIGINAL_PART_NAME:
       break_on_no_node;
-      if (node->conglomerate_elt) {
+      if (node->conglomerate_elt)
+      {
         struct descriptor_d string_d = {0, DTYPE_T, CLASS_D, 0};
         DESCRIPTOR_NID(nid_dsc, 0);
         DESCRIPTOR(part_name, "PART_NAME");
         nid_dsc.pointer = (char *)&nid;
         status = _TreeDoMethod(dbid, &nid_dsc, (struct descriptor *)&part_name,
                                &string_d MDS_END_ARG);
-        if (status == TreeNOMETHOD) {
+        if (status == TreeNOMETHOD)
+        {
           DESCRIPTOR(part_name, "ORIGINAL_PART_NAME");
           status =
               _TreeDoMethod(dbid, &nid_dsc, (struct descriptor *)&part_name,
                             &string_d MDS_END_ARG);
         }
-        if (STATUS_OK && string_d.pointer) {
+        if (STATUS_OK && string_d.pointer)
+        {
           string = strncpy(malloc(string_d.length + 1), string_d.pointer,
                            string_d.length);
           string[string_d.length] = 0;
@@ -478,13 +526,15 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
       }
       break;
     case NciFULLPATH:
-      if (node_exists) {
+      if (node_exists)
+      {
         char *part = malloc(0x1000);
         char *temp;
         string = malloc(0x1000);
         string[0] = 0;
         part[0] = 0;
-        for (; parent_of(dblist, node); node = parent_of(dblist, node)) {
+        for (; parent_of(dblist, node); node = parent_of(dblist, node))
+        {
           unsigned int i;
           part[0] = TreeIsChild(dblist, node) ? '.' : ':';
           for (i = 0; i < sizeof(NODE_NAME) && node->name[i] != ' '; i++)
@@ -504,17 +554,22 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
         strcat(string, "::TOP");
         strcat(string, part);
         free(part);
-      } else
+      }
+      else
         string = strdup(NODE_NOT_FOUND_PATH);
       break;
     case NciMINPATH:
-      if (node_exists) {
-        if (nid.tree == 0 && nid.node == 0) {
+      if (node_exists)
+      {
+        if (nid.tree == 0 && nid.node == 0)
+        {
           string = malloc(7 + strlen(dblist->tree_info->treenam));
           string[0] = '\\';
           strcpy(&string[1], dblist->tree_info->treenam);
           strcat(string, "::TOP");
-        } else {
+        }
+        else
+        {
           char *part = malloc(0x1000);
           char *temp;
           NODE *default_node = dblist->default_node;
@@ -534,7 +589,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
         found_it:
           for (ancestor = node;
                parent_of(dblist, ancestor) && (default_node != ancestor);
-               ancestor = parent_of(dblist, ancestor)) {
+               ancestor = parent_of(dblist, ancestor))
+          {
             unsigned int i;
             part[0] = TreeIsChild(dblist, ancestor) ? '.' : ':';
             for (i = 0; i < sizeof(NODE_NAME) && ancestor->name[i] != ' '; i++)
@@ -546,7 +602,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
             part = string;
             string = temp;
           }
-          if (hyphens) {
+          if (hyphens)
+          {
             temp = part;
             part = string;
             string = temp;
@@ -555,14 +612,16 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
               strcat(string, ".-");
             strcat(string, part);
           }
-          if (strlen(string) && string[0] == ':') {
+          if (strlen(string) && string[0] == ':')
+          {
             temp = part;
             part = string;
             string = temp;
             strcpy(string, &part[1]);
           }
           path_string = getPath(dblist, node, 1);
-          if (strlen(path_string) <= strlen(string)) {
+          if (strlen(path_string) <= strlen(string))
+          {
             temp = path_string;
             path_string = string;
             string = temp;
@@ -570,58 +629,69 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
           free(path_string);
           free(part);
         }
-      } else
+      }
+      else
         string = strdup(NODE_NOT_FOUND_PATH);
       break;
-    case NciPARENT_TREE: {
+    case NciPARENT_TREE:
+    {
       break_on_no_node;
       set_retlen(sizeof(NID));
       for (node = parent_of(dblist, node);
            node && node->usage != TreeUSAGE_SUBTREE;
            node = parent_of(dblist, node))
         ;
-      if (node) {
+      if (node)
+      {
         node_to_nid(dblist, node, (&out_nid));
         *(NID *)itm->pointer = out_nid;
-      } else
+      }
+      else
         *(int *)itm->pointer = 0;
       break;
     }
-    case NciDTYPE_STR: {
+    case NciDTYPE_STR:
+    {
       char *lstr;
       break_on_no_node;
       read_nci;
       lstr = MdsDtypeString(nci.dtype);
-      string = strcpy(malloc(strlen(lstr) + 1), lstr);
+      string = strdup(lstr);
       break;
     }
 
-    case NciCLASS_STR: {
+    case NciCLASS_STR:
+    {
       char *lstr;
       break_on_no_node;
       read_nci;
       lstr = MdsClassString(nci.class);
-      string = strcpy(malloc(strlen(lstr) + 1), lstr);
+      string = strdup(lstr);
       break;
     }
 
-    case NciUSAGE_STR: {
+    case NciUSAGE_STR:
+    {
       char *lstr;
       break_on_no_node;
       lstr = MdsUsageString(node->usage);
-      string = strcpy(malloc(strlen(lstr) + 1), lstr);
+      string = strdup(lstr);
       break;
     }
 
     default:
       status = TreeILLEGAL_ITEM;
     }
-    if (string) {
-      if (itm->buffer_length && itm->pointer) {
+    if (string)
+    {
+      if (itm->buffer_length && itm->pointer)
+      {
         retlen = minInt(strlen(string), itm->buffer_length);
         memcpy(itm->pointer, string, retlen);
         free(string);
-      } else {
+      }
+      else
+      {
         retlen = (int)strlen(string);
         // trunc to actual length to reduce memory leak if caller forgot to free
         itm->pointer = (unsigned char *)realloc(string, strlen(string) + 1);
@@ -633,7 +703,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm) {
   return status;
 }
 
-static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs) {
+static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
+{
   char *string = malloc(0x1000);
   char *part = malloc(0x1000);
   char *temp;
@@ -642,7 +713,8 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs) {
   int tagged;
   string[0] = '\0';
   part[0] = '\0';
-  if (remove_tree_refs) {
+  if (remove_tree_refs)
+  {
     NODE *default_node = dblist->default_node;
     for (default_node_info = dblist->tree_info; default_node_info;
          default_node_info = default_node_info->next_info)
@@ -652,7 +724,8 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs) {
         break;
   }
   for (tagged = 0; parent_of(dblist, node) && !tagged;
-       node = parent_of(dblist, node)) {
+       node = parent_of(dblist, node))
+  {
     char *tag;
     void *ctx = NULL;
     NID nid;
@@ -661,10 +734,12 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs) {
     for (info = dblist->tree_info, i = 0; info && i < nid.tree;
          i++, info = info->next_info)
       ;
-    if ((tag = _TreeFindNodeTags((void *)dblist, *(int *)&nid, &ctx)) != NULL) {
+    if ((tag = _TreeFindNodeTags((void *)dblist, *(int *)&nid, &ctx)) != NULL)
+    {
       string[0] = '\\';
       string[1] = '\0';
-      if (default_node_info != info) {
+      if (default_node_info != info)
+      {
         strcat(string, info->treenam);
         strcat(string, "::");
       }
@@ -672,17 +747,22 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs) {
       strcat(string, part);
       free(tag);
       tagged = 1;
-    } else if (node == info->root) {
+    }
+    else if (node == info->root)
+    {
       string[0] = '\\';
       string[1] = '\0';
-      if (default_node_info != info) {
+      if (default_node_info != info)
+      {
         strcat(string, info->treenam);
         strcat(string, "::");
       }
       strcat(string, "TOP");
       strcat(string, part);
       tagged = 1;
-    } else {
+    }
+    else
+    {
       unsigned int i;
       temp = part;
       part = string;
@@ -695,10 +775,12 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs) {
       strcat(part, string);
     }
   }
-  if (!strlen(string) || !tagged) {
+  if (!strlen(string) || !tagged)
+  {
     string[0] = '\\';
     string[1] = '\0';
-    if (default_node_info != info) {
+    if (default_node_info != info)
+    {
       strcat(string, info->treenam);
       strcat(string, "::");
     }
@@ -712,7 +794,8 @@ static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs) {
     return NULL;
 }
 
-int TreeIsChild(PINO_DATABASE *dblist, NODE *node) {
+int TreeIsChild(PINO_DATABASE *dblist, NODE *node)
+{
   NODE *n = 0;
   if (parent_of(dblist, node))
     for (n = child_of(dblist, parent_of(dblist, node)); n && n != node;
@@ -721,7 +804,8 @@ int TreeIsChild(PINO_DATABASE *dblist, NODE *node) {
   return n == node;
 }
 
-char *_TreeGetPath(void *dbid, int nid_in) {
+char *_TreeGetPath(void *dbid, int nid_in)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NCI_ITM itm_lst[] = {{0, NciPATH, 0, 0}, {0, NciEND_OF_LIST, 0, 0}};
   if (!(IS_OPEN(dblist)))
@@ -730,7 +814,8 @@ char *_TreeGetPath(void *dbid, int nid_in) {
   return (char *)itm_lst[0].pointer;
 }
 char *TreeGetPath(int nid_in) { return _TreeGetPath(*TreeCtx(), nid_in); }
-int _TreeGetPathDsc(void *dbid, int nid_in, mdsdsc_xd_t *out_ptr) {
+int _TreeGetPathDsc(void *dbid, int nid_in, mdsdsc_xd_t *out_ptr)
+{
   char *ans_c = _TreeGetPath(dbid, nid_in);
   if (!ans_c)
     return TreeFAILURE;
@@ -739,32 +824,38 @@ int _TreeGetPathDsc(void *dbid, int nid_in, mdsdsc_xd_t *out_ptr) {
   free(ans_c);
   return TreeSUCCESS;
 }
-int TreeGetPathDsc(int nid_in, mdsdsc_xd_t *out_ptr) {
+int TreeGetPathDsc(int nid_in, mdsdsc_xd_t *out_ptr)
+{
   return _TreeGetPathDsc(*TreeCtx(), nid_in, out_ptr);
 }
 
-char *_TreeGetMinimumPath(void *dbid, int *def_nid_in, int nid_in) {
+char *_TreeGetMinimumPath(void *dbid, int *def_nid_in, int nid_in)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *def_nid = (NID *)def_nid_in;
   int status;
   NCI_ITM itm_lst[] = {{0, NciMINPATH, 0, 0}, {0, NciEND_OF_LIST, 0, 0}};
   if (!(IS_OPEN(dblist)))
     return NULL;
-  if (def_nid) {
+  if (def_nid)
+  {
     int old_def;
     _TreeGetDefaultNid(dbid, &old_def);
     _TreeSetDefaultNid(dbid, *def_nid_in);
     status = _TreeGetNci(dbid, nid_in, itm_lst);
     _TreeSetDefaultNid(dbid, old_def);
-  } else
+  }
+  else
     status = _TreeGetNci(dbid, nid_in, itm_lst);
   return STATUS_OK ? (char *)itm_lst[0].pointer : NULL;
 }
-char *TreeGetMinimumPath(int *def_nid_in, int nid_in) {
+char *TreeGetMinimumPath(int *def_nid_in, int nid_in)
+{
   return _TreeGetMinimumPath(*TreeCtx(), def_nid_in, nid_in);
 }
 int _TreeGetMinimumPathDsc(void *dbid, int *def_nid_in, int nid_in,
-                           mdsdsc_xd_t *out_ptr) {
+                           mdsdsc_xd_t *out_ptr)
+{
   char *ans_c = _TreeGetMinimumPath(dbid, def_nid_in, nid_in);
   if (!ans_c)
     return TreeFAILURE;
@@ -773,11 +864,13 @@ int _TreeGetMinimumPathDsc(void *dbid, int *def_nid_in, int nid_in,
   free(ans_c);
   return TreeSUCCESS;
 }
-int TreeGetMinimumPathDsc(int *def_nid_in, int nid_in, mdsdsc_xd_t *out_ptr) {
+int TreeGetMinimumPathDsc(int *def_nid_in, int nid_in, mdsdsc_xd_t *out_ptr)
+{
   return _TreeGetMinimumPathDsc(*TreeCtx(), def_nid_in, nid_in, out_ptr);
 }
 
-int _TreeIsOn(void *dbid, int nid) {
+int _TreeIsOn(void *dbid, int nid)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int nci_flags;
   int retlen;
@@ -788,24 +881,25 @@ int _TreeIsOn(void *dbid, int nid) {
   nci_list[0].pointer = (unsigned char *)&nci_flags;
   nci_list[0].return_length_address = &retlen;
   status = _TreeGetNci(dbid, nid, nci_list);
-  if
-    STATUS_OK {
-      if (nci_flags & NciM_STATE)
-        if (nci_flags & NciM_PARENT_STATE)
-          status = TreeBOTH_OFF;
-        else
-          status = TreeOFF;
-      else if (nci_flags & NciM_PARENT_STATE)
-        status = TreePARENT_OFF;
+  if (STATUS_OK)
+  {
+    if (nci_flags & NciM_STATE)
+      if (nci_flags & NciM_PARENT_STATE)
+        status = TreeBOTH_OFF;
       else
-        status = TreeON;
-    }
+        status = TreeOFF;
+    else if (nci_flags & NciM_PARENT_STATE)
+      status = TreePARENT_OFF;
+    else
+      status = TreeON;
+  }
   return status;
 }
 int TreeIsOn(int nid) { return _TreeIsOn(*TreeCtx(), nid); }
 
 int tree_get_nci(TREE_INFO *info, int node_num, NCI *nci, unsigned int version,
-                 int *locked) {
+                 int *locked)
+{
   int status = TreeSUCCESS;
   /******************************************
   If the tree is not open for edit then
@@ -814,53 +908,63 @@ int tree_get_nci(TREE_INFO *info, int node_num, NCI *nci, unsigned int version,
   if OK so far then fill in the gab and read the record
   ******************************************/
 
-  if ((info->edit == 0) || (node_num < info->edit->first_in_mem)) {
+  if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
+  {
     int deleted = TRUE;
     char nci_bytes[42];
     unsigned int n_version = 0;
     int64_t viewDate;
     RETURN_IF_NOT_OK(TreeOpenNciR(info));
-    while
-      STATUS_OK {
-        RETURN_IF_NOT_OK(tree_lock_nci(info, 1, node_num, &deleted, locked));
-        if (!deleted)
-          break;
-        status = TreeReopenNci(info);
-      }
-    if
-      STATUS_OK {
-        MDS_IO_LSEEK(info->nci_file->get, node_num * sizeof(nci_bytes),
-                     SEEK_SET);
-        if (MDS_IO_READ(info->nci_file->get, nci_bytes, sizeof(nci_bytes)) ==
-            sizeof(nci_bytes)) {
-          TreeSerializeNciIn(nci_bytes, nci);
-          status = TreeSUCCESS;
-          TreeGetViewDate(&viewDate);
-          if (viewDate > 0) {
-            while (STATUS_OK && nci->time_inserted > viewDate) {
-              if (nci->flags & NciM_VERSIONS)
-                status = TreeGetVersionNci(info, nci, nci);
-              else
-                status = 0;
-            }
-            if
-              STATUS_NOT_OK {
-                memset(nci, 0, sizeof(NCI));
-                status = TreeSUCCESS;
-              }
-          }
-          while (STATUS_OK && version > n_version) {
-            if (nci->flags & NciM_VERSIONS) {
+    while (STATUS_OK)
+    {
+      RETURN_IF_NOT_OK(tree_lock_nci(info, 1, node_num, &deleted, locked));
+      if (!deleted)
+        break;
+      status = TreeReopenNci(info);
+    }
+    if (STATUS_OK)
+    {
+      MDS_IO_LSEEK(info->nci_file->get, node_num * sizeof(nci_bytes),
+                   SEEK_SET);
+      if (MDS_IO_READ(info->nci_file->get, nci_bytes, sizeof(nci_bytes)) ==
+          sizeof(nci_bytes))
+      {
+        TreeSerializeNciIn(nci_bytes, nci);
+        status = TreeSUCCESS;
+        TreeGetViewDate(&viewDate);
+        if (viewDate > 0)
+        {
+          while (STATUS_OK && nci->time_inserted > viewDate)
+          {
+            if (nci->flags & NciM_VERSIONS)
               status = TreeGetVersionNci(info, nci, nci);
-              n_version++;
-            } else
-              status = TreeNOVERSION;
+            else
+              status = 0;
           }
-        } else
-          status = TreeNCIREAD;
+          if (STATUS_NOT_OK)
+          {
+            memset(nci, 0, sizeof(NCI));
+            status = TreeSUCCESS;
+          }
+        }
+        while (STATUS_OK && version > n_version)
+        {
+          if (nci->flags & NciM_VERSIONS)
+          {
+            status = TreeGetVersionNci(info, nci, nci);
+            n_version++;
+          }
+          else
+            status = TreeNOVERSION;
+        }
       }
+      else
+        status = TreeNCIREAD;
+    }
     tree_unlock_nci(info, 1, node_num, locked);
-  } else {
+  }
+  else
+  {
     /********************************************
         Otherwise the tree is open for edit so
         the attributes are just a memory reference
@@ -875,7 +979,8 @@ int tree_get_nci(TREE_INFO *info, int node_num, NCI *nci, unsigned int version,
   return status;
 }
 
-int TreeOpenNciR(TREE_INFO *info) {
+int TreeOpenNciR(TREE_INFO *info)
+{
   INIT_STATUS_AS TreeSUCCESS;
   WRLOCKINFO(info);
   if (!info->nci_file)
@@ -884,34 +989,38 @@ int TreeOpenNciR(TREE_INFO *info) {
   return status;
 }
 static char *tree_to_characteristic(
-    const char *tree) { // replace .tree with .characteristics or
-                        // .characteristics# if tmpfile
+    const char *tree)
+{ // replace .tree with .characteristics or
+  // .characteristics# if tmpfile
   const size_t baselen = strlen(tree) - sizeof("tree") + 1;
   const size_t namelen = baselen + sizeof("characteristics");
   char *const filename = memcpy(malloc(namelen), tree, baselen);
   memcpy(filename + baselen, "characteristics", namelen - baselen);
   return filename;
 }
-int _TreeOpenNciR(TREE_INFO *info) {
+int _TreeOpenNciR(TREE_INFO *info)
+{
   /****************************************************
      Allocate an nci_file structure
      (if there is any problem ...
      Free the mem allocated and return
   *****************************************************/
   INIT_STATUS_AS TreeFAILURE;
-  if (!info->nci_file) {
+  if (!info->nci_file)
+  {
     info->nci_file = calloc(1, sizeof(NCI_FILE));
-    if (info->nci_file) {
+    if (info->nci_file)
+    {
       char *filename = tree_to_characteristic(info->filespec);
       info->nci_file->get =
           MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
       free(filename);
       status = (info->nci_file->get == -1) ? TreeFOPENR : TreeSUCCESS;
-      if
-        STATUS_NOT_OK {
-          free(info->nci_file);
-          info->nci_file = NULL;
-        }
+      if (STATUS_NOT_OK)
+      {
+        free(info->nci_file);
+        info->nci_file = NULL;
+      }
     }
   }
   return status;
@@ -919,7 +1028,8 @@ int _TreeOpenNciR(TREE_INFO *info) {
 
 void TreeFree(void *ptr) { free(ptr); }
 
-int64_t RfaToSeek(unsigned char *rfa) {
+int64_t RfaToSeek(unsigned char *rfa)
+{
   int64_t ans = (((int64_t)rfa[0] << 9) | ((int64_t)rfa[1] << 17) |
                  ((int64_t)rfa[2] << 25) | ((int64_t)rfa[4]) |
                  (((int64_t)rfa[5] & 1) << 8)) -
@@ -928,7 +1038,8 @@ int64_t RfaToSeek(unsigned char *rfa) {
   return ans;
 }
 
-void SeekToRfa(int64_t seek, unsigned char *rfa) {
+void SeekToRfa(int64_t seek, unsigned char *rfa)
+{
   int64_t tmp = seek + 512;
   rfa[0] = (unsigned char)((tmp >> 9) & 0xff);
   rfa[1] = (unsigned char)((tmp >> 17) & 0xff);

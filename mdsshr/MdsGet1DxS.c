@@ -63,7 +63,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 +-----------------------------------------------------------------------------*/
 
-#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <status.h>
@@ -73,7 +72,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 EXPORT int MdsGet1DxS(const length_t *const length_ptr,
                       const dtype_t *const dtype_ptr,
-                      mdsdsc_xd_t *const out_dsc_ptr) {
+                      mdsdsc_xd_t *const out_dsc_ptr)
+{
   int status;
   uint32_t dsc_size = (uint32_t)sizeof(mdsdsc_t);
   uint32_t align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
@@ -82,12 +82,12 @@ EXPORT int MdsGet1DxS(const length_t *const length_ptr,
   dsc_size = align(dsc_size, align_size);
   length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);
-  if
-    STATUS_OK {
-      out_dsc_ptr->pointer->length = *length_ptr;
-      out_dsc_ptr->pointer->dtype = *dtype_ptr;
-      out_dsc_ptr->pointer->class = CLASS_S;
-      out_dsc_ptr->pointer->pointer = (char *)out_dsc_ptr->pointer + dsc_size;
-    }
+  if (STATUS_OK)
+  {
+    out_dsc_ptr->pointer->length = *length_ptr;
+    out_dsc_ptr->pointer->dtype = *dtype_ptr;
+    out_dsc_ptr->pointer->class = CLASS_S;
+    out_dsc_ptr->pointer->pointer = (char *)out_dsc_ptr->pointer + dsc_size;
+  }
   return status;
 }

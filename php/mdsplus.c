@@ -86,7 +86,7 @@ zend_module_entry mdsplus_module_entry = {
     mdsplus_functions,
     PHP_MINIT(mdsplus),
     PHP_MSHUTDOWN(mdsplus),
-    PHP_RINIT(mdsplus), /* Replace with NULL if there's nothing to do at request
+    PHP_RINIT(mdsplus),     /* Replace with NULL if there's nothing to do at request
                            start */
     PHP_RSHUTDOWN(mdsplus), /* Replace with NULL if there's nothing to do at
                                request end */
@@ -122,15 +122,17 @@ static void php_mdsplus_init_globals(zend_mdsplus_globals *mdsplus_globals)
 }
 */
 /* }}} */
-static void mdsplus_replace_error(char *msg, int do_not_copy) {
+static void mdsplus_replace_error(char *msg, int do_not_copy)
+{
   free(mdsplus_error_msg);
   if (do_not_copy)
     mdsplus_error_msg = msg;
   else
-    mdsplus_error_msg = strcpy(malloc(strlen(msg) + 1), msg);
+    mdsplus_error_msg = strdup(msg);
 }
 
-static char *mdsplus_translate_status(int socket, int status) {
+static char *mdsplus_translate_status(int socket, int status)
+{
   char expression[100];
   struct descrip ans;
   int tmpstat;
@@ -138,7 +140,8 @@ static char *mdsplus_translate_status(int socket, int status) {
   tmpstat = MdsValue(socket, expression, &ans, NULL);
   if (tmpstat & 1 && ans.ptr)
     return (char *)ans.ptr;
-  else {
+  else
+  {
     char *msg = malloc(100);
     sprintf(msg, "Unable to determine error string, error status=%d", status);
     return msg;
@@ -147,7 +150,8 @@ static char *mdsplus_translate_status(int socket, int status) {
 
 /* {{{ PHP_MINIT_FUNCTION
  */
-PHP_MINIT_FUNCTION(mdsplus) {
+PHP_MINIT_FUNCTION(mdsplus)
+{
   /* If you have INI entries, uncomment these lines
      ZEND_INIT_MODULE_GLOBALS(mdsplus, php_mdsplus_init_globals, NULL);
      REGISTER_INI_ENTRIES();
@@ -159,7 +163,8 @@ PHP_MINIT_FUNCTION(mdsplus) {
 
 /* {{{ PHP_MSHUTDOWN_FUNCTION
  */
-PHP_MSHUTDOWN_FUNCTION(mdsplus) {
+PHP_MSHUTDOWN_FUNCTION(mdsplus)
+{
   /* uncomment this line if you have INI entries
      UNREGISTER_INI_ENTRIES();
    */
@@ -184,7 +189,8 @@ PHP_RSHUTDOWN_FUNCTION(mdsplus) { return SUCCESS; }
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(mdsplus) {
+PHP_MINFO_FUNCTION(mdsplus)
+{
   php_info_print_table_start();
   php_info_print_table_header(2, "mdsplus support", "enabled");
   php_info_print_table_end();
@@ -208,7 +214,8 @@ static int persistent = 0;
 static char *lastHost = 0;
 static int persistentConnection = -1;
 
-PHP_FUNCTION(mdsplus_connect) {
+PHP_FUNCTION(mdsplus_connect)
+{
   char *arg = NULL;
   int arg_len, len;
   int handle;
@@ -219,7 +226,8 @@ PHP_FUNCTION(mdsplus_connect) {
   mdsplus_replace_error(0, 1);
   persistent = 0;
   if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &arg, &zarg_len,
-                            &zpersistent) == FAILURE) {
+                            &zpersistent) == FAILURE)
+  {
     RETURN_FALSE;
   }
   arg_len = (int)zarg_len;
@@ -228,17 +236,22 @@ PHP_FUNCTION(mdsplus_connect) {
             strcmp(arg, lastHost) != 0)
                ? ConnectToMds(arg)
                : persistentConnection;
-  if (handle != -1) {
-    if (persistent) {
-      if (lastHost != 0) {
+  if (handle != -1)
+  {
+    if (persistent)
+    {
+      if (lastHost != 0)
+      {
         free(lastHost);
         lastHost = 0;
       }
-      lastHost = strcpy(malloc(strlen(arg) + 1), arg);
+      lastHost = strdup(arg);
       persistentConnection = handle;
     }
     RETURN_LONG(handle);
-  } else {
+  }
+  else
+  {
     char *error =
         strcpy(malloc(arg_len + strlen("Error connecting to host: ") + 1),
                "Error connecting to host: ");
@@ -257,11 +270,13 @@ PHP_FUNCTION(mdsplus_connect) {
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(mdsplus_disconnect) {
+PHP_FUNCTION(mdsplus_disconnect)
+{
   int socket;
   long int zsocket;
   if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &zsocket) ==
-      FAILURE) {
+      FAILURE)
+  {
     return;
   }
   socket = (int)zsocket;
@@ -281,7 +296,8 @@ PHP_FUNCTION(mdsplus_disconnect) {
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(mdsplus_open) {
+PHP_FUNCTION(mdsplus_open)
+{
   char *tree = NULL;
   int arg_len, len;
   long zarg_len;
@@ -292,7 +308,8 @@ PHP_FUNCTION(mdsplus_open) {
   int status;
 
   if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsl", &zsocket, &tree,
-                            &zarg_len, &zshot) == FAILURE) {
+                            &zarg_len, &zshot) == FAILURE)
+  {
     return;
   }
   socket = (int)zsocket;
@@ -300,9 +317,12 @@ PHP_FUNCTION(mdsplus_open) {
   shot = (int)zshot;
   mdsplus_replace_error(0, 1);
   status = MdsOpen(socket, tree, shot);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     RETURN_TRUE;
-  } else {
+  }
+  else
+  {
     mdsplus_replace_error(mdsplus_translate_status(socket, status), 1);
     RETURN_FALSE;
   }
@@ -317,21 +337,26 @@ PHP_FUNCTION(mdsplus_open) {
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(mdsplus_close) {
+PHP_FUNCTION(mdsplus_close)
+{
   int socket;
   long zsocket;
   int status;
 
   if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &zsocket) ==
-      FAILURE) {
+      FAILURE)
+  {
     return;
   }
   socket = (int)zsocket;
   mdsplus_replace_error(0, 1);
   status = MdsClose(socket);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     RETURN_TRUE;
-  } else {
+  }
+  else
+  {
     char *msg;
     mdsplus_replace_error(msg = mdsplus_translate_status(socket, status), 1);
     RETURN_FALSE;
@@ -348,12 +373,16 @@ PHP_FUNCTION(mdsplus_close) {
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
 
-static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index) {
+static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index)
+{
   int i;
   array_init(arr);
-  if (dim == 0) {
-    for (i = 0; i < ans->dims[dim]; i++) {
-      switch (ans->dtype) {
+  if (dim == 0)
+  {
+    for (i = 0; i < ans->dims[dim]; i++)
+    {
+      switch (ans->dtype)
+      {
       case DTYPE_UCHAR:
         add_next_index_long(arr, (int)((unsigned char *)ans->ptr)[*index]);
         break;
@@ -378,7 +407,8 @@ static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index) {
       case DTYPE_DOUBLE:
         add_next_index_double(arr, ((double *)ans->ptr)[*index]);
         break;
-      case DTYPE_CSTRING: {
+      case DTYPE_CSTRING:
+      {
         char *string =
             strncpy(emalloc(ans->length + 1),
                     ((char *)ans->ptr) + (*index * ans->length), ans->length);
@@ -389,8 +419,11 @@ static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index) {
       }
       *index = *index + 1;
     }
-  } else {
-    for (i = 0; i < ans->dims[dim]; i++) {
+  }
+  else
+  {
+    for (i = 0; i < ans->dims[dim]; i++)
+    {
       zval *arr2;
       MAKE_STD_ZVAL(arr2);
       MakeArray(arr2, ans, dim - 1, index);
@@ -399,7 +432,8 @@ static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index) {
   }
 }
 
-PHP_FUNCTION(mdsplus_value) {
+PHP_FUNCTION(mdsplus_value)
+{
   char *expression = NULL;
   int expression_len, len;
   int socket;
@@ -423,14 +457,17 @@ PHP_FUNCTION(mdsplus_value) {
   mdsplus_replace_error(0, 1);
   if (num_args == 2)
     status = MdsValue(socket, expression, &ans, NULL);
-  else {
+  else
+  {
     int dims[7] = {0, 0, 0, 0, 0, 0, 0};
     if (zend_get_parameters_array_ex(num_args, args) != SUCCESS)
       WRONG_PARAM_COUNT;
     status = SendArg(socket, 0, DTYPE_CSTRING, num_args - 1, strlen(expression),
                      0, dims, expression);
-    for (i = 2; (status & 1) && i < num_args; i++) {
-      switch (Z_TYPE_P(*args[i])) {
+    for (i = 2; (STATUS_OK) && i < num_args; i++)
+    {
+      switch (Z_TYPE_P(*args[i]))
+      {
       case IS_LONG:
         status = SendArg(socket, i - 1, DTYPE_LONG, num_args - 1, sizeof(int),
                          0, dims, (void *)&Z_LVAL_P(*args[i]));
@@ -448,16 +485,20 @@ PHP_FUNCTION(mdsplus_value) {
             "invalid argument type, must be long, double or string only", 0);
         RETURN_FALSE;
       }
-      if (!(status & 1)) {
+      if (STATUS_NOT_OK)
+      {
         mdsplus_replace_error("error sending argument to server", 0);
         RETURN_FALSE;
         break;
       }
     }
-    if (!(status & 1)) {
+    if (STATUS_NOT_OK)
+    {
       mdsplus_replace_error("error sending argument to server", 0);
       RETURN_FALSE;
-    } else {
+    }
+    else
+    {
       short len;
       int numbytes;
       void *dptr;
@@ -465,22 +506,29 @@ PHP_FUNCTION(mdsplus_value) {
       status = GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims,
                                &numbytes, &dptr, &mem);
       ans.length = len;
-      if (numbytes) {
-        if (ans.dtype == DTYPE_CSTRING) {
+      if (numbytes)
+      {
+        if (ans.dtype == DTYPE_CSTRING)
+        {
           ans.ptr = malloc(numbytes + 1);
           ((char *)ans.ptr)[numbytes] = 0;
-        } else if (numbytes > 0)
+        }
+        else if (numbytes > 0)
           ans.ptr = malloc(numbytes);
         if (numbytes > 0)
           memcpy(ans.ptr, dptr, numbytes);
-      } else
+      }
+      else
         ans.ptr = NULL;
       free(mem);
     }
   }
-  if (status & 1) {
-    if (ans.ndims == 0) {
-      switch (ans.dtype) {
+  if (STATUS_OK)
+  {
+    if (ans.ndims == 0)
+    {
+      switch (ans.dtype)
+      {
       case DTYPE_UCHAR:
         RETURN_LONG((int)*(unsigned char *)ans.ptr);
         break;
@@ -508,7 +556,8 @@ PHP_FUNCTION(mdsplus_value) {
       case DTYPE_CSTRING:
         RETURN_STRING(ans.ptr ? ans.ptr : strcpy(malloc(1), ""), 1);
         break;
-      default: {
+      default:
+      {
         char error[128];
         sprintf(error, "expression '%s' returned unsupported data type: %d",
                 expression, ans.dtype);
@@ -517,9 +566,12 @@ PHP_FUNCTION(mdsplus_value) {
         break;
       }
       }
-    } else {
+    }
+    else
+    {
       int index = 0;
-      switch (ans.dtype) {
+      switch (ans.dtype)
+      {
       case DTYPE_UCHAR:
       case DTYPE_USHORT:
       case DTYPE_ULONG:
@@ -530,7 +582,8 @@ PHP_FUNCTION(mdsplus_value) {
       case DTYPE_DOUBLE:
       case DTYPE_CSTRING:
         break;
-      default: {
+      default:
+      {
         char error[128];
         sprintf(error, "expression '%s' returned unsupported data type: %d",
                 expression, ans.dtype);
@@ -542,14 +595,19 @@ PHP_FUNCTION(mdsplus_value) {
       }
       MakeArray(return_value, &ans, ans.ndims - 1, &index);
     }
-  } else {
+  }
+  else
+  {
     char *error;
-    if (ans.ptr) {
+    if (ans.ptr)
+    {
       error = malloc(strlen(ans.ptr) + strlen(expression) + 128);
       sprintf(error,
               "expression '%s' evaluation failed with the following error: %s",
               expression, ans.ptr);
-    } else {
+    }
+    else
+    {
       error = malloc(strlen(expression) + 128);
       sprintf(error, "expression '%s' evaluation failed with status return %d",
               expression, status);
@@ -569,7 +627,8 @@ PHP_FUNCTION(mdsplus_value) {
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(mdsplus_put) {
+PHP_FUNCTION(mdsplus_put)
+{
   char *node = NULL;
   int node_len;
   char *expression = NULL;
@@ -596,7 +655,8 @@ PHP_FUNCTION(mdsplus_put) {
   mdsplus_replace_error(0, 1);
   if (num_args == 3)
     status = MdsPut(socket, node, expression, &ans, NULL);
-  else {
+  else
+  {
     int dims[7] = {0, 0, 0, 0, 0, 0, 0};
     char putexp[512];
     if (zend_get_parameters_array_ex(num_args, args) != SUCCESS)
@@ -611,8 +671,10 @@ PHP_FUNCTION(mdsplus_put) {
                      node);
     status = SendArg(socket, 2, DTYPE_CSTRING, num_args, strlen(expression), 0,
                      dims, expression);
-    for (i = 3; (status & 1) && i < num_args; i++) {
-      switch (Z_TYPE_P(*args[i])) {
+    for (i = 3; (STATUS_OK) && i < num_args; i++)
+    {
+      switch (Z_TYPE_P(*args[i]))
+      {
       case IS_LONG:
         status = SendArg(socket, i, DTYPE_LONG, num_args, sizeof(int), 0, dims,
                          (void *)&Z_LVAL_P(*args[i]));
@@ -632,15 +694,19 @@ PHP_FUNCTION(mdsplus_put) {
         goto done_mdsplus_put;
         break;
       }
-      if (!(status & 1)) {
+      if (STATUS_NOT_OK)
+      {
         mdsplus_replace_error("error sending argument to server", 0);
         goto done_mdsplus_put;
       }
     }
-    if (!(status & 1)) {
+    if (STATUS_NOT_OK)
+    {
       mdsplus_replace_error("error sending argument to server", 0);
       goto done_mdsplus_put;
-    } else {
+    }
+    else
+    {
       short len;
       int numbytes;
       void *dptr;
@@ -648,36 +714,49 @@ PHP_FUNCTION(mdsplus_put) {
       status = GetAnswerInfoTS(socket, &ans.dtype, &len, &ans.ndims, &ans.dims,
                                &numbytes, &dptr, &mem);
       ans.length = len;
-      if (numbytes) {
-        if (ans.dtype == DTYPE_CSTRING) {
+      if (numbytes)
+      {
+        if (ans.dtype == DTYPE_CSTRING)
+        {
           ans.ptr = malloc(numbytes + 1);
           ((char *)ans.ptr)[numbytes] = 0;
-        } else if (numbytes > 0)
+        }
+        else if (numbytes > 0)
           ans.ptr = malloc(numbytes);
         if (numbytes > 0)
           memcpy(ans.ptr, dptr, numbytes);
-      } else
+      }
+      else
         ans.ptr = NULL;
       free(mem);
     }
   }
-  if (status & 1) {
-    if (ans.ptr && (*(int *)ans.ptr & 1)) {
+  if (STATUS_OK)
+  {
+    if (ans.ptr && (*(int *)ans.ptr & 1))
+    {
       goto done_mdsplus_put;
-    } else {
+    }
+    else
+    {
       mdsplus_replace_error(mdsplus_translate_status(socket, *(int *)ans.ptr),
                             1);
       status = 0;
       goto done_mdsplus_put;
     }
-  } else {
+  }
+  else
+  {
     char *error;
-    if (ans.ptr) {
+    if (ans.ptr)
+    {
       error = malloc(strlen(ans.ptr) + strlen(expression) + 128);
       sprintf(error,
               "expression '%s' evaluation failed with the following error: %s",
               expression, ans.ptr);
-    } else {
+    }
+    else
+    {
       error = malloc(strlen(expression) + 128);
       sprintf(error, "expression '%s' evaluation failed with status return %d",
               expression, status);
@@ -686,9 +765,12 @@ PHP_FUNCTION(mdsplus_put) {
   }
 done_mdsplus_put:
   free(ans.ptr);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     RETURN_TRUE;
-  } else {
+  }
+  else
+  {
     RETURN_FALSE;
   }
 }
@@ -702,10 +784,14 @@ done_mdsplus_put:
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(mdsplus_error) {
-  if (mdsplus_error_msg) {
+PHP_FUNCTION(mdsplus_error)
+{
+  if (mdsplus_error_msg)
+  {
     RETVAL_STRING(mdsplus_error_msg, 1);
-  } else {
+  }
+  else
+  {
     RETURN_FALSE;
   }
   return;

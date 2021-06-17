@@ -59,12 +59,15 @@ static void srunner_fprint_summary(FILE *file, SRunner *sr,
 static void srunner_fprint_results(FILE *file, SRunner *sr,
                                    enum print_output print_mode);
 
-void srunner_print(SRunner *sr, enum print_output print_mode) {
+void srunner_print(SRunner *sr, enum print_output print_mode)
+{
   srunner_fprint(stdout, sr, print_mode);
 }
 
-void srunner_fprint(FILE *file, SRunner *sr, enum print_output print_mode) {
-  if (print_mode == CK_ENV) {
+void srunner_fprint(FILE *file, SRunner *sr, enum print_output print_mode)
+{
+  if (print_mode == CK_ENV)
+  {
     print_mode = get_env_printmode();
   }
 
@@ -73,13 +76,15 @@ void srunner_fprint(FILE *file, SRunner *sr, enum print_output print_mode) {
 }
 
 static void srunner_fprint_summary(FILE *file, SRunner *sr,
-                                   enum print_output print_mode) {
+                                   enum print_output print_mode)
+{
 #if ENABLE_SUBUNIT
   if (print_mode == CK_SUBUNIT)
     return;
 #endif
 
-  if (print_mode >= CK_MINIMAL) {
+  if (print_mode >= CK_MINIMAL)
+  {
     char *str;
 
     str = sr_stat_str(sr);
@@ -90,7 +95,8 @@ static void srunner_fprint_summary(FILE *file, SRunner *sr,
 }
 
 static void srunner_fprint_results(FILE *file, SRunner *sr,
-                                   enum print_output print_mode) {
+                                   enum print_output print_mode)
+{
   List *resultlst;
 
 #if ENABLE_SUBUNIT
@@ -101,7 +107,8 @@ static void srunner_fprint_results(FILE *file, SRunner *sr,
   resultlst = sr->resultlst;
 
   for (check_list_front(resultlst); !check_list_at_end(resultlst);
-       check_list_advance(resultlst)) {
+       check_list_advance(resultlst))
+  {
     TestResult *tr = (TestResult *)check_list_val(resultlst);
 
     tr_fprint(file, tr, print_mode);
@@ -109,10 +116,13 @@ static void srunner_fprint_results(FILE *file, SRunner *sr,
   return;
 }
 
-void fprint_xml_esc(FILE *file, const char *str) {
-  for (; *str != '\0'; str++) {
+void fprint_xml_esc(FILE *file, const char *str)
+{
+  for (; *str != '\0'; str++)
+  {
 
-    switch (*str) {
+    switch (*str)
+    {
 
       /* handle special characters that must be escaped */
     case '"':
@@ -139,13 +149,16 @@ void fprint_xml_esc(FILE *file, const char *str) {
   }
 }
 
-void tr_fprint(FILE *file, TestResult *tr, enum print_output print_mode) {
-  if (print_mode == CK_ENV) {
+void tr_fprint(FILE *file, TestResult *tr, enum print_output print_mode)
+{
+  if (print_mode == CK_ENV)
+  {
     print_mode = get_env_printmode();
   }
 
   if ((print_mode >= CK_VERBOSE && tr->rtype == CK_PASS) ||
-      (tr->rtype != CK_PASS && print_mode >= CK_NORMAL)) {
+      (tr->rtype != CK_PASS && print_mode >= CK_NORMAL))
+  {
     char *trstr = tr_str(tr);
 
     fprintf(file, "%s\n", trstr);
@@ -154,13 +167,15 @@ void tr_fprint(FILE *file, TestResult *tr, enum print_output print_mode) {
 }
 
 void tr_xmlprint(FILE *file, TestResult *tr,
-                 enum print_output print_mode CK_ATTRIBUTE_UNUSED) {
+                 enum print_output print_mode CK_ATTRIBUTE_UNUSED)
+{
   char result[10];
   char *path_name = NULL;
   char *file_name = NULL;
   char *slash = NULL;
 
-  switch (tr->rtype) {
+  switch (tr->rtype)
+  {
   case CK_PASS:
     snprintf(result, sizeof(result), "%s", "success");
     break;
@@ -179,16 +194,21 @@ void tr_xmlprint(FILE *file, TestResult *tr,
     break;
   }
 
-  if (tr->file) {
+  if (tr->file)
+  {
     slash = strrchr(tr->file, '/');
-    if (slash == NULL) {
+    if (slash == NULL)
+    {
       slash = strrchr(tr->file, '\\');
     }
 
-    if (slash == NULL) {
+    if (slash == NULL)
+    {
       path_name = strdup(".");
       file_name = tr->file;
-    } else {
+    }
+    else
+    {
       path_name = strdup(tr->file);
       path_name[slash - tr->file] = 0; /* Terminate the temporary string. */
       file_name = slash + 1;
@@ -216,7 +236,8 @@ void tr_xmlprint(FILE *file, TestResult *tr,
   free(path_name);
 }
 
-enum print_output get_env_printmode(void) {
+enum print_output get_env_printmode(void)
+{
   char *env = getenv("CK_VERBOSITY");
 
   if (env == NULL)

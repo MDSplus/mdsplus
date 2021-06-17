@@ -33,6 +33,12 @@ Java-Bean: True
 Name: DeviceParameters.class
 Java-Bean: True
 
+Name: DeviceInputs.class
+Java-Bean: True
+
+Name: DeviceOutputs.class
+Java-Bean: True
+
 Name: DeviceWaveParameters.class
 Java-Bean: True
 

@@ -92,7 +92,7 @@ class Apd(_dat.TreeRefX, _arr.Array):
         self.dtype_id = dtype
         self._descs = []
         if value is not None:
-            if isinstance(value, (Apd, tuple, list, _ver.mapclass, _ver.generator, _N.ndarray)):
+            if isinstance(value, _ver.listlike):
                 for val in value:
                     self.append(_dat.Data(val))
             else:
@@ -116,7 +116,7 @@ class Apd(_dat.TreeRefX, _arr.Array):
     def _value(self):
         """Returns native representation of the List"""
         return _N.asarray(tuple(d.value for d in self._descs), 'object')
-
+_ver.listlike = tuple(set(_ver.listlike).union(set((Apd,))))
 
 class Dictionary(dict, Apd):
     """dictionary class"""

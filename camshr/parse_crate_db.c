@@ -70,7 +70,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      pointer to struct of crate data
 // output:      none
 //-------------------------------------------------------------------------
-void parse_crate_db(struct CRATE *in, struct Crate_ *out) {
+void parse_crate_db(struct CRATE *in, struct Crate_ *out)
+{
   if (MSGLVL(FUNCTION_NAME))
     printf("parse_crate_db()\n");
 

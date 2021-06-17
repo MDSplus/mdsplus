@@ -45,7 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************/
 
 EXPORT int TclWfevent(void *ctx, char **error,
-                      char **output __attribute__((unused))) {
+                      char **output __attribute__((unused)))
+{
   char *event = 0;
   char *timeout = 0;
   int seconds = 0;
@@ -54,12 +55,16 @@ EXPORT int TclWfevent(void *ctx, char **error,
   cli_get_value(ctx, "TIMEOUT", &timeout);
   seconds = strtol(timeout, NULL, 0);
   free(timeout);
-  if (event) {
-    if (seconds > 0) {
+  if (event)
+  {
+    if (seconds > 0)
+    {
       status = MDSWfeventTimed(event, 0, 0, 0, seconds);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
         *error = strdup("Timeout\n");
-    } else {
+    }
+    else
+    {
       status = MDSWfevent(event, 0, 0, 0);
     }
     free(event);

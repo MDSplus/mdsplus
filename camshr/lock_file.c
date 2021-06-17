@@ -63,7 +63,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // input:       none
 // output:      status
 //-------------------------------------------------------------------------
-int lock_file() {
+int lock_file()
+{
   int status = SUCCESS; // assume the best case
   struct sembuf sb = {0, P_SEMA4, 0};
   extern int semid;       // see 'create_sema4()'
@@ -79,8 +80,10 @@ int lock_file() {
   if (sema4Exists == FALSE)
     create_sema4();
 
-  do {
-    if (semop(semid, &sb, 1) == ERROR) {
+  do
+  {
+    if (semop(semid, &sb, 1) == ERROR)
+    {
       if (MSGLVL(ALWAYS))
         perror("semop()");
 
@@ -94,7 +97,8 @@ int lock_file() {
   } while (check_sema4());
 
 LockFile_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("lock_file(): ");
     ShowStatus(status);
   }

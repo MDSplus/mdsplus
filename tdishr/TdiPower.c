@@ -31,7 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    use double. Ken Klare, LANL P-4     (c)1990,1991
 */
 #include <string.h>
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 #include "tdinelements.h"
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
@@ -47,7 +46,8 @@ extern int Tdi3Exp();
 extern int Tdi3Divide();
 
 int Tdi3Power(struct descriptor *x, struct descriptor *y,
-              struct descriptor_a *z) {
+              struct descriptor_a *z)
+{
   INIT_STATUS;
   int yy;
   char uno[32];
@@ -57,42 +57,45 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
   For real/complex exponent, z = EXP(LOG(x)*y)
   Need HC routines, not available on VAX.
   *******************************************/
-  if (y->dtype != DTYPE_L) {
-    if (x->class != CLASS_A && z->class == CLASS_A) {
+  if (y->dtype != DTYPE_L)
+  {
+    if (x->class != CLASS_A && z->class == CLASS_A)
+    {
       status = TdiConvert(x, z);
       status = Tdi3Log(z, z);
-    } else
+    }
+    else
       status = Tdi3Log(x, z);
-    if
-      STATUS_OK
-    status = Tdi3Multiply(y, z, z);
-    if
-      STATUS_OK
-    status = Tdi3Exp(z, z);
+    if (STATUS_OK)
+      status = Tdi3Multiply(y, z, z);
+    if (STATUS_OK)
+      status = Tdi3Exp(z, z);
   }
   /******************************************
   Scalar integer exponent, look once at bits.
   Clobbers x and x&z must be different.
   ******************************************/
-  else if (y->class != CLASS_A) {
-    if ((yy = *(int *)y->pointer) <= 0) {
+  else if (y->class != CLASS_A)
+  {
+    if ((yy = *(int *)y->pointer) <= 0)
+    {
       if (yy == 0)
         return TdiConvert(&one_dsc, z);
       yy = -yy;
       duno = *x;
       duno.pointer = uno;
       status = TdiConvert(&one_dsc, &duno);
-      if
-        STATUS_OK
-      status = Tdi3Divide(&duno, x, x);
+      if (STATUS_OK)
+        status = Tdi3Divide(&duno, x, x);
     }
     for (; !(yy & 1) && STATUS_OK; yy >>= 1)
       status = Tdi3Multiply(x, x, x);
     if (x->class != CLASS_A)
-      _MOVC3(z->length, x->pointer, z->pointer);
+      memcpy(z->pointer, x->pointer, z->length);
     else
-      _MOVC3(z->arsize, x->pointer, z->pointer);
-    for (; (yy >>= 1) > 0 && STATUS_OK;) {
+      memcpy(z->pointer, x->pointer, z->arsize);
+    for (; (yy >>= 1) > 0 && STATUS_OK;)
+    {
       status = Tdi3Multiply(x, x, x);
       if (yy & 1 && STATUS_OK)
         status = Tdi3Multiply(x, z, z);
@@ -102,7 +105,8 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
   Must do it the hard way.
   Copy to keep scalar base.
   ************************/
-  else {
+  else
+  {
     char xx[32];
     struct descriptor dx = {0, 0, CLASS_S, 0};
     char *px = x->pointer;
@@ -119,14 +123,16 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
     dz.class = CLASS_S;
     duno = dx;
     duno.pointer = uno;
-    if
-      STATUS_OK
-    status = TdiConvert(&one_dsc, &duno);
-    for (; --n >= 0 && STATUS_OK; px += incx, dz.pointer += incz) {
-      _MOVC3(dx.length, px, xx);
-      if ((int)(yy = *py++) <= 0) {
-        if (yy == 0) {
-          _MOVC3(dz.length, uno, dz.pointer);
+    if (STATUS_OK)
+      status = TdiConvert(&one_dsc, &duno);
+    for (; --n >= 0 && STATUS_OK; px += incx, dz.pointer += incz)
+    {
+      memcpy(xx, px, dx.length);
+      if ((int)(yy = *py++) <= 0)
+      {
+        if (yy == 0)
+        {
+          memcpy(dz.pointer, uno, dz.length);
           continue;
         }
         yy = -yy;
@@ -134,8 +140,9 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
       }
       for (; !(yy & 1) && STATUS_OK; yy >>= 1)
         status = Tdi3Multiply(&dx, &dx, &dx);
-      _MOVC3(dz.length, dx.pointer, dz.pointer);
-      for (; (yy >>= 1) > 0 && STATUS_OK;) {
+      memcpy(dz.pointer, dx.pointer, dz.length);
+      for (; (yy >>= 1) > 0 && STATUS_OK;)
+      {
         status = Tdi3Multiply(&dx, &dx, &dx);
         if (yy & 1 && STATUS_OK)
           status = Tdi3Multiply(&dx, &dz, &dz);
@@ -149,12 +156,14 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y,
         Tdi3Merge.C
         Assign value from either true or false source according to mask.
 */
-typedef struct {
+typedef struct
+{
   int q0, q1;
 } lquad;
 
 int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse,
-              struct descriptor_a *pdmask, struct descriptor_a *pdout) {
+              struct descriptor_a *pdmask, struct descriptor_a *pdout)
+{
   INIT_STATUS;
   int len = pdout->length;
   char *po = pdout->pointer;
@@ -177,45 +186,47 @@ int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse,
   lquad *pq;
 
   N_ELEMENTS(pdout, n);
-  if
-    STATUS_OK
-  switch (len) {
-  case 1:
-    for (pc = (char *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
-      if (*pm & 1)
-        *pc++ = *(char *)pt;
-      else
-        *pc++ = *(char *)pf;
+  if (STATUS_OK)
+    switch (len)
+    {
+    case 1:
+      for (pc = (char *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
+        if (*pm & 1)
+          *pc++ = *(char *)pt;
+        else
+          *pc++ = *(char *)pf;
+      break;
+    case 2:
+      for (ps = (short *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
+        if (*pm & 1)
+          *ps++ = *(short *)pt;
+        else
+          *ps++ = *(short *)pf;
+      break;
+    case 4:
+      for (pl = (int *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
+        if (*pm & 1)
+          *pl++ = *(int *)pt;
+        else
+          *pl++ = *(int *)pf;
+      break;
+    case 8:
+      for (pq = (lquad *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
+        if (*pm & 1)
+          *pq++ = *(lquad *)pt;
+        else
+          *pq++ = *(lquad *)pf;
+      break;
+    default:
+    {
+      int sm = stepm, st = stept, sf = stepf;
+      for (; --n >= 0; pm += sm, pt += st, pf += sf, po += len)
+        if (*pm & 1)
+          memcpy(po, pt, len);
+        else
+          memcpy(po, pf, len);
+    }
     break;
-  case 2:
-    for (ps = (short *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
-      if (*pm & 1)
-        *ps++ = *(short *)pt;
-      else
-        *ps++ = *(short *)pf;
-    break;
-  case 4:
-    for (pl = (int *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
-      if (*pm & 1)
-        *pl++ = *(int *)pt;
-      else
-        *pl++ = *(int *)pf;
-    break;
-  case 8:
-    for (pq = (lquad *)po; --n >= 0; pm += stepm, pt += stept, pf += stepf)
-      if (*pm & 1)
-        *pq++ = *(lquad *)pt;
-      else
-        *pq++ = *(lquad *)pf;
-    break;
-  default: {
-    int sm = stepm, st = stept, sf = stepf;
-    for (; --n >= 0; pm += sm, pt += st, pf += sf, po += len)
-      if (*pm & 1)
-        _MOVC3(len, pt, po);
-      else
-        _MOVC3(len, pf, po);
-  } break;
-  }
+    }
   return status;
 }

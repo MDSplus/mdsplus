@@ -109,6 +109,7 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret, String
 #include <ctype.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <status.h>
 #ifndef _toupper
 #define _toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c)&0xDF : (c))
 #endif
@@ -132,7 +133,8 @@ extern int TdiCompile();
 extern int TdiDimOf();
 extern int TdiDebug();
 
-static void ResetErrors() {
+static void ResetErrors()
+{
   static int const four = 4;
   static struct descriptor const clear_messages = {4, DTYPE_L, CLASS_S,
                                                    (char *)&four};
@@ -142,10 +144,12 @@ static void ResetErrors() {
 }
 
 static Boolean Error(Boolean brief, String topic, String *error,
-                     struct descriptor_xd *xd1, struct descriptor_xd *xd2) {
+                     struct descriptor_xd *xd1, struct descriptor_xd *xd2)
+{
   if (brief)
     *error = XtNewString(topic);
-  else {
+  else
+  {
     static struct descriptor_d messages = {0, DTYPE_T, CLASS_D, 0};
     static int const one = 1;
     static struct descriptor const get_messages = {4, DTYPE_L, CLASS_S,
@@ -170,7 +174,8 @@ static Boolean Error(Boolean brief, String topic, String *error,
 }
 
 static void DestroyXd(Widget w __attribute__((unused)),
-                      struct descriptor_xd *xd) {
+                      struct descriptor_xd *xd)
+{
   MdsFree1Dx(xd, 0);
   free(xd);
 }
@@ -180,7 +185,8 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
 Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
                      String database, String shot, String default_node,
                      String x, String y, XmdsWaveformValStruct *x_ret,
-                     XmdsWaveformValStruct *y_ret, String *error) {
+                     XmdsWaveformValStruct *y_ret, String *error)
+{
 
   static DESCRIPTOR(rowv, "_ROW=$");
   static DESCRIPTOR(colv, "_COLUMN=$");
@@ -193,10 +199,12 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
   TdiExecute(&colv, &ival_d, &ival_d MDS_END_ARG);
   ival = idx;
   TdiExecute(&idxv, &ival_d, &ival_d MDS_END_ARG);
-  if (strlen(database)) {
+  if (strlen(database))
+  {
     static int shotnum;
     shotnum = 0;
-    if (strlen(shot)) {
+    if (strlen(shot))
+    {
       struct descriptor shot_dsc = {0, DTYPE_T, CLASS_S, 0};
       static DESCRIPTOR_LONG(shotnum_dsc, &shotnum);
       shot_dsc.length = strlen(shot);
@@ -204,7 +212,8 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
       ResetErrors();
       if (!(TdiExecute(&shot_dsc, &shotnum_dsc MDS_END_ARG) & 1))
         return Error(brief, "Error evaluating shot number", error, 0, 0);
-      if (event) {
+      if (event)
+      {
         int i;
         String upper_shot = XtNewString(shot);
         int len = strlen(shot);
@@ -220,14 +229,17 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
     if (!(TreeOpen(database, shotnum, 1) & 1))
       return Error(1, "Error opening database", error, 0, 0);
   }
-  if (strlen(default_node)) {
+  if (strlen(default_node))
+  {
     int nid;
     TreeSetDefaultNid(0);
     if (!(TreeSetDefault(default_node, &nid) & 1))
       return Error(1, "Default node not found", error, 0, 0);
-  } else
+  }
+  else
     TreeSetDefaultNid(0);
-  if (strlen(y)) {
+  if (strlen(y))
+  {
     struct descriptor y_dsc = {0, DTYPE_T, CLASS_S, 0};
     static EMPTYXD(sig);
     static float zero = 0.0;
@@ -239,36 +251,43 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
     ResetErrors();
     if ((TdiExecute(&y_dsc, &sig MDS_END_ARG) & 1) &&
         (TdiData(sig.pointer, &y_xd MDS_END_ARG) & 1) &&
-        (TdiCvt(&y_xd, &float_dsc, &y_xd MDS_END_ARG) & 1)) {
+        (TdiCvt(&y_xd, &float_dsc, &y_xd MDS_END_ARG) & 1))
+    {
       struct descriptor_a *y_a = (struct descriptor_a *)y_xd.pointer;
       int count = (y_a->class == CLASS_A) ? y_a->arsize / sizeof(float) : 1;
-      if (count >= 1) {
+      if (count >= 1)
+      {
         EMPTYXD(x_xd);
         int status;
         ResetErrors();
-        if (strlen(x)) {
+        if (strlen(x))
+        {
           struct descriptor x_dsc = {0, DTYPE_T, CLASS_S, 0};
           x_dsc.length = strlen(x);
           x_dsc.pointer = x;
           status = (TdiCompile(&x_dsc, &sig MDS_END_ARG) & 1) &&
                    (TdiData(&sig, &x_xd MDS_END_ARG) & 1) &&
                    (TdiCvt(&x_xd, &float_dsc, &x_xd MDS_END_ARG) & 1);
-        } else
+        }
+        else
           status = (TdiDimOf(&sig, &x_xd MDS_END_ARG) & 1) &&
                    (TdiData(&x_xd, &x_xd MDS_END_ARG) & 1) &&
                    (TdiCvt(&x_xd, &float_dsc, &x_xd MDS_END_ARG) & 1);
-        if (!(status & 1) && (y_a->class == CLASS_S)) {
+        if (STATUS_NOT_OK && (y_a->class == CLASS_S))
+        {
           static int zero = 0;
           static DESCRIPTOR_LONG(zero_d, &zero);
           status = MdsCopyDxXd(&zero_d, &x_xd);
         }
         MdsFree1Dx(&sig, 0);
-        if (status) {
+        if (status)
+        {
           struct descriptor_a *x_a = (struct descriptor_a *)x_xd.pointer;
           count = (x_a->class == CLASS_A)
                       ? minInt(x_a->arsize / sizeof(float), count)
                       : 1;
-          if (count >= 1) {
+          if (count >= 1)
+          {
             x_ret->size = (x_a->class == CLASS_A) ? x_a->arsize : sizeof(float);
             x_ret->addr = x_a->pointer;
             x_ret->destroy = DestroyXd;
@@ -279,23 +298,30 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
             y_ret->destroy = DestroyXd;
             y_ret->destroy_arg =
                 memcpy(malloc(sizeof(y_xd)), &y_xd, sizeof(y_xd));
-          } else
+          }
+          else
             return Error(1, "X-axis contains no points", error, &y_xd, &x_xd);
-        } else
+        }
+        else
           return Error(brief, "Error evaluating X-axis", error, &y_xd, &x_xd);
-      } else
+      }
+      else
         return Error(1, "Y-axis contains no points", error, &y_xd, 0);
-    } else
+    }
+    else
       return Error(brief, "Error evaluating Y-axis", error, &y_xd, 0);
-  } else
+  }
+  else
     return Error(1, "", error, 0, 0);
   return 1;
 }
 
 Boolean EvaluateText(String text, String error_prefix, String *text_ret,
-                     String *error) {
+                     String *error)
+{
   Boolean status = 1;
-  if (strlen(text)) {
+  if (strlen(text))
+  {
     struct descriptor text_dsc = {0, DTYPE_T, CLASS_S, 0};
     static EMPTYXD(string_xd);
     static struct descriptor_d string_d = {0, DTYPE_T, CLASS_D, 0};
@@ -304,24 +330,29 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret,
     ResetErrors();
     if ((TdiExecute(&text_dsc, &string_xd MDS_END_ARG) & 1) &&
         (TdiData(&string_xd, &string_xd MDS_END_ARG) & 1) &&
-        (TdiAdjustl(&string_xd, &string_d MDS_END_ARG) & 1)) {
+        (TdiAdjustl(&string_xd, &string_d MDS_END_ARG) & 1))
+    {
       StrTrim((struct descriptor *)&string_d, (struct descriptor *)&string_d,
               0);
       *text_ret = memcpy(XtMalloc(string_d.length + 1), string_d.pointer,
                          string_d.length);
       (*text_ret)[string_d.length] = '\0';
-    } else {
+    }
+    else
+    {
       *text_ret = XtNewString("");
       status = Error(0, error_prefix, error, &string_xd, 0);
     }
     StrFree1Dx(&string_d);
     MdsFree1Dx(&string_xd, 0);
-  } else
+  }
+  else
     *text_ret = XtNewString("");
   return status;
 }
 
-void CloseDataSources() {
+void CloseDataSources()
+{
   while (TreeClose(NULL, 0) & 1)
     ;
 }
@@ -329,7 +360,8 @@ void CloseDataSources() {
 #ifdef OLD_WAY
 static XtAppContext this_app_context;
 static Widget this_widget;
-static void EventAst(void *astparam, int dlen, char *data) {
+static void EventAst(void *astparam, int dlen, char *data)
+{
   Boolean *received = (Boolean *)astparam;
   *received = 1;
   XtAppAddTimeOut(this_app_context, 1, (XtTimerCallbackProc)EventUpdate, 0);
@@ -342,19 +374,23 @@ static void EventAst(void *astparam, int dlen, char *data) {
   XFlush(XtDisplay(this_widget));
 }
 
-void SetupEvent(String event, Boolean *received, int *id) {
-  if (*id) {
+void SetupEvent(String event, Boolean *received, int *id)
+{
+  if (*id)
+  {
     MDSEventCan(*id);
     *id = 0;
   }
-  if (strlen(event)) {
+  if (strlen(event))
+  {
     pthread_mutex_lock(&event_mutex);
     MDSEventAst(event, EventAst, received, id);
     pthread_mutex_unlock(&event_mutex);
   }
 }
 
-void SetupEventInput(XtAppContext app_context, Widget w) {
+void SetupEventInput(XtAppContext app_context, Widget w)
+{
   this_app_context = app_context;
   this_widget = w;
 }
@@ -362,7 +398,8 @@ void SetupEventInput(XtAppContext app_context, Widget w) {
 
 static int event_pipe[2];
 static void EventAst(void *astparam, int dlen __attribute__((unused)),
-                     char *data __attribute__((unused))) {
+                     char *data __attribute__((unused)))
+{
   Boolean *received = (Boolean *)astparam;
   char buf[1];
   pthread_mutex_lock(&event_mutex);
@@ -372,19 +409,23 @@ static void EventAst(void *astparam, int dlen __attribute__((unused)),
     perror("Error writing to event pipe\n");
 }
 
-void SetupEvent(String event, Boolean *received, int *id) {
-  if (*id) {
+void SetupEvent(String event, Boolean *received, int *id)
+{
+  if (*id)
+  {
     MDSEventCan(*id);
     *id = 0;
   }
-  if (strlen(event)) {
+  if (strlen(event))
+  {
     pthread_mutex_lock(&event_mutex);
     MDSEventAst(event, EventAst, received, id);
     pthread_mutex_unlock(&event_mutex);
   }
 }
 
-static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id) {
+static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
+{
   char buf[1];
   if (read(event_pipe[0], buf, 1) == -1)
     perror("Error reading from event pipe\n");
@@ -392,7 +433,8 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id) {
 }
 
 void SetupEventInput(XtAppContext app_context,
-                     Widget w __attribute__((unused))) {
+                     Widget w __attribute__((unused)))
+{
   if (pipe(event_pipe) == -1)
     perror("Error creating event pipes");
   XtAppAddInput(app_context, event_pipe[0], (XtPointer)XtInputReadMask,
@@ -404,12 +446,16 @@ void SetupEventInput(XtAppContext app_context,
 #include <rpc/rpc.h>
 #include <MdsRpc/mds_rpc.h>
 #include <Xmds/XmdsWaveform.h>
-static void Destroy_xy(Widget w, float *ptr) { free(ptr); }
+static void Destroy_xy(Widget w, float *ptr)
+{
+  free(ptr);
+}
 
 Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
                      String database, String shot, String default_node,
                      String x, String y, XmdsWaveformValStruct *x_ret,
-                     XmdsWaveformValStruct *y_ret, String *error) {
+                     XmdsWaveformValStruct *y_ret, String *error)
+{
 
   CLIENT *cl;
   char *rpc_server = getenv("mds_rpc_server");
@@ -426,18 +472,21 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
   rpc_input.default_node = default_node;
 
   cl = clnt_create(rpc_server, MDSPLUS, MDSPLUSVERS, "tcp");
-  if (cl == NULL) {
+  if (cl == NULL)
+  {
     *error = clnt_spcreateerror(rpc_server);
     return (0);
   }
 
   result = mds_scope_xy_value_1(&rpc_input, cl);
-  if (result == NULL) {
+  if (result == NULL)
+  {
     *error = clnt_sperror(cl, rpc_server);
     return (0);
   }
 
-  switch (result->errno) {
+  switch (result->errno)
+  {
   case 0:
     x_ptr =
         malloc(result->mds_scope_xy_res_u.results->x_value.len * sizeof(float));
@@ -465,11 +514,13 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
     status = 1;
     break;
   case 1:
-    if (result->mds_scope_xy_res_u.results_error->error_len) {
+    if (result->mds_scope_xy_res_u.results_error->error_len)
+    {
       *error =
           XtCalloc(1, result->mds_scope_xy_res_u.results_error->error_len + 1);
       strcpy(*error, result->mds_scope_xy_res_u.results_error->error);
-    } else
+    }
+    else
       *error = XtNewString("");
     xdr_free(xdr_mds_scope_xy_res, result);
     status = 0;
@@ -482,7 +533,8 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
 }
 
 Boolean EvaluateText(String text, String error_prefix, String *text_ret,
-                     String *error) {
+                     String *error)
+{
   CLIENT *cl;
   char *rpc_server = getenv("mds_rpc_server");
   mds_scope_text_res *result;
@@ -493,38 +545,45 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret,
   rpc_input.error_prefix = error_prefix;
 
   cl = clnt_create(rpc_server, MDSPLUS, MDSPLUSVERS, "tcp");
-  if (cl == NULL) {
+  if (cl == NULL)
+  {
     *error = clnt_spcreateerror(rpc_server);
     *text_ret = XtNewString("");
     return (0);
   }
 
   result = mds_scope_text_value_1(&rpc_input, cl);
-  if (result == NULL) {
+  if (result == NULL)
+  {
     *error = clnt_sperror(cl, rpc_server);
     *text_ret = XtNewString("");
     return (0);
   }
 
-  switch (result->errno) {
+  switch (result->errno)
+  {
   case 0:
-    if (result->mds_scope_text_res_u.results->len) {
+    if (result->mds_scope_text_res_u.results->len)
+    {
       *text_ret = XtCalloc(1, result->mds_scope_text_res_u.results->len + 1);
       strcpy(*text_ret, result->mds_scope_text_res_u.results->ptr);
       (*text_ret)[result->mds_scope_text_res_u.results->len] = 0;
-    } else
+    }
+    else
       *text_ret = XtNewString("");
 
     xdr_free(xdr_mds_scope_text_res, result);
     status = 1;
     break;
   case 1:
-    if (result->mds_scope_text_res_u.results_error->len) {
+    if (result->mds_scope_text_res_u.results_error->len)
+    {
       *error = XtCalloc(1, result->mds_scope_text_res_u.results_error->len + 1);
       strcpy(*error, result->mds_scope_text_res_u.results_error->ptr);
       (*error)[result->mds_scope_text_res_u.results_error->len] = 0;
       *text_ret = XtNewString("");
-    } else
+    }
+    else
       *error = XtNewString("");
 
     xdr_free(xdr_mds_scope_text_res, result);
@@ -546,17 +605,21 @@ void SetupEventInput(XtAppContext app_context, Widget w) {}
 #elif defined(_DUMMY_)
 #include <math.h>
 static Boolean Error(Boolean brief, String topic, String *error, String text,
-                     int *dummy) {
+                     int *dummy)
+{
   /*
     if (brief)
       *error = XtNewString(topic);
     else {
   */
-  if (text) {
+  if (text)
+  {
     String message = XtMalloc(strlen(topic) + strlen(text) + 5);
     sprintf(message, "%s\n\n%s", topic, text);
     *error = message;
-  } else {
+  }
+  else
+  {
     String message = XtMalloc(strlen(topic) + 5);
     sprintf(message, "%s\n\n", topic);
     *error = message;
@@ -572,13 +635,16 @@ static void Destroy(Widget w, String ptr) { free(ptr); }
 Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
                      String database, String shot, String default_node,
                      String x, String y, XmdsWaveformValStruct *x_ret,
-                     XmdsWaveformValStruct *y_ret, String *error) {
-  if (strlen(y)) {
+                     XmdsWaveformValStruct *y_ret, String *error)
+{
+  if (strlen(y))
+  {
     int count = 10000;
     int i;
     float *xv = (float *)malloc(count * sizeof(float));
     float *yv = (float *)malloc(count * sizeof(float));
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+    {
       xv[i] = i;
       yv[i] = sin(i / 1000. * 3.14);
     }
@@ -590,17 +656,21 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
     y_ret->addr = (caddr_t)yv;
     y_ret->destroy = Destroy;
     y_ret->destroy_arg = (caddr_t)yv;
-  } else
+  }
+  else
     return Error(1, "", error, NULL, NULL);
   return 1;
 }
 
 Boolean EvaluateText(String text, String error_prefix, String *text_ret,
-                     String *error) {
+                     String *error)
+{
   Boolean status = 1;
-  if (strlen(text)) {
+  if (strlen(text))
+  {
     *text_ret = XtNewString(text);
-  } else
+  }
+  else
     *text_ret = XtNewString("");
   return status;
 }
@@ -618,11 +688,14 @@ void SetupEventInput(XtAppContext app_context, Widget w) {}
 #else
 #include <ipdesc.h>
 
-static long Connect() {
+static long Connect()
+{
   static long sock;
-  if (!sock) {
+  if (!sock)
+  {
     char *host = getenv("MDS_HOST");
-    if (host == 0) {
+    if (host == 0)
+    {
       printf("set environment variable MDS_HOST to remote server name\n");
       exit(1);
     }
@@ -633,7 +706,8 @@ static long Connect() {
   return sock;
 }
 
-static long ConnectToMdsEvents(char *event_host) {
+static long ConnectToMdsEvents(char *event_host)
+{
   char hostpart[256] = {0};
   char portpart[256] = {0};
   char host[256];
@@ -649,9 +723,11 @@ static long ConnectToMdsEvents(char *event_host) {
   return ConnectToMds(host);
 }
 
-static long ConnectEvents() {
+static long ConnectEvents()
+{
   static long sock = -1;
-  if (sock == -1) {
+  if (sock == -1)
+  {
     char *event_host = getenv("MDS_EVENT_HOST");
     if (event_host)
       sock = ConnectToMdsEvents(event_host);
@@ -659,26 +735,31 @@ static long ConnectEvents() {
   return sock;
 }
 
-#define FreeDescrip(x)                                                         \
-  if (x.ptr != NULL) {                                                         \
-    free(x.ptr);                                                               \
-    x.ptr = NULL;                                                              \
+#define FreeDescrip(x) \
+  if (x.ptr != NULL)   \
+  {                    \
+    free(x.ptr);       \
+    x.ptr = NULL;      \
   }
-#define Descrip(name, type, ptr)                                               \
+#define Descrip(name, type, ptr) \
   struct descrip name = {type, 0, {0, 0, 0, 0, 0, 0, 0}, 0, ptr}
 
 static Boolean Error(Boolean brief __attribute__((unused)), String topic,
-                     String *error, String text, struct descrip *dsc) {
+                     String *error, String text, struct descrip *dsc)
+{
   /*
     if (brief)
       *error = XtNewString(topic);
     else {
   */
-  if (text) {
+  if (text)
+  {
     String message = XtMalloc(strlen(topic) + strlen(text) + 5);
     sprintf(message, "%s\n\n%s", topic, text);
     *error = message;
-  } else {
+  }
+  else
+  {
     String message = XtMalloc(strlen(topic) + 5);
     sprintf(message, "%s\n\n", topic);
     *error = message;
@@ -687,21 +768,25 @@ static Boolean Error(Boolean brief __attribute__((unused)), String topic,
     }
   */
   if (dsc != NULL)
-    if (dsc->ptr != NULL) {
+    if (dsc->ptr != NULL)
+    {
       free(dsc->ptr);
       dsc->ptr = NULL;
     }
   return 0;
 }
 
-static int Nelements(struct descrip *in) {
-  if (in->ndims) {
+static int Nelements(struct descrip *in)
+{
+  if (in->ndims)
+  {
     int num = 1;
     int i;
     for (i = 0; i < in->ndims; i++)
       num *= in->dims[i];
     return num;
-  } else
+  }
+  else
     return 1;
 }
 
@@ -710,7 +795,8 @@ static void Destroy(Widget w __attribute__((unused)), String ptr) { free(ptr); }
 Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
                      String database, String shot, String default_node,
                      String x, String y, XmdsWaveformValStruct *x_ret,
-                     XmdsWaveformValStruct *y_ret, String *error) {
+                     XmdsWaveformValStruct *y_ret, String *error)
+{
   int shotnum = 0;
   static int ival;
   static Descrip(id, DTYPE_LONG, &ival);
@@ -723,8 +809,10 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
   status = MdsValue(sock, "_COLUMN=$", &id, &ans, NULL);
   FreeDescrip(ans) ival = idx;
   status = MdsValue(sock, "_INDEX=$", &id, &ans, NULL);
-  FreeDescrip(ans) if (strlen(database)) {
-    if (strlen(shot)) {
+  FreeDescrip(ans) if (strlen(database))
+  {
+    if (strlen(shot))
+    {
       Descrip(ans, 0, NULL);
       Descrip(tmp, 0, NULL);
       if (!(MdsValue(sock, "long(execute($))",
@@ -734,7 +822,8 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
         return Error(brief, "Error evaluating shot number", error, ans.ptr,
                      &ans);
       shotnum = *(int *)ans.ptr;
-      if (event) {
+      if (event)
+      {
         int i;
         String upper_shot = XtNewString(shot);
         int len = strlen(shot);
@@ -750,36 +839,46 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
     if (!(MdsOpen(sock, database, shotnum) & 1))
       return Error(1, "Error opening database", error, NULL, NULL);
   }
-  if (strlen(default_node)) {
+  if (strlen(default_node))
+  {
     MdsValue(sock, "TreeShr->TreeSetDefaultNid(val(0))", &ans, NULL);
     FreeDescrip(ans);
     if (!(MdsSetDefault(sock, default_node) & 1))
       return Error(1, "Default node not found", error, NULL, NULL);
-  } else {
+  }
+  else
+  {
     MdsValue(sock, "TreeShr->TreeSetDefaultNid(val(0))", &ans, NULL);
     FreeDescrip(ans);
   }
-  if (strlen(y)) {
+  if (strlen(y))
+  {
     Descrip(yans, 0, NULL);
     String yexp = XtMalloc(strlen(y) + 100);
     sprintf(yexp, "_y$$dwscope = (%s),f_float(data(_y$$dwscope))", y);
-    if (MdsValue(sock, yexp, &yans, NULL) & 1) {
+    if (MdsValue(sock, yexp, &yans, NULL) & 1)
+    {
       int count = Nelements(&yans);
-      if (count >= 1) {
+      if (count >= 1)
+      {
         Descrip(xans, 0, NULL);
-        if (strlen(x)) {
+        if (strlen(x))
+        {
           String xexp = XtMalloc(strlen(x) + 100);
           sprintf(xexp, "f_float(data(%s))", x);
           status = MdsValue(sock, xexp, &xans, NULL);
           XtFree(xexp);
-        } else
+        }
+        else
           status =
               MdsValue(sock, "f_float(data(dim_of(_y$$dwscope)))", &xans, NULL);
-        if (status & 1) {
+        if (STATUS_OK)
+        {
           int xcount = Nelements(&xans);
           if (xcount < count)
             count = xcount;
-          if (count >= 1) {
+          if (count >= 1)
+          {
             x_ret->size = count * sizeof(float);
             x_ret->addr = xans.ptr;
             x_ret->destroy = Destroy;
@@ -788,49 +887,63 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
             y_ret->addr = yans.ptr;
             y_ret->destroy = Destroy;
             y_ret->destroy_arg = yans.ptr;
-          } else {
+          }
+          else
+          {
             FreeDescrip(xans);
             FreeDescrip(yans);
             return Error(1, "X-axis contains no points", error, NULL, NULL);
           }
-        } else {
+        }
+        else
+        {
           FreeDescrip(yans);
           return Error(brief, "Error evaluating X-axis", error, xans.ptr,
                        &xans);
         }
-      } else
+      }
+      else
         return Error(1, "Y-axis contains no points", error, NULL, &yans);
-    } else
+    }
+    else
       return Error(brief, "Error evaluating Y-axis", error, yans.ptr, &yans);
-  } else
+  }
+  else
     return Error(1, "", error, NULL, NULL);
   return 1;
 }
 
 Boolean EvaluateText(String text, String error_prefix, String *text_ret,
-                     String *error) {
+                     String *error)
+{
   Boolean status = 1;
   long sock = Connect();
   *text_ret = NULL;
 
-  if (strlen(text) && sock) {
+  if (strlen(text) && sock)
+  {
     Descrip(ans, 0, NULL);
     Descrip(tmp, 0, NULL);
     if (MdsValue(sock, "trim(adjustl(execute($)))",
                  MakeDescrip(&tmp, DTYPE_CSTRING, 0, NULL, text), &ans, NULL) &
-        1) {
+        1)
+    {
       *text_ret = XtNewString(ans.ptr);
       FreeDescrip(ans);
-    } else {
+    }
+    else
+    {
       *text_ret = XtNewString("");
       status = Error(0, error_prefix, error, ans.ptr, &ans);
     }
-  } else
+  }
+  else
     *text_ret = XtNewString("");
   return status;
 }
 
-void CloseDataSources() {
+void CloseDataSources()
+{
   long sock = Connect();
   if (sock)
     MdsClose(sock);
@@ -838,14 +951,18 @@ void CloseDataSources() {
 
 static void EventReceived(Boolean *received) { *received = True; }
 
-void SetupEvent(String event, Boolean *received, int *id) {
+void SetupEvent(String event, Boolean *received, int *id)
+{
   int sock = ConnectEvents();
-  if (sock != -1) {
-    if (*id) {
+  if (sock != -1)
+  {
+    if (*id)
+    {
       MdsEventCan(sock, *id);
       *id = 0;
     }
-    if (strlen(event)) {
+    if (strlen(event))
+    {
       MdsEventAst(sock, event, EventReceived, received, id);
     }
   }
@@ -853,13 +970,15 @@ void SetupEvent(String event, Boolean *received, int *id) {
 
 extern void MdsDispatchEvent();
 
-static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id) {
+static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
+{
   MdsDispatchEvent(ConnectEvents());
   EventUpdate(client_data, source, id);
 }
 
 void SetupEventInput(XtAppContext app_context,
-                     Widget w __attribute__((unused))) {
+                     Widget w __attribute__((unused)))
+{
   int sock = ConnectEvents();
   if (sock != -1)
     XtAppAddInput(app_context, sock, (XtPointer)XtInputExceptMask,

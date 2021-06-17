@@ -33,7 +33,8 @@
 #include <Xmds/XmdsWavedraw.h>
 #include <Xmds/XmdsWaveformP.h>
 
-typedef struct _XmdsWavedrawClassPart {
+typedef struct _XmdsWavedrawClassPart
+{
   XtTranslations draw1_trans;
   XtTranslations draw2_trans;
   XtTranslations setpen_trans;
@@ -48,7 +49,8 @@ typedef struct _XmdsWavedrawClassPart {
   caddr_t extension;
 } XmdsWavedrawClassPart;
 
-typedef struct _XmdsWavedrawClassRec {
+typedef struct _XmdsWavedrawClassRec
+{
   CoreClassPart core_class;
   XmPrimitiveClassPart primitive_class;
   XmdsWaveformClassPart waveform_class;
@@ -57,7 +59,8 @@ typedef struct _XmdsWavedrawClassRec {
 
 externalref XmdsWavedrawClassRec xmdsWavedrawClassRec;
 
-typedef struct _XmdsWavedrawAxis {
+typedef struct _XmdsWavedrawAxis
+{
   float *low;
   float *high;
   float *min_distance;
@@ -67,7 +70,8 @@ typedef struct _XmdsWavedrawAxis {
   float *grid_snap;
 } XmdsWavedrawAxis;
 
-typedef struct _XmdsWavedrawPart {
+typedef struct _XmdsWavedrawPart
+{
   XtCallbackList move_callback;
   XtCallbackList select_callback;
   XtCallbackList deselect_callback;
@@ -83,7 +87,8 @@ typedef struct _XmdsWavedrawPart {
 } XmdsWavedrawPart;
 
 /* Full instance record declaration */
-typedef struct _XmdsWavedrawRec {
+typedef struct _XmdsWavedrawRec
+{
   CorePart core;
   XmPrimitivePart common;
   XmdsWaveformPart waveform;

@@ -15,12 +15,14 @@
 #include <xseries-lib.h>
 #include <pxi-6259-lib.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int retval, fd;
   xseries_device_info_t devinfo;
   uint32_t serial_number;
 
-  if (argc < 2) {
+  if (argc < 2)
+  {
     printf("Usage:  %s <device file descriptor> \n", argv[0]);
     printf("Example:\n        %s /dev/pxie-6368.0 \n", argv[0]);
     printf("Example:\n        %s /dev/pxi6259.0 \n", argv[0]);
@@ -29,15 +31,18 @@ int main(int argc, char **argv) {
 
   /* Open device file descriptor */
   fd = open(argv[1], O_RDWR);
-  if (fd < 0) {
+  if (fd < 0)
+  {
     printf("Err, opening device node: %s\n", strerror(errno));
     exit(EXIT_FAILURE);
   }
 
-  if (strstr(argv[1], "6368") != 0) {
+  if (strstr(argv[1], "6368") != 0)
+  {
     /* Get device info */
     retval = xseries_get_device_info(fd, &devinfo);
-    if (retval) {
+    if (retval)
+    {
       printf("Err, cannot read device info: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }
@@ -52,11 +57,13 @@ int main(int argc, char **argv) {
     printf(" Number of DIO lines: %d\n", devinfo.port0_length);
   }
 
-  if (strstr(argv[1], "6259") != 0) {
+  if (strstr(argv[1], "6259") != 0)
+  {
     /* Get device info */
     retval = xseries_get_device_info(fd, &devinfo);
     retval = pxi6259_get_board_serial_number(fd, &serial_number);
-    if (retval) {
+    if (retval)
+    {
       printf("Err, cannot read device info: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }

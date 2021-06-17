@@ -82,9 +82,9 @@ def load_library(name):
     try:
         libnam = find_library(name)
     except:
-        raise Exception("Could not find library: %s" % (name,))
+        raise ImportError("Could not find library: %s" % (name,))
     if libnam is None:
-        raise Exception("Could not find library: %s" % (name,))
+        raise ImportError("Could not find library: %s" % (name,))
     try:
         return C.CDLL(libnam)
     except:
@@ -92,7 +92,7 @@ def load_library(name):
     try:
         return C.CDLL(os.path.basename(libnam))
     except:
-        raise Exception('Could not load library: %s' % (name,))
+        raise ImportError('Could not load library: %s' % (name,))
 
 
 from types import GeneratorType as generator  # analysis:ignore
@@ -124,6 +124,7 @@ if has_mapclass:
     mapclass = map
 else:
     mapclass = tuple
+listlike = (tuple, list, mapclass, generator, nparray)
 
 if ispy3:
     def superdir(cls, self):

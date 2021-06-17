@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //-----------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
-
+#include <status.h>
 #include "common.h"
 #include "crate.h"
 #include "prototypes.h"
@@ -51,7 +51,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Fri Aug 24 15:59:54 EDT 2001 -- fixed powered off condition (???)
 // Mon Aug 27 11:26:10 EDT 2001 -- re-fixed (?) powered off condition
 //-----------------------------------------------------------
-int get_crate_status(char *crate_name, int *ptr_crate_status) {
+int get_crate_status(char *crate_name, int *ptr_crate_status)
+{
   char controller[11];
   short SCCdata;
   int status = SUCCESS; // optimistic ...
@@ -75,7 +76,7 @@ int get_crate_status(char *crate_name, int *ptr_crate_status) {
                    &iosb       // *iosb
   );
 
-  *ptr_crate_status = (short)((status & 1) ? SCCdata : 0) & 0x0ffff;
+  *ptr_crate_status = (short)((STATUS_OK) ? SCCdata : 0) & 0x0ffff;
 
   if (MSGLVL(DETAILS))
     printf(

@@ -96,7 +96,8 @@ extern int TdiDecompile();
 
  Local variables:                                                             */
 
-typedef struct _DisplayPart {
+typedef struct _DisplayPart
+{
   int nid;
   int nid_offset;
 } XmdsDisplayPart;
@@ -112,7 +113,8 @@ static XtResource resources[] = {
  Executable:                                                                  */
 
 EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args,
-                                Cardinal argcount) {
+                                Cardinal argcount)
+{
   XmdsDisplayPart info = {-1, 0};
   Widget w;
   Arg lab_args[] = {{XmNlabelString, 0}, {XmNuserData, DisplayUserData}};
@@ -126,23 +128,28 @@ EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args,
     nid = info.nid + info.nid_offset;
   else
     nid = -1;
-  if (nid != -1) {
+  if (nid != -1)
+  {
     static struct descriptor_d display_dsc = {0, DTYPE_T, CLASS_D, 0};
     static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
     struct descriptor nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, (char *)0};
     int status;
     nid_dsc.pointer = (char *)&nid;
     status = TdiEvaluate(&nid_dsc, &xd MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK)
+    {
       status = TdiDecompile(&xd, &display_dsc MDS_END_ARG);
-      if (status & 1) {
+      if (STATUS_OK)
+      {
         static DESCRIPTOR(zero_dsc, "\0");
         StrConcat((struct descriptor *)&display_dsc,
                   (struct descriptor *)&display_dsc, &zero_dsc MDS_END_ARG);
         lab_args[0].value = (long)XmStringCreateSimple(display_dsc.pointer);
-      } else
+      }
+      else
         lab_args[0].value = (long)XmStringCreateSimple("Error - Decomp");
-    } else
+    }
+    else
       lab_args[0].value = (long)XmStringCreateSimple("Error - Eval");
   }
   merged_args = XtMergeArgLists(args, argcount, lab_args, XtNumber(lab_args));
@@ -152,7 +159,8 @@ EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args,
   return w;
 }
 
-EXPORT Boolean XmdsIsDisplay(Widget w) {
+EXPORT Boolean XmdsIsDisplay(Widget w)
+{
   XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);
   if (user_data && (user_data == (XtPointer)DisplayUserData))

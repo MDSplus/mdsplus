@@ -146,7 +146,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {
             'path': ':TRIG_STR',
             'type': 'text',
-            'options': ('nowrite_shot',), 
+            'options': ('no_write_shot',), 
             'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"
         },
         {
@@ -182,8 +182,6 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     data_socket = -1
 
-    trig_types = ['hard', 'soft', 'automatic']
-
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
 
@@ -214,10 +212,8 @@ class _ACQ2106_435ST(MDSplus.Device):
             self.device_thread = self.DeviceWorker(self)
 
         def run(self):
-            import acq400_hapi
             import ast
             import re
-            uut = acq400_hapi.Acq400(self.dev.node.data(), monitor=False)
 
             def lcm(a, b):
                 from fractions import gcd
@@ -381,11 +377,31 @@ class _ACQ2106_435ST(MDSplus.Device):
                         else:
                             self.full_buffers.put(buf)
 
-    def init(self, resampling=0):
-        import acq400_hapi
-        MIN_FREQUENCY = 10000
+    # The minimum frequency we can operate at                   
+    MIN_FREQUENCY = 10000
 
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+    # These are partial lists of the options we support.
+    # For a complete list, consult D-Tacq
+
+    # Trigger Source Options for Signal Highway d0
+    TRIG_SRC_OPTS_0 = [
+        'ext',          # External Trigger
+        'hdmi',         # HDMI Trigger
+        'gpg0',         # Gateway Pulse Generator Trigger
+        'wrtt0'         # White Rabbit Trigger
+    ]
+
+    # Trigger Source Options for Signal Highway d1
+    TRIG_SRC_OPTS_1 = [
+        'strig',        # Software Trigger
+        'hdmi_gpio',    # HDMI General Purpose I/O Trigger
+        'gpg1',         # Gateway Pulse Generator Trigger
+        'fp_sync',      # Front Panel SYNC
+        'wrtt1'         # White Rabbit Trigger
+    ]
+
+    def init(self, resampling=False):
+        uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
         if self.ext_clock.length > 0:
@@ -393,11 +409,11 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         freq = int(self.freq.data())
         # D-Tacq Recommendation: the minimum sample rate is 10kHz.
-        if freq < MIN_FREQUENCY:
+        if freq < self.MIN_FREQUENCY:
             raise MDSplus.DevBAD_PARAMETER(
                 "Sample rate should be greater or equal than 10kHz")
 
-        mode = self.trig_mode.data()
+        mode = str(self.trig_mode.data()).lower()
         if mode == 'hard':
             role = 'master'
             trg = 'hard'
@@ -406,22 +422,43 @@ class _ACQ2106_435ST(MDSplus.Device):
             trg = 'soft'
         else:
             role = mode.split(":")[0]
-            trg = mode.split(":")[1]
+            trg  = mode.split(":")[1]
 
-        print("Role is {} and {} trigger".format(role, trg))
+        if self.debug:
+            print("Role is %s and %s trigger" % (role, trg))
+
+
+        src_trg_0 = None
+        src_trg_1 = None
 
         if trg == 'hard':
             trg_dx = 'd0'
-        elif trg == 'automatic':
+            src_trg_0 = 'EXT' # External Trigger
+        elif trg == 'soft' or trg == 'automatic':
             trg_dx = 'd1'
-        elif trg == 'soft':
+            src_trg_1 = 'STRIG' # Soft Trigger
+        elif trg in self.TRIG_SRC_OPTS_0:
+            trg_dx = 'd0'
+            src_trg_0 = trg
+        elif trg in self.TRIG_SRC_OPTS_1:
             trg_dx = 'd1'
+            src_trg_1 = trg
+        elif trg != 'none':
+            raise MDSplus.DevBAD_PARAMETER("TRIG_MODE does not contain a valid trigger source")
 
         # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]
         uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
+
+        # snyc_role will set a default trigger source, we need to override it to the selected trigger source
+        # These must be uppercase
+        if src_trg_0:
+            uut.s0.SIG_SRC_TRG_0 = src_trg_0.upper()
+
+        if src_trg_1:
+            uut.s0.SIG_SRC_TRG_1 = src_trg_1.upper()
 
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
@@ -440,26 +477,27 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         # Hardware decimation:
         if self.debug:
-            print("Hardware Filter (NACC) from tree node is {}".format(
+            print("Hardware Filter (NACC) from tree node is %d" % (
                 int(self.hw_filter.data())))
 
         # Hardware Filter: Accumulate/Decimate filter. Accumulate nacc_samp samples, then output one value.
         nacc_samp = int(self.hw_filter.data())
-        print("Number of sites in use {}".format(self.sites))
+
+        if self.debug:
+            print("Number of sites in use %d" % (self.sites,))
 
         # Get the slots (aka sites, or cards) that are physically active in the chassis of the ACQ
         self.slots = self.getSlots()
 
-        for card in self.slots:
-            if 1 <= nacc_samp <= 32:
+        if nacc_samp >= 1 and nacc_samp <= 32:
+            for card in self.slots:
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
-            else:
-                print(
-                    "WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
-                self.slots[card].nacc = '1'
+        else:
+            print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
+            self.slots[card].nacc = '1'
 
         self.running.on = True
-        # If resampling=1, then resampling is used during streaming:
+        # If resampling == 1, then resampling is used during streaming:
         self.resampling = resampling
 
         thread = self.MDSWorker(self)
@@ -467,24 +505,24 @@ class _ACQ2106_435ST(MDSplus.Device):
     INIT = init
 
     def getSlots(self):
-        import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut = self.getUUT()
+        
         # Ask UUT what are the sites that are actually being populatee with a 435ELF
         slot_list = {}
-        for (site, module) in sorted(uut.modules.items()):
+        for (site, _) in sorted(uut.modules.items()):
             site_number = int(site)
             if site_number == 1:
-                slot_list[site_number]=uut.s1
+                slot_list[site_number] = uut.s1
             elif site_number == 2:
-                slot_list[site_number]=uut.s2
+                slot_list[site_number] = uut.s2
             elif site_number == 3:
-                slot_list[site_number]=uut.s3
+                slot_list[site_number] = uut.s3
             elif site_number == 4:
-                slot_list[site_number]=uut.s4
+                slot_list[site_number] = uut.s4
             elif site_number == 5:
-                slot_list[site_number]=uut.s5
+                slot_list[site_number] = uut.s5
             elif site_number == 6:
-                slot_list[site_number]=uut.s6
+                slot_list[site_number] = uut.s6
         return slot_list
 
     def stop(self):
@@ -492,10 +530,14 @@ class _ACQ2106_435ST(MDSplus.Device):
     STOP = stop
 
     def trig(self):
-        import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut = self.getUUT()
         uut.s0.set_knob('soft_trigger', '1')
     TRIG = trig
+
+    def getUUT(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        return uut
 
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)

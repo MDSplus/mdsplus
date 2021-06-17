@@ -38,7 +38,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *1    19-OCT-1995 13:38:16 TWF "XD handling" */
 /*  CMS REPLACEMENT HISTORY, Element MDSXDROUTINES.C */
 #include "mdsshrp.h"
-#include <STATICdef.h>
 #include <libroutines.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -52,15 +51,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LibVM_EXTEND_AREA 32
 #define LibVM_TAIL_LARGE 128
 #define compression_threshold 128
-#define _MOVC3(a, b, c) memcpy(c, b, (size_t)(a))
 
-inline static size_t _sizeAligned(const size_t bytes) {
+inline static size_t _sizeAligned(const size_t bytes)
+{
   size_t b_mod = bytes % sizeof(void *);
   return (b_mod == 0) ? bytes : (bytes + sizeof(void *) - b_mod);
 }
 
 inline static char *_align(char *const ptr, const size_t offset,
-                           const size_t size) {
+                           const size_t size)
+{
   uintptr_t p_mod = (uintptr_t)(ptr + offset) % size;
   return (p_mod == 0) ? ptr + offset : (ptr + offset + size - p_mod);
 }
@@ -69,45 +69,52 @@ inline static char *_align(char *const ptr, const size_t offset,
 
 EXPORT int MdsGet1Dx(const l_length_t *const length_ptr,
                      const dtype_t *const dtype_ptr, mdsdsc_xd_t *const dsc_ptr,
-                     void **const zone) {
+                     void **const zone)
+{
   int status;
-  if (dsc_ptr->class == CLASS_XD) {
-    if (*length_ptr != dsc_ptr->l_length) {
+  if (dsc_ptr->class == CLASS_XD)
+  {
+    if (*length_ptr != dsc_ptr->l_length)
+    {
       if (dsc_ptr->l_length)
         status = LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
       else
         status = 1;
-      if
-        STATUS_OK
-      status =
-          LibGetVm((uint32_t *)length_ptr, (void *)&dsc_ptr->pointer, zone);
-    } else
+      if (STATUS_OK)
+        status =
+            LibGetVm((uint32_t *)length_ptr, (void *)&dsc_ptr->pointer, zone);
+    }
+    else
       status = 1;
-    if
-      STATUS_OK {
-        dsc_ptr->length = 0;
-        dsc_ptr->l_length = *length_ptr;
-        dsc_ptr->class = CLASS_XD;
-        dsc_ptr->dtype = *dtype_ptr;
-      }
-  } else
+    if (STATUS_OK)
+    {
+      dsc_ptr->length = 0;
+      dsc_ptr->l_length = *length_ptr;
+      dsc_ptr->class = CLASS_XD;
+      dsc_ptr->dtype = *dtype_ptr;
+    }
+  }
+  else
     status = LibINVSTRDES;
   return status;
 }
 
-EXPORT int MdsFree1Dx(mdsdsc_xd_t *const dsc_ptr, void **const zone) {
+EXPORT int MdsFree1Dx(mdsdsc_xd_t *const dsc_ptr, void **const zone)
+{
   int status;
-  if (dsc_ptr->class == CLASS_XD) {
+  if (dsc_ptr->class == CLASS_XD)
+  {
     if (dsc_ptr->pointer)
       status = LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer, zone);
     else
       status = 1;
-    if
-      STATUS_OK {
-        dsc_ptr->pointer = 0;
-        dsc_ptr->l_length = 0;
-      }
-  } else if (dsc_ptr->class == CLASS_D)
+    if (STATUS_OK)
+    {
+      dsc_ptr->pointer = 0;
+      dsc_ptr->l_length = 0;
+    }
+  }
+  else if (dsc_ptr->class == CLASS_D)
     status = StrFree1Dx((mdsdsc_d_t *)dsc_ptr);
   else
     status = LibINVSTRDES;
@@ -126,7 +133,8 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
                    mdsdsc_xd_t *const out_dsc_ptr,
                    uint32_t *const bytes_used_ptr, int (*const fixup_nid)(),
                    void *const fixup_nid_arg, int (*const fixup_path)(),
-                   void *const fixup_path_arg, int *const compressible) {
+                   void *const fixup_path_arg, int *const compressible)
+{
   int status = 1;
   uint32_t bytes = 0, j, size;
   mdsdsc_t *in_ptr = (mdsdsc_t *)in_dsc_ptr;
@@ -134,21 +142,26 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
   while (in_ptr && in_ptr->dtype == DTYPE_DSC && in_ptr->class != CLASS_APD)
     in_ptr = (mdsdsc_t *)in_ptr->pointer;
   if (in_ptr)
-    switch (in_ptr->class) {
+    switch (in_ptr->class)
+    {
     case CLASS_S:
-    case CLASS_D: {
+    case CLASS_D:
+    {
       mdsdsc_t in;
       mdsdsc_t *po = (mdsdsc_t *)out_dsc_ptr;
       mdsdsc_d_t path = {0, DTYPE_T, CLASS_D, 0};
       in = *(mdsdsc_t *)in_ptr;
       in.class = CLASS_S;
       if (in.dtype == DTYPE_NID && fixup_nid &&
-          (*fixup_nid)(in.pointer, fixup_nid_arg, &path)) {
+          (*fixup_nid)(in.pointer, fixup_nid_arg, &path))
+      {
         in.length = path.length;
         in.dtype = DTYPE_PATH;
         in.pointer = path.pointer;
-      } else if (in.dtype == DTYPE_PATH && fixup_path &&
-                 (*fixup_path)(&in, fixup_path_arg, &path)) {
+      }
+      else if (in.dtype == DTYPE_PATH && fixup_path &&
+               (*fixup_path)(&in, fixup_path_arg, &path))
+      {
         in.length = path.length;
         in.pointer = path.pointer;
       }
@@ -156,57 +169,70 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
           ((in.dtype == DTYPE_T || in.dtype == DTYPE_PATH) && in.length)
               ? 1
               : in.length;
-      if (po) {
+      if (po)
+      {
         *po = in;
         po->class = CLASS_S;
-        if (in.length) {
+        if (in.length)
+        {
           po->pointer = _align((char *)po, sizeof(mdsdsc_t), align_size);
           memcpy(po->pointer, in.pointer, in.length);
-        } else
+        }
+        else
           po->pointer = NULL;
       }
       if (path.pointer)
         StrFree1Dx(&path);
       bytes = (uint32_t)sizeof(mdsdsc_s_t) + in.length + align_size;
-    } break;
+    }
+    break;
 
     case CLASS_XS:
-    case CLASS_XD: {
+    case CLASS_XD:
+    {
       mdsdsc_xs_t in;
       mdsdsc_xs_t *po = (mdsdsc_xs_t *)out_dsc_ptr;
       mdsdsc_d_t path = {0, DTYPE_T, CLASS_D, 0};
       in = *(mdsdsc_xs_t *)in_ptr;
       if (in.dtype == DTYPE_NID && fixup_nid &&
-          (*fixup_nid)(in.pointer, fixup_nid_arg, &path)) {
+          (*fixup_nid)(in.pointer, fixup_nid_arg, &path))
+      {
         in.l_length = path.length;
         in.dtype = DTYPE_PATH;
         in.pointer = (mdsdsc_t *)path.pointer;
-      } else if (in.dtype == DTYPE_PATH && fixup_path &&
-                 (*fixup_path)(&in, fixup_path_arg, &path)) {
+      }
+      else if (in.dtype == DTYPE_PATH && fixup_path &&
+               (*fixup_path)(&in, fixup_path_arg, &path))
+      {
         in.l_length = path.length;
         in.pointer = (mdsdsc_t *)path.pointer;
       }
-      if (po) {
+      if (po)
+      {
         *po = in;
         po->class = CLASS_XS;
         po->pointer = (mdsdsc_t *)po + sizeof(in);
-        _MOVC3(in.l_length, in.pointer, po->pointer);
+        memcpy(po->pointer, in.pointer, in.l_length);
       }
       if (path.pointer)
         StrFree1Dx(&path);
       bytes = (uint32_t)_sizeAligned(sizeof(mdsdsc_xs_t) + in.l_length);
-    } break;
+    }
+    break;
 
-    case CLASS_R: {
+    case CLASS_R:
+    {
       mdsdsc_r_t *pi = (mdsdsc_r_t *)in_ptr;
       mdsdsc_r_t *po = (mdsdsc_r_t *)out_dsc_ptr;
       bytes = (uint32_t)sizeof(mdsdsc_r_t) +
               (pi->ndesc - 1u) * (uint32_t)sizeof(mdsdsc_t *);
-      if (po) {
-        _MOVC3(bytes, (char *)pi, (char *)po);
-        if (pi->length > 0) {
+      if (po)
+      {
+        memcpy((char *)po, (char *)pi, bytes);
+        if (pi->length > 0)
+        {
           po->pointer = (unsigned char *)po + bytes;
-          _MOVC3(pi->length, (char *)pi->pointer, (char *)po->pointer);
+          memcpy((char *)po->pointer, (char *)pi->pointer, pi->length);
         }
       }
       bytes = (uint32_t)_sizeAligned(bytes + pi->length);
@@ -214,7 +240,8 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
       Each descriptor must be copied.
       ******************************/
       for (j = 0; j < pi->ndesc && STATUS_OK; ++j)
-        if (pi->dscptrs[j]) {
+        if (pi->dscptrs[j])
+        {
           status = copy_dx((mdsdsc_xd_t *)pi->dscptrs[j],
                            po ? (mdsdsc_xd_t *)((char *)po + bytes) : 0, &size,
                            fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
@@ -223,19 +250,22 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
             po->dscptrs[j] = size ? (mdsdsc_t *)((char *)po + bytes) : 0;
           bytes = (uint32_t)_sizeAligned(bytes + size);
         }
-    } break;
+    }
+    break;
 
-    case CLASS_NCA: {
+    case CLASS_NCA:
+    {
       array_coeff *pi = (array_coeff *)FixedArray(in_ptr);
       array_coeff *po = (array_coeff *)out_dsc_ptr;
       bytes =
           (uint32_t)sizeof(mdsdsc_a_t) +
           (pi->aflags.coeff ? (uint32_t)sizeof(int) * (pi->dimct + 1u) : 0u) +
           (pi->aflags.bounds ? (uint32_t)sizeof(int) * pi->dimct * 2u : 0u);
-      if (po) {
-        _MOVC3(bytes, (char *)pi, (char *)po);
+      if (po)
+      {
+        memcpy((char *)po, (char *)pi, bytes);
         po->pointer = (char *)po + bytes;
-        _MOVC3(pi->arsize, pi->pointer, po->pointer);
+        memcpy(po->pointer, pi->pointer, pi->arsize);
         if (pi->aflags.coeff)
           po->a0 = po->pointer + (pi->a0 - pi->pointer);
       }
@@ -243,9 +273,11 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
       if (pi->arsize > compression_threshold)
         *compressible = 1;
       free(pi);
-    } break;
+    }
+    break;
 
-    case CLASS_A: {
+    case CLASS_A:
+    {
       uint32_t dscsize, align_size;
       array_coeff *pi = (array_coeff *)in_ptr;
       array_coeff *po = (array_coeff *)out_dsc_ptr;
@@ -259,22 +291,25 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
         MdsFixDscLength((mdsdsc_t *)pi);
       align_size = (pi->dtype == DTYPE_T || pi->length == 0) ? 1 : pi->length;
       bytes = dscsize + pi->arsize + align_size;
-      if (po) {
-        _MOVC3(dscsize, (char *)pi, (char *)po);
+      if (po)
+      {
+        memcpy((char *)po, (char *)pi, dscsize);
         po->pointer = _align((char *)po, dscsize, align_size);
         if (pi->arsize > 0 && pi->pointer != NULL)
-          _MOVC3(pi->arsize, pi->pointer, po->pointer);
+          memcpy(po->pointer, pi->pointer, pi->arsize);
         if (pi->aflags.coeff)
           po->a0 = po->pointer + (pi->a0 - pi->pointer);
       }
       if (pi->arsize > compression_threshold)
         *compressible = 1;
-    } break;
+    }
+    break;
 
     /**************************************
     For CA and APD, a0 is the offset.
     **************************************/
-    case CLASS_APD: {
+    case CLASS_APD:
+    {
       mdsdsc_a_t *pi = (mdsdsc_a_t *)in_ptr;
       mdsdsc_a_t *po = (mdsdsc_a_t *)out_dsc_ptr;
       mdsdsc_t **pdi = (mdsdsc_t **)pi->pointer;
@@ -285,8 +320,9 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
                                       (uint32_t)sizeof(int) * pi->dimct
                                 : 0u) +
               (pi->aflags.bounds ? (uint32_t)sizeof(int) * pi->dimct * 2u : 0u);
-      if (po) {
-        _MOVC3(bytes, (char *)pi, (char *)po);
+      if (po)
+      {
+        memcpy((char *)po, (char *)pi, bytes);
         pdo = (mdsdsc_t **)(po->pointer = (char *)po + bytes);
       }
       bytes = (uint32_t)_sizeAligned(bytes + pi->arsize);
@@ -294,7 +330,8 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
       /******************************
       Each descriptor must be copied.
       ******************************/
-      for (j = 0; j < num_dsc && STATUS_OK; ++j) {
+      for (j = 0; j < num_dsc && STATUS_OK; ++j)
+      {
         status = copy_dx((mdsdsc_xd_t *)*pdi++,
                          po ? (mdsdsc_xd_t *)((char *)po + bytes) : 0, &size,
                          fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
@@ -303,9 +340,11 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
           *pdo++ = size ? (mdsdsc_t *)((char *)po + bytes) : 0;
         bytes = (uint32_t)_sizeAligned(bytes + size);
       }
-    } break;
+    }
+    break;
 
-    case CLASS_CA: {
+    case CLASS_CA:
+    {
       mdsdsc_a_t *pi = (mdsdsc_a_t *)in_ptr;
       mdsdsc_a_t *po = (mdsdsc_a_t *)out_dsc_ptr;
       bytes = (uint32_t)_sizeAligned(
@@ -314,8 +353,9 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
                ? (uint32_t)sizeof(char *) + (uint32_t)sizeof(int) * pi->dimct
                : 0u) +
           (pi->aflags.bounds ? (uint32_t)sizeof(int) * pi->dimct * 2u : 0u));
-      if (po) {
-        _MOVC3(bytes, (char *)pi, (char *)po);
+      if (po)
+      {
+        memcpy((char *)po, (char *)pi, bytes);
         if (pi->pointer)
           po->pointer = _align((char *)po, bytes, sizeof(void *));
         else
@@ -325,14 +365,16 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
       /***************************
       Null pointer for shape only.
       ***************************/
-      if (pi->pointer) {
+      if (pi->pointer)
+      {
         status =
             copy_dx((mdsdsc_xd_t *)pi->pointer,
                     po ? (mdsdsc_xd_t *)(po->pointer) : 0, &size, fixup_nid,
                     fixup_nid_arg, fixup_path, fixup_path_arg, compressible);
         bytes = (uint32_t)_sizeAligned(bytes + size);
       }
-    } break;
+    }
+    break;
 
     default:
       status = LibINVSTRDES;
@@ -353,7 +395,8 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 EXPORT int MdsCopyDxXdZ(const mdsdsc_t *const in_dsc_ptr,
                         mdsdsc_xd_t *const out_dsc_ptr, void **const zone,
                         int (*const fixup_nid)(), void *const fixup_nid_arg,
-                        int (*const fixup_path)(), void *const fixup_path_arg) {
+                        int (*const fixup_path)(), void *const fixup_path_arg)
+{
   uint32_t size;
   static dtype_t dsc_dtype = DTYPE_DSC;
   /************************************************
@@ -365,21 +408,23 @@ EXPORT int MdsCopyDxXdZ(const mdsdsc_t *const in_dsc_ptr,
   int status =
       copy_dx((mdsdsc_xd_t *)in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg,
               fixup_path, fixup_path_arg, &compressible);
-  if (STATUS_OK && size) {
+  if (STATUS_OK && size)
+  {
     status = MdsGet1Dx(&size, &dsc_dtype, out_dsc_ptr, zone);
-    if
-      STATUS_OK
-    status = copy_dx((mdsdsc_xd_t *)in_dsc_ptr,
-                     (mdsdsc_xd_t *)out_dsc_ptr->pointer, &size, fixup_nid,
-                     fixup_nid_arg, fixup_path, fixup_path_arg, &compressible);
+    if (STATUS_OK)
+      status = copy_dx((mdsdsc_xd_t *)in_dsc_ptr,
+                       (mdsdsc_xd_t *)out_dsc_ptr->pointer, &size, fixup_nid,
+                       fixup_nid_arg, fixup_path, fixup_path_arg, &compressible);
     if (STATUS_OK && compressible)
       status = MdsCOMPRESSIBLE;
-  } else
+  }
+  else
     MdsFree1Dx(out_dsc_ptr, zone);
   return status;
 }
 
-static mdsdsc_t *FixedArray(const mdsdsc_t *const in) {
+static mdsdsc_t *FixedArray(const mdsdsc_t *const in)
+{
 
   array_coeff *a = (array_coeff *)in;
   uint32_t dsize = (uint32_t)sizeof(mdsdsc_a_t) + 4u + 12u * a->dimct;
@@ -396,12 +441,15 @@ static mdsdsc_t *FixedArray(const mdsdsc_t *const in) {
   return (mdsdsc_t *)answer;
 }
 
-EXPORT int MdsCopyDxXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out) {
+EXPORT int MdsCopyDxXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out)
+{
   return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL);
 }
 
-void MdsFixDscLength(mdsdsc_t *const in) {
-  switch (in->dtype) {
+void MdsFixDscLength(mdsdsc_t *const in)
+{
+  switch (in->dtype)
+  {
   default:
     break;
   case DTYPE_B:

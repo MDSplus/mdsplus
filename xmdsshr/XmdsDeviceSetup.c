@@ -76,7 +76,8 @@ void XmdsSetDeviceNid(int nid);
 EXPORT int XmdsDeviceSetup(Widget parent, int *nid, String uids[],
                            Cardinal num_uids, String ident,
                            MrmRegisterArglist reglist, MrmCount regnum,
-                           Widget *widget_return) {
+                           Widget *widget_return)
+{
   static int device_nid;
   static NCI_ITM nci[] = {
       {sizeof(int), NciCONGLOMERATE_NIDS, (unsigned char *)&device_nid, 0},
@@ -88,7 +89,8 @@ EXPORT int XmdsDeviceSetup(Widget parent, int *nid, String uids[],
   TreeGetNci(*nid, nci);
   XmdsSetDeviceNid(device_nid);
   status = MrmOpenHierarchy(num_uids, uids, 0, &drm_hierarchy);
-  if (status == MrmSUCCESS) {
+  if (status == MrmSUCCESS)
+  {
     if (regnum)
       MrmRegisterNamesInHierarchy(drm_hierarchy, reglist, regnum);
     status = MrmFetchWidget(drm_hierarchy, ident, parent, &w, &class);

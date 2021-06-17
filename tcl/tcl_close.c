@@ -46,25 +46,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Close tree file(s).
  ***************************************************************/
 EXPORT int TclClose(void *ctx, char **error,
-                    char **output __attribute__((unused))) {
+                    char **output __attribute__((unused)))
+{
   int sts;
   char *exp = 0;
   char *shotidstr = 0;
   int shotid;
 
-  if (cli_get_value(ctx, "FILE", &exp) & 1) {
+  if (cli_get_value(ctx, "FILE", &exp) & 1)
+  {
     cli_get_value(ctx, "SHOTID", &shotidstr);
     sts = tclStringToShot(shotidstr, &shotid, error);
     if (sts & 1)
       sts = TreeClose(exp, shotid);
-  } else {
+  }
+  else
+  {
     int doall = cli_present(ctx, "ALL") & 1;
     while ((sts = TreeClose(0, 0)) & 1 && doall)
       ;
     if (doall && sts == TreeNOT_OPEN)
       sts = TreeSUCCESS;
   }
-  if (sts == TreeWRITEFIRST) {
+  if (sts == TreeWRITEFIRST)
+  {
     if (cli_present(ctx, "CONFIRM") & 1)
       sts = TreeQuitTree(0, 0);
     else

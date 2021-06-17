@@ -43,14 +43,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // tree->write();
 //
 
-int dbiTest(void *ctx, short int code) {
+int dbiTest(void *ctx, short int code)
+{
   int supports;
   int len;
   struct dbi_itm dbiList[] = {{sizeof(int), code, &supports, &len},
                               {0, DbiEND_OF_LIST, 0, 0}};
 
   int status = _TreeGetDbi(ctx, dbiList);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   return supports;
 }
@@ -64,7 +65,8 @@ int dbiTest(void *ctx, short int code) {
 ///
 ///
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(Tree Delete Node);
 
   void *ctx = NULL;
@@ -76,34 +78,37 @@ int main(int argc __attribute__((unused)),
 
   // open tree //
   status = _TreeOpenNew(&ctx, tree_name, shot);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST0(ctx == NULL);
 
   // add node //
   int nid;
   status = _TreeAddNode(ctx, node_name, &nid, TreeUSAGE_ANY);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   status = _TreeWriteTree(&ctx, tree_name, shot);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   // remove node //
   int count;
   status = _TreeDeleteNodeInitialize(ctx, nid, &count, 1);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   _TreeDeleteNodeExecute(ctx);
 
   status = _TreeWriteTree(&ctx, tree_name, shot);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
 
   // close tree //
   int is_modified = dbiTest(ctx, DbiMODIFIED);
-  if (is_modified) {
+  if (is_modified)
+  {
     status = _TreeQuitTree(&ctx, tree_name, shot);
-    TEST1(status & 1);
-  } else {
+    TEST1(STATUS_OK);
+  }
+  else
+  {
     status = _TreeClose(&ctx, tree_name, shot);
-    TEST1(status & 1);
+    TEST1(STATUS_OK);
   }
   TreeFreeDbid(ctx);
 

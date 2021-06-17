@@ -53,8 +53,7 @@
 
 #ifdef MDS_SHARED // defined if MDS is compiled as a shared library
 #define MDS_API_LOCAL MDS_API_HIDDEN
-#ifdef MDS_API_BUILD // defined if we are building the MDS library instead of
-                     // using it
+#ifdef MDS_API_BUILD // defined if we are building the MDS library instead of  using it
 #define MDS_API MDS_API_EXPORT
 #else
 #define MDS_API MDS_API_IMPORT

@@ -39,7 +39,7 @@ testarch(){
 config() {
     if [ -z "$JARS_DIR" ]
     then
-	JAVA_OPTS=
+    JAVA_OPTS=
     else
 	JAVA_OPTS="--with-jars=${JARS_DIR}"
     fi
@@ -205,11 +205,6 @@ main(){
       set +e
       make_jars
     fi
-    case "$BRANCH" in
-     stable) export BNAME="";;
-      alpha) export BNAME="-alpha";;
-          *) export BNAME="-other";;
-    esac
     if [ "$RELEASE" = "yes" ]
     then
         set +e

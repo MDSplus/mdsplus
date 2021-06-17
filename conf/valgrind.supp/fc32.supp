@@ -34,13 +34,50 @@
    fun:getnameinfo
 }
 {
+   getservbyname
+   Helgrind:Race
+   fun:_nss_files_parse_servent
+   fun:internal_getent
+   fun:_nss_files_getservbyname_r
+   fun:getservbyname_r@@GLIBC_2.2.5
+   fun:getservbyname
+}
+{
    pthread_create
    Memcheck:Leak
    match-leak-kinds: possible
    fun:calloc
    fun:_dl_allocate_tls
 }
-
+{
+   mempcpy e.g. caused by printf
+   Helgrind:Race
+   fun:mempcpy
+}
+{
+   lock still held on thread_exit
+   Helgrind:Misc
+   fun:__open_nocancel
+   fun:open_verify.constprop.0
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
+{
+   inside data symbol "environ" with putenv
+   Helgrind:Race
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+}
 # python
 
 {
@@ -65,12 +102,27 @@
    fun:_PyThreadState_Swap
 }
 {
+   PyThread_allocate_lock
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyThread_allocate_lock
+}
+{
    PyBytes_FromStringAndSize
    Memcheck:Leak
    match-leak-kinds: possible
    fun:malloc
    obj:/usr/lib64/libpython3.8.so.1.0
    fun:PyBytes_FromStringAndSize
+}
+{
+   likely GIL stuff
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   obj:/usr/lib64/libpython3.8.so.1.0
 }
 {
    PyObject_Malloc
@@ -90,6 +142,13 @@
    _PyObject_New
    Memcheck:Leak
    match-leak-kinds: possible
+   fun:malloc
+   fun:_PyObject_New
+}
+{
+   _PyObject_New
+   Memcheck:Leak
+   match-leak-kinds: definite
    fun:malloc
    fun:_PyObject_New
 }
@@ -145,6 +204,13 @@
    match-leak-kinds: possible
    fun:realloc
    fun:_PyBytes_Resize
+}
+{
+   _PyObject_GC_Resize
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   fun:_PyObject_GC_Resize
 }
 {
    _PyLong_New
@@ -243,6 +309,12 @@
    fun:_PyEval_EvalFrameDefault
 }
 {
+   memmove
+   Helgrind:Race
+   fun:memmove
+   obj:/usr/lib64/libpython3.8.so.1.0
+}
+{
    PyEval_AcquireThread
    Helgrind:Race
    obj:/usr/lib64/libpython3.8.so.1.0
@@ -262,6 +334,19 @@
    fun:pthread_cond_timedwait@@GLIBC_2.3.2
    fun:pthread_cond_timedwait_WRK
    fun:pthread_cond_timedwait@*
+   obj:/usr/lib64/libpython3.8.so.1.0
+}
+{
+   _PyObject_MakeTpCall holds lock on exit
+   Helgrind:Misc
+   fun:open
+   obj:/usr/lib64/libpython3.8.so.1.0
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyObject_MakeTpCall
+}
+{
+   python still holds a lock somewhere
+   Helgrind:Misc
    obj:/usr/lib64/libpython3.8.so.1.0
 }
 
@@ -367,4 +452,12 @@
    InlineTree::Compile::ciMethod::JVMState()
    Memcheck:Cond
    fun:_ZN10InlineTreeC1EP7CompilePKS_P8ciMethodP8JVMStateifi
+}
+{
+   os::PlatformEvent::unpark()
+   Helgrind:Misc
+   fun:pthread_cond_signal@@GLIBC_2.3.2
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:_ZN2os13PlatformEvent6unparkEv
 }

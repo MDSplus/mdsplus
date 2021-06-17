@@ -58,7 +58,8 @@ Invariance Method
 #include <stdlib.h>
 
 EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
-                                       float *cut_off, int *num_in_poles) {
+                                       float *cut_off, int *num_in_poles)
+{
   static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 
   DESCRIPTOR_A(data_d, sizeof(float), DTYPE_FLOAT, 0, 0);
@@ -117,7 +118,8 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
        i++)
     ;
 
-  if (i > 1) {
+  if (i > 1)
+  {
     phs_steep = (phs[1] - phs[i]) / ((i / 1000.) * fc / 2.);
     delay = phs_steep / (2 * PI);
   }
@@ -139,10 +141,12 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   return &out_xd;
 }
 
-EXPORT void PrintFilter(Filter *filter) {
+EXPORT void PrintFilter(Filter *filter)
+{
   int i, j;
 
-  for (i = 0; i < filter->num_parallels; i++) {
+  for (i = 0; i < filter->num_parallels; i++)
+  {
     // if(filter->units[i].den_degree > 0)
     {
       for (j = 0; j < filter->units[i].num_degree; j++)

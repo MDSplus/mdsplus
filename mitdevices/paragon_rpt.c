@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -58,7 +58,7 @@ int paragon_rpt___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
   FILE *file;
   int isftp;
   int status = PARAGON_FTP_COPY(setup->report_name,(struct descriptor *)&rpt_name,&isftp);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     return(status);
   }

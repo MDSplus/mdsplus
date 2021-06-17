@@ -1,5 +1,5 @@
 mdsconnect("local://1")
-1
+0
 mdsvalue("$",[1,2,3])
 [1,2,3]
 mdsvalue("DECOMPILE($)",[[1,2],[3,4]])

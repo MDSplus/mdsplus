@@ -10,11 +10,12 @@
 
 #ifdef __cplusplus
 
-extern "C" {
+extern "C"
+{
 
 #endif
 
-/*
+  /*
 
  * Class:     MdsHelper
 
@@ -24,7 +25,7 @@ extern "C" {
 
  */
 
-JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString(JNIEnv *, jclass, jint);
+  JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString(JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }

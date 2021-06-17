@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <status.h>
 
 #include "common.h"
 #include "crate.h"
@@ -55,7 +56,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Tue Apr 10 11:11:48 EDT 2001
 // eg. *crate_name == "GKB509"
 //-----------------------------------------------------------
-int turn_crate_on_off_line(char *crate_name, int state) {
+int turn_crate_on_off_line(char *crate_name, int state)
+{
   char controller[12], *pController;
   short SCCdata;
   size_t i;
@@ -81,7 +83,8 @@ int turn_crate_on_off_line(char *crate_name, int state) {
 
   // lookup name -- make sure a valid device
   if ((idx = lookup_entry(CRATE_DB, crate_name)) <
-      0) { // lookup actual device num
+      0)
+  { // lookup actual device num
     if (MSGLVL(IMPORTANT))
       fprintf(stderr, "no such crate in 'crate.db'\n");
 
@@ -93,7 +96,8 @@ int turn_crate_on_off_line(char *crate_name, int state) {
 
   pController = &controller[0];
 
-  if (CRATEdb[idx].HwyType != ('0' + JORWAY_73A)) {
+  if (CRATEdb[idx].HwyType != ('0' + JORWAY_73A))
+  {
     SCCdata = 1;                  // initiates Dataway Z
     status = CamPiow(pController, // serial crate controller name
                      0,           // A    --\__ write status register
@@ -111,7 +115,8 @@ int turn_crate_on_off_line(char *crate_name, int state) {
                      16,                  // mem == 16-bit data
                      &iosb                // *iosb
     );
-    if (status & 1) {
+    if (STATUS_OK)
+    {
       status = get_crate_status(pController, &crateStatus);
       online = ((crateStatus & 0x1000) != 0x1000) ? TRUE : FALSE;
       if (!crateStatus || crateStatus == 0x3)
@@ -120,7 +125,9 @@ int turn_crate_on_off_line(char *crate_name, int state) {
       enhanced = (online && (crateStatus & 0x4000)) ? TRUE : FALSE;
       CRATEdb[idx].enhanced = enhanced ? '1' : '0';
     }
-  } else {
+  }
+  else
+  {
     CRATEdb[idx].online = (state == ON) ? '1' : '0';
     CRATEdb[idx].enhanced = '0';
     status = 1;

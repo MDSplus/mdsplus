@@ -349,7 +349,7 @@ static int lex_float(LEX_ARGS) {
     status = TdiEXTRANEOUS;
 
   yylval_param->mark.builtin = -1;
-  if STATUS_OK
+  if (STATUS_OK)
     return LEX_VALUE;
   TDI_REFZONE.l_status = status;
   return LEX_ERROR;
@@ -645,7 +645,7 @@ static int lex_int(LEX_ARGS) {
       if (*qptr != qtst)
 	status = TdiTOO_BIG;
 
-  if STATUS_OK {
+  if (STATUS_OK) {
 #ifdef WORDS_BIGENDIAN
     int i;
     char *ptr = yylval_param->mark.rptr->pointer;
@@ -674,7 +674,7 @@ int tdi_lex_path(int len, char* str, struct marker *mark_ptr, TDITHREADSTATIC_AR
   if (TDI_REFZONE.l_rel_path) {
     MAKE_S(DTYPE_PATH, (unsigned short)len, mark_ptr->rptr);
     memcpy((char *)mark_ptr->rptr->pointer, str, len);
-  } else if IS_OK(TreeFindNode((char *)str_l, &nid)) {
+  } else if (IS_OK(TreeFindNode((char *)str_l, &nid))) {
     MAKE_S(DTYPE_NID, (unsigned short)sizeof(nid), mark_ptr->rptr);
     *(int *)mark_ptr->rptr->pointer = nid;
   } else {

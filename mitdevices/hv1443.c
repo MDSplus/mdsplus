@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include "hv1443_gen.h"
@@ -46,7 +46,7 @@ EXPORT int hv1443__get_settings(struct descriptor *niddsc_ptr __attribute__ ((un
   if (max_chans != HV1443_K_CHANS)
     return HV1440$_WRONG_POD_TYPE;
   status = hv1443___get_settings(niddsc_ptr, &setup);
-  if (status & 1) {
+  if (STATUS_OK) {
     int i;
     for (i = 0; i < HV1443_K_CHANS; i++) {
       int nid = setup.head_nid + HV1443_N_VOLTAGE_01 + i;

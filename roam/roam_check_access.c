@@ -42,19 +42,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #endif
 
-static char *urlencode(char *in) {
+static char *urlencode(char *in)
+{
   char *ans = 0;
   int i;
   int j = 0;
   int inlen = strlen(in);
   ans = malloc(inlen * 3);
-  for (i = 0, j = 0; i < inlen; i++) {
+  for (i = 0, j = 0; i < inlen; i++)
+  {
     if ((in[i] >= '0' && in[i] <= '9') || (in[i] >= 'A' && in[i] <= 'Z') ||
-        (in[i] >= 'a' && in[i] <= 'z')) {
+        (in[i] >= 'a' && in[i] <= 'z'))
+    {
       ans[j++] = in[i];
-    } else if (in[i] == ' ') {
+    }
+    else if (in[i] == ' ')
+    {
       ans[j++] = '+';
-    } else {
+    }
+    else
+    {
       ans[j++] = '%';
       sprintf(&ans[j], "%2X", (unsigned int)in[i]);
       j += 2;
@@ -67,7 +74,8 @@ static char *urlencode(char *in) {
 #ifdef XIO
 EXPORT int roam_check_access(char *host, int https, char *resource,
                              char *permit, char *dn,
-                             struct descriptor_xd *aux) {
+                             struct descriptor_xd *aux)
+{
   globus_xio_driver_t tcp_driver;
   globus_xio_driver_t gsi_driver;
   globus_xio_driver_t http_driver;
@@ -99,14 +107,16 @@ EXPORT int roam_check_access(char *host, int https, char *resource,
   globus_xio_stack_init(&stack, NULL);
   globus_xio_driver_load("tcp", &tcp_driver);
   globus_xio_stack_push_driver(stack, tcp_driver);
-  if (https) {
+  if (https)
+  {
     globus_xio_driver_load("gsi", &gsi_driver);
     globus_xio_stack_push_driver(stack, gsi_driver);
   }
   globus_xio_driver_load("http", &http_driver);
   globus_xio_stack_push_driver(stack, http_driver);
   globus_xio_attr_init(&attr);
-  if (https) {
+  if (https)
+  {
     globus_xio_attr_cntl(attr, gsi_driver, GLOBUS_XIO_GSI_SET_SSL_COMPATIBLE,
                          GLOBUS_TRUE);
   }
@@ -114,15 +124,20 @@ EXPORT int roam_check_access(char *host, int https, char *resource,
   //  test_res(res);
   res = globus_xio_open(xio_handle, url, attr);
   // test_res(res);
-  while (res == GLOBUS_SUCCESS) {
+  while (res == GLOBUS_SUCCESS)
+  {
     nbytes = 0;
     res = globus_xio_read(xio_handle, line, LINE_LEN, 1, &nbytes, NULL);
-    if (nbytes > 0) {
-      if (ans) {
+    if (nbytes > 0)
+    {
+      if (ans)
+      {
         int newlen = strlen(ans) + nbytes;
         ans = strncat(realloc(ans, newlen + 1), line, nbytes);
         ans[newlen] = 0;
-      } else {
+      }
+      else
+      {
         ans = strncpy(malloc(nbytes + 1), line, nbytes);
         ans[nbytes] = 0;
       }
@@ -130,8 +145,10 @@ EXPORT int roam_check_access(char *host, int https, char *resource,
     if (res)
       break;
   }
-  if (ans && strlen(ans) > 4) {
-    if (strncmp(ans, "yes", 3) == 0) {
+  if (ans && strlen(ans) > 4)
+  {
+    if (strncmp(ans, "yes", 3) == 0)
+    {
       struct descriptor accnt = {0, DTYPE_T, CLASS_S, 0};
       status = GLOBUS_SUCCESS;
       accnt.pointer = malloc(strlen(ans) - 4);
@@ -150,18 +167,23 @@ EXPORT int roam_check_access(char *host, int https, char *resource,
 }
 #else
 
-struct _buf {
+struct _buf
+{
   size_t size;
   char *ptr;
 };
 
-static size_t callback(void *contents, size_t size, size_t nmemb, void *userp) {
+static size_t callback(void *contents, size_t size, size_t nmemb, void *userp)
+{
   char *ptr = (char *)contents;
   struct _buf *buf = (struct _buf *)userp;
-  if (buf->size == 0) {
+  if (buf->size == 0)
+  {
     buf->ptr = malloc(size * nmemb + 1);
     memcpy(buf->ptr, ptr, size * nmemb);
-  } else {
+  }
+  else
+  {
     buf->ptr = realloc(buf->ptr, buf->size + size * nmemb + 1);
     memcpy(buf->ptr + buf->size, ptr, size * nmemb);
   }
@@ -172,7 +194,8 @@ static size_t callback(void *contents, size_t size, size_t nmemb, void *userp) {
 
 EXPORT int roam_check_access(char *host, int https, char *resource,
                              char *permit, char *dn,
-                             struct descriptor_xd *aux) {
+                             struct descriptor_xd *aux)
+{
   CURL *ctx = curl_easy_init();
   CURLcode status;
   struct _buf buf = {0, 0};
@@ -195,9 +218,12 @@ EXPORT int roam_check_access(char *host, int https, char *resource,
   curl_easy_setopt(ctx, CURLOPT_CAPATH, "/etc/grid-security/certificates");
   status = curl_easy_perform(ctx);
   curl_easy_cleanup(ctx);
-  if (status == 0 && buf.size >= 4) {
-    if (strncmp(buf.ptr, "yes", 3) == 0) {
-      if (buf.size > 4) {
+  if (status == 0 && buf.size >= 4)
+  {
+    if (strncmp(buf.ptr, "yes", 3) == 0)
+    {
+      if (buf.size > 4)
+      {
         struct descriptor accnt = {0, DTYPE_T, CLASS_S, 0};
         accnt.pointer = malloc(buf.size - 4);
         if (buf.size > 5)
@@ -206,9 +232,12 @@ EXPORT int roam_check_access(char *host, int https, char *resource,
         accnt.length = strlen(accnt.pointer);
         MdsCopyDxXd(&accnt, aux);
       }
-    } else
+    }
+    else
       status = -2;
-  } else {
+  }
+  else
+  {
     status = -1;
   }
   free(buf.ptr);

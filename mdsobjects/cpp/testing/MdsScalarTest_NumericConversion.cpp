@@ -45,7 +45,8 @@ using namespace testing;
 //  SIGNED  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void test_Int8() {
+void test_Int8()
+{
   signed char value = 123;
 
   Data *data = new Int8(value);
@@ -54,7 +55,8 @@ void test_Int8() {
   deleteData(data);
 }
 
-void test_Int8Array() {
+void test_Int8Array()
+{
 
   std::vector<char> value;
   value << (char)1, 2, 3, 123;
@@ -66,7 +68,8 @@ void test_Int8Array() {
   deleteData(data);
 }
 
-void test_Int16() {
+void test_Int16()
+{
   signed short value = 123;
 
   Data *data = new Int16(value);
@@ -75,7 +78,8 @@ void test_Int16() {
   deleteData(data);
 }
 
-void test_Int16Array() {
+void test_Int16Array()
+{
 
   std::vector<short> value;
   value << (short)1, 2, 3, 123;
@@ -87,7 +91,8 @@ void test_Int16Array() {
   deleteData(data);
 }
 
-void test_Int32() {
+void test_Int32()
+{
   signed int value = 123;
 
   Data *data = new Int32(value);
@@ -96,7 +101,8 @@ void test_Int32() {
   deleteData(data);
 }
 
-void test_Int32Array() {
+void test_Int32Array()
+{
 
   std::vector<int> value;
   value << (int)1, 2, 3, 123;
@@ -108,7 +114,8 @@ void test_Int32Array() {
   deleteData(data);
 }
 
-void test_Int64() {
+void test_Int64()
+{
   int64_t value = 123;
 
   Data *data = new Int64(value);
@@ -117,7 +124,8 @@ void test_Int64() {
   deleteData(data);
 }
 
-void test_Int64Array() {
+void test_Int64Array()
+{
 
   std::vector<int64_t> value;
   value << (int64_t)1, 2, 3, 123;
@@ -133,7 +141,8 @@ void test_Int64Array() {
 //  UNSIGED  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void test_Uint8() {
+void test_Uint8()
+{
   unsigned char value = 123;
 
   Data *data = new Uint8(value);
@@ -142,7 +151,8 @@ void test_Uint8() {
   deleteData(data);
 }
 
-void test_Uint8Array() {
+void test_Uint8Array()
+{
 
   std::vector<unsigned char> value;
   value << (unsigned char)1, 2, 3, 123;
@@ -154,7 +164,8 @@ void test_Uint8Array() {
   deleteData(data);
 }
 
-void test_Uint16() {
+void test_Uint16()
+{
   unsigned short value = 123;
 
   Data *data = new Uint16(value);
@@ -163,7 +174,8 @@ void test_Uint16() {
   deleteData(data);
 }
 
-void test_Uint16Array() {
+void test_Uint16Array()
+{
 
   std::vector<unsigned short> value;
   value << (unsigned short)1, 2, 3, 123;
@@ -175,7 +187,8 @@ void test_Uint16Array() {
   deleteData(data);
 }
 
-void test_Uint32() {
+void test_Uint32()
+{
   unsigned int value = 123;
 
   Data *data = new Uint32(value);
@@ -184,7 +197,8 @@ void test_Uint32() {
   deleteData(data);
 }
 
-void test_Uint32Array() {
+void test_Uint32Array()
+{
 
   std::vector<unsigned int> value;
   value << (unsigned int)1, 2, 3, 123;
@@ -196,7 +210,8 @@ void test_Uint32Array() {
   deleteData(data);
 }
 
-void test_Uint64() {
+void test_Uint64()
+{
   uint64_t value = 123;
 
   Data *data = new Uint64(value);
@@ -205,7 +220,8 @@ void test_Uint64() {
   deleteData(data);
 }
 
-void test_Uint64Array() {
+void test_Uint64Array()
+{
 
   std::vector<uint64_t> value;
   value << (uint64_t)1, 2, 3, 123;
@@ -221,7 +237,8 @@ void test_Uint64Array() {
 //  FLOATS  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void test_Float32() {
+void test_Float32()
+{
 
   float value = 123.2368;
 
@@ -231,7 +248,8 @@ void test_Float32() {
 
   deleteData(data);
 }
-void test_Float32Array() {
+void test_Float32Array()
+{
 
   std::vector<float> value;
   value << (float)1, 2, 3, 123.2368;
@@ -242,7 +260,8 @@ void test_Float32Array() {
 
   deleteData(data);
 }
-void test_Float64() {
+void test_Float64()
+{
 
   double value = 123.2368;
 
@@ -252,7 +271,8 @@ void test_Float64() {
 
   deleteData(data);
 }
-void test_Float64Array() {
+void test_Float64Array()
+{
 
   std::vector<double> value;
   value << (double)1, 2, 3, 123.2368;
@@ -268,7 +288,8 @@ void test_Float64Array() {
 //  COMPLEX  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void test_Complex32() {
+void test_Complex32()
+{
 
   std::complex<float> value(1.23, 123.2368);
   Data *data = new Complex32(value.real(), value.imag());
@@ -277,7 +298,8 @@ void test_Complex32() {
 
   deleteData(data);
 }
-void test_Complex32Array() {
+void test_Complex32Array()
+{
   typedef std::complex<float> Cf;
 
   TEST1(sizeof(Cf) == sizeof(float) * 2);
@@ -293,7 +315,8 @@ void test_Complex32Array() {
   deleteData(data);
 }
 
-void test_Complex64() {
+void test_Complex64()
+{
 
   std::complex<double> value(1.23, 123.2368);
   Data *data = new Complex64(value.real(), value.imag());
@@ -302,7 +325,8 @@ void test_Complex64() {
 
   deleteData(data);
 }
-void test_Complex64Array() {
+void test_Complex64Array()
+{
   typedef std::complex<double> Cf;
 
   TEST1(sizeof(Cf) == sizeof(double) * 2);
@@ -323,7 +347,8 @@ void test_Complex64Array() {
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   BEGIN_TESTING(Data);
 
   test_Int8();

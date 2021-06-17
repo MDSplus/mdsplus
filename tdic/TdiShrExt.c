@@ -70,19 +70,21 @@ extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
 #define LOCAL "local"
 #define STRLEN 4096
 #define INVALID_ID -1
-/* Variables that stay set between calls */
-static int id = INVALID_ID; /* Mark the conid as unopen */
-static char serv[STRLEN];   /* Current server */
-static EMPTYXD(ans_xd);
 
 /* Connection record */
-typedef struct _connection {
+typedef struct _connection
+{
   int id;       /* Mark the conid as unopen */
   char *unique; /* Unique connection name */
   int port;
   char serv[STRLEN]; /* Current server */
   struct _connection *next;
 } Connection;
+/* Variables that stay set between calls */
+
+static int id = INVALID_ID; /* Mark the conid as unopen */
+static char serv[STRLEN];   /* Current server */
+static EMPTYXD(ans_xd);
 static Connection *Connections = NULL;
 
 /* Routine definitions */
@@ -106,7 +108,8 @@ struct descriptor_xd *bTest1(struct descriptor *in_bufD);
 #endif
 
 /* Return the name of the current connection */
-EXPORT struct descriptor_xd *rMdsCurrent() {
+EXPORT struct descriptor_xd *rMdsCurrent()
+{
   /* Values for changing matrix dimensions */
   struct descriptor_s ans_dsc = {0, 0, CLASS_S, 0};
 
@@ -119,20 +122,24 @@ EXPORT struct descriptor_xd *rMdsCurrent() {
 }
 
 /* List Current connections */
-EXPORT int rMdsList() {
+EXPORT int rMdsList()
+{
   Connection *cptr;
   int i = 0;
 
   if (!strcmp(serv, LOCAL))
     printf("Current connection is local\n");
-  for (cptr = Connections; (cptr != NULL);) {
+  for (cptr = Connections; (cptr != NULL);)
+  {
     i++;
-    if (cptr->id != INVALID_ID) {
+    if (cptr->id != INVALID_ID)
+    {
       printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique,
              (int)cptr->id);
       if (cptr->id == id)
         printf("  <-- active");
-    } else
+    }
+    else
       printf("UnUsed slot");
     printf("\n");
     cptr = cptr->next;
@@ -141,7 +148,8 @@ EXPORT int rMdsList() {
 }
 
 /* Return the version number to TDI */
-EXPORT struct descriptor_xd *rgetenv(char *expression) {
+EXPORT struct descriptor_xd *rgetenv(char *expression)
+{
   char *sptr;
   struct descriptor_s ans_dsc = {0, 0, CLASS_S, 0};
 
@@ -155,7 +163,8 @@ EXPORT struct descriptor_xd *rgetenv(char *expression) {
 }
 
 /* Return the version number to TDI */
-EXPORT struct descriptor_xd *rMdsVersion() {
+EXPORT struct descriptor_xd *rMdsVersion()
+{
   struct descriptor_s ans_dsc = {0, 0, CLASS_S, 0};
 
   ans_dsc.pointer = VERSION;
@@ -167,18 +176,22 @@ EXPORT struct descriptor_xd *rMdsVersion() {
 }
 
 /* Routine returns conid if valid */
-static int AddConnection(char *server) {
+static int AddConnection(char *server)
+{
   Connection *cptr;
   int nid;
   char unique[128] = "\0";
   /* Extract the ip and port numbers */
-  if ((nid = ReuseCheck(server, unique, 128)) == INVALID_ID) {
+  if ((nid = ReuseCheck(server, unique, 128)) == INVALID_ID)
+  {
     printf("hostname [%s] invalid, No Connection\n", server);
     return INVALID_ID;
   }
   /* scan through current list looking for an ip/port pair */
-  for (cptr = Connections; (cptr != NULL);) {
-    if ((cptr->id != INVALID_ID) && (strcmp(unique, cptr->unique) == 0)) {
+  for (cptr = Connections; (cptr != NULL);)
+  {
+    if ((cptr->id != INVALID_ID) && (strcmp(unique, cptr->unique) == 0))
+    {
 #ifdef DEBUG
       printf("mdsopen: Keep conid! name changed from  [%s] to [%s]\n",
              cptr->serv, server);
@@ -190,13 +203,16 @@ static int AddConnection(char *server) {
     cptr = cptr->next;
   }
   /* See if the connection works */
-  if ((nid = ConnectToMds(server)) == INVALID_ID) {
+  if ((nid = ConnectToMds(server)) == INVALID_ID)
+  {
     printf("mdsopen: Could not open connection to MDS server\n");
     return (INVALID_ID);
   }
   /* Connection valid, find a slot in the stack */
-  for (cptr = Connections; (cptr != NULL);) {
-    if (cptr->id == INVALID_ID) { /* found an empty slot */
+  for (cptr = Connections; (cptr != NULL);)
+  {
+    if (cptr->id == INVALID_ID)
+    { /* found an empty slot */
 #ifdef DEBUG
       printf("Found empty slot\n");
 #endif
@@ -205,7 +221,8 @@ static int AddConnection(char *server) {
     cptr = cptr->next;
   }
   /* If slot in stack empty, create a new one */
-  if (cptr == NULL) { /* End of List */
+  if (cptr == NULL)
+  { /* End of List */
 #ifdef DEBUG
     printf("Making new Connection\n");
 #endif
@@ -221,7 +238,8 @@ static int AddConnection(char *server) {
 }
 
 /* mds server connect */
-EXPORT int rMdsConnect(char *hostin) {
+EXPORT int rMdsConnect(char *hostin)
+{
   char host[STRLEN];
   unsigned int i;
   if (hostin == NULL)
@@ -230,17 +248,21 @@ EXPORT int rMdsConnect(char *hostin) {
   for (i = 0; i < (STRLEN - 1) && i < strlen(hostin); i++)
     host[i] = tolower(hostin[i]);
   host[i] = 0;
-  if (!strcmp(host, LOCAL)) {
+  if (!strcmp(host, LOCAL))
+  {
     strcpy(serv, LOCAL);
-    id = INVALID_ID;
-    return (id);
+    return INVALID_ID;
   }
   /* If no conid, or server name has changed */
-  if ((id == INVALID_ID) || strcmp(host, serv)) {
-    if ((id = AddConnection(hostin)) == INVALID_ID) {
+  if ((id == INVALID_ID) || strcmp(host, serv))
+  {
+    if ((id = AddConnection(hostin)) == INVALID_ID)
+    {
       *serv = '\0';
-      return (0); /* no connection obtained */
-    } else {
+      return id; /* no connection obtained */
+    }
+    else
+    {
       strcpy(serv, host); /* copy new name to memory, keep conid open */
     }
   }
@@ -249,27 +271,37 @@ EXPORT int rMdsConnect(char *hostin) {
 
 /* mdsdisconnect
  * ==================================================================== */
-EXPORT int rMdsDisconnect(int all) {
+EXPORT int rMdsDisconnect(int all)
+{
   int status = 1;
   Connection *cptr;
 
-  if (all) {
-    for (cptr = Connections; (cptr != NULL); cptr = cptr->next) {
-      if (cptr->id != INVALID_ID) {
+  if (all)
+  {
+    for (cptr = Connections; (cptr != NULL); cptr = cptr->next)
+    {
+      if (cptr->id != INVALID_ID)
+      {
         DisconnectFromMds(id);
         cptr->id = INVALID_ID;
-        if (cptr->unique) {
+        if (cptr->unique)
+        {
           free(cptr->unique);
           cptr->unique = 0;
         }
       }
     }
-  } else if (id != INVALID_ID) {
+  }
+  else if (id != INVALID_ID)
+  {
     status = DisconnectFromMds(id);
-    for (cptr = Connections; (cptr != NULL);) {
-      if (cptr->id == id) {
+    for (cptr = Connections; (cptr != NULL);)
+    {
+      if (cptr->id == id)
+      {
         cptr->id = INVALID_ID;
-        if (cptr->unique) {
+        if (cptr->unique)
+        {
           free(cptr->unique);
           cptr->unique = 0;
         }
@@ -277,7 +309,9 @@ EXPORT int rMdsDisconnect(int all) {
       }
       cptr = cptr->next;
     }
-  } else if (strcmp(serv, "local")) {
+  }
+  else if (strcmp(serv, "local"))
+  {
     printf("mdsdisconnect: warning, communication conid aleady closed\n");
     status = 0;
   }
@@ -288,7 +322,8 @@ EXPORT int rMdsDisconnect(int all) {
 
 /*  ================================================================================
  */
-EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...) {
+EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
+{
   /**** NOTE: NULL terminated argument list expected ****/
   va_list incrmtr;
   int i, j;
@@ -306,21 +341,24 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...) {
   void *dptr;
   void *mem = 0;
   /* check there is a connection open */
-  if (id == INVALID_ID) {
+  if (id == INVALID_ID)
+  {
     printf("MdsValue: No Socket open\n");
     return (0);
   }
   /* Count the arguments which is needed by SendArg routine*/
   va_start(incrmtr, expression);
   tdiarg = (struct descriptor *)expression;
-  for (nargs = 0; tdiarg != NULL; nargs++) {
+  for (nargs = 0; tdiarg != NULL; nargs++)
+  {
     tdiarg = va_arg(incrmtr, struct descriptor *);
 #ifdef DEBUG
     printf("Vararg [%d] for [0x%" PRIxPTR "]\n", nargs, (uintptr_t)tdiarg);
 #endif
   }
   /* note minimum 1 arg I/P and 1 arg O/P */
-  if (expression == NULL || nargs < 1) {
+  if (expression == NULL || nargs < 1)
+  {
     printf("MdsValue: not enough arguments given [%d]\n", nargs);
     return (0);
   }
@@ -331,13 +369,15 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...) {
 #endif
   tdiarg = expression; /* first in list (corresponding to string) */
                        /* Cycle through the arguments */
-  for (i = 0; (i < nargs) && (status & 1); i++) {
+  for (i = 0; (i < nargs) && (STATUS_OK); i++)
+  {
 #ifdef DEBUG
     printf("idx[%d] dtype[%d] nargs[%d]\n", i, tdiarg->dtype, nargs);
     bTest(tdiarg); /* Display the descriptor */
 #endif
     /* Make up the correct packet for SendArg */
-    switch (tdiarg->class) {
+    switch (tdiarg->class)
+    {
     default:
       break;
     case CLASS_S: /* fixed-length descriptor */
@@ -348,12 +388,14 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...) {
       desca = (struct descriptor_a *)tdiarg;
       num = desca->arsize / desca->length;
       ndims = desca->dimct; /* dimensions count */
-      if (desca->aflags.coeff) {
+      if (desca->aflags.coeff)
+      {
         array_bounds *bptr =
             (array_bounds *)desca; /* access the array bounds of descriptor_a */
         for (j = 0; j < desca->dimct; j++)
           dims[j] = bptr->m[j]; /* copy in the dimensions */
-      } else
+      }
+      else
         dims[0] = num; /* simple vector assignment */
       break;
     }
@@ -372,55 +414,61 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...) {
   }
   va_end(incrmtr);
   /* Get the reply ================================================== */
-  if
-    STATUS_OK {
-      status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr,
-                               &mem);
+  if (STATUS_OK)
+  {
+    status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr,
+                             &mem);
 #ifdef DEBUG
-      printf(
-          "Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n",
-          status, dtype, len, ndims, numbytes, *(int *)dptr);
+    printf(
+        "Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n",
+        status, dtype, len, ndims, numbytes, *(int *)dptr);
 #endif
-      if
-        STATUS_OK {
-          /* Remap the descriptor types */
-          dtype = IpToMds(dtype);
-          /* Copy the Josh way ( see his example in MdsRemote.c ) */
-          if (ndims == 0) {
-            struct descriptor_s ans_dsc = {
-                0, 0, CLASS_S,
-                0}; /* Create scalar descriptor for arrived data */
-            ans_dsc.pointer = dptr;
-            ans_dsc.dtype = dtype;
-            ans_dsc.length = len;
-            MdsCopyDxXd((struct descriptor *)&ans_dsc,
-                        &ans_xd); /* Copy the arrival data to xd output */
-          } else {
-            DESCRIPTOR_A_COEFF(
-                a_dsc, 0, 0, 0, MAX_DIMS,
-                0); /* Create array descriptor for arrived data */
-            int i;
-            a_dsc.pointer = dptr;
-            a_dsc.dimct = ndims;
-            a_dsc.dtype = dtype;
-            a_dsc.length = len;
-            a_dsc.a0 = dptr;
-            a_dsc.arsize = numbytes; /* Use byte count already available from
+    if (STATUS_OK)
+    {
+      /* Remap the descriptor types */
+      dtype = IpToMds(dtype);
+      /* Copy the Josh way ( see his example in MdsRemote.c ) */
+      if (ndims == 0)
+      {
+        struct descriptor_s ans_dsc = {
+            0, 0, CLASS_S,
+            0}; /* Create scalar descriptor for arrived data */
+        ans_dsc.pointer = dptr;
+        ans_dsc.dtype = dtype;
+        ans_dsc.length = len;
+        MdsCopyDxXd((struct descriptor *)&ans_dsc,
+                    &ans_xd); /* Copy the arrival data to xd output */
+      }
+      else
+      {
+        DESCRIPTOR_A_COEFF(
+            a_dsc, 0, 0, 0, MAX_DIMS,
+            0); /* Create array descriptor for arrived data */
+        int i;
+        a_dsc.pointer = dptr;
+        a_dsc.dimct = ndims;
+        a_dsc.dtype = dtype;
+        a_dsc.length = len;
+        a_dsc.a0 = dptr;
+        a_dsc.arsize = numbytes; /* Use byte count already available from
                                         MdsIp reply */
-                                     /*      a_dsc.arsize= len;*/
-            for (i = 0; i < ndims; i++) {
-              a_dsc.m[i] = dims[i];
-              /*	 a_dsc.arsize *= dims[i];*/
-            }
-            MdsCopyDxXd((struct descriptor *)&a_dsc,
-                        &ans_xd); /* Copy the arrival data to xd output */
-          }
+                                 /*      a_dsc.arsize= len;*/
+        for (i = 0; i < ndims; i++)
+        {
+          a_dsc.m[i] = dims[i];
+          /*	 a_dsc.arsize *= dims[i];*/
         }
-      else {
-        MdsFree1Dx(&ans_xd, 0);
+        MdsCopyDxXd((struct descriptor *)&a_dsc,
+                    &ans_xd); /* Copy the arrival data to xd output */
       }
     }
-  else {
+    else
+    {
+      MdsFree1Dx(&ans_xd, 0);
+    }
+  }
+  else
+  {
     MdsFree1Dx(&ans_xd, 0);
     rMdsDisconnect(id);
   }
@@ -435,7 +483,8 @@ _ans = build_call(8, 'BpdMdsUnix', 'rMdsOpen', 'localhost::') _a = build_call(
 #endif
     /* definitions from ipdesc.h for MdsIp descriptor */
     static int
-    MdsToIp(struct descriptor * *tdiarg, short *len) {
+    MdsToIp(struct descriptor * *tdiarg, short *len)
+{
   int dtype;
   short llen;
   static EMPTYXD(xd);
@@ -443,7 +492,8 @@ _ans = build_call(8, 'BpdMdsUnix', 'rMdsOpen', 'localhost::') _a = build_call(
   if (len == NULL)
     len = &llen; /* ensure writing is not invalid */
 
-  switch ((*tdiarg)->dtype) {
+  switch ((*tdiarg)->dtype)
+  {
   case DTYPE_BU: /*      2               byte (unsigned);  8-bit unsigned
                     quantity */
     dtype = DTYPE_UCHAR;
@@ -493,7 +543,8 @@ _ans = build_call(8, 'BpdMdsUnix', 'rMdsOpen', 'localhost::') _a = build_call(
   case DTYPE_F:  /*      10              F_floating;  32-bit single-precision
                     floating point */
   case DTYPE_FS: /*      52              IEEE float basic single S */
-    if ((*tdiarg)->dtype != DTYPE_NATIVE_FLOAT) {
+    if ((*tdiarg)->dtype != DTYPE_NATIVE_FLOAT)
+    {
       static char tmp[4];
       static struct descriptor mold = {4, DTYPE_NATIVE_FLOAT, CLASS_S, tmp};
       TdiCvt(*tdiarg, &mold, &xd MDS_END_ARG);
@@ -505,7 +556,8 @@ _ans = build_call(8, 'BpdMdsUnix', 'rMdsOpen', 'localhost::') _a = build_call(
   case DTYPE_D:
   case DTYPE_G:
   case DTYPE_FT: /*      53              IEEE float basic double T */
-    if ((*tdiarg)->dtype != DTYPE_NATIVE_DOUBLE) {
+    if ((*tdiarg)->dtype != DTYPE_NATIVE_DOUBLE)
+    {
       static char tmp[8];
       static struct descriptor mold = {8, DTYPE_NATIVE_DOUBLE, CLASS_S, tmp};
       TdiCvt(*tdiarg, &mold, &xd MDS_END_ARG);
@@ -516,7 +568,8 @@ _ans = build_call(8, 'BpdMdsUnix', 'rMdsOpen', 'localhost::') _a = build_call(
     break;
   case DTYPE_FC:
   case DTYPE_FSC: /*      54              IEEE float basic single S complex */
-    if ((*tdiarg)->dtype != DTYPE_FLOAT_COMPLEX) {
+    if ((*tdiarg)->dtype != DTYPE_FLOAT_COMPLEX)
+    {
       static char tmp[8];
       static struct descriptor mold = {8, DTYPE_FLOAT_COMPLEX, CLASS_S, tmp};
       TdiCvt(*tdiarg, &mold, &xd MDS_END_ARG);
@@ -528,7 +581,8 @@ _ans = build_call(8, 'BpdMdsUnix', 'rMdsOpen', 'localhost::') _a = build_call(
   case DTYPE_DC:
   case DTYPE_GC:
   case DTYPE_FTC: /*      54              IEEE float basic single S complex */
-    if ((*tdiarg)->dtype != DTYPE_DOUBLE_COMPLEX) {
+    if ((*tdiarg)->dtype != DTYPE_DOUBLE_COMPLEX)
+    {
       static char tmp[16];
       static struct descriptor mold = {16, DTYPE_DOUBLE_COMPLEX, CLASS_S, tmp};
       TdiCvt(*tdiarg, &mold, &xd MDS_END_ARG);
@@ -549,9 +603,11 @@ _ans = build_call(8, 'BpdMdsUnix', 'rMdsOpen', 'localhost::') _a = build_call(
   return (dtype);
 }
 
-static int IpToMds(int dtypein) {
+static int IpToMds(int dtypein)
+{
   int dtype = DTYPE_Z;
-  switch (dtypein) {
+  switch (dtypein)
+  {
   case DTYPE_UCHAR:
     dtype = DTYPE_BU;
     break; /*      2                byte (unsigned);  8-bit unsigned quantity */
@@ -604,7 +660,8 @@ static int IpToMds(int dtypein) {
 
 #ifdef DEBUG
 /* test routines for fun */
-static void bTest(struct descriptor *desc) {
+static void bTest(struct descriptor *desc)
+{
   int i, num;
   int8_t *pntC;
   uint8_t *pntUC;
@@ -619,7 +676,8 @@ static void bTest(struct descriptor *desc) {
 
   struct descriptor_a *desca;
   /* if an array, print out other info */
-  switch (desc->class) {
+  switch (desc->class)
+  {
   case CLASS_S: /* fixed-length descriptor */
     printf("got descriptor [%d],[%d],[%d],[%" PRIu64 "]\n", desc->length,
            desc->dtype, desc->class, (uintptr_t)desc->pointer);
@@ -635,7 +693,8 @@ static void bTest(struct descriptor *desc) {
            desca->aflags.binscale, desca->aflags.redim, desca->aflags.column,
            desca->aflags.coeff, desca->aflags.bounds);
     num = desca->arsize / desca->length;
-    if (desca->aflags.coeff) {
+    if (desca->aflags.coeff)
+    {
       int j;
       array_bounds *bptr =
           (array_bounds *)desca; /* access the array bounds of descriptor_a */
@@ -658,7 +717,8 @@ static void bTest(struct descriptor *desc) {
     return;
   }
   if (num)
-    switch (desc->dtype) {
+    switch (desc->dtype)
+    {
     case DTYPE_Z: /*      0               unspecified */
       printf("unspecified ($MISSING)");
       break;
@@ -790,7 +850,8 @@ static void bTest(struct descriptor *desc) {
 }
 
 /* simple example routine as to how to copy or make a xd return descriptor */
-struct descriptor_xd *bTest1(struct descriptor *in_bufD) {
+struct descriptor_xd *bTest1(struct descriptor *in_bufD)
+{
   /* Values for changing matrix dimensions */
   struct descriptor_s ans_dsc = {0, 0, CLASS_S, 0};
   /* by casting to a descriptor with a_coeff, there is enough room to put in
@@ -799,7 +860,8 @@ struct descriptor_xd *bTest1(struct descriptor *in_bufD) {
   struct descriptor_a *desca;
   /* Copy the incoming vector into the output */
 
-  switch (in_bufD->class) {
+  switch (in_bufD->class)
+  {
   case CLASS_S: /* fixed-length descriptor */
     ans_dsc.pointer = in_bufD->pointer;
     ans_dsc.dtype = in_bufD->dtype;
@@ -815,12 +877,14 @@ struct descriptor_xd *bTest1(struct descriptor *in_bufD) {
     a_dsc.dimct = desca->dimct;     /* number of dimensions used */
     a_dsc.arsize = desca->arsize;   /* total size in bytes */
     a_dsc.aflags = desca->aflags;   /* description flags of extended fields */
-    if (desca->aflags.coeff) {
+    if (desca->aflags.coeff)
+    {
       int i;
       array_bounds *bptr =
           (array_bounds *)desca; /* access the array bounds of descriptor_a */
       a_dsc.a0 = desca->pointer; /* pointer to first element of data */
-      for (i = 0; i < desca->dimct; i++) {
+      for (i = 0; i < desca->dimct; i++)
+      {
         a_dsc.m[i] = bptr->m[i];
       }
     }

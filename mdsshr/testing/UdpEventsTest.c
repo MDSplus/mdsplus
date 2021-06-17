@@ -22,22 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsshr.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
-#ifdef _WIN32
-#include <windows.h>
-#define syscall(__NR_gettid) GetCurrentThreadId()
-#else
-#include <sys/syscall.h>
-#endif
-#include <time.h>
-
 #include <stdarg.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
 
+#include <mdsshr.h>
+#include <mdsmsg.h>
 #include "testing.h"
 
 static pthread_mutex_t astCount_lock;
@@ -47,9 +38,9 @@ static pthread_mutex_t second_lock;
 static int astCount = 0;
 
 void eventAst(void *arg, int len __attribute__((unused)),
-              char *buf __attribute__((unused))) {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+              char *buf __attribute__((unused)))
+{
+  printf("received event in thread %ld, name=%s\n", CURRENT_THREAD_ID(), (char *)arg);
   pthread_mutex_lock(&astCount_lock);
   astCount++;
   pthread_mutex_unlock(&astCount_lock);
@@ -58,29 +49,31 @@ void eventAst(void *arg, int len __attribute__((unused)),
 static int first = 0, second = 0;
 
 void eventAstFirst(void *arg, int len __attribute__((unused)),
-                   char *buf __attribute__((unused))) {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+                   char *buf __attribute__((unused)))
+{
+  printf("received event in thread %ld, name=%s\n", CURRENT_THREAD_ID(), (char *)arg);
   pthread_mutex_lock(&first_lock);
   first = 1;
   pthread_mutex_unlock(&first_lock);
 }
 
 void eventAstSecond(void *arg, int len __attribute__((unused)),
-                    char *buf __attribute__((unused))) {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+                    char *buf __attribute__((unused)))
+{
+  printf("received event in thread %ld, name=%s\n", CURRENT_THREAD_ID(), (char *)arg);
   pthread_mutex_lock(&second_lock);
   second = 1;
   pthread_mutex_unlock(&second_lock);
 }
 
-static void wait() {
+static void wait()
+{
   static const struct timespec tspec = {0, 100000000};
   nanosleep(&tspec, 0);
 }
 
-int main(int argc, char **args) {
+int main(int argc, char **args)
+{
   int status = 0;
   int i, iterations, ev_id;
   char *eventname = alloca(100);
@@ -88,14 +81,18 @@ int main(int argc, char **args) {
   pthread_mutex_init(&first_lock, NULL);
   pthread_mutex_init(&second_lock, NULL);
   BEGIN_TESTING(UdpEvents);
-  if (argc < 2) {
+  if (argc < 2)
+  {
     iterations = 3;
-  } else {
+  }
+  else
+  {
     iterations = strtol(args[1], NULL, 0);
     printf("Doing %d iterations\n", iterations);
   }
 
-  for (i = 0; i < iterations; i++) {
+  for (i = 0; i < iterations; i++)
+  {
     sprintf(eventname, "ev_test_%d_%d", i, getpid());
 
     status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
@@ -133,5 +130,5 @@ int main(int argc, char **args) {
   status = MDSEventCan(id2);
 
   END_TESTING;
-  return (status & 1) == 0;
+  return (STATUS_OK) == 0;
 }

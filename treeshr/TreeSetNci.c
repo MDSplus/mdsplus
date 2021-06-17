@@ -28,8 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <treeshr.h>
 
-#define DEBUG
-
 extern void **TreeCtx();
 
 extern int SetNciRemote();
@@ -38,7 +36,8 @@ extern int TreeFlushResetRemote();
 extern int TreeTurnOnRemote();
 extern int TreeTurnOffRemote();
 
-int TreeSetNci(int nid, NCI_ITM *nci_itm_ptr) {
+int TreeSetNci(int nid, NCI_ITM *nci_itm_ptr)
+{
   return _TreeSetNci(*TreeCtx(), nid, nci_itm_ptr);
 }
 
@@ -50,12 +49,14 @@ int TreeTurnOn(int nid) { return _TreeTurnOn(*TreeCtx(), nid); }
 
 int TreeTurnOff(int nid) { return _TreeTurnOff(*TreeCtx(), nid); }
 
-int TreeSetUsage(int nid_in, unsigned char usage) {
+int TreeSetUsage(int nid_in, unsigned char usage)
+{
   return _TreeSetUsage(*TreeCtx(), nid_in, usage);
 }
 
 static int set_node_parent_state(PINO_DATABASE *db, NODE *node, NCI *nci,
-                                 unsigned int state) {
+                                 unsigned int state)
+{
   TREE_INFO *info;
   int node_num;
   int status;
@@ -69,20 +70,22 @@ static int set_node_parent_state(PINO_DATABASE *db, NODE *node, NCI *nci,
   node_num = (int)(node - info->node);
   int locked = 0;
   status = tree_get_and_lock_nci(info, node_num, nci, &locked);
-  if
-    STATUS_OK {
-      bitassign(state, nci->flags, NciM_PARENT_STATE);
-      status = tree_put_nci(info, node_num, nci, &locked);
-    }
+  if (STATUS_OK)
+  {
+    bitassign(state, nci->flags, NciM_PARENT_STATE);
+    status = tree_put_nci(info, node_num, nci, &locked);
+  }
   return status;
 }
 
-int tree_set_parent_state(PINO_DATABASE *db, NODE *node, unsigned int state) {
+int tree_set_parent_state(PINO_DATABASE *db, NODE *node, unsigned int state)
+{
   int status;
   NCI nci;
   NODE *lnode;
   status = TreeSUCCESS;
-  for (lnode = node; lnode && STATUS_OK; lnode = brother_of(db, lnode)) {
+  for (lnode = node; lnode && STATUS_OK; lnode = brother_of(db, lnode))
+  {
     status = set_node_parent_state(db, lnode, &nci, state);
     if (STATUS_OK && (!(nci.flags & NciM_STATE)) && (lnode->child))
       status = tree_set_parent_state(db, child_of(db, lnode), state);
@@ -93,23 +96,28 @@ int tree_set_parent_state(PINO_DATABASE *db, NODE *node, unsigned int state) {
 }
 
 int tree_lock_nci(TREE_INFO *info, int readonly, int nodenum, int *deleted,
-                  int *locked) {
+                  int *locked)
+{
   int status = TreeSUCCESS;
   int deleted_loc, *deleted_ptr = deleted ? deleted : &deleted_loc;
-  if (!info->header->readonly) {
-    if (*locked == 0) { // acquire lock
+  if (!info->header->readonly)
+  {
+    if (*locked == 0)
+    { // acquire lock
       status = MDS_IO_LOCK(
           readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42,
           42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted_ptr);
-      if
-        STATUS_OK {
-          if (!*deleted_ptr)
-            *locked = 3; // lock acquired and increment
-          else if (!deleted)
-            *locked = 2; // lock not acquired but caller did not provide
-                         // deleted; increment w/o lock
-        }
-    } else { // increment and simulate
+      if (STATUS_OK)
+      {
+        if (!*deleted_ptr)
+          *locked = 3; // lock acquired and increment
+        else if (!deleted)
+          *locked = 2; // lock not acquired but caller did not provide
+                       // deleted; increment w/o lock
+      }
+    }
+    else
+    { // increment and simulate
       if (deleted)
         *deleted = FALSE;
       *locked += 2;
@@ -117,15 +125,18 @@ int tree_lock_nci(TREE_INFO *info, int readonly, int nodenum, int *deleted,
   }
   return status;
 }
-void tree_unlock_nci(TREE_INFO *info, int readonly, int nodenum, int *locked) {
-  if (!info->header->readonly) {
+void tree_unlock_nci(TREE_INFO *info, int readonly, int nodenum, int *locked)
+{
+  if (!info->header->readonly)
+  {
 #ifdef DEBUG
     if (*locked < 2)
       fprintf(stderr, "ERROR: tree_unlock_nci and *locked invalid: %d\n",
               *locked);
 #endif
-    *locked -= 2;       // decrement
-    if (*locked == 1) { // last lock and lock acquired -> release lock
+    *locked -= 2; // decrement
+    if (*locked == 1)
+    { // last lock and lock acquired -> release lock
       MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
                   nodenum * 42, 42, MDS_IO_LOCK_NONE, 0);
       *locked = 0;
@@ -157,7 +168,8 @@ void tree_unlock_nci(TREE_INFO *info, int readonly, int nodenum, int *locked) {
 
 +-----------------------------------------------------------------------------*/
 
-int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr) {
+int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid_ptr = (NID *)&nid_in;
   int status;
@@ -183,8 +195,10 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr) {
   RETURN_IF_NOT_OK(
       tree_get_and_lock_nci(tree_info, node_number, &nci, &locked));
   for (itm_ptr = nci_itm_ptr; itm_ptr->code != NciEND_OF_LIST && STATUS_OK;
-       itm_ptr++) {
-    switch (itm_ptr->code) {
+       itm_ptr++)
+  {
+    switch (itm_ptr->code)
+    {
     case NciSET_FLAGS:
       nci.flags |= *(unsigned int *)itm_ptr->pointer;
       putnci = 1;
@@ -197,7 +211,8 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr) {
       putnci = 1;
       nci.status = *(unsigned int *)itm_ptr->pointer;
       break;
-    case NciUSAGE: {
+    case NciUSAGE:
+    {
       NODE *node_ptr;
 
       /**************************************************
@@ -209,7 +224,8 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr) {
         status = TreeNOEDIT;
 
       node_ptr = nid_to_node(dblist, nid_ptr);
-      if (node_ptr->usage != *(unsigned char *)itm_ptr->pointer) {
+      if (node_ptr->usage != *(unsigned char *)itm_ptr->pointer)
+      {
         node_ptr->usage = *(unsigned char *)itm_ptr->pointer;
         dblist->modified = 1;
       }
@@ -228,7 +244,8 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr) {
   return status;
 }
 
-EXPORT int TreeSetNciItm(int nid, int code, int value) {
+EXPORT int TreeSetNciItm(int nid, int code, int value)
+{
   NCI_ITM itm[] = {{0, 0, 0, 0}, {0, 0, 0, 0}};
   itm[0].buffer_length = (short)sizeof(int);
   itm[0].code = (short)code;
@@ -236,7 +253,8 @@ EXPORT int TreeSetNciItm(int nid, int code, int value) {
   return TreeSetNci(nid, itm);
 }
 
-int _TreeFlushOff(void *dbid, int nid) {
+int _TreeFlushOff(void *dbid, int nid)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid_ptr = (NID *)&nid;
   TREE_INFO *tree_info;
@@ -251,7 +269,8 @@ int _TreeFlushOff(void *dbid, int nid) {
   return TreeSUCCESS;
 }
 
-int _TreeFlushReset(void *dbid, int nid) {
+int _TreeFlushReset(void *dbid, int nid)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid_ptr = (NID *)&nid;
   TREE_INFO *tree_info;
@@ -262,7 +281,8 @@ int _TreeFlushReset(void *dbid, int nid) {
   nid_to_tree(dblist, nid_ptr, tree_info);
   if (!tree_info)
     return TreeNNF;
-  if ((tree_info->flush == 0) && (dblist->shotid == -1)) {
+  if ((tree_info->flush == 0) && (dblist->shotid == -1))
+  {
     tree_info->flush = 1;
     TreeWait(tree_info);
   }
@@ -293,7 +313,8 @@ node locking the record so that it can be updated.
 +-----------------------------------------------------------------------------*/
 
 int tree_get_and_lock_nci(TREE_INFO *info, int node_num, NCI *nci,
-                          int *locked) {
+                          int *locked)
+{
   if (info->header->readonly)
     return TreeREADONLY_TREE;
 
@@ -307,33 +328,37 @@ int tree_get_and_lock_nci(TREE_INFO *info, int node_num, NCI *nci,
     if OK so far then
     fill in the gab and read the record
   ******************************************/
-  if ((info->edit == 0) || (node_num < info->edit->first_in_mem)) {
+  if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
+  {
     int deleted = TRUE;
     char nci_bytes[42];
     if ((info->nci_file == 0) || (info->nci_file->put == 0))
       RETURN_IF_NOT_OK(TreeOpenNciW(info, 0));
-    while
-      STATUS_OK {
-        RETURN_IF_NOT_OK(tree_lock_nci(info, 0, node_num, &deleted, locked));
-        if (!deleted)
-          break;
-        status = TreeReopenNci(info);
+    while (STATUS_OK)
+    {
+      RETURN_IF_NOT_OK(tree_lock_nci(info, 0, node_num, &deleted, locked));
+      if (!deleted)
+        break;
+      status = TreeReopenNci(info);
+    }
+    if (STATUS_OK)
+    {
+      MDS_IO_LSEEK(info->nci_file->put, node_num * sizeof(nci_bytes),
+                   SEEK_SET);
+      if (MDS_IO_READ(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==
+          sizeof(nci_bytes))
+      {
+        TreeSerializeNciIn(nci_bytes, nci);
+        status = TreeSUCCESS;
       }
-    if
-      STATUS_OK {
-        MDS_IO_LSEEK(info->nci_file->put, node_num * sizeof(nci_bytes),
-                     SEEK_SET);
-        if (MDS_IO_READ(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==
-            sizeof(nci_bytes)) {
-          TreeSerializeNciIn(nci_bytes, nci);
-          status = TreeSUCCESS;
-        } else
-          status = TreeNCIREAD;
-      }
-    if
-      STATUS_NOT_OK
-    tree_unlock_nci(info, 0, node_num, locked);
-  } else {
+      else
+        status = TreeNCIREAD;
+    }
+    if (STATUS_NOT_OK)
+      tree_unlock_nci(info, 0, node_num, locked);
+  }
+  else
+  {
     /********************************************
      Otherwise the tree is open for edit so
      the characteristics are just a memory reference
@@ -370,8 +395,9 @@ int tree_get_and_lock_nci(TREE_INFO *info, int node_num, NCI *nci,
 +-----------------------------------------------------------------------------*/
 static char *tree_to_characteristic(
     const char *tree,
-    const int tmpfile) { // replace .tree with .characteristics or
-                         // .characteristics# if tmpfile
+    const int tmpfile)
+{ // replace .tree with .characteristics or
+  // .characteristics# if tmpfile
   const size_t baselen = strlen(tree) - sizeof("tree") + 1;
   const size_t namelen = baselen + (tmpfile ? sizeof("characteristics#") - 1
                                             : sizeof("characteristics") - 1);
@@ -380,13 +406,15 @@ static char *tree_to_characteristic(
   filename[namelen] = '\0';
   return filename;
 }
-int TreeOpenNciW(TREE_INFO *info, int tmpfile) {
+int TreeOpenNciW(TREE_INFO *info, int tmpfile)
+{
   WRLOCKINFO(info);
   int status = _TreeOpenNciW(info, tmpfile);
   UNLOCKINFO(info);
   return status;
 }
-int _TreeOpenNciW(TREE_INFO *info, int tmpfile) {
+int _TreeOpenNciW(TREE_INFO *info, int tmpfile)
+{
   int status;
 
   /****************************************************
@@ -394,31 +422,34 @@ int _TreeOpenNciW(TREE_INFO *info, int tmpfile) {
       Allocate one
   *****************************************************/
 
-  if (!info->nci_file) {
+  if (!info->nci_file)
+  {
     status =
         ((info->nci_file = (struct nci_file *)malloc(sizeof(NCI_FILE))) != NULL)
             ? TreeSUCCESS
             : TreeFAILURE;
-    if
-      STATUS_OK {
-        char *filename = tree_to_characteristic(info->filespec, tmpfile);
-        memset(info->nci_file, 0, sizeof(NCI_FILE));
-        info->nci_file->get = MDS_IO_OPEN(
-            filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY,
-            0664);
-        status = (info->nci_file->get == -1) ? TreeFAILURE : TreeSUCCESS;
-        if (info->nci_file->get == -1)
-          info->nci_file->get = 0;
-        if
-          STATUS_OK {
-            info->nci_file->put = MDS_IO_OPEN(filename, O_RDWR, 0);
-            status = (info->nci_file->put == -1) ? TreeFAILURE : TreeSUCCESS;
-            if (info->nci_file->put == -1)
-              info->nci_file->put = 0;
-          }
-        free(filename);
+    if (STATUS_OK)
+    {
+      char *filename = tree_to_characteristic(info->filespec, tmpfile);
+      memset(info->nci_file, 0, sizeof(NCI_FILE));
+      info->nci_file->get = MDS_IO_OPEN(
+          filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY,
+          0664);
+      status = (info->nci_file->get == -1) ? TreeFAILURE : TreeSUCCESS;
+      if (info->nci_file->get == -1)
+        info->nci_file->get = 0;
+      if (STATUS_OK)
+      {
+        info->nci_file->put = MDS_IO_OPEN(filename, O_RDWR, 0);
+        status = (info->nci_file->put == -1) ? TreeFAILURE : TreeSUCCESS;
+        if (info->nci_file->put == -1)
+          info->nci_file->put = 0;
       }
-  } else {
+      free(filename);
+    }
+  }
+  else
+  {
     /*******************************************
       Else the file was open for read access so
       open it for write access.
@@ -434,16 +465,16 @@ int _TreeOpenNciW(TREE_INFO *info, int tmpfile) {
       info->nci_file->put = 0;
     free(filename);
   }
-  if
-    STATUS_OK {
-      if (info->edit) {
-        info->edit->first_in_mem =
-            (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / 42;
-      }
+  if (STATUS_OK)
+  {
+    if (info->edit)
+    {
+      info->edit->first_in_mem =
+          (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / 42;
     }
-  if
-    STATUS_OK
-  TreeCallHook(OpenNCIFileWrite, info, 0);
+  }
+  if (STATUS_OK)
+    TreeCallHook(OpenNCIFileWrite, info, 0);
   return status;
 }
 
@@ -471,13 +502,15 @@ int _TreeOpenNciW(TREE_INFO *info, int tmpfile) {
 
 +-----------------------------------------------------------------------------*/
 
-int tree_put_nci(TREE_INFO *info, int node_num, NCI *nci, int *locked) {
+int tree_put_nci(TREE_INFO *info, int node_num, NCI *nci, int *locked)
+{
   int status = TreeSUCCESS;
   /***************************************
     If the tree is not open for edit
   ****************************************/
 
-  if ((info->edit == 0) || (node_num < info->edit->first_in_mem)) {
+  if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
+  {
 
     /**********************
      Update the NCI record
@@ -500,7 +533,8 @@ int tree_put_nci(TREE_INFO *info, int node_num, NCI *nci, int *locked) {
     memory reference away.
   *****************************/
 
-  else {
+  else
+  {
     memcpy(info->edit->nci + (node_num - info->edit->first_in_mem), nci,
            sizeof(*nci));
     if (!*locked)
@@ -532,7 +566,8 @@ int tree_put_nci(TREE_INFO *info, int node_num, NCI *nci, int *locked) {
 
 +-----------------------------------------------------------------------------*/
 
-int _TreeTurnOn(void *dbid, int nid_in) {
+int _TreeTurnOn(void *dbid, int nid_in)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)&nid_in;
   int status;
@@ -549,18 +584,23 @@ int _TreeTurnOn(void *dbid, int nid_in) {
     return TreeNNF;
   int locked = 0;
   RETURN_IF_NOT_OK(tree_get_and_lock_nci(info, node_num, &nci, &locked));
-  if (nci.flags & NciM_STATE) {
+  if (nci.flags & NciM_STATE)
+  {
     bitassign(0, nci.flags, NciM_STATE);
     RETURN_IF_NOT_OK(tree_put_nci(info, node_num, &nci, &locked));
-    if (!(nci.flags & NciM_PARENT_STATE)) {
+    if (!(nci.flags & NciM_PARENT_STATE))
+    {
       node = nid_to_node(dblist, nid);
       if (node->child)
         status = tree_set_parent_state(dblist, child_of(dblist, node), 0);
       if (node->member)
         status = tree_set_parent_state(dblist, member_of(node), 0);
-    } else
+    }
+    else
       status = TreePARENT_OFF;
-  } else {
+  }
+  else
+  {
     tree_unlock_nci(info, 0, node_num, &locked);
     status = TreeALREADY_ON;
   }
@@ -590,7 +630,8 @@ int _TreeTurnOn(void *dbid, int nid_in) {
 
 +-----------------------------------------------------------------------------*/
 
-int _TreeTurnOff(void *dbid, int nid_in) {
+int _TreeTurnOff(void *dbid, int nid_in)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)&nid_in;
   int status;
@@ -607,24 +648,29 @@ int _TreeTurnOff(void *dbid, int nid_in) {
     return TreeNNF;
   int locked = 0;
   RETURN_IF_NOT_OK(tree_get_and_lock_nci(info, node_num, &nci, &locked));
-  if (!(nci.flags & NciM_STATE)) {
+  if (!(nci.flags & NciM_STATE))
+  {
     bitassign(1, nci.flags, NciM_STATE);
     RETURN_IF_NOT_OK(tree_put_nci(info, node_num, &nci, &locked));
-    if (!(nci.flags & NciM_PARENT_STATE)) {
+    if (!(nci.flags & NciM_PARENT_STATE))
+    {
       node = nid_to_node(dblist, nid);
       if (node->child)
         status = tree_set_parent_state(dblist, child_of(dblist, node), 1);
       if (node->member)
         status = tree_set_parent_state(dblist, member_of(node), 1);
     }
-  } else {
+  }
+  else
+  {
     tree_unlock_nci(info, 0, node_num, &locked);
     status = TreeALREADY_OFF;
   }
   return status;
 }
 
-int _TreeSetUsage(void *dbid, int nid_in, unsigned char usage) {
+int _TreeSetUsage(void *dbid, int nid_in, unsigned char usage)
+{
   NCI_ITM itm[] = {{0, 0, 0, 0}, {0, 0, 0, 0}};
   itm[0].buffer_length = (short)sizeof(usage);
   itm[0].code = (short)NciUSAGE;

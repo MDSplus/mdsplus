@@ -23,10 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device
+import MDSplus
 
 
-class A3248(Device):
+class A3248(MDSplus.Device):
     """
     AEON 3248  4 channel transient recorder
 
@@ -93,49 +93,43 @@ class A3248(Device):
     dts = (1E-7, 1.5E-7, 2E-7, 2.5E-7, 3E-7, 3.5E-7, 4E-7, 0.0,
            1E-6, 1.5E-6, 2E-6, 2.5E-6, 3E-6, 3.5E-6, 4E-6, 0.0)
 
-    def getInteger(self, node, cls):
+    def getInteger(self, node, exc):
         try:
             ans = int(node.record)
         except Exception as e:
             print("AEON 3248 error reading %s erro is\n%s" % (node, e,))
-            raise cls()
+            raise exc
         return ans
 
-    def getString(self, node, cls):
+    def getString(self, node, exc):
         try:
             ans = str(node.record)
         except Exception as e:
             print("AEON 3248 error reading %s erro is\n%s" % (node, e,))
-            raise cls()
+            raise exc
         return ans
 
     def init(self):
         import math
-        from MDSplus import Data
-        from MDSplus.mdsExceptions import DevBAD_GAIN
-        from MDSplus.mdsExceptions import DevBAD_NAME
-        from MDSplus.mdsExceptions import DevBAD_OFFSET
-        from MDSplus.mdsExceptions import DevBAD_PRE_TRIG
-        from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
-
         if self.debug:
             print("A3248 INIT starting")
-        name = self.getString(self.name, DevBAD_NAME)
-        gain = self.getInteger(self.gain, DevBAD_GAIN)
+        name = self.getString(self.name, MDSplus.DevBAD_NAME)
+        gain = self.getInteger(self.gain, MDSplus.DevBAD_GAIN)
         if not gain in (1, 2, 4, 8):
-            raise(DevBAD_GAIN, "Gain must be one of 1,r or 8")
+            raise MDSplus.DevBAD_GAIN("Gain must be one of 1,r or 8")
         gain_code = int(math.log(gain, 2))
-        offset = self.getInteger(self.offset, DevBAD_OFFSET)
+        offset = self.getInteger(self.offset, MDSplus.DevBAD_OFFSET)
         offset = max(min(offset, 255), 0)
         gain_offset_reg = (gain_code << 8) | offset
 
         pretrig = max(
-            min(self.getInteger(self.pretrig, DevBAD_PRE_TRIG), 32768), 0)
+            min(self.getInteger(self.pretrig, MDSplus.DevBAD_PRE_TRIG), 32768), 0)
 
         posttrig_code = (32768 - pretrig) << 7
-        clock = self.getInteger(self.frequency, DevBAD_CLOCK_FREQ)
+        clock = self.getInteger(self.frequency, MDSplus.DevBAD_CLOCK_FREQ)
         if not clock in self.clock_freqs:
-            raise(DevBAD_CLOCK_FREQ, "Clock must be in ".self.clock_freqs)
+            raise MDSplus.DevBAD_CLOCK_FREQ(
+                "Clock must be in %r" % (self.clock_freqs,))
         if self.ext_clock.length > 0:
             clock_code = 7
         else:
@@ -147,37 +141,30 @@ class A3248(Device):
         status_reg = clock_code << 8
         if pretrig != 0:
             status_reg = status_reg | posttrig_code | (1 << 12)
-        status = Data.execute('AEON_ARM("%s", %d, %d)' %
-                              (name, gain_offset_reg, status_reg,))
+        status = MDSplus.Data.execute('AEON_ARM("%s", %d, %d)' % (
+            name, gain_offset_reg, status_reg,))
         if (status & 1) == 0:
-            raise DevCAMAC_ERROR(
+            raise MDSplus.DevCAMAC_ERROR(
                 'AEON 3248 Arming %s status %d' % (name, status,))
     INIT = init
 
     def trig(self):
-        from MDSplus import Data
-        from MDSplus.mdsExceptions import DevBAD_NAME
-        name = self.getString(self.name, DevBAD_NAME)
-        status = Data.execute('AEON_TRIGGER("%s")' % (name,))
+        name = self.getString(self.name, MDSplus.DevBAD_NAME)
+        status = MDSplus.Data.execute('AEON_TRIGGER("%s")' % (name,))
         if (status & 1) == 0:
-            raise DevCAMAC_ERROR(
+            raise MDSplus.DevCAMAC_ERROR(
                 'AEON 3248 Triggering %s status %d' % (name, status,))
     TRIGGER = trig
 
     def store(self):
         """ Store method for the aeon 3248 digitizer  """
-        from MDSplus import Data
-        from MDSplus import Range
-        from MDSplus.mdsExceptions import DevBAD_NAME
-        from MDSplus.mdsExceptions import DevNOT_TRIGGERED
-
         if self.debug:
             print("starting A3248 store")
-        name = self.getString(self.name, DevBAD_NAME)
-        status = Data.execute('AEON_CHECKTRIGGER("%s")' % (name,))
+        name = self.getString(self.name, MDSplus.DevBAD_NAME)
+        status = MDSplus.Data.execute('AEON_CHECKTRIGGER("%s")' % (name,))
         if not (status & 1):
-            raise DevNOT_TRIGGERED("Module %s not triggered" % name)
-        setup_vector = Data.execute('AEON_GETSETUP("%s")' % (name,))
+            raise MDSplus.DevNOT_TRIGGERED("Module %s not triggered" % name)
+        setup_vector = MDSplus.Data.execute('AEON_GETSETUP("%s")' % (name,))
         status_reg = int(setup_vector[0])
         gain_reg = int(setup_vector[1])
         addr = int(setup_vector[2])
@@ -200,38 +187,31 @@ class A3248(Device):
         if dt == 0:
             self.clock.record = self.ext_clock
         else:
-            self.clock.record = Range(None, None, dt)
+            self.clock.record = MDSplus.Range(None, None, dt)
 
         for chan in range(4):
             self.storeChannel(name, chan, addr, pts, gain, offset)
-        return 1
     STORE = store
 
     def dw_setup(self):
-        from MDSplus import Data
-        Data.execute('a3248__dw_setup($)', self.nid)
-        return 1
+        MDSplus.Data.execute('a3248__dw_setup($)', self.nid)
     DW_SETUP = dw_setup
 
     def storeChannel(self, name, chan, addr, pts, gain, offset):
-        import MDSplus
-
         chan_node = self.__getattr__('input_%1.1d' % (chan+1,))
         if chan_node.on:
             if self.debug:
                 print("it is on so ...")
-            start = 0
-            end = pts-1
             try:
                 start = max(int(self.__getattr__(
                     'input_%1.1d_start_idx' % (chan+1,))), 0)
-            except:
-                pass
+            except Exception:
+                start = 0
             try:
                 end = min(int(self.__getattr__(
                     'input_%1.1d_end_idx' % (chan+1,))), pts-1)
-            except:
-                pass
+            except Exception:
+                end = pts-1
             if self.debug:
                 print("about to aeon_getchannel(%s, %d, %d %d)" %
                       (name, addr, chan, end+1,))
@@ -248,10 +228,8 @@ class A3248(Device):
             dat = MDSplus.Data.compile(
                 'build_signal(build_with_units(($value - $2)*.02/$1, "V") ,build_with_units($3,"Counts"),$4)',
                 gain, offset, buf[start: end], dim)
-            exec('c=self.input_'+'%1d' % (chan+1,)+'.record=dat')
+            getattr(self, 'input_%d' % (chan+1,)).record = dat
 
     def help(self):
         """ Help method to describe the methods and nodes of the AEON_3248 module type """
-        help(A3248)
-        return 1
-    HELP = help
+        return help(A3248)

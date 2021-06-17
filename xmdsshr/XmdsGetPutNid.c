@@ -147,17 +147,21 @@ extern int TdiGetFloat();
 
  Executable:                                                                  */
 
-int XmdsGetNidLongValue(int nid, int minVal, int maxVal, int defaultVal) {
+int XmdsGetNidLongValue(int nid, int minVal, int maxVal, int defaultVal)
+{
   int value;
   return (GetLong(nid, &value) & 1) ? max(minVal, min(maxVal, value))
                                     : defaultVal;
 }
 
-int XmdsGetNidFloatOption(int nid, float *options, int numOptions) {
+int XmdsGetNidFloatOption(int nid, float *options, int numOptions)
+{
   static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
   int option = numOptions;
-  if (TreeGetRecord(nid, &xd) & 1) {
-    if (xd.pointer->dtype == DTYPE_F) {
+  if (TreeGetRecord(nid, &xd) & 1)
+  {
+    if (xd.pointer->dtype == DTYPE_F)
+    {
       float f = *((float *)xd.pointer->pointer);
       int i;
       for (i = 0; i < numOptions; i++)
@@ -170,11 +174,14 @@ int XmdsGetNidFloatOption(int nid, float *options, int numOptions) {
   return option;
 }
 
-int XmdsGetNidIntOption(int nid, int *options, int numOptions) {
+int XmdsGetNidIntOption(int nid, int *options, int numOptions)
+{
   static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
   int option = numOptions;
-  if (TreeGetRecord(nid, &xd) & 1) {
-    if (xd.pointer->dtype == DTYPE_L) {
+  if (TreeGetRecord(nid, &xd) & 1)
+  {
+    if (xd.pointer->dtype == DTYPE_L)
+    {
       int f = *((int *)xd.pointer->pointer);
       int i;
       for (i = 0; i < numOptions; i++)
@@ -187,51 +194,63 @@ int XmdsGetNidIntOption(int nid, int *options, int numOptions) {
   return option;
 }
 
-char *XmdsGetNidText(int nid) {
+char *XmdsGetNidText(int nid)
+{
   static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
   char *value;
-  if (TreeGetRecord(nid, &xd) & 1) {
-    if (xd.pointer->dtype == DTYPE_T) {
+  if (TreeGetRecord(nid, &xd) & 1)
+  {
+    if (xd.pointer->dtype == DTYPE_T)
+    {
       value = XtMalloc(xd.pointer->length + 1);
       strncpy(value, xd.pointer->pointer, xd.pointer->length);
       value[xd.pointer->length] = 0;
-    } else
+    }
+    else
       value = XtNewString("");
-  } else
+  }
+  else
     value = XtNewString("");
   MdsFree1Dx(&xd, 0);
   return value;
 }
 
 int XmdsPutNidValue(int nid, unsigned short length, unsigned char dtype,
-                    char *pointer, char *originalValue) {
-  if (memcmp(pointer, originalValue, length)) {
+                    char *pointer, char *originalValue)
+{
+  if (memcmp(pointer, originalValue, length))
+  {
     struct descriptor dsc = {0, 0, CLASS_S, (char *)0};
     dsc.length = length;
     dsc.dtype = dtype;
     dsc.pointer = pointer;
     return TreePutRecord(nid, &dsc, 0);
-  } else
+  }
+  else
     return 1;
 }
 
-int XmdsPutNidToggleButton(Widget w, int nid, int originalValue) {
+int XmdsPutNidToggleButton(Widget w, int nid, int originalValue)
+{
   int value = XmToggleButtonGetState(w);
   return XmdsPutNidValue(nid, 4, DTYPE_L, (char *)&value,
                          (char *)&originalValue);
 }
 
-int XmdsPutNidScale(Widget w, int nid, int originalValue) {
+int XmdsPutNidScale(Widget w, int nid, int originalValue)
+{
   int value;
   XmScaleGetValue(w, &value);
   return XmdsPutNidValue(nid, 4, DTYPE_L, (char *)&value,
                          (char *)&originalValue);
 }
 
-int XmdsPutNidSText(Widget w, int nid, char *originalValue) {
+int XmdsPutNidSText(Widget w, int nid, char *originalValue)
+{
   char *value = XmTextGetString(w);
   int status = 1;
-  if (strcmp(value, originalValue)) {
+  if (strcmp(value, originalValue))
+  {
     struct descriptor dsc = {0, DTYPE_T, CLASS_S, (char *)0};
     dsc.length = strlen(value);
     dsc.pointer = value;
@@ -240,7 +259,8 @@ int XmdsPutNidSText(Widget w, int nid, char *originalValue) {
   return status;
 }
 
-static int GetLong(int nid, int *intptr) {
+static int GetLong(int nid, int *intptr)
+{
   struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, (char *)0};
   int status;
   float x;
@@ -250,44 +270,61 @@ static int GetLong(int nid, int *intptr) {
   return status;
 }
 
-int XmdsSetState(int nid, Widget w) {
+int XmdsSetState(int nid, Widget w)
+{
   return (XmToggleButtonGetState(w)) ? TreeTurnOn(nid) : TreeTurnOff(nid);
 }
 
-int XmdsGetNidBooleanValue(int nid, int defaultVal) {
+int XmdsGetNidBooleanValue(int nid, int defaultVal)
+{
   int val;
   return (GetLong(nid, &val) & 1) ? val & 1 : defaultVal;
 }
 
-int XmdsIsOn(int nid) {
+int XmdsIsOn(int nid)
+{
   int status;
   return (((status = TreeIsOn(nid)) == TreeON) || (status == TreePARENT_OFF));
 }
 
-Boolean XmdsXdsAreValid(Widget w) {
+Boolean XmdsXdsAreValid(Widget w)
+{
   int status = True;
-  if (XmdsIsExpr(w)) {
+  if (XmdsIsExpr(w))
+  {
     struct descriptor_xd *xd = (struct descriptor_xd *)XmdsExprGetXd(w);
-    if (xd) {
+    if (xd)
+    {
       MdsFree1Dx(xd, 0);
       XtFree((char *)xd);
-    } else
+    }
+    else
       status = False;
-  } else if (XmdsIsExprField(w)) {
+  }
+  else if (XmdsIsExprField(w))
+  {
     struct descriptor_xd *xd = (struct descriptor_xd *)XmdsExprFieldGetXd(w);
-    if (xd) {
+    if (xd)
+    {
       MdsFree1Dx(xd, 0);
       XtFree((char *)xd);
-    } else
+    }
+    else
       status = False;
-  } else if (XmdsIsXdBox(w)) {
+  }
+  else if (XmdsIsXdBox(w))
+  {
     struct descriptor_xd *xd = (struct descriptor_xd *)XmdsXdBoxGetXd(w);
-    if (xd) {
+    if (xd)
+    {
       MdsFree1Dx(xd, 0);
       XtFree((char *)xd);
-    } else
+    }
+    else
       status = False;
-  } else if (XtIsComposite(w)) {
+  }
+  else if (XtIsComposite(w))
+  {
     Widget *children;
     int num;
     int i;
@@ -295,7 +332,8 @@ Boolean XmdsXdsAreValid(Widget w) {
     for (i = 0; i < num && status; i++)
       status = XmdsXdsAreValid(children[i]);
   }
-  if (XtIsWidget(w) && w->core.num_popups) {
+  if (XtIsWidget(w) && w->core.num_popups)
+  {
     Widget *popups = w->core.popup_list;
     int num = w->core.num_popups;
     int i;
@@ -305,7 +343,8 @@ Boolean XmdsXdsAreValid(Widget w) {
   return status;
 }
 
-void XmdsResetAllXds(Widget w) {
+void XmdsResetAllXds(Widget w)
+{
   if (XmdsIsExpr(w))
     XmdsExprReset(w);
   else if (XmdsIsExprField(w))
@@ -320,7 +359,8 @@ void XmdsResetAllXds(Widget w) {
     XmdsNidOptionMenuReset(w);
   else if (XmdsIsXdBoxOnOffButton(w))
     XmdsXdBoxOnOffButtonReset(w);
-  else if (XtIsComposite(w)) {
+  else if (XtIsComposite(w))
+  {
     Widget *children;
     int num;
     int i;
@@ -328,7 +368,8 @@ void XmdsResetAllXds(Widget w) {
     for (i = 0; i < num; i++)
       XmdsResetAllXds(children[i]);
   }
-  if (XtIsWidget(w) && w->core.num_popups) {
+  if (XtIsWidget(w) && w->core.num_popups)
+  {
     Widget *popups = w->core.popup_list;
     int num = w->core.num_popups;
     int i;
@@ -337,7 +378,8 @@ void XmdsResetAllXds(Widget w) {
   }
 }
 
-Boolean XmdsApplyAllXds(Widget w) {
+Boolean XmdsApplyAllXds(Widget w)
+{
   int status = 1;
   if (XmdsIsExpr(w))
     return XmdsExprApply(w);
@@ -353,7 +395,8 @@ Boolean XmdsApplyAllXds(Widget w) {
     return XmdsNidOptionMenuApply(w);
   else if (XmdsIsXdBoxOnOffButton(w))
     return XmdsXdBoxOnOffButtonApply(w);
-  else if (XtIsComposite(w)) {
+  else if (XtIsComposite(w))
+  {
     Widget *children;
     int num;
     int i;
@@ -361,12 +404,13 @@ Boolean XmdsApplyAllXds(Widget w) {
     for (i = 0; i < num && status; i++)
       status = XmdsApplyAllXds(children[i]);
   }
-  if (XtIsWidget(w) && w->core.num_popups) {
+  if (XtIsWidget(w) && w->core.num_popups)
+  {
     Widget *popups = w->core.popup_list;
     int num = w->core.num_popups;
     int i;
     for (i = 0; i < num && status; i++)
       status = XmdsApplyAllXds(popups[i]);
   }
-  return status & 1;
+  return STATUS_OK;
 }

@@ -83,12 +83,13 @@ int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
 int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
 int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
 
-int getTreeData(void *dbid, int nid, void **data, void *tree) {
+int getTreeData(void *dbid, int nid, void **data, void *tree)
+{
   EMPTYXD(xd);
   int status;
 
   status = _TreeGetRecord(dbid, nid, &xd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
 
   *data = convertFromDsc(&xd, tree);
@@ -96,7 +97,8 @@ int getTreeData(void *dbid, int nid, void **data, void *tree) {
   return status;
 }
 
-int putTreeData(void *dbid, int nid, void *data) {
+int putTreeData(void *dbid, int nid, void *data)
+{
   struct descriptor_xd *xdPtr;
   int status;
 
@@ -106,7 +108,8 @@ int putTreeData(void *dbid, int nid, void *data) {
   return status;
 }
 
-int deleteTreeData(void *dbid, int nid) {
+int deleteTreeData(void *dbid, int nid)
+{
   EMPTYXD(xd);
   int status;
 
@@ -114,7 +117,8 @@ int deleteTreeData(void *dbid, int nid) {
   return status;
 }
 
-void convertTime(int *time, char *retTime) {
+void convertTime(int *time, char *retTime)
+{
   char timeStr[512];
   unsigned short retLen;
   struct descriptor time_dsc = {511, DTYPE_T, CLASS_S, timeStr};
@@ -124,7 +128,8 @@ void convertTime(int *time, char *retTime) {
   strcpy(retTime, timeStr);
 }
 
-int doTreeMethod(void *dbid, int nid, char *method) {
+int doTreeMethod(void *dbid, int nid, char *method)
+{
   struct descriptor nidD = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&nid};
   struct descriptor methodD = {strlen(method), DTYPE_T, CLASS_S, method};
 
@@ -132,7 +137,8 @@ int doTreeMethod(void *dbid, int nid, char *method) {
 }
 
 int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
-                     void *endDsc, void *dimDsc) {
+                     void *endDsc, void *dimDsc)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
@@ -152,7 +158,8 @@ int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
 }
 
 int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
-                    void *endDsc, void *dimDsc, int rowsFilled) {
+                    void *endDsc, void *dimDsc, int rowsFilled)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
@@ -173,7 +180,8 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
 
 int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc,
                              void *endDsc, void *dimDsc, int rowsFilled,
-                             int resNid, int resFactor) {
+                             int resNid, int resFactor)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
@@ -194,7 +202,8 @@ int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc,
 }
 int makeTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
                           void *endDsc, void *dimDsc, int rowsFilled,
-                          int resNid, int resFactor) {
+                          int resNid, int resFactor)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
@@ -216,7 +225,8 @@ int makeTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
 
 int beginTreeSegmentResampled(void *dbid, int nid, void *dataDsc,
                               void *startDsc, void *endDsc, void *dimDsc,
-                              int resNid, int resFactor) {
+                              int resNid, int resFactor)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
@@ -237,7 +247,8 @@ int beginTreeSegmentResampled(void *dbid, int nid, void *dataDsc,
 
 int beginTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
                            void *endDsc, void *dimDsc, int resNid,
-                           int resFactor) {
+                           int resFactor)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
@@ -257,7 +268,8 @@ int beginTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
 }
 
 #define PUTROW_BUFSIZE 1000
-int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size) {
+int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -267,7 +279,8 @@ int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size) {
   return status;
 }
 
-int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs) {
+int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -278,7 +291,8 @@ int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs) {
 }
 
 int putTreeSegmentResampled(void *dbid, int nid, void *dataDsc, int ofs,
-                            int resNid, int resFactor) {
+                            int resNid, int resFactor)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -290,7 +304,8 @@ int putTreeSegmentResampled(void *dbid, int nid, void *dataDsc, int ofs,
 }
 
 int putTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, int ofs,
-                         int resNid, int resFactor) {
+                         int resNid, int resFactor)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -302,18 +317,21 @@ int putTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, int ofs,
 }
 
 int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc,
-                      void *endDsc, void *timeDsc) {
+                      void *endDsc, void *timeDsc)
+{
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
   struct descriptor_xd *timeXd = (struct descriptor_xd *)timeDsc;
   int status, numSegments, segmentIdx;
 
-  if (segIdx == -1) {
+  if (segIdx == -1)
+  {
     status = _TreeGetNumSegments(dbid, nid, &numSegments);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return status;
     segmentIdx = numSegments - 1;
-  } else
+  }
+  else
     segmentIdx = segIdx;
   status = _TreeUpdateSegment(dbid, nid, (struct descriptor *)startXd->pointer,
                               (struct descriptor *)endXd->pointer,
@@ -324,12 +342,14 @@ int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc,
   return status;
 }
 
-int getTreeNumSegments(void *dbid, int nid, int *numSegments) {
+int getTreeNumSegments(void *dbid, int nid, int *numSegments)
+{
   return _TreeGetNumSegments(dbid, nid, numSegments);
 }
 
 int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startPtr,
-                         void **endPtr) {
+                         void **endPtr)
+{
   struct descriptor_xd *startXd, *endXd;
   EMPTYXD(emptyXd);
 
@@ -344,29 +364,34 @@ int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startPtr,
 }
 
 int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype,
-                       char *dimct, int *dims, int *nextRow) {
+                       char *dimct, int *dims, int *nextRow)
+{
   return _TreeGetSegmentInfo(dbid, nid, segIdx, dtype, dimct, dims, nextRow);
 }
 
 int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc,
-                   void **timeDsc) {
+                   void **timeDsc)
+{
   EMPTYXD(emptyXd);
   struct descriptor_xd *timeXd =
       (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
   *timeXd = emptyXd;
   *timeDsc = timeXd;
   struct descriptor_xd *dataXd;
-  if (dataDsc) {
+  if (dataDsc)
+  {
     dataXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
     *dataXd = emptyXd;
     *dataDsc = dataXd;
-  } else
+  }
+  else
     dataXd = NULL;
   return _TreeGetSegment(dbid, nid, segIdx, dataXd, timeXd);
 }
 
 int setTreeTimeContext(void *dbid, void *startDsc, void *endDsc,
-                       void *deltaDsc) {
+                       void *deltaDsc)
+{
   int status;
 
   status = _TreeSetTimeContext(dbid, (struct descriptor *)startDsc,
@@ -382,7 +407,8 @@ int setTreeTimeContext(void *dbid, void *startDsc, void *endDsc,
   return status;
 }
 
-int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc) {
+int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -393,7 +419,8 @@ int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc) {
 }
 
 int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
-                              int64_t *times) {
+                              int64_t *times)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -404,7 +431,8 @@ int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
 }
 
 int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
-                               int64_t *times, int rowsFilled) {
+                               int64_t *times, int rowsFilled)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -414,7 +442,8 @@ int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
   return status;
 }
 
-int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc) {
+int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc)
+{
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
@@ -424,19 +453,21 @@ int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc) {
 }
 
 int getTreeXNci(void *dbid, int nid, const char *name, void **data,
-                void *tree) {
+                void *tree)
+{
   EMPTYXD(xd);
   int status;
 
   status = _TreeGetXNci(dbid, nid, name, &xd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   *data = convertFromDsc(&xd, tree);
   MdsFree1Dx(&xd, 0);
   return status;
 }
 
-int getTreeSegmentScale(void *dbid, int nid, void **sclDsc) {
+int getTreeSegmentScale(void *dbid, int nid, void **sclDsc)
+{
   EMPTYXD(emptyXd);
   struct descriptor_xd *sclXd =
       (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
@@ -444,7 +475,8 @@ int getTreeSegmentScale(void *dbid, int nid, void **sclDsc) {
   *sclDsc = sclXd;
   return _TreeGetSegmentScale(dbid, nid, sclXd);
 }
-int setTreeSegmentScale(void *dbid, int nid, void *sclDsc) {
+int setTreeSegmentScale(void *dbid, int nid, void *sclDsc)
+{
   struct descriptor_xd *sclXd = (struct descriptor_xd *)sclDsc;
   int status = _TreeSetSegmentScale(dbid, nid, sclXd->pointer);
   freeDsc(sclXd);

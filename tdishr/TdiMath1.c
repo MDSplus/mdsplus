@@ -70,107 +70,117 @@ static const int roprand = 0x8000;
 #define radians_to_degrees 57.295778
 #define degrees_to_radians 0.017453293
 
-#define SetupArgs                                                              \
-  struct descriptor_a *ina = (struct descriptor_a *)in;                        \
-  struct descriptor_a *outa = (struct descriptor_a *)out;                      \
-  int scalars = 0;                                                             \
-  int nout;                                                                    \
-  switch (out->class) {                                                        \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    nout = 1;                                                                  \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    nout = outa->arsize / outa->length;                                        \
-    if (nout == 0)                                                             \
-      return 1;                                                                \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
-  }                                                                            \
-  switch (in->class) {                                                         \
-  case CLASS_S:                                                                \
-  case CLASS_D:                                                                \
-    scalars |= 1;                                                              \
-    break;                                                                     \
-  case CLASS_A:                                                                \
-    if (ina->arsize / ina->length < (unsigned int)nout)                        \
-      return TdiINV_SIZE;                                                      \
-    break;                                                                     \
-  default:                                                                     \
-    return TdiINVCLADSC;                                                       \
+#define SetupArgs                                         \
+  struct descriptor_a *ina = (struct descriptor_a *)in;   \
+  struct descriptor_a *outa = (struct descriptor_a *)out; \
+  int scalars = 0;                                        \
+  int nout;                                               \
+  switch (out->class)                                     \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    nout = 1;                                             \
+    break;                                                \
+  case CLASS_A:                                           \
+    nout = outa->arsize / outa->length;                   \
+    if (nout == 0)                                        \
+      return 1;                                           \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
+  }                                                       \
+  switch (in->class)                                      \
+  {                                                       \
+  case CLASS_S:                                           \
+  case CLASS_D:                                           \
+    scalars |= 1;                                         \
+    break;                                                \
+  case CLASS_A:                                           \
+    if (ina->arsize / ina->length < (unsigned int)nout)   \
+      return TdiINV_SIZE;                                 \
+    break;                                                \
+  default:                                                \
+    return TdiINVCLADSC;                                  \
   }
 
-#define Operate(type, dtype, function)                                         \
-  {                                                                            \
-    type *inp = (type *)in->pointer;                                           \
-    type *outp = (type *)out->pointer;                                         \
-    double in;                                                                 \
-    double ans;                                                                \
-    while (nout--) {                                                           \
-      errno = 0;                                                               \
-      if (CvtConvertFloat(inp++, dtype, &in, DTYPE_NATIVE_DOUBLE, 0))          \
-        ans = function(in);                                                    \
-      else                                                                     \
-        errno = -1;                                                            \
-      if (errno)                                                               \
-        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                  \
-      else                                                                     \
-        CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);          \
-    }                                                                          \
-    break;                                                                     \
+#define Operate(type, dtype, function)                                \
+  {                                                                   \
+    type *inp = (type *)in->pointer;                                  \
+    type *outp = (type *)out->pointer;                                \
+    double in;                                                        \
+    double ans;                                                       \
+    while (nout--)                                                    \
+    {                                                                 \
+      errno = 0;                                                      \
+      if (CvtConvertFloat(inp++, dtype, &in, DTYPE_NATIVE_DOUBLE, 0)) \
+        ans = function(in);                                           \
+      else                                                            \
+        errno = -1;                                                   \
+      if (errno)                                                      \
+        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);         \
+      else                                                            \
+        CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, outp++, dtype, 0); \
+    }                                                                 \
+    break;                                                            \
   }
 
-#define OperateC2C(type, dtype, function)                                      \
-  {                                                                            \
-    type *inp = (type *)in->pointer;                                           \
-    type *outp = (type *)out->pointer;                                         \
-    double in[2];                                                              \
-    double ans[2];                                                             \
-    while (nout--) {                                                           \
-      errno = 0;                                                               \
-      if (CvtConvertFloat(&inp[0], dtype, &in[0], DTYPE_NATIVE_DOUBLE, 0) &&   \
-          CvtConvertFloat(&inp[1], dtype, &in[1], DTYPE_NATIVE_DOUBLE, 0))     \
-        function(in, ans);                                                     \
-      else                                                                     \
-        errno = -1;                                                            \
-      if (errno) {                                                             \
-        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                  \
-        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                  \
-      } else {                                                                 \
-        CvtConvertFloat(&ans[0], DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);       \
-        CvtConvertFloat(&ans[1], DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);       \
-      }                                                                        \
-      inp += 2;                                                                \
-    }                                                                          \
-    break;                                                                     \
+#define OperateC2C(type, dtype, function)                                    \
+  {                                                                          \
+    type *inp = (type *)in->pointer;                                         \
+    type *outp = (type *)out->pointer;                                       \
+    double in[2];                                                            \
+    double ans[2];                                                           \
+    while (nout--)                                                           \
+    {                                                                        \
+      errno = 0;                                                             \
+      if (CvtConvertFloat(&inp[0], dtype, &in[0], DTYPE_NATIVE_DOUBLE, 0) && \
+          CvtConvertFloat(&inp[1], dtype, &in[1], DTYPE_NATIVE_DOUBLE, 0))   \
+        function(in, ans);                                                   \
+      else                                                                   \
+        errno = -1;                                                          \
+      if (errno)                                                             \
+      {                                                                      \
+        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                \
+        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                \
+      }                                                                      \
+      else                                                                   \
+      {                                                                      \
+        CvtConvertFloat(&ans[0], DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);     \
+        CvtConvertFloat(&ans[1], DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);     \
+      }                                                                      \
+      inp += 2;                                                              \
+    }                                                                        \
+    break;                                                                   \
   }
 
-#define OperateC2S(type, dtype, function)                                      \
-  {                                                                            \
-    type *inp = (type *)in->pointer;                                           \
-    type *outp = (type *)out->pointer;                                         \
-    double in[2];                                                              \
-    double ans;                                                                \
-    while (nout--) {                                                           \
-      errno = 0;                                                               \
-      if (CvtConvertFloat(&inp[0], dtype, &in[0], DTYPE_NATIVE_DOUBLE, 0) &&   \
-          CvtConvertFloat(&inp[1], dtype, &in[1], DTYPE_NATIVE_DOUBLE, 0))     \
-        ans = function(in[1], in[0]);                                          \
-      else                                                                     \
-        errno = -1;                                                            \
-      if (errno)                                                               \
-        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                  \
-      else                                                                     \
-        CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);          \
-      inp += 2;                                                                \
-    }                                                                          \
-    break;                                                                     \
+#define OperateC2S(type, dtype, function)                                    \
+  {                                                                          \
+    type *inp = (type *)in->pointer;                                         \
+    type *outp = (type *)out->pointer;                                       \
+    double in[2];                                                            \
+    double ans;                                                              \
+    while (nout--)                                                           \
+    {                                                                        \
+      errno = 0;                                                             \
+      if (CvtConvertFloat(&inp[0], dtype, &in[0], DTYPE_NATIVE_DOUBLE, 0) && \
+          CvtConvertFloat(&inp[1], dtype, &in[1], DTYPE_NATIVE_DOUBLE, 0))   \
+        ans = function(in[1], in[0]);                                        \
+      else                                                                   \
+        errno = -1;                                                          \
+      if (errno)                                                             \
+        CvtConvertFloat(&roprand, DTYPE_F, outp++, dtype, 0);                \
+      else                                                                   \
+        CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, outp++, dtype, 0);        \
+      inp += 2;                                                              \
+    }                                                                        \
+    break;                                                                   \
   }
 
 #define mathsingle(name, function)                                             \
-  int Tdi3##name(struct descriptor *in, struct descriptor *out) {              \
-    SetupArgs switch (in->dtype) {                                             \
+  int Tdi3##name(struct descriptor *in, struct descriptor *out)                \
+  {                                                                            \
+    SetupArgs switch (in->dtype)                                               \
+    {                                                                          \
     case DTYPE_F:                                                              \
       Operate(float, DTYPE_F, function) case DTYPE_FS                          \
           : Operate(float, DTYPE_FS, function) case DTYPE_G                    \
@@ -183,8 +193,10 @@ static const int roprand = 0x8000;
 
 #define mathsinglewithkind(name, function)                                     \
   int Tdi3##name(struct descriptor *in, struct descriptor *kind,               \
-                 struct descriptor *out) {                                     \
-    SetupArgs switch (in->dtype) {                                             \
+                 struct descriptor *out)                                       \
+  {                                                                            \
+    SetupArgs switch (in->dtype)                                               \
+    {                                                                          \
     case DTYPE_F:                                                              \
       Operate(float, DTYPE_F, function) case DTYPE_FS                          \
           : Operate(float, DTYPE_FS, function) case DTYPE_G                    \
@@ -195,40 +207,45 @@ static const int roprand = 0x8000;
     return kind ? 1 : 1;                                                       \
   }
 
-#define mathboth(name, function)                                               \
-  int Tdi3##name(struct descriptor *in, struct descriptor *out) {              \
-    SetupArgs switch (in->dtype) {                                             \
-    case DTYPE_F:                                                              \
-      Operate(float, DTYPE_F, function) case DTYPE_FS                          \
-          : Operate(float, DTYPE_FS, function) case DTYPE_G                    \
-          : Operate(double, DTYPE_G, function) case DTYPE_D                    \
-          : Operate(double, DTYPE_D, function) case DTYPE_FT                   \
-          : Operate(double, DTYPE_FT, function) case DTYPE_FC                  \
-          : Operate(float, DTYPE_F, function) case DTYPE_FSC                   \
-          : OperateC2C(float, DTYPE_FS, function##_complex) case DTYPE_GC      \
-          : OperateC2C(double, DTYPE_G, function##_complex) case DTYPE_DC      \
-          : OperateC2C(double, DTYPE_D, function##_complex) case DTYPE_FTC     \
-          : OperateC2C(double, DTYPE_FT, function##_complex) default           \
-          : return TdiINVDTYDSC;                                               \
-    }                                                                          \
-    return 1;                                                                  \
+#define mathboth(name, function)                                           \
+  int Tdi3##name(struct descriptor *in, struct descriptor *out)            \
+  {                                                                        \
+    SetupArgs switch (in->dtype)                                           \
+    {                                                                      \
+    case DTYPE_F:                                                          \
+      Operate(float, DTYPE_F, function) case DTYPE_FS                      \
+          : Operate(float, DTYPE_FS, function) case DTYPE_G                \
+          : Operate(double, DTYPE_G, function) case DTYPE_D                \
+          : Operate(double, DTYPE_D, function) case DTYPE_FT               \
+          : Operate(double, DTYPE_FT, function) case DTYPE_FC              \
+          : Operate(float, DTYPE_F, function) case DTYPE_FSC               \
+          : OperateC2C(float, DTYPE_FS, function##_complex) case DTYPE_GC  \
+          : OperateC2C(double, DTYPE_G, function##_complex) case DTYPE_DC  \
+          : OperateC2C(double, DTYPE_D, function##_complex) case DTYPE_FTC \
+          : OperateC2C(double, DTYPE_FT, function##_complex) default       \
+          : return TdiINVDTYDSC;                                           \
+    }                                                                      \
+    return 1;                                                              \
   }
 
-#define mathcomplex(name, function)                                            \
-  int Tdi3##name(struct descriptor *in, struct descriptor *out) {              \
-    SetupArgs switch (in->dtype) {                                             \
-    case DTYPE_FC:                                                             \
-      OperateC2S(float, DTYPE_F, function) case DTYPE_FSC                      \
-          : OperateC2S(float, DTYPE_FS, function) case DTYPE_GC                \
-          : OperateC2S(double, DTYPE_G, function) case DTYPE_DC                \
-          : OperateC2S(double, DTYPE_D, function) case DTYPE_FTC               \
-          : OperateC2S(double, DTYPE_FT, function) default                     \
-          : return TdiINVDTYDSC;                                               \
-    }                                                                          \
-    return 1;                                                                  \
+#define mathcomplex(name, function)                              \
+  int Tdi3##name(struct descriptor *in, struct descriptor *out)  \
+  {                                                              \
+    SetupArgs switch (in->dtype)                                 \
+    {                                                            \
+    case DTYPE_FC:                                               \
+      OperateC2S(float, DTYPE_F, function) case DTYPE_FSC        \
+          : OperateC2S(float, DTYPE_FS, function) case DTYPE_GC  \
+          : OperateC2S(double, DTYPE_G, function) case DTYPE_DC  \
+          : OperateC2S(double, DTYPE_D, function) case DTYPE_FTC \
+          : OperateC2S(double, DTYPE_FT, function) default       \
+          : return TdiINVDTYDSC;                                 \
+    }                                                            \
+    return 1;                                                    \
   }
 
-static double anint(double val) {
+static double anint(double val)
+{
   int tmp;
   val += (val > 0.0) ? .5 : -.5;
   tmp = (int)val;
@@ -237,26 +254,30 @@ static double anint(double val) {
 
 static double trunc_Static(double val) { return (double)((int)val); }
 
-static void cos_complex(double *in, double *out) {
+static void cos_complex(double *in, double *out)
+{
   out[0] = cos(in[0]) * cosh(in[1]);
   out[1] = -sin(in[0]) * sinh(in[1]);
   return;
 }
 
-static void sin_complex(double *in, double *out) {
+static void sin_complex(double *in, double *out)
+{
   out[0] = sin(in[0]) * cosh(in[1]);
   out[1] = cos(in[0]) * sinh(in[1]);
   return;
 }
 
-static void exp_complex(double *in, double *out) {
+static void exp_complex(double *in, double *out)
+{
   out[0] = exp(in[0]);
   out[1] = out[0] * sin(in[1]);
   out[0] = out[0] * cos(in[1]);
   return;
 }
 
-static double cabs_d(double in1, double in2) {
+static double cabs_d(double in1, double in2)
+{
   double x = (in1 > 0) ? in1 : -in1;
   double y = (in2 > 0) ? in2 : -in2;
   if (x == 0.0)
@@ -269,15 +290,20 @@ static double cabs_d(double in1, double in2) {
     return y * sqrt(1 + pow((x / y), 2.0));
 }
 
-static void sqrt_complex(double *in, double *out) {
-  if (in[0] == (double)0.0 && in[1] == (double)0.0) {
+static void sqrt_complex(double *in, double *out)
+{
+  if (in[0] == (double)0.0 && in[1] == (double)0.0)
+  {
     out[0] = (double)0.0;
     out[1] = (double)0.0;
-  } else {
+  }
+  else
+  {
     out[0] = sqrt((fabs(in[0]) + cabs_d(in[0], in[1])) * .5);
     if (in[0] > 0.0)
       out[1] = in[1] / (out[0] + out[0]);
-    else {
+    else
+    {
       out[1] = (in[1] < 0.0) ? -out[0] : out[0];
       out[0] = in[1] / (out[1] + out[1]);
     }
@@ -285,7 +311,8 @@ static void sqrt_complex(double *in, double *out) {
   return;
 }
 
-static void log_complex(double *in, double *out) {
+static void log_complex(double *in, double *out)
+{
   double theta = 0;
   if (in[0] > 0.0)
     theta = 0.0;
@@ -293,15 +320,20 @@ static void log_complex(double *in, double *out) {
     theta = M_PI;
   else if (in[0] < 0.0)
     theta = -M_PI;
-  else if (in[0] == 0 && in[1] == 0) {
+  else if (in[0] == 0 && in[1] == 0)
+  {
     out[0] = 0.0;
     out[1] = 0.0;
     return;
-  } else if (in[0] == 0.0 && in[1] > 0.0) {
+  }
+  else if (in[0] == 0.0 && in[1] > 0.0)
+  {
     out[0] = log(in[1]);
     out[1] = M_PI_2;
     return;
-  } else if (in[0] == 0.0) {
+  }
+  else if (in[0] == 0.0)
+  {
     out[0] = log(fabs(in[1]));
     out[1] = -M_PI_2;
     return;
@@ -325,11 +357,13 @@ static double sind_Static(double in) { return sin(degrees_to_radians * in); }
 
 static double tand_Static(double in) { return tan(degrees_to_radians * in); }
 
-static double atand2_Static(double in1, double in2) {
+static double atand2_Static(double in1, double in2)
+{
   return radians_to_degrees * atan2(in1, in2);
 }
 
-static double atanh_Static(double in) {
+static double atanh_Static(double in)
+{
   double ans;
   if (in <= -1.0 || in >= 1.)
     CvtConvertFloat(&roprand, DTYPE_F, &ans, DTYPE_NATIVE_DOUBLE, 0);

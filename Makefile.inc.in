@@ -1,6 +1,11 @@
 # @configure_input@
+.PHONY: --always
+--always:
+	@
+echo-%: --always
+	@echo '$* = $($*)'
 
-DEFAULT_CFLAGS=-g -O3
+DEFAULT_CFLAGS = -O3
 
 ifeq "$(NOWARN)" ""
 WARNFLAGS = @WARNFLAGS@

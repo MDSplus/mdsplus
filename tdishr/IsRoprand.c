@@ -41,9 +41,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define t_float_exp(val) (((*(int64_t *)val) >> 52) & 0x7ff)
 #define IsRoprandT(val) (t_float_exp(val) == 2047)
 
-EXPORT int IsRoprand(int dtype, void *value) {
+EXPORT int IsRoprand(int dtype, void *value)
+{
   int ans = 0;
-  switch (dtype) {
+  switch (dtype)
+  {
   case DTYPE_F:
     ans = IsRoprandF(value);
     break;

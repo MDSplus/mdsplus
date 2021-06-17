@@ -49,7 +49,8 @@ extern int str_element();
 
 extern int TdiExecute();
 
-typedef struct _LinkedEvent {
+typedef struct _LinkedEvent
+{
   char *msg;
   char *tree;
   int shot;
@@ -95,17 +96,19 @@ static void PutLog(char *time, char *mode, char *status, char *server,
 static void PutError(char *time, char *mode, char *status, char *server,
                      char *path);
 
-static void ParseTime(LinkedEvent *event) {
+static void ParseTime(LinkedEvent *event)
+{
   event->time = strtok(event->time, " ");
   while (event->time && strchr(event->time, ':') == 0)
     event->time = strtok(0, " ");
 }
 
-static int parseMsg(char *msg, LinkedEvent *event) {
+static int parseMsg(char *msg, LinkedEvent *event)
+{
   char *tmp;
   if (!msg)
     return C_ERROR;
-  event->msg = strcpy(malloc(strlen(msg) + 1), msg);
+  event->msg = strdup(msg);
   event->tree = strtok(event->msg, " ");
   if (!event->tree)
     return C_ERROR;
@@ -153,7 +156,8 @@ static int parseMsg(char *msg, LinkedEvent *event) {
   return C_OK;
 }
 
-static LinkedEvent *GetQEvent() {
+static LinkedEvent *GetQEvent()
+{
   pthread_mutex_lock(&event_mutex);
   LinkedEvent *ans = EventQueueHead;
   if (ans)
@@ -164,17 +168,20 @@ static LinkedEvent *GetQEvent() {
   return ans;
 }
 
-inline static void _DoTimer() {
+inline static void _DoTimer()
+{
   LinkedEvent *ev;
   // while (sleep(100)==0)
-  while ((ev = GetQEvent())) {
+  while ((ev = GetQEvent()))
+  {
     EventUpdate(ev);
     free(ev->msg);
     free(ev);
   }
 }
 
-static void QEvent(LinkedEvent *ev) {
+static void QEvent(LinkedEvent *ev)
+{
   ev->next = NULL;
   pthread_mutex_lock(&event_mutex);
   if (EventQueueTail)
@@ -185,10 +192,12 @@ static void QEvent(LinkedEvent *ev) {
   pthread_mutex_unlock(&event_mutex);
 }
 
-static void MessageAst(void *dummy __attribute__((unused)), char *reply) {
+static void MessageAst(void *dummy __attribute__((unused)), char *reply)
+{
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
   event->msg = NULL;
-  if (!parseMsg(reply, event)) {
+  if (!parseMsg(reply, event))
+  {
     QEvent(event);
     return;
   }
@@ -197,8 +206,10 @@ static void MessageAst(void *dummy __attribute__((unused)), char *reply) {
   CheckIn(0);
 }
 
-inline static void _EventUpdate(LinkedEvent *event) {
-  switch (event->mode) {
+inline static void _EventUpdate(LinkedEvent *event)
+{
+  switch (event->mode)
+  {
   case build_table_begin:
     DoOpenTree(event);
   case build_table:
@@ -217,11 +228,13 @@ inline static void _EventUpdate(LinkedEvent *event) {
   }
 }
 
-inline static void _DoOpenTree(LinkedEvent *event) {
+inline static void _DoOpenTree(LinkedEvent *event)
+{
   current_node_entry = 0;
   current_on = -1;
   current_phase = 9999;
-  if ((event->shot != current_shot) || strcmp(event->tree, current_tree)) {
+  if ((event->shot != current_shot) || strcmp(event->tree, current_tree))
+  {
     current_shot = event->shot;
     if (event->tree)
       strncpy(current_tree, event->tree, 12);
@@ -230,7 +243,8 @@ inline static void _DoOpenTree(LinkedEvent *event) {
   }
 }
 
-static void Phase(LinkedEvent *event) {
+static void Phase(LinkedEvent *event)
+{
   static DESCRIPTOR(const unknown, "UNKNOWN");
   static struct descriptor phase = {0, DTYPE_T, CLASS_D, 0};
   static DESCRIPTOR(const phase_lookup, "PHASE_NAME_LOOKUP($)");
@@ -238,7 +252,8 @@ static void Phase(LinkedEvent *event) {
   phase_d.pointer = (char *)&event->phase;
   if (current_shot == -9999)
     current_shot = event->shot;
-  if (current_phase != event->phase) {
+  if (current_phase != event->phase)
+  {
     if (!(TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1))
       StrCopyDx((struct descriptor *)&phase, (struct descriptor *)&unknown);
     char *str = MdsDescrToCstring(&phase);
@@ -247,34 +262,38 @@ static void Phase(LinkedEvent *event) {
     current_phase = event->phase;
   }
 }
-inline static void _Doing(LinkedEvent *event) {
+inline static void _Doing(LinkedEvent *event)
+{
   Phase(event);
   PutLog(event->time, "DOING", " ", event->server, event->fullpath);
 }
 
-inline static void _Done(LinkedEvent *event) {
+inline static void _Done(LinkedEvent *event)
+{
   PutLog(event->time, "DONE", IS_OK(event->status) ? " " : event->status_text,
          event->server, event->fullpath);
-  if
-    IS_NOT_OK(event->status)
-  PutError(event->time, "DONE", event->status_text, event->server,
-           event->fullpath);
+  if (IS_NOT_OK(event->status))
+    PutError(event->time, "DONE", event->status_text, event->server,
+             event->fullpath);
 }
 
-static void Dispatched(LinkedEvent *event) {
+static void Dispatched(LinkedEvent *event)
+{
   Phase(event);
   PutLog(event->time, "DISPATCHED", " ", event->server, event->fullpath);
 }
 
-static void CheckIn(char *monitor_in) {
+static void CheckIn(char *monitor_in)
+{
   static char *monitor;
   INIT_STATUS_ERROR;
   if (monitor_in)
     monitor = monitor_in;
-  for (;;) {
+  for (;;)
+  {
     status = ServerMonitorCheckin(monitor, MessageAst, 0);
-    if
-      STATUS_OK return;
+    if (STATUS_OK)
+      return;
     printf("Error %d connecting to monitor: %s, will try again shortly\n",
            status, monitor);
     sleep(2);

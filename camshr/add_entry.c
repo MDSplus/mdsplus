@@ -68,7 +68,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //                      pointer to a c-string containing a complete entry
 // output:      status
 //-------------------------------------------------------------------------
-int add_entry(int dbType, char *newEntry) {
+int add_entry(int dbType, char *newEntry)
+{
   void *dbptr; // re-usable pointer for dbs
   int entrySize, i, numOfEntries;
   int status = SUCCESS;         // assume the best
@@ -84,17 +85,20 @@ int add_entry(int dbType, char *newEntry) {
   //-- 'critical section' start
   //----------------------------
   // 'lock' with semaphore
-  if (lock_file() != SUCCESS) {
+  if (lock_file() != SUCCESS)
+  {
     status = LOCK_ERROR;
     goto AddEntry_Exit;
   }
   // get current number of entries
-  if ((numOfEntries = get_file_count(dbType)) < 0) {
+  if ((numOfEntries = get_file_count(dbType)) < 0)
+  {
     status = FILE_ERROR;
     goto AddEntry_Exit;
   }
   // cull db specific info
-  switch (dbType) {
+  switch (dbType)
+  {
   case CTS_DB:
     dbptr = (void *)CTSdb;
     entrySize = MODULE_ENTRY;
@@ -121,12 +125,14 @@ int add_entry(int dbType, char *newEntry) {
 
   // insertion sort
   if (numOfEntries > 0) // only insert if more than one entry exists already
-    if (issort(dbptr, numOfEntries + 1, entrySize, compare_str) != 0) {
+    if (issort(dbptr, numOfEntries + 1, entrySize, compare_str) != 0)
+    {
       status = ERROR;
       goto AddEntry_Exit;
     }
   // commit change to file
-  if (commit_entry(dbType) != SUCCESS) {
+  if (commit_entry(dbType) != SUCCESS)
+  {
     status = COMMIT_ERROR;
     goto AddEntry_Exit;
   }
@@ -139,7 +145,8 @@ int add_entry(int dbType, char *newEntry) {
   //----------------------------
 
 AddEntry_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS))
+  {
     printf("add_entry(): ");
     ShowStatus(status);
   }

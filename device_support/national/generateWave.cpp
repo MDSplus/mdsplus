@@ -41,7 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SAWTOOTH 4
 
 static void createSawtoothWaveform(int number_of_samples, double offset,
-                                   double level, float *buf) {
+                                   double level, float *buf)
+{
   int i;
 
   // create one complete Sawtooth period in volts
@@ -53,7 +54,8 @@ static void createSawtoothWaveform(int number_of_samples, double offset,
 }
 
 static void createTriangularWaveform(int number_of_samples, double offset,
-                                     double level, float *buf) {
+                                     double level, float *buf)
+{
   int i;
 
   // create one complete triangular period in volts
@@ -71,7 +73,8 @@ static void createTriangularWaveform(int number_of_samples, double offset,
 }
 
 static void createSquareWaveform(int number_of_samples, double offset,
-                                 double level, float *buf) {
+                                 double level, float *buf)
+{
   int i;
 
   // create one complete square period in volts
@@ -86,7 +89,8 @@ static void createSquareWaveform(int number_of_samples, double offset,
 }
 
 static void createSinusoidalWaveform(int number_of_samples, double offset,
-                                     double level, float *buf) {
+                                     double level, float *buf)
+{
   int i;
 
   // create one complete sinus period in volts
@@ -100,7 +104,8 @@ static void createSinusoidalWaveform(int number_of_samples, double offset,
 uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
                                            uint8_t channel, double offset,
                                            double level, uint32_t waverate,
-                                           int waveType) {
+                                           int waveType)
+{
   int silent = 0;
   int retval = 0;
   int number_of_channels = 4;
@@ -126,7 +131,8 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
   float *write_array[number_of_channels];
   xseries_ao_conf_t ao_conf;
 
-  for (i = 0; i < number_of_channels; i++) {
+  for (i = 0; i < number_of_channels; i++)
+  {
     write_array[i] = (float *)calloc(1, sizeof(float) * number_of_samples);
   }
 
@@ -135,7 +141,8 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
   /* open AO segment file descriptor */
   sprintf(str, "%s.%u.ao", device_name, selectedCard);
   ao_fd = open(str, O_RDWR);
-  if (ao_fd <= 0) {
+  if (ao_fd <= 0)
+  {
     if (!silent)
       printf("Could not open AO segment! %s \n", strerror(errno));
     retval = -1;
@@ -147,7 +154,8 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
 
   /* reset AO segment */
   retval = xseries_reset_ao(ao_fd);
-  if (retval) {
+  if (retval)
+  {
     if (!silent)
       printf("Error reseting card!\n");
     goto out_6368;
@@ -167,7 +175,8 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
       XSERIES_AO_EXTERNAL_GATE_DISABLED, // No external pause signal
       XSERIES_AO_POLARITY_RISING_EDGE,   // Don't care
       0);                                // Disable
-  if (retval) {
+  if (retval)
+  {
     if (!silent)
       printf("Error setting external gate!\n");
     goto out_6368;
@@ -181,7 +190,8 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
       XSERIES_AO_START_TRIGGER_SW_PULSE, // Set the line to software-driven
       XSERIES_AO_POLARITY_RISING_EDGE,   // Make line active on rising...
       1);                                //   ...edge (not high level)
-  if (retval) {
+  if (retval)
+  {
     if (!silent)
       printf("Error setting start trigger!\n");
     goto out_6368;
@@ -206,7 +216,8 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
       XSERIES_AO_UPDATE_COUNTER_UI_TC,  // Derive the clock line from the Update
                                         // Interval Terminal Count
       XSERIES_AO_POLARITY_RISING_EDGE); // Make the line active on rising edge
-  if (retval) {
+  if (retval)
+  {
     if (!silent)
       printf("Error setting update counter!\n");
     goto out_6368;
@@ -218,24 +229,28 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
       XSERIES_OUTTIMER_UPDATE_INTERVAL_COUNTER_TB3, // Source the Update
                                                     // Interval from the
                                                     // internal timebase
-      XSERIES_OUTTIMER_POLARITY_RISING_EDGE, // Make the line active on rising
-                                             // edge
-      update_period_divisor, // Number of clock intervals between successive
-                             // updates
-      2 // Number of clock intervals after the start trigger before the first
-        // update
+      XSERIES_OUTTIMER_POLARITY_RISING_EDGE,        // Make the line active on rising
+                                                    // edge
+      update_period_divisor,                        // Number of clock intervals between successive
+                                                    // updates
+      2                                             // Number of clock intervals after the start trigger before the first
+                                                    // update
   );
-  if (retval) {
+  if (retval)
+  {
     if (!silent)
       printf("Error setting update interval counter!\n");
     goto out_6368;
   }
 
   /* Add channels */
-  for (i = 0; i < number_of_channels; i++) {
-    if (i == channel) {
+  for (i = 0; i < number_of_channels; i++)
+  {
+    if (i == channel)
+    {
       retval = xseries_add_ao_channel(&ao_conf, i, XSERIES_OUTPUT_RANGE_10V);
-      if (retval) {
+      if (retval)
+      {
         if (!silent)
           printf("Cannot add AI channel %d to configuration!\n", i);
         goto out_6368;
@@ -245,7 +260,8 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
 
   /* load configuration to the device */
   retval = xseries_load_ao_conf(ao_fd, ao_conf);
-  if (retval) {
+  if (retval)
+  {
     if (!silent)
       printf("Cannot load AO configuration! %s (%d)\n", strerror(errno), errno);
     goto out_6368;
@@ -254,9 +270,11 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
   /* wait for the AO devices */
   sleep(1);
 
-  for (i = 0; i < number_of_channels; i++) {
+  for (i = 0; i < number_of_channels; i++)
+  {
 
-    switch (waveType) {
+    switch (waveType)
+    {
     case TRIANGULAR:
       createTriangularWaveform(number_of_samples, offset, level,
                                write_array[i]);
@@ -275,13 +293,16 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
   }
 
   /* Open channels */
-  for (i = 0; i < number_of_channels; i++) {
+  for (i = 0; i < number_of_channels; i++)
+  {
     sprintf(str, "%s.%u.ao.%u", device_name, selectedCard, i);
-    if (i == channel) {
+    if (i == channel)
+    {
 
       printf("%s\n", str);
       ao_chan_fd[i] = open(str, O_RDWR | O_NONBLOCK);
-      if (ao_chan_fd[i] < 0) {
+      if (ao_chan_fd[i] < 0)
+      {
         if (!silent)
           printf("Cannot add AO channel %d to configuration!\n", i);
         goto out_6368;
@@ -290,14 +311,18 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
   }
 
   /* Write samples */
-  for (i = 0; i < number_of_samples; i++) {
-    for (k = 0; k < number_of_channels; k++) {
-      if (k == channel) {
+  for (i = 0; i < number_of_samples; i++)
+  {
+    for (k = 0; k < number_of_channels; k++)
+    {
+      if (k == channel)
+      {
         // Write is not blocking !!!
         retval = xseries_write_ao(ao_chan_fd[k], &write_array[k][i], 1);
         // if( i < 10 )
         //    printf("write_array[%d][%d] = %f\n", k, i, write_array[k][i]);
-        if (retval == -1 && errno != EAGAIN) {
+        if (retval == -1 && errno != EAGAIN)
+        {
           if (!silent)
             printf("Error writing samples to FIFO buffer!\n");
           goto out_6368;
@@ -308,14 +333,16 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard,
 
   /* put segment in started state */
   retval = xseries_start_ao(ao_fd);
-  if (retval) {
+  if (retval)
+  {
     printf("Cannot start AO segment! %s (%d)\n", strerror(errno), errno);
     goto out_6368;
   }
 
   /* pulse start trigger */
   retval = xseries_pulse_ao(ao_fd, XSERIES_START_TRIGGER);
-  if (retval) {
+  if (retval)
+  {
     printf("Error generating start pulse!\n");
     goto out_6368;
   }
@@ -331,7 +358,8 @@ out_6368:
   xseries_stop_ao(ao_fd);
 
   /* close all used file descriptors */
-  for (i = 0; i < number_of_channels; i++) {
+  for (i = 0; i < number_of_channels; i++)
+  {
     if (i == channel)
       close(ao_chan_fd[i]);
   }
@@ -345,7 +373,8 @@ out_6368:
   /* close card's file descriptor */
   close(dev_fd);
 
-  for (i = 0; i < number_of_channels; i++) {
+  for (i = 0; i < number_of_channels; i++)
+  {
     free(write_array[i]);
   }
 
@@ -355,7 +384,8 @@ out_6368:
 uint32_t generateWaveformOnOneChannel_6259(uint8_t selectedCard,
                                            uint8_t channel, double offset,
                                            double level, uint32_t waverate,
-                                           int waveType) {
+                                           int waveType)
+{
   uint32_t retval = 0;
   pxi6259_ao_conf_t ao_conf;
 
@@ -382,7 +412,8 @@ uint32_t generateWaveformOnOneChannel_6259(uint8_t selectedCard,
   // get configuration file descriptor
   sprintf(str, "%s.%d.ao", RESOURCE_NAME_DAQ, selectedCard);
   fdConfig = open(str, O_RDWR | O_NONBLOCK);
-  if (fdConfig < 0) {
+  if (fdConfig < 0)
+  {
     printf("Error Opening Device! fd: %d\n", fdConfig);
     return -1;
   }
@@ -395,7 +426,8 @@ uint32_t generateWaveformOnOneChannel_6259(uint8_t selectedCard,
           }
   */
 
-  switch (waveType) {
+  switch (waveType)
+  {
   case TRIANGULAR:
     createTriangularWaveform(number_of_samples, offset, level,
                              scaledWriteArray);
@@ -429,7 +461,8 @@ uint32_t generateWaveformOnOneChannel_6259(uint8_t selectedCard,
     return -1;
 
   retval = pxi6259_load_ao_conf(fdConfig, &ao_conf);
-  if (retval) {
+  if (retval)
+  {
     printf("err: load task. retval: %x\n", retval * -1);
     goto out_6259;
   }
@@ -439,13 +472,15 @@ uint32_t generateWaveformOnOneChannel_6259(uint8_t selectedCard,
   // Open channels
   sprintf(str, "%s.%d.ao.%d", RESOURCE_NAME_DAQ, selectedCard, channel);
   fdChannel = open(str, O_RDWR | O_NONBLOCK);
-  if (fdChannel < 0) {
+  if (fdChannel < 0)
+  {
     printf("Error Opening Channel! FD: %d\n", fdChannel);
     return -1;
   }
 
   retval = pxi6259_write_ao(fdChannel, scaledWriteArray, number_of_samples);
-  if (retval != number_of_samples) {
+  if (retval != number_of_samples)
+  {
     printf("err: writing. retval: %d\n", retval);
     goto out_6259;
   }
@@ -453,7 +488,8 @@ uint32_t generateWaveformOnOneChannel_6259(uint8_t selectedCard,
   close(fdChannel);
 
   retval = pxi6259_start_ao(fdConfig);
-  if (retval) {
+  if (retval)
+  {
     printf("err: Starting task. retval: %d\n", retval);
     return -1;
   }
@@ -487,18 +523,21 @@ out_6259:
   // Open channels
   sprintf(str, "%s.%d.ao.%d", RESOURCE_NAME_DAQ, selectedCard, channel);
   fdChannel = open(str, O_RDWR | O_NONBLOCK);
-  if (fdChannel < 0) {
+  if (fdChannel < 0)
+  {
     printf("Error Opening Channel! FD: %d\n", fdChannel);
     return -1;
   }
 
   retval = pxi6259_write_ao(fdChannel, scaledWriteArray, number_of_samples);
-  if (retval != number_of_samples) {
+  if (retval != number_of_samples)
+  {
     printf("err: writing. retval: %d\n", retval);
   }
 
   retval = pxi6259_start_ao(fdConfig);
-  if (retval) {
+  if (retval)
+  {
     printf("err: Starting task. retval: %d\n", retval);
   }
 
@@ -513,7 +552,8 @@ out_6259:
   return 0;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int retval = 0;
   uint8_t selectedCard = 0;
   uint8_t channel = 0;
@@ -525,7 +565,8 @@ int main(int argc, char **argv) {
   const char *device;
   int waveType;
 
-  if (argc == 8 && (!strcmp(argv[1], "6368") || !strcmp(argv[1], "6259"))) {
+  if (argc == 8 && (!strcmp(argv[1], "6368") || !strcmp(argv[1], "6259")))
+  {
     device = argv[1];
     selectedCard = atoi(argv[2]);
     channel = atoi(argv[3]);
@@ -540,8 +581,9 @@ int main(int argc, char **argv) {
       waveType = SINUSOIDAL;
     else if (strcmp(argv[7], "Sa") == 0)
       waveType = SAWTOOTH;
-
-  } else if (argc == 1) {
+  }
+  else if (argc == 1)
+  {
     device = "6368";
     selectedCard = 0;
     channel = 0;
@@ -551,8 +593,9 @@ int main(int argc, char **argv) {
     waveType = TRIANGULAR;
     printf("Default values: device: 6368 card: 0, channels: 0, MinValue : 0.0, "
            "MaxValue : 5.0, ferquency : 100, Wave : Triangular\n\n");
-
-  } else {
+  }
+  else
+  {
     printf("\nPlease define arguments for AO waveform signal generation "
            "example! Run as:\n");
     printf("\n./generateTriangularWave [device {6368/6259}] [card] [channel "
@@ -570,15 +613,18 @@ int main(int argc, char **argv) {
 
   printf("Offset %f level %f\n", offset, level);
 
-  if (!strcmp(device, "6368")) {
+  if (!strcmp(device, "6368"))
+  {
     retval = generateWaveformOnOneChannel_6368(selectedCard, channel, offset,
                                                level, frequency, waveType);
   }
-  if (!strcmp(device, "6259")) {
+  if (!strcmp(device, "6259"))
+  {
     retval = generateWaveformOnOneChannel_6259(selectedCard, channel, offset,
                                                level, frequency, waveType);
   }
-  if (retval) {
+  if (retval)
+  {
     printf("Error generating waveform signal\n");
     return -1;
   }

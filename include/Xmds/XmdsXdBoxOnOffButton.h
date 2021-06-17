@@ -34,8 +34,8 @@
 
 #define XmdsNnid "nid"             /* Nid */
 #define XmdsNnidOffset "nidOffset" /* Nid offset */
-#define XmdsNputOnApply                                                        \
-  "putOnApply" /* Put when a XmdsApplyAllXds is called                         \
+#define XmdsNputOnApply                                \
+  "putOnApply" /* Put when a XmdsApplyAllXds is called \
                 */
 
 /* External creation routines:

@@ -37,13 +37,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **************************************************************/
 
 EXPORT int TclSetVersions(void *ctx, char **error,
-                          char **output __attribute__((unused))) {
+                          char **output __attribute__((unused)))
+{
   int status = 1;
 
   /*--------------------------------------------------------
    * Executable ...
    *-------------------------------------------------------*/
-  switch (cli_present(ctx, "MODEL")) {
+  switch (cli_present(ctx, "MODEL"))
+  {
   case MdsdclPRESENT:
     status = TreeSetDbiItm(DbiVERSIONS_IN_MODEL, 1);
     break;
@@ -51,9 +53,10 @@ EXPORT int TclSetVersions(void *ctx, char **error,
     status = TreeSetDbiItm(DbiVERSIONS_IN_MODEL, 0);
     break;
   }
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     goto error;
-  switch (cli_present(ctx, "SHOT")) {
+  switch (cli_present(ctx, "SHOT"))
+  {
   case MdsdclPRESENT:
     status = TreeSetDbiItm(DbiVERSIONS_IN_PULSE, 1);
     break;
@@ -62,7 +65,8 @@ EXPORT int TclSetVersions(void *ctx, char **error,
     break;
   }
 error:
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error,
@@ -75,19 +79,23 @@ error:
 
 EXPORT int TclShowVersions(void *ctx __attribute__((unused)),
                            char **error __attribute__((unused)),
-                           char **output) {
+                           char **output)
+{
   int in_model, in_pulse, status;
   DBI_ITM itmlst[] = {{4, DbiVERSIONS_IN_MODEL, &in_model, 0},
                       {4, DbiVERSIONS_IN_PULSE, &in_pulse, 0},
                       {0, 0, 0, 0}};
   status = TreeGetDbi(itmlst);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     *output = malloc(500);
     sprintf(*output,
             "  Versions are %s in the model file and %s in the shot file.\n",
             in_model ? "enabled" : "disabled",
             in_pulse ? "enabled" : "disabled");
-  } else {
+  }
+  else
+  {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error,

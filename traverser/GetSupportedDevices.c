@@ -31,19 +31,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <tdishr.h>
 
-int GetSupportedDevices(char ***devnames, int *number) {
+int GetSupportedDevices(char ***devnames, int *number)
+{
   EMPTYXD(dev_list);
   static DESCRIPTOR(expr, "_devs = MdsDevices()");
   int status;
   *number = 0;
   *devnames = 0;
   status = TdiExecute((struct descriptor *)&expr, &dev_list MDS_END_ARG);
-  if (status & 1) {
+  if (STATUS_OK)
+  {
     int i;
     struct descriptor_a *a_ptr = (struct descriptor_a *)dev_list.pointer;
     *number = a_ptr->arsize / a_ptr->length / 2;
     *devnames = (char **)malloc(*number * sizeof(char **));
-    for (i = 0; i < *number; i++) {
+    for (i = 0; i < *number; i++)
+    {
       char *devname;
       (*devnames)[i] = devname =
           strndup((const char *)a_ptr->pointer + (i * 2 * a_ptr->length),

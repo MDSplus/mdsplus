@@ -49,13 +49,18 @@ static const struct descriptor_xd BAD = {0, DTYPE_DSC, CLASS_XS,
 /********************************
 Units must match or one be empty.
 ********************************/
-static int either(struct descriptor_xd uni[2]) {
+static int either(struct descriptor_xd uni[2])
+{
 
-  if (uni[0].pointer == 0) {
+  if (uni[0].pointer == 0)
+  {
     uni[0] = uni[1];
     uni[1] = EMPTY_XD;
-  } else if (uni[1].pointer) {
-    if (StrCompare(uni[0].pointer, uni[1].pointer)) {
+  }
+  else if (uni[1].pointer)
+  {
+    if (StrCompare(uni[0].pointer, uni[1].pointer))
+    {
       MdsFree1Dx(&uni[0], NULL);
       uni[0] = BAD;
     }
@@ -66,7 +71,8 @@ static int either(struct descriptor_xd uni[2]) {
 /*******************************
 Discard units unless mismatched.
 *******************************/
-static int only_mismatch(struct descriptor_xd uni[2]) {
+static int only_mismatch(struct descriptor_xd uni[2])
+{
 
   either(uni);
   if (uni[0].pointer && uni[0].pointer != (struct descriptor *)&bad)
@@ -78,13 +84,17 @@ static int only_mismatch(struct descriptor_xd uni[2]) {
 Concatenate units.
 *****************/
 static void multiply(struct descriptor_xd *left_ptr,
-                     struct descriptor_xd *right_ptr) {
+                     struct descriptor_xd *right_ptr)
+{
   INIT_STATUS;
 
-  if (left_ptr->pointer == 0) {
+  if (left_ptr->pointer == 0)
+  {
     *left_ptr = *right_ptr;
     *right_ptr = EMPTY_XD;
-  } else if (right_ptr->pointer) {
+  }
+  else if (right_ptr->pointer)
+  {
     /*NEED cleaver code here */
     status = TdiConcat(left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
     if (STATUS_NOT_OK)
@@ -96,21 +106,23 @@ static void multiply(struct descriptor_xd *left_ptr,
 Reciprocate units.
 *****************/
 static void divide(struct descriptor_xd *left_ptr,
-                   struct descriptor_xd *right_ptr) {
+                   struct descriptor_xd *right_ptr)
+{
   INIT_STATUS;
 
-  if (right_ptr->pointer) {
+  if (right_ptr->pointer)
+  {
     /*NEED cleaver code here */
     /*NEED to fix up leading / or * */
     status = TdiTranslate(right_ptr, &star_slash, &slash_star,
                           right_ptr MDS_END_ARG);
-    if
-      STATUS_OK {
-        if (left_ptr->pointer)
-          status = TdiConcat(left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
-        else
-          status = TdiConcat(&slash, right_ptr, left_ptr MDS_END_ARG);
-      }
+    if (STATUS_OK)
+    {
+      if (left_ptr->pointer)
+        status = TdiConcat(left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
+      else
+        status = TdiConcat(&slash, right_ptr, left_ptr MDS_END_ARG);
+    }
     if (STATUS_NOT_OK)
       *left_ptr = BAD;
   }
@@ -125,7 +137,8 @@ int Tdi2Abs(int narg __attribute__((unused)),
             struct descriptor_xd dat[1] __attribute__((unused)),
             struct TdiCatStruct cats[1],
             int (**routine_ptr)() __attribute__((unused)),
-            int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+            int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   if ((cats[0].in_cat & TdiCAT_B) == TdiCAT_BU)
     *routine_ptr = NULL;
@@ -141,7 +154,8 @@ int Tdi2Add(int narg __attribute__((unused)), struct descriptor_xd uni[1],
             struct descriptor_xd dat[1] __attribute__((unused)),
             struct TdiCatStruct cats[1],
             int (**routine_ptr)() __attribute__((unused)),
-            int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+            int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   either(uni);
   cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
@@ -157,7 +171,8 @@ int Tdi2Atan2(int narg __attribute__((unused)), struct descriptor_xd uni[1],
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   only_mismatch(uni);
   cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
@@ -173,7 +188,8 @@ int Tdi2Any(int narg __attribute__((unused)), struct descriptor_xd uni[1],
             struct descriptor_xd dat[1] __attribute__((unused)),
             struct TdiCatStruct cats[1] __attribute__((unused)),
             int (**routine_ptr)() __attribute__((unused)),
-            int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+            int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
@@ -187,7 +203,8 @@ int Tdi2Adjust(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
                struct descriptor_xd dat[1] __attribute__((unused)),
                struct TdiCatStruct cats[1],
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   cats[narg].digits = cats[0].digits;
   return 1;
@@ -200,14 +217,16 @@ int Tdi2Adjust(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
 int Tdi2Aint(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
              struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   INIT_STATUS;
 
   /**************************
   Check for valid second arg.
   Prevent its conversion.
   **************************/
-  if (narg > 1) {
+  if (narg > 1)
+  {
     int kind = -1;
     status = TdiGetLong(dat[1].pointer, &kind);
     if (kind < TdiCAT_MAX)
@@ -233,7 +252,8 @@ int Tdi2Bsearch(int narg __attribute__((unused)), struct descriptor_xd uni[1],
                 struct TdiCatStruct cats[1],
                 int (**routine_ptr)() __attribute__((unused)),
                 int o1 __attribute__((unused)),
-                int o2 __attribute__((unused))) {
+                int o2 __attribute__((unused)))
+{
 
   either(uni);
   cats[1].out_cat = cats[0].out_cat |= cats[1].out_cat;
@@ -251,10 +271,12 @@ int Tdi2Btest(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   int j;
 
-  for (j = narg; --j > 0;) {
+  for (j = narg; --j > 0;)
+  {
     cats[j].out_dtype = DTYPE_L;
     cats[j].out_cat = TdiREF_CAT[DTYPE_L].cat;
   }
@@ -267,14 +289,16 @@ int Tdi2Btest(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
 int Tdi2Char(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
              struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   INIT_STATUS;
 
   /**************************
   Check for valid second arg.
   Prevent its conversion.
   **************************/
-  if (narg > 1) {
+  if (narg > 1)
+  {
     int kind = -1;
     status = TdiGetLong(dat[1].pointer, &kind);
     if (kind < TdiCAT_MAX)
@@ -300,7 +324,8 @@ int Tdi2Char(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
 int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
               struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   INIT_STATUS;
 
   /********************************
@@ -311,10 +336,12 @@ int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
   ********************************/
   if (narg > 1)
     either(uni);
-  if (narg > 2) {
+  if (narg > 2)
+  {
     int kind = -1;
     status = TdiGetLong(dat[2].pointer, &kind);
-    if (kind < TdiCAT_MAX) {
+    if (kind < TdiCAT_MAX)
+    {
       cats[narg].out_cat = (unsigned short)((TdiREF_CAT[cats[narg].out_dtype =
                                                             (unsigned char)kind]
                                                  .cat |
@@ -324,8 +351,11 @@ int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
     cats[2].out_dtype = cats[2].in_dtype;
     cats[2].out_cat = cats[2].in_cat;
     cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
-  } else if (narg == 1) {
-    switch (cats[0].out_dtype) {
+  }
+  else if (narg == 1)
+  {
+    switch (cats[0].out_dtype)
+    {
     default:
       break;
     case DTYPE_F:
@@ -352,7 +382,8 @@ int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
   }
   if (narg < 2 || cats[1].in_dtype == DTYPE_MISSING)
     *routine_ptr = NULL;
-  else {
+  else
+  {
     if (cats[0].in_cat != cats[0].out_cat)
       cats[0].out_cat &= ~TdiCAT_COMPLEX;
     if (cats[1].in_cat != cats[1].out_cat)
@@ -368,7 +399,8 @@ int Tdi2Concat(int narg __attribute__((unused)), struct descriptor_xd uni[1],
                struct descriptor_xd dat[1] __attribute__((unused)),
                struct TdiCatStruct cats[1],
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   either(uni);
   cats[2].digits = (unsigned short)(cats[0].digits + cats[1].digits);
@@ -384,7 +416,8 @@ int Tdi2Cvt(int narg __attribute__((unused)),
             struct descriptor_xd dat[1] __attribute__((unused)),
             struct TdiCatStruct cats[1],
             int (**routine_ptr)() __attribute__((unused)),
-            int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+            int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   cats[2].out_dtype = cats[0].out_dtype = cats[1].out_dtype;
   cats[2].out_cat = cats[0].out_cat = cats[1].out_cat;
@@ -399,7 +432,8 @@ int Tdi2Dble(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat =
       (unsigned short)(cats[narg].out_cat +
@@ -414,7 +448,8 @@ int Tdi2Divide(int narg __attribute__((unused)), struct descriptor_xd uni[1],
                struct descriptor_xd dat[1] __attribute__((unused)),
                struct TdiCatStruct cats[1],
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   divide(&uni[0], &uni[1]);
   cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
@@ -428,7 +463,8 @@ int Tdi2Dprod(int narg, struct descriptor_xd uni[1],
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   multiply(&uni[0], &uni[1]);
   cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat =
@@ -447,7 +483,8 @@ int Tdi2Eq(int narg __attribute__((unused)), struct descriptor_xd uni[1],
            struct descriptor_xd dat[1] __attribute__((unused)),
            struct TdiCatStruct cats[1],
            int (**routine_ptr)() __attribute__((unused)),
-           int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+           int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   only_mismatch(uni);
   cats[0].out_cat = cats[1].out_cat =
@@ -463,7 +500,8 @@ int Tdi2Element(int narg, struct descriptor_xd uni[1],
                 struct TdiCatStruct cats[1],
                 int (**routine_ptr)() __attribute__((unused)),
                 int o1 __attribute__((unused)),
-                int o2 __attribute__((unused))) {
+                int o2 __attribute__((unused)))
+{
 
   MdsFree1Dx(&uni[0], NULL);
   uni[0] = uni[2];
@@ -480,7 +518,8 @@ int Tdi2Extract(int narg, struct descriptor_xd uni[1],
                 struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
                 int (**routine_ptr)() __attribute__((unused)),
                 int o1 __attribute__((unused)),
-                int o2 __attribute__((unused))) {
+                int o2 __attribute__((unused)))
+{
   int length, status;
 
   MdsFree1Dx(&uni[0], NULL);
@@ -506,7 +545,8 @@ int Tdi2Fix(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
             struct descriptor_xd dat[1] __attribute__((unused)),
             struct TdiCatStruct cats[1],
             int (**routine_ptr)() __attribute__((unused)),
-            int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+            int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   int cmplx, j;
 
   cmplx = cats[0].out_cat & TdiCAT_COMPLEX;
@@ -526,7 +566,8 @@ int Tdi2Iand(int narg, struct descriptor_xd uni[1],
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   either(uni);
   cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
@@ -545,7 +586,8 @@ int Tdi2Inverse(int narg __attribute__((unused)), struct descriptor_xd uni[1],
                 struct TdiCatStruct cats[1] __attribute__((unused)),
                 int (**routine_ptr)() __attribute__((unused)),
                 int o1 __attribute__((unused)),
-                int o2 __attribute__((unused))) {
+                int o2 __attribute__((unused)))
+{
   struct descriptor_xd tmp = uni[0];
 
   uni[0] = EMPTY_XD;
@@ -567,7 +609,8 @@ int Tdi2Keep(int narg __attribute__((unused)),
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1] __attribute__((unused)),
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   return 1;
 }
 
@@ -578,14 +621,17 @@ int Tdi2Land(int narg __attribute__((unused)), struct descriptor_xd uni[1],
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   only_mismatch(uni);
-  if (cats[0].out_cat != DTYPE_BU) {
+  if (cats[0].out_cat != DTYPE_BU)
+  {
     cats[0].out_dtype = DTYPE_BU;
     cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
   }
-  if (cats[1].out_cat != DTYPE_BU) {
+  if (cats[1].out_cat != DTYPE_BU)
+  {
     cats[1].out_dtype = DTYPE_BU;
     cats[1].out_cat = TdiREF_CAT[DTYPE_BU].cat;
   }
@@ -600,12 +646,14 @@ int Tdi2Long2(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   int j;
 
   cats[narg].out_dtype = cats[0].out_dtype;
   cats[narg].out_cat = cats[0].out_cat;
-  for (j = narg; --j > 0;) {
+  for (j = narg; --j > 0;)
+  {
     cats[j].out_dtype = DTYPE_L;
     cats[j].out_cat = TdiREF_CAT[DTYPE_L].cat;
   }
@@ -620,11 +668,13 @@ int Tdi2Mask1(int narg __attribute__((unused)), struct descriptor_xd uni[1],
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
-  if (cats[0].out_cat != cats[0].in_cat) {
+  if (cats[0].out_cat != cats[0].in_cat)
+  {
     cats[0].out_dtype = DTYPE_BU;
     cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
   }
@@ -639,12 +689,14 @@ int Tdi2Mask2(int narg, struct descriptor_xd uni[1],
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   int j;
 
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
-  for (j = narg; --j > 0;) {
+  for (j = narg; --j > 0;)
+  {
     cats[j].out_cat =
         (unsigned short)((cats[j].out_cat | TdiREF_CAT[DTYPE_BU].cat) &
                          TdiREF_CAT[DTYPE_O].cat);
@@ -662,14 +714,17 @@ int Tdi2Mask3(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   cats[narg] = cats[0];
-  if (narg > 2) {
+  if (narg > 2)
+  {
     cats[2].out_cat =
         (unsigned short)((cats[2].in_cat | TdiREF_CAT[DTYPE_BU].cat) &
                          TdiREF_CAT[DTYPE_O].cat);
-    if (cats[2].out_cat != cats[2].in_cat) {
+    if (cats[2].out_cat != cats[2].in_cat)
+    {
       cats[2].out_dtype = DTYPE_BU;
       cats[2].out_cat = TdiREF_CAT[DTYPE_BU].cat;
     }
@@ -685,15 +740,18 @@ int Tdi2Mask3L(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
                struct descriptor_xd dat[1] __attribute__((unused)),
                struct TdiCatStruct cats[1],
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   cats[narg].out_dtype = DTYPE_L;
   cats[narg].out_cat = TdiREF_CAT[DTYPE_L].cat;
-  if (narg > 2) {
+  if (narg > 2)
+  {
     cats[2].out_cat =
         (unsigned short)((cats[2].in_cat | TdiREF_CAT[DTYPE_BU].cat) &
                          TdiREF_CAT[DTYPE_O].cat);
-    if (cats[2].out_cat != cats[2].in_cat) {
+    if (cats[2].out_cat != cats[2].in_cat)
+    {
       cats[2].out_dtype = DTYPE_BU;
       cats[2].out_cat = TdiREF_CAT[DTYPE_BU].cat;
     }
@@ -709,7 +767,8 @@ int Tdi2Merge(int narg, struct descriptor_xd uni[1],
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   either(uni);
   cats[narg].out_cat = cats[1].out_cat = cats[0].out_cat =
@@ -734,7 +793,8 @@ int Tdi2Multiply(int narg __attribute__((unused)), struct descriptor_xd uni[1],
                  struct TdiCatStruct cats[1],
                  int (**routine_ptr)() __attribute__((unused)),
                  int o1 __attribute__((unused)),
-                 int o2 __attribute__((unused))) {
+                 int o2 __attribute__((unused)))
+{
 
   multiply(&uni[0], &uni[1]);
   cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
@@ -749,9 +809,11 @@ int Tdi2None(int narg __attribute__((unused)), struct descriptor_xd uni[1],
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1] __attribute__((unused)),
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
-  if (uni[0].pointer) {
+  if (uni[0].pointer)
+  {
     MdsFree1Dx(&uni[0], NULL);
     uni[0] = BAD;
   }
@@ -765,13 +827,16 @@ int Tdi2Not(int narg __attribute__((unused)), struct descriptor_xd uni[1],
             struct descriptor_xd dat[1] __attribute__((unused)),
             struct TdiCatStruct cats[1],
             int (**routine_ptr)() __attribute__((unused)),
-            int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+            int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
-  if (uni[0].pointer) {
+  if (uni[0].pointer)
+  {
     MdsFree1Dx(&uni[0], NULL);
     uni[0] = BAD;
   }
-  if (cats[0].in_cat != cats[0].out_cat) {
+  if (cats[0].in_cat != cats[0].out_cat)
+  {
     cats[0].out_dtype = DTYPE_BU;
     cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
   }
@@ -786,13 +851,16 @@ int Tdi2NoHc(int narg, struct descriptor_xd uni[1],
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
-  if (uni[0].pointer) {
+  if (uni[0].pointer)
+  {
     MdsFree1Dx(&uni[0], NULL);
     uni[0] = BAD;
   }
-  if (cats[narg].out_cat == TdiREF_CAT[DTYPE_HC].cat) {
+  if (cats[narg].out_cat == TdiREF_CAT[DTYPE_HC].cat)
+  {
     cats[narg].out_dtype = DTYPE_GC;
     cats[narg].out_cat = TdiREF_CAT[DTYPE_GC].cat;
   }
@@ -807,9 +875,11 @@ int Tdi2Pack(int narg, struct descriptor_xd uni[1],
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
-  if (narg > 2 && uni[2].pointer) {
+  if (narg > 2 && uni[2].pointer)
+  {
     MdsFree1Dx(&uni[1], NULL);
     uni[1] = uni[2];
     uni[2] = EMPTY_XD;
@@ -820,7 +890,8 @@ int Tdi2Pack(int narg, struct descriptor_xd uni[1],
   cats[1].out_cat =
       (unsigned short)((cats[1].in_cat | TdiREF_CAT[DTYPE_BU].cat) &
                        TdiREF_CAT[DTYPE_O].cat);
-  if (cats[1].out_cat != cats[1].in_cat) {
+  if (cats[1].out_cat != cats[1].in_cat)
+  {
     cats[1].out_dtype = DTYPE_BU;
     cats[1].out_cat = TdiREF_CAT[DTYPE_BU].cat;
   }
@@ -834,22 +905,28 @@ int Tdi2Power(int narg __attribute__((unused)), struct descriptor_xd uni[1],
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   /******************************************
   Permit any^long, real^same, complex^same.
   Integer exponents become long. Result=base.
   ******************************************/
-  if (uni[0].pointer || uni[1].pointer) {
+  if (uni[0].pointer || uni[1].pointer)
+  {
     MdsFree1Dx(&uni[0], NULL);
     uni[0] = BAD;
   }
-  if (cats[1].out_cat < TdiCAT_F) {
+  if (cats[1].out_cat < TdiCAT_F)
+  {
     cats[1].out_dtype = DTYPE_L;
     cats[1].out_cat = TdiREF_CAT[DTYPE_L].cat;
-  } else {
+  }
+  else
+  {
     cats[0].out_cat |= cats[1].out_cat;
-    if (cats[0].out_cat == TdiREF_CAT[DTYPE_HC].cat) {
+    if (cats[0].out_cat == TdiREF_CAT[DTYPE_HC].cat)
+    {
       cats[0].out_dtype = DTYPE_GC;
       cats[0].out_cat = TdiREF_CAT[DTYPE_GC].cat;
     }
@@ -867,13 +944,15 @@ int Tdi2Range(int narg, struct descriptor_xd uni[1],
               struct descriptor_xd dat[1] __attribute__((unused)),
               struct TdiCatStruct cats[1],
               int (**routine_ptr)() __attribute__((unused)),
-              int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+              int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   if (narg > 2)
     either(&uni[1]);
   either(uni);
   cats[2].out_cat = cats[1].out_cat = cats[0].out_cat = cats[narg].out_cat;
-  if (cats[2].out_cat == TdiREF_CAT[DTYPE_T].cat) {
+  if (cats[2].out_cat == TdiREF_CAT[DTYPE_T].cat)
+  {
     if (cats[0].digits < cats[1].digits)
       cats[0].digits = cats[1].digits;
     if (cats[0].digits < cats[2].digits)
@@ -890,14 +969,16 @@ int Tdi2Range(int narg, struct descriptor_xd uni[1],
 int Tdi2Real(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
              struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   INIT_STATUS;
 
   /**************************
   Check for valid second arg.
   Prevent its conversion.
   **************************/
-  if (narg > 1) {
+  if (narg > 1)
+  {
     int kind = -1;
     status = TdiGetLong(dat[1].pointer, &kind);
     if (kind < TdiCAT_MAX)
@@ -919,17 +1000,18 @@ int Tdi2Real(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
 int Tdi2Repeat(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
                struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   unsigned int ncopies, status;
 
   status = TdiGetLong(dat[1].pointer, &ncopies);
-  if
-    STATUS_OK {
-      if ((ncopies *= cats[0].digits) < 65535)
-        cats[narg].digits = (unsigned short)ncopies;
-      else
-        status = TdiTOO_BIG;
-    }
+  if (STATUS_OK)
+  {
+    if ((ncopies *= cats[0].digits) < 65535)
+      cats[narg].digits = (unsigned short)ncopies;
+    else
+      status = TdiTOO_BIG;
+  }
   cats[1].out_cat = cats[1].in_cat;
   return status;
 }
@@ -942,7 +1024,8 @@ int Tdi2Shft(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   cats[1].out_dtype = cats[0].out_dtype;
   cats[1].out_cat = cats[0].out_cat;
@@ -958,7 +1041,8 @@ int Tdi2Sign(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
              struct descriptor_xd dat[1] __attribute__((unused)),
              struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   cats[narg].out_cat = cats[0].out_cat;
   return 1;
@@ -971,7 +1055,8 @@ int Tdi2Square(int narg __attribute__((unused)), struct descriptor_xd uni[1],
                struct descriptor_xd dat[1] __attribute__((unused)),
                struct TdiCatStruct cats[1] __attribute__((unused)),
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   struct descriptor_xd tmp = EMPTY_XD;
   INIT_STATUS;
 
@@ -987,20 +1072,21 @@ int Tdi2Square(int narg __attribute__((unused)), struct descriptor_xd uni[1],
 int Tdi2String(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
                struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   unsigned int length, status;
 
   cats[1].out_dtype = cats[1].in_dtype;
   cats[1].out_cat = cats[1].in_cat;
   cats[1].digits = dat[1].length;
   status = TdiGetLong(dat[1].pointer, &length);
-  if
-    STATUS_OK {
-      if (length > 65535)
-        status = TdiTOO_BIG;
-      else if (length > 0)
-        cats[0].digits = cats[narg].digits = (unsigned short)length;
-    }
+  if (STATUS_OK)
+  {
+    if (length > 65535)
+      status = TdiTOO_BIG;
+    else if (length > 0)
+      cats[0].digits = cats[narg].digits = (unsigned short)length;
+  }
   return status;
 }
 
@@ -1010,20 +1096,21 @@ int Tdi2String(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
 int Tdi2Text(int narg, struct descriptor_xd uni[1] __attribute__((unused)),
              struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
              int (**routine_ptr)() __attribute__((unused)),
-             int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+             int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   unsigned int length, status;
 
   cats[1].out_dtype = cats[1].in_dtype;
   cats[1].out_cat = cats[1].in_cat;
   cats[1].digits = dat[1].length;
   status = TdiGetLong(dat[1].pointer, &length);
-  if
-    STATUS_OK {
-      if (length > 65535)
-        status = TdiTOO_BIG;
-      else if (length > 0)
-        cats[0].digits = cats[narg].digits = (unsigned short)length;
-    }
+  if (STATUS_OK)
+  {
+    if (length > 65535)
+      status = TdiTOO_BIG;
+    else if (length > 0)
+      cats[0].digits = cats[narg].digits = (unsigned short)length;
+  }
   return status;
 }
 
@@ -1035,7 +1122,8 @@ int Tdi2Ttb(int narg, struct descriptor_xd uni[1],
             struct descriptor_xd dat[1] __attribute__((unused)),
             struct TdiCatStruct cats[1],
             int (**routine_ptr)() __attribute__((unused)),
-            int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+            int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
 
   either(uni);
   if (narg > 2)
@@ -1051,15 +1139,21 @@ int Tdi2Vector(int narg, struct descriptor_xd uni[1],
                struct descriptor_xd dat[1] __attribute__((unused)),
                struct TdiCatStruct cats[1] __attribute__((unused)),
                int (**routine_ptr)() __attribute__((unused)),
-               int o1 __attribute__((unused)), int o2 __attribute__((unused))) {
+               int o1 __attribute__((unused)), int o2 __attribute__((unused)))
+{
   int j;
 
-  for (j = narg; --j > 0;) {
-    if (uni[0].pointer == 0) {
+  for (j = narg; --j > 0;)
+  {
+    if (uni[0].pointer == 0)
+    {
       uni[0] = uni[j];
       uni[j] = EMPTY_XD;
-    } else if (uni[j].pointer) {
-      if (StrCompare(uni[0].pointer, uni[j].pointer)) {
+    }
+    else if (uni[j].pointer)
+    {
+      if (StrCompare(uni[0].pointer, uni[j].pointer))
+      {
         MdsFree1Dx(&uni[0], NULL);
         uni[0] = BAD;
         break;

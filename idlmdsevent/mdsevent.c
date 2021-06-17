@@ -53,13 +53,17 @@ EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
 Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
-#include <ipdesc.h>
-#include <mdsplus/mdsconfig.h>
-#include <mdsshr.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 
-typedef struct _event_struct {
+#include <mdsplus/mdsconfig.h>
+#include <ipdesc.h>
+#include <mdsshr.h>
+#include <socket_port.h>
+
+typedef struct _event_struct
+{
   int stub_id;
   int base_id;
   int event_id;
@@ -96,14 +100,16 @@ static void EventAst(void *e, int eventid, char *data);
 #define BlockSig(arg)
 #define UnBlockSig(arg)
 #else
-static int BlockSig(int sig_number) {
+static int BlockSig(int sig_number)
+{
   sigset_t newsigset;
   sigemptyset(&newsigset);
   sigaddset(&newsigset, sig_number);
   return sigprocmask(SIG_BLOCK, &newsigset, NULL);
 }
 
-static int UnBlockSig(int sig_number) {
+static int UnBlockSig(int sig_number)
+{
   sigset_t newsigset;
   sigemptyset(&newsigset);
   sigaddset(&newsigset, sig_number);
@@ -111,19 +117,22 @@ static int UnBlockSig(int sig_number) {
 }
 #endif
 
-EXPORT int IDLMdsEventCan(int argc, void **argv) {
+EXPORT int IDLMdsEventCan(int argc, void **argv)
+{
   int status = 0;
-  if (argc == 2) {
+  if (argc == 2)
+  {
     EventStruct *e, *p;
-    SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
-    int eventid = (unsigned int)((char *)argv[1] - (char *)0);
+    SOCKET sock = (SOCKET)((intptr_t)argv[0]);
+    int eventid = (int)((intptr_t)argv[1]);
     BlockSig(SIGALRM);
     status = (sock >= 0) ? MdsEventCan(sock, eventid) : MDSEventCan(eventid);
     UnBlockSig(SIGALRM);
     for (e = EventList, p = 0; e && e->loc_event_id != eventid;
          p = e, e = e->next)
       ;
-    if (e) {
+    if (e)
+    {
 #ifdef _WIN32
       if (e->thread_handle)
         TerminateThread(e->thread_handle, 0);
@@ -138,16 +147,19 @@ EXPORT int IDLMdsEventCan(int argc, void **argv) {
   return status;
 }
 
-EXPORT int IDLMdsGetevi(int argc, void **argv) {
-  if (argc == 2) {
-    int eventid = (unsigned int)((char *)argv[0] - (char *)0);
+EXPORT int IDLMdsGetevi(int argc, void **argv)
+{
+  if (argc == 2)
+  {
+    int eventid = (int)((intptr_t)argv[0]);
     EventStruct *e;
     for (e = EventList; e && e->loc_event_id != eventid; e = e->next)
       ;
     if (e)
       memcpy(argv[1], e, 52);
     return (e != 0);
-  } else
+  }
+  else
     return 0;
 }
 
@@ -156,7 +168,8 @@ static int event_pipe[2];
 
 static void DoEventUpdate(XtPointer client_data __attribute__((unused)),
                           int *source __attribute__((unused)),
-                          XtInputId *id __attribute__((unused))) {
+                          XtInputId *id __attribute__((unused)))
+{
   char *stub_rec;
   char *base_rec;
   EventStruct *e;
@@ -164,7 +177,8 @@ static void DoEventUpdate(XtPointer client_data __attribute__((unused)),
   if (read(event_pipe[0], &e, sizeof(EventStruct *)) == -1)
     perror("Error reading from event pipe\n");
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id)) &&
-      (base_rec = IDL_WidgetStubLookup(e->base_id))) {
+      (base_rec = IDL_WidgetStubLookup(e->base_id)))
+  {
 #ifdef _WIN32
     HWND wid1, wid2;
 #endif
@@ -178,7 +192,8 @@ static void DoEventUpdate(XtPointer client_data __attribute__((unused)),
       Widget w;
       IDL_WidgetGetStubIds(base_rec, (unsigned long *)&top,
                            (unsigned long *)&w);
-      if (w) {
+      if (w)
+      {
         XClientMessageEvent event;
         event.type = ClientMessage;
         event.display = XtDisplay(top);
@@ -193,7 +208,8 @@ static void DoEventUpdate(XtPointer client_data __attribute__((unused)),
   }
 }
 
-static void EventAst(void *e_in, int len, char *data) {
+static void EventAst(void *e_in, int len, char *data)
+{
   EventStruct *e = (EventStruct *)e_in;
   if (len > 0)
     memcpy(e->value, data, len > 12 ? 12 : len);
@@ -201,9 +217,11 @@ static void EventAst(void *e_in, int len, char *data) {
     perror("Error writing to event pipe\n");
 }
 #endif
-EXPORT int IDLMdsEvent(int argc, void **argv) {
-  if (argc == 4) {
-    SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
+EXPORT int IDLMdsEvent(int argc, void **argv)
+{
+  if (argc == 4)
+  {
+    SOCKET sock = (SOCKET)(intptr_t)argv[0];
     int *base_id = (int *)argv[1];
     int *stub_id = (int *)argv[2];
     char *name = (char *)argv[3];
@@ -214,25 +232,30 @@ EXPORT int IDLMdsEvent(int argc, void **argv) {
       char *stub_rec;
       IDL_WidgetStubLock(TRUE);
       if ((parent_rec = IDL_WidgetStubLookup(*base_id)) &&
-          (stub_rec = IDL_WidgetStubLookup(*stub_id))) {
+          (stub_rec = IDL_WidgetStubLookup(*stub_id)))
+      {
         /* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
 #ifdef _WIN32
-        if (sock != INVALID_SOCKET) {
+        if (sock != INVALID_SOCKET)
+        {
           e->thread_handle =
               CreateThread((LPSECURITY_ATTRIBUTES)NULL, 0,
                            (LPTHREAD_START_ROUTINE)MdsDispatchEvent,
                            (LPVOID)sock, (DWORD)NULL, &e->thread_id);
-        } else
+        }
+        else
           e->thread_handle = 0;
 #else
-        if (!XTINPUTID) {
+        if (!XTINPUTID)
+        {
           Widget w1, w2;
           IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1,
                                (unsigned long *)&w2);
-          if (sock != INVALID_SOCKET) {
+          if (sock != INVALID_SOCKET)
+          {
             XtAppAddInput(XtWidgetToApplicationContext(w1), sock,
                           (XtPointer)XtInputExceptMask, MdsDispatchEvent,
-                          (char *)0 + sock);
+                          (void *)(intptr_t)sock);
           }
           if (pipe(event_pipe) == -1)
             perror("Error creating event pipes\n");
@@ -252,9 +275,12 @@ EXPORT int IDLMdsEvent(int argc, void **argv) {
 #pragma GCC diagnostic pop
         e->next = EventList;
         EventList = e;
-        if (sock != INVALID_SOCKET) {
+        if (sock != INVALID_SOCKET)
+        {
           MdsEventAst(sock, name, EventAst, e, &e->event_id);
-        } else {
+        }
+        else
+        {
           MDSEventAst(name, EventAst, e, &e->event_id);
         }
         IDL_WidgetStubLock(FALSE);
@@ -268,7 +294,8 @@ EXPORT int IDLMdsEvent(int argc, void **argv) {
 }
 
 #ifdef _WIN32
-static void EventAst(void *e_in, int len, char *data) {
+static void EventAst(void *e_in, int len, char *data)
+{
   EventStruct *e = (EventStruct *)e_in;
   char *stub_rec;
   char *base_rec;
@@ -276,7 +303,8 @@ static void EventAst(void *e_in, int len, char *data) {
   if (len > 0)
     memcpy(e->value, data, len > 12 ? 12 : len);
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id)) &&
-      (base_rec = IDL_WidgetStubLookup(e->base_id))) {
+      (base_rec = IDL_WidgetStubLookup(e->base_id)))
+  {
     HWND wid1, wid2;
     IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
     IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);

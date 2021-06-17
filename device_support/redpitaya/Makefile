@@ -1,11 +1,11 @@
 
 CC=g++
 
-CFLAGS =  -fPIC  -o2  -Wall -DLINUX -I${MDSPLUS_DIR}/include -I.
+CFLAGS =  -fPIC  -std=c++11 -o2  -Wall -DLINUX -I${MDSPLUS_DIR}/include -I.
 LDFLAGS =  -L${MDSPLUS_DIR}/lib  -lpthread -lMdsObjectsCppShr 
 
 
-SOURCES=redpitaya.cpp 
+SOURCES=redpitaya.cpp AsyncStoreManager.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 SHAREDLIB=libredpitaya.so
 EXE=test

@@ -37,14 +37,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **************************************************************/
 
 EXPORT int TclSetReadonly(void *ctx, char **error,
-                          char **output __attribute__((unused))) {
+                          char **output __attribute__((unused)))
+{
   int status = 1;
 
   /*--------------------------------------------------------
    * Executable ...
    *-------------------------------------------------------*/
   status = TreeSetDbiItm(DbiREADONLY, (cli_present(ctx, "OFF") & 1) == 0);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error,

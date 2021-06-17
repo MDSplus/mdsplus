@@ -84,12 +84,14 @@ char *bfgets(char *s, int size, FILE *stream,
 static void tdiputs(char *line);
 */
 /* Lookup up entry point in shareable */
-void *dlsymget(void *handle, char *sym) {
+void *dlsymget(void *handle, char *sym)
+{
   char *error;
   void *ret = NULL;
   ret = dlsym(handle, sym);
   dlerror(); /* Clear any existing error */
-  if ((error = dlerror()) != NULL) {
+  if ((error = dlerror()) != NULL)
+  {
     fprintf(stderr, "%s\n", error);
     exit(1);
   }
@@ -98,7 +100,8 @@ void *dlsymget(void *handle, char *sym) {
 
 #pragma GCC diagnostic ignored "-Wunused-result"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   FILE *in = stdin;
   int status;
   char temp[MAXEXPR]; /* temp strings for command */
@@ -124,9 +127,11 @@ int main(int argc, char **argv) {
   strcat(hfile, HFILE);
 #endif
 #ifdef DYNTdiShr
-  if (TDIhandle == NULL) {
+  if (TDIhandle == NULL)
+  {
     TDIhandle = dlopen(DYNTdiShr, RTLD_LAZY);
-    if (!TDIhandle) {
+    if (!TDIhandle)
+    {
       fprintf(stderr, "%s\n", dlerror());
       exit(1);
     }
@@ -135,12 +140,14 @@ int main(int argc, char **argv) {
 #endif
 
 #ifdef DYNreadline
-  if (READhandle == NULL) {
+  if (READhandle == NULL)
+  {
     CURSEShandle = dlopen(DYNcurses, RTLD_NOW | RTLD_GLOBAL);
     READhandle = dlopen(DYNreadline, RTLD_LAZY);
     //      READhandle = dlopen(DYNreadline, RTLD_NOW);
     //      READhandle = dlopen(DYNreadline, RTLD_NOW | RTLD_GLOBAL);
-    if (!READhandle) {
+    if (!READhandle)
+    {
       fprintf(stderr, "%s\n", dlerror());
       exit(1);
     }
@@ -156,70 +163,89 @@ int main(int argc, char **argv) {
   Busing_history();
   *last_line = 0;
   /* get input from file */
-  if (argc > 1) {
+  if (argc > 1)
+  {
     in = fopen(argv[1], "r");
-    if (in == (FILE *)0) {
+    if (in == (FILE *)0)
+    {
       printf("Error opening input file /%s/\n", argv[1]);
       return (0);
     }
   }
   /* if specified, output to a file, defaults to stdout */
-  if (argc > 2) {
+  if (argc > 2)
+  {
     struct descriptor out_d = {0, DTYPE_T, CLASS_S, 0};
     out_d.length = (unsigned short)strlen(argv[2]);
     out_d.pointer = argv[2];
     BTdiExecute(&out_unit_other, &out_d, &output_unit MDS_END_ARG);
-  } else {
+  }
+  else
+  {
     BTdiExecute(&out_unit_stdout, &output_unit MDS_END_ARG);
   }
   /* get history loaded */
   Bread_history(hfile);
   /* main loop to get characters */
-  while (bfgets(line_in, MAXEXPR, in, PROMPT) != NULL) {
+  while (bfgets(line_in, MAXEXPR, in, PROMPT) != NULL)
+  {
     int comment = line_in[0] == '%'; /* is a comment */
     int len = strlen(line_in);       /* get first line of command */
-    if (!comment) {
+    if (!comment)
+    {
       BTdiExecute(&reset_output_unit, &output_unit, &ans MDS_END_ARG);
       /*	 tdiputs(line_in);*/
     }
     /* if a continuation, keep getting the rest of the command */
-    while (line_in[len - 1] == '\\') {
+    while (line_in[len - 1] == '\\')
+    {
       bfgets(&line_in[len - 1], MAXEXPR - len + 1, in, "> ");
       /*	 if (!comment) tdiputs(&line_in[len-1]);*/
       len = strlen(line_in);
     }
-    if (!comment) {
+    if (!comment)
+    {
       static DESCRIPTOR(error_out, "_MSG=DEBUG(0),DEBUG(4),WRITE($,_MSG)");
       static DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
 #ifdef OLDHIST
-      if (!strcmp(line_in, last_line) || (*line_in == ' ')) {
+      if (!strcmp(line_in, last_line) || (*line_in == ' '))
+      {
         /*		printf("Removing [%d]\n",Bwhere_history());*/
         HIST_ENTRY *entry = Bremove_history(Bwhere_history());
-        if (entry) {
+        if (entry)
+        {
           free(entry->line);
           free(entry);
         }
-      } else
+      }
+      else
         strcpy(last_line, line_in);
 #else
-      if (*line_in && (*line_in != ' ') && strcmp(line_in, last_line)) {
+      if (*line_in && (*line_in != ' ') && strcmp(line_in, last_line))
+      {
         Badd_history(line_in);
         strcpy(last_line, line_in);
       }
 #endif
       /* Check the special TDIC options */
-      if (!strcmp(line_in, "exit") || !strcmp(line_in, "quit")) {
+      if (!strcmp(line_in, "exit") || !strcmp(line_in, "quit"))
+      {
         Bwrite_history(hfile);
-        if (getenv("HISTFILESIZE")) {
+        if (getenv("HISTFILESIZE"))
+        {
           int i;
           sscanf(getenv("HISTFILESIZE"), "%d", &i);
           Bhistory_truncate_file(hfile, i);
         }
         exit(1);
-      } else if (*line_in == '!') {
+      }
+      else if (*line_in == '!')
+      {
         *line_in = ' '; /* replace by a space */
         system(line_in);
-      } else if (!strcmp(line_in, "help") || !strcmp(line_in, "man")) {
+      }
+      else if (!strcmp(line_in, "help") || !strcmp(line_in, "man"))
+      {
         printf("TDI(C) reference (October 1999)\n");
         printf("      help func <help function>\n");
         printf("      help func* <lists 1st line of each help>\n");
@@ -229,13 +255,16 @@ int main(int argc, char **argv) {
         printf("      tcl <TCL command>\n      open <shot#>\n");
         printf("      !<shell command>\n      man [TDI intrinsic]\n");
         printf("      exit (guess)\n      ; behaves as in MatLab\n");
-      } else if (!strncmp(line_in, "type ", 5)) {
+      }
+      else if (!strncmp(line_in, "type ", 5))
+      {
         char *nameStart, *nameEnd, *mdspath, *tpath;
         struct stat statf;
         strcpy(temp, line_in + 5); /* copy the target */
                                    /* Check the path name for finding file */
         mdspath = getenv(MDSPATH); /* get pointer */
-        if (mdspath == NULL) {
+        if (mdspath == NULL)
+        {
           printf("Path [%s] not defined !\n", MDSPATH);
           return (0);
         }
@@ -254,64 +283,82 @@ int main(int argc, char **argv) {
         *++nameEnd = '\0';
         /* If there is anything left, scan the path */
         if (strlen(nameStart))
-          do {
+          do
+          {
             strcpy(line_in, "more ");
-            if ((tpath = strchr(mdspath, ';')) == NULL) {
+            if ((tpath = strchr(mdspath, ';')) == NULL)
+            {
               strcat(line_in, mdspath);
-            } else {
+            }
+            else
+            {
               strncat(line_in, mdspath, tpath - mdspath);
               mdspath = tpath + 1; /* put to next char */
             }
             strcat(line_in, "/");
             strcat(line_in, nameStart); /* put back the target */
             strcat(line_in, ".fun");
-            if (!stat(line_in + 5, &statf)) {
+            if (!stat(line_in + 5, &statf))
+            {
               printf("Found <%s>\n", line_in + 5);
               system(line_in);
               tpath = NULL;
             }
           } while (tpath != NULL);
-      } else if (!strncmp(line_in, "man ", 4)) {
+      }
+      else if (!strncmp(line_in, "man ", 4))
+      {
         strcpy(temp, line_in + 4); /* copy the target */
         strcpy(line_in, "man ");
         strcat(line_in, temp); /* put back the target */
         system(line_in);
-      } else if (!strncmp(line_in, "tcl", 3)) {
+      }
+      else if (!strncmp(line_in, "tcl", 3))
+      {
         strcpy(line_in, "$MDSPLUS/bin/tcl"); /* move the text to the left */
         system(line_in);
       }
 #ifdef NEVER
-      else if (!strncmp(line_in, "tcl", 3)) {
+      else if (!strncmp(line_in, "tcl", 3))
+      {
         strcpy(line_in, line_in + 4); /* move the text to the left */
         mdsdcl$do(&Dtcl, &Dcommand);
-      } else if (!strncmp(line_in, "open", 4)) {
+      }
+      else if (!strncmp(line_in, "open", 4))
+      {
         strcpy(temp, line_in + 5); /* copy shot number into temp */
         strcpy(line_in, "set tree tcv_shot/shot=");
         strcat(line_in, temp); /* concantenate the number */
         mdsdcl$do(&Dtcl, &Dcommand);
       }
 #endif
-      else {
+      else
+      {
 #ifdef NEVER
-        else if (!strncmp(line_in, "use ", 4)) {
+        else if (!strncmp(line_in, "use ", 4))
+        {
           strcpy(temp, line_in + 4); /* copy the target */
           strcpy(line_in, "help('");
           strcat(line_in, temp);
           strcat(line_in, "',,1)");
         }
-        else if (line_in[length] != ';') {
+        else if (line_in[length] != ';')
+        {
           strcpy(temp, line_in); /* copy string */
           strcpy(line_in, "write(*,");
           strcat(line_in, temp);
           strcat(line_in, ")");
         }
 #endif
-        if (!strncmp(line_in, "help ", 5)) {
+        if (!strncmp(line_in, "help ", 5))
+        {
           strcpy(temp, line_in + 5); /* copy the target */
           strcpy(line_in, "help('");
           strcat(line_in, temp);
           strcat(line_in, "');");
-        } else if (!strncmp(line_in, "open", 4)) {
+        }
+        else if (!strncmp(line_in, "open", 4))
+        {
           strcpy(temp, line_in + 5); /* copy shot number into temp */
           strcpy(line_in, "TreeOpen('tcv_shot',");
           strcat(line_in, temp); /* concantenate the number */
@@ -332,10 +379,12 @@ int main(int argc, char **argv) {
               expr[expr_dsc.length++] = ')';
         */
         status = BTdiExecute(&expr_dsc, &ans MDS_END_ARG);
-        if (status & 1) {
+        if (STATUS_OK)
+        {
           if (!comment)
             BTdiExecute(&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
-        } else
+        }
+        else
           BTdiExecute(&error_out, &output_unit, &ans MDS_END_ARG);
       }
     }
@@ -357,7 +406,8 @@ static void tdiputs(char *line)
 */
 #ifndef HAVE_READLINE_READLINE_H
 /* Routine to replace fgets using readline on stdin */
-static char *Breadline(char *prompt) {
+static char *Breadline(char *prompt)
+{
   if (prompt)
     printf("%s ", prompt);
   return fgets(malloc(1024), 1023, stdin);
@@ -365,10 +415,12 @@ static char *Breadline(char *prompt) {
 
 static void Badd_history(char *string) { return; }
 #endif
-char *bfgets(char *s, int size, FILE *stream, char *prompt) {
+char *bfgets(char *s, int size, FILE *stream, char *prompt)
+{
   char *rep;
   /* if not stdin, read from file */
-  if (stream == stdin) {
+  if (stream == stdin)
+  {
     rep = Breadline(prompt);
     strncpy(s, rep ? rep : "", size - 1); /* Copy respecting the size limit */
 #ifdef OLDHIST
@@ -378,6 +430,7 @@ char *bfgets(char *s, int size, FILE *stream, char *prompt) {
     free(rep);
     s[size - 1] = '\0'; /* null terminate if necessary */
     return (s);
-  } else
+  }
+  else
     return (fgets(s, size, stream));
 }

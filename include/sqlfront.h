@@ -4,17 +4,18 @@
 #define DBNTWIN32
 #ifdef DBNTWIN32
 #ifndef _WINDOWS_
-#pragma message(                                                               \
-    __FILE__                                                                   \
+#pragma message( \
+    __FILE__     \
     " : db-library error: windows.h must be included before sqlfront.h.")
 #endif
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/*****************************************************************************
+  /*****************************************************************************
  *                                                                            *
  *     SQLFRONT.H - DB-Library header file for the Microsoft SQL Server.      *
  *                                                                            *
@@ -27,11 +28,11 @@ extern "C" {
  *                                                                            *
  *****************************************************************************/
 
-/*****************************************************************************
+  /*****************************************************************************
  * Datatype definitions                                                       *
  *****************************************************************************/
 
-// Note this has changed because Windows 3.1 defines API as 'pascal far'
+  // Note this has changed because Windows 3.1 defines API as 'pascal far'
 
 #if !defined(M_I86SM) && !defined(DBNTWIN32)
 #define SQLAPI cdecl far
@@ -44,10 +45,10 @@ extern "C" {
 #endif
 
 #ifndef DOUBLE
-typedef double DOUBLE;
+  typedef double DOUBLE;
 #endif
 
-/*****************************************************************************
+  /*****************************************************************************
  * DBPROCESS, LOGINREC and DBCURSOR                                           *
  *****************************************************************************/
 
@@ -58,35 +59,35 @@ typedef double DOUBLE;
 
 // DOS Specific
 #ifdef DBMSDOS
-typedef DBPROCESS *PDBPROCESS;
-typedef LOGINREC *PLOGINREC;
-typedef DBCURSOR *PDBCURSOR;
-typedef DBHANDLE *PDBHANDLE;
+  typedef DBPROCESS *PDBPROCESS;
+  typedef LOGINREC *PLOGINREC;
+  typedef DBCURSOR *PDBCURSOR;
+  typedef DBHANDLE *PDBHANDLE;
 #define PTR *
 #endif
 
 // WIN 3.x Specific.  The handle pointers are near for Windows 3.x
 #ifdef DBMSWIN
-typedef DBPROCESS near *PDBPROCESS;
-typedef LOGINREC near *PLOGINREC;
-typedef DBCURSOR near *PDBCURSOR;
-typedef DBHANDLE near *PDBHANDLE;
+  typedef DBPROCESS near *PDBPROCESS;
+  typedef LOGINREC near *PLOGINREC;
+  typedef DBCURSOR near *PDBCURSOR;
+  typedef DBHANDLE near *PDBHANDLE;
 #define PTR far *
 #endif
 
 // Windows NT Specific
 #ifdef DBNTWIN32
-typedef DBPROCESS *PDBPROCESS;
-typedef LOGINREC *PLOGINREC;
-typedef DBCURSOR *PDBCURSOR;
-typedef DBHANDLE *PDBHANDLE;
+  typedef DBPROCESS *PDBPROCESS;
+  typedef LOGINREC *PLOGINREC;
+  typedef DBCURSOR *PDBCURSOR;
+  typedef DBHANDLE *PDBHANDLE;
 #define PTR *
-typedef int(SQLAPI *SQLFARPROC)();
+  typedef int(SQLAPI *SQLFARPROC)();
 #else
 typedef long(far pascal *LGFARPROC)(); // Windows loadable driver fp
 #endif
 
-/*****************************************************************************
+  /*****************************************************************************
  * Win32 compatibility datatype definitions                                   *
  * Note: The following datatypes are provided for Win32 compatibility.        *
  * Since some of the datatypes are already defined in unrelated include files *
@@ -97,45 +98,45 @@ typedef long(far pascal *LGFARPROC)(); // Windows loadable driver fp
 #ifndef DBNTWIN32
 
 #ifndef SHORT
-typedef short SHORT;
+  typedef short SHORT;
 #endif
 
 #ifndef INT
-typedef int INT;
+  typedef int INT;
 #endif
 
 #ifndef UINT
-typedef unsigned int UINT;
+  typedef unsigned int UINT;
 #endif
 
 #ifndef USHORT
-typedef unsigned short USHORT;
+  typedef unsigned short USHORT;
 #endif
 
 #ifndef ULONG
-typedef unsigned long ULONG;
+  typedef unsigned long ULONG;
 #endif
 
 #ifndef CHAR
-typedef char CHAR;
+  typedef char CHAR;
 #endif
 
 #ifndef LPINT
-typedef INT PTR LPINT;
+  typedef INT PTR LPINT;
 #endif
 
-typedef unsigned char BYTE;
+  typedef unsigned char BYTE;
 
-typedef CHAR PTR LPSTR;
-typedef BYTE PTR LPBYTE;
-typedef void PTR LPVOID;
-typedef const CHAR PTR LPCSTR;
+  typedef CHAR PTR LPSTR;
+  typedef BYTE PTR LPBYTE;
+  typedef void PTR LPVOID;
+  typedef const CHAR PTR LPCSTR;
 
-typedef int BOOL;
+  typedef int BOOL;
 
 #endif
 
-/*****************************************************************************
+  /*****************************************************************************
  * DB-Library datatype definitions                                            *
  *****************************************************************************/
 
@@ -148,61 +149,67 @@ typedef int BOOL;
 #define RETCODE INT
 #define STATUS INT
 
-// DB-Library datatypes
-typedef char DBCHAR;
-typedef unsigned char DBBINARY;
-typedef unsigned char DBTINYINT;
-typedef short DBSMALLINT;
-typedef unsigned short DBUSMALLINT;
-typedef long DBINT;
-typedef double DBFLT8;
-typedef unsigned char DBBIT;
-typedef unsigned char DBBOOL;
-typedef float DBFLT4;
-typedef long DBMONEY4;
+  // DB-Library datatypes
+  typedef char DBCHAR;
+  typedef unsigned char DBBINARY;
+  typedef unsigned char DBTINYINT;
+  typedef short DBSMALLINT;
+  typedef unsigned short DBUSMALLINT;
+  typedef long DBINT;
+  typedef double DBFLT8;
+  typedef unsigned char DBBIT;
+  typedef unsigned char DBBOOL;
+  typedef float DBFLT4;
+  typedef long DBMONEY4;
 
-typedef DBFLT4 DBREAL;
-typedef UINT DBUBOOL;
+  typedef DBFLT4 DBREAL;
+  typedef UINT DBUBOOL;
 
-typedef struct dbdatetime4 {
-  USHORT numdays; // No of days since Jan-1-1900
-  USHORT nummins; // No. of minutes since midnight
-} DBDATETIM4;
+  typedef struct dbdatetime4
+  {
+    USHORT numdays; // No of days since Jan-1-1900
+    USHORT nummins; // No. of minutes since midnight
+  } DBDATETIM4;
 
-typedef struct dbvarychar {
-  DBSMALLINT len;
-  DBCHAR str[DBMAXCHAR];
-} DBVARYCHAR;
+  typedef struct dbvarychar
+  {
+    DBSMALLINT len;
+    DBCHAR str[DBMAXCHAR];
+  } DBVARYCHAR;
 
-typedef struct dbvarybin {
-  DBSMALLINT len;
-  BYTE array[DBMAXCHAR];
-} DBVARYBIN;
+  typedef struct dbvarybin
+  {
+    DBSMALLINT len;
+    BYTE array[DBMAXCHAR];
+  } DBVARYBIN;
 
-typedef struct dbmoney {
-  DBINT mnyhigh;
-  ULONG mnylow;
-} DBMONEY;
+  typedef struct dbmoney
+  {
+    DBINT mnyhigh;
+    ULONG mnylow;
+  } DBMONEY;
 
-typedef struct dbdatetime {
-  DBINT dtdays;
-  ULONG dttime;
-} DBDATETIME;
+  typedef struct dbdatetime
+  {
+    DBINT dtdays;
+    ULONG dttime;
+  } DBDATETIME;
 
-// DBDATEREC structure used by dbdatecrack
-typedef struct dbdaterec {
-  INT year;        // 1753 - 9999
-  INT quarter;     // 1 - 4
-  INT month;       // 1 - 12
-  INT dayofyear;   // 1 - 366
-  INT day;         // 1 - 31
-  INT week;        // 1 - 54 (for leap years)
-  INT weekday;     // 1 - 7  (Mon - Sun)
-  INT hour;        // 0 - 23
-  INT minute;      // 0 - 59
-  INT second;      // 0 - 59
-  INT millisecond; // 0 - 999
-} DBDATEREC;
+  // DBDATEREC structure used by dbdatecrack
+  typedef struct dbdaterec
+  {
+    INT year;        // 1753 - 9999
+    INT quarter;     // 1 - 4
+    INT month;       // 1 - 12
+    INT dayofyear;   // 1 - 366
+    INT day;         // 1 - 31
+    INT week;        // 1 - 54 (for leap years)
+    INT weekday;     // 1 - 7  (Mon - Sun)
+    INT hour;        // 0 - 23
+    INT minute;      // 0 - 59
+    INT second;      // 0 - 59
+    INT millisecond; // 0 - 999
+  } DBDATEREC;
 
 #define MAXNUMERICLEN 16
 #define MAXNUMERICDIG 38
@@ -210,21 +217,21 @@ typedef struct dbdaterec {
 #define DEFAULTPRECISION 18
 #define DEFAULTSCALE 0
 
-typedef struct dbnumeric {
-  BYTE precision;
-  BYTE scale;
-  BYTE sign; // 1 = Positive, 0 = Negative
-  BYTE val[MAXNUMERICLEN];
-} DBNUMERIC;
+  typedef struct dbnumeric
+  {
+    BYTE precision;
+    BYTE scale;
+    BYTE sign; // 1 = Positive, 0 = Negative
+    BYTE val[MAXNUMERICLEN];
+  } DBNUMERIC;
 
-typedef DBNUMERIC DBDECIMAL;
+  typedef DBNUMERIC DBDECIMAL;
 
 // Pack the following structures on a word boundary
 #ifdef __BORLANDC__
 #pragma option -a+
 #else
-#ifndef DBLIB_SKIP_PRAGMA_PACK // Define this if your compiler does not support
-                               // #pragma pack()
+#ifndef DBLIB_SKIP_PRAGMA_PACK // Define this if your compiler does not support  #pragma pack()
 #pragma pack(2)
 #endif
 #endif
@@ -232,47 +239,50 @@ typedef DBNUMERIC DBDECIMAL;
 #define MAXCOLNAMELEN 30
 #define MAXTABLENAME 30
 
-typedef struct {
-  DBINT SizeOfStruct;
-  CHAR Name[MAXCOLNAMELEN + 1];
-  CHAR ActualName[MAXCOLNAMELEN + 1];
-  CHAR TableName[MAXTABLENAME + 1];
-  SHORT Type;
-  DBINT UserType;
-  DBINT MaxLength;
-  BYTE Precision;
-  BYTE Scale;
-  BOOL VarLength;     // TRUE, FALSE
-  BYTE Null;          // TRUE, FALSE or DBUNKNOWN
-  BYTE CaseSensitive; // TRUE, FALSE or DBUNKNOWN
-  BYTE Updatable;     // TRUE, FALSE or DBUNKNOWN
-  BOOL Identity;      // TRUE, FALSE
-} DBCOL, PTR LPDBCOL;
+  typedef struct
+  {
+    DBINT SizeOfStruct;
+    CHAR Name[MAXCOLNAMELEN + 1];
+    CHAR ActualName[MAXCOLNAMELEN + 1];
+    CHAR TableName[MAXTABLENAME + 1];
+    SHORT Type;
+    DBINT UserType;
+    DBINT MaxLength;
+    BYTE Precision;
+    BYTE Scale;
+    BOOL VarLength;     // TRUE, FALSE
+    BYTE Null;          // TRUE, FALSE or DBUNKNOWN
+    BYTE CaseSensitive; // TRUE, FALSE or DBUNKNOWN
+    BYTE Updatable;     // TRUE, FALSE or DBUNKNOWN
+    BOOL Identity;      // TRUE, FALSE
+  } DBCOL, PTR LPDBCOL;
 
 #define MAXSERVERNAME 30
 #define MAXNETLIBNAME 255
 #define MAXNETLIBCONNSTR 255
 
-typedef struct {
-  DBINT SizeOfStruct;
-  BYTE ServerType;
-  USHORT ServerMajor;
-  USHORT ServerMinor;
-  USHORT ServerRevision;
-  CHAR ServerName[MAXSERVERNAME + 1];
-  CHAR NetLibName[MAXNETLIBNAME + 1];
-  CHAR NetLibConnStr[MAXNETLIBCONNSTR + 1];
-} DBPROCINFO, PTR LPDBPROCINFO;
+  typedef struct
+  {
+    DBINT SizeOfStruct;
+    BYTE ServerType;
+    USHORT ServerMajor;
+    USHORT ServerMinor;
+    USHORT ServerRevision;
+    CHAR ServerName[MAXSERVERNAME + 1];
+    CHAR NetLibName[MAXNETLIBNAME + 1];
+    CHAR NetLibConnStr[MAXNETLIBCONNSTR + 1];
+  } DBPROCINFO, PTR LPDBPROCINFO;
 
-typedef struct {
-  DBINT SizeOfStruct;   // Use sizeof(DBCURSORINFO)
-  ULONG TotCols;        // Total Columns in cursor
-  ULONG TotRows;        // Total Rows in cursor
-  ULONG CurRow;         // Current actual row in server
-  ULONG TotRowsFetched; // Total rows actually fetched
-  ULONG Type;           // See CU_...
-  ULONG Status;         // See CU_...
-} DBCURSORINFO, PTR LPDBCURSORINFO;
+  typedef struct
+  {
+    DBINT SizeOfStruct;   // Use sizeof(DBCURSORINFO)
+    ULONG TotCols;        // Total Columns in cursor
+    ULONG TotRows;        // Total Rows in cursor
+    ULONG CurRow;         // Current actual row in server
+    ULONG TotRowsFetched; // Total rows actually fetched
+    ULONG Type;           // See CU_...
+    ULONG Status;         // See CU_...
+  } DBCURSORINFO, PTR LPDBCURSORINFO;
 
 #define INVALID_UROWNUM ((ULONG)(-1))
 
@@ -280,32 +290,31 @@ typedef struct {
 #ifdef __BORLANDC__
 #pragma option -a-
 #else
-#ifndef DBLIB_SKIP_PRAGMA_PACK // Define this if your compiler does not support
-                               // #pragma pack()
+#ifndef DBLIB_SKIP_PRAGMA_PACK // Define this if your compiler does not support  #pragma pack()
 #pragma pack()
 #endif
 #endif
 
 #endif // End DBTYPEDEFS
 
-/*****************************************************************************
+  /*****************************************************************************
  * Pointer Datatypes                                                          *
  *****************************************************************************/
 
-typedef const LPINT LPCINT;
-typedef const LPBYTE LPCBYTE;
-typedef USHORT PTR LPUSHORT;
-typedef const LPUSHORT LPCUSHORT;
-typedef DBINT PTR LPDBINT;
-typedef const LPDBINT LPCDBINT;
-typedef DBBINARY PTR LPDBBINARY;
-typedef const LPDBBINARY LPCDBBINARY;
-typedef DBDATEREC PTR LPDBDATEREC;
-typedef const LPDBDATEREC LPCDBDATEREC;
-typedef DBDATETIME PTR LPDBDATETIME;
-typedef const LPDBDATETIME LPCDBDATETIME;
+  typedef const LPINT LPCINT;
+  typedef const LPBYTE LPCBYTE;
+  typedef USHORT PTR LPUSHORT;
+  typedef const LPUSHORT LPCUSHORT;
+  typedef DBINT PTR LPDBINT;
+  typedef const LPDBINT LPCDBINT;
+  typedef DBBINARY PTR LPDBBINARY;
+  typedef const LPDBBINARY LPCDBBINARY;
+  typedef DBDATEREC PTR LPDBDATEREC;
+  typedef const LPDBDATEREC LPCDBDATEREC;
+  typedef DBDATETIME PTR LPDBDATETIME;
+  typedef const LPDBDATETIME LPCDBDATETIME;
 
-/*****************************************************************************
+  /*****************************************************************************
  * General #defines                                                           *
  *****************************************************************************/
 
@@ -317,8 +326,13 @@ typedef const LPDBDATETIME LPCDBDATETIME;
 #define SERVTYPE_UNKNOWN 0
 #define SERVTYPE_MICROSOFT 1
 
-// Used by dbcolinfo
-enum CI_TYPES { CI_REGULAR = 1, CI_ALTERNATE = 2, CI_CURSOR = 3 };
+  // Used by dbcolinfo
+  enum CI_TYPES
+  {
+    CI_REGULAR = 1,
+    CI_ALTERNATE = 2,
+    CI_CURSOR = 3
+  };
 
 // Bulk Copy Definitions (bcp)
 #define DB_IN 1  // Transfer from client to server
@@ -591,9 +605,9 @@ enum CI_TYPES { CI_REGULAR = 1, CI_ALTERNATE = 2, CI_CURSOR = 3 };
 // DBPROCESS is still alive
 #define EXPROGRAM 7  // Coding error in user program
 #define EXRESOURCE 8 // Running out of resources - the DBPROCESS may be dead
-#define EXCOMM 9 // Failure in communication with Server - the DBPROCESS is dead
-#define EXFATAL 10 // Fatal error - the DBPROCESS is dead
-#define EXCONSISTENCY                                                          \
+#define EXCOMM 9     // Failure in communication with Server - the DBPROCESS is dead
+#define EXFATAL 10   // Fatal error - the DBPROCESS is dead
+#define EXCONSISTENCY \
   11 // Internal software error  - notify MS Technical Supprt
 
 // Offset identifiers
@@ -670,7 +684,7 @@ enum CI_TYPES { CI_REGULAR = 1, CI_ALTERNATE = 2, CI_CURSOR = 3 };
 #define CUR_OPTCC 3 // Optimistic concurrency control, data modifications
 // succeed only if the row hasn't been updated since
 // the last fetch.
-#define CUR_OPTCCVAL                                                           \
+#define CUR_OPTCCVAL \
   4 // Optimistic concurrency control based on selected column values
 
 // Following flags are used in the scrollopt parameter in dbcursoropen
@@ -741,10 +755,10 @@ enum CI_TYPES { CI_REGULAR = 1, CI_ALTERNATE = 2, CI_CURSOR = 3 };
 #define NOT_SUPPORTED 0x0008
 #define ENUM_INVALID_PARAM 0x0010
 
-// Netlib Error problem codes.  ConnectionError() should return one of
-// these as the dblib-mapped problem code, so the corresponding string
-// is sent to the dblib app's error handler as dberrstr.  Return NE_E_NOMAP
-// for a generic DB-Library error string (as in prior versions of dblib).
+  // Netlib Error problem codes.  ConnectionError() should return one of
+  // these as the dblib-mapped problem code, so the corresponding string
+  // is sent to the dblib app's error handler as dberrstr.  Return NE_E_NOMAP
+  // for a generic DB-Library error string (as in prior versions of dblib).
 
 #define NE_E_NOMAP 0          // No string; uses dblib default.
 #define NE_E_NOMEMORY 1       // Insufficient memory.
@@ -757,16 +771,16 @@ enum CI_TYPES { CI_REGULAR = 1, CI_ALTERNATE = 2, CI_CURSOR = 3 };
 #define NE_E_NORESOURCE 8     // Insufficient network resources.
 #define NE_E_NETBUSY 9        // Network is busy.
 #define NE_E_NONETACCESS 10   // Network access denied.
-#define NE_E_GENERAL 11  // General network error.  Check your documentation.
-#define NE_E_CONNMODE 12 // Incorrect connection mode.
-#define NE_E_NAMENOTFOUND 13 // Name not found in directory service.
-#define NE_E_INVALIDCONN 14  // Invalid connection.
-#define NE_E_NETDATAERR 15   // Error reading or writing network data.
-#define NE_E_TOOMANYFILES 16 // Too many open file handles.
-#define NE_E_CANTCONNECT 17  // SQL Server does not exist or access denied.
-#define NE_E_SSLSEC 18       // SSL Security error
-#define NE_E_ENCRYPT_REQ 19  // Server requires encryption
-#define NE_ENCRPYT_NOTSUP 20 // Encryption not supported on SQL Server
+#define NE_E_GENERAL 11       // General network error.  Check your documentation.
+#define NE_E_CONNMODE 12      // Incorrect connection mode.
+#define NE_E_NAMENOTFOUND 13  // Name not found in directory service.
+#define NE_E_INVALIDCONN 14   // Invalid connection.
+#define NE_E_NETDATAERR 15    // Error reading or writing network data.
+#define NE_E_TOOMANYFILES 16  // Too many open file handles.
+#define NE_E_CANTCONNECT 17   // SQL Server does not exist or access denied.
+#define NE_E_SSLSEC 18        // SSL Security error
+#define NE_E_ENCRYPT_REQ 19   // Server requires encryption
+#define NE_ENCRPYT_NOTSUP 20  // Encryption not supported on SQL Server
 
 #define NE_MAX_NETERROR 20
 

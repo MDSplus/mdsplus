@@ -63,7 +63,8 @@ int getPixelSize(
 }
 
 // Support class for enqueueing Frame streaming requests
-class StreamingFrame {
+class StreamingFrame
+{
 
   void *frame;
   int width;
@@ -92,7 +93,8 @@ public:
                  unsigned int *lowLim, unsigned int *highLim,
                  unsigned int minLim, unsigned int maxLim, int adjRoiX,
                  int adjRoiY, int adjRoiW, int adjRoiH,
-                 const char *deviceName) {
+                 const char *deviceName)
+  {
     this->tcpStreamHandle = tcpStreamHandle;
     this->frame = frame;
     this->width = width;
@@ -118,7 +120,8 @@ public:
 
   StreamingFrame *getNext() { return nxt; }
 
-  void streaming() {
+  void streaming()
+  {
     unsigned char *frame8bit =
         (unsigned char *)calloc(1, width * height * sizeof(char));
     camFrameTo8bit(frame, width, height, pixelFormat, frame8bit, adjLimit,
@@ -156,7 +159,8 @@ public:
   }
 };
 
-class StreamingFrameList {
+class StreamingFrameList
+{
 public:
   pthread_cond_t itemAvailable;
   pthread_t thread;
@@ -166,7 +170,8 @@ public:
   pthread_mutex_t mutex;
 
 public:
-  StreamingFrameList() {
+  StreamingFrameList()
+  {
     int status = pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&itemAvailable, NULL);
     streamingHead = streamingTail = NULL;
@@ -179,16 +184,20 @@ public:
                          bool adjLimit, unsigned int *lowLim,
                          unsigned int *highLim, unsigned int minLim,
                          unsigned int maxLim, int adjRoiX, int adjRoiY,
-                         int adjRoiW, int adjRoiH, const char *deviceName) {
+                         int adjRoiW, int adjRoiH, const char *deviceName)
+  {
     // printf("add streaming frame\n");
     StreamingFrame *newItem = new StreamingFrame(
         tcpStreamHandle, frame, width, height, pixelFormat, irFrameFormat,
         adjLimit, lowLim, highLim, minLim, maxLim, adjRoiX, adjRoiY, adjRoiW,
         adjRoiH, deviceName);
     pthread_mutex_lock(&mutex);
-    if (streamingHead == NULL) {
+    if (streamingHead == NULL)
+    {
       streamingHead = streamingTail = newItem;
-    } else {
+    }
+    else
+    {
       streamingTail->setNext(newItem);
       streamingTail = newItem;
     }
@@ -196,15 +205,20 @@ public:
     pthread_mutex_unlock(&mutex);
   }
 
-  void executeItems() {
-    while (true) {
-      if (stopReq && streamingHead == NULL) {
+  void executeItems()
+  {
+    while (true)
+    {
+      if (stopReq && streamingHead == NULL)
+      {
         pthread_mutex_destroy(&mutex);
         pthread_exit(NULL);
       }
 
-      while (streamingHead == NULL) {
-        if (stopReq && streamingHead == NULL) {
+      while (streamingHead == NULL)
+      {
+        if (stopReq && streamingHead == NULL)
+        {
           pthread_mutex_destroy(&mutex);
           pthread_exit(NULL);
         }
@@ -241,35 +255,42 @@ public:
     }
   }
 
-  void start() {
+  void start()
+  {
     pthread_create(&thread, NULL, handleStreaming, (void *)this);
     threadCreated = true;
   }
 
-  void stop() {
+  void stop()
+  {
     stopReq = true;
     pthread_cond_signal(&itemAvailable);
-    if (threadCreated) {
+    if (threadCreated)
+    {
       pthread_join(thread, NULL);
       printf("Streaming THREAD TERMINATED\n");
     }
   }
 };
 
-void *handleStreaming(void *listPtr) {
+void *handleStreaming(void *listPtr)
+{
   StreamingFrameList *list = (StreamingFrameList *)listPtr;
   list->executeItems();
   return NULL;
 }
 
-void camStartStreaming(void **retList) {
+void camStartStreaming(void **retList)
+{
   StreamingFrameList *streamingFrameList = new StreamingFrameList;
   streamingFrameList->start();
   *retList = (void *)streamingFrameList;
 }
 
-void camStopStreaming(void *listPtr) {
-  if (listPtr) {
+void camStopStreaming(void *listPtr)
+{
+  if (listPtr)
+  {
     StreamingFrameList *list = (StreamingFrameList *)listPtr;
     list->stop();
     delete list;
@@ -281,19 +302,25 @@ void camStreamingFrame(int tcpStreamHandle, void *frame, int width, int height,
                        unsigned int *lowLim, unsigned int *highLim,
                        unsigned int minLim, unsigned int maxLim, int adjRoiX,
                        int adjRoiY, int adjRoiW, int adjRoiH,
-                       const char *deviceName, void *streamingListPtr) {
+                       const char *deviceName, void *streamingListPtr)
+{
   void *bufFrame;
 
   int pixelSize = getPixelSize(pixelFormat);
   int frameSize = width * height;
 
-  if (pixelSize <= 8) {
+  if (pixelSize <= 8)
+  {
     bufFrame = new char[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(char));
-  } else if (pixelSize <= 16) {
+  }
+  else if (pixelSize <= 16)
+  {
     bufFrame = new short[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(short));
-  } else if (pixelSize <= 32) {
+  }
+  else if (pixelSize <= 32)
+  {
     bufFrame = new int[frameSize];
     memcpy(bufFrame, frame, frameSize * sizeof(int));
   }
@@ -311,7 +338,8 @@ void camStreamingFrame(int tcpStreamHandle, void *frame, int width, int height,
  * (connection to FFMPEG)*/
 int camOpenTcpConnection(const char *streamingServer, int StreamingPort,
                          int *kSockHandle, int width, int height,
-                         int pixelFormat) {
+                         int pixelFormat)
+{
   struct sockaddr_in sin;
   struct hostent *hp;
 
@@ -321,7 +349,8 @@ int camOpenTcpConnection(const char *streamingServer, int StreamingPort,
 
   /* Resolve the passed name and store the resulting long representation in the
    * struct hostent variable */
-  if ((hp = gethostbyname(streamingServer)) == 0) {
+  if ((hp = gethostbyname(streamingServer)) == 0)
+  {
     // perror("gethostbyname");
     return -1;
   }
@@ -333,8 +362,10 @@ int camOpenTcpConnection(const char *streamingServer, int StreamingPort,
   sin.sin_port = htons(StreamingPort);
 
   /* create a new socket */
-  if (*kSockHandle == -1) {
-    if ((*kSockHandle = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+  if (*kSockHandle == -1)
+  {
+    if ((*kSockHandle = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    {
       // perror("socket");
       return -1;
     }
@@ -371,7 +402,8 @@ int camOpenTcpConnection(const char *streamingServer, int StreamingPort,
   // 20170615 fede end new
 
   /* connect the socket to the port and host specified in struct sockaddr_in */
-  if (connect(*kSockHandle, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
+  if (connect(*kSockHandle, (struct sockaddr *)&sin, sizeof(sin)) == -1)
+  {
     // perror("connect");
     // char lDoodle[] = "-+*";
     // printf("%c Error: connection refused!\r", lDoodle[rand()%3]);
@@ -388,17 +420,20 @@ int camOpenTcpConnection(const char *streamingServer, int StreamingPort,
   int netPixelFormat = htonl(pixelFormat);
 
   /* init frame size streaming */
-  if (send(*kSockHandle, &netWidth, sizeof(netWidth), 0) == -1) {
+  if (send(*kSockHandle, &netWidth, sizeof(netWidth), 0) == -1)
+  {
     // perror("send width");
     return -1;
   }
 
-  if (send(*kSockHandle, &netHeight, sizeof(netHeight), 0) == -1) {
+  if (send(*kSockHandle, &netHeight, sizeof(netHeight), 0) == -1)
+  {
     // perror("send height");
     return -1;
   }
 
-  if (send(*kSockHandle, &netPixelFormat, sizeof(netPixelFormat), 0) == -1) {
+  if (send(*kSockHandle, &netPixelFormat, sizeof(netPixelFormat), 0) == -1)
+  {
     // perror("send pixel format");
     return -1;
   }
@@ -407,9 +442,12 @@ int camOpenTcpConnection(const char *streamingServer, int StreamingPort,
 }
 
 // close TCP connection
-int camCloseTcpConnection(int *kSockHandle) {
-  if (*kSockHandle != -1) {
-    if (close(*kSockHandle) == -1) {
+int camCloseTcpConnection(int *kSockHandle)
+{
+  if (*kSockHandle != -1)
+  {
+    if (close(*kSockHandle) == -1)
+    {
       perror("close");
       return -1;
     }
@@ -420,12 +458,14 @@ int camCloseTcpConnection(int *kSockHandle) {
 
 // send 8bit frame over the opened TCP connection
 int camSendFrameOnTcp(int *kSockHandle, int width, int height,
-                      void *frame8bit) {
+                      void *frame8bit)
+{
 #ifdef debug
   cout << "camSendFrameOnTcp. Handle:" << *kSockHandle << endl;
 #endif
 
-  if (*kSockHandle != -1) {
+  if (*kSockHandle != -1)
+  {
     int total = 0;                  // how many bytes we've sent
     int bytesleft = width * height; // how many we have left to send
     int n;
@@ -434,28 +474,35 @@ int camSendFrameOnTcp(int *kSockHandle, int width, int height,
     {
       n = send(*kSockHandle, (void *)((char *)frame8bit + total), bytesleft,
                0); // flags: 0, MSG_DONTWAIT
-      if (n == -1) {
+      if (n == -1)
+      {
         printf("TCP send failed. Code: %d |  %s\n", errno, strerror(errno));
         if (errno == 11) // Resource temporarily unavailable
         {
           return -1;
-        } // return without close the connection
+        }                                   // return without close the connection
         camCloseTcpConnection(kSockHandle); // if send fail -> close socket
         return -1;
-      } else {
+      }
+      else
+      {
         total += n;
         bytesleft -= n;
         //         printf("Sent %d bytes. Bytesleft %d.\n", n, bytesleft); //%zu
-        if (bytesleft != 0) {
+        if (bytesleft != 0)
+        {
           printf("Wait for sending remaining bytes...\n");
           // usleep(100000);//100ms
         }
       }
     }
 #ifdef debug
-    cout << "Frame spedito su TCP.\n" << endl;
+    cout << "Frame spedito su TCP.\n"
+         << endl;
 #endif
-  } else {
+  }
+  else
+  {
     return -1;
   }
   return 0;
@@ -465,7 +512,8 @@ int camFrameTo8bit(void *frame, int width, int height, int pixelFormat,
                    unsigned char *frame8bit, bool adjLimits,
                    unsigned int *lowLim, unsigned int *highLim,
                    unsigned int minLim, unsigned int maxLim, int adjRoiX,
-                   int adjRoiY, int adjRoiW, int adjRoiH) {
+                   int adjRoiY, int adjRoiW, int adjRoiH)
+{
   // when adjLimits==0, lowLim and highLim are used to adjust the frame. minLim
   // and maxLim are NOT used. minLim & maxLim depend on specific camera and are
   // used only if adjLimits==1. In this case lowLim and highLim are calculated in
@@ -476,7 +524,8 @@ int camFrameTo8bit(void *frame, int width, int height, int pixelFormat,
 
   unsigned int minpix, maxpix;
 
-  if (adjLimits) {
+  if (adjLimits)
+  {
     maxpix = 0;
 
     if (pixelSize <= 8)
@@ -489,30 +538,42 @@ int camFrameTo8bit(void *frame, int width, int height, int pixelFormat,
     for (int row = adjRoiY; row < adjRoiY + adjRoiH;
          row++) // calculate min & max pixel only in ROI
     {
-      for (int col = adjRoiX; col < adjRoiX + adjRoiW; col++) {
+      for (int col = adjRoiX; col < adjRoiX + adjRoiW; col++)
+      {
         int i = (row * width) + col;
-        if (pixelSize <= 8) {
+        if (pixelSize <= 8)
+        {
           char *framePtr = (char *)frame;
-          if ((framePtr[i] > minLim) && (framePtr[i] < minpix)) {
+          if ((framePtr[i] > minLim) && (framePtr[i] < minpix))
+          {
             minpix = framePtr[i];
           }
-          if ((framePtr[i] < maxLim) && (framePtr[i] > maxpix)) {
+          if ((framePtr[i] < maxLim) && (framePtr[i] > maxpix))
+          {
             maxpix = framePtr[i];
           }
-        } else if (pixelSize <= 16) {
+        }
+        else if (pixelSize <= 16)
+        {
           short *framePtr = (short *)frame;
-          if ((framePtr[i] > minLim) && (framePtr[i] < minpix)) {
+          if ((framePtr[i] > minLim) && (framePtr[i] < minpix))
+          {
             minpix = framePtr[i];
           }
-          if ((framePtr[i] < maxLim) && (framePtr[i] > maxpix)) {
+          if ((framePtr[i] < maxLim) && (framePtr[i] > maxpix))
+          {
             maxpix = framePtr[i];
           }
-        } else if (pixelSize <= 32) {
+        }
+        else if (pixelSize <= 32)
+        {
           int *framePtr = (int *)frame;
-          if ((framePtr[i] > minLim) && (framePtr[i] < minpix)) {
+          if ((framePtr[i] > minLim) && (framePtr[i] < minpix))
+          {
             minpix = framePtr[i];
           }
-          if ((framePtr[i] < maxLim) && (framePtr[i] > maxpix)) {
+          if ((framePtr[i] < maxLim) && (framePtr[i] > maxpix))
+          {
             maxpix = framePtr[i];
           }
         }
@@ -520,7 +581,9 @@ int camFrameTo8bit(void *frame, int width, int height, int pixelFormat,
     }   // for rows
     *lowLim = minpix;
     *highLim = maxpix;
-  } else {
+  }
+  else
+  {
     minpix = *lowLim;
     maxpix = *highLim;
   }
@@ -529,40 +592,61 @@ int camFrameTo8bit(void *frame, int width, int height, int pixelFormat,
   float span = (float)(maxpix - minpix + 1);
 
   // for(int i=0; i<width*height; i++)
-  for (int row = 0; row < height; row++) {
-    for (int col = 0; col < width; col++) {
+  for (int row = 0; row < height; row++)
+  {
+    for (int col = 0; col < width; col++)
+    {
       int i = row * width + col;
       if (pixelSize <= 8) // no need to normalize. already 8 bits!!!
       {
         unsigned char *framePtr = (unsigned char *)frame;
         unsigned char sample = framePtr[i];
-        if (sample < minpix) {
+        if (sample < minpix)
+        {
           nsample = 0;
-        } else if (sample > maxpix) {
+        }
+        else if (sample > maxpix)
+        {
           nsample = 255;
-        } else {
+        }
+        else
+        {
           nsample = (unsigned char)(((sample - minpix) / span) * 0xFF);
         }
         frame8bit[i] = nsample;
-      } else if (pixelSize <= 16) {
+      }
+      else if (pixelSize <= 16)
+      {
         short *framePtr = (short *)frame;
         unsigned short sample = framePtr[i];
-        if (sample < minpix) {
+        if (sample < minpix)
+        {
           nsample = 0;
-        } else if (sample > maxpix) {
+        }
+        else if (sample > maxpix)
+        {
           nsample = 255;
-        } else {
+        }
+        else
+        {
           nsample = (unsigned char)(((sample - minpix) / span) * 0xFF);
         }
         frame8bit[i] = nsample;
-      } else if (pixelSize <= 32) {
+      }
+      else if (pixelSize <= 32)
+      {
         int *framePtr = (int *)frame;
         unsigned int sample = framePtr[i];
-        if (sample < minpix) {
+        if (sample < minpix)
+        {
           nsample = 0;
-        } else if (sample > maxpix) {
+        }
+        else if (sample > maxpix)
+        {
           nsample = 255;
-        } else {
+        }
+        else
+        {
           nsample = (unsigned char)(((sample - minpix) / span) * 0xFF);
         }
         frame8bit[i] = nsample;
@@ -584,7 +668,8 @@ int camFrameTo8bit(void *frame, int width, int height, int pixelFormat,
 
 // IMPORTANT: the file used by drawtext filter in ffmpeg is reload every frame
 // processed and so any operation on it MUST BE an atomic operation!!!
-int camFFMPEGoverlay(const char *filename, const char *textString) {
+int camFFMPEGoverlay(const char *filename, const char *textString)
+{
   char pathname[100];
   strcpy(pathname, "");             // Clear local filename
   strcat(pathname, getenv("HOME")); // get home dir
@@ -598,26 +683,31 @@ int camFFMPEGoverlay(const char *filename, const char *textString) {
   mode_t default_mode =
       S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
   int fd = open(tmp_pathname, O_RDWR | O_CREAT | O_TRUNC, default_mode);
-  if (fd == -1) {
+  if (fd == -1)
+  {
     printf("Failed to open new file for writing\n");
     return -1;
   }
 
   size_t count = write(fd, textString, strlen(textString));
 
-  if (count != strlen(textString)) {
+  if (count != strlen(textString))
+  {
     printf("Failed to write new content on file\n");
     return -1;
   }
-  if (fsync(fd) == -1) {
+  if (fsync(fd) == -1)
+  {
     printf("Failed to flush new file content to disc\n");
     return -1;
   }
-  if (close(fd) == -1) {
+  if (close(fd) == -1)
+  {
     printf("Failed to close new file\n");
     return -1;
   }
-  if (rename(tmp_pathname, pathname) == -1) {
+  if (rename(tmp_pathname, pathname) == -1)
+  {
     printf("Failed to move new file to final location\n");
     return -1;
   }

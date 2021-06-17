@@ -65,19 +65,21 @@ extern int TdiDimOf();
 struct descriptor *Resample(struct descriptor *in_sig, struct descriptor *in_x);
 
 EXPORT struct descriptor *resample(struct descriptor *in_sig,
-                                   struct descriptor *in_x) {
+                                   struct descriptor *in_x)
+{
   return Resample(in_sig, in_x);
 }
 
 EXPORT struct descriptor *Resample(struct descriptor *in_sig,
-                                   struct descriptor *in_x) {
+                                   struct descriptor *in_x)
+{
 
-#define return_on_error(func, error)                                           \
-  if (!((status = func) & 1))                                                  \
+#define return_on_error(func, error) \
+  if (!((status = func) & 1))        \
   return error
 //#define interp(x1,y1,x2,y2,x) (((y2)-(y1))/((x2)-(x1)) * (x) +
 //(((y1)*(x2))-((y2)*(x1)))/((x2)-(x1)))
-#define interp(x1, y1, x2, y2, x)                                              \
+#define interp(x1, y1, x2, y2, x) \
   (y1) + ((y2) - (y1)) / ((x2) - (x1)) * ((x) - (x1))
 
   int status;
@@ -147,12 +149,14 @@ EXPORT struct descriptor *Resample(struct descriptor *in_sig,
   if (!sig_elements ||
       ((unsigned)sig_elements > (sig_x->arsize / sig_x->length)))
     return (struct descriptor *)&bad_sig_in;
-  for (i = 0; i < new_elements; i++) {
+  for (i = 0; i < new_elements; i++)
+  {
     if (new_x_f[i] <= sig_x_f[0])
       new_y_f[i] = sig_y_f[0];
     else if (new_x_f[i] >= sig_x_f[sig_elements - 1])
       new_y_f[i] = sig_y_f[sig_elements - 1];
-    else {
+    else
+    {
       for (; j < sig_elements; j++)
         if (new_x_f[i] <= sig_x_f[j])
           break;

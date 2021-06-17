@@ -46,7 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Open tree for edit
  ***************************************************************/
 EXPORT int TclEdit(void *ctx, char **error,
-                   char **output __attribute__((unused))) {
+                   char **output __attribute__((unused)))
+{
   int shot;
   int sts;
   char *filnam = 0;
@@ -61,7 +62,8 @@ EXPORT int TclEdit(void *ctx, char **error,
     sts = TreeOpenEdit(filnam, shot);
   if (sts & 1)
     TclNodeTouched(0, tree);
-  else {
+  else
+  {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + 100);
     sprintf(*error,

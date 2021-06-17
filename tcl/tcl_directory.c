@@ -62,9 +62,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ************************************************************************/
 
 static int doFull(char **output, int nid, unsigned char nodeUsage, int version);
-static char *mds_owner(/* Return: ptr to "user" string         */
+static char *mds_owner(                   /* Return: ptr to "user" string         */
                        unsigned int owner /* <r> owner id */
-) {
+)
+{
   static char ownerString[512];
   int gid = owner >> 16;
   int uid = owner & 0xFFFF;
@@ -72,14 +73,16 @@ static char *mds_owner(/* Return: ptr to "user" string         */
   char *username = 0;
 #ifdef HAVE_GETGRGID
   struct group *g = getgrgid(gid);
-  if (g) {
+  if (g)
+  {
     groupname = alloca(strlen(g->gr_name) + 3);
     sprintf(groupname, "(%s)", g->gr_name);
   }
 #endif
 #ifdef HAVE_GETPWUID
   struct passwd *p = getpwuid(uid);
-  if (p) {
+  if (p)
+  {
     username = alloca(strlen(p->pw_name) + 3);
     sprintf(username, "(%s)", p->pw_name);
   }
@@ -94,7 +97,8 @@ static char *mds_owner(/* Return: ptr to "user" string         */
 
 static char *mds_datetime(           /* Return: ptr to date+time string      */
                           int time[] /* <r> date/time to display: quadword */
-) {
+)
+{
   unsigned short len;
   static char datime[24];
   static DESCRIPTOR(dsc_datime, datime);
@@ -107,7 +111,8 @@ static char *mds_datetime(           /* Return: ptr to date+time string      */
   return (datime);
 }
 
-void tclAppend(char **output, char *str) {
+void tclAppend(char **output, char *str)
+{
   if (*output)
     *output = strcat(realloc(*output, strlen(*output) + strlen(str) + 1), str);
   else
@@ -119,7 +124,8 @@ void tclAppend(char **output, char *str) {
  * Perform directory function
  ****************************************************************/
 EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
-                        char **output) {
+                        char **output)
+{
   char *tagnam;
   char msg[128];
   char *nodnam = 0;
@@ -152,30 +158,40 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
   if (*output == 0)
     *output = strdup("");
   full = cli_present(ctx, "FULL") & 1;
-  if (cli_present(ctx, "USAGE") & 1) {
+  if (cli_present(ctx, "USAGE") & 1)
+  {
     char *usageStr = 0;
     usageMask = 0;
-    while (cli_get_value(ctx, "USAGE", &usageStr) & 1) {
-      if (usageStr) {
+    while (cli_get_value(ctx, "USAGE", &usageStr) & 1)
+    {
+      if (usageStr)
+      {
         char usage = tclUsageToNumber(usageStr, error);
-        if (usage == -1) {
+        if (usage == -1)
+        {
           free(usageStr);
           return 0;
-        } else {
+        }
+        else
+        {
           usageMask = usageMask | (1 << usage);
           free(usageStr);
         }
       }
     }
   }
-  while (cli_get_value(ctx, "NODE", &nodnam) & 1) {
+  while (cli_get_value(ctx, "NODE", &nodnam) & 1)
+  {
     int listlen = 0;
-    while ((status = TreeFindNodeWild(nodnam, &nid, &ctx1, usageMask)) & 1) {
+    while ((status = TreeFindNodeWild(nodnam, &nid, &ctx1, usageMask)) & 1)
+    {
       grand_found++;
       status = TreeGetNci(nid, general_info_list);
       nodnamC[nodnamLen] = '\0';
-      if (parent_nid != last_parent_nid) {
-        if (found) {
+      if (parent_nid != last_parent_nid)
+      {
+        if (found)
+        {
           sprintf(msg, "\n\nTotal of %d node%s.\n", found,
                   (found > 1) ? "s" : "");
           listlen = 0;
@@ -184,7 +200,8 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
         found = 0;
         last_parent_nid = parent_nid;
         pathnam = TreeGetPath(parent_nid);
-        if (pathnam) {
+        if (pathnam)
+        {
           sprintf(msg, "\n%s\n\n", pathnam);
           free(pathnam);
           tclAppend(output, msg);
@@ -192,8 +209,10 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
         previous_relationship = relationship;
       }
       found++;
-      if (full) {
-        if (previous_relationship != relationship) {
+      if (full)
+      {
+        if (previous_relationship != relationship)
+        {
           tclAppend(output, "\n");
           previous_relationship = relationship;
         }
@@ -202,7 +221,8 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
         tclAppend(output, msg);
         ctx2 = 0;
         first_tag = 1;
-        while ((tagnam = TreeFindNodeTags(nid, &ctx2))) {
+        while ((tagnam = TreeFindNodeTags(nid, &ctx2)))
+        {
           sprintf(msg, "%s\\%s", first_tag ? " tags: " : ",", tagnam);
           tclAppend(output, msg);
           free(tagnam);
@@ -212,8 +232,11 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
         version = 0;
         while (doFull(output, nid, nodeUsage, version++) & 1)
           ;
-      } else {
-        if (previous_relationship != relationship) {
+      }
+      else
+      {
+        if (previous_relationship != relationship)
+        {
           tclAppend(output, "\n\n");
           listlen = 0;
           previous_relationship = relationship;
@@ -222,7 +245,8 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
                 nodnamC);
         tclAppend(output, msg);
         listlen = listlen + strlen(msg);
-        if (listlen > 60) {
+        if (listlen > 60)
+        {
           tclAppend(output, "\n");
           listlen = 0;
         }
@@ -235,8 +259,10 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
   sprintf(msg, "%s\nTotal of %d node%s.\n", full ? "" : "\n", found,
           ((found > 1) || (found == 0)) ? "s" : "");
   tclAppend(output, msg);
-  if (grand_found) {
-    if (found != grand_found) {
+  if (grand_found)
+  {
+    if (found != grand_found)
+    {
       sprintf(msg, "\n\nGrand total of %d node%s.\n", grand_found,
               ((grand_found > 1) || (grand_found == 0)) ? "s" : "");
       tclAppend(output, msg);
@@ -246,7 +272,8 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__((unused)),
 }
 
 static int doFull(char **output, int nid, unsigned char nodeUsage,
-                  int version) {
+                  int version)
+{
   char *pathnam;
   int time[2];
   char partC[64 + 1];
@@ -260,9 +287,9 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
   int k;
   char *p;
   char msg[128];
-  static char *usages[] = {"any",           "structure", "action", "device",
-                           "dispatch",      "numeric",   "signal", "task",
-                           "text",          "window",    "axis",   "subtree",
+  static char *usages[] = {"any", "structure", "action", "device",
+                           "dispatch", "numeric", "signal", "task",
+                           "text", "window", "axis", "subtree",
                            "compound data", "unknown"};
 #define MAX_USAGES (sizeof(usages) / sizeof(usages[0]))
   int nciFlags;
@@ -284,8 +311,10 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
   int status;
   vers = version;
   status = TreeGetNci(nid, full_list);
-  if (status & 1) {
-    if (version == 0) {
+  if (STATUS_OK)
+  {
+    if (version == 0)
+    {
       k = (nodeUsage < MAX_USAGES) ? nodeUsage : (MAX_USAGES - 1);
       p = usages[k];
       sprintf(msg, "      Status: %s,parent is %s, usage %s%s%s%s\n",
@@ -301,38 +330,44 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
         tclAppend(output, "      not writeable in model\n");
       if (nciFlags & NciM_NO_WRITE_SHOT)
         tclAppend(output, "      not writeable in pulse file\n");
-      if (nodeUsage == TreeUSAGE_SUBTREE) {
+      if (nodeUsage == TreeUSAGE_SUBTREE)
+      {
         sprintf(msg, "      subtree %sincluded in pulse file.\n",
                 (nciFlags & NciM_INCLUDE_IN_PULSE) ? "" : "NOT ");
         tclAppend(output, msg);
       }
       msg[0] = 0;
-      if (nciFlags & NciM_COMPRESSIBLE) {
+      if (nciFlags & NciM_COMPRESSIBLE)
+      {
         strcat(msg, "compressible");
         strcat(msg, (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS |
                                  NciM_COMPRESS_SEGMENTS))
                         ? ","
                         : "\n");
       }
-      if (nciFlags & NciM_COMPRESS_ON_PUT) {
+      if (nciFlags & NciM_COMPRESS_ON_PUT)
+      {
         strcat(msg, "compress on put");
         strcat(msg, (nciFlags & (NciM_DO_NOT_COMPRESS | NciM_COMPRESS_SEGMENTS))
                         ? ","
                         : "\n");
       }
-      if (nciFlags & NciM_DO_NOT_COMPRESS) {
+      if (nciFlags & NciM_DO_NOT_COMPRESS)
+      {
         strcat(msg, "do not compress");
         strcat(msg, (nciFlags & NciM_COMPRESS_SEGMENTS) ? "," : "\n");
       }
       if (nciFlags & NciM_COMPRESS_SEGMENTS)
         strcat(msg, "compress segments\n");
 
-      if (strlen(msg) > 0) {
+      if (strlen(msg) > 0)
+      {
         tclAppend(output, "      ");
         tclAppend(output, msg);
       }
 
-      switch (nciFlags & (NciM_PATH_REFERENCE | NciM_NID_REFERENCE)) {
+      switch (nciFlags & (NciM_PATH_REFERENCE | NciM_NID_REFERENCE))
+      {
       case NciM_PATH_REFERENCE:
         reference = "      contains node references (paths only)\n";
         break;
@@ -346,7 +381,8 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
         reference = 0;
         break;
       }
-      if (reference) {
+      if (reference)
+      {
         tclAppend(output, reference);
       }
     }
@@ -355,18 +391,22 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
     tclAppend(output, "    Owner: ");
     tclAppend(output, mds_owner(owner));
     tclAppend(output, "\n");
-    if (dataLen) {
+    if (dataLen)
+    {
       sprintf(msg, "      Dtype: %-20s  Class: %-18s  Length: %u bytes\n",
               MdsDtypeString((int)dtype), MdsClassString((int)class), dataLen);
       tclAppend(output, msg);
-    } else
+    }
+    else
       tclAppend(output, "      There is no data stored for this node\n");
-    if (conglomerate_elt != 0) {
+    if (conglomerate_elt != 0)
+    {
       sprintf(msg, "      Model element: %d\n", conglomerate_elt);
       tclAppend(output, msg);
       partlen = 0;
       TreeGetNci(nid, cong_list);
-      if (partlen) {
+      if (partlen)
+      {
         pathnam = TreeGetPath(head_nid);
         partC[partlen] = 0;
         sprintf(msg, "      Original element name: %s%s\n", pathnam, partC);
@@ -378,9 +418,11 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
       struct descriptor nid_d = {4, DTYPE_NID, CLASS_S, (char *)&nid};
       int stat = TdiExecute((struct descriptor *)&expression, &nid_d,
                             &help_d MDS_END_ARG);
-      if (stat & 1 && help_d.pointer != NULL) {
+      if (stat & 1 && help_d.pointer != NULL)
+      {
         char *help = MdsDescrToCstring(help_d.pointer);
-        if (strlen(help) > 0) {
+        if (strlen(help) > 0)
+        {
           tclAppend(output, "      Device Help: ");
           tclAppend(output, help);
           tclAppend(output, "\n");
@@ -393,7 +435,8 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
   return status;
 }
 
-EXPORT int TclLs(void *ctx) {
+EXPORT int TclLs(void *ctx)
+{
   char *cmd = 0;
   cli_get_value(ctx, "command_line", &cmd);
   printf("TclLs called with command line: '%s'\n", cmd);

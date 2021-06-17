@@ -45,7 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TclCompressDatafile:
  ****************************************************************/
 EXPORT int TclCompressDatafile(void *ctx, char **error,
-                               char **output __attribute__((unused))) {
+                               char **output __attribute__((unused)))
+{
   int shot;
   int sts;
   char *filnam = 0;
@@ -54,9 +55,11 @@ EXPORT int TclCompressDatafile(void *ctx, char **error,
   cli_get_value(ctx, "FILE", &filnam);
   cli_get_value(ctx, "SHOTID", &asciiShot);
   sts = tclStringToShot(asciiShot, &shot, error);
-  if (sts & 1) {
+  if (sts & 1)
+  {
     sts = TreeCompressDatafile(filnam, shot);
-    if (!(sts & 1)) {
+    if (!(sts & 1))
+    {
       char *msg = MdsGetMsg(sts);
       *error = malloc(strlen(msg) + strlen(filnam) + 100);
       sprintf(*error,

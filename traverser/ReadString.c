@@ -33,7 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int TdiData();
 extern int TdiCompile();
 extern int TdiExecute();
-char *ReadString(char *expr, ...) {
+char *ReadString(char *expr, ...)
+{
   INIT_STATUS;
   static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, 0};
   char *ans;
@@ -43,7 +44,8 @@ char *ReadString(char *expr, ...) {
   int numargs;
   struct descriptor *dsc_ptrs[3];
   VA_LIST_MDS_END_ARG(dsc_ptrs, numargs, 0, 0, expr);
-  switch (numargs) {
+  switch (numargs)
+  {
   case 0:
     status = TdiExecute(&expr_dsc, &ans_xd MDS_END_ARG);
     break;
@@ -57,26 +59,28 @@ char *ReadString(char *expr, ...) {
   default:
     return 0;
   }
-  if
-    STATUS_OK {
-      /*    status = TdiData(&ans_xd, &ans_xd); */
-      if
-        STATUS_OK {
-          struct descriptor *d_ptr;
-          for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
-               d_ptr = (struct descriptor *)d_ptr->pointer)
-            ;
-          if (d_ptr->dtype == DTYPE_T) {
-            ans = (char *)malloc((d_ptr->length + 1) * sizeof(char));
-            strncpy(ans, d_ptr->pointer, d_ptr->length);
-            ans[d_ptr->length] = 0;
-          } else
-            ans = 0;
-        }
+  if (STATUS_OK)
+  {
+    /*    status = TdiData(&ans_xd, &ans_xd); */
+    if (STATUS_OK)
+    {
+      struct descriptor *d_ptr;
+      for (d_ptr = (struct descriptor *)&ans_xd; d_ptr->dtype == DTYPE_DSC;
+           d_ptr = (struct descriptor *)d_ptr->pointer)
+        ;
+      if (d_ptr->dtype == DTYPE_T)
+      {
+        ans = (char *)malloc((d_ptr->length + 1) * sizeof(char));
+        strncpy(ans, d_ptr->pointer, d_ptr->length);
+        ans[d_ptr->length] = 0;
+      }
       else
         ans = 0;
-      MdsFree1Dx(&ans_xd, 0);
     }
+    else
+      ans = 0;
+    MdsFree1Dx(&ans_xd, 0);
+  }
   else
     ans = 0;
   return ans;

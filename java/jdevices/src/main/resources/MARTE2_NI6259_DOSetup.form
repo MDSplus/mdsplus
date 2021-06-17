@@ -2,7 +2,7 @@
 
 <Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdevail.rfx.local:8200"/>
+    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI6259 Digital Output "/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_DO"/>
     <Property name="height" type="int" value="200"/>

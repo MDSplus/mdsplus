@@ -59,7 +59,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 jmp_buf error_jmp_buffer;
 
 /* FIXME: including a colon at the end is a bad way to indicate an error */
-void eprintf(const char *fmt, const char *file, int line, ...) {
+void eprintf(const char *fmt, const char *file, int line, ...)
+{
   va_list args;
 
   fflush(stderr);
@@ -77,7 +78,8 @@ void eprintf(const char *fmt, const char *file, int line, ...) {
   exit(2);
 }
 
-void *emalloc(size_t n) {
+void *emalloc(size_t n)
+{
   void *p;
 
   p = malloc(n);
@@ -86,7 +88,8 @@ void *emalloc(size_t n) {
   return p;
 }
 
-void *erealloc(void *ptr, size_t n) {
+void *erealloc(void *ptr, size_t n)
+{
   void *p;
 
   p = realloc(ptr, n);

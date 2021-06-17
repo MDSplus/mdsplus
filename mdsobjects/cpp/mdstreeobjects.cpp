@@ -39,96 +39,98 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace std;
 
-extern "C" {
-// From treeshrp.h
-int TreeFindTag(char *tagnam, char *treename, int *tagidx);
+extern "C"
+{
+  // From treeshrp.h
+  int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 
-// From libroutines.h
-int LibConvertDateString(char *asc_time, int64_t *qtime);
+  // From libroutines.h
+  int LibConvertDateString(char *asc_time, int64_t *qtime);
 
-// From mdsshr.h
-const char *MdsClassString(int id);
-const char *MdsDtypeString(int id);
+  // From mdsshr.h
+  const char *MdsClassString(int id);
+  const char *MdsDtypeString(int id);
 
-// From mdsdata.c
-void freeDsc(void *dscPtr);
-void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
-void *evaluateData(void *dscPtr, int isEvaluate);
-void *deserializeData(char *serialized, int size);
-char *decompileDsc(void *dscPtr);
-void *convertFromDsc(void *dscPtr, Tree *tree);
+  // From mdsdata.c
+  void freeDsc(void *dscPtr);
+  void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
+  void *evaluateData(void *dscPtr, int isEvaluate);
+  void *deserializeData(char *serialized, int size);
+  char *decompileDsc(void *dscPtr);
+  void *convertFromDsc(void *dscPtr, Tree *tree);
 
-void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
-void *convertToArrayDsc(int clazz, int dtype, int length, int l_length,
-                        int nDims, int *dims, void *ptr);
-void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr,
-                           int ndescs, void **descs);
-void *convertToApdDsc(int ndescs, void **ptr);
-void *convertToByte(void *dsc);
-void *convertToShort(void *dsc);
-void *convertToInt(void *dsc);
-void *convertToLong(void *dsc);
-void *convertToFloat(void *dsc);
-void *convertToDouble(void *dsc);
-void *convertToShape(void *dcs);
+  void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
+  void *convertToArrayDsc(int clazz, int dtype, int length, int l_length,
+                          int nDims, int *dims, void *ptr);
+  void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr,
+                             int ndescs, void **descs);
+  void *convertToApdDsc(int ndescs, void **ptr);
+  void *convertToByte(void *dsc);
+  void *convertToShort(void *dsc);
+  void *convertToInt(void *dsc);
+  void *convertToLong(void *dsc);
+  void *convertToFloat(void *dsc);
+  void *convertToDouble(void *dsc);
+  void *convertToShape(void *dcs);
 
-// From mdstree.c
-void convertTime(void *dbid, int *time, char *retTime);
-int getTreeData(void *dbid, int nid, void **data, void *tree);
-int putTreeData(void *dbid, int nid, void *data);
-int deleteTreeData(void *dbid, int nid);
-int doTreeMethod(void *dbid, int nid, char *method);
-int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
-                     void *endDsc, void *timeDsc);
-int beginTreeSegmentResampled(void *dbid, int nid, void *dataDsc,
-                              void *startDsc, void *endDsc, void *timeDsc,
-                              int resNid, int resFactor);
-int beginTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
-                           void *endDsc, void *timeDsc, int resNid,
-                           int resFactor);
-int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
-                    void *endDsc, void *timeDsc, int rowsFilled);
-int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc,
-                             void *endDsc, void *timeDsc, int rowsFilled,
-                             int resNid, int resFactor);
-int makeTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
-                          void *endDsc, void *timeDsc, int rowsFilled,
-                          int resNid, int resFactor);
-int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
-int putTreeSegmentResampled(void *dbid, int nid, void *dataDsc, int ofs,
+  // From mdstree.c
+  void convertTime(void *dbid, int *time, char *retTime);
+  int getTreeData(void *dbid, int nid, void **data, void *tree);
+  int putTreeData(void *dbid, int nid, void *data);
+  int deleteTreeData(void *dbid, int nid);
+  int doTreeMethod(void *dbid, int nid, char *method);
+  int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
+                       void *endDsc, void *timeDsc);
+  int beginTreeSegmentResampled(void *dbid, int nid, void *dataDsc,
+                                void *startDsc, void *endDsc, void *timeDsc,
+                                int resNid, int resFactor);
+  int beginTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
+                             void *endDsc, void *timeDsc, int resNid,
+                             int resFactor);
+  int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc,
+                      void *endDsc, void *timeDsc, int rowsFilled);
+  int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc,
+                               void *endDsc, void *timeDsc, int rowsFilled,
+                               int resNid, int resFactor);
+  int makeTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc,
+                            void *endDsc, void *timeDsc, int rowsFilled,
                             int resNid, int resFactor);
-int putTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, int ofs,
-                         int resNid, int resFactor);
-int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc,
-                      void *endDsc, void *timeDsc);
-int getTreeNumSegments(void *dbid, int nid, int *numSegments);
-int getTreeSegmentScale(void *dbid, int nid, void *scale);
-int setTreeSegmentScale(void *dbid, int nid, void *scale);
-int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc,
-                         void **endDsc);
-int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc,
-                   void **timeDsc);
-int setTreeTimeContext(void *dbid, void *startDsc, void *endDsc,
-                       void *deltaDsc);
-int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
-int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
-                              int64_t *times);
-int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
-                               int64_t *times, int rowsFilled);
-int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
-int getTreeXNci(void *dbid, int nid, const char *name, void **data, void *tree);
-int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
-int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype,
-                       char *dimct, int *dims, int *nextRow);
-// From TreeFindTagWild.c
-char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
-char *MdsGetMsg(int status);
-void *TreeDbid();
+  int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
+  int putTreeSegmentResampled(void *dbid, int nid, void *dataDsc, int ofs,
+                              int resNid, int resFactor);
+  int putTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, int ofs,
+                           int resNid, int resFactor);
+  int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc,
+                        void *endDsc, void *timeDsc);
+  int getTreeNumSegments(void *dbid, int nid, int *numSegments);
+  int getTreeSegmentScale(void *dbid, int nid, void *scale);
+  int setTreeSegmentScale(void *dbid, int nid, void *scale);
+  int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc,
+                           void **endDsc);
+  int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc,
+                     void **timeDsc);
+  int setTreeTimeContext(void *dbid, void *startDsc, void *endDsc,
+                         void *deltaDsc);
+  int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
+  int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
+                                int64_t *times);
+  int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc,
+                                 int64_t *times, int rowsFilled);
+  int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
+  int getTreeXNci(void *dbid, int nid, const char *name, void **data, void *tree);
+  int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
+  int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype,
+                         char *dimct, int *dims, int *nextRow);
+  // From TreeFindTagWild.c
+  char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
+  char *MdsGetMsg(int status);
+  void *TreeDbid();
 }
 
 #define MAX_ARGS 512
 
-static int convertUsage(std::string const &usage) {
+static int convertUsage(std::string const &usage)
+{
   if (usage == "ACTION")
     return TreeUSAGE_ACTION;
   else if (usage == "ANY")
@@ -162,9 +164,10 @@ static int convertUsage(std::string const &usage) {
 static Mutex treeMutex;
 
 Tree::Tree(char const *name, int shot)
-    : name(name), shot(shot), ctx(nullptr), fromActiveTree(false) {
+    : name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
+{
   int status = _TreeOpen(&ctx, name, shot, 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   // setActiveTree(this);
 }
@@ -173,11 +176,13 @@ Tree::Tree(char const *name, int shot, void *ctx)
     : name(name), shot(shot), ctx(ctx), fromActiveTree(true) {}
 
 Tree::Tree(Tree *tree)
-    : name(tree->name), shot(tree->shot), ctx(tree->ctx), fromActiveTree(true) {
+    : name(tree->name), shot(tree->shot), ctx(tree->ctx), fromActiveTree(true)
+{
 }
 
 Tree::Tree(char const *name, int shot, char const *mode)
-    : name(name), shot(shot), ctx(nullptr), fromActiveTree(false) {
+    : name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
+{
   std::string upMode(mode);
   std::transform(upMode.begin(), upMode.end(), upMode.begin(),
                  static_cast<int (*)(int)>(&std::toupper));
@@ -194,22 +199,26 @@ Tree::Tree(char const *name, int shot, char const *mode)
   else
     throw MdsException("Invalid Open mode");
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-Tree::~Tree() {
+Tree::~Tree()
+{
   if (fromActiveTree)
     return;
-  if (isModified()) {
+  if (isModified())
+  {
     int status = _TreeQuitTree(&ctx, name.c_str(), shot);
     (void)status;
-    //        if(!(status & 1))
+    //        if(STATUS_NOT_OK)
     //            throw MdsException(status);
-  } else {
+  }
+  else
+  {
     int status = _TreeClose(&ctx, name.c_str(), shot);
     (void)status;
-    //        if(!(status & 1))
+    //        if(STATUS_NOT_OK)
     //            throw MdsException(status);
   }
   TreeFreeDbid(ctx);
@@ -221,25 +230,27 @@ EXPORT void *Tree::operator new(size_t sz) { return ::operator new(sz); }
 
 EXPORT void Tree::operator delete(void *p) { ::operator delete(p); }
 
-void Tree::edit(const bool st) {
+void Tree::edit(const bool st)
+{
   if (isReadOnly())
     throw MdsException("Tree is read only");
   int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot)
                   : _TreeOpen(&ctx, name.c_str(), shot, 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void Tree::write() {
+void Tree::write()
+{
   int status = _TreeWriteTree(&ctx, name.c_str(), shot);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 // void Tree::quit()
 //{
 //	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
-//	if(!(status & 1))
+//	if(STATUS_NOT_OK)
 //		throw MdsException(status);
 //}
 
@@ -247,127 +258,152 @@ Data *Tree::tdiEvaluate(Data *data) { return data->evaluate(this); }
 
 Data *Tree::tdiData(Data *data) { return data->data(this); }
 
-Data *Tree::tdiCompile(const char *expr) {
+Data *Tree::tdiCompile(const char *expr)
+{
   return MDSplus::compile(expr, this);
 }
 
-Data *Tree::tdiCompile(const char *expr, Data *arg1) {
+Data *Tree::tdiCompile(const char *expr, Data *arg1)
+{
   return MDSplus::compileWithArgs(expr, this, 1, arg1);
 }
-Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2) {
+Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2)
+{
   return MDSplus::compileWithArgs(expr, this, 2, arg1, arg2);
 }
-Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3) {
+Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3)
+{
   return MDSplus::compileWithArgs(expr, this, 3, arg1, arg2, arg3);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4) {
+                       Data *arg4)
+{
   return MDSplus::compileWithArgs(expr, this, 4, arg1, arg2, arg3, arg4);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4, Data *arg5) {
+                       Data *arg4, Data *arg5)
+{
   return MDSplus::compileWithArgs(expr, this, 5, arg1, arg2, arg3, arg4, arg5);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4, Data *arg5, Data *arg6) {
+                       Data *arg4, Data *arg5, Data *arg6)
+{
   return MDSplus::compileWithArgs(expr, this, 6, arg1, arg2, arg3, arg4, arg5,
                                   arg6);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4, Data *arg5, Data *arg6, Data *arg7) {
+                       Data *arg4, Data *arg5, Data *arg6, Data *arg7)
+{
   return MDSplus::compileWithArgs(expr, this, 7, arg1, arg2, arg3, arg4, arg5,
                                   arg6, arg7);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3,
                        Data *arg4, Data *arg5, Data *arg6, Data *arg7,
-                       Data *arg8) {
+                       Data *arg8)
+{
   return MDSplus::compileWithArgs(expr, this, 8, arg1, arg2, arg3, arg4, arg5,
                                   arg6, arg7, arg8);
 }
 
 Data *Tree::tdiExecute(const char *expr) { return execute(expr, this); }
 
-Data *Tree::tdiExecute(const char *expr, Data *arg1) {
+Data *Tree::tdiExecute(const char *expr, Data *arg1)
+{
   return MDSplus::executeWithArgs(expr, this, 1, arg1);
 }
-Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2) {
+Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2)
+{
   return MDSplus::executeWithArgs(expr, this, 2, arg1, arg2);
 }
-Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3) {
+Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3)
+{
   return MDSplus::executeWithArgs(expr, this, 3, arg1, arg2, arg3);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4) {
+                       Data *arg4)
+{
   return MDSplus::executeWithArgs(expr, this, 4, arg1, arg2, arg3, arg4);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4, Data *arg5) {
+                       Data *arg4, Data *arg5)
+{
   return MDSplus::executeWithArgs(expr, this, 5, arg1, arg2, arg3, arg4, arg5);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4, Data *arg5, Data *arg6) {
+                       Data *arg4, Data *arg5, Data *arg6)
+{
   return MDSplus::executeWithArgs(expr, this, 6, arg1, arg2, arg3, arg4, arg5,
                                   arg6);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3,
-                       Data *arg4, Data *arg5, Data *arg6, Data *arg7) {
+                       Data *arg4, Data *arg5, Data *arg6, Data *arg7)
+{
   return MDSplus::executeWithArgs(expr, this, 7, arg1, arg2, arg3, arg4, arg5,
                                   arg6, arg7);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3,
                        Data *arg4, Data *arg5, Data *arg6, Data *arg7,
-                       Data *arg8) {
+                       Data *arg8)
+{
   return MDSplus::executeWithArgs(expr, this, 8, arg1, arg2, arg3, arg4, arg5,
                                   arg6, arg7, arg8);
 }
 
-TreeNode *Tree::addNode(char const *name, char const *usage) {
+TreeNode *Tree::addNode(char const *name, char const *usage)
+{
   int newNid;
   int status = _TreeAddNode(ctx, name, &newNid, convertUsage(usage));
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, this);
 }
 
-TreeNode *Tree::addDevice(char const *name, char const *type) {
+TreeNode *Tree::addDevice(char const *name, char const *type)
+{
   int newNid;
   int status = _TreeAddConglom(ctx, name, type, &newNid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, this);
 }
 
-void Tree::remove(char const *name) {
+void Tree::remove(char const *name)
+{
   int count;
   AutoPointer<TreeNode> delNode(getNode(name));
   int status = _TreeDeleteNodeInitialize(ctx, delNode.ptr->getNid(), &count, 1);
-  if (status & 1)
+  if (STATUS_OK)
     _TreeDeleteNodeExecute(ctx);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-TreeNode *Tree::getNode(char const *path) {
+TreeNode *Tree::getNode(char const *path)
+{
   int nid;
 
   int status = _TreeFindNode(ctx, path, &nid);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     throw MdsException(status);
   }
   return new TreeNode(nid, this);
 }
 
-TreeNode *Tree::getNode(TreePath *path) {
+TreeNode *Tree::getNode(TreePath *path)
+{
   AutoArray<char> pathName(path->getString());
   return getNode(pathName.ptr);
 }
 
-TreeNode *Tree::getNode(String *path) {
+TreeNode *Tree::getNode(String *path)
+{
   AutoArray<char> pathName(path->getString());
   return getNode(pathName.ptr);
 }
 
-TreeNodeArray *Tree::getNodeWild(char const *path, int usageMask) {
+TreeNodeArray *Tree::getNodeWild(char const *path, int usageMask)
+{
   // FIXME: This function doesn't need nids at all. Store a vector of TreeNodes
   // built right in the while loop.  Need better testing before that change,
   // though.
@@ -392,43 +428,49 @@ TreeNodeArray *Tree::getNodeWild(char const *path, int usageMask) {
   return nodeArray;
 }
 
-TreeNodeArray *Tree::getNodeWild(char const *path) {
+TreeNodeArray *Tree::getNodeWild(char const *path)
+{
   return getNodeWild(path, -1);
 }
 
-void Tree::setDefault(TreeNode *treeNode) {
+void Tree::setDefault(TreeNode *treeNode)
+{
   int status = _TreeSetDefaultNid(ctx, treeNode->getNid());
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-TreeNode *Tree::getDefault() {
+TreeNode *Tree::getDefault()
+{
   int nid;
 
   int status = _TreeGetDefaultNid(ctx, &nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(nid, this);
 }
 
-static bool dbiTest(void *ctx, short int code) {
+static bool dbiTest(void *ctx, short int code)
+{
   int supports;
   int len;
   struct dbi_itm dbiList[] = {{sizeof(int), code, &supports, &len},
                               {0, DbiEND_OF_LIST, 0, 0}};
 
   int status = _TreeGetDbi(ctx, dbiList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 
   return supports ? true : false;
 }
 
-bool Tree::versionsInPulseEnabled() {
+bool Tree::versionsInPulseEnabled()
+{
   return dbiTest(ctx, DbiVERSIONS_IN_PULSE);
 }
 
-bool Tree::versionsInModelEnabled() {
+bool Tree::versionsInModelEnabled()
+{
   return dbiTest(ctx, DbiVERSIONS_IN_MODEL);
 }
 
@@ -438,73 +480,84 @@ bool Tree::isOpenForEdit() { return dbiTest(ctx, DbiOPEN_FOR_EDIT); }
 
 bool Tree::isReadOnly() { return dbiTest(ctx, DbiOPEN_READONLY); }
 
-static void dbiSet(void *ctx, short int code, bool value) {
+static void dbiSet(void *ctx, short int code, bool value)
+{
   int len;
   int intVal = value ? 1 : 0;
   struct dbi_itm dbiList[] = {{sizeof(int), code, &intVal, &len},
                               {0, DbiEND_OF_LIST, 0, 0}};
 
   int status = _TreeSetDbi(ctx, dbiList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void Tree::setVersionsInModel(bool verEnabled) {
+void Tree::setVersionsInModel(bool verEnabled)
+{
   dbiSet(ctx, DbiVERSIONS_IN_MODEL, verEnabled);
 }
 
-void Tree::setVersionsInPulse(bool verEnabled) {
+void Tree::setVersionsInPulse(bool verEnabled)
+{
   dbiSet(ctx, DbiVERSIONS_IN_PULSE, verEnabled);
 }
 
-void Tree::setViewDate(char *date) {
+void Tree::setViewDate(char *date)
+{
   int64_t qtime;
 
   int status = LibConvertDateString(date, &qtime);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException("Invalid date format");
   status = TreeSetViewDate(&qtime);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void Tree::setTimeContext(Data *start, Data *end, Data *delta) {
+void Tree::setTimeContext(Data *start, Data *end, Data *delta)
+{
   int status = setTreeTimeContext(ctx, (start) ? start->convertToDsc() : 0,
                                   (end) ? end->convertToDsc() : 0,
                                   (delta) ? delta->convertToDsc() : 0);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void Tree::setCurrent(char const *treeName, int shot) {
+void Tree::setCurrent(char const *treeName, int shot)
+{
   int status = TreeSetCurrentShotId(treeName, shot);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-int Tree::getCurrent(char const *treeName) {
+int Tree::getCurrent(char const *treeName)
+{
   return TreeGetCurrentShotId(treeName);
 }
 
-void Tree::createPulse(int shot) {
+void Tree::createPulse(int shot)
+{
   int status = _TreeCreatePulseFile(getCtx(), shot, 0, NULL);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void Tree::deletePulse(int shot) {
+void Tree::deletePulse(int shot)
+{
   int status = _TreeDeletePulseFile(getCtx(), shot, 1);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-StringArray *Tree::findTags(char *wild) {
+StringArray *Tree::findTags(char *wild)
+{
   const int MAX_TAGS = 1024;
   char *tagNames[MAX_TAGS];
   void *ctx = 0;
   int nTags = 0;
   int nidOut;
-  for (nTags = 0; nTags < MAX_TAGS; nTags++) {
+  for (nTags = 0; nTags < MAX_TAGS; nTags++)
+  {
     char *currTag = _TreeFindTagWild(getCtx(), wild, &nidOut, &ctx);
     if (!currTag)
       break;
@@ -516,13 +569,15 @@ StringArray *Tree::findTags(char *wild) {
     delete[] tagNames[i];
   return stArr;
 }
-void Tree::removeTag(char const *tagName) {
+void Tree::removeTag(char const *tagName)
+{
   int status = _TreeRemoveTag(getCtx(), tagName);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-int64_t Tree::getDatafileSize() {
+int64_t Tree::getDatafileSize()
+{
   int64_t size = _TreeGetDatafileSize(getCtx());
   if (size == -1)
     throw MdsException("Cannot retrieve datafile size");
@@ -533,7 +588,8 @@ int64_t Tree::getDatafileSize() {
 //  TreeNode  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void *TreeNode::convertToDsc() {
+void *TreeNode::convertToDsc()
+{
   //	AutoLock lock(treeMutex);
   //	setActiveTree(tree);
   void *retDsc = completeConversionToDsc(
@@ -542,7 +598,8 @@ void *TreeNode::convertToDsc() {
   return retDsc;
 }
 
-Data *TreeNode::data() {
+Data *TreeNode::data()
+{
   Data *d = getData();
   AutoLock lock(treeMutex);
   setActiveTree(tree);
@@ -551,33 +608,38 @@ Data *TreeNode::data() {
   return outD;
 }
 
-template <class T> static T getNci(void *ctx, int nid, short int code) {
+template <class T>
+static T getNci(void *ctx, int nid, short int code)
+{
   T value = 0;
   int len;
   struct nci_itm nciList[] = {{sizeof(T), (nci_t)code, &value, &len},
                               {0, NciEND_OF_LIST, 0, 0}};
 
   int status = _TreeGetNci(ctx, nid, nciList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 
   return value;
 }
 
-template <> std::string getNci(void *ctx, int nid, short int code) {
+template <>
+std::string getNci(void *ctx, int nid, short int code)
+{
   char value[1024] = {};
   int len;
   struct nci_itm nciList[] = {{sizeof(value), (nci_t)code, &value, &len},
                               {0, NciEND_OF_LIST, 0, 0}};
 
   int status = _TreeGetNci(ctx, nid, nciList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 
   return value;
 }
 
-void TreeNode::setFlag(int flagOfs, bool flag) {
+void TreeNode::setFlag(int flagOfs, bool flag)
+{
   int nciFlags;
   int status;
   int nciFlagsLen = sizeof(int);
@@ -591,12 +653,13 @@ void TreeNode::setFlag(int flagOfs, bool flag) {
     status = _TreeSetNci(tree->getCtx(), nid, setNciList);
   else
     status = _TreeSetNci(tree->getCtx(), nid, clearNciList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help,
-                   Data *validation) {
+                   Data *validation)
+{
   this->tree = 0;
   if (!tree && nid != 0)
     this->tree = getActiveTree();
@@ -611,7 +674,8 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help,
   setAccessory(units, error, help, validation);
 }
 
-void TreeNode::setTree(Tree *tree) {
+void TreeNode::setTree(Tree *tree)
+{
   if (this->tree)
     delete this->tree;
   this->tree = new Tree(tree);
@@ -620,28 +684,34 @@ void TreeNode::setTree(Tree *tree) {
 EXPORT void *TreeNode::operator new(size_t sz) { return ::operator new(sz); }
 EXPORT void TreeNode::operator delete(void *p) { ::operator delete(p); }
 
-TreeNode::~TreeNode() {
+TreeNode::~TreeNode()
+{
   if (tree)
     delete tree;
 }
 
-std::string TreeNode::getNciString(int itm) {
+std::string TreeNode::getNciString(int itm)
+{
   return getNci<std::string>(tree->getCtx(), nid, itm);
 }
 
-char TreeNode::getNciChar(int itm) {
+char TreeNode::getNciChar(int itm)
+{
   return getNci<char>(tree->getCtx(), nid, itm);
 }
 
-int TreeNode::getNciInt(int itm) {
+int TreeNode::getNciInt(int itm)
+{
   return getNci<int>(tree->getCtx(), nid, itm);
 }
 
-int64_t TreeNode::getNciInt64(int itm) {
+int64_t TreeNode::getNciInt64(int itm)
+{
   return getNci<int64_t>(tree->getCtx(), nid, itm);
 }
 
-char *TreeNode::getPath() {
+char *TreeNode::getPath()
+{
   resolveNid();
   char *currPath = _TreeGetPath(tree->getCtx(), nid);
   char *path = new char[strlen(currPath) + 1];
@@ -650,12 +720,14 @@ char *TreeNode::getPath() {
   return path;
 }
 
-std::string TreeNode::getPathStr() {
+std::string TreeNode::getPathStr()
+{
   resolveNid();
   return AutoString(getPath()).string;
 }
 
-char *TreeNode::getMinPath() {
+char *TreeNode::getMinPath()
+{
   resolveNid();
   std::string path = getNciString(NciMINPATH);
   char *retPath = new char[path.length() + 1];
@@ -663,11 +735,13 @@ char *TreeNode::getMinPath() {
   return retPath;
 }
 
-std::string TreeNode::getMinPathStr() {
+std::string TreeNode::getMinPathStr()
+{
   return AutoString(getMinPath()).string;
 }
 
-char *TreeNode::getFullPath() {
+char *TreeNode::getFullPath()
+{
   resolveNid();
   std::string path = getNciString(NciFULLPATH);
   char *retPath = new char[path.length() + 1];
@@ -675,11 +749,13 @@ char *TreeNode::getFullPath() {
   return retPath;
 }
 
-std::string TreeNode::getFullPathStr() {
+std::string TreeNode::getFullPathStr()
+{
   return AutoString(getFullPath()).string;
 }
 
-char *TreeNode::getOriginalPartName() {
+char *TreeNode::getOriginalPartName()
+{
   resolveNid();
   std::string path = getNciString(NciORIGINAL_PART_NAME);
   char *retPath = new char[path.length() + 1];
@@ -687,11 +763,13 @@ char *TreeNode::getOriginalPartName() {
   return retPath;
 }
 
-std::string TreeNode::getOriginalPartNameStr() {
+std::string TreeNode::getOriginalPartNameStr()
+{
   return AutoString(getOriginalPartName()).string;
 }
 
-char *TreeNode::getNodeName() {
+char *TreeNode::getNodeName()
+{
   resolveNid();
   std::string path = getNciString(NciNODE_NAME);
   char *retPath = new char[path.length() + 1];
@@ -703,42 +781,51 @@ char *TreeNode::getNodeName() {
   return retPath;
 }
 
-std::string TreeNode::getNodeNameStr() {
+std::string TreeNode::getNodeNameStr()
+{
   return AutoString(getNodeName()).string;
 }
 
-Data *TreeNode::getData() {
+Data *TreeNode::getData()
+{
   Data *data = 0;
   resolveNid();
   int status = getTreeData(tree->getCtx(), nid, (void **)&data, tree);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     throw MdsException(status);
   }
   return data;
 }
 
-void TreeNode::putData(Data *data) {
+void TreeNode::putData(Data *data)
+{
   resolveNid();
   int status = putTreeData(tree->getCtx(), nid, (void *)data);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     throw MdsException(status);
   }
 }
 
-void TreeNode::deleteData() {
+void TreeNode::deleteData()
+{
   resolveNid();
   int status = deleteTreeData(tree->getCtx(), nid);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     throw MdsException(status);
   }
 }
 
-bool TreeNode::isOn() {
+bool TreeNode::isOn()
+{
   resolveNid();
   return (_TreeIsOn(tree->getCtx(), nid) & 1) ? true : false;
 }
 
-void TreeNode::setOn(bool on) {
+void TreeNode::setOn(bool on)
+{
   resolveNid();
   if (on)
     _TreeTurnOn(tree->getCtx(), nid);
@@ -746,66 +833,77 @@ void TreeNode::setOn(bool on) {
     _TreeTurnOff(tree->getCtx(), nid);
 }
 
-int TreeNode::getLength() {
+int TreeNode::getLength()
+{
   resolveNid();
   return getNciInt(NciLENGTH);
 }
 
-int TreeNode::getCompressedLength() {
+int TreeNode::getCompressedLength()
+{
   resolveNid();
   return getNciInt(NciRLENGTH);
 }
 
-int TreeNode::getStatus() {
+int TreeNode::getStatus()
+{
   resolveNid();
   return getNciInt(NciSTATUS);
 }
 
-int TreeNode::getOwnerId() {
+int TreeNode::getOwnerId()
+{
   resolveNid();
   return getNciInt(NciOWNER_ID);
 }
 
-int64_t TreeNode::getTimeInserted() {
+int64_t TreeNode::getTimeInserted()
+{
   resolveNid();
   return getNciInt64(NciTIME_INSERTED);
 }
 
-Data *TreeNode::getExtendedAttribute(const char *name) {
+Data *TreeNode::getExtendedAttribute(const char *name)
+{
   Data *data = NULL;
   int status = getTreeXNci(tree->getCtx(), nid, name, (void **)&data, tree);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return data;
 }
 
-Data *TreeNode::getExtendedAttribute(std::string name) {
+Data *TreeNode::getExtendedAttribute(std::string name)
+{
   return getExtendedAttribute(name.c_str());
 }
 
-void TreeNode::setExtendedAttribute(const char *name, Data *data) {
+void TreeNode::setExtendedAttribute(const char *name, Data *data)
+{
   resolveNid();
   int status = setTreeXNci(tree->getCtx(), nid, name, data->convertToDsc());
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::setExtendedAttribute(std::string name, Data *data) {
+void TreeNode::setExtendedAttribute(std::string name, Data *data)
+{
   resolveNid();
   int status =
       setTreeXNci(tree->getCtx(), nid, name.c_str(), data->convertToDsc());
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::doMethod(char *method) {
+void TreeNode::doMethod(char *method)
+{
   resolveNid();
   int status = doTreeMethod(tree->getCtx(), nid, method);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-bool TreeNode::getFlag(int flagOfs) {
+bool TreeNode::getFlag(int flagOfs)
+{
   resolveNid();
   int nciFlags = getNciInt(NciGET_FLAGS);
   return (nciFlags & flagOfs) ? true : false;
@@ -819,13 +917,15 @@ void TreeNode::setWriteOnce(bool flag) { setFlag(NciM_WRITE_ONCE, flag); }
 
 bool TreeNode::isCompressOnPut() { return getFlag(NciM_COMPRESS_ON_PUT); }
 
-void TreeNode::setCompressOnPut(bool flag) {
+void TreeNode::setCompressOnPut(bool flag)
+{
   setFlag(NciM_COMPRESS_ON_PUT, flag);
 }
 
 bool TreeNode::isNoWriteModel() { return getFlag(NciM_NO_WRITE_MODEL); }
 
-void TreeNode::setNoWriteModel(bool flag) {
+void TreeNode::setNoWriteModel(bool flag)
+{
   setFlag(NciM_NO_WRITE_MODEL, flag);
 }
 
@@ -842,67 +942,79 @@ bool TreeNode::isIncludeInPulse() { return getFlag(NciM_INCLUDE_IN_PULSE); }
 
 bool TreeNode::containsVersions() { return getFlag(NciM_VERSIONS); }
 
-bool TreeNode::isMember() {
+bool TreeNode::isMember()
+{
   resolveNid();
   int par = getNciInt(NciPARENT_RELATIONSHIP);
   return (par & NciK_IS_MEMBER) ? true : false;
 }
 
-bool TreeNode::isChild() {
+bool TreeNode::isChild()
+{
   resolveNid();
   int par = getNciInt(NciPARENT_RELATIONSHIP);
   return (par & NciK_IS_CHILD) ? true : false;
 }
 
-void TreeNode::setIncludedInPulse(bool flag) {
+void TreeNode::setIncludedInPulse(bool flag)
+{
   TreeNode::setIncludeInPulse(flag);
 }
-void TreeNode::setIncludeInPulse(bool flag) {
+void TreeNode::setIncludeInPulse(bool flag)
+{
   setFlag(NciM_INCLUDE_IN_PULSE, flag);
 }
 
-TreeNode *TreeNode::getParent() {
+TreeNode *TreeNode::getParent()
+{
   resolveNid();
   int nodeId = getNciInt(NciPARENT);
   return new TreeNode(nodeId, tree);
 }
 
-TreeNode *TreeNode::getBrother() {
+TreeNode *TreeNode::getBrother()
+{
   resolveNid();
   int nodeId = getNciInt(NciBROTHER);
   return new TreeNode(nodeId, tree);
 }
 
-TreeNode *TreeNode::getChild() {
+TreeNode *TreeNode::getChild()
+{
   resolveNid();
   int nodeId = getNciInt(NciCHILD);
   return new TreeNode(nodeId, tree);
 }
 
-TreeNode *TreeNode::getMember() {
+TreeNode *TreeNode::getMember()
+{
   resolveNid();
   int nodeId = getNciInt(NciMEMBER);
   return new TreeNode(nodeId, tree);
 }
 
-int TreeNode::getNumChildren() {
+int TreeNode::getNumChildren()
+{
   resolveNid();
   return getNciInt(NciNUMBER_OF_CHILDREN);
 }
 
-int TreeNode::getNumMembers() {
+int TreeNode::getNumMembers()
+{
   resolveNid();
   return getNciInt(NciNUMBER_OF_MEMBERS);
 }
 
-int TreeNode::getNumDescendants() {
+int TreeNode::getNumDescendants()
+{
   resolveNid();
   int members = getNciInt(NciNUMBER_OF_MEMBERS);
   int children = getNciInt(NciNUMBER_OF_CHILDREN);
   return members + children;
 }
 
-TreeNode **TreeNode::getDescendants(int *numDescendants) {
+TreeNode **TreeNode::getDescendants(int *numDescendants)
+{
   int numMembers;
   TreeNode **members = getMembers(&numMembers);
 
@@ -924,7 +1036,8 @@ TreeNode **TreeNode::getDescendants(int *numDescendants) {
   return retDescendants;
 }
 
-TreeNode **TreeNode::getChildren(int *numChildren) {
+TreeNode **TreeNode::getChildren(int *numChildren)
+{
   int nidCnt = getNumChildren();
   std::vector<int> nids(nidCnt);
   *numChildren = nidCnt;
@@ -936,7 +1049,7 @@ TreeNode **TreeNode::getChildren(int *numChildren) {
       {0, NciEND_OF_LIST, 0, 0}};
 
   int status = _TreeGetNci(tree->getCtx(), nid, nciList1);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 
   TreeNode **retNodes = new TreeNode *[nidCnt];
@@ -945,7 +1058,8 @@ TreeNode **TreeNode::getChildren(int *numChildren) {
   return retNodes;
 }
 
-TreeNode **TreeNode::getMembers(int *numMembers) {
+TreeNode **TreeNode::getMembers(int *numMembers)
+{
   int nidCnt = getNumMembers();
   std::vector<int> nids(nidCnt);
   *numMembers = nidCnt;
@@ -957,7 +1071,7 @@ TreeNode **TreeNode::getMembers(int *numMembers) {
       {0, NciEND_OF_LIST, 0, 0}};
 
   int status = _TreeGetNci(tree->getCtx(), nid, nciList1);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 
   TreeNode **retNodes = new TreeNode *[nidCnt];
@@ -966,23 +1080,27 @@ TreeNode **TreeNode::getMembers(int *numMembers) {
   return retNodes;
 }
 
-const char *TreeNode::getClass() {
+const char *TreeNode::getClass()
+{
   resolveNid();
   char type = getNciChar(NciCLASS);
   return MdsClassString(type);
 }
 
-const char *TreeNode::getDType() {
+const char *TreeNode::getDType()
+{
   resolveNid();
   char type = getNciChar(NciDTYPE);
   return MdsDtypeString(type);
 }
 
-const char *TreeNode::getUsage() {
+const char *TreeNode::getUsage()
+{
   resolveNid();
   int usage = getNciInt(NciUSAGE);
 
-  switch (usage) {
+  switch (usage)
+  {
   case TreeUSAGE_ACTION:
     return "ACTION";
   case TreeUSAGE_ANY:
@@ -1013,17 +1131,20 @@ const char *TreeNode::getUsage() {
   return "Unknown";
 }
 
-int TreeNode::getConglomerateElt() {
+int TreeNode::getConglomerateElt()
+{
   resolveNid();
   return getNciChar(NciCONGLOMERATE_ELT);
 }
 
-int TreeNode::getNumElts() {
+int TreeNode::getNumElts()
+{
   resolveNid();
   return getNciInt(NciNUMBER_OF_ELTS);
 }
 
-TreeNodeArray *TreeNode::getConglomerateNodes() {
+TreeNodeArray *TreeNode::getConglomerateNodes()
+{
   int nNidsLen, retLen;
   int nNids;
   struct nci_itm nciList[] = {{4, NciNUMBER_OF_ELTS, (char *)&nNids, &nNidsLen},
@@ -1031,7 +1152,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes() {
 
   resolveNid();
   int status = _TreeGetNci(tree->getCtx(), nid, nciList);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 
   int *nids = new int[nNids];
@@ -1040,7 +1161,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes() {
       {0, NciEND_OF_LIST, 0, 0}};
 
   status = _TreeGetNci(tree->getCtx(), nid, nciList1);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 
   TreeNodeArray *resArray = new TreeNodeArray(nids, nNids, tree);
@@ -1048,7 +1169,8 @@ TreeNodeArray *TreeNode::getConglomerateNodes() {
   return resArray;
 }
 
-int TreeNode::getDepth() {
+int TreeNode::getDepth()
+{
   resolveNid();
   return getNciInt(NciDEPTH);
 }
@@ -1060,7 +1182,8 @@ int TreeNode::getDepth() {
 #endif
 
 void TreeNode::makeSegment(Data *start, Data *end, Data *time,
-                           Array *initialData) {
+                           Array *initialData)
+{
   resolveNid();
   int numDims;
   int *shape = initialData->getShape(&numDims);
@@ -1071,13 +1194,14 @@ void TreeNode::makeSegment(Data *start, Data *end, Data *time,
                       time->convertToDsc(), shape[0]);
   deleteNativeArray(shape);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time,
                                  Array *initialData, TreeNode *resampledNode,
-                                 int resFactor) {
+                                 int resFactor)
+{
   resolveNid();
   int numDims;
   int *shape = initialData->getShape(&numDims);
@@ -1088,13 +1212,14 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time,
       shape[0], resampledNode->getNid(), resFactor);
   deleteNativeArray(shape);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time,
                                     Array *initialData, TreeNode *resampledNode,
-                                    int resFactor) {
+                                    int resFactor)
+{
   resolveNid();
   int numDims;
   int *shape = initialData->getShape(&numDims);
@@ -1105,40 +1230,43 @@ void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time,
       shape[0], resampledNode->getNid(), resFactor);
   deleteNativeArray(shape);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 void TreeNode::beginSegment(Data *start, Data *end, Data *time,
-                            Array *initialData) {
+                            Array *initialData)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status = beginTreeSegment(
       tree->getCtx(), getNid(), initialData->convertToDsc(),
       start->convertToDsc(), end->convertToDsc(), time->convertToDsc());
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 void TreeNode::beginSegmentResampled(Data *start, Data *end, Data *time,
                                      Array *initialData,
-                                     TreeNode *resampledNode, int resFactor) {
+                                     TreeNode *resampledNode, int resFactor)
+{
   resolveNid();
   int status = beginTreeSegmentResampled(
       tree->getCtx(), getNid(), initialData->convertToDsc(),
       start->convertToDsc(), end->convertToDsc(), time->convertToDsc(),
       resampledNode->getNid(), resFactor);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 void TreeNode::beginSegmentMinMax(Data *start, Data *end, Data *time,
                                   Array *initialData, TreeNode *resampledNode,
-                                  int resFactor) {
+                                  int resFactor)
+{
   resolveNid();
   int status = beginTreeSegmentMinMax(
       tree->getCtx(), getNid(), initialData->convertToDsc(),
       start->convertToDsc(), end->convertToDsc(), time->convertToDsc(),
       resampledNode->getNid(), resFactor);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 /*void TreeNode::beginSegmentMinMax(Data *start, Data *end, Data *time, Array
@@ -1183,36 +1311,39 @@ resampledNode->convertToDsc());
         beginSegment(start, end, time, initialData);
 }
 */
-void TreeNode::putSegment(Array *data, int ofs) {
+void TreeNode::putSegment(Array *data, int ofs)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status =
       putTreeSegment(tree->getCtx(), getNid(), data->convertToDsc(), ofs);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
 void TreeNode::putSegmentResampled(Array *data, int ofs,
-                                   TreeNode *resampledNode, int resFactor) {
+                                   TreeNode *resampledNode, int resFactor)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status =
       putTreeSegmentResampled(tree->getCtx(), getNid(), data->convertToDsc(),
                               ofs, resampledNode->getNid(), resFactor);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 void TreeNode::putSegmentMinMax(Array *data, int ofs, TreeNode *resampledNode,
-                                int resFactor) {
+                                int resFactor)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status =
       putTreeSegmentMinMax(tree->getCtx(), getNid(), data->convertToDsc(), ofs,
                            resampledNode->getNid(), resFactor);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 /*void TreeNode::putSegmentMinMax(Array *data, int ofs, TreeNode*resampledNode,
@@ -1248,57 +1379,62 @@ numRows/resFactor)); resampledNode->putSegment(resData, ofs);
         putSegment(data, ofs);
 }
 */
-void TreeNode::updateSegment(Data *start, Data *end, Data *time) {
+void TreeNode::updateSegment(Data *start, Data *end, Data *time)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status =
       updateTreeSegment(tree->getCtx(), getNid(), -1, start->convertToDsc(),
                         end->convertToDsc(), time->convertToDsc());
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::updateSegment(int segIdx, Data *start, Data *end, Data *time) {
+void TreeNode::updateSegment(int segIdx, Data *start, Data *end, Data *time)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status =
       updateTreeSegment(tree->getCtx(), getNid(), segIdx, start->convertToDsc(),
                         end->convertToDsc(), time->convertToDsc());
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-int TreeNode::getNumSegments() {
+int TreeNode::getNumSegments()
+{
   int numSegments;
 
   resolveNid();
   // if(tree) tree->lock();
   int status = getTreeNumSegments(tree->getCtx(), getNid(), &numSegments);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return numSegments;
 }
 
 void TreeNode::getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims,
-                              int *nextRow) {
+                              int *nextRow)
+{
   resolveNid();
   int status = getTreeSegmentInfo(tree->getCtx(), getNid(), segIdx, dtype,
                                   dimct, dims, nextRow);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end) {
+void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
+{
   void *startDsc, *endDsc;
   resolveNid();
   // if(tree) tree->lock();
   int status = getTreeSegmentLimits(tree->getCtx(), getNid(), segmentIdx,
                                     &startDsc, &endDsc);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   *start = (Data *)convertFromDsc(startDsc, tree);
   freeDsc(startDsc);
@@ -1306,7 +1442,8 @@ void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end) {
   freeDsc(endDsc);
 }
 
-Array *TreeNode::getSegment(int segIdx) {
+Array *TreeNode::getSegment(int segIdx)
+{
   void *dataDsc;
   void *timeDsc;
   resolveNid();
@@ -1314,7 +1451,8 @@ Array *TreeNode::getSegment(int segIdx) {
   int status =
       getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
   // if(tree) tree->unlock();
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     freeDsc(dataDsc);
     freeDsc(timeDsc);
     throw MdsException(status);
@@ -1325,13 +1463,15 @@ Array *TreeNode::getSegment(int segIdx) {
   return retData;
 }
 
-Data *TreeNode::getSegmentDim(int segIdx) {
+Data *TreeNode::getSegmentDim(int segIdx)
+{
   void *timeDsc;
   resolveNid();
   // if(tree) tree->lock();
   int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, NULL, &timeDsc);
   // if(tree) tree->unlock();
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     freeDsc(timeDsc);
     throw MdsException(status);
   }
@@ -1341,7 +1481,8 @@ Data *TreeNode::getSegmentDim(int segIdx) {
 }
 
 void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment,
-                                      Data *&dimension) {
+                                      Data *&dimension)
+{
   void *dataDsc;
   void *timeDsc;
   resolveNid();
@@ -1349,7 +1490,8 @@ void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment,
   int status =
       getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
   // if(tree) tree->unlock();
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     freeDsc(dataDsc);
     freeDsc(timeDsc);
     throw MdsException(status);
@@ -1360,13 +1502,15 @@ void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment,
   freeDsc(timeDsc);
 }
 
-Data *TreeNode::getSegmentScale() {
+Data *TreeNode::getSegmentScale()
+{
   void *sclDsc;
   resolveNid();
   // if(tree) tree->lock();
   int status = getTreeSegmentScale(tree->getCtx(), getNid(), &sclDsc);
   // if(tree) tree->unlock();
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     freeDsc(sclDsc);
     sclDsc = NULL;
   }
@@ -1375,27 +1519,30 @@ Data *TreeNode::getSegmentScale() {
   return retScl;
 }
 
-void TreeNode::setSegmentScale(Data *scale) {
+void TreeNode::setSegmentScale(Data *scale)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status =
       setTreeSegmentScale(tree->getCtx(), getNid(), scale->convertToDsc());
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::beginTimestampedSegment(Array *initData) {
+void TreeNode::beginTimestampedSegment(Array *initData)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status = beginTreeTimestampedSegment(tree->getCtx(), getNid(),
                                            initData->convertToDsc());
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::makeTimestampedSegment(Array *data, int64_t *times) {
+void TreeNode::makeTimestampedSegment(Array *data, int64_t *times)
+{
   int numDims;
   int *shape = data->getShape(&numDims);
 
@@ -1405,54 +1552,59 @@ void TreeNode::makeTimestampedSegment(Array *data, int64_t *times) {
       tree->getCtx(), getNid(), data->convertToDsc(), times, shape[0]);
   // if(tree) tree->unlock();
   deleteNativeArray(shape);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::putTimestampedSegment(Array *data, int64_t *times) {
+void TreeNode::putTimestampedSegment(Array *data, int64_t *times)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status = putTreeTimestampedSegment(tree->getCtx(), getNid(),
                                          data->convertToDsc(), times);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::putRow(Data *data, int64_t *time, int size) {
+void TreeNode::putRow(Data *data, int64_t *time, int size)
+{
   resolveNid();
   // if(tree) tree->lock();
   int status =
       putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), time, size);
   // if(tree) tree->unlock();
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-TreeNode *TreeNode::getNode(char const *relPath) {
+TreeNode *TreeNode::getNode(char const *relPath)
+{
   int newNid;
   resolveNid();
 
   int status = _TreeFindNodeRelative(tree->getCtx(), relPath, nid, &newNid);
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, tree);
 }
 
-TreeNode *TreeNode::getNode(String *relPathStr) {
+TreeNode *TreeNode::getNode(String *relPathStr)
+{
   int newNid;
   resolveNid();
   AutoArray<char> relPath(relPathStr->getString());
 
   int status = _TreeFindNodeRelative(tree->getCtx(), relPath.ptr, nid, &newNid);
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, tree);
 }
 
-TreeNodeArray *TreeNode::getNodeWild(char const *path, int usageMask) {
+TreeNodeArray *TreeNode::getNodeWild(char const *path, int usageMask)
+{
   int status;
   void *wildCtx = 0;
 
@@ -1475,87 +1627,96 @@ TreeNodeArray *TreeNode::getNodeWild(char const *path, int usageMask) {
   return nodeArray;
 }
 
-TreeNodeArray *TreeNode::getNodeWild(char const *path) {
+TreeNodeArray *TreeNode::getNodeWild(char const *path)
+{
   return getNodeWild(path, -1);
 }
 
-TreeNode *TreeNode::addNode(char const *name, char const *usage) {
+TreeNode *TreeNode::addNode(char const *name, char const *usage)
+{
   int defNid;
   int newNid;
   resolveNid();
   int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeSetDefaultNid(tree->getCtx(), nid);
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeAddNode(tree->getCtx(), name, &newNid, convertUsage(usage));
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeSetDefaultNid(tree->getCtx(), defNid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, tree);
 }
 
-void TreeNode::remove(char const *name) {
+void TreeNode::remove(char const *name)
+{
   int count;
   int defNid;
   resolveNid();
   int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeSetDefaultNid(tree->getCtx(), nid);
   AutoPointer<TreeNode> delNode(getNode(name));
   status =
       _TreeDeleteNodeInitialize(tree->getCtx(), delNode.ptr->nid, &count, 1);
-  if (status & 1)
+  if (STATUS_OK)
     _TreeDeleteNodeExecute(tree->getCtx());
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeSetDefaultNid(tree->getCtx(), defNid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-TreeNode *TreeNode::addDevice(char const *name, char const *type) {
+TreeNode *TreeNode::addDevice(char const *name, char const *type)
+{
   int defNid;
   int newNid;
   resolveNid();
   int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeSetDefaultNid(tree->getCtx(), nid);
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeAddConglom(tree->getCtx(), name, type, &newNid);
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeSetDefaultNid(tree->getCtx(), defNid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, tree);
 }
 
-void TreeNode::rename(std::string const &newName) {
+void TreeNode::rename(std::string const &newName)
+{
   resolveNid();
   int status = _TreeRenameNode(tree->getCtx(), nid, newName.c_str());
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::move(TreeNode *parent, std::string const &newName) {
+void TreeNode::move(TreeNode *parent, std::string const &newName)
+{
   resolveNid();
   AutoString parentPath(parent->getFullPath());
   rename(parentPath.string + ":" + newName);
 }
 
-void TreeNode::move(TreeNode *parent) {
+void TreeNode::move(TreeNode *parent)
+{
   resolveNid();
   AutoString name(getNodeName());
   move(parent, name.string);
 }
 
-void TreeNode::addTag(std::string const &tagName) {
+void TreeNode::addTag(std::string const &tagName)
+{
   resolveNid();
   int status = _TreeAddTag(tree->getCtx(), nid, tagName.c_str());
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::removeTag(std::string const &tagName) {
+void TreeNode::removeTag(std::string const &tagName)
+{
   resolveNid();
   int currNid;
   std::string bTag("\\" + tagName);
@@ -1564,22 +1725,24 @@ void TreeNode::removeTag(std::string const &tagName) {
     throw MdsException("No such tag for this tree node"); // The tag does not
                                                           // refer to this node
   status = _TreeRemoveTag(tree->getCtx(), tagName.c_str());
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-void TreeNode::setSubtree(bool isSubtree) {
+void TreeNode::setSubtree(bool isSubtree)
+{
   resolveNid();
   int status;
   if (isSubtree)
     status = _TreeSetSubtree(tree->getCtx(), nid);
   else
     status = _TreeSetNoSubtree(tree->getCtx(), nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
 }
 
-StringArray *TreeNode::findTags() {
+StringArray *TreeNode::findTags()
+{
   resolveNid();
   const int MAX_TAGS = 1024;
   char *tagNames[MAX_TAGS];
@@ -1600,23 +1763,26 @@ StringArray *TreeNode::findTags() {
 
 TreePath::TreePath(std::string const &path, Tree *tree, Data *units,
                    Data *error, Data *help, Data *validation)
-    : TreeNode(0, tree, units, error, help, validation), path(path) {
+    : TreeNode(0, tree, units, error, help, validation), path(path)
+{
   clazz = CLASS_S;
   dtype = DTYPE_PATH;
 }
 
 TreePath::TreePath(char const *path, int len, Tree *tree, Data *units,
                    Data *error, Data *help, Data *validation)
-    : TreeNode(0, tree, units, error, help, validation), path(path, len) {
+    : TreeNode(0, tree, units, error, help, validation), path(path, len)
+{
   clazz = CLASS_S;
   dtype = DTYPE_PATH;
 }
 
-void TreePath::resolveNid() {
+void TreePath::resolveNid()
+{
   if (!tree)
     tree = getActiveTree();
   int status = _TreeFindNode(tree->getCtx(), path.c_str(), &nid);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     nid = -1;
 }
 
@@ -1624,7 +1790,8 @@ void TreePath::resolveNid() {
 //  TreeNodeArray  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes) {
+TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
+{
   this->numNodes = numNodes;
   this->nodes = new TreeNode *[numNodes];
 
@@ -1632,7 +1799,8 @@ TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes) {
     this->nodes[i] = nodes[i];
 }
 
-TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree) {
+TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree)
+{
   this->numNodes = numNodes;
   this->nodes = new TreeNode *[numNodes];
 
@@ -1640,8 +1808,10 @@ TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree) {
     this->nodes[i] = new TreeNode(nids[i], tree);
 }
 
-TreeNodeArray::~TreeNodeArray() {
-  if (numNodes > 0) {
+TreeNodeArray::~TreeNodeArray()
+{
+  if (numNodes > 0)
+  {
     for (int i = 0; i < numNodes; i++)
       deleteData(nodes[i]);
     delete[] nodes;
@@ -1652,7 +1822,8 @@ void *TreeNodeArray::operator new(size_t sz) { return ::operator new(sz); }
 
 void TreeNodeArray::operator delete(void *p) { ::operator delete(p); }
 
-StringArray *TreeNodeArray::getPath() {
+StringArray *TreeNodeArray::getPath()
+{
   /* WRONG!! AutoArray cannot wok here because AutoArray objects are
   instantiated several times and then go out of scope, this triggering multiple
   deallocation of the same C string and crashing the program
@@ -1678,7 +1849,8 @@ StringArray *TreeNodeArray::getPath() {
   return new StringArray(&nativePaths[0], numNodes);
 }
 
-StringArray *TreeNodeArray::getFullPath() {
+StringArray *TreeNodeArray::getFullPath()
+{
   /* Same as before
           std::vector<AutoArray<char> > paths;
           for(int i = 0; i < numNodes; ++i)
@@ -1701,7 +1873,8 @@ StringArray *TreeNodeArray::getFullPath() {
   return new StringArray(&nativePaths[0], numNodes);
 }
 
-Int32Array *TreeNodeArray::getNid() {
+Int32Array *TreeNodeArray::getNid()
+{
   std::vector<int> nids;
   for (int i = 0; i < numNodes; ++i)
     nids.push_back(nodes[i]->getNid());
@@ -1709,7 +1882,8 @@ Int32Array *TreeNodeArray::getNid() {
   return new Int32Array(&nids[0], numNodes);
 }
 
-Int8Array *TreeNodeArray::isOn() {
+Int8Array *TreeNodeArray::isOn()
+{
   std::vector<char> info;
   for (int i = 0; i < numNodes; ++i)
     info.push_back(nodes[i]->isOn());
@@ -1717,7 +1891,8 @@ Int8Array *TreeNodeArray::isOn() {
   return new Int8Array(&info[0], numNodes);
 }
 
-void TreeNodeArray::setOn(Int8Array *info) {
+void TreeNodeArray::setOn(Int8Array *info)
+{
   std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
   // FIXME: numNodes should be size_t
@@ -1726,7 +1901,8 @@ void TreeNodeArray::setOn(Int8Array *info) {
     nodes[i]->setOn((infoArray[i]) ? true : false);
 }
 
-Int8Array *TreeNodeArray::isSetup() {
+Int8Array *TreeNodeArray::isSetup()
+{
   std::vector<char> info;
   for (int i = 0; i < numNodes; ++i)
     info[i] = nodes[i]->isSetup();
@@ -1734,7 +1910,8 @@ Int8Array *TreeNodeArray::isSetup() {
   return new Int8Array(&info[0], numNodes);
 }
 
-Int8Array *TreeNodeArray::isWriteOnce() {
+Int8Array *TreeNodeArray::isWriteOnce()
+{
   std::vector<char> info;
   for (int i = 0; i < numNodes; ++i)
     info[i] = nodes[i]->isWriteOnce();
@@ -1742,7 +1919,8 @@ Int8Array *TreeNodeArray::isWriteOnce() {
   return new Int8Array(&info[0], numNodes);
 }
 
-void TreeNodeArray::setWriteOnce(Int8Array *info) {
+void TreeNodeArray::setWriteOnce(Int8Array *info)
+{
   std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
   // FIXME: numNodes should be size_t
@@ -1750,7 +1928,8 @@ void TreeNodeArray::setWriteOnce(Int8Array *info) {
   for (std::size_t i = 0; i < MAX; ++i)
     nodes[i]->setWriteOnce((infoArray[i]) ? true : false);
 }
-Int8Array *TreeNodeArray::isCompressOnPut() {
+Int8Array *TreeNodeArray::isCompressOnPut()
+{
   std::vector<char> info;
   for (int i = 0; i < numNodes; ++i)
     info[i] = nodes[i]->isCompressOnPut();
@@ -1758,7 +1937,8 @@ Int8Array *TreeNodeArray::isCompressOnPut() {
   return new Int8Array(&info[0], numNodes);
 }
 
-void TreeNodeArray::setCompressOnPut(Int8Array *info) {
+void TreeNodeArray::setCompressOnPut(Int8Array *info)
+{
   std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
   // FIXME: numNodes should be size_t
@@ -1767,7 +1947,8 @@ void TreeNodeArray::setCompressOnPut(Int8Array *info) {
     nodes[i]->setCompressOnPut((infoArray[i]) ? true : false);
 }
 
-Int8Array *TreeNodeArray::isNoWriteModel() {
+Int8Array *TreeNodeArray::isNoWriteModel()
+{
   std::vector<char> info;
   for (int i = 0; i < numNodes; ++i)
     info[i] = nodes[i]->isNoWriteModel();
@@ -1775,7 +1956,8 @@ Int8Array *TreeNodeArray::isNoWriteModel() {
   return new Int8Array(&info[0], numNodes);
 }
 
-void TreeNodeArray::setNoWriteModel(Int8Array *info) {
+void TreeNodeArray::setNoWriteModel(Int8Array *info)
+{
   std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
   // FIXME: numNodes should be size_t
@@ -1784,7 +1966,8 @@ void TreeNodeArray::setNoWriteModel(Int8Array *info) {
     nodes[i]->setNoWriteModel((infoArray[i]) ? true : false);
 }
 
-Int8Array *TreeNodeArray::isNoWriteShot() {
+Int8Array *TreeNodeArray::isNoWriteShot()
+{
   std::vector<char> info;
   for (int i = 0; i < numNodes; ++i)
     info[i] = nodes[i]->isNoWriteShot();
@@ -1792,7 +1975,8 @@ Int8Array *TreeNodeArray::isNoWriteShot() {
   return new Int8Array(&info[0], numNodes);
 }
 
-void TreeNodeArray::setNoWriteShot(Int8Array *info) {
+void TreeNodeArray::setNoWriteShot(Int8Array *info)
+{
   std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
   // FIXME: numNodes should be size_t
@@ -1801,7 +1985,8 @@ void TreeNodeArray::setNoWriteShot(Int8Array *info) {
     nodes[i]->setNoWriteShot((infoArray[i]) ? true : false);
 }
 
-Int32Array *TreeNodeArray::getLength() {
+Int32Array *TreeNodeArray::getLength()
+{
   std::vector<int> sizes;
   for (int i = 0; i < numNodes; ++i)
     sizes.push_back(nodes[i]->getLength());
@@ -1809,7 +1994,8 @@ Int32Array *TreeNodeArray::getLength() {
   return new Int32Array(&sizes[0], numNodes);
 }
 
-Int32Array *TreeNodeArray::getCompressedLength() {
+Int32Array *TreeNodeArray::getCompressedLength()
+{
   std::vector<int> sizes;
   for (int i = 0; i < numNodes; ++i)
     sizes.push_back(nodes[i]->getCompressedLength());
@@ -1817,7 +2003,8 @@ Int32Array *TreeNodeArray::getCompressedLength() {
   return new Int32Array(&sizes[0], numNodes);
 }
 
-StringArray *TreeNodeArray::getUsage() {
+StringArray *TreeNodeArray::getUsage()
+{
   std::vector<char const *> usages;
   for (int i = 0; i < numNodes; ++i)
     usages.push_back(nodes[i]->getUsage());
@@ -1829,8 +2016,10 @@ StringArray *TreeNodeArray::getUsage() {
 ////////////////End TreeNodeArray methods/////////////////////
 ////////////////TreeNodeThinClient methods ///////////////////
 
-static const char *convertNciItm(int nciItm) {
-  switch (nciItm) {
+static const char *convertNciItm(int nciItm)
+{
+  switch (nciItm)
+  {
   case NciTIME_INSERTED:
     return "\'TIME_INSERTED\'";
   case NciOWNER_ID:
@@ -1892,7 +2081,8 @@ static const char *convertNciItm(int nciItm) {
 
 TreeNodeThinClient::TreeNodeThinClient(int nid, Connection *connection,
                                        Data *units, Data *error, Data *help,
-                                       Data *validation) {
+                                       Data *validation)
+{
   this->tree = 0;
   this->nid = nid;
   this->connection = connection;
@@ -1901,7 +2091,8 @@ TreeNodeThinClient::TreeNodeThinClient(int nid, Connection *connection,
   setAccessory(units, error, help, validation);
 }
 
-std::string TreeNodeThinClient::getNciString(int itm) {
+std::string TreeNodeThinClient::getNciString(int itm)
+{
   char expr[64];
   sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retStringData(connection->get(expr));
@@ -1912,7 +2103,8 @@ std::string TreeNodeThinClient::getNciString(int itm) {
   return as.string;
 }
 
-char TreeNodeThinClient::getNciChar(int itm) {
+char TreeNodeThinClient::getNciChar(int itm)
+{
   char expr[64];
   sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retData(connection->get(expr));
@@ -1922,7 +2114,8 @@ char TreeNodeThinClient::getNciChar(int itm) {
   return retChar;
 }
 
-int TreeNodeThinClient::getNciInt(int itm) {
+int TreeNodeThinClient::getNciInt(int itm)
+{
   char expr[64];
   sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retData(connection->get(expr));
@@ -1931,7 +2124,8 @@ int TreeNodeThinClient::getNciInt(int itm) {
   return retData->getInt();
 }
 
-int64_t TreeNodeThinClient::getNciInt64(int itm) {
+int64_t TreeNodeThinClient::getNciInt64(int itm)
+{
   char expr[64];
   sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retData(connection->get(expr));
@@ -1940,7 +2134,8 @@ int64_t TreeNodeThinClient::getNciInt64(int itm) {
   return retData->getLong();
 }
 
-char *TreeNodeThinClient::getPath() {
+char *TreeNodeThinClient::getPath()
+{
   char expr[64];
   sprintf(expr, "GETNCI(%d,\'PATH\')", nid);
   AutoData<Data> retData(connection->get(expr));
@@ -1949,7 +2144,8 @@ char *TreeNodeThinClient::getPath() {
   return retData->getString();
 }
 
-EXPORT Data *TreeNodeThinClient::getData() {
+EXPORT Data *TreeNodeThinClient::getData()
+{
   char expr[64];
   sprintf(expr, "GETNCI(%d,\'RECORD\')", nid);
   Data *retData = connection->get(expr);
@@ -1958,20 +2154,23 @@ EXPORT Data *TreeNodeThinClient::getData() {
   return retData;
 }
 
-EXPORT void TreeNodeThinClient::putData(Data *data) {
+EXPORT void TreeNodeThinClient::putData(Data *data)
+{
   AutoArray<char> path(getPath());
   AutoData<Data> argsD[] = {data->data()};
   Data *args[] = {argsD[0].get()};
   connection->put(path, (char *)"$", args, 1);
 }
 
-EXPORT void TreeNodeThinClient::deleteData() {
+EXPORT void TreeNodeThinClient::deleteData()
+{
   AutoArray<char> path = getFullPath();
   Data *args[1] = {0};
   connection->put(path, (char *)"*", args, 0);
 }
 
-EXPORT bool TreeNodeThinClient::isOn() {
+EXPORT bool TreeNodeThinClient::isOn()
+{
   char expr[64];
   sprintf(expr, "GETNCI(%d,\'STATE\')", nid);
   AutoData<Data> retData(connection->get(expr));
@@ -1982,7 +2181,8 @@ EXPORT bool TreeNodeThinClient::isOn() {
   return (onData) ? false : true;
 }
 
-EXPORT void TreeNodeThinClient::setOn(bool on) {
+EXPORT void TreeNodeThinClient::setOn(bool on)
+{
   char expr[64];
   if (on)
     sprintf(expr, "TreeTurnOn(%d)", nid);
@@ -1992,7 +2192,8 @@ EXPORT void TreeNodeThinClient::setOn(bool on) {
 }
 
 EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time,
-                                             Array *initialData) {
+                                             Array *initialData)
+{
   char expr[256];
   AutoData<Data> argsD[] = {start->data(), end->data(), time->data(),
                             initialData->data()};
@@ -2003,7 +2204,8 @@ EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time,
 }
 
 EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time,
-                                            Array *initialData) {
+                                            Array *initialData)
+{
   char expr[256];
   AutoData<Data> argsD[] = {start->data(), end->data(), time->data(),
                             initialData->data()};
@@ -2013,7 +2215,8 @@ EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time,
   AutoData<Data> retData(connection->get(expr, args, 4));
 }
 
-EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs) {
+EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
+{
   char expr[256];
   AutoData<Data> argsD[] = {data->data()};
   Data *args[] = {argsD[0].get()};
@@ -2021,7 +2224,8 @@ EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs) {
   AutoData<Data> retData(connection->get(expr, args, 1));
 }
 
-EXPORT int TreeNodeThinClient::getNumSegments() {
+EXPORT int TreeNodeThinClient::getNumSegments()
+{
   char expr[64];
   sprintf(expr, "GetNumSegments(%d)", nid);
   AutoData<Data> data(connection->get(expr));
@@ -2031,7 +2235,8 @@ EXPORT int TreeNodeThinClient::getNumSegments() {
 }
 
 EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start,
-                                                 Data **end) {
+                                                 Data **end)
+{
   char expr[64];
   sprintf(expr, "GetSegmentLimits(%d, %d)", nid, segmentIdx);
   AutoData<Array> limitsArr((Array *)connection->get(expr));
@@ -2042,7 +2247,8 @@ EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start,
   *end = limitsArr->getElementAt(&endIdx, 1);
 }
 
-EXPORT Array *TreeNodeThinClient::getSegment(int segIdx) {
+EXPORT Array *TreeNodeThinClient::getSegment(int segIdx)
+{
   char expr[64];
   sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
   Array *retSegment = (Array *)connection->get(expr);
@@ -2051,7 +2257,8 @@ EXPORT Array *TreeNodeThinClient::getSegment(int segIdx) {
   return retSegment;
 }
 
-EXPORT Data *TreeNodeThinClient::getSegmentDim(int segIdx) {
+EXPORT Data *TreeNodeThinClient::getSegmentDim(int segIdx)
+{
   char expr[64];
   sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
   Data *retDim = connection->get(expr);
@@ -2062,7 +2269,8 @@ EXPORT Data *TreeNodeThinClient::getSegmentDim(int segIdx) {
 
 EXPORT void TreeNodeThinClient::getSegmentAndDimension(int segIdx,
                                                        Array *&segment,
-                                                       Data *&dimension) {
+                                                       Data *&dimension)
+{
   char expr[64];
   sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
   segment = (Array *)connection->get(expr);
@@ -2072,7 +2280,8 @@ EXPORT void TreeNodeThinClient::getSegmentAndDimension(int segIdx,
     throw MdsException("Error in Remote evaluation of GetSegment");
 }
 
-EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData) {
+EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData)
+{
   char expr[64];
   AutoData<Data> argsD[] = {initData->data()};
   Data *args[] = {argsD[0].get()};
@@ -2081,7 +2290,8 @@ EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData) {
 }
 
 EXPORT void TreeNodeThinClient::putTimestampedSegment(Array *data,
-                                                      int64_t *times) {
+                                                      int64_t *times)
+{
   char expr[64];
   int len = data->getSize();
   AutoData<Data> argsD[] = {new Int64Array(times, len), data->data()};
@@ -2091,12 +2301,14 @@ EXPORT void TreeNodeThinClient::putTimestampedSegment(Array *data,
 }
 
 EXPORT void TreeNodeThinClient::makeTimestampedSegment(Array *data,
-                                                       int64_t *times) {
+                                                       int64_t *times)
+{
   beginTimestampedSegment(data);
   putTimestampedSegment(data, times);
 }
 
-EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size) {
+EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size)
+{
   AutoData<Data> argsD[] = {new Int64(*time), data->data()};
   Data *args[] = {argsD[0].get(), argsD[1].get()};
   char expr[64];
@@ -2104,7 +2316,8 @@ EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size) {
   AutoData<Data> retData(connection->get(expr, args, 2));
 }
 
-EXPORT StringArray *TreeNodeThinClient::findTags() {
+EXPORT StringArray *TreeNodeThinClient::findTags()
+{
   char expr[64];
   sprintf(expr, "TreeFindNodeTags(%d)", nid);
   AutoData<Data> retData(connection->get(expr));
@@ -2123,7 +2336,8 @@ EXPORT StringArray *TreeNodeThinClient::findTags() {
 
 void MDSplus::setActiveTree(Tree *tree) { TreeSwitchDbid(tree->getCtx()); }
 
-Tree *MDSplus::getActiveTree() {
+Tree *MDSplus::getActiveTree()
+{
   char name[1024];
   int shot;
   int retNameLen, retShotLen;
@@ -2131,12 +2345,14 @@ Tree *MDSplus::getActiveTree() {
                         {sizeof(int), DbiSHOTID, &shot, &retShotLen},
                         {0, DbiEND_OF_LIST, 0, 0}};
   int status = TreeGetDbi(dbiItems);
-  if (!(status & 1)) {
+  if (STATUS_NOT_OK)
+  {
     throw MdsException(status);
   }
   return new Tree(name, shot, TreeDbid());
 }
 
-ostream &operator<<(ostream &stream, TreeNode *treeNode) {
+ostream &operator<<(ostream &stream, TreeNode *treeNode)
+{
   return stream << treeNode->getPathStr();
 }

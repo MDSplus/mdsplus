@@ -43,7 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Ken Klare, LANL P-4     (c)1991,1992
 */
 #include <mdstypes.h>
-#define _MOVC3(a, b, c) memcpy(c, b, a)
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <math.h> /*for pow definition */
@@ -76,11 +75,13 @@ extern int TdiText();
 #define MAXPARSE 16384
 
 static const DESCRIPTOR(dunderscore, "_");
-typedef struct {
+typedef struct
+{
   unsigned int l0;
   int l1;
 } quadw;
-typedef struct {
+typedef struct
+{
   int used;
   int c;
   struct descriptor **v;
@@ -151,7 +152,8 @@ typedef const LPBYTE LPCBYTE;
 #endif
 
 /*********************************************************/
-static int TDISQL_LINK(char *name, int (**routine)()) {
+static int TDISQL_LINK(char *name, int (**routine)())
+{
   static const DESCRIPTOR(dimage, "MdsSql");
 #ifdef __APPLE__
   static const DESCRIPTOR(dimage2, "sybdb");
@@ -159,15 +161,15 @@ static int TDISQL_LINK(char *name, int (**routine)()) {
   DESCRIPTOR_FROM_CSTRING(dname, name);
   int status = TdiFindImageSymbol(&dimage, &dname, routine);
 #ifdef __APPLE__
-  if
-    STATUS_NOT_OK
-  status = TdiFindImageSymbol(&dimage2, &dname, routine);
+  if (STATUS_NOT_OK)
+    status = TdiFindImageSymbol(&dimage2, &dname, routine);
 #endif
   return status;
 }
 
 /*********************************************************/
-static int TDISQL_LINKCPTR(char *name, char *(**routine)()) {
+static int TDISQL_LINKCPTR(char *name, char *(**routine)())
+{
   static const DESCRIPTOR(dimage, "MdsSql");
 #ifdef __APPLE__
   static const DESCRIPTOR(dimage2, "sybdb");
@@ -184,7 +186,8 @@ static int TDISQL_LINKCPTR(char *name, char *(**routine)()) {
 static int date = 0;
 static int NaN = 0;
 
-static struct ans_buf {
+static struct ans_buf
+{
   void *vptr;
   int size;
   int offset;
@@ -193,11 +196,15 @@ static struct ans_buf {
 } *bufs = 0;
 static int num_bufs = 0;
 
-static void FreeBuffers() {
+static void FreeBuffers()
+{
   int i;
-  if (bufs) {
-    for (i = 0; i < num_bufs; i++) {
-      if (bufs[i].vptr) {
+  if (bufs)
+  {
+    for (i = 0; i < num_bufs; i++)
+    {
+      if (bufs[i].vptr)
+      {
         free(bufs[i].vptr);
       }
     }
@@ -209,7 +216,8 @@ static void FreeBuffers() {
 
 #define INITIAL_GUESS 32767
 
-static void AppendAnswer(int idx, void *buffer, int len, int dtype) {
+static void AppendAnswer(int idx, void *buffer, int len, int dtype)
+{
   int needed = len;
   /*
      if ((dtype == SYBDATETIME) || (dtype == SYBDATETIME4) && !date) dtype =
@@ -225,7 +233,8 @@ static void AppendAnswer(int idx, void *buffer, int len, int dtype) {
                   bufs[idx].offset=0;
           }
   */
-  if (bufs[idx].size < (bufs[idx].offset + needed)) {
+  if (bufs[idx].size < (bufs[idx].offset + needed))
+  {
     int new_size =
         (bufs[idx].size == 0) ? INITIAL_GUESS * len : 3 * bufs[idx].size;
     if (new_size < bufs[idx].offset + needed)
@@ -235,13 +244,15 @@ static void AppendAnswer(int idx, void *buffer, int len, int dtype) {
   }
   memcpy((void *)((char *)bufs[idx].vptr + bufs[idx].offset), buffer, len);
   bufs[idx].offset += len;
-  if (dtype == DTYPE_T) {
+  if (dtype == DTYPE_T)
+  {
     char *cptr = bufs[idx].vptr;
     cptr[bufs[idx].offset++] = 1;
   }
 }
 
-static void StoreAnswer(int idx, struct descriptor *dst, int type) {
+static void StoreAnswer(int idx, struct descriptor *dst, int type)
+{
   INIT_STATUS;
   DESCRIPTOR_A(src, 0, 0, 0, 0);
   struct descriptor_xd xs = {0, DTYPE_DSC, CLASS_XS, 0, sizeof(src)};
@@ -252,7 +263,8 @@ static void StoreAnswer(int idx, struct descriptor *dst, int type) {
     type = SYBTEXT;
   src.pointer = bufs[idx].vptr;
   src.arsize = bufs[idx].offset;
-  switch (type) {
+  switch (type)
+  {
   case SYBFLT8:
     src.length = 8;
     src.dtype = DTYPE_FT;
@@ -280,33 +292,40 @@ static void StoreAnswer(int idx, struct descriptor *dst, int type) {
     break;
   case SYBCHAR:
   case SYBTEXT:
-  case SYBMONEY: {
+  case SYBMONEY:
+  {
     int num = bufs[idx].offset / 32767 + 1;
-    if (num > 1) {
+    if (num > 1)
+    {
       src.length = 32767;
       src.dtype = DTYPE_T;
-      if (bufs[idx].size < 32767 * num) {
+      if (bufs[idx].size < 32767 * num)
+      {
         src.pointer = bufs[idx].vptr = realloc(bufs[idx].vptr, 32767 * num);
         bufs[idx].size = 32767 * num;
       }
-      if (bufs[idx].offset < 32767 * num) {
+      if (bufs[idx].offset < 32767 * num)
+      {
         memset(((char *)src.pointer) + bufs[idx].offset, 0,
                32767 * num - bufs[idx].offset);
       }
       src.arsize = 32767 * num;
-    } else {
+    }
+    else
+    {
       t_dsc.length = bufs[idx].offset;
       t_dsc.pointer = bufs[idx].vptr;
       xs.pointer = &t_dsc;
     }
-  } break;
+  }
+  break;
   default:
     status = MDSplusERROR;
   }
-  if
-    STATUS_OK
-  status = tdi_put_ident(dst, &xs);
-  else status = tdi_put_ident(dst, &xd);
+  if (STATUS_OK)
+    status = tdi_put_ident(dst, &xs);
+  else
+    status = tdi_put_ident(dst, &xd);
   free(bufs[idx].vptr);
   bufs[idx].vptr = 0;
   bufs[idx].size = 0;
@@ -330,8 +349,10 @@ ARGLIST *arg;
   char *buf;
   static struct descriptor name = {0, DTYPE_T, CLASS_S, 0};
 
-  if (rows == 0) {
-    if (bufs) {
+  if (rows == 0)
+  {
+    if (bufs)
+    {
       FreeBuffers();
     }
     if (ncol > 0)
@@ -342,9 +363,12 @@ ARGLIST *arg;
        //     if (used + ncol < arg->c) status = TdiEXTRA_ARG;
        //     if (used + ncol > arg->c) status = TdiMISS_ARG;
      */
-  } else
-    for (j = 0; j < MAX(ncol, num_bufs); ++j, ++used) {
-      if (rows < 0) {
+  }
+  else
+    for (j = 0; j < MAX(ncol, num_bufs); ++j, ++used)
+    {
+      if (rows < 0)
+      {
         /*              dst = (struct descriptor *)(used + j > arg->c ? 0 :
          * *(argv+used)); // should'nt it be used > arg-> c ? */
         dst = (struct descriptor
@@ -354,21 +378,24 @@ ARGLIST *arg;
                               used)); /* // should'nt it be used > arg-> c ? */
         while (dst && dst->dtype == DTYPE_DSC)
           dst = (struct descriptor *)dst->pointer;
-        if (dst == 0) { /* // && (rblob || (pda->SQLTYPE & ~1) !=
+        if (dst == 0)
+        { /* // && (rblob || (pda->SQLTYPE & ~1) !=
                            SQL_TYPE_SEGMENT_ID)) { */
           name.pointer = SYB_dbcolname(dbproc, j + 1);
           name.length = strlen(name.pointer);
           status =
               StrConcat(dst = (struct descriptor *)&madeup,
                         (struct descriptor *)&dunderscore, &name MDS_END_ARG);
-          if
-            STATUS_NOT_OK
-          break;
+          if (STATUS_NOT_OK)
+            break;
           dst->dtype = DTYPE_IDENT;
         }
         StoreAnswer(j, dst, bufs[j].syb_type);
-      } else {
-        if (j > num_bufs) {
+      }
+      else
+      {
+        if (j > num_bufs)
+        {
           num_bufs++;
           bufs = realloc(bufs, num_bufs * sizeof(struct ans_buf));
           bufs[j].size = 0;
@@ -377,7 +404,8 @@ ARGLIST *arg;
         }
         buf = SYB_dbdata(dbproc, j + 1);
         ind = buf == (void *)NULL;
-        if ((bufs[j].syb_type == 0) || (bufs[j].len == 0)) {
+        if ((bufs[j].syb_type == 0) || (bufs[j].len == 0))
+        {
           bufs[j].syb_type = SYB_dbcoltype(dbproc, j + 1);
           bufs[j].len = SYB_dbdatlen(dbproc, j + 1);
         }
@@ -391,20 +419,25 @@ ARGLIST *arg;
            rows < 0; type = SYB_dbcoltype(dbproc, j+1);
         */
         type = bufs[j].syb_type;
-        switch (type) {
+        switch (type)
+        {
         case SYBCHAR:
         case SYBTEXT:
-          if (ind) {
+          if (ind)
+          {
             buf = &space;
             len = 1;
-          } else {
+          }
+          else
+          {
             len = SYB_dbdatlen(dbproc, j + 1);
           }
           dtype = DTYPE_T;
           AppendAnswer(j, buf, len, dtype);
           break;
         case SYBFLT8:
-          if (ind) {
+          if (ind)
+          {
             buf = (NaN) ? (char *)&nan_d_bits : (char *)&HUGE_D;
             bufs[j].len = 8;
           }
@@ -412,7 +445,8 @@ ARGLIST *arg;
           AppendAnswer(j, buf, bufs[j].len, dtype);
           break;
         case SYBREAL:
-          if (ind) {
+          if (ind)
+          {
             buf = (NaN) ? (char *)&nan_f_bits : (char *)&HUGE_F;
             bufs[j].len = 4;
           }
@@ -420,7 +454,8 @@ ARGLIST *arg;
           AppendAnswer(j, buf, bufs[j].len, dtype);
           break;
         case SYBINT4:
-          if (ind) {
+          if (ind)
+          {
             buf = (char *)&HUGE_L;
             bufs[j].len = 4;
           }
@@ -428,7 +463,8 @@ ARGLIST *arg;
           AppendAnswer(j, buf, bufs[j].len, dtype);
           break;
         case SYBINT2:
-          if (ind) {
+          if (ind)
+          {
             buf = (char *)&HUGE_W;
             bufs[j].len = 2;
           }
@@ -436,7 +472,8 @@ ARGLIST *arg;
           AppendAnswer(j, buf, bufs[j].len, dtype);
           break;
         case SYBINT1:
-          if (ind) {
+          if (ind)
+          {
             buf = (char *)&HUGE_B;
             bufs[j].len = 1;
           }
@@ -447,7 +484,8 @@ ARGLIST *arg;
         case SYBDATETIME4: /***convert date to double***/
         case SYBDATETIME:  /***convert date to double***/
 
-          if (date) { /*Julian day 3 million?? is 17-Nov-1858 */
+          if (date)
+          { /*Julian day 3 million?? is 17-Nov-1858 */
             dtype = DTYPE_FT;
 #ifdef OLD
             int yr, mo, da, hr, mi, se, th, leap;
@@ -456,12 +494,13 @@ ARGLIST *arg;
                               (unsigned char *)ddate, sizeof(ddate) - 1);
 
             static const char *moname = "JanFebMarAprMayJunJulAugSepOctNovDec";
-            static const int day[] = {0,   31,  59,  90,  120, 151,
+            static const int day[] = {0, 31, 59, 90, 120, 151,
                                       181, 212, 243, 273, 304, 334};
             char mon[4], *moptr, ampm[3];
 
             len = sizeof(d_null);
-            if (status < 0) {
+            if (status < 0)
+            {
               buf = (char *)&d_null;
               break;
             }
@@ -469,7 +508,8 @@ ARGLIST *arg;
             if (type == SYBDATETIME)
               sscanf(ddate, "%3s %2d %4d %2d:%2d:%2d:%3d%2s", mon, &da, &yr,
                      &hr, &mi, &se, &th, ampm);
-            else {
+            else
+            {
               sscanf(ddate, "%3s %2d %4d %2d:%2d%2s", mon, &da, &yr, &hr, &mi,
                      ampm);
               se = 0;
@@ -492,11 +532,14 @@ ARGLIST *arg;
             buf = (char *)&d_ans;
 #else
             d_ans = d_null;
-            if (bufs[j].len == 8) {
+            if (bufs[j].len == 8)
+            {
               d_ans =
                   (double)(((int *)buf)[0] + 15020) +
                   ((double)((unsigned int *)buf)[1]) / 300. / 60. / 60. / 24.;
-            } else if (bufs[j].len == 4) {
+            }
+            else if (bufs[j].len == 4)
+            {
               d_ans = (double)(((unsigned short *)buf)[0] + 15020) +
                       ((double)((unsigned short *)buf)[1]) / 60. / 24.;
             }
@@ -504,36 +547,47 @@ ARGLIST *arg;
             len = sizeof(d_ans);
 #endif
             AppendAnswer(j, buf, len, dtype);
-          } else {
+          }
+          else
+          {
             /***convert to text***/
-            if (!ind) {
+            if (!ind)
+            {
               INIT_STATUS;
 #ifdef WORDS_BIGENDIAN
               unsigned long hi = *(unsigned long *)buf;
               *(unsigned long *)buf = *((unsigned long *)buf + 1);
               *((unsigned long *)buf + 1) = hi;
 #endif
-              if (bufs[j].len != 0) {
+              if (bufs[j].len != 0)
+              {
                 status =
                     SYB_dbconvert(dbproc, type, buf, bufs[j].len, SYBCHAR,
                                   (unsigned char *)ddate, sizeof(ddate) - 1);
-                if (status >= 0) {
+                if (status >= 0)
+                {
                   ddate[status] = '\0';
                   len = status;
-                } else {
+                }
+                else
+                {
                   strcpy(ddate, "FAILED");
                   len = strlen(ddate);
                 }
                 buf = ddate;
                 dtype = DTYPE_T;
-              } else {
+              }
+              else
+              {
                 buf = (char *)default_date;
                 dtype = DTYPE_T;
                 len = strlen(default_date);
               }
 
               AppendAnswer(j, buf, len, dtype);
-            } else {
+            }
+            else
+            {
               buf = (char *)default_date;
               dtype = DTYPE_T;
               len = strlen(default_date);
@@ -551,9 +605,10 @@ ARGLIST *arg;
   return status;
 }
 
-#define bufchk                                                                 \
-  if (pout == pout_end) {                                                      \
-    return 0;                                                                  \
+#define bufchk          \
+  if (pout == pout_end) \
+  {                     \
+    return 0;           \
   }
 
 static int Gets(pin, pout, nmarks, arg) char *pin, *pout;
@@ -563,33 +618,40 @@ ARGLIST *arg;
   struct descriptor_xd **argv = (struct descriptor_xd **)arg->v, tmp = EMPTY_XD;
   int used = arg->used, status, i;
   char *pout_end = pout + MAXPARSE;
-  while (*pin) {
-    bufchk switch (*pin) {
+  while (*pin)
+  {
+    bufchk switch (*pin)
+    {
     default: /* copy text */
       *pout++ = *pin++;
       break;
     case '\'': /* quoted string */
-      while ((*pout++ = *pin) != 0) {
+      while ((*pout++ = *pin) != 0)
+      {
         bufchk if (*++pin == '\'') break;
       }
       break;
     case '"': /* quoted string */
-      while ((*pout++ = *pin) != 0) {
+      while ((*pout++ = *pin) != 0)
+      {
         bufchk if (*++pin == '"') break;
       }
       break;
     case '?':
       ++pin; /* parameter marker */
       ++*nmarks;
-      if (used >= arg->c) {
+      if (used >= arg->c)
+      {
         /*         sprintf(hold, "Expect >= %d parameters, %d given.",
          * arg->used, arg->c);  */
         return TdiMISS_ARG;
       }
       if (argv && ((status = TdiData(*argv, &tmp MDS_END_ARG)) & 1) &&
           (tmp.pointer->length) &&
-          ((status = TdiText(&tmp, &tmp MDS_END_ARG)) & 1)) {
-        for (i = 0; i < tmp.pointer->length; i++) {
+          ((status = TdiText(&tmp, &tmp MDS_END_ARG)) & 1))
+      {
+        for (i = 0; i < tmp.pointer->length; i++)
+        {
           bufchk *pout++ = *(char *)(tmp.pointer->pointer + i);
         }
         MdsFree1Dx(&tmp, NULL);
@@ -606,7 +668,8 @@ ARGLIST *arg;
 
 /*********************************************************/
 int Tdi1Dsql(opcode_t opcode __attribute__((unused)), int narg,
-             struct descriptor *list[], struct descriptor_xd *out_ptr) {
+             struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   int rows = 0;
   ARGLIST user_args = {0};
@@ -618,7 +681,8 @@ int Tdi1Dsql(opcode_t opcode __attribute__((unused)), int narg,
   user_args.c = narg - 1;
   user_args.v = &list[1];
 
-  if (SQL_DYNAMIC == 0) {
+  if (SQL_DYNAMIC == 0)
+  {
     status = TDISQL_LINK("SQL_DYNAMIC", &SQL_DYNAMIC);
     if (STATUS_OK && (SQL_GETDBMSGTEXT == 0))
       TDISQL_LINKCPTR("GetDBMsgText", &SQL_GETDBMSGTEXT);
@@ -635,52 +699,59 @@ int Tdi1Dsql(opcode_t opcode __attribute__((unused)), int narg,
     if (STATUS_OK && (SYB_dbdata == 0))
       TDISQL_LINKCPTR("dbdata", &SYB_dbdata);
   }
-  if
-    STATUS_OK
-  status = TdiData(list[0], &dtext MDS_END_ARG);
+  if (STATUS_OK)
+    status = TdiData(list[0], &dtext MDS_END_ARG);
   status = StrConcat((struct descriptor *)&dtext, (struct descriptor *)&dtext,
                      &zero MDS_END_ARG);
 
   /* see if the last argument is "/date" */
-  if
-    STATUS_OK {
-      int ss = TdiData(list[narg - 1], &dq_text MDS_END_ARG);
-      if (ss) {
-        if (dq_text.length == 5)
-          date = (strncmp("/date", dq_text.pointer, 5) == 0);
-        else
-          date = 0;
-        StrFree1Dx(&dq_text);
-      } else
+  if (STATUS_OK)
+  {
+    int ss = TdiData(list[narg - 1], &dq_text MDS_END_ARG);
+    if (ss)
+    {
+      if (dq_text.length == 5)
+        date = (strncmp("/date", dq_text.pointer, 5) == 0);
+      else
         date = 0;
+      StrFree1Dx(&dq_text);
     }
+    else
+      date = 0;
+  }
 
   /* see if the 2nd to last argument is "/NaN" */
-  if (STATUS_OK && (narg > 2)) {
+  if (STATUS_OK && (narg > 2))
+  {
     int ss = TdiData(list[narg - 2], &dq_text MDS_END_ARG);
-    if (ss) {
+    if (ss)
+    {
       if (dq_text.length == 4)
         NaN = (strncmp("/NaN", dq_text.pointer, 4) == 0);
       else
         NaN = 0;
       StrFree1Dx(&dq_text);
-    } else
+    }
+    else
       NaN = 0;
-  } else
+  }
+  else
     NaN = 0;
 
-  if
-    STATUS_OK
-  status = SQL_DYNAMIC(Gets,          /*routine to fill markers       */
-                       Puts,          /*routine to store selctions    */
-                       dtext.pointer, /*text string descriptor        */
-                       &user_args,    /*value passed to GETS and PUTS */
-                       &rows);        /*output, number of rows        */
+  if (STATUS_OK)
+    status = SQL_DYNAMIC(Gets,          /*routine to fill markers       */
+                         Puts,          /*routine to store selctions    */
+                         dtext.pointer, /*text string descriptor        */
+                         &user_args,    /*value passed to GETS and PUTS */
+                         &rows);        /*output, number of rows        */
 
   StrFree1Dx(&dtext);
-  if
-    STATUS_OK { status = MdsCopyDxXd(&drows, out_ptr); }
-  else {
+  if (STATUS_OK)
+  {
+    status = MdsCopyDxXd(&drows, out_ptr);
+  }
+  else
+  {
     struct descriptor msg = {0, DTYPE_T, CLASS_S, 0};
     msg.pointer = SQL_GETDBMSGTEXT();
     msg.length = strlen(msg.pointer);
@@ -690,13 +761,15 @@ int Tdi1Dsql(opcode_t opcode __attribute__((unused)), int narg,
 }
 
 /*********************************************************/
-int Tdi1Isql() {
+int Tdi1Isql()
+{
   fprintf(stderr, "ISQL function no longer supported\n");
   return 0;
 }
 
 /*********************************************************/
-int Tdi1IsqlSet() {
+int Tdi1IsqlSet()
+{
   fprintf(stderr, "ISQL function no longer supported\n");
   return 0;
 }
@@ -707,7 +780,8 @@ static const DESCRIPTOR(
 int Tdi1Dsql(opcode_t opcode __attribute__((unused)),
              int narg __attribute__((unused)),
              const struct descriptor *list[] __attribute__((unused)),
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
@@ -716,7 +790,8 @@ int Tdi1Dsql(opcode_t opcode __attribute__((unused)),
 int Tdi1Isql(opcode_t opcode __attribute__((unused)),
              int narg __attribute__((unused)),
              const struct descriptor *list[] __attribute__((unused)),
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
@@ -725,7 +800,8 @@ int Tdi1Isql(opcode_t opcode __attribute__((unused)),
 int Tdi1IsqlSet(opcode_t opcode __attribute__((unused)),
                 int narg __attribute__((unused)),
                 const struct descriptor *list[] __attribute__((unused)),
-                struct descriptor_xd *out_ptr) {
+                struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;

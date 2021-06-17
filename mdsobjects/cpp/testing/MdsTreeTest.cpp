@@ -107,7 +107,8 @@ using namespace testing;
 //#define TreeUSAGE_SUBTREE_TOP 15 /* Runtime only special usage */
 
 int main(int argc __attribute__((unused)),
-         char *argv[] __attribute__((unused))) {
+         char *argv[] __attribute__((unused)))
+{
   TEST_TIMEOUT(100);
   BEGIN_TESTING(Tree);
 

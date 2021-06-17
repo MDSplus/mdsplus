@@ -38,7 +38,8 @@ SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
                    float timeIdx0, void *treePtr, int shot, int streamFactor,
                    char *streamName, float streamGain, float streamOffset,
                    double period, float gain, float *coeffs, int numCoeffs,
-                   int resampledNid = -1) {
+                   int resampledNid = -1)
+{
   this->buffer = buffer;
   this->dataType = dataType;
   this->bufSize = bufSize;
@@ -123,13 +124,16 @@ SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
     }
 ***********************/
 
-void SaveItem::save() {
+void SaveItem::save()
+{
   // Streaming stuff
 
-  if (streamName && streamFactor > 0 && (counter % streamFactor) == 0) {
+  if (streamName && streamFactor > 0 && (counter % streamFactor) == 0)
+  {
 
     // Computation of value to be streamed
-    try {
+    try
+    {
       Data *nidData = new Int32(dataNid);
       int sampleInterval = (int)(0.1 / period);
       if (sampleInterval < 1)
@@ -142,7 +146,8 @@ void SaveItem::save() {
       float *samples = new float[numSamples];
       float *times = new float[numSamples];
       int actSamples = 0;
-      for (int sampleIdx = 0; sampleIdx < numSamples; sampleIdx++) {
+      for (int sampleIdx = 0; sampleIdx < numSamples; sampleIdx++)
+      {
         if (sampleIdx * sampleInterval >= bufSize)
           break;
         float sample =
@@ -151,7 +156,8 @@ void SaveItem::save() {
                         : ((float *)buffer)[sampleIdx * sampleInterval]);
 
         float scaled = coeffs[numCoeffs - 1];
-        for (int c = numCoeffs - 2; c >= 0; c--) {
+        for (int c = numCoeffs - 2; c >= 0; c--)
+        {
           scaled *= sample;
           scaled += coeffs[c];
         }
@@ -172,13 +178,14 @@ void SaveItem::save() {
       }
       // printf("STREAM %d %s %d %f %f\n", shot, streamName, actSamples,
       // times[0], samples[0]);
-      EventStream::send(shot, streamName, actSamples, times, samples, false);
+      EventStream::send(shot, streamName, false, actSamples, times, 1, &actSamples, samples);
       // EventStream::send(shot, streamName, (float)(period * counter +
       // timeIdx0), sample);
       delete[] samples;
       delete[] times;
-
-    } catch (MdsException &exc) {
+    }
+    catch (MdsException &exc)
+    {
       printf("Cannot convert stream sample: %s\n", exc.what());
     }
   }
@@ -187,7 +194,8 @@ void SaveItem::save() {
   // printf("Counter = %d Sample to read = %d\n", counter, sampleToRead );
   // if((counter % segmentSize) == 0 || ((int)(counter / segmentSize) *
   // segmentSize) < counter + bufSize )
-  if ((counter % segmentSize) == 0) {
+  if ((counter % segmentSize) == 0)
+  {
     // Create Segment
     Data *startIdx = new Int32(counter);
     Data *endIdx;
@@ -222,8 +230,9 @@ void SaveItem::save() {
                           (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
       dim = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",
                             (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
-
-    } else {
+    }
+    else
+    {
       Data *timeAtIdx0 = new Float32(timeIdx0);
       /*
       startTime = tree->tdiCompile("$+slope_of($)*$", timeAtIdx0, clockNode,
@@ -242,47 +251,58 @@ void SaveItem::save() {
                             (Tree *)treePtr, 4, clockNode, startIdx, endIdx,
                             timeAtIdx0);
     }
-    switch (dataType) {
-    case SHORT: {
+    switch (dataType)
+    {
+    case SHORT:
+    {
       short *fBuf = new short[segmentSize];
       memset(fBuf, 0, sizeof(short) * segmentSize);
       Int16Array *fData = new Int16Array((short *)fBuf, segmentSize);
       pthread_mutex_lock(&segmentMutex);
-      try {
+      try
+      {
         if (resampledNode)
           dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
                                        resampledNode, 100);
         // dataNode->beginSegment(startTime, endTime, dim, fData);
         else
           dataNode->beginSegment(startTime, endTime, dim, fData);
-      } catch (MdsException &exc) {
+      }
+      catch (MdsException &exc)
+      {
         printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
                dataNode->getFullPath(), exc.what());
       }
       pthread_mutex_unlock(&segmentMutex);
       delete[] fBuf;
       deleteData(fData);
-    } break;
-    case FLOAT: {
+    }
+    break;
+    case FLOAT:
+    {
       float *fBuf = new float[segmentSize];
       memset(fBuf, 0, sizeof(float) * segmentSize);
       Float32Array *fData = new Float32Array((float *)fBuf, segmentSize);
       pthread_mutex_lock(&segmentMutex);
-      try {
+      try
+      {
         if (resampledNode)
           dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
                                        resampledNode, 100);
         // dataNode->beginSegment(startTime, endTime, dim, fData);
         else
           dataNode->beginSegment(startTime, endTime, dim, fData);
-      } catch (MdsException &exc) {
+      }
+      catch (MdsException &exc)
+      {
         printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
                dataNode->getFullPath(), exc.what());
       }
       pthread_mutex_unlock(&segmentMutex);
       delete[] fBuf;
       deleteData(fData);
-    } break;
+    }
+    break;
     }
     deleteData(startIdx);
     deleteData(endIdx);
@@ -290,53 +310,66 @@ void SaveItem::save() {
     deleteData(endTime);
   }
 
-  try {
-    switch (dataType) {
-    case SHORT: {
+  try
+  {
+    switch (dataType)
+    {
+    case SHORT:
+    {
       // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter
       // );
       Int16Array *data = new Int16Array((short *)buffer, bufSize);
 
       pthread_mutex_lock(&segmentMutex);
-      try {
+      try
+      {
         if (resampledNode)
           dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
         // dataNode->putSegment(data, -1);
         else
           dataNode->putSegment(data, -1);
-      } catch (MdsException &exc) {
+      }
+      catch (MdsException &exc)
+      {
         printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
                exc.what());
       }
       pthread_mutex_unlock(&segmentMutex);
       deleteData(data);
       delete[](short *) buffer;
-    } break;
-    case FLOAT: {
+    }
+    break;
+    case FLOAT:
+    {
       // printf("Float Save data %s counter %d\n", dataNode->getPath(), counter
       // );
       Float32Array *data = new Float32Array((float *)buffer, bufSize);
       pthread_mutex_lock(&segmentMutex);
-      try {
+      try
+      {
         if (resampledNode)
           dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
         // dataNode->putSegment(data, -1);
         else
           dataNode->putSegment(data, -1);
-      } catch (MdsException &exc) {
+      }
+      catch (MdsException &exc)
+      {
         printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
                exc.what());
       }
       pthread_mutex_unlock(&segmentMutex);
       deleteData(data);
       delete[](float *) buffer;
-    } break;
+    }
+    break;
     }
 
     /* Send Event on Segment update <TreeName>_<DeviceNodeName>_CH<numchannel>*/
     // sendChannelSegmentPutEvent(dataNode);
-
-  } catch (MdsException *exc) {
+  }
+  catch (MdsException *exc)
+  {
     printf("Cannot put segment: %s\n", exc->what());
   }
   delete dataNode;
@@ -358,7 +391,8 @@ class SaveList
                 pthread_mutex_t mutex;
         public:
 */
-SaveList::SaveList() {
+SaveList::SaveList()
+{
   int status = pthread_mutex_init(&mutex, NULL);
   pthread_cond_init(&itemAvailable, NULL);
   saveHead = saveTail = NULL;
@@ -397,7 +431,8 @@ void SaveList::addItem(void *buffer, int bufSize, int sampleToRead,
 
   if (saveHead == NULL)
     saveHead = saveTail = newItem;
-  else {
+  else
+  {
     saveTail->setNext(newItem);
     saveTail = newItem;
   }
@@ -408,17 +443,22 @@ void SaveList::addItem(void *buffer, int bufSize, int sampleToRead,
   reportQueueLen(dataNid, treePtr, getQueueLen(), shot);
 #endif
 }
-void SaveList::executeItems() {
-  while (true) {
+void SaveList::executeItems()
+{
+  while (true)
+  {
     pthread_mutex_lock(&mutex);
-    if (stopReq && saveHead == NULL) {
+    if (stopReq && saveHead == NULL)
+    {
       pthread_mutex_unlock(&mutex);
       pthread_exit(NULL);
     }
 
-    while (saveHead == NULL) {
+    while (saveHead == NULL)
+    {
       pthread_cond_wait(&itemAvailable, &mutex);
-      if (stopReq && saveHead == NULL) {
+      if (stopReq && saveHead == NULL)
+      {
         pthread_mutex_unlock(&mutex);
         pthread_exit(NULL);
       }
@@ -449,21 +489,25 @@ void SaveList::executeItems() {
     delete currItem;
   }
 }
-void SaveList::start() {
+void SaveList::start()
+{
   pthread_create(&thread, NULL, handleSave, (void *)this);
   threadCreated = true;
 }
-void SaveList::stop() {
+void SaveList::stop()
+{
   stopReq = true;
   pthread_cond_signal(&itemAvailable);
-  if (threadCreated) {
+  if (threadCreated)
+  {
     pthread_join(thread, NULL);
     printf("SAVE THREAD TERMINATED\n");
   }
 }
 
 // Queue length streaming support
-void reportQueueLen(int dataNid, void *treePtr, int len, int shot) {
+void reportQueueLen(int dataNid, void *treePtr, int len, int shot)
+{
   static long prevTimeMs = 0;
   static int prevShot = -1;
   static unordered_map<int, long> prevTimes;
@@ -476,13 +520,15 @@ void reportQueueLen(int dataNid, void *treePtr, int len, int shot) {
   currTimeMs = retTime.tv_sec * 1000 + retTime.tv_nsec / 1000000;
 
   pthread_mutex_lock(&globalMutex);
-  if (shot != prevShot) {
+  if (shot != prevShot)
+  {
     prevTimes.clear();
     prevShot = shot;
     startTimeMs = currTimeMs;
   }
 
-  if (prevTimes.count(dataNid) > 0 && currTimeMs <= prevTimes[dataNid]) {
+  if (prevTimes.count(dataNid) > 0 && currTimeMs <= prevTimes[dataNid])
+  {
     pthread_mutex_unlock(&globalMutex);
     return;
   }
@@ -490,19 +536,22 @@ void reportQueueLen(int dataNid, void *treePtr, int len, int shot) {
   pthread_mutex_unlock(&globalMutex);
 
   TreeNode *currNode = new TreeNode(dataNid, (Tree *)treePtr);
-  while (currNode->getNid() > 0 && strcmp(currNode->getUsage(), "DEVICE")) {
+  while (currNode->getNid() > 0 && strcmp(currNode->getUsage(), "DEVICE"))
+  {
     TreeNode *prevNode = currNode;
     currNode = currNode->getParent();
     delete prevNode;
   }
-  if (currNode->getNid() == 0) {
+  if (currNode->getNid() == 0)
+  {
     if (debug)
       std::cout << "INTERNAL ERROR: wrong data nid to reportQueueLen"
                 << std::endl;
     return;
   }
   StringArray *tags = currNode->findTags();
-  if (tags->getSize() < 1) {
+  if (tags->getSize() < 1)
+  {
     if (debug)
       std::cout << "WARNING: no tags for data node  to reportQueueLen"
                 << std::endl;
@@ -520,20 +569,24 @@ void reportQueueLen(int dataNid, void *treePtr, int len, int shot) {
   delete[] buf;
 }
 
-void *handleSave(void *listPtr) {
+void *handleSave(void *listPtr)
+{
   SaveList *list = (SaveList *)listPtr;
   list->executeItems();
   return NULL;
 }
 
-void startSave(void **retList) {
+void startSave(void **retList)
+{
   SaveList *saveList = new SaveList;
   saveList->start();
   *retList = (void *)saveList;
 }
 
-void stopSave(void *listPtr) {
-  if (listPtr) {
+void stopSave(void *listPtr)
+{
+  if (listPtr)
+  {
     SaveList *list = (SaveList *)listPtr;
     list->stop();
     delete list;

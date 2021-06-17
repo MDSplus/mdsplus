@@ -24,15 +24,17 @@
 #
 
 
+import threading
+import numpy
+import ctypes
+
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
-
-import ctypes as _C
-import numpy as _N
 
 _dsc = _mimport('descriptor')
 _exc = _mimport('mdsExceptions')
@@ -51,46 +53,51 @@ __MdsIpShr = _ver.load_library('MdsIpShr')
 _ConnectToMds = __MdsIpShr.ConnectToMds
 _DisconnectFromMds = __MdsIpShr.DisconnectFromMds
 _GetAnswerInfoTO = __MdsIpShr.GetAnswerInfoTO
-_GetAnswerInfoTO.argtypes = [_C.c_int32, _C.POINTER(_C.c_ubyte), _C.POINTER(_C.c_ushort), _C.POINTER(_C.c_ubyte),
-                             _C.c_void_p, _C.POINTER(_C.c_ulong), _C.POINTER(_C.c_void_p), _C.POINTER(_C.c_void_p), _C.c_int32]
+_GetAnswerInfoTO.argtypes = [ctypes.c_int32, ctypes.POINTER(ctypes.c_ubyte), ctypes.POINTER(ctypes.c_ushort), ctypes.POINTER(ctypes.c_ubyte),
+                             ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong), ctypes.POINTER(ctypes.c_void_p), ctypes.POINTER(ctypes.c_void_p), ctypes.c_int32]
 _MdsIpFree = __MdsIpShr.MdsIpFree
-_MdsIpFree.argtypes = [_C.c_void_p]
+_MdsIpFree.argtypes = [ctypes.c_void_p]
 _SendArg = __MdsIpShr.SendArg
-_SendArg.argtypes = [_C.c_int32, _C.c_ubyte, _C.c_ubyte,
-                     _C.c_ubyte, _C.c_ushort, _C.c_ubyte, _C.c_void_p, _C.c_void_p]
+_SendArg.argtypes = [ctypes.c_int32, ctypes.c_ubyte, ctypes.c_ubyte,
+                     ctypes.c_ubyte, ctypes.c_ushort, ctypes.c_ubyte, ctypes.c_void_p, ctypes.c_void_p]
 
 
-class Connection(object):
-    """Implements an MDSip connection to an MDSplus server"""
-    _socket = 0
+INVALID_CONNECTION_ID = -1
+class _Connection:
+
+    _conid = INVALID_CONNECTION_ID
+
+    def __init__(self, hostspec):
+        self.hostspec = _ver.tobytes(hostspec)
 
     @property
-    def socket(self):
-        if self._socket == 0:
-            self._socket = _ConnectToMds(_ver.tobytes(self.hostspec))
-        if self._socket == -1:
-            raise MdsIpException("Error connecting to %s" % (self.hostspec,))
-        return self._socket
-
-    @socket.setter
-    def socket(self, value):
-        if self._socket > 0:
-            try:
-                _DisconnectFromMds(self._socket)
-            except:
-                pass
-        self._socket = value
-
-    def __enter__(self):
-        """ Used for with statement. """
+    def conid(self):
         self.connect()
-        return self
+        return self._conid
+
+    def connect(self):
+        if self._conid == INVALID_CONNECTION_ID:
+            self._conid = _ConnectToMds(self.hostspec)
+            if self._conid == INVALID_CONNECTION_ID:
+                raise MdsIpException("Error connecting to %s" %
+                                     _ver.tostr(self.hostspec))
+
+    def disconnect(self):
+        if self._conid != INVALID_CONNECTION_ID:
+            _DisconnectFromMds(self._conid)
+            self._conid = INVALID_CONNECTION_ID
+
+    def __enter__(self, *a):
+        self.connect()
 
     def __exit__(self, type, value, traceback):
-        """ Cleanup for with statement. """
         self.disconnect()
 
-    def __inspect__(self, value):
+    def __del__(self):
+        self.disconnect()
+
+    @staticmethod
+    def _inspect(value):
         """Internal routine used in determining characteristics of the value"""
         d = value.descriptor
         if d.dclass == 4:
@@ -102,13 +109,13 @@ class Connection(object):
                     dims.append(d.coeff_and_bounds[i])
             dtype = d.dtype
             length = d.length
-            dims = _N.array(dims, dtype=_N.uint32)
+            dims = numpy.array(dims, dtype=numpy.uint32)
             dimct = d.dimct
             pointer = d.pointer
         else:
             length = d.length
             dtype = d.dtype
-            dims = _N.array(0, dtype=_N.uint32)
+            dims = numpy.array(0, dtype=numpy.uint32)
             dimct = 0
             pointer = d.pointer
         if dtype == 52:
@@ -121,17 +128,17 @@ class Connection(object):
             dtype = 13
         return {'dtype': dtype, 'length': length, 'dimct': dimct, 'dims': dims, 'address': pointer}
 
-    def __getAnswer__(self, to_msec=-1):
-        dtype = _C.c_ubyte(0)
-        length = _C.c_ushort(0)
-        ndims = _C.c_ubyte(0)
-        dims = _N.array([0, 0, 0, 0, 0, 0, 0, 0], dtype=_N.uint32)
-        numbytes = _C.c_ulong(0)
-        ans = _C.c_void_p(0)
-        mem = _C.c_void_p(0)
+    def _get_answer(self, to_msec=-1):
+        dtype = ctypes.c_ubyte(0)
+        length = ctypes.c_ushort(0)
+        ndims = ctypes.c_ubyte(0)
+        dims = numpy.array([0, 0, 0, 0, 0, 0, 0, 0], dtype=numpy.uint32)
+        numbytes = ctypes.c_ulong(0)
+        ans = ctypes.c_void_p(0)
+        mem = ctypes.c_void_p(0)
         try:
-            _exc.checkStatus(_GetAnswerInfoTO(self.socket, dtype, length, ndims,
-                                              dims.ctypes.data, numbytes, _C.byref(ans), _C.byref(mem), int(to_msec)))
+            _exc.checkStatus(_GetAnswerInfoTO(self.conid, dtype, length, ndims,
+                                              dims.ctypes.data, numbytes, ctypes.byref(ans), ctypes.byref(mem), int(to_msec)))
             dtype = dtype.value
             if dtype == 10:
                 dtype = 52
@@ -175,38 +182,79 @@ class Connection(object):
             if mem.value is not None:
                 _MdsIpFree(mem)
 
-    def __init__(self, hostspec):
-        self.hostspec = hostspec
-        self.connect()
-
-    def connect(self):
-        return self.socket
-
-    def disconnect(self):
-        self.socket = 0
-
-    def reconnect(self):
-        self.disconnect()
-        self.connect()
-
-    def __del__(self):
-        self.disconnect()
-
-    def __sendArg__(self, value, idx, num):
+    def _send_arg(self, value, idx, num):
         """Internal routine to send argument to mdsip server"""
         val = _dat.Data(value)
         if not isinstance(val, _sca.Scalar) and not isinstance(val, _arr.Array):
             val = _dat.Data(val.data())
-        valInfo = self.__inspect__(val)
+        info = self._inspect(val)
         _exc.checkStatus(
-            _SendArg(self.socket,
+            _SendArg(self.conid,
                      idx,
-                     valInfo['dtype'],
+                     info['dtype'],
                      num,
-                     valInfo['length'],
-                     valInfo['dimct'],
-                     valInfo['dims'].ctypes.data,
-                     valInfo['address']))
+                     info['length'],
+                     info['dimct'],
+                     info['dims'].ctypes.data,
+                     info['address']))
+
+    def get(self, exp, *args, **kwargs):
+        if 'arglist' in kwargs:
+            args = kwargs['arglist']
+        timeout = kwargs.get('timeout', -1)
+        num = len(args)+1
+        exp = _ver.tobytes(exp)
+        _exc.checkStatus(_SendArg(self.conid, 0, 14, num,
+                                  len(exp), 0, 0, ctypes.c_char_p(exp)))
+        for i, arg in enumerate(args):
+            self._send_arg(arg, i+1, num)
+        return self._get_answer(timeout)
+
+
+class Connection(object):
+    """Implements an MDSip connection to an MDSplus server"""
+
+    @property
+    def conn(self):
+        try:
+            conn = self._local.conn
+        except AttributeError:
+            conn = self._local.conn = _Connection(self.hostspec)
+        return conn
+
+    @conn.deleter
+    def conn(self):
+        try:
+            conn = self._local.conn
+        except AttributeError:
+            pass
+        else:
+            del(self._local.conn)
+            conn.disconnect()
+
+    def __enter__(self):
+        """ Used for with statement. """
+        self.conn.__enter__()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        """ Cleanup for with statement. """
+        self.disconnect()
+
+    def __init__(self, hostspec):
+        self._local = threading.local()
+        self.hostspec = hostspec
+        self.connect()
+
+    def connect(self):
+        self.conn.connect()
+
+    def disconnect(self):
+        del(self.conn)
+
+    def reconnect(self):
+        self.disconnect()
+        self.connect()
 
     def closeAllTrees(self):
         """Close all open MDSplus trees
@@ -266,16 +314,7 @@ class Connection(object):
         @return: result of evaluating the expression on the remote server
         @rtype: Scalar or Array
         """
-        if 'arglist' in kwargs:
-            args = kwargs['arglist']
-        timeout = kwargs.get('timeout', -1)
-        num = len(args)+1
-        exp = _ver.tobytes(exp)
-        _exc.checkStatus(_SendArg(self.socket, 0, 14, num,
-                                  len(exp), 0, 0, _C.c_char_p(exp)))
-        for i, arg in enumerate(args):
-            self.__sendArg__(arg, i+1, num)
-        return self.__getAnswer__(timeout)
+        return self.conn.get(exp, *args, **kwargs)
 
     def getObject(self, exp, *args, **kwargs):
         return self.get('serializeout(`(%s;))' % exp, *args, **kwargs).deserialize()

@@ -87,7 +87,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "mdsshrp.h"
-#include <STATICdef.h>
 #include <limits.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -107,25 +106,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define X_AND_Y(x, y) (int)(XFIELD(x) | YFIELD(y))
 #define X_OF_INT(val) (int)(((unsigned int)(val) >> BITSY) & MASK(BITSX))
 #define Y_OF_INT(val) (int)((unsigned int)(val)&MASK(BITSY))
-#define SWAP_SHORTS(in, out)                                                   \
+#define SWAP_SHORTS(in, out) \
   ((short *)out)[0] = ((short *)in)[1], ((short *)out)[1] = ((short *)in)[0]
-#define DEFINED_OVERFLOW(a, op, b)                                             \
-  (signed)(((unsigned)(a))op(                                                  \
+#define DEFINED_OVERFLOW(a, op, b) \
+  (signed)(((unsigned)(a))op(      \
       (unsigned)(b))) // use defined + and - operations on unsigned
 
-typedef struct {
+typedef struct
+{
   int l;
 } * PF;
-struct HEADER {
+struct HEADER
+{
   int n;
   int e;
 };
 
-STATIC_CONSTANT signed char FIELDSY = BITSY + BITSX;
-STATIC_CONSTANT int FIELDSX = 2;
+static signed char FIELDSY = BITSY + BITSX;
+static int FIELDSX = 2;
 
 int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
-             mdsdsc_a_t *const pack_dsc_ptr, int *const bit_ptr) {
+             mdsdsc_a_t *const pack_dsc_ptr, int *const bit_ptr)
+{
   int nitems = *nitems_ptr;
   int step = items_dsc_ptr->length;
   int dtype = items_dsc_ptr->dtype;
@@ -148,7 +150,7 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
   signed char yn_c;
   signed char ye_c;
   int diff[MAXX], exce[MAXX];
-  STATIC_CONSTANT int signif[65] = {
+  static int signif[65] = {
       0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5,
       5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
       6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7};
@@ -170,7 +172,8 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
   /***************
   Do this in runs.
   ***************/
-  while (nitems > 0) {
+  while (nitems > 0)
+  {
     memset((void *)tally, 0, sizeof(tally));
     xn = j = MIN(nitems, MAXX);
     nitems -= j;
@@ -181,7 +184,8 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
     Temporary is exce.
     Repoint for ints.
     *********************/
-    switch (dtype) {
+    switch (dtype)
+    {
     default:
       if (step == sizeof(int))
         goto case_LU;
@@ -239,7 +243,8 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
     for the range -7 to +7.
     ******************************/
     old = 0;
-    for (pn = diff, j = xn; --j >= 0; old = *p32++) {
+    for (pn = diff, j = xn; --j >= 0; old = *p32++)
+    {
       unsigned int delta;
       /**** Check for integer overflow,
        *        previously was:
@@ -251,25 +256,34 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
        ***********/
       int32_t ans = DEFINED_OVERFLOW(*p32, -, old);
       if ((((uint32_t)ans) == 0x80000000) ||
-          (old < 0 ? ans < *p32 : ans > *p32)) {
+          (old < 0 ? ans < *p32 : ans > *p32))
+      {
         *pn++ = ans;
         yy = 32;
-      } else {
+      }
+      else
+      {
         i = *pn++ = ans;
         delta = (uint32_t)((i < 0) ? -i : i);
-        if (delta <= 64) {
+        if (delta <= 64)
+        {
           yy = signif[delta];
-        } else {
+        }
+        else
+        {
           yy = 0;
-          if (delta > 0x1000000) {
+          if (delta > 0x1000000)
+          {
             delta = delta >> 24;
             yy += 24;
           }
-          if (delta > 0x1000) {
+          if (delta > 0x1000)
+          {
             delta = delta >> 12;
             yy += 12;
           }
-          if (delta > 0x40) {
+          if (delta > 0x40)
+          {
             delta = delta >> 6;
             yy += 6;
           }
@@ -281,11 +295,14 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
     /***************************
     Special case for all zeroes.
     ***************************/
-    if (tally[0] == xn) {
+    if (tally[0] == xn)
+    {
       yn = 0;
       xe = 0;
       ye = 0;
-    } else {
+    }
+    else
+    {
       /**************************************************
       Determine exception width and do xn-sum(1:y).
       tally[0] is y=1 count, i.e., the number of zeros.
@@ -304,8 +321,10 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
       For y=ye there are no exceptions.
       *******************************************/
       best = xn * yy;
-      while (--yy > 0) {
-        if ((test = xn * yy + *--ptally * ye) < best) {
+      while (--yy > 0)
+      {
+        if ((test = xn * yy + *--ptally * ye) < best)
+        {
           best = test;
           yn = yy;
         }
@@ -318,7 +337,8 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
       *********************/
       int mark = (int)(0xFFFFFFFF << (yn - 1));
       int maxim = ~mark;
-      for (pn = diff, pe = exce, j = xe; --j >= 0;) {
+      for (pn = diff, pe = exce, j = xe; --j >= 0;)
+      {
         while (*pn <= maxim && *pn > mark)
           ++pn;
         *pe++ = *pn;
@@ -347,7 +367,8 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
         Expand compressed data.
 */
 EXPORT int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr,
-                    mdsdsc_a_t *const items_dsc_ptr, int *const bit_ptr) {
+                    mdsdsc_a_t *const items_dsc_ptr, int *const bit_ptr)
+{
   int nitems = *nitems_ptr;
   char *ppack = memcpy(malloc(pack_dsc_ptr->arsize + 4), pack_dsc_ptr->pointer,
                        pack_dsc_ptr->arsize);
@@ -375,7 +396,8 @@ EXPORT int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr,
   Note the sign-extended unpacking.
   ********************************/
   memset(ppack + pack_dsc_ptr->arsize, -1, 4);
-  while (nitems > 0) {
+  while (nitems > 0)
+  {
     signed char nbits = FIELDSY;
     if ((*bit_ptr + 2 * (BITSY + BITSX)) > limit)
       break;
@@ -393,13 +415,16 @@ EXPORT int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr,
     nitems -= j;
     nbits = (char)yn;
     MdsUnpk(&nbits, &xn, (int *)ppack, diff, (int *)bit_ptr);
-    if (xe) {
+    if (xe)
+    {
       *bit_ptr -= yn * (xhead - j);
       pe = exce;
       nbits = (char)ye;
       MdsUnpk(&nbits, &xe, (int *)ppack, pe, (int *)bit_ptr);
       mark = (int)(0xFFFFFFFF << (-yn - 1));
-    } else {
+    }
+    else
+    {
       pe = diff;
       mark = 0;
     }
@@ -411,7 +436,8 @@ EXPORT int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr,
     ***********************************/
     pn = diff;
     old = 0;
-    switch (dtype) {
+    switch (dtype)
+    {
     default:
       if (step == sizeof(int))
         goto case_LU;
@@ -421,14 +447,15 @@ EXPORT int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr,
     case DTYPE_T:
     case DTYPE_B:
     case DTYPE_BU:
-#define load(type)                                                             \
-  {                                                                            \
-    type *newone;                                                              \
-    for (newone = (type *)px; --j >= 0; pn++, newone++) {                      \
-      old = DEFINED_OVERFLOW(old, +, (xe && (*pn == mark)) ? *pe++ : *pn);     \
-      *newone = (type)old;                                                     \
-    }                                                                          \
-    px = (PF)newone;                                                           \
+#define load(type)                                                         \
+  {                                                                        \
+    type *newone;                                                          \
+    for (newone = (type *)px; --j >= 0; pn++, newone++)                    \
+    {                                                                      \
+      old = DEFINED_OVERFLOW(old, +, (xe && (*pn == mark)) ? *pe++ : *pn); \
+      *newone = (type)old;                                                 \
+    }                                                                      \
+    px = (PF)newone;                                                       \
   }
     case_BU:
       load(char);

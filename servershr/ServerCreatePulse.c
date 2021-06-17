@@ -60,7 +60,8 @@ dsc$descriptor *tree, int *shot, void (*ast)(), int astprm, int *netid, void
 
 EXPORT int ServerCreatePulse(int *id, char *server, char *tree, int shot,
                              void (*ast)(), void *astprm, int *retstatus,
-                             pthread_rwlock_t *lock, void (*before_ast)()) {
+                             pthread_rwlock_t *lock, void (*before_ast)())
+{
   struct descrip p1, p2;
   return ServerSendMessage(id, server, SrvAction, retstatus, lock, NULL, ast,
                            astprm, before_ast, 2,

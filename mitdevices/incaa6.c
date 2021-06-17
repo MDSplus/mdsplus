@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -87,7 +87,7 @@ static int arm_init(InInitStruct * setup, int start)
 
   status = TdiGetFloat(setup->int_clk_frq, &freq);
   csreg.all_chan = 0;
-  if (status & 1) {
+  if (STATUS_OK) {
     static float freqs[] = { 1000, 500, 250, 125, 50, 10, 5 };
     for (i = 0; i < 7; i++)
       if (freq >= freqs[i])
@@ -223,20 +223,20 @@ EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
   min_idx = setup->ptsc - samps_per_chan - actual_ptsc;
   free(raw.pointer);
   raw.pointer = malloc(samps_per_chan * 2);
-  for (chan = start; ((chan < MAX_CHANS) && (status & 1)); chan += inc) {
+  for (chan = start; ((chan < MAX_CHANS) && (STATUS_OK)); chan += inc) {
     int data_nid =
 	setup->head_nid + INCAA6_N_INPUT_1 + (INCAA6_N_INPUT_2 - INCAA6_N_INPUT_1) * chan;
     int start_nid = data_nid + INCAA6_N_INPUT_1_STARTIDX - INCAA6_N_INPUT_1;
     int end_nid = data_nid + INCAA6_N_INPUT_1_ENDIDX - INCAA6_N_INPUT_1;
     if (TreeIsOn(data_nid) & 1) {
       status = DevLong(&start_nid, (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_idx, max(min_idx, raw.bounds[0].l));
       else
 	raw.bounds[0].l = min_idx;
 
       status = DevLong(&end_nid, (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_idx, max(min_idx, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_idx;
@@ -248,7 +248,7 @@ EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
 	int samps;
 	pio(16, 0, &addr, 24);
 	for (samples_to_read = raw.m[0], data_ptr = (short *)raw.pointer;
-	     (samples_to_read > 0) && (status & 1); samples_to_read -= samps, data_ptr += samps) {
+	     (samples_to_read > 0) && (STATUS_OK); samples_to_read -= samps, data_ptr += samps) {
 	  samps = min(samples_to_read, 32767);
 	  if (fast) {
 	    fstop(2, 0, samps, data_ptr, 16);
@@ -256,7 +256,7 @@ EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
 	    stop(2, 0, samps, data_ptr, 16);
 	  }
 	}
-	if (status & 1) {
+	if (STATUS_OK) {
 	  raw.a0 = raw.pointer - raw.bounds[0].l;
 	  raw.arsize = raw.m[0] * 2;
 	  status = TreePutRecord(data_nid, (struct descriptor *)&signal, 0);

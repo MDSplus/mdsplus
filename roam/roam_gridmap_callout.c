@@ -93,7 +93,8 @@ extern int MdsFree1Dx();
 
 int roam_check_access();
 
-EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
+EXPORT globus_result_t roam_gridmap_callout(va_list ap)
+{
   gss_ctx_id_t context;
   char *service;
   char *desired_identity;
@@ -130,7 +131,8 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
                                      GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL,
                                      GLOBUS_NULL, &initiator, GLOBUS_NULL);
 
-  if (GSS_ERROR(major_status)) {
+  if (GSS_ERROR(major_status))
+  {
     GLOBUS_GRIDMAP_CALLOUT_GSS_ERROR(result, major_status, minor_status);
     goto error;
   }
@@ -140,7 +142,8 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
       initiator ? &peer : GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL, GLOBUS_NULL,
       GLOBUS_NULL, GLOBUS_NULL);
 
-  if (GSS_ERROR(major_status)) {
+  if (GSS_ERROR(major_status))
+  {
     GLOBUS_GRIDMAP_CALLOUT_GSS_ERROR(result, major_status, minor_status);
     goto error;
   }
@@ -148,7 +151,8 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
   major_status =
       gss_display_name(&minor_status, peer, &peer_name_buffer, GLOBUS_NULL);
 
-  if (GSS_ERROR(major_status)) {
+  if (GSS_ERROR(major_status))
+  {
     GLOBUS_GRIDMAP_CALLOUT_GSS_ERROR(result, major_status, minor_status);
     gss_release_name(&minor_status, &peer);
     goto error;
@@ -156,7 +160,8 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
 
   gss_release_name(&minor_status, &peer);
 
-  if (desired_identity == NULL) {
+  if (desired_identity == NULL)
+  {
     struct descriptor expression_d = {0, DTYPE_T, CLASS_S, 0};
     struct descriptor local_user_d = {0, DTYPE_T, CLASS_D, 0};
     int status;
@@ -168,16 +173,20 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
     expression_d.length = strlen(expression);
     expression_d.pointer = expression;
     status = TdiExecute(&expression_d, &local_user_d MDS_END_ARG);
-    if (status & 1) {
+    if (STATUS_OK)
+    {
       rc = GLOBUS_SUCCESS;
       local_identity = strncpy((char *)malloc(local_user_d.length + 1),
                                local_user_d.pointer, local_user_d.length);
       local_identity[local_user_d.length] = 0;
       MdsFree1Dx(&local_user_d, 0);
-    } else {
+    }
+    else
+    {
       rc = globus_gss_assist_gridmap(peer_name_buffer.value, &local_identity);
     }
-    if (rc != 0) {
+    if (rc != 0)
+    {
       GLOBUS_GRIDMAP_CALLOUT_ERROR(
           result, GLOBUS_GRIDMAP_CALLOUT_LOOKUP_FAILED,
           ("Could not map %s\n", peer_name_buffer.value));
@@ -185,16 +194,21 @@ EXPORT globus_result_t roam_gridmap_callout(va_list ap) {
       goto error;
     }
 
-    if (strlen(local_identity) + 1 > buffer_length) {
+    if (strlen(local_identity) + 1 > buffer_length)
+    {
       GLOBUS_GRIDMAP_CALLOUT_ERROR(
           result, GLOBUS_GRIDMAP_CALLOUT_BUFFER_TOO_SMALL,
           ("Local identity length: %d Buffer length: %d\n",
            strlen(local_identity), buffer_length));
-    } else {
+    }
+    else
+    {
       strcpy(identity_buffer, local_identity);
     }
     free(local_identity);
-  } else {
+  }
+  else
+  {
     GLOBUS_GRIDMAP_CALLOUT_ERROR(
         result, GLOBUS_GRIDMAP_CALLOUT_LOOKUP_FAILED,
         ("Could not map %s to %s\n", peer_name_buffer.value, desired_identity));

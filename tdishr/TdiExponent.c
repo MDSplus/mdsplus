@@ -35,36 +35,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int IsRoprand();
 
 #define F_FLOAT_EXPONENT(val) (((*(int *)val) >> 7) & 0xFF)
-#define F_FLOAT_SET_EXPONENT(val, exp)                                         \
+#define F_FLOAT_SET_EXPONENT(val, exp) \
   (*(int *)val = (*(int *)val & ~(0xff << 7)) | (((exp)&0xff) << 7))
 #define F_FLOAT_BIAS 0x80
 #define F_FLOAT_PREC 23
 #define FS_FLOAT_EXPONENT(val) (((*(int *)val) >> 23) & 0xFF)
-#define FS_FLOAT_SET_EXPONENT(val, exp)                                        \
+#define FS_FLOAT_SET_EXPONENT(val, exp) \
   (*(int *)val = (*(int *)val & ~(0xff << 23)) | (((exp)&0xff) << 23))
 #define FS_FLOAT_BIAS 0x80
 #define FS_FLOAT_PREC 23
 #define G_FLOAT_EXPONENT(val) (((*(int *)val) >> 4) & 0x7FF)
-#define G_FLOAT_SET_EXPONENT(val, exp)                                         \
+#define G_FLOAT_SET_EXPONENT(val, exp) \
   (*(int *)val = (*(int *)val & ~(0x7ff << 4)) | (((exp)&0x7ff) << 4))
 #define G_FLOAT_BIAS 0x400
 #define G_FLOAT_PREC 52
 #define D_FLOAT_EXPONENT(val) (((*(int *)val) >> 7) & 0xFF)
-#define D_FLOAT_SET_EXPONENT(val, exp)                                         \
+#define D_FLOAT_SET_EXPONENT(val, exp) \
   (*(int *)val = (*(int *)val & ~(0xff << 7)) | (((exp)&0xff) << 7))
 #define D_FLOAT_BIAS 0x80
 #define D_FLOAT_PREC 55
 #define FT_FLOAT_EXPONENT(val) ((((int *)val)[1] >> 20) & 0x7FF)
-#define FT_FLOAT_SET_EXPONENT(val, exp)                                        \
+#define FT_FLOAT_SET_EXPONENT(val, exp) \
   (((int *)val)[1] = (((int *)val)[1] & ~(0x7ff << 20)) | (((exp)&0x7ff) << 20))
 #define FT_FLOAT_BIAS 0x400
 #define FT_FLOAT_PREC 52
 
-#define compute_exponent(dtype)                                                \
-  for (; --n >= 0; pi += step, ++po)                                           \
-    *po = dtype##_FLOAT_EXPONENT(pi)                                           \
-              ? dtype##_FLOAT_EXPONENT(pi) - dtype##_FLOAT_BIAS                \
-              : 0;                                                             \
+#define compute_exponent(dtype)                                 \
+  for (; --n >= 0; pi += step, ++po)                            \
+    *po = dtype##_FLOAT_EXPONENT(pi)                            \
+              ? dtype##_FLOAT_EXPONENT(pi) - dtype##_FLOAT_BIAS \
+              : 0;                                              \
   break;
 
 /*-------------------------------------------------------------------
@@ -73,29 +73,30 @@ extern int IsRoprand();
         EXPONENT(1.0) is 1, EXPONENT(4.1) is 3, EXPONENT(0.0) is 0,
    EXPONENT(ROPRAND) is 0. integer = EXPONENT(real)
 */
-int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int n, step = in_ptr->length;
   char *pi = in_ptr->pointer;
   int *po = (int *)out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  switch (in_ptr->dtype) {
-  case DTYPE_FC:
-  case DTYPE_FSC:
-  case DTYPE_DC:
-  case DTYPE_GC:
-  case DTYPE_FTC:
-    status = TdiNO_CMPLX;
-    break;
-  case DTYPE_F:
-    compute_exponent(F) case DTYPE_FS : compute_exponent(FS) case DTYPE_D
-        : compute_exponent(D) case DTYPE_G : compute_exponent(G) case DTYPE_FT
-        : compute_exponent(FT) default : status = TdiINVDTYDSC;
-    break;
-  }
+  if (STATUS_OK)
+    switch (in_ptr->dtype)
+    {
+    case DTYPE_FC:
+    case DTYPE_FSC:
+    case DTYPE_DC:
+    case DTYPE_GC:
+    case DTYPE_FTC:
+      status = TdiNO_CMPLX;
+      break;
+    case DTYPE_F:
+      compute_exponent(F) case DTYPE_FS : compute_exponent(FS) case DTYPE_D
+          : compute_exponent(D) case DTYPE_G : compute_exponent(G) case DTYPE_FT
+          : compute_exponent(FT) default : status = TdiINVDTYDSC;
+      break;
+    }
   return status;
 }
 
@@ -104,7 +105,8 @@ int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr) {
                 FINITE(expression)
         VAX dependent.
 */
-int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   char *pin = in_ptr->pointer;
   char *pout = out_ptr->pointer;
@@ -112,7 +114,8 @@ int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   int n;
 
   N_ELEMENTS(out_ptr, n);
-  switch (in_ptr->dtype) {
+  switch (in_ptr->dtype)
+  {
   case DTYPE_F:
     for (; --n >= 0; pin += step)
       *pout++ = (char)!IsRoprand(DTYPE_F, pin);
@@ -178,31 +181,34 @@ int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr) {
    ?:.
 */
 
-#define do_complex(type, dtype)                                                \
-  if (cmplx) {                                                                 \
-    for (; --n >= 0; inp += inp_inc, rep += rep_inc, outp += out_inc) {        \
-      *(type *)outp = IsRoprand(dtype, inp) ? *(type *)rep : *(type *)inp;     \
-      *(type *)(outp + 4) = IsRoprand(dtype, inp + sizeof(type))               \
-                                ? *(float *)(rep + sizeof(type))               \
-                                : *(float *)(inp + sizeof(type));              \
-    }                                                                          \
-    break;                                                                     \
-  }                                                                            \
-  n += n;                                                                      \
+#define do_complex(type, dtype)                                            \
+  if (cmplx)                                                               \
+  {                                                                        \
+    for (; --n >= 0; inp += inp_inc, rep += rep_inc, outp += out_inc)      \
+    {                                                                      \
+      *(type *)outp = IsRoprand(dtype, inp) ? *(type *)rep : *(type *)inp; \
+      *(type *)(outp + 4) = IsRoprand(dtype, inp + sizeof(type))           \
+                                ? *(float *)(rep + sizeof(type))           \
+                                : *(float *)(inp + sizeof(type));          \
+    }                                                                      \
+    break;                                                                 \
+  }                                                                        \
+  n += n;                                                                  \
   inp_inc >>= 1;
 
-#define do_simple(type, dtype)                                                 \
-  for (; --n >= 0; inp += inp_inc, rep += rep_inc, outp += out_inc)            \
-    *(type *)outp = IsRoprand(dtype, inp) ? *(type *)rep : *(type *)inp;       \
+#define do_simple(type, dtype)                                           \
+  for (; --n >= 0; inp += inp_inc, rep += rep_inc, outp += out_inc)      \
+    *(type *)outp = IsRoprand(dtype, inp) ? *(type *)rep : *(type *)inp; \
   break;
 
-#define do_fix(type, dtype)                                                    \
-  case DTYPE##dtype##C:                                                        \
-    do_complex(type, DTYPE##dtype) case DTYPE##dtype                           \
+#define do_fix(type, dtype)                          \
+  case DTYPE##dtype##C:                              \
+    do_complex(type, DTYPE##dtype) case DTYPE##dtype \
         : do_simple(type, DTYPE##dtype)
 
 int Tdi3FixRoprand(struct descriptor *old_ptr, struct descriptor *rep_ptr,
-                   struct descriptor *out_ptr) {
+                   struct descriptor *out_ptr)
+{
   INIT_STATUS;
   char *inp = old_ptr->pointer;
   char *rep = rep_ptr->pointer;
@@ -213,7 +219,8 @@ int Tdi3FixRoprand(struct descriptor *old_ptr, struct descriptor *rep_ptr,
   int n, cmplx;
 
   N_ELEMENTS(out_ptr, n);
-  switch (rep_ptr->dtype) {
+  switch (rep_ptr->dtype)
+  {
   case DTYPE_F:
   case DTYPE_FS:
   case DTYPE_D:
@@ -225,25 +232,26 @@ int Tdi3FixRoprand(struct descriptor *old_ptr, struct descriptor *rep_ptr,
     cmplx = 1;
     break;
   }
-  if
-    STATUS_OK
-  switch (out_ptr->dtype) {
-    do_fix(float, _F) do_fix(float, _FS) do_fix(double, _D) do_fix(double, _G)
-        do_fix(double, _FT) default : break;
-  }
+  if (STATUS_OK)
+    switch (out_ptr->dtype)
+    {
+      do_fix(float, _F) do_fix(float, _FS) do_fix(double, _D) do_fix(double, _G)
+          do_fix(double, _FT) default : break;
+    }
   return status;
 }
 
-#define do_fraction(dtype, copydouble)                                         \
-  case DTYPE_##dtype##C:                                                       \
-    n += n;                                                                    \
-    inc >>= 1;                                                                 \
-  case DTYPE_##dtype:                                                          \
-    for (; --n >= 0; inp += inc, outp += inc) {                                \
-      *(int *)outp = *(int *)inp;                                              \
-      copydouble if (dtype##_FLOAT_EXPONENT(outp) != 0)                        \
-          dtype##_FLOAT_SET_EXPONENT(outp, dtype##_FLOAT_BIAS);                \
-    }                                                                          \
+#define do_fraction(dtype, copydouble)                          \
+  case DTYPE_##dtype##C:                                        \
+    n += n;                                                     \
+    inc >>= 1;                                                  \
+  case DTYPE_##dtype:                                           \
+    for (; --n >= 0; inp += inc, outp += inc)                   \
+    {                                                           \
+      *(int *)outp = *(int *)inp;                               \
+      copydouble if (dtype##_FLOAT_EXPONENT(outp) != 0)         \
+          dtype##_FLOAT_SET_EXPONENT(outp, dtype##_FLOAT_BIAS); \
+    }                                                           \
     break;
 
 /*-------------------------------------------------------------------
@@ -251,37 +259,39 @@ int Tdi3FixRoprand(struct descriptor *old_ptr, struct descriptor *rep_ptr,
    fraction. This is computer-dependent. VAX base=2. FRACTION(3.0) is .75,
    FRACTION(0.0) is 0.0, FRACTION(ROPRAND) is ROPRAND. real = FRACTION(real)
 */
-int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   char *inp = in_ptr->pointer;
   char *outp = out_ptr->pointer;
   int inc = out_ptr->length, n;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  switch (out_ptr->dtype) {
-    do_fraction(F, ;) do_fraction(FS, ;)
-        do_fraction(G, ((int *)outp)[1] = ((int *)inp)[1];)
-            do_fraction(D, ((int *)outp)[1] = ((int *)inp)[1];)
-                do_fraction(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
-        : status = TdiINVDTYDSC;
-    break;
-  }
+  if (STATUS_OK)
+    switch (out_ptr->dtype)
+    {
+      do_fraction(F, ;) do_fraction(FS, ;)
+          do_fraction(G, ((int *)outp)[1] = ((int *)inp)[1];)
+              do_fraction(D, ((int *)outp)[1] = ((int *)inp)[1];)
+                  do_fraction(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
+          : status = TdiINVDTYDSC;
+      break;
+    }
   return status;
 }
 
-#define do_rrspacing(dtype, copydouble)                                        \
-  case DTYPE_##dtype##C:                                                       \
-    n += n;                                                                    \
-    inc >>= 1;                                                                 \
-  case DTYPE_##dtype:                                                          \
-    for (; --n >= 0; inp += inc, outp += inc) {                                \
-      *(int *)outp = *(int *)inp;                                              \
-      copydouble if (dtype##_FLOAT_EXPONENT(outp) != 0)                        \
-          dtype##_FLOAT_SET_EXPONENT(outp, dtype##_FLOAT_PREC + 1 +            \
-                                               dtype##_FLOAT_BIAS);            \
-    }                                                                          \
+#define do_rrspacing(dtype, copydouble)                             \
+  case DTYPE_##dtype##C:                                            \
+    n += n;                                                         \
+    inc >>= 1;                                                      \
+  case DTYPE_##dtype:                                               \
+    for (; --n >= 0; inp += inc, outp += inc)                       \
+    {                                                               \
+      *(int *)outp = *(int *)inp;                                   \
+      copydouble if (dtype##_FLOAT_EXPONENT(outp) != 0)             \
+          dtype##_FLOAT_SET_EXPONENT(outp, dtype##_FLOAT_PREC + 1 + \
+                                               dtype##_FLOAT_BIAS); \
+    }                                                               \
     break;
 
 /*-------------------------------------------------------------------
@@ -289,7 +299,8 @@ int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr) {
    base**exponent * fraction. This is computer-dependent. VAX base=2.
    abs(X*b^(prec-offset)). RRSPACING(3.0) is .75*2^24. real = RRSPACING(real)
 */
-int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int n;
   int inc = out_ptr->length;
@@ -297,32 +308,33 @@ int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   char *outp = out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  switch (in_ptr->dtype) {
-    do_rrspacing(F, ;) do_rrspacing(FS, ;)
-        do_rrspacing(G, ((int *)outp)[1] = ((int *)inp)[1];)
-            do_rrspacing(D, ((int *)outp)[1] = ((int *)inp)[1];)
-                do_rrspacing(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
-        : status = TdiINVDTYDSC;
-    break;
-  }
+  if (STATUS_OK)
+    switch (in_ptr->dtype)
+    {
+      do_rrspacing(F, ;) do_rrspacing(FS, ;)
+          do_rrspacing(G, ((int *)outp)[1] = ((int *)inp)[1];)
+              do_rrspacing(D, ((int *)outp)[1] = ((int *)inp)[1];)
+                  do_rrspacing(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
+          : status = TdiINVDTYDSC;
+      break;
+    }
   return status;
 }
 
-#define do_scale(dtype, copydouble)                                            \
-  case DTYPE_##dtype##C:                                                       \
-    n += n;                                                                    \
-    inp_inc >>= 1;                                                             \
-    outp_inc >>= 1;                                                            \
-    inp2_inc >>= 1;                                                            \
-  case DTYPE_##dtype:                                                          \
-    for (; --n >= 0; inp += inp_inc, outp += outp_inc, inp2 += inp2_inc) {     \
-      *(int *)outp = *(int *)inp;                                              \
-      copydouble if (dtype##_FLOAT_EXPONENT(outp) != 0)                        \
-          dtype##_FLOAT_SET_EXPONENT(outp, dtype##_FLOAT_EXPONENT(outp) +      \
-                                               *(int *)inp2);                  \
-    }                                                                          \
+#define do_scale(dtype, copydouble)                                       \
+  case DTYPE_##dtype##C:                                                  \
+    n += n;                                                               \
+    inp_inc >>= 1;                                                        \
+    outp_inc >>= 1;                                                       \
+    inp2_inc >>= 1;                                                       \
+  case DTYPE_##dtype:                                                     \
+    for (; --n >= 0; inp += inp_inc, outp += outp_inc, inp2 += inp2_inc)  \
+    {                                                                     \
+      *(int *)outp = *(int *)inp;                                         \
+      copydouble if (dtype##_FLOAT_EXPONENT(outp) != 0)                   \
+          dtype##_FLOAT_SET_EXPONENT(outp, dtype##_FLOAT_EXPONENT(outp) + \
+                                               *(int *)inp2);             \
+    }                                                                     \
     break;
 /*-------------------------------------------------------------------
         F8X elemental to scale number of model: sign * base**exponent *
@@ -331,7 +343,8 @@ int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr) {
    integer) NEED overflow detection, complex.
 */
 int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
-              struct descriptor *out_ptr) {
+              struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int n;
   int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
@@ -346,16 +359,16 @@ int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
     inp_inc = 0;
   if (in2_ptr->class != CLASS_A)
     inp2_inc = 0;
-  if
-    STATUS_OK
-  switch (in1_ptr->dtype) {
-    do_scale(F, ;) do_scale(FS, ;)
-        do_scale(G, ((int *)outp)[1] = ((int *)inp)[1];)
-            do_scale(D, ((int *)outp)[1] = ((int *)inp)[1];)
-                do_scale(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
-        : status = TdiINVDTYDSC;
-    break;
-  }
+  if (STATUS_OK)
+    switch (in1_ptr->dtype)
+    {
+      do_scale(F, ;) do_scale(FS, ;)
+          do_scale(G, ((int *)outp)[1] = ((int *)inp)[1];)
+              do_scale(D, ((int *)outp)[1] = ((int *)inp)[1];)
+                  do_scale(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
+          : status = TdiINVDTYDSC;
+      break;
+    }
   return status;
 }
 
@@ -366,7 +379,8 @@ int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
     outp_inc >>= 1;                                                            \
     inp2_inc >>= 1;                                                            \
   case DTYPE_##dtype:                                                          \
-    for (; --n >= 0; inp += inp_inc, outp += outp_inc, inp2 += inp2_inc) {     \
+    for (; --n >= 0; inp += inp_inc, outp += outp_inc, inp2 += inp2_inc)       \
+    {                                                                          \
       *(int *)outp = *(int *)inp;                                              \
       copydouble if (dtype##_FLOAT_EXPONENT(outp) != 0)                        \
           dtype##_FLOAT_SET_EXPONENT(outp, *(int *)inp2 + dtype##_FLOAT_BIAS); \
@@ -380,7 +394,8 @@ int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
         NEED overflow detection.
 */
 int Tdi3SetExponent(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
-                    struct descriptor *out_ptr) {
+                    struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int n;
   int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
@@ -391,30 +406,31 @@ int Tdi3SetExponent(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
   char *outp = out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  switch (in1_ptr->dtype) {
-    do_setexponent(F, ;) do_setexponent(FS, ;)
-        do_setexponent(G, ((int *)outp)[1] = ((int *)inp)[1];)
-            do_setexponent(D, ((int *)outp)[1] = ((int *)inp)[1];)
-                do_setexponent(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
-        : status = TdiINVDTYDSC;
-    break;
-  }
+  if (STATUS_OK)
+    switch (in1_ptr->dtype)
+    {
+      do_setexponent(F, ;) do_setexponent(FS, ;)
+          do_setexponent(G, ((int *)outp)[1] = ((int *)inp)[1];)
+              do_setexponent(D, ((int *)outp)[1] = ((int *)inp)[1];)
+                  do_setexponent(FT, ((int *)outp)[1] = ((int *)inp)[1];) default
+          : status = TdiINVDTYDSC;
+      break;
+    }
   return status;
 }
 
-#define do_spacing(dtype, zerodouble)                                          \
-  case DTYPE_##dtype##C:                                                       \
-    n += n;                                                                    \
-    inc >>= 1;                                                                 \
-  case DTYPE_##dtype:                                                          \
-    for (; --n >= 0; inp += inc, outp += inc) {                                \
-      test = dtype##_FLOAT_EXPONENT(inp) - dtype##_FLOAT_PREC - 1;             \
-      *(int *)outp = 0;                                                        \
-      zerodouble if (test >= 1) dtype##_FLOAT_SET_EXPONENT(outp, test);        \
-      else dtype##_FLOAT_SET_EXPONENT(outp, 1);                                \
-    }                                                                          \
+#define do_spacing(dtype, zerodouble)                                   \
+  case DTYPE_##dtype##C:                                                \
+    n += n;                                                             \
+    inc >>= 1;                                                          \
+  case DTYPE_##dtype:                                                   \
+    for (; --n >= 0; inp += inc, outp += inc)                           \
+    {                                                                   \
+      test = dtype##_FLOAT_EXPONENT(inp) - dtype##_FLOAT_PREC - 1;      \
+      *(int *)outp = 0;                                                 \
+      zerodouble if (test >= 1) dtype##_FLOAT_SET_EXPONENT(outp, test); \
+      else dtype##_FLOAT_SET_EXPONENT(outp, 1);                         \
+    }                                                                   \
     break;
 
 /*-------------------------------------------------------------------
@@ -423,7 +439,8 @@ int Tdi3SetExponent(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
    base=2. base^(exp-prec) SPACING(3.0) is 2^22. real = SPACING(real) NEED
    overflow detection.
 */
-int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr) {
+int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
+{
   INIT_STATUS;
   int n, test;
   int inc = out_ptr->length;
@@ -431,14 +448,14 @@ int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr) {
   char *outp = out_ptr->pointer;
 
   N_ELEMENTS(out_ptr, n);
-  if
-    STATUS_OK
-  switch (in_ptr->dtype) {
-    do_spacing(F, ;) do_spacing(FS, ;) do_spacing(G, ((int *)outp)[1] = 0;)
-        do_spacing(D, ((int *)outp)[1] = 0;)
-            do_spacing(FT, ((int *)outp)[1] = 0;) default : status =
-                                                                TdiINVDTYDSC;
-    break;
-  }
+  if (STATUS_OK)
+    switch (in_ptr->dtype)
+    {
+      do_spacing(F, ;) do_spacing(FS, ;) do_spacing(G, ((int *)outp)[1] = 0;)
+          do_spacing(D, ((int *)outp)[1] = 0;)
+              do_spacing(FT, ((int *)outp)[1] = 0;) default : status =
+                                                                  TdiINVDTYDSC;
+      break;
+    }
   return status;
 }

@@ -40,7 +40,8 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 
     int Tdi1Constant(opcode_t opcode, int narg __attribute__((unused)),
                      mdsdsc_t *list[] __attribute__((unused)),
-                     mdsdsc_xd_t *out_ptr) {
+                     mdsdsc_xd_t *out_ptr)
+{
 
   return MdsCopyDxXd(((mdsdsc_t * (*)()) * TdiRefFunction[opcode].f3)(),
                      out_ptr);
@@ -86,59 +87,64 @@ typedef void *MISSING;
 typedef uint8_t BU;
 typedef float FS;
 typedef double FT;
-typedef struct {
+typedef struct
+{
   float x, y;
 } FSC;
 typedef unsigned int FROP;
 
 #define DTYPE_FROP DTYPE_F
 
-#define DATUM(type, x, data)                                                   \
-  mdsdsc_t *Tdi3##x() {                                                        \
-    static const type val = data;                                              \
-    static const mdsdsc_t constant = {sizeof(type), DTYPE_##type, CLASS_S,     \
-                                      (char *)&val};                           \
-    return (mdsdsc_t *)&constant;                                              \
+#define DATUM(type, x, data)                                               \
+  mdsdsc_t *Tdi3##x()                                                      \
+  {                                                                        \
+    static const type val = data;                                          \
+    static const mdsdsc_t constant = {sizeof(type), DTYPE_##type, CLASS_S, \
+                                      (char *)&val};                       \
+    return (mdsdsc_t *)&constant;                                          \
   }
 
-#define UNITS(type, x, data, units)                                            \
-  mdsdsc_t *Tdi3##x() {                                                        \
-    static const type val = data;                                              \
-    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
-                                   (char *)&val};                              \
-    static const DESCRIPTOR(units_d, units);                                   \
-    static const DESCRIPTOR_WITH_UNITS(constant, &val_d, &units_d);            \
-    return (mdsdsc_t *)&constant;                                              \
+#define UNITS(type, x, data, units)                                     \
+  mdsdsc_t *Tdi3##x()                                                   \
+  {                                                                     \
+    static const type val = data;                                       \
+    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S, \
+                                   (char *)&val};                       \
+    static const DESCRIPTOR(units_d, units);                            \
+    static const DESCRIPTOR_WITH_UNITS(constant, &val_d, &units_d);     \
+    return (mdsdsc_t *)&constant;                                       \
   }
 
-#define CAST_ERROR(type, x)                                                    \
-  (((x) - (double)(type)(x)) < 0 ? ((double)(type)(x) - (x))                   \
+#define CAST_ERROR(type, x)                                  \
+  (((x) - (double)(type)(x)) < 0 ? ((double)(type)(x) - (x)) \
                                  : ((x) - (double)(type)(x)))
 
-#define DERR(type, x, data, error)                                             \
-  mdsdsc_t *Tdi3##x() {                                                        \
-    static const type val = data;                                              \
-    static const type err = CAST_ERROR(type, data) + error;                    \
-    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
-                                   (char *)&val};                              \
-    static const mdsdsc_t err_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
-                                   (char *)&err};                              \
-    static const DESCRIPTOR_WITH_ERROR(constant, &val_d, &err_d);              \
-    return (mdsdsc_t *)&constant;                                              \
+#define DERR(type, x, data, error)                                      \
+  mdsdsc_t *Tdi3##x()                                                   \
+  {                                                                     \
+    static const type val = data;                                       \
+    static const type err = CAST_ERROR(type, data) + error;             \
+    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S, \
+                                   (char *)&val};                       \
+    static const mdsdsc_t err_d = {sizeof(type), DTYPE_##type, CLASS_S, \
+                                   (char *)&err};                       \
+    static const DESCRIPTOR_WITH_ERROR(constant, &val_d, &err_d);       \
+    return (mdsdsc_t *)&constant;                                       \
   }
 
-#define UERR(type, x, data, error, units)                                      \
-  mdsdsc_t *Tdi3##x() {                                                        \
-    static const type val = data;                                              \
-    static const type err = CAST_ERROR(type, data) + error;                    \
-    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
-                                   (char *)&val};                              \
-    static const mdsdsc_t err_d = {sizeof(type), DTYPE_##type, CLASS_S,        \
-                                   (char *)&err};                              \
-    static const DESCRIPTOR(units_d, units);                                   \
-    static const DESCRIPTOR_WITH_ERROR(werr_d, &val_d, &err_d);                \
-    static const DESCRIPTOR_WITH_UNITS(constant, &werr_d, &units_d);           \
-    return (mdsdsc_t *)&constant;                                              \
+#define UERR(type, x, data, error, units)                               \
+  mdsdsc_t *Tdi3##x()                                                   \
+  {                                                                     \
+    static const type val = data;                                       \
+    static const type err = CAST_ERROR(type, data) + error;             \
+    static const mdsdsc_t val_d = {sizeof(type), DTYPE_##type, CLASS_S, \
+                                   (char *)&val};                       \
+    static const mdsdsc_t err_d = {sizeof(type), DTYPE_##type, CLASS_S, \
+                                   (char *)&err};                       \
+    static const DESCRIPTOR(units_d, units);                            \
+    static const DESCRIPTOR_WITH_ERROR(werr_d, &val_d, &err_d);         \
+    static const DESCRIPTOR_WITH_UNITS(constant, &werr_d, &units_d);    \
+    return (mdsdsc_t *)&constant;                                       \
   }
 
 #ifdef M_PI
@@ -154,8 +160,10 @@ typedef unsigned int FROP;
 #define GAS_DATA 8.31446261815324
 #define GN_DATA 9.80665
 #define H_DATA 6.62607015e-34
-#define I_DATA                                                                 \
-  { 0., 1. }
+#define I_DATA \
+  {            \
+    0., 1.     \
+  }
 #define K_DATA 1.3806505e-23
 #define MU0_DATA (4e-7 * PI_DATA)
 #define NA_DATA 6.02214076e23
@@ -180,12 +188,12 @@ typedef unsigned int FROP;
 #define MP_ERROR 51e-38 /*negligible*/
 // values by relation
 #define NEGLIGIBLE 0
-#define A0_DATA                                                                \
+#define A0_DATA \
   ((EPS0_DATA * H_DATA * H_DATA) / (PI_DATA * E_DATA * E_DATA * ME_DATA))
-#define RE_DATA                                                                \
-  ((MU0_DATA * C_DATA * C_DATA * E_DATA * E_DATA) /                            \
+#define RE_DATA                                     \
+  ((MU0_DATA * C_DATA * C_DATA * E_DATA * E_DATA) / \
    (4 * PI_DATA * ME_DATA * C_DATA * C_DATA))
-#define RYDBERG_DATA                                                           \
+#define RYDBERG_DATA \
   ((ALPHA_DATA * ALPHA_DATA * ME_DATA * C_DATA) / (2 * H_DATA))
 
 DATUM(BU, False, 0)          /*	logically false		*/

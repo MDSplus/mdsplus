@@ -44,7 +44,8 @@ extern int TdiCvtArgs();
 extern int TdiMasterData();
 
 int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[],
-             struct descriptor_xd *out_ptr) {
+             struct descriptor_xd *out_ptr)
+{
   INIT_STATUS;
   struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD},
                        dat[1] = {EMPTY_XD};
@@ -55,10 +56,10 @@ int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[],
 
   uni[0] = EMPTY_XD;
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
-  if
-    STATUS_OK
-  status = TdiCvtArgs(narg, dat, cats);
-  if (STATUS_OK && narg > 0) {
+  if (STATUS_OK)
+    status = TdiCvtArgs(narg, dat, cats);
+  if (STATUS_OK && narg > 0)
+  {
     N_ELEMENTS(dat[0].pointer, j);
     if (STATUS_OK && j != 1)
       status = TdiINVCLADSC;
@@ -66,13 +67,12 @@ int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[],
   /***********************
   Go off and do something.
   ***********************/
-  if
-    STATUS_OK
-  status = (*fun_ptr->f3)(dat[0].pointer, out_ptr);
-  if
-    STATUS_OK
-  status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
-  if (narg > 0) {
+  if (STATUS_OK)
+    status = (*fun_ptr->f3)(dat[0].pointer, out_ptr);
+  if (STATUS_OK)
+    status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
+  if (narg > 0)
+  {
     if (sig[0].pointer)
       MdsFree1Dx(&sig[0], NULL);
     if (uni[0].pointer)
@@ -86,7 +86,8 @@ int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[],
 /*--------------------------------------------------------------
         F90 transformation, string trailing blanks removed.
 */
-int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr) {
+int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
+{
   int n = in_ptr->length;
   char *t_ptr = in_ptr->pointer + n;
 
@@ -101,37 +102,40 @@ int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr) {
         Convert opcode to builtin name.
 */
 int Tdi3OpcodeBuiltin(struct descriptor *in_ptr,
-                      struct descriptor_xd *out_ptr) {
+                      struct descriptor_xd *out_ptr)
+{
   int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
   static const dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
-  if (STATUS_OK && ind < (int)TdiFUNCTION_MAX) {
+  if (STATUS_OK && ind < (int)TdiFUNCTION_MAX)
+  {
     char *name_ptr = TdiRefFunction[ind].name;
     struct descriptor str2 = {0, DTYPE_T, CLASS_S, 0};
     str2.length = (length_t)strlen(name_ptr);
     str2.pointer = name_ptr;
     status = MdsGet1DxS(&str2.length, &dtype, out_ptr);
-    if
-      STATUS_OK
-    status = StrCopyDx(out_ptr->pointer, &str2);
-  } else if
-    STATUS_OK
-  status = TdiINV_OPC;
+    if (STATUS_OK)
+      status = StrCopyDx(out_ptr->pointer, &str2);
+  }
+  else if (STATUS_OK)
+    status = TdiINV_OPC;
   return status;
 }
 
 /*--------------------------------------------------------------
         Convert opcode to string name.
 */
-int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr) {
+int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
+{
   static const DESCRIPTOR(str1, "OPC"
                                 "$");
   int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
   static const dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
-  if (STATUS_OK && ind < TdiFUNCTION_MAX) {
+  if (STATUS_OK && ind < TdiFUNCTION_MAX)
+  {
     char *name_ptr = TdiRefFunction[ind].name;
     struct descriptor str2 = {0, DTYPE_T, CLASS_S, 0};
     length_t total;
@@ -139,12 +143,11 @@ int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr) {
     str2.pointer = name_ptr;
     total = (length_t)(str1.length + str2.length);
     status = MdsGet1DxS(&total, &dtype, out_ptr);
-    if
-      STATUS_OK
-    status = StrConcat((struct descriptor *)out_ptr->pointer,
-                       (struct descriptor *)&str1, &str2 MDS_END_ARG);
-  } else if
-    STATUS_OK
-  status = TdiINV_OPC;
+    if (STATUS_OK)
+      status = StrConcat((struct descriptor *)out_ptr->pointer,
+                         (struct descriptor *)&str1, &str2 MDS_END_ARG);
+  }
+  else if (STATUS_OK)
+    status = TdiINV_OPC;
   return status;
 }

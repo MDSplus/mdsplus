@@ -62,20 +62,24 @@ num_resources, Arglist args, Cardinal argcount )
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
+#include <inttypes.h>
 
 int XmdsSetSubvalues(XtPointer record, XtResourceList resources,
-                     Cardinal num_resources, ArgList args, Cardinal argcount) {
+                     Cardinal num_resources, ArgList args, Cardinal argcount)
+{
   Cardinal i;
-  for (i = 0; i < num_resources; i++) {
-    if (*((int *)&resources[i].resource_offset) >= 0) {
-      resources[i].resource_name =
-          XrmStringToQuark(resources[i].resource_name) + (char *)0;
-      resources[i].resource_class =
-          XrmStringToQuark(resources[i].resource_class) + (char *)0;
-      resources[i].resource_type =
-          XrmStringToQuark(resources[i].resource_type) + (char *)0;
-      resources[i].default_type =
-          XrmStringToQuark(resources[i].default_type) + (char *)0;
+  for (i = 0; i < num_resources; i++)
+  {
+    if (*((int *)&resources[i].resource_offset) >= 0)
+    {
+      resources[i].resource_name = (char *)(intptr_t)
+          XrmStringToQuark(resources[i].resource_name);
+      resources[i].resource_class = (char *)(intptr_t)
+          XrmStringToQuark(resources[i].resource_class);
+      resources[i].resource_type = (char *)(intptr_t)
+          XrmStringToQuark(resources[i].resource_type);
+      resources[i].default_type = (char *)(intptr_t)
+          XrmStringToQuark(resources[i].default_type);
       resources[i].resource_offset = -(resources[i].resource_offset + 1);
     }
   }

@@ -53,42 +53,48 @@ int TreeDeleteNodeInitialize(NID *nid,int *count,reset)
 
 ------------------------------------------------------------------------------*/
 #include "treeshrp.h"
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <treeshr.h>
 
 extern void **TreeCtx();
 
-STATIC_ROUTINE void check_nid(PINO_DATABASE *dblist, NID *nid, int *count);
+static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count);
 
-int TreeDeleteNodeGetNid(int *nid) {
+int TreeDeleteNodeGetNid(int *nid)
+{
   return _TreeDeleteNodeGetNid(*TreeCtx(), nid);
 }
 
-int TreeDeleteNodeInitialize(int nid, int *count, int reset) {
+int TreeDeleteNodeInitialize(int nid, int *count, int reset)
+{
   return (_TreeDeleteNodeInitialize(*TreeCtx(), nid, count, reset));
 }
 
 void TreeDeleteNodeExecute() { _TreeDeleteNodeExecute(*TreeCtx()); }
 
-int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset) {
+int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)&nidin;
   int vm_needed;
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
   vm_needed = dblist->tree_info->header->nodes / 8 + 4;
-  if (vm_needed != dblist->delete_list_vm) {
+  if (vm_needed != dblist->delete_list_vm)
+  {
     unsigned char *old_list = dblist->delete_list;
     dblist->delete_list = malloc((size_t)vm_needed);
     if (!dblist->delete_list)
       return TreeMEMERR;
-    if (reset) {
+    if (reset)
+    {
       memset(dblist->delete_list, 0, (size_t)vm_needed);
       if (count)
         *count = 0;
-    } else {
+    }
+    else
+    {
       if (old_list)
         memcpy(dblist->delete_list, old_list,
                (size_t)((dblist->delete_list_vm < vm_needed)
@@ -101,7 +107,9 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset) {
     if (dblist->delete_list_vm)
       free(old_list);
     dblist->delete_list_vm = vm_needed;
-  } else if (reset) {
+  }
+  else if (reset)
+  {
     memset(dblist->delete_list, 0, (size_t)dblist->delete_list_vm);
     if (count)
       *count = 0;
@@ -111,18 +119,22 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset) {
   return TreeSUCCESS;
 }
 
-static inline int getbit(PINO_DATABASE *dblist, int bitnum) {
+static inline int getbit(PINO_DATABASE *dblist, int bitnum)
+{
   return dblist->delete_list[bitnum / 8] & (1 << (bitnum % 8));
 }
 
-static inline void setbit(PINO_DATABASE *dblist, int bitnum) {
+static inline void setbit(PINO_DATABASE *dblist, int bitnum)
+{
   dblist->delete_list[bitnum / 8] =
       (unsigned char)(dblist->delete_list[bitnum / 8] | (1 << bitnum % 8));
 }
 
-STATIC_ROUTINE void check_nid(PINO_DATABASE *dblist, NID *nid, int *count) {
+static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count)
+{
   int bitnum = nid->node;
-  if (!getbit(dblist, bitnum)) {
+  if (!getbit(dblist, bitnum))
+  {
     NODE *node;
     NODE *descendent;
     node = nid_to_node(dblist, nid);
@@ -130,18 +142,21 @@ STATIC_ROUTINE void check_nid(PINO_DATABASE *dblist, NID *nid, int *count) {
       (*count)++;
     setbit(dblist, bitnum);
     for (descendent = member_of(node); descendent;
-         descendent = brother_of(0, descendent)) {
+         descendent = brother_of(0, descendent))
+    {
       NID nid;
       node_to_nid(dblist, descendent, (&nid));
       check_nid(dblist, &nid, count);
     }
     for (descendent = child_of(0, node); descendent;
-         descendent = brother_of(0, descendent)) {
+         descendent = brother_of(0, descendent))
+    {
       NID nid;
       node_to_nid(dblist, descendent, (&nid));
       check_nid(dblist, &nid, count);
     }
-    if (swapint16(&node->conglomerate_elt)) {
+    if (swapint16(&node->conglomerate_elt))
+    {
       NID elt_nid;
       NODE *elt_node;
       unsigned short elt_num = 1;
@@ -187,7 +202,8 @@ void TreeDeleteNodeExecute( )
 
 ------------------------------------------------------------------------------*/
 
-extern void _TreeDeleteNodeExecute(void *dbid) {
+extern void _TreeDeleteNodeExecute(void *dbid)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   if (!IS_OPEN_FOR_EDIT(dblist))
     return;
@@ -203,59 +219,79 @@ extern void _TreeDeleteNodeExecute(void *dbid) {
 
   nid.tree = 0;
   nid.node = 0;
-  while (_TreeDeleteNodeGetNid(dbid, (int *)&nid) & 1) {
+  while (_TreeDeleteNodeGetNid(dbid, (int *)&nid) & 1)
+  {
     int found = 0;
     _TreeRemoveNodesTags(dbid, *(int *)&nid);
     _TreeSetNoSubtree(dbid, *(int *)&nid);
     node = nid_to_node(dblist, &nid);
     parent = parent_of(0, node);
-    if (child_of(0, parent) == node) {
+    if (child_of(0, parent) == node)
+    {
       found = 1;
-      if (node->brother) {
+      if (node->brother)
+      {
         parent->child = node_offset(brother_of(0, node), parent);
-      } else
+      }
+      else
         parent->child = 0;
-    } else if (parent->child) {
+    }
+    else if (parent->child)
+    {
       NODE *bro;
       for (bro = child_of(0, parent);
            bro->brother && (brother_of(0, bro) != node);
            bro = brother_of(0, bro))
         ;
-      if (brother_of(0, bro) == node) {
+      if (brother_of(0, bro) == node)
+      {
         found = 1;
-        if (node->brother) {
+        if (node->brother)
+        {
           bro->brother = node_offset(brother_of(0, node), bro);
-        } else
+        }
+        else
           bro->brother = 0;
       }
     }
-    if (!found) {
-      if (member_of(parent) == node) {
-        if (node->brother) {
+    if (!found)
+    {
+      if (member_of(parent) == node)
+      {
+        if (node->brother)
+        {
           parent->member = node_offset(brother_of(0, node), parent);
-        } else
+        }
+        else
           parent->member = 0;
-      } else if (parent->member) {
+      }
+      else if (parent->member)
+      {
         NODE *bro;
         for (bro = member_of(parent);
              bro->brother && (brother_of(0, bro) != node);
              bro = brother_of(0, bro))
           ;
-        if (brother_of(0, bro) == node) {
+        if (brother_of(0, bro) == node)
+        {
           found = 1;
-          if (node->brother) {
+          if (node->brother)
+          {
             bro->brother = node_offset(brother_of(0, node), bro);
-          } else
+          }
+          else
             bro->brother = 0;
         }
       }
     }
-    if ((int)nid.node < edit->first_in_mem) {
+    if ((int)nid.node < edit->first_in_mem)
+    {
       DELETED_NID *dnid = malloc(sizeof(DELETED_NID));
       dnid->next = edit->deleted_nid_list;
       dnid->nid = nid;
       edit->deleted_nid_list = dnid;
-    } else
+    }
+    else
       memset(edit->nci + nid.node - edit->first_in_mem, 0, sizeof(struct nci));
     memcpy(node->name, "deleted node", sizeof(node->name));
     loadint16(&node->conglomerate_elt, &zero);
@@ -267,7 +303,8 @@ extern void _TreeDeleteNodeExecute(void *dbid) {
   _TreeDeleteNodeInitialize(dbid, 0, 0, 1);
 }
 
-void _TreeDeleteNodesWrite(void *dbid) {
+void _TreeDeleteNodesWrite(void *dbid)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID nid;
   NODE *node;
@@ -281,47 +318,55 @@ void _TreeDeleteNodesWrite(void *dbid) {
   NCI old_nci;
   int nidx;
   for (dnid = edit->deleted_nid_list, edit->deleted_nid_list = 0; dnid;
-       dnid = next) {
+       dnid = next)
+  {
     next = dnid->next;
     nid = dnid->nid;
     free(dnid);
     node = nid_to_node(dblist, &nid);
-    if (prevnode) {
+    if (prevnode)
+    {
       int tmp;
       prevnode->parent = node_offset(node, prevnode);
       tmp = -swapint32(&prevnode->parent);
       node->child = swapint32(&tmp);
-    } else {
+    }
+    else
+    {
       int tmp;
       tmp = node_offset(node, dblist->tree_info->node);
       dblist->tree_info->header->free = swapint32(&tmp);
       node->child = 0;
     }
     prevnode = node;
-    if (firstempty) {
+    if (firstempty)
+    {
       int tmp;
       node->parent = node_offset(firstempty, node);
       tmp = -swapint32(&node->parent);
       firstempty->child = swapint32(&tmp);
-    } else
+    }
+    else
       node->parent = 0;
     nidx = nid.node;
     int ncilocked = 0;
-    if
-      IS_OK(tree_get_and_lock_nci(dblist->tree_info, nidx, &old_nci,
-                                  &ncilocked)) {
-        NCI empty_nci = {0};
-        tree_put_nci(dblist->tree_info, nidx, &empty_nci, &ncilocked);
-      }
+    if (IS_OK(tree_get_and_lock_nci(dblist->tree_info, nidx, &old_nci,
+                                    &ncilocked)))
+    {
+      NCI empty_nci = {0};
+      tree_put_nci(dblist->tree_info, nidx, &empty_nci, &ncilocked);
+    }
   }
 }
 
-void _TreeDeleteNodesDiscard(void *dbid) {
+void _TreeDeleteNodesDiscard(void *dbid)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   TREE_EDIT *edit = dblist->tree_info->edit;
   DELETED_NID *dnid, *next;
   for (dnid = edit->deleted_nid_list, edit->deleted_nid_list = 0; dnid;
-       dnid = next) {
+       dnid = next)
+  {
     next = dnid->next;
     free(dnid);
   }
@@ -357,7 +402,8 @@ int TreeDeleteNodeGetNid(NID *nid)
 
 ------------------------------------------------------------------------------*/
 
-int _TreeDeleteNodeGetNid(void *dbid, int *innid) {
+int _TreeDeleteNodeGetNid(void *dbid, int *innid)
+{
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)innid;
   int i;

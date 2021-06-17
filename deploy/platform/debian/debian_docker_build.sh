@@ -62,15 +62,15 @@ debtopkg() {
 buildrelease() {
   ### Build release version of MDSplus and then construct installer debs
   set -e
-  # ${RELEASEDIR}/${BRANCH}/DEBS will be cleaned in debian_build.sh
-  RELEASEDEBS=/release/${BRANCH}/DEBS/${ARCH}
+  # ${RELEASEDIR}/${FLAVOR}/DEBS will be cleaned in debian_build.sh
+  RELEASEDEBS=/release/${FLAVOR}/DEBS/${ARCH}
   RELEASEBLD=/workspace/releasebld
   BUILDROOT=${RELEASEBLD}/buildroot
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
   rm -Rf ${RELEASEBLD}/${bits} ${BUILDROOT}
   mkdir -p ${RELEASEBLD}/${bits} ${BUILDROOT} ${MDSPLUS_DIR}
   pushd ${RELEASEBLD}/${bits}
-  config ${config_param} ${ALPHA_DEBUG_INFO}
+  config ${config_param} ${CONFIGURE_EXTRA}
   if [ -z "$NOMAKE" ]; then
     $MAKE
     $MAKE install
@@ -78,15 +78,10 @@ buildrelease() {
   popd
   if [ -z "$NOMAKE" ]; then
     mkdir -p ${RELEASEDEBS}
-    BRANCH=${BRANCH} \
-      RELEASE_VERSION=${RELEASE_VERSION} \
-      ARCH=${ARCH} \
-      DISTNAME=${DISTNAME} \
-      BUILDROOT=${BUILDROOT} \
-      PLATFORM=${PLATFORM} \
-      ${srcdir}/deploy/platform/debian/debian_build_debs.py
+    BUILDROOT=${BUILDROOT} \
+      ${srcdir}/deploy/packaging/debian/debian_build_debs.py
     baddeb=0
-    for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${RELEASE_VERSION}_*\.deb"); do
+    for deb in $(find ${RELEASEDEBS} -name "*${RELEASE_VERSION}_*\.deb"); do
       pkg=$(debtopkg $(basename $deb) "${BNAME}" ${RELEASE_VERSION} ${ARCH})
       if [ "${#pkg}" = "0" ]; then
         continue
@@ -114,10 +109,10 @@ buildrelease() {
     if [ -z "$abort" ] || [ "$abort" = "0" ]; then
       echo "Building repo"
       mkdir -p /release/repo/conf /release/repo/db /release/repo/dists /release/repo/pool
-      if [ "${BRANCH}" = "alpha" -o "${BRANCH}" = "stable" ]; then
+      if [ "${FLAVOR}" = "alpha" -o "${FLAVOR}" = "stable" ]; then
         component=""
       else
-        component=" ${BRANCH}"
+        component=" ${FLAVOR}"
       fi
       GPG_HOME=""
       if [ -d /sign_keys/${OS}/.gnupg ]; then
@@ -148,9 +143,9 @@ ${SIGN_WITH}
 EOF
       pushd /release/repo
       reprepro clearvanished
-      for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${RELEASE_VERSION}_*\.deb"); do
+      for deb in $(find /release/${FLAVOR}/DEBS/${ARCH} -name "*${RELEASE_VERSION}_*\.deb"); do
         if [ -z "$abort" ] || [ "$abort" = "0" ]; then
-          : && HOME=/tmp reprepro -V -C ${BRANCH} includedeb MDSplus $deb
+          : && HOME=/tmp reprepro -V -C ${FLAVOR} includedeb MDSplus $deb
           checkstatus abort "Failure: Problem installing $deb into repository." $?
         else
           break
@@ -163,9 +158,9 @@ EOF
 
 publish() {
   ### DO NOT CLEAN /publish as it may contain valid older release packages
-  mkdir -p /publish/${BRANCH}/DEBS
-  rsync -a /release/${BRANCH}/DEBS/${ARCH} /publish/${BRANCH}/DEBS/
-  LAST_RELEASE_INFO=/publish/${BRANCH}_${OS}
+  mkdir -p /publish/${FLAVOR}/DEBS
+  rsync -a /release/${FLAVOR}/DEBS/${ARCH} /publish/${FLAVOR}/DEBS/
+  LAST_RELEASE_INFO=/publish/${FLAVOR}_${OS}
   if [ ! -r /publish/repo ]; then
     : && rsync -a /release/repo /publish/
     checkstatus abort "Failure: Problem copying repo into publish area." $?
@@ -173,9 +168,9 @@ publish() {
     pushd /publish/repo
     rsync -a /release/repo/conf/distributions /publish/repo/conf/
     reprepro clearvanished
-    : && env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${RELEASE_VERSION}_*.deb ||
+    : && env HOME=/sign_keys reprepro -V --keepunused -C ${FLAVOR} includedeb MDSplus ../${FLAVOR}/DEBS/${ARCH}/*${RELEASE_VERSION}_*.deb ||
       env HOME=/sign_keys reprepro export MDSplus
-    checkstatus abort "Failure: Problem installing ${BRANCH} into debian repository." $?
+    checkstatus abort "Failure: Problem installing ${FLAVOR} into debian repository." $?
     if [ -f ${LAST_RELEASE_INFO} ]; then
       PREVIOUS_VERSION="$(cat ${LAST_RELEASE_INFO})"
     else
@@ -183,9 +178,9 @@ publish() {
     fi
     echo "PREVIOUS_VERSION=${PREVIOUS_VERSION}"
     if [ -n $PREVIOUS_VERSION ]; then
-      : && env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus-previous ../${BRANCH}/DEBS/${ARCH}/*${PREVIOUS_VERSION}_*.deb ||
+      : && env HOME=/sign_keys reprepro -V --keepunused -C ${FLAVOR} includedeb MDSplus-previous ../${FLAVOR}/DEBS/${ARCH}/*${PREVIOUS_VERSION}_*.deb ||
         env HOME=/sign_keys reprepro export MDSplus-previous
-      checkstatus abort "Failure: Problem installing previous ${BRANCH} into debian repository." $?
+      checkstatus abort "Failure: Problem installing previous ${FLAVOR} into debian repository." $?
     fi
     popd
   fi
