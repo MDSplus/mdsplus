@@ -24,7 +24,11 @@ public class DeviceOutputs extends DeviceComponent
 	protected void initializeData(String data, boolean is_on)
         {
             mode = STRUCTURE;
-            int currNid = baseNid + offsetNid;
+            int currNid = baseNid;
+            try {
+              currNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".OUTPUTS, \'NID_NUMBER\')");
+            }catch(Exception exc){numOutputs = 0;}
+            //int currNid = baseNid + offsetNid;
             try {
                 numOutputs = subtree.getInt("GETNCI("+subtree.getFullPath(currNid)+",\'NUMBER_OF_CHILDREN\')");
             }catch(Exception exc){numOutputs = 0;}
