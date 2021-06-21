@@ -694,7 +694,7 @@ class Tree(object):
 
     def __eq__(self, obj):
         if isinstance(obj, (Tree,)):
-            return self.ctx == obj.ctx
+            return self.ctx.value == obj.ctx.value
         return False
 
     def __ne__(self, obj): return not self.__eq__(obj)
@@ -1047,7 +1047,7 @@ class Tree(object):
         old = self.default
         if not isinstance(node, TreeNode):
             raise TypeError('default node must be a TreeNode')
-        if not node.ctx == self.ctx:
+        if not node.ctx.value == self.ctx.value:
             raise TypeError('TreeNode must be in same tree')
         _exc.checkStatus(
             _TreeShr._TreeSetDefaultNid(self.ctx,
