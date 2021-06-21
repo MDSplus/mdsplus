@@ -694,7 +694,7 @@ class Tree(object):
 
     def __eq__(self, obj):
         if isinstance(obj, (Tree,)):
-            return self.ctx == obj.ctx
+            return self.ctx.value == obj.ctx.value
         return False
 
     def __ne__(self, obj): return not self.__eq__(obj)
