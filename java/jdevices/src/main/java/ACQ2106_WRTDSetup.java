@@ -45,8 +45,13 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceField2 = new DeviceField();
         label3 = new java.awt.Label();
         jPanel9 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
+        deviceChoice4 = new DeviceChoice();
         label4 = new java.awt.Label();
+        label10 = new java.awt.Label();
+        label11 = new java.awt.Label();
+        label12 = new java.awt.Label();
+        label13 = new java.awt.Label();
+        label14 = new java.awt.Label();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
@@ -68,24 +73,27 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         setDeviceProvider("172.20.240.104:9998");
         setDeviceTitle("WRTD for MDSplus");
         setDeviceType("acq2106_WRTD");
-        setHeight(200);
+        setHeight(400);
         setUpdateEvent("");
-        setWidth(2000);
+        setWidth(1400);
         getContentPane().setLayout(new java.awt.BorderLayout(5, 0));
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(1, 0));
+        java.awt.FlowLayout flowLayout1 = new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 5);
+        flowLayout1.setAlignOnBaseline(true);
+        jPanel1.setLayout(flowLayout1);
 
         deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Node IP");
+        deviceField1.setLabelString("Node IP     ");
         deviceField1.setNumCols(20);
         deviceField1.setOffsetNid(1);
         deviceField1.setTextOnly(true);
         jPanel1.add(deviceField1);
+        deviceField1.getAccessibleContext().setAccessibleName("");
 
         deviceChoice1.setChoiceItems(new String[] {"FPTRG", "HDMI"});
         deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("WR Trigger Source");
+        deviceChoice1.setLabelString("WR Trigger Source  ");
         deviceChoice1.setOffsetNid(5);
         deviceChoice1.setUpdateIdentifier("");
         jPanel1.add(deviceChoice1);
@@ -139,18 +147,48 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel7.add(deviceField2);
         deviceField2.getAccessibleContext().setAccessibleDescription("Sets WR \"safe time for broadcasts\" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec ");
 
-        label3.setText("Sets WR \"safe time for broadcasts\" the message ID, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS");
+        label3.setAlignment(java.awt.Label.CENTER);
+        label3.setText("Sets WR \"safe time for broadcasts\" the message ID. The TAI trigger time is: WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS");
         jPanel7.add(label3);
 
         jTabbedPane2.addTab("DELTA NS", null, jPanel7, "");
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("nsec per tick [nsec]");
-        deviceField9.setOffsetNid(11);
-        jPanel9.add(deviceField9);
+        jPanel9.setLayout(new java.awt.GridLayout(8, 1));
 
+        deviceChoice4.setChoiceFloatValues(new float[] {195.3125f, 97.65625f, 48.828125f, 30.51758f});
+        deviceChoice4.setChoiceItems(new String[] {"195.31250", "97.656250", "48.828125", "30.517580"});
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("nsec per tick");
+        deviceChoice4.setOffsetNid(11);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel9.add(deviceChoice4);
+
+        label4.setAlignment(java.awt.Label.CENTER);
         label4.setText("TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]");
         jPanel9.add(label4);
+
+        label10.setAlignment(java.awt.Label.CENTER);
+        label10.setText("SR = 10 KHz, TICKNS = 195.31250");
+        jPanel9.add(label10);
+        label10.getAccessibleContext().setAccessibleDescription("");
+
+        label11.setAlignment(java.awt.Label.CENTER);
+        label11.setText("SR = 20 KHz, TICKNS = 97.656250");
+        jPanel9.add(label11);
+        label11.getAccessibleContext().setAccessibleDescription("");
+
+        label12.setAlignment(java.awt.Label.CENTER);
+        label12.setText("SR = 40 KHz, TICKNS = 48.828125");
+        jPanel9.add(label12);
+        label12.getAccessibleContext().setAccessibleDescription("");
+
+        label13.setAlignment(java.awt.Label.CENTER);
+        label13.setText("SR =  80 KHz, TICKNS = 48.828125");
+        jPanel9.add(label13);
+
+        label14.setAlignment(java.awt.Label.CENTER);
+        label14.setText("SR = 128 KHz, TICKNS = 30.517580");
+        jPanel9.add(label14);
 
         jTabbedPane2.addTab("TICKNS", jPanel9);
 
@@ -184,7 +222,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("RX Matches for WRTT0");
-        deviceField6.setNumCols(20);
+        deviceField6.setNumCols(100);
         deviceField6.setOffsetNid(14);
         deviceField6.setTextOnly(true);
         jPanel4.add(deviceField6);
@@ -198,7 +236,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("RX Matches for WRTT1");
-        deviceField7.setNumCols(20);
+        deviceField7.setNumCols(100);
         deviceField7.setOffsetNid(15);
         deviceField7.setTextOnly(true);
         jPanel5.add(deviceField7);
@@ -233,6 +271,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getAccessibleContext().setAccessibleName("");
+        getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -241,6 +280,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
+    private DeviceChoice deviceChoice4;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
@@ -252,7 +292,6 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
-    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
@@ -267,6 +306,11 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private java.awt.Label label1;
+    private java.awt.Label label10;
+    private java.awt.Label label11;
+    private java.awt.Label label12;
+    private java.awt.Label label13;
+    private java.awt.Label label14;
     private java.awt.Label label2;
     private java.awt.Label label3;
     private java.awt.Label label4;

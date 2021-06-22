@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+<Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="deviceProvider" type="java.lang.String" value="172.20.240.104:9998"/>
     <Property name="deviceTitle" type="java.lang.String" value="WRTD for MDSplus"/>
     <Property name="deviceType" type="java.lang.String" value="acq2106_WRTD"/>
-    <Property name="height" type="int" value="200"/>
+    <Property name="height" type="int" value="400"/>
     <Property name="updateEvent" type="java.lang.String" value=""/>
-    <Property name="width" type="int" value="2000"/>
+    <Property name="width" type="int" value="1400"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
   </AccessibilityProperties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
@@ -45,20 +46,18 @@
           <BorderConstraints direction="First"/>
         </Constraint>
       </Constraints>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-        <Property name="columns" type="int" value="0"/>
-        <Property name="rows" type="int" value="1"/>
-      </Layout>
       <SubComponents>
         <Component class="DeviceField" name="deviceField1">
           <Properties>
             <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Node IP"/>
+            <Property name="labelString" type="java.lang.String" value="Node IP     "/>
             <Property name="numCols" type="int" value="20"/>
             <Property name="offsetNid" type="int" value="1"/>
             <Property name="textOnly" type="boolean" value="true"/>
           </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+          </AccessibilityProperties>
         </Component>
         <Component class="DeviceChoice" name="deviceChoice1">
           <Properties>
@@ -69,7 +68,7 @@
               </StringArray>
             </Property>
             <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="WR Trigger Source"/>
+            <Property name="labelString" type="java.lang.String" value="WR Trigger Source  "/>
             <Property name="offsetNid" type="int" value="5"/>
             <Property name="updateIdentifier" type="java.lang.String" value=""/>
           </Properties>
@@ -125,6 +124,152 @@
         <Component class="DeviceDispatch" name="deviceDispatch1">
         </Component>
       </SubComponents>
+      <LayoutCode>
+        <CodeStatement>
+          <CodeExpression id="1_flowLayout1">
+            <CodeVariable name="flowLayout1" type="4096" declaredType="java.awt.FlowLayout"/>
+            <ExpressionOrigin>
+              <ExpressionProvider type="CodeConstructor">
+                <CodeConstructor class="java.awt.FlowLayout" parameterTypes="int, int, int"/>
+              </ExpressionProvider>
+              <Parameters>
+                <CodeExpression id="2">
+                  <ExpressionOrigin>
+                    <Value type="int" value="1"/>
+                  </ExpressionOrigin>
+                </CodeExpression>
+                <CodeExpression id="3">
+                  <ExpressionOrigin>
+                    <Value type="int" value="10"/>
+                  </ExpressionOrigin>
+                </CodeExpression>
+                <CodeExpression id="4">
+                  <ExpressionOrigin>
+                    <Value type="int" value="5"/>
+                  </ExpressionOrigin>
+                </CodeExpression>
+              </Parameters>
+            </ExpressionOrigin>
+          </CodeExpression>
+          <StatementProvider type="CodeExpression">
+            <CodeExpression id="1_flowLayout1"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="2"/>
+            <CodeExpression id="3"/>
+            <CodeExpression id="4"/>
+          </Parameters>
+        </CodeStatement>
+        <CodeStatement>
+          <CodeExpression id="1_flowLayout1"/>
+          <StatementProvider type="CodeMethod">
+            <CodeMethod name="setAlignOnBaseline" class="java.awt.FlowLayout" parameterTypes="boolean"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="5">
+              <ExpressionOrigin>
+                <Value type="boolean" value="true"/>
+              </ExpressionOrigin>
+            </CodeExpression>
+          </Parameters>
+        </CodeStatement>
+        <CodeStatement>
+          <CodeExpression id="6_jPanel1">
+            <CodeVariable name="jPanel1" type="8194" declaredType="javax.swing.JPanel"/>
+            <ExpressionOrigin>
+              <ExpressionProvider type="ComponentRef">
+                <ComponentRef name="jPanel1"/>
+              </ExpressionProvider>
+            </ExpressionOrigin>
+          </CodeExpression>
+          <StatementProvider type="CodeMethod">
+            <CodeMethod name="setLayout" class="java.awt.Container" parameterTypes="java.awt.LayoutManager"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="1_flowLayout1"/>
+          </Parameters>
+        </CodeStatement>
+        <CodeStatement>
+          <CodeExpression id="6_jPanel1"/>
+          <StatementProvider type="CodeMethod">
+            <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="7_deviceField1">
+              <CodeVariable name="deviceField1" type="8194" declaredType="DeviceField"/>
+              <ExpressionOrigin>
+                <ExpressionProvider type="ComponentRef">
+                  <ComponentRef name="deviceField1"/>
+                </ExpressionProvider>
+              </ExpressionOrigin>
+            </CodeExpression>
+          </Parameters>
+        </CodeStatement>
+        <CodeStatement>
+          <CodeExpression id="6_jPanel1"/>
+          <StatementProvider type="CodeMethod">
+            <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="8_deviceChoice1">
+              <CodeVariable name="deviceChoice1" type="8194" declaredType="DeviceChoice"/>
+              <ExpressionOrigin>
+                <ExpressionProvider type="ComponentRef">
+                  <ComponentRef name="deviceChoice1"/>
+                </ExpressionProvider>
+              </ExpressionOrigin>
+            </CodeExpression>
+          </Parameters>
+        </CodeStatement>
+        <CodeStatement>
+          <CodeExpression id="6_jPanel1"/>
+          <StatementProvider type="CodeMethod">
+            <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="9_deviceChoice2">
+              <CodeVariable name="deviceChoice2" type="8194" declaredType="DeviceChoice"/>
+              <ExpressionOrigin>
+                <ExpressionProvider type="ComponentRef">
+                  <ComponentRef name="deviceChoice2"/>
+                </ExpressionProvider>
+              </ExpressionOrigin>
+            </CodeExpression>
+          </Parameters>
+        </CodeStatement>
+        <CodeStatement>
+          <CodeExpression id="6_jPanel1"/>
+          <StatementProvider type="CodeMethod">
+            <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="10_deviceChoice3">
+              <CodeVariable name="deviceChoice3" type="8194" declaredType="DeviceChoice"/>
+              <ExpressionOrigin>
+                <ExpressionProvider type="ComponentRef">
+                  <ComponentRef name="deviceChoice3"/>
+                </ExpressionProvider>
+              </ExpressionOrigin>
+            </CodeExpression>
+          </Parameters>
+        </CodeStatement>
+        <CodeStatement>
+          <CodeExpression id="6_jPanel1"/>
+          <StatementProvider type="CodeMethod">
+            <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+          </StatementProvider>
+          <Parameters>
+            <CodeExpression id="11_deviceDispatch1">
+              <CodeVariable name="deviceDispatch1" type="8194" declaredType="DeviceDispatch"/>
+              <ExpressionOrigin>
+                <ExpressionProvider type="ComponentRef">
+                  <ComponentRef name="deviceDispatch1"/>
+                </ExpressionProvider>
+              </ExpressionOrigin>
+            </CodeExpression>
+          </Parameters>
+        </CodeStatement>
+      </LayoutCode>
     </Container>
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
       <Constraints>
@@ -226,7 +371,8 @@
                 </Component>
                 <Component class="java.awt.Label" name="label3">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message ID, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS"/>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message ID. The TAI trigger time is: WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -240,18 +386,73 @@
                 </Constraint>
               </Constraints>
 
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="1"/>
+                <Property name="rows" type="int" value="8"/>
+              </Layout>
               <SubComponents>
-                <Component class="DeviceField" name="deviceField9">
+                <Component class="DeviceChoice" name="deviceChoice4">
                   <Properties>
+                    <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[195.3125, 97.65625, 48.828125, 30.51758]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="4">
+                        <StringItem index="0" value="195.31250"/>
+                        <StringItem index="1" value="97.656250"/>
+                        <StringItem index="2" value="48.828125"/>
+                        <StringItem index="3" value="30.517580"/>
+                      </StringArray>
+                    </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="nsec per tick [nsec]"/>
+                    <Property name="labelString" type="java.lang.String" value="nsec per tick"/>
                     <Property name="offsetNid" type="int" value="11"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
                 <Component class="java.awt.Label" name="label4">
                   <Properties>
+                    <Property name="alignment" type="int" value="1"/>
                     <Property name="text" type="java.lang.String" value="TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]"/>
+                  </Properties>
+                </Component>
+                <Component class="java.awt.Label" name="label10">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="SR = 10 KHz, TICKNS = 195.31250"/>
+                  </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
+                  </AccessibilityProperties>
+                </Component>
+                <Component class="java.awt.Label" name="label11">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="SR = 20 KHz, TICKNS = 97.656250"/>
+                  </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
+                  </AccessibilityProperties>
+                </Component>
+                <Component class="java.awt.Label" name="label12">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="SR = 40 KHz, TICKNS = 48.828125"/>
+                  </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
+                  </AccessibilityProperties>
+                </Component>
+                <Component class="java.awt.Label" name="label13">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="SR =  80 KHz, TICKNS = 48.828125"/>
+                  </Properties>
+                </Component>
+                <Component class="java.awt.Label" name="label14">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="SR = 128 KHz, TICKNS = 30.517580"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -346,7 +547,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="RX Matches for WRTT0"/>
-                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="numCols" type="int" value="100"/>
                     <Property name="offsetNid" type="int" value="14"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
@@ -377,7 +578,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="RX Matches for WRTT1"/>
-                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="numCols" type="int" value="100"/>
                     <Property name="offsetNid" type="int" value="15"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
