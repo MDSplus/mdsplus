@@ -38,76 +38,166 @@ class ACQ2106_WRTD(MDSplus.Device):
     """
 
     parts = [
-        {'path': ':NODE',        'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':HOSTNAME',    'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':COMMENT',     'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':TRIG_MSG',    'type': 'text',
-            'options': ('write_shot',)},
-        {'path': ':TRIG_SRC',    'type': 'text',
-            'value': 'FPTRG', 'options': ('write_shot',)},
-        {'path': ':TRIG_TIME',   'type': 'numeric',
-            'value': 0.,       'options': ('write_shot',)},
-        {'path': ':T0',          'type': 'numeric',
-            'value': 0.,       'options': ('write_shot',)},
+        {
+            'path': ':NODE',
+            'type': 'text',
+            'value': '192.168.0.254',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':HOSTNAME',
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':COMMENT',
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_MSG',
+            'type': 'text',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_SRC',
+            'type': 'text',
+            'value': 'FPTRG',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_TIME',
+            'type': 'numeric',
+            'value': 0.,
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':T0',
+            'type': 'numeric',
+            'value': 0.,
+            'options': ('write_shot',)
+        },
         # If DIO-PG is present:
-        {'path': ':DIO_SITE',    'type': 'numeric',
-            'value': 0.,       'options': ('write_shot',)},
+        {
+            'path': ':DIO_SITE',
+            'type': 'numeric',
+            'value': 0.,
+            'options': ('no_write_shot',)
+        },
         # A DIO-PG source can be one of [d0...d5, TRGIN, WRTT]
-        {'path': ':PG_TRIG_SRC', 'type': 'text',
-            'value': 'dx', 'options': ('write_shot',)},
-
-        {'path': ':WR_INIT',     'type': 'text',   'options': ('write_shot',)},
+        {
+            'path': ':PG_TRIG_SRC',
+            'type': 'text',
+            'value': 'dx',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT',
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
         # ns per tick. (tick size in ns). uut.cC.WRTD_TICKNS: For SR=20MHz. It's the Si5326 tick at 20MHz ..
-        {'path': ':WR_INIT:WRTD_TICKNS', 'type': 'numeric',
-            'value': 50, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_TICKNS',
+            'type': 'numeric',
+            'value': 50,
+            'options': ('no_write_shot',)
+        },
         # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
-        {'path': ':WR_INIT:WRTD_DNS',    'type': 'numeric',
-         'value': 50000000, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_DNS',
+            'type': 'numeric',
+            'value': 50000000,
+            'options': ('no_write_shot',)
+        },
         # uut.cC.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
-        {'path': ':WR_INIT:WRTD_VBOSE',  'type': 'numeric',
-         'value': 2, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_VBOSE',
+            'type': 'numeric',
+            'value': 2,
+            'options': ('no_write_shot',)
+        },
         # uut.cC.WRTD_RX_MATCHES: match any of these triggers to initiate WRTT0
-        {'path': ':WR_INIT:WRTD_RX_M',   'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_RX_M',
+            'type': 'text',
+            'value': "acq2106_999,wrtt0_message",
+            'options': ('no_write_shot',)
+        },
         # uut.cC.WRTD_RX_MATCHES1: match any of these triggers to initiate WRTT1
-        {'path': ':WR_INIT:WRTD_RX_M1',  'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
-        # From uut.cC.WRTD_DELAY01: WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
-        # Double Tap, which is:
+        {
+            'path': ':WR_INIT:WRTD_RX_M1',
+            'type': 'text',
+            'value': "acq2106_999,wrtt1_message",
+            'options': ('no_write_shot',)
+        },
+        # WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
+        # Double Tap, which means that:
         # 1. WRTT0
         # 2. Delay WRTD_DELAY01 nsec.
         # 3. WRTT1
-        {'path': ':WR_INIT:WRTD_RX_DTP', 'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
-        {'path': ':WR_INIT:WRTD_DELAY',  'type': 'numeric',
-         'value': 5000000, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_RX_DTP',
+            'type': 'text',
+            'value': "acq2106_999",
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT:WRTD_DELAY',
+            'type': 'numeric',
+            'value': 5000000,
+            'options': ('no_write_shot',)
+        },
         # WRTD_ID
         # For Global ID
-        {'path': ':WR_INIT:WRTD_ID_GLB',     'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_ID_GLB',
+            'type': 'text',
+            'value': "acq2106_999",
+            'options': ('no_write_shot',)
+        },
         # For an individual DIO 482 site WRTD ID. This is used only in TIGA systems.
-        {'path': ':WR_INIT:WRTD_ID_TIGA',    'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
-
-        {'path': ':WR_INIT:WRTD_TX',     'type': 'numeric',
-         'value': 1, 'options': ('write_shot',)},
-        {'path': ':WR_INIT:WRTD_RX',     'type': 'numeric',
-         'value': 1, 'options': ('write_shot',)},
-
-
-        {'path': ':RUNNING',     'type': 'numeric',
-            'options': ('no_write_model',)},
-        {'path': ':LOG_OUTPUT',  'type': 'text',    'options': (
-            'no_write_model', 'write_once', 'write_shot',)},
-        {'path': ':INIT_ACTION', 'type': 'action',
-            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))", 'options': ('no_write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_ID_TIGA',
+            'type': 'text',
+            'value': "acq2106_999",
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT:WRTD_TX',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT:WRTD_RX',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':RUNNING',
+            'type': 'numeric',
+            'options': ('no_write_model',)
+        },
+        {
+            'path': ':LOG_OUTPUT',
+            'type': 'text',
+            'options': ('no_write_model', 'write_once', 'write_shot',)
+        },
+        {
+            'path': ':INIT_ACTION',
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))", 
+            'options': ('no_write_shot',)
+        },
     ]
 
     def init(self):
         uut = self.getUUT()
+
+        # Sets WRTD TICKNS in nsecs: defined by 1/MBCLK
+        uut.cC.WRTD_TICKNS = self.wr_init_wrtd_tickns.data()
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
