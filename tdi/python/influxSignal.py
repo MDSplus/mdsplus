@@ -19,13 +19,13 @@ def influxSignal(dbname, measurement, field_value, address, credentials):
             lines = cred_file.readlines()
 
             if len(lines) < 2:
-                print("Failed to read credentials from file %s" %(credentials,))
+                print("Failed to read credentials from file %s" %(credentials.data(),))
 
             username = lines[0].strip('\n')
             password = lines[1].strip('\n')
 
     except IOError as e:
-        print("Failed to open credentials file %s" %(credentials,))
+        print("Failed to open credentials file %s" %(credentials.data(),))
 
     dbname      = dbname.data()
     #measurement = measurement.data()
