@@ -45,6 +45,11 @@ class ACQ2106_WRTD(MDSplus.Device):
             'options': ('no_write_shot',)
         },
         {
+            'path': ':HOSTNAME',
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
+        {
             'path': ':COMMENT',
             'type': 'text',
             'options': ('no_write_shot',)
@@ -62,6 +67,12 @@ class ACQ2106_WRTD(MDSplus.Device):
         },
         {
             'path': ':TRIG_TIME',
+            'type': 'numeric',
+            'value': 0.,
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':T0',
             'type': 'numeric',
             'value': 0.,
             'options': ('write_shot',)
@@ -89,8 +100,8 @@ class ACQ2106_WRTD(MDSplus.Device):
         {
             'path': ':WR_INIT:WRTD_TICKNS',
             'type': 'numeric',
-            'value': 50.0,
-            'options': ('write_shot',)
+            'value': 50,
+            'options': ('no_write_shot',)
         },
         # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
         {
@@ -186,36 +197,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         uut = self.getUUT()
 
         # Sets WRTD TICKNS in nsecs: defined by 1/MBCLK
-        # We can take MBCLK from the name of the clock plan that is going to be used when 
-        # the desired sample rate is set by the acq2106 device's INIT function.
-        #
-        # 1- Quering sync_role() will give us the clock plan name (FIN):
-        sync_role_query = uut.s0.sync_role
-        if 'FIN_DEF=' in sync_role_query:
-            mbclk_plan = '31M25-' + sync_role_query.split('FIN_DEF=')[1]
-        else:
-            mbclk_plan = ''
-
-        # 2- Quering SYS:CLK:CONFIG will also give us the clock plan's name:
-        # sys_clk_plan = uut.s0.SYS_CLK_CONFIG
-        # mbclk_plan        = sys_clk_plan.split(' ')[1]
-
-        to_nano = 1E9
-        allowed_plans = {'31M25-5M12':(1./5120000)*to_nano, '31M25-10M24':(1./10240000)*to_nano, '31M25-20M48':(1./20480000)*to_nano, 
-                        '31M25-32M768':(1./32768000)*to_nano, '31M25-40M':25.0000, '31M25-20M':50.0000}
-        
-        # In TIGA systems the clock plan is 31M25-40M, but MBCLK = 10 MHz, and is set at boot-time to WRTD_TICKNS = 100.
-
-        if not self.is_tiga():
-            if mbclk_plan:
-                if mbclk_plan in allowed_plans:
-                    uut.cC.WRTD_TICKNS = allowed_plans.get(mbclk_plan)
-                    self.wr_init_wrtd_tickns.record = allowed_plans.get(mbclk_plan)
-                else:
-                    raise MDSplus.DevBAD_PARAMETER(
-                        "MBCLK plan must be 31M25-5M12, 31M25-10M24, 31M25-20M48, 31M25-32M768, 31M25-40M or 31M25-20M; not %d" % (mbclk_plan,))
-            else:
-                raise MDSplus.DevBAD_PARAMETER("MBCLK plan name is missing from the query uut.s0.sync_role")
+        uut.cC.WRTD_TICKNS = self.wr_init_wrtd_tickns.data()
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
