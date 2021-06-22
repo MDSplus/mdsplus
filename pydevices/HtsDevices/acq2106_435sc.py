@@ -73,7 +73,21 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
     def init(self):
         self.slots = super(_ACQ2106_435SC, self).getSlots()
-        
+        freq = int(self.freq.data())
+
+        # Available Clock Plans for the 2106 Signal Conditioning devices (from D-Tacq): 
+        # 10 kSPS (5M12  /512)
+        # 20 kSPS (10M24 /512)
+        # 40 kSPS (20M48 /512)
+        # 80 kSPS (20M48 /256)
+        # 128kSPS (32M768/256)
+        allow_freqs = [10000, 20000, 40000, 80000, 128000]
+
+        # Frequency innput validation
+        if freq not in allow_freqs:
+            raise MDSplus.DevBAD_PARAMETER(
+                "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
+
         for card in self.slots:
             if self.is_global.data() == 1:
                 # Global controls for GAINS and OFFSETS
