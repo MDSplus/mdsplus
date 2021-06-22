@@ -7,16 +7,29 @@ except:
         "You must install the `influxdb` python package.")
     exit(1)
 
-def influxSignal(dbname, measurement, field_value):
+def influxSignal(dbname, measurement, field_value, address, credentials):
     """Instantiate a connection to the InfluxDB."""
-    host     = 'localhost'
+    host     = address.data()
     port     = 8086
-    user     = 'admin'
-    password = 'password'
+
+    username = ''
+    password = ''
+    try:
+        with open(credentials.data()) as cred_file:
+            lines = cred_file.readlines()
+
+            if len(lines) < 2:
+                print("Failed to read credentials from file %s" %(credentials,))
+
+            username = lines[0].strip('\n')
+            password = lines[1].strip('\n')
+
+    except IOError as e:
+        print("Failed to open credentials file %s" %(credentials,))
 
     dbname      = dbname.data()
-    measurement = measurement.data()
-    field_value = field_value.data()
+    #measurement = measurement.data()
+    #field_value = field_value.data()
 
     start_end_times = MDSplus.Tree.getTimeContext()
 
@@ -24,7 +37,8 @@ def influxSignal(dbname, measurement, field_value):
     start_time = str(int(start_end_times[0]))
     end_time   = str(int(start_end_times[1]))
     
-    client = InfluxDBClient(host, port, user, password, dbname)
+    client = InfluxDBClient(host, port, username, password, dbname)
+
     # example influxDB query:
     # dbname      = 'NOAA_water_database' 
     # measurement = h2o_feet == Table
@@ -50,3 +64,4 @@ def influxSignal(dbname, measurement, field_value):
     times  = MDSplus.Uint64Array(timeData)
 
     return MDSplus.Signal(values, None, times)
+
