@@ -117,23 +117,23 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jPanel8.setLayout(new java.awt.GridLayout(3, 0));
+        jPanel8.setLayout(new java.awt.GridLayout(3, 1));
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Message ID to Transmit");
-        deviceField3.setNumCols(20);
+        deviceField3.setNumCols(40);
         deviceField3.setOffsetNid(18);
         jPanel8.add(deviceField3);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("PG Site N message ID to Transmit");
-        deviceField11.setNumCols(15);
+        deviceField11.setNumCols(40);
         deviceField11.setOffsetNid(19);
         jPanel8.add(deviceField11);
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Safe time to broadcasts message ID [DELTA NS in msec]");
-        deviceField2.setNumCols(2);
+        deviceField2.setNumCols(40);
         deviceField2.setOffsetNid(12);
         jPanel8.add(deviceField2);
         deviceField2.getAccessibleContext().setAccessibleDescription("Sets WR \"safe time for broadcasts\" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec ");

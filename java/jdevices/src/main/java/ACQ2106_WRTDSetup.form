@@ -308,7 +308,7 @@
               </Constraints>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-                <Property name="columns" type="int" value="0"/>
+                <Property name="columns" type="int" value="1"/>
                 <Property name="rows" type="int" value="3"/>
               </Layout>
               <SubComponents>
@@ -316,7 +316,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Message ID to Transmit"/>
-                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="numCols" type="int" value="40"/>
                     <Property name="offsetNid" type="int" value="18"/>
                   </Properties>
                 </Component>
@@ -324,7 +324,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="PG Site N message ID to Transmit"/>
-                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="numCols" type="int" value="40"/>
                     <Property name="offsetNid" type="int" value="19"/>
                   </Properties>
                 </Component>
@@ -332,7 +332,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Safe time to broadcasts message ID [DELTA NS in msec]"/>
-                    <Property name="numCols" type="int" value="2"/>
+                    <Property name="numCols" type="int" value="40"/>
                     <Property name="offsetNid" type="int" value="12"/>
                   </Properties>
                   <AccessibilityProperties>
