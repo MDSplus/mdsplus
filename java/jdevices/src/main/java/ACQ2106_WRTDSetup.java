@@ -166,7 +166,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         label17.setAlignment(java.awt.Label.CENTER);
         label17.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        label17.setText("Choices of TICKNS for 435 modules are");
+        label17.setText("Choices of TICKNS for 435 modules");
         jPanel9.add(label17);
 
         label10.setAlignment(java.awt.Label.CENTER);
