@@ -155,8 +155,8 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         jPanel9.setLayout(new java.awt.GridLayout(8, 1));
 
-        deviceChoice4.setChoiceFloatValues(new float[] {195.3125f, 97.65625f, 48.828125f, 30.51758f});
-        deviceChoice4.setChoiceItems(new String[] {"195.31250", "97.656250", "48.828125", "30.517580"});
+        deviceChoice4.setChoiceFloatValues(new float[] {195.3125f, 97.6562f, 48.8281f, 30.5176f});
+        deviceChoice4.setChoiceItems(new String[] {"195.3125", "97.6562", "48.8281", "30.5176"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("nsec per tick");
         deviceChoice4.setOffsetNid(11);
@@ -168,26 +168,26 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel9.add(label4);
 
         label10.setAlignment(java.awt.Label.CENTER);
-        label10.setText("SR = 10 KHz, TICKNS = 195.31250");
+        label10.setText("SR = 10 KHz  =>  TICKNS = 195.3125");
         jPanel9.add(label10);
         label10.getAccessibleContext().setAccessibleDescription("");
 
         label11.setAlignment(java.awt.Label.CENTER);
-        label11.setText("SR = 20 KHz, TICKNS = 97.656250");
+        label11.setText("SR = 20 KHz  =>  TICKNS = 97.6562");
         jPanel9.add(label11);
         label11.getAccessibleContext().setAccessibleDescription("");
 
         label12.setAlignment(java.awt.Label.CENTER);
-        label12.setText("SR = 40 KHz, TICKNS = 48.828125");
+        label12.setText("SR = 40 KHz  =>  TICKNS = 48.8281");
         jPanel9.add(label12);
         label12.getAccessibleContext().setAccessibleDescription("");
 
         label13.setAlignment(java.awt.Label.CENTER);
-        label13.setText("SR =  80 KHz, TICKNS = 48.828125");
+        label13.setText("SR =  80 KHz  =>  TICKNS = 48.8281");
         jPanel9.add(label13);
 
         label14.setAlignment(java.awt.Label.CENTER);
-        label14.setText("SR = 128 KHz, TICKNS = 30.517580");
+        label14.setText("SR = 128 KHz  => TICKNS = 30.5176");
         jPanel9.add(label14);
 
         jTabbedPane2.addTab("TICKNS", jPanel9);

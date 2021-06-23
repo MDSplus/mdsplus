@@ -394,14 +394,14 @@
                 <Component class="DeviceChoice" name="deviceChoice4">
                   <Properties>
                     <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[195.3125, 97.65625, 48.828125, 30.51758]"/>
+                      <PropertyValue value="[195.3125, 97.6562, 48.8281, 30.5176]"/>
                     </Property>
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="4">
-                        <StringItem index="0" value="195.31250"/>
-                        <StringItem index="1" value="97.656250"/>
-                        <StringItem index="2" value="48.828125"/>
-                        <StringItem index="3" value="30.517580"/>
+                        <StringItem index="0" value="195.3125"/>
+                        <StringItem index="1" value="97.6562"/>
+                        <StringItem index="2" value="48.8281"/>
+                        <StringItem index="3" value="30.5176"/>
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
@@ -419,7 +419,7 @@
                 <Component class="java.awt.Label" name="label10">
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
-                    <Property name="text" type="java.lang.String" value="SR = 10 KHz, TICKNS = 195.31250"/>
+                    <Property name="text" type="java.lang.String" value="SR = 10 KHz  =&gt;  TICKNS = 195.3125"/>
                   </Properties>
                   <AccessibilityProperties>
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
@@ -428,7 +428,7 @@
                 <Component class="java.awt.Label" name="label11">
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
-                    <Property name="text" type="java.lang.String" value="SR = 20 KHz, TICKNS = 97.656250"/>
+                    <Property name="text" type="java.lang.String" value="SR = 20 KHz  =&gt;  TICKNS = 97.6562"/>
                   </Properties>
                   <AccessibilityProperties>
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
@@ -437,7 +437,7 @@
                 <Component class="java.awt.Label" name="label12">
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
-                    <Property name="text" type="java.lang.String" value="SR = 40 KHz, TICKNS = 48.828125"/>
+                    <Property name="text" type="java.lang.String" value="SR = 40 KHz  =&gt;  TICKNS = 48.8281"/>
                   </Properties>
                   <AccessibilityProperties>
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
@@ -446,13 +446,13 @@
                 <Component class="java.awt.Label" name="label13">
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
-                    <Property name="text" type="java.lang.String" value="SR =  80 KHz, TICKNS = 48.828125"/>
+                    <Property name="text" type="java.lang.String" value="SR =  80 KHz  =&gt;  TICKNS = 48.8281"/>
                   </Properties>
                 </Component>
                 <Component class="java.awt.Label" name="label14">
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
-                    <Property name="text" type="java.lang.String" value="SR = 128 KHz, TICKNS = 30.517580"/>
+                    <Property name="text" type="java.lang.String" value="SR = 128 KHz  =&gt; TICKNS = 30.5176"/>
                   </Properties>
                 </Component>
               </SubComponents>
