@@ -5,7 +5,7 @@
     <Property name="deviceProvider" type="java.lang.String" value="172.20.240.104:9998"/>
     <Property name="deviceTitle" type="java.lang.String" value="WRTD for MDSplus"/>
     <Property name="deviceType" type="java.lang.String" value="acq2106_WRTD"/>
-    <Property name="height" type="int" value="400"/>
+    <Property name="height" type="int" value="500"/>
     <Property name="updateEvent" type="java.lang.String" value=""/>
     <Property name="width" type="int" value="1400"/>
   </Properties>
@@ -296,15 +296,21 @@
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
           <SubComponents>
             <Container class="javax.swing.JPanel" name="jPanel8">
+              <AccessibilityProperties>
+                <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+              </AccessibilityProperties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Global ID">
-                    <Property name="tabTitle" type="java.lang.String" value="Global ID"/>
+                  <JTabbedPaneConstraints tabName="Message IDs">
+                    <Property name="tabTitle" type="java.lang.String" value="Message IDs"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>
 
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="3"/>
+              </Layout>
               <SubComponents>
                 <Component class="DeviceField" name="deviceField3">
                   <Properties>
@@ -314,66 +320,24 @@
                     <Property name="offsetNid" type="int" value="18"/>
                   </Properties>
                 </Component>
-                <Component class="java.awt.Label" name="label1">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Message ID to be transmitted."/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel10">
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="PG Site ID">
-                    <Property name="tabTitle" type="java.lang.String" value="PG Site ID"/>
-                  </JTabbedPaneConstraints>
-                </Constraint>
-              </Constraints>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
                 <Component class="DeviceField" name="deviceField11">
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="PG Site N message ID"/>
+                    <Property name="labelString" type="java.lang.String" value="PG Site N message ID to Transmit"/>
+                    <Property name="numCols" type="int" value="15"/>
                     <Property name="offsetNid" type="int" value="19"/>
                   </Properties>
                 </Component>
-                <Component class="java.awt.Label" name="label2">
-                  <Properties>
-                    <Property name="name" type="java.lang.String" value="" noResource="true"/>
-                    <Property name="text" type="java.lang.String" value="Message ID associated only to PG site N"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel7">
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="DELTA NS" toolTip="">
-                    <Property name="tabTitle" type="java.lang.String" value="DELTA NS"/>
-                    <Property name="tabToolTip" type="java.lang.String" value=""/>
-                  </JTabbedPaneConstraints>
-                </Constraint>
-              </Constraints>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
                 <Component class="DeviceField" name="deviceField2">
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="DELTA NS [msec]"/>
+                    <Property name="labelString" type="java.lang.String" value="Safe time to broadcasts message ID [DELTA NS in msec]"/>
+                    <Property name="numCols" type="int" value="2"/>
                     <Property name="offsetNid" type="int" value="12"/>
                   </Properties>
                   <AccessibilityProperties>
                     <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec "/>
                   </AccessibilityProperties>
-                </Component>
-                <Component class="java.awt.Label" name="label3">
-                  <Properties>
-                    <Property name="alignment" type="int" value="1"/>
-                    <Property name="text" type="java.lang.String" value="Sets WR &quot;safe time for broadcasts&quot; the message ID. The TAI trigger time is: WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS"/>
-                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
@@ -388,20 +352,21 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
                 <Property name="columns" type="int" value="1"/>
-                <Property name="rows" type="int" value="8"/>
+                <Property name="rows" type="int" value="11"/>
               </Layout>
               <SubComponents>
                 <Component class="DeviceChoice" name="deviceChoice4">
                   <Properties>
                     <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                      <PropertyValue value="[195.3125, 97.6562, 48.8281, 30.5176]"/>
+                      <PropertyValue value="[195.3125, 97.6562, 48.8281, 30.5176, 25.0]"/>
                     </Property>
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="4">
+                      <StringArray count="5">
                         <StringItem index="0" value="195.3125"/>
                         <StringItem index="1" value="97.6562"/>
                         <StringItem index="2" value="48.8281"/>
                         <StringItem index="3" value="30.5176"/>
+                        <StringItem index="4" value="25.0000"/>
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
@@ -414,6 +379,24 @@
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
                     <Property name="text" type="java.lang.String" value="TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]"/>
+                  </Properties>
+                </Component>
+                <Component class="java.awt.Label" name="label15">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="Choices of TICKNS for 423 modules"/>
+                  </Properties>
+                </Component>
+                <Component class="java.awt.Label" name="label16">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="TICKNS = 25.0000"/>
+                  </Properties>
+                </Component>
+                <Component class="java.awt.Label" name="label17">
+                  <Properties>
+                    <Property name="alignment" type="int" value="1"/>
+                    <Property name="text" type="java.lang.String" value="Choices of TICKNS for 435 modules are"/>
                   </Properties>
                 </Component>
                 <Component class="java.awt.Label" name="label10">

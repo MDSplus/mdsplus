@@ -37,16 +37,14 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel8 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
-        label1 = new java.awt.Label();
-        jPanel10 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
-        label2 = new java.awt.Label();
-        jPanel7 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
-        label3 = new java.awt.Label();
         jPanel9 = new javax.swing.JPanel();
         deviceChoice4 = new DeviceChoice();
         label4 = new java.awt.Label();
+        label15 = new java.awt.Label();
+        label16 = new java.awt.Label();
+        label17 = new java.awt.Label();
         label10 = new java.awt.Label();
         label11 = new java.awt.Label();
         label12 = new java.awt.Label();
@@ -73,7 +71,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         setDeviceProvider("172.20.240.104:9998");
         setDeviceTitle("WRTD for MDSplus");
         setDeviceType("acq2106_WRTD");
-        setHeight(400);
+        setHeight(500);
         setUpdateEvent("");
         setWidth(1400);
         getContentPane().setLayout(new java.awt.BorderLayout(5, 0));
@@ -119,44 +117,34 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
+        jPanel8.setLayout(new java.awt.GridLayout(3, 0));
+
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Message ID to Transmit");
         deviceField3.setNumCols(20);
         deviceField3.setOffsetNid(18);
         jPanel8.add(deviceField3);
 
-        label1.setText("Message ID to be transmitted.");
-        jPanel8.add(label1);
-
-        jTabbedPane2.addTab("Global ID", jPanel8);
-
         deviceField11.setIdentifier("");
-        deviceField11.setLabelString("PG Site N message ID");
+        deviceField11.setLabelString("PG Site N message ID to Transmit");
+        deviceField11.setNumCols(15);
         deviceField11.setOffsetNid(19);
-        jPanel10.add(deviceField11);
-
-        label2.setName(""); // NOI18N
-        label2.setText("Message ID associated only to PG site N");
-        jPanel10.add(label2);
-
-        jTabbedPane2.addTab("PG Site ID", jPanel10);
+        jPanel8.add(deviceField11);
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("DELTA NS [msec]");
+        deviceField2.setLabelString("Safe time to broadcasts message ID [DELTA NS in msec]");
+        deviceField2.setNumCols(2);
         deviceField2.setOffsetNid(12);
-        jPanel7.add(deviceField2);
+        jPanel8.add(deviceField2);
         deviceField2.getAccessibleContext().setAccessibleDescription("Sets WR \"safe time for broadcasts\" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS. 50msec ");
 
-        label3.setAlignment(java.awt.Label.CENTER);
-        label3.setText("Sets WR \"safe time for broadcasts\" the message ID. The TAI trigger time is: WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS");
-        jPanel7.add(label3);
+        jTabbedPane2.addTab("Message IDs", jPanel8);
+        jPanel8.getAccessibleContext().setAccessibleName("");
 
-        jTabbedPane2.addTab("DELTA NS", null, jPanel7, "");
+        jPanel9.setLayout(new java.awt.GridLayout(11, 1));
 
-        jPanel9.setLayout(new java.awt.GridLayout(8, 1));
-
-        deviceChoice4.setChoiceFloatValues(new float[] {195.3125f, 97.6562f, 48.8281f, 30.5176f});
-        deviceChoice4.setChoiceItems(new String[] {"195.3125", "97.6562", "48.8281", "30.5176"});
+        deviceChoice4.setChoiceFloatValues(new float[] {195.3125f, 97.6562f, 48.8281f, 30.5176f, 25.0f});
+        deviceChoice4.setChoiceItems(new String[] {"195.3125", "97.6562", "48.8281", "30.5176", "25.0000"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("nsec per tick");
         deviceChoice4.setOffsetNid(11);
@@ -166,6 +154,18 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         label4.setAlignment(java.awt.Label.CENTER);
         label4.setText("TICKNS is the MBCLK tick interval, i.e. 1. / MBCLK [in nsec]");
         jPanel9.add(label4);
+
+        label15.setAlignment(java.awt.Label.CENTER);
+        label15.setText("Choices of TICKNS for 423 modules");
+        jPanel9.add(label15);
+
+        label16.setAlignment(java.awt.Label.CENTER);
+        label16.setText("TICKNS = 25.0000");
+        jPanel9.add(label16);
+
+        label17.setAlignment(java.awt.Label.CENTER);
+        label17.setText("Choices of TICKNS for 435 modules are");
+        jPanel9.add(label17);
 
         label10.setAlignment(java.awt.Label.CENTER);
         label10.setText("SR = 10 KHz  =>  TICKNS = 195.3125");
@@ -293,26 +293,24 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
-    private java.awt.Label label1;
     private java.awt.Label label10;
     private java.awt.Label label11;
     private java.awt.Label label12;
     private java.awt.Label label13;
     private java.awt.Label label14;
-    private java.awt.Label label2;
-    private java.awt.Label label3;
+    private java.awt.Label label15;
+    private java.awt.Label label16;
+    private java.awt.Label label17;
     private java.awt.Label label4;
     private java.awt.Label label5;
     private java.awt.Label label6;
