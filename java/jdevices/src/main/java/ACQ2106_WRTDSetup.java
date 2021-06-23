@@ -146,7 +146,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         deviceChoice4.setChoiceFloatValues(new float[] {195.3125f, 97.6562f, 48.8281f, 30.5176f, 25.0f});
         deviceChoice4.setChoiceItems(new String[] {"195.3125", "97.6562", "48.8281", "30.5176", "25.0000"});
         deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("nsec per tick");
+        deviceChoice4.setLabelString("TICKNS [nsec per tick]");
         deviceChoice4.setOffsetNid(11);
         deviceChoice4.setUpdateIdentifier("");
         jPanel9.add(deviceChoice4);
@@ -156,6 +156,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel9.add(label4);
 
         label15.setAlignment(java.awt.Label.CENTER);
+        label15.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         label15.setText("Choices of TICKNS for 423 modules");
         jPanel9.add(label15);
 
@@ -164,6 +165,7 @@ public class ACQ2106_WRTDSetup extends DeviceSetup {
         jPanel9.add(label16);
 
         label17.setAlignment(java.awt.Label.CENTER);
+        label17.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         label17.setText("Choices of TICKNS for 435 modules are");
         jPanel9.add(label17);
 

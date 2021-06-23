@@ -370,7 +370,7 @@
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="nsec per tick"/>
+                    <Property name="labelString" type="java.lang.String" value="TICKNS [nsec per tick]"/>
                     <Property name="offsetNid" type="int" value="11"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
@@ -384,6 +384,9 @@
                 <Component class="java.awt.Label" name="label15">
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Dialog" size="14" style="1"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Choices of TICKNS for 423 modules"/>
                   </Properties>
                 </Component>
@@ -396,6 +399,9 @@
                 <Component class="java.awt.Label" name="label17">
                   <Properties>
                     <Property name="alignment" type="int" value="1"/>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Dialog" size="14" style="1"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Choices of TICKNS for 435 modules are"/>
                   </Properties>
                 </Component>
