@@ -28,8 +28,8 @@ def influxSignal(dbname, measurement, field_value, address, credentials):
         print("Failed to open credentials file %s" %(credentials.data(),))
 
     dbname      = dbname.data()
-    #measurement = measurement.data()
-    #field_value = field_value.data()
+    measurement = measurement.data()
+    field_value = field_value.data()
 
     start_end_times = MDSplus.Tree.getTimeContext()
 
