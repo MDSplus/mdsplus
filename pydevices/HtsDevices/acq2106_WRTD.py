@@ -197,7 +197,29 @@ class ACQ2106_WRTD(MDSplus.Device):
         uut = self.getUUT()
 
         # Sets WRTD TICKNS in nsecs: defined by 1/MBCLK
-        uut.cC.WRTD_TICKNS = self.wr_init_wrtd_tickns.data()
+        # We can take MBCLK from the name of the clock plan that is going to be used when 
+        # the desired sample rate is set by the acq2106 device's INIT function.
+        # Quering sync_role() will give us the clock plan name (FIN):
+        # sync_role_query = uut.s0.sync_role
+        # clk_plan        = sync_role_query.split('\n')[4]
+        # MBCLK           = clk_plan.split(' ')[1]
+
+        sys_clk_plan = uut.s0.SYS_CLK_CONFIG
+        MBCLK        = sys_clk_plan.split(' ')[1]
+
+        tonano = 1E9
+        allowed_plans = {'31M25-5M12':(1./51200000)*tonano, '31M25-10M24':(1./10240000)*tonano, '31M25-20M48':(1./20480000)*tonano, 
+                        '31M25-32M768':(1./32768000)*tonano, '31M25-40M':25.0000, '31M25-20M':50.0000}
+        
+        # In TIGA systems the clock plan is 31M25-40M, but MBCLK = 10 MHz, and is set to WRTD_TICKNS = 100.
+
+        if not self.is_tiga():
+            if MBCLK in allowed_plans:
+                uut.cC.WRTD_TICKNS = allowed_plans.get(MBCLK)
+                self.wr_init_wrtd_tickns.record = allowed_plans.get(MBCLK)
+            else:
+                raise MDSplus.DevBAD_PARAMETER(
+                    "MBCLK must be 5M12, 10M24, 20M48, 32M768, 31M25-40M or 31M25-20M; not %d" % (MBCLK,))
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
@@ -228,20 +250,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         uut = self.getUUT()
         pg_slot = self.getDioSlot()
 
-        # Is the System a TIGA system?
-        # In embedded software there is also a command:
-        # /usr/local/bin/is_tiga
-        #
-        # it's not a knob and it's totally silent, it contains the following:
-        # #!/bin/sh
-        # [ -e /dev/acq400.0.knobs/wr_tai_trg_s1 ] && exit 0
-        # exit 1
-        #
-        # We can emulate that in HAPI the following way:
-        try:
-            is_tiga = uut.s0.wr_tai_trg_s1 is not None
-        except:
-            is_tiga = False
+        is_tiga = self.is_tiga()
 
         message = str(msg)
 
@@ -283,6 +292,25 @@ class ACQ2106_WRTD(MDSplus.Device):
             uut.cC.wrtd_txi = message
 
     TRIG = trig
+
+    def is_tiga(self):
+        uut = self.getUUT()
+        # Is the System a TIGA system?
+        # In embedded software there is also a command:
+        # /usr/local/bin/is_tiga
+        #
+        # it's not a knob and it's totally silent, it contains the following:
+        # #!/bin/sh
+        # [ -e /dev/acq400.0.knobs/wr_tai_trg_s1 ] && exit 0
+        # exit 1
+        #
+        # We can emulate that in HAPI the following way:
+        try:
+            tiga = uut.s0.wr_tai_trg_s1 is not None
+        except:
+            tiga = False
+        
+        return tiga
 
     def getUUT(self):
         import acq400_hapi
