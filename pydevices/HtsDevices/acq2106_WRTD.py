@@ -100,7 +100,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         {
             'path': ':WR_INIT:WRTD_TICKNS',
             'type': 'numeric',
-            'value': 50,
+            'value': 50.0,
             'options': ('no_write_shot',)
         },
         # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
@@ -204,11 +204,12 @@ class ACQ2106_WRTD(MDSplus.Device):
         # clk_plan        = sync_role_query.split('\n')[4]
         # MBCLK           = clk_plan.split(' ')[1]
 
+        # Or, it can be query by:
         sys_clk_plan = uut.s0.SYS_CLK_CONFIG
         MBCLK        = sys_clk_plan.split(' ')[1]
 
         tonano = 1E9
-        allowed_plans = {'31M25-5M12':(1./51200000)*tonano, '31M25-10M24':(1./10240000)*tonano, '31M25-20M48':(1./20480000)*tonano, 
+        allowed_plans = {'31M25-5M12':(1./5120000)*tonano, '31M25-10M24':(1./10240000)*tonano, '31M25-20M48':(1./20480000)*tonano, 
                         '31M25-32M768':(1./32768000)*tonano, '31M25-40M':25.0000, '31M25-20M':50.0000}
         
         # In TIGA systems the clock plan is 31M25-40M, but MBCLK = 10 MHz, and is set to WRTD_TICKNS = 100.
