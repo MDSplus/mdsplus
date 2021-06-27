@@ -104,12 +104,15 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
     status = GetAnswerInfoTS(id, (char *)&ser.dtype, (short int *)&ser.length,
                              &ndims, dims, (int *)&ser.arsize,
                              (void **)&ser.pointer, &mem);
-    ser.class = CLASS_A;
-    if ((expect_serial && ser.dtype == DTYPE_SERIAL) || ser.dtype == DTYPE_B)
-      status = MdsSerializeDscIn(ser.pointer, ans_ptr);
-    else
-      status = MdsCopyDxXd((mdsdsc_t *)&ser, ans_ptr);
-    free(mem);
+    if(STATUS_OK)
+    {
+      ser.class = CLASS_A;
+      if ((expect_serial && ser.dtype == DTYPE_SERIAL) || ser.dtype == DTYPE_B)
+        status = MdsSerializeDscIn(ser.pointer, ans_ptr);
+      else
+        status = MdsCopyDxXd((mdsdsc_t *)&ser, ans_ptr);
+      free(mem);
+    }
   }
   return status;
 }
