@@ -116,7 +116,7 @@ Connection *FindConnectionSending(int id)
   return c;
 }
 
-EXPORT int GetConnectionVersion(int id)
+EXPORT int MdsIpGetConnectionVersion(int id)
 {
   MDSIPTHREADSTATIC_INIT;
   Connection *c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);

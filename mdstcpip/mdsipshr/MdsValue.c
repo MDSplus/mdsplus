@@ -59,7 +59,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
 {
   int dim = 0;
   int i, status;
-  int version = GetConnectionVersion(id);
+  int version = MdsIpGetConnectionVersion(id);
   const int expect_serial = version >= MDSIP_VERSION_DSC_ARGS;
   if (expect_serial)
   {
