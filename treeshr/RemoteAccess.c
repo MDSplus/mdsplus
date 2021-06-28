@@ -1800,15 +1800,15 @@ inline static int io_open_one_remote(char *host, char *filepath,
                                      int *enhanced)
 {
   int status;
-  static int (*GetConnectionVersion)(int) = NULL;
-  status = LibFindImageSymbol_C("MdsIpShr", "GetConnectionVersion",
-                                &GetConnectionVersion);
+  static int (*MdsIpGetConnectionVersion)(int) = NULL;
+  status = LibFindImageSymbol_C("MdsIpShr", "MdsIpGetConnectionVersion",
+                                &MdsIpGetConnectionVersion);
   do
   {
     *conid = remote_connect(host, 1);
     if (*conid != -1)
     {
-      if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE)
+      if (MdsIpGetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE)
       {
         if (*filepath && !strstr(filepath, "::"))
         {
