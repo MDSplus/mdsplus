@@ -32,7 +32,7 @@ except:
         "You must install the `influxdb` python package.")
     exit(1)
 
-def influxSignal(dbname, measurement, field_value, address, credentials):
+def influxSignal(dbname, measurement, field_value, where, address, credentials):
     """Instantiate a connection to the InfluxDB."""
     host     = address.data()
     port     = 8086
@@ -56,13 +56,37 @@ def influxSignal(dbname, measurement, field_value, address, credentials):
     measurement = measurement.data()
     field_value = field_value.data()
 
-    # We get the start_time and the end_time of the query from the defined MDSplus tree time context
+    if where == '':
+        return
+
+    whereList = [where.data()]
+
+    # We get the start_time and the end_time of the query from the defined MDSplus tree time context:
     start_end_times = MDSplus.Tree.getTimeContext()
 
-    print('Getting time context from the tree: {} '.format(start_end_times))
-    start_time = str(int(start_end_times[0]))
-    end_time   = str(int(start_end_times[1]))
-    
+    print('Getting time context from the tree: %s '%(start_end_times,))
+    start = int(start_end_times[0])
+    end   = int(start_end_times[1])
+
+    startTimeQuery = ''
+    endTimeQuery = ''
+
+    # Convert to nanosecond UNIX timestamp
+    startTimeQuery = 'time > %d' % (start * 1000000,)
+
+    # Convert to nanosecond UNIX timestamp
+    endTimeQuery = 'time < %d' % (end * 1000000,)
+
+    if startTimeQuery != '':
+        whereList.append(startTimeQuery)
+
+    if endTimeQuery != '':
+        whereList.append(endTimeQuery)
+
+    where = ''
+    if len(whereList) > 0:
+        where = 'WHERE %s' % (' AND '.join(whereList),)
+
     client = InfluxDBClient(host, port, username, password, dbname)
 
     # example influxDB query:
@@ -70,7 +94,7 @@ def influxSignal(dbname, measurement, field_value, address, credentials):
     # measurement = h2o_feet == Table
     # field_value = water_level
     # 'SELECT "water_level" FROM "h2o_feet" WHERE time >= 1568745000000000000 AND time <= 1568750760000000000;'
-    query = 'SELECT "%s" AS value FROM "%s" WHERE time >= %s AND time <= %s;' % (field_value, measurement, start_time, end_time)
+    query = 'SELECT "%s" AS value FROM "%s" %s;' % (field_value, measurement, where)
     print('Query: %s' % query)
 
     result = client.query(query, params={'epoch': 'ms'})
