@@ -783,7 +783,6 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc,
       status = *(int *)ans.pointer->pointer;
     else if (STATUS_OK)
       status = 0;
-    MdsFree1Dx(&ans, NULL);
   }
   MdsIpFreeDsc(&ans);
   return status;
