@@ -763,28 +763,28 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc,
                     int utility_update)
 {
   int status;
-  EMPTYXD(ans);
+  EMPTYXD(xd);
   char exp[80];
   if (dsc)
   {
     sprintf(exp, "TreeShr->TreePutRecord(val(%d),xd($),val(%d))", nid_in,
             utility_update);
-    status = MdsValueDsc(dblist->tree_info->channel, exp, dsc, &ans, NULL);
+    status = MdsValueDsc(dblist->tree_info->channel, exp, dsc, &xd, NULL);
   }
   else
   {
     sprintf(exp, "TreeShr->TreePutRecord(val(%d),val(0),val(%d))", nid_in,
             utility_update);
-    status = MdsValueDsc(dblist->tree_info->channel, exp, &ans, NULL);
+    status = MdsValueDsc(dblist->tree_info->channel, exp, &xd, NULL);
   }
-  if (ans.pointer)
+  if (xd.pointer)
   {
-    if (ans.pointer->dtype == DTYPE_L)
-      status = *(int *)ans.pointer->pointer;
+    if (xd.pointer->dtype == DTYPE_L)
+      status = *(int *)xd.pointer->pointer;
     else if (STATUS_OK)
       status = 0;
   }
-  MdsIpFreeDsc(&ans);
+  MdsIpFreeDsc(&xd);
   return status;
 }
 
