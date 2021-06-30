@@ -1,7 +1,7 @@
 # allocations _$0 should end with "/test-tdishr.tdi"
 EXTRACT(len(_$0)-16,16,_$0)
-# deallocate _$0 as it varies with os in tests
-deallocate(_$0)
+# deallocate _$0 and _$1 as they vary with os in tests
+deallocate(_$0)+deallocate(_$1)
 _a=1
 allocated(_a)
 show_private(_a)

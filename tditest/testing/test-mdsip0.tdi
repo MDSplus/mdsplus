@@ -1,0 +1,24 @@
+setenv("MDSIP_MAX_VERSION=0")
+mdsconnect("thread://0")>=0
+# 0 dims ; TODO: locks up next mdsvalue: CONNECTIONLIST_LOCK
+#mdsvalue("$",[])
+# 1 dim
+mdsvalue("$",[1,2,3])
+# 2 dims; deco
+mdsvalue("DECOMPILE($)",[[1,2],[3,4]])
+# 7 dims
+mdsvalue("$",[[[[[[[1]]]]]]])
+# 8 dims dim[i] == 1 for all i<8
+mdsvalue("$",[[[[[[[[1]]]]]]]])
+# 8 dims dim[i] != 1 for first and last
+mdsvalue("$",[[[[[[[[1,2]]]]]]],[[[[[[[3,4]]]]]]]])
+FOR(_i=1;_i<=3;_i++)\
+{\
+setenv("mdsip0_path=thread://"//char(0x30+_i)//"::.");\
+treeopennew('MDSIP0', _i);\
+}
+treeaddnode('A', _, 0)
+treewrite()
+treeputrecord('A',RANGE(3))
+tcl('deco A')
+WHILE(treeclose() & 1);mdsdisconnect()
