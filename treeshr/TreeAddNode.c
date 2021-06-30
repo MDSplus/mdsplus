@@ -890,6 +890,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
           ((size_t)info_ptr->header->externals * 4u + 511u) / 512u;
       strcat(nfilenam, "#");
       ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+#define GOTO_ERROR_CLOSE do{MDS_IO_CLOSE(ntreefd);goto error_exit;}while(0)
       if (ntreefd != -1)
       {
         status = MDSplusERROR;
@@ -899,24 +900,22 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
         FreeHeaderOut(header);
         status = TreeWRITETREEERR;
         if (num != (ssize_t)(header_pages * 512))
-        {
-          goto error_exit;
-        }
+          GOTO_ERROR_CLOSE;
         num = MDS_IO_WRITE(ntreefd, info_ptr->node, 512 * node_pages);
         if (num != (ssize_t)(node_pages * 512))
-          goto error_exit;
+          GOTO_ERROR_CLOSE;
         num = MDS_IO_WRITE(ntreefd, info_ptr->tags, 512 * tags_pages);
         if (num != (ssize_t)(tags_pages * 512))
-          goto error_exit;
+          GOTO_ERROR_CLOSE;
         num = MDS_IO_WRITE(ntreefd, info_ptr->tag_info, 512 * tag_info_pages);
         if (num != (ssize_t)(tag_info_pages * 512))
-          goto error_exit;
+          GOTO_ERROR_CLOSE;
         num = MDS_IO_WRITE(ntreefd, info_ptr->external, 512 * external_pages);
         if (num != (ssize_t)(external_pages * 512))
-          goto error_exit;
+          GOTO_ERROR_CLOSE;
         status = TreeWriteNci(info_ptr);
         if (STATUS_NOT_OK)
-          goto error_exit;
+          GOTO_ERROR_CLOSE;
         status = TreeSUCCESS;
         if (info_ptr->channel > -1)
           status = MDS_IO_CLOSE(info_ptr->channel);
