@@ -73,7 +73,7 @@ inline static char *strndup(const char *src, size_t n)
 int treeshr_errno = 0;
 extern int MDSEventCan();
 static void RemoveBlanksAndUpcase(char *out, char const *in);
-static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
+static int close_top_tree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent,
                        char *subtree_list);
 static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot,
@@ -317,7 +317,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
       }
       else if ((*dblist)->open)
       {
-        status = CloseTopTree(*dblist, 1);
+        status = close_top_tree(*dblist, 1);
         if (STATUS_OK)
           free_top_db(dblist);
       }
@@ -328,7 +328,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
   return status;
 }
 
-static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
+static int close_top_tree(PINO_DATABASE *dblist, int call_hook)
 {
   int status = TreeSUCCESS;
   if (!dblist)
@@ -396,7 +396,6 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
         }
         free(local_info->edit);
       }
-
       /********************************************************
       For each tree in the linked list, first the pages must be
       remapped to the pagefile using sys$cretva before they can
@@ -733,7 +732,7 @@ static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot,
 
   case CLOSE:
     move_to_top(prev_db, db);
-    CloseTopTree(*dblist, 1);
+    close_top_tree(*dblist, 1);
     status = TreeSUCCESS;
     break;
   case ERROR_DIRTY:
@@ -762,7 +761,7 @@ static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot,
         if (useable_db)
         {
           move_to_top(saved_prev_db, useable_db);
-          CloseTopTree(*dblist, 1);
+          close_top_tree(*dblist, 1);
           status = TreeSUCCESS;
         }
         else
@@ -1254,22 +1253,26 @@ int TreeReopenDatafile(struct tree_info *info)
 
 int TreeReopenNci(struct tree_info *info)
 {
-  int status = 1, reopen_get, reopen_put;
+  int status = 1;
   WRLOCKINFO(info);
   if (info->nci_file)
   {
-    reopen_get = info->nci_file->get > 0;
-    reopen_put = info->nci_file->put > 0;
-    if (reopen_get)
-      MDS_IO_CLOSE(info->nci_file->get);
-    if (reopen_put)
-      MDS_IO_CLOSE(info->nci_file->put);
+    int reopen_get = info->nci_file->get;
+    int reopen_put = info->nci_file->put;
     free(info->nci_file);
     info->nci_file = 0;
     if (reopen_get)
+    {
       status = _TreeOpenNciR(info);
-    if (STATUS_OK && reopen_put)
-      status = _TreeOpenNciW(info, 0);
+      MDS_IO_CLOSE(reopen_get);
+    }
+    if (reopen_put)
+    {
+      if (STATUS_OK)
+        status = _TreeOpenNciW(info, 0);
+      MDS_IO_CLOSE(reopen_put);
+    }
+
   }
   UNLOCKINFO(info);
   return status;
@@ -1353,6 +1356,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 
 int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 {
+  int fd_keepalive = -1; // in case tree is remote
   TREE_INFO *info;
   char *tree = strdup(tree_in);
   int shot;
@@ -1381,17 +1385,22 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
                          &info->filespec, &fd);
         if (fd > -1)
         {
-          MDS_IO_CLOSE(fd);
+          fd_keepalive = fd;
           info->channel = -2;
           status = OpenOne(info, (*dblist)->tree_info, TREE_NCIFILE_TYPE, 1, 0,
                            NULL, &fd);
+
           if (fd > -1)
           {
-            MDS_IO_CLOSE(fd);
+            MDS_IO_CLOSE(fd_keepalive);
+            fd_keepalive = fd;
             status = OpenOne(info, (*dblist)->tree_info, TREE_DATAFILE_TYPE, 1,
                              0, NULL, &fd);
             if (fd > -1)
-              MDS_IO_CLOSE(fd);
+            {
+              MDS_IO_CLOSE(fd_keepalive);
+              fd_keepalive = fd;
+            }
           }
         }
         if (STATUS_OK)
@@ -1452,7 +1461,10 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
     }
   }
   if (STATUS_OK)
+  {
     _TreeWriteTree(dbid, 0, 0);
+    MDS_IO_CLOSE(fd_keepalive);
+  }
   return status;
 }
 
@@ -1463,7 +1475,7 @@ void TreeFreeDbid(void *dbid)
     MDSDBG("Destroyed DB %" PRIxPTR "\n", (uintptr_t)dbid);
     PINO_DATABASE *db = (PINO_DATABASE *)dbid;
     TreeFreeDbid(db->next);
-    CloseTopTree(db, 1);
+    close_top_tree(db, 1);
     free_xd(&db->timecontext.start);
     free_xd(&db->timecontext.end);
     free_xd(&db->timecontext.delta);
