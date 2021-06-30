@@ -78,7 +78,7 @@ static inline char *replaceBackslashes(char *filename)
   return filename;
 }
 
-static int remote_connect(char *server, int inc_count)
+static int remote_connect(char *server)
 {
 #define CONMSG(TYP, PRI, ...) TYP("Host(conid=%d, links=?, unique='%s'), server='%s'" PRI, conid, unique, server, __VA_ARGS__)
   int conid = -1;
@@ -120,7 +120,7 @@ static int remote_connect(char *server, int inc_count)
     {
       host = malloc(sizeof(Host));
       host->conid = conid;
-      host->links = !!inc_count;
+      host->links = 1;
       host->unique = strdup(unique);
       host->next = TREE_HOSTLIST;
       TREE_HOSTLIST = host;
@@ -246,7 +246,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char const *tree,
   int conid;
   logname[strlen(logname) - 2] = '\0';
   int status = TreeSUCCESS;
-  conid = remote_connect(logname, 1);
+  conid = remote_connect(logname);
   if (conid != -1)
   {
     status = tree_open(dblist, conid, subtree_list ? subtree_list : tree);
@@ -282,7 +282,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char const *tree,
       }
     }
     else
-      remote_disconnect(conid, 0);
+      remote_disconnect(conid, B_FALSE);
   }
   else
     status = TreeCONNECTFAIL;
@@ -763,29 +763,28 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc,
                     int utility_update)
 {
   int status;
-  EMPTYXD(ans);
+  EMPTYXD(xd);
   char exp[80];
   if (dsc)
   {
     sprintf(exp, "TreeShr->TreePutRecord(val(%d),xd($),val(%d))", nid_in,
             utility_update);
-    status = MdsValueDsc(dblist->tree_info->channel, exp, dsc, &ans, NULL);
+    status = MdsValueDsc(dblist->tree_info->channel, exp, dsc, &xd, NULL);
   }
   else
   {
     sprintf(exp, "TreeShr->TreePutRecord(val(%d),val(0),val(%d))", nid_in,
             utility_update);
-    status = MdsValueDsc(dblist->tree_info->channel, exp, &ans, NULL);
+    status = MdsValueDsc(dblist->tree_info->channel, exp, &xd, NULL);
   }
-  if (ans.pointer)
+  if (xd.pointer)
   {
-    if (ans.pointer->dtype == DTYPE_L)
-      status = *(int *)ans.pointer->pointer;
+    if (xd.pointer->dtype == DTYPE_L)
+      status = *(int *)xd.pointer->pointer;
     else if (STATUS_OK)
       status = 0;
-    MdsFree1Dx(&ans, NULL);
   }
-  MdsIpFreeDsc(&ans);
+  MdsIpFreeDsc(&xd);
   return status;
 }
 
@@ -926,13 +925,14 @@ int TreeTurnOffRemote(PINO_DATABASE *dblist, int nid)
 int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 {
   int status = TreeFAILURE;
-  int channel = remote_connect(path, 0);
-  if (channel > 0)
+  int conid = remote_connect(path);
+  if (conid > 0)
   {
     struct descrip ans = {0};
     struct descrip tree = STR2DESCRIP(treearg);
-    status = MdsValue(channel, "TreeShr->TreeGetCurrentShotId(ref($))", &tree,
+    status = MdsValue(conid, "TreeShr->TreeGetCurrentShotId(ref($))", &tree,
                       &ans, NULL);
+    remote_disconnect(conid, B_FALSE);
     if (ans.ptr)
     {
       if (ans.dtype == DTYPE_L)
@@ -948,14 +948,15 @@ int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 {
   int status = 0;
-  int channel = remote_connect(path, 0);
-  if (channel > 0)
+  int conid = remote_connect(path);
+  if (conid > 0)
   {
     struct descrip ans = {0};
     struct descrip tree = STR2DESCRIP(treearg);
     char exp[64];
     sprintf(exp, "TreeShr->TreeSetCurrentShotId(ref($),val(%d))", shot);
-    status = MdsValue(channel, exp, &tree, &ans, NULL);
+    status = MdsValue(conid, exp, &tree, &ans, NULL);
+    remote_disconnect(conid, B_FALSE);
     if (ans.ptr)
     {
       status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
@@ -1127,7 +1128,7 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size,
       if (idx != MDS_IO_CLOSE_K)
         fprintf(stderr, "Error in GetAnswerInfoTS: mode = %d, status = %d\n",
                 idx, status);
-      remote_disconnect(conid, 0);
+      remote_disconnect(conid, B_FALSE);
     }
   }
   return status;
@@ -1194,7 +1195,7 @@ inline static int io_open_remote(char *host, char *filename, int options,
   if (options & O_RDWR)
     mdsio.open.options |= MDS_IO_O_RDWR;
   if (*conid == -1)
-    *conid = remote_connect(host, 1);
+    *conid = remote_connect(host);
   if (*conid != -1)
   {
     fd =
@@ -1261,7 +1262,7 @@ inline static int io_close_remote(int conid, int fd)
   int status = MdsIoRequest(conid, MDS_IO_CLOSE_K, sizeof(mdsio.close), &mdsio,
                             NULL, &len, &dout, &msg);
   if (STATUS_OK)
-    remote_disconnect(conid, 0);
+    remote_disconnect(conid, B_FALSE);
   if (STATUS_OK && sizeof(int) == len)
   {
     ret = *(int *)dout;
@@ -1574,7 +1575,7 @@ inline static int io_exists_remote(char *host, char *filename)
 {
   int ret;
   INIT_AND_FREE_ON_EXIT(void *, msg);
-  int conid = remote_connect(host, 1);
+  int conid = remote_connect(host);
   if (conid != -1)
   {
     mdsio_t mdsio = {.exists = {.length = strlen(filename) + 1}};
@@ -1582,6 +1583,7 @@ inline static int io_exists_remote(char *host, char *filename)
     char *dout;
     int status = MdsIoRequest(conid, MDS_IO_EXISTS_K, sizeof(mdsio.exists),
                               &mdsio, filename, &len, &dout, &msg);
+    remote_disconnect(conid, B_FALSE);
     if (STATUS_OK && len == sizeof(int))
       ret = *(int *)dout;
     else
@@ -1615,7 +1617,7 @@ inline static int io_remove_remote(char *host, char *filename)
 {
   int ret;
   INIT_AND_FREE_ON_EXIT(void *, msg);
-  int conid = remote_connect(host, 1);
+  int conid = remote_connect(host);
   if (conid != -1)
   {
     mdsio_t mdsio = {.remove = {.length = strlen(filename) + 1}};
@@ -1623,6 +1625,7 @@ inline static int io_remove_remote(char *host, char *filename)
     char *dout;
     int status = MdsIoRequest(conid, MDS_IO_REMOVE_K, sizeof(mdsio.remove),
                               &mdsio, filename, &len, &dout, &msg);
+    remote_disconnect(conid, B_FALSE);
     if (STATUS_OK && len == sizeof(int))
       ret = *(int *)dout;
     else
@@ -1653,7 +1656,7 @@ inline static int io_rename_remote(char *host, char *filename_old,
 {
   int ret;
   int conid;
-  conid = remote_connect(host, 1);
+  conid = remote_connect(host);
   if (conid != -1)
   {
     INIT_AND_FREE_ON_EXIT(char *, names);
@@ -1666,6 +1669,7 @@ inline static int io_rename_remote(char *host, char *filename_old,
     char *dout;
     int status = MdsIoRequest(conid, MDS_IO_RENAME_K, sizeof(mdsio.rename),
                               &mdsio, names, &len, &dout, &msg);
+    remote_disconnect(conid, B_FALSE);
     if (STATUS_OK && len == sizeof(int))
       ret = *(int *)dout;
     else
@@ -1801,15 +1805,15 @@ inline static int io_open_one_remote(char *host, char *filepath,
                                      int *enhanced)
 {
   int status;
-  static int (*GetConnectionVersion)(int) = NULL;
-  status = LibFindImageSymbol_C("MdsIpShr", "GetConnectionVersion",
-                                &GetConnectionVersion);
+  static int (*MdsIpGetConnectionVersion)(int) = NULL;
+  status = LibFindImageSymbol_C("MdsIpShr", "MdsIpGetConnectionVersion",
+                                &MdsIpGetConnectionVersion);
   do
   {
-    *conid = remote_connect(host, 1);
+    *conid = remote_connect(host);
     if (*conid != -1)
     {
-      if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE)
+      if (MdsIpGetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE)
       {
         if (*filepath && !strstr(filepath, "::"))
         {
