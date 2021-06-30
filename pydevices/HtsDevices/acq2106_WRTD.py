@@ -202,8 +202,10 @@ class ACQ2106_WRTD(MDSplus.Device):
         #
         # 1- Quering sync_role() will give us the clock plan name (FIN):
         # sync_role_query = uut.s0.sync_role
-        # clk_plan        = sync_role_query.split('\n')[4]
-        # MBCLK           = clk_plan.split(' ')[1]
+        # if 'FIN=' in sync_role_query:
+        #     MBCLK = sync_role_query.split('FIN=')[1]
+        # else:
+        #     MBCK = ''
 
         # 2- Quering SYS:CLK:CONFIG will also give us the clock plan's name:
         sys_clk_plan = uut.s0.SYS_CLK_CONFIG
@@ -213,15 +215,18 @@ class ACQ2106_WRTD(MDSplus.Device):
         allowed_plans = {'31M25-5M12':(1./5120000)*to_nano, '31M25-10M24':(1./10240000)*to_nano, '31M25-20M48':(1./20480000)*to_nano, 
                         '31M25-32M768':(1./32768000)*to_nano, '31M25-40M':25.0000, '31M25-20M':50.0000}
         
-        # In TIGA systems the clock plan is 31M25-40M, but MBCLK = 10 MHz, and is set to WRTD_TICKNS = 100.
+        # In TIGA systems the clock plan is 31M25-40M, but MBCLK = 10 MHz, and is set at boot-time to WRTD_TICKNS = 100.
 
         if not self.is_tiga():
-            if MBCLK in allowed_plans:
-                uut.cC.WRTD_TICKNS = allowed_plans.get(MBCLK)
-                self.wr_init_wrtd_tickns.record = allowed_plans.get(MBCLK)
+            if MBCLK:
+                if MBCLK in allowed_plans:
+                    uut.cC.WRTD_TICKNS = allowed_plans.get(MBCLK)
+                    self.wr_init_wrtd_tickns.record = allowed_plans.get(MBCLK)
+                else:
+                    raise MDSplus.DevBAD_PARAMETER(
+                        "MBCLK must be 31M25-5M12, 31M25-10M24, 31M25-20M48, 31M25-32M768, 31M25-40M or 31M25-20M; not %d" % (MBCLK,))
             else:
-                raise MDSplus.DevBAD_PARAMETER(
-                    "MBCLK must be 31M25-5M12, 31M25-10M24, 31M25-20M48, 31M25-32M768, 31M25-40M or 31M25-20M; not %d" % (MBCLK,))
+                raise MDSplus.DevBAD_PARAMETER("MBCLK plan name is empty")
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
