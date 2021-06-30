@@ -1,0 +1,27 @@
+setenv("MDSIP_MAX_VERSION=0")
+65545
+mdsconnect("thread://0")>=0
+1BU
+mdsvalue("$",[1,2,3])
+[1,2,3]
+mdsvalue("DECOMPILE($)",[[1,2],[3,4]])
+"[[1,2], [3,4]]"
+mdsvalue("$",[[[[[[[1]]]]]]])
+[[[[[[[1]]]]]]]
+mdsvalue("$",[[[[[[[[1]]]]]]]])
+[[[[[[[[1]]]]]]]]
+mdsvalue("$",[[[[[[[[1,2]]]]]]],[[[[[[[3,4]]]]]]]])
+[[[[[[[[1,2]]]]]]], [[[[[[[3,4]]]]]]]]
+FOR(_i=1;_i<=3;_i++){setenv("mdsip0_path=thread://"//char(0x30+_i)//"::.");treeopennew('MDSIP0', _i);}
+3
+treeaddnode('A', _, 0)
+265389633
+treewrite()
+265389633
+treeputrecord('A',RANGE(3))
+265389633
+tcl('deco A')
+RANGE(3)
+1
+WHILE(treeclose() & 1);mdsdisconnect()
+65545
