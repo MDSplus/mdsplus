@@ -1289,11 +1289,236 @@ $<APP_NAME> = {
 
 
     def buildConfiguration(self):
-        config = self.generateConfiguration()
-        #print(config)
-        name = self.getNode('NAME').data()
-        f = open('/tmp/'+name+'_marte_configuration.cfg', 'w')
-        f.write(config)
+        print('START BUILD')
+        error, info, threadMap, typeDicts = self.getInfo()
+        if error != '':
+            return 0
+        confText = self.declareTypes(typeDicts)
+        confText += '+MDS_EVENTS = {\n'
+        confText += '  Class = MDSEventManager\n'
+        confText += '  StackSize = 1048576\n'
+        confText += '  CPUs = 0x1\n'
+        confText += '  Name = '+info['name']+'\n'
+        confText += '}\n'
+        confText += '+WebRoot = {\n'
+        confText += '    Class = HttpObjectBrowser\n'
+        confText += '    Root = "."\n'
+        confText += '    +ObjectBrowse = {\n'
+        confText += '        Class = HttpObjectBrowser\n'
+        confText += '        Root = "/"\n'
+        confText += '    }\n'
+        confText += '    +ResourcesHtml = {\n'
+        confText += '        Class = HttpDirectoryResource\n'
+        confText += '        BaseDir = "/opt/MARTe2/MARTe2/Resources/HTTP/"\n'
+        confText += '    } \n'
+        confText += '}\n'
+        confText += '+WebServer = {\n'
+        confText += '    Class = HttpService\n'
+        confText += '    Port = 8085\n'
+        confText += '    WebRoot = WebRoot\n'
+        confText += '    Timeout = 0\n'
+        confText += '    ListenMaxConnections = 255\n'
+        confText += '    AcceptTimeout = 1000\n'
+        confText += '    MaxNumberOfThreads = 8\n'
+        confText += '    MinNumberOfThreads = 1\n'
+        confText += '}    \n'
+    
+        confText += ' +StateMachine = {\n'
+        confText += '    Class = StateMachine\n'
+        confText += '    +INITIAL = {\n'
+        confText += '        Class = ReferenceContainer    \n'  
+        confText += '        +START = {\n'
+        confText += '            Class = StateMachineEvent\n'
+        confText += '            NextState = "IDLE"\n'
+        confText += '            NextStateError = "IDLE"\n'
+        confText += '            Timeout = 0\n'
+        confText += '            +StartHttpServer = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = "WebServer"\n'
+        confText += '                Function = "Start"\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }            \n'
+        confText += '            +ChangeToStateIdleMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '                Function = PrepareNextState\n'
+        confText += '                +Parameters = {\n'
+        confText += '                    Class = ConfigurationDatabase\n'
+        confText += '                    param1 = Idle\n'
+        confText += '                }\n'
+        confText += '            }\n'
+        confText += '            +StartNextStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StartNextStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '        }\n'
+        confText += '    }\n'
+        confText += '    +IDLE = {\n'
+        confText += '        Class = ReferenceContainer\n'
+        confText += '        +GOTORUN = {\n'
+        confText += '            Class = StateMachineEvent\n'
+        confText += '            NextState = "RUN"\n'
+        confText += '            NextStateError = "IDLE"\n'
+        confText += '            Timeout = 0 \n'
+        confText += '            +ChangeToRunMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '               Destination = '+info['name']+'\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '                Function = PrepareNextState\n'
+        confText += '                +Parameters = {\n'
+        confText += '                   Class = ConfigurationDatabase\n'
+        confText += '                    param1 = '+info['states'][0]['name']+'\n'
+        confText += '                }\n'
+        confText += '           }\n'
+        confText += '            +StopCurrentStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '               Function = StopCurrentStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '            +StartNextStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StartNextStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '        }\n'
+        confText += '    }\n'
+        confText += '    +RUN = {\n'
+        confText += '        Class = ReferenceContainer\n'
+        confText += '        +GOTOIDLE = {\n'
+        confText += '           Class = StateMachineEvent\n'
+        confText += '           NextState = "IDLE"\n'
+        confText += '            NextStateError = "IDLE"\n'
+        confText += '            Timeout = 0         \n'
+        confText += '            +ChangeToIdleMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '                Function = PrepareNextState\n'
+        confText += '                +Parameters = {\n'
+        confText += '                    Class = ConfigurationDatabase\n'
+        confText += '                    param1 = Idle\n'
+        confText += '                }\n'
+        confText += '           }\n'
+        confText += '            +StopCurrentStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StopCurrentStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '           +StartNextStateExecutionMsg = {\n'
+        confText += '                Class = Message\n'
+        confText += '                Destination = '+info['name']+'\n'
+        confText += '                Function = StartNextStateExecution\n'
+        confText += '                Mode = ExpectsReply\n'
+        confText += '            }\n'
+        confText += '        }   \n'
+        confText += '    }\n'
+        confText += '}   \n'
+
+        confText += '$'+info['name']+' = {\n'
+        confText += ' Class = RealTimeApplication\n'
+        confText += ' +Functions = {\n'
+        confText += '  Class = ReferenceContainer\n'
+        confText += '  +IDLE_MDSPLUS = {\n'
+        confText += '    Class = IOGAM\n'
+        confText += '    InputSignals = {\n'
+        confText += '      Counter = {\n'
+        confText += '        DataSource = IDLE_MDSPLUS_TIMER\n'
+        confText += '        Type = uint32\n'
+        confText += '        NumberOfElements = 1\n'
+        confText += '      }\n'
+        confText += '      Time = {\n'
+        confText += '        DataSource = IDLE_MDSPLUS_TIMER\n'
+        confText += '        Type = uint32\n'
+        confText += '        NumberOfElements = 1\n'
+        confText += '        Frequency = 10\n'
+        confText += '      }\n'
+        confText += '    }\n'
+        confText += '    OutputSignals = {\n'
+        confText += '      Counter = {\n'
+        confText += '        DataSource = IDLE_MDSPLUS_DDB\n'
+        confText += '        Type = uint32\n'
+        confText += '      }\n'
+        confText += '      Time = {\n'
+        confText += '        DataSource = IDLE_MDSPLUS_DDB\n'
+        confText += '        Type = uint32\n'
+        confText += '        NumberOfElements = 1\n'
+        confText += '      }\n'
+        confText += '    }\n'
+        confText += '  }\n'
+
+        for gam in info['gams']:
+            confText += gam
+        confText += ' }\n'
+        confText += ' +Data = {\n'
+        confText += '  Class = ReferenceContainer\n'
+        confText += ' +IDLE_MDSPLUS_TIMER = {\n'
+        confText += '   Class = LinuxTimer\n'
+        confText += '   SleepNature = "Busy"\n'
+        confText += '   Signals = {\n'
+        confText += '     Counter = {\n'
+        confText += '       Type = uint32\n'
+        confText += '     }\n'
+        confText += '     Time = {\n'
+        confText += '       Type = uint32\n'
+        confText += '     }\n'
+        confText += '   }\n'
+        confText += ' }\n'
+        confText += ' +IDLE_MDSPLUS_DDB = {\n'
+        confText += '   Class = GAMDataSource\n'
+        confText += ' }\n'
+        confText += '  +Timings = {\n'
+        confText += '      Class = TimingDataSource\n'
+        confText += '  }\n'
+
+        for dataSource in info['data_sources']:
+            confText += dataSource
+        confText += '  }\n'
+
+        confText += ' +States = {\n'
+        confText += '  Class = ReferenceContainer\n'
+        confText += '  +Idle = {\n'
+        confText += '    Class = RealTimeState\n'
+        confText += '    +Threads = {\n'
+        confText += '      Class = ReferenceContainer\n'
+        confText += '        +Thread1 = {\n'
+        confText += '          Class = RealTimeThread\n'
+        confText += '          Functions = {IDLE_MDSPLUS}\n'
+        confText += '        }\n'
+        confText += '      }\n'
+        confText += '    }\n'
+
+        for state in info['states']:
+            confText += '  +'+state['name'] + ' = {\n'
+            confText += '  Class = RealTimeState\n'
+            confText += '  +Threads = {\n'
+            confText += '    Class = ReferenceContainer\n'
+            for thread in state['threads']:
+                confText += '    +'+thread['name']+' = {\n'
+                confText += '      Class = RealTimeThread\n'
+                if 'core' in thread:
+                    confText += '      CPUs = '+str(thread['core'])+'\n'
+                functionStr = ''
+                for gamName in thread['gams']:
+                    functionStr += gamName + ' '
+                confText += '      Functions = {'+functionStr+'}\n'
+                confText += '     }\n'
+            confText += '   }\n'
+            confText += '  }\n'
+        confText += ' }\n'
+        confText += ' +Scheduler = {\n'
+        confText += '   Class = GAMScheduler\n'
+        confText += '   TimingDataSource = Timings\n'
+        confText += ' }\n'
+        confText += '}\n'
+        print (confText)
+        f = open(info['name']+'_marte_configuration.cfg', 'w')
+        f.write(confText)
         f.close()
 
 
@@ -1313,14 +1538,16 @@ $<APP_NAME> = {
     def gotorun(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTORUN'
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
 
     def gotoidle(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTOIDLE'
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
+
+
 
     def doState(self, state):
         marteName = self.getNode('name').data()
@@ -1328,14 +1555,15 @@ $<APP_NAME> = {
         eventString1 = marteName+':StopCurrentStateExecution:XX'
         eventString2 = marteName+':'+'PrepareNextState:'+stateName
         eventString3 = marteName+':StartNextStateExecution:XX'
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
         time.sleep(.1)
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString2.encode(), dtype=np.uint8))
         time.sleep(.1)
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
+        return 1
 
     def doState1(self):
         self.doState(1)
@@ -1357,14 +1585,15 @@ $<APP_NAME> = {
         eventString1 = marteName+':StopCurrentStateExecution:XX'
         eventString2 = marteName+':'+'PrepareNextState:IDLE'
         eventString3 = marteName+':StartNextStateExecution:XX'
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
         time.sleep(0.1)
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString2.encode(), dtype=np.uint8))
         time.sleep(0.1)
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(
+        Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
+        return 1
 
     def stopMarte(self):
         marteName = self.getNode('name').data()
