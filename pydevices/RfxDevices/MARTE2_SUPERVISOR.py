@@ -499,7 +499,7 @@ class MARTE2_SUPERVISOR(Device):
         confText += '  Class = ReferenceContainer\n'
         confText += ' +IDLE_MDSPLUS_TIMER = {\n'
         confText += '   Class = LinuxTimer\n'
-        confText += '   SleepNature = "Default"\n'
+        confText += '   SleepNature = "Busy"\n'
         confText += '   Signals = {\n'
         confText += '     Counter = {\n'
         confText += '       Type = uint32\n'
@@ -582,13 +582,13 @@ class MARTE2_SUPERVISOR(Device):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTORUN'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
+            eventString1.encode(), dtype=np.uint8))
 
     def gotoidle(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTOIDLE'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
+            eventString1.encode(), dtype=np.uint8))
 
 
 
@@ -599,13 +599,13 @@ class MARTE2_SUPERVISOR(Device):
         eventString2 = marteName+':'+'PrepareNextState:'+stateName
         eventString3 = marteName+':StartNextStateExecution:XX'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
+            eventString1.encode(), dtype=np.uint8))
         time.sleep(.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString2, dtype=np.uint8))
+            eventString2.encode(), dtype=np.uint8))
         time.sleep(.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString3, dtype=np.uint8))
+            eventString3.encode(), dtype=np.uint8))
         return 1
 
     def doState1(self):
@@ -629,13 +629,13 @@ class MARTE2_SUPERVISOR(Device):
         eventString2 = marteName+':'+'PrepareNextState:IDLE'
         eventString3 = marteName+':StartNextStateExecution:XX'
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString1, dtype=np.uint8))
+            eventString1.encode(), dtype=np.uint8))
         time.sleep(0.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString2, dtype=np.uint8))
+            eventString2.encode(), dtype=np.uint8))
         time.sleep(0.1)
         Event.seteventRaw(marteName, np.frombuffer(
-            eventString3, dtype=np.uint8))
+            eventString3.encode(), dtype=np.uint8))
         return 1
 
     def stopMarte(self):
