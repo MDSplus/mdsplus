@@ -45,11 +45,6 @@ class ACQ2106_WRTD(MDSplus.Device):
             'options': ('no_write_shot',)
         },
         {
-            'path': ':HOSTNAME',
-            'type': 'text',
-            'options': ('no_write_shot',)
-        },
-        {
             'path': ':COMMENT',
             'type': 'text',
             'options': ('no_write_shot',)
@@ -67,12 +62,6 @@ class ACQ2106_WRTD(MDSplus.Device):
         },
         {
             'path': ':TRIG_TIME',
-            'type': 'numeric',
-            'value': 0.,
-            'options': ('write_shot',)
-        },
-        {
-            'path': ':T0',
             'type': 'numeric',
             'value': 0.,
             'options': ('write_shot',)
@@ -101,7 +90,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             'path': ':WR_INIT:WRTD_TICKNS',
             'type': 'numeric',
             'value': 50.0,
-            'options': ('no_write_shot',)
+            'options': ('write_shot',)
         },
         # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
         {
