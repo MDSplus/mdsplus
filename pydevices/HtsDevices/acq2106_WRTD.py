@@ -192,7 +192,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         # 1- Quering sync_role() will give us the clock plan name (FIN):
         sync_role_query = uut.s0.sync_role
         if 'FIN_DEF=' in sync_role_query:
-            mbclk_plan = sync_role_query.split('FIN_DEF=')[1]
+            mbclk_plan = '31M25-' + sync_role_query.split('FIN_DEF=')[1]
         else:
             mbclk_plan = ''
 
