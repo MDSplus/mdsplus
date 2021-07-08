@@ -190,15 +190,15 @@ class ACQ2106_WRTD(MDSplus.Device):
         # the desired sample rate is set by the acq2106 device's INIT function.
         #
         # 1- Quering sync_role() will give us the clock plan name (FIN):
-        # sync_role_query = uut.s0.sync_role
-        # if 'FIN=' in sync_role_query:
-        #     MBCLK = sync_role_query.split('FIN=')[1]
-        # else:
-        #     MBCK = ''
+        sync_role_query = uut.s0.sync_role
+        if 'FIN_DEF=' in sync_role_query:
+            mbclk_plan = sync_role_query.split('FIN_DEF=')[1]
+        else:
+            mbclk_plan = ''
 
         # 2- Quering SYS:CLK:CONFIG will also give us the clock plan's name:
-        sys_clk_plan = uut.s0.SYS_CLK_CONFIG
-        MBCLK        = sys_clk_plan.split(' ')[1]
+        # sys_clk_plan = uut.s0.SYS_CLK_CONFIG
+        # mbclk_plan        = sys_clk_plan.split(' ')[1]
 
         to_nano = 1E9
         allowed_plans = {'31M25-5M12':(1./5120000)*to_nano, '31M25-10M24':(1./10240000)*to_nano, '31M25-20M48':(1./20480000)*to_nano, 
@@ -207,15 +207,15 @@ class ACQ2106_WRTD(MDSplus.Device):
         # In TIGA systems the clock plan is 31M25-40M, but MBCLK = 10 MHz, and is set at boot-time to WRTD_TICKNS = 100.
 
         if not self.is_tiga():
-            if MBCLK:
-                if MBCLK in allowed_plans:
-                    uut.cC.WRTD_TICKNS = allowed_plans.get(MBCLK)
-                    self.wr_init_wrtd_tickns.record = allowed_plans.get(MBCLK)
+            if mbclk_plan:
+                if mbclk_plan in allowed_plans:
+                    uut.cC.WRTD_TICKNS = allowed_plans.get(mbclk_plan)
+                    self.wr_init_wrtd_tickns.record = allowed_plans.get(mbclk_plan)
                 else:
                     raise MDSplus.DevBAD_PARAMETER(
-                        "MBCLK must be 31M25-5M12, 31M25-10M24, 31M25-20M48, 31M25-32M768, 31M25-40M or 31M25-20M; not %d" % (MBCLK,))
+                        "MBCLK plan must be 31M25-5M12, 31M25-10M24, 31M25-20M48, 31M25-32M768, 31M25-40M or 31M25-20M; not %d" % (mbclk_plan,))
             else:
-                raise MDSplus.DevBAD_PARAMETER("MBCLK plan name is empty")
+                raise MDSplus.DevBAD_PARAMETER("MBCLK plan name is missing from the query uut.s0.sync_role")
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
@@ -251,16 +251,6 @@ class ACQ2106_WRTD(MDSplus.Device):
         message = str(msg)
 
         self.TRIG_MSG.record = message
-
-        if message in uut.cC.WRTD_RX_MATCHES:
-            # To be sure that the EVENT bus is set to TRG
-            uut.s0.SIG_EVENT_SRC_0 = 'TRG'
-        elif message in uut.cC.WRTD_RX_MATCHES1:
-            # To be sure that the EVENT bus is set to TRG
-            uut.s0.SIG_EVENT_SRC_1 = 'TRG'
-        else:
-            print('Message does not match either of the WRTTs available')
-            self.running.on = False
 
         if not message.strip():
             # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI is used to trigger.
