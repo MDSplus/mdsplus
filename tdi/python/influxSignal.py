@@ -32,50 +32,89 @@ except:
         "You must install the `influxdb` python package.")
     exit(1)
 
-def influxSignal(dbname, measurement, field_value, where, address, credentials):
-    """Instantiate a connection to the InfluxDB."""
-    host     = address.data()
-    port     = 8086
+def influxSignal(fieldKey, where, series=None, database=None, config=None, shotStartTime=None, shotEndTime=None): 
+    tree = MDSplus.Tree()
 
+    if series is None:
+        series = tree.getNode('\INFLUX_SERIES')
+    
+    if database is None:
+        database = tree.getNode('\INFLUX_DATABASE')
+    
+    if config is None:
+        config = tree.getNode('\INFLUX_CONFIG')
+    
+    if shotStartTime is None:
+        shotStartTime = tree.getNode('\INFLUX_START_TIME')
+    
+    if shotEndTime is None:
+        shotEndTime = tree.getNode('\INFLUX_END_TIME')
+
+    """Instantiate a connection to the InfluxDB."""
     username = ''
     password = ''
     try:
-        with open(credentials.data()) as cred_file:
-            lines = cred_file.readlines()
+        with open(config.data()) as file:
+            lines = file.readlines()
 
             if len(lines) < 2:
-                print("Failed to read credentials from file %s" %(credentials.data(),))
-
-            username = lines[0].strip('\n')
-            password = lines[1].strip('\n')
+                print("Failed to read influx config from file %s" %(config.data(),))
+                
+            host = lines[0].strip('\n')
+            username = lines[1].strip('\n')
+            password = lines[2].strip('\n')
 
     except IOError as e:
-        print("Failed to open credentials file %s" %(credentials.data(),))
+        print("Failed to open credentials file %s" %(config.data(),))
 
-    dbname      = dbname.data()
-    measurement = measurement.data()
-    field_value = field_value.data()
+    port = 8086
+    if ':' in host:
+        parts = host.split(':')
+        host = parts[0]
+        port = int(parts[1])
+
+    database = database.data()
+    series = series.data()
+    fieldKey = fieldKey.data()
+    shotStartTime = shotStartTime.data()
+    shotEndTime = shotEndTime.data()
 
     if where == '':
         return
 
     whereList = [where.data()]
 
-    # We get the start_time and the end_time of the query from the defined MDSplus tree time context:
-    start_end_times = MDSplus.Tree.getTimeContext()
+    timeContext = MDSplus.Tree.getTimeContext()
 
-    print('Getting time context from the tree: %s '%(start_end_times,))
-    start = int(start_end_times[0])
-    end   = int(start_end_times[1])
+    startTime = shotStartTime
+    endTime = shotEndTime
+
+    #print('Getting time context from the tree: %s '%(timeContext,))
+
+    # The time context is in seconds relative to the start of the shot.
+    if timeContext[0] is not None:
+        startTime = shotStartTime + (int(timeContext[0]) * 1000)
+    if timeContext[1] is not None:
+        endTime   = shotStartTime + (int(timeContext[1]) * 1000)
+    
+    # TODO: timeContext[2] is the interval which influx supports, therefore we should support it too.
+
+    # Clamp the computed start/end time within the time bounds of the shot
+    if startTime < shotStartTime:
+        startTime = shotStartTime
+    if endTime > shotEndTime:
+        endTime = shotEndTime
 
     startTimeQuery = ''
     endTimeQuery = ''
 
     # Convert to nanosecond UNIX timestamp
-    startTimeQuery = 'time > %d' % (start * 1000000,)
+    if startTime is not None:
+        startTimeQuery = 'time > %d' % (startTime * 1000000,)
 
     # Convert to nanosecond UNIX timestamp
-    endTimeQuery = 'time < %d' % (end * 1000000,)
+    if endTime is not None:
+        endTimeQuery = 'time < %d' % (endTime * 1000000,)
 
     if startTimeQuery != '':
         whereList.append(startTimeQuery)
@@ -87,15 +126,10 @@ def influxSignal(dbname, measurement, field_value, where, address, credentials):
     if len(whereList) > 0:
         where = 'WHERE %s' % (' AND '.join(whereList),)
 
-    client = InfluxDBClient(host, port, username, password, dbname)
+    client = InfluxDBClient(host, port, username, password, database)
 
-    # example influxDB query:
-    # dbname      = 'NOAA_water_database' 
-    # measurement = h2o_feet == Table
-    # field_value = water_level
-    # 'SELECT "water_level" FROM "h2o_feet" WHERE time >= 1568745000000000000 AND time <= 1568750760000000000;'
-    query = 'SELECT "%s" AS value FROM "%s" %s;' % (field_value, measurement, where)
-    print('Query: %s' % query)
+    query = 'SELECT "%s" AS value FROM "%s" %s;' % (fieldKey, series, where)
+    #print('Query: %s' % query)
 
     result = client.query(query, params={'epoch': 'ms'})
 
@@ -107,11 +141,11 @@ def influxSignal(dbname, measurement, field_value, where, address, credentials):
     i = 0
     for row in data:
         valueData[i] = float(row['value'])
-        timeData[i] = row['time']
+        timeData[i] = (row['time'] - shotStartTime) / 1000
         i += 1
 
     values = MDSplus.Float32Array(valueData)
-    times  = MDSplus.Uint64Array(timeData)
+    times  = MDSplus.Float32Array(timeData)
 
     return MDSplus.Signal(values, None, times)
 
