@@ -77,7 +77,7 @@ def influxSignal(fieldKey, where, series=None, database=None, config=None, shotS
     series = series.data()
     fieldKey = fieldKey.data()
     shotStartTime = shotStartTime.data()
-    shotEndTime = shotEndTime.data()
+    shotEndTime = shotEndTime.getDataNoRaise()
 
     if where == '':
         return
@@ -102,15 +102,14 @@ def influxSignal(fieldKey, where, series=None, database=None, config=None, shotS
     # Clamp the computed start/end time within the time bounds of the shot
     if startTime < shotStartTime:
         startTime = shotStartTime
-    if endTime > shotEndTime:
+    if endTime is not None and endTime > shotEndTime:
         endTime = shotEndTime
 
     startTimeQuery = ''
     endTimeQuery = ''
 
     # Convert to nanosecond UNIX timestamp
-    if startTime is not None:
-        startTimeQuery = 'time > %d' % (startTime * 1000000,)
+    startTimeQuery = 'time > %d' % (startTime * 1000000,)
 
     # Convert to nanosecond UNIX timestamp
     if endTime is not None:
