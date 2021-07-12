@@ -41,7 +41,8 @@
    Management.
 ----------------------------------------------------------------------------*/
 
-#pragma once
+#ifndef _XMDSWAVEFORM_H
+#define _XMDSWAVEFORM_H
 #include <stdio.h>
 #ifndef _Xm_h
 #include <Xm/Xm.h>
@@ -210,3 +211,4 @@ extern void XmdsWaveformUpdate(Widget w, XmdsWaveformValStruct *x,
 extern void XmdsWaveformSetWave(Widget w, int count, float *x, float *y,
                                 Boolean *select, Boolean *pendown,
                                 Boolean autoscale, Boolean defer_update);
+#endif //ifndef _XMDSWAVEFORM_H
