@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _TESTING_H
+#define _TESTING_H
 
 #include <assert.h>
 #include <string.h>
@@ -211,3 +212,4 @@ _Pragma("GCC diagnostic ignored \"-Wcatch-value\"")
     TEST1(correct_exception_caught);        \
   }
 #endif
+#endif // ifndef _TESTING_H

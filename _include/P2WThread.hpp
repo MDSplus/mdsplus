@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _P2WTHREAD_HPP
+#define _P2WTHREAD_HPP
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -348,3 +350,4 @@ private:
   }
 #endif // PTHREAD
 };
+#endif // ifndef _P2WTHREAD_HPP
