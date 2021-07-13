@@ -36,3 +36,4 @@ typedef struct
 } CamKey;
 
 extern int CamXlateLogicalname(char *Name, CamKey *key);
+#endif
