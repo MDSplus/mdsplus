@@ -513,7 +513,7 @@ public class ChannelArchiver
 		            }
 		            else
 		            {
-			            getMany.append("put_"+count, "PutRow("+descr.getNodeName()+",1000,"+descr.getTimes()[0]+"Q,"+descr.getVal().decompile()+")", new Data[0]);
+			            getMany.append("put_"+count, "PutRow("+descr.getNodeName()+",1000,"+descr.getTimes()[0]+"Q,"+descr.getVal().toString()+")", new Data[0]);
 		            }
 		            count++;
 		            if(count > 10000)
