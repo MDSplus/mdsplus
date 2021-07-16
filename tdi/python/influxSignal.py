@@ -26,6 +26,8 @@
 import re
 import MDSplus
 
+from os import environ
+
 try:
     from influxdb import InfluxDBClient
 except:
@@ -35,6 +37,10 @@ except:
 
 def influxSignal(fieldKey, aggregation, where, series=None, database=None, config=None, shotStartTime=None, shotEndTime=None): 
     tree = MDSplus.Tree()
+
+    debug = False
+    if "DEBUG_DEVICES" in environ:
+        debug = True
 
     if series is None:
         series = tree.getNode('\INFLUX_SERIES')
@@ -165,10 +171,14 @@ def influxSignal(fieldKey, aggregation, where, series=None, database=None, confi
         # For example:
         #   10*fVal will become 10*MEAN(fVal)
         fieldKey = re.sub(r'([a-zA-Z]*)', '%s(\\1)' % (aggregation,), fieldKey)
+        if debug:
+            print(aggregation, fieldKey)
 
     client = InfluxDBClient(host, port, username, password, database)
 
     query = 'SELECT %s AS value FROM "%s" %s %s;' % (fieldKey, series, where, groupBy)
+    if debug:
+        print(query)
 
     result = client.query(query, params={'epoch': 'ms'})
 
@@ -177,26 +187,23 @@ def influxSignal(fieldKey, aggregation, where, series=None, database=None, confi
     valueData = [None] * len(data)
     timeData  = [None] * len(data)
 
-    i = 0
+    count = 0
     for row in data:
+        if debug:
+            print(row)
+
         # If there are no data points within the time specified by deltaTime, influx
         # returns a None for the value
         if row['value'] is None:
             continue
 
-        valueData[i] = float(row['value'])
-        timeData[i] = (row['time'] - shotStartTime) / 1000
-        i += 1
+        valueData[count] = float(row['value'])
+        timeData[count] = (row['time'] - shotStartTime) / 1000
+        count += 1
 
-    values = MDSplus.Float32Array(valueData)
-    times  = MDSplus.Float32Array(timeData)
-
-    #try:
-    #    with open('/var/log/influxSignalQueries.log', 'at') as f:
-    #        f.write('%s %s\n' % (timeContext, query,))
-    #        f.close()
-    #except:
-    #    pass
+    # If any data points were skipped, shrink the arrays to the actual number of points
+    values = MDSplus.Float32Array(valueData[:count])
+    times  = MDSplus.Float32Array(timeData[:count])
 
     return MDSplus.Signal(values, None, times)
 
