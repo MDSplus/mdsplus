@@ -32,7 +32,7 @@ class INFLUXHISTORIAN(MDSplus.Device):
         parts.append({'path': name + ":WHERE",     'type': 'text',
                       'options': ('no_write_shot',)})
         parts.append({'path': name + ":SELECT",    'type': 'text',
-                      'options': ('no_write_shot',)})
+                      'options': ('no_write_shot',)}) # No longer used
 
     def debugging(self):
         import os
@@ -94,7 +94,7 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
         if start > 0:
             # Convert to nanosecond UNIX timestamp
-            startTimeQuery = 'time > %d' % (start * 1000000,)
+            startTimeQuery = 'time >= %d' % (start * 1000000,)
 
         if end > 0:
             # Convert to nanosecond UNIX timestamp
@@ -122,19 +122,16 @@ class INFLUXHISTORIAN(MDSplus.Device):
                 if len(whereList) > 0:
                     where = 'WHERE %s' % (' AND '.join(whereList),)
 
-                query = 'SELECT %s AS value FROM "%s" %s' % (
-                    node.SELECT.data(),
+                query = 'SELECT fVal,iVal,bVal FROM "%s" %s' % (
                     self.series.data(),
                     where
                 )
 
-                if self.debugging():
-                    print(query)
+                self.dprint(query, 1)
 
                 result = client.query(query, params={'epoch': 'ms'})
 
-                if self.debugging():
-                    print("Query returned")
+                self.dprint("Query returned", 1)
 
                 data = list(result.get_points())
 
@@ -143,7 +140,12 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
                 i = 0
                 for row in data:
-                    valueData[i] = float(row['value'])
+                    if row['fVal'] != None:
+                        valueData[i] = float(row['fVal'])
+                    elif row['iVal'] != None:
+                        valueData[i] = float(row['iVal'])
+                    elif row['bVal'] != None:
+                        valueData[i] = float(row['bVal'])
                     timeData[i] = row['time']
                     i += 1
 
@@ -152,8 +154,7 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
                 node.makeTimestampedSegment(times, values)
 
-                if self.debugging():
-                    print("MDSplus I/O complete")
+                self.dprint("MDSplus I/O complete", 1)
 
             except MDSplus.TreeNODATA:
                 pass
