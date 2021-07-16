@@ -131,8 +131,6 @@ def influxSignal(fieldKey, aggregation, where, series=None, database=None, confi
     if timeContext[2] is not None:
         deltaTime = float(timeContext[2])
 
-    # TODO: timeContext[2] is the interval which influx supports, therefore we should support it too.
-
     # Clamp the computed start/end time within the time bounds of the shot
     if startTime < shotStartTime:
         startTime = shotStartTime
@@ -174,6 +172,7 @@ def influxSignal(fieldKey, aggregation, where, series=None, database=None, confi
         if debug:
             print(aggregation, fieldKey)
 
+    """Instantiate a connection to the InfluxDB."""
     client = InfluxDBClient(host, port, username, password, database)
 
     query = 'SELECT %s AS value FROM "%s" %s %s;' % (fieldKey, series, where, groupBy)
