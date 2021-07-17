@@ -84,7 +84,7 @@ static int remote_connect(char *server)
   int conid = -1;
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ReuseCheck, return conid, int, (char *, char *, int));
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ConnectToMds, return conid, int, (char *));
-  char unique[sizeof(((Host*)NULL)->unique)] = "";
+  char unique[HOST_UNIQUE_SIZE] = "";
   if (ReuseCheck(server, unique, 128) < 0)
   {
     conid = ConnectToMds(server);
@@ -103,7 +103,7 @@ static int remote_connect(char *server)
     TREETHREADSTATIC_INIT;
     for (host = TREE_HOSTLIST; host; host = host->next)
     {
-      if (!strncmp(host->unique, unique, sizeof(unique)))
+      if (!strncmp(host->unique, unique, HOST_UNIQUE_SIZE))
       {
         conid = host->conid;
         host->links++;
@@ -121,7 +121,7 @@ static int remote_connect(char *server)
       host = malloc(sizeof(Host));
       host->conid = conid;
       host->links = 1;
-      strncpy(host->unique, unique, sizeof(unique));
+      strncpy(host->unique, unique, HOST_UNIQUE_SIZE);
       host->next = TREE_HOSTLIST;
       TREE_HOSTLIST = host;
       MDSDBG(HOST_PRI ", server='%s': new", HOST_VAR(host), server);
