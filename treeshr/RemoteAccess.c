@@ -85,7 +85,7 @@ static int remote_connect(char *server)
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ReuseCheck, return conid, int, (char *, char *, int));
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ConnectToMds, return conid, int, (char *));
   char unique[HOST_UNIQUE_SIZE] = "";
-  if (ReuseCheck(server, unique, 128) < 0)
+  if (ReuseCheck(server, unique, HOST_UNIQUE_SIZE) < 0)
   {
     conid = ConnectToMds(server);
     if (conid == -1)
