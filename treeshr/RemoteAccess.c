@@ -84,7 +84,7 @@ static int remote_connect(char *server)
   int conid = -1;
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ReuseCheck, return conid, int, (char *, char *, int));
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, ConnectToMds, return conid, int, (char *));
-  char unique[128] = "";
+  char unique[sizeof(((Host*)NULL)->unique)] = "";
   if (ReuseCheck(server, unique, 128) < 0)
   {
     conid = ConnectToMds(server);
@@ -103,7 +103,7 @@ static int remote_connect(char *server)
     TREETHREADSTATIC_INIT;
     for (host = TREE_HOSTLIST; host; host = host->next)
     {
-      if (!strcmp(host->unique, unique))
+      if (!strncmp(host->unique, unique, sizeof(unique)))
       {
         conid = host->conid;
         host->links++;
@@ -121,7 +121,7 @@ static int remote_connect(char *server)
       host = malloc(sizeof(Host));
       host->conid = conid;
       host->links = 1;
-      host->unique = strdup(unique);
+      strncpy(host->unique, unique, sizeof(unique));
       host->next = TREE_HOSTLIST;
       TREE_HOSTLIST = host;
       MDSDBG(HOST_PRI ", server='%s': new", HOST_VAR(host), server);
@@ -141,8 +141,8 @@ static int remote_disconnect(int conid, int force)
   if (conid == -1)
     return TreeSUCCESS;
   TREETHREADSTATIC_INIT;
-  Host **prev = &TREE_HOSTLIST, *host = TREE_HOSTLIST;
-  for (; host; prev = &host->next, host = host->next)
+  Host **phost = &TREE_HOSTLIST, *host = TREE_HOSTLIST;
+  for (; host; phost = &host->next, host = host->next)
   {
     if (host->conid == conid)
     {
@@ -155,19 +155,38 @@ static int remote_disconnect(int conid, int force)
       {
         if (force)
         {
+          *phost = host->next;
           MDSWRN(HOST_PRI " disconnected", HOST_VAR(host));
+          destroy_host(host);
         }
         else
         {
-          MDSDBG(HOST_PRI " disconnected", HOST_VAR(host));
+          MDSDBG(HOST_PRI " idle", HOST_VAR(host));
         }
-        *prev = host->next;
-        destroy_host(host);
       }
       break;
     }
   }
   return TreeSUCCESS;
+}
+
+void TreeCleanupConnections()
+{
+  TREETHREADSTATIC_INIT;
+  Host **phost = &TREE_HOSTLIST, *host = TREE_HOSTLIST;
+  for (; host; host = *phost)
+  {
+    if (host->links <= 0)
+    {
+      *phost = host->next;
+      MDSDBG(HOST_PRI " cleaned up", HOST_VAR(host));
+      destroy_host(host);
+    }
+    else
+    {
+      phost = &host->next;
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////

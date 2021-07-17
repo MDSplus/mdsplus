@@ -9,7 +9,7 @@ typedef struct host
   struct host *next;
   int conid;
   int links;
-  char *unique;
+  char unique[64];
 } Host;
 #define HOST_PRI "Host(conid=%d, links=%d, unique='%s')"
 #define HOST_VAR(h) (h)->conid, (h)->links, (h)->unique
