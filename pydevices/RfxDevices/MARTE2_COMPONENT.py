@@ -797,7 +797,8 @@ class MARTE2_COMPONENT(Device):
             outPeriod = period  # Driving thread timing
             dataSourceText = '  +'+gamName+'_Timer' + ' = {\n'
             dataSourceText += '    Class = LinuxTimer\n'
-            dataSourceText += '    SleepNature = "Default"\n'
+#            dataSourceText += '    SleepNature = "Default"\n'
+            dataSourceText += '    SleepNature = "Busy"\n'
             dataSourceText += '    Signals = {\n'
             dataSourceText += '      Counter = {\n'
             dataSourceText += '        Type = uint32\n'
@@ -1937,7 +1938,8 @@ class MARTE2_COMPONENT(Device):
                 outPeriod = period  # Driving thread timing
                 dataSourceText = '  +'+dataSourceName+'_Timer' + ' = {\n'
                 dataSourceText += '    Class = LinuxTimer\n'
-                dataSourceText += '    SleepNature = "Default"\n'
+#                dataSourceText += '    SleepNature = "Default"\n'
+                dataSourceText += '    SleepNature = "Busy"\n'
                 dataSourceText += '    Signals = {\n'
                 dataSourceText += '      Counter = {\n'
                 dataSourceText += '        Type = uint32\n'
@@ -2495,7 +2497,8 @@ class MARTE2_COMPONENT(Device):
             outPeriod = period  # driving thread timing
             dataSourceText = '  +'+dataSourceName+'_Timer' + ' = {\n'
             dataSourceText += '    Class = LinuxTimer\n'
-            dataSourceText += '    SleepNature = "Default"\n'
+#            dataSourceText += '    SleepNature = "Default"\n'
+            dataSourceText += '    SleepNature = "Busy"\n'
             dataSourceText += '    Signals = {\n'
             dataSourceText += '      Counter = {\n'
             dataSourceText += '        Type = uint32\n'
@@ -2596,7 +2599,8 @@ class MARTE2_COMPONENT(Device):
 
         for inputDict in inputDicts:
             # This is a Time field referring to this timebase
-            if inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid():
+            if 'value' in inputDict and isinstance(inputDict['value'], TreeNode) and inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent() == self:
+            #if inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid():
                 signalNames.append('Time')
                 gamText += '      Time = {\n'
                 gamText += '      DataSource = ' + timerDDB+'\n'
@@ -2604,7 +2608,7 @@ class MARTE2_COMPONENT(Device):
             else:  # Normal reference
                 isTreeRef = False
                 isInputStructField = (
-                    inputDict['value'].getParent().getParent().getName() == 'FIELDS')
+                    isinstance(inputDict['value'], TreeNode) and inputDict['value'].getParent().getParent().getName() == 'FIELDS')
                 try:
                     if isInputStructField:
                         sourceNode = inputDict['value'].getParent(
@@ -2743,9 +2747,9 @@ class MARTE2_COMPONENT(Device):
                 valExpr = nodeDict['expr']
                 if isinstance(valExpr, TreeNode):
                     valExpr = valExpr.getFullPath()
-                dataSourceText += '        DataExpr = "'+valExpr+'"\n'
+                dataSourceText += '        DataExpr = "'+str(valExpr)+'"\n'
                 dataSourceText += '        TimebaseExpr = "dim_of(' + \
-                    valExpr+')"\n'
+                    str(valExpr)+')"\n'
                 numberOfElements = 1
                 if not (np.isscalar(nodeDict['dimensions'])):
                     for currDim in nodeDict['dimensions']:
