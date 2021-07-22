@@ -45,6 +45,7 @@
 ./usr/local/mdsplus/include/mdsplus/Mutex.hpp
 ./usr/local/mdsplus/include/mdsplus/Traits.hpp
 ./usr/local/mdsplus/include/mdsplus/mdsconfig.h
+./usr/local/mdsplus/include/mdsplus/mdsconfig.h.in~
 ./usr/local/mdsplus/include/mdsplus/mdsplus.h
 ./usr/local/mdsplus/include/mdsplus/numeric_cast.hpp
 ./usr/local/mdsplus/include/mdsserver.h

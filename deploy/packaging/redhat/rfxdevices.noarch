@@ -33,6 +33,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_GAM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_IN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_LOGGER.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6255.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6259.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6259_ASYNCH_DI.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6259_ASYNCH_DO.py
@@ -44,6 +45,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6368_DAC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6368_DO.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6368_SYNCH_DI.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6723.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_OUT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_GENERIC.py
