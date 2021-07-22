@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _NCIDEF_H
+#define _NCIDEF_H
 /**************************************
   NCIDEF.H - definitions of constants
   used in  item list arguments to the
@@ -93,3 +94,4 @@ typedef struct nci_itm
   void *pointer;
   int *return_length_address;
 } NCI_ITM;
+#endif

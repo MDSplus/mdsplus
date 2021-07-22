@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _STRROUTINES_H
+#define _STRROUTINES_H
 
 #include <mdsdescrip.h>
 
@@ -50,4 +51,5 @@ static void __attribute__((unused)) free_d(void *ptr)
   FREED_ON_EXIT(&var)
 #define INIT_AND_FREED_ON_EXIT(var, dtype) \
   INIT_AS_AND_FREED_ON_EXIT(var, ((mdsdsc_d_t){0, dtype, CLASS_D, NULL}))
+#endif
 #endif

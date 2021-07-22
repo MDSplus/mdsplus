@@ -49,7 +49,6 @@ void destroy_host(Host *host)
   MDSSHR_LOAD_LIBROUTINE_LOCAL(MdsIpShr, DisconnectFromMds, abort(), void, (int));
   MDSDBG(HOST_PRI, HOST_VAR(host));
   DisconnectFromMds(host->conid);
-  free(host->unique);
   free(host);
 }
 

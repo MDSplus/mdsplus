@@ -24,8 +24,9 @@ status=0
 
 run() {
   eval $1 2>&1 | tee ${2-/dev/null} |
-    grep -v -e '^[DIWE],' \
-      -e '^\s*Data inserted:' \
+    grep -v -e '^[DIWE],'\
+      -e '^\s*Data inserted:'\
+      -e '^Connected:'\
       -e 'Length:'
 }
 
@@ -35,7 +36,7 @@ if [ ! -z $1 ]; then
     # fixes [?1034h for old readline verisons, rhel5/6/7, fc17/18/20
     export TERM=vt100
   else
-    cmd="$TDITEST $zdrv$srcdir/$test.tdi 1 2 3"
+    cmd="$TDITEST $zdrv$srcdir/$test.tdi $zdrv$(pwd) 2 3"
   fi
 
   if [ -z ${MDSPLUS_DIR} ]; then

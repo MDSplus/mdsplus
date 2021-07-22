@@ -1,7 +1,7 @@
 EXTRACT(len(_$0)-16,16,_$0)
 "/test-tdishr.tdi"
-deallocate(_$0)
-1
+deallocate(_$0)+deallocate(_$1)
+2
 _a=1
 1
 allocated(_a)
@@ -10,11 +10,10 @@ show_private(_a)
 Private _A	= 1
 1
 show_private()
-Private _$1	= "1"
 Private _$2	= "2"
 Private _$3	= "3"
 Private _A	= 1
-4
+3
 deallocate()
 *
 allocated(_a)

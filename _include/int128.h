@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _INT128_H
+#define _INT128_H
 #include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
@@ -379,3 +380,4 @@ static inline int int128_div(const int128_t *x, const int128_t *d,
     int128_minus(ans, ans);
   return 1;
 }
+#endif // ifndef _INT128_H

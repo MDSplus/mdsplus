@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef _MDSIO_H
+#define _MDSIO_H
 #ifndef DOXYGEN // hide this part from documentation
 
 typedef enum
@@ -128,3 +129,4 @@ typedef union {
   }
 #endif
 #endif // DOXYGEN end of hidden code
+#endif // ifndef _MDSIO_H

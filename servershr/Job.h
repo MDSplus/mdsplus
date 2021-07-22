@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _JOB_H
+#define _JOB_H
 #include <pthread_port.h>
 
 #include <mdsmsg.h>
@@ -262,3 +263,4 @@ static void Job_cleanup(int status, int jobid)
     j = Job_pop_by_conid(conid);
   } while (j);
 }
+#endif // ifndef _JOB_H

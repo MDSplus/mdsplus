@@ -261,8 +261,8 @@ class MARTE2_COMPONENT(Device):
         parts.append(
             {'path': ':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
 
-#      for part in parts:
-#        print(part)
+#        for part in parts:
+#          print(part)
 
     name = None
     inputs = []
@@ -1777,6 +1777,7 @@ class MARTE2_COMPONENT(Device):
                         valExpr = str(valExpr)
                     else:
                         valExpr = str(valExpr)
+                    valExpr = valExpr.replace('"', "'")
                     dataSourceText += '        DataExpr = "'+valExpr+'"\n'
                     dataSourceText += '        TimebaseExpr = "dim_of(' + \
                         valExpr+')"\n'
@@ -1790,8 +1791,8 @@ class MARTE2_COMPONENT(Device):
                         dataSourceText += '        UseColumnOrder = 1\n'
                     else:
                         dataSourceText += '        UseColumnOrder = 0\n'
-                        dataSourceText += '        DataManagement = 1\n'
-                        dataSourceText += '      }\n'
+                    dataSourceText += '        DataManagement = 1\n'
+                    dataSourceText += '      }\n'
                 dataSourceText += '      timebase = {\n'
                 dataSourceText += '        NumberOfElements = 1\n'
                 dataSourceText += '        Type = uint64\n'
@@ -2400,6 +2401,7 @@ class MARTE2_COMPONENT(Device):
                 valExpr = nodeDict['expr']
                 if isinstance(valExpr, TreeNode):
                     valExpr = valExpr.getFullPath()
+                valExpr = valExpr.replace('"', "'")
                 dataSourceText += '        DataExpr = "'+valExpr+'"\n'
                 dataSourceText += '        TimebaseExpr = "dim_of(' + \
                     valExpr+')"\n'
@@ -2413,8 +2415,8 @@ class MARTE2_COMPONENT(Device):
                     dataSourceText += '        UseColumnOrder = 1\n'
                 else:
                     dataSourceText += '        UseColumnOrder = 0\n'
-                    dataSourceText += '        DataManagement = 1\n'
-                    dataSourceText += '      }\n'
+                dataSourceText += '        DataManagement = 1\n'
+                dataSourceText += '      }\n'
             dataSourceText += '      timebase = {\n'
             dataSourceText += '        NumberOfElements = 1\n'
             dataSourceText += '        Type = uint64\n'
@@ -2747,6 +2749,7 @@ class MARTE2_COMPONENT(Device):
                 valExpr = nodeDict['expr']
                 if isinstance(valExpr, TreeNode):
                     valExpr = valExpr.getFullPath()
+                valExpr = valExpr.replace('"', "'")
                 dataSourceText += '        DataExpr = "'+str(valExpr)+'"\n'
                 dataSourceText += '        TimebaseExpr = "dim_of(' + \
                     str(valExpr)+')"\n'

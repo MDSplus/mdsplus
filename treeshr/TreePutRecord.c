@@ -457,22 +457,25 @@ int _TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
   }
   if (STATUS_OK)
   {
-    int old_get = df_ptr->get;
     char *filename = tree_to_datafile(info->filespec, tmpfile);
+    int old_fd = df_ptr->get;
     df_ptr->get = MDS_IO_OPEN(
         filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY,
         0664);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeSUCCESS;
     if (df_ptr->get == -1)
-      df_ptr->get = old_get;
-    else if (df_ptr->get > 0)
-      MDS_IO_CLOSE(old_get);
+      df_ptr->get = old_fd;
+    else if (old_fd > 0)
+      MDS_IO_CLOSE(old_fd);
     if (STATUS_OK)
     {
+      old_fd = df_ptr->put;
       df_ptr->put = MDS_IO_OPEN(filename, O_RDWR, 0);
       status = (df_ptr->put == -1) ? TreeFAILURE : TreeSUCCESS;
       if (df_ptr->put == -1)
-        df_ptr->put = 0;
+        df_ptr->put = old_fd;
+      else if (old_fd > 0)
+        MDS_IO_CLOSE(old_fd);
       if (STATUS_OK)
         df_ptr->open_for_write = 1;
     }

@@ -1,5 +1,7 @@
 
-#pragma once
+#ifndef _TREESHR_XNCI_H
+#define _TREESHR_XNCI_H
+
 #include <treeshr.h>
 #ifdef __cplusplus
 extern "C"
@@ -72,3 +74,4 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+#endif // ifndef _TREESHR_XNCI_H

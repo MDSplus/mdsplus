@@ -213,6 +213,7 @@ def BUILDER(cls):
                 retrievedName = WrapperLib.WCAPI_GetSignalName(
                     SignalStruct, signalIdx)
                 retrievedName = retrievedName.decode("utf-8")
+                retrievedName = retrievedName.replace(' ','_')  #remove blacks
                 #print('SIGNAL NAME: ' + retrievedName);
                # retrievedName = removeAngular(retrievedName)
 
@@ -357,7 +358,7 @@ def BUILDER(cls):
                                 print('type '+str(fieldEnumType))
                                 raise Exception('Unsupported Enum datatype.')
                         else:
-                            print('type '+str(fieldEnumType))
+                            print('type '+str(fieldSLIdType))
                             raise Exception('Unsupported datatype.')
                 # field dimensions
                        # dimensions are retrieved
@@ -433,7 +434,6 @@ def BUILDER(cls):
                     ParameterStruct, paramIdx)
                 retrievedName = retrievedName.decode("utf-8")
                 #print('retrievedname: ', retrievedName)
-
                 # type is retrieved
                 retrievedTypeIdx = WrapperLib.WCAPI_GetModelParameterDataTypeIdx(
                     ParameterStruct, paramIdx)
