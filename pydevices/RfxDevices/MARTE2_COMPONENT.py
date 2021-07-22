@@ -797,8 +797,8 @@ class MARTE2_COMPONENT(Device):
             outPeriod = period  # Driving thread timing
             dataSourceText = '  +'+gamName+'_Timer' + ' = {\n'
             dataSourceText += '    Class = LinuxTimer\n'
-#            dataSourceText += '    SleepNature = "Default"\n'
-            dataSourceText += '    SleepNature = "Busy"\n'
+            dataSourceText += '    SleepNature = "Default"\n'
+#            dataSourceText += '    SleepNature = "Busy"\n'
             dataSourceText += '    Signals = {\n'
             dataSourceText += '      Counter = {\n'
             dataSourceText += '        Type = uint32\n'
@@ -1939,8 +1939,8 @@ class MARTE2_COMPONENT(Device):
                 outPeriod = period  # Driving thread timing
                 dataSourceText = '  +'+dataSourceName+'_Timer' + ' = {\n'
                 dataSourceText += '    Class = LinuxTimer\n'
-#                dataSourceText += '    SleepNature = "Default"\n'
-                dataSourceText += '    SleepNature = "Busy"\n'
+                dataSourceText += '    SleepNature = "Default"\n'
+#                dataSourceText += '    SleepNature = "Busy"\n'
                 dataSourceText += '    Signals = {\n'
                 dataSourceText += '      Counter = {\n'
                 dataSourceText += '        Type = uint32\n'
@@ -2499,8 +2499,8 @@ class MARTE2_COMPONENT(Device):
             outPeriod = period  # driving thread timing
             dataSourceText = '  +'+dataSourceName+'_Timer' + ' = {\n'
             dataSourceText += '    Class = LinuxTimer\n'
-#            dataSourceText += '    SleepNature = "Default"\n'
-            dataSourceText += '    SleepNature = "Busy"\n'
+            dataSourceText += '    SleepNature = "Default"\n'
+#            dataSourceText += '    SleepNature = "Busy"\n'
             dataSourceText += '    Signals = {\n'
             dataSourceText += '      Counter = {\n'
             dataSourceText += '        Type = uint32\n'
@@ -2749,8 +2749,8 @@ class MARTE2_COMPONENT(Device):
                 valExpr = nodeDict['expr']
                 if isinstance(valExpr, TreeNode):
                     valExpr = valExpr.getFullPath()
-                valExpr = valExpr.replace('"', "'")
-                dataSourceText += '        DataExpr = "'+str(valExpr)+'"\n'
+                valExpr = str(valExpr).replace('"', "'")
+                dataSourceText += '        DataExpr = "'+valExpr+'"\n'
                 dataSourceText += '        TimebaseExpr = "dim_of(' + \
                     str(valExpr)+')"\n'
                 numberOfElements = 1
