@@ -301,9 +301,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
-
-            self.dev.trig_time.record = self.device_thread.trig_time - \
-                ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
+            
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
