@@ -222,6 +222,10 @@ class _ACQ2106_423ST(MDSplus.Device):
                 except Empty:
                     continue
 
+                if self.dev.trig_time.getDataNoRaise() is None:
+                    self.dev.trig_time.record = self.device_thread.trig_time - \
+                        ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
+
                 buffer = np.frombuffer(buf, dtype='int16')
                 i = 0
                 for c in self.chans:
@@ -239,8 +243,6 @@ class _ACQ2106_423ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time - \
-                ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
