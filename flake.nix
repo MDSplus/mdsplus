@@ -49,6 +49,7 @@
 				for b in $(ls ${mdsplus}/bin); do
 					makeWrapper ${mdsplus}/bin/$b $out/bin/$b --set MDSPLUS_DIR "${mdsplus}"
 				done
+				ln -s ${mdsplus} $out/mdsplus-install-location
 			'';
 
 	in {
