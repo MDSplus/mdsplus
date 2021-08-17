@@ -5,7 +5,7 @@ config.status
 Makefile.inc
 stamp-h1
 config.h
-rpm/envsyms  
+rpm/envsyms
 rpm/Makefile
 rpm/post_install_script
 envsyms
@@ -83,7 +83,7 @@ __pycache__/
 *.out
 *.app
 
-# automake 
+# automake
 aclocal.m4
 autom4te.cache
 
@@ -189,6 +189,7 @@ testing/selftest/Makefile.in
 treeshr/testing/Makefile.in
 treeshr/TreeFindNodeWild.c
 wfevent/Makefile.in
+m4/ax_git_revision.m4
 
 # Generated Java binaries
 java/*/classes/

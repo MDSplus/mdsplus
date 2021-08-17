@@ -36,22 +36,8 @@ AX_IS_RELEASE([always])
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[
-    # ],[
-    # ])
-
-dnl look if a version from git directory can be obtained
+dnl get version info from generated file
 AX_GIT_REVISION
-
-dnl fixup branch and tag
-RELEASE_BRANCH=${BRANCH::12}
-if   [[ ! -z "${BRANCH::12}" ]]
-then RELEASE_BRANCH=${BRANCH::12}
-elif [[ ! -z "${GIT_BRANCH::12}" ]]
-then RELEASE_BRANCH=${GIT_BRANCH::12}
-else RELEASE_BRANCH=unknown
-fi
-RELEASE_TAG="${RELEASE_BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 dnl add reconfigure target option to autoconf generated Makefile
 AX_RECONFIGURE_TARGETS
@@ -100,8 +86,6 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
-AC_PROG_YACC
-AM_PROG_LEX
 
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
@@ -109,13 +93,6 @@ AC_MSG_RESULT([before VISIBILITY])
 gl_VISIBILITY
 AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
 CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
-#if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
-#	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
-#fi
-
-#FIXME: Remove this when Makefile.inc goes away
-#AS_CASE(["$MKDIR_P"],
-#        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
 
 dnl See if we need to use native compilers
 AS_CASE(["$host"],
@@ -1342,7 +1319,6 @@ AC_SUBST([GIT_REMOTE])
 AC_SUBST([GIT_REMOTE_URL])
 AC_SUBST([GIT_COMMIT])
 AC_SUBST([GIT_COMMIT_DATE])
-AC_SUBST([GIT_SRCDIR])
 
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
