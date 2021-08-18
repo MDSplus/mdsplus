@@ -27,7 +27,7 @@
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
 
@@ -56,10 +56,10 @@ class staticmethodX(object):
     def __init__(self, method):
         self.method = method
 
-    def static(mself, self, *args, **kwargs):
-        if self is None:
+    def static(self, obj, *args, **kwargs):
+        if obj is None:
             return None
-        return mself.method(Data(self), *args, **kwargs)
+        return self.method(Data(obj), *args, **kwargs)
 
 
 def _unwrap(args):
@@ -185,7 +185,7 @@ class Data(NoTreeRef):
         num = _C.c_int32(num)
         xmin = Data(xmin)
         xmax = Data(xmax)
-        xd = _dsc.Descriptor_xd()
+        xd = _dsc.DescriptorXD()
         if self.tree is None:
             status = _MdsMisc. GetXYSignalXd(self.ref, Data.byref(
                 x), Data.byref(xmin), Data.byref(xmax), num, xd.ref)
@@ -830,7 +830,7 @@ class Data(NoTreeRef):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
-        xd = _dsc.Descriptor_xd()
+        xd = _dsc.DescriptorXD()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscOut(self.ref,
                                        xd.ref))
@@ -845,7 +845,7 @@ class Data(NoTreeRef):
         """
         if len(bytes) == 0:  # short cut if setevent did not send array
             return _apd.List([])
-        xd = _dsc.Descriptor_xd()
+        xd = _dsc.DescriptorXD()
         _exc.checkStatus(
             _MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),
                                       xd.ref))
@@ -860,7 +860,7 @@ class EmptyData(Data):
     dtype_id = 24
     """No Value aka *"""
 
-    def __init__(self, *value): pass
+    def __init__(self, *value): """empty"""
 
     def decompile(self): return "*"
 
@@ -902,12 +902,9 @@ class DataX(Data):
             self._descs[idx] = tuple(Data(val) for val in value)
             self._setTree(*value)
         else:
-            last = idx
             if value is None:
                 if len(self._descs) > idx:
                     self._descs[idx] = None
-                else:
-                    last = -1
             else:
                 diff = 1+idx-len(self._descs)
                 if diff > 0:

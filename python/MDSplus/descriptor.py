@@ -24,14 +24,15 @@
 #
 
 
+import ctypes as _C
+
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
-
-import ctypes as _C
 
 _ver = _mimport('version')
 _exc = _mimport('mdsExceptions')
@@ -115,7 +116,7 @@ class Descriptor(object):
 
     def __init__(self, obj_in=None, _dict_={}):
         if self.__class__ is Descriptor:
-            return Exception("cannot instanciate Descriptor")
+            raise _exc.MdsException("cannot instanciate Descriptor")
         for k, v in _dict_.items():
             if k not in ['ptr', 'ptr_']:
                 self.__dict__[k] = v
@@ -155,13 +156,13 @@ class DescriptorNULL(Descriptor):
     dclass = length = dtype = addressof = pointer = 0
     ref = ptr_ = ptr = Descriptor.null
 
-    def __init__(self): pass
+    def __init__(self): """NULL"""
 
 
 DescriptorNULL = DescriptorNULL()
 
 
-class Descriptor_s(Descriptor):
+class DescriptorS(Descriptor):
     dclass_id = 1
 
     @property
@@ -170,22 +171,22 @@ class Descriptor_s(Descriptor):
             return dtypeToClass[self.dtype].fromDescriptor(self)._setTree(self.tree)
 
 
-class Descriptor_d(Descriptor_s):
+class DescriptorD(DescriptorS):
     dclass_id = 2
 
     def __del__(self):
         _MdsShr.MdsFree1Dx(self.ptr, 0)
 
 
-class Descriptor_xs(Descriptor_s):
+class DescriptorXS(DescriptorS):
     dclass_id = 193
 
     class _structure_class(_C.Structure):
-        _fields_ = Descriptor_s._structure_class._fields_ + [
+        _fields_ = DescriptorS._structure_class._fields_ + [
             ("l_length", _C.c_uint32)]
 
     def _new_structure(self, l_length=0, **kwarg):
-        super(Descriptor_xs, self)._new_structure(**kwarg)
+        super(DescriptorXS, self)._new_structure(**kwarg)
         self._structure.l_length = l_length
     PTR = _C.POINTER(_structure_class)
     null = _C.cast(0, PTR)
@@ -196,7 +197,7 @@ class Descriptor_xs(Descriptor_s):
             return Descriptor(self.pointer, self.__dict__)._setTree(self.tree).value
 
 
-class Descriptor_xd(Descriptor_xs):
+class DescriptorXD(DescriptorXS):
     dclass_id = 192
     dtype_dsc = 24
 
@@ -204,12 +205,12 @@ class Descriptor_xd(Descriptor_xs):
         _MdsShr.MdsFree1Dx(self.ptr, 0)
 
 
-class Descriptor_r(Descriptor_s):
+class DescriptorR(DescriptorS):
     dclass_id = 194
 
     class _structure_class(_C.Structure):
         _pack_ = _C.sizeof(_C.c_void_p)
-        _fields_ = Descriptor_s._structure_class._fields_ + [
+        _fields_ = DescriptorS._structure_class._fields_ + [
             ("ndesc", _C.c_ubyte),
             ("dscptrs", Descriptor.PTR*256)]
     PTR = _C.POINTER(_structure_class)
@@ -218,7 +219,7 @@ class Descriptor_r(Descriptor_s):
 # HINT: arrays
 
 
-class Descriptor_a(Descriptor):
+class DescriptorA(Descriptor):
     dclass_id = 4
 
     class _structure_class(_C.Structure):
@@ -234,7 +235,7 @@ class Descriptor_a(Descriptor):
             ("coeff_and_bounds", _C.c_int32 * 24)]
 
     def _new_structure(self, arsize=0, **kwarg):
-        super(Descriptor_a, self)._new_structure(**kwarg)
+        super(DescriptorA, self)._new_structure(**kwarg)
         self._structure.arsize = arsize
         self._structure.aflags = 48
     PTR = _C.POINTER(_structure_class)
@@ -301,36 +302,36 @@ class Descriptor_a(Descriptor):
             self.aflags &= ~128
 
 
-class Descriptor_ca(Descriptor_a):
+class DescriptorCA(DescriptorA):
     dclass_id = 195
 
     @property
     def value(self):
-        xd = Descriptor_xd()
+        xd = DescriptorXD()
         _exc.checkStatus(_MdsShr.MdsDecompress(self.ptr, xd.ptr))
         return xd._setTree(self.tree).value
 
 
-class Descriptor_apd(Descriptor_a):
+class DescriptorAPD(DescriptorA):
     dclass_id = 196
 
 
-dclassToClass = {Descriptor_s.dclass_id: Descriptor_s,
-                 Descriptor_d.dclass_id: Descriptor_d,
-                 Descriptor_xs.dclass_id: Descriptor_xs,
-                 Descriptor_xd.dclass_id: Descriptor_xd,
-                 Descriptor_r.dclass_id: Descriptor_r,
-                 Descriptor_a.dclass_id: Descriptor_a,
-                 Descriptor_ca.dclass_id: Descriptor_ca,
-                 Descriptor_apd.dclass_id: Descriptor_apd}
+dclassToClass = {DescriptorS.dclass_id: DescriptorS,
+                 DescriptorD.dclass_id: DescriptorD,
+                 DescriptorXS.dclass_id: DescriptorXS,
+                 DescriptorXD.dclass_id: DescriptorXD,
+                 DescriptorR.dclass_id: DescriptorR,
+                 DescriptorA.dclass_id: DescriptorA,
+                 DescriptorCA.dclass_id: DescriptorCA,
+                 DescriptorAPD.dclass_id: DescriptorAPD}
 
 dtypeToClass = {}
 
 
-def addDtypeToClass(Class):      dtypeToClass[Class.dtype_id] = Class
+def _add_dtype_to_class(cls):      dtypeToClass[cls.dtype_id] = cls
 
 
 dtypeToArrayClass = {}
 
 
-def addDtypeToArrayClass(Class): dtypeToArrayClass[Class.dtype_id] = Class
+def _add_dtype_to_array_class(cls): dtypeToArrayClass[cls.dtype_id] = cls
