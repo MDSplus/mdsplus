@@ -13,7 +13,7 @@ function [ status ] = mdsconnect( host )
     if MDSINFO.isConnected && strcmp(MDSINFO.connectedHost, host) && MDSINFO.usePython == MDSINFO.isPythonConnection
         status = 1;
     else
-        if strcmpi(host,'LOCAL') == 1
+        if strcmpi(host, 'LOCAL') == 1
             MDSINFO.isConnected = false;
             MDSINFO.connection = [];
             MDSINFO.connectedHost = host;
@@ -21,14 +21,13 @@ function [ status ] = mdsconnect( host )
         else
             try
                 if MDSINFO.usePython
-                    py_MDSplus_Connection=str2func('py.MDSplus.Connection');
-                    MDSINFO.connection=py_MDSplus_Connection(host);
+                    MDSINFO.connection = pythonConnect(host);
                 else
-                    MDSINFO.connection=javaObject('MDSplus.Connection',host);
+                    MDSINFO.connection = javaConnect(host);
                 end
-                MDSINFO.isPythonConnection=MDSINFO.usePython;
-                MDSINFO.connectedHost=host;
-                MDSINFO.isConnected=true;
+                MDSINFO.isPythonConnection = MDSINFO.usePython;
+                MDSINFO.connectedHost = host;
+                MDSINFO.isConnected = true;
                 status = 1;
             catch
                 status = -1;
@@ -36,4 +35,3 @@ function [ status ] = mdsconnect( host )
         end
     end
 end
-
