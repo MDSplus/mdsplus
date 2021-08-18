@@ -25,19 +25,22 @@
 #
 import sys
 import os
+
 if 'pip-egg-info' in sys.argv:
     print("When using pip to install MDSplus use 'pip install -e <dir>'")
     sys.exit(1)
 
 try:
+    version = ()
     mod_dir = os.path.dirname(os.path.abspath(__file__))
-    exec(open(mod_dir+os.sep+'_version.py').read())
+    with open(os.path.join(mod_dir, '_version.py')) as f:
+        exec(f.read())
     release = "%d.%d.%d" % version
-except:
-    release = '1.0.0'
+except Exception:
+    release = '0.0.0'
     release_tag = 'Unknown'
-pth_dir = os.path.abspath(__file__)
-pth_dir = os.path.abspath(os.path.dirname(pth_dir)+'/..')
+
+pth_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 setupkw = {
     'name': 'MDSplus',
     'extra_path': ('mdsplus', pth_dir),
@@ -74,7 +77,7 @@ def remove():
             sys.path.remove("")
         try:
             import MDSplus
-        except:
+        except ImportError:
             print("Error removing MDSplus: package not found")
             return False
         _f = MDSplus.__file__.split(os.sep)
@@ -110,8 +113,7 @@ def remove():
 
 
 if __name__ == '__main__':
-    try:
-        print("use distutils.core")
+    def use_distutils():
         from distutils.core import setup
         from distutils.cmd import Command
 
@@ -119,35 +121,39 @@ if __name__ == '__main__':
             user_options = []
 
             def initialize_options(self):
-                pass
+                """nothing to do."""
 
             def finalize_options(self):
-                pass
+                """nothing to do."""
 
             def run(self):
                 import sys
                 import subprocess
                 raise SystemExit(
-                    subprocess.call([sys.executable,
-                                     '-m',
-                                     'tests.__init__']))
+                    subprocess.call([sys.executable, '-m', 'tests.__init__']))
 
         class RemoveCommand(Command):
             user_options = []
 
             def initialize_options(self):
-                pass
+                """nothing to do."""
 
             def finalize_options(self):
-                pass
+                """nothing to do."""
 
             def run(self):
                 remove()
-        setupkw['cmdclass'] = {'test': TestCommand, 'remove': RemoveCommand}
-    except:
+        setup(cmdclass={'test': TestCommand, 'remove': RemoveCommand})
+
+    def use_setuptools():
         from setuptools import setup
-        print("use setuptools")
-        setupkw['include_package_data'] = True
-        setupkw['test_suite'] = 'tests.test_all'
-        setupkw['zip_safe'] = False
-    setup(**setupkw)
+        setup(
+            include_package_data=True,
+            test_suite='tests.test_all',
+            zip_safe=False,
+        )
+
+    try:
+        use_setuptools()
+    except ImportError:
+        use_distutils()
