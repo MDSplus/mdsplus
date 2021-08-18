@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define YYLTYPE TDITHREADSTATIC_TYPE
 #include "tdiyacc.h"
 #include "tdilex.h"
-#include "../mdsshr/version.h"
+#include <_mdsversion.h>
 
 static inline TDITHREADSTATIC_TYPE *buffer_alloc()
 {
