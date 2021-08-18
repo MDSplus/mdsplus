@@ -553,6 +553,7 @@ rm -f /etc/profile.d/mdsplus.csh
   </package>
 
   <package name="kernel_bin" arch="bin" summary="MDSplus core binaries" description="MDSplus core binaries">
+    <requires package="readline" external=""/>
     <include dir="/usr/local/mdsplus/bin"/>
     <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <exclude file="/usr/local/mdsplus/bin/dw*"/>
@@ -825,18 +826,28 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
    <xinetd package="busybox"/>
+   <readline package="libreadline8"/>
+ </external_packages>
+
+ <external_packages dist="Ubuntu18">
+   <numpy package="python-numpy"/>
+   <java package="java-runtime"/>
+   <xinetd package="busybox"/>
+   <readline package="libreadline7"/>
  </external_packages>
 
  <external_packages dist="el8">
    <numpy package="python3-numpy"/>
    <java/>
    <xinetd/>
+   <readline/>
  </external_packages>
 
  <external_packages dist="el7">
    <python-numpy package="numpy"/>
    <java/>
    <xinetd/>
+   <readline/>
  </external_packages>
 
  <!-- platform last -->
@@ -844,11 +855,13 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
    <numpy/>
    <java/>
    <xinetd/>
+   <readline/>
  </external_packages>
 
  <external_packages platform="alpine">
    <numpy package="py-numpy"/>
-   <java package="java-jre"/>
+   <java package="openjdk8-jre"/>
+   <readline/>
  </external_packages>
 
  <external_packages platform="debian">
