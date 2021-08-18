@@ -4,6 +4,8 @@ The MDSplus developers want to know who you are. If you or your site is using MD
 [MDSplus User Survey](https://docs.google.com/forms/d/e/1FAIpQLScSsA-fY2yTsW076bBreJmNbBqY9jsd-m4vmAdPvfCxXidiOQ/viewform?usp=sf_link).
 
 ## Building MDSplus
+
+### Building from source manually
 To build and install MDSplus on unix systems, you will need to obtain the
 MDSplus distribution from github either as a git repository or as a 
 compressed tar file.
@@ -35,6 +37,7 @@ When MDSplus is built to generate releases for public distribution a deploy
 script is used which uses Docker to pull specially configured Docker images
 from https://hub.docker.com/r/mdsplus/docker/
 
+### Building using Dockerized build environment
 You can build MDSplus for any of the linux and windows operatings systems
 without needing to install any special compilers or libraries. If you have
 the mdsplus source code and Docker installed on your linux system and your
@@ -60,6 +63,20 @@ You can find the available operating systems that you could specify for the
     # ls <mdsplus-src-dir>/deploy/os/*.opts
 
     
+### Building with nix package manager
+The mdsplus repo is a nix flake, meaning that it specifies a build recipe
+for mdsplus and all of its dependencies.  You can automatically download,
+build, and install mdsplus using the following nix command (after enabling the 
+currently experimental flakes feature):
+
+    nix shell github:mdsplus/mdsplus/<branch or tag name>
+    
+Upon first invocation, the above command will build and install mdsplus into
+the nix store, and then put the user into a subshell in which the mdsplus
+programs are available on the PATH.  The commands will be accessible until
+the subshell is exited.  In subsequent invocations, the user will go directly
+into the subshell without rebuilding or reinstalling.
+
 ---------------------------------------------------------------------------
 Who Uses MDSplus
 This map shows world fusion sites using MDSplus.  
