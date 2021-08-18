@@ -459,7 +459,7 @@ class Tree(object):
         """Return file path.
         @rtype: str
         """
-        xd = _dsc.Descriptor_xd()
+        xd = _dsc.DescriptorXD()
         if tree is None:
             treeref = None
         else:
@@ -949,9 +949,9 @@ class Tree(object):
         """Get time context for retrieving segmented records (begin,end,delta)
         @rtype: tuple
         """
-        begin = _dsc.Descriptor_xd()
-        end = _dsc.Descriptor_xd()
-        delta = _dsc.Descriptor_xd()
+        begin = _dsc.DescriptorXD()
+        end = _dsc.DescriptorXD()
+        delta = _dsc.DescriptorXD()
         if isinstance(self, (Tree,)):
             begin._setTree(self)
             end._setTree(self)
@@ -1268,7 +1268,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
     @property
     def _descriptor(self):
         """Return a MDSplus descriptor"""
-        d = _dsc.Descriptor_s()
+        d = _dsc.DescriptorS()
         d.length = 4
         d.dtype = self.dtype_id
         d.pointer = _C.cast(_C.pointer(self._nid), _C.c_void_p)
@@ -1865,7 +1865,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         @rtype: None
         """
         arglist = [self.ctx]
-        xd = _dsc.Descriptor_xd()
+        xd = _dsc.DescriptorXD()
         argsobj = [self, _scr.String(method)]
         arglist += list(map(_dat.Data.byref, argsobj))
         arglist.append(len(args))
@@ -1936,7 +1936,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         @return: data stored in this node
         @rtype: Data
         """
-        xd = _dsc.Descriptor_xd()
+        xd = _dsc.DescriptorXD()
         status = _TreeShr._TreeGetRecord(self.ctx, self._nid, xd.ref)
         if (status & 1):
             return xd._setTree(self.tree).value
@@ -1983,7 +1983,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                        attribute has no data
         @rtype: MDSplus data type
         """
-        xd = _dsc.Descriptor_xd()
+        xd = _dsc.DescriptorXD()
         status = _TreeShr._TreeGetXNci(self.ctx,
                                        self.nid,
                                        _C.c_char_p(_ver.tobytes(
@@ -2219,8 +2219,8 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         @return: Data segment
         @rtype: Signal | None
         """
-        val = _dsc.Descriptor_xd()._setTree(self.tree)
-        dim = _dsc.Descriptor_xd()._setTree(self.tree)
+        val = _dsc.DescriptorXD()._setTree(self.tree)
+        dim = _dsc.DescriptorXD()._setTree(self.tree)
         try:
             _exc.checkStatus(
                 _TreeShr._TreeGetSegment(self.ctx,
@@ -2245,7 +2245,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         @return: Segment dimension
         @rtype: Dimension
         """
-        dim = _dsc.Descriptor_xd()._setTree(self.tree)
+        dim = _dsc.DescriptorXD()._setTree(self.tree)
         try:
             _exc.checkStatus(
                 _TreeShr._TreeGetSegment(self.ctx,
@@ -2258,8 +2258,8 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         return dim.value
 
     def getSegmentLimits(self, idx):
-        start = _dsc.Descriptor_xd()._setTree(self.tree)
-        end = _dsc.Descriptor_xd()._setTree(self.tree)
+        start = _dsc.DescriptorXD()._setTree(self.tree)
+        end = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentLimits(self.ctx,
                                            self._nid,
@@ -2273,7 +2273,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
 
     def getSegmentList(self, start, end):
         start, end = map(_dat.Data, (start, end))
-        xd = _dsc.Descriptor_xd()._setTree(self.tree)
+        xd = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
             _XTreeShr._XTreeGetSegmentList(self.ctx,
                                            self._nid,
@@ -2286,7 +2286,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         """sets the scale expression of a segmetned Node
         @rtype: expression for the data field; should contain $VALUE
         """
-        xd = _dsc.Descriptor_xd()._setTree(self.tree)
+        xd = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentScale(self.ctx,
                                           self._nid,
@@ -2295,8 +2295,8 @@ class TreeNode(_dat.TreeRef, _dat.Data):
 
     def getSegmentTimes(self):
         num = _C.c_int32(0)
-        start = _dsc.Descriptor_xd()._setTree(self.tree)
-        end = _dsc.Descriptor_xd()._setTree(self.tree)
+        start = _dsc.DescriptorXD()._setTree(self.tree)
+        end = _dsc.DescriptorXD()._setTree(self.tree)
         _exc.checkStatus(
             _TreeShr._TreeGetSegmentTimesXd(self.ctx,
                                             self._nid,
@@ -3055,7 +3055,7 @@ class TreePath(TreeNode):  # HINT: TreePath begin
 
     @property
     def _descriptor(self):
-        d = _dsc.Descriptor_s()
+        d = _dsc.DescriptorS()
         d.length = len(self.tree_path)
         d.dtype = self.dtype_id
         d.pointer = _C.cast(_C.c_char_p(
@@ -3249,7 +3249,7 @@ class cached_property(object):
 
     def __call__(self, method):
         if hasattr(self, 'target'):
-            raise Exception("cached_property.target already set")
+            raise _exc.MdsException("cached_property.target already set")
         self.target = property(method)
         return self
 
@@ -3337,7 +3337,7 @@ class mdsrecord(object):
 
     def __call__(self, target):
         if hasattr(self, 'target'):
-            raise Exception("mdsrecord.target already set")
+            raise _exc.MdsException("mdsrecord.target already set")
         self.target = target
         if self.cached is None:
             return self
@@ -3377,7 +3377,7 @@ class mdsrecord(object):
 
     @staticmethod
     def bytes_list(node):
-        return [_ver.tostr(x).rstrip()
+        return [_ver.tobytes(x).rstrip()
                 for x in node.data().flatten()]
 
     @staticmethod
@@ -3507,7 +3507,7 @@ class Device(TreeNode):  # HINT: Device begin
                 return dev
             from types import FunctionType
 
-            def dummy(self, *args, **kvargs): pass
+            def dummy(self, *args, **kvargs): """dummy"""
             db = {}
             for d in dev.mro()[-5::-1]:  # mro[-4] is Device
                 for k, v in d.__dict__.items():
@@ -3535,7 +3535,7 @@ class Device(TreeNode):  # HINT: Device begin
             try:
                 device = __import__(filename, glob, fromlist=[
                                     name], level=1).__getattribute__(name)
-            except:
+            except Exception:
                 device = __import__(filename, glob, fromlist=[
                                     name]).__getattribute__(name)
             if debug:
@@ -3568,7 +3568,7 @@ class Device(TreeNode):  # HINT: Device begin
                 head = TreeNode(
                     node.conglomerate_nids.nid_number[0], node.tree, 0)
                 return head.getDevice(head)
-            except:
+            except Exception:
                 raise TypeError("Cannot create instances of Device class")
         elif not cls in cls.__initialized:
             cls.part_names = tuple(elt['path'] for elt in cls.parts)
@@ -3641,7 +3641,7 @@ class Device(TreeNode):  # HINT: Device begin
             msg.append('\n%s' % ('-'*64))
             return '\n'.join(msg)
         except AttributeError as e:
-            raise Exception(e.message)
+            raise _exc.MdsException(e.message)
 
     def fullhelp(self): print(self.fullhelp_str)
 
@@ -3691,7 +3691,7 @@ class Device(TreeNode):  # HINT: Device begin
         @type value: varied
         @rtype: None
         """
-        def isInDicts(name, cls):
+        def is_in_dicts(name, cls):
             for c in cls.mro()[:-1]:
                 if name in c.__dict__:
                     return True
@@ -3703,7 +3703,7 @@ class Device(TreeNode):  # HINT: Device begin
                      self.tree, head).record = value
         elif (name.startswith('_')
               or name in self.__dict__
-              or isInDicts(name, self.__class__)
+              or is_in_dicts(name, self.__class__)
               or isinstance(stack()[1][0].f_locals.get('self', None), Device)):
             super(Device, self).__setattr__(name, value)
         else:
@@ -3787,7 +3787,7 @@ If you did intend to write to a subnode of the device you should check the prope
         on (i.e. write_once).
         """
         if cls is Device:
-            raise Exception("Cannot add super class Device.")
+            raise _exc.MdsException("Cannot add super class Device.")
         parent = tree
         if isinstance(tree, TreeNode):
             tree = tree.tree
@@ -3846,14 +3846,14 @@ If you did intend to write to a subnode of the device you should check the prope
         """
         try:
             _widgets = _mimport('widgets')
-            import os
             import gtk
+            import gtk.glade
+            import os
             import inspect
             import threading
             import sys
-            import gtk.glade
 
-            class gtkMain(threading.Thread):
+            class gtk_main(threading.Thread):
                 def run(self):
                     gtk.main()
 
@@ -3877,12 +3877,12 @@ If you did intend to write to a subnode of the device you should check the prope
                              str(self)+' - '+str(self.tree))
             _widgets.MDSplusWidget.doToAll(window, "reset")
         except Exception as exc:
-            raise Exception("No setup available, %s" % (str(exc),))
+            raise _exc.MdsException("No setup available, %s" % (str(exc),))
 
         window.connect("destroy", self.onSetupWindowClose)
         window.show_all()
         if Device.gtkThread is None or not Device.gtkThread.isAlive():
-            Device.gtkThread = gtkMain()
+            Device.gtkThread = gtk_main()
             Device.gtkThread.start()
         return _exc.MDSplusSUCCESS.status
     DW_SETUP = dw_setup
@@ -4029,6 +4029,5 @@ If you did intend to write to a subnode of the device you should check the prope
 
 
 ############# dtype to classes ##################################
-#
 _dsc.dtypeToClass[TreeNode.dtype_id] = TreeNode
 _dsc.dtypeToClass[TreePath.dtype_id] = TreePath
