@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mdsshr.h>
 
-#include "../mdsshr/version.h"
+#include <_mdsversion.h>
 #include "mdsdclthreadstatic.h"
 
 static inline DCLTHREADSTATIC_TYPE *buffer_alloc()

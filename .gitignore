@@ -118,6 +118,7 @@ LabView/Makefile.in
 configure
 ChangeLog
 MANIFEST.MF
+_include/_mdsversion.h
 docs/Makefile.in
 dwscope/Makefile.in
 include/camshr_messages.h
@@ -163,7 +164,6 @@ mdsobjects/cpp/testing/testutils/Makefile.in
 mdsshr/MdsGetStdMsg.c
 mdsshr/docs/Makefile.in
 mdsshr/testing/Makefile.in
-mdsshr/version.h
 mdstcpip/docs/Makefile.in
 mdstcpip/docs/img/Makefile.in
 mdstcpip/testing/Makefile.in

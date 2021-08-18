@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <_mdsshr.h>
 
-#include "../mdsshr/version.h"
+#include <_mdsversion.h>
 #include "treethreadstatic.h"
 
 // #define DEBUG
