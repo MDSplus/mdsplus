@@ -57,13 +57,13 @@ class MARTE2_SUPERVISOR(Device):
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
 
     parts.append({'path': ':INIT', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',50,None),Method(None,'init',head))",
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
                   'options': ('no_write_shot',)})
-    parts.append({'path': ':START_STORE', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',51,None),Method(None,'start_store',head))",
+    parts.append({'path': ':GOTORUN', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',20,None),Method(None,'gotorun',head))",
                   'options': ('no_write_shot',)})
-    parts.append({'path': ':STOP_STORE', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PPC',50,None),Method(None,'stop_store',head))",
+    parts.append({'path': ':STOP', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stopMarte',head))",
                   'options': ('no_write_shot',)})
 
     MODE_GAM = 1
@@ -583,6 +583,7 @@ class MARTE2_SUPERVISOR(Device):
         eventString1 = 'StateMachine:GOTORUN'
         Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
+        return 1
 
     def gotoidle(self):
         marteName = self.getNode('name').data()

@@ -54,6 +54,10 @@ public class jTraverser extends JFrame implements ActionListener
 	DisplayTags display_tags;
 	ModifyData modify_data;
 
+	String expName;
+	int expShot;
+	boolean expEdit, expReadonly;
+
 	public jTraverser(String exp_name, String shot_name, String access)
 	{
 		jTraverser.exp_name = exp_name;
@@ -146,8 +150,20 @@ public class jTraverser extends JFrame implements ActionListener
 		curr_menu.add(jm);
 		tree = new Tree(this);
 		if (exp_name != null)
-			tree.open(exp_name.toUpperCase(), (shot_name == null) ? -1 : Integer.parseInt(shot_name), edit, readonly,
-					false);
+		{
+		    this.expName = exp_name;
+		    this.expShot = (shot_name == null) ? -1 : Integer.parseInt(shot_name);
+		    this.expEdit = expEdit;
+		    this.expReadonly = readonly;
+		    SwingUtilities.invokeLater(new Runnable()
+		    {
+			public void run()
+			{
+				jTraverser.this.tree.open(jTraverser.this.expName.toUpperCase(), jTraverser.this.expShot, 
+					jTraverser.this.expEdit, jTraverser.this.expReadonly, false);
+			}
+		   });
+		}
 		getContentPane().add(tree);
 		getContentPane().add(status, BorderLayout.PAGE_END);
 		addWindowListener(new WindowAdapter()

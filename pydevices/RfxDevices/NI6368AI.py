@@ -263,6 +263,9 @@ class NI6368AI(Device):
 
         def run(self):
             import os
+
+            self.device = self.device.copy()
+
             bufSize = self.device.buf_size.data()
             segmentSize = self.device.seg_length.data()
             #counters = [0]*len(self.chanMap)
