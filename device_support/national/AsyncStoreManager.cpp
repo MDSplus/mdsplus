@@ -3,36 +3,6 @@
 pthread_mutex_t globalMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t segmentMutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Support class for enqueueing storage requests
-/*
-class SaveItem {
-    void *buffer;
-    char dataType;
-    int bufSize;
-    int sampleToRead;
-    int segmentSize;
-    int counter;
-    int dataNid;
-    int resampledNid;
-    int clockNid;
-    float timeIdx0;
-    void *treePtr;
-    SaveItem *nxt;
-    char *eventName;
-    int streamFactor;
-    double period;
-    TreeNode *dataNode;
-    TreeNode *clockNode;
-    TreeNode *resampledNode;
-    char *streamName;
-    float streamGain;
-    float streamOffset;
-    int shot;
-    int gain;
-    int numCoeffs;
-    float *coeffs;
- public:
-*/
 SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
                    int segmentSize, int counter, int dataNid, int clockNid,
                    float timeIdx0, void *treePtr, int shot, int streamFactor,
@@ -61,71 +31,28 @@ SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
   this->numCoeffs = numCoeffs;
   this->coeffs = coeffs;
   nxt = 0;
+/*
   dataNode = new TreeNode(dataNid, (Tree *)treePtr);
   clockNode = new TreeNode(clockNid, (Tree *)treePtr);
   resampledNode = NULL;
   if (resampledNid > 0)
     resampledNode = new TreeNode(resampledNid, (Tree *)treePtr);
+*/
 }
 
-/***********
-    void setNext(SaveItem *itm)
-    {
-        nxt = itm;
-    }
-
-    SaveItem *getNext()
-    {
-        return nxt;
-    }
-    int getShot() { return shot;}
-    Tree *getTree() { return(Tree *)treePtr;}
-    int getDataNid() {return dataNid;}
-
-
-    vector<string> split(const char *str, char c = ' ')
-    {
-        vector<string> result;
-
-        do
-        {
-            const char *begin = str;
-
-            while(*str != c && *str)
-                str++;
-
-            result.push_back(string(begin, str));
-        } while (0 != *str++);
-
-        return result;
-    }
-
-    void sendChannelSegmentPutEvent(TreeNode *dataNode)
-    {
-        try
-        {
-            char *path;
-            vector<string> tokens;
-            char event[256];
-            char treeStr[64];
-
-            path=dataNode->getPath();
-            tokens = split((const char *)path, ':');
-            sprintf(treeStr,"%s", (tokens[0].substr(1)).data());
-
-            tokens = split(tokens[tokens.size()-2].data(), '.');
-            sprintf(event,"%s_%s_CH%s", treeStr, tokens[0].data(),
-(tokens[1].substr(8)).data()); Event::setevent(event);
-        }
-        catch(MdsException *exc)
-        {
-            printf("Send Event Error: %s\n", exc->what());
-        }
-    }
-***********************/
 
 void SaveItem::save()
 {
+
+  Tree *tree = new Tree( ((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
+
+  dataNode = new TreeNode(dataNid, tree);
+  clockNode = new TreeNode(clockNid, tree);
+  resampledNode = NULL;
+  if (resampledNid > 0)
+    resampledNode = new TreeNode(resampledNid, tree);
+
+
   // Streaming stuff
 
   if (streamName && streamFactor > 0 && (counter % streamFactor) == 0)
@@ -209,19 +136,12 @@ void SaveItem::save()
     Data *startTime;
     Data *endTime;
     Data *dim;
-    Tree *tree = (Tree *)treePtr;
+    //Tree *tree = (Tree *)treePtr;
     if (timeIdx0 != timeIdx0) // is a NaN float
     {
       // printf("Configuration for gclock\n");
       // printf("---------------- time at idx 0 NAN\n");
-      /*
-      startTime = tree->tdiCompile("begin_of($)+slope_of($)*$", clockNode,
-      clockNode,startIdx); endTime =
-      tree->tdiCompile("begin_of($)+slope_of($)*$", clockNode, clockNode,
-      endIdx); dim = tree->tdiCompile("build_range(begin_of($)+slope_of($)*$,
-      begin_of($)+slope_of($)*($), slope_of($))", clockNode, clockNode,
-      startIdx, clockNode, clockNode, endIdx, clockNode);
-      */
+/*
       startTime =
           compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'start_time')",
                           (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
@@ -230,17 +150,20 @@ void SaveItem::save()
                           (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
       dim = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",
                             (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
+*/
+      startTime =
+          compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'start_time')",
+                          tree, 3, clockNode, startIdx, endIdx);
+      endTime =
+          compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'end_time')",
+                          tree, 3, clockNode, startIdx, endIdx);
+      dim = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",
+                          tree, 3, clockNode, startIdx, endIdx);
     }
     else
     {
       Data *timeAtIdx0 = new Float32(timeIdx0);
-      /*
-      startTime = tree->tdiCompile("$+slope_of($)*$", timeAtIdx0, clockNode,
-      startIdx); endTime = tree->tdiCompile("$+slope_of($)*$",timeAtIdx0,
-      clockNode, endIdx); dim = tree->tdiCompile("build_range($+slope_of($)*$,
-      $+slope_of($)*($), slope_of($))", timeAtIdx0, clockNode, startIdx,
-      timeAtIdx0, clockNode, endIdx, clockNode);
-      */
+/*
       startTime = compileWithArgs(
           "NIADCClockSegment($1, $2, $3, $4, 'start_time')", (Tree *)treePtr, 4,
           clockNode, startIdx, endIdx, timeAtIdx0);
@@ -249,6 +172,16 @@ void SaveItem::save()
                                 timeAtIdx0);
       dim = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'dim')",
                             (Tree *)treePtr, 4, clockNode, startIdx, endIdx,
+                            timeAtIdx0);
+*/
+      startTime = compileWithArgs(
+          "NIADCClockSegment($1, $2, $3, $4, 'start_time')", tree, 4,
+          clockNode, startIdx, endIdx, timeAtIdx0);
+      endTime = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'end_time')",
+                                tree, 4, clockNode, startIdx, endIdx,
+                                timeAtIdx0);
+      dim = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'dim')",
+                            tree, 4, clockNode, startIdx, endIdx,
                             timeAtIdx0);
     }
     switch (dataType)
@@ -374,23 +307,10 @@ void SaveItem::save()
   }
   delete dataNode;
   delete clockNode;
+  delete tree;
 }
 
-/*
 
-extern "C" void *handleSave(void *listPtr);
-
-class SaveList
-{
-        public:
-                pthread_cond_t itemAvailable;
-                pthread_t thread;
-                bool threadCreated;
-                SaveItem *saveHead, *saveTail;
-                bool stopReq;
-                pthread_mutex_t mutex;
-        public:
-*/
 SaveList::SaveList()
 {
   int status = pthread_mutex_init(&mutex, NULL);
@@ -399,21 +319,7 @@ SaveList::SaveList()
   stopReq = false;
   threadCreated = false;
 }
-/*
-    int getQueueLen()
-    {
-        pthread_mutex_lock(&mutex);
-        int len = 0;
-        SaveItem *currItem = saveHead;
-        while(currItem)
-        {
-            len++;
-            currItem = currItem->getNext();
-        }
-        pthread_mutex_unlock(&mutex);
-        return len;
-    }
-**/
+
 void SaveList::addItem(void *buffer, int bufSize, int sampleToRead,
                        char dataType, int segmentSize, int counter, int dataNid,
                        int clockNid, float trigTime, void *treePtr, int shot,
@@ -463,8 +369,8 @@ void SaveList::executeItems()
         pthread_exit(NULL);
       }
       /*
-                      int nItems = 0;
-                      for(SaveItem *itm = saveHead; itm; itm = itm->getNext(),
+         int nItems = 0;
+         for(SaveItem *itm = saveHead; itm; itm = itm->getNext(),
          nItems++); if(nItems > 2) printf("THREAD ACTIVATED: %d items
          pending\n", nItems);
       */
@@ -473,8 +379,8 @@ void SaveList::executeItems()
     saveHead = saveHead->getNext();
 
     /*
-                    int nItems = 0;
-                    for(SaveItem *itm = saveHead; itm; itm = itm->getNext(),
+       int nItems = 0;
+       for(SaveItem *itm = saveHead; itm; itm = itm->getNext(),
        nItems++); if(nItems > 2) printf("THREAD ACTIVATED: %d items pending\n",
        nItems);
     */
