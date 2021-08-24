@@ -38,6 +38,7 @@ _dsc = _mimport('descriptor')
 _dat = _mimport('mdsdata')
 _scr = _mimport('mdsscalar')
 _cmd = _mimport('compound')
+_exc = _mimport('mdsExceptions')
 
 
 class Array(_dat.Data):
@@ -59,7 +60,7 @@ class Array(_dat.Data):
         elif isinstance(value, _C.Array):
             try:
                 value = _N.ctypeslib.as_array(value)
-            except:
+            except Exception:
                 pass
         elif isinstance(value, (int, _ver.long)):
             value = _N.array(value)
@@ -117,7 +118,7 @@ class Array(_dat.Data):
             return super(Array, self).__getattribute__(name)
         except AttributeError:
             if name == '_value':
-                raise Exception('_value undefined')
+                raise _exc.MdsException('_value undefined')
             try:
                 return getattr(self._value, name)
             except AttributeError:
@@ -205,7 +206,7 @@ class Array(_dat.Data):
         if not self._value.flags.c_contiguous:
             self._value = self._value.copy('C')
         value = self._value.T
-        d = _dsc.Descriptor_a()
+        d = _dsc.DescriptorA()
         d.scale = 0
         d.digits = 0
         d.dtype = self.dtype_id
@@ -294,7 +295,7 @@ class Float32Array(Array):
     ntype = _N.float32
 
 
-_dsc.addDtypeToArrayClass(Float32Array)
+_dsc._add_dtype_to_array_class(Float32Array)
 
 
 class Float64Array(Array):
@@ -304,7 +305,7 @@ class Float64Array(Array):
     ntype = _N.float64
 
 
-_dsc.addDtypeToArrayClass(Float64Array)
+_dsc._add_dtype_to_array_class(Float64Array)
 
 
 class Complex64Array(Array):
@@ -313,7 +314,7 @@ class Complex64Array(Array):
     ntype = _N.complex64
 
 
-_dsc.addDtypeToArrayClass(Complex64Array)
+_dsc._add_dtype_to_array_class(Complex64Array)
 
 
 class Complex128Array(Array):
@@ -322,7 +323,7 @@ class Complex128Array(Array):
     ntype = _N.complex128
 
 
-_dsc.addDtypeToArrayClass(Complex128Array)
+_dsc._add_dtype_to_array_class(Complex128Array)
 
 
 class Uint8Array(Array):
@@ -338,7 +339,7 @@ class Uint8Array(Array):
         return _dat.Data.deserialize(self)
 
 
-_dsc.addDtypeToArrayClass(Uint8Array)
+_dsc._add_dtype_to_array_class(Uint8Array)
 
 
 class Uint16Array(Array):
@@ -348,7 +349,7 @@ class Uint16Array(Array):
     ntype = _N.uint16
 
 
-_dsc.addDtypeToArrayClass(Uint16Array)
+_dsc._add_dtype_to_array_class(Uint16Array)
 
 
 class Uint32Array(Array):
@@ -358,7 +359,7 @@ class Uint32Array(Array):
     ntype = _N.uint32
 
 
-_dsc.addDtypeToArrayClass(Uint32Array)
+_dsc._add_dtype_to_array_class(Uint32Array)
 
 
 class Uint64Array(Array):
@@ -368,7 +369,7 @@ class Uint64Array(Array):
     ntype = _N.uint64
 
 
-_dsc.addDtypeToArrayClass(Uint64Array)
+_dsc._add_dtype_to_array_class(Uint64Array)
 
 
 class Int8Array(Array):
@@ -384,7 +385,7 @@ class Int8Array(Array):
         return _dat.Data.deserialize(self)
 
 
-_dsc.addDtypeToArrayClass(Int8Array)
+_dsc._add_dtype_to_array_class(Int8Array)
 
 
 class Int16Array(Array):
@@ -394,7 +395,7 @@ class Int16Array(Array):
     ntype = _N.int16
 
 
-_dsc.addDtypeToArrayClass(Int16Array)
+_dsc._add_dtype_to_array_class(Int16Array)
 
 
 class Int32Array(Array):
@@ -404,7 +405,7 @@ class Int32Array(Array):
     ntype = _N.int32
 
 
-_dsc.addDtypeToArrayClass(Int32Array)
+_dsc._add_dtype_to_array_class(Int32Array)
 
 
 class Int64Array(Array):
@@ -414,7 +415,7 @@ class Int64Array(Array):
     ntype = _N.int64
 
 
-_dsc.addDtypeToArrayClass(Int64Array)
+_dsc._add_dtype_to_array_class(Int64Array)
 
 
 class FloatFArray(Float32Array):
@@ -422,7 +423,7 @@ class FloatFArray(Float32Array):
     dtype_id = 10
 
 
-_dsc.addDtypeToArrayClass(FloatFArray)
+_dsc._add_dtype_to_array_class(FloatFArray)
 
 
 class FloatDArray(Float64Array):
@@ -430,7 +431,7 @@ class FloatDArray(Float64Array):
     dtype_id = 11
 
 
-_dsc.addDtypeToArrayClass(FloatDArray)
+_dsc._add_dtype_to_array_class(FloatDArray)
 
 
 class ComplexFArray(Complex64Array):
@@ -438,7 +439,7 @@ class ComplexFArray(Complex64Array):
     dtype_id = 12
 
 
-_dsc.addDtypeToArrayClass(ComplexFArray)
+_dsc._add_dtype_to_array_class(ComplexFArray)
 
 
 class ComplexDArray(Complex128Array):
@@ -446,7 +447,7 @@ class ComplexDArray(Complex128Array):
     dtype_id = 13
 
 
-_dsc.addDtypeToArrayClass(ComplexDArray)
+_dsc._add_dtype_to_array_class(ComplexDArray)
 
 
 class StringArray(Array):
@@ -487,7 +488,7 @@ class StringArray(Array):
         return self.execute('$//$', self, y)
 
 
-_dsc.addDtypeToArrayClass(StringArray)
+_dsc._add_dtype_to_array_class(StringArray)
 
 
 class Uint128Array(Array):
@@ -498,7 +499,7 @@ class Uint128Array(Array):
         raise TypeError("Uint128Array is not yet supported")
 
 
-_dsc.addDtypeToArrayClass(Uint128Array)
+_dsc._add_dtype_to_array_class(Uint128Array)
 
 
 class Int128Array(Array):
@@ -509,7 +510,7 @@ class Int128Array(Array):
         raise TypeError("Int128Array is not yet supported")
 
 
-_dsc.addDtypeToArrayClass(Int128Array)
+_dsc._add_dtype_to_array_class(Int128Array)
 
 
 class FloatGArray(Float64Array):
@@ -517,7 +518,7 @@ class FloatGArray(Float64Array):
     dtype_id = 27
 
 
-_dsc.addDtypeToArrayClass(FloatGArray)
+_dsc._add_dtype_to_array_class(FloatGArray)
 
 
 class ComplexGArray(Complex128Array):
@@ -525,7 +526,7 @@ class ComplexGArray(Complex128Array):
     dtype_id = 29
 
 
-_dsc.addDtypeToArrayClass(ComplexGArray)
+_dsc._add_dtype_to_array_class(ComplexGArray)
 
 _apd = _mimport('apd')
 _cmp = _mimport('compound')

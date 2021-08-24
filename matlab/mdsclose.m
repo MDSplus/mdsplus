@@ -1,8 +1,8 @@
 function [ status ] = mdsclose()
-% MDSCLOSE - closes currently active tree 
-%   
+% MDSCLOSE - closes currently active tree
+%
 %     This routine will close the tree at the top of the open tree stack.
-% 
+%
 %      Previous incarnations also disconnected thin-client (mdsconnect) connections.
 %      THAT IS NO LONGER DONE
 %
@@ -12,11 +12,10 @@ function [ status ] = mdsclose()
         try
             info.connection.get('TreeClose()');
         catch err
-            status=0;
+            status = 0;
             err.message
         end
     else
         status = mdsvalue('TreeClose()');
     end
 end
-

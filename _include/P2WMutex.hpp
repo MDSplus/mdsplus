@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _P2WMUTEX_HPP
+#define _P2WMUTEX_HPP
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -280,3 +282,4 @@ public:
 };
 static_assert(sizeof(pthread_cond_t) == sizeof(P2WCond), "Size is not correct");
 #endif
+#endif // ifndef _P2WMUTEX_HPP

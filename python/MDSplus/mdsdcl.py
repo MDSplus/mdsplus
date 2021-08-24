@@ -23,17 +23,16 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from __future__ import print_function
+import ctypes as _C
 import sys as _sys
 
 
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
-
-import ctypes as _C
 
 _ver = _mimport('version')
 _exc = _mimport('mdsExceptions')
@@ -42,10 +41,10 @@ _tre = _mimport('tree')
 try:
     _mdsdcl = _ver.load_library('Mdsdcl')
     _mdsdcl. mdsdcl_do_command_dsc.argtypes = [
-        _C.c_char_p, _dsc.Descriptor_xd.PTR, _dsc.Descriptor_xd.PTR]
+        _C.c_char_p, _dsc.DescriptorXD.PTR, _dsc.DescriptorXD.PTR]
     _mdsdcl._mdsdcl_do_command_dsc.argtypes = [
-        _C.c_void_p, _C.c_char_p, _dsc.Descriptor_xd.PTR, _dsc.Descriptor_xd.PTR]
-except:
+        _C.c_void_p, _C.c_char_p, _dsc.DescriptorXD.PTR, _dsc.DescriptorXD.PTR]
+except Exception:
     def dcl(*a, **kw):
         raise _exc.LibNOTFOU("Mdsdcl")
 else:
@@ -63,9 +62,9 @@ else:
         @type setcommand: str
         @rtype: str / tuple / None
         """
-        xd_error = _dsc.Descriptor_xd()
+        xd_error = _dsc.DescriptorXD()
         error_p = xd_error.ptr
-        xd_output = _dsc.Descriptor_xd()
+        xd_output = _dsc.DescriptorXD()
         out_p = xd_output.ptr
         _exc.checkStatus(_mdsdcl.mdsdcl_do_command_dsc(
             _ver.tobytes('set command %s' % (setcommand,)), error_p, out_p))

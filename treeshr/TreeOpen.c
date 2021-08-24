@@ -83,7 +83,7 @@ static int GetVmForTree(TREE_INFO *info, int nomap);
 static int MapTree(TREE_INFO *info, TREE_INFO *root, int edit_flag);
 static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent,
                                NODE *subtreetop);
-
+extern void TreeCleanupConnections();
 extern void **TreeCtx();
 
 int TreeClose(char const *tree, int shot)
@@ -325,6 +325,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
         status = TreeNOT_OPEN;
     }
   }
+  TreeCleanupConnections();
   return status;
 }
 
@@ -1272,7 +1273,6 @@ int TreeReopenNci(struct tree_info *info)
         status = _TreeOpenNciW(info, 0);
       MDS_IO_CLOSE(reopen_put);
     }
-
   }
   UNLOCKINFO(info);
   return status;
@@ -1351,6 +1351,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
         free_top_db(dblist);
     }
   }
+  TreeCleanupConnections();
   return status;
 }
 
@@ -1465,6 +1466,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
     _TreeWriteTree(dbid, 0, 0);
     MDS_IO_CLOSE(fd_keepalive);
   }
+  TreeCleanupConnections();
   return status;
 }
 

@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Data, TdiCompile, version, String, Descriptor_xd
+from MDSplus import Data, TdiCompile, version, String, DescriptorXD
 import os
 import sys
 import ctypes

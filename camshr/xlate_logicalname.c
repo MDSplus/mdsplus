@@ -104,7 +104,7 @@ Xlate_LogicalName_Exit:
 
   return status;
 }
-EXPORT int CamXlateLogicalname(char *Name, CamKey *key) 
+EXPORT int CamXlateLogicalname(char *Name, CamKey *key)
 {
   return xlate_logicalname(Name, key);
 }

@@ -36,22 +36,8 @@ AX_IS_RELEASE([always])
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[
-    # ],[
-    # ])
-
-dnl look if a version from git directory can be obtained
+dnl get version info from generated file
 AX_GIT_REVISION
-
-dnl fixup branch and tag
-RELEASE_BRANCH=${BRANCH::12}
-if   [[ ! -z "${BRANCH::12}" ]]
-then RELEASE_BRANCH=${BRANCH::12}
-elif [[ ! -z "${GIT_BRANCH::12}" ]]
-then RELEASE_BRANCH=${GIT_BRANCH::12}
-else RELEASE_BRANCH=unknown
-fi
-RELEASE_TAG="${RELEASE_BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 dnl add reconfigure target option to autoconf generated Makefile
 AX_RECONFIGURE_TARGETS
@@ -100,8 +86,6 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
-AC_PROG_YACC
-AM_PROG_LEX
 
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
@@ -109,13 +93,6 @@ AC_MSG_RESULT([before VISIBILITY])
 gl_VISIBILITY
 AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
 CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
-#if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
-#	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
-#fi
-
-#FIXME: Remove this when Makefile.inc goes away
-#AS_CASE(["$MKDIR_P"],
-#        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
 
 dnl See if we need to use native compilers
 AS_CASE(["$host"],
@@ -336,7 +313,7 @@ IDL_LD=""
 LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
-CPPFLAGS="-I\${top_srcdir}/include -I\${top_srcdir}/_include -I\${top_builddir}/include $CPPFLAGS"
+CPPFLAGS=" -I\${top_builddir}/_include -I\${top_srcdir}/_include -I\${top_builddir}/include -I\${top_srcdir}/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
 then
@@ -1206,7 +1183,8 @@ dnl Here we define all custom autoheader adds to mdsconfig.h.in
 
 dnl add here what goes on tom of mdsconfig.h
 AH_TOP(
-#pragma once
+#ifndef _MDSCONFIG_H
+#define _MDSCONFIG_H
 #ifdef _MSC_VER
 #define __attribute__(...)
 #define EXPORT __declspec(dllexport)
@@ -1248,6 +1226,7 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of mdsconfig.h
 AH_BOTTOM(
 #endif // _MSC_VER else
+#endif // ifndef _MDSCONFIG_H
 )
 
 
@@ -1342,7 +1321,6 @@ AC_SUBST([GIT_REMOTE])
 AC_SUBST([GIT_REMOTE_URL])
 AC_SUBST([GIT_COMMIT])
 AC_SUBST([GIT_COMMIT_DATE])
-AC_SUBST([GIT_SRCDIR])
 
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
@@ -1376,85 +1354,85 @@ AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
 AC_OUTPUT(
-  Makefile.inc
-  Makefile
-  docs/Makefile
   envsyms
+  Makefile
+  Makefile.inc
+  _include/_mdsversion.h
   actions/Makefile
   camshr/Makefile
   ccl/Makefile
   d3dshr/Makefile
+  docs/Makefile
   dwscope/Makefile
   hdf5/Makefile
   idlmdsevent/Makefile
   idlmdswidgets/Makefile
-  javamds/Makefile
-  java/Makefile
-  java/tests/Makefile
-  java/mdsplus/Makefile
-  java/mdsplus-api/Makefile
-  java/mdsplus-api/tests/Makefile
-  java/mdsobjects/Makefile
-  java/mdsobjects/docs/Makefile
-  java/mdsobjects/tests/Makefile
+  java/devicebeans/Makefile
+  java/jdevices/Makefile
   java/jdispatcher/Makefile
   java/jscope/Makefile
   java/jtraverser/Makefile
   java/jtraverser2/Makefile
-  java/jdevices/Makefile
-  java/devicebeans/Makefile
+  java/Makefile
+  java/mdsobjects/docs/Makefile
+  java/mdsobjects/Makefile
+  java/mdsobjects/tests/Makefile
+  java/mdsplus-api/Makefile
+  java/mdsplus-api/tests/Makefile
+  java/mdsplus/Makefile
+  java/tests/Makefile
+  javamds/Makefile
   LabView/Makefile
-  manpages/Makefile
   macosx/Makefile
+  manpages/Makefile
   math/Makefile
   math/testing/Makefile
   mdsdcl/Makefile
   mdsdcl/mdsdclVersionInfo.c
-  mdslib/Makefile
   mdslib/docs/Makefile
+  mdslib/Makefile
   mdslib/testing/Makefile
   mdslibidl/Makefile
-  mdsobjects/cpp/Makefile
+  mdsmisc/Makefile
   mdsobjects/cpp/docs/Makefile
+  mdsobjects/cpp/Makefile
   mdsobjects/cpp/testing/Makefile
   mdsobjects/cpp/testing/testutils/Makefile
-  python/MDSplus/docs/Makefile
-  python/MDSplus/tests/Makefile
-  python/MDSplus/_version.py
+  mdsobjects/labview/Makefile
+  mdsshr/docs/Makefile
+  mdsshr/Makefile
+  mdsshr/testing/Makefile
+  mdssql/Makefile
+  mdstcpip/docs/img/Makefile
+  mdstcpip/docs/Makefile
+  mdstcpip/Makefile
+  mdstcpip/testing/Makefile
+  mdstcpip/zlib/Makefile
+  mdsvme/Makefile
+  mitdevices/Makefile
   pydevices/HtsDevices/_version.py
   pydevices/MitDevices/_version.py
   pydevices/RfxDevices/_version.py
   pydevices/W7xDevices/_version.py
-  mdsobjects/labview/Makefile
-  mdsmisc/Makefile
-  mdsshr/Makefile
-  mdsshr/version.h
-  mdsshr/testing/Makefile
-  mdsshr/docs/Makefile
-  mdssql/Makefile
-  mdstcpip/Makefile
-  mdstcpip/testing/Makefile
-  mdstcpip/zlib/Makefile
-  mdstcpip/docs/Makefile
-  mdstcpip/docs/img/Makefile
-  mdsvme/Makefile
-  mitdevices/Makefile
+  python/MDSplus/_version.py
+  python/MDSplus/docs/Makefile
+  python/MDSplus/tests/Makefile
   remcam/Makefile
   roam/Makefile
-  rpm/Makefile
   rpm/envsyms
+  rpm/Makefile
   rpm/post_install_script
   scripts/Makefile
   servershr/Makefile
   setevent/Makefile
   tcl/Makefile
+  tdic/Makefile
   tdishr/Makefile
   tdishr/testing/Makefile
-  tdic/Makefile
   tditest/Makefile
   tditest/testing/Makefile
-  testing/Makefile
   testing/backends/check/Makefile
+  testing/Makefile
   testing/selftest/Makefile
   traverser/Makefile
   treeshr/Makefile

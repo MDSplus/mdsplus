@@ -553,6 +553,7 @@ rm -f /etc/profile.d/mdsplus.csh
   </package>
 
   <package name="kernel_bin" arch="bin" summary="MDSplus core binaries" description="MDSplus core binaries">
+    <requires package="readline" external=""/>
     <include dir="/usr/local/mdsplus/bin"/>
     <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <exclude file="/usr/local/mdsplus/bin/dw*"/>
@@ -778,7 +779,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
-    <requires package="python-numpy" external=""/>
+    <requires package="numpy" external=""/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
 
@@ -822,31 +823,49 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
  <!-- dist first -->
  <external_packages dist="Ubuntu20">
-   <python-numpy package="python3-numpy"/>
+   <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
    <xinetd package="busybox"/>
+   <readline package="libreadline8"/>
+ </external_packages>
+
+ <external_packages dist="Ubuntu18">
+   <numpy package="python-numpy"/>
+   <java package="java-runtime"/>
+   <xinetd package="busybox"/>
+   <readline package="libreadline7"/>
  </external_packages>
 
  <external_packages dist="el8">
-   <python-numpy package="python3-numpy"/>
+   <numpy package="python3-numpy"/>
    <java/>
    <xinetd/>
+   <readline/>
+ </external_packages>
+
+ <external_packages dist="el7">
+   <python-numpy package="numpy"/>
+   <java/>
+   <xinetd/>
+   <readline/>
  </external_packages>
 
  <!-- platform last -->
  <external_packages platform="redhat">
-   <python-numpy/>
+   <numpy/>
    <java/>
    <xinetd/>
+   <readline/>
  </external_packages>
 
  <external_packages platform="alpine">
-   <python-numpy package="py-numpy"/>
-   <java package="java-jre"/>
+   <numpy package="py-numpy"/>
+   <java package="openjdk8-jre"/>
+   <readline/>
  </external_packages>
 
  <external_packages platform="debian">
-   <python-numpy package="python-numpy"/>
+   <numpy package="python-numpy"/>
    <java package="java-runtime"/>
    <xinetd package="busybox"/>
  </external_packages>
