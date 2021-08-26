@@ -66,18 +66,15 @@ class NI6683(Device):
     del(chanName)
     parts.append({'path':':DEV_TYPE', 'type':'text'})
     parts.append({'path':':INIT','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','READY',50,None),Method(None,'init',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
         'options':('no_write_shot',)})
-    parts.append({'path':':START_STORE','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','READY',51,None),Method(None,'start_store',head))",
+    parts.append({'path':':TRIGGER','type':'action',
+        'valueExpr':"Action(Dispatch('PXI_SERVER','PULSE_ON',10,None),Method(None,'trigger',head))",
         'options':('no_write_shot',)})
-    parts.append({'path':':STOP_STORE','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_store',head))",
+    parts.append({'path':':STOP','type':'action',
+        'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':TRIG_EVENT', 'type':'text'})
-    parts.append({'path':':TRIGGER','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','PON',50,None),Method(None,'trigger',head))",
-        'options':('no_write_shot',)})
 
 
     DEV_IS_OPEN = 1
@@ -656,8 +653,9 @@ class NI6683(Device):
         worker.configure(self.copy())
         worker.start()
     """ 
-    def stop_store(self):
-        self.debugPrint('================= PXI 6683 stop store ================')
+
+    def stop(self):
+        self.debugPrint('================= PXI 6683 stop ================')
         worker = NI6683.ni6683WorkerDict[self.nid]
         if worker.isAlive():
            self.debugPrint("PXI 6683 stop_worker")

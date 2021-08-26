@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-from MDSplus import mdsExceptions, Device, Data, Dimension, Range, Window
+from MDSplus import mdsExceptions, Device, Data, Dimension, Range, Window, Tree
 from MDSplus import Int32, Float32, Float32Array, Float64
 from ctypes import POINTER,CDLL,Structure,c_int,c_double,c_uint,c_char,c_byte,c_ubyte,c_float,byref,c_char_p,c_void_p,c_short,c_ulonglong
 #from ctypes import *
@@ -239,6 +239,7 @@ class NI6368EV(Device):
         def run(self):
 
             # info
+            self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
             self.device = self.device.copy()
 
             nid = self.device.getNid()

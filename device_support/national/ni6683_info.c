@@ -111,7 +111,7 @@ int main(int argc, const char **argv)
             else
                 printf("%sntpd service is stoped\n", KGRN);
 
-            if( !checkService("%s-core status", "ptpd", "active") ) //CODAC 6
+            if( checkService("%s-core status", "ptpd", "inactive") ) //CODAC 6
            //if( !checkService("%s-nisync status", "ptpd", "stopped") )//CODAC 5
                 printf("%sptpd service MUST be started\n", KRED);
             else

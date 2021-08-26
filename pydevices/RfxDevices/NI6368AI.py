@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import mdsExceptions, Device, Data, Dimension, Range, Window
+from MDSplus import mdsExceptions, Device, Data, Dimension, Range, Window, Tree
 from MDSplus import Int32, Float32, Float32Array, Float64
 from ctypes import CDLL, Structure, c_int, c_uint, c_char, c_byte, c_ubyte, c_float, byref, c_char_p, c_void_p, c_short, c_ulonglong
 #from ctypes import *
@@ -223,7 +223,6 @@ class NI6368AI(Device):
         except:
             pass
             #self.debugPrint('CLOSE INFO: HANDLE NOT FOUND')
-        return 1
 
 # Worker Management
     def saveWorker(self):
@@ -264,6 +263,7 @@ class NI6368AI(Device):
         def run(self):
             import os
 
+            self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
             self.device = self.device.copy()
 
             bufSize = self.device.buf_size.data()
@@ -438,7 +438,6 @@ class NI6368AI(Device):
             NI6368AI.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
             """
-            return
 
         def stop(self):
             self.device.debugPrint('Stop ASYNCH WORKER TERMINATED')
@@ -876,7 +875,6 @@ class NI6368AI(Device):
 
         self.debugPrint("===============================================")
 
-        return 1
 
 # StartStore
     def start_store(self):
@@ -944,7 +942,6 @@ class NI6368AI(Device):
 
         self.debugPrint("===============================================")
 
-        return 1
 
 # StopStore
 
@@ -979,7 +976,6 @@ class NI6368AI(Device):
 
         self.debugPrint("===============================================")
 
-        return 1
 
     """
     def readConfig(self,arg):
@@ -1032,7 +1028,6 @@ class NI6368AI(Device):
 
         self.debugPrint("===============================================")
 
-        return 1
 
 
 # trigger
@@ -1059,4 +1054,4 @@ class NI6368AI(Device):
 
         self.debugPrint("===============================================")
 
-        return 1
+
