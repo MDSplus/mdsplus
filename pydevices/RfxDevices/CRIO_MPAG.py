@@ -5,7 +5,7 @@ from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_ui
 import os
 from time import sleep
 import sys, traceback
-import exceptions
+#import exceptions
 
 class CRIO_MPAG(Device):
     """NI Compact RIO MITICA AGPS analogue signals"""
@@ -98,7 +98,7 @@ class CRIO_MPAG(Device):
           msger=""
           if logErrno and CRIO_MPAG.niInterfaceLib is not None:
               errno = CRIO_MPAG.niInterfaceLib.getErrno();
-              print "errno ", errno
+              print ("errno ", errno)
               if errno is not None:
                   msger = 'Error (%d) %s' % (errno, os.strerror( errno ))
           print( self.name + ":" + msg, obj, msger );
@@ -167,11 +167,11 @@ class CRIO_MPAG(Device):
             numSamples = -1 # continuous
             clockMode = self.device.clockModeDict[self.device.clock_mode.data()]
 
-            print 'startSave'
+            print ('startSave')
             saveList = c_void_p(0)
             CRIO_MPAG.niInterfaceLib.startSave(byref(saveList))
 
-            print 'getStopAcqFlag'
+            print ('getStopAcqFlag')
             CRIO_MPAG.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq))
  
           
@@ -213,22 +213,22 @@ class CRIO_MPAG(Device):
 
             chanNid_c      = (c_int * len(chanNid) )(*chanNid)
             resNid_c       = (c_int * len(resNid))(*resNid)
- 	    chanState_c    = (c_int * len(chanState))(*chanState)
+            chanState_c    = (c_int * len(chanState))(*chanState)
 
-            print self.device.session
-            print "numChan ",numChan
+            print (self.device.session)
+            print ("numChan ",numChan)
             #print "chanState_c ",chanState_c
-            print "bufSize ",bufSize
-            print "segmentSize ",segmentSize 
-            print "numSamples ",numSamples
+            print ("bufSize ",bufSize)
+            print ("segmentSize ",segmentSize )
+            print ("numSamples ",numSamples)
             #print "chanNid_c ",chanNid_c
-            print "clock_source mid ",self.device.clock_source.getNid()
-            print "timeAt0 ",timeAt0
-            print "period ",period
-            print "tree ptr ",self.treePtr
-            print "saveList ",saveList, 
-            print "stopAcq ",self.stopAcq
-            print "shot ",self.device.getTree().shot
+            print ("clock_source mid ",self.device.clock_source.getNid())
+            print ("timeAt0 ",timeAt0)
+            print ("period ",period)
+            print ("tree ptr ",self.treePtr)
+            print ("saveList ",saveList)
+            print ("stopAcq ",self.stopAcq)
+            print ("shot ",self.device.getTree().shot)
             #print "resNid_c ",resNid_c
 
 
@@ -245,7 +245,7 @@ class CRIO_MPAG(Device):
 
         def stop(self):
             #self.stopAcq.value = 1;
-            print self.stopAcq       
+            print (self.stopAcq)       
             CRIO_MPAG.niInterfaceLib.setStopAcqFlag(self.stopAcq);
 
       
@@ -263,7 +263,7 @@ class CRIO_MPAG(Device):
         try:
             boardId = self.board_id.data();
             boardIdDev='RIO%d'%(int(boardId))  
-            print '-------->'+boardIdDev
+            print ('-------->'+boardIdDev)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Board Identifier undefined')
             raise DevBAD_PARAMETER
@@ -273,7 +273,7 @@ class CRIO_MPAG(Device):
             if self.restoreInfo() == self.DEV_IS_OPEN :
                if self.restoreWorker():
                   if self.worker.isAlive():
-                      print 'stop Store'
+                      print ('stop Store')
                       self.stop_store()
                       self.wait_store()
                self.closeInfo()
@@ -307,22 +307,22 @@ class CRIO_MPAG(Device):
 #clock mode
         try:
             clockMode = self.clock_mode.data()
-            print 'ClockMode -------->'+clockMode
+            print ('ClockMode -------->'+clockMode)
             if clockMode == 'INTERNAL' :
                 frequency = self.clock_freq.data()
-                print frequency
+                print (frequency)
                 if( frequency > self.MAX_ACQ_FREQUENCY ):
                     frequency = self.MAX_ACQ_FREQUENCY
                     self.debugPrint('cRIO MPAG Frequency out of limits. Set to max frequency value : %f' %(self.MAX_ACQ_FREQUENCY))
                     self.clock_freq.putData(frequency)
 
                 clockSource = Range(None, None, Float64(1./frequency))
-                print clockSource
+                print (clockSource)
                 self.debugPrint('cRIO MPAG CLOCK: ', clockSource)
                 self.clock_source.putData(clockSource)
             else:
                 clockSource = self.clock_source.evaluate()
-                print clockSource
+                print (clockSource)
                 frequency = self.clock_freq.data()
         except Exception as ex:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid clock definition : '+str(ex))
@@ -331,14 +331,14 @@ class CRIO_MPAG(Device):
 #trigger source
         try:
             trigMode = self.trig_mode.data()
-            print 'Trig --------> '+trigMode
+            print ('Trig --------> '+trigMode)
             if trigMode == 'EXTERNAL':
                 trigSource = self.trig_source.data()
             else:
                 try:
                     trigSource = self.trig_source.data()
-		except:
-		    trigSource = 0;
+                except:
+                    trigSource = 0;
                     self.trig_source.putData(Float32(trigSource))
             self.debugPrint('cRIO MPAG Trigger source: ',trigSource)
         except Exception as ex:
@@ -484,7 +484,7 @@ class CRIO_MPAG(Device):
 
         if self.restoreWorker() :
             if self.worker.isAlive():
-                print "stop_worker"
+                print ("stop_worker")
                 self.worker.stop()
         return 1
 
@@ -497,11 +497,11 @@ class CRIO_MPAG(Device):
 
         if self.restoreWorker() :
             if self.worker.isAlive():
-                print "stop_worker"
+                print ("stop_worker")
                 self.worker.stop()
                 self.worker.join()
         
-        print "Close Info"
+        print ("Close Info")
         self.closeInfo()
         return 1
 
@@ -511,7 +511,7 @@ class CRIO_MPAG(Device):
         try:
             boardId = self.board_id.data();
             boardIdDev='RIO%d'%(int(boardId))  
-            print '-------->'+boardIdDev
+            print ('-------->'+boardIdDev)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Board Identifier undefined')
             raise DevBAD_PARAMETER
@@ -531,7 +531,7 @@ class CRIO_MPAG(Device):
         try:
             boardId = self.board_id.data();
             boardIdDev='RIO%d'%(int(boardId))  
-            print '-------->'+boardIdDev
+            print ('-------->'+boardIdDev)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Board Identifier undefined')
             raise DevBAD_PARAMETER
