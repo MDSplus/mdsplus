@@ -151,15 +151,129 @@ class MARTE2_SUPERVISOR(MDSplus.Device):
         except:
             return []
 
-        interfaceNodes = []
-        if isinstance(interfaces, MDSplus.VECTOR):
-            for i in range(interfaces.getNumDescs()):
-                currInterface = interfaces.getDescAt(i)
-                interfaceNodes.append(currInterface)
-        else:
-            for interf1 in interfaces.data():
-                if isinstance(interf1, str):
-                    interf = interf1
+        # first iteration to get threadMap
+            for state in range(numStates):
+                numThreads = getattr(
+                    self, 'state_%d_num_threads' % (state+1)).data()
+                for thread in range(numThreads):
+                    threadName = getattr(
+                        self, 'state_%d_thread_%d_name' % (state+1, thread+1)).data()
+                    try:
+                        gamNodes = self.getGamList(state, thread)
+                    except:
+                        raise Exception(
+                            'Cannot get GAM list for state: ' + str(state + 1) + ', thread: '+str(thread + 1))
+                    for currGamNode in gamNodes:
+                        nid = currGamNode.getNid()
+                        if nid in threadMap:
+                            threadMap[nid] += [threadName]
+                        else:
+                            threadMap[nid] = [threadName]
+
+        # Second iteration, build the remaining
+            for state in range(numStates):
+                stateInfo = {}
+                stateInfo['name'] = getattr(
+                    self, 'state_%d_name' % (state+1)).data()
+                numThreads = getattr(
+                    self, 'state_%d_num_threads' % (state+1)).data()
+                stateThreads = []
+                for thread in range(numThreads):
+                    threadInfo = {}
+                    threadName = getattr(
+                        self, 'state_%d_thread_%d_name' % (state+1, thread+1)).data()
+                    try:
+                        core = getattr(self, 'state_%d_thread_%d_core' %
+                                       (state+1, thread+1)).data()
+                        threadInfo['core'] = core
+                    except:
+                        pass
+                    threadInfo['name'] = threadName
+                    gamNames = []
+                    threadPeriod = 0
+                    gamNids = []
+                    gamNodes = self.getGamList(state, thread)
+                    for currGamNode in gamNodes:
+                        nid = currGamNode.getNid()
+                        if currGamNode.isOn():
+                            try:
+                                gamClass = currGamNode.getData().getDevice()
+                                gamInstance = gamClass(currGamNode)
+                            except:
+                                raise Exception(
+                                    'Cannot instantiate device for node '+currGamNode.getFullPath())
+                            gamList = []
+                            if not (currGamNode.getNid() in gamNids):
+                                # try:
+                                gamInstance.prepareMarteInfo()
+                                currPeriod = gamInstance.getMarteInfo(
+                                    threadMap, retGams, retData, gamList, typeDicts)
+                                # except:
+                                # return 'Cannot get timebase for ' + gam, {},{}
+                                gamNids.append(currGamNode.getNid())
+                                if currPeriod > 0 and threadPeriod > 0:
+                                    raise Exception('More than one component driving thread timing for state: '+str(
+                                        state+1)+', thread: '+str(thread+1))
+                                else:
+                                    if currPeriod > 0:
+                                        threadPeriod = currPeriod
+                            else:
+                                dummyGams = []
+                                dummyData = []
+                                gamInstance.getMarteInfo(
+                                    threadMap, dummyGams, dummyData, gamList, typeDicts)
+                            gamNames += gamList
+# TIMINGS
+                    if threadPeriod == 0:
+                        raise Exception(
+                            'No component driving thread timing for state: '+str(state+1)+', thread: '+str(thread+1))
+                    gamList = []
+                    self.getTimingInfo(
+                        state, thread, threadPeriod, retGams, retData, gamList)
+                    gamNames += gamList
+#############################
+
+                    threadInfo['gams'] = gamNames
+                    stateThreads.append(threadInfo)
+                stateInfo['threads'] = stateThreads
+                statesInfo.append(stateInfo)
+            info['states'] = statesInfo
+
+            info['gams'] = retGams
+            info['data_sources'] = retData
+            info['name'] = self.getNode('name').data()
+            return error, info, threadMap, typeDicts
+        except Exception as inst:
+            print(traceback.format_exc())
+     #       return inst.args[0], None, None
+            return str(inst), None, None, None
+
+
+# Enrich GAMs and Data Sources with what is required to store timing information (IOGAM + TreeWriter) is seg_len > 0
+
+    def getTimingInfo(self, state, thread, threadPeriod, retGams, dataSources, gamList):
+        segLen = getattr(self, 'times_state_%d_thread_%d_seg_len' %
+                         (state+1, thread+1)).data()
+        if(segLen == 0):
+            return
+        stateName = getattr(self, 'state_%d_name' % (state+1)).data()
+        threadName = getattr(self, 'state_%d_thread_%d_name' %
+                             (state+1, thread+1)).data()
+        cpuMask = getattr(self, 'times_state_%d_thread_%d_cpu_mask' %
+                          (state+1, thread+1)).data()
+        timeSignals = []
+        gamNodes = self.getGamList(state, thread)
+        for currGamNid in gamNodes:
+            if currGamNid.isOn():
+                gamName = currGamNid.getNodeName()
+                gamClass = currGamNid.getData().getDevice()
+                gamInstance = gamClass(currGamNid)
+                gamMode = gamInstance.mode.data()
+                if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
+                    timeSignals.append(gamName+'_ReadTime')
+                    timeSignals.append(gamName+'_ExecTime')
+                elif gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT:
+                    timeSignals.append(gamName+'_IOGAM_WriteTime')
                 else:
                     interf = str(interf1, 'utf_8')
                 currInterface = t.getNode(interf)
@@ -1322,11 +1436,11 @@ $<APP_NAME> = {
         confText += '    MaxNumberOfThreads = 8\n'
         confText += '    MinNumberOfThreads = 1\n'
         confText += '}    \n'
-    
+
         confText += ' +StateMachine = {\n'
         confText += '    Class = StateMachine\n'
         confText += '    +INITIAL = {\n'
-        confText += '        Class = ReferenceContainer    \n'  
+        confText += '        Class = ReferenceContainer    \n'
         confText += '        +START = {\n'
         confText += '            Class = StateMachineEvent\n'
         confText += '            NextState = "IDLE"\n'
@@ -1370,7 +1484,8 @@ $<APP_NAME> = {
         confText += '                Function = PrepareNextState\n'
         confText += '                +Parameters = {\n'
         confText += '                   Class = ConfigurationDatabase\n'
-        confText += '                    param1 = '+info['states'][0]['name']+'\n'
+        confText += '                    param1 = ' + \
+            info['states'][0]['name']+'\n'
         confText += '                }\n'
         confText += '           }\n'
         confText += '            +StopCurrentStateExecutionMsg = {\n'
@@ -1517,10 +1632,10 @@ $<APP_NAME> = {
         confText += ' }\n'
         confText += '}\n'
         print (confText)
-        f = open(info['name']+'_marte_configuration.cfg', 'w')
+        f = open('/tmp/'+info['name']+'_marte_configuration.cfg', 'w')
         f.write(confText)
         f.close()
-
+        print('END BUILD')
 
     def startMarteIdle(self):
         self.buildConfiguration()
@@ -1547,8 +1662,6 @@ $<APP_NAME> = {
         Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
 
-
-
     def doState(self, state):
         marteName = self.getNode('name').data()
         stateName = getattr(self, 'state_%d_name' % (state)).data()
@@ -1563,7 +1676,6 @@ $<APP_NAME> = {
         time.sleep(.1)
         Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
-        return 1
 
     def doState1(self):
         self.doState(1)
@@ -1593,7 +1705,6 @@ $<APP_NAME> = {
         time.sleep(0.1)
         Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
-        return 1
 
     def stopMarte(self):
         marteName = self.getNode('name').data()
@@ -1601,13 +1712,21 @@ $<APP_NAME> = {
         time.sleep(2)
         MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         time.sleep(2)
-        MDSplus.Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
+        Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         # KILL MARTe process
         import subprocess
         import os
-
-        command = 'kill -KILL `ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'`' % (marteName)
-        os.system(command)
+        command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'' % (
+            marteName)
+        pid, error = subprocess.Popen("{cmd}".format(
+            cmd=command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if len(pid) == 0:
+            if len(error) != 0:
+                print('INFO : %s' % (error))
+        else:
+            for p in pid.split():
+                os.kill(int(p), 9)
+                print('MARTe Process PID : %s Killed\n' % (p))
         return 1
 
         command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'' % (

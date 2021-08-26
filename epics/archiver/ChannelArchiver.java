@@ -333,7 +333,6 @@ public class ChannelArchiver
 
 	    if( shot > 0 )
 	    {
-                System.out.println("Experiment "+expName);
                 tree = new Tree(expName, shot);
                 isTrendShot = false;
 	    }
@@ -525,62 +524,62 @@ public class ChannelArchiver
 	}
 
 
-        public void run()
-        {
-	        long startTime, endTime;
-            //while(true)
-            while(!terminate)
-            {
-		        GetMany getMany = null;
-		        int count = 0;
-		        startTime = System.currentTimeMillis();
-		        while (queue.size() > 0)
-		        {
-		            if(getMany == null)
-			        getMany = connection.getMany();
-			        TreeDataDescriptor descr = null;
-                    try {
-                        descr = queue.take();
-		            } catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
-		           
-		            if(descr.getDim() > 1)
-		            {
-		            	Data args[] = new Data[2];
-			            args[0] = new Int64Array(descr.getTimes());
-			            args[1] = descr.getVals();
-			            getMany.append("put_"+count, "MakeTimestampedSegment("+descr.getNodeName()+",$1,$2)", args);
-		            }
-		            else
-		            {
-			            getMany.append("put_"+count, "PutRow("+descr.getNodeName()+",1000,"+descr.getTimes()[0]+"Q,"+descr.getVal().toString()+")", new Data[0]);
-		            }
-		            count++;
-		            if(count > 10000)
-		            {
-			            System.out.println("Warning: more than 10000 pending write operations");
-			            break;
-		            }
-		        }
-		        if(getMany != null)
-		        {
-		            try {
-			            if(debug) System.out.println("Writing "+count+ " data items");
-			                getMany.execute();
-		            } catch(Exception exc){System.err.println("Error in GetMany.execute(): " + exc);}
-                }
-	            endTime = System.currentTimeMillis();
-	            long interval = endTime - startTime;
-	            if(debug)
-	                System.out.println("Pending Write queue length: " + queue.size());
-	            if(interval < 1000)
-	            {
-	                try {
-	            	    Thread.currentThread().sleep(1000-interval); 
-	                }catch(InterruptedException exc){}
-	            }
-            }
-        }
-        
+	public void run()
+	{
+		long startTime, endTime;
+	    //while(true)
+	    while(!terminate)
+	    {
+			GetMany getMany = null;
+			int count = 0;
+			startTime = System.currentTimeMillis();
+			while (queue.size() > 0)
+			{
+			    if(getMany == null)
+				getMany = connection.getMany();
+				TreeDataDescriptor descr = null;
+	            try {
+	                descr = queue.take();
+			    } catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
+
+			    if(descr.getDim() > 1)
+			    {
+			    	Data args[] = new Data[2];
+				    args[0] = new Int64Array(descr.getTimes());
+				    args[1] = descr.getVals();
+				    getMany.append("put_"+count, "MakeTimestampedSegment("+descr.getNodeName()+",$1,$2)", args);
+			    }
+			    else
+			    {
+				    getMany.append("put_"+count, "PutRow("+descr.getNodeName()+",1000,"+descr.getTimes()[0]+"Q,"+descr.getVal().toString()+")", new Data[0]);
+			    }
+			    count++;
+			    if(count > 10000)
+			    {
+				    System.out.println("Warning: more than 10000 pending write operations");
+				    break;
+			    }
+			}
+			if(getMany != null)
+			{
+			    try {
+				    if(debug) System.out.println("Writing "+count+ " data items");
+				        getMany.execute();
+			    } catch(Exception exc){System.err.println("Error in GetMany.execute(): " + exc);}
+	        }
+		    endTime = System.currentTimeMillis();
+		    long interval = endTime - startTime;
+		    if(debug)
+		        System.out.println("Pending Write queue length: " + queue.size());
+		    if(interval < 1000)
+		    {
+		        try {
+		    	    Thread.currentThread().sleep(1000-interval);
+		        }catch(InterruptedException exc){}
+		    }
+	    }
+	}
+
     } //End static inner  class TreeHandlerConnection
 
     static class TreeManager
@@ -1308,8 +1307,6 @@ public class ChannelArchiver
 
 	    System.out.println("gov.aps.jca.Context.auto_addr_list " + jca.getProperty("gov.aps.jca.Context.auto_addr_list"));
 	    System.out.println("gov.aps.jca.Context.addr_list " + jca.getProperty("gov.aps.jca.Context.addr_list"));
-
-            System.out.println("Experiment "+experiment);
 
 	    tree = new Tree(experiment, -1);
 		if(createPulse)

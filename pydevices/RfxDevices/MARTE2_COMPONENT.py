@@ -1900,9 +1900,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
             dataSourceText += '        AutomaticSegmentation = 0\n'
             if outputTrigger != None:
                 dataSourceText += '        TimeSignal = 1\n'
-            if startTime != 0:
-                dataSourceText += '        SamplePhase = ' + \
-                    str(int(round(startTime/period)))+'\n'
+            #if startTime != 0:
+            #    dataSourceText += '        SamplePhase = ' + \
+            #        str(int(round(startTime/period)))+'\n'
             dataSourceText += '      }\n'
 
             for outputDict in outputDicts:
@@ -1915,9 +1915,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     dataSourceText += '        MakeSegmentAfterNWrites = ' + \
                         str(outputDict['seg_len'])+'\n'
                     dataSourceText += '        AutomaticSegmentation = 0\n'
-                    if startTime != 0:
-                        dataSourceText += '        SamplePhase = ' + \
-                            str(int(round(startTime/period)))+'\n'
                     dataSourceText += '      }\n'
 
                 # Check if the output is a struct and seglen is > 0 for one o more fields
@@ -1932,9 +1929,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                         dataSourceText += '        MakeSegmentAfterNWrites = ' + \
                             str(fieldDict['seg_len'])+'\n'
                         dataSourceText += '        AutomaticSegmentation = 0\n'
-                        if startTime != 0:
-                            dataSourceText += '        SamplePhase = ' + \
-                                str(int(round(startTime/period)))+'\n'
                         dataSourceText += '      }\n'
             # end for fieldDict in outputDict['fields']:
             dataSourceText += '    }\n'
@@ -2792,9 +2786,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
                 dataSourceText += '        AutomaticSegmentation = 0\n'
                 dataSourceText += '        Type = uint32\n'
-                if startTime != 0:
-                    dataSourceText += '        SamplePhase = ' + \
-                        str(int(round(startTime/period)))+'\n'
+                #if startTime != 0:
+                #    dataSourceText += '        SamplePhase = ' + \
+                #        str(int(round(startTime/period)))+'\n'
                 dataSourceText += '      }\n'
 
             outIdx = 0
@@ -2813,9 +2807,9 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     if isSynch and outIdx == configDict['outTimeIdx'] and outputTrigger != None:
                         dataSourceText += '        TimeSignal = 1\n'
 
-                    if startTime != 0:
-                        dataSourceText += '        SamplePhase = ' + \
-                            str(int(round(startTime/period)))+'\n'
+                   # if startTime != 0:
+                   #     dataSourceText += '        SamplePhase = ' + \
+                   #         str(int(round(startTime/period)))+'\n'
                     dataSourceText += '      }\n'
                 outIdx = outIdx + 1
             dataSourceText += '    }\n'
@@ -2846,7 +2840,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 frequency = 1./period
 
                 gamText += '        Frequency = '+str(round(frequency, 4))+'\n'
-               # gamText += '        Frequency = '+str(round(frequency))+'\n'
 
             gamText += '      }\n'
         gamText += '    }\n'
@@ -3143,7 +3136,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
             gamText += '        DataSource = '+dataSourceName+'_Timer\n'
             gamText += '        Type = uint32\n'
             gamText += '        NumberOfElements = 1\n'
-#        gamText += '        Frequency = '+str(int(round(1./period)))+'\n'
             gamText += '        Frequency = '+str(round(1./period, 4))+'\n'
             gamText += '      }\n'
             gamText += '    }\n'
@@ -3391,11 +3383,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
         dataSourceText += '    Class = '+dataSourceClass+'\n'
 # parameters
         dataSourceText = self.reportParameters(paramDicts, dataSourceText, 1)
-#      for paramDict in paramDicts:
-#        if paramDict['is_text']:
-#          dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
-#        else:
-#          dataSourceText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
 
 # input Signals
         dataSourceText += '    Signals = {\n'

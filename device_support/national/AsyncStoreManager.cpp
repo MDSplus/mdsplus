@@ -5,8 +5,6 @@
 pthread_mutex_t globalMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t segmentMutex = PTHREAD_MUTEX_INITIALIZER;
 
-//#define DEBUG_QUEUE
-
 SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
                    int segmentSize, int counter, int dataNid, int clockNid,
                    float timeIdx0, void *treePtr, int shot, int streamFactor,
@@ -35,24 +33,20 @@ SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
   this->numCoeffs = numCoeffs;
   this->coeffs = coeffs;
   nxt = 0;
-  isUpdate = false;
-}
-
-SaveItem::SaveItem(int dataNid, void *treePtr, MDSplus::Data *startPtr, 
-MDSplus::Data *endPtr, MDSplus::Data *dimPtr, MDSplus::Data *dimResPtr,  int resampledNid){
-  this->dataNid = dataNid;
-  this->treePtr = treePtr;
-  this->startPtr = startPtr;
-  this->endPtr = endPtr;
-  this->dimPtr = dimPtr;
-  this->dimResPtr = dimResPtr;
-  this->resampledNid = resampledNid;
-  nxt = 0;
-  isUpdate = true;
 }
 
 void SaveItem::save()
 {
+
+  Tree *tree = new Tree(((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
+
+  dataNode = new TreeNode(dataNid, tree);
+  clockNode = new TreeNode(clockNid, tree);
+  resampledNode = NULL;
+  if (resampledNid > 0)
+    resampledNode = new TreeNode(resampledNid, tree);
+
+  // Streaming stuff
 
   // std::cout << "START SAVE" << std::endl;
   //Tree *tree = new Tree(((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
@@ -122,14 +116,17 @@ void SaveItem::save()
               period * (counter + actSamples * sampleInterval) + timeIdx0;
           actSamples++;
         }
-        EventStream::send(shot, streamName, false, actSamples, times, 1, &actSamples, samples);
-        delete[] samples;
-        delete[] times;
+        scaled /= gain;
+
+        scaled = scaled * streamGain + streamOffset;
+        samples[actSamples] = scaled;
+        times[actSamples] =
+            period * (counter + actSamples * sampleInterval) + timeIdx0;
+        actSamples++;
       }
-      catch (const MdsException &exc)
-      {
-        printf("Cannot convert stream sample: %s\n", exc.what());
-      }
+      EventStream::send(shot, streamName, false, actSamples, times, 1, &actSamples, samples);
+      delete[] samples;
+      delete[] times;
     }
   // std::cout << "SAVE  1" << std::endl;
 
@@ -151,181 +148,153 @@ void SaveItem::save()
 
       endIdx = new Int32(counter + segmentSize - 1);
 
-      Data *startTime;
-      Data *endTime;
-      Data *dim;
-      if (timeIdx0 != timeIdx0) // is a NaN float
+    Data *startTime;
+    Data *endTime;
+    Data *dim;
+    if (timeIdx0 != timeIdx0) // is a NaN float
+    {
+      // printf("Configuration for gclock\n");
+      // printf("---------------- time at idx 0 NAN\n");
+      startTime =
+          compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'start_time')",
+                          tree, 3, clockNode, startIdx, endIdx);
+      endTime =
+          compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'end_time')",
+                          tree, 3, clockNode, startIdx, endIdx);
+      dim = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",
+                            tree, 3, clockNode, startIdx, endIdx);
+    }
+    else
+    {
+      Data *timeAtIdx0 = new Float32(timeIdx0);
+      startTime = compileWithArgs(
+          "NIADCClockSegment($1, $2, $3, $4, 'start_time')", tree, 4,
+          clockNode, startIdx, endIdx, timeAtIdx0);
+      endTime = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'end_time')",
+                                tree, 4, clockNode, startIdx, endIdx,
+                                timeAtIdx0);
+      dim = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'dim')",
+                            tree, 4, clockNode, startIdx, endIdx,
+                            timeAtIdx0);
+    }
+    switch (dataType)
+    {
+    case SHORT:
+    {
+      short *fBuf = new short[segmentSize];
+      memset(fBuf, 0, sizeof(short) * segmentSize);
+      Int16Array *fData = new Int16Array((short *)fBuf, segmentSize);
+      pthread_mutex_lock(&segmentMutex);
+      try
       {
-        // printf("Configuration for gclock\n");
-        // printf("---------------- time at idx 0 NAN\n");
-        startTime =
-            compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'start_time')",
-                            tree, 3, clockNode, startIdx, endIdx);
-        endTime =
-            compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'end_time')",
-                            tree, 3, clockNode, startIdx, endIdx);
-        dim = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",
-                              tree, 3, clockNode, startIdx, endIdx);
+        if (resampledNode)
+          dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
+                                       resampledNode, 100);
+        else
+          dataNode->beginSegment(startTime, endTime, dim, fData);
       }
       else
       {
-        //  std::cout << "SAVE  3" << std::endl;
-
-        Data *timeAtIdx0 = new Float32(timeIdx0);
-        Data *periodData = new Float64(period);
-        std::cout << "PERIOD: " << period << std::endl;
-        startTime = compileWithArgs(
-            "NIADCClockSegment($1, $2, $3, $4, 'start_time', $5)", tree, 5,
-            clockNode, startIdx, endIdx, timeAtIdx0, periodData);
-        endTime = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'end_time', $5)",
-                                  tree, 5, clockNode, startIdx, endIdx,
-                                  timeAtIdx0, periodData);
-        dim = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'dim', $5)",
-                              tree, 5, clockNode, startIdx, endIdx,
-                              timeAtIdx0, periodData);
-//  std::cout << "SAVE  4" << std::endl;
-
-/*
-        Data *timeAtIdx0 = new Float32(timeIdx0);
-        startTime = compileWithArgs(
-            "NIADCClockSegment($1, $2, $3, $4, 'start_time')", tree, 4,
-            clockNode, startIdx, endIdx, timeAtIdx0);
-std::cout << "CHIAMO LA FUN.." << std::endl;
-        endTime = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'end_time')",
-                                  tree, 4, clockNode, startIdx, endIdx,
-                                  timeAtIdx0);
-std::cout << "CHIAMO LA FUN.." << std::endl;
-        dim = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'dim')",
-                              tree, 4, clockNode, startIdx, endIdx,
-                              timeAtIdx0);
-std::cout << "CHIAMO LA FUN.." << std::endl;
-*/
+        printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
+               dataNode->getFullPath(), exc.what());
       }
-// std::cout << "SAVE  5" << std::endl;
-
- //     std::cout << "CURRENTLY SAVING START TIME: " << startTime->getFloat() << ", END TIME: " << endTime->getFloat() << std::endl;
-// std::cout << "SAVE  6" << std::endl;
-      switch (dataType)
-      {
-      case SHORT:
-      {
-        short *fBuf = new short[segmentSize];
-        memset(fBuf, 0, sizeof(short) * segmentSize);
-        Int16Array *fData = new Int16Array((short *)fBuf, segmentSize);
-        pthread_mutex_lock(&segmentMutex);
-        try
-        {
-          if (resampledNode)
-            dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
-                                         resampledNode, 100);
-          else
-            dataNode->beginSegment(startTime, endTime, dim, fData);
-        }
-        catch (const MdsException &exc)
-        {
-          printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
-                 dataNode->getFullPath(), exc.what());
-        }
-        pthread_mutex_unlock(&segmentMutex);
-        delete[] fBuf;
-        deleteData(fData);
-      }
-      break;
-      case FLOAT:
-      {
-        float *fBuf = new float[segmentSize];
-        memset(fBuf, 0, sizeof(float) * segmentSize);
-        Float32Array *fData = new Float32Array((float *)fBuf, segmentSize);
-        pthread_mutex_lock(&segmentMutex);
-        try
-        {
-          if (resampledNode)
-            dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
-                                         resampledNode, 100);
-          else
-            dataNode->beginSegment(startTime, endTime, dim, fData);
-        }
-        catch (const MdsException &exc)
-        {
-          printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
-                 dataNode->getFullPath(), exc.what());
-        }
-        pthread_mutex_unlock(&segmentMutex);
-        delete[] fBuf;
-        deleteData(fData);
-      }
-      break;
-      }
-
-      deleteData(startIdx);
-      deleteData(endIdx);
-      deleteData(startTime);
-      deleteData(endTime);
+      pthread_mutex_unlock(&segmentMutex);
+      delete[] fBuf;
+      deleteData(fData);
     }
-
-    try
+    break;
+    case FLOAT:
     {
-      switch (dataType)
+      float *fBuf = new float[segmentSize];
+      memset(fBuf, 0, sizeof(float) * segmentSize);
+      Float32Array *fData = new Float32Array((float *)fBuf, segmentSize);
+      pthread_mutex_lock(&segmentMutex);
+      try
       {
-      case SHORT:
+        if (resampledNode)
+          dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
+                                       resampledNode, 100);
+        else
+          dataNode->beginSegment(startTime, endTime, dim, fData);
+      }
+      catch (MdsException &exc)
       {
-        // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter);
-        Int16Array *data = new Int16Array((short *)buffer, bufSize);
-
-        pthread_mutex_lock(&segmentMutex);
-        try
-        {
-          if (resampledNode)
-            dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-          else
-            dataNode->putSegment(data, -1);
-        }
-        catch (const MdsException &exc)
-        {
-          printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
-                 exc.what());
-        }
-        pthread_mutex_unlock(&segmentMutex);
-        deleteData(data);
-        delete[](short *) buffer;
+        printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
+               dataNode->getFullPath(), exc.what());
       }
-      break;
-      case FLOAT:
-      {
-        // printf("Float Save data %s counter %d\n", dataNode->getPath(), counter);
-        Float32Array *data = new Float32Array((float *)buffer, bufSize);
-        pthread_mutex_lock(&segmentMutex);
-        try
-        {
-          if (resampledNode)
-            dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-          else
-            dataNode->putSegment(data, -1);
-        }
-        catch (const MdsException &exc)
-        {
-          printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
-                 exc.what());
-        }
-        pthread_mutex_unlock(&segmentMutex);
-        deleteData(data);
-        delete[](float *) buffer;
-      }
-      break;
-      }
-
-      /* Send Event on Segment update <TreeName>_<DeviceNodeName>_CH<numchannel>*/
-      // sendChannelSegmentPutEvent(dataNode);
+      pthread_mutex_unlock(&segmentMutex);
+      delete[] fBuf;
+      deleteData(fData);
     }
-    catch (const MdsException &exc)
-    {
-      printf("Cannot put segment: %s\n", exc.what());
+    break;
     }
-    delete clockNode;
+    deleteData(startIdx);
+    deleteData(endIdx);
+    deleteData(startTime);
+    deleteData(endTime);
   }
-  // std::cout << "DELETING DATANODE AND TREE" << std::endl;
+
+  try
+  {
+    switch (dataType)
+    {
+    case SHORT:
+    {
+      // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter);
+      Int16Array *data = new Int16Array((short *)buffer, bufSize);
+
+      pthread_mutex_lock(&segmentMutex);
+      try
+      {
+        if (resampledNode)
+          dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
+        else
+          dataNode->putSegment(data, -1);
+      }
+      catch (MdsException &exc)
+      {
+        printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
+               exc.what());
+      }
+      pthread_mutex_unlock(&segmentMutex);
+      deleteData(data);
+      delete[](short *) buffer;
+    }
+    break;
+    case FLOAT:
+    {
+      // printf("Float Save data %s counter %d\n", dataNode->getPath(), counter);
+      Float32Array *data = new Float32Array((float *)buffer, bufSize);
+      pthread_mutex_lock(&segmentMutex);
+      try
+      {
+        if (resampledNode)
+          dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
+        else
+          dataNode->putSegment(data, -1);
+      }
+      catch (MdsException &exc)
+      {
+        printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
+               exc.what());
+      }
+      pthread_mutex_unlock(&segmentMutex);
+      deleteData(data);
+      delete[](float *) buffer;
+    }
+    break;
+    }
+
+    /* Send Event on Segment update <TreeName>_<DeviceNodeName>_CH<numchannel>*/
+    // sendChannelSegmentPutEvent(dataNode);
+  }
+  catch (MdsException *exc)
+  {
+    printf("Cannot put segment: %s\n", exc->what());
+  }
   delete dataNode;
-  //delete tree;
+  delete clockNode;
+  delete tree;
 }
 
 SaveList::SaveList()

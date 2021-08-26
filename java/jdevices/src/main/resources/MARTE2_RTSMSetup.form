@@ -125,14 +125,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase div.:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="3764"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField59">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Write CPU Mask:"/>
-                <Property name="offsetNid" type="int" value="3682"/>
+                <Property name="offsetNid" type="int" value="3716"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -8895,7 +8888,7 @@
                         <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Output: "/>
-                        <Property name="offsetNid" type="int" value="3696"/>
+                        <Property name="offsetNid" type="int" value="3648"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
