@@ -561,13 +561,11 @@ class MARTE2_SUPERVISOR(Device):
         f.write(confText)
         f.close()
         print('END BUILD')
-        return 1
 
     def startMarteIdle(self):
         self.buildConfiguration()
         subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
-        return 1
 
     def startMarte(self):
         self.buildConfiguration()
@@ -576,14 +574,12 @@ class MARTE2_SUPERVISOR(Device):
             'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
         time.sleep(2)
         self.gotorun()
-        return 1
 
     def gotorun(self):
         marteName = self.getNode('name').data()
         eventString1 = 'StateMachine:GOTORUN'
         Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
-        return 1
 
     def gotoidle(self):
         marteName = self.getNode('name').data()
@@ -607,22 +603,21 @@ class MARTE2_SUPERVISOR(Device):
         time.sleep(.1)
         Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
-        return 1
 
     def doState1(self):
-        return self.doState(1)
+        self.doState(1)
 
     def doState2(self):
-        return self.doState(2)
+        self.doState(2)
 
     def doState3(self):
-        return self.doState(2)
+        self.doState(2)
 
     def doState4(self):
-        return self.doState(2)
+        self.doState(2)
 
     def doState5(self):
-        return self.doState(2)
+        self.doState(2)
 
     def suspendMarte(self):
         marteName = self.getNode('name').data()
@@ -637,7 +632,6 @@ class MARTE2_SUPERVISOR(Device):
         time.sleep(0.1)
         Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
-        return 1
 
     def stopMarte(self):
         marteName = self.getNode('name').data()
