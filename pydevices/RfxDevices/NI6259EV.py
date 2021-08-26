@@ -152,6 +152,8 @@ class NI6259EV(Device):
 
 
 # saveInfo and restoreInfo allow to handle open file descriptors
+
+
     def saveInfo(self):
         print('SAVE INFO')
         NI6259EV.ni6259Fds[self.nid] = self.fd
@@ -235,9 +237,9 @@ class NI6259EV(Device):
 
         def run(self):
 
-            self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
+            self.device.setTree(
+                Tree(self.device.getTree().name, self.device.getTree().shot))
             self.device = self.device.copy()
-
 
             nid = self.device.getNid()
             chanModes = NI6259EV.ni6259chanModes[nid]
@@ -264,8 +266,8 @@ class NI6259EV(Device):
             eventNames_c = (c_char_p * numChans)()
 
             for chan in range(numChans):
-                    # self.device.debugPrint 'CHANNEL', self.chanMap[chan]+1
-                    # self.device.debugPrint '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]])
+                # self.device.debugPrint 'CHANNEL', self.chanMap[chan]+1
+                # self.device.debugPrint '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]])
                 if chanModes[chan] == 'CONTINUOUS(FREQ1)':
                     isBurst_c[chan] = 0
                     f1Divs_c[chan] = f1Div
@@ -402,6 +404,8 @@ class NI6259EV(Device):
 # End Inner class AsynchStore
 
 ##########init############################################################################
+
+
     def init(self):
 
         self.debugPrint(

@@ -35,7 +35,7 @@ RfxDevices
 from MDSplus import Device, Data, Uint64, Event, Float64, Tree
 from MDSplus.mdsExceptions import DevCOMM_ERROR, DevBAD_PARAMETER
 from threading import Thread
-from ctypes import * # CDLL, c_int, byref, c_byte, c_ulonglong, c_ubyte
+from ctypes import CDLL, Structure, c_int, byref, c_int8, c_uint8, c_uint32, c_uint64
 import os
 import sys
 import numpy as np
@@ -100,7 +100,7 @@ class NI6683(Device):
     ni6683PulseLengths = {}
     ni6683ModuleTriggerName = ""
     ni6683RelTime = 0 #initialization
-    ni6683AbsTime = 0 
+    ni6683AbsTime = 0
 
 
     NISYNC_TIME_IMMEDIATE_NANOS = 0
@@ -118,9 +118,9 @@ class NI6683(Device):
     eventTime = None
 
     class nisync_device_info(Structure):
-        _fields_ = [("driver_version", c_char * 30),
-                    ("model", c_char * 10),
-                    ("name", c_char * 10),
+        _fields_ = [("driver_version", c_uint8 * 30),
+                    ("model", c_uint8 * 10),
+                    ("name", c_uint8 * 10),
                     ("state", c_int),
                     ("time_since_sync", c_uint64),
                     ("serial_number", c_uint32),
@@ -174,14 +174,6 @@ class NI6683(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevCOMM_ERROR
 
-            # PTP file descriptor opening
-            # try:
-            #     self.ptp_fd = NI6683.niLib.nisync_open_ptp_device(c_int(devType), c_int(boardId))
-            # except Exception as e:
-            #     emsg = 'Cannot open device : %s'%(str(e))
-            #     Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
-            #     raise DevCOMM_ERROR
-
             self.termDict = {}
             for termName in NI6683.termNameDict.keys():
                 try:
@@ -227,16 +219,7 @@ class NI6683(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
             raise DevBAD_PARAMETER
 
-    """
-    def getRelTime(self, absTime):
-        try:
-            return float((absTime - self.abs_start.data())/1E9 + self.rel_start.data())
-        except:
-            emsg = 'Cannot convert absolute time to relative ' + str(self.fd)
-            Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
-            raise DevBAD_PARAMETER
-    """
-    def getStartEnd(self, termName): 
+    def getStartEnd(self, termName):
 
         termNameNid = termName+str(self.nid)
 
@@ -307,9 +290,9 @@ class NI6683(Device):
         NI6683.ni6683RecorderDict[self.nid] = []
 
         for termName in NI6683.termNameDict.keys():
-             
-            termNameNid = termName+str(self.nid) 
-  
+
+            termNameNid = termName+str(self.nid)
+
             try:
                 NI6683.relTime = self.rel_start.data()
             except:
@@ -326,7 +309,7 @@ class NI6683(Device):
 
             if (mode == 'RECORDER RISING' or mode == 'RECORDER FALLING' or mode == 'RECORDER ANY'):
                 NI6683.ni6683RecorderDict[self.nid].append(termName)
-            
+
             try:
                 freq = getattr(self, termName.lower()+'_frequency').data()
             except:
@@ -335,7 +318,7 @@ class NI6683(Device):
                 raise DevBAD_PARAMETER
             NI6683.ni6683Frequencies[termNameNid] = freq
             periodNs = int(1000000000./float(freq))
-            
+
             try:
                 dutyCycle = getattr(self, termName.lower()+'_duty_cycle').data()
             except:
@@ -348,14 +331,14 @@ class NI6683(Device):
                 raise DevBAD_PARAMETER
             dutyCycleNs = int(periodNs * dutyCycle/100.)
             NI6683.ni6683DutyCycles[termNameNid] = dutyCycleNs
-            
+
             try:
                 NI6683.ni6683TermEnds[termNameNid] = getattr(self, termName.lower()+'_end').data()
             except:
                 emsg = 'Invalid end in ' + termName
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
-            
+
             try:
                 NI6683.ni6683PulseLengths[termNameNid] = getattr(self, termName.lower()+'_pulse_len').data()
             except:
@@ -374,14 +357,14 @@ class NI6683(Device):
                 NI6683.ni6683ModuleTriggerName = self.trig_event.data()
             except:
                 NI6683.ni6683ModuleTriggerName = None
-            
+
             try:
                 NI6683.ni6683AbsStart = self.abs_start.data()
             except:
                 emsg = 'Invalid abs start ' + termName
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
-            
+
     def trigger(self):
 
         # MyEvent inner class, it saves the timestamp data passed by the event ( event type: <name>, <curr_time> )
@@ -401,14 +384,14 @@ class NI6683(Device):
         if (trigger_event != None): # external time reference trigger
             eventObj=MyEvent(trigger_event)
             eventObj.run()
-            trigTime = c_ulonglong(self.eventTime)
+            trigTime = c_uint64(self.eventTime)
             self.abs_start.putData(Uint64(trigTime))
 
         else: # internal time reference
             curr_nanos = c_uint64()
             status = NI6683.niLib.nisync_get_time_ns(self.fd, byref(curr_nanos))
             self.abs_start.putData(Uint64(curr_nanos.value))
-        
+
 
         #NI6683.ni6683RecorderDict[self.nid] = []
         for termName in NI6683.termNameDict.keys():
@@ -418,7 +401,7 @@ class NI6683(Device):
             mode = NI6683.ni6683Modes[termNameNid]
             freq = NI6683.ni6683Frequencies[termNameNid]
             if mode == 'DISABLED':#########################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
                 self.checkStatus(status, 'Cannot inquire future events')
                 if enabled.value != 0:
@@ -435,7 +418,7 @@ class NI6683(Device):
                     status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable timestamp triggers')
             elif mode == 'CLOCK':#############################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
@@ -459,14 +442,14 @@ class NI6683(Device):
 
                 print('Generate Clock: '+ str(self.termDict[termName]) + '  ' + str(startNs) + '  '+str(endNs)+'  ' + str(periodNs) + '  '+str(NI6683.ni6683DutyCycles[termNameNid]))
                 status = NI6683.niLib.nisync_generate_clock_ns(c_int(self.termDict[termName]), c_uint64(startNs),
-                    c_uint64(endNs), c_ulonglong(periodNs), c_ulonglong(dutyCycle))
-                print (os.strerror(get_errno()))                
+                    c_uint64(endNs), c_uint64(periodNs), c_uint64(dutyCycle))
+                print (os.strerror(get_errno()))
                 if status != 0:
                    emsg = 'Error in replace clock for %s status = %d '%(termName, status)
                    Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                    raise DevCOMM_ERROR
             elif mode == 'HIGH PULSE':###############################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
@@ -493,12 +476,12 @@ class NI6683(Device):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                         raise DevBAD_PARAMETER
                     print ("DEBUG -> PULSE AT: ", startNs[i])
-                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_ulonglong(startNs[i]), c_ubyte(self.NISYNC_LEVEL_HIGH))
+                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_uint64(startNs[i]), c_uint8(self.NISYNC_LEVEL_HIGH))
                     self.checkStatus(status, 'Cannot generate future event')
-                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_ulonglong(endNs[i]), c_ubyte(self.NISYNC_LEVEL_LOW))
+                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_uint64(endNs[i]), c_uint8(self.NISYNC_LEVEL_LOW))
                     self.checkStatus(status, 'Cannot generate future event')
             elif mode == 'LOW PULSE':###################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
@@ -524,13 +507,13 @@ class NI6683(Device):
                         emsg = 'Start Time greater than End Time for ' + termName
                         Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                         raise DevBAD_PARAMETER
-                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_ulonglong(startNs[i]), c_ubyte(self.NISYNC_LEVEL_LOW))
-                    # print ("ERRORE" + NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_ulonglong(startNs[i]), c_ubyte(self.NISYNC_LEVEL_LOW)))
+                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_uint64(startNs[i]), c_uint8(self.NISYNC_LEVEL_LOW))
+                    # print ("ERRORE" + NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_uint64(startNs[i]), c_uint8(self.NISYNC_LEVEL_LOW)))
                     self.checkStatus(status, 'Cannot generate future event')
-                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_ulonglong(endNs[i]), c_ubyte(self.NISYNC_LEVEL_HIGH))
+                    status = NI6683.niLib.nisync_generate_fte_ns(c_int(self.termDict[termName]), c_uint64(endNs[i]), c_uint8(self.NISYNC_LEVEL_HIGH))
                     self.checkStatus(status, 'Cannot generate future event')
             elif mode == 'HIGH':################################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
@@ -551,7 +534,7 @@ class NI6683(Device):
                 status = NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_HIGH))
                 self.checkStatus(status, 'Cannot set terminal level')
             elif mode == 'LOW':####################################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
@@ -572,7 +555,7 @@ class NI6683(Device):
                 status = NI6683.niLib.nisync_set_terminal_level(c_int(self.termDict[termName]), c_int(self.NISYNC_LEVEL_LOW))
                 self.checkStatus(status, 'Cannot set terminal level')
             elif mode == 'RECORDER RISING':#############################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
@@ -593,7 +576,7 @@ class NI6683(Device):
                         c_int(self.NISYNC_EDGE_RISING), c_int(1))
                 self.checkStatus(status, 'Cannot enable timestamp triggers')
             elif mode == 'RECORDER FALLING':################################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
@@ -614,7 +597,7 @@ class NI6683(Device):
                         c_int(self.NISYNC_EDGE_FALLING), c_int(1))
                 self.checkStatus(status, 'Cannot enable timestamp triggers')
             elif mode == 'RECORDER ANY': ##############################################################
-                enabled = c_byte()
+                enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
                 status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
@@ -633,7 +616,7 @@ class NI6683(Device):
                 print('ENABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
                 status = NI6683.niLib.nisync_enable_timestamp_trigger(c_int(self.termDict[termName]),
                         c_int(self.NISYNC_EDGE_ANY), c_int(1))
-                self.checkStatus(status, 'Cannot enable timestamp triggers')  
+                self.checkStatus(status, 'Cannot enable timestamp triggers')
 
         self.debugPrint('=================  PXI 6683 start AsynchStore ===============')
         worker = self.AsynchStore()
@@ -642,17 +625,6 @@ class NI6683(Device):
         worker.configure(self.copy())
         worker.start()
 
-
-    """
-    def start_store(self):
-        self.debugPrint('=================  PXI 6683 start_store ===============')
-        self.restoreInfo()
-        worker = self.AsynchStore()
-        NI6683.ni6683WorkerDict[self.nid] = worker
-        worker.daemon = True
-        worker.configure(self.copy())
-        worker.start()
-    """ 
 
     def stop(self):
         self.debugPrint('================= PXI 6683 stop ================')
@@ -671,22 +643,13 @@ class NI6683(Device):
                     print('DISABLE CLOCK for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_abort_clock(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable the clock')
-                enabled = c_byte()
+                enabled = c_int8()
                 status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
                 self.checkStatus(status, 'Cannot inquire future events')
                 if enabled.value != 0:
                     print('DISABLE FUTURE EVENT for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_disable_future_time_events(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable future events')
-                # activeEdge = c_int()
-                # decimationCount = c_int()
-                # status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
-                #     byref(enabled), byref(activeEdge), byref(decimationCount))
-                # self.checkStatus(status, 'Cannot inquire timestamp triggers')
-                # if enabled.value != 0:
-                #     print('DISABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
-                #     status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
-                #     self.checkStatus(status, 'Cannot disable timestamp triggers')
         self.closeInfo()
 
 
@@ -720,7 +683,7 @@ class NI6683(Device):
         def run(self):
             self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
             self.device = self.device.copy()
-            
+
             while not self.stopReq:
                 readyFds = self.poll.poll(1000)
                 for fdTuple in readyFds:

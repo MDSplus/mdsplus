@@ -202,6 +202,7 @@ class MARTE2_SUPERVISOR(Device):
 
 
 # Enrich GAMs and Data Sources with what is required to store timing information (IOGAM + TreeWriter) is seg_len > 0
+
     def getTimingInfo(self, state, thread, threadPeriod, retGams, dataSources, gamList):
         segLen = getattr(self, 'times_state_%d_thread_%d_seg_len' %
                          (state+1, thread+1)).data()
@@ -362,11 +363,11 @@ class MARTE2_SUPERVISOR(Device):
         confText += '    MaxNumberOfThreads = 8\n'
         confText += '    MinNumberOfThreads = 1\n'
         confText += '}    \n'
-    
+
         confText += ' +StateMachine = {\n'
         confText += '    Class = StateMachine\n'
         confText += '    +INITIAL = {\n'
-        confText += '        Class = ReferenceContainer    \n'  
+        confText += '        Class = ReferenceContainer    \n'
         confText += '        +START = {\n'
         confText += '            Class = StateMachineEvent\n'
         confText += '            NextState = "IDLE"\n'
@@ -410,7 +411,8 @@ class MARTE2_SUPERVISOR(Device):
         confText += '                Function = PrepareNextState\n'
         confText += '                +Parameters = {\n'
         confText += '                   Class = ConfigurationDatabase\n'
-        confText += '                    param1 = '+info['states'][0]['name']+'\n'
+        confText += '                    param1 = ' + \
+            info['states'][0]['name']+'\n'
         confText += '                }\n'
         confText += '           }\n'
         confText += '            +StopCurrentStateExecutionMsg = {\n'
@@ -587,8 +589,6 @@ class MARTE2_SUPERVISOR(Device):
         Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
 
-
-
     def doState(self, state):
         marteName = self.getNode('name').data()
         stateName = getattr(self, 'state_%d_name' % (state)).data()
@@ -640,18 +640,20 @@ class MARTE2_SUPERVISOR(Device):
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         time.sleep(2)
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
-        #KILL MARTe process
+        # KILL MARTe process
         import subprocess
         import os
-        command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\''%(marteName)
-        pid, error = subprocess.Popen("{cmd}".format(cmd=command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-        if len(pid) == 0 :
+        command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'' % (
+            marteName)
+        pid, error = subprocess.Popen("{cmd}".format(
+            cmd=command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if len(pid) == 0:
             if len(error) != 0:
-                print('INFO : %s'%(error))
+                print('INFO : %s' % (error))
         else:
             for p in pid.split():
                 os.kill(int(p), 9)
-                print('MARTe Process PID : %s Killed\n'%(p))
+                print('MARTe Process PID : %s Killed\n' % (p))
         return 1
 
     def check(self):

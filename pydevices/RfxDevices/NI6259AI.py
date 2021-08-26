@@ -26,7 +26,8 @@
 #   2019 03 07: Trig time is initialized to trig source value also in INTERNAL mode
 #
 
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Float32Array, Tree
+from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window
+from MDSplus import Int32, Float32, Float64, Float32Array, Tree
 from MDSplus.mdsExceptions import DevCOMM_ERROR
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 
@@ -276,7 +277,8 @@ class NI6259AI(Device):
 
         def run(self):
 
-            self.device.setTree(Tree(self.device.getTree().name, self.device.getTree().shot))
+            self.device.setTree(
+                Tree(self.device.getTree().name, self.device.getTree().shot))
             self.device = self.device.copy()
 
             bufSize = self.device.buf_size.data()
@@ -443,7 +445,6 @@ class NI6259AI(Device):
 
             self.device.closeInfo()
 
-
         def stop(self):
             self.stopReq = True
             NI6259AI.niInterfaceLib.setStopAcqFlag(self.stopAcq)
@@ -460,6 +461,8 @@ class NI6259AI(Device):
 # End Inner class AsynchStore
 
 ##########init############################################################################
+
+
     def init(self):
 
         self.debugPrint('================= PXI 6259 Init ===============')
@@ -904,7 +907,6 @@ class NI6259AI(Device):
         self.debugPrint(
             "======================================================")
 
-
     def stop_store(self):
 
         self.debugPrint(
@@ -941,7 +943,6 @@ class NI6259AI(Device):
         self.debugPrint(
             "======================================================")
 
-
     def wait_store(self):
 
         self.debugPrint(
@@ -974,7 +975,7 @@ class NI6259AI(Device):
 
         self.debugPrint(
             "======================================================")
- 
+
     def readConfig(self):
 
         self.restoreInfo()
@@ -1003,4 +1004,3 @@ class NI6259AI(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Exception Cannot Start Acquisition')
             raise DevBAD_PARAMETER
-
