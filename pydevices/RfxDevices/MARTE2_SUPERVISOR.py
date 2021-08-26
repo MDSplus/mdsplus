@@ -611,13 +611,13 @@ class MARTE2_SUPERVISOR(Device):
         self.doState(2)
 
     def doState3(self):
-        self.doState(2)
+        self.doState(3)
 
     def doState4(self):
-        self.doState(2)
+        self.doState(4)
 
     def doState5(self):
-        self.doState(2)
+        self.doState(5)
 
     def suspendMarte(self):
         marteName = self.getNode('name').data()

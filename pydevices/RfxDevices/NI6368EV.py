@@ -176,7 +176,7 @@ class NI6368EV(Device):
             NI6368EV.niInterfaceLib = CDLL('libNiInterface.so')
         try:
             self.ai_fd = NI6368EV.ni6368EvFds[self.getNid()]
-            return  # if present, already opened
+            return self.DEV_IS_OPEN # if present, already opened
         except:
             try:
                 boardId = self.board_id.data()
@@ -195,6 +195,7 @@ class NI6368EV(Device):
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device' + fileName)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
+        return self.DEV_OPEN # return of RestoreInfo
     
     def closeInfo(self):
         try:
@@ -314,7 +315,7 @@ class NI6368EV(Device):
                 except Exception as exc:
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel ' + str(self.chanMap[chan])+" : "+str(exc))
                     self.error = self.ACQ_ERROR
-                    raise mdsExceptions.TclFAILED_ESSENTIAL
+                    return
                 
                 chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )
                 #self.device.debugPrint ('chanFd '+'channel_%d_data_raw'%(self.chanMap[chan]+1), chanFd[chan])
