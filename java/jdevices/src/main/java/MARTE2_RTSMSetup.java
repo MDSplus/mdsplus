@@ -917,7 +917,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceField50.setIdentifier("");
         deviceField50.setLabelString("Timebase div.:");
         deviceField50.setNumCols(4);
-        deviceField50.setOffsetNid(3707);
+        deviceField50.setOffsetNid(3716);
         jPanel219.add(deviceField50);
 
         jPanel2.add(jPanel219, java.awt.BorderLayout.PAGE_END);
@@ -4747,7 +4747,7 @@ public class MARTE2_RTSMSetup extends DeviceSetup {
         deviceChoice9.setConvert(true);
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Output: ");
-        deviceChoice9.setOffsetNid(3647);
+        deviceChoice9.setOffsetNid(3648);
         deviceChoice9.setUpdateIdentifier("");
         jPanel220.add(deviceChoice9);
 

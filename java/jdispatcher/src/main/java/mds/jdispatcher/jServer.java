@@ -351,7 +351,7 @@ public class jServer extends MdsIp
 		int status = 0;
 		try
 		{
-			if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot || !mdsTree.isOpen())
+			//if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot || !mdsTree.isOpen())
 			{
 				if (mdsTree != null)
 					mdsTree.close();

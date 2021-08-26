@@ -8,6 +8,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/CAENV1740.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CONTIPPSETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CRIO_FAU.py
+./usr/local/mdsplus/pydevices/RfxDevices/CRIO_MPAG.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CYGNET4K.py
 ./usr/local/mdsplus/pydevices/RfxDevices/DEMOADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/DEMOSTREAM.py
@@ -84,9 +85,12 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_WAVEGEN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_XRAY.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MILL3.py
+./usr/local/mdsplus/pydevices/RfxDevices/MITICA_SETUP.py
+./usr/local/mdsplus/pydevices/RfxDevices/MITICA_SM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6259AI.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6259EV.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6368AI.py
+./usr/local/mdsplus/pydevices/RfxDevices/NI6368EV.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6682.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6683.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6683REC.py
