@@ -31,27 +31,18 @@ SaveItem::SaveItem(void *buffer, int bufSize, int sampleToRead, char dataType,
   this->numCoeffs = numCoeffs;
   this->coeffs = coeffs;
   nxt = 0;
-/*
-  dataNode = new TreeNode(dataNid, (Tree *)treePtr);
-  clockNode = new TreeNode(clockNid, (Tree *)treePtr);
-  resampledNode = NULL;
-  if (resampledNid > 0)
-    resampledNode = new TreeNode(resampledNid, (Tree *)treePtr);
-*/
 }
-
 
 void SaveItem::save()
 {
 
-  Tree *tree = new Tree( ((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
+  Tree *tree = new Tree(((Tree *)treePtr)->getName(), ((Tree *)treePtr)->getShot());
 
   dataNode = new TreeNode(dataNid, tree);
   clockNode = new TreeNode(clockNid, tree);
   resampledNode = NULL;
   if (resampledNid > 0)
     resampledNode = new TreeNode(resampledNid, tree);
-
 
   // Streaming stuff
 
@@ -91,23 +82,12 @@ void SaveItem::save()
         scaled /= gain;
 
         scaled = scaled * streamGain + streamOffset;
-        //		    Data *sampleData = new Float32(rawSample);
-        //		    Data *streamValD =
-        //executeWithArgs("NiConvertStream($1,$2)", (Tree *)treePtr, 2, nidData,
-        //sampleData); 		    float sample = streamValD->getFloat();
-        //		    samples[actSamples] = sample;
         samples[actSamples] = scaled;
-        //		    deleteData(sampleData);
-        //		    deleteData(streamValD);
         times[actSamples] =
             period * (counter + actSamples * sampleInterval) + timeIdx0;
         actSamples++;
       }
-      // printf("STREAM %d %s %d %f %f\n", shot, streamName, actSamples,
-      // times[0], samples[0]);
       EventStream::send(shot, streamName, false, actSamples, times, 1, &actSamples, samples);
-      // EventStream::send(shot, streamName, (float)(period * counter +
-      // timeIdx0), sample);
       delete[] samples;
       delete[] times;
     }
@@ -136,21 +116,10 @@ void SaveItem::save()
     Data *startTime;
     Data *endTime;
     Data *dim;
-    //Tree *tree = (Tree *)treePtr;
     if (timeIdx0 != timeIdx0) // is a NaN float
     {
       // printf("Configuration for gclock\n");
       // printf("---------------- time at idx 0 NAN\n");
-/*
-      startTime =
-          compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'start_time')",
-                          (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
-      endTime =
-          compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'end_time')",
-                          (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
-      dim = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",
-                            (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
-*/
       startTime =
           compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'start_time')",
                           tree, 3, clockNode, startIdx, endIdx);
@@ -158,22 +127,11 @@ void SaveItem::save()
           compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'end_time')",
                           tree, 3, clockNode, startIdx, endIdx);
       dim = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",
-                          tree, 3, clockNode, startIdx, endIdx);
+                            tree, 3, clockNode, startIdx, endIdx);
     }
     else
     {
       Data *timeAtIdx0 = new Float32(timeIdx0);
-/*
-      startTime = compileWithArgs(
-          "NIADCClockSegment($1, $2, $3, $4, 'start_time')", (Tree *)treePtr, 4,
-          clockNode, startIdx, endIdx, timeAtIdx0);
-      endTime = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'end_time')",
-                                (Tree *)treePtr, 4, clockNode, startIdx, endIdx,
-                                timeAtIdx0);
-      dim = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'dim')",
-                            (Tree *)treePtr, 4, clockNode, startIdx, endIdx,
-                            timeAtIdx0);
-*/
       startTime = compileWithArgs(
           "NIADCClockSegment($1, $2, $3, $4, 'start_time')", tree, 4,
           clockNode, startIdx, endIdx, timeAtIdx0);
@@ -197,7 +155,6 @@ void SaveItem::save()
         if (resampledNode)
           dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
                                        resampledNode, 100);
-        // dataNode->beginSegment(startTime, endTime, dim, fData);
         else
           dataNode->beginSegment(startTime, endTime, dim, fData);
       }
@@ -222,7 +179,6 @@ void SaveItem::save()
         if (resampledNode)
           dataNode->beginSegmentMinMax(startTime, endTime, dim, fData,
                                        resampledNode, 100);
-        // dataNode->beginSegment(startTime, endTime, dim, fData);
         else
           dataNode->beginSegment(startTime, endTime, dim, fData);
       }
@@ -249,8 +205,7 @@ void SaveItem::save()
     {
     case SHORT:
     {
-      // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter
-      // );
+      // printf("Short Save data %s counter %d\n", dataNode->getPath(), counter);
       Int16Array *data = new Int16Array((short *)buffer, bufSize);
 
       pthread_mutex_lock(&segmentMutex);
@@ -258,7 +213,6 @@ void SaveItem::save()
       {
         if (resampledNode)
           dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-        // dataNode->putSegment(data, -1);
         else
           dataNode->putSegment(data, -1);
       }
@@ -274,15 +228,13 @@ void SaveItem::save()
     break;
     case FLOAT:
     {
-      // printf("Float Save data %s counter %d\n", dataNode->getPath(), counter
-      // );
+      // printf("Float Save data %s counter %d\n", dataNode->getPath(), counter);
       Float32Array *data = new Float32Array((float *)buffer, bufSize);
       pthread_mutex_lock(&segmentMutex);
       try
       {
         if (resampledNode)
           dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-        // dataNode->putSegment(data, -1);
         else
           dataNode->putSegment(data, -1);
       }
@@ -309,7 +261,6 @@ void SaveItem::save()
   delete clockNode;
   delete tree;
 }
-
 
 SaveList::SaveList()
 {
