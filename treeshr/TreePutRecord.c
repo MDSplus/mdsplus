@@ -127,7 +127,11 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int compress_utility = utility_update == 2;
 #ifndef _WIN32
   if (!saved_uic)
-    saved_uic = (getgid() << 16) | getuid();
+  {
+    saved_uic = getuid();
+    if (!(saved_uic & 0xFFFF0000))
+      saved_uic = (getgid() << 16) | (saved_uic);
+  }
 #endif
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;

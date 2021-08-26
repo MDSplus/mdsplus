@@ -81,6 +81,9 @@ static char *mds_owner(                   /* Return: ptr to "user" string       
 #endif
 #ifdef HAVE_GETPWUID
   struct passwd *p = getpwuid(uid);
+  if (!p) {
+        p = getpwuid(owner);
+  }
   if (p)
   {
     username = alloca(strlen(p->pw_name) + 3);

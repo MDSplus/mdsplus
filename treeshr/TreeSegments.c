@@ -985,7 +985,14 @@ inline static int begin_finish(vars_t *vars)
 
 #ifndef _WIN32
 static int saved_uic = 0;
-static void init_saved_uic() { saved_uic = (getgid() << 16) | getuid(); }
+static void init_saved_uic() { 
+  if (!saved_uic)
+  {
+    saved_uic = getuid();
+    if (!(saved_uic & 0xFFFF0000))
+      saved_uic = (getgid() << 16) | (saved_uic);
+  }
+}
 #endif
 inline static void begin_local_nci(vars_t *vars,
                                    const mdsdsc_a_t *initialValue)
