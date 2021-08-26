@@ -86,6 +86,8 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_WAVEGEN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_XRAY.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MILL3.py
+./usr/local/mdsplus/pydevices/RfxDevices/MITICA_SETUP.py
+./usr/local/mdsplus/pydevices/RfxDevices/MITICA_SM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6259AI.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6259EV.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6368AI.py
