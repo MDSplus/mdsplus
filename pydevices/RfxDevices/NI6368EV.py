@@ -176,7 +176,7 @@ class NI6368EV(Device):
             NI6368EV.niInterfaceLib = CDLL('libNiInterface.so')
         try:
             self.ai_fd = NI6368EV.ni6368EvFds[self.getNid()]
-            return self.DEV_IS_OPEN # if present, already opened
+            return  # if present, already opened
         except:
             try:
                 boardId = self.board_id.data()
@@ -195,7 +195,6 @@ class NI6368EV(Device):
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device' + fileName)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return self.DEV_OPEN # return of RestoreInfo
     
     def closeInfo(self):
         try:
@@ -205,7 +204,6 @@ class NI6368EV(Device):
             self.ai_fd = -1
         except:
             pass
-        return 1
 
     def saveWorker(self):
         NI6368EV.ni6368EvWorkers[self.getNid()] = self.worker
@@ -316,7 +314,7 @@ class NI6368EV(Device):
                 except Exception as exc:
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel ' + str(self.chanMap[chan])+" : "+str(exc))
                     self.error = self.ACQ_ERROR
-                    return
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
                 
                 chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )
                 #self.device.debugPrint ('chanFd '+'channel_%d_data_raw'%(self.chanMap[chan]+1), chanFd[chan])
@@ -385,8 +383,6 @@ class NI6368EV(Device):
             # once stopReq received, stop the acquisition
             status = NI6368EV.niLib.xseries_stop_ai(c_int(self.ai_fd))
             self.closeAll(chanFd, saveList)
-
-            return
 
 
         def stop(self):
@@ -647,7 +643,6 @@ class NI6368EV(Device):
 
         self.debugPrint("===============================================")
 
-        return 1
 
 ####################################################################################
 ################################### START STORE ####################################
@@ -710,7 +705,6 @@ class NI6368EV(Device):
  
         self.debugPrint("===============================================")
 
-        return 1
 
 ####################################################################################
 ################################### STOP STORE ####################################
@@ -753,7 +747,6 @@ class NI6368EV(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
  
 
-        return 1
 
 
 ####################################################################################
@@ -769,7 +762,8 @@ class NI6368EV(Device):
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Acquisition thread not started')
-            return 1
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+
 
         if self.worker.isAlive():
             self.worker.stop()
@@ -793,7 +787,6 @@ class NI6368EV(Device):
 
         self.debugPrint("===============================================")
 
-        return 1
 
     def readConfig(self):
 
@@ -804,4 +797,3 @@ class NI6368EV(Device):
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot read board configuration')
             raise DevBAD_PARAMETER
-        return 1
