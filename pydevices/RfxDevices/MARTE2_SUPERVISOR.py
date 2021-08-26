@@ -557,7 +557,7 @@ class MARTE2_SUPERVISOR(Device):
         confText += ' }\n'
         confText += '}\n'
         print (confText)
-        f = open(info['name']+'_marte_configuration.cfg', 'w')
+        f = open('/tmp/'+info['name']+'_marte_configuration.cfg', 'w')
         f.write(confText)
         f.close()
         print('END BUILD')
@@ -565,14 +565,14 @@ class MARTE2_SUPERVISOR(Device):
 
     def startMarteIdle(self):
         self.buildConfiguration()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
+        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
         return 1
 
     def startMarte(self):
         self.buildConfiguration()
         stateName = self.state_1_name.data()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
+        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
         time.sleep(2)
         self.gotorun()
@@ -646,6 +646,18 @@ class MARTE2_SUPERVISOR(Device):
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         time.sleep(2)
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
+        #KILL MARTe process
+        import subprocess
+        import os
+        command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\''%(marteName)
+        pid, error = subprocess.Popen("{cmd}".format(cmd=command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if len(pid) == 0 :
+            if len(error) != 0:
+                print('INFO : %s'%(error))
+        else:
+            for p in pid.split():
+                os.kill(int(p), 9)
+                print('MARTe Process PID : %s Killed\n'%(p))
         return 1
 
     def check(self):
