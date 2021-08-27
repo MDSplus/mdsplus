@@ -62,39 +62,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ************************************************************************/
 
 static int doFull(char **output, int nid, unsigned char nodeUsage, int version);
-static char *mds_owner(                   /* Return: ptr to "user" string         */
-                       unsigned int owner /* <r> owner id */
-)
+/// @param uid - user id
+/// @return ptr to "user" string
+static char *mds_owner(unsigned int uid)
 {
   static char ownerString[512];
-  int gid = owner >> 16;
-  int uid = owner & 0xFFFF;
-  char *groupname = 0;
   char *username = 0;
-#ifdef HAVE_GETGRGID
-  struct group *g = getgrgid(gid);
-  if (g)
-  {
-    groupname = alloca(strlen(g->gr_name) + 3);
-    sprintf(groupname, "(%s)", g->gr_name);
-  }
-#endif
 #ifdef HAVE_GETPWUID
   struct passwd *p = getpwuid(uid);
-  if (!p) {
-        p = getpwuid(owner);
-  }
   if (p)
   {
     username = alloca(strlen(p->pw_name) + 3);
     sprintf(username, "(%s)", p->pw_name);
   }
 #endif
-  if (groupname == 0)
-    groupname = "";
   if (username == 0)
     username = "";
-  sprintf(ownerString, "gid=%d%s,uid=%d%s", gid, groupname, uid, username);
+  sprintf(ownerString, "uid=%d%s", uid, username);
   return (ownerString);
 }
 
