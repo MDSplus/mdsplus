@@ -276,7 +276,12 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       read_nci;
       set_retlen(sizeof(nci.owner_identifier));
-      *(unsigned int *)itm->pointer = nci.owner_identifier;
+      unsigned int owner = nci.owner_identifier;
+      if (!(nci.flags2 & NciM_32BIT_UID_NCI))
+      {
+        owner &= 0xFFFF;
+      }
+      *(unsigned int *)itm->pointer = owner;
       break;
     case NciCLASS:
       break_on_no_node;
