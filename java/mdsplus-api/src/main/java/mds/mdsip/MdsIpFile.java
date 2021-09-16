@@ -9,9 +9,9 @@ import mds.mdsip.MdsIp.MdsIpIOStream;
 
 public class MdsIpFile extends MdsIpIOStream
 {
-	static final MdsIpFile fromString(final String string) throws IOException
+	static final MdsIpFile fromURI(final String uri) throws IOException
 	{
-		final String args[] = string.split(" ");
+		final String args[] = uri.split(" ");
 		for (int i = 0; i < args.length; i++)
 		{
 			try

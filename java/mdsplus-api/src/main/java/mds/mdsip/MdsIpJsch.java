@@ -87,11 +87,24 @@ public final class MdsIpJsch extends MdsIpIOStream
 
 		private SshServerInfo(final String user, final String host, final int port, final ConfigRepository cr)
 		{
-			this.config = cr;
-			this.host = host;
-			this.user = user;
-			this.port = port;
-			this.proxyjump = this.config.getConfig(host).getValue("ProxyJump");
+			this.config = cr.getConfig(host);
+			final String _hostname = this.config.getHostname();
+			this.hostname = _hostname != null ? _hostname : host;
+			if (user != null)
+				this.user = user;
+			else
+			{
+				final String cuser = this.config.getUser();
+				this.user = cuser != null ? cuser : System.getProperty("user.name");
+			}
+			if (port != 0)
+				this.port = port;
+			else
+			{
+				final int pport = this.config.getPort();
+				this.port = pport > 0 ? pport : 22;
+			}
+			this.proxyjump = this.config.getValue("ProxyJump");
 			this.proxy = this.proxyjump == null ? null : SshServerInfo.parse(this.proxyjump, cr);
 		}
 
@@ -117,11 +130,9 @@ public final class MdsIpJsch extends MdsIpIOStream
 				hostname = null;
 				pport = port;
 			}
-			Session session = ((JSch) MdsIpJsch.jsch).getSession(username, host);
-			if (hostname != null)
-				session.setHost(hostname);
-			if (pport > 0)
-				session.setPort(pport);
+			final String strictHostKeyChecking = this.config.getValue("StrictHostKeyChecking");
+			if (strictHostKeyChecking != null)
+				session.setConfig("StrictHostKeyChecking", strictHostKeyChecking);
 			sessions.insertElementAt(session, 0);
 			session.setUserInfo(MdsIpJsch.userinfo);
 			MdsIpJsch.userinfo.tried_pw = false;
@@ -269,6 +280,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 		{
 			_jsch = new JSch();
 			final File known_hosts = new File(MdsIpJsch.dotssh, "known_hosts");
+			final File id_rsa = new File(MdsIpJsch.dotssh, "id_rsa");
 			if (!MdsIpJsch.dotssh.exists())
 				MdsIpJsch.dotssh.mkdirs();
 			if (known_hosts.exists())
