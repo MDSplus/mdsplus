@@ -26,6 +26,35 @@ public class MdsIp extends Mds
 		static final long internal_timeout = 1000L; // ms
 	}
 
+	private final class EventProcessorThread extends Thread
+	{
+		int eventId = -1;
+		String eventName;
+
+		public EventProcessorThread()
+		{
+			super(MdsIp.this.getName("EventProcessorThread"));
+			this.setDaemon(true);
+		}
+
+		@Override
+		public void run()
+		{
+			if (this.eventName != null)
+				MdsIp.this.dispatchUpdateEvent(this.eventName);
+			else if (this.eventId != -1)
+				MdsIp.this.dispatchUpdateEvent(this.eventId);
+		}
+
+		public void setEventid(final int id)
+		{
+			if (DEBUG.M)
+				System.out.println("Received Event ID " + id);
+			this.eventId = id;
+			this.eventName = null;
+		}
+	} // end EventProcessorThread class
+
 	public abstract static class MdsIpIOStream implements Connection
 	{
 		protected InputStream dis;
@@ -118,142 +147,6 @@ public class MdsIp extends Mds
 			return rem - left;
 		}
 	}
-
-	private final class MRT extends Thread // mds Receive Thread
-	{
-		private boolean killed = false;
-		private Message message;
-
-		public MRT()
-		{
-			super(MdsIp.this.getName("MRT"));
-			this.setDaemon(true);
-			this.message = null;
-		}
-
-		public Message getMessage() throws MdsAbortException
-		{
-			if (DEBUG.D)
-				System.out.println("getMessage()");
-			long time;
-			if (DEBUG.D)
-				time = System.nanoTime();
-			Message msg = null;
-			try
-			{
-				synchronized (this)
-				{
-					for (;;)
-					{
-						if (this.killed)
-							return null;
-						msg = this.message;
-						this.message = null;
-						if (msg != null)
-							break;
-						this.wait(1000);
-					}
-				}
-			}
-			catch (final InterruptedException e)
-			{
-				MdsIp.this.lostConnection();
-				throw new MdsException.MdsAbortException();
-			}
-			if (DEBUG.D)
-				if (msg != null)
-				{
-					final int cap = msg.getBody().capacity();
-					System.out.println(msg.getMsgLen() + "B in " + (System.nanoTime() - time) / 1e9 + "sec"
-							+ (cap == 0 ? "" : " (" + msg.asString().substring(0, (cap < 64) ? cap : 64) + ")"));
-				}
-			return msg;
-		}
-
-		@Override
-		public final void run()
-		{
-			try
-			{
-				for (;;)
-				{
-					final Message new_message = Message.receive(MdsIp.this.connection, MdsIp.this.translisteners, -1);
-					if (new_message.getDType() == DTYPE.EVENT)
-					{
-						final PMET PmdsEvent = new PMET();
-						PmdsEvent.setEventid(new_message.getBody().get(12));
-						PmdsEvent.start();
-					}
-					else
-						synchronized (this)
-						{
-							this.message = new_message;
-							this.notifyAll();
-						}
-				}
-			}
-			catch (final IOException e)
-			{
-				synchronized (this)
-				{
-					this.killed = true;
-					this.notifyAll();
-				}
-				if (MdsIp.this.connected)
-				{
-					MdsIp.this.lostConnection();
-				}
-			}
-		}
-
-		synchronized public final void waitExited()
-		{
-			this.interrupt();
-			while (!this.killed)
-				try
-				{
-					this.wait(300);
-				}
-				catch (final InterruptedException exc)
-				{
-					System.err.println(this.getName() + ": isInterrupted");
-				}
-		}
-	} // End MRT class
-
-	private final class PMET extends Thread // Process mds Event Thread
-	{
-		int eventId = -1;
-		String eventName;
-
-		public PMET()
-		{
-			super(MdsIp.this.getName("PMET"));
-			this.setDaemon(true);
-		}
-
-		@Override
-		public void run()
-		{
-			if (this.eventName != null)
-				MdsIp.this.dispatchUpdateEvent(this.eventName);
-			else if (this.eventId != -1)
-				MdsIp.this.dispatchUpdateEvent(this.eventId);
-		}
-
-		public void setEventid(final int id)
-		{
-			if (DEBUG.M)
-				System.out.println("Received Event ID " + id);
-			this.eventId = id;
-			this.eventName = null;
-		}
-		/*
-		 * public void setEventName(final String name) { if(DEBUG.M)
-		 * System.out.println("Received Event Name " + name); this.eventId = -1;
-		 * this.eventName = name; }
-		 */
-	} // end PMET class
 
 	public final static class Provider
 	{
@@ -418,6 +311,108 @@ public class MdsIp extends Mds
 		}
 	}
 
+	private final class ReceiverThread extends Thread
+	{
+		private boolean killed = false;
+		private Message message;
+
+		public ReceiverThread()
+		{
+			super(MdsIp.this.getName("ReceiverThread"));
+			this.setDaemon(true);
+			this.message = null;
+		}
+
+		public Message getMessage() throws MdsAbortException
+		{
+			if (DEBUG.D)
+				System.out.println("getMessage()");
+			long time;
+			if (DEBUG.D)
+				time = System.nanoTime();
+			Message msg = null;
+			try
+			{
+				synchronized (this)
+				{
+					for (;;)
+					{
+						if (this.killed)
+							return null;
+						msg = this.message;
+						this.message = null;
+						if (msg != null)
+							break;
+						this.wait(1000);
+					}
+				}
+			}
+			catch (final InterruptedException e)
+			{
+				MdsIp.this.lostConnection();
+				throw new MdsException.MdsAbortException();
+			}
+			if (DEBUG.D)
+				if (msg != null)
+				{
+					final int cap = msg.getBody().capacity();
+					System.out.println(msg.getMsgLen() + "B in " + (System.nanoTime() - time) / 1e9 + "sec"
+							+ (cap == 0 ? "" : " (" + msg.asString().substring(0, (cap < 64) ? cap : 64) + ")"));
+				}
+			return msg;
+		}
+
+		@Override
+		public final void run()
+		{
+			try
+			{
+				for (;;)
+				{
+					final Message new_message = Message.receive(MdsIp.this.connection, MdsIp.this.translisteners, -1);
+					if (new_message.getDType() == DTYPE.EVENT)
+					{
+						final EventProcessorThread thread = new EventProcessorThread();
+						thread.setEventid(new_message.getBody().get(12));
+						thread.start();
+					}
+					else
+						synchronized (this)
+						{
+							this.message = new_message;
+							this.notifyAll();
+						}
+				}
+			}
+			catch (final IOException e)
+			{
+				synchronized (this)
+				{
+					this.killed = true;
+					this.notifyAll();
+				}
+				if (MdsIp.this.connected)
+				{
+					MdsIp.this.lostConnection();
+				}
+			}
+		}
+
+		synchronized public final void waitExited()
+		{
+			this.interrupt();
+			while (!this.killed)
+				try
+				{
+					this.wait(300);
+				}
+				catch (final InterruptedException exc)
+				{
+					System.err.println(this.getName() + ": isInterrupted");
+				}
+		}
+	} // End ReceiverThread class
+
 	public static final int LOGIN_OK = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
 	private static final byte MAX_MSGS = 8;
 	private static final String NOT_CONNECTED = "Not Connected.";
@@ -517,7 +512,7 @@ public class MdsIp extends Mds
 	private byte msg_id = 0;
 	private final Object mutex = new Object();
 	private final Provider provider;
-	private MRT receiveThread = null;
+	private ReceiverThread receiverThread = null;
 	private boolean use_compression = false;
 
 	public MdsIp()
@@ -676,9 +671,9 @@ public class MdsIp extends Mds
 			this.close();
 			throw new IOException("Server responded status == 0");
 		}
-		this.receiveThread = new MRT();
+		this.receiverThread = new ReceiverThread();
 		this.connected = true;
-		this.receiveThread.start();
+		this.receiverThread.start();
 		this.setup();
 		this.dispatchContextEvent("Connected to " + this.provider.toString(), false);
 	}
@@ -694,8 +689,8 @@ public class MdsIp extends Mds
 		{
 			System.err.println("The closing of connection failed:\n" + e.getMessage());
 		}
-		if (this.receiveThread != null)
-			this.receiveThread.waitExited();
+		if (this.receiverThread != null)
+			this.receiverThread.waitExited();
 		this.connected = false;
 	}
 
@@ -735,7 +730,7 @@ public class MdsIp extends Mds
 
 	private final Message getAnswer() throws MdsException
 	{
-		final Message message = this.receiveThread.getMessage();
+		final Message message = this.receiverThread.getMessage();
 		if (message == null)
 			throw new MdsException("Null response from server", 0);
 		final int status = message.getStatus();

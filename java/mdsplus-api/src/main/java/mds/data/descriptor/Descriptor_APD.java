@@ -2,11 +2,10 @@ package mds.data.descriptor;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_apd.Dictionary;
-import mds.data.descriptor_apd.List;
-import mds.data.descriptor_apd.Tuple;
+import mds.data.descriptor_apd.*;
 import mds.data.descriptor_s.Missing;
 
 /** Array of Descriptor (-60 : 196) **/
@@ -51,6 +50,7 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 		}
 	}
 
+	@SuppressWarnings("hiding")
 	public static final byte CLASS = -60;
 	public static final String name = "APD";
 
@@ -151,7 +151,9 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 
 	@Override
 	public final String getDTypeName()
-	{ return this.dtype().label; }
+	{
+		return this.dtype().label;
+	}
 
 	@Override
 	public final Descriptor<?> getElement(final ByteBuffer b_ptr)
@@ -162,7 +164,8 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 		final int max = this.getLength() * Integer.BYTES;
 		int pos = b_ptr.position();
 		for (; pos < max && b_ptr.getInt(pos) == 0; pos += Integer.BYTES)
-		{/* NOP */}
+		{
+			/* NOP */}
 		final int next = pos < max ? b_ptr.getInt(pos) : this.b.limit();
 		try
 		{
@@ -214,7 +217,9 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 
 	@Override
 	protected final String getSuffix()
-	{ return ""; }
+	{
+		return "";
+	}
 
 	@Override
 	protected final Descriptor<?>[] initArray(final int size)
@@ -224,7 +229,9 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 
 	@Override
 	public boolean isAtomic()
-	{ return false; }
+	{
+		return false;
+	}
 
 	@Override
 	protected final void setElement(final ByteBuffer b, final Descriptor<?> value)

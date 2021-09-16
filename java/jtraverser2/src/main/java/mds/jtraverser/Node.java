@@ -1,34 +1,23 @@
 package mds.jtraverser;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import mds.MdsException;
-import mds.data.DATA;
-import mds.data.DTYPE;
-import mds.data.TREE;
+import mds.data.*;
 import mds.data.TREE.NodeInfo;
 import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
-import mds.devices.Device;
 import mds.data.descriptor_s.Nid;
+import mds.devices.Device;
 
 public class Node
 {
@@ -58,8 +47,8 @@ public class Node
 		public TreeNodeLabel(final Node node, final String name, final Icon icon, final boolean isSelected)
 		{
 			super((node.isDefault()
-					? new StringBuilder(name.length() + 2).append('(').append(name).append(')').toString()
-					: name), icon, SwingConstants.LEFT);
+					? new StringBuilder(name.length() + 2).append('(').append(name).append(')').toString() : name),
+					icon, SwingConstants.LEFT);
 			this.node = node;
 			final Flags flags = node.getFlags();
 			final int lusage = node.getUsage();
@@ -84,7 +73,9 @@ public class Node
 
 		@Override
 		public final String getToolTipText()
-		{ return this.node.getToolTipText(); }
+		{
+			return this.node.getToolTipText();
+		}
 	}
 
 	private static Node copied;
@@ -126,7 +117,8 @@ public class Node
 					toNode.setData(data);
 		}
 		catch (final MdsException exc)
-		{/**/}
+		{
+			/**/}
 		for (int i = 0; i < fromNode.children.length; i++)
 			Node.copySubtreeContent(fromNode.children[i], toNode.children[i]);
 		for (int i = 0; i < fromNode.members.length; i++)
@@ -174,7 +166,9 @@ public class Node
 	}
 
 	public static final boolean isCopied()
-	{ return Node.copied != null; }
+	{
+		return Node.copied != null;
+	}
 
 	private static final ImageIcon loadIcon(final String gifname)
 	{
@@ -185,7 +179,8 @@ public class Node
 	}
 
 	public static final void updateCell()
-	{/* stub */}
+	{
+		/* stub */}
 
 	private TreeNodeLabel label;
 	private Node[] members;
@@ -442,12 +437,7 @@ public class Node
 
 	public final void doAction()
 	{
-		try
-		{
-			this.nid.doAction();
-		}
-		catch (final MdsException e)
-		{/**/}
+		this.nid.doAction();
 	}
 
 	public final void expand()
@@ -456,6 +446,7 @@ public class Node
 			return;
 		try
 		{
+			@SuppressWarnings("resource")
 			final TREE tree = this.nid.getTree();
 			final NodeInfo[][] infos = NodeInfo.getNodeInfos(this.nid);
 			final NodeInfo[] children_info = infos[0];
@@ -481,7 +472,9 @@ public class Node
 	}
 
 	public final Node[] getChildren()
-	{ return this.children; }
+	{
+		return this.children;
+	}
 
 	public final DATA<?> getData() throws MdsException
 	{
@@ -527,7 +520,8 @@ public class Node
 
 	public final Component getIcon(final boolean isSelected)
 	{
-		// if(!this.treeview.isUpdating() && this.label != null) return this.label;
+		// if(!this.treeview.isUpdating() && this.label != null) return
+		// this.label;
 		final int lusage = this.getUsage();
 		final Icon icon = lusage <= Node.ICONS.length ? Node.ICONS[lusage] : null;
 		this.label = new TreeNodeLabel(this, this.getName(), icon, isSelected);
@@ -557,6 +551,7 @@ public class Node
 		else if (this.getUsage() == NODE.USAGE_SUBTREE)
 		{
 			sb.append("</nobr></td></tr><tr><td align=\"left\">File:</td><td align=\"left\">");
+			@SuppressWarnings("resource")
 			final TREE tree = this.nid.getTree();
 			String filename;
 			try
@@ -596,7 +591,9 @@ public class Node
 	}
 
 	public final Node[] getMembers()
-	{ return this.members; }
+	{
+		return this.members;
+	}
 
 	public final String getMinPath()
 	{
@@ -718,7 +715,9 @@ public class Node
 	}
 
 	public final DefaultMutableTreeNode getTreeNode()
-	{ return this.treenode; }
+	{
+		return this.treenode;
+	}
 
 	public final byte getUsage()
 	{
@@ -728,7 +727,9 @@ public class Node
 	}
 
 	public final boolean isDefault()
-	{ return this.treeview.getDefault().equals(this.nid); }
+	{
+		return this.treeview.getDefault().equals(this.nid);
+	}
 
 	public final boolean isOn()
 	{
@@ -748,7 +749,9 @@ public class Node
 	}
 
 	public final boolean isSubTree()
-	{ return this.getUsage() == NODE.USAGE_SUBTREE; }
+	{
+		return this.getUsage() == NODE.USAGE_SUBTREE;
+	}
 
 	final boolean move(final Node newParent)
 	{

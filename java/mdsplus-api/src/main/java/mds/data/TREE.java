@@ -18,10 +18,12 @@ import mds.mdsip.MdsIp;
 
 public final class TREE implements ContextEventListener, CTX, AutoCloseable
 {
+	@SuppressWarnings("hiding")
 	public enum MODE
 	{
 		CLOSED, READONLY, NORMAL, EDITABLE, NEW;
 	}
+
 	public final static class NodeInfo
 	{
 		public static final String members = "IF_ERROR(GETNCI(GETNCI(_n,'MEMBER_NIDS'),'NID_NUMBER'),[])";
@@ -44,6 +46,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 			return infos;
 		}
 
+		@SuppressWarnings("resource")
 		public static final NodeInfo getNodeInfo(final NODE<?> node) throws MdsException
 		{
 			final TREE tree = node.getTree();
@@ -69,6 +72,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 			return infos;
 		}
 
+		@SuppressWarnings("resource")
 		public static final NodeInfo[][] getNodeInfos(final NODE<?> node) throws MdsException
 		{
 			final TREE tree = node.getTree();
@@ -233,7 +237,9 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 	public static final String NCI_STATE = "STATE";
 
 	public static final TREE getActiveTree()
-	{ return TREE.active; }
+	{
+		return TREE.active;
+	}
 
 	public static final NodeInfo[] getDeviceNodeInfos(final Descriptor<?> nodes, final Mds mds, final CTX ctx)
 			throws MdsException
@@ -280,16 +286,17 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 				shot = this.getCurrentShot();
 		}
 		catch (final MdsException e)
-		{/**/}
+		{
+			/**/}
 		this.shot = shot;
 		this.mode = TREE.CLOSED;
 		this.def_nid = this.getTop();
 	}
 
-	public TREE(final Mds mds, final String expt, int shot, final MODE mode) throws MdsException
+	public TREE(final Mds mds, final String expt, final int shot, final MODE mode) throws MdsException
 	{
 		this(mds, expt, shot);
-		if (mode != CLOSED)
+		if (mode != TREE.CLOSED)
 		{
 			this.mode = mode;
 			this._open();
@@ -311,14 +318,14 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 		switch (this.mode)
 		{
 		case NEW:
-			this.mode = EDITABLE;
+			this.mode = TREE.EDITABLE;
 			status = this.api.treeOpenNew(this.ctx, this.expt, this.shot);
 			break;
 		case EDITABLE:
 			status = this.api.treeOpenEdit(this.ctx, this.expt, this.shot);
 			break;
 		default:
-			this.mode = READONLY;
+			this.mode = TREE.READONLY;
 			//$FALL-THROUGH$
 		case READONLY:
 		case NORMAL:
@@ -391,10 +398,11 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 				this.api.treeClose(this.ctx, null, 0);
 				this.api.treeFreeDbid(this.ctx);
 			}
-
 		}
 		catch (final MdsException e)
-		{}
+		{
+			// ignore
+		}
 		this.updateListener(false);
 	}
 
@@ -575,23 +583,35 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 	}
 
 	public final int getCurrentShot() throws MdsException
-	{ return this.setActive().api.treeGetCurrentShotId(null, this.expt); }
+	{
+		return this.setActive().api.treeGetCurrentShotId(null, this.expt);
+	}
 
 	@Override
 	public final Pointer getDbid()
-	{ return this.ctx; }
+	{
+		return this.ctx;
+	}
 
 	public final int getDefault() throws MdsException
-	{ return this.getDefaultNid().getNidNumber(); }
+	{
+		return this.getDefaultNid().getNidNumber();
+	}
 
 	public final Nid getDefaultC()
-	{ return this.def_nid; }
+	{
+		return this.def_nid;
+	}
 
 	public final Nid getDefaultNid() throws MdsException
-	{ return this.def_nid = new Nid(this.setActive().api.treeGetDefaultNid(this.ctx).getData(), this); }
+	{
+		return this.def_nid = new Nid(this.setActive().api.treeGetDefaultNid(this.ctx).getData(), this);
+	}
 
 	public final String getFileName() throws MdsException
-	{ return this.getFileName(this.expt); }
+	{
+		return this.getFileName(this.expt);
+	}
 
 	public final String getFileName(final String subtree) throws MdsException
 	{
@@ -604,10 +624,14 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 
 	@Override
 	public final Mds getMds()
-	{ return this.mds; }
+	{
+		return this.mds;
+	}
 
 	public final MODE getMode()
-	{ return this.mode; }
+	{
+		return this.mode;
+	}
 
 	public final Descriptor<?> getNci(final int nid, final String name) throws MdsException
 	{
@@ -852,7 +876,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 		return this.getNci(nid, TREE.NCI_VERSION).toInt();
 	}
 
-	public final Nid getNode(int nid)
+	public final Nid getNode(final int nid)
 	{
 		return new Nid(nid, this);
 	}
@@ -970,10 +994,14 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 	}
 
 	public final List getTimeContext() throws MdsException
-	{ return (List) this.setActive().api.treeGetTimeContext(this.ctx).getData(); }
+	{
+		return (List) this.setActive().api.treeGetTimeContext(this.ctx).getData();
+	}
 
 	public final Nid getTop()
-	{ return new Nid(0, this); }
+	{
+		return new Nid(0, this);
+	}
 
 	public final Descriptor<?> getXNci(final int nid, final String name) throws MdsException
 	{
@@ -981,7 +1009,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 	}
 
 	@Override
-	public void handleContextEvent(Mds source, String info, boolean ok)
+	public void handleContextEvent(final Mds source, final String info, final boolean ok)
 	{
 		if (!ok)
 			this.ctx.setAddress(0);
@@ -1234,6 +1262,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 		return this;
 	}
 
+	@SuppressWarnings("resource")
 	public final TREE withPrivateConnection()
 	{
 		if (!(this.mds instanceof MdsIp))

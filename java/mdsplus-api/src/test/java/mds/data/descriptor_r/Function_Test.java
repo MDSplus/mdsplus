@@ -1,26 +1,15 @@
 package mds.data.descriptor_r;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import mds.AllTests;
-import mds.Mds;
-import mds.MdsException;
-import mds.TdiShr;
+import org.junit.*;
+
+import mds.*;
 import mds.data.descriptor.Descriptor;
-import mds.data.descriptor_a.Int16Array;
-import mds.data.descriptor_a.Int32Array;
-import mds.data.descriptor_a.Uint32Array;
-import mds.data.descriptor_a.Uint64Array;
-import mds.data.descriptor_r.function.BINARY;
-import mds.data.descriptor_r.function.CAST;
-import mds.data.descriptor_r.function.CONST;
+import mds.data.descriptor_a.*;
+import mds.data.descriptor_r.function.*;
 import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Uint16;
 
+@SuppressWarnings("static-method")
 public final class Function_Test
 {
 	private static Mds mds;
@@ -40,12 +29,16 @@ public final class Function_Test
 	}
 
 	@Before
-	public final void setUp() throws Exception
-	{/* stub */}
+	public void setUp() throws Exception
+	{
+		// stub
+	}
 
 	@After
-	public final void tearDown() throws Exception
-	{/* stub */}
+	public void tearDown() throws Exception
+	{
+		// stub
+	}
 
 	@Test
 	public final void test_$a0() throws MdsException
@@ -129,7 +122,9 @@ public final class Function_Test
 		Assert.assertEquals("\"test\" // TEXT(1) // \"test\"",
 				(fun = (Function) Function_Test.tdi.tdiCompile(null, "'test'//text(1)//\"test\"").getData())
 						.decompile());
-		Assert.assertEquals("\"test          1test\"", fun.getData().decompile());// tdi produces length12
+		Assert.assertEquals("\"test          1test\"", fun.getData().decompile());// tdi
+																					// produces
+																					// length12
 	}
 
 	@Test

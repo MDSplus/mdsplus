@@ -4,26 +4,10 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
+
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_a.Complex32Array;
-import mds.data.descriptor_a.Complex64Array;
-import mds.data.descriptor_a.EmptyArray;
-import mds.data.descriptor_a.Float32Array;
-import mds.data.descriptor_a.Float64Array;
-import mds.data.descriptor_a.Int128Array;
-import mds.data.descriptor_a.Int16Array;
-import mds.data.descriptor_a.Int32Array;
-import mds.data.descriptor_a.Int64Array;
-import mds.data.descriptor_a.Int8Array;
-import mds.data.descriptor_a.NUMBERArray;
-import mds.data.descriptor_a.NidArray;
-import mds.data.descriptor_a.StringArray;
-import mds.data.descriptor_a.Uint128Array;
-import mds.data.descriptor_a.Uint16Array;
-import mds.data.descriptor_a.Uint32Array;
-import mds.data.descriptor_a.Uint64Array;
-import mds.data.descriptor_a.Uint8Array;
+import mds.data.descriptor_a.*;
 import mds.mdsip.Message;
 
 /** Array Descriptor (4) **/
@@ -256,6 +240,7 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return this.decompile(new StringBuilder(32), t).toString();
 	}
 
+	@SuppressWarnings("static-method")
 	protected boolean format()
 	{
 		return false;
@@ -263,7 +248,9 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 
 	@Override
 	public final T[] getAtomic()
-	{ return this.getAtomic(0, this.getLength()); }
+	{
+		return this.getAtomic(0, this.getLength());
+	}
 
 	protected final T[] getAtomic(int begin, int count)
 	{
@@ -311,7 +298,9 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 
 	@Override
 	public final Descriptor<?> getHelp()
-	{ return null; }
+	{
+		return null;
+	}
 
 	/*
 	 * returns the i-th element as Descriptor
@@ -324,7 +313,9 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 
 	@Override
 	public boolean isAtomic()
-	{ return Descriptor_A.atomic; }
+	{
+		return Descriptor_A.atomic;
+	}
 
 	@Override
 	@SuppressWarnings(

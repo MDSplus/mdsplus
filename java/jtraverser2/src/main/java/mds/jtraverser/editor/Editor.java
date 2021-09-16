@@ -1,27 +1,11 @@
 package mds.jtraverser.editor;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.TextAction;
+import java.awt.event.*;
+
+import javax.swing.*;
+import javax.swing.text.*;
 
 import mds.Mds;
 import mds.MdsException;
@@ -147,11 +131,13 @@ public abstract class Editor extends JPanel
 
 		@Override
 		public void mouseEntered(final MouseEvent e)
-		{/* stub */}
+		{
+			/* stub */}
 
 		@Override
 		public void mouseExited(final MouseEvent e)
-		{/* stub */}
+		{
+			/* stub */}
 
 		@Override
 		public void mousePressed(final MouseEvent e)
@@ -347,10 +333,14 @@ public abstract class Editor extends JPanel
 	}
 
 	public void interrupt()
-	{/* stub */}
+	{
+		/* stub */}
 
+	@SuppressWarnings("static-method")
 	public boolean isNull()
-	{ return false; }
+	{
+		return false;
+	}
 
 	public void reset(final boolean hard)
 	{
@@ -382,5 +372,7 @@ public abstract class Editor extends JPanel
 	 * setValue(Descriptor<?> value) sets $VALUE PTR for evaluation
 	 */
 	public final void setValue(final Descriptor<?> value)
-	{ this.value = value; }
+	{
+		this.value = value;
+	}
 }
