@@ -15,6 +15,20 @@
    fun:_dlerror_run
 }
 {
+   dlopen
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+}
+{
    getaddrinfo
    Memcheck:Leak
    match-leak-kinds: definite
