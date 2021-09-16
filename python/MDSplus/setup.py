@@ -98,5 +98,5 @@ if __name__ == '__main__':
         sys.exit(1)
     try:
         use_setuptools()
-    except ImportError:
+    except (ImportError, RuntimeError):
         use_distutils()
