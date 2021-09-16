@@ -21,9 +21,42 @@ import mds.data.descriptor_s.*;
 
 public class MdsIp extends Mds
 {
-	public interface Connection extends ReadableByteChannel, WritableByteChannel
+	public static abstract class Connection implements ReadableByteChannel, WritableByteChannel
 	{
 		static final long internal_timeout = 1000L; // ms
+		private static final int minIdx = 1;
+		private int currentIdx = -1;
+		private int maxIdx = -1;
+
+		/** Check message index to early detect invalid headers. */
+		public void checkMsgIdx(final byte msgIdx) throws IOException
+		{
+			final int thisIdx = 0xFF & msgIdx;
+			if (this.currentIdx == -1)
+			{ // satisfy very old mdsip servers that failed to initialize msgidx
+				// to 1
+				this.currentIdx = 2;
+				if (thisIdx > 1)
+					throw new IOException("Invalid Message: MSGIDX");
+				return;
+			}
+			else if (this.maxIdx < 0)
+			{
+				if (msgIdx == Connection.minIdx && this.currentIdx > Connection.minIdx)
+				{ // adjust max index
+					this.maxIdx = this.currentIdx;
+					this.currentIdx = Connection.minIdx;
+				}
+			}
+			else if (this.currentIdx >= this.maxIdx)
+			{
+				this.currentIdx = Connection.minIdx;
+			}
+			if (DEBUG.D)
+				System.out.println(this + " currentIdx = " + this.currentIdx + " thisIdx = " + thisIdx);
+			if (thisIdx != this.currentIdx++)
+				throw new IOException("Invalid Message: MSGIDX");
+		}
 	}
 
 	private final class EventProcessorThread extends Thread
@@ -55,7 +88,7 @@ public class MdsIp extends Mds
 		}
 	} // end EventProcessorThread class
 
-	public abstract static class MdsIpIOStream implements Connection
+	public abstract static class MdsIpIOStream extends Connection
 	{
 		protected InputStream dis;
 		protected OutputStream dos;
@@ -335,7 +368,7 @@ public class MdsIp extends Mds
 			{
 				synchronized (this)
 				{
-					for (;;)
+					while (MdsIp.this.connected)
 					{
 						if (this.killed)
 							return null;
@@ -391,9 +424,13 @@ public class MdsIp extends Mds
 					this.killed = true;
 					this.notifyAll();
 				}
-				if (MdsIp.this.connected)
+				synchronized (MdsIp.this)
 				{
-					MdsIp.this.lostConnection();
+					if (MdsIp.this.connected)
+					{
+						MdsIp.this.receiverThread = null;
+						MdsIp.this.lostConnection();
+					}
 				}
 			}
 		}
@@ -639,7 +676,7 @@ public class MdsIp extends Mds
 		final String prefix = this.provider.getPrefix();
 		if (Provider.PREFIX_LOCAL.equals(prefix))
 		{
-			this.connection = new MdsIpFile("mdsip -P tunnel");
+			this.connection = new MdsIpFile("mdsip", "-P", "tunnel");
 		}
 		else if (Provider.PREFIX_SSH.equals(prefix))
 		{
@@ -647,7 +684,7 @@ public class MdsIp extends Mds
 		}
 		else if (Provider.PREFIX_FILE.equals(prefix))
 		{
-			this.connection = new MdsIpFile(this.provider.host);
+			this.connection = MdsIpFile.fromURI(this.provider.host);
 		}
 		else
 		{
@@ -660,7 +697,7 @@ public class MdsIp extends Mds
 		message.useCompression(this.use_compression);
 		long tictoc = -System.nanoTime();
 		message.send(this.connection);
-		final Message msg = Message.receive(this.connection, null, 10_000);
+		final Message msg = Message.receive(this.connection, null, 20_000);
 		tictoc += System.nanoTime();
 		if (DEBUG.N)
 			System.out.println(tictoc);

@@ -16,6 +16,7 @@ import mds.TransferEventListener;
 import mds.data.DTYPE;
 import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
+import mds.mdsip.MdsIp.Connection;
 
 public final class Message extends Object
 {
@@ -63,33 +64,22 @@ public final class Message extends Object
 		}
 	}
 
-	public static final int _clntB = 14;
-	public static final int _dmctB = 15;
-	public static final int _dmsI = 16;
-	public static final int _idxB = 11;
-	public static final int _lenS = 8;
-	public static final int _midB = 12;
-	public static final int _mlenI = 0;
-	public static final int _nargsB = 10;
-	public static final int _statI = 4;
-	public static final int _typB = 13;
 	public static final byte BIG_ENDIAN_MASK = (byte) 0x80;
 	private static final byte COMPRESSED = (byte) 0x20;
 	protected static final String EVENTASTREQUEST = "---EVENTAST---REQUEST---";
 	protected static final String EVENTCANREQUEST = "---EVENTCAN---REQUEST---";
-	static final private int HEADER_CTYPE_B = 14;
-	static final private int HEADER_DIM0_I = 16;
-	static final private int HEADER_DSCIDX_B = 11;
-	static final private int HEADER_DTYPE_B = 13;
-	static final private int HEADER_LENGTH_S = 8;
-	static final private int HEADER_MSGIDX_B = 12;
-	static final private int HEADER_MSGLEN_I = 0;
-	static final private int HEADER_NARGS_B = 10;
-	static final private int HEADER_NDIMS_B = 15;
-	public static final int HEADER_SIZE = 48;
-	static final private int HEADER_STATUS_I = 4;
-	public static final byte JAVA_CLIENT = (byte) (Message.JAVA_CLIENT_LITTLE | Message.BIG_ENDIAN_MASK); // |
-																											// Message.SWAP_ENDIAN_ON_SERVER_MASK);
+	static final public int HEADER_CTYPE_B = 14;
+	static final public int HEADER_DIM0_I = 16;
+	static final public int HEADER_DSCIDX_B = 11;
+	static final public int HEADER_DTYPE_B = 13;
+	static final public int HEADER_LENGTH_S = 8;
+	static final public int HEADER_MSGIDX_B = 12;
+	static final public int HEADER_MSGLEN_I = 0;
+	static final public int HEADER_NARGS_B = 10;
+	static final public int HEADER_NDIMS_B = 15;
+	static final public int HEADER_SIZE = 48;
+	static final public int HEADER_STATUS_I = 4;
+	public static final byte JAVA_CLIENT = (byte) (Message.JAVA_CLIENT_LITTLE | Message.BIG_ENDIAN_MASK);
 	private static final byte JAVA_CLIENT_LITTLE = (byte) 0x3;
 	// private static final byte SENDCAPABILITIES = (byte)0xF;
 	private static final int SUPPORTS_COMPRESSION = 0x8000;
@@ -153,22 +143,29 @@ public final class Message extends Object
 		}
 	}
 
-	public final static Message receive(final ReadableByteChannel rbc, final Set<TransferEventListener> listeners,
+	public final static Message receive(final Connection con, final Set<TransferEventListener> listeners,
 			final int timeout) throws IOException
 	{
 		final long abstimeout = timeout >= 0 ? System.currentTimeMillis() + timeout : -1;
-		final ByteBuffer header = Message.readBuf(Message.HEADER_SIZE, rbc, null, abstimeout);
-		final byte c_type = header.get(Message._clntB);
+		final ByteBuffer header = Message.readBuf(Message.HEADER_SIZE, con, null, abstimeout);
+		con.checkMsgIdx(header.get(Message.HEADER_MSGIDX_B));
+		if (header.get(Message.HEADER_NDIMS_B) > ARRAY.MAX_DIMS)
+			throw new IOException("Invalid Message: MAX_DIMS");
+		final byte c_type = header.get(Message.HEADER_CTYPE_B);
 		if ((c_type & Message.BIG_ENDIAN_MASK) == 0)
 			header.order(ByteOrder.LITTLE_ENDIAN);
-		final int msglen = header.getInt(Message._mlenI);
+		final int msglen = header.getInt(Message.HEADER_MSGLEN_I);
 		final ByteBuffer body;
 		if (msglen > Message.HEADER_SIZE)
 		{
 			if ((c_type & Message.COMPRESSED) != 0)
-				body = Message.readCompressedBuf(rbc, header.order(), listeners);
+				body = Message.readCompressedBuf(con, header.order(), listeners);
 			else
-				body = Message.readBuf(msglen - Message.HEADER_SIZE, rbc, listeners, 0);
+				body = Message.readBuf(msglen - Message.HEADER_SIZE, con, listeners, 0);
+		}
+		else if (msglen < Message.HEADER_SIZE)
+		{
+			throw new IOException("Invalid Message: HEADER_SIZE");
 		}
 		else
 			body = ByteBuffer.allocateDirect(0);

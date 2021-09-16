@@ -9,11 +9,9 @@ import mds.mdsip.MdsIp.MdsIpIOStream;
 
 public class MdsIpFile extends MdsIpIOStream
 {
-	private final Process process;
-
-	public MdsIpFile(final String filepath) throws IOException
+	static final MdsIpFile fromURI(final String uri) throws IOException
 	{
-		final String args[] = filepath.split(" ");
+		final String args[] = uri.split(" ");
 		for (int i = 0; i < args.length; i++)
 		{
 			try
@@ -25,7 +23,16 @@ public class MdsIpFile extends MdsIpIOStream
 				throw new IOException("Invalid URI: " + args[i]);
 			}
 		}
-		this.process = new ProcessBuilder(args).start();
+		return new MdsIpFile(args);
+	}
+
+	private final Process process;
+	private final String args[];
+
+	public MdsIpFile(final String... args) throws IOException
+	{
+		this.args = args;
+		this.process = new ProcessBuilder(this.args).start();
 		this.dis = this.process.getInputStream();
 		this.dos = this.process.getOutputStream();
 	}
@@ -53,5 +60,17 @@ public class MdsIpFile extends MdsIpIOStream
 	public boolean isOpen()
 	{
 		return this.process.isAlive();
+	}
+
+	@Override
+	public final String toString()
+	{
+		final StringBuilder sb = new StringBuilder();
+		sb.append("MdsIpFile(");
+		for (final String s : this.args)
+			sb.append('"').append(s).append('"').append(", ");
+		sb.setLength(sb.length() - 2);
+		sb.append(')');
+		return sb.toString();
 	}
 }

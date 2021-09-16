@@ -121,13 +121,13 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 	public static final Descriptor_A<?> readMessage(final Message msg) throws MdsException
 	{
 		final ByteBuffer msgh = msg.getHeader();
-		final byte dmct = msgh.get(Message._dmctB);
+		final byte dmct = msgh.get(Message.HEADER_NDIMS_B);
 		final int shape = (dmct > 1) ? (1 + dmct) * Integer.BYTES : 0;
 		final short header_size = (short) (Descriptor.BYTES + Descriptor.BYTES + shape);
-		final int arsize = msgh.getInt(Message._mlenI) - Message.HEADER_SIZE;
+		final int arsize = msgh.getInt(Message.HEADER_MSGLEN_I) - Message.HEADER_SIZE;
 		final ByteBuffer b = ByteBuffer.allocateDirect(header_size + arsize).order(msgh.order());
-		b.putShort(msgh.getShort(Message._lenS));
-		b.put(msgh.get(Message._typB));
+		b.putShort(msgh.getShort(Message.HEADER_LENGTH_S));
+		b.put(msgh.get(Message.HEADER_DTYPE_B));
 		b.put(Descriptor_A.CLASS);
 		b.putInt(header_size);
 		b.put((byte) 0);
@@ -136,12 +136,12 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 			b.put(ARRAY.f_coeff.toByte());
 		else
 			b.put(ARRAY.f_array.toByte());
-		b.put(msgh.get(Message._dmctB));
+		b.put(msgh.get(Message.HEADER_NDIMS_B));
 		b.putInt(arsize);
 		if (shape > 0)
 		{
 			b.putInt(header_size);
-			msgh.position(Message._dmsI);
+			msgh.position(Message.HEADER_DIM0_I);
 			for (int i = 0; i < dmct; i++)
 				b.putInt(msgh.getInt());
 		}

@@ -128,7 +128,7 @@ public class TREE_Test
 		{
 			tree.setVersioning(false, true);
 			System.out.println(tree.api.tdiExecute(tree, "TCL('SHOW VERSIONS')"));
-			// TODO: test verisoning ala
+			// TODO: test versioning ala
 			// https://www.mdsplus.org/index.php/Documentation:Tutorial:Using_Data_Versioning
 		}
 	}
