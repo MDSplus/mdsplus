@@ -4,7 +4,7 @@ module=${1}
 
 if test "${module}" = "MDSplus"; then
   srcdir=${mdsplus_dir}/python
-  if test -n "$(${mdsplus_dir}/rpm/python_module_remove.sh ${module} y)"; then
+  if test "$(${mdsplus_dir}/rpm/python_module_remove.sh ${module} y)" = "y"; then
     setup_install=y
   elif ( echo ${PYTHONPATH} | grep ${mdsplus_dir}/python >/dev/null ); then
     setup_install=n
