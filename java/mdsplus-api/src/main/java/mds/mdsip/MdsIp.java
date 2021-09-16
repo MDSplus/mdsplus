@@ -1,7 +1,6 @@
 package mds.mdsip;
 
 import java.io.*;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -203,11 +202,6 @@ public class MdsIp extends Mds
 				if (MdsIp.this.connected)
 				{
 					MdsIp.this.lostConnection();
-					if (!(e instanceof SocketException || e instanceof EOFException))
-					{
-						// EOF if socket shuts down on abort
-						e.printStackTrace();
-					}
 				}
 			}
 		}
@@ -951,9 +945,7 @@ public class MdsIp extends Mds
 		{
 			return this.provider.getHost();
 		}
-		final String provider_str = this.provider.toString();
-		return new StringBuilder(provider_str.length() + 12).append("MdsIp(").append(provider_str).append(")")
-				.toString();
+		return this.provider.toString();
 	}
 
 	public final void useCompression(final boolean compression)
