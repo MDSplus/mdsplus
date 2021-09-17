@@ -278,14 +278,10 @@ static int io_listen(int argc __attribute__((unused)),
   io_pipes_t pipes;
   memset(&pipes, 0, sizeof(pipes));
 #ifdef WIN32
-  pipes.in = GetStdHandle(STD_INPUT_HANDLE);
-  pipes.out = GetStdHandle(STD_OUTPUT_HANDLE);
-  // redirect regular stdout to stderr
-  HANDLE pid = GetCurrentProcess();
-  HANDLE err = GetStdHandle(STD_ERROR_HANDLE);
-  HANDLE out;
-  DuplicateHandle(pid, err, pid, &out, 0, TRUE, DUPLICATE_SAME_ACCESS);
-  SetStdHandle(STD_OUTPUT_HANDLE, out);
+  pipes.in = (HANDLE)_get_osfhandle(0);
+  pipes.out = (HANDLE)_get_osfhandle(_dup(1));
+  close(1);
+  _dup2(2, 1);
 #else
   pipes.in = 0;       // use stdin directly
   pipes.out = dup(1); // use copy of stdout so we can redirect to stderr
