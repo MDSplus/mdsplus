@@ -10,6 +10,15 @@ import mds.mdsip.MdsIp.Connection;
 
 public class MdsIpTcp extends Connection
 {
+	private static final int DEFAULT_PORT = 8000;
+
+	static public Connection fromString(final String string) throws IOException
+	{
+		final String host_port[] = string.split(":", 2);
+		final int port = (host_port.length > 1) ? Integer.parseInt(host_port[1]) : MdsIpTcp.DEFAULT_PORT;
+		return new MdsIpTcp(host_port[0], port);
+	}
+
 	private final SelectionKey select_out;
 	private final SelectionKey select_in;
 	private final SocketChannel socket;

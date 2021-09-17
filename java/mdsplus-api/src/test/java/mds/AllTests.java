@@ -32,12 +32,10 @@ public class AllTests
 	{
 		final boolean local_win = System.getProperty("os.name").startsWith("Win");
 		final String host = System.getenv("MDSIP_SERVER");
-		final String user = System.getProperty("user.name");
 		AllTests.local = AllTests.local || (!AllTests.mdsip) || host == null || host.length() == 0;
 		final String treepath = (AllTests.local ? local_win : AllTests.remote_win) ? "C:\\Temp" : "/tmp";
-		final String hostinfo = AllTests.local ? "local://" : host;
-		final boolean use_ssh = AllTests.local ? false : AllTests.ssh;
-		final int use_port = use_ssh ? 22 : AllTests.port;
+		final String prefix = AllTests.local ? "local://" : (AllTests.ssh ? "ssh://" : null);
+		final String command = AllTests.local ? "local" : (AllTests.ssh ? host : host + ":" + AllTests.port);
 		final Mds mdslocal = Mds.getLocal();
 		if (!AllTests.use_local && mdslocal != null)
 			mdslocal.close();
@@ -48,7 +46,7 @@ public class AllTests
 		}
 		else
 		{
-			final MdsIp tmds = MdsIp.sharedConnection(new Provider(hostinfo, use_port, user, use_ssh));
+			final MdsIp tmds = MdsIp.sharedConnection(new Provider(prefix + command));
 			if (tmds.isConnected())
 				mds = tmds;
 		}

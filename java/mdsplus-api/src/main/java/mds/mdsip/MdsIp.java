@@ -183,17 +183,14 @@ public class MdsIp extends Mds
 
 	public final static class Provider
 	{
-		// Must ensure host field is never null
 		private static final String DEFAULT_LOCAL = "local";
-		private static final int DEFAULT_PORT = 8000;
-		private static final String DEFAULT_USER = System.getProperty("user.name");
-		private static final String PREFIX_LOCAL = "local://";
-		private static final String PREFIX_SSH = "ssh://";
-		private static final String PREFIX_FILE = "file://";
+		private static final String PREFIX_LOCAL = "local";
+		private static final String PREFIX_FILE = "file";
+		private static final String PREFIX_SSH = "ssh";
+		private static final String PREFIX_TCP = "tcp";
+		private static final String DEFAULT_PREFIX = Provider.PREFIX_TCP;
 		private final String prefix;
-		private final String host;
-		private final int port;
-		private final String user;
+		private final String suffix;
 
 		public Provider()
 		{
@@ -202,88 +199,22 @@ public class MdsIp extends Mds
 
 		public Provider(final String provider)
 		{
-			this(provider, false);
-		}
-
-		public Provider(String provider, final boolean use_ssh)
-		{
 			if (provider == null || provider.isEmpty())
 			{
 				this.prefix = Provider.PREFIX_LOCAL;
-				this.user = null;
-				this.host = null;
-				this.port = 0;
+				this.suffix = Provider.DEFAULT_LOCAL;
+				return;
 			}
-			else if (provider.toLowerCase().startsWith(Provider.PREFIX_LOCAL))
+			final String pre_post[] = provider.split("://", 2);
+			if (pre_post.length > 1)
 			{
-				this.prefix = Provider.PREFIX_LOCAL;
-				this.user = null;
-				this.host = provider.substring(Provider.PREFIX_LOCAL.length());
-				this.port = 0;
-			}
-			else if (provider.toLowerCase().startsWith(Provider.PREFIX_FILE))
-			{
-				this.prefix = Provider.PREFIX_FILE;
-				this.user = null;
-				this.host = provider.substring(Provider.PREFIX_FILE.length());
-				this.port = 0;
+				this.prefix = pre_post[0];
+				this.suffix = pre_post[1];
 			}
 			else
 			{
-				final boolean sshstr = provider.toLowerCase().startsWith(Provider.PREFIX_SSH);
-				if (sshstr)
-				{
-					provider = provider.substring(Provider.PREFIX_SSH.length());
-				}
-				this.prefix = sshstr || use_ssh ? Provider.PREFIX_SSH : "";
-				final int at = provider.indexOf("@");
-				final int cn = provider.indexOf(":");
-				this.user = at < 0 ? null : provider.substring(0, at);
-				this.host = cn < 0 ? provider.substring(at + 1).toLowerCase()
-						: provider.substring(at + 1, cn).toLowerCase();
-				this.port = cn < 0 ? 0 : Short.parseShort(provider.substring(cn + 1));
-			}
-		}
-
-		public Provider(final String host, final int port)
-		{
-			this(host, port, null, false);
-		}
-
-		public Provider(final String host, final int port, final String user)
-		{
-			this(host, port, user, user != null);
-		}
-
-		public Provider(String host, final int port, final String user, final boolean use_ssh)
-		{
-			if (host == null)
-			{
-				this.prefix = Provider.PREFIX_LOCAL;
-				this.user = null;
-				this.host = null;
-				this.port = 0;
-			}
-			else
-			{
-				this.user = user;
-				host = host.toLowerCase();
-				if (host.startsWith(Provider.PREFIX_LOCAL))
-				{
-					host = host.substring(Provider.PREFIX_LOCAL.length());
-					this.prefix = Provider.PREFIX_LOCAL;
-				}
-				else
-				{
-					final boolean sshstr = host.startsWith(Provider.PREFIX_SSH);
-					if (sshstr)
-					{
-						host = host.substring(Provider.PREFIX_SSH.length());
-					}
-					this.prefix = sshstr || use_ssh ? Provider.PREFIX_SSH : "";
-				}
-				this.host = host;
-				this.port = port;
+				this.prefix = Provider.DEFAULT_PREFIX;
+				this.suffix = pre_post[0];
 			}
 		}
 
@@ -295,52 +226,19 @@ public class MdsIp extends Mds
 			if (obj == null || !(obj instanceof Provider))
 				return false;
 			final Provider provider = (Provider) obj;
-			return this.getPrefix().equals(provider.getPrefix()) && this.getHost().equals(provider.getHost())
-					&& this.getPort() == provider.getPort() && this.getUser().equals(provider.getUser());
-		}
-
-		public final MdsIp getConnection()
-		{
-			return new MdsIp(this);
-		}
-
-		public String getHost()
-		{
-			return this.host == null || this.host.isEmpty() ? Provider.DEFAULT_LOCAL : this.host;
-		}
-
-		public int getPort()
-		{
-			return this.port != 0 ? this.port : ("".equals(this.prefix) ? 0 : Provider.DEFAULT_PORT);
-		}
-
-		public String getPrefix()
-		{
-			return this.prefix;
-		}
-
-		public final String getUser()
-		{
-			return this.user == null || this.user.isEmpty() ? Provider.DEFAULT_USER : this.user;
+			return this.prefix.equals(provider.prefix) && this.suffix.equals(provider.suffix);
 		}
 
 		@Override
 		public int hashCode()
 		{
-			return this.getPrefix().hashCode() ^ this.getUser().hashCode() ^ this.getHost().hashCode() ^ this.getPort();
+			return this.prefix.hashCode() ^ this.suffix.hashCode();
 		}
 
 		@Override
 		public final String toString()
 		{
-			final StringBuilder sb = new StringBuilder();
-			sb.append(this.getPrefix());
-			if (this.user != null)
-				sb.append(this.user).append('@');
-			sb.append(this.getHost());
-			if (this.port != 0)
-				sb.append(':').append(this.port);
-			return sb.toString();
+			return this.prefix + "://" + this.suffix;
 		}
 	}
 
@@ -673,27 +571,42 @@ public class MdsIp extends Mds
 			return;
 		// connect to server
 		this.defined_funs.clear();
-		final String prefix = this.provider.getPrefix();
+		final String prefix = this.provider.prefix;
+		String user = System.getProperty("user.name");
 		if (Provider.PREFIX_LOCAL.equals(prefix))
 		{
 			this.connection = new MdsIpFile("mdsip", "-P", "tunnel");
 		}
 		else if (Provider.PREFIX_SSH.equals(prefix))
 		{
-			this.connection = new MdsIpJsch(this.provider.user, this.provider.host, this.provider.getPort());
-		}
-		else if (Provider.PREFIX_FILE.equals(prefix))
-		{
-			this.connection = MdsIpFile.fromURI(this.provider.host);
+			this.connection = MdsIpJsch.fromString(this.provider.suffix);
 		}
 		else
 		{
-			this.connection = new MdsIpTcp(this.provider.host, this.provider.getPort());
+			String host;
+			final String parts[] = this.provider.suffix.split("@", 2);
+			if (parts.length > 1)
+			{
+				user = parts[0];
+				host = parts[1];
+			}
+			else
+			{
+				host = parts[0];
+			}
+			if (Provider.PREFIX_FILE.equals(prefix))
+			{
+				this.connection = MdsIpFile.fromString(host);
+			}
+			else
+			{
+				this.connection = MdsIpTcp.fromString(host);
+			}
 		}
 		if (DEBUG.D)
 			System.out.println(this.connection.toString());
 		// connect to mdsip
-		final Message message = new Message(this.provider.getUser(), this.getMsgId());
+		final Message message = new Message(user, this.getMsgId());
 		message.useCompression(this.use_compression);
 		long tictoc = -System.nanoTime();
 		message.send(this.connection);
@@ -814,7 +727,7 @@ public class MdsIp extends Mds
 				this.dispatchTransferEvent("waiting for server", 0, 0);
 				msg = this.getAnswer();
 				if (msg == null)
-					throw new MdsException("Could not get IO for " + this.provider.host, 0);
+					throw new MdsException("Could not get IO for " + this.provider, 0);
 			}
 			finally
 			{
@@ -866,7 +779,7 @@ public class MdsIp extends Mds
 	private void lostConnection()
 	{
 		this.disconnectFromServer();
-		this.dispatchContextEvent(this.provider.host, false);
+		this.dispatchContextEvent(this.provider.toString(), false);
 	}
 
 	synchronized public final void mdsRemoveEvent(final UpdateEventListener l, final String event)
@@ -882,7 +795,7 @@ public class MdsIp extends Mds
 		}
 		catch (final IOException e)
 		{
-			System.err.print("Could not get IO for " + this.provider.host + ":\n" + e.getMessage());
+			System.err.print("Could not get IO for " + this.provider + ":\n" + e.getMessage());
 		}
 	}
 
@@ -898,7 +811,7 @@ public class MdsIp extends Mds
 		}
 		catch (final IOException e)
 		{
-			System.err.print("Could not get IO for " + this.provider.host + ":\n" + e.getMessage());
+			System.err.print("Could not get IO for " + this.provider + ":\n" + e.getMessage());
 		}
 	}
 
@@ -973,9 +886,9 @@ public class MdsIp extends Mds
 	@Override
 	public final String toString()
 	{
-		if (Provider.PREFIX_LOCAL.equals(this.provider.getPrefix()))
+		if (Provider.PREFIX_LOCAL.equals(this.provider.prefix))
 		{
-			return this.provider.getHost();
+			return this.provider.suffix;
 		}
 		return this.provider.toString();
 	}
