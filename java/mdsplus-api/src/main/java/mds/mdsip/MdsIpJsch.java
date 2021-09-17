@@ -326,7 +326,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 		final String user = usersplit.length == 1 ? null : usersplit[1];
 		final String rest = usersplit.length == 1 ? usersplit[0] : usersplit[1];
 		final String portsplit[] = rest.split(":", 2);
-		final int port = portsplit.length == 1 ? 0 : Integer.parseInt(portsplit[1]);
+		final int port = portsplit.length == 1 ? 22 : Integer.parseInt(portsplit[1]);
 		return new MdsIpJsch(user, portsplit[0], port);
 	}
 
