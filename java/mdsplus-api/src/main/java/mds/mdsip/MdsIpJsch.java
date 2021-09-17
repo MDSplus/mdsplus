@@ -14,6 +14,7 @@ import javax.swing.event.AncestorListener;
 import com.jcraft.jsch.*;
 import com.jcraft.jsch.ConfigRepository.Config;
 
+import mds.mdsip.MdsIp.Connection;
 import mds.mdsip.MdsIp.MdsIpIOStream;
 
 public final class MdsIpJsch extends MdsIpIOStream
@@ -320,6 +321,16 @@ public final class MdsIpJsch extends MdsIpIOStream
 		userinfo = _userinfo;
 	}
 
+	public static Connection fromString(final String string) throws IOException
+	{
+		final String usersplit[] = string.split("@", 2);
+		final String user = usersplit.length == 1 ? null : usersplit[1];
+		final String rest = usersplit.length == 1 ? usersplit[0] : usersplit[1];
+		final String portsplit[] = rest.split(":", 2);
+		final int port = portsplit.length == 1 ? 22 : Integer.parseInt(portsplit[1]);
+		return new MdsIpJsch(user, portsplit[0], port);
+	}
+
 	private static final ConfigRepository getConfigRepository()
 	{
 		final File config = new File(MdsIpJsch.dotssh, "config");
@@ -397,6 +408,11 @@ public final class MdsIpJsch extends MdsIpIOStream
 				throw (IOException) e;
 			throw new IOException(e.toString());
 		}
+	}
+
+	public String getUser()
+	{
+		return this.sessions.firstElement().getUserName();
 	}
 
 	@Override
