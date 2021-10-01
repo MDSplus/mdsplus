@@ -149,11 +149,13 @@ public class OpenTreeDialog extends JDialog
 		{
 			@Override
 			public void popupMenuCanceled(final PopupMenuEvent e)
-			{/* stub */}
+			{
+				/* stub */}
 
 			@Override
 			public void popupMenuWillBecomeInvisible(final PopupMenuEvent e)
-			{/* stub */}
+			{
+				/* stub */}
 
 			@Override
 			public void popupMenuWillBecomeVisible(final PopupMenuEvent e)
@@ -233,8 +235,7 @@ public class OpenTreeDialog extends JDialog
 		}
 		int shot;
 		final String shot_str = (this.shot_list.getSelectedItem() instanceof String)
-				? ((String) this.shot_list.getSelectedItem()).trim()
-				: "";
+				? ((String) this.shot_list.getSelectedItem()).trim() : "";
 		if (shot_str.length() == 0 || shot_str.trim().equalsIgnoreCase("model"))
 			shot = -1;
 		else
@@ -278,6 +279,7 @@ public class OpenTreeDialog extends JDialog
 			this.setFields(treeview.getExpt(), treeview.getShot());
 		else
 		{
+			@SuppressWarnings("resource")
 			final TREE tree = TREE.getActiveTree();
 			if (tree != null)
 				this.setFields(tree.expt, tree.shot);

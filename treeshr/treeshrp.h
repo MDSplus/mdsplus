@@ -40,6 +40,8 @@
 #define NciV_NON_VMS 3
 #define NciM_EXTENDED_NCI 0x10
 #define NciV_EXTENDED_NCI 4
+#define NciM_32BIT_UID_NCI 0x20
+#define NciV_32BIT_UID_NCI 5
 
 typedef struct nci
 {

@@ -1,6 +1,7 @@
 package mds.data.descriptor_a;
 
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
@@ -49,6 +50,7 @@ public final class Int64Array extends INTEGERArray<Long>
 		return this.buildBuffer(buf, (long) value);
 	}
 
+	@SuppressWarnings("static-method")
 	public ByteBuffer buildBuffer(final ByteBuffer buf, final long value)
 	{
 		return buf.putLong(value);
@@ -68,7 +70,9 @@ public final class Int64Array extends INTEGERArray<Long>
 
 	@Override
 	protected final byte getRankBits()
-	{ return 0x07; }
+	{
+		return 0x07;
+	}
 
 	@Override
 	public final Int64 getScalar(final int idx)

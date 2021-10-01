@@ -985,12 +985,24 @@ inline static int begin_finish(vars_t *vars)
 
 #ifndef _WIN32
 static int saved_uic = 0;
-static void init_saved_uic() { saved_uic = (getgid() << 16) | getuid(); }
+static int saved_uic32 = 0;
+static void init_saved_uic() {
+  if (!saved_uic)
+  {
+    saved_uic = getuid();
+    saved_uic32 = (saved_uic & 0xFFFF0000) != 0;
+    if (!saved_uic32)
+    {
+      saved_uic = (getgid() << 16) | (saved_uic);
+    }
+  }
+}
 #endif
 inline static void begin_local_nci(vars_t *vars,
                                    const mdsdsc_a_t *initialValue)
 {
-  vars->local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
+  // reset flag2 bits
+  vars->local_nci.flags2 &= ~(NciM_DATA_IN_ATT_BLOCK | NciM_32BIT_UID_NCI);
   vars->local_nci.dtype = initialValue->dtype;
   vars->local_nci.class = CLASS_R;
   vars->local_nci.time_inserted = TreeTimeInserted();
@@ -998,7 +1010,12 @@ inline static void begin_local_nci(vars_t *vars,
   RUN_FUNCTION_ONCE(init_saved_uic);
 #else
   const int saved_uic = 0;
+  const int saved_uic32 = 0;
 #endif
+  if (saved_uic32)
+  {
+    vars->local_nci.flags2 |= NciM_32BIT_UID_NCI;
+  }
   vars->local_nci.owner_identifier = saved_uic;
 }
 

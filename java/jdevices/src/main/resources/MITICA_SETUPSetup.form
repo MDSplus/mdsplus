@@ -1,0 +1,1915 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="soserver.nbtf:9000"/>
+    <Property name="deviceTitle" type="java.lang.String" value="MITICA Experiment Setup"/>
+    <Property name="deviceType" type="java.lang.String" value="MITICA_SETUP"/>
+    <Property name="height" type="int" value="650"/>
+    <Property name="width" type="int" value="1000"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,77,0,0,3,-109"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Last"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+      <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTabbedPane1FocusLost"/>
+      </Events>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel27">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="MITICA">
+                <Property name="tabTitle" type="java.lang.String" value="MITICA"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel28">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="1"/>
+                <Property name="rows" type="int" value="4"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel31">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Times"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField18">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="T_START_MITICA: "/>
+                        <Property name="numCols" type="int" value="30"/>
+                        <Property name="offsetNid" type="int" value="119"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel30">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="ISEPS EG and RF, AGPS AG  Enable  time Limit"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField19">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                        <Property name="numCols" type="int" value="18"/>
+                        <Property name="offsetNid" type="int" value="120"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField20">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="End Time:"/>
+                        <Property name="numCols" type="int" value="18"/>
+                        <Property name="offsetNid" type="int" value="121"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField23">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Frequency:"/>
+                        <Property name="numCols" type="int" value="18"/>
+                        <Property name="offsetNid" type="int" value="133"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel29">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Reference Waveform Time Limit"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField13">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                        <Property name="numCols" type="int" value="30"/>
+                        <Property name="offsetNid" type="int" value="122"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField17">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="End Time: "/>
+                        <Property name="numCols" type="int" value="30"/>
+                        <Property name="offsetNid" type="int" value="123"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="deviceField17FocusLost"/>
+                        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="deviceField17PropertyChange"/>
+                      </Events>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel47">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Time Of Interest"/>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField28">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="numCols" type="int" value="80"/>
+                        <Property name="offsetNid" type="int" value="211"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel17">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="ISEPS ">
+                <Property name="tabTitle" type="java.lang.String" value="ISEPS "/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane3">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel3">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Setup">
+                        <Property name="tabTitle" type="java.lang.String" value="Setup"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="0"/>
+                    <Property name="rows" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel32">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="EG Modulation"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceChoice" name="deviceChoice1">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="DISABLED"/>
+                                <StringItem index="1" value="ENABLED"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="State:"/>
+                            <Property name="offsetNid" type="int" value="124"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField1">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Frequency:"/>
+                            <Property name="offsetNid" type="int" value="125"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField2">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duty Cycle:"/>
+                            <Property name="offsetNid" type="int" value="126"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel33">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="RF"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                        <Property name="columns" type="int" value="0"/>
+                        <Property name="rows" type="int" value="2"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel53">
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceChoice" name="deviceChoice2">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="DISABLED"/>
+                                    <StringItem index="1" value="ENABLED"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="RF Modulation State:"/>
+                                <Property name="offsetNid" type="int" value="127"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField3">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Mod. Frequency:"/>
+                                <Property name="offsetNid" type="int" value="128"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField6">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Mod. Duty Cycle:"/>
+                                <Property name="offsetNid" type="int" value="129"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel54">
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField29">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="ISRF TE V:"/>
+                                <Property name="offsetNid" type="int" value="323"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceChoice" name="deviceChoice10">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="None"/>
+                                    <StringItem index="1" value="Frequency"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="RF Control Mode:"/>
+                                <Property name="offsetNid" type="int" value="324"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel34">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Filament"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                        <Property name="columns" type="int" value="0"/>
+                        <Property name="rows" type="int" value="2"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel24">
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceChoice" name="deviceChoice3">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="ON"/>
+                                    <StringItem index="1" value="OFF"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="State:"/>
+                                <Property name="offsetNid" type="int" value="130"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField41">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Ref. V:"/>
+                                <Property name="numCols" type="int" value="8"/>
+                                <Property name="offsetNid" type="int" value="325"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField21">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Start Time:"/>
+                                <Property name="numCols" type="int" value="20"/>
+                                <Property name="offsetNid" type="int" value="131"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField22">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Stop Time:"/>
+                                <Property name="numCols" type="int" value="20"/>
+                                <Property name="offsetNid" type="int" value="132"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel52">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Core Snubber"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField42">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="CS1 Ref. I:"/>
+                            <Property name="offsetNid" type="int" value="326"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField43">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="CS2 Ref. I:"/>
+                            <Property name="offsetNid" type="int" value="327"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel2">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Waveforms">
+                        <Property name="tabTitle" type="java.lang.String" value="Waveforms"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel6">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                        <Property name="columns" type="int" value="0"/>
+                        <Property name="rows" type="int" value="2"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel37">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Breakdown Management"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField10">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Dead time Time: "/>
+                                <Property name="numCols" type="int" value="20"/>
+                                <Property name="offsetNid" type="int" value="12"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField11">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Recover time: "/>
+                                <Property name="numCols" type="int" value="20"/>
+                                <Property name="offsetNid" type="int" value="13"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel25">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="ISSS Power Supply"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                            <Property name="columns" type="int" value="5"/>
+                            <Property name="rows" type="int" value="1"/>
+                          </Layout>
+                          <SubComponents>
+                            <Container class="javax.swing.JPanel" name="jPanel36">
+                              <Properties>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                    <TitledBorder/>
+                                  </Border>
+                                </Property>
+                              </Properties>
+                              <SubComponents>
+                                <Component class="DeviceChoice" name="deviceChoice4">
+                                  <Properties>
+                                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                      <StringArray count="2">
+                                        <StringItem index="0" value="ENABLED"/>
+                                        <StringItem index="1" value="DISABLED"/>
+                                      </StringArray>
+                                    </Property>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="labelString" type="java.lang.String" value="Plasma Grid:"/>
+                                    <Property name="offsetNid" type="int" value="134"/>
+                                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                  </Properties>
+                                </Component>
+                              </SubComponents>
+                              <LayoutCode>
+                                <CodeStatement>
+                                  <CodeExpression id="1_flowLayout1">
+                                    <CodeVariable name="flowLayout1" type="4096" declaredType="java.awt.FlowLayout"/>
+                                    <ExpressionOrigin>
+                                      <ExpressionProvider type="CodeConstructor">
+                                        <CodeConstructor class="java.awt.FlowLayout" parameterTypes="int, int, int"/>
+                                      </ExpressionProvider>
+                                      <Parameters>
+                                        <CodeExpression id="2">
+                                          <ExpressionOrigin>
+                                            <Value type="int" value="1"/>
+                                          </ExpressionOrigin>
+                                        </CodeExpression>
+                                        <CodeExpression id="3">
+                                          <ExpressionOrigin>
+                                            <Value type="int" value="0"/>
+                                          </ExpressionOrigin>
+                                        </CodeExpression>
+                                        <CodeExpression id="4">
+                                          <ExpressionOrigin>
+                                            <Value type="int" value="5"/>
+                                          </ExpressionOrigin>
+                                        </CodeExpression>
+                                      </Parameters>
+                                    </ExpressionOrigin>
+                                  </CodeExpression>
+                                  <StatementProvider type="CodeExpression">
+                                    <CodeExpression id="1_flowLayout1"/>
+                                  </StatementProvider>
+                                  <Parameters>
+                                    <CodeExpression id="2"/>
+                                    <CodeExpression id="3"/>
+                                    <CodeExpression id="4"/>
+                                  </Parameters>
+                                </CodeStatement>
+                                <CodeStatement>
+                                  <CodeExpression id="1_flowLayout1"/>
+                                  <StatementProvider type="CodeMethod">
+                                    <CodeMethod name="setAlignOnBaseline" class="java.awt.FlowLayout" parameterTypes="boolean"/>
+                                  </StatementProvider>
+                                  <Parameters>
+                                    <CodeExpression id="5">
+                                      <ExpressionOrigin>
+                                        <Value type="boolean" value="true"/>
+                                      </ExpressionOrigin>
+                                    </CodeExpression>
+                                  </Parameters>
+                                </CodeStatement>
+                                <CodeStatement>
+                                  <CodeExpression id="6_jPanel36">
+                                    <CodeVariable name="jPanel36" type="8194" declaredType="javax.swing.JPanel"/>
+                                    <ExpressionOrigin>
+                                      <ExpressionProvider type="ComponentRef">
+                                        <ComponentRef name="jPanel36"/>
+                                      </ExpressionProvider>
+                                    </ExpressionOrigin>
+                                  </CodeExpression>
+                                  <StatementProvider type="CodeMethod">
+                                    <CodeMethod name="setLayout" class="java.awt.Container" parameterTypes="java.awt.LayoutManager"/>
+                                  </StatementProvider>
+                                  <Parameters>
+                                    <CodeExpression id="1_flowLayout1"/>
+                                  </Parameters>
+                                </CodeStatement>
+                                <CodeStatement>
+                                  <CodeExpression id="6_jPanel36"/>
+                                  <StatementProvider type="CodeMethod">
+                                    <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
+                                  </StatementProvider>
+                                  <Parameters>
+                                    <CodeExpression id="7_deviceChoice4">
+                                      <CodeVariable name="deviceChoice4" type="8194" declaredType="DeviceChoice"/>
+                                      <ExpressionOrigin>
+                                        <ExpressionProvider type="ComponentRef">
+                                          <ComponentRef name="deviceChoice4"/>
+                                        </ExpressionProvider>
+                                      </ExpressionOrigin>
+                                    </CodeExpression>
+                                  </Parameters>
+                                </CodeStatement>
+                              </LayoutCode>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel35">
+                              <Properties>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                    <TitledBorder/>
+                                  </Border>
+                                </Property>
+                              </Properties>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                                <Property name="horizontalGap" type="int" value="0"/>
+                              </Layout>
+                              <SubComponents>
+                                <Component class="DeviceChoice" name="deviceChoice7">
+                                  <Properties>
+                                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                      <StringArray count="2">
+                                        <StringItem index="0" value="ENABLED"/>
+                                        <StringItem index="1" value="DISABLED"/>
+                                      </StringArray>
+                                    </Property>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="labelString" type="java.lang.String" value="Bias:"/>
+                                    <Property name="offsetNid" type="int" value="135"/>
+                                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                  </Properties>
+                                </Component>
+                                <Component class="DeviceChoice" name="deviceChoice8">
+                                  <Properties>
+                                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                      <StringArray count="2">
+                                        <StringItem index="0" value="VOLTAGE"/>
+                                        <StringItem index="1" value="CURRENT"/>
+                                      </StringArray>
+                                    </Property>
+                                    <Property name="identifier" type="java.lang.String" value="bi_control"/>
+                                    <Property name="labelString" type="java.lang.String" value="Control:"/>
+                                    <Property name="offsetNid" type="int" value="136"/>
+                                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                  </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel26">
+                              <Properties>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                    <TitledBorder/>
+                                  </Border>
+                                </Property>
+                              </Properties>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                                <Property name="horizontalGap" type="int" value="0"/>
+                              </Layout>
+                              <SubComponents>
+                                <Component class="DeviceChoice" name="deviceChoice5">
+                                  <Properties>
+                                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                      <StringArray count="2">
+                                        <StringItem index="0" value="ENABLED"/>
+                                        <StringItem index="1" value="DISABLED"/>
+                                      </StringArray>
+                                    </Property>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="labelString" type="java.lang.String" value="Bias Plate:"/>
+                                    <Property name="offsetNid" type="int" value="137"/>
+                                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                  </Properties>
+                                </Component>
+                                <Component class="DeviceChoice" name="deviceChoice6">
+                                  <Properties>
+                                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                      <StringArray count="2">
+                                        <StringItem index="0" value="VOLTAGE"/>
+                                        <StringItem index="1" value="CURRENT"/>
+                                      </StringArray>
+                                    </Property>
+                                    <Property name="identifier" type="java.lang.String" value="bp_control"/>
+                                    <Property name="labelString" type="java.lang.String" value="Control:"/>
+                                    <Property name="offsetNid" type="int" value="138"/>
+                                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                                  </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JTabbedPane" name="jTabbedPane2">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel7">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Bias Plate I / V  [A]/[V] ">
+                                <Property name="tabTitle" type="java.lang.String" value="Bias Plate I / V  [A]/[V] "/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave1">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="offsetNid" type="int" value="15"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel8">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Extraction Grid [V]">
+                                <Property name="tabTitle" type="java.lang.String" value="Extraction Grid [V]"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave2">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="maxYVisible" type="boolean" value="false"/>
+                                <Property name="minYVisible" type="boolean" value="true"/>
+                                <Property name="offsetNid" type="int" value="21"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel9">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Plasma Grid [A]">
+                                <Property name="tabTitle" type="java.lang.String" value="Plasma Grid [A]"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave3">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="offsetNid" type="int" value="27"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel13">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Bias I/V [A]/[V]">
+                                <Property name="tabTitle" type="java.lang.String" value="Bias I/V [A]/[V]"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave6">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="offsetNid" type="int" value="33"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JTabbedPane" name="jTabbedPane7">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="RF1 Setup">
+                                <Property name="tabTitle" type="java.lang.String" value="RF1 Setup"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                          <SubComponents>
+                            <Container class="javax.swing.JPanel" name="jPanel10">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF1 Power [W]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Power [W]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave4">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="39"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel14">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF1 Frequeny [Hz]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Frequeny [Hz]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave7">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="45"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel48">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF1 Capacitance [nF]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF1 Capacitance [nF]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave22">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="51"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JTabbedPane" name="jTabbedPane8">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="RF2 Setup">
+                                <Property name="tabTitle" type="java.lang.String" value="RF2 Setup"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                          <SubComponents>
+                            <Container class="javax.swing.JPanel" name="jPanel15">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF2 Power [W]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Power [W]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave8">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="57"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel16">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF2 Frequeny [Hz]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Frequeny [Hz]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave9">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="213"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel49">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF2 Capacitance [nF]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF2 Capacitance [nF]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave23">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="220"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JTabbedPane" name="jTabbedPane9">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="RF3 Setup">
+                                <Property name="tabTitle" type="java.lang.String" value="RF3 Setup"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                          <SubComponents>
+                            <Container class="javax.swing.JPanel" name="jPanel50">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF3 Power [W]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF3 Power [W]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave24">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="227"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel64">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF3 Frequeny [Hz]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF3 Frequeny [Hz]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave25">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="234"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel65">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF3 Capacitance [nF]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF3 Capacitance [nF]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave26">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="241"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JTabbedPane" name="jTabbedPane10">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="RF4 Setup">
+                                <Property name="tabTitle" type="java.lang.String" value="RF4 Setup"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                          <SubComponents>
+                            <Container class="javax.swing.JPanel" name="jPanel66">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF4 Power [W]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Power [W]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave27">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="248"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel67">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF4 Frequeny [Hz]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Frequeny [Hz]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave28">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="255"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel68">
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                                  <JTabbedPaneConstraints tabName="RF4 Capacitance [nF]">
+                                    <Property name="tabTitle" type="java.lang.String" value="RF4 Capacitance [nF]"/>
+                                  </JTabbedPaneConstraints>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                              <SubComponents>
+                                <Container class="DeviceWave" name="deviceWave29">
+                                  <Properties>
+                                    <Property name="identifier" type="java.lang.String" value=""/>
+                                    <Property name="offsetNid" type="int" value="262"/>
+                                    <Property name="updateExpression" type="java.lang.String" value=""/>
+                                  </Properties>
+                                  <Constraints>
+                                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                      <BorderConstraints direction="Center"/>
+                                    </Constraint>
+                                  </Constraints>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                                </Container>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel12">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Recover Wave">
+                                <Property name="tabTitle" type="java.lang.String" value="Recover Wave"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave5">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="offsetNid" type="int" value="63"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel1">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Data Acquisition">
+                        <Property name="tabTitle" type="java.lang.String" value="Data Acquisition"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="1"/>
+                    <Property name="rows" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel4">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="CAEN DT5720 Timing"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField4">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="4"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField5">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duration: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="5"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel5">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="NI 6259 Timing"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField7">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="7"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField8">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duration"/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="8"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField9">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Frequency: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="6"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel11">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="NI 6368 Timing"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField14">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="10"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField15">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duration"/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="11"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField16">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Frequency: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="9"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel38">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="AGPS">
+                <Property name="tabTitle" type="java.lang.String" value="AGPS"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane5">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel39">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Setup">
+                        <Property name="tabTitle" type="java.lang.String" value="Setup"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="0"/>
+                    <Property name="rows" type="int" value="3"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel40">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="AG  Modulation"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceChoice" name="deviceChoice9">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="DISABLED"/>
+                                <StringItem index="1" value="ENABLED"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="State:"/>
+                            <Property name="offsetNid" type="int" value="152"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField24">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Frequency:"/>
+                            <Property name="offsetNid" type="int" value="153"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField25">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duty Cycle:"/>
+                            <Property name="offsetNid" type="int" value="154"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel44">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Waveforms">
+                        <Property name="tabTitle" type="java.lang.String" value="Waveforms"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel45">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="First"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                        <Property name="columns" type="int" value="0"/>
+                        <Property name="rows" type="int" value="1"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel46">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Breakdown Management"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField30">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Dead time Time: "/>
+                                <Property name="numCols" type="int" value="20"/>
+                                <Property name="offsetNid" type="int" value="150"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField31">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Recover time: "/>
+                                <Property name="numCols" type="int" value="20"/>
+                                <Property name="offsetNid" type="int" value="151"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JTabbedPane" name="jTabbedPane6">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel51">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Acceleration Grid  [V]">
+                                <Property name="tabTitle" type="java.lang.String" value="Acceleration Grid  [V]"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave13">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="maxYVisible" type="boolean" value="false"/>
+                                <Property name="minYVisible" type="boolean" value="true"/>
+                                <Property name="offsetNid" type="int" value="156"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel59">
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Recover Wave">
+                                <Property name="tabTitle" type="java.lang.String" value="Recover Wave"/>
+                              </JTabbedPaneConstraints>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                          <SubComponents>
+                            <Container class="DeviceWave" name="deviceWave21">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="offsetNid" type="int" value="204"/>
+                                <Property name="updateExpression" type="java.lang.String" value=""/>
+                              </Properties>
+                              <Constraints>
+                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                                  <BorderConstraints direction="Center"/>
+                                </Constraint>
+                              </Constraints>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel60">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Data Acquisition">
+                        <Property name="tabTitle" type="java.lang.String" value="Data Acquisition"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="1"/>
+                    <Property name="rows" type="int" value="4"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel61">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="CAEN DT5720 Timing"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField32">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="142"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField33">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duration: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="143"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel62">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="NI 6259 Timing"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField34">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="145"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField35">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duration"/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="146"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField36">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Frequency: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="144"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel63">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="NI 6368 Timing"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField37">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Start Time: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="148"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField38">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Duration"/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="149"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField39">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Frequency: "/>
+                            <Property name="numCols" type="int" value="20"/>
+                            <Property name="offsetNid" type="int" value="147"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel18">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="GVS">
+                <Property name="tabTitle" type="java.lang.String" value="GVS"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel19">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel41">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="North"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="0"/>
+                    <Property name="rows" type="int" value="2"/>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel20">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Gas And Vacuum Timing"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField12">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Trigger Source: "/>
+                            <Property name="numCols" type="int" value="30"/>
+                            <Property name="offsetNid" type="int" value="69"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel43">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                        <Property name="horizontalGap" type="int" value="0"/>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel42">
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                            <Property name="alignment" type="int" value="0"/>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField40">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Pre Set Press. [barG]:"/>
+                                <Property name="numCols" type="int" value="5"/>
+                                <Property name="offsetNid" type="int" value="320"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel55">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="GVS Configuration"/>
+                              </Border>
+                            </Property>
+                          </Properties>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField26">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="VC3001 Turns:"/>
+                                <Property name="numCols" type="int" value="5"/>
+                                <Property name="offsetNid" type="int" value="209"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jLabel1">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="/25      "/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField27">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="VC3002 Turns: "/>
+                                <Property name="numCols" type="int" value="5"/>
+                                <Property name="offsetNid" type="int" value="210"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jLabel2">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="/25   "/>
+                                <Property name="toolTipText" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceChoice" name="deviceChoice11">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="3000"/>
+                                    <StringItem index="1" value="3090"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Tank"/>
+                                <Property name="offsetNid" type="int" value="321"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceChoice" name="deviceChoice12">
+                              <Properties>
+                                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                                  <StringArray count="2">
+                                    <StringItem index="0" value="H2"/>
+                                    <StringItem index="1" value="D2"/>
+                                  </StringArray>
+                                </Property>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Gas Type:"/>
+                                <Property name="offsetNid" type="int" value="322"/>
+                                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JTabbedPane" name="jTabbedPane4">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel21">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="Pressure Modulation %">
+                            <Property name="tabTitle" type="java.lang.String" value="Pressure Modulation %"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceWave" name="deviceWave10">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="offsetNid" type="int" value="71"/>
+                            <Property name="updateExpression" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                              <BorderConstraints direction="Center"/>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel22">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="VG-3011 Open(1) / Close(0) ">
+                            <Property name="tabTitle" type="java.lang.String" value="VG-3011 Open(1) / Close(0) "/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceWave" name="deviceWave11">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="maxYVisible" type="boolean" value="false"/>
+                            <Property name="offsetNid" type="int" value="77"/>
+                            <Property name="updateExpression" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                              <BorderConstraints direction="Center"/>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel23">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="VG-3012 Open(1) / Close(0) ">
+                            <Property name="tabTitle" type="java.lang.String" value="VG-3012 Open(1) / Close(0) "/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                      <SubComponents>
+                        <Container class="DeviceWave" name="deviceWave12">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="maxYVisible" type="boolean" value="false"/>
+                            <Property name="offsetNid" type="int" value="83"/>
+                            <Property name="updateExpression" type="java.lang.String" value=""/>
+                          </Properties>
+                          <Constraints>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                              <BorderConstraints direction="Center"/>
+                            </Constraint>
+                          </Constraints>
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

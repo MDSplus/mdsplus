@@ -26,7 +26,8 @@
 #   2019 03 07: Trig time is initialized to trig source value also in INTERNAL mode
 #
 
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Float32Array
+from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window
+from MDSplus import Int32, Float32, Float64, Float32Array, Tree
 from MDSplus.mdsExceptions import DevCOMM_ERROR
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 
@@ -247,7 +248,6 @@ class NI6259AI(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
             os.close(self.fd)
-        return
 
 # Worker Management
     def saveWorker(self):
@@ -276,6 +276,11 @@ class NI6259AI(Device):
             self.error = self.ACQ_NOERROR
 
         def run(self):
+
+            self.device.setTree(
+                Tree(self.device.getTree().name, self.device.getTree().shot))
+            self.device = self.device.copy()
+
             bufSize = self.device.buf_size.data()
             segmentSize = self.device.seg_length.data()
             #counters = [0]*len(self.chanMap)
@@ -440,8 +445,6 @@ class NI6259AI(Device):
 
             self.device.closeInfo()
 
-            return
-
         def stop(self):
             self.stopReq = True
             NI6259AI.niInterfaceLib.setStopAcqFlag(self.stopAcq)
@@ -458,6 +461,8 @@ class NI6259AI(Device):
 # End Inner class AsynchStore
 
 ##########init############################################################################
+
+
     def init(self):
 
         self.debugPrint('================= PXI 6259 Init ===============')
@@ -833,7 +838,6 @@ class NI6259AI(Device):
         """
         self.saveInfo()
         self.debugPrint("===============================================")
-        return 1
 
 # StartStore
     def start_store(self):
@@ -903,8 +907,6 @@ class NI6259AI(Device):
         self.debugPrint(
             "======================================================")
 
-        return 1
-
     def stop_store(self):
 
         self.debugPrint(
@@ -941,8 +943,6 @@ class NI6259AI(Device):
         self.debugPrint(
             "======================================================")
 
-        return 1
-
     def wait_store(self):
 
         self.debugPrint(
@@ -975,7 +975,6 @@ class NI6259AI(Device):
 
         self.debugPrint(
             "======================================================")
-        return 1
 
     def readConfig(self):
 
@@ -987,7 +986,6 @@ class NI6259AI(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Cannot read board configuration')
             raise DevBAD_PARAMETER
-        return 1
 
     def trigger(self):
 
@@ -1006,4 +1004,3 @@ class NI6259AI(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Exception Cannot Start Acquisition')
             raise DevBAD_PARAMETER
-        return 1

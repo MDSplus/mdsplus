@@ -1,31 +1,18 @@
 package mds.data.descriptor;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import mds.AllTests;
-import mds.Mds;
-import mds.MdsException;
-import mds.data.descriptor_a.Float32Array;
-import mds.data.descriptor_a.Float64Array;
-import mds.data.descriptor_a.Int16Array;
-import mds.data.descriptor_a.Int32Array;
-import mds.data.descriptor_a.Int64Array;
-import mds.data.descriptor_a.Uint64Array;
+import org.junit.*;
+
+import mds.*;
+import mds.data.descriptor_a.*;
 import mds.data.descriptor_apd.Dictionary;
 import mds.data.descriptor_apd.List;
 import mds.data.descriptor_r.Function;
 import mds.data.descriptor_r.Signal;
 import mds.data.descriptor_r.function.BINARY.Multiply;
 import mds.data.descriptor_r.function.CONST;
-import mds.data.descriptor_s.Float32;
-import mds.data.descriptor_s.Int32;
-import mds.data.descriptor_s.Int64;
-import mds.data.descriptor_s.Uint8;
+import mds.data.descriptor_s.*;
 
+@SuppressWarnings("static-method")
 public final class Descriptor_A_Test
 {
 	private static Mds mds;
@@ -43,12 +30,16 @@ public final class Descriptor_A_Test
 	}
 
 	@Before
-	public final void setUp() throws Exception
-	{/* stub */}
+	public void setUp() throws Exception
+	{
+		// stub
+	}
 
 	@After
-	public final void tearDown() throws Exception
-	{/* stub */}
+	public void tearDown() throws Exception
+	{
+		// stub
+	}
 
 	@Test
 	public final void testARRAY() throws MdsException
@@ -63,9 +54,10 @@ public final class Descriptor_A_Test
 				6, 0, 0, 0, 7, 0, 0, 0, 8, 0, 0, 0, 9, 0, 0, 0, 10, 0, 0, 0 }).toString());
 		Assert.assertArrayEquals(new byte[]
 		{ 8, 0, 5, 4, 16, 0, 0, 0, 0, 0, 48, 1, 8, 0, 0, 0, 0, 16, -91, -44, -24, 0, 0, 0 }, test.serializeArray());
-		Assert.assertEquals("ABS([1000000000000QU])", Descriptor_A_Test.mds.getString(
-				"_a=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_a));_s=TdiShr->TdiDecompile(xd(_a),xd(_a),val(1));_a",
-				Function.ABS(new Uint64Array(1000000000000l)).serializeDsc()));
+		Assert.assertEquals("ABS([1000000000000QU])",
+				Descriptor_A_Test.mds.getString(
+						"_a=*;_s=MdsShr->MdsSerializeDscIn(ref($),xd(_a));_s=TdiShr->TdiDecompile(xd(_a),xd(_a),val(1));_a",
+						Function.ABS(new Uint64Array(1000000000000l)).serializeDsc()));
 		Assert.assertEquals("Build_Signal([1D0,2D0,3D0], *, [1Q,2Q,3Q])",
 				new Signal(new Float64Array(1, 2, 3), null, new Int64Array(1, 2, 3)).decompile());
 		Assert.assertEquals("Build_Signal([[[1,2],[3,4]],[[5,6],[7,8]]], *, [1Q,2Q])",
@@ -86,7 +78,8 @@ public final class Descriptor_A_Test
 		{ 2, 2 }, 1, 2, 3, 4), new Int32Array(1, 2));
 		final Descriptor<?>[] args = new Descriptor<?>[]
 		{ new Uint8(1), new Int64(1), new Uint8(2), signal };
-		// HINT: tdi 'Dict' converts keys into int as they can only be native python
+		// HINT: tdi 'Dict' converts keys into int as they can only be native
+		// python
 		// types
 		final Dictionary dict = Descriptor_A_Test.mds
 				.getDescriptor("Dict(,1BU,1Q,2BU,Build_Signal($VALUE,[[1,2],[3,4]],[1,2]))", Dictionary.class);

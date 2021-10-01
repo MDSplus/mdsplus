@@ -1,16 +1,13 @@
 package mds;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+
 import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Int8Array;
 import mds.data.descriptor_r.Range;
 
+@SuppressWarnings("static-method")
 public class MdsShr_Test
 {
 	private static MdsShr mdsshr;
@@ -31,11 +28,15 @@ public class MdsShr_Test
 
 	@Before
 	public void setUp() throws Exception
-	{/* stub */}
+	{
+		// stub
+	}
 
 	@After
 	public void tearDown() throws Exception
-	{/* stub */}
+	{
+		// stub
+	}
 
 	@Test
 	public final void testMdsCompress() throws MdsException

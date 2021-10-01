@@ -153,10 +153,10 @@
 ./usr/local/mdsplus/tdi/python/addfun.py
 ./usr/local/mdsplus/tdi/python/ctime.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
+./usr/local/mdsplus/tdi/python/influxSignal.py
 ./usr/local/mdsplus/tdi/python/intersect1d.py
 ./usr/local/mdsplus/tdi/python/pyfun.py
 ./usr/local/mdsplus/tdi/python/setdiff1d.py
-./usr/local/mdsplus/tdi/python/influxSignal.py
 ./usr/local/mdsplus/tdi/remote/GetManyExecute.fun
 ./usr/local/mdsplus/tdi/remote/ListConnections.fun
 ./usr/local/mdsplus/tdi/remote/MdsConnect.fun

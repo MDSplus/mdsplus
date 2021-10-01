@@ -1,0 +1,2269 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
+    <Property name="deviceTitle" type="java.lang.String" value="MITICA State Machine COnfiguation"/>
+    <Property name="deviceType" type="java.lang.String" value="MITICA_SM"/>
+    <Property name="height" type="int" value="300"/>
+    <Property name="width" type="int" value="700"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,0,-7,0,0,2,28"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="First"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+      <SubComponents>
+        <Component class="DeviceField" name="deviceField1">
+          <Properties>
+            <Property name="identifier" type="java.lang.String" value=""/>
+            <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+            <Property name="numCols" type="int" value="4"/>
+            <Property name="offsetNid" type="int" value="7"/>
+          </Properties>
+        </Component>
+        <Component class="DeviceChoice" name="deviceChoice1">
+          <Properties>
+            <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+              <PropertyValue value="[1, 0]"/>
+            </Property>
+            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+              <StringArray count="2">
+                <StringItem index="0" value="YES"/>
+                <StringItem index="1" value="NO"/>
+              </StringArray>
+            </Property>
+            <Property name="convert" type="boolean" value="true"/>
+            <Property name="identifier" type="java.lang.String" value=""/>
+            <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+            <Property name="offsetNid" type="int" value="4"/>
+            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="PRIMA">
+                <Property name="tabTitle" type="java.lang.String" value="PRIMA"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel7">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField2">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="offsetNid" type="int" value="17"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice2">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                    <Property name="offsetNid" type="int" value="14"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice3">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                    <Property name="offsetNid" type="int" value="20"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane2">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel8">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Cooling Plant">
+                        <Property name="tabTitle" type="java.lang.String" value="Cooling Plant"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField3">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="27"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice4">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="24"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice5">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="30"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel9">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Vacuum and Gas Plant">
+                        <Property name="tabTitle" type="java.lang.String" value="Vacuum and Gas Plant"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField4">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="37"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice6">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="34"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice7">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="40"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel10">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="22 kV Power Distribution Board">
+                        <Property name="tabTitle" type="java.lang.String" value="22 kV Power Distribution Board"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField5">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="47"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice8">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="44"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice9">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="50"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel41">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Timing">
+                        <Property name="tabTitle" type="java.lang.String" value="Timing"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField36">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="327"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice70">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="324"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice71">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="330"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel3">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Power Supply">
+                <Property name="tabTitle" type="java.lang.String" value="Power Supply"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane3">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel12">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="AGPS">
+                        <Property name="tabTitle" type="java.lang.String" value="AGPS"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField7">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="67"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice12">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="64"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice13">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="70"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel13">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="ISEPS">
+                        <Property name="tabTitle" type="java.lang.String" value="ISEPS"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField8">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="77"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice14">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="74"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice15">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="80"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel14">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Caesium Oven">
+                        <Property name="tabTitle" type="java.lang.String" value="Caesium Oven"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField9">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="87"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice16">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="84"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice17">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="90"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel15">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Electric Measurements">
+                        <Property name="tabTitle" type="java.lang.String" value="Electric Measurements"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField10">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="97"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice18">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="94"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice19">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="100"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel42">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Timing">
+                        <Property name="tabTitle" type="java.lang.String" value="Timing"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField37">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="337"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice72">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="334"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice73">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="340"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel16">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField11">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="offsetNid" type="int" value="57"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice20">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                    <Property name="offsetNid" type="int" value="54"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice21">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                    <Property name="offsetNid" type="int" value="60"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel4">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Source">
+                <Property name="tabTitle" type="java.lang.String" value="Source"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel11">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField6">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="offsetNid" type="int" value="107"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice10">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                    <Property name="offsetNid" type="int" value="104"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice11">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                    <Property name="offsetNid" type="int" value="110"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane4">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel17">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Spectroscopy">
+                        <Property name="tabTitle" type="java.lang.String" value="Spectroscopy"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField12">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="117"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice22">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="114"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice23">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="120"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel18">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Source Thermocouples">
+                        <Property name="tabTitle" type="java.lang.String" value="Source Thermocouples"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField13">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="127"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice24">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="124"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice25">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="130"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel19">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Vessel Thermocouples">
+                        <Property name="tabTitle" type="java.lang.String" value="Vessel Thermocouples"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField14">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="137"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice26">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="134"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice27">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="140"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel20">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Beam Dump Thermocouples">
+                        <Property name="tabTitle" type="java.lang.String" value="Beam Dump Thermocouples"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField15">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="145"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice28">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="144"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice29">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="150"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel21">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Grounded Grid Thermocouples">
+                        <Property name="tabTitle" type="java.lang.String" value="Grounded Grid Thermocouples"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField16">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="157"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice30">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="154"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice31">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="160"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel22">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="STRIKE">
+                        <Property name="tabTitle" type="java.lang.String" value="STRIKE"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField17">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="167"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice32">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="164"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice33">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="170"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel23">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Inspection Imaging">
+                        <Property name="tabTitle" type="java.lang.String" value="Inspection Imaging"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField18">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="177"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice34">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="174"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice35">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="180"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel43">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Timing">
+                        <Property name="tabTitle" type="java.lang.String" value="Timing"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField38">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="347"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice74">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="344"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice75">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="350"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel5">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Diagnostics">
+                <Property name="tabTitle" type="java.lang.String" value="Diagnostics"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel24">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField19">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="offsetNid" type="int" value="187"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice36">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                    <Property name="offsetNid" type="int" value="184"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice37">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                    <Property name="offsetNid" type="int" value="190"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane5">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel31">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Spectroscopy">
+                        <Property name="tabTitle" type="java.lang.String" value="Spectroscopy"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField26">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="197"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice50">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="194"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice51">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="200"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel32">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Cavity Ringdown">
+                        <Property name="tabTitle" type="java.lang.String" value="Cavity Ringdown"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField27">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="207"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice52">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="204"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice53">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="210"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel33">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Diagnostic Imaging">
+                        <Property name="tabTitle" type="java.lang.String" value="Diagnostic Imaging"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField28">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="217"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice54">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="214"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice55">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="220"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel34">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Inspection Imaging">
+                        <Property name="tabTitle" type="java.lang.String" value="Inspection Imaging"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField29">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="227"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice56">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="224"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice57">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="230"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel35">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Neutron/X Ray">
+                        <Property name="tabTitle" type="java.lang.String" value="Neutron/X Ray"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField30">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="237"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice58">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="234"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice59">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="240"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel36">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Electrostatic Probe">
+                        <Property name="tabTitle" type="java.lang.String" value="Electrostatic Probe"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField31">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="247"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice60">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="244"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice61">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="250"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel37">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Beam Tomography">
+                        <Property name="tabTitle" type="java.lang.String" value="Beam Tomography"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField32">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="257"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice62">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="254"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice63">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="260"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel44">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Timing">
+                        <Property name="tabTitle" type="java.lang.String" value="Timing"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField39">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="367"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice76">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="364"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice77">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="370"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel6">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Interlock">
+                <Property name="tabTitle" type="java.lang.String" value="Interlock"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel25">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField20">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="offsetNid" type="int" value="267"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice38">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                    <Property name="offsetNid" type="int" value="264"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice39">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                    <Property name="offsetNid" type="int" value="270"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane6">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel38">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Interlock">
+                        <Property name="tabTitle" type="java.lang.String" value="Interlock"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField33">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="277"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice64">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="274"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice65">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="280"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel39">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Timing">
+                        <Property name="tabTitle" type="java.lang.String" value="Timing"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField34">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="357"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice66">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="354"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice67">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="360"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel26">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Safety">
+                <Property name="tabTitle" type="java.lang.String" value="Safety"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel27">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField21">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="offsetNid" type="int" value="297"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice40">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                    <Property name="offsetNid" type="int" value="294"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceChoice" name="deviceChoice41">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                    <Property name="offsetNid" type="int" value="300"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane7">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel46">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Safety">
+                        <Property name="tabTitle" type="java.lang.String" value="Safety"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField41">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="287"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice80">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="284"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice81">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="290"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel45">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="Timing">
+                        <Property name="tabTitle" type="java.lang.String" value="Timing"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField40">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="307"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice78">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                        <Property name="offsetNid" type="int" value="304"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice79">
+                      <Properties>
+                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                          <PropertyValue value="[1, 0]"/>
+                        </Property>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="YES"/>
+                            <StringItem index="1" value="NO"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="convert" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                        <Property name="offsetNid" type="int" value="310"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel40">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Acquisition">
+                <Property name="tabTitle" type="java.lang.String" value="Acquisition"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField35">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="317"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice68">
+              <Properties>
+                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[1, 0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="YES"/>
+                    <StringItem index="1" value="NO"/>
+                  </StringArray>
+                </Property>
+                <Property name="convert" type="boolean" value="true"/>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Is Master:"/>
+                <Property name="offsetNid" type="int" value="314"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice69">
+              <Properties>
+                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[1, 0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="YES"/>
+                    <StringItem index="1" value="NO"/>
+                  </StringArray>
+                </Property>
+                <Property name="convert" type="boolean" value="true"/>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Is Essential: "/>
+                <Property name="offsetNid" type="int" value="320"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Last"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+  </SubComponents>
+</Form>

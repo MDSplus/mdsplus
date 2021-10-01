@@ -9,6 +9,7 @@ import mds.data.descriptor_a.Float32Array;
 import mds.data.descriptor_a.Float64Array;
 import mds.data.descriptor_s.*;
 
+@SuppressWarnings("static-method")
 public class TREE_Test
 {
 	private static final String expt = AllTests.tree;
@@ -73,7 +74,8 @@ public class TREE_Test
 			Assert.assertEquals(node.getNciMinPath(), node1.followReference().getNciMinPath());
 			Assert.assertEquals("\\TEST::TOP:SIGNAL", node.setPath(":SIGNAL").toPath().toString());
 			// Assert.assertEquals("Build_Conglom(*, \"E1429\", *, *)", new
-			// Path(".STRUCT").addConglom("E1429", "E1429").getRecord().decompile());
+			// Path(".STRUCT").addConglom("E1429",
+			// "E1429").getRecord().decompile());
 			Assert.assertEquals("[]", Arrays.toString(node.getTags()));
 			Assert.assertEquals("[]", Arrays.toString(node.getTagsLL()));
 			Assert.assertEquals("[DAT, SIG]", Arrays.toString(node.addTag("SIG").addTag("DAT").getTags()));
@@ -88,7 +90,8 @@ public class TREE_Test
 			// Assert.assertEquals("\\DAT", tree.findTagWild("*A*",
 			// TagRefStatus.init).data);
 			// Assert.assertEquals("[1.0, 2.0, 3.0]",
-			// Arrays.toString(tree.findNodesWild("***", NODE.USAGE_SIGNAL)[2].putRecord(new
+			// Arrays.toString(tree.findNodesWild("***",
+			// NODE.USAGE_SIGNAL)[2].putRecord(new
 			// Signal(new Float64Array(1., 2., 3.), null, new Uint64Array(1, 2,
 			// 3))).getData().toDoubleArray()));
 			Assert.assertEquals(NODE.Flags.COMPRESS_ON_PUT | NODE.Flags.NO_WRITE_MODEL,
@@ -106,6 +109,18 @@ public class TREE_Test
 		}
 	}
 
+	@Before
+	public void setUp() throws Exception
+	{
+		// stub
+	}
+
+	@After
+	public void tearDown() throws Exception
+	{
+		// stub
+	}
+
 	@Test
 	public void testVersions() throws MdsException
 	{
@@ -113,18 +128,8 @@ public class TREE_Test
 		{
 			tree.setVersioning(false, true);
 			System.out.println(tree.api.tdiExecute(tree, "TCL('SHOW VERSIONS')"));
-			// TODO: test verisoning ala
+			// TODO: test versioning ala
 			// https://www.mdsplus.org/index.php/Documentation:Tutorial:Using_Data_Versioning
 		}
-		finally
-		{}
 	}
-
-	@Before
-	public void setUp() throws Exception
-	{/* stub */}
-
-	@After
-	public void tearDown() throws Exception
-	{/* stub */}
 }

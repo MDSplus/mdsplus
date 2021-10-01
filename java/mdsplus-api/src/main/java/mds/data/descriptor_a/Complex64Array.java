@@ -2,6 +2,7 @@ package mds.data.descriptor_a;
 
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
+
 import mds.MdsException;
 import mds.data.DATA;
 import mds.data.DTYPE;
@@ -58,6 +59,7 @@ public final class Complex64Array extends COMPLEXArray<Double>
 		return buf.putDouble(value);
 	}
 
+	@SuppressWarnings("static-method")
 	public final ByteBuffer buildBuffer(final ByteBuffer buf, final double real, final double imag)
 	{
 		return buf.putDouble(real).putDouble(imag);
@@ -77,7 +79,9 @@ public final class Complex64Array extends COMPLEXArray<Double>
 
 	@Override
 	protected final byte getRankBits()
-	{ return 0x07; }
+	{
+		return 0x07;
+	}
 
 	@Override
 	public Complex64 getScalar(final int idx)

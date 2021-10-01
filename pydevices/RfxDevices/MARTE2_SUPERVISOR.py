@@ -57,13 +57,13 @@ class MARTE2_SUPERVISOR(Device):
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
 
     parts.append({'path': ':INIT', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',50,None),Method(None,'init',head))",
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
                   'options': ('no_write_shot',)})
-    parts.append({'path': ':START_STORE', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',51,None),Method(None,'start_store',head))",
+    parts.append({'path': ':GOTORUN', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PON',20,None),Method(None,'gotorun',head))",
                   'options': ('no_write_shot',)})
-    parts.append({'path': ':STOP_STORE', 'type': 'action',
-                  'valueExpr': "Action(Dispatch('MARTE_SERVER','PPC',50,None),Method(None,'stop_store',head))",
+    parts.append({'path': ':STOP', 'type': 'action',
+                  'valueExpr': "Action(Dispatch('MARTE_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stopMarte',head))",
                   'options': ('no_write_shot',)})
 
     MODE_GAM = 1
@@ -202,6 +202,7 @@ class MARTE2_SUPERVISOR(Device):
 
 
 # Enrich GAMs and Data Sources with what is required to store timing information (IOGAM + TreeWriter) is seg_len > 0
+
     def getTimingInfo(self, state, thread, threadPeriod, retGams, dataSources, gamList):
         segLen = getattr(self, 'times_state_%d_thread_%d_seg_len' %
                          (state+1, thread+1)).data()
@@ -362,11 +363,11 @@ class MARTE2_SUPERVISOR(Device):
         confText += '    MaxNumberOfThreads = 8\n'
         confText += '    MinNumberOfThreads = 1\n'
         confText += '}    \n'
-    
+
         confText += ' +StateMachine = {\n'
         confText += '    Class = StateMachine\n'
         confText += '    +INITIAL = {\n'
-        confText += '        Class = ReferenceContainer    \n'  
+        confText += '        Class = ReferenceContainer    \n'
         confText += '        +START = {\n'
         confText += '            Class = StateMachineEvent\n'
         confText += '            NextState = "IDLE"\n'
@@ -410,7 +411,8 @@ class MARTE2_SUPERVISOR(Device):
         confText += '                Function = PrepareNextState\n'
         confText += '                +Parameters = {\n'
         confText += '                   Class = ConfigurationDatabase\n'
-        confText += '                    param1 = '+info['states'][0]['name']+'\n'
+        confText += '                    param1 = ' + \
+            info['states'][0]['name']+'\n'
         confText += '                }\n'
         confText += '           }\n'
         confText += '            +StopCurrentStateExecutionMsg = {\n'
@@ -557,26 +559,23 @@ class MARTE2_SUPERVISOR(Device):
         confText += ' }\n'
         confText += '}\n'
         print (confText)
-        f = open(info['name']+'_marte_configuration.cfg', 'w')
+        f = open('/tmp/'+info['name']+'_marte_configuration.cfg', 'w')
         f.write(confText)
         f.close()
         print('END BUILD')
-        return 1
 
     def startMarteIdle(self):
         self.buildConfiguration()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
+        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START'], shell=True)
-        return 1
 
     def startMarte(self):
         self.buildConfiguration()
         stateName = self.state_1_name.data()
-        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode(
+        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
         time.sleep(2)
         self.gotorun()
-        return 1
 
     def gotorun(self):
         marteName = self.getNode('name').data()
@@ -589,8 +588,6 @@ class MARTE2_SUPERVISOR(Device):
         eventString1 = 'StateMachine:GOTOIDLE'
         Event.seteventRaw(marteName, np.frombuffer(
             eventString1.encode(), dtype=np.uint8))
-
-
 
     def doState(self, state):
         marteName = self.getNode('name').data()
@@ -606,22 +603,21 @@ class MARTE2_SUPERVISOR(Device):
         time.sleep(.1)
         Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
-        return 1
 
     def doState1(self):
-        return self.doState(1)
+        self.doState(1)
 
     def doState2(self):
-        return self.doState(2)
+        self.doState(2)
 
     def doState3(self):
-        return self.doState(2)
+        self.doState(3)
 
     def doState4(self):
-        return self.doState(2)
+        self.doState(4)
 
     def doState5(self):
-        return self.doState(2)
+        self.doState(5)
 
     def suspendMarte(self):
         marteName = self.getNode('name').data()
@@ -636,7 +632,6 @@ class MARTE2_SUPERVISOR(Device):
         time.sleep(0.1)
         Event.seteventRaw(marteName, np.frombuffer(
             eventString3.encode(), dtype=np.uint8))
-        return 1
 
     def stopMarte(self):
         marteName = self.getNode('name').data()
@@ -645,6 +640,20 @@ class MARTE2_SUPERVISOR(Device):
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
         time.sleep(2)
         Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype=np.uint8))
+        # KILL MARTe process
+        import subprocess
+        import os
+        command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'' % (
+            marteName)
+        pid, error = subprocess.Popen("{cmd}".format(
+            cmd=command), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if len(pid) == 0:
+            if len(error) != 0:
+                print('INFO : %s' % (error))
+        else:
+            for p in pid.split():
+                os.kill(int(p), 9)
+                print('MARTe Process PID : %s Killed\n' % (p))
         return 1
 
     def check(self):
