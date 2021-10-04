@@ -162,51 +162,85 @@ static int convertUsage(std::string const &usage)
 }
 
 static Mutex treeMutex;
+static Mutex treeContextMutex;
 
 Tree::Tree(char const *name, int shot)
-    : name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
+    : name(name), shot(shot), fromActiveTree(false)
 {
+  void *ctx = 0;
   int status = _TreeOpen(&ctx, name, shot, 0);
   if (STATUS_NOT_OK)
     throw MdsException(status);
+  struct TreeThreadContextInfo ttci = {pthread_self(), ctx};
+  threadContextV.push_back(ttci);
+  isEdit = false;
+  ronly = false;
   // setActiveTree(this);
 }
 
 Tree::Tree(char const *name, int shot, void *ctx)
-    : name(name), shot(shot), ctx(ctx), fromActiveTree(true) {}
+    : name(name), shot(shot), fromActiveTree(true) 
+{
+  struct TreeThreadContextInfo ttci = {pthread_self(), ctx};
+  threadContextV.push_back(ttci);
+}
 
 Tree::Tree(Tree *tree)
-    : name(tree->name), shot(tree->shot), ctx(tree->ctx), fromActiveTree(true)
+    : name(tree->name), shot(tree->shot), fromActiveTree(true)
 {
+  struct TreeThreadContextInfo ttci = {pthread_self(), tree->getCtx()};
+  threadContextV.push_back(ttci);
 }
 
 Tree::Tree(char const *name, int shot, char const *mode)
-    : name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
+    : name(name), shot(shot), fromActiveTree(false)
 {
+  void *ctx = 0;
   std::string upMode(mode);
   std::transform(upMode.begin(), upMode.end(), upMode.begin(),
                  static_cast<int (*)(int)>(&std::toupper));
 
   int status = 0;
+  
   if (upMode == "NORMAL")
+  {
     status = _TreeOpen(&ctx, name, shot, 0);
+    isEdit = false;
+    ronly = false;
+  }
   else if (upMode == "READONLY")
+  {
     status = _TreeOpen(&ctx, name, shot, 1);
+    isEdit = false;
+    ronly = true;
+  }
   else if (upMode == "NEW")
+  {
     status = _TreeOpenNew(&ctx, name, shot);
+    isEdit = true;
+    ronly = false;
+  }
   else if (upMode == "EDIT")
+  {
     status = _TreeOpenEdit(&ctx, name, shot);
+    isEdit = true;
+    ronly = false;
+  }
   else
+  {
     throw MdsException("Invalid Open mode");
-
+  }
   if (STATUS_NOT_OK)
     throw MdsException(status);
+  struct TreeThreadContextInfo ttci = {pthread_self(), ctx};
+  threadContextV.push_back(ttci);
 }
 
 Tree::~Tree()
 {
   if (fromActiveTree)
     return;
+  void *ctx = getCtx();
   if (isModified())
   {
     int status = _TreeQuitTree(&ctx, name.c_str(), shot);
@@ -232,20 +266,62 @@ EXPORT void Tree::operator delete(void *p) { ::operator delete(p); }
 
 void Tree::edit(const bool st)
 {
+  void *ctx = 0;
   if (isReadOnly())
     throw MdsException("Tree is read only");
   int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot)
                   : _TreeOpen(&ctx, name.c_str(), shot, 0);
   if (STATUS_NOT_OK)
     throw MdsException(status);
+  isEdit = true;
+  ronly = false;
+  pthread_t tid = pthread_self();
+  for(size_t i = 0; i < threadContextV.size(); i++)
+  {
+    if(threadContextV[i].tid == tid)
+    {
+      threadContextV[i].ctx = ctx;
+      return;
+    }
+  }
+  struct TreeThreadContextInfo ttci = {tid, ctx};
+  threadContextV.push_back(ttci);
 }
 
 void Tree::write()
 {
+  void *ctx = getCtx();
   int status = _TreeWriteTree(&ctx, name.c_str(), shot);
   if (STATUS_NOT_OK)
     throw MdsException(status);
 }
+
+
+void *Tree::getCtx()
+{
+    AutoLock lock(treeMutex);
+    pthread_t thisTid = pthread_self();
+    for(size_t i = 0; i < threadContextV.size(); i++)
+    {
+        if(threadContextV[i].tid == thisTid)
+        {
+            return threadContextV[i].ctx;
+        }
+    }
+    //If we arrive here this is the first tree operation in a new thread and the tree must be opened again
+    void *ctx = 0;
+    int status = isEdit ? _TreeOpenEdit(&ctx, name.c_str(), shot)
+                  : _TreeOpen(&ctx, name.c_str(), shot, ronly);
+    if (STATUS_NOT_OK)
+      throw MdsException(status);
+
+    struct TreeThreadContextInfo ttci = {thisTid, ctx};
+    threadContextV.push_back(ttci);
+    return ctx;
+}
+    
+
+
 
 // void Tree::quit()
 //{
@@ -352,7 +428,7 @@ Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3,
 TreeNode *Tree::addNode(char const *name, char const *usage)
 {
   int newNid;
-  int status = _TreeAddNode(ctx, name, &newNid, convertUsage(usage));
+  int status = _TreeAddNode(getCtx(), name, &newNid, convertUsage(usage));
   if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, this);
@@ -361,7 +437,7 @@ TreeNode *Tree::addNode(char const *name, char const *usage)
 TreeNode *Tree::addDevice(char const *name, char const *type)
 {
   int newNid;
-  int status = _TreeAddConglom(ctx, name, type, &newNid);
+  int status = _TreeAddConglom(getCtx(), name, type, &newNid);
   if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(newNid, this);
@@ -371,9 +447,9 @@ void Tree::remove(char const *name)
 {
   int count;
   AutoPointer<TreeNode> delNode(getNode(name));
-  int status = _TreeDeleteNodeInitialize(ctx, delNode.ptr->getNid(), &count, 1);
+  int status = _TreeDeleteNodeInitialize(getCtx(), delNode.ptr->getNid(), &count, 1);
   if (STATUS_OK)
-    _TreeDeleteNodeExecute(ctx);
+    _TreeDeleteNodeExecute(getCtx());
   if (STATUS_NOT_OK)
     throw MdsException(status);
 }
@@ -382,7 +458,7 @@ TreeNode *Tree::getNode(char const *path)
 {
   int nid;
 
-  int status = _TreeFindNode(ctx, path, &nid);
+  int status = _TreeFindNode(getCtx(), path, &nid);
   if (STATUS_NOT_OK)
   {
     throw MdsException(status);
@@ -414,10 +490,10 @@ TreeNodeArray *Tree::getNodeWild(char const *path, int usageMask)
   nids.reserve(10000);
 
   int temp = 0;
-  while ((status = _TreeFindNodeWild(ctx, path, &temp, &wildCtx, usageMask)) &
+  while ((status = _TreeFindNodeWild(getCtx(), path, &temp, &wildCtx, usageMask)) &
          1)
     nids.push_back(temp);
-  _TreeFindNodeEnd(ctx, &wildCtx);
+  _TreeFindNodeEnd(getCtx(), &wildCtx);
 
   TreeNode **retNodes = new TreeNode *[nids.size()];
   for (std::size_t i = 0; i < nids.size(); ++i)
@@ -435,7 +511,7 @@ TreeNodeArray *Tree::getNodeWild(char const *path)
 
 void Tree::setDefault(TreeNode *treeNode)
 {
-  int status = _TreeSetDefaultNid(ctx, treeNode->getNid());
+  int status = _TreeSetDefaultNid(getCtx(), treeNode->getNid());
   if (STATUS_NOT_OK)
     throw MdsException(status);
 }
@@ -444,7 +520,7 @@ TreeNode *Tree::getDefault()
 {
   int nid;
 
-  int status = _TreeGetDefaultNid(ctx, &nid);
+  int status = _TreeGetDefaultNid(getCtx(), &nid);
   if (STATUS_NOT_OK)
     throw MdsException(status);
   return new TreeNode(nid, this);
@@ -466,19 +542,19 @@ static bool dbiTest(void *ctx, short int code)
 
 bool Tree::versionsInPulseEnabled()
 {
-  return dbiTest(ctx, DbiVERSIONS_IN_PULSE);
+  return dbiTest(getCtx(), DbiVERSIONS_IN_PULSE);
 }
 
 bool Tree::versionsInModelEnabled()
 {
-  return dbiTest(ctx, DbiVERSIONS_IN_MODEL);
+  return dbiTest(getCtx(), DbiVERSIONS_IN_MODEL);
 }
 
-bool Tree::isModified() { return dbiTest(ctx, DbiMODIFIED); }
+bool Tree::isModified() { return dbiTest(getCtx(), DbiMODIFIED); }
 
-bool Tree::isOpenForEdit() { return dbiTest(ctx, DbiOPEN_FOR_EDIT); }
+bool Tree::isOpenForEdit() { return dbiTest(getCtx(), DbiOPEN_FOR_EDIT); }
 
-bool Tree::isReadOnly() { return dbiTest(ctx, DbiOPEN_READONLY); }
+bool Tree::isReadOnly() { return dbiTest(getCtx(), DbiOPEN_READONLY); }
 
 static void dbiSet(void *ctx, short int code, bool value)
 {
@@ -494,12 +570,12 @@ static void dbiSet(void *ctx, short int code, bool value)
 
 void Tree::setVersionsInModel(bool verEnabled)
 {
-  dbiSet(ctx, DbiVERSIONS_IN_MODEL, verEnabled);
+  dbiSet(getCtx(), DbiVERSIONS_IN_MODEL, verEnabled);
 }
 
 void Tree::setVersionsInPulse(bool verEnabled)
 {
-  dbiSet(ctx, DbiVERSIONS_IN_PULSE, verEnabled);
+  dbiSet(getCtx(), DbiVERSIONS_IN_PULSE, verEnabled);
 }
 
 void Tree::setViewDate(char *date)
@@ -516,7 +592,7 @@ void Tree::setViewDate(char *date)
 
 void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 {
-  int status = setTreeTimeContext(ctx, (start) ? start->convertToDsc() : 0,
+  int status = setTreeTimeContext(getCtx(), (start) ? start->convertToDsc() : 0,
                                   (end) ? end->convertToDsc() : 0,
                                   (delta) ? delta->convertToDsc() : 0);
   if (STATUS_NOT_OK)
@@ -1696,15 +1772,15 @@ void TreeNode::rename(std::string const &newName)
 void TreeNode::move(TreeNode *parent, std::string const &newName)
 {
   resolveNid();
-  AutoString parentPath(parent->getFullPath());
-  rename(parentPath.string + ":" + newName);
+  std::string parentPath(parent->getFullPathStr());
+  rename(parentPath + ":" + newName);
 }
 
 void TreeNode::move(TreeNode *parent)
 {
   resolveNid();
-  AutoString name(getNodeName());
-  move(parent, name.string);
+  std::string name(getNodeNameStr());
+  move(parent, name);
 }
 
 void TreeNode::addTag(std::string const &tagName)

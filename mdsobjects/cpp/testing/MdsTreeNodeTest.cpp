@@ -103,6 +103,30 @@ namespace testing
   }
 } // namespace testing
 
+ void *testThread(void *ptr)
+{
+    Tree *tree = ((Tree **)ptr)[0];
+    Tree *tree1 = ((Tree **)ptr)[1];
+    TreeNode *n = tree->getNode(":DATA");
+    Data *d = new Int32(1);
+    Data *d1 = new Int32(2);
+    n->putData(d);
+    TreeNode *n1 = tree1->getNode(":DATA");
+    n1->putData(d1);
+    deleteData(d);
+    deleteData(d1);
+    d = n->getData();
+    d1 = n1->getData();
+    TEST1(d->getInt() == 1);
+    TEST1(d1->getInt() == 2);
+    deleteData(d);
+    deleteData(d1); 
+    pthread_exit(0);
+}
+
+
+
+
 #ifdef _WIN32
 #include <windows.h>
 #define setenv(name, val, extra) _putenv_s(name, val)
@@ -695,6 +719,7 @@ void main_test()
                 .string == "[1Q,1Q,2Q,3Q,5Q,8Q,13Q,21Q,34Q,55Q]");
     }
 
+    
     { // IMAGES in segments //
       unique_ptr<TreeNode> n2 = tree->addNode("test_seg:image", "SIGNAL");
 
@@ -817,7 +842,6 @@ void main_test()
   //  Edit Nodes
   //  ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////
-
   {
 
     unique_ptr<TreeNode> root = (tree->addNode("test_edit", "STRUCTURE"));
@@ -848,58 +872,57 @@ void main_test()
 
     n2 = n1->addNode("subnode", "ANY");
     n3 = n2->addNode("child", "ANY");
-
     n3->move(n1);
     TEST1(unique_ptr<TreeNode>(n3->getParent())->getNodeNameStr() == "PARENT");
 
     n3->move(root, "new_parent");
     TEST1(unique_ptr<TreeNode>(n1->getParent())->getNodeNameStr() ==
           "TEST_EDIT");
-
     n2->addTag("n2");
-
     n3->addTag("n3");
     n3 = tree->getNode("\\n3");
-
     n3->removeTag("n3");
     TEST_EXCEPTION(unique_ptr<TreeNode>(tree->getNode("\\n3")), MdsException);
-
     delete n1->addDevice("device", "DIO2");
   }
 
-  END_TESTING;
 
-  BEGIN_TESTING(TreeNode - Tree reference);
-
-  Tree *tree = new Tree("t_treenode", -1, "NEW");
-  TreeNode *n = tree->addNode(":DATA", "NUMERIC");
-  delete n;
-  tree->write();
-  delete tree;
-  tree = new Tree("t_treenode", -1);
-  tree->createPulse(1);
-  tree->createPulse(2);
-  delete tree;
-  tree = new Tree("t_treenode", 1);
-  Tree *tree1 = new Tree("t_treenode", 2);
-  n = tree->getNode(":DATA");
-  Data *d = new Int32(1);
-  Data *d1 = new Int32(2);
-  n->putData(d);
-  TreeNode *n1 = tree1->getNode(":DATA");
-  n1->putData(d1);
-  deleteData(d);
-  deleteData(d1);
-  d = n->getData();
-  d1 = n1->getData();
-  TEST1(d->getInt() == 1);
-  TEST1(d1->getInt() == 2);
-  deleteData(d);
-  deleteData(d1);
-  delete n;
-  delete n1;
-  delete tree;
-  delete tree1;
+  {
+    Tree *tree = new Tree("t_treenode", -1, "NEW");
+    TreeNode *n = tree->addNode(":DATA", "NUMERIC");
+    delete n;
+    tree->write();
+    tree = new Tree("t_treenode", -1);
+    tree->createPulse(1);
+    tree->createPulse(2);
+    tree = new Tree("t_treenode", 1);
+    Tree *tree1 = new Tree("t_treenode", 2);
+    n = tree->getNode(":DATA");
+    Data *d = new Int32(1);
+    Data *d1 = new Int32(2);
+    n->putData(d);
+    TreeNode *n1 = tree1->getNode(":DATA");
+    n1->putData(d1);
+    deleteData(d);
+    deleteData(d1);
+    d = n->getData();
+    d1 = n1->getData();
+    TEST1(d->getInt() == 1);
+    TEST1(d1->getInt() == 2);
+    deleteData(d);
+    deleteData(d1);
+    delete n;
+    delete n1;
+    tree = new Tree("t_treenode", 1);
+    tree1 = new Tree("t_treenode", 2);
+    Tree *trees[2] = {tree, tree1};
+    pthread_t thread;
+    
+    pthread_create(&thread, NULL, testThread, trees);
+    void *res;
+    pthread_join(thread, &res);
+  
+  }
   END_TESTING;
 }
 
