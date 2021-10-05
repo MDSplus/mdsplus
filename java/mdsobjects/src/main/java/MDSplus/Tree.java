@@ -558,32 +558,40 @@ public class Tree
 	{
 		if (expr == null || expr.isEmpty())
 			return new Data();
-		final Data retData = compile(getCtx(), expr, args);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = compile(getCtx(), expr, args);
+                    retData.setCtxTree(this);
+                    return retData;
+                }catch(Exception exc){return new Data();}
 	}
 
 	public Data tdiExecute(java.lang.String expr, Data... args)
 	{
 		if (expr == null || expr.isEmpty())
 			return new Data();
-		final Data retData = execute(getCtx(), expr, args);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = execute(getCtx(), expr, args);
+                    retData.setCtxTree(this);
+                    return retData;
+               }catch(Exception exc){return new Data();}
 	}
 
 	public Data tdiData(Data data)
 	{
-		final Data retData = data(getCtx(), data);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = data(getCtx(), data);
+                    retData.setCtxTree(this);
+                    return retData;
+               }catch(Exception exc){return new Data();}
 	}
 
 	public Data tdiEvaluate(Data data)
 	{
-		final Data retData = evaluate(getCtx(), data);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = evaluate(getCtx(), data);
+                    retData.setCtxTree(this);
+                    return retData;
+              }catch(Exception exc){return new Data();}
 	}
 
 	public static Tree getActiveTree()
