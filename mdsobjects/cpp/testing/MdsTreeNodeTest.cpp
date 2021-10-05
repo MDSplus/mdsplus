@@ -122,6 +122,7 @@ namespace testing
     deleteData(d);
     deleteData(d1); 
     pthread_exit(0);
+    return NULL;
 }
 
 
