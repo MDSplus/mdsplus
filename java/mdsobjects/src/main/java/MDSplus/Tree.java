@@ -103,16 +103,7 @@ public class Tree
 		this.mode = OPEN_CLOSED;
 	}
 
-	@Override
-	protected void finalize() throws Throwable
-	{
-               if(mode == OPEN_CLOSED) return;
- 		if (edit)
-			this.quit();
-		else
-			this.close();
-	}
-
+	
 	public boolean isOpen()
 	{ return open; }
 
