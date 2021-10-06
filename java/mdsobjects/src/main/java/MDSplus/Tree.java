@@ -398,52 +398,60 @@ public class Tree
 	/**
 	 * Open the tree for editing.
 	 */
-	public void normal() throws MdsException
+	public synchronized void normal() throws MdsException
 	{
 		openTree(ctx, name, shot, false);
 		edit = false;
 		open = true;
 		mode = OPEN_NORMAL;
+                treeCtxInfoV.clear();
                 treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
 	}
 
-	public void readonly() throws MdsException
+	public synchronized void readonly() throws MdsException
 	{
 		openTree(ctx, name, shot, true);
 		edit = false;
 		open = true;
 		mode = OPEN_READONLY;
+                treeCtxInfoV.clear();
                 treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
                
 	}
 
-	public void edit() throws MdsException
+	public synchronized void edit() throws MdsException
 	{
 		editTree(ctx, name, shot, false);
 		edit = true;
 		open = true;
 		mode = OPEN_EDIT;
+                treeCtxInfoV.clear();
                 treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
 	}
 
-	private void _new() throws MdsException
+	private synchronized void _new() throws MdsException
 	{
 		editTree(ctx, name, shot, true);
 		edit = true;
 		open = true;
 		mode = OPEN_EDIT;
+                treeCtxInfoV.clear();
                 treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
 	}
         
         protected synchronized long getCtx() throws MdsException
 	{
+           // if(true) return ctx;
             long tid = Thread.currentThread().getId();
             for(int i = 0; i < treeCtxInfoV.size(); i++)
             {
                 if (treeCtxInfoV.elementAt(i).tid == tid)
-                    return treeCtxInfoV.elementAt(i).ctx;
+                {
+                     return treeCtxInfoV.elementAt(i).ctx;
+                }
             }
             //If we arrive here, a new context must be created
+            ctx = 0;
             if(edit)
             {
  		editTree(ctx, name, shot, false);
