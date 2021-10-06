@@ -35,6 +35,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cctype>
 
 #include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
+#ifdef _WIN32
+#define GET_THREAD_ID GetCurrentThreadId()
+#else
+#define GET_THREAD_ID pthread_self()
+#endif
+
 
 using namespace MDSplus;
 using namespace std;
@@ -171,7 +182,7 @@ Tree::Tree(char const *name, int shot)
   int status = _TreeOpen(&ctx, name, shot, 0);
   if (STATUS_NOT_OK)
     throw MdsException(status);
-  struct TreeThreadContextInfo ttci = {pthread_self(), ctx};
+  struct TreeThreadContextInfo ttci = {GET_THREAD_ID, ctx};
   threadContextV.push_back(ttci);
   isEdit = false;
   ronly = false;
@@ -181,14 +192,14 @@ Tree::Tree(char const *name, int shot)
 Tree::Tree(char const *name, int shot, void *ctx)
     : name(name), shot(shot), fromActiveTree(true) 
 {
-  struct TreeThreadContextInfo ttci = {pthread_self(), ctx};
+  struct TreeThreadContextInfo ttci = {GET_THREAD_ID, ctx};
   threadContextV.push_back(ttci);
 }
 
 Tree::Tree(Tree *tree)
     : name(tree->name), shot(tree->shot), fromActiveTree(true)
 {
-  struct TreeThreadContextInfo ttci = {pthread_self(), tree->getCtx()};
+  struct TreeThreadContextInfo ttci = {GET_THREAD_ID, tree->getCtx()};
   threadContextV.push_back(ttci);
 }
 
@@ -232,7 +243,7 @@ Tree::Tree(char const *name, int shot, char const *mode)
   }
   if (STATUS_NOT_OK)
     throw MdsException(status);
-  struct TreeThreadContextInfo ttci = {pthread_self(), ctx};
+  struct TreeThreadContextInfo ttci = {GET_THREAD_ID, ctx};
   threadContextV.push_back(ttci);
 }
 
@@ -275,7 +286,7 @@ void Tree::edit(const bool st)
     throw MdsException(status);
   isEdit = true;
   ronly = false;
-  pthread_t tid = pthread_self();
+  pthread_t tid = GET_THREAD_ID;
   for(size_t i = 0; i < threadContextV.size(); i++)
   {
     if(threadContextV[i].tid == tid)
@@ -300,7 +311,7 @@ void Tree::write()
 void *Tree::getCtx()
 {
     AutoLock lock(treeMutex);
-    pthread_t thisTid = pthread_self();
+    pthread_t thisTid = GET_THREAD_ID;
     for(size_t i = 0; i < threadContextV.size(); i++)
     {
         if(threadContextV[i].tid == thisTid)

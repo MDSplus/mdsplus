@@ -98,7 +98,7 @@ public class Tree
 	public void close() throws MdsException
 	{
 		if (open)
-			closeTree(ctx, name, shot);
+			closeTree(getCtx(), name, shot);
 		edit = open = false;
 		this.mode = OPEN_CLOSED;
 	}
@@ -106,7 +106,8 @@ public class Tree
 	@Override
 	protected void finalize() throws Throwable
 	{
-		if (edit)
+               if(mode == OPEN_CLOSED) return;
+ 		if (edit)
 			this.quit();
 		else
 			this.close();
@@ -421,6 +422,9 @@ public class Tree
 
 	public synchronized void edit() throws MdsException
 	{
+ 		if (open)
+			closeTree(getCtx(), name, shot);
+                ctx = 0;
 		editTree(ctx, name, shot, false);
 		edit = true;
 		open = true;

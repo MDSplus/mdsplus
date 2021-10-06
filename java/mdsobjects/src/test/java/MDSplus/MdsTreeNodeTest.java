@@ -452,7 +452,7 @@ public class MdsTreeNodeTest
         @Test
         public void testTreeNodeMultiThread() throws MdsException
         {
-               tree.edit();
+                tree.edit();
                 final MDSplus.TreeNode n1 = tree.addNode(any+":n1", "ANY");
                 // addNode with relative path //
                 MDSplus.TreeNode  n2 = n1.addNode("n2", "ANY");
