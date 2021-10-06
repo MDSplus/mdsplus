@@ -280,13 +280,20 @@ EXPORT void Tree::operator delete(void *p) { ::operator delete(p); }
 void Tree::edit(const bool st)
 {
   void *ctx = 0;
+  if(isEdit == st) return;
   if (isReadOnly())
     throw MdsException("Tree is read only");
-  int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot)
+  ctx = getCtx();
+  int status = _TreeClose(&ctx, name.c_str(), shot);
+  if (STATUS_NOT_OK)
+    throw MdsException(status);
+  TreeFreeDbid(ctx);
+  ctx = 0;
+  status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot)
                   : _TreeOpen(&ctx, name.c_str(), shot, 0);
   if (STATUS_NOT_OK)
     throw MdsException(status);
-  isEdit = true;
+  isEdit = st;
   ronly = false;
   THREAD_ID tid = GET_THREAD_ID;
   for(size_t i = 0; i < threadContextV.size(); i++)

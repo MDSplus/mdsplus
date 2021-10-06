@@ -122,6 +122,7 @@ namespace testing
     deleteData(d);
     deleteData(d1); 
     pthread_exit(0);
+    delete n;
     return NULL;
 }
 
@@ -138,6 +139,7 @@ void main_test()
   TEST_TIMEOUT(100);
   BEGIN_TESTING(TreeNode);
 
+  
   unique_ptr<Tree> tree = new Tree("T_TREENODE", -1, "NEW");
   unique_ptr<Tree> tree2 = new Tree("T_TREENODE2", -1, "NEW");
 
@@ -459,7 +461,7 @@ void main_test()
 
   {
     tree->edit(true);
-    unique_ptr<TreeNode> node = tree->addNode("test_flags", "ANY");
+    TreeNode * node = tree->addNode("test_flags", "ANY");
 
     // WRITE ONCE //////////////////////////////////////////////////////////
 
@@ -492,7 +494,7 @@ void main_test()
     tree->edit(false);
     tree->createPulse(1);
     tree->edit(true);
-
+    node->setTree(tree);
     unique_ptr<Tree> shot = new Tree("T_TREENODE", 1);
     unique_ptr<TreeNode> shot_node = shot->getNode("test_flags");
 
@@ -513,7 +515,7 @@ void main_test()
     TEST0(node->isNoWriteModel());
     node->putData(unique_ptr<Data>(new Int32(5552369)));
 
-    // NO WRITE SHOT //
+   // NO WRITE SHOT //
 
     TEST0(shot_node->isNoWriteShot());
     shot_node->putData(unique_ptr<Data>(new Int32(5552369)));
@@ -893,9 +895,11 @@ void main_test()
     TreeNode *n = tree->addNode(":DATA", "NUMERIC");
     delete n;
     tree->write();
+    delete tree;
     tree = new Tree("t_treenode", -1);
     tree->createPulse(1);
     tree->createPulse(2);
+    delete tree;
     tree = new Tree("t_treenode", 1);
     Tree *tree1 = new Tree("t_treenode", 2);
     n = tree->getNode(":DATA");
@@ -914,6 +918,8 @@ void main_test()
     deleteData(d1);
     delete n;
     delete n1;
+    delete tree;
+    delete tree1;
     tree = new Tree("t_treenode", 1);
     tree1 = new Tree("t_treenode", 2);
     Tree *trees[2] = {tree, tree1};
@@ -922,6 +928,8 @@ void main_test()
     pthread_create(&thread, NULL, testThread, trees);
     void *res;
     pthread_join(thread, &res);
+    delete tree;
+    delete tree1;
   
   }
   END_TESTING;
