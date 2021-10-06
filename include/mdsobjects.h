@@ -3892,7 +3892,11 @@ namespace MDSplus
   struct TreeThreadContextInfo
   {
     public: 
+#ifdef _MSC_VER
+      DWORD tid;
+#else
       pthread_t tid;
+#endif
       void *ctx;
   };
 

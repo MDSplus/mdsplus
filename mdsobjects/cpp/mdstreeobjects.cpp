@@ -42,8 +42,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef _WIN32
 #define GET_THREAD_ID GetCurrentThreadId()
+#define THREAD_ID DWORD
 #else
 #define GET_THREAD_ID pthread_self()
+#define THREAD_ID pthread_t
 #endif
 
 
@@ -286,7 +288,7 @@ void Tree::edit(const bool st)
     throw MdsException(status);
   isEdit = true;
   ronly = false;
-  pthread_t tid = GET_THREAD_ID;
+  THREAD_ID tid = GET_THREAD_ID;
   for(size_t i = 0; i < threadContextV.size(); i++)
   {
     if(threadContextV[i].tid == tid)
@@ -311,7 +313,7 @@ void Tree::write()
 void *Tree::getCtx()
 {
     AutoLock lock(treeMutex);
-    pthread_t thisTid = GET_THREAD_ID;
+    THREAD_ID thisTid = GET_THREAD_ID;
     for(size_t i = 0; i < threadContextV.size(); i++)
     {
         if(threadContextV[i].tid == thisTid)
