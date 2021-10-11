@@ -199,7 +199,7 @@ Tree::Tree(char const *name, int shot, void *ctx)
 }
 
 Tree::Tree(Tree *tree)
-    : name(tree->name), shot(tree->shot), fromActiveTree(true), isEdit(tree->isEdit), ronly(tree->ronly)
+    : name(tree->name), shot(tree->shot), fromActiveTree(true)
 {
   struct TreeThreadContextInfo ttci = {GET_THREAD_ID, tree->getCtx()};
   threadContextV.push_back(ttci);
@@ -570,11 +570,6 @@ bool Tree::versionsInModelEnabled()
   return dbiTest(getCtx(), DbiVERSIONS_IN_MODEL);
 }
 
-bool Tree::alternateCompressionEnabled()
-{
-  return dbiTest(getCtx(), DbiALTERNATE_COMPRESSION);
-}
-
 bool Tree::isModified() { return dbiTest(getCtx(), DbiMODIFIED); }
 
 bool Tree::isOpenForEdit() { return dbiTest(getCtx(), DbiOPEN_FOR_EDIT); }
@@ -601,11 +596,6 @@ void Tree::setVersionsInModel(bool verEnabled)
 void Tree::setVersionsInPulse(bool verEnabled)
 {
   dbiSet(getCtx(), DbiVERSIONS_IN_PULSE, verEnabled);
-}
-
-void Tree::setAlternateCompression(bool altEnabled)
-{
-  dbiSet(getCtx(), DbiALTERNATE_COMPRESSION, altEnabled);
 }
 
 void Tree::setViewDate(char *date)
