@@ -3889,18 +3889,34 @@ namespace MDSplus
   ///      0 - current shot
   ///     >1 - pulse files
   ///
+  struct TreeThreadContextInfo
+  {
+    public: 
+#ifdef _MSC_VER
+      DWORD tid;
+#else
+      pthread_t tid;
+#endif
+      void *ctx;
+  };
 
   class EXPORT Tree
   {
     friend void setActiveTree(Tree *tree);
     friend Tree *getActiveTree();
-
+    friend class TreeNode;
+    
   protected:
     std::string name;
     int shot;
-    void *ctx;
     bool fromActiveTree;
+    bool isEdit;
+    bool ronly;
+    
+    std::vector<TreeThreadContextInfo> threadContextV;
+    Mutex treeContextMutex;
 
+    
   public:
     /// Builds a new Tree object instance creating or attaching to the named
     /// tree. The tree name has to match the path envoronment variable
@@ -3935,8 +3951,11 @@ namespace MDSplus
     /// Get current shot number
     static int getCurrent(char const *treeName);
 
+    //Check context validity 
+    void checkContext();
+    
     /// Return current tree context (see treeshr library)
-    void *getCtx() { return ctx; }
+    void *getCtx(); 
 
     /// Reopen target tree in edit mode or in normal mode according to the
     /// value passed as argument. The default behavior is to reopen for edit.
