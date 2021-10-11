@@ -18,46 +18,12 @@ import mds.mdsip.MdsIp;
 
 public class Device implements Interface
 {
-	public static void main(String... args) throws Exception
-	{
-		showDeviceSetup(args[0], Integer.valueOf(args[1]), args[2]);
-	}
-
-	public static void showDeviceSetup(String experiment, int shot, String path) throws Exception
-	{
-		final MdsIp mds = new MdsIp();
-		try (final TREE tree = new TREE(mds, experiment, shot, TREE.NORMAL))
-		{
-			final Nid nid = tree.getNode(path);
-			final JDialog dialog = showDialog(null, nid, !tree.is_readonly());
-			if (dialog != null)
-			{
-				dialog.addWindowListener(new WindowAdapter()
-				{
-					@Override
-					public void windowClosed(WindowEvent e)
-					{
-						synchronized (dialog)
-						{
-							dialog.notifyAll();
-						}
-					}
-				});
-				synchronized (dialog)
-				{
-					while (dialog.isShowing())
-						dialog.wait(1000);
-				}
-			}
-		}
-	}
-
 	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable) throws Exception
 	{
-		return Device.getEditor(frame, nid, editable, getModel(nid));
+		return Device.getEditor(frame, nid, editable, Device.getModel(nid));
 	}
 
-	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable, String model)
+	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable, final String model)
 			throws Exception
 	{
 		Class<?> device_cls;
@@ -73,7 +39,7 @@ public class Device implements Interface
 				Boolean.valueOf(editable));
 	}
 
-	private static final String getModel(Nid nid) throws Exception
+	private static final String getModel(final Nid nid) throws Exception
 	{
 		final Conglom conglom = (Conglom) nid.getRecord();
 		if (conglom == null)
@@ -84,6 +50,43 @@ public class Device implements Interface
 		return model.toString();
 	}
 
+	public static void main(final String... args) throws Exception
+	{
+		Device.showDeviceSetup(args[0], Integer.parseInt(args[1]), args[2]);
+	}
+
+	public static void showDeviceSetup(final String experiment, final int shot, final String path) throws Exception
+	{
+		try (final MdsIp mds = new MdsIp())
+		{
+			try (final TREE tree = new TREE(mds, experiment, shot, TREE.NORMAL))
+			{
+				final Nid nid = tree.getNode(path);
+				final JDialog dialog = Device.showDialog(null, nid, !tree.is_readonly());
+				if (dialog != null)
+				{
+					dialog.addWindowListener(new WindowAdapter()
+					{
+						@Override
+						public void windowClosed(final WindowEvent e)
+						{
+							synchronized (dialog)
+							{
+								dialog.notifyAll();
+							}
+						}
+					});
+					synchronized (dialog)
+					{
+						while (dialog.isShowing())
+							dialog.wait(1000);
+					}
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("boxing")
 	public static JDialog showDialog(final Frame frame, final Nid nid, final boolean editable) throws Exception
 	{
 		final String model = Device.getModel(nid);
@@ -126,11 +129,11 @@ public class Device implements Interface
 		NODE<?>[] nodes;
 		try
 		{
-			final Nid olddefault = tree.getDefaultC();
+			final Nid olddefault = this.tree.getDefaultC();
 			this.head.setDefault();
 			try
 			{
-				node_infos = TREE.NodeInfo.getDeviceNodeInfos(head, mds, tree);
+				node_infos = TREE.NodeInfo.getDeviceNodeInfos(head, this.mds, this.tree);
 			}
 			finally
 			{
@@ -162,7 +165,7 @@ public class Device implements Interface
 				continue;
 			String orig_name;
 			final String name = node_infos[i].minpath;
-			this.node[i] = new Nid(node_infos[i].nid_number, tree);
+			this.node[i] = new Nid(node_infos[i].nid_number, this.tree);
 			this.node[i].setNodeInfoC(node_infos[i]);
 			try
 			{
@@ -183,7 +186,7 @@ public class Device implements Interface
 					continue;
 				String orig_name;
 				final String name = node_infos[i].minpath;
-				this.node[i] = new Nid(node_infos[i].nid_number, tree);
+				this.node[i] = new Nid(node_infos[i].nid_number, this.tree);
 				this.node[i].setNodeInfoC(node_infos[i]);
 				try
 				{
@@ -274,138 +277,146 @@ public class Device implements Interface
 	}
 
 	@Override
-	public void dataChanged(int... nids)
+	public void dataChanged(final int... nids)
 	{
 		// NOP
 	}
 
 	@Override
-	public final void doDeviceMethod(int nid, String method) throws Exception
+	public final void doDeviceMethod(final int nid, final String method) throws Exception
 	{
-		tree.doDeviceMethod(nid, method);
+		this.tree.doDeviceMethod(nid, method);
 	}
 
 	@Override
-	public String execute(String expr) throws Exception
+	public String execute(final String expr) throws Exception
 	{
-		return mds.getDescriptor(tree, expr).decompile();
+		return this.mds.getDescriptor(this.tree, expr).decompile();
 	}
 
 	@Override
-	public final String getDataExpr(int nid) throws Exception
+	public final String getDataExpr(final int nid) throws Exception
 	{
-		return tree.getRecord(nid).decompile();
+		return this.tree.getRecord(nid).decompile();
 	}
 
 	@Override
 	public final int getDefault() throws Exception
-	{ return tree.getDefault(); }
-
-	@Override
-	public double getDouble(String expr) throws Exception
 	{
-		return mds.getDouble(tree, expr);
+		return this.tree.getDefault();
 	}
 
 	@Override
-	public float getFloat(String expr) throws Exception
+	public double getDouble(final String expr) throws Exception
 	{
-		return mds.getFloat(tree, expr);
+		return this.mds.getDouble(this.tree, expr);
 	}
 
 	@Override
-	public float[] getFloatArray(String expr) throws Exception
+	public float getFloat(final String expr) throws Exception
 	{
-		return mds.getFloatArray(tree, expr);
+		return this.mds.getFloat(this.tree, expr);
 	}
 
 	@Override
-	public final String getFullPath(int nid) throws Exception
+	public float[] getFloatArray(final String expr) throws Exception
 	{
-		return tree.getNciFullPath(nid);
+		return this.mds.getFloatArray(this.tree, expr);
 	}
 
 	@Override
-	public int getInt(String expr) throws Exception
+	public final String getFullPath(final int nid) throws Exception
 	{
-		return mds.getInteger(tree, expr);
+		return this.tree.getNciFullPath(nid);
 	}
 
 	@Override
-	public int[] getIntArray(String expr) throws Exception
+	public int getInt(final String expr) throws Exception
 	{
-		return mds.getIntegerArray(tree, expr);
+		return this.mds.getInteger(this.tree, expr);
+	}
+
+	@Override
+	public int[] getIntArray(final String expr) throws Exception
+	{
+		return this.mds.getIntegerArray(this.tree, expr);
 	}
 
 	@Override
 	public final String getName()
-	{ return tree.expt; }
-
-	@Override
-	public int getNode(String path) throws Exception
 	{
-		return tree.getNode(path).getNciNidNumber();
+		return this.tree.expt;
 	}
 
 	@Override
-	public String getNodeName(int nid) throws Exception
+	public int getNode(final String path) throws Exception
 	{
-		return tree.getNciNodeName(nid);
+		return this.tree.getNode(path).getNciNidNumber();
 	}
 
 	@Override
-	public int getNumConglomerateNids(int nid) throws Exception
+	public String getNodeName(final int nid) throws Exception
 	{
-		return tree.getNciNumberOfElts(nid);
+		return this.tree.getNciNodeName(nid);
+	}
+
+	@Override
+	public int getNumConglomerateNids(final int nid) throws Exception
+	{
+		return this.tree.getNciNumberOfElts(nid);
 	}
 
 	public JComponent getPane()
-	{ return this.pane; }
+	{
+		return this.pane;
+	}
 
 	@Override
 	public final int getShot()
-	{ return tree.shot; }
-
-	@Override
-	public String getString(String expr) throws Exception
 	{
-		return mds.getString(tree, expr);
+		return this.tree.shot;
 	}
 
 	@Override
-	public String[] getStringArray(String expr) throws Exception
+	public String getString(final String expr) throws Exception
 	{
-		return mds.getStringArray(tree, expr);
+		return this.mds.getString(this.tree, expr);
 	}
 
 	@Override
-	public String getUsage(int nid) throws Exception
+	public String[] getStringArray(final String expr) throws Exception
 	{
-		return NODE.getUsageStr(tree.getNciUsage(nid));
+		return this.mds.getStringArray(this.tree, expr);
 	}
 
 	@Override
-	public boolean isOn(int nid) throws Exception
+	public String getUsage(final int nid) throws Exception
 	{
-		return tree.getNciState(nid) == 0;
+		return NODE.getUsageStr(this.tree.getNciUsage(nid));
 	}
 
 	@Override
-	public void putDataExpr(int nid, String expr) throws Exception
+	public boolean isOn(final int nid) throws Exception
 	{
-		tree.putRecord(nid, mds.getAPI().tdiCompile(tree, expr).getData());
+		return this.tree.getNciState(nid) == 0;
 	}
 
 	@Override
-	public final void setDefault(int nid) throws Exception
+	public void putDataExpr(final int nid, final String expr) throws Exception
 	{
-		tree.setDefault(nid);
+		this.tree.putRecord(nid, this.mds.getAPI().tdiCompile(this.tree, expr).getData());
 	}
 
 	@Override
-	public void setOn(int nid, boolean on) throws Exception
+	public final void setDefault(final int nid) throws Exception
 	{
-		tree.getNode(nid).setOn(on);
+		this.tree.setDefault(nid);
+	}
+
+	@Override
+	public void setOn(final int nid, final boolean on) throws Exception
+	{
+		this.tree.getNode(nid).setOn(on);
 	}
 
 	public final JDialog showDialog()

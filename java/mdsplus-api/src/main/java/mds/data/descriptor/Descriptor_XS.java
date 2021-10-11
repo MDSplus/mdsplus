@@ -2,6 +2,7 @@ package mds.data.descriptor;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -12,7 +13,8 @@ import mds.mdsip.Message;
 public class Descriptor_XS extends Descriptor<Descriptor<?>>
 {
 	public static final short _l_lenI = 8;
-	public static final int BYTES = 12;
+	@SuppressWarnings("hiding")
+	public static final int BYTES = Descriptor.BYTES + 4;
 	public static final byte CLASS = -63;
 
 	public static final Descriptor_XS deserialize(final ByteBuffer bb) throws MdsException
@@ -48,7 +50,9 @@ public class Descriptor_XS extends Descriptor<Descriptor<?>>
 
 	@Override
 	public Descriptor<?> getAtomic()
-	{ return this.payload(); }
+	{
+		return this.payload();
+	}
 
 	@Override
 	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
@@ -58,7 +62,9 @@ public class Descriptor_XS extends Descriptor<Descriptor<?>>
 
 	@Override
 	public final Descriptor<?> getHelp()
-	{ return null; }
+	{
+		return null;
+	}
 
 	@Override
 	public Descriptor_XS getLocal_(final FLAG local)
@@ -72,7 +78,9 @@ public class Descriptor_XS extends Descriptor<Descriptor<?>>
 
 	@Override
 	public int[] getShape()
-	{ return new int[0]; }
+	{
+		return new int[0];
+	}
 
 	public final int l_length()
 	{

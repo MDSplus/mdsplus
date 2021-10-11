@@ -31,6 +31,9 @@ class ACQ4xx extends Device
 		super(frame, head, editable, nargs);
 	}
 
+	@SuppressWarnings("static-method")
 	public Master getMaster()
-	{ return null; }
+	{
+		return null;
+	}
 }

@@ -2,6 +2,7 @@ package mds.data.descriptor;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -79,7 +80,9 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>
 
 	@Override
 	public ByteBuffer getAtomic()
-	{ return this.getBuffer(); }
+	{
+		return this.getBuffer();
+	}
 
 	@Override
 	public final Descriptor<?> getData(final DTYPE... omits)
@@ -89,7 +92,9 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>
 
 	@Override
 	public final Descriptor<?> getHelp()
-	{ return null; }
+	{
+		return null;
+	}
 
 	@Override
 	public Descriptor_CA getLocal_(final FLAG local)
@@ -99,7 +104,9 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>
 
 	@Override
 	public boolean isLocal()
-	{ return true; }
+	{
+		return true;
+	}
 
 	public final Descriptor_R<?> payload()
 	{

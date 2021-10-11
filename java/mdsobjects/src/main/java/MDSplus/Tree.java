@@ -1,4 +1,5 @@
 package MDSplus;
+import java.util.*;
 
 /**
  * Class Tree brings all the tree-wide information.
@@ -9,6 +10,18 @@ package MDSplus;
  */
 public class Tree
 {
+    static class TreeCtxInfo
+    {
+        long tid;
+        long ctx;
+        TreeCtxInfo(long tid, long ctx)
+        {
+            this.tid = tid;
+            this.ctx = ctx;
+        }
+    }
+    
+    
 	static final int DbiNAME = 1, DbiSHOTID = 2, DbiMODIFIED = 3, DbiOPEN_FOR_EDIT = 4, DbiINDEX = 5,
 			DbiNUMBER_OPENED = 6, DbiMAX_OPEN = 7, DbiDEFAULT = 8, DbiOPEN_READONLY = 9, DbiVERSIONS_IN_MODEL = 10,
 			DbiVERSIONS_IN_PULSE = 11;
@@ -51,6 +64,7 @@ public class Tree
 	private final int shot;
 	private final java.lang.String name;
 	private java.lang.String mode;
+        protected Vector<TreeCtxInfo> treeCtxInfoV = new Vector<TreeCtxInfo>();
 	protected long ctx = 0l;
 	private boolean open = false;
 	private boolean edit = false;
@@ -84,20 +98,12 @@ public class Tree
 	public void close() throws MdsException
 	{
 		if (open)
-			closeTree(ctx, name, shot);
+			closeTree(getCtx(), name, shot);
 		edit = open = false;
 		this.mode = OPEN_CLOSED;
 	}
 
-	@Override
-	protected void finalize() throws Throwable
-	{
-		if (edit)
-			this.quit();
-		else
-			this.close();
-	}
-
+	
 	public boolean isOpen()
 	{ return open; }
 
@@ -200,8 +206,6 @@ public class Tree
 
 	private static native Data evaluate(long ctx, Data data);
 
-	protected long getCtx()
-	{ return ctx; }
 
 	/**
 	 * Return TreeNode for the data item corresponding to the passed pathname
@@ -210,7 +214,7 @@ public class Tree
 	 */
 	public TreeNode getNode(java.lang.String path) throws MdsException
 	{
-		final TreeNode t = new TreeNode(findNode(ctx, path), this);
+		final TreeNode t = new TreeNode(findNode(getCtx(), path), this);
 		t.setCtxTree(this);
 		return t;
 	}
@@ -234,7 +238,7 @@ public class Tree
 	 */
 	public TreeNode getNode(TreePath path) throws MdsException
 	{
-		return new TreeNode(findNode(ctx, path.getString()), this);
+		return new TreeNode(findNode(getCtx(), path.getString()), this);
 	}
 
 	/**
@@ -251,7 +255,7 @@ public class Tree
 
 	public TreeNodeArray getNodeWild(java.lang.String path, int usage) throws MdsException
 	{
-		return new TreeNodeArray(getWild(ctx, path, usage), this);
+		return new TreeNodeArray(getWild(getCtx(), path, usage), this);
 	}
 
 	public TreeNodeArray getNodeWild(java.lang.String path, java.lang.String usage) throws MdsException
@@ -263,7 +267,7 @@ public class Tree
 	 * Get the TreeNode for the default node.
 	 */
 	public TreeNode getDefault() throws MdsException
-	{ return new TreeNode(getDefaultNid(ctx), this); }
+	{ return new TreeNode(getDefaultNid(getCtx()), this); }
 
 	/**
 	 * Set the default position in the tree.
@@ -272,7 +276,7 @@ public class Tree
 	 */
 	public void setDefault(TreeNode node) throws MdsException
 	{
-		setDefaultNid(ctx, node.getNid());
+		setDefaultNid(getCtx(), node.getNid());
 	}
 
 	/**
@@ -280,7 +284,7 @@ public class Tree
 	 */
 	public boolean versionsInModelEnabled() throws MdsException
 	{
-		return getDbiFlag(ctx, DbiVERSIONS_IN_MODEL);
+		return getDbiFlag(getCtx(), DbiVERSIONS_IN_MODEL);
 	}
 
 	/**
@@ -288,27 +292,27 @@ public class Tree
 	 */
 	public boolean versionsInPulseEnabled() throws MdsException
 	{
-		return getDbiFlag(ctx, DbiVERSIONS_IN_PULSE);
+		return getDbiFlag(getCtx(), DbiVERSIONS_IN_PULSE);
 	}
 
 	public void setVersionsInModel(boolean enabled) throws MdsException
 	{
-		setDbiFlag(ctx, enabled, DbiVERSIONS_IN_MODEL);
+		setDbiFlag(getCtx(), enabled, DbiVERSIONS_IN_MODEL);
 	}
 
 	public void setVersionsInPulse(boolean enabled) throws MdsException
 	{
-		setDbiFlag(ctx, enabled, DbiVERSIONS_IN_PULSE);
+		setDbiFlag(getCtx(), enabled, DbiVERSIONS_IN_PULSE);
 	}
 
 	public boolean isModified() throws MdsException
-	{ return getDbiFlag(ctx, DbiMODIFIED); }
+	{ return getDbiFlag(getCtx(), DbiMODIFIED); }
 
 	public boolean isOpenForEdit() throws MdsException
-	{ return getDbiFlag(ctx, DbiOPEN_FOR_EDIT); }
+	{ return getDbiFlag(getCtx(), DbiOPEN_FOR_EDIT); }
 
 	public boolean isReadOnly() throws MdsException
-	{ return getDbiFlag(ctx, DbiOPEN_READONLY); }
+	{ return getDbiFlag(getCtx(), DbiOPEN_READONLY); }
 
 	/**
 	 * Set the version date: all read data will refer to the version active to that
@@ -331,7 +335,7 @@ public class Tree
 	 */
 	public void setTimeContext(Data start, Data end, Data delta) throws MdsException
 	{
-		setTreeTimeContext(ctx, start, end, delta);
+		setTreeTimeContext(getCtx(), start, end, delta);
 	}
 
 	/**
@@ -360,7 +364,7 @@ public class Tree
 	 */
 	public void createPulse(int pulseShot) throws MdsException
 	{
-		createPulseFile(ctx, pulseShot);
+		createPulseFile(getCtx(), pulseShot);
 	}
 
 	/**
@@ -370,7 +374,7 @@ public class Tree
 	 */
 	public void deletePulse(int pulseShot) throws MdsException
 	{
-		deletePulseFile(ctx, pulseShot);
+		deletePulseFile(getCtx(), pulseShot);
 	}
 
 	/**
@@ -380,50 +384,88 @@ public class Tree
 	 */
 	public java.lang.String[] findTags(java.lang.String wild) throws MdsException
 	{
-		return findTreeTags(ctx, wild);
+		return findTreeTags(getCtx(), wild);
 	}
 
 	/**
 	 * Open the tree for editing.
 	 */
-	public void normal() throws MdsException
+	public synchronized void normal() throws MdsException
 	{
 		openTree(ctx, name, shot, false);
 		edit = false;
 		open = true;
 		mode = OPEN_NORMAL;
+                treeCtxInfoV.clear();
+                treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
 	}
 
-	public void readonly() throws MdsException
+	public synchronized void readonly() throws MdsException
 	{
 		openTree(ctx, name, shot, true);
 		edit = false;
 		open = true;
 		mode = OPEN_READONLY;
+                treeCtxInfoV.clear();
+                treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
+               
 	}
 
-	public void edit() throws MdsException
+	public synchronized void edit() throws MdsException
 	{
+ 		if (open)
+			closeTree(getCtx(), name, shot);
+                ctx = 0;
 		editTree(ctx, name, shot, false);
 		edit = true;
 		open = true;
 		mode = OPEN_EDIT;
+                treeCtxInfoV.clear();
+                treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
 	}
 
-	private void _new() throws MdsException
+	private synchronized void _new() throws MdsException
 	{
 		editTree(ctx, name, shot, true);
 		edit = true;
 		open = true;
 		mode = OPEN_EDIT;
+                treeCtxInfoV.clear();
+                treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
 	}
+        
+        protected synchronized long getCtx() throws MdsException
+	{
+           // if(true) return ctx;
+            long tid = Thread.currentThread().getId();
+            for(int i = 0; i < treeCtxInfoV.size(); i++)
+            {
+                if (treeCtxInfoV.elementAt(i).tid == tid)
+                {
+                     return treeCtxInfoV.elementAt(i).ctx;
+                }
+            }
+            //If we arrive here, a new context must be created
+            ctx = 0;
+            if(edit)
+            {
+ 		editTree(ctx, name, shot, false);
+            }
+            else
+            {
+                openTree(ctx, name, shot, mode == OPEN_READONLY);
+            }
+            treeCtxInfoV.addElement(new TreeCtxInfo(Thread.currentThread().getId(), ctx));
+            return ctx;
+        }
+         
 
 	/**
 	 * Write the tree under edit.
 	 */
 	public void write() throws MdsException
 	{
-		writeTree(ctx, name, shot);
+		writeTree(getCtx(), name, shot);
 	}
 
 	/**
@@ -432,7 +474,7 @@ public class Tree
 	public void quit() throws MdsException
 	{
 		if (open)
-			quitTree(ctx, name, shot);
+			quitTree(getCtx(), name, shot);
 		edit = open = false;
 		this.mode = OPEN_CLOSED;
 	}
@@ -477,7 +519,7 @@ public class Tree
 	 */
 	public TreeNode addNode(java.lang.String name, java.lang.String usage) throws MdsException
 	{
-		final int newNid = addTreeNode(ctx, name, convertUsage(usage));
+		final int newNid = addTreeNode(getCtx(), name, convertUsage(usage));
 		return new TreeNode(newNid, this);
 	}
 
@@ -489,7 +531,7 @@ public class Tree
 	 */
 	public void addDevice(java.lang.String name, java.lang.String type) throws MdsException
 	{
-		addTreeDevice(ctx, name, type);
+		addTreeDevice(getCtx(), name, type);
 	}
 
 	/**
@@ -499,17 +541,17 @@ public class Tree
 	 */
 	public void deleteNode(java.lang.String name) throws MdsException
 	{
-		deleteTreeNode(ctx, name);
+		deleteTreeNode(getCtx(), name);
 	}
 
 	public void removeTag(java.lang.String tag) throws MdsException
 	{
-		removeTreeTag(ctx, tag);
+		removeTreeTag(getCtx(), tag);
 	}
 
 	public long getDatafileSize() throws MdsException
 	{
-		final long size = getDatafileSize(ctx);
+		final long size = getDatafileSize(getCtx());
 		if (size == -1)
 			throw new MdsException("Cannot get Datafile Size");
 		return size;
@@ -519,32 +561,40 @@ public class Tree
 	{
 		if (expr == null || expr.isEmpty())
 			return new Data();
-		final Data retData = compile(ctx, expr, args);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = compile(getCtx(), expr, args);
+                    retData.setCtxTree(this);
+                    return retData;
+                }catch(Exception exc){return new Data();}
 	}
 
 	public Data tdiExecute(java.lang.String expr, Data... args)
 	{
 		if (expr == null || expr.isEmpty())
 			return new Data();
-		final Data retData = execute(ctx, expr, args);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = execute(getCtx(), expr, args);
+                    retData.setCtxTree(this);
+                    return retData;
+               }catch(Exception exc){return new Data();}
 	}
 
 	public Data tdiData(Data data)
 	{
-		final Data retData = data(ctx, data);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = data(getCtx(), data);
+                    retData.setCtxTree(this);
+                    return retData;
+               }catch(Exception exc){return new Data();}
 	}
 
 	public Data tdiEvaluate(Data data)
 	{
-		final Data retData = evaluate(ctx, data);
-		retData.setCtxTree(this);
-		return retData;
+                try {
+                    final Data retData = evaluate(getCtx(), data);
+                    retData.setCtxTree(this);
+                    return retData;
+              }catch(Exception exc){return new Data();}
 	}
 
 	public static Tree getActiveTree()

@@ -1,6 +1,7 @@
 package mds.data.descriptor_a;
 
 import java.nio.ByteBuffer;
+
 import mds.data.DTYPE;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.Uint64;
@@ -46,6 +47,7 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>
 		return this.buildBuffer(buf, (long) value);
 	}
 
+	@SuppressWarnings("static-method")
 	public ByteBuffer buildBuffer(final ByteBuffer buf, final long value)
 	{
 		return buf.putLong(value);
@@ -65,7 +67,9 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>
 
 	@Override
 	protected final byte getRankBits()
-	{ return 0x07; }
+	{
+		return 0x07;
+	}
 
 	@Override
 	public final Uint64 getScalar(final int idx)

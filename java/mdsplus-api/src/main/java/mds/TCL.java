@@ -14,7 +14,8 @@ import mds.mdsip.MdsIp;
 public final class TCL
 {
 	private static abstract class Listener extends KeyAdapter implements ActionListener
-	{/**/}
+	{
+		/**/}
 
 	private static class SelectAll extends TextAction
 	{
@@ -114,7 +115,10 @@ public final class TCL
 
 	public static void main(final String... args)
 	{
-		TCL.getPrompt(new MdsIp()).setVisible(true);
+		try (MdsIp mdsip = new MdsIp())
+		{
+			TCL.getPrompt(mdsip).setVisible(true);
+		}
 	}
 
 	static public JPopupMenu newTextEditorPopup(final boolean editable)
