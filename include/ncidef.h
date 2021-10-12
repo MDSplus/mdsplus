@@ -1,5 +1,5 @@
-#ifndef _NCIDEF_H
-#define _NCIDEF_H
+#ifndef NCIDEF_H
+#define NCIDEF_H
 /**************************************
   NCIDEF.H - definitions of constants
   used in  item list arguments to the
@@ -20,7 +20,7 @@
 #define ENDDEF(type, name) name
 #endif
 
-const char *compression_methods["standard", "gzip"];
+#define DEFINE_COMPRESSION_METHOD_STRINGS static const char *compression_methods[] = {"standard", "gzip"};
 
 TYPEDEF(4){
     NciM_STATE = 0x00000001,

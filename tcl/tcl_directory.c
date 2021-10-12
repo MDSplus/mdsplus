@@ -49,6 +49,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <usagedef.h>
 
 #include "tcl_p.h"
+DEFINE_COMPRESSION_METHOD_STRINGS
+
 
 /**********************************************************************
  * TCL_DIRECTORY.C --
@@ -285,6 +287,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
   char dtype;
   uint32_t dataLen;
   unsigned short conglomerate_elt;
+  unsigned char compression_method;
   int vers;
   NCI_ITM full_list[] = {{4, NciVERSION, &vers, 0},
                          {4, NciGET_FLAGS, &nciFlags, 0},
@@ -294,6 +297,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
                          {1, NciDTYPE, &dtype, 0},
                          {4, NciLENGTH, &dataLen, 0},
                          {2, NciCONGLOMERATE_ELT, &conglomerate_elt, 0},
+                         {1, NciCOMPRESSION_METHOD, &compression_method, 0},
                          {0, NciEND_OF_LIST, 0, 0}};
   int status;
   vers = version;
@@ -327,6 +331,9 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
       if (nciFlags & NciM_COMPRESSIBLE)
       {
         strcat(msg, "compressible");
+        strcat(msg, " compression method = ");
+        strcat(msg, compression_methods[compression_method]);
+ 
         strcat(msg, (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS |
                                  NciM_COMPRESS_SEGMENTS))
                         ? ","
@@ -346,6 +353,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
       }
       if (nciFlags & NciM_COMPRESS_SEGMENTS)
         strcat(msg, "compress segments\n");
+
 
       if (strlen(msg) > 0)
       {
