@@ -39,7 +39,7 @@ void TreeSerializeNciOut(const NCI *in, char *out)
   putint8(&ptr, &in->class);
   putint8(&ptr, &in->dtype);
   putint32(&ptr, &in->length);
-  putint8(&ptr, &in->spare2);
+  putint8(&ptr, &in->compression_method);
   putint32(&ptr, &in->status);
   if (in->flags2 & NciM_DATA_IN_ATT_BLOCK)
   {
@@ -71,7 +71,7 @@ void TreeSerializeNciIn(const char *in, NCI *out)
   getint8(&ptr, &out->class);
   getint8(&ptr, &out->dtype);
   getint32(&ptr, &out->length);
-  getint8(&ptr, &out->spare2);
+  getint8(&ptr, &out->compression_method);
   getint32(&ptr, &out->status);
   if (out->flags2 & NciM_DATA_IN_ATT_BLOCK)
   {

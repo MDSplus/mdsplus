@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
@@ -40,6 +41,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <usagedef.h>
 
 #include "tcl_p.h"
+
+DEFINE_COMPRESSION_METHOD_STRINGS
+#define N_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
 
 /**********************************************************************
  * TCL_SET_NODE.C --
@@ -81,11 +85,13 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
     if (cli_present(ctx, "COMPRESSION_METHOD"))
     {
       char *compression_method_str = 0;
-      if(cli_get_value("COMPRESSION_METHOD", &compression_method_str) & 1)
+      if(cli_get_value(ctx, "COMPRESSION_METHOD", &compression_method_str) & 1)
       {
-        int i;
+        unsigned int i;
         unsigned char compression_method=0;
-        for (i=0 i < N_ELEMENTS(compression_methods), i++)
+        char *p = compression_method_str;
+        for ( ; *p; ++p) *p = tolower(*p);
+        for (i=0; i < N_ELEMENTS(compression_methods); i++)
         {
           if(strcmp(compression_method, compression_methods[i]) == 0)
             compression_method=i;
