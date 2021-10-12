@@ -332,7 +332,6 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
       if (nciFlags & NciM_COMPRESSIBLE)
       {
         strcat(msg, "compressible");
-
         strcat(msg, (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS |
                                  NciM_COMPRESS_SEGMENTS))
                         ? ","
@@ -360,6 +359,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
         strcat(msg, compression_methods[compression_method]);
         strcat(msg, "\n");
       }
+
 
       if (strlen(msg) > 0)
       {

@@ -20,7 +20,7 @@
 #define ENDDEF(type, name) name
 #endif
 
-const char *compression_methods["standard", "gzip"];
+#define DEFINE_COMPRESSION_METHOD_STRINGS static const char *compression_methods[] = {"standard", "gzip"};
 
 TYPEDEF(4){
     NciM_STATE = 0x00000001,
