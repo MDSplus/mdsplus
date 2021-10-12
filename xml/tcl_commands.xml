@@ -1141,7 +1141,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <qualifier name="LOG"/>
     <qualifier name="ESSENTIAL"/>
     <qualifier name="STATUS" required="True"/>
-    <qualifier name="COMPRESSION_METHOD" required="True"/>
+    <qualifier name="COMPRESSION_METHOD" nonnegatable="True" type="string"/>
   </syntax>
 
   <syntax name="set_server">
