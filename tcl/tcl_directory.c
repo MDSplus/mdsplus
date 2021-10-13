@@ -360,7 +360,6 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
         strcat(msg, "\n");
       }
 
-
       if (strlen(msg) > 0)
       {
         tclAppend(output, "      ");
