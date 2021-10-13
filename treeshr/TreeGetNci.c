@@ -43,6 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define O_RANDOM 0
 #endif
 
+DEFINE_COMPRESSION_METHOD_STRINGS
+
 static inline int minInt(int a, int b) { return a < b ? a : b; }
 
 #define read_nci                                                             \
@@ -687,6 +689,14 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       lstr = MdsUsageString(node->usage);
       string = strdup(lstr);
+      break;
+    }
+
+    case NciCOMPRESSION_METHOD_STR:
+    {
+      break_on_no_node;
+      read_nci;
+      string = strdup(compression_methods[nci.compression_method]);
       break;
     }
 
