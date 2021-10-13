@@ -87,6 +87,7 @@ TYPEDEF(4){
     NciCLASS_STR = 40,
     NciVERSION = 41,
     NciCOMPRESSION_METHOD = 42,
+    NciCOMPRESSION_METHOD_STR = 43,
 } ENDDEF(int16_t, nci_t);
 #undef TYPEDEF
 #undef ENDDEF
