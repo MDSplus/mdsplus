@@ -90,6 +90,14 @@ class UsageError(KeyError):
         super(UsageError, self).__init__('Invalid usage "%s". Must be one of: %s' % (
             str(usage), ', '.join(_usage_table.keys())))
 
+_compression_methods_table = {'standard': 0, 'gzip': 1}
+
+class CompressionMethodError(KeyError):
+    def __init__(self, compression_method):
+        super(CompressionMethodError, self).__init__('Invalid compression_method "%s". Must be one of: %s' % (
+            str(compression_method), ', '.join(_compression_methods_table.keys())))
+
+
 #
 ###################################################
 
@@ -300,6 +308,8 @@ class Nci(object):
     USAGE_STR = (39, _C.c_char_p, 64, str)
     CLASS_STR = (40, _C.c_char_p, 64, str)
     VERSION = (41, _C.c_uint32, 4, int)
+    COMPRESSION_METHOD = (42, _C.c_uint8, 1, int)
+    COMPRESSION_METHOD_STR = (43, _C.c_char_p, 64, str)
 
     class _nci_item(_C.Structure):
         _fields_ = [("buflen", _C.c_ushort),
@@ -1308,6 +1318,11 @@ class TreeNode(_dat.TreeRef, _dat.Data):
             return TreeNodeArray([int(ans[i]) for i in _ver.xrange(retlen//4)], self.tree)
         return rtype(ans.value)
 
+    def _setNci(self, code, setting):
+        pointer = _C.cast(_C.pointer(_C.c_uint32(setting)), _C.c_char_p)
+        _exc.checkStatus(_TreeShr._TreeSetNci(
+            self.ctx, self._nid, _C.byref(Nci._nci_item(0, code, pointer))))
+
     def _setNciFlag(self, mask, setting):
         value = 1 if setting else 2
         pointer = _C.cast(_C.pointer(_C.c_uint32(mask)), _C.c_char_p)
@@ -1394,6 +1409,11 @@ class TreeNode(_dat.TreeRef, _dat.Data):
         Nci.TIME_INSERTED, "64-bit timestamp when data was stored")
     usage_str = Nci._nciProp(
         Nci.USAGE_STR, "formal name of the usage of this node")
+    compression_method = Nci._nciProp(
+        Nci.COMPRESSION_METHOD, "numerical code for the compression method to use for this node")
+    compression_method_str = Nci._nciProp(
+        Nci.COMPRESSION_METHOD_STR, "name of the compression algorithm to use for this node")
+    
     __children_nids = Nci._nciProp(Nci.CHILDREN_NIDS)
     __member_nids = Nci._nciProp(Nci.MEMBER_NIDS)
 
@@ -1548,6 +1568,15 @@ class TreeNode(_dat.TreeRef, _dat.Data):
 
     @usage.setter
     def usage(self, usage): self.setUsage(usage)
+
+    @property
+    def compression_method(self):
+        "compression method to use for this node."
+        return _scr.String(str(self.compression_method_str))
+
+    @compression_method.setter
+    def compression_method(self, compression_method): 
+        self.setCompressionMethod(compression_method) 
 
     ########################################
     # End of Node Properties
@@ -2938,6 +2967,18 @@ class TreeNode(_dat.TreeRef, _dat.Data):
                                    _C.c_int32(usagenum)))
         return self
 
+    def setCompressionMethod(self, compression_method):
+        """Set the usage of a node
+        @param compression_method: name of compression method from predfined list.
+        @type usage: str
+        @rtype: original type
+        """
+        try:
+          compressionmethodnum = _compression_methods_table[compression_method.lower()]
+        except KeyError:
+          raise CompressionMethodError(compression_method)
+        self._setNci(Nci.COMPRESSION_METHOD[0], compressionmethodnum)
+     
     def setTree(self, tree):
         """Set Tree associated with this node
         @param tree: Tree instance to associated with this node
