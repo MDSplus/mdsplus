@@ -245,8 +245,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
           status = MdsSerializeDscOutZ(
               descriptor_ptr, info_ptr->data_file->data, tree_fixup_nid,
               dbid_tree, FixupPath, 0,
-              (compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) &&
-                  !(nci->flags & NciM_DO_NOT_COMPRESS),
+              ((compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) &&
+                  !(nci->flags & NciM_DO_NOT_COMPRESS)) ? local_nci.compression_method : -1,
               &compressible, &nci->length,
               &nci->DATA_INFO.DATA_LOCATION.record_length, &nci->dtype,
               &nci->class,
