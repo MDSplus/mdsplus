@@ -393,7 +393,7 @@ class NI6683(Device):
         trigger_event = NI6683.ni6683ModuleTriggerName
         if (trigger_event != None): # external time reference trigger
             eventObj=MyEvent(trigger_event)
-            eventObj.run()
+            eventObj.start()
             trigTime = c_uint64(self.eventTime)
             self.abs_start.putData(Uint64(trigTime))
 
