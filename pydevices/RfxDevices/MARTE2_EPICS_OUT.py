@@ -63,8 +63,8 @@ class MARTE2_EPICS_OUT(MC.MARTE2_COMPONENT):
             {'name': 'PVName', 'type': 'string', 'value': 'PV_16'}]},
     ]
     parameters = [
-        {'name': 'DeviceName', 'type': 'string', 'value': '/dev/pxi6259'},
-        {'name': 'BoardId', 'type': 'int32', 'value': 0},
+        {'name': 'StackSize', 'type': 'int32', 'value': 1048576},
+        {'name': 'CPUs', 'type': 'int32', 'value': 0xFF},
         {'name': 'IgnoreBufferOverrun', 'type': 'int32', 'value': 1},
         {'name': 'NumberOfBuffers', 'type': 'int32', 'value': 10}]
     parts = []
