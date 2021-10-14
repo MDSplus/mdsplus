@@ -213,7 +213,7 @@ class NI6683(Device):
     def getAbsTime(self, relTime):
         print ('DEBUG -> Abs time: ', NI6683.ni6683AbsTime, ' Reltime: ', relTime, ' RelStart: ', NI6683.ni6683RelTime)
         try:
-            result = long((relTime - NI6683.ni6683RelTime)*1000000000 + NI6683.ni6683AbsTime)
+            result = long((relTime - NI6683.ni6683RelTime)*1000000000 + NI6683.ni6683AbsTime )
             print ('DEBUG -> Result: ', result)
             return result
         except:
@@ -226,9 +226,11 @@ class NI6683(Device):
         termNameNid = termName+str(self.nid)
         try:
             start = NI6683.ni6683TermStarts[termNameNid]
-            if start <= NI6683.ni6683RelTime:
-                print ('WARNING: start time of ' + termName +' is equal or lower the pulse start time')
-                start = 0 # NISYNC_TIME_IMMEDIATE_NANOS in the API
+            if start < NI6683.ni6683RelTime:
+                emsg = 'Start time less than relative time in ' + termName
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevBAD_PARAMETER
+                # start = 0 # NISYNC_TIME_IMMEDIATE_NANOS in the API
             else:
                 start = self.getAbsTime(start)
         except:
@@ -396,10 +398,11 @@ class NI6683(Device):
             self.abs_start.putData(Uint64(trigTime))
 
         else: # internal time reference
+            deltaT = 200 # ms
             print ("MODULE TRIGGER NOT FOUND -> CONTINUING WITH ABS INTERNAL TIMING")
             curr_nanos = c_uint64()
             status = NI6683.niLib.nisync_get_time_ns(self.fd, byref(curr_nanos))
-            self.abs_start.putData(Uint64(curr_nanos.value))
+            self.abs_start.putData(Uint64(curr_nanos.value + deltaT * 1000000))
 
         NI6683.ni6683AbsTime = self.abs_start.data()
         NI6683.ni6683RelTime = self.rel_start.data()
