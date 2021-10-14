@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <mdsshr_messages.h>
 #include <mdstypes.h>
+#include <ncidef.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -52,6 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FixLength(a) \
   if (a.length == 0) \
   MdsFixDscLength((mdsdsc_t *)&a)
+#define N_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
 void MdsFixDscLength(mdsdsc_t *in);
 
 #ifdef WORDS_BIGENDIAN
@@ -1127,12 +1129,23 @@ EXPORT int MdsSerializeDscOutZ(
       MdsCopyDxXdZ(in, out, 0, fixupNid, fixupNidArg, fixupPath, fixupPathArg);
   if (status == MdsCOMPRESSIBLE)
   {
-    if (compress)
+    // changed the meaning of the compress arg from boolean to:
+    // -1 -don't compress
+    // 0  - use standard delta compression
+    // 1.. - use the compression method with this index
+    if (compress != -1)
     {
+      DEFINE_COMPRESSION_METHOD_METHODS
+
       tempxd = *out;
       out->l_length = 0;
       out->pointer = 0;
-      status = MdsCompress(0, 0, tempxd.pointer, out);
+      if ((unsigned int)compress >= N_ELEMENTS(compression_routines))
+          compress = 0;
+      status = MdsCompress(compression_images[compress], 
+                           compression_routines[compress], 
+                           tempxd.pointer, 
+                           out);
       MdsFree1Dx(&tempxd, NULL);
       compressible = 0;
     }
