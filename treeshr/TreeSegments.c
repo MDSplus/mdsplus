@@ -411,9 +411,10 @@ inline static int open_datafile_write1(vars_t *vars)
 
 inline static void set_compress(vars_t *vars)
 {
-  vars->compress = (vars->local_nci.flags & NciM_COMPRESS_ON_PUT) &&
+  vars->compress = ((vars->local_nci.flags & NciM_COMPRESS_ON_PUT) &&
                    (vars->local_nci.flags & NciM_COMPRESS_SEGMENTS) &&
-                   !(vars->local_nci.flags & NciM_DO_NOT_COMPRESS);
+                   !(vars->local_nci.flags & NciM_DO_NOT_COMPRESS)) ? 
+                       vars->local_nci.compression_method : -1;
 }
 
 #define NAMED_ATTRIBUTES_INDEX_SIZE \
@@ -2302,7 +2303,8 @@ int tree_put_dsc(PINO_DATABASE *dbid, TREE_INFO *tinfo, int nid_in,
   unsigned char tree = nid->tree;
   void *dbid_tree[2] = {(void *)dbid, (void *)&tree};
   int status = MdsSerializeDscOutZ(dsc, &xd, tree_fixup_nid, dbid_tree, 0, 0,
-                                   compress, &compressible, &ddlen, &reclen,
+                                   compress, 
+                                   &compressible, &ddlen, &reclen,
                                    &dtype, &class, 0, 0, &data_in_altbuf);
   if (STATUS_OK && xd.pointer && xd.pointer->class == CLASS_A &&
       xd.pointer->pointer)
