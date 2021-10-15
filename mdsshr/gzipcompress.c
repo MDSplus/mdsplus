@@ -6,16 +6,21 @@
 
 #include <stdio.h>
 
+// #define DEBUG
+
+#define UNUSED(x) (void)(x)
+
 EXPORT int gzip(
     const int *const nitems_ptr,
     const mdsdsc_a_t *const items_dsc_ptr,
     mdsdsc_a_t *const pack_dsc_ptr,
     int *const bit_ptr,
-    mdsdsc_d_t * pdximage,
-    mdsdsc_d_t * pdxentry
+    mdsdsc_d_t * const pdximage,
+    mdsdsc_d_t * const pdxentry
 )
 {
     int ret;
+    UNUSED(nitems_ptr);
 
     // unsigned long maxDestinationSize = compressBound(items_dsc_ptr->length);
 
@@ -33,23 +38,24 @@ EXPORT int gzip(
         return LibSTRTRU;
     }
 
+#ifdef DEBUG
     printf("gzip() %u => %lu\n", pack_dsc_ptr->arsize, pack_length);
-
+#endif
     // The new compressed length, in bits (for some reason)
     *bit_ptr = pack_length * 8;
 
     if (pdximage) {
-        StrCopyDx(pdximage, &image);
+        StrCopyDx((mdsdsc_t * const)pdximage, &image);
     }
 
     if (pdxentry) {
-        StrCopyDx(pdxentry, &routine);
+        StrCopyDx((mdsdsc_t * const)pdxentry, &routine);
     }
-
+#ifdef DEBUG
     printf("gzip() called successfully\n");
+#endif
     return 1;
 }
-#define UNUSED(x) (void)(x)
 EXPORT int gunzip(
     int *const nitems_ptr,
     const mdsdsc_a_t *const pack_dsc_ptr,
@@ -72,7 +78,8 @@ EXPORT int gunzip(
     if (ret != Z_OK) {
         return LibINVSTRDES;
     }
-
+#ifdef DEBUG
     printf("gunzip() called successfully\n");
+#endif
     return 1;
 }
