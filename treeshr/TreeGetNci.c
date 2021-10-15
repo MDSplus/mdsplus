@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
+#include <_ncidef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strroutines.h>

@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 EXPORT int gzip(
+    const int *const nitems_ptr,
     const mdsdsc_a_t *const items_dsc_ptr,
     mdsdsc_a_t *const pack_dsc_ptr,
     int *const bit_ptr,
@@ -19,7 +20,8 @@ EXPORT int gzip(
     // unsigned long maxDestinationSize = compressBound(items_dsc_ptr->length);
 
     unsigned long pack_length = pack_dsc_ptr->arsize; 
-
+    static const DESCRIPTOR(image, "libMdsShr");
+    static const DESCRIPTOR(routine, "gunzip");
     ret = compress(
         (Bytef *)pack_dsc_ptr->pointer,
         &pack_length,
@@ -37,15 +39,11 @@ EXPORT int gzip(
     *bit_ptr = pack_length * 8;
 
     if (pdximage) {
-        const char * IMAGE = "libMdsShr";
-        unsigned short IMAGE_LEN = strlen(IMAGE);
-        StrCopyR((mdsdsc_t * const)pdximage, &IMAGE_LEN, (char *)IMAGE);
+        StrCopyDx(pdximage, &image);
     }
 
     if (pdxentry) {
-        const char * ENTRY = "gunzip";
-        unsigned short ENTRY_LEN = strlen(ENTRY);
-        StrCopyR((mdsdsc_t * const)pdxentry, &ENTRY_LEN, (char *)ENTRY);
+        StrCopyDx(pdxentry, &routine);
     }
 
     printf("gzip() called successfully\n");

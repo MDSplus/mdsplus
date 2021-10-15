@@ -20,14 +20,6 @@
 #define ENDDEF(type, name) name
 #endif
 
-#define DEFINE_COMPRESSION_METHOD_STRINGS \
-    static const char *compression_methods[] = {"standard", "gzip"};
-#define DEFINE_COMPRESSION_METHOD_METHODS \
-    static const DESCRIPTOR(mdsshr_dsc, "libMdsShr"); \
-    static const DESCRIPTOR(gzip_dsc, "gzip"); \
-    static const mdsdsc_t *compression_images[] = {NULL, &mdsshr_dsc}; \
-    static const mdsdsc_t *compression_routines[] = {NULL, &gzip_dsc}; 
-
 TYPEDEF(4){
     NciM_STATE = 0x00000001,
     NciM_PARENT_STATE = 0x00000002,
