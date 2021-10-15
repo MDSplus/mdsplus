@@ -49,7 +49,8 @@ camshr/cts_commands.c
 
 # vi autosave files
 *~
-
+#vs code autosave files
+*.swp
 # python compiled files
 *.pyc
 __pycache__/
