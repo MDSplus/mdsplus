@@ -26,7 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <mdsshr_messages.h>
 #include <mdstypes.h>
-#include <ncidef.h>
+#include <_ncidef.h>
 #include <stdint.h>
 #include <string.h>
 
