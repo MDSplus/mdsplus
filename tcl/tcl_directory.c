@@ -354,7 +354,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
       {
         strcat(msg, "compress segments\n");
       }
-      if ((nciFlags & NciM_DO_NOT_COMPRESS) == 0)
+      if (((nciFlags & NciM_DO_NOT_COMPRESS) == 0) && (compression_method != 0))
       {
         strcat(msg, "      compression method = ");
         strcat(msg, compression_methods[compression_method]);

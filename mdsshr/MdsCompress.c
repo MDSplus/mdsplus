@@ -189,7 +189,7 @@ static int compress(const mdsdsc_t *const pcimage,
       pdat->arsize = (unsigned int)(plim - pcmp);
 
       nitems = (int)porig->arsize / (int)porig->length;
-      if (pcentry)
+      if (pcentry && pcentry->length)
       {
         dximage = EMPTY_D;
         dxentry = EMPTY_D;

@@ -1146,7 +1146,7 @@ static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,
   /* If not the first segment, see if we can reuse the previous segment storage
    * space and compress the previous segment. */
   if (((vars->shead.idx % SEGMENTS_PER_INDEX) > 0) &&
-      (previous_length == (int64_t)vars->add_length) && vars->compress)
+      (previous_length == (int64_t)vars->add_length) && (vars->compress != -1))
   {
     EMPTYXD(xd_data);
     EMPTYXD(xd_dim);
@@ -2570,17 +2570,17 @@ int TreeCopyExtended(PINO_DATABASE *dbid_in, PINO_DATABASE *dbid_out, int nid,
     copy_named_attributes(tinfo_in, dbid_out, tinfo_out, nid,
                           &attr.facility_offset[NAMED_ATTRIBUTES_FACILITY],
                           &attr.facility_length[NAMED_ATTRIBUTES_FACILITY],
-                          compress);
+                          (compress) ? nci->compression_method : -1);
   if (attr.facility_offset[SEGMENTED_RECORD_FACILITY] != -1)
     copy_segmented_records(tinfo_in, dbid_out, tinfo_out, nid,
                            &attr.facility_offset[SEGMENTED_RECORD_FACILITY],
                            &attr.facility_length[SEGMENTED_RECORD_FACILITY],
-                           compress);
+                          (compress) ? nci->compression_method : -1);
   if (attr.facility_offset[STANDARD_RECORD_FACILITY] != -1)
     copy_standard_record(tinfo_in, dbid_out, tinfo_out, nid,
                          &attr.facility_offset[STANDARD_RECORD_FACILITY],
                          &attr.facility_length[STANDARD_RECORD_FACILITY],
-                         compress);
+                          (compress) ? nci->compression_method : -1);
   RETURN_IF_NOT_OK(TreePutExtendedAttributes(tinfo_out, &attr, &offset));
   SeekToRfa(offset, nci->DATA_INFO.DATA_LOCATION.rfa);
   int locked = 0;
