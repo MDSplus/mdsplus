@@ -113,6 +113,7 @@ static int compress(const mdsdsc_t *const pcimage,
   mdsdsc_d_t dximage, dxentry;
   mdsdsc_t *pd0, *pd1, **ppd;
   size_t asize, align_size;
+  printf("Here I am in compress\n");
   if (pwork)
     switch (pwork->class)
     {
@@ -189,42 +190,48 @@ static int compress(const mdsdsc_t *const pcimage,
       pdat->arsize = (unsigned int)(plim - pcmp);
 
       nitems = (int)porig->arsize / (int)porig->length;
-      if (pcentry && pcentry->length)
+      if (pcentry && pcentry->length && pcentry->pointer)
       {
         dximage = EMPTY_D;
         dxentry = EMPTY_D;
+        printf("It thinks there is a pcentry\n");
+        printf("pcentry = %p\n", pcentry);
+        printf("pcentry->length = %d\n", pcentry->length);
+        printf("pcentry->pointer = %p\n", pcentry->pointer);
         status = LibFindImageSymbol(pcimage, pcentry, &symbol);
         if (STATUS_OK)
+        {
           status = (*symbol)(&nitems, pwork, pdat, &bit, &dximage, &dxentry);
-        pdat->arsize = (bit + 7) / 8;
-        pd0 = (mdsdsc_t *)(pdat->pointer + pdat->arsize);
-        if (dximage.pointer)
-        {
-          pd1 = &pd0[1] + dximage.length;
-          if ((char *)pd1 < (char *)plim)
+          pdat->arsize = (bit + 7) / 8;
+          pd0 = (mdsdsc_t *)(pdat->pointer + pdat->arsize);
+          if (dximage.pointer)
           {
-            prec->dscptrs[0] = pd0;
-            *pd0 = *(mdsdsc_t *)&dximage;
-            pd0->pointer = (char *)&pd0[1];
-            memcpy(pd0->pointer, dximage.pointer,
-                   dximage.length);
+            pd1 = &pd0[1] + dximage.length;
+            if ((char *)pd1 < (char *)plim)
+            {
+              prec->dscptrs[0] = pd0;
+              *pd0 = *(mdsdsc_t *)&dximage;
+              pd0->pointer = (char *)&pd0[1];
+              memcpy(pd0->pointer, dximage.pointer,
+                     dximage.length);
+            }
+            pd0 = pd1;
+            StrFree1Dx(&dximage);
           }
-          pd0 = pd1;
-          StrFree1Dx(&dximage);
-        }
-        if (dxentry.pointer)
-        {
-          pd1 = &pd0[1] + dxentry.length;
-          if ((char *)pd1 < (char *)plim)
+          if (dxentry.pointer)
           {
-            prec->dscptrs[1] = pd0;
-            *pd0 = *(mdsdsc_t *)&dxentry;
-            pd0->pointer = (char *)&pd0[1];
-            memcpy(pd0->pointer, dxentry.pointer,
-                   dxentry.length);
+            pd1 = &pd0[1] + dxentry.length;
+            if ((char *)pd1 < (char *)plim)
+            {
+              prec->dscptrs[1] = pd0;
+              *pd0 = *(mdsdsc_t *)&dxentry;
+              pd0->pointer = (char *)&pd0[1];
+              memcpy(pd0->pointer, dxentry.pointer,
+                     dxentry.length);
+            }
+            pd0 = pd1;
+            StrFree1Dx(&dxentry);
           }
-          pd0 = pd1;
-          StrFree1Dx(&dxentry);
         }
         if ((STATUS_OK) && (status != LibSTRTRU) &&
             ((char *)pd0 < (char *)plim))
