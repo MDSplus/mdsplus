@@ -2356,7 +2356,7 @@ copy_segment(TREE_INFO *tinfo_in, PINO_DATABASE *dbid_out, TREE_INFO *tinfo_out,
              int compress)
 { // used in copy_segment_index only
   int status = TreeSUCCESS;
-  if (compress)
+  if (compress != -1)
   {
     int length;
     EMPTYXD(xd);
