@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="CONGLOM_NOT_FULL" value="4133" severity="Error" text="Current conglomerate is not yet full"/>
     <status name="CONTINUING" value="4396" severity="Info" text="Operation continuing: note following error"/>
     <status name="DUPTAG" value="4121" severity="Error" text="Tag name already in use"/>
-    <status name="EDITTING" value="4146" severity="Error" text="Tree file open for edit: operation not permitted"/>
+    <status name="EDITING" value="4146" severity="Error" text="Tree file open for edit: operation not permitted"/>
     <status name="ILLEGAL_ITEM" value="4129" severity="Error" text="Invalid item code or part number specified"/>
     <status name="ILLPAGCNT" value="4122" severity="Error" text="Illegal page count, error mapping tree file"/>
     <status name="INVDFFCLASS" value="4135" severity="Error" text="Invalid data fmt: only CLASS_S can have data in NCI"/>
