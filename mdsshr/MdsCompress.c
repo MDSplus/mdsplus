@@ -113,7 +113,6 @@ static int compress(const mdsdsc_t *const pcimage,
   mdsdsc_d_t dximage, dxentry;
   mdsdsc_t *pd0, *pd1, **ppd;
   size_t asize, align_size;
-  printf("Here I am in compress\n");
   if (pwork)
     switch (pwork->class)
     {
@@ -194,10 +193,6 @@ static int compress(const mdsdsc_t *const pcimage,
       {
         dximage = EMPTY_D;
         dxentry = EMPTY_D;
-        printf("It thinks there is a pcentry\n");
-        printf("pcentry = %p\n", pcentry);
-        printf("pcentry->length = %d\n", pcentry->length);
-        printf("pcentry->pointer = %p\n", pcentry->pointer);
         status = LibFindImageSymbol(pcimage, pcentry, &symbol);
         if (STATUS_OK)
         {
