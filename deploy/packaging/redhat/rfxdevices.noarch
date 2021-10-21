@@ -29,6 +29,8 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_COMPONENT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_CONVERSION.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_DUTY_CYCLE.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EPICS_IN.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EPICS_OUT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EXPR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_FFT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_GAM.py
