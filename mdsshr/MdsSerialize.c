@@ -1232,5 +1232,5 @@ EXPORT int MdsSerializeDscOutZ(
 
 EXPORT int MdsSerializeDscOut(mdsdsc_t const *in, mdsdsc_xd_t *out)
 {
-  return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0);
 }
