@@ -1,9 +1,11 @@
 
-from MDSplus import Device, Event, VECTOR
+from MDSplus import Device, Event, VECTOR, Uint8Array
 import subprocess
 import numpy as np
 import time
 import traceback
+import os
+
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
@@ -55,6 +57,8 @@ class MARTE2_SUPERVISOR(Device):
                           '.THREAD_'+str(threadIdx+1)+':GAM7', 'type': 'signal'})
             parts.append({'path': '.TIMES.STATE_'+str(stateIdx+1) +
                           '.THREAD_'+str(threadIdx+1)+':GAM8', 'type': 'signal'})
+    parts.append({'path': ':MARTE_CONFIG', 'type': 'numeric'})
+
 
     parts.append({'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'startMarteIdle',head))",
@@ -559,7 +563,12 @@ class MARTE2_SUPERVISOR(Device):
         confText += ' }\n'
         confText += '}\n'
         print (confText)
+        try:
+          os.system('mv /tmp/'+info['name']+'_marte_configuration.cfg '+'/tmp/'+info['name']+'_marte_configuration_OLD.cfg ')
+        except:
+          pass
         f = open('/tmp/'+info['name']+'_marte_configuration.cfg', 'w')
+        self.marte_config.putData(Uint8Array(bytearray(confText.encode())))
         f.write(confText)
         f.close()
         print('END BUILD')

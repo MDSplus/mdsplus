@@ -35,7 +35,8 @@ RfxDevices
 from MDSplus import Device, Data, Uint64, Event, Float64, Tree
 from MDSplus.mdsExceptions import DevCOMM_ERROR, DevBAD_PARAMETER
 from threading import Thread
-from ctypes import CDLL, Structure, c_int, byref, c_int8, c_uint8, c_uint32, c_uint64
+# from ctypes import CDLL, Structure, c_int, byref, c_int8, c_uint8, c_uint32, c_uint64, c
+from ctypes import *
 import os
 import sys
 import numpy as np
@@ -118,9 +119,9 @@ class NI6683(Device):
     eventTime = None
 
     class nisync_device_info(Structure):
-        _fields_ = [("driver_version", c_uint8 * 30),
-                    ("model", c_uint8 * 10),
-                    ("name", c_uint8 * 10),
+        _fields_ = [("driver_version", c_char* 30),
+                    ("model", c_char * 10),
+                    ("name", c_char * 10),
                     ("state", c_int),
                     ("time_since_sync", c_uint64),
                     ("serial_number", c_uint32),
@@ -195,13 +196,14 @@ class NI6683(Device):
             del(NI6683.ni6683Fds[self.nid])
             for termName in NI6683.termNameDict.keys():
                 try:
-                  os.close(self.termDict[termName])
+                    os.close(self.termDict[termName])
                 except Exception as e:
                     emsg = 'Cannot close terminal %s : %s'%(termName, str(e))
                     Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                     raise DevCOMM_ERROR
             try:
                 os.close(self.fd)
+                #self.fd.close()
             except:
                 emsg = 'Cannot close device ' + str(self.fd)
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
@@ -209,9 +211,9 @@ class NI6683(Device):
 
 
     def getAbsTime(self, relTime):
+        print ('DEBUG -> Abs time: ', NI6683.ni6683AbsTime, ' Reltime: ', relTime, ' RelStart: ', NI6683.ni6683RelTime)
         try:
-            print ('DEBUG -> Abs time: ', NI6683.ni6683AbsStart, ' Reltime: ', relTime, ' RelStart: ', NI6683.ni6683RelStart)
-            result = long((relTime - NI6683.ni6683RelStart)*1000000000 + NI6683.ni6683AbsStart)
+            result = long((relTime - NI6683.ni6683RelTime)*1000000000 + NI6683.ni6683AbsTime )
             print ('DEBUG -> Result: ', result)
             return result
         except:
@@ -222,12 +224,13 @@ class NI6683(Device):
     def getStartEnd(self, termName):
 
         termNameNid = termName+str(self.nid)
-
         try:
             start = NI6683.ni6683TermStarts[termNameNid]
-            if start <= NI6683.ni6683RelTime:
-                print ('WARNING: start time of ' + termName +' is equal or lower the pulse start time')
-                start = 0 # NISYNC_TIME_IMMEDIATE_NANOS in the API
+            if start < NI6683.ni6683RelTime:
+                emsg = 'Start time less than relative time in ' + termName
+                Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
+                raise DevBAD_PARAMETER
+                # start = 0 # NISYNC_TIME_IMMEDIATE_NANOS in the API
             else:
                 start = self.getAbsTime(start)
         except:
@@ -248,8 +251,10 @@ class NI6683(Device):
         return start, end
 
     def getStartPulse(self, termName):
-        try:
-            start = ni6683TermStarts[termNameNid]
+        termNameNid = termName+str(self.nid)
+        try:  
+            print(NI6683.ni6683TermStarts)
+            start = NI6683.ni6683TermStarts[termNameNid]
         except:
             emsg = 'Error reading start time in ' + termName
             Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
@@ -284,11 +289,16 @@ class NI6683(Device):
 
     def init(self):
         self.debugPrint('=================  PXI 6683 init ===============')
-        print ("DEBUG INIT")
 
         self.restoreInfo()
         NI6683.ni6683RecorderDict[self.nid] = []
-
+        
+        # Resetting the device (N.B. WIP)
+        print("RESETTING DEVICE...")
+        status = NI6683.niLib.nisync_reset(self.fd)
+        self.checkStatus(status, 'Cannot reset the device')
+        print("DONE")
+        
         for termName in NI6683.termNameDict.keys():
 
             termNameNid = termName+str(self.nid)
@@ -378,21 +388,24 @@ class NI6683(Device):
         self.debugPrint('=================  PXI 6683 trigger ===============')
 
         self.restoreInfo()
-        info = self.nisync_device_info("", "", "", 0, 0, 0, 0, 0, 0, 0)
+        info = self.nisync_device_info("","","", 0, 0, 0, 0, 0, 0, 0)
 
         trigger_event = NI6683.ni6683ModuleTriggerName
         if (trigger_event != None): # external time reference trigger
             eventObj=MyEvent(trigger_event)
-            eventObj.run()
+            eventObj.start()
             trigTime = c_uint64(self.eventTime)
             self.abs_start.putData(Uint64(trigTime))
 
         else: # internal time reference
+            deltaT = 200 # ms
+            print ("MODULE TRIGGER NOT FOUND -> CONTINUING WITH ABS INTERNAL TIMING")
             curr_nanos = c_uint64()
             status = NI6683.niLib.nisync_get_time_ns(self.fd, byref(curr_nanos))
-            self.abs_start.putData(Uint64(curr_nanos.value))
+            self.abs_start.putData(Uint64(curr_nanos.value + deltaT * 1000000))
 
-
+        NI6683.ni6683AbsTime = self.abs_start.data()
+        NI6683.ni6683RelTime = self.rel_start.data()
         #NI6683.ni6683RecorderDict[self.nid] = []
         for termName in NI6683.termNameDict.keys():
 
@@ -421,21 +434,22 @@ class NI6683(Device):
                 enabled = c_int8()
                 activeEdge = c_int()
                 decimationCount = c_int()
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
-                    byref(enabled), byref(activeEdge), byref(decimationCount))
-                self.checkStatus(status, 'Cannot inquire timestamp triggers')
-                if enabled.value != 0:
-                    print('DISABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
-                    status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
-                    self.checkStatus(status, 'Cannot disable timestamp triggers')
+                # status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
+                #     byref(enabled), byref(activeEdge), byref(decimationCount))
+                # self.checkStatus(status, 'Cannot inquire timestamp triggers')
+                # if enabled.value != 0:
+                #     print('DISABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
+                #     status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
+                #     self.checkStatus(status, 'Cannot disable timestamp triggers')
                 status = NI6683.niLib.nisync_future_time_events_configuration(c_int(self.termDict[termName]), byref(enabled))
                 self.checkStatus(status, 'Cannot inquire future events')
                 if enabled.value == 0:
                     print('ENABLE FUTURE EVENT for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_enable_future_time_events(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot enable future events')
-                status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
-                self.checkStatus(status, 'Cannot abort FTEs')
+                # status = NI6683.niLib.nisync_abort_all_ftes(c_int(self.termDict[termName]))
+                # self.checkStatus(status, 'Cannot abort FTEs')
+
                 startNs, endNs = self.getStartEnd(termName)
                 periodNs = int(1000000000./float(freq))
                 dutyCycle = NI6683.ni6683DutyCycles[termNameNid]
@@ -673,8 +687,8 @@ class NI6683(Device):
 
         def getRelTime(self, absTime):
             try:
-                print("absTime: " + str(absTime) + " self.device.abs_start.data(): " + str(self.device.abs_start.data()) + " self.device.rel_start.data(): " +str(self.device.rel_start.data()) )
-                return float((absTime - self.device.abs_start.data())/1E9 + self.device.rel_start.data())
+                #print("absTime: " + str(absTime) + " self.device.abs_start.data(): " + str(self.device.abs_start.data()) + " self.device.rel_start.data(): " +str(self.device.rel_start.data()) )
+                return float((absTime - NI6683.ni6683AbsStart)/1E9 + NI6683.ni6683RelStart)
             except:
                 emsg = 'Cannot convert absolute time to relative ' + str(self.device.fd)
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), emsg)

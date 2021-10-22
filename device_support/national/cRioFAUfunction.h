@@ -31,16 +31,16 @@ extern "C"
   NiFpga_Status startFauFpga(NiFpga_Session session);
   int readFauFifoData(NiFpga_Session session, uint8_t *data, double *time,
                       double tickPeriod, size_t *maxSamp, size_t nDio,
-                      uint8_t *stopFlag);
+                      int *stopFlag);
   int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
                      size_t maxSamp, size_t nDio, void *treePtr, void *dataNidPtr,
-                     uint8_t *stopFlag);
+                     int *stopFlag);
   // int  fauQueuedAcqData(NiFpga_Session session, void *fauList, uint8_t *data,
   // double *time, double tickPeriod, size_t maxSamp, size_t nDio, void *treePtr,
-  // void *dataNidPtr, uint8_t *stopFlag);
+  // void *dataNidPtr, int *stopFlag);
   int fauQueuedAcqData(NiFpga_Session session, void *fauList, double tickPeriod,
                        double trigTime, size_t maxSamp, size_t nDio,
-                       void *treePtr, void *dataNidPtr, uint8_t *stopFlag);
+                       void *treePtr, void *dataNidPtr, int *stopFlag);
   NiFpga_Status getFauAcqState(NiFpga_Session session, uint16_t *acqState);
   uint16_t IsFauFIFOOverflow(NiFpga_Session session);
   NiFpga_Status startFauAcquisition(NiFpga_Session session);
