@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
  *
  * Created on Feb 2, 2012, 2:19:27 PM
  */
-
 /**
  *
  * @author manduchi
@@ -64,12 +63,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         jPanel54 = new javax.swing.JPanel();
         deviceField29 = new DeviceField();
         deviceChoice10 = new DeviceChoice();
-        jPanel34 = new javax.swing.JPanel();
-        jPanel24 = new javax.swing.JPanel();
-        deviceChoice3 = new DeviceChoice();
-        deviceField41 = new DeviceField();
-        deviceField21 = new DeviceField();
-        deviceField22 = new DeviceField();
         jPanel52 = new javax.swing.JPanel();
         deviceField42 = new DeviceField();
         deviceField43 = new DeviceField();
@@ -96,6 +89,8 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave3 = new DeviceWave();
         jPanel13 = new javax.swing.JPanel();
         deviceWave6 = new DeviceWave();
+        jPanel56 = new javax.swing.JPanel();
+        deviceWave14 = new DeviceWave();
         jTabbedPane7 = new javax.swing.JTabbedPane();
         jPanel10 = new javax.swing.JPanel();
         deviceWave4 = new DeviceWave();
@@ -194,7 +189,10 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         setDeviceTitle("MITICA Experiment Setup");
         setDeviceType("MITICA_SETUP");
         setHeight(650);
-        setWidth(1000);
+        setWidth(1200);
+
+        deviceButtons1.setCheckExpressions(new String[] {});
+        deviceButtons1.setCheckMessages(new String[] {});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jTabbedPane1.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -240,6 +238,11 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         jPanel28.add(jPanel30);
 
         jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("Reference Waveform Time Limit"));
+        jPanel29.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jPanel29FocusLost(evt);
+            }
+        });
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Start Time: ");
@@ -281,7 +284,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jPanel17.setLayout(new java.awt.BorderLayout());
 
-        jPanel3.setLayout(new java.awt.GridLayout(4, 0));
+        jPanel3.setLayout(new java.awt.GridLayout(3, 0));
 
         jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("EG Modulation"));
 
@@ -326,7 +329,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jPanel33.add(jPanel53);
 
-        deviceField29.setIdentifier("");
+        deviceField29.setIdentifier("isrf_te_v");
         deviceField29.setLabelString("ISRF TE V:");
         deviceField29.setOffsetNid(323);
         jPanel54.add(deviceField29);
@@ -341,38 +344,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         jPanel33.add(jPanel54);
 
         jPanel3.add(jPanel33);
-
-        jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("Filament"));
-        jPanel34.setLayout(new java.awt.GridLayout(2, 0));
-
-        deviceChoice3.setChoiceItems(new String[] {"ON", "OFF"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("State:");
-        deviceChoice3.setOffsetNid(130);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel24.add(deviceChoice3);
-
-        deviceField41.setIdentifier("");
-        deviceField41.setLabelString("Ref. V:");
-        deviceField41.setNumCols(8);
-        deviceField41.setOffsetNid(325);
-        jPanel24.add(deviceField41);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("Start Time:");
-        deviceField21.setNumCols(20);
-        deviceField21.setOffsetNid(131);
-        jPanel24.add(deviceField21);
-
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("Stop Time:");
-        deviceField22.setNumCols(20);
-        deviceField22.setOffsetNid(132);
-        jPanel24.add(deviceField22);
-
-        jPanel34.add(jPanel24);
-
-        jPanel3.add(jPanel34);
 
         jPanel52.setBorder(javax.swing.BorderFactory.createTitledBorder("Core Snubber"));
 
@@ -507,9 +478,18 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jTabbedPane2.addTab("Bias I/V [A]/[V]", jPanel13);
 
+        jPanel56.setLayout(new java.awt.BorderLayout());
+
+        deviceWave14.setIdentifier("");
+        deviceWave14.setOffsetNid(269);
+        deviceWave14.setUpdateExpression("");
+        jPanel56.add(deviceWave14, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane2.addTab("Filament Bias [V] ", jPanel56);
+
         jPanel10.setLayout(new java.awt.BorderLayout());
 
-        deviceWave4.setIdentifier("");
+        deviceWave4.setIdentifier("rf1_power");
         deviceWave4.setOffsetNid(39);
         deviceWave4.setUpdateExpression("");
         jPanel10.add(deviceWave4, java.awt.BorderLayout.CENTER);
@@ -532,13 +512,13 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave22.setUpdateExpression("");
         jPanel48.add(deviceWave22, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane7.addTab("RF1 Capacitance [nF]", jPanel48);
+        jTabbedPane7.addTab("RF1 Capacitance [pF]", jPanel48);
 
         jTabbedPane2.addTab("RF1 Setup", jTabbedPane7);
 
         jPanel15.setLayout(new java.awt.BorderLayout());
 
-        deviceWave8.setIdentifier("");
+        deviceWave8.setIdentifier("rf2_power");
         deviceWave8.setOffsetNid(57);
         deviceWave8.setUpdateExpression("");
         jPanel15.add(deviceWave8, java.awt.BorderLayout.CENTER);
@@ -561,13 +541,13 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave23.setUpdateExpression("");
         jPanel49.add(deviceWave23, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane8.addTab("RF2 Capacitance [nF]", jPanel49);
+        jTabbedPane8.addTab("RF2 Capacitance [pF]", jPanel49);
 
         jTabbedPane2.addTab("RF2 Setup", jTabbedPane8);
 
         jPanel50.setLayout(new java.awt.BorderLayout());
 
-        deviceWave24.setIdentifier("");
+        deviceWave24.setIdentifier("rf3_power");
         deviceWave24.setOffsetNid(227);
         deviceWave24.setUpdateExpression("");
         jPanel50.add(deviceWave24, java.awt.BorderLayout.CENTER);
@@ -590,13 +570,13 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave26.setUpdateExpression("");
         jPanel65.add(deviceWave26, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane9.addTab("RF3 Capacitance [nF]", jPanel65);
+        jTabbedPane9.addTab("RF3 Capacitance [pF]", jPanel65);
 
         jTabbedPane2.addTab("RF3 Setup", jTabbedPane9);
 
         jPanel66.setLayout(new java.awt.BorderLayout());
 
-        deviceWave27.setIdentifier("");
+        deviceWave27.setIdentifier("rf4_power");
         deviceWave27.setOffsetNid(248);
         deviceWave27.setUpdateExpression("");
         jPanel66.add(deviceWave27, java.awt.BorderLayout.CENTER);
@@ -619,7 +599,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave29.setUpdateExpression("");
         jPanel68.add(deviceWave29, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane10.addTab("RF4 Capacitance [nF]", jPanel68);
+        jTabbedPane10.addTab("RF4 Capacitance [pF]", jPanel68);
 
         jTabbedPane2.addTab("RF4 Setup", jTabbedPane10);
 
@@ -954,6 +934,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
     private void deviceField17PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_deviceField17PropertyChange
         // TODO add your handling code here:
+        //updateWaves();
     }//GEN-LAST:event_deviceField17PropertyChange
 
     
@@ -961,24 +942,24 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     {
         float maxX = 0, minX = 0;
         try {
-  //          Data data = this.deviceField13.getData();
-  //          minX = (subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0)).getFloat();
-	      minX = subtree.getFloat(this.deviceField13.getData());
+            //MDSplus.Data data = (MDSplus.Data)this.deviceField13.getData();
+            //minX = (subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0)).getFloat();
+            minX = subtree.getFloat(this.deviceField13.getData());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(MITICA_SETUPSetup.this,
                 "The value on the file Start Time in the Reference Wave Time Limit pannel isn't a valid float value or mdsplus expression.",
-                "Incorret Start Time Reference wave limits", JOptionPane.WARNING_MESSAGE);
+                "Incorret Start Time Reference wave limits ", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         try {
- //           Data data = this.deviceField17.getData();
-  //          maxX = (subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0)).getFloat();
-	      maxX = subtree.getFloat(this.deviceField17.getData());
+            //MDSplus.Data data = (MDSplus.Data)this.deviceField17.getFullData();
+            //maxX = (subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0)).getFloat();
+            maxX = subtree.getFloat(this.deviceField17.getData()); 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(MITICA_SETUPSetup.this,
-                "The value on the file Stop Time in the Reference Wave Time Limit pannel isn't a valid float value or mdsplus expression.",
-                "Incorret Start Time Reference wave limits", JOptionPane.WARNING_MESSAGE);
+                "The value on the file Stop Time in the Reference Wave Time Limit pannel isn't a valid float value or mdsplus expression.\n"+ex,
+                "Incorret Start Time Reference wave limits ", JOptionPane.WARNING_MESSAGE);
             return;
         }
         
@@ -1005,6 +986,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave11.updateXLimit(minX, maxX);
         deviceWave12.updateXLimit(minX, maxX);
         deviceWave13.updateXLimit(minX, maxX);
+        deviceWave14.updateXLimit(minX, maxX);
         //deviceWave21.updateXLimit(minX, maxX); Reconnect Wave x limit fixed from 0 to 1
         deviceWave22.updateXLimit(minX, maxX);
         deviceWave23.updateXLimit(minX, maxX);
@@ -1018,12 +1000,21 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     
     private void deviceField17FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_deviceField17FocusLost
         // TODO add your handling code here:
+        //System.out.println("deviceField17FocusLost");
+        //updateWaves();
     }//GEN-LAST:event_deviceField17FocusLost
 
     private void jTabbedPane1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTabbedPane1FocusLost
         // TODO add your handling code here:
-        updateWaves();
+        //System.out.println("jTabbedPane1FocusLost");
+        //updateWaves();
     }//GEN-LAST:event_jTabbedPane1FocusLost
+
+    private void jPanel29FocusLost(java.awt.event.FocusEvent evt) {                                   
+        System.out.println("jPanel29FocusLost");
+        updateWaves();
+        // TODO add your handling code here:
+    }     
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1033,7 +1024,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceChoice deviceChoice11;
     private DeviceChoice deviceChoice12;
     private DeviceChoice deviceChoice2;
-    private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice6;
@@ -1053,8 +1043,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceField deviceField19;
     private DeviceField deviceField2;
     private DeviceField deviceField20;
-    private DeviceField deviceField21;
-    private DeviceField deviceField22;
     private DeviceField deviceField23;
     private DeviceField deviceField24;
     private DeviceField deviceField25;
@@ -1075,7 +1063,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceField deviceField39;
     private DeviceField deviceField4;
     private DeviceField deviceField40;
-    private DeviceField deviceField41;
     private DeviceField deviceField42;
     private DeviceField deviceField43;
     private DeviceField deviceField5;
@@ -1088,6 +1075,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceWave deviceWave11;
     private DeviceWave deviceWave12;
     private DeviceWave deviceWave13;
+    private DeviceWave deviceWave14;
     private DeviceWave deviceWave2;
     private DeviceWave deviceWave21;
     private DeviceWave deviceWave22;
@@ -1123,7 +1111,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
-    private javax.swing.JPanel jPanel24;
     private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
@@ -1134,7 +1121,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
-    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
@@ -1158,6 +1144,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel53;
     private javax.swing.JPanel jPanel54;
     private javax.swing.JPanel jPanel55;
+    private javax.swing.JPanel jPanel56;
     private javax.swing.JPanel jPanel59;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel60;

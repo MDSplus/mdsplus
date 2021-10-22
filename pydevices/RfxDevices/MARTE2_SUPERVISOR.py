@@ -1,6 +1,5 @@
 
-import  MDSplus
-import RfxDevices
+from MDSplus import Device, Event, VECTOR, Uint8Array
 import subprocess
 import numpy as np
 import time
@@ -1632,7 +1631,12 @@ $<APP_NAME> = {
         confText += ' }\n'
         confText += '}\n'
         print (confText)
+        try:
+          os.system('mv /tmp/'+info['name']+'_marte_configuration.cfg '+'/tmp/'+info['name']+'_marte_configuration_OLD.cfg ')
+        except:
+          pass
         f = open('/tmp/'+info['name']+'_marte_configuration.cfg', 'w')
+        self.marte_config.putData(Uint8Array(bytearray(confText.encode())))
         f.write(confText)
         f.close()
         print('END BUILD')

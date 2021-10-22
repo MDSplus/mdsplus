@@ -333,6 +333,7 @@ public class ChannelArchiver
 
 	    if( shot > 0 )
 	    {
+                System.out.println("Experiment "+expName);
                 tree = new Tree(expName, shot);
                 isTrendShot = false;
 	    }
@@ -1307,6 +1308,8 @@ public class ChannelArchiver
 
 	    System.out.println("gov.aps.jca.Context.auto_addr_list " + jca.getProperty("gov.aps.jca.Context.auto_addr_list"));
 	    System.out.println("gov.aps.jca.Context.addr_list " + jca.getProperty("gov.aps.jca.Context.addr_list"));
+
+            System.out.println("Experiment "+experiment);
 
 	    tree = new Tree(experiment, -1);
 		if(createPulse)
