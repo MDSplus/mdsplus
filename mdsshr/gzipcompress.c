@@ -1,4 +1,4 @@
-#include <zlib.h>
+#include "../mdstcpip/zlib/zlib.h"
 #include <string.h>
 
 #include <mdsdescrip.h>
