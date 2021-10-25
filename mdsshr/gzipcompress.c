@@ -1,10 +1,11 @@
-#include "../mdstcpip/zlib/zlib.h"
 #include <string.h>
 
 #include <mdsdescrip.h>
 #include <strroutines.h>
 
 #include <stdio.h>
+#include <stdarg.h>
+#include <zlib.h>
 
 //#define DEBUG
 
