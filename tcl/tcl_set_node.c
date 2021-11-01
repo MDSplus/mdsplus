@@ -43,8 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
-DEFINE_COMPRESSION_METHOD_STRINGS
-#define N_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
+DEFINE_COMPRESSION_METHODS
 
 /**********************************************************************
  * TCL_SET_NODE.C --
@@ -92,15 +91,15 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
         unsigned char compression_method=0;
         char *p = compression_method_str;
         for ( ; *p; ++p) *p = tolower(*p);
-        for (i=0; i < N_ELEMENTS(compression_methods); i++)
+        for (i=0; i < NUM_COMPRESSION_METHODS; i++)
         {
-          if(strcmp(compression_method_str, compression_methods[i]) == 0)
+          if(strcmp(compression_method_str, compression_methods[i].name) == 0)
           {
             compression_method=i;
             break;
           }
         }
-        if(i < N_ELEMENTS(compression_methods))
+        if(i < NUM_COMPRESSION_METHODS)
         {
           NCI_ITM setnci[] = {{sizeof(compression_method), NciCOMPRESSION_METHOD, 0, 0},
                               {0, NciEND_OF_LIST, 0, 0}};

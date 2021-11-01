@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define O_RANDOM 0
 #endif
 
-DEFINE_COMPRESSION_METHOD_STRINGS
+DEFINE_COMPRESSION_METHODS
 
 static inline int minInt(int a, int b) { return a < b ? a : b; }
 
@@ -697,7 +697,9 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
     {
       break_on_no_node;
       read_nci;
-      string = strdup(compression_methods[nci.compression_method]);
+      if (nci.compression_method >= NUM_COMPRESSION_METHODS)
+          nci.compression_method = 0;
+      string = strdup(compression_methods[nci.compression_method].name);
       break;
     }
 

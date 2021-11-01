@@ -1135,15 +1135,17 @@ EXPORT int MdsSerializeDscOutZ(
     // 1.. - use the compression method with this index
     if (compress != -1)
     {
-      DEFINE_COMPRESSION_METHOD_METHODS
+      DEFINE_COMPRESSION_METHODS
 
       tempxd = *out;
       out->l_length = 0;
       out->pointer = 0;
-      if ((unsigned int)compress >= N_ELEMENTS(compression_routines))
+      if ((unsigned int)compress >= NUM_COMPRESSION_METHODS)
           compress = 0;
-      status = MdsCompress(compression_images[compress], 
-                           compression_routines[compress], 
+      DESCRIPTOR(image, compression_methods[compress].image);
+      DESCRIPTOR(method, compression_methods[compress].method);
+      status = MdsCompress((compress) ? &image : NULL, 
+                           (compress) ? &method : NULL, 
                            tempxd.pointer, 
                            out);
       MdsFree1Dx(&tempxd, NULL);
