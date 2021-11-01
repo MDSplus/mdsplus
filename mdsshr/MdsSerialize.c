@@ -1142,16 +1142,12 @@ EXPORT int MdsSerializeDscOutZ(
       out->pointer = 0;
       if ((unsigned int)compress >= NUM_COMPRESSION_METHODS)
           compress = 0;
-      if (compress) 
-      {
-          DESCRIPTOR_FROM_CSTRING(image, compression_methods[compress].image);
-          DESCRIPTOR_FROM_CSTRING(method, compression_methods[compress].method);
-          status = MdsCompress(&image, &method, tempxd.pointer, out);
-      }
-      else
-      {
-          status = MdsCompress(NULL, NULL, tempxd.pointer, out);
-      }
+      DESCRIPTOR(image, compression_methods[compress].image);
+      DESCRIPTOR(method, compression_methods[compress].method);
+      status = MdsCompress((compress) ? &image : NULL, 
+                           (compress) ? &method : NULL, 
+                           tempxd.pointer, 
+                           out);
       MdsFree1Dx(&tempxd, NULL);
       compressible = 0;
     }

@@ -1,5 +1,5 @@
-#ifndef _NCIDEF_H
-#define _NCIDEF_H
+#ifndef NCIDEF_H
+#define NCIDEF_H
 /**************************************
   NCIDEF.H - definitions of constants
   used in  item list arguments to the
