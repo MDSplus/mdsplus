@@ -157,8 +157,6 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
 
     def state(self):
-        import acq400_hapi
-
         # State of the Transient recorder NOW (when this method was run)
         uut = self.getUUT()
 

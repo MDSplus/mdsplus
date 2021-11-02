@@ -344,8 +344,6 @@ class _ACQ2106_423ST(MDSplus.Device):
 
     def init(self, armed_by_transient = False):
         uut = self.getUUT()
-
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
         if self.ext_clock.length > 0:
