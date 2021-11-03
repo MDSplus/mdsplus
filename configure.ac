@@ -85,6 +85,7 @@ AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
+AC_CHECK_TOOL([DLLTOOL], [dlltool], [:])
 AC_CHECK_TOOL([WINDRES], [windres], [:])
 
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
@@ -365,12 +366,12 @@ case "$host" in
          SQL_ARCH=32
          BINDIR=bin_x86
          VS_ARCH=x86
-	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl64"
+         IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl64"
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
          VS_ARCH=x64
-	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
+         IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
        fi
        MAKELIBDIR="\$(top_builddir)/${BINDIR}/"
        MAKESHLIBDIR="\$(top_builddir)/${BINDIR}/"

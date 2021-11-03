@@ -279,12 +279,18 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
                            "text", "window", "axis", "subtree",
                            "compound data", "unknown"};
 #define MAX_USAGES (sizeof(usages) / sizeof(usages[0]))
+#include <_ncidef.h>
+#define UNUSED(x) (void)(x)
+  DEFINE_COMPRESSION_METHODS
+  UNUSED(NUM_COMPRESSION_METHODS);
+
   int nciFlags;
   unsigned int owner;
   char class;
   char dtype;
   uint32_t dataLen;
   unsigned short conglomerate_elt;
+  unsigned char compression_method;
   int vers;
   NCI_ITM full_list[] = {{4, NciVERSION, &vers, 0},
                          {4, NciGET_FLAGS, &nciFlags, 0},
@@ -294,6 +300,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
                          {1, NciDTYPE, &dtype, 0},
                          {4, NciLENGTH, &dataLen, 0},
                          {2, NciCONGLOMERATE_ELT, &conglomerate_elt, 0},
+                         {1, NciCOMPRESSION_METHOD, &compression_method, 0},
                          {0, NciEND_OF_LIST, 0, 0}};
   int status;
   vers = version;
@@ -345,7 +352,15 @@ static int doFull(char **output, int nid, unsigned char nodeUsage,
         strcat(msg, (nciFlags & NciM_COMPRESS_SEGMENTS) ? "," : "\n");
       }
       if (nciFlags & NciM_COMPRESS_SEGMENTS)
+      {
         strcat(msg, "compress segments\n");
+      }
+      if (((nciFlags & NciM_DO_NOT_COMPRESS) == 0) && (compression_method != 0))
+      {
+        strcat(msg, "      compression method = ");
+        strcat(msg, compression_methods[compression_method].name);
+        strcat(msg, "\n");
+      }
 
       if (strlen(msg) > 0)
       {
