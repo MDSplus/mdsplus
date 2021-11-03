@@ -67,9 +67,41 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
   void *ctx1 = 0;
   char *nodename = 0;
   char *statusStr = 0;
+  unsigned char compression_method=0;
+
   cli_get_value(ctx, "NODENAME", &nodename);
   cli_get_value(ctx, "STATUS", &statusStr);
   log = cli_present(ctx, "LOG") & 1;
+
+  if (cli_present(ctx, "COMPRESSION_METHOD"))
+  {
+    char *compression_method_str = 0;
+    if(cli_get_value(ctx, "COMPRESSION_METHOD", &compression_method_str) & 1)
+    {
+      char *p = compression_method_str;
+      int i;
+      for ( ; *p; ++p) *p = tolower(*p);
+      for (i=0; i < NUM_COMPRESSION_METHODS; i++)
+      {
+        if(strcmp(compression_method_str, compression_methods[i].name) == 0)
+        {
+            compression_method=i;
+            break;
+        }
+      }
+      if(i >= NUM_COMPRESSION_METHODS)
+      {
+        *error = malloc(strlen(nodename) + strlen(compression_method_str) + 100);
+        sprintf(*error,
+        "Error: Problem setting compression method for node %s\n"
+        "\t%s not a valid compression method\n",
+        nodename, compression_method_str);
+          
+      }
+      free(compression_method_str);
+    }
+  }
+
 
   usageMask = -1;
   while ((status = TreeFindNodeWild(nodename, &nid, &ctx1, usageMask)) & 1)
@@ -84,40 +116,10 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
     }
     if (cli_present(ctx, "COMPRESSION_METHOD"))
     {
-      char *compression_method_str = 0;
-      if(cli_get_value(ctx, "COMPRESSION_METHOD", &compression_method_str) & 1)
-      {
-        unsigned int i;
-        unsigned char compression_method=0;
-        char *p = compression_method_str;
-        for ( ; *p; ++p) *p = tolower(*p);
-        for (i=0; i < NUM_COMPRESSION_METHODS; i++)
-        {
-          if(strcmp(compression_method_str, compression_methods[i].name) == 0)
-          {
-            compression_method=i;
-            break;
-          }
-        }
-        if(i < NUM_COMPRESSION_METHODS)
-        {
-          NCI_ITM setnci[] = {{sizeof(compression_method), NciCOMPRESSION_METHOD, 0, 0},
-                              {0, NciEND_OF_LIST, 0, 0}};
-          setnci[0].pointer = (unsigned char *)&compression_method;
-          TreeSetNci(nid, setnci);
-        }
-        else
-        {
-          *error = malloc(strlen(nodename) + strlen(compression_method_str) + 100);
-          sprintf(*error,
-                  "Error: Problem setting compression method for node %s\n"
-                  "\t%s not a valid compression method\n",
-                  nodename, compression_method_str); 
-          free(compression_method_str);
-          goto error;          
-        }
-        free(compression_method_str);
-      }
+      NCI_ITM setnci[] = {{sizeof(compression_method), NciCOMPRESSION_METHOD, 0, 0},
+                          {0, NciEND_OF_LIST, 0, 0}};
+      setnci[0].pointer = (unsigned char *)&compression_method;
+      TreeSetNci(nid, setnci);
     }
  
     switch (cli_present(ctx, "SUBTREE"))
