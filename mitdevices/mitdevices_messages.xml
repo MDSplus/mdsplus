@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="NOT_TRIGGERED" value="4108" severity="Error"
 	    text="device was not triggered,  check wires and triggering device"
 	    />
-    <status name="FREQ_TO_HIGH" value="4109" severity="Error"
+    <status name="FREQ_TOO_HIGH" value="4109" severity="Error"
 	    text="the frequency is set to high for the requested number of channels"
 	    />
     <status name="INVALID_NOC" value="4110" severity="Error"
@@ -466,7 +466,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      <status name="BAD_PTS" value="5051" severity="Error"
 	    text="Invalid pts code, must be 0 .. 7"
 	    facnam="L8212$_" facabb="L8212"/>
-     <status name="FREQ_TO_HIGH" value="5052" severity="Error"
+     <status name="FREQ_TOO_HIGH" value="5052" severity="Error"
 	    text="Frequency to high for selected number of channels"
 	    facnam="L8212$_" facabb="L8212"/>
      <status name="INVALID_NOC" value="5053" severity="Error"
