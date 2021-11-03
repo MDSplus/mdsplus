@@ -80,13 +80,13 @@ class Tests(_common.TreeTests, _common.MdsIp):
         self._doTCLTest('do TESTDEVICE_S:TASK_TEST')
         self._doTCLTest('do TESTDEVICE_S:ACTIONSERVER:MANUAL')
         self._doExceptionTest('do TESTDEVICE_I:TASK_ERROR1',
-                              Exc.DevUNKOWN_STATE)  # w/o timeout
+                              Exc.DevUNKNOWN_STATE)  # w/o timeout
         self._doExceptionTest('do TESTDEVICE_S:TASK_ERROR1',
-                              Exc.DevUNKOWN_STATE)  # w/o timeout
+                              Exc.DevUNKNOWN_STATE)  # w/o timeout
         self._doExceptionTest('do TESTDEVICE_I:TASK_ERROR2',
-                              Exc.DevUNKOWN_STATE)  # w/  timeout
+                              Exc.DevUNKNOWN_STATE)  # w/  timeout
         self._doExceptionTest('do TESTDEVICE_S:TASK_ERROR2',
-                              Exc.DevUNKOWN_STATE)  # w/  timeout
+                              Exc.DevUNKNOWN_STATE)  # w/  timeout
         self._doExceptionTest('close', Exc.TreeWRITEFIRST)
         self._doTCLTest('write')
         self._doTCLTest('close')
