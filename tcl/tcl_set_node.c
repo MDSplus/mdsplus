@@ -79,7 +79,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
     if(cli_get_value(ctx, "COMPRESSION_METHOD", &compression_method_str) & 1)
     {
       char *p = compression_method_str;
-      int i;
+      unsigned int i;
       for ( ; *p; ++p) *p = tolower(*p);
       for (i=0; i < NUM_COMPRESSION_METHODS; i++)
       {
