@@ -203,3 +203,6 @@ java/jtraverser/DecompileTree
 java/jtraverser/jTraverser
 java/jtraverser2/jTraverser2
 java/jtraverser2/setupDevice
+
+# vscode swp files
+*.swp

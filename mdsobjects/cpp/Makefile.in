@@ -46,19 +46,19 @@ install: $(libdir)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-defs:
+generate-libs-from-dlls:
 	@mkdir -p $(top_builddir)/defs
 	@for i in $$(find @MAKESHLIBDIR@ -follow -name '*.dll'); do \
 	  deffile=$(top_builddir)/defs/$$(basename $${i/.dll/.def}) ;\
 	  gendef -a - $$i > $$deffile ;\
+	  @DLLTOOL@ -d $$deffile -l @MAKESHLIBDIR@/$$(basename $${i/.dll/.lib}); \
 	done
 
-.PHONY: defs
+.PHONY: generate-libs-from-dlls 
 
 ifneq "$(VSDLL)" ""
 
-$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
-@HAVE_WINE_TRUE@	@for i in $(top_builddir)/defs/*.def; do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}"; done
+$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB) generate-libs-from-dlls
 @HAVE_WINE_TRUE@	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
 @HAVE_WINE_FALSE@	@echo VSDLL defined but no wine: at this point we would have built VSDLLs
 
