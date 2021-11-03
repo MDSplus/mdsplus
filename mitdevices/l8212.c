@@ -217,19 +217,19 @@ static int FreqToClock(int chans, int noc, int freq_nid, int *clock)
       switch (*clock) {
       case 4:
 	if (noc > 8)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       case 5:
 	if (noc > 4)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       case 6:
 	if (noc > 2)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       case 7:
 	if (noc > 1)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       }
       break;
@@ -237,19 +237,19 @@ static int FreqToClock(int chans, int noc, int freq_nid, int *clock)
       switch (*clock) {
       case 4:
 	if (noc > 32)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       case 5:
 	if (noc > 16)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       case 6:
 	if (noc > 8)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       case 7:
 	if (noc > 4)
-	  status = L8212$_FREQ_TO_HIGH;
+	  status = L8212$_FREQ_TOO_HIGH;
 	break;
       }
       break;
