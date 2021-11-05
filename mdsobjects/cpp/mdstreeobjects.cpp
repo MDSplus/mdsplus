@@ -704,6 +704,249 @@ Data *TreeNode::data()
   return outD;
 }
 
+char TreeNode::getByte()
+{
+  Data *d = data();
+  char res = d->getByte();
+  MDSplus::deleteData(d);
+  return res;
+}
+short TreeNode::getShort()
+{
+  Data *d = data();
+  short res = d->getShort();
+  MDSplus::deleteData(d);
+  return res;
+}
+int TreeNode::getInt()
+{
+  Data *d = data();
+  int res = d->getInt();
+  MDSplus::deleteData(d);
+  return res;
+}
+int64_t TreeNode::getLong()
+{
+  Data *d = data();
+  long res = d->getLong();
+  MDSplus::deleteData(d);
+  return res;
+}
+unsigned char TreeNode::getByteUnsigned()
+{
+  Data *d = data();
+  unsigned char res = d->getByteUnsigned();
+  MDSplus::deleteData(d);
+  return res;
+}
+unsigned short TreeNode::getShortUnsigned()
+{
+  Data *d = data();
+  unsigned short res = d->getShortUnsigned();
+  MDSplus::deleteData(d);
+  return res;
+}
+unsigned int TreeNode::getIntUnsigned()
+{
+  Data *d = data();
+  unsigned int res = d->getIntUnsigned();
+  MDSplus::deleteData(d);
+  return res;
+}
+uint64_t TreeNode::getLongUnsigned()
+{
+  Data *d = data();
+  uint64_t res = d->getLongUnsigned();
+  MDSplus::deleteData(d);
+  return res;
+}
+float TreeNode::getFloat()
+{
+  Data *d = data();
+  float res = d->getFloat();
+  MDSplus::deleteData(d);
+  return res;
+}
+double TreeNode::getDouble()
+{
+  Data *d = data();
+  double res = d->getDouble();
+  MDSplus::deleteData(d);
+  return res;
+}
+std::complex<double> TreeNode::getComplex()
+{
+  Data *d = data();
+  std::complex<double> res = d->getComplex();
+  MDSplus::deleteData(d);
+  return res;
+}
+char *TreeNode::getByteArray(int *numElements)
+{
+  Data *d = data();
+  char * res = d->getByteArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<char> TreeNode::getByteArray()
+{
+  Data *d = data();
+  std::vector<char> res = d->getByteArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+short *TreeNode::getShortArray(int *numElements)
+{
+  Data *d = data();
+  short * res = d->getShortArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<short> TreeNode::getShortArray()
+{
+  Data *d = data();
+  std::vector<short>  res = d->getShortArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+int *TreeNode::getIntArray(int *numElements)
+{
+  Data *d = data();
+  int * res = d->getIntArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<int> TreeNode::getIntArray()
+{
+  Data *d = data();
+  std::vector<int> res = d->getIntArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+int64_t *TreeNode::getLongArray(int *numElements)
+{
+  Data *d = data();
+  int64_t * res = d->getLongArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<int64_t> TreeNode::getLongArray()
+{
+  Data *d = data();
+  std::vector<int64_t> res = d->getLongArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+float *TreeNode::getFloatArray(int *numElements)
+{
+  Data *d = data();
+  float * res = d->getFloatArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<float> TreeNode::getFloatArray()
+{
+  Data *d = data();
+  std::vector<float> res = d->getFloatArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+unsigned char *TreeNode::getByteUnsignedArray(int *numElements)
+{
+  Data *d = data();
+  unsigned char * res = d->getByteUnsignedArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<unsigned char> TreeNode::getByteUnsignedArray()
+{
+  Data *d = data();
+  std::vector<unsigned char> res = d->getByteUnsignedArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+unsigned short *TreeNode::getShortUnsignedArray(int *numElements)
+{
+  Data *d = data();
+  unsigned short * res = d->getShortUnsignedArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<unsigned short> TreeNode::getShortUnsignedArray()
+{
+  Data *d = data();
+  std::vector<unsigned short> res = d->getShortUnsignedArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+unsigned int *TreeNode::getIntUnsignedArray(int *numElements)
+{
+  Data *d = data();
+  unsigned int * res = d->getIntUnsignedArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<unsigned int> TreeNode::getIntUnsignedArray()
+{
+  Data *d = data();
+  std::vector<unsigned int> res = d->getIntUnsignedArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+uint64_t *TreeNode::getLongUnsignedArray(int *numElements)
+{
+  Data *d = data();
+  uint64_t * res = d->getLongUnsignedArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<uint64_t> TreeNode::getLongUnsignedArray()
+{
+  Data *d = data();
+  std::vector<uint64_t> res = d->getLongUnsignedArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+double *TreeNode::getDoubleArray(int *numElements)
+{
+  Data *d = data();
+  double * res = d->getDoubleArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<double> TreeNode::getDoubleArray()
+{
+  Data *d = data();
+  std::vector<double> res = d->getDoubleArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+std::complex<double> *TreeNode::getComplexArray(int *numElements)
+{
+  Data *d = data();
+  std::complex<double> *res = d->getComplexArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+std::vector<std::complex<double> > TreeNode::getComplexArray()
+{
+  Data *d = data();
+  std::vector<std::complex<double> > res = d->getComplexArray();
+  MDSplus::deleteData(d);
+  return res;
+}
+char **TreeNode::getStringArray(int *numElements)
+{
+  Data *d = data();
+  char ** res = d->getStringArray(numElements);
+  MDSplus::deleteData(d);
+  return res;
+}
+
+
+
+
+
 template <class T>
 static T getNci(void *ctx, int nid, short int code)
 {
