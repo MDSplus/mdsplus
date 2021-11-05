@@ -50,9 +50,9 @@ class Tests(_common.TreeTests):
             self._doTCLTest(
                 'do TESTDEVICE:TASK_TEST', tree=tree)
             self._doExceptionTest(
-                'do TESTDEVICE:TASK_ERROR1', Exc.DevUNKOWN_STATE, tree)
+                'do TESTDEVICE:TASK_ERROR1', Exc.DevUNKNOWN_STATE, tree)
             self._doExceptionTest(
-                'do TESTDEVICE:TASK_ERROR2', Exc.DevUNKOWN_STATE, tree)
+                'do TESTDEVICE:TASK_ERROR2', Exc.DevUNKNOWN_STATE, tree)
             self._doExceptionTest(
                 'do TESTDEVICE:TASK_TIMEOUT', Exc.TdiTIMEOUT, tree)
 

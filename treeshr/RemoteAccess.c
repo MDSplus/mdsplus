@@ -1848,7 +1848,7 @@ inline static int io_open_one_remote(char *host, char *filepath,
                                          MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,
                                          0)))
             {
-              status = TreeEDITTING;
+              status = TreeEDITING;
               *fd = -2;
             }
           }
@@ -1979,7 +1979,7 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
             if (IS_NOT_OK(io_lock_local((fdinfo_t){conid, fd, enhanced}, 1, 1,
                                         MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)))
             {
-              status = TreeEDITTING;
+              status = TreeEDITING;
               fd = -2;
             }
           }

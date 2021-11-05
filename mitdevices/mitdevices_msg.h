@@ -36,7 +36,7 @@
   (MSG_MASK + 2015 * MSG_FACNUM_M + 11 * MSG_MSGNUM_M + MSG_ERROR)
 #define DEV$_NOT_TRIGGERED \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 12 * MSG_MSGNUM_M + MSG_ERROR)
-#define DEV$_FREQ_TO_HIGH \
+#define DEV$_FREQ_TOO_HIGH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 13 * MSG_MSGNUM_M + MSG_ERROR)
 #define DEV$_INVALID_NOC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 14 * MSG_MSGNUM_M + MSG_ERROR)
@@ -270,7 +270,7 @@
   (MSG_MASK + 2015 * MSG_FACNUM_M + 954 * MSG_MSGNUM_M + MSG_ERROR)
 #define L8212$_BAD_PTS \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 955 * MSG_MSGNUM_M + MSG_ERROR)
-#define L8212$_FREQ_TO_HIGH \
+#define L8212$_FREQ_TOO_HIGH \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 956 * MSG_MSGNUM_M + MSG_ERROR)
 #define L8212$_INVALID_NOC \
   (MSG_MASK + 2015 * MSG_FACNUM_M + 957 * MSG_MSGNUM_M + MSG_ERROR)
@@ -362,7 +362,7 @@ EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
        "unable to read start index for channel"},
       {DEV$_NOT_TRIGGERED, "DEV", "NOT_TRIGGERED",
        "device was not triggered,  check wires and triggering device"},
-      {DEV$_FREQ_TO_HIGH, "DEV", "FREQ_TO_HIGH",
+      {DEV$_FREQ_TOO_HIGH, "DEV", "FREQ_TOO_HIGH",
        "the frequency is set to high for the requested number of channels"},
       {DEV$_INVALID_NOC, "DEV", "INVALID_NOC",
        "the NOC (number of channels) requested is greater than the physical "
@@ -562,7 +562,7 @@ EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
       {L8212$_BAD_OFFSET, "L8212", "BAD_OFFSET",
        "Invalid offset must be one of (0, -2048, -4096)"},
       {L8212$_BAD_PTS, "L8212", "BAD_PTS", "Invalid pts code, must be 0 .. 7"},
-      {L8212$_FREQ_TO_HIGH, "L8212", "FREQ_TO_HIGH",
+      {L8212$_FREQ_TOO_HIGH, "L8212", "FREQ_TOO_HIGH",
        "Frequency to high for selected number of channels"},
       {L8212$_INVALID_NOC, "L8212", "INVALID_NOC",
        "Invalid number of active channels"},
