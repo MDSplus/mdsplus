@@ -2970,6 +2970,43 @@ namespace MDSplus
     void *operator new(size_t sz);
     void operator delete(void *p);
 
+    //From Data
+    virtual char getByte();
+    virtual short getShort();
+    virtual int getInt();
+    virtual int64_t getLong();
+    virtual unsigned char getByteUnsigned();
+    virtual unsigned short getShortUnsigned();
+    virtual unsigned int getIntUnsigned();
+    virtual uint64_t getLongUnsigned();
+    virtual float getFloat();
+    virtual double getDouble();
+    virtual std::complex<double> getComplex();
+    virtual char *getByteArray(int *numElements);
+    virtual std::vector<char> getByteArray();
+    virtual short *getShortArray(int *numElements);
+    virtual std::vector<short> getShortArray();
+    virtual int *getIntArray(int *numElements);
+    virtual std::vector<int> getIntArray();
+    virtual int64_t *getLongArray(int *numElements);
+    virtual std::vector<int64_t> getLongArray();
+    virtual float *getFloatArray(int *numElements);
+    virtual std::vector<float> getFloatArray();
+    virtual unsigned char *getByteUnsignedArray(int *numElements);
+    virtual std::vector<unsigned char> getByteUnsignedArray();
+    virtual unsigned short *getShortUnsignedArray(int *numElements);
+    virtual std::vector<unsigned short> getShortUnsignedArray();
+    virtual unsigned int *getIntUnsignedArray(int *numElements);
+    virtual std::vector<unsigned int> getIntUnsignedArray();
+    virtual uint64_t *getLongUnsignedArray(int *numElements);
+    virtual std::vector<uint64_t> getLongUnsignedArray();
+    virtual double *getDoubleArray(int *numElements);
+    virtual std::vector<double> getDoubleArray();
+    virtual std::complex<double> *getComplexArray(int *numElements
+                                                  __attribute__((unused)));
+    virtual std::vector<std::complex<double> > getComplexArray();
+    virtual char **getStringArray(int *numElements);
+    
     /// Get the associated tree instance
     virtual Tree *getTree() { return tree; }
 
