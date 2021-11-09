@@ -68,7 +68,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
         # start a MDSWorker thread of the super-class, with the purpose of letting the sub-class 
         # to arm the digitazer:
         # True ==> the transient recording will arm the digitazer.
-        super(_ACQ2106_423TR, self).init(True)
+        super(_ACQ2106_423TR, self).init(armed_by_transient = True)
 
         # Transient capture may be configured programmatically as follows, where
         # PRE, POST are pre-trigger, post-trigger capture lengths in samples.
