@@ -73,11 +73,12 @@ inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD,
   EMPTYXD(startXd);
   EMPTYXD(endXd);
   EMPTYXD(deltaXd);
+
   int numSamples, i;
   mdsdsc_a_t *currDim = (mdsdsc_a_t *)inSignalD->dimensions[0];
   if (currDim->class != CLASS_A)
   {
-//Reset time context when evaluating timebase to avoid errors in case the timebase expression refers to segmented data
+    //Reset time context when evaluating timebase to avoid errors in case the timebase expression refers to segmented data
     TreeGetTimeContext(&startXd, &endXd, &deltaXd);
     TreeSetTimeContext(NULL, NULL, NULL);
     int status = TdiData(currDim, &currXd MDS_END_ARG);
