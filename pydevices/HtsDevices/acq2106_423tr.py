@@ -24,6 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import MDSplus
+import threading
 import importlib
 
 acq2106_423st = importlib.import_module('acq2106_423st')
@@ -85,7 +86,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
         # set.site 1 event0=1,0,1 - external rising edge causes PRE - > POST
         uut = self.getUUT()
 
-        uut.s0.transient = 'SOFT_TRIGGER=1'
+        uut.s0.transient = 'SOFT_TRIGGER=1' # Automatic
 
         # If PRE samples different from zero
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.postsamples.data())
@@ -141,22 +142,23 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
             if self.debug:
                 print("TRG source was set to {}".format(str(self.trig_src.data())))
 
+        self.arm()
+
     INIT=init
 
 
     def arm(self):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
-
+        
         shot_controller = acq400_hapi.ShotController([uut])
         if self.debug:
             print("Using HAPI ShotController to run the shot.")
         shot_controller.run_shot()
 
-    ARM=arm
-
 
     def state(self):
+        import acq400_hapi
         # State of the Transient recorder NOW (when this method was run)
         uut = self.getUUT()
 
@@ -181,25 +183,24 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
     def store(self):
         uut = self.getUUT()
-        
-        while uut.statmon.get_state() != 0: continue
+
+        while uut.statmon.get_state() != 0: 
+            continue
 
         self.chans = []
         nchans = uut.nchan()
+
         for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
         channel_data = uut.read_channels()
-
-        # print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
-        # print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
+        print(channel_data)
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
                 
                 start_idx     = - self.presamples.data() + 1
                 end_idx       = self.postsamples.data()
-                total_samples = uut.elapsed_samples()
 
                 clock_period  = 1./self.freq.data()
 
@@ -217,7 +218,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
                 ch.RAW_INPUT.putData(raw_signal)
 
     STORE=store
-        
+
     def getUUT(self):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
