@@ -342,7 +342,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         'wrtt1'         # White Rabbit Trigger
     ]
 
-    def init(self):
+    def init(self, armed_by_transient = False):
         uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
@@ -417,8 +417,13 @@ class _ACQ2106_423ST(MDSplus.Device):
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
 
         self.running.on = True
-        thread = self.MDSWorker(self)
-        thread.start()
+
+        if not armed_by_transient:
+            # Then, the following will armed by this super-class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
     INIT = init
 
     def stop(self):
@@ -460,8 +465,9 @@ def assemble(cls):
                 'type': 'NUMERIC',
                 'options': ('no_write_model', 'write_once',)
             },
+
             {
-                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),    
                 'type': 'NUMERIC',
                 'options': ('no_write_model', 'write_once',)
             },
