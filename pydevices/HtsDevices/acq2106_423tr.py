@@ -175,8 +175,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
         uut = self.getUUT()
 
         print("{}".format(uut.s0.transient))
-        uut.s0.set_abort=1
-        
+        uut.s0.set_abort=1        
         self.running.on = False
     
     STOP = stop
@@ -194,7 +193,6 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
             self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
         channel_data = uut.read_channels()
-        print(channel_data)
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
@@ -217,6 +215,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
                 raw_signal = MDSplus.Signal(channel_data[ic], None, dim)
                 ch.RAW_INPUT.putData(raw_signal)
 
+        print("Storing data from all channels: done")
     STORE=store
 
     def getUUT(self):
