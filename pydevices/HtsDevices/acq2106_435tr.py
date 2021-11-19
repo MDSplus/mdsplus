@@ -268,32 +268,32 @@ def assemble(cls):
 
 
 class ACQ2106_435TR_1ST(_ACQ2106_435TR): 
-    sites=1
+    sites = 1
 
 assemble(ACQ2106_435TR_1ST)
 
 class ACQ2106_435TR_2ST(_ACQ2106_435TR):
-    sites=2
+    sites = 2
 
 assemble(ACQ2106_435TR_2ST)
 
 class ACQ2106_435TR_3ST(_ACQ2106_435TR):
-    sites=3
+    sites = 3
 
 assemble(ACQ2106_435TR_3ST)
 
 class ACQ2106_435TR_4ST(_ACQ2106_435TR):
-    sites=4
+    sites = 4
 
 assemble(ACQ2106_435TR_4ST)
 
 class ACQ2106_435TR_5ST(_ACQ2106_435TR):
-    sites=5
+    sites = 5
 
 assemble(ACQ2106_435TR_5ST)
 
 class ACQ2106_435TR_6ST(_ACQ2106_435TR):
-    sites=6
+    sites = 6
 
 assemble(ACQ2106_435TR_6ST)
 
