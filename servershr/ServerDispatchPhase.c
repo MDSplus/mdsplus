@@ -137,9 +137,9 @@ static inline int is_abort_in_progress()
 }
 
 static Condition JobWaitC = CONDITION_INITIALIZER;
-static Condition SendMonitorC = CONDITION_INITIALIZER;
 
 static pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t send_monitor_queue_cond = PTHREAD_COND_INITIALIZER;
 #define MONITOR_QUEUE_LOCK MUTEX_LOCK_PUSH(&send_monitor_queue_mutex)
 #define MONITOR_QUEUE_UNLOCK MUTEX_LOCK_POP(&send_monitor_queue_mutex)
 
@@ -889,13 +889,6 @@ void send_monitor_do(int mode, int idx)
 
 static Condition SendMonitorRunningC = CONDITION_INITIALIZER;
 
-static inline void send_monitor_signal() { CONDITION_SET(&SendMonitorC); }
-
-static inline void send_monitor_wait()
-{
-  CONDITION_WAIT_1SEC(&SendMonitorC);
-}
-
 static void send_monitor_push(int mode, int i)
 {
   SendMonitorInfo *c = malloc(sizeof(SendMonitorInfo));
@@ -908,38 +901,27 @@ static void send_monitor_push(int mode, int i)
   else
     SendMonitorQueueHead = c;
   SendMonitorQueueTail = c;
+  pthread_cond_signal(&send_monitor_queue_cond);
   MONITOR_QUEUE_UNLOCK;
-  send_monitor_signal();
 }
 
 static int send_monitor_pop(int *mode_out, int *i)
 {
   int idx;
   int mode;
-  do
+  MONITOR_QUEUE_LOCK;
+  while (!SendMonitorQueueHead)
   {
-    int release;
-    MONITOR_QUEUE_LOCK;
-    release = 1;
-    if (SendMonitorQueueHead)
-    {
-      SendMonitorInfo *c = SendMonitorQueueHead;
-      idx = SendMonitorQueueHead->idx;
-      mode = SendMonitorQueueHead->mode;
-      SendMonitorQueueHead = SendMonitorQueueHead->next;
-      if (!SendMonitorQueueHead)
-        SendMonitorQueueTail = NULL;
-      free(c);
-    }
-    else
-    {
-      release = pthread_mutex_unlock(&send_monitor_queue_mutex);
-      idx = -1;
-      mode = 0;
-      send_monitor_wait();
-    }
-    pthread_cleanup_pop(release);
-  } while (idx == -1);
+    pthread_cond_wait(&send_monitor_queue_cond, &send_monitor_queue_mutex);
+  }
+  SendMonitorInfo *c = SendMonitorQueueHead;
+  idx = SendMonitorQueueHead->idx;
+  mode = SendMonitorQueueHead->mode;
+  SendMonitorQueueHead = SendMonitorQueueHead->next;
+  free(c);
+  if (!SendMonitorQueueHead)
+    SendMonitorQueueTail = NULL;
+  MONITOR_QUEUE_UNLOCK;
   *i = idx;
   *mode_out = mode;
   return B_TRUE;
