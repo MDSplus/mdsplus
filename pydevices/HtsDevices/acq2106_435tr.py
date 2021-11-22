@@ -115,9 +115,9 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
             # EVENT0 setting in d0:
             if str(self.event0_src.data()) in srcs_0:
                 uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
-                uut.s1.EVENT0       = 'enable'
-                uut.s1.EVENT0_DX    = 'd0'
-                uut.s1.EVENT0_SENSE = 'rising'
+                uut.s1.EVENT0          = 'enable'
+                uut.s1.EVENT0_DX       = 'd0'
+                uut.s1.EVENT0_SENSE    = 'rising'
                 uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
             else:
                print("EVENT0 source should be one of {}, not {}".format(srcs_0, str(self.event0_src.data())))
@@ -132,9 +132,9 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
             # EVENT0 setting in d1:
             if str(self.event0_src.data()) in srcs_1:
                 uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
-                uut.s1.EVENT0       = 'enable'
-                uut.s1.EVENT0_DX    = 'd1'
-                uut.s1.EVENT0_SENSE = 'rising'
+                uut.s1.EVENT0          = 'enable'
+                uut.s1.EVENT0_DX       = 'd1'
+                uut.s1.EVENT0_SENSE    = 'rising'
                 uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
             else:
                print("EVENT0 source should be one of {}".format(srcs_1))
