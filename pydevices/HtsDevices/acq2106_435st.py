@@ -496,7 +496,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
         else:
             print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
-            self.slots[card].nacc = '1'
+            for card in self.slots:
+                self.slots[card].nacc = '1'
 
         self.running.on = True
         # If resampling == 1, then resampling is used during streaming:

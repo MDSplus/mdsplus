@@ -90,6 +90,21 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
         for card in self.slots:
             if self.is_global.data() == 1:
+
+                for ic in range(1,32+1):
+                    if card == 1:
+                        setattr(getattr(self, 'INPUT_%3.3d' % (ic,)), 
+                            'head.setChanScaleGlobal("INPUT_%3.3d", %d, %d, %d, %d)' 
+                            % (ic, ic, self.def_gain1.data(), self.def_gain2.data(), self.def_offset.data()))
+                    elif card == 3:
+                        setattr(getattr(self, 'INPUT_%3.3d' % (ic+32,)), 
+                            'head.setChanScaleGlobal("INPUT_%3.3d", %d, %d, %d, %d)' 
+                            % (ic+32, ic+32, self.def_gain1.data(), self.def_gain2.data(), self.def_offset.data()))
+                    elif card == 5:
+                        setattr(getattr(self, 'INPUT_%3.3d' % (ic+64,)), 
+                            'head.setChanScaleGlobal("INPUT_%3.3d", %d, %d, %d, %d)' 
+                            % (ic+64, ic+64, self.def_gain1.data(), self.def_gain2.data(), self.def_offset.data()))
+
                 # Global controls for GAINS and OFFSETS
                 self.slots[card].SC32_OFFSET_ALL = self.def_offset.data()
 
@@ -150,6 +165,18 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                                        MDSplus.MULTIPLY(input_chan.SC_GAIN1, input_chan.SC_GAIN2)), 
                                        MDSplus.SUBTRACT(input_chan.OFFSET, input_chan.SC_OFFSET))
             )
+
+    def setChanScaleGlobal(self, node, num, def_gain1, def_gain2, def_offset):
+        #Raw input channel, where the conditioning has been applied:
+        input_chan = self.__getattr__('INPUT_%3.3d' % num)
+        chan       = self.__getattr__(node)
+        #Un-conditioning the signal:
+        chan.setSegmentScale(
+            MDSplus.ADD(MDSplus.DIVIDE(MDSplus.MULTIPLY(input_chan.COEFFICIENT, MDSplus.dVALUE()), 
+                                        MDSplus.MULTIPLY(def_gain1, def_gain2)), 
+                                        MDSplus.SUBTRACT(input_chan.OFFSET, def_offset))
+            )
+
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
