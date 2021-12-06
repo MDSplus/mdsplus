@@ -378,13 +378,21 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
     for (int currBlock = 0; currBlock < blocksInSegment; currBlock++)
     {
       unsigned int currSample = 0;
+      bool firstRead = true;
       while (currSample < blockSamples)
       {
         int rb = read(fd, &dataSamples[currBlock * blockSamples + currSample],
                       (blockSamples - currSample) * sizeof(int));
         //std::cout << "READ " << rb << std::endl;
         currSample += rb / sizeof(int);
-
+        if(firstRead)
+        {
+          firstRead = false;
+          // signal to FPGA that block has been read -- In this way make sure that no more than 2 burst can be concurrenlty in read
+          ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
+          trig_lev_count++;
+          ioctl(fd, RFX_STREAM_SET_LEV_TRIG_COUNT, &trig_lev_count);
+        }
         if (stopped) // May happen when block readout has terminated or in the
                      // middle of readout
         {
@@ -464,10 +472,6 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
           return;
         }
       }
-      // signal to FPGA that block has been read
-      ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
-      trig_lev_count++;
-      ioctl(fd, RFX_STREAM_SET_LEV_TRIG_COUNT, &trig_lev_count);
       // Here the block been filled. It may refer to the same window
       // (isSingle)or to a different time window
       if (preSamples != 0 || postSamples != 0) // not continuous
