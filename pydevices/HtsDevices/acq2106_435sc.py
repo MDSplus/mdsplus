@@ -35,34 +35,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     
     sc_parts = [
         {
-            # IS_GLOBAL controls if the GAINS and OFFSETS are set globally or per channel
-            'path': ':IS_GLOBAL',
-            'type': 'numeric', 
-            'value': 1, # mean, global settings are used in the D-Tacq SC device.
-            'options': ('no_write_shot',)
-        },
-        { 
-            # Global D-Tacq SC GAIN1
-            'path': ':DEF_GAIN1',
-            'type': 'numeric',
-            'value': 1,
-            'options': ('no_write_shot',)
-        },
-        {
-            # Global D-Tacq SC GAIN2
-            'path': ':DEF_GAIN2',
-            'type': 'numeric',
-            'value': 1,
-            'options': ('no_write_shot',)
-        },
-        {
-            # Global D-Tacq SC OFFSET
-            'path': ':DEF_OFFSET',
-            'type': 'numeric',
-            'value': 0,
-            'options': ('no_write_shot',)
-        },
-        {
             # Resampling factor. This is used during streaming by makeSegmentResampled()
             'path': ':RES_FACTOR',
             'type': 'numeric',
@@ -89,40 +61,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
 
         for card in self.slots:
-            if self.is_global.data() == 1:
-
-                for ic in range(1,32+1):
-                    if card == 1:
-                        setattr(getattr(self, 'INPUT_%3.3d' % (ic,)), 
-                            'head.setChanScaleGlobal("INPUT_%3.3d", %d, %d, %d, %d)' 
-                            % (ic, ic, self.def_gain1.data(), self.def_gain2.data(), self.def_offset.data()))
-                    elif card == 3:
-                        setattr(getattr(self, 'INPUT_%3.3d' % (ic+32,)), 
-                            'head.setChanScaleGlobal("INPUT_%3.3d", %d, %d, %d, %d)' 
-                            % (ic+32, ic+32, self.def_gain1.data(), self.def_gain2.data(), self.def_offset.data()))
-                    elif card == 5:
-                        setattr(getattr(self, 'INPUT_%3.3d' % (ic+64,)), 
-                            'head.setChanScaleGlobal("INPUT_%3.3d", %d, %d, %d, %d)' 
-                            % (ic+64, ic+64, self.def_gain1.data(), self.def_gain2.data(), self.def_offset.data()))
-
-                # Global controls for GAINS and OFFSETS
-                self.slots[card].SC32_OFFSET_ALL = self.def_offset.data()
-
-                if self.debug:
-                    print("Site %s OFFSET ALL %d" % (card, int(self.def_offset.data())))
-
-                self.slots[card].SC32_G1_ALL     = self.def_gain1.data()
-                
-                if self.debug:
-                    print("Site %s GAIN 1 ALL %d" % (card, int(self.def_gain1.data())))
-
-                self.slots[card].SC32_G2_ALL     = self.def_gain2.data()
-                
-                if self.debug:
-                    print("Site %s GAIN 2 ALL %d" % (card, int(self.def_gain2.data())))
-            else:
-                self.setGainsOffsets(card)
-
+            self.setGainsOffsets(card)
             self.slots[card].SC32_GAIN_COMMIT = 1
             
             if self.debug:
@@ -164,17 +103,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             MDSplus.ADD(MDSplus.DIVIDE(MDSplus.MULTIPLY(input_chan.COEFFICIENT, MDSplus.dVALUE()), 
                                        MDSplus.MULTIPLY(input_chan.SC_GAIN1, input_chan.SC_GAIN2)), 
                                        MDSplus.SUBTRACT(input_chan.OFFSET, input_chan.SC_OFFSET))
-            )
-
-    def setChanScaleGlobal(self, node, num, def_gain1, def_gain2, def_offset):
-        #Raw input channel, where the conditioning has been applied:
-        input_chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan       = self.__getattr__(node)
-        #Un-conditioning the signal:
-        chan.setSegmentScale(
-            MDSplus.ADD(MDSplus.DIVIDE(MDSplus.MULTIPLY(input_chan.COEFFICIENT, MDSplus.dVALUE()), 
-                                        MDSplus.MULTIPLY(def_gain1, def_gain2)), 
-                                        MDSplus.SUBTRACT(input_chan.OFFSET, def_offset))
             )
 
 
