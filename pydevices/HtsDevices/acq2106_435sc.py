@@ -137,21 +137,21 @@ def assemble(cls):
                 # Local (per channel) SC gains
                 'path': ':INPUT_%3.3d:SC_GAIN1' % (i+1,),
                 'type':'NUMERIC', 
-                'valueExpr':'head.def_gain1',
+                'value':1,
                 'options':('no_write_shot',)
             },
             {
                 # Local (per channel) SC gains
                 'path': ':INPUT_%3.3d:SC_GAIN2' % (i+1,),
                 'type':'NUMERIC', 
-                'valueExpr':'head.def_gain2',
+                'value':1,
                 'options':('no_write_shot',)
             },
             {
                 # Local (per channel) SC offsets
                 'path': ':INPUT_%3.3d:SC_OFFSET' % (i+1,),
                 'type':'NUMERIC', 
-                'valueExpr':'head.def_offset',
+                'value':0,
                 'options':('no_write_shot',)
             },   
             {
