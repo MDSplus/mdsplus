@@ -83,50 +83,59 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
         for ic in range(1,32+1):
             if card == 1:
-                offset = getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))
-                g1 = getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))
-                g2 = getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))
+                offset = int((getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))).split(' ')[1])
+                g1 = int((getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))).split(' ')[1])
+                g2 = int((getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))).split(' ')[1])
 
-                offsetNode = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data()
-                g1Node = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data()
-                g2Node = getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data()
+                offsetNode = int(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
+                g1Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
+                g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
 
                 if offsetNode != offset:
+                    print('OFFSET will change from %3.3d to %3.3d in card %3.3d' % (offset, offsetNode, card,))
                     setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
+
                 if g1Node != g1:
+                    print('GAIN1 will change from %3.3d  to %3.3d in card %3.3d' % (g1, g1Node, card,))
                     setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
+
                 if g2Node != g2:
+                    print('GAIN2 will change from %3.3d  to %3.3d in card %3.3d' % (g2, g2Node, card,))
                     setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
 
             elif card == 3:
-                offset = getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))
-                g1 = getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))
-                g2 = getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))
+                offset = int((getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))).split(' ')[1])
+                g1 = int((getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))).split(' ')[1])
+                g2 = int((getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))).split(' ')[1])
 
-                offsetNode = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data()
-                g1Node = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data()
-                g2Node = getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data()
+                offsetNode = int(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
+                g1Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
+                g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
 
                 if offsetNode != offset:
                     setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
+                    
                 if g1Node != g1:
                     setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
+
                 if g2Node != g2:
                     setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
 
             elif card == 5:
-                offset = getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))
-                g1 = getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))
-                g2 = getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))
+                offset = int((getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))).split(' ')[1])
+                g1 = int((getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))).split(' ')[1])
+                g2 = int((getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))).split(' ')[1])
 
-                offsetNode = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data()
-                g1Node = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data()
-                g2Node = getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data()
+                offsetNode = int(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
+                g1Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
+                g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
                 if offsetNode != offset:
                     setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
+
                 if g1Node != g1:
                     setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
+
                 if g2Node != g2:
                     setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
