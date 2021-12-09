@@ -64,8 +64,8 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             self.setGainsOffsets(card)
             self.slots[card].SC32_GAIN_COMMIT = 1
             
-            if self.debug:
-                print("GAINs Committed for site %s" % (card,))
+            #if self.debug:
+            print("GAINs Committed for site %s" % (card,))
                 
         # Here, the argument to the init of the superclass:
         # - init(True) => use resampling function:
@@ -80,19 +80,55 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         return uut
 
     def setGainsOffsets(self, card):
+
         for ic in range(1,32+1):
             if card == 1:
-                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
-                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
-                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+                offset = getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))
+                g1 = getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))
+                g2 = getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))
+
+                offsetNode = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data()
+                g1Node = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data()
+                g2Node = getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data()
+
+                if offsetNode != offset:
+                    setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
+                if g1Node != g1:
+                    setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
+                if g2Node != g2:
+                    setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+
             elif card == 3:
-                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
-                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
-                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+                offset = getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))
+                g1 = getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))
+                g2 = getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))
+
+                offsetNode = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data()
+                g1Node = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data()
+                g2Node = getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data()
+
+                if offsetNode != offset:
+                    setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
+                if g1Node != g1:
+                    setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
+                if g2Node != g2:
+                    setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+
             elif card == 5:
-                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
-                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
-                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
+                offset = getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))
+                g1 = getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))
+                g2 = getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))
+
+                offsetNode = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data()
+                g1Node = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data()
+                g2Node = getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data()
+
+                if offsetNode != offset:
+                    setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
+                if g1Node != g1:
+                    setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
+                if g2Node != g2:
+                    setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
     def setChanScale(self, node, num):
         #Raw input channel, where the conditioning has been applied:
