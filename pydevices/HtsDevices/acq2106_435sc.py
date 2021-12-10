@@ -25,6 +25,7 @@
 
 import MDSplus
 import importlib
+import threading
 
 acq2106_435st = importlib.import_module('acq2106_435st')
 
@@ -60,12 +61,19 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             raise MDSplus.DevBAD_PARAMETER(
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
 
+        thread_list = []
         for card in self.slots:
-            self.setGainsOffsets(card)
+            thread = threading.Thread(target=self.setGainsOffsets, args=(card,))
+            thread_list.append(thread)
+            thread.start()
+        
+        for thread in thread_list:
+            thread.join()
+
+        for card in self.slots:
             self.slots[card].SC32_GAIN_COMMIT = 1
-            
-            #if self.debug:
-            print("GAINs Committed for site %s" % (card,))
+            if self.debug:
+                print("GAINs Committed for site %s" % (card,))
                 
         # Here, the argument to the init of the superclass:
         # - init(True) => use resampling function:
@@ -92,15 +100,18 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
 
                 if offsetNode != offset:
-                    print('OFFSET will change from %3.3d to %3.3d in card %3.3d' % (offset, offsetNode, card,))
+                    if self.debug:
+                        print('OFFSET will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (offset, offsetNode, card, ic, ))
                     setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
 
                 if g1Node != g1:
-                    print('GAIN1 will change from %3.3d  to %3.3d in card %3.3d' % (g1, g1Node, card,))
+                    if self.debug:
+                        print('GAIN1 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic, ))
                     setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
 
                 if g2Node != g2:
-                    print('GAIN2 will change from %3.3d  to %3.3d in card %3.3d' % (g2, g2Node, card,))
+                    if self.debug:
+                        print('GAIN2 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g2, g2Node, card, ic, ))
                     setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
 
             elif card == 3:
@@ -113,12 +124,18 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
 
                 if offsetNode != offset:
+                    if self.debug:
+                        print('OFFSET will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (offset, offsetNode, card, ic+32, ))
                     setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
                     
                 if g1Node != g1:
+                    if self.debug:
+                        print('GAIN1 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+32, ))
                     setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
 
                 if g2Node != g2:
+                    if self.debug:
+                        print('GAIN2 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+32, ))
                     setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
 
             elif card == 5:
@@ -131,12 +148,18 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
                 if offsetNode != offset:
+                    if self.debug:
+                        print('OFFSET will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (offset, offsetNode, card, ic+64, ))
                     setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
 
                 if g1Node != g1:
+                    if self.debug:
+                        print('GAIN1 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+64, ))
                     setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
 
                 if g2Node != g2:
+                    if self.debug:
+                        print('GAIN2 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+64, ))
                     setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
     def setChanScale(self, node, num):

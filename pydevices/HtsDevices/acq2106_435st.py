@@ -100,7 +100,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {
             'path': ':HW_FILTER',
             'type': 'numeric',
-            'value': 0,
+            'value': 1,
             'options': ('no_write_shot',)
         },
         {
@@ -495,7 +495,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             for card in self.slots:
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
         else:
-            print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
+            print("WARNING: Hardware Filter samples must be in the range [1,32]. A value of 0 => Disabled == 1")
             for card in self.slots:
                 self.slots[card].nacc = '1'
 
