@@ -1,7 +1,7 @@
 
 from MDSplus import mdsExceptions, Device, Data, Event
 from threading import Thread
-from ctypes import CDLL, c_int, c_double, c_char_p
+from ctypes import CDLL, c_int, c_double, c_char_p, c_longlong
 
 
 class RFX_RPADC(Device):
@@ -43,6 +43,7 @@ class RFX_RPADC(Device):
              {'path': ':CHAN_A', 'type': 'signal'},
              {'path': ':CHAN_B', 'type': 'signal'},
              {'path': ':MDS_TRIG_EV', 'type': 'text'},
+             {'path': ':TRIG_TIME', 'type': 'numeric', 'value' : 0},
              {'path': ':INIT_ACTION', 'type': 'action',
               'valueExpr': "Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
               'options': ('no_write_shot',)},
@@ -64,7 +65,7 @@ class RFX_RPADC(Device):
 
     class Configuration:
         def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples,
-                      postSamples, segmentSamples, frequency, frequency1, single):
+                      postSamples, segmentSamples, frequency, frequency1, single, useAbsTriggerTime):
             self.lib = lib
             self.fd = fd
             self.name = name
@@ -79,6 +80,7 @@ class RFX_RPADC(Device):
             self.frequency = frequency
             self.frequency1 = frequency1
             self.single = single
+            self.useAbsTriggerTime = useAbsTriggerTime
 
     class AsynchStore(Thread):
         def configure(self, conf):
@@ -96,6 +98,7 @@ class RFX_RPADC(Device):
             self.frequency = conf.frequency
             self.frequency1 = conf.frequency1
             self.single = conf.single
+            self.useAbsTriggerTime = conf.useAbsTriggerTime
 
         def run(self):
             print('START THREAD', self.name, self.shot)
@@ -105,7 +108,7 @@ class RFX_RPADC(Device):
                         self.shot), c_int(self.chanANid), c_int(self.chanBNid),
                     c_int(self.triggerNid), c_int(
                         self.preSamples), c_int(self.postSamples),
-                    c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single))
+                    c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single), c_int(self.useAbsTriggerTime))
             except ValueError as e:
                 print(e)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -187,11 +190,15 @@ class RFX_RPADC(Device):
                 try:
                     if self.clock_mode.data() == 'HIGHWAY':
                         period = 1E-6 * decimation
+                    elif self.clock_mode.data() == 'TRIG_EXTERNAL':
+                        period = decimation/125E6
                     else:
                         period = Data.execute(
                             'slope_of($)', self.ext_clock) * decimation
                     frequency = 1./period
-                    if self.clock_mode.data() == 'EXTERNAL' or self.clock_mode.data() == 'HIGHWAY':
+                    if self.clock_mode.data() == 'TRIG_EXTERNAL':
+                        frequency1 = 1E6  #take clock for trigger timestamping from the 1MHz internal clock
+                    else:
                         frequency1 = frequency
                 except:
                     print('Cannot resolve external clock')
@@ -214,10 +221,16 @@ class RFX_RPADC(Device):
                 print("Error opening device")
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             print('device opened')
+            if self.clock_mode.data() == 'TRIG_EXTERNAL':
+              useAbsTriggerTime = 1
+            else:
+              useAbsTriggerTime = 0
+            
+            
             self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
                                 self.trigger.getNid(), self.start_time.getNid(
             ), preSamples, postSamples, segSize, frequency,
-                frequency1, isSingle)
+                frequency1, isSingle, useAbsTriggerTime)
             print('configured')
             aChan = self.getTree().tdiCompile(
                 '($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a)
@@ -232,8 +245,15 @@ class RFX_RPADC(Device):
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
+
+    def set_trig_time(self):
+        self.lib.setTriggerTime(c_longlong(self.trig_time.data()))
+
     def start_store(self):
-        try:
+        if self.clock_mode.data() == 'TRIG_EXTERNAL':
+            self.lib = CDLL("libredpitaya.so")
+            self.lib.alignFreq()
+        try:            
             self.raw_a.deleteData()
             self.raw_b.deleteData()
             worker = self.AsynchStore()
