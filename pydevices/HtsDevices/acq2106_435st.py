@@ -544,8 +544,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(
-            chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
+        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
 
 
 def assemble(cls):

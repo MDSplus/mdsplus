@@ -23,9 +23,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 import MDSplus
 import importlib
 import threading
+
 
 acq2106_435st = importlib.import_module('acq2106_435st')
 
@@ -63,7 +65,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
         thread_list = []
         for card in self.slots:
-            thread = threading.Thread(target=self.setGainsOffsets, args=(card,))
+            thread = threading.Thread(target=self.setGains, args=(card,))
             thread_list.append(thread)
             thread.start()
         
@@ -81,86 +83,61 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         super(_ACQ2106_435SC, self).init(resampling=True)
 
     INIT=init
+
     
     def getUUT(self):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
         return uut
 
-    def setGainsOffsets(self, card):
 
+    def setGains(self, card):
+        import epics
+        import socket
+        domainName = socket.gethostbyaddr(self.node.data())[0]
+        splitDomainName = domainName.split(".")
+
+        #For EPICS, the ACQs hostnames should be of the format <chassis>_<three digists serial number>
+        if "-" in splitDomainName[0]:
+            epicsDomainName = splitDomainName[0].replace("-", "_")
+        else:
+            epicsDomainName = splitDomainName[0]
+
+        
         for ic in range(1,32+1):
             if card == 1:
-                offset = int((getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))).split(' ')[1])
-                g1 = int((getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))).split(' ')[1])
-                g2 = int((getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))).split(' ')[1])
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
+                pv.put(valueg1, wait=True)
 
-                offsetNode = int(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
-                g1Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
-                g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
-
-                if offsetNode != offset:
-                    if self.debug:
-                        print('OFFSET will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (offset, offsetNode, card, ic, ))
-                    setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
-
-                if g1Node != g1:
-                    if self.debug:
-                        print('GAIN1 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic, ))
-                    setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
-
-                if g2Node != g2:
-                    if self.debug:
-                        print('GAIN2 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g2, g2Node, card, ic, ))
-                    setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+                pv.put(valueg2, wait=True)
 
             elif card == 3:
-                offset = int((getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))).split(' ')[1])
-                g1 = int((getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))).split(' ')[1])
-                g2 = int((getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))).split(' ')[1])
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
+                pv.put(valueg1, wait=True)
 
-                offsetNode = int(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
-                g1Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
-                g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
-
-                if offsetNode != offset:
-                    if self.debug:
-                        print('OFFSET will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (offset, offsetNode, card, ic+32, ))
-                    setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
-                    
-                if g1Node != g1:
-                    if self.debug:
-                        print('GAIN1 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+32, ))
-                    setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
-
-                if g2Node != g2:
-                    if self.debug:
-                        print('GAIN2 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+32, ))
-                    setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+                pv.put(valueg2, wait=True)
 
             elif card == 5:
-                offset = int((getattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,))).split(' ')[1])
-                g1 = int((getattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,))).split(' ')[1])
-                g2 = int((getattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,))).split(' ')[1])
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
+                pv.put(valueg1, wait=True)
 
-                offsetNode = int(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
-                g1Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
-                g2Node = int(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
+                pv.put(valueg2, wait=True)
 
-                if offsetNode != offset:
-                    if self.debug:
-                        print('OFFSET will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (offset, offsetNode, card, ic+64, ))
-                    setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
-
-                if g1Node != g1:
-                    if self.debug:
-                        print('GAIN1 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+64, ))
-                    setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
-
-                if g2Node != g2:
-                    if self.debug:
-                        print('GAIN2 will change from %3.3d --> %3.3d in card %3.3d and channel %3.3d' % (g1, g1Node, card, ic+64, ))
-                    setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
 
     def setChanScale(self, node, num):
         #Raw input channel, where the conditioning has been applied:
