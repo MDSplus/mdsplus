@@ -26,7 +26,6 @@
 
 import MDSplus
 import importlib
-import threading
 
 
 acq2106_435st = importlib.import_module('acq2106_435st')
@@ -63,16 +62,8 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             raise MDSplus.DevBAD_PARAMETER(
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
 
-        thread_list = []
         for card in self.slots:
-            thread = threading.Thread(target=self.setGainsOffsets, args=(card,))
-            thread_list.append(thread)
-            thread.start()
-        
-        for thread in thread_list:
-            thread.join()
-
-        for card in self.slots:
+            self.setGainsOffsets(card)
             self.slots[card].SC32_GAIN_COMMIT = 1
             if self.debug:
                 print("GAINs Committed for site %s" % (card,))
