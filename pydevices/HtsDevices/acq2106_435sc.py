@@ -65,7 +65,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
         thread_list = []
         for card in self.slots:
-            thread = threading.Thread(target=self.setGains, args=(card,))
+            thread = threading.Thread(target=self.setGainsOffsets, args=(card,))
             thread_list.append(thread)
             thread.start()
         
@@ -91,19 +91,19 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         return uut
 
 
-    def setGains(self, card):
+    def setGainsOffsets(self, card):
         import epics
         import socket
         domainName = socket.gethostbyaddr(self.node.data())[0]
         splitDomainName = domainName.split(".")
 
-        #For EPICS, the ACQs hostnames should be of the format <chassis>_<three digists serial number>
+        #For EPICS PV definitions hardcoded in D-Tacq "/tmp/records.dbl", 
+        # the ACQs DNS hostnames should be of the format <chassis name> _ <three digits serial number>
         if "-" in splitDomainName[0]:
             epicsDomainName = splitDomainName[0].replace("-", "_")
         else:
             epicsDomainName = splitDomainName[0]
 
-        
         for ic in range(1,32+1):
             if card == 1:
                 pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
@@ -116,6 +116,11 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
                 pv.put(valueg2, wait=True)
 
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
+                pv.put(valueg3, wait=True)
+
             elif card == 3:
                 pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
                 pv = epics.PV(pvg1)
@@ -126,6 +131,11 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 pv = epics.PV(pvg2)
                 valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
                 pv.put(valueg2, wait=True)
+
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
+                pv.put(valueg3, wait=True)
 
             elif card == 5:
                 pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
@@ -138,6 +148,10 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
                 pv.put(valueg2, wait=True)
 
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
+                pv.put(valueg3, wait=True)
 
     def setChanScale(self, node, num):
         #Raw input channel, where the conditioning has been applied:
