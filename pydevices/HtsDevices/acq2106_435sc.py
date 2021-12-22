@@ -94,11 +94,12 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     def setGainsOffsets(self, card):
         import epics
         import socket
-        domainName = socket.gethostbyaddr(self.node.data())[0]
+
+        domainName = socket.gethostbyaddr(str(self.node.data()))[0]
         splitDomainName = domainName.split(".")
 
-        #For EPICS PV definitions hardcoded in D-Tacq "/tmp/records.dbl", 
-        # the ACQs DNS hostnames should be of the format <chassis name> _ <three digits serial number>
+        #For EPICS PV definitions hardcoded in D-Tacq's "/tmp/records.dbl", 
+        # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
         if "-" in splitDomainName[0]:
             epicsDomainName = splitDomainName[0].replace("-", "_")
         else:
