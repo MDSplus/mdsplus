@@ -190,14 +190,9 @@ class _ACQ2106_435ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
-            # Variables designed to bring a copy of the tree to the MDSWorker thread
-            self.tree = dev.tree.name
-            self.shot = dev.tree.shot
-            self.path = dev.path
-
             self.dev = dev
 
-            self.nchans     = self.dev.sites * self.dev.NUM_CHANS_PER_SITE
+            self.nchans     = self.dev.sites*32
             self.resampling = self.dev.resampling
             
             self.seg_length = self.dev.seg_length.data()
@@ -225,17 +220,17 @@ class _ACQ2106_435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            tree = MDSplus.Tree(self.tree, self.shot)
-            self.dev = tree.getNode(self.path)
+            self.dev = self.dev.copy()
 
             if self.dev.debug:
                 print("MDSWorker running")
             
-            chans = []
-            decim = []
+            self.chans = []
+            self.decim = []
             for i in range(self.nchans):
-                chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                decim.append(getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
+                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                self.decim.append(
+                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
