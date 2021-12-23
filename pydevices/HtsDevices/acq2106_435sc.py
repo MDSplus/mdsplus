@@ -63,25 +63,8 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
 
         for card in self.slots:
-            if self.is_global.data() == 1:
-                # Global controls for GAINS and OFFSETS
-                self.slots[card].SC32_OFFSET_ALL = self.def_offset.data()
-
-        # Available Clock Plans for the 2106 Signal Conditioning devices (from D-Tacq): 
-        # 10 kSPS (5M12  /512)
-        # 20 kSPS (10M24 /512)
-        # 40 kSPS (20M48 /512)
-        # 80 kSPS (20M48 /256)
-        # 128kSPS (32M768/256)
-        allow_freqs = [10000, 20000, 40000, 80000, 128000]
-
-        # Frequency innput validation
-        if freq not in allow_freqs:
-            raise MDSplus.DevBAD_PARAMETER(
-                "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
-
-        for site in self.slots:
-            self.setGainsOffsets(site)
+            self.setGainsOffsets(card)
+            self.slots[card].SC32_GAIN_COMMIT = 1
             if self.debug:
                 print("GAINs Committed for site %s" % (site,))
                 
@@ -98,18 +81,69 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
         return uut
 
-    def computeGains(self, g):
-        g1opts = [ 1000, 100, 10, 1 ]
-        g2opts = [ 1, 2, 5, 10 ]
-        
-        for g1opt in g1opts:
-            if g >= g1opt:
-                g1 = g1opt
-                g2 = g // g1opt
-                if g2 not in g2opts:
-                    raise MDSplus.DevBAD_PARAMETER(
-                            "SC_GAIN must be computable from (one of: 1000, 100, 10, 1) * (one of: 1, 2, 5, 10) ; not %d" % (g,))
-                return (g1, g2)
+
+    def setGainsOffsets(self, card):
+        import epics
+        import socket
+
+        domainName = socket.gethostbyaddr(str(self.node.data()))[0]
+        splitDomainName = domainName.split(".")
+
+        #For EPICS PV definitions hardcoded in D-Tacq's "/tmp/records.dbl", 
+        # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
+        if "-" in splitDomainName[0]:
+            epicsDomainName = splitDomainName[0].replace("-", "_")
+        else:
+            epicsDomainName = splitDomainName[0]
+
+        for ic in range(1,32+1):
+            if card == 1:
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
+                pv.put(valueg1, wait=True)
+
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+                pv.put(valueg2, wait=True)
+
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
+                pv.put(valueg3, wait=True)
+
+            elif card == 3:
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
+                pv.put(valueg1, wait=True)
+
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+                pv.put(valueg2, wait=True)
+
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
+                pv.put(valueg3, wait=True)
+
+            elif card == 5:
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
+                pv.put(valueg1, wait=True)
+
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
+                pv.put(valueg2, wait=True)
+
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
+                pv.put(valueg3, wait=True)
 
     def setGainsOffsets(self, site):
         import epics
@@ -186,6 +220,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         )
 
 
+
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
     for i in range(cls.sites*32):
@@ -215,8 +250,15 @@ def assemble(cls):
             },
             {
                 # Local (per channel) SC gains
-                'path': ':INPUT_%3.3d:SC_GAIN' % (i+1,),
-                'type':'TEXT', 
+                'path': ':INPUT_%3.3d:SC_GAIN1' % (i+1,),
+                'type':'NUMERIC', 
+                'value':1,
+                'options':('no_write_shot',)
+            },
+            {
+                # Local (per channel) SC gains
+                'path': ':INPUT_%3.3d:SC_GAIN2' % (i+1,),
+                'type':'NUMERIC', 
                 'value':1,
                 'options':('no_write_shot',)
             },
