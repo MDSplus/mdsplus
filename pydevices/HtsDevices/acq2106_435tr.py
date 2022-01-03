@@ -195,15 +195,11 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         # See D-Tacq 4G User Guide: For 24 bit ADC, Section 11.1, normalise the raw value first by dividing by 256 ( >> 8 ).
         channel_data = numpy.right_shift(uut.read_channels(), 8)
 
-        # print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
-        # print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
-
         for ic, ch in enumerate(self.chans):
             if ch.on:
                 
                 start_idx     = - self.presamples.data() + 1
                 end_idx       = self.postsamples.data()
-                total_samples = uut.elapsed_samples()
 
                 clock_period  = 1./self.freq.data()
 

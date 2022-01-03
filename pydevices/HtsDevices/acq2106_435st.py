@@ -402,11 +402,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         'wrtt1'         # White Rabbit Trigger
     ]
 
-<<<<<<< HEAD
-    def init(self, resampling=False, armed_by_transient=False):
-=======
     def init(self, resampling = False, armed_by_transient = False):
->>>>>>> 27ad24511... Try to fix a broken rebase. Code is same as alpha mdsplus + the two new changes
         uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
