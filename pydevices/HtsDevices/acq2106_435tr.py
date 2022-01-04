@@ -142,6 +142,8 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
             if self.debug:
                 print("TRG source was set to {}".format(str(self.trig_src.data())))
 
+        self.arm()
+
     INIT=init
 
 
@@ -153,8 +155,6 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         if self.debug:
             print("Using HAPI ShotController to run the shot.")
         shot_controller.run_shot()
-
-    ARM=arm
 
 
     def state(self):
