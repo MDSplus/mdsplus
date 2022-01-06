@@ -23,8 +23,10 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 import MDSplus
 import importlib
+
 
 acq2106_435st = importlib.import_module('acq2106_435st')
 
@@ -34,34 +36,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     """
     
     sc_parts = [
-        {
-            # IS_GLOBAL controls if the GAINS and OFFSETS are set globally or per channel
-            'path': ':IS_GLOBAL',
-            'type': 'numeric', 
-            'value': 1, # mean, global settings are used in the D-Tacq SC device.
-            'options': ('no_write_shot',)
-        },
-        { 
-            # Global D-Tacq SC GAIN1
-            'path': ':DEF_GAIN1',
-            'type': 'numeric',
-            'value': 1,
-            'options': ('no_write_shot',)
-        },
-        {
-            # Global D-Tacq SC GAIN2
-            'path': ':DEF_GAIN2',
-            'type': 'numeric',
-            'value': 1,
-            'options': ('no_write_shot',)
-        },
-        {
-            # Global D-Tacq SC OFFSET
-            'path': ':DEF_OFFSET',
-            'type': 'numeric',
-            'value': 0,
-            'options': ('no_write_shot',)
-        },
         {
             # Resampling factor. This is used during streaming by makeSegmentResampled()
             'path': ':RES_FACTOR',
@@ -89,27 +63,8 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
 
         for card in self.slots:
-            if self.is_global.data() == 1:
-                # Global controls for GAINS and OFFSETS
-                self.slots[card].SC32_OFFSET_ALL = self.def_offset.data()
-
-                if self.debug:
-                    print("Site %s OFFSET ALL %d" % (card, int(self.def_offset.data())))
-
-                self.slots[card].SC32_G1_ALL     = self.def_gain1.data()
-                
-                if self.debug:
-                    print("Site %s GAIN 1 ALL %d" % (card, int(self.def_gain1.data())))
-
-                self.slots[card].SC32_G2_ALL     = self.def_gain2.data()
-                
-                if self.debug:
-                    print("Site %s GAIN 2 ALL %d" % (card, int(self.def_gain2.data())))
-            else:
-                self.setGainsOffsets(card)
-
+            self.setGainsOffsets(card)
             self.slots[card].SC32_GAIN_COMMIT = 1
-            
             if self.debug:
                 print("GAINs Committed for site %s" % (card,))
                 
@@ -119,26 +74,76 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         super(_ACQ2106_435SC, self).init(resampling=True)
 
     INIT=init
+
     
     def getUUT(self):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
         return uut
 
+
     def setGainsOffsets(self, card):
+        import epics
+        import socket
+
+        domainName = socket.gethostbyaddr(str(self.node.data()))[0]
+        splitDomainName = domainName.split(".")
+
+        #For EPICS PV definitions hardcoded in D-Tacq's "/tmp/records.dbl", 
+        # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
+        if "-" in splitDomainName[0]:
+            epicsDomainName = splitDomainName[0].replace("-", "_")
+        else:
+            epicsDomainName = splitDomainName[0]
+
         for ic in range(1,32+1):
             if card == 1:
-                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
-                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
-                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
+                pv.put(valueg1, wait=True)
+
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
+                pv.put(valueg2, wait=True)
+
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
+                pv.put(valueg3, wait=True)
+
             elif card == 3:
-                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
-                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
-                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
+                pv.put(valueg1, wait=True)
+
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
+                pv.put(valueg2, wait=True)
+
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
+                pv.put(valueg3, wait=True)
+
             elif card == 5:
-                setattr(self.slots[card], 'SC32_OFFSET_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
-                setattr(self.slots[card], 'SC32_G1_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
-                setattr(self.slots[card], 'SC32_G2_%2.2d' % (ic,), getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
+                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg1)
+                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
+                pv.put(valueg1, wait=True)
+
+                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg2)
+                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
+                pv.put(valueg2, wait=True)
+
+                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
+                pv = epics.PV(pvg3)
+                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
+                pv.put(valueg3, wait=True)
 
     def setChanScale(self, node, num):
         #Raw input channel, where the conditioning has been applied:
@@ -150,6 +155,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                                        MDSplus.MULTIPLY(input_chan.SC_GAIN1, input_chan.SC_GAIN2)), 
                                        MDSplus.SUBTRACT(input_chan.OFFSET, input_chan.SC_OFFSET))
             )
+
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
@@ -182,21 +188,21 @@ def assemble(cls):
                 # Local (per channel) SC gains
                 'path': ':INPUT_%3.3d:SC_GAIN1' % (i+1,),
                 'type':'NUMERIC', 
-                'valueExpr':'head.def_gain1',
+                'value':1,
                 'options':('no_write_shot',)
             },
             {
                 # Local (per channel) SC gains
                 'path': ':INPUT_%3.3d:SC_GAIN2' % (i+1,),
                 'type':'NUMERIC', 
-                'valueExpr':'head.def_gain2',
+                'value':1,
                 'options':('no_write_shot',)
             },
             {
                 # Local (per channel) SC offsets
                 'path': ':INPUT_%3.3d:SC_OFFSET' % (i+1,),
                 'type':'NUMERIC', 
-                'valueExpr':'head.def_offset',
+                'value':0,
                 'options':('no_write_shot',)
             },   
             {

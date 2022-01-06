@@ -830,7 +830,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  </external_packages>
 
  <external_packages dist="Ubuntu18">
-   <numpy package="python-numpy"/>
+   <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
    <xinetd package="busybox"/>
    <readline package="libreadline7"/>
