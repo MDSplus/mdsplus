@@ -100,7 +100,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {
             'path': ':HW_FILTER', 
             'type': 'numeric',
-            'value': 0, 
+            'value': 1,
             'options': ('no_write_shot',)
         },
         {
@@ -188,18 +188,11 @@ class _ACQ2106_435ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
-            self.dev = dev.copy()
+            self.dev = dev
 
-            self.chans = []
-            self.decim = []
             self.nchans     = self.dev.sites*32
             self.resampling = self.dev.resampling
-
-            for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
-
+            
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
 
@@ -225,8 +218,17 @@ class _ACQ2106_435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
+            self.dev = self.dev.copy()
+
             if self.dev.debug:
                 print("MDSWorker running")
+            
+            self.chans = []
+            self.decim = []
+            for i in range(self.nchans):
+                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                self.decim.append(
+                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
@@ -495,12 +497,12 @@ class _ACQ2106_435ST(MDSplus.Device):
             for card in self.slots:
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
         else:
-            print("WARNING: Hardware Filter samples must be in the range [1,32]. 0 => Disabled == 1")
+            print("WARNING: Hardware Filter samples must be in the range [1,32]. A value of 0 => Disabled == 1")
             for card in self.slots:
                 self.slots[card].nacc = '1'
 
         self.running.on = True
-        # If resampling == 1, then resampling is used during streaming:
+        # If resampling is True, then resampling is used during streaming:
         self.resampling = resampling
 
         if not armed_by_transient:
@@ -549,8 +551,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(
-            chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
+        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
 
 
 def assemble(cls):
