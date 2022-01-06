@@ -98,13 +98,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             'options': ('no_write_shot',)
         },
         {
-            'path': ':HW_FILTER',
-            'type': 'numeric',
-            'value': 1,
-            'options': ('no_write_shot',)
-        },
-        {
-            'path': ':DEF_DCIM',
+            'path': ':HW_FILTER', 
             'type': 'numeric',
             'value': 1,
             'options': ('no_write_shot',)
