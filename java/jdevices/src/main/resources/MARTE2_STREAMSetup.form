@@ -61,7 +61,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase div.:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="107"/>
+                <Property name="offsetNid" type="int" value="1307"/>
               </Properties>
             </Component>
             <Component class="DeviceChoice" name="deviceChoice9">
