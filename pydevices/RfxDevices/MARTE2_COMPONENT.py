@@ -1092,6 +1092,7 @@ class MARTE2_COMPONENT(Device):
                                     '_Output_Synch'
 
                             try:
+  #NOTE:If subsampling (syncDiv > 1), the GAM will receive a set of samples and therefore it must be prepared to handle this
                                 syncDiv = self.timebase_div.data()
                                 gamText += '        Samples = ' + \
                                     str(syncDiv)+'\n'
@@ -2670,6 +2671,7 @@ class MARTE2_COMPONENT(Device):
         gamList.append(dataSourceName+'_IOGAM')
         gamText = '  +'+dataSourceName+'_IOGAM = {\n'
 #        gamText += '    Class = IOGAM\n'
+#NOTE: default behavior for Output is different from that of GAM. Here a single sample is picked when subsampling is defined (syncDiv > 1)
         gamText += '    Class = PickSampleGAM\n'
 
 # input Signals
