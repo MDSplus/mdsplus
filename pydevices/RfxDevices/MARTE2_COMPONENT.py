@@ -2669,7 +2669,8 @@ class MARTE2_COMPONENT(Device):
        #Head and parameters
         gamList.append(dataSourceName+'_IOGAM')
         gamText = '  +'+dataSourceName+'_IOGAM = {\n'
-        gamText += '    Class = IOGAM\n'
+#        gamText += '    Class = IOGAM\n'
+        gamText += '    Class = PickSampleGAM\n'
 
 # input Signals
         gamText += '    InputSignals = {\n'
@@ -2784,8 +2785,7 @@ class MARTE2_COMPONENT(Device):
         idx = 0
         for outputDict in inputDicts:
             gamText += '      '+signalNames[idx]+' = {\n'
-            if signalSamples[idx] > 1:
-                gamText += '        Samples = '+str(signalSamples[idx])+'\n'
+            gamText += '        Samples = 1\n'
 
             idx = idx+1
             gamText += '        DataSource = '+dataSourceName+'\n'
