@@ -643,10 +643,10 @@ class MARTE2_COMPONENT(Device):
         devList = self.getDevList(threadMap)
         for dev in devList:
             if not self.onSameThread(threadMap, dev):
-                # Check first timebase dependency
+                 # Check first timebase dependency
                 try:
                     timebaseNode = TreeNode(
-                        dev, self.getTree).getNode(':TIMEBASE')
+                        dev, self.getTree()).getNode(':TIMEBASE')
                     if timebaseNode.getData().getNid() == outValueNode.getNid():
                         return isSynch
                 except:
@@ -676,6 +676,7 @@ class MARTE2_COMPONENT(Device):
                                 'VALUE').getData().getNid()
                         except:
                             continue
+                          
                         if inputNid == outValueNode.getNid():
 
                             if self.sameSynchSource(dev):
@@ -787,6 +788,12 @@ class MARTE2_COMPONENT(Device):
         debugEnabled = configDict['debug']
 
         outPeriod = 0  # If different from 0, this means that the corresponing component is driving the thread timing
+
+        try:
+            syncDiv = self.timebase_div.data()
+        except:
+            syncDiv = 1
+        resampledSyncSigs = []  #Input Signals for which PickSampleGAM is required
 # timebase
         if isinstance(timebase, Range):
             period = timebase.getDescAt(2).data()
@@ -849,7 +856,7 @@ class MARTE2_COMPONENT(Device):
 
                 dataSourceText = '  +'+gamName+'_Timer_Synch = {\n'
                 dataSourceText += '    Class = RealTimeThreadSynchronisation\n'
-                dataSourceText += '    Timeout = 10000\n'
+                dataSourceText += '    Timeout = 1000000\n'
                 dataSourceText += ' }\n'
                 dataSources.append(dataSourceText)
 
@@ -906,7 +913,10 @@ class MARTE2_COMPONENT(Device):
                 if self.onSameThread(threadMap, prevTimebase.getParent()):
                     timerDDB = origName+'_Output_DDB'
                 else:
-                    timerDDB = origName+'_Output_Synch'
+                    timerDDB = gamName+'_Res_DDB'
+                    resampledSyncSigs.append({'name': 'Time', 'datasource': origName+'_Output_Synch',
+                             'type': 'uint32', 'dimensions': 0, 'elements': 1, 'samples':syncDiv})
+#                   timerDDB = origName+'_Output_Synch'
                     try:
                         # Get period from driving synchronizing device
                         outPeriod = timebase.getDescAt(2).data()
@@ -937,7 +947,7 @@ class MARTE2_COMPONENT(Device):
             gamList.append(gamName+'_Input_Bus_IOGAM')
 
        #Head and parameters
-        gamList.append(gamName)
+ #       gamList.append(gamName) Afret potential resampler
         gamText = '  +'+gamName+' = {\n'
         gamText += '    Class = '+gamClass+'\n'
         gamText = self.reportParameters(paramDicts, gamText, 1)
@@ -1085,19 +1095,17 @@ class MARTE2_COMPONENT(Device):
                                 signalDict['datasource'] = sourceGamName + \
                                     '_Output_DDB'
                             elif self.sameSynchSource(sourceNode):
-                                gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+                                if syncDiv > 1:
+                                    gamText += '        DataSource = '+gamName+'_Res_DDB\n'
+                                else:
+                                    gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
                                 signalDict['name'] = signalGamName
                                 signalDict['datasource'] = sourceGamName + \
                                     '_Output_Synch'
-
-                            try:
-                                syncDiv = self.timebase_div.data()
-                                gamText += '        Samples = ' + \
-                                    str(syncDiv)+'\n'
-                                forceUsingSamples = True
-                            except:
-                                pass  # Consider RealTimeSynchronization downsampling only if timebase_div is defined
-
+                                if syncDiv > 1:
+                                    signalDict['datasource'] = sourceGamName+'_Output_Synch'
+                                    signalDict['samples'] = syncDiv
+                                    resampledSyncSigs.append(signalDict)
                             else:
                                 gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
                     if 'name' in inputDict:
@@ -1132,7 +1140,46 @@ class MARTE2_COMPONENT(Device):
             inputSignals.append(signalDict)
         if len(inputDicts) > 0:
             gamText += '    }\n'
+            
+            
+#If some inputs derive from resampled synch sources, instantiate PickSampleGAM
+        if len(resampledSyncSigs) > 0:
+            gamList.append(gamName+'Resampler')
+            pickGamText = '  +'+gamName+'Resampler = {\n'
+            pickGamText += '    Class = PickSampleGAM\n'
+            pickGamText += '    InputSignals = {\n'
+            for sigDict in resampledSyncSigs:
+                pickGamText += '      '+sigDict['name']+' = {\n'
+                pickGamText +=  '        DataSource = '+sigDict['datasource']+'\n'
+                if 'alias' in sigDict:
+                    pickGamText +=  '        Alias = '+sigDict['alias']+'\n'
+                pickGamText +=  '        Samples = '+str(sigDict['samples'])+'\n'
+                pickGamText +=  '        Type = '+sigDict['type']+'\n'
+                pickGamText +=  '        NumberOfDimensions = '+str(sigDict['dimensions'])+'\n'
+                pickGamText +=  '        NumberOfElements = '+str(sigDict['elements'])+'\n'
+                pickGamText +=  '      }\n'
+            pickGamText += '    }\n' 
+            pickGamText += '    OutputSignals = {\n'
+            for sigDict in resampledSyncSigs:
+                if 'alias' in sigDict:
+                    pickGamText +=  '      '+sigDict['alias']+' = {\n'
+                else:
+                    pickGamText += '      '+sigDict['name']+' = {\n'
+                pickGamText +=  '        DataSource = '+gamName+'_Res_DDB\n'
+                pickGamText +=  '        Samples = 1\n'
+                pickGamText +=  '        Type = '+sigDict['type']+'\n'
+                pickGamText +=  '        NumberOfDimensions = '+str(sigDict['dimensions'])+'\n'
+                pickGamText +=  '        NumberOfElements = '+str(sigDict['elements'])+'\n'
+                pickGamText +=  '      }\n'
+            pickGamText += '    }\n' 
+            pickGamText += '  }\n' 
+            gams.append(pickGamText)            
+            dataSourceText = '  +'+gamName+'_Res_DDB = {\n'
+            dataSourceText += '    Class = GAMDataSource\n'
+            dataSourceText += '  }\n'
+            dataSources.append(dataSourceText)
 
+        gamList.append(gamName)
         ######################################################### Output Signals
         outputSignals = []  # For debug printout
 
@@ -1168,9 +1215,9 @@ class MARTE2_COMPONENT(Device):
                 outputDict['value_nid'].getParent().getNode('parameters'), gamText)
             gamText += '      }\n'
             if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], True):
-                synchThreadSignals.append(outputDict['name'])
+                synchThreadSignals.append(outputDict)
             if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], False):
-                asynchThreadSignals.append(outputDict['name'])
+                asynchThreadSignals.append(outputDict)
             outputSignals.append(outputSignalDict)
             # --------------------------------------------If this is a structured output
             if len(outputDict['fields']) > 0:
@@ -1794,10 +1841,11 @@ class MARTE2_COMPONENT(Device):
                 dataSourceText += '  }\n'
                 dataSources.append(dataSourceText)
 
-        # Some outputs are connected to devices on separate synchronized theads
+        # Some outputs are connected to devices on separate synchronized threads
         if len(synchThreadSignals) > 0:
             dataSourceText = '  +'+gamName+'_Output_Synch = {\n'
             dataSourceText += '    Class = RealTimeThreadSynchronisation\n'
+            dataSourceText += '    Timeout = 1000000\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
@@ -1805,16 +1853,46 @@ class MARTE2_COMPONENT(Device):
             gamText = '  +'+gamName+'_Output_Synch_IOGAM = {\n'
             gamText += '    Class = IOGAM\n'
             gamText += '    InputSignals = {\n'
-            for signal in synchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in synchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+                gamText += '        Type = '+signalDict['type']+'\n'
+                if 'dimensions' in signalDict:
+                    dimensions = signalDict['dimensions']
+                    if dimensions == 0:
+                        numberOfElements = 1
+                        numberOfDimensions = 0
+                    else:
+                        numberOfDimensions = len(signalDict['dimensions'])
+                        numberOfElements = 1
+                        for currDim in signalDict['dimensions']:
+                            numberOfElements *= currDim
+                    gamText += '        NumberOfDimensions = ' + \
+                            str(numberOfDimensions)+'\n'
+                    gamText += '        NumberOfElements = ' + \
+                            str(numberOfElements)+'\n'
                 gamText += '      }\n'
             gamText += '    }\n'
             gamText += '    OutputSignals = {\n'
-            for signal in synchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in synchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+gamName+'_Output_Synch\n'
-                gamText += '        Type = '+outputDict['type']+'\n'
+                #Check if it is the reference to a resampled timebase
+                gamText += '        Type = '+signalDict['type']+'\n'
+                if 'dimensions' in signalDict:
+                    dimensions = signalDict['dimensions']
+                    if dimensions == 0:
+                        numberOfElements = 1
+                        numberOfDimensions = 0
+                    else:
+                        numberOfDimensions = len(signalDict['dimensions'])
+                        numberOfElements = 1
+                        for currDim in signalDict['dimensions']:
+                            numberOfElements *= currDim
+                    gamText += '        NumberOfDimensions = ' + \
+                            str(numberOfDimensions)+'\n'
+                    gamText += '        NumberOfElements = ' + \
+                            str(numberOfElements)+'\n'
                 gamText += '      }\n'
             gamText += '    }\n'
             gamText += '  }\n'
@@ -1831,16 +1909,24 @@ class MARTE2_COMPONENT(Device):
             gamText = '  +'+gamName+'_Output_Asynch_IOGAM = {\n'
             gamText += '    Class = IOGAM\n'
             gamText += '    InputSignals = {\n'
-            for signal in asynchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in asynchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+                gamText += '        NumberOfDimensions = ' + \
+                    str(signalDict['dimensions'])+'\n'
+                gamText += '        NumberOfElements = ' + \
+                    str(signalDict['elements'])+'\n'
                 gamText += '      }\n'
             gamText += '    }\n'
             gamText += '    OutputSignals = {\n'
-            for signal in asynchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in asynchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+gamName+'_Output_Asynch\n'
-                gamText += '        Type = '+outputDict['type']+'\n'
+                gamText += '        Type = '+signalDict['type']+'\n'
+                gamText += '        NumberOfDimensions = ' + \
+                    str(signalDict['dimensions'])+'\n'
+                gamText += '        NumberOfElements = ' + \
+                    str(signalDict['elements'])+'\n'
                 gamText += '      }\n'
 
             gamText += '    }\n'
@@ -1918,6 +2004,8 @@ class MARTE2_COMPONENT(Device):
         outputDicts = configDict['outputDicts']
         outputTrigger = configDict['outputTrigger']
         outPeriod = 0  # If different from 0, this means that the corresponing component is driving the thread timing
+        synchThreadSignals = []
+        asynchThreadSignals = []
 
         startTime = 0
         if not isSynch:
@@ -1981,10 +2069,9 @@ class MARTE2_COMPONENT(Device):
 
                 # Check if time information is required by another synchronized thread
                 if self.isUsedOnAnotherThread(threadMap, self.timebase, True):
-
                     dataSourceText = '  +'+dataSourceName+'_Timer_Synch = {\n'
                     dataSourceText += '    Class = RealTimeThreadSynchronisation\n'
-                    dataSourceText += '    Timeout = 10000\n'
+                    dataSourceText += '    Timeout = 1000000\n'
                     dataSourceText += ' }\n'
                     dataSources.append(dataSourceText)
 
@@ -2078,7 +2165,14 @@ class MARTE2_COMPONENT(Device):
                 currTimebase = currTimebase.data()
                 outPeriod = currTimebase[1] - currTimebase[0]
                 startTime = currTimebase[0]
-# endif isSynch
+                
+                
+                
+          # Check if time information is required by another synchronized thread Gabriele Jan 2022
+          # for sync input devices, the check has to be performed on output Time
+            if self.isUsedOnAnotherThread(threadMap, self.timebase, True):
+                synchThreadSignals.append({'name':'Time', 'type':'uint32', 'dimensions':0, 'elements': 1}) 
+ # endif isSynch
 
 #Head and parameters
         dataSourceText = '  +'+dataSourceName+' = {\n'
@@ -2093,6 +2187,8 @@ class MARTE2_COMPONENT(Device):
     # Output Signals
         dataSourceText += '    Signals = {\n'
         for outputDict in outputDicts:
+            print('CICCIO')
+            print(outputDict)
             dataSourceText += '      '+outputDict['name']+' = {\n'
             dataSourceText += '        Type = '+outputDict['type']+'\n'
             if outputDict['dimensions'] == 0:
@@ -2229,8 +2325,6 @@ class MARTE2_COMPONENT(Device):
         gamText += '    }\n'
         gamText += '    OutputSignals = {\n'
 
-        synchThreadSignals = []
-        asynchThreadSignals = []
         for outputDict in outputDicts:
             gamText += '      '+outputDict['name'] + ' = {\n'
             gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
@@ -2253,9 +2347,9 @@ class MARTE2_COMPONENT(Device):
                 str(numberOfElements * samples)+'\n'
             gamText += '      }\n'
             if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], True):
-                synchThreadSignals.append(outputDict['name'])
+                synchThreadSignals.append(outputDict)
             if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], False):
-                asynchThreadSignals.append(outputDict['name'])
+                asynchThreadSignals.append(outptDict)
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
@@ -2420,6 +2514,7 @@ class MARTE2_COMPONENT(Device):
         if len(synchThreadSignals) > 0:
             dataSourceText = '  +'+dataSourceName+'_Output_Synch = {\n'
             dataSourceText += '    Class = RealTimeThreadSynchronisation\n'
+            dataSourceText += '    Timeout = 1000000\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
@@ -2429,16 +2524,46 @@ class MARTE2_COMPONENT(Device):
 
             gamText += '    Class = IOGAM\n'
             gamText += '    InputSignals = {\n'
-            for signal in synchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in synchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
+                gamText += '        Type = '+signalDict['type']+'\n'
+                if 'dimensions' in signalDict:
+                    dimensions = signalDict['dimensions']
+                    if dimensions == 0:
+                        numberOfElements = 1
+                        numberOfDimensions = 0
+                    else:
+                        numberOfDimensions = len(signalDict['dimensions'])
+                        numberOfElements = 1
+                        for currDim in signalDict['dimensions']:
+                            numberOfElements *= currDim
+                    gamText += '        NumberOfDimensions = ' + \
+                            str(numberOfDimensions)+'\n'
+                    gamText += '        NumberOfElements = ' + \
+                            str(numberOfElements)+'\n'
                 gamText += '      }\n'
             gamText += '    }\n'
             gamText += '    OutputSignals = {\n'
-            for signal in synchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in synchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+dataSourceName+'_Output_Synch\n'
-                gamText += '        Type = '+outputDict['type']+'\n'
+                #Check if it is the reference to a resampled timebase
+                gamText += '        Type = '+signalDict['type']+'\n'
+                if 'dimensions' in signalDict:
+                    dimensions = signalDict['dimensions']
+                    if dimensions == 0:
+                        numberOfElements = 1
+                        numberOfDimensions = 0
+                    else:
+                        numberOfDimensions = len(signalDict['dimensions'])
+                        numberOfElements = 1
+                        for currDim in signalDict['dimensions']:
+                            numberOfElements *= currDim
+                    gamText += '        NumberOfDimensions = ' + \
+                            str(numberOfDimensions)+'\n'
+                    gamText += '        NumberOfElements = ' + \
+                            str(numberOfElements)+'\n'
                 gamText += '      }\n'
             gamText += '    }\n'
             gamText += '  }\n'
@@ -2448,6 +2573,7 @@ class MARTE2_COMPONENT(Device):
         if len(asynchThreadSignals) > 0:
             dataSourceText = '  +'+dataSourceName+'_Output_Asynch = {\n'
             dataSourceText += '    Class = RealTimeThreadAsyncBridge\n'
+            dataSourceText += '    Timeout = 1000000\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
@@ -2455,15 +2581,23 @@ class MARTE2_COMPONENT(Device):
             gamText = '  +'+dataSourceName+'_Output_Asynch_IOGAM = {\n'
             gamText += '    Class = IOGAM\n'
             gamText += '    InputSignals = {\n'
-            for signal in asynchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in asynchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
+                gamText += '        NumberOfDimensions = ' + \
+                    str(signalDict['dimensions'])+'\n'
+                gamText += '        NumberOfElements = ' + \
+                    str(signalDict['elements'])+'\n'
                 gamText += '      }\n'
             gamText += '    }\n'
             gamText += '    OutputSignals = {\n'
-            for signal in asynchThreadSignals:
-                gamText += '      '+signal+' = {\n'
+            for signalDict in asynchThreadSignals:
+                gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+dataSourceName+'_Output_Asynch\n'
+                gamText += '        NumberOfDimensions = ' + \
+                    str(signalDict['dimensions'])+'\n'
+                gamText += '        NumberOfElements = ' + \
+                    str(signalDict['elements'])+'\n'
                 gamText += '      }\n'
             gamText += '    }\n'
             gamText += '  }\n'
@@ -2557,6 +2691,7 @@ class MARTE2_COMPONENT(Device):
                 if self.onSameThread(threadMap, prevTimebase.getParent()):
                     timerDDB = origName+'_Output_DDB'
                 else:
+                   # timerDDB = origName+'_Output_Synch' Gabriele Jan 2022
                     timerDDB = origName+'_Output_Synch'
                     try:
                         # Get period from driving synchronizing device
@@ -2580,7 +2715,9 @@ class MARTE2_COMPONENT(Device):
        #Head and parameters
         gamList.append(dataSourceName+'_IOGAM')
         gamText = '  +'+dataSourceName+'_IOGAM = {\n'
-        gamText += '    Class = IOGAM\n'
+#        gamText += '    Class = IOGAM\n'
+#NOTE: default behavior for Output is different from that of GAM. Here a single sample is picked when subsampling is defined (syncDiv > 1)
+        gamText += '    Class = PickSampleGAM\n'
 
 # input Signals
         gamText += '    InputSignals = {\n'
@@ -2594,7 +2731,16 @@ class MARTE2_COMPONENT(Device):
                 signalNames.append('Time')
                 gamText += '      Time = {\n'
                 gamText += '      DataSource = ' + timerDDB+'\n'
-                signalSamples.append(1)
+                try:
+                    syncDiv = self.timebase_div.data()
+                    gamText += '        Samples = ' + \
+                        str(syncDiv)+'\n'
+                    signalSamples.append(syncDiv)
+                    forceUsingSamples = True
+                except:
+                    signalSamples.append(1)
+                    pass  # Consider ealTimeSynchronization downsampling only if timebase_div is defined
+               # signalSamples.append(1) Gabriele Jan 2022
             else:  # Normal reference
                 isTreeRef = False
                 isInputStructField = (
@@ -2686,8 +2832,7 @@ class MARTE2_COMPONENT(Device):
         idx = 0
         for outputDict in inputDicts:
             gamText += '      '+signalNames[idx]+' = {\n'
-            if signalSamples[idx] > 1:
-                gamText += '        Samples = '+str(signalSamples[idx])+'\n'
+            gamText += '        Samples = 1\n'
 
             idx = idx+1
             gamText += '        DataSource = '+dataSourceName+'\n'
@@ -2957,12 +3102,8 @@ class MARTE2_COMPONENT(Device):
                 syncDiv = 1
             inDimensions = inputDict['value'].getParent().getNode(
                 ':DIMENSIONS').getData()
-            if syncDiv > 1:
-                if inDimensions != 0:
-                    return 'Dimension mismatch for input '+str(inputIdx)+' getting timebase from another thread'
-            else:
-                if inDimensions != inputDict['dimensions']:
-                    return 'Dimension mismatch for input '+str(inputIdx)+': expected '+str(inputDict['dimensions'])+'  found '+str(inDimensions)
+            if inDimensions != inputDict['dimensions']:
+                return 'Dimension mismatch for input '+str(inputIdx)+': expected '+str(inputDict['dimensions'])+'  found '+str(inDimensions)
 
         return ''
 
