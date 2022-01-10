@@ -788,6 +788,12 @@ class MARTE2_COMPONENT(Device):
         debugEnabled = configDict['debug']
 
         outPeriod = 0  # If different from 0, this means that the corresponing component is driving the thread timing
+
+        try:
+            syncDiv = self.timebase_div.data()
+        except:
+            syncDiv = 1
+        resampledSyncSigs = []  #Input Signals for which PickSampleGAM is required
 # timebase
         if isinstance(timebase, Range):
             period = timebase.getDescAt(2).data()
@@ -907,7 +913,10 @@ class MARTE2_COMPONENT(Device):
                 if self.onSameThread(threadMap, prevTimebase.getParent()):
                     timerDDB = origName+'_Output_DDB'
                 else:
-                    timerDDB = origName+'_Output_Synch'
+                    timerDDB = gamName+'_Res_DDB'
+                    resampledSyncSigs.append({'name': 'Time', 'datasource': origName+'_Output_Synch',
+                             'type': 'uint32', 'dimensions': 0, 'elements': 1, 'samples':syncDiv})
+#                   timerDDB = origName+'_Output_Synch'
                     try:
                         # Get period from driving synchronizing device
                         outPeriod = timebase.getDescAt(2).data()
@@ -938,7 +947,7 @@ class MARTE2_COMPONENT(Device):
             gamList.append(gamName+'_Input_Bus_IOGAM')
 
        #Head and parameters
-        gamList.append(gamName)
+ #       gamList.append(gamName) Afret potential resampler
         gamText = '  +'+gamName+' = {\n'
         gamText += '    Class = '+gamClass+'\n'
         gamText = self.reportParameters(paramDicts, gamText, 1)
@@ -1086,20 +1095,17 @@ class MARTE2_COMPONENT(Device):
                                 signalDict['datasource'] = sourceGamName + \
                                     '_Output_DDB'
                             elif self.sameSynchSource(sourceNode):
-                                gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+                                if syncDiv > 1:
+                                    gamText += '        DataSource = '+gamName+'_Res_DDB\n'
+                                else:
+                                    gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
                                 signalDict['name'] = signalGamName
                                 signalDict['datasource'] = sourceGamName + \
                                     '_Output_Synch'
-
-                            try:
-  #NOTE:If subsampling (syncDiv > 1), the GAM will receive a set of samples and therefore it must be prepared to handle this
-                                syncDiv = self.timebase_div.data()
-                                gamText += '        Samples = ' + \
-                                    str(syncDiv)+'\n'
-                                forceUsingSamples = True
-                            except:
-                                pass  # Consider RealTimeSynchronization downsampling only if timebase_div is defined
-
+                                if syncDiv > 1:
+                                    signalDict['datasource'] = sourceGamName+'_Output_Synch'
+                                    signalDict['samples'] = syncDiv
+                                    resampledSyncSigs.append(signalDict)
                             else:
                                 gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
                     if 'name' in inputDict:
@@ -1134,7 +1140,46 @@ class MARTE2_COMPONENT(Device):
             inputSignals.append(signalDict)
         if len(inputDicts) > 0:
             gamText += '    }\n'
+            
+            
+#If some inputs derive from resampled synch sources, instantiate PickSampleGAM
+        if len(resampledSyncSigs) > 0:
+            gamList.append(gamName+'Resampler')
+            pickGamText = '  +'+gamName+'Resampler = {\n'
+            pickGamText += '    Class = PickSampleGAM\n'
+            pickGamText += '    InputSignals = {\n'
+            for sigDict in resampledSyncSigs:
+                pickGamText += '      '+sigDict['name']+' = {\n'
+                pickGamText +=  '        DataSource = '+sigDict['datasource']+'\n'
+                if 'alias' in sigDict:
+                    pickGamText +=  '        Alias = '+sigDict['alias']+'\n'
+                pickGamText +=  '        Samples = '+str(sigDict['samples'])+'\n'
+                pickGamText +=  '        Type = '+sigDict['type']+'\n'
+                pickGamText +=  '        NumberOfDimensions = '+str(sigDict['dimensions'])+'\n'
+                pickGamText +=  '        NumberOfElements = '+str(sigDict['elements'])+'\n'
+                pickGamText +=  '      }\n'
+            pickGamText += '    }\n' 
+            pickGamText += '    OutputSignals = {\n'
+            for sigDict in resampledSyncSigs:
+                if 'alias' in sigDict:
+                    pickGamText +=  '      '+sigDict['alias']+' = {\n'
+                else:
+                    pickGamText += '      '+sigDict['name']+' = {\n'
+                pickGamText +=  '        DataSource = '+gamName+'_Res_DDB\n'
+                pickGamText +=  '        Samples = 1\n'
+                pickGamText +=  '        Type = '+sigDict['type']+'\n'
+                pickGamText +=  '        NumberOfDimensions = '+str(sigDict['dimensions'])+'\n'
+                pickGamText +=  '        NumberOfElements = '+str(sigDict['elements'])+'\n'
+                pickGamText +=  '      }\n'
+            pickGamText += '    }\n' 
+            pickGamText += '  }\n' 
+            gams.append(pickGamText)            
+            dataSourceText = '  +'+gamName+'_Res_DDB = {\n'
+            dataSourceText += '    Class = GAMDataSource\n'
+            dataSourceText += '  }\n'
+            dataSources.append(dataSourceText)
 
+        gamList.append(gamName)
         ######################################################### Output Signals
         outputSignals = []  # For debug printout
 

@@ -167,7 +167,8 @@ class MARTE2_SUPERVISOR(Device):
                                 # except:
                                 # return 'Cannot get timebase for ' + gam, {},{}
                                 gamNids.append(currGamNode.getNid())
-                                if currPeriod > 0 and threadPeriod > 0:
+                              #  if currPeriod > 0 and threadPeriod > 0:
+                                if currPeriod > 0 and threadPeriod > 0 and currPeriod != threadPeriod:
                                     raise Exception('More than one component driving thread timing for state: '+str(
                                         state+1)+', thread: '+str(thread+1))
                                 else:
