@@ -885,7 +885,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Timebase div. (if from another thread):");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(166);
+        deviceField2.setOffsetNid(174);
         jPanel2.add(deviceField2);
 
         jPanel1.add(jPanel2);
