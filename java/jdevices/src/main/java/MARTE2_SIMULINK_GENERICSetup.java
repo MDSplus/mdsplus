@@ -73,7 +73,21 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
+        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Timebase:");
+        deviceField1.setNumCols(20);
+        deviceField1.setOffsetNid(3);
+        jPanel2.add(deviceField1);
+
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("Timebase div. (if from another thread):");
+        deviceField2.setNumCols(4);
+        deviceField2.setOffsetNid(174);
+        jPanel2.add(deviceField2);
+
+        jPanel1.add(jPanel2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Simulink module: ");
