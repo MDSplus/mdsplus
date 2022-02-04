@@ -132,6 +132,7 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
   regs.post_register_enable = 1;
   regs.post_register = config->post_samples;
 
+
   regs.decimator_register_enable = 1;
   regs.decimator_register = 10;
 
@@ -216,9 +217,6 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   config->post_samples = regs.post_register;
   config->pre_samples = regs.pre_register;
   config->decimation = regs.decimator_register + 1;
-  config->deadtime = regs.deadtime_register;
-  config->offset = regs.offset_reg;
-  
 }
 
 static void fifoFlush(int fd) { ioctl(fd, RFX_STREAM_FIFO_FLUSH, NULL); }
