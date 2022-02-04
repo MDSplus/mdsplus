@@ -36,6 +36,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         jPanel11 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField14 = new DeviceField();
+        deviceChoice130 = new DeviceChoice();
         deviceChoice9 = new DeviceChoice();
         jPanel12 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
@@ -705,6 +706,13 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField14.setNumCols(4);
         deviceField14.setOffsetNid(1307);
         jPanel11.add(deviceField14);
+
+        deviceChoice130.setChoiceItems(new String[] {"NO_PICK", "JUST_PICK", "PICK_FILTERED", "PICK_RESAMPLED"});
+        deviceChoice130.setIdentifier("");
+        deviceChoice130.setLabelString("Div. Mode:");
+        deviceChoice130.setOffsetNid(1308);
+        deviceChoice130.setUpdateIdentifier("");
+        jPanel11.add(deviceChoice130);
 
         deviceChoice9.setChoiceIntValues(new int[] {1, 0});
         deviceChoice9.setChoiceItems(new String[] {"Time Streaming", "Oscilloscope"});
@@ -4753,6 +4761,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
     private DeviceChoice deviceChoice128;
     private DeviceChoice deviceChoice129;
     private DeviceChoice deviceChoice13;
+    private DeviceChoice deviceChoice130;
     private DeviceChoice deviceChoice14;
     private DeviceChoice deviceChoice15;
     private DeviceChoice deviceChoice16;

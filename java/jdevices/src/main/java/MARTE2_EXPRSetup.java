@@ -151,6 +151,7 @@ public class MARTE2_EXPRSetup extends DeviceSetup
         jPanel50 = new javax.swing.JPanel();
         deviceField41 = new DeviceField();
         deviceField43 = new DeviceField();
+        deviceChoice17 = new DeviceChoice();
         deviceField42 = new DeviceField();
 
         setDeviceProvider("spilds:8100");
@@ -694,10 +695,17 @@ public class MARTE2_EXPRSetup extends DeviceSetup
         jPanel50.add(deviceField41);
 
         deviceField43.setIdentifier("");
-        deviceField43.setLabelString("Timebase Division (Valid if timebase on another thread):");
+        deviceField43.setLabelString("Timebase Div:");
         deviceField43.setNumCols(4);
-        deviceField43.setOffsetNid(181);
+        deviceField43.setOffsetNid(189);
         jPanel50.add(deviceField43);
+
+        deviceChoice17.setChoiceItems(new String[] {"NO_PICK", "JUST_PICK", "PICK_RESAMPLED", "PICK_AVERAGED"});
+        deviceChoice17.setIdentifier("");
+        deviceChoice17.setLabelString("Div Mode");
+        deviceChoice17.setOffsetNid(190);
+        deviceChoice17.setUpdateIdentifier("");
+        jPanel50.add(deviceChoice17);
 
         deviceField42.setIdentifier("");
         deviceField42.setLabelString("Storage CPUs: ");
@@ -720,6 +728,7 @@ public class MARTE2_EXPRSetup extends DeviceSetup
     private DeviceChoice deviceChoice14;
     private DeviceChoice deviceChoice15;
     private DeviceChoice deviceChoice16;
+    private DeviceChoice deviceChoice17;
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
