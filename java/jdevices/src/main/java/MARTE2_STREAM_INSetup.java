@@ -42,6 +42,7 @@ public class MARTE2_STREAM_INSetup extends DeviceSetup
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
+        deviceField18 = new DeviceField();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel5 = new javax.swing.JPanel();
@@ -105,6 +106,11 @@ public class MARTE2_STREAM_INSetup extends DeviceSetup
         deviceField5.setNumCols(6);
         deviceField5.setOffsetNid(19);
         jPanel4.add(deviceField5);
+
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString("Write CPU Mask:");
+        deviceField18.setOffsetNid(26);
+        jPanel4.add(deviceField18);
 
         jPanel2.add(jPanel4);
 
@@ -246,6 +252,7 @@ public class MARTE2_STREAM_INSetup extends DeviceSetup
     private DeviceField deviceField15;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
+    private DeviceField deviceField18;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;

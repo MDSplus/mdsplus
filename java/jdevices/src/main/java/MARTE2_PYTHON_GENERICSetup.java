@@ -34,6 +34,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         jPanel3 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
+        deviceChoice17 = new DeviceChoice();
         jPanel4 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
@@ -190,10 +191,17 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
         jPanel3.add(deviceField1);
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase div (if from another thread):");
+        deviceField2.setLabelString("Timebase div:");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(160);
+        deviceField2.setOffsetNid(168);
         jPanel3.add(deviceField2);
+
+        deviceChoice17.setChoiceItems(new String[] {"NO_PICK", "JUST_PICK", "PICK_FILTERED", "PICK_RESAMPLED"});
+        deviceChoice17.setIdentifier("");
+        deviceChoice17.setLabelString("Div. Mode");
+        deviceChoice17.setOffsetNid(169);
+        deviceChoice17.setUpdateIdentifier("");
+        jPanel3.add(deviceChoice17);
 
         jPanel2.add(jPanel3);
 
@@ -948,6 +956,7 @@ public class MARTE2_PYTHON_GENERICSetup extends DeviceSetup {
     private DeviceChoice deviceChoice14;
     private DeviceChoice deviceChoice15;
     private DeviceChoice deviceChoice16;
+    private DeviceChoice deviceChoice17;
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
