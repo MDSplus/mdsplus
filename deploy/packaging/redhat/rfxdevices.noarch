@@ -109,6 +109,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/RFXWAVESETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_PROTECTIONS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPADC.py
+./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPDAC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIG_SNAPSHOT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIS3820.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SOFT_TRIGGER.py
