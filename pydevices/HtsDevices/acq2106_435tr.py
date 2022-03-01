@@ -220,7 +220,8 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         
     def getUUT(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
+        #uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
+        uut = acq400_hapi.factory(self.node.data())
         return uut
 
 def assemble(cls):

@@ -155,8 +155,6 @@ class _ACQ2106_423ST(MDSplus.Device):
         },
     ]
 
-    data_socket = -1
-
     trig_types = ['hard', 'soft', 'automatic']
 
     class MDSWorker(threading.Thread):

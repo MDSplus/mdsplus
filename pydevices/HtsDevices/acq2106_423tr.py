@@ -149,8 +149,9 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
     def arm(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data())
-        
+        # uut = acq400_hapi.Acq400(self.node.data())
+        uut = self.getUUT()
+
         shot_controller = acq400_hapi.ShotController([uut])
         if self.debug:
             print("Using HAPI ShotController to run the shot.")
@@ -220,8 +221,11 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
     def getUUT(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
+        #uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
+        uut = acq400_hapi.factory(self.node.data())
+        print("Number of channels: %3.3d" % uut.nchan())
         return uut
+    
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_423TR.carrier_parts + _ACQ2106_423TR.tr_parts)
