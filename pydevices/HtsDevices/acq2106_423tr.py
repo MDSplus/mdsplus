@@ -221,7 +221,6 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
     def getUUT(self):
         import acq400_hapi
-        #uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
         uut = acq400_hapi.factory(self.node.data())
         print("Number of channels: %3.3d" % uut.nchan())
         return uut
