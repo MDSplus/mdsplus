@@ -47,7 +47,7 @@ newline \n
 %option prefix="yytreepath"
 %option extra-type="SEARCH_CTX *"
 %%
-^\\{alphaplus}{1,12}:{2}{alphaplus}{1,23}	{
+^\\{alphaplus}{1,64}:{2}{alphaplus}{1,23}	{
   addSearchTerm(yyscanner, TAG_TREE, yyget_text( yyscanner ));
 }
 ^\\{alphaplus}{1,23} {
@@ -59,7 +59,7 @@ newline \n
 {member_search} {
   addSearchTerm(yyscanner, MEMBER_SEARCH, yyget_text( yyscanner ));
 }
-{childstart}{0,1}{ancestor_search}{alphaplus}{0,12} {
+{childstart}{0,1}{ancestor_search}{alphaplus}{0,64} {
   addSearchTerm(yyscanner, ANCESTOR_SEARCH, yyget_text( yyscanner ));
 }
 {childstart}{0,1}|{memberstart}{0,1}{child_or_member_search}|{old_child_or_member_search} {
@@ -68,16 +68,16 @@ newline \n
 {childstart}{0,1}{parent} {
   addSearchTerm(yyscanner, PARENT, yyget_text( yyscanner ));
 }
-{childstart}{0,1}{ancestor}{alphaplus}{0,12} {
+{childstart}{0,1}{ancestor}{alphaplus}{0,64} {
   addSearchTerm(yyscanner, ANCESTOR, yyget_text( yyscanner ));
 }
-:{0,1}{alphaplus}{1,12} {
+:{0,1}{alphaplus}{1,64} {
   addSearchTerm(yyscanner, MEMBER, yyget_text( yyscanner ));
 }
-{childstart}{alphaplus}{1,12} {
+{childstart}{alphaplus}{1,64} {
   addSearchTerm(yyscanner, CHILD, yyget_text( yyscanner ));
 }
-{child_or_memberstart}{alphaplus}{1,12} {
+{child_or_memberstart}{alphaplus}{1,64} {
   addSearchTerm(yyscanner, CHILD_OR_MEMBER, yyget_text( yyscanner ));
 }
 {newline} {

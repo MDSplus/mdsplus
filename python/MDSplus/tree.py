@@ -280,7 +280,7 @@ class Nci(object):
     STATUS = (9, _C.c_uint32, 4, int)
     CONGLOMERATE_ELT = (10, _C.c_uint16, 2, int)
     GET_FLAGS = (12, _C.c_uint32, 4, int)
-    NODE_NAME = (13, _C.c_char_p, 13, str)
+    NODE_NAME = (13, _C.c_char_p, 64, str)
     PATH = (14, _C.c_char_p, 1024, str)
     DEPTH = (15, _C.c_uint32, 4, int)
     PARENT = (16, _C.c_int32, 4, None)
@@ -1868,7 +1868,7 @@ class TreeNode(_dat.TreeRef, _dat.Data):
     def dir(self):
         """list descendants"""
         for desc in self.descendants:
-            print('%-12s    %s' % (desc.node_name, desc.usage))
+            print('%s    %s' % (desc.node_name, desc.usage))
 
     def __dir__(self):
         """used for tab completion"""

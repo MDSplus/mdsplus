@@ -124,7 +124,7 @@ EXPORT char *TreePath(char const *tree, char *tree_lower_out)
   char pathname[32];
   char *path;
   char tree_lower[sizeof(TREE_NAME) + 1];
-  for (i = 0; i < 12 && tree[i]; ++i)
+  for (i = 0; i < sizeof(TREE_NAME) && tree[i]; ++i)
     tree_lower[i] = tolower(tree[i]);
   tree_lower[i] = '\0';
   strcpy(pathname, tree_lower);
@@ -286,7 +286,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
       size_t i;
       char uptree[sizeof(TREE_NAME) + 1] = {0};
       size_t len = strlen(tree);
-      for (i = 0; i < 12 && i < len; ++i)
+      for (i = 0; i < sizeof(TREE_NAME) && i < len; ++i)
         uptree[i] = (char)toupper(tree[i]);
       status = TreeNOT_OPEN;
       if (!shot)

@@ -237,7 +237,7 @@ int TreeInsertChild(NODE *parent_ptr, NODE *child_ptr, int sort)
       for (pre_ptr = 0,
           tmp_ptr = child_of(0, parent_ptr); /*   for all children < this one */
            tmp_ptr && (strncmp((const char *)tmp_ptr->name,
-                               (const char *)child_ptr->name, 12) < 0);
+                               (const char *)child_ptr->name, sizeof(NODE_NAME)) < 0);
            pre_ptr = tmp_ptr, tmp_ptr = brother_of(0, tmp_ptr))
         ;
       if (pre_ptr == 0)
@@ -298,7 +298,7 @@ int TreeInsertMember(NODE *parent_ptr, NODE *member_ptr, int sort)
       for (pre_ptr = 0,
           tmp_ptr = member_of(parent_ptr); /*   for all members < this one */
            tmp_ptr && (strncmp((const char *)tmp_ptr->name,
-                               (const char *)member_ptr->name, 12) < 0);
+                               (const char *)member_ptr->name, sizeof(NODE_NAME)) < 0);
            pre_ptr = tmp_ptr, tmp_ptr = brother_of(0, tmp_ptr))
         ;
       if (pre_ptr == 0)
@@ -836,11 +836,11 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
   {
     if (exp_ptr)
     {
-      char uptree[13];
+      char uptree[sizeof(TREE_NAME)+1];
       size_t i;
       int shot;
       size_t len = strlen(exp_ptr);
-      for (i = 0; i < 12 && i < len; i++)
+      for (i = 0; (i < sizeof(TREE_NAME)) && (i < len); i++)
         uptree[i] = (char)toupper(exp_ptr[i]);
       uptree[i] = '\0';
       shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
@@ -1190,7 +1190,7 @@ int _TreeQuitTree(void **dbid, char const *exp_ptr, int shotid)
   {
     if (exp_ptr)
     {
-      char uptree[13];
+      char uptree[sizeof(TREE_NAME)+1];
       size_t i;
       int shot;
       size_t len = strlen(exp_ptr);

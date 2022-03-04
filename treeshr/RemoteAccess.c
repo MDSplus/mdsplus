@@ -1917,13 +1917,13 @@ EXPORT int MDS_IO_OPEN_ONE(char *filepath_in, char const *treename_in, int shot,
   int enhanced = 0;
   int conid = -1;
   int fd = -1;
-  char treename[13];
+  char treename[sizeof(TREE_NAME)+1];
   char *hostpart, *filepart;
   size_t i;
   char *filepath = NULL;
   if (filepath_in && *filepath_in /*not empty*/)
   {
-    for (i = 0; i < 12 && treename_in[i]; ++i)
+    for (i = 0; i < sizeof(TREE_NAME) && treename_in[i]; ++i)
       treename[i] = tolower(treename_in[i]);
     treename[i] = '\0';
     filepath = strdup(filepath_in);
