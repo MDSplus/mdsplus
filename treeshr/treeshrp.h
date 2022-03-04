@@ -314,7 +314,7 @@ typedef struct node
 
 #ifdef EMPTY_NODE
 static NODE empty_node = {
-    {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '},
+    {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', [12 ... 63] = ' '},
     0,
     0,
     0,
