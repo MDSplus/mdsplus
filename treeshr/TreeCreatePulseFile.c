@@ -102,7 +102,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   else
     treepath = NULL;
 
-  int nids[256], i, j, num;
+  int nids[256], i, num, j;
   if (numnids_in == 0)
   {
     void *ctx = 0;
@@ -148,7 +148,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
       if (numnids_in == 0)
         skip = (flags & NciM_INCLUDE_IN_PULSE) == 0;
       // cut at first space and/or terminate with \0
-      for (j = 0; j < 12 && name[j] != ' '; j++)
+      for (j = 0; ((long unsigned int)j < sizeof(TREE_NAME)) && (name[j] != ' '); j++)
         ;
       name[j] = '\0';
     }

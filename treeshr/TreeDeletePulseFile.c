@@ -129,7 +129,7 @@ static inline int _TreeDeletePulseFiles(PINO_DATABASE *dblist, int shotid,
       itmlst[0].pointer = name;
       sts = _TreeGetNci(dbid_tmp, nids[num], itmlst);
       // cut at first space and/or terminate with \0
-      for (j = 0; j < 12 && name[j] != ' '; j++)
+      for (j = 0; ((long unsigned int)j < sizeof(TREE_NAME)) && (name[j] != ' '); j++)
         ;
       name[j] = '\0';
     }
