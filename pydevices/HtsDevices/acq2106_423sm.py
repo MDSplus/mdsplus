@@ -90,6 +90,7 @@ class _ACQ2106_423SM(MDSplus.Device):
 
 
         def run(self):
+            uut = self.dev.getUUT()
 
             event_name = self.dev.data_event.data()
 
@@ -109,14 +110,17 @@ class _ACQ2106_423SM(MDSplus.Device):
                 try:
                     nbytes = s.recv_into(buffer, len(buffer))
                     if nbytes != len(buffer):
-                        print("Unable to read bytes.")
+                        print("Unable to read bytes: %d != %d" % (nbytes, len(buffer)))
 
-                    now = time.time()
+                    now = MDSplus.Uint64(time.time_ns())
+
                     samples = np.frombuffer(buffer, dtype='int16')
+
                     for i, ch in enumerate(chans):
-                        calibrated_sample = samples[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
                         if ch.on:
-                            ch.putRow(10, calibrated_sample, now)
+                            #calibrated_sample = samples[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
+                            #ch.putRow(1000, calibrated_sample, now)
+                            ch.putRow(1000, samples[i], now)
 
                     MDSplus.Event.setevent(event_name)
 
@@ -186,8 +190,8 @@ def assemble(cls):
         cls.parts += [
             {
                 'path': ':INPUT_%3.3d' % (i + 1,),            
-                #'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (i + 1,),
-                'type': 'SIGNAL', 
+                'type': 'SIGNAL',
+                #'valueExpr': 'head.setChanScale(%d)' % (i + 1,),
                 'options': ('no_write_model',)
             },
             {

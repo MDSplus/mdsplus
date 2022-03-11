@@ -86,7 +86,7 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         # set.site 1 event0=1,0,1 - external rising edge causes PRE - > POST
         uut = self.getUUT()
 
-        uut.s0.transient = 'SOFT_TRIGGER=1'
+        uut.s0.transient = 'SOFT_TRIGGER=0' # Automatic = 1, Non-automatic = 0
 
         # If PRE samples different from zero
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.postsamples.data())
@@ -142,12 +142,15 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
             if self.debug:
                 print("TRG source was set to {}".format(str(self.trig_src.data())))
 
-        self.arm()
+        #self.arm()
 
     INIT=init
 
 
     def arm(self):
+        import sys
+        print(sys.version_info)
+
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
 
@@ -233,7 +236,7 @@ def assemble(cls):
                 'type': 'SIGNAL',  
                 'valueExpr': 
                      'ADD(MULTIPLY(head.INPUT_%3.3d.RAW_INPUT, head.INPUT_%3.3d.COEFFICIENT), head.INPUT_%3.3d.OFFSET)'
-                      % (i+1,i+1,i+1),
+                      % (i + 1, i + 1, i + 1),
                 'options': ('no_write_model','write_once',)
             }, 
 

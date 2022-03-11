@@ -90,7 +90,6 @@ class _ACQ2106_435SM(MDSplus.Device):
 
 
         def run(self):
-
             event_name = self.dev.data_event.data()
 
             nchans = self.dev.sites * 32
@@ -107,15 +106,18 @@ class _ACQ2106_435SM(MDSplus.Device):
 
             while self.dev.running.on:
                 try:
-                    nbytes = s.recv_into(buffer, len(buffer))
+                    nbytes = s.recv_into(buffer, len(buffer), socket.MSG_WAITALL)
                     if nbytes != len(buffer):
-                        print("Unable to read bytes.")
+                        print("Unable to read bytes: %d != %d" % (nbytes, len(buffer)))
+                        continue
 
-                    now = time.time()
-                    samples = np.frombuffer(buffer, dtype='int32')
-                    for i, c in enumerate(chans):
-                        if c.on:
-                            c.putRow(1000, samples[i], now)
+                    now = MDSplus.Uint64(time.time_ns())
+                    
+                    samples = np.right_shift(np.frombuffer(buffer, dtype='int32'), 8)
+
+                    for i, ch in enumerate(chans):
+                        if ch.on:
+                            ch.putRow(1000, samples[i], now)
 
                     MDSplus.Event.setevent(event_name)
 
@@ -172,7 +174,8 @@ class _ACQ2106_435SM(MDSplus.Device):
 
     def getUUT(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        #uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut = acq400_hapi.factory(self.node.data())
         return uut
 
     def setChanScale(self, num):
@@ -185,7 +188,8 @@ def assemble(cls):
         cls.parts += [
             {
                 'path': ':INPUT_%3.3d' % (i + 1,),            
-                'type': 'SIGNAL', 'valueExpr': 'head.setChanScale(%d)' % (i + 1,), 
+                'type': 'SIGNAL', 
+                'valueExpr': 'head.setChanScale(%d)' % (i + 1,),
                 'options': ('no_write_model',)
             },
             {

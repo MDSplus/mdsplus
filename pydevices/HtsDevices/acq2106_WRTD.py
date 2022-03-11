@@ -243,6 +243,7 @@ class ACQ2106_WRTD(MDSplus.Device):
     INIT = init
 
     def trig(self, msg=''):
+        import time
         uut = self.getUUT()
         pg_slot = self.getDioSlot()
 
@@ -272,8 +273,11 @@ class ACQ2106_WRTD(MDSplus.Device):
                 pg_slot.TRG_DX = str(self.pg_trig_src.data())
         else:
             # send immediate WRTD message
+            self.trig_time.record = MDSplus.Uint64(time.time_ns())
+
             # The timestamp in the packet is:
             # WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
+            
             print("Message sent: {}".format(message))
             uut.cC.wrtd_txi = message
 

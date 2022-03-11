@@ -86,7 +86,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
         # set.site 1 event0=1,0,1 - external rising edge causes PRE - > POST
         uut = self.getUUT()
 
-        uut.s0.transient = 'SOFT_TRIGGER=1' # Automatic
+        uut.s0.transient = 'SOFT_TRIGGER=0' # Automatic
 
         # If PRE samples different from zero
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.postsamples.data())
@@ -142,7 +142,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
             if self.debug:
                 print("TRG source was set to {}".format(str(self.trig_src.data())))
 
-        self.arm()
+        #self.arm()
 
     INIT=init
 
@@ -221,6 +221,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
 
     def getUUT(self):
         import acq400_hapi
+        #uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
         uut = acq400_hapi.factory(self.node.data())
         print("Number of channels: %3.3d" % uut.nchan())
         return uut
