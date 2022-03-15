@@ -90,7 +90,8 @@ class _ACQ2106_423SM(MDSplus.Device):
 
 
         def run(self):
-            uut = self.dev.getUUT()
+            from influxdb import InfluxDBClient
+            self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon')
 
             event_name = self.dev.data_event.data()
 
@@ -112,14 +113,29 @@ class _ACQ2106_423SM(MDSplus.Device):
                     if nbytes != len(buffer):
                         print("Unable to read bytes: %d != %d" % (nbytes, len(buffer)))
 
-                    now = MDSplus.Uint64(time.time_ns())
+                    timestamp = time.time_ns()
+                    now = MDSplus.Uint64(timestamp)
 
                     samples = np.frombuffer(buffer, dtype='int16')
 
                     for i, ch in enumerate(chans):
                         if ch.on:
-                            #calibrated_sample = samples[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
-                            #ch.putRow(1000, calibrated_sample, now)
+                            calibrated_sample = samples[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
+                            
+                            #Setup Payload:
+                            json_payload = []
+                            data = {
+                                "measurement": "slowrates",
+                                "time": timestamp,
+                                "fields": {
+                                    'sample': calibrated_sample
+                                }
+                            }
+                            json_payload.append(data)
+
+                            self.client.write_points(json_payload, time_precision='n')
+
+                            # Add data to MDSplus
                             ch.putRow(1000, samples[i], now)
 
                     MDSplus.Event.setevent(event_name)

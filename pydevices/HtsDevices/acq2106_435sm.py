@@ -90,6 +90,9 @@ class _ACQ2106_435SM(MDSplus.Device):
 
 
         def run(self):
+            from influxdb import InfluxDBClient
+            self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon435')
+
             event_name = self.dev.data_event.data()
 
             nchans = self.dev.sites * 32
@@ -111,12 +114,28 @@ class _ACQ2106_435SM(MDSplus.Device):
                         print("Unable to read bytes: %d != %d" % (nbytes, len(buffer)))
                         continue
 
-                    now = MDSplus.Uint64(time.time_ns())
+                    timestamp = time.time_ns()
+                    now = MDSplus.Uint64(timestamp)
                     
                     samples = np.right_shift(np.frombuffer(buffer, dtype='int32'), 8)
 
                     for i, ch in enumerate(chans):
                         if ch.on:
+                            calibrated_sample = samples[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
+                            
+                            #Setup Payload:
+                            json_payload = []
+                            data = {
+                                "measurement": "slowrates",
+                                "time": timestamp,
+                                "fields": {
+                                    'sample': calibrated_sample
+                                }
+                            }
+                            json_payload.append(data)
+
+                            self.client.write_points(json_payload, time_precision='n')
+
                             ch.putRow(1000, samples[i], now)
 
                     MDSplus.Event.setevent(event_name)
@@ -181,6 +200,30 @@ class _ACQ2106_435SM(MDSplus.Device):
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
+
+    def initInfluxDB(self):
+        from influxdb import InfluxDBClient
+        self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon435')
+
+
+    def putInfluxDB(self, timestamp, sample):
+        #Setup Payload:
+        json_payload = []
+        data = {
+            "measurement": "slowrates",
+            "time": timestamp,
+            "fields": {
+                'sample': sample
+            }
+        }
+        json_payload.append(data)
+
+        start = time.time_ns()
+        self.client.write_points(json_payload, time_precision='n')
+        end = time.time_ns()
+        diff= (end - start)/1000000.0
+        if diff > 100:
+            print(timestamp, diff)
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SM.carrier_parts)

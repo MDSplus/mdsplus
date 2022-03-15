@@ -86,7 +86,7 @@ class _ACQ2106_423TR(acq2106_423st._ACQ2106_423ST):
         # set.site 1 event0=1,0,1 - external rising edge causes PRE - > POST
         uut = self.getUUT()
 
-        uut.s0.transient = 'SOFT_TRIGGER=0' # Automatic
+        uut.s0.transient = 'SOFT_TRIGGER=0' # Automatic = 1, Non-automatic = 0 
 
         # If PRE samples different from zero
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.postsamples.data())
