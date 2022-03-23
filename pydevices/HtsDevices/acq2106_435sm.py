@@ -126,7 +126,7 @@ class _ACQ2106_435SM(MDSplus.Device):
                             #Setup Payload:
                             json_payload = []
                             data = {
-                                "measurement": "slowrates",
+                                "measurement": 'INPUT_%3.3d' % (i+1),
                                 "time": timestamp,
                                 "fields": {
                                     'sample': calibrated_sample
@@ -186,6 +186,14 @@ class _ACQ2106_435SM(MDSplus.Device):
         thread.start()
 
     INIT = init
+
+    def stream(self):
+        self.running.on = True
+
+        thread = self.Worker(self)
+        thread.start()
+        
+    STREAM = stream
 
     def stop(self):
         self.running.on = False

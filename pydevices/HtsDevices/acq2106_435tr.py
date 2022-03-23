@@ -86,7 +86,7 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         # set.site 1 event0=1,0,1 - external rising edge causes PRE - > POST
         uut = self.getUUT()
 
-        uut.s0.transient = 'SOFT_TRIGGER=0' # Automatic = 1, Non-automatic = 0
+        uut.s0.transient = 'SOFT_TRIGGER=1' # Automatic = 1, Non-automatic = 0
 
         # If PRE samples different from zero
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.postsamples.data())
@@ -148,11 +148,33 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
 
 
     def arm(self):
-        import sys
-        print(sys.version_info)
-
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
+
+        shot_controller = acq400_hapi.ShotController([uut])
+        if self.debug:
+            print("Using HAPI ShotController to run the shot.")
+        shot_controller.run_shot()
+
+
+    def rearm(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data())
+
+        # Fetching all calibration information from every channel.
+        uut.fetch_all_calibration()
+        coeffs = uut.cal_eslo[1:]
+        eoff = uut.cal_eoff[1:]
+
+        chans = []
+        nchans = uut.nchan()
+        for ii in range(nchans):
+            chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
+
+        for ic, ch in enumerate(chans):
+            if ch.on:
+                ch.OFFSET.putData(float(eoff[ic]))
+                ch.COEFFICIENT.putData(float(coeffs[ic]))
 
         shot_controller = acq400_hapi.ShotController([uut])
         if self.debug:
