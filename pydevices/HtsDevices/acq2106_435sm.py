@@ -82,12 +82,41 @@ class _ACQ2106_435SM(MDSplus.Device):
         },
     ]
 
-    class Worker(threading.Thread):
+    class Sample:
+
+        def __init__(self, nchans):
+            self.buffer = bytearray(nchans * np.int32(0).nbytes)
+            self.time = 0
+
+    # self.empty_buffers.put(Sample(self.nchans))
+    # ..
+    # try:
+    #     sample = self.empty_buffers.get(block=False)
+    # except Empty:
+    #    sample = Sample(self.nchans)
+    #
+    # s.recv_into(sample.buffer, len(sample.buffer))
+    # sample.time = time.time_ns()
+    #
+    # self.full_buffers.put(sample)
+
+    class DataWorker(threading.Thread):
+        INITIAL_BUFFER_COUNT = 100
+        
         def __init__(self, dev):
             super(_ACQ2106_435SM.Worker, self).__init__(name=dev.path)
             
             self.dev = dev
 
+            self.nchans = self.dev.sites * 32
+
+            self.empty_buffers = Queue()
+            self.full_buffers  = Queue()
+
+            for i in range(self.INITIAL_BUFFER_COUNT):
+                self.empty_buffers.put(Sample(self.nchans))
+
+            self.device_thread = self.DeviceWorker(self)
 
         def run(self):
             from influxdb import InfluxDBClient
@@ -95,68 +124,101 @@ class _ACQ2106_435SM(MDSplus.Device):
 
             event_name = self.dev.data_event.data()
 
-            nchans = self.dev.sites * 32
-
             chans = []
-            for i in range(nchans):
+            for i in range(self.nchans):
                 chans.append(getattr(self.dev, 'input_%3.3d' % (i + 1)))
 
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((self.dev.node.data(), 53666))
-            s.settimeout(6)
+            self.device_thread.start()
+            running = self.dev.running
 
-            buffer = bytearray(nchans * np.int32(0).nbytes)
+            while running.on:
 
-            while self.dev.running.on:
                 try:
-                    nbytes = s.recv_into(buffer, len(buffer), socket.MSG_WAITALL)
-                    if nbytes != len(buffer):
-                        print("Unable to read bytes: %d != %d" % (nbytes, len(buffer)))
-                        continue
+                    sample = self.full_buffers.get(block=True, timeout=1)
+                except Empty:
+                    continue
+                
+                data = np.right_shift(np.frombuffer(sample.buffer, dtype='int32'), 8)
 
-                    timestamp = time.time_ns()
-                    now = MDSplus.Uint64(timestamp)
-                    
-                    samples = np.right_shift(np.frombuffer(buffer, dtype='int32'), 8)
-
-                    for i, ch in enumerate(chans):
-                        if ch.on:
-                            calibrated_sample = samples[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
-                            
-                            #Setup Payload:
-                            json_payload = []
-                            data = {
+                for i, ch in enumerate(chans):
+                    if ch.on:
+                        calibrated = data[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
+                        
+                        self.client.write_points([
+                            {
                                 "measurement": 'INPUT_%3.3d' % (i+1),
-                                "time": timestamp,
+                                "time": sample.time,
                                 "fields": {
-                                    'sample': calibrated_sample
+                                    'sample': calibrated
                                 }
                             }
-                            json_payload.append(data)
+                        ], time_precision='n')
 
-                            self.client.write_points(json_payload, time_precision='n')
+                        ch.putRow(1000, data[i], MDSplus.Uint64(sample.time))
 
-                            ch.putRow(1000, samples[i], now)
+                MDSplus.Event.setevent(event_name)
 
-                    MDSplus.Event.setevent(event_name)
+                self.empty_buffers.put(sample)
+            
+            self.device_thread.stop()
+        
+        class ACQWorker(threading.Tread):
 
-                except socket.timeout as e:
-                    print("Got a timeout.")
-                    err = e.args[0]
-                    # this next if/else is a bit redundant, but illustrates how the
-                    # timeout exception is setup
+            def __init__(self, data_worker):
+                super(_ACQ2106_435ST.MDSWorker.ACQWorker, self).__init__()
+                self.nchans        = data_worker.nchans
+                self.empty_buffers = data_worker.empty_buffers
+                self.full_buffers  = data_worker.full_buffers
 
-                    if err == 'timed out':
-                        time.sleep(1)
-                        print (' recv timed out, retry later')
-                        continue
-                    else:
-                        print (e)
-                        break
-                except socket.error as e:
-                    # Something else happened, handle error, exit, etc.
-                    print("socket error", e)
-                    break
+            def stop(self):
+                self.running = False
+
+            def run(self):
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((self.dev.node.data(), 53666))
+                s.settimeout(6)
+
+                while self.running:
+                    try:
+                        sample = self.empty_buffers.get(block=False)
+                    except Empty:
+                        print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
+                        sample = Sample(self.nchans)
+
+                    try:
+                        # s.recv_into(sample.buffer, len(sample.buffer))
+                        # sample.time = time.time_ns()
+
+                        nbytes = s.recv_into(sample.buffer, len(sample.buffer), socket.MSG_WAITALL)
+                        if nbytes != len(sample.buffer):
+                            print("Unable to read bytes: %d != %d" % (nbytes, len(sample.buffer)))
+                            # reuse the sample buffer
+                            self.empty_buffers.put(sample)
+                            continue
+                        
+                        sample.time = time.time_ns()
+                        self.full_buffers.put(sample)
+
+                    except socket.timeout as e:
+                        print("Got a timeout.")
+                        err = e.args[0]
+                        # this next if/else is a bit redundant, but illustrates how the
+                        # timeout exception is setup
+
+                        if err == 'timed out':
+                            time.sleep(1)
+                            print (' recv timed out, retry later')
+                            continue
+                        else:
+                            print (e)
+                            break
+
+                    except socket.error as e:
+                        # Something else happened, handle error, exit, etc.
+                        print("socket error", e)
+                        break             
+
+
     
     def init(self):
         uut = self.getUUT()
@@ -187,13 +249,6 @@ class _ACQ2106_435SM(MDSplus.Device):
 
     INIT = init
 
-    def stream(self):
-        self.running.on = True
-
-        thread = self.Worker(self)
-        thread.start()
-        
-    STREAM = stream
 
     def stop(self):
         self.running.on = False
