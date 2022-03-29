@@ -155,7 +155,8 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
         if self.debug:
             print("Using HAPI ShotController to run the shot.")
         shot_controller.run_shot()
-
+        
+    ARM=arm
 
     def rearm(self):
         import acq400_hapi
@@ -181,6 +182,7 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
             print("Using HAPI ShotController to run the shot.")
         shot_controller.run_shot()
 
+    REARM=rearm
 
     def state(self):
         import acq400_hapi

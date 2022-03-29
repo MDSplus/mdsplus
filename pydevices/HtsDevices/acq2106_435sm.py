@@ -27,6 +27,11 @@ import socket
 import threading
 import time
 import numpy as np
+import sys
+if sys.version_info < (3,):
+    from Queue import Queue, Empty
+else:
+    from queue import Queue, Empty
 
 class _ACQ2106_435SM(MDSplus.Device):
     """
@@ -75,18 +80,14 @@ class _ACQ2106_435SM(MDSplus.Device):
             'options': ('no_write_shot',)
         },
         {
-            'path': ':STOP_ACTION', 
+            'path': '7:STOP_ACTION', 
             'type': 'action',
             'valueExpr': "Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      
             'options': ('no_write_shot',)
         },
     ]
 
-    class Sample:
 
-        def __init__(self, nchans):
-            self.buffer = bytearray(nchans * np.int32(0).nbytes)
-            self.time = 0
 
     # self.empty_buffers.put(Sample(self.nchans))
     # ..
@@ -101,103 +102,128 @@ class _ACQ2106_435SM(MDSplus.Device):
     # self.full_buffers.put(sample)
 
     class DataWorker(threading.Thread):
-        INITIAL_BUFFER_COUNT = 100
+        INITIAL_BUFFER_COUNT = 10
         
-        def __init__(self, dev):
-            super(_ACQ2106_435SM.Worker, self).__init__(name=dev.path)
-            
-            self.dev = dev
+        # One data point per channel at a given time
+        class DataPoint:
+            def __init__(self, nchans):
+                self.buffer = bytearray(nchans * np.int32(0).nbytes)
+                self.time = 0
 
-            self.nchans = self.dev.sites * 32
+        def __init__(self, mdsplus_device):
+            super(_ACQ2106_435SM.DataWorker, self).__init__(name=mdsplus_device.path)
+            
+            self.mdsplus_device = mdsplus_device
+
+            self.nchans = self.mdsplus_device.sites * 32
 
             self.empty_buffers = Queue()
             self.full_buffers  = Queue()
 
             for i in range(self.INITIAL_BUFFER_COUNT):
-                self.empty_buffers.put(Sample(self.nchans))
+                self.empty_buffers.put(self.DataPoint(self.nchans))
 
-            self.device_thread = self.DeviceWorker(self)
+            self.acq_thread = self.ACQWorker(self)
 
         def run(self):
             from influxdb import InfluxDBClient
             self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon435')
 
-            event_name = self.dev.data_event.data()
+            event_name = self.mdsplus_device.data_event.data()
 
-            chans = []
+            channel_list = []
+            coefficient_list = []
+            offset_list = []
+
             for i in range(self.nchans):
-                chans.append(getattr(self.dev, 'input_%3.3d' % (i + 1)))
+                channel = getattr(self.mdsplus_device, 'input_%3.3d' % (i + 1))
+                channel_list.append(channel)
+                coefficient_list.append(channel.COEFFICIENT.data())
+                offset_list.append(channel.OFFSET.data())
 
-            self.device_thread.start()
-            running = self.dev.running
+            self.acq_thread.start()
+            running = self.mdsplus_device.running
 
-            while running.on:
+            while running.on or not self.full_buffers.empty():
+                # Stop data acquisition but continue processing full_buffers
+                if not running.on and self.acq_thread.running:
+                    self.acq_thread.stop
 
                 try:
-                    sample = self.full_buffers.get(block=True, timeout=1)
+                    data_point = self.full_buffers.get(block=True, timeout=1)
                 except Empty:
                     continue
                 
-                data = np.right_shift(np.frombuffer(sample.buffer, dtype='int32'), 8)
+                samples = np.right_shift(np.frombuffer(data_point.buffer, dtype='int32'), 8)
 
-                for i, ch in enumerate(chans):
+                influx_points = []
+                mdsplus_points= []
+
+                start = time.time()
+                for i, ch in enumerate(channel_list):
                     if ch.on:
-                        calibrated = data[i] * ch.COEFFICIENT.data() + ch.OFFSET.data()
+                        calibrated = samples[i] * coefficient_list[i] + offset_list[i]
                         
-                        self.client.write_points([
-                            {
-                                "measurement": 'INPUT_%3.3d' % (i+1),
-                                "time": sample.time,
-                                "fields": {
-                                    'sample': calibrated
-                                }
+                        influx_points.append({
+                            "measurement": 'INPUT_%3.3d' % (i+1),
+                            "time": data_point.time,
+                            "fields": {
+                                'sample': calibrated
                             }
-                        ], time_precision='n')
+                        })
+                        #mdsplus_points.append('PutRow(%s, %d, %dQ, %d)' % (ch, 1, data_point.time, samples[i]))
+                        #ch.putRow(1000, samples[i], MDSplus.Uint64(data_point.time))
+                        ch.putRow(3600, samples[i], data_point.time)
 
-                        ch.putRow(1000, data[i], MDSplus.Uint64(sample.time))
+                # start = time.time()               
+                self.client.write_points(influx_points, time_precision='n')
+                end  = time.time()
+                print('putRow and write_points', end - start)
 
+                # start = time.time()
+                # self.mdsplus_device.tree.tdiExecute(','.join(mdsplus_points))            
+                # end  = time.time()
+                # print('tdiExecute', end - start)
+                
                 MDSplus.Event.setevent(event_name)
 
-                self.empty_buffers.put(sample)
+                self.empty_buffers.put(data_point)
             
-            self.device_thread.stop()
+            if self.acq_thread.running:
+                self.acq_thread.stop()
         
-        class ACQWorker(threading.Tread):
+        class ACQWorker(threading.Thread):
 
             def __init__(self, data_worker):
-                super(_ACQ2106_435ST.MDSWorker.ACQWorker, self).__init__()
-                self.nchans        = data_worker.nchans
-                self.empty_buffers = data_worker.empty_buffers
-                self.full_buffers  = data_worker.full_buffers
+                super(_ACQ2106_435SM.DataWorker.ACQWorker, self).__init__()
+                self.data_worker = data_worker
 
             def stop(self):
                 self.running = False
 
             def run(self):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect((self.dev.node.data(), 53666))
+                s.connect((self.data_worker.mdsplus_device.node.data(), 53666))
                 s.settimeout(6)
 
+                self.running = True
                 while self.running:
                     try:
-                        sample = self.empty_buffers.get(block=False)
+                        sample = self.data_worker.empty_buffers.get(block=False)
                     except Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
-                        sample = Sample(self.nchans)
+                        sample = self.data_worker.DataPoint(self.data_worker.nchans)
 
                     try:
-                        # s.recv_into(sample.buffer, len(sample.buffer))
-                        # sample.time = time.time_ns()
-
                         nbytes = s.recv_into(sample.buffer, len(sample.buffer), socket.MSG_WAITALL)
                         if nbytes != len(sample.buffer):
                             print("Unable to read bytes: %d != %d" % (nbytes, len(sample.buffer)))
                             # reuse the sample buffer
-                            self.empty_buffers.put(sample)
+                            self.data_worker.empty_buffers.put(sample)
                             continue
                         
                         sample.time = time.time_ns()
-                        self.full_buffers.put(sample)
+                        self.data_worker.full_buffers.put(sample)
 
                     except socket.timeout as e:
                         print("Got a timeout.")
@@ -244,7 +270,7 @@ class _ACQ2106_435SM(MDSplus.Device):
 
         self.running.on = True
 
-        thread = self.Worker(self)
+        thread = self.DataWorker(self)
         thread.start()
 
     INIT = init
@@ -267,26 +293,6 @@ class _ACQ2106_435SM(MDSplus.Device):
     def initInfluxDB(self):
         from influxdb import InfluxDBClient
         self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon435')
-
-
-    def putInfluxDB(self, timestamp, sample):
-        #Setup Payload:
-        json_payload = []
-        data = {
-            "measurement": "slowrates",
-            "time": timestamp,
-            "fields": {
-                'sample': sample
-            }
-        }
-        json_payload.append(data)
-
-        start = time.time_ns()
-        self.client.write_points(json_payload, time_precision='n')
-        end = time.time_ns()
-        diff= (end - start)/1000000.0
-        if diff > 100:
-            print(timestamp, diff)
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SM.carrier_parts)
