@@ -3352,8 +3352,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
     # Output Signals
         dataSourceText += '    Signals = {\n'
         for outputDict in outputDicts:
-            print('CICCIO')
-            print(outputDict)
             dataSourceText += '      '+outputDict['name']+' = {\n'
             dataSourceText += '        Type = '+outputDict['type']+'\n'
             if outputDict['dimensions'] == 0:
@@ -3892,7 +3890,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
 
         for inputDict in inputDicts:
             # This is a Time field referring to this timebase
-            if inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid():
+            if 'value' in inputDict and isinstance(inputDict['value'], TreeNode) and inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid():
                 signalNames.append('Time')
                 gamText += '      Time = {\n'
                 gamText += '      DataSource = ' + timerDDB+'\n'
@@ -3909,7 +3907,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             else:  # Normal reference
                 isTreeRef = False
                 isInputStructField = (
-                    inputDict['value'].getParent().getParent().getName() == 'FIELDS')
+                    ('value' in inputDict) and isinstance(inputDict['value'], TreeNode) and inputDict['value'].getParent().getParent().getName() == 'FIELDS')
                 try:
                     if isInputStructField:
                         sourceNode = inputDict['value'].getParent(
@@ -4047,10 +4045,11 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 valExpr = nodeDict['expr']
                 if isinstance(valExpr, TreeNode):
                     valExpr = valExpr.getFullPath()
-                valExpr = valExpr.replace('"', "'")
-                dataSourceText += '        DataExpr = "'+valExpr+'"\n'
+                if isinstance(valExpr, str):
+                  valExpr = valExpr.replace('"', "'")
+                dataSourceText += '        DataExpr = "'+str(valExpr)+'"\n'
                 dataSourceText += '        TimebaseExpr = "dim_of(' + \
-                    valExpr+')"\n'
+                    str(valExpr)+')"\n'
                 numberOfElements = 1
                 if not (np.isscalar(nodeDict['dimensions'])):
                     for currDim in nodeDict['dimensions']:

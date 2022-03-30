@@ -13,6 +13,7 @@ import javax.swing.event.ChangeListener;
 
 public class DeviceOutputs extends DeviceComponent
 {
+	
     	class FromTransferHandler extends TransferHandler
 	{
 		String path;
@@ -104,8 +105,7 @@ public class DeviceOutputs extends DeviceComponent
                     numItems += numFields;
                     numBusItems++;
                 }
-                numParItems += numPars;
-                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 10 * numFields;
+                currOutNid += 1 + numChildren + numMembers + 2 * numPars + 8 * numFields;
             }
             typesTF = new JTextField[numItems];
             dimensionsTF = new JTextField[numItems];
@@ -217,7 +217,9 @@ public class DeviceOutputs extends DeviceComponent
                         jp1.add(typesTF[currItem] = new JTextField(10));
                         typesTF[currItem].setVisible(false);
                         jp1.add(new JLabel("Segment len.: "));
-                        jp1.add(segLensTF[currItem] = new JTextField(4));
+                        jp1.add(segLensTF[currItem] = new JTextField(10));
+                        jp1.add(new JLabel("Stream name: "));
+                        jp1.add(streamNamesTF[currItem] = new JTextField(10));
                         
                         try {
                             jp1.setTransferHandler(new FromTransferHandler(subtree.getFullPath(currOutNid)+".FIELDS."+fieldName+":VALUE"));

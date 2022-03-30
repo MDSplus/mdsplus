@@ -97,7 +97,7 @@ public class DeviceInputs extends DeviceComponent
                 }
                 JPanel jp1 = new JPanel();
                 TitledBorder titledBorder = new TitledBorder(inputName);
-                //titledBorder.setTitleColor(Color.red);
+                titledBorder.setTitleColor(Color.red);
                 jp1.setBorder(titledBorder);
                 
                 jp1.setLayout(new GridLayout(1 + numFields[i],1));

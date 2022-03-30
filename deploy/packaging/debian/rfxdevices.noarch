@@ -70,7 +70,6 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_DTT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_DTT_PCS.py
-./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_DTT_VS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_FLUXMAP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_LEV_CTRLR.py
@@ -86,7 +85,6 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SWTRIG.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_UDP_RECEIVER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_UDP_SENDER.py
-./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_WRTDTIMER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_BREAKDOWN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_COMMON.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_CONFIG.py
