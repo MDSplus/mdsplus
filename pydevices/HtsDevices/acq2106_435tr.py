@@ -26,6 +26,7 @@
 import MDSplus
 import importlib
 import numpy
+import threading
 
 acq2106_435st = importlib.import_module('acq2106_435st')
 
@@ -142,26 +143,26 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
             if self.debug:
                 print("TRG source was set to {}".format(str(self.trig_src.data())))
 
-        #self.arm()
+        self.arm()
 
     INIT=init
 
+    def _arm(self, uut):
+        import acq400_hapi
+        shot_controller = acq400_hapi.ShotController([uut])
+        if self.debug:
+            print("Using HAPI ShotController to run the shot.")
+        shot_controller.run_shot() 
 
     def arm(self):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
-
-        shot_controller = acq400_hapi.ShotController([uut])
-        if self.debug:
-            print("Using HAPI ShotController to run the shot.")
-        shot_controller.run_shot()
-        
+        thread = threading.Thread(target = self._arm, args=(uut,))
+        thread.start()
     ARM=arm
 
-    def rearm(self):
+    def _rearm(self, uut):
         import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data())
-
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
@@ -182,7 +183,13 @@ class _ACQ2106_435TR(acq2106_435st._ACQ2106_435ST):
             print("Using HAPI ShotController to run the shot.")
         shot_controller.run_shot()
 
-    REARM=rearm
+    def rearm(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data())
+        thread = threading.Thread(target = self._rearm, args=(uut,))
+        thread.start()
+    ARM=rearm
+
 
     def state(self):
         import acq400_hapi

@@ -328,7 +328,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             def run(self):
                 if self.debug:
                     print("DeviceWorker running")
-
+                
                 self.running = True
 
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -470,7 +470,8 @@ class _ACQ2106_435ST(MDSplus.Device):
         eoff = uut.cal_eoff[1:]
 
         self.chans = []
-        nchans = uut.nchan()
+        #nchans = uut.nchan()
+        nchans = self.sites*32
         for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
