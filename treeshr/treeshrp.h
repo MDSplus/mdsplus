@@ -43,17 +43,30 @@
 #define NciM_32BIT_UID_NCI 0x20
 #define NciV_32BIT_UID_NCI 5
 
+/*******************************************
+  NOTE:  This structure was never packed.
+
+  as of this release, padding bytes explicitly
+  added to match gcc version 9.4.0 default packing
+
+  THIS HAS EVIDENTLY NOT CHANGED SINCE VAX/VMS !
+
+  pragma to request packing added.
+********************************************/
+#pragma pack(push, 1)
 typedef struct nci
 {
   unsigned int flags;
   unsigned char flags2;
-  unsigned char spare;
+  unsigned char spare[3];
   int64_t time_inserted;
   unsigned int owner_identifier;
   class_t class;
   dtype_t dtype;
+  unsigned char spare2[2];
   l_length_t length;
   unsigned char compression_method;
+  unsigned char spare3[3];
   unsigned int status;
   union {
     struct
@@ -76,6 +89,7 @@ typedef struct nci
   } DATA_INFO;
   unsigned char nci_fill;
 } NCI;
+#pragma pack(pop)
 
 #define FACILITIES_PER_EA 8
 typedef struct extended_attributes
@@ -366,7 +380,7 @@ typedef struct tag_info
    header. The tree header is the first 512
    bytes of a tree file
 *********************************************/
-
+#pragma pack(push, 1)
 typedef struct tree_header
 {
   char version; /* Version of tree file format */
@@ -385,6 +399,7 @@ typedef struct tree_header
   int nodes;     /* Number of nodes allocated (both defined and free node)     */
   char fill2[488];
 } TREE_HEADER;
+#pragma pack(pop)
 
 /***********************************
 Defines RFA type as 6 characters.
