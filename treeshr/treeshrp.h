@@ -379,6 +379,11 @@ typedef struct tag_info
 1) The first section of a tree file is the
    header. The tree header is the first 512
    bytes of a tree file
+
+NOTE:  This structure is a packed structure. 
+The pragma pack below was not present until
+this update, but the structure is unchanged 
+by it.
 *********************************************/
 #pragma pack(push, 1)
 typedef struct tree_header
