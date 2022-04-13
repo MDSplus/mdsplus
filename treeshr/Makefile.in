@@ -1,4 +1,5 @@
 include @top_builddir@/Makefile.inc
+-include Makefile.deps
 
 LIBPREFIX=Tree
 
@@ -14,9 +15,13 @@ LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr @SRBLIB@ $(LIBSOCKET) $(THREAD)
 @MINGW_TRUE@ DEF=${srcdir}/TreeShr.def
 
 SOURCES = $(wildcard @srcdir@/*.c)
+HSOURCES = $(wildcard @srcdir@/*.h)
 OBJECTS = $(SOURCES:@srcdir@/%.c=%.o)
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@TreeShr.a
+
+Makefile.deps:
+	$(CC) $(CFLAGS) -MM $(SOURCES) $(HSOURCES) > Makefile.deps
 
 clean:
 	@ $(RM) $(OBJECTS)
