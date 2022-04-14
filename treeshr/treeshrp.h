@@ -299,8 +299,8 @@ typedef struct nid
    nodes.
 *********************************************/
 #define MAX_NAME_LEN 64
-typedef char NODE_NAME[MAX_NAME_LEN];
-typedef char TREE_NAME[MAX_NAME_LEN];
+typedef char NODE_NAME[MAX_NAME_LEN + 1];
+typedef char TREE_NAME[MAX_NAME_LEN + 1];
 
 /*********************************************
  Linkages to other nodes via parent, brother,
@@ -326,9 +326,12 @@ typedef struct node
 } NODE;
 #pragma pack(pop)
 
+/*
+  Note: the name is MAX_NAME_LEN+1 bytes long.
+*/
 #ifdef EMPTY_NODE
 static NODE empty_node = {
-    {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', [12 ... MAX_NAME_LEN-1] = 0},
+    {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', [12 ... MAX_NAME_LEN] = 0},
     0,
     0,
     0,
