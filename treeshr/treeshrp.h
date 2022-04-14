@@ -298,7 +298,7 @@ typedef struct nid
 2) The second section of a tree file contains
    nodes.
 *********************************************/
-#define MAX_NAME_LEN 64
+#define MAX_NAME_LEN 63
 typedef char NODE_NAME[MAX_NAME_LEN + 1];
 typedef char TREE_NAME[MAX_NAME_LEN + 1];
 
