@@ -1750,8 +1750,9 @@ inline static char *generate_fullpath(char *filepath, char const *treename,
   default:
     return strdup(filepath);
   }
-  // The name must be able to handle the longest tree name and the longest shot number
-  char name[sizeof(TREE_NAME)+sizeof("2147483647")+1];
+  // The longest tree name, the biggest shot number strlen(MAX_INT), and an underscore
+  // The space for the null terminator is included in the sizeof()
+  char name[sizeof(TREE_NAME) + sizeof("_2147483647")];
   if (shot > 999)
     snprintf(name, sizeof(name), "%s_%d", treename, shot);
   else if (shot > 0)
