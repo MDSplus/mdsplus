@@ -293,7 +293,7 @@ extern void _TreeDeleteNodeExecute(void *dbid)
     }
     else
       memset(edit->nci + nid.node - edit->first_in_mem, 0, sizeof(struct nci));
-    memcpy(node->name, "deleted node", sizeof(node->name));
+    strncpy(node->name, "deleted node", sizeof(node->name));
     loadint16(&node->conglomerate_elt, &zero);
     node->member = 0;
     node->brother = 0;
