@@ -1750,13 +1750,14 @@ inline static char *generate_fullpath(char *filepath, char const *treename,
   default:
     return strdup(filepath);
   }
-  char name[40];
+  // The name must be able to handle the longest tree name and the longest shot number
+  char name[sizeof(TREE_NAME)+sizeof("2147483647")+1];
   if (shot > 999)
-    sprintf(name, "%s_%d", treename, shot);
+    snprintf(name, sizeof(name), "%s_%d", treename, shot);
   else if (shot > 0)
-    sprintf(name, "%s_%03d", treename, shot);
+    snprintf(name, sizeof(name), "%s_%03d", treename, shot);
   else // if (shot == -1)
-    sprintf(name, "%s_model", treename);
+    snprintf(name, sizeof(name), "%s_model", treename);
   char *resnam = strcpy(
       malloc(2 + strlen(filepath) + strlen(name) + strlen(ext)), filepath);
   int last = strlen(resnam) - 1;
