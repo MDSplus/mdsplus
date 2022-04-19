@@ -106,8 +106,10 @@ class _ACQ2106_435SM(MDSplus.Device):
         
         # One data point per channel at a given time
         class DataPoint:
+            SPAD_SIZE = np.int32(0).nbytes * 4
+
             def __init__(self, nchans):
-                self.buffer = bytearray(nchans * np.int32(0).nbytes)
+                self.buffer = bytearray(nchans * np.int32(0).nbytes + self.SPAD_SIZE)
                 self.time = 0
 
         def __init__(self, mdsplus_device):
@@ -127,7 +129,7 @@ class _ACQ2106_435SM(MDSplus.Device):
 
         def run(self):
             from influxdb import InfluxDBClient
-            self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon435')
+            self.client = InfluxDBClient('sparc-daq1', 8086, 'admin', 'password', 'slowmon')
 
             self.mdsplus_device = self.mdsplus_device.copy()
 
@@ -184,7 +186,7 @@ class _ACQ2106_435SM(MDSplus.Device):
                 # self.mdsplus_device.tree.tdiExecute(','.join(mdsplus_points))            
                 # end  = time.time()
                 # print('tdiExecute', end - start)
-                
+               
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(data_point)
@@ -221,11 +223,13 @@ class _ACQ2106_435SM(MDSplus.Device):
 
                     first = True
                     toread = len(sample.buffer)
+                    print("*toread =", toread)
                     try:
                         view = memoryview(sample.buffer)
                         while toread:
                             nbytes = s.recv_into(view, toread)
-                            print(nbytes)
+                            print("nbytes =", nbytes)
+                            print("toread =", toread)
                             if first:
                                 sample.time = time.time_ns()
                                 first = False
@@ -260,6 +264,9 @@ class _ACQ2106_435SM(MDSplus.Device):
     
     def init(self):
         uut = self.getUUT()
+
+        # Setting the slow monitoring frequency to 1Hz
+        uut.s0.SLOWMON_FS = 1 #Hz
 
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
