@@ -849,7 +849,7 @@ Data *MDSplus::compileWithArgs(const char *expr, int nArgs...)
   return res;
 }
 
-Data *MDSplus::compileWithArgsV(const char *expr, Data **argsData, int nArgs)
+Data *MDSplus::compileWithArgs(const char *expr, Data **argsData, int nArgs)
 {
   void **args = new void *[nArgs];
   int i;
@@ -919,7 +919,7 @@ Data *MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs...)
   return res;
 }
 
-Data *MDSplus::compileWithArgsV(const char *expr, Tree *tree, Data **argsData, int nArgs)
+Data *MDSplus::compileWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs)
 {
   int i;
   void **args = new void *[nArgs];
@@ -977,7 +977,7 @@ Data *MDSplus::executeWithArgs(const char *expr, int nArgs...)
 
   return evalData;
 }
-Data *MDSplus::executeWithArgsV(const char *expr, Data **argsData, int nArgs)
+Data *MDSplus::executeWithArgs(const char *expr, Data **argsData, int nArgs)
 {
   void **args = new void *[nArgs];
 
@@ -1043,7 +1043,7 @@ Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs...)
     freeDsc(args[i]);
   return evalData;
 }
-Data *MDSplus::executeWithArgsV(const char *expr, Tree *tree, Data **argsData, int nArgs)
+Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs)
 {
   void **args = new void *[nArgs];
 
