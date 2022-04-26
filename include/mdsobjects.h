@@ -185,14 +185,18 @@ namespace MDSplus
     /// Friendship declaration for TDI expression compilation
     friend EXPORT Data *compile(const char *expr);
     friend EXPORT Data *compileWithArgs(const char *expr, int nArgs...);
+    friend EXPORT Data *compileWithArgs(const char *expr, Data **args, int nArgs);
     friend EXPORT Data *compile(const char *expr, Tree *tree);
     friend EXPORT Data *compileWithArgs(const char *expr, Tree *tree,
                                         int nArgs...);
+    friend EXPORT Data *compileWithArgs(const char *expr, Tree *tree, Data **args, int nArgs);
     friend EXPORT Data *execute(const char *expr);
     friend EXPORT Data *executeWithArgs(const char *expr, int nArgs...);
+    friend EXPORT Data *executeWithArgs(const char *expr, Data **args, int nArgs);
     friend EXPORT Data *execute(const char *expr, Tree *tree);
     friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree,
                                         int nArgs...);
+    friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree, Data **args, int nArgs);
     friend EXPORT Data *deserialize(char const *serialized);
     friend EXPORT Data *deserialize(Data *serialized);
     ///@}
@@ -4564,12 +4568,16 @@ namespace MDSplus
   EXPORT Data *deserialize(Data *serializedData);
   EXPORT Data *compile(const char *expr);
   EXPORT Data *compileWithArgs(const char *expr, int nArgs...);
+  EXPORT Data *compileWithArgs(const char *expr, Data **argsData, int nArgs);
   EXPORT Data *compile(const char *expr, Tree *tree);
   EXPORT Data *compileWithArgs(const char *expr, Tree *tree, int nArgs...);
+  EXPORT Data *compileWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs);
   EXPORT Data *execute(const char *expr);
   EXPORT Data *executeWithArgs(const char *expr, int nArgs...);
+  EXPORT Data *executeWithArgs(const char *expr, Data **argsData, int nArgs);
   EXPORT Data *execute(const char *expr, Tree *tree);
   EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs...);
+  EXPORT Data *executeWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs);
   // EXPORT Tree *getActiveTree();
   // EXPORT void setActiveTree(Tree *tree);
   // Required for handling dynamic memory allocated in a different DLL on windows
