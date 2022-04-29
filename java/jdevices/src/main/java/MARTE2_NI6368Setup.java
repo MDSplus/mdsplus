@@ -73,7 +73,7 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice14 = new DeviceChoice();
         deviceField17 = new DeviceField();
 
-        setDeviceProvider("scdevail:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 NI 6368 ADC Setup");
         setDeviceType("MARTE2_NI6368");
         setHeight(400);
@@ -163,7 +163,7 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Samples");
         deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(70);
+        deviceField6.setOffsetNid(72);
         jPanel5.add(deviceField6);
 
         deviceField7.setIdentifier("");
@@ -190,14 +190,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice7.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Input Range: ");
-        deviceChoice7.setOffsetNid(77);
+        deviceChoice7.setOffsetNid(80);
         deviceChoice7.setUpdateIdentifier("");
         jPanel7.add(deviceChoice7);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Seg. Len: ");
         deviceField10.setNumCols(4);
-        deviceField10.setOffsetNid(72);
+        deviceField10.setOffsetNid(74);
         jPanel7.add(deviceField10);
 
         jPanel6.add(jPanel7);
@@ -208,14 +208,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice8.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Input Range: ");
-        deviceChoice8.setOffsetNid(91);
+        deviceChoice8.setOffsetNid(95);
         deviceChoice8.setUpdateIdentifier("");
         jPanel8.add(deviceChoice8);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Seg. Len: ");
         deviceField11.setNumCols(4);
-        deviceField11.setOffsetNid(86);
+        deviceField11.setOffsetNid(89);
         jPanel8.add(deviceField11);
 
         jPanel6.add(jPanel8);
@@ -226,14 +226,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice9.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Input Range: ");
-        deviceChoice9.setOffsetNid(105);
+        deviceChoice9.setOffsetNid(110);
         deviceChoice9.setUpdateIdentifier("");
         jPanel9.add(deviceChoice9);
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Seg. Len: ");
         deviceField12.setNumCols(4);
-        deviceField12.setOffsetNid(100);
+        deviceField12.setOffsetNid(104);
         jPanel9.add(deviceField12);
 
         jPanel6.add(jPanel9);
@@ -244,14 +244,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice10.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Input Range: ");
-        deviceChoice10.setOffsetNid(119);
+        deviceChoice10.setOffsetNid(125);
         deviceChoice10.setUpdateIdentifier("");
         jPanel10.add(deviceChoice10);
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Seg. Len: ");
         deviceField13.setNumCols(4);
-        deviceField13.setOffsetNid(114);
+        deviceField13.setOffsetNid(119);
         jPanel10.add(deviceField13);
 
         jPanel6.add(jPanel10);
@@ -262,14 +262,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice11.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Input Range: ");
-        deviceChoice11.setOffsetNid(133);
+        deviceChoice11.setOffsetNid(140);
         deviceChoice11.setUpdateIdentifier("");
         jPanel11.add(deviceChoice11);
 
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Seg. Len: ");
         deviceField14.setNumCols(4);
-        deviceField14.setOffsetNid(128);
+        deviceField14.setOffsetNid(134);
         jPanel11.add(deviceField14);
 
         jPanel6.add(jPanel11);
@@ -280,14 +280,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice12.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Input Range: ");
-        deviceChoice12.setOffsetNid(147);
+        deviceChoice12.setOffsetNid(155);
         deviceChoice12.setUpdateIdentifier("");
         jPanel12.add(deviceChoice12);
 
         deviceField15.setIdentifier("");
         deviceField15.setLabelString("Seg. Len: ");
         deviceField15.setNumCols(4);
-        deviceField15.setOffsetNid(142);
+        deviceField15.setOffsetNid(149);
         jPanel12.add(deviceField15);
 
         jPanel6.add(jPanel12);
@@ -298,14 +298,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice13.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Input Range: ");
-        deviceChoice13.setOffsetNid(161);
+        deviceChoice13.setOffsetNid(170);
         deviceChoice13.setUpdateIdentifier("");
         jPanel13.add(deviceChoice13);
 
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Seg. Len: ");
         deviceField16.setNumCols(4);
-        deviceField16.setOffsetNid(156);
+        deviceField16.setOffsetNid(164);
         jPanel13.add(deviceField16);
 
         jPanel6.add(jPanel13);
@@ -316,14 +316,14 @@ public class MARTE2_NI6368Setup extends DeviceSetup {
         deviceChoice14.setChoiceItems(new String[] {"1.", "2.", "5.", "10."});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Input Range: ");
-        deviceChoice14.setOffsetNid(175);
+        deviceChoice14.setOffsetNid(185);
         deviceChoice14.setUpdateIdentifier("");
         jPanel14.add(deviceChoice14);
 
         deviceField17.setIdentifier("");
         deviceField17.setLabelString("Seg. Len: ");
         deviceField17.setNumCols(4);
-        deviceField17.setOffsetNid(170);
+        deviceField17.setOffsetNid(179);
         jPanel14.add(deviceField17);
 
         jPanel6.add(jPanel14);

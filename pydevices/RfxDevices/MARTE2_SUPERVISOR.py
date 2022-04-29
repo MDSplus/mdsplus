@@ -497,7 +497,7 @@ class MARTE2_SUPERVISOR(Device):
         confText += '  Class = ReferenceContainer\n'
         confText += ' +IDLE_MDSPLUS_TIMER = {\n'
         confText += '   Class = LinuxTimer\n'
-        confText += '   SleepNature = "Busy"\n'
+        confText += '   SleepNature = "Default"\n'
         confText += '   Signals = {\n'
         confText += '     Counter = {\n'
         confText += '       Type = uint32\n'
@@ -572,6 +572,13 @@ class MARTE2_SUPERVISOR(Device):
 
     def startMarte(self):
         self.buildConfiguration()
+        stateName = self.state_1_name.data()
+        subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
+            'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
+        time.sleep(4)
+        self.gotorun()
+
+    def startMarteStraight(self):
         stateName = self.state_1_name.data()
         subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
@@ -674,6 +681,7 @@ class MARTE2_SUPERVISOR(Device):
                             gamInstance = gamClass(currGamNid)
                             gamInstances.append(gamInstance)
                 except:
+                    print(traceback.format_exc())
                     return 'Cannot get Device list for tread '+str(thread)+' of state '+str(state)
         for gamInstance in gamInstances:
             try:
