@@ -575,7 +575,7 @@ class MARTE2_SUPERVISOR(Device):
         stateName = self.state_1_name.data()
         subprocess.Popen(['$MARTE_DIR/Playground.sh -f /tmp/'+self.getNode(
             'name').data()+'_marte_configuration.cfg -m StateMachine:START '+stateName], shell=True)
-        time.sleep(2)
+        time.sleep(4)
         self.gotorun()
 
     def gotorun(self):
