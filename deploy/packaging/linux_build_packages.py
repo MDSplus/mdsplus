@@ -36,7 +36,7 @@ def get_root():
 
 
 def external_package(info, root, package):
-    for extpackages in root.getiterator('external_packages'):
+    for extpackages in root.iter('external_packages'):
         dist = extpackages.attrib.get('dist', None)
         if dist:
             if info['dist'] != dist:
