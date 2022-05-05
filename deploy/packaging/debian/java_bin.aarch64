@@ -1,0 +1,10 @@
+./usr/local/mdsplus/bin/CompileTree
+./usr/local/mdsplus/bin/DecompileTree
+./usr/local/mdsplus/bin/jDispatchMonitor
+./usr/local/mdsplus/bin/jDispatcherIp
+./usr/local/mdsplus/bin/jScope
+./usr/local/mdsplus/bin/jServer
+./usr/local/mdsplus/bin/jTraverser
+./usr/local/mdsplus/bin/jTraverser2
+./usr/local/mdsplus/bin/setupDevice
+./usr/local/mdsplus/lib/libJavaMds.so

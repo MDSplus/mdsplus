@@ -15,6 +15,7 @@
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 # configure based on ARCH
+echo "******** ARCH is ${ARCH} *************"
 case "${ARCH}" in
 "amd64")
   host=x86_64-linux
@@ -26,11 +27,12 @@ case "${ARCH}" in
   gsi_param="--with-gsi=/usr:gcc32"
   bits=32
   ;;
-*)
-  host=i686-linux
-  gsi_param="--with-gsi=/usr:gcc32"
-  bits=32
+"aarch64")
+  host=aarch64-linux
+  gsi_param="--with-gsi=/usr:gcc64"
+  bits=64
   ;;
+*)
 esac
 
 if [ "$OS" == "debian_wheezy" -o "${OS:0:7}" = "debian7" ]; then

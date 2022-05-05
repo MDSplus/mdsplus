@@ -194,6 +194,7 @@ normaltest() {
 
 main(){
     MAKE=${MAKE:="make"}
+    echo "****** ${srcdir}/deploy/os/${OS}.env *********************"
     if [ -r ${srcdir}/deploy/os/${OS}.env ]
     then
         source ${srcdir}/deploy/os/${OS}.env
@@ -217,6 +218,7 @@ main(){
     fi
 }
 
+echo "**************** ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh ***************"
 source ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
 if [ ! -z "$0" ] && [ ${0:0:1} != "-" ] && [ "$( basename $0 )" = "platform_docker_build.sh" ]
 then
