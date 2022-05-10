@@ -160,6 +160,21 @@ class _ACQ2106_435SM(MDSplus.Device):
                     continue
                 
                 samples = np.right_shift(np.frombuffer(data_point.buffer, dtype='int32'), 8)
+                spad    = np.frombuffer(data_point.buffer, dtype='uint32', count=-1, offset=self.nchans * np.int32(0).nbytes)
+
+                spad_stride = int(self.nchans / 2) + 4
+
+                spad2 = spad[2::spad_stride] # sec
+                spad3 = spad[3::spad_stride]
+
+                vernier   = (spad3 & 0x0FFFFFFF)
+
+                vernierns = vernier * self.mdsplus_device.wrtd_tickns
+                timeStamp = (spad2 * 1e9) + vernierns # wall TAI time in ns
+
+                # vernierns = vernier * self.dev.wrtd_tickns
+                # timeStamp = (spad2) + vernierns * 1e-9 # wall TAI time in secs
+                print("#### time stamp ", spad2[0], vernier[0], timeStamp[0], data_point.time)
 
                 influx_points = []
                 mdsplus_points= []
@@ -267,6 +282,9 @@ class _ACQ2106_435SM(MDSplus.Device):
 
         # Setting the slow monitoring frequency to 1Hz
         uut.s0.SLOWMON_FS = 1 #Hz
+
+        # WR Nanosec per tick:
+        self.wrtd_tickns = float(uut.cC.WRTD_TICKNS)
 
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
