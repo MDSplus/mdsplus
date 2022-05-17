@@ -1,8 +1,7 @@
 package mds.data.descriptor_a;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
+
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.descriptor_s.COMPLEX.Complex;
@@ -58,6 +57,7 @@ public final class Complex32Array extends COMPLEXArray<Float>
 		return buf.putFloat((float) value);
 	}
 
+	@SuppressWarnings("static-method")
 	public final ByteBuffer buildBuffer(final ByteBuffer buf, final double real, final double imag)
 	{
 		return buf.putFloat((float) real).putFloat((float) imag);
@@ -77,7 +77,9 @@ public final class Complex32Array extends COMPLEXArray<Float>
 
 	@Override
 	protected final byte getRankBits()
-	{ return 0x03; }
+	{
+		return 0x03;
+	}
 
 	@Override
 	public Complex32 getScalar(final int idx)

@@ -1,17 +1,10 @@
 package mds.jtraverser.dialogs;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.Vector;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
+
+import javax.swing.*;
 
 import mds.MdsException;
 import mds.data.CTX;
@@ -20,15 +13,7 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_s.NODE;
 import mds.jtraverser.editor.Editor;
 import mds.jtraverser.editor.SegmentEditor;
-import mds.jtraverser.editor.usage.ActionEditor;
-import mds.jtraverser.editor.usage.AnyEditor;
-import mds.jtraverser.editor.usage.AxisEditor;
-import mds.jtraverser.editor.usage.DispatchEditor;
-import mds.jtraverser.editor.usage.NumericEditor;
-import mds.jtraverser.editor.usage.SignalEditor;
-import mds.jtraverser.editor.usage.TaskEditor;
-import mds.jtraverser.editor.usage.TextEditor;
-import mds.jtraverser.editor.usage.WindowEditor;
+import mds.jtraverser.editor.usage.*;
 
 public class DataDialog extends JDialog
 {
@@ -88,6 +73,7 @@ public class DataDialog extends JDialog
 				MdsException.stderr("DataDialog.getData", e);
 				e.printStackTrace();
 			}
+			@SuppressWarnings("resource")
 			final CTX ctx = node.getTree();
 			switch (node.getNciUsage())
 			{

@@ -48,10 +48,10 @@ public abstract class Descriptor<T>
 		public boolean flag = true;
 
 		public FLAG()
-		{}
+		{
+		}
 	}
 
-	public static final boolean atomic = false;
 	public static final ByteOrder BYTEORDER = ByteOrder.nativeOrder();
 	public static final short BYTES = 8;
 	protected static final int _clsB = 3;
@@ -84,8 +84,8 @@ public abstract class Descriptor<T>
 	}
 
 	/**
-	 * Returns the Descriptor deserialized from the given byte[] with native byte
-	 * order (Descriptor.BYTEORDER)
+	 * Returns the Descriptor deserialized from the given byte[] with native
+	 * byte order (Descriptor.BYTEORDER)
 	 **/
 	public static final Descriptor<?> deserialize(final byte[] buf) throws MdsException
 	{
@@ -139,7 +139,7 @@ public abstract class Descriptor<T>
 		return t == null ? "*" : t.toString();
 	}
 
-	protected final static DATA<?>[] getDATAs(final Descriptor<?>... args) throws MdsException
+	protected final static DATA<?>[] getDATAs(final Descriptor<?>... args)
 	{
 		final DATA<?>[] data_args = new DATA[args.length];
 		for (int i = 0; i < args.length; i++)
@@ -451,7 +451,9 @@ public abstract class Descriptor<T>
 
 	/** Returns the value as raw ByteBuffer **/
 	public ByteBuffer getBuffer()
-	{ return this.p.asReadOnlyBuffer().order(this.p.order()); }
+	{
+		return this.p.asReadOnlyBuffer().order(this.p.order());
+	}
 
 	/**
 	 * Returns the data of the Descriptor, i.e. DATA($THIS)
@@ -475,8 +477,11 @@ public abstract class Descriptor<T>
 	}
 
 	public final DATA<?> getDATA()
-	{ return (DATA<?>) this.getData(); }
+	{
+		return (DATA<?>) this.getData();
+	}
 
+	@SuppressWarnings("static-method")
 	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
 	{
 		throw DATA.dataerror;
@@ -490,8 +495,10 @@ public abstract class Descriptor<T>
 		throw new MdsException(MdsException.TdiINVDTYDSC);
 	}
 
-	public Descriptor<?> getDataD() throws MdsException
-	{ return this.getData().toDescriptor(); }
+	public Descriptor<?> getDataD()
+	{
+		return this.getData().toDescriptor();
+	}
 
 	public Descriptor_S<?> getDataS() throws MdsException
 	{
@@ -503,14 +510,20 @@ public abstract class Descriptor<T>
 
 	/** Returns the dclass name of the Descriptor **/
 	public final String getDClassName()
-	{ return Descriptor.getDClassName(this.dclass()); }
+	{
+		return Descriptor.getDClassName(this.dclass());
+	}
 
 	/** Returns the value cast to Descriptor **/
 	public final Descriptor<?> getDescriptor() throws MdsException
-	{ return Descriptor.deserialize(this.getBuffer()); }
+	{
+		return Descriptor.deserialize(this.getBuffer());
+	}
 
 	public Descriptor<?> getDimension()
-	{ return this.getDimension(0); }
+	{
+		return this.getDimension(0);
+	}
 
 	public Descriptor<?> getDimension(final int idx)
 	{
@@ -522,7 +535,9 @@ public abstract class Descriptor<T>
 
 	/** Returns the dtype name of the Descriptor **/
 	public String getDTypeName()
-	{ return this.dtype().label; }
+	{
+		return this.dtype().label;
+	}
 
 	public Descriptor<?> getHelp()
 	{
@@ -560,7 +575,9 @@ public abstract class Descriptor<T>
 	}
 
 	protected Mds getMds()
-	{ return this.getTree().getMds(); }
+	{
+		return this.getTree().getMds();
+	}
 
 	public Descriptor<?> getRaw()
 	{
@@ -575,10 +592,14 @@ public abstract class Descriptor<T>
 
 	/** Returns the total size of the backing buffer in bytes **/
 	public final int getSize()
-	{ return this.b.limit(); }
+	{
+		return this.b.limit();
+	}
 
 	public final TREE getTree()
-	{ return this.tree; }
+	{
+		return this.tree;
+	}
 
 	public Descriptor<?> getUnits()
 	{
@@ -594,11 +615,16 @@ public abstract class Descriptor<T>
 		return super.hashCode();
 	}
 
+	@SuppressWarnings("static-method")
 	public boolean isAtomic()
-	{ return Descriptor.atomic; }
+	{
+		return false;
+	}
 
 	public boolean isLocal()
-	{ return this.islocal; }
+	{
+		return this.islocal;
+	}
 
 	/** (0,s) specific length typically a 16-bit (unsigned) length **/
 	public final int length()
@@ -769,6 +795,7 @@ public abstract class Descriptor<T>
 		return this.decompile(Descriptor.P_STMT, new StringBuilder(1024), Descriptor.DECO_STRX).toString();
 	}
 
+	@SuppressWarnings("static-method")
 	protected final boolean use_mds_local()
 	{
 		return (Descriptor.mds_local != null && Descriptor.mds_local.isReady() == null);

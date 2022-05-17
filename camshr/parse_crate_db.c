@@ -83,7 +83,7 @@ void parse_crate_db(struct CRATE *in, struct Crate_ *out)
   );
 
   out->device = (in->DSFname[0] != '.')
-                    ? strtol(in->DSFname, NULL, 0) // valid /dev/sg#
+                    ? strtol(in->DSFname, NULL, 10) // valid /dev/sg#
                     : -1;                          // in-valid
 
   out->type = in->HwyType; // highway type

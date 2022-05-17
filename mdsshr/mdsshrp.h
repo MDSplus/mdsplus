@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MDSSHRP_H
+#define _MDSSHRP_H
 
 #include <mdsdescrip.h>
 
@@ -22,3 +23,4 @@ extern int MDSUdpEventAstMask(char const *eventName,
 extern int MDSUdpEventCan(int eventid);
 extern int MDSUdpEvent(char const *eventName, int bufLen, char const *buf);
 extern int LibSFree1Dd(struct descriptor *out);
+#endif //indef _MDSSHRP_H

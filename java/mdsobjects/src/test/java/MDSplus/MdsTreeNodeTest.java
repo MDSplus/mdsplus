@@ -365,60 +365,110 @@ public class MdsTreeNodeTest
 			Assert.assertEquals(image[i], test_image[i + shift]);
 	}
 
-	@Test
-	public void testTreeNode() throws MdsException
-	{
-		tree.edit();
-		final MDSplus.TreeNode n1 = tree.addNode(any+":n1", "ANY");
-		// addNode with relative path //
-		MDSplus.TreeNode  n2 = n1.addNode("n2", "ANY");
-		MDSplus.TreeNode n3 = n1.addNode("\\top:"+any+":n3", "ANY");
-		tree.write();
-		Assert.assertEquals("N2", n2.getNodeName());
-		Assert.assertEquals("ANY", n2.getUsage());
-		Assert.assertEquals("N1", n2.getParent().getNodeName());
-		Assert.assertEquals("ANY", n2.getParent().getUsage());
-		// addNode with absolute path //
-		Assert.assertEquals("N3", n3.getNodeName());
-		Assert.assertEquals("ANY", n3.getUsage());
-		Assert.assertEquals(any, n3.getParent().getNodeName());
-		Assert.assertEquals("ANY", n3.getParent().getUsage());
-		// remove relative path //
-		n1.remove("n2");
-		try
-		{
-			n1.remove("n3");
-			Assert.fail("Removed inexistent node N3");
-		}
-		catch (final Exception exc)
-		{}
-		// remove switching to parent node //
-		n1.getParent().remove("n3");
-		n1.rename("\\top:test_rename");
-		Assert.assertEquals("TOP", n1.getParent().getNodeName());
-		n1.rename("\\top:"+any+":parent");
-		Assert.assertEquals("PARENT", n1.getNodeName());
-		Assert.assertEquals("ANY", n1.getUsage());
-		Assert.assertEquals(any, n1.getParent().getNodeName());
-		Assert.assertEquals("ANY", n1.getParent().getUsage());
-		n2 = n1.addNode("subnode", "ANY");
-		n3 = n2.addNode("child", "ANY");
-		n3.move(n1);
-		Assert.assertEquals("PARENT", n3.getParent().getNodeName());
-		n3.move(node, "new_parent");
-		Assert.assertEquals(any, n3.getParent().getNodeName());
-		n2.addTag("n2");
-		n3.addTag("n3");
-		n3 = tree.getNode("\\n3");
-		n3.removeTag("n3");
-		try
-		{
-			tree.getNode("\\n3");
-			Assert.fail("TAG N3 is non existent");
-		}
-		catch (final Exception exc)
-		{}
-	}
+        @Test
+        public void testTreeNode() throws MdsException
+        {
+                tree.edit();
+                final MDSplus.TreeNode n1 = tree.addNode(any+":n1", "ANY");
+                // addNode with relative path //
+                MDSplus.TreeNode  n2 = n1.addNode("n2", "ANY");
+                MDSplus.TreeNode n3 = n1.addNode("\\top:"+any+":n3", "ANY");
+                tree.write();
+                Assert.assertEquals("N2", n2.getNodeName());
+                Assert.assertEquals("ANY", n2.getUsage());
+                Assert.assertEquals("N1", n2.getParent().getNodeName());
+                Assert.assertEquals("ANY", n2.getParent().getUsage());
+                // addNode with absolute path //
+                Assert.assertEquals("N3", n3.getNodeName());
+                Assert.assertEquals("ANY", n3.getUsage());
+                Assert.assertEquals(any, n3.getParent().getNodeName());
+                Assert.assertEquals("ANY", n3.getParent().getUsage());
+                // remove relative path //
+                n1.remove("n2");
+                try
+                {
+                        n1.remove("n3");
+                        Assert.fail("Removed inexistent node N3");
+                }
+                catch (final Exception exc)
+                {}
+                // remove switching to parent node //
+                n1.getParent().remove("n3");
+                n1.rename("\\top:test_rename");
+                Assert.assertEquals("TOP", n1.getParent().getNodeName());
+                n1.rename("\\top:"+any+":parent");
+                Assert.assertEquals("PARENT", n1.getNodeName());
+                Assert.assertEquals("ANY", n1.getUsage());
+                Assert.assertEquals(any, n1.getParent().getNodeName());
+                Assert.assertEquals("ANY", n1.getParent().getUsage());
+                n2 = n1.addNode("subnode", "ANY");
+                n3 = n2.addNode("child", "ANY");
+                n3.move(n1);
+                Assert.assertEquals("PARENT", n3.getParent().getNodeName());
+                n3.move(node, "new_parent");
+                Assert.assertEquals(any, n3.getParent().getNodeName());
+                n2.addTag("n2");
+                n3.addTag("n3");
+                n3 = tree.getNode("\\n3");
+                n3.removeTag("n3");
+                try
+                {
+                        tree.getNode("\\n3");
+                        Assert.fail("TAG N3 is non existent");
+                }
+                catch (final Exception exc)
+                {}
+        }
+        
+        static class AsyncTest implements Runnable
+        {
+            TreeNode n1, n2, n3;
+            AsyncTest(Tree t)
+            {
+                try {
+                  n1 = t.getNode(any+":n1");
+                  n2 = t.getNode(any+":n1:n2");
+                  n3 = t.getNode("\\top:"+any+":n3");
+              }
+              catch(Exception exc){Assert.fail(exc.toString());}
+            }
+            public void run()
+            {
+              try {
+                Assert.assertEquals("N2", n2.getNodeName());
+                Assert.assertEquals("ANY", n2.getUsage());
+                Assert.assertEquals("N1", n2.getParent().getNodeName());
+                Assert.assertEquals("ANY", n2.getParent().getUsage());
+                // addNode with absolute path //
+                Assert.assertEquals("N3", n3.getNodeName());
+                Assert.assertEquals("ANY", n3.getUsage());
+                Assert.assertEquals(any, n3.getParent().getNodeName());
+                Assert.assertEquals("ANY", n3.getParent().getUsage());
+              }
+              catch(Exception exc){Assert.fail(exc.toString());}
+            }
+        }
+        
+        @Test
+        public void testTreeNodeMultiThread() throws MdsException
+        {
+                tree.edit();
+                final MDSplus.TreeNode n1 = tree.addNode(any+":n1", "ANY");
+                // addNode with relative path //
+                MDSplus.TreeNode  n2 = n1.addNode("n2", "ANY");
+                MDSplus.TreeNode n3 = n1.addNode("\\top:"+any+":n3", "ANY");
+                tree.write();
+                tree.close();
+                tree.normal();
+                Thread t = new Thread(new AsyncTest(tree));
+                t.start();
+                try {
+                  t.join();
+                }catch(Exception exc)
+                {
+                    Assert.fail(exc.toString());
+                }
+        }
 
 	@Test
 	public void testDevices() throws MdsException

@@ -24,7 +24,12 @@ public class DeviceInputs extends DeviceComponent
 	protected void initializeData(String data, boolean is_on)
         {
             mode = STRUCTURE;
-            int currNid = baseNid + offsetNid;
+            int currNid = baseNid;
+            try {
+              currNid = subtree.getInt("GETNCI("+subtree.getFullPath(baseNid)+".INPUTS, \'NID_NUMBER\')");
+            }catch(Exception exc){numInputs = 0;}
+            offsetNid = currNid - baseNid;
+            //int currNid = baseNid + offsetNid;
             try {
                 numInputs = subtree.getInt("GETNCI("+subtree.getFullPath(currNid)+",\'NUMBER_OF_CHILDREN\')");
             }catch(Exception exc){numInputs = 0;}
@@ -72,7 +77,10 @@ public class DeviceInputs extends DeviceComponent
                     inputName = "";
                 }
                 JPanel jp1 = new JPanel();
-                jp1.setBorder(new TitledBorder(inputName));
+                TitledBorder titledBorder = new TitledBorder(inputName);
+                titledBorder.setTitleColor(Color.red);
+                jp1.setBorder(titledBorder);
+                
                 jp1.setLayout(new GridLayout(1 + numFields[i],1));
                 JPanel jp2 = new JPanel();
                 jp2.setLayout(new BorderLayout());
@@ -132,12 +140,19 @@ public class DeviceInputs extends DeviceComponent
             {
                 try {
                      subtree.putDataExpr(currInputNid + 4, valuesTF[inputIdx].getText());
-                }catch(Exception exc){}
+                }catch(Exception exc)
+                {
+                    JOptionPane.showMessageDialog(null, ""+exc, "Error in input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
+                }
                 for(int fieldIdx = 0; fieldIdx < numFields[inputIdx]; fieldIdx++)
                 {
                     try {
                        subtree.putDataExpr(currInputNid + 8 + 2 * numParameters[inputIdx] + 6 * fieldIdx +  5, fieldsTF[inputIdx][fieldIdx].getText());
-                    }catch(Exception exc){}
+                    }catch(Exception exc)
+                    {
+                        JOptionPane.showMessageDialog(null, ""+exc, "Error in subfield of input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
+                    }
+             
                 }
                 currInputNid += numInputChildren + 1 + 2 * numParameters[inputIdx] + 6 * numFields[inputIdx]; 
             }

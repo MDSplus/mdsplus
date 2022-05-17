@@ -1459,7 +1459,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase div. (if from another thread):"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="166"/>
+                <Property name="offsetNid" type="int" value="174"/>
               </Properties>
             </Component>
           </SubComponents>

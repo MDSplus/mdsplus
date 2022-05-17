@@ -563,7 +563,8 @@ public class Node
 		}
 		catch (final Exception exc)
 		{
-			jTraverser.stderr("Error getting default", exc);
+			//jTraverser.stderr("Error getting default", exc);
+			//exc.printStackTrace();
 			return false;
 		}
 		try

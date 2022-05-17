@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _MDSDCLTHREADSTATIC_H
+#define _MDSDCLTHREADSTATIC_H
 #include "../mdsshr/mdsthreadstatic.h"
 #include "dcl_p.h"
 
@@ -18,3 +19,4 @@ typedef struct
 #define DCL_DOCS DCLTHREADSTATIC_VAR->docs
 
 extern DEFINE_GETTHREADSTATIC(DCLTHREADSTATIC_TYPE, DclGetThreadStatic);
+#endif // ifndef _MDSDCLTHREADSTATIC_H

@@ -119,8 +119,8 @@ static int checkResampledVersion(int nid, mdsdsc_t *deltaD)
   return outNid;
 }
 
-EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD, mdsdsc_t *endD,
-                               mdsdsc_t *minDeltaD, mdsdsc_xd_t *outSignal)
+EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *inStartD, mdsdsc_t *inEndD,
+                               mdsdsc_t *inMinDeltaD, mdsdsc_xd_t *outSignal)
 {
   int status, nid;
   int actNumSegments, currSegIdx, nonEmptySegIdx, numSegments, currIdx,
@@ -132,6 +132,36 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD, mdsdsc_t *endD,
   EMPTYXD(endTimesXd);
   double *startTimes, *endTimes, start, end;
 
+  
+  //Start, End, Delta MUST be copied becuse they may become invalid in case TreeSetTimeContext is internally called (e.g. in DefaultResample)
+  EMPTYXD(startXd);
+  EMPTYXD(endXd);
+  EMPTYXD(minDeltaXd);
+  mdsdsc_t *startD, *endD, *minDeltaD;
+  if (inStartD)
+  {
+    MdsCopyDxXd(inStartD, &startXd);
+    startD = startXd.pointer;
+  }
+  else
+    startD = NULL;
+  if (inEndD)
+  {
+    MdsCopyDxXd(inEndD, &endXd);
+    endD = endXd.pointer;
+  }
+  else
+    endD = NULL;
+  if (inMinDeltaD)
+  {
+    MdsCopyDxXd(inMinDeltaD, &minDeltaXd);
+    minDeltaD = minDeltaXd.pointer;
+  }
+  else
+    minDeltaD = NULL;
+  
+  
+  
   mdsdsc_t resampleFunNameD = {0, DTYPE_T, CLASS_S, resampleFunName};
   mdsdsc_t squishFunNameD = {0, DTYPE_T, CLASS_S, squishFunName};
   DESCRIPTOR_R(resampleFunD, DTYPE_FUNCTION, 6);
@@ -456,6 +486,10 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD, mdsdsc_t *endD,
       MdsFree1Dx(&emptyXd, NULL);
     }
   }
+  MdsFree1Dx(&startXd, NULL);
+  MdsFree1Dx(&endXd, NULL);
+  MdsFree1Dx(&minDeltaXd, NULL);
+
   return status;
 }
 

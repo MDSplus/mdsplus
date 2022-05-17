@@ -4,26 +4,10 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
+
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_a.Complex32Array;
-import mds.data.descriptor_a.Complex64Array;
-import mds.data.descriptor_a.EmptyArray;
-import mds.data.descriptor_a.Float32Array;
-import mds.data.descriptor_a.Float64Array;
-import mds.data.descriptor_a.Int128Array;
-import mds.data.descriptor_a.Int16Array;
-import mds.data.descriptor_a.Int32Array;
-import mds.data.descriptor_a.Int64Array;
-import mds.data.descriptor_a.Int8Array;
-import mds.data.descriptor_a.NUMBERArray;
-import mds.data.descriptor_a.NidArray;
-import mds.data.descriptor_a.StringArray;
-import mds.data.descriptor_a.Uint128Array;
-import mds.data.descriptor_a.Uint16Array;
-import mds.data.descriptor_a.Uint32Array;
-import mds.data.descriptor_a.Uint64Array;
-import mds.data.descriptor_a.Uint8Array;
+import mds.data.descriptor_a.*;
 import mds.mdsip.Message;
 
 /** Array Descriptor (4) **/
@@ -137,13 +121,13 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 	public static final Descriptor_A<?> readMessage(final Message msg) throws MdsException
 	{
 		final ByteBuffer msgh = msg.getHeader();
-		final byte dmct = msgh.get(Message._dmctB);
+		final byte dmct = msgh.get(Message.HEADER_NDIMS_B);
 		final int shape = (dmct > 1) ? (1 + dmct) * Integer.BYTES : 0;
 		final short header_size = (short) (Descriptor.BYTES + Descriptor.BYTES + shape);
-		final int arsize = msgh.getInt(Message._mlenI) - Message.HEADER_SIZE;
+		final int arsize = msgh.getInt(Message.HEADER_MSGLEN_I) - Message.HEADER_SIZE;
 		final ByteBuffer b = ByteBuffer.allocateDirect(header_size + arsize).order(msgh.order());
-		b.putShort(msgh.getShort(Message._lenS));
-		b.put(msgh.get(Message._typB));
+		b.putShort(msgh.getShort(Message.HEADER_LENGTH_S));
+		b.put(msgh.get(Message.HEADER_DTYPE_B));
 		b.put(Descriptor_A.CLASS);
 		b.putInt(header_size);
 		b.put((byte) 0);
@@ -152,12 +136,12 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 			b.put(ARRAY.f_coeff.toByte());
 		else
 			b.put(ARRAY.f_array.toByte());
-		b.put(msgh.get(Message._dmctB));
+		b.put(msgh.get(Message.HEADER_NDIMS_B));
 		b.putInt(arsize);
 		if (shape > 0)
 		{
 			b.putInt(header_size);
-			msgh.position(Message._dmsI);
+			msgh.position(Message.HEADER_DIM0_I);
 			for (int i = 0; i < dmct; i++)
 				b.putInt(msgh.getInt());
 		}
@@ -256,6 +240,7 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return this.decompile(new StringBuilder(32), t).toString();
 	}
 
+	@SuppressWarnings("static-method")
 	protected boolean format()
 	{
 		return false;
@@ -263,7 +248,9 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 
 	@Override
 	public final T[] getAtomic()
-	{ return this.getAtomic(0, this.getLength()); }
+	{
+		return this.getAtomic(0, this.getLength());
+	}
 
 	protected final T[] getAtomic(int begin, int count)
 	{
@@ -311,7 +298,9 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 
 	@Override
 	public final Descriptor<?> getHelp()
-	{ return null; }
+	{
+		return null;
+	}
 
 	/*
 	 * returns the i-th element as Descriptor
@@ -324,7 +313,9 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 
 	@Override
 	public boolean isAtomic()
-	{ return Descriptor_A.atomic; }
+	{
+		return Descriptor_A.atomic;
+	}
 
 	@Override
 	@SuppressWarnings(

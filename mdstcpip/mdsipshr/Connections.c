@@ -116,13 +116,11 @@ Connection *FindConnectionSending(int id)
   return c;
 }
 
-EXPORT int GetConnectionVersion(int id)
+EXPORT int MdsIpGetConnectionVersion(int id)
 {
   MDSIPTHREADSTATIC_INIT;
-  int version;
   Connection *c = _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR);
-  version = c ? (int)c->version : -1;
-  return version;
+  return (c) ? (int)c->version : -1;
 }
 
 Connection *FindConnectionWithLock(int id, con_t state)
@@ -483,6 +481,31 @@ int AddConnection(Connection *c)
   return c->id;
 }
 
+static inline int get_max_version()
+{
+#define MDSIP_MAX_VERSION "MDSIP_MAX_VERSION"
+  static int max_version = -1;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&mutex);
+  if (max_version < 0)
+  {
+    // if env not specified, use max
+    max_version = 0xFFFF;
+    char *tmp = getenv(MDSIP_MAX_VERSION);
+    if (tmp)
+    {
+      long max_long = strtol(tmp, &tmp, 0);
+      if (!*tmp && max_long >= 0 && max_long < max_version)
+      {
+        max_version = (int)max_long;
+      }
+      MDSMSG(MDSIP_MAX_VERSION " = %d", max_version);
+    }
+  }
+  pthread_mutex_unlock(&mutex);
+  return max_version;
+}
+
 int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
                      size_t info_len, int *id, char **usr)
 {
@@ -516,10 +539,12 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     // SET COMPRESSION //
     if (STATUS_OK)
     {
+      const int max_version = get_max_version();
       c->compression_level = msg->h.status & 0xf;
       c->client_type = msg->h.client_type;
-      if (msg->h.ndims > 0)
-        c->version = msg->h.dims[0];
+      c->version = msg->h.ndims > 0 ? msg->h.dims[0] : 0;
+      if (c->version > max_version)
+        c->version = max_version;
       fprintf(stderr, "Connected: %s\n", user_p);
     }
     else

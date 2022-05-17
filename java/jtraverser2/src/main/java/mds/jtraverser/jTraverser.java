@@ -1,4 +1,5 @@
 package mds.jtraverser;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -6,6 +7,7 @@ public class jTraverser
 {
 	static Pattern pattern = Pattern.compile("(.*)[\\\\/]([^\\\\/]+)_((model|[0-9]+))\\.tree");
 
+	@SuppressWarnings("unused")
 	public static void main(final String args[])
 	{
 		if (args.length >= 5)

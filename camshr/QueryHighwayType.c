@@ -115,7 +115,7 @@ int QueryHighwayType(char *serial_hwy_driver)
     {
       if (strstr(line, "Host:"))
       {
-        sscanf(line, "Host: scsi%1d Channel: %*2d Id: %2d", &tmpHost, &tmpId);
+        sscanf(line, "Host: scsi%d Channel: %*2d Id: %2d", &tmpHost, &tmpId);
 
         if (tmpHost == host_adapter && tmpId == scsi_id)
         {

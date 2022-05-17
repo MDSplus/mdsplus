@@ -62,6 +62,7 @@ public class MdsTreeTest
 		node = tree.addNode("\\java_test0::top.test_usage:TEXT", "TEXT");
 		node = tree.addNode("\\java_test0::top.test_usage:WINDOW", "WINDOW");
 		tree.write();
+		tree.close();
 		tree = new MDSplus.Tree("java_test0", -1, "READONLY");
 		node = tree.getNode("\\java_test0::top.test_usage:ANY");
 		Assert.assertEquals("ANY", node.getNodeName());
@@ -80,6 +81,7 @@ public class MdsTreeTest
 		Assert.assertEquals("ANY", node.getNodeName());
 		node = tree.getNode("ANY");
 		Assert.assertEquals("ANY", node.getNodeName());
+		tree.close();
 		// test usage and find by usage
 		tree = new MDSplus.Tree("java_test0", -1, "NORMAL");
 		MDSplus.TreeNodeArray array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_ANY);
@@ -115,6 +117,7 @@ public class MdsTreeTest
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_WINDOW);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("WINDOW", array.getElementAt(0).getNodeName());
+		tree.close();
 		tree = new MDSplus.Tree("java_test0", -1, "NORMAL");
 		try
 		{
@@ -146,17 +149,22 @@ public class MdsTreeTest
 		}
 		catch (final Exception exc)
 		{}
+		tree.close();
 		// create and delete
 		tree = new MDSplus.Tree("java_test0", -1);
 		tree.createPulse(1);
+		tree.close();
 		tree = new MDSplus.Tree("java_test0", 1);
 		node = tree.getNode("test_usage:ANY");
 		Assert.assertEquals("ANY", node.getNodeName());
+		tree.close();
 		tree = new MDSplus.Tree("java_test0", -1);
 		tree.createPulse(2);
+		tree.close();
 		tree = new MDSplus.Tree("java_test0", 2);
 		tree.deletePulse(2);
 		// create a pulse without copying from model structure //
+		tree.close();
 		tree = new MDSplus.Tree("java_test0", 2, "NEW");
 		// test that the new pulse has not the model nodes //
 		try
@@ -166,6 +174,7 @@ public class MdsTreeTest
 		}
 		catch (final Exception exc)
 		{}
+		tree.close();
 		tree = new MDSplus.Tree("java_test0", -1, "EDIT");
 		tree.setVersionsInModel(false);
 		tree.write(); // tree open in edit mode so must call write to avoid memory leak //
@@ -213,6 +222,8 @@ public class MdsTreeTest
 		}
 		catch (final Exception exc)
 		{}
+		tree.write();
+		tree.close();
 		try
 		{
 			// add device
@@ -236,5 +247,6 @@ public class MdsTreeTest
 			if (!exc.getMessage().contains("PYDEVICE_NOT_FOUND"))
 				throw exc;
 		}
+                tree.close();
 	}
 }

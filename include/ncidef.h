@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NCIDEF_H
+#define NCIDEF_H
 /**************************************
   NCIDEF.H - definitions of constants
   used in  item list arguments to the
@@ -37,7 +38,7 @@ TYPEDEF(4){
     NciM_NID_REFERENCE = 0x00004000,
     NciM_INCLUDE_IN_PULSE = 0x00008000,
     NciM_COMPRESS_SEGMENTS = 0x00010000,
-} ENDDEF(uint32_t, ncim_t);
+ } ENDDEF(uint32_t, ncim_t);
 TYPEDEF(4){
     NciK_IS_CHILD = 1,
     NciK_IS_MEMBER = 2,
@@ -83,6 +84,8 @@ TYPEDEF(4){
     NciUSAGE_STR = 39,
     NciCLASS_STR = 40,
     NciVERSION = 41,
+    NciCOMPRESSION_METHOD = 42,
+    NciCOMPRESSION_METHOD_STR = 43,
 } ENDDEF(int16_t, nci_t);
 #undef TYPEDEF
 #undef ENDDEF
@@ -93,3 +96,4 @@ typedef struct nci_itm
   void *pointer;
   int *return_length_address;
 } NCI_ITM;
+#endif

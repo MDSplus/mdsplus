@@ -9,6 +9,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/CAENV1740.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CONTIPPSETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CRIO_FAU.py
+./usr/local/mdsplus/pydevices/RfxDevices/CRIO_MPAG.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CYGNET4K.py
 ./usr/local/mdsplus/pydevices/RfxDevices/DEMOADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/DEMOSTREAM.py
@@ -28,6 +29,8 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_COMPONENT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_CONVERSION.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_DUTY_CYCLE.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EPICS_IN.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EPICS_OUT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_EXPR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_FFT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_GAM.py
@@ -53,6 +56,8 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RFXMODEL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RTSM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_DTT.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_DTT_PCS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_FLUXMAP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_LEV_CTRLR.py
@@ -66,6 +71,8 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_STREAM_IN_A.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SUPERVISOR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SWTRIG.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_UDP_RECEIVER.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_UDP_SENDER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_BREAKDOWN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_COMMON.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_CONFIG.py
@@ -85,9 +92,12 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_WAVEGEN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_XRAY.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MILL3.py
+./usr/local/mdsplus/pydevices/RfxDevices/MITICA_SETUP.py
+./usr/local/mdsplus/pydevices/RfxDevices/MITICA_SM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6259AI.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6259EV.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6368AI.py
+./usr/local/mdsplus/pydevices/RfxDevices/NI6368EV.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6682.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6683.py
 ./usr/local/mdsplus/pydevices/RfxDevices/NI6683REC.py
@@ -103,6 +113,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/RFXWAVESETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_PROTECTIONS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPADC.py
+./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPDAC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIG_SNAPSHOT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIS3820.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SOFT_TRIGGER.py

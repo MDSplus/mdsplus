@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MDSSHR_H
+#define __MDSSHR_H
 #include <mdsshr.h>
 #include <status.h>
 #include <mdsmsg.h>
@@ -20,3 +21,4 @@ struct sockaddr;
   MDSSHR_LOAD_LIBROUTINE(method, lib, method, on_error)
 
 extern int _LibGetHostAddr(const char *hostname, const char *service, struct sockaddr *sin);
+#endif // ifndef __MDSSHR_H

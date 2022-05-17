@@ -985,7 +985,7 @@ else:
             if pers is not None:
                 stream = pers.get('stream', None)
                 if stream is not None:
-                    raise MDSplus.DevUNKOWN_STATE
+                    raise MDSplus.DevUNKNOWN_STATE
             try:
                 self.lib.arm()
                 pers['stream'] = stream = self.Stream(self)

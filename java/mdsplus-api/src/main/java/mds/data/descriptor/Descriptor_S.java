@@ -2,29 +2,10 @@ package mds.data.descriptor;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_s.Complex32;
-import mds.data.descriptor_s.Complex64;
-import mds.data.descriptor_s.Event;
-import mds.data.descriptor_s.Float32;
-import mds.data.descriptor_s.Float64;
-import mds.data.descriptor_s.Ident;
-import mds.data.descriptor_s.Int128;
-import mds.data.descriptor_s.Int16;
-import mds.data.descriptor_s.Int32;
-import mds.data.descriptor_s.Int64;
-import mds.data.descriptor_s.Int8;
-import mds.data.descriptor_s.Missing;
-import mds.data.descriptor_s.Nid;
-import mds.data.descriptor_s.Path;
-import mds.data.descriptor_s.Pointer;
-import mds.data.descriptor_s.StringDsc;
-import mds.data.descriptor_s.Uint128;
-import mds.data.descriptor_s.Uint16;
-import mds.data.descriptor_s.Uint32;
-import mds.data.descriptor_s.Uint64;
-import mds.data.descriptor_s.Uint8;
+import mds.data.descriptor_s.*;
 
 /** Fixed-Length (static) Descriptor (1) **/
 @SuppressWarnings("deprecation")
@@ -32,6 +13,8 @@ public abstract class Descriptor_S<T> extends Descriptor<T>
 {
 	public static final byte CLASS = 1;
 	private static final boolean atomic = true;
+	@SuppressWarnings("hiding")
+	public static final short BYTES = Descriptor.BYTES;
 
 	public static final Descriptor_S<?> deserialize(final ByteBuffer b) throws MdsException
 	{
@@ -157,7 +140,9 @@ public abstract class Descriptor_S<T> extends Descriptor<T>
 
 	@Override
 	public int[] getShape()
-	{ return new int[0]; }
+	{
+		return new int[0];
+	}
 
 	public Float64 gfloat()
 	{
@@ -166,7 +151,9 @@ public abstract class Descriptor_S<T> extends Descriptor<T>
 
 	@Override
 	public boolean isAtomic()
-	{ return Descriptor_S.atomic; }
+	{
+		return Descriptor_S.atomic;
+	}
 
 	public Int32 longs()
 	{

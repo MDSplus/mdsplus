@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _TDISHR_H
+#define _TDISHR_H
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <status.h>
@@ -31,3 +32,4 @@ extern int _TdiIntrinsic(void **ctx, opcode_t opcode, int narg,
                          struct descriptor_xd *out_ptr);
 extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue,
                            uint32_t outdtype, uint32_t options);
+#endif

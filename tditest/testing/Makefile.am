@@ -17,6 +17,7 @@ TESTS = \
 	test-tdishr.tdi \
 	test-treeshr.tdi \
 	test-mdsip.tdi \
+	test-mdsip0.tdi \
 	test-mdsmisc.tdi \
 	test-dev-py.tdi \
 	test-tab.tdi
@@ -45,7 +46,7 @@ VALGRIND_FLAGS = \
 MOSTLYCLEANFILES = \
 	./*.log ./*.tap \
 	tditst.tmp shotid.sys \
-	main_*.characteristics* main_*.datafile* main_*.tree*
+	*_*.characteristics* *_*.datafile* *_*.tree*
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -53,5 +54,5 @@ MOSTLYCLEANFILES = \
 
 #clean-local: clean-local-tests
 
-check_PROGRAMS = 
+check_PROGRAMS =
 check_SCRIPTS  = $(TESTS)

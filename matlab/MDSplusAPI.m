@@ -1,13 +1,18 @@
 classdef MDSplusAPI < handle
 % MDSplusAPI new API core for MDSplus
-% % e.g.: read signal from remote tree on mds-data-1 using thick client
-%   setenv('default_tree_path', 'mds-data-1::')
-%   mdsip = MDSplusAPI();
-%   mdsip.open('mytree', 7357);
-%   sig = mdsip.tree.getNode('.signals:channel43').getRecord();
-%   dat = sig.toFloatArray();
-%   dim = sig.getDimension().toFloatArray();
-%   plot(dim, dat)
+% e.g.:
+% - read signal from remote tree on mds-data-1 using thick client
+%  setenv('default_tree_path', 'mds-data-1::')
+%  mdsip = MDSplusAPI();
+%  mdsip.open('mytree', 7357);
+%  sig = mdsip.tree.getNode('.signals:channel43').getRecord();
+%  dat = sig.toFloatArray();
+%  dim = sig.getDimension().toFloatArray();
+%  plot(dim, dat)
+% - using thin client connection to mds-data-1
+%  mdsip = MDSplusAPI('mds-data-1')
+%  ...
+
     properties(SetAccess = private)
         con;    % java object of the connection
         api;    % java object of the api
@@ -25,7 +30,7 @@ classdef MDSplusAPI < handle
             % NULL convenient way to create Descriptor[]
             %   arr = mdsip.toArray(mdsip.compile('1UQ'));
             arr = javaArray('mds.data.descriptor.Descriptor', nargin);
-            for i = 1:nargin
+            for i = 1 : nargin
                 arr(i) = varargin{i};
             end
         end
@@ -93,7 +98,7 @@ classdef MDSplusAPI < handle
         end
         function obj = evaluate(self, obj)
             % EVALUATE  evaluate mdsplus object
-            %   obj = mdsip.evaluate(obj_in);           
+            %   obj = mdsip.evaluate(obj_in);
             data = self.api.tdiEvaluate(self.tree, obj);
             obj = data.getData();
         end

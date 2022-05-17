@@ -309,15 +309,6 @@ class NI6683REC(Device):
                             print (e)
                             print('Error save timestamp')
 
-                        """
-                       try:
-                           self.device.pulse_time_tai_ns.putData( Int64(ts.nanos))
-                           self.device.pulse_time_tai_s.putData(Int64(ts.nanos//1000000000))
-                           self.device.pulse_time_date.putData(dt_str)
-                       except BaseException as e:
-                           print e
-                           print('Error save timestamp')
-                       """
                         ts_nanos_prev = ts[i].nanos
                       # break
                     print ("------------------------------------------------")
@@ -329,8 +320,6 @@ class NI6683REC(Device):
                 poll.unregister(fd)
 
             print ('AsynchStore stop')
-
-            return
 
         def stop(self):
             self.stopReq = True
@@ -345,7 +334,6 @@ class NI6683REC(Device):
             self.stop()
         except:
             print ('Not started')
-            pass
 
 
 # Configuration check
@@ -363,14 +351,6 @@ class NI6683REC(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Device number Undefined')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-
-        """
-        try:
-            devTerm = self.trigTermDict[self.trig_term.data()]
-        except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Device terminal Undefined')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-        """
 
         try:
             trigDecCnt = c_int(self.trig_dec_cnt.data())

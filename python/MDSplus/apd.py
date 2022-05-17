@@ -27,7 +27,7 @@
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
 
@@ -52,7 +52,7 @@ class Apd(_dat.TreeRefX, _arr.Array):
     @property
     def _descriptor(self):
         descs = self.descs
-        d = _dsc.Descriptor_apd()
+        d = _dsc.DescriptorAPD()
         d.scale = 0
         d.digits = 0
         d.aflags = 0

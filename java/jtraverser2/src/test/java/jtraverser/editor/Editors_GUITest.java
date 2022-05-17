@@ -1,35 +1,26 @@
 package jtraverser.editor;
 
 import java.awt.GridLayout;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+
+import javax.swing.*;
+
+import org.junit.*;
 
 import mds.MdsException;
 import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Float32Array;
 import mds.data.descriptor_a.Uint64Array;
-import mds.data.descriptor_r.Param;
-import mds.data.descriptor_r.Range;
-import mds.data.descriptor_r.Signal;
-import mds.data.descriptor_r.With_Units;
+import mds.data.descriptor_r.*;
 import mds.data.descriptor_r.function.CONST;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.StringDsc;
 import mds.jtraverser.dialogs.GraphPanel;
-import mds.jtraverser.editor.ArrayEditor;
-import mds.jtraverser.editor.Editor;
-import mds.jtraverser.editor.ExprEditor;
-import mds.jtraverser.editor.usage.AnyEditor;
-import mds.jtraverser.editor.usage.AxisEditor;
-import mds.jtraverser.editor.usage.NumericEditor;
+import mds.jtraverser.editor.*;
+import mds.jtraverser.editor.usage.*;
 import mds.jtraverser.editor.usage.SignalEditor;
 
+@SuppressWarnings("static-method")
 public class Editors_GUITest
 {
 	private static final Range range;

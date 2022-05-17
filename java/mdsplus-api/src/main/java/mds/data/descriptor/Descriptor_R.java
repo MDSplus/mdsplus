@@ -2,28 +2,10 @@ package mds.data.descriptor;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_r.Action;
-import mds.data.descriptor_r.Call;
-import mds.data.descriptor_r.Condition;
-import mds.data.descriptor_r.Conglom;
-import mds.data.descriptor_r.Dependency;
-import mds.data.descriptor_r.Dim;
-import mds.data.descriptor_r.Dispatch;
-import mds.data.descriptor_r.Function;
-import mds.data.descriptor_r.Method;
-import mds.data.descriptor_r.Opaque;
-import mds.data.descriptor_r.Param;
-import mds.data.descriptor_r.Procedure;
-import mds.data.descriptor_r.Program;
-import mds.data.descriptor_r.Range;
-import mds.data.descriptor_r.Routine;
-import mds.data.descriptor_r.Signal;
-import mds.data.descriptor_r.Slope;
-import mds.data.descriptor_r.Window;
-import mds.data.descriptor_r.With_Error;
-import mds.data.descriptor_r.With_Units;
+import mds.data.descriptor_r.*;
 import mds.data.descriptor_s.Missing;
 
 /** Fixed-Length (static) Descriptor (-62 : 194) **/
@@ -32,6 +14,7 @@ public abstract class Descriptor_R<T extends Number> extends Descriptor<T>
 {
 	public static final byte _ndesc = 8;
 	public static final byte _dscoffIa = 12;
+	@SuppressWarnings("hiding")
 	public static final int BYTES = Descriptor.BYTES + 4;
 	public static final byte CLASS = -62; // 194
 
@@ -242,7 +225,9 @@ public abstract class Descriptor_R<T extends Number> extends Descriptor<T>
 
 	@Override
 	public T getAtomic()
-	{ return null; }
+	{
+		return null;
+	}
 
 	public final Descriptor<?> getDescriptor(final int idx)
 	{
@@ -262,11 +247,15 @@ public abstract class Descriptor_R<T extends Number> extends Descriptor<T>
 	}
 
 	public final int getNArgs()
-	{ return this.ndesc() & 0xFF; }
+	{
+		return this.ndesc() & 0xFF;
+	}
 
 	@Override
 	public int[] getShape()
-	{ return new int[0]; }
+	{
+		return new int[0];
+	}
 
 	protected final byte ndesc()
 	{

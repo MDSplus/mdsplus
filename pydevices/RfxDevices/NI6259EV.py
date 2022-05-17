@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import mdsExceptions, Device, Data, Float32
+from MDSplus import mdsExceptions, Device, Data, Float32, Tree
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_double
@@ -152,6 +152,8 @@ class NI6259EV(Device):
 
 
 # saveInfo and restoreInfo allow to handle open file descriptors
+
+
     def saveInfo(self):
         print('SAVE INFO')
         NI6259EV.ni6259Fds[self.nid] = self.fd
@@ -235,6 +237,10 @@ class NI6259EV(Device):
 
         def run(self):
 
+            self.device.setTree(
+                Tree(self.device.getTree().name, self.device.getTree().shot))
+            self.device = self.device.copy()
+
             nid = self.device.getNid()
             chanModes = NI6259EV.ni6259chanModes[nid]
             chanEvents = NI6259EV.ni6259chanEvents[nid]
@@ -260,8 +266,8 @@ class NI6259EV(Device):
             eventNames_c = (c_char_p * numChans)()
 
             for chan in range(numChans):
-                    # self.device.debugPrint 'CHANNEL', self.chanMap[chan]+1
-                    # self.device.debugPrint '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]])
+                # self.device.debugPrint 'CHANNEL', self.chanMap[chan]+1
+                # self.device.debugPrint '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]])
                 if chanModes[chan] == 'CONTINUOUS(FREQ1)':
                     isBurst_c[chan] = 0
                     f1Divs_c[chan] = f1Div
@@ -398,6 +404,8 @@ class NI6259EV(Device):
 # End Inner class AsynchStore
 
 ##########init############################################################################
+
+
     def init(self):
 
         self.debugPrint(
@@ -605,10 +613,10 @@ class NI6259EV(Device):
         NI6259EV.niInterfaceLib.openTree(
             c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
-            self.worker.configure(self, self.fd, chanMap,
+            self.worker.configure(self.copy(), self.fd, chanMap,
                                   self.diffChanMap, treePtr, stopAcq)
         else:
-            self.worker.configure(self, self.fd, chanMap,
+            self.worker.configure(self.copy(), self.fd, chanMap,
                                   self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()

@@ -9,7 +9,7 @@ function mdstcl(command)
 %   prompting for, and executing TCL commands, and outputting the responses,
 %   until 'exit' is entered.
 
-    if (exist('command','var'))
+    if (exist('command', 'var'))
         mdsvalue('tcl($, _response)', command);
         response = char(mdsvalue('_response'));
         if (~isempty(response))
@@ -19,10 +19,10 @@ function mdstcl(command)
     end
 
     while 1
-        tclcmd = input('TCL> ','s');
+        tclcmd = input('TCL> ', 's');
         if (isempty(tclcmd))
             continue;
-        elseif (any(strcmpi(tclcmd,{'ex','exi','exit'})))
+        elseif (any(strcmpi(tclcmd, {'ex', 'exi', 'exit'})))
             return;
         else
             mdsvalue('tcl($, _response)', tclcmd);

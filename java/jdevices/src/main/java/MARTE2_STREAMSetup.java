@@ -703,7 +703,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Timebase div.:");
         deviceField14.setNumCols(4);
-        deviceField14.setOffsetNid(107);
+        deviceField14.setOffsetNid(1307);
         jPanel11.add(deviceField14);
 
         deviceChoice9.setChoiceIntValues(new int[] {1, 0});
@@ -959,7 +959,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel9);
 
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 128"));
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Value: ");
@@ -989,7 +989,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel10);
 
-        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 9"));
+        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField23.setIdentifier("");
         deviceField23.setLabelString("Value: ");
@@ -1020,7 +1020,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel13);
 
-        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 10"));
+        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField25.setIdentifier("");
         deviceField25.setLabelString("Value: ");
@@ -1051,7 +1051,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel14);
 
-        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 11"));
+        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField27.setIdentifier("");
         deviceField27.setLabelString("Value: ");
@@ -1082,7 +1082,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel15);
 
-        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 12"));
+        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField29.setIdentifier("");
         deviceField29.setLabelString("Value: ");
@@ -1113,7 +1113,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel16);
 
-        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 13"));
+        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField31.setIdentifier("");
         deviceField31.setLabelString("Value: ");
@@ -1144,7 +1144,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel17);
 
-        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 14"));
+        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField33.setIdentifier("");
         deviceField33.setLabelString("Value: ");
@@ -1175,7 +1175,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel18);
 
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 15"));
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField35.setIdentifier("");
         deviceField35.setLabelString("Value: ");
@@ -1206,7 +1206,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel19);
 
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 16"));
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField37.setIdentifier("");
         deviceField37.setLabelString("Value: ");
@@ -1237,7 +1237,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel20);
 
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 17"));
+        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField39.setIdentifier("");
         deviceField39.setLabelString("Value: ");
@@ -1268,7 +1268,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel21);
 
-        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 18"));
+        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField41.setIdentifier("");
         deviceField41.setLabelString("Value: ");
@@ -1299,7 +1299,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel22);
 
-        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 19"));
+        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField43.setIdentifier("");
         deviceField43.setLabelString("Value: ");
@@ -1330,7 +1330,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel23);
 
-        jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 20"));
+        jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField45.setIdentifier("");
         deviceField45.setLabelString("Value: ");
@@ -1361,7 +1361,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel24);
 
-        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 21"));
+        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField47.setIdentifier("");
         deviceField47.setLabelString("Value: ");
@@ -1392,7 +1392,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel25);
 
-        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 22"));
+        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField49.setIdentifier("");
         deviceField49.setLabelString("Value: ");
@@ -1423,7 +1423,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel26);
 
-        jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 23"));
+        jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField51.setIdentifier("");
         deviceField51.setLabelString("Value: ");
@@ -1454,7 +1454,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel27);
 
-        jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 24"));
+        jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField53.setIdentifier("");
         deviceField53.setLabelString("Value: ");
@@ -1485,7 +1485,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel28);
 
-        jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 25"));
+        jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField55.setIdentifier("");
         deviceField55.setLabelString("Value: ");
@@ -1516,7 +1516,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel29);
 
-        jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 26"));
+        jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField57.setIdentifier("");
         deviceField57.setLabelString("Value: ");
@@ -1547,7 +1547,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel30);
 
-        jPanel31.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 27"));
+        jPanel31.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField59.setIdentifier("");
         deviceField59.setLabelString("Value: ");
@@ -1578,7 +1578,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel31);
 
-        jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 28"));
+        jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField61.setIdentifier("");
         deviceField61.setLabelString("Value: ");
@@ -1609,7 +1609,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel32);
 
-        jPanel33.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 29"));
+        jPanel33.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField63.setIdentifier("");
         deviceField63.setLabelString("Value: ");
@@ -1640,7 +1640,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel33);
 
-        jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 30"));
+        jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField65.setIdentifier("");
         deviceField65.setLabelString("Value: ");
@@ -1671,7 +1671,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel34);
 
-        jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 31"));
+        jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField67.setIdentifier("");
         deviceField67.setLabelString("Value: ");
@@ -1702,7 +1702,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel35);
 
-        jPanel36.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 32"));
+        jPanel36.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField69.setIdentifier("");
         deviceField69.setLabelString("Value: ");
@@ -1733,7 +1733,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel36);
 
-        jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 33"));
+        jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField71.setIdentifier("");
         deviceField71.setLabelString("Value: ");
@@ -1764,7 +1764,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel37);
 
-        jPanel38.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 34"));
+        jPanel38.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField73.setIdentifier("");
         deviceField73.setLabelString("Value: ");
@@ -1795,7 +1795,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel38);
 
-        jPanel39.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal35"));
+        jPanel39.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField75.setIdentifier("");
         deviceField75.setLabelString("Value: ");
@@ -1826,7 +1826,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel39);
 
-        jPanel40.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 36"));
+        jPanel40.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField77.setIdentifier("");
         deviceField77.setLabelString("Value: ");
@@ -1857,7 +1857,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel40);
 
-        jPanel41.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 37"));
+        jPanel41.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField79.setIdentifier("");
         deviceField79.setLabelString("Value: ");
@@ -1888,7 +1888,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel41);
 
-        jPanel42.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 38"));
+        jPanel42.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField81.setIdentifier("");
         deviceField81.setLabelString("Value: ");
@@ -1919,7 +1919,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel42);
 
-        jPanel43.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 40"));
+        jPanel43.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField83.setIdentifier("");
         deviceField83.setLabelString("Value: ");
@@ -1950,7 +1950,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel43);
 
-        jPanel44.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 41"));
+        jPanel44.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField85.setIdentifier("");
         deviceField85.setLabelString("Value: ");
@@ -1981,7 +1981,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel44);
 
-        jPanel45.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 42"));
+        jPanel45.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField87.setIdentifier("");
         deviceField87.setLabelString("Value: ");
@@ -2012,7 +2012,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel45);
 
-        jPanel46.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 43"));
+        jPanel46.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField89.setIdentifier("");
         deviceField89.setLabelString("Value: ");
@@ -2043,7 +2043,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel46);
 
-        jPanel47.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 44"));
+        jPanel47.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField91.setIdentifier("");
         deviceField91.setLabelString("Value: ");
@@ -2074,7 +2074,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel47);
 
-        jPanel48.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 45"));
+        jPanel48.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField93.setIdentifier("");
         deviceField93.setLabelString("Value: ");
@@ -2105,7 +2105,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel48);
 
-        jPanel49.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 46"));
+        jPanel49.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField95.setIdentifier("");
         deviceField95.setLabelString("Value: ");
@@ -2136,7 +2136,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel49);
 
-        jPanel50.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 47"));
+        jPanel50.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField97.setIdentifier("");
         deviceField97.setLabelString("Value: ");
@@ -2167,7 +2167,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel50);
 
-        jPanel51.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 48"));
+        jPanel51.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField99.setIdentifier("");
         deviceField99.setLabelString("Value: ");
@@ -2198,7 +2198,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel51);
 
-        jPanel52.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 49"));
+        jPanel52.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField101.setIdentifier("");
         deviceField101.setLabelString("Value: ");
@@ -2229,7 +2229,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel52);
 
-        jPanel53.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 50"));
+        jPanel53.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField103.setIdentifier("");
         deviceField103.setLabelString("Value: ");
@@ -2260,7 +2260,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel53);
 
-        jPanel54.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 51"));
+        jPanel54.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField105.setIdentifier("");
         deviceField105.setLabelString("Value: ");
@@ -2291,7 +2291,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel54);
 
-        jPanel55.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 52"));
+        jPanel55.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField107.setIdentifier("");
         deviceField107.setLabelString("Value: ");
@@ -2322,7 +2322,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel55);
 
-        jPanel56.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 53"));
+        jPanel56.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField109.setIdentifier("");
         deviceField109.setLabelString("Value: ");
@@ -2353,7 +2353,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel56);
 
-        jPanel57.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 54"));
+        jPanel57.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField111.setIdentifier("");
         deviceField111.setLabelString("Value: ");
@@ -2384,7 +2384,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel57);
 
-        jPanel58.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 55"));
+        jPanel58.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField113.setIdentifier("");
         deviceField113.setLabelString("Value: ");
@@ -2415,7 +2415,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel58);
 
-        jPanel59.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 56"));
+        jPanel59.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField115.setIdentifier("");
         deviceField115.setLabelString("Value: ");
@@ -2446,7 +2446,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel59);
 
-        jPanel60.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 57"));
+        jPanel60.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField117.setIdentifier("");
         deviceField117.setLabelString("Value: ");
@@ -2477,7 +2477,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel60);
 
-        jPanel61.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 58"));
+        jPanel61.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField119.setIdentifier("");
         deviceField119.setLabelString("Value: ");
@@ -2508,7 +2508,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel61);
 
-        jPanel62.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 59"));
+        jPanel62.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField121.setIdentifier("");
         deviceField121.setLabelString("Value: ");
@@ -2539,7 +2539,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel62);
 
-        jPanel63.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 60"));
+        jPanel63.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField123.setIdentifier("");
         deviceField123.setLabelString("Value: ");
@@ -2570,7 +2570,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel63);
 
-        jPanel64.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 61"));
+        jPanel64.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField125.setIdentifier("");
         deviceField125.setLabelString("Value: ");
@@ -2601,7 +2601,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel64);
 
-        jPanel65.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 62"));
+        jPanel65.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField127.setIdentifier("");
         deviceField127.setLabelString("Value: ");
@@ -2632,7 +2632,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel65);
 
-        jPanel66.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 63"));
+        jPanel66.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField129.setIdentifier("");
         deviceField129.setLabelString("Value: ");
@@ -2663,7 +2663,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel66);
 
-        jPanel67.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 64"));
+        jPanel67.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField131.setIdentifier("");
         deviceField131.setLabelString("Value: ");
@@ -2694,7 +2694,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel67);
 
-        jPanel68.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 65"));
+        jPanel68.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField133.setIdentifier("");
         deviceField133.setLabelString("Value: ");
@@ -2725,7 +2725,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel68);
 
-        jPanel69.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 66"));
+        jPanel69.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField135.setIdentifier("");
         deviceField135.setLabelString("Value: ");
@@ -2756,7 +2756,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel69);
 
-        jPanel70.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 67"));
+        jPanel70.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField137.setIdentifier("");
         deviceField137.setLabelString("Value: ");
@@ -2787,7 +2787,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel70);
 
-        jPanel71.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 68"));
+        jPanel71.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField139.setIdentifier("");
         deviceField139.setLabelString("Value: ");
@@ -2818,7 +2818,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel71);
 
-        jPanel72.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 69"));
+        jPanel72.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField141.setIdentifier("");
         deviceField141.setLabelString("Value: ");
@@ -2849,7 +2849,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel72);
 
-        jPanel73.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 70"));
+        jPanel73.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField143.setIdentifier("");
         deviceField143.setLabelString("Value: ");
@@ -2911,7 +2911,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel74);
 
-        jPanel75.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 71"));
+        jPanel75.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField147.setIdentifier("");
         deviceField147.setLabelString("Value: ");
@@ -2942,7 +2942,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel75);
 
-        jPanel76.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 72"));
+        jPanel76.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField149.setIdentifier("");
         deviceField149.setLabelString("Value: ");
@@ -2973,7 +2973,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel76);
 
-        jPanel77.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 73"));
+        jPanel77.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField151.setIdentifier("");
         deviceField151.setLabelString("Value: ");
@@ -3004,7 +3004,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel77);
 
-        jPanel78.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 74"));
+        jPanel78.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField153.setIdentifier("");
         deviceField153.setLabelString("Value: ");
@@ -3035,7 +3035,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel78);
 
-        jPanel79.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 75"));
+        jPanel79.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField155.setIdentifier("");
         deviceField155.setLabelString("Value: ");
@@ -3066,7 +3066,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel79);
 
-        jPanel80.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 76"));
+        jPanel80.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField157.setIdentifier("");
         deviceField157.setLabelString("Value: ");
@@ -3097,7 +3097,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel80);
 
-        jPanel81.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 77"));
+        jPanel81.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField159.setIdentifier("");
         deviceField159.setLabelString("Value: ");
@@ -3128,7 +3128,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel81);
 
-        jPanel82.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 78"));
+        jPanel82.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField161.setIdentifier("");
         deviceField161.setLabelString("Value: ");
@@ -3159,7 +3159,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel82);
 
-        jPanel83.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 79"));
+        jPanel83.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField163.setIdentifier("");
         deviceField163.setLabelString("Value: ");
@@ -3190,7 +3190,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel83);
 
-        jPanel84.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 80"));
+        jPanel84.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField165.setIdentifier("");
         deviceField165.setLabelString("Value: ");
@@ -3252,7 +3252,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel85);
 
-        jPanel86.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 81"));
+        jPanel86.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField169.setIdentifier("");
         deviceField169.setLabelString("Value: ");
@@ -3283,7 +3283,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel86);
 
-        jPanel87.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 82"));
+        jPanel87.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField171.setIdentifier("");
         deviceField171.setLabelString("Value: ");
@@ -3314,7 +3314,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel87);
 
-        jPanel88.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 83"));
+        jPanel88.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField173.setIdentifier("");
         deviceField173.setLabelString("Value: ");
@@ -3345,7 +3345,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel88);
 
-        jPanel89.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 84"));
+        jPanel89.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField175.setIdentifier("");
         deviceField175.setLabelString("Value: ");
@@ -3376,7 +3376,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel89);
 
-        jPanel90.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 85"));
+        jPanel90.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField177.setIdentifier("");
         deviceField177.setLabelString("Value: ");
@@ -3407,7 +3407,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel90);
 
-        jPanel91.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 86"));
+        jPanel91.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField179.setIdentifier("");
         deviceField179.setLabelString("Value: ");
@@ -3438,7 +3438,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel91);
 
-        jPanel92.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 87"));
+        jPanel92.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField181.setIdentifier("");
         deviceField181.setLabelString("Value: ");
@@ -3469,7 +3469,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel92);
 
-        jPanel93.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 88"));
+        jPanel93.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField183.setIdentifier("");
         deviceField183.setLabelString("Value: ");
@@ -3500,7 +3500,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel93);
 
-        jPanel94.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 89"));
+        jPanel94.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField185.setIdentifier("");
         deviceField185.setLabelString("Value: ");
@@ -3531,7 +3531,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel94);
 
-        jPanel95.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 90"));
+        jPanel95.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField187.setIdentifier("");
         deviceField187.setLabelString("Value: ");
@@ -3562,7 +3562,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel95);
 
-        jPanel96.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 91"));
+        jPanel96.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField189.setIdentifier("");
         deviceField189.setLabelString("Value: ");
@@ -3593,7 +3593,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel96);
 
-        jPanel97.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 92"));
+        jPanel97.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField191.setIdentifier("");
         deviceField191.setLabelString("Value: ");
@@ -3624,7 +3624,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel97);
 
-        jPanel98.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 93"));
+        jPanel98.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField193.setIdentifier("");
         deviceField193.setLabelString("Value: ");
@@ -3655,7 +3655,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel98);
 
-        jPanel99.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 94"));
+        jPanel99.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField195.setIdentifier("");
         deviceField195.setLabelString("Value: ");
@@ -3686,7 +3686,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel99);
 
-        jPanel100.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 95"));
+        jPanel100.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField197.setIdentifier("");
         deviceField197.setLabelString("Value: ");
@@ -3717,7 +3717,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel100);
 
-        jPanel101.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 96"));
+        jPanel101.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField295.setIdentifier("");
         deviceField295.setLabelString("Value: ");
@@ -3748,7 +3748,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel101);
 
-        jPanel102.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 97"));
+        jPanel102.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField298.setIdentifier("");
         deviceField298.setLabelString("Value: ");
@@ -3779,7 +3779,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel102);
 
-        jPanel103.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 98"));
+        jPanel103.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField301.setIdentifier("");
         deviceField301.setLabelString("Value: ");
@@ -3810,7 +3810,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel103);
 
-        jPanel104.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 99"));
+        jPanel104.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField304.setIdentifier("");
         deviceField304.setLabelString("Value: ");
@@ -3841,7 +3841,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel104);
 
-        jPanel105.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8100"));
+        jPanel105.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField307.setIdentifier("");
         deviceField307.setLabelString("Value: ");
@@ -3872,7 +3872,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel105);
 
-        jPanel106.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 101"));
+        jPanel106.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField310.setIdentifier("");
         deviceField310.setLabelString("Value: ");
@@ -3903,7 +3903,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel106);
 
-        jPanel107.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 102"));
+        jPanel107.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField313.setIdentifier("");
         deviceField313.setLabelString("Value: ");
@@ -3934,7 +3934,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel107);
 
-        jPanel108.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 103"));
+        jPanel108.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField316.setIdentifier("");
         deviceField316.setLabelString("Value: ");
@@ -3965,7 +3965,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel108);
 
-        jPanel109.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 104"));
+        jPanel109.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField319.setIdentifier("");
         deviceField319.setLabelString("Value: ");
@@ -3996,7 +3996,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel109);
 
-        jPanel110.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 105"));
+        jPanel110.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField322.setIdentifier("");
         deviceField322.setLabelString("Value: ");
@@ -4027,7 +4027,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel110);
 
-        jPanel111.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 106"));
+        jPanel111.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField325.setIdentifier("");
         deviceField325.setLabelString("Value: ");
@@ -4058,7 +4058,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel111);
 
-        jPanel112.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 107"));
+        jPanel112.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField328.setIdentifier("");
         deviceField328.setLabelString("Value: ");
@@ -4089,7 +4089,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel112);
 
-        jPanel113.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 108"));
+        jPanel113.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField331.setIdentifier("");
         deviceField331.setLabelString("Value: ");
@@ -4120,7 +4120,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel113);
 
-        jPanel114.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 109"));
+        jPanel114.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField334.setIdentifier("");
         deviceField334.setLabelString("Value: ");
@@ -4151,7 +4151,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel114);
 
-        jPanel115.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 110"));
+        jPanel115.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField337.setIdentifier("");
         deviceField337.setLabelString("Value: ");
@@ -4182,7 +4182,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel115);
 
-        jPanel116.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 111"));
+        jPanel116.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField340.setIdentifier("");
         deviceField340.setLabelString("Value: ");
@@ -4213,7 +4213,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel116);
 
-        jPanel117.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 112"));
+        jPanel117.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField343.setIdentifier("");
         deviceField343.setLabelString("Value: ");
@@ -4244,7 +4244,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel117);
 
-        jPanel118.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 113"));
+        jPanel118.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField346.setIdentifier("");
         deviceField346.setLabelString("Value: ");
@@ -4275,7 +4275,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel118);
 
-        jPanel119.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 114"));
+        jPanel119.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField349.setIdentifier("");
         deviceField349.setLabelString("Value: ");
@@ -4306,7 +4306,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel119);
 
-        jPanel120.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8115"));
+        jPanel120.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField352.setIdentifier("");
         deviceField352.setLabelString("Value: ");
@@ -4337,7 +4337,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel120);
 
-        jPanel121.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 116"));
+        jPanel121.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField355.setIdentifier("");
         deviceField355.setLabelString("Value: ");
@@ -4368,7 +4368,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel121);
 
-        jPanel122.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 117"));
+        jPanel122.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField358.setIdentifier("");
         deviceField358.setLabelString("Value: ");
@@ -4399,7 +4399,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel122);
 
-        jPanel123.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 118"));
+        jPanel123.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField361.setIdentifier("");
         deviceField361.setLabelString("Value: ");
@@ -4430,7 +4430,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel123);
 
-        jPanel124.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 119"));
+        jPanel124.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField364.setIdentifier("");
         deviceField364.setLabelString("Value: ");
@@ -4461,7 +4461,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel124);
 
-        jPanel125.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 120"));
+        jPanel125.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField367.setIdentifier("");
         deviceField367.setLabelString("Value: ");
@@ -4492,7 +4492,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel125);
 
-        jPanel126.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 121"));
+        jPanel126.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField370.setIdentifier("");
         deviceField370.setLabelString("Value: ");
@@ -4523,7 +4523,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel126);
 
-        jPanel127.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 122"));
+        jPanel127.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField373.setIdentifier("");
         deviceField373.setLabelString("Value: ");
@@ -4554,7 +4554,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel127);
 
-        jPanel128.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 123"));
+        jPanel128.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField376.setIdentifier("");
         deviceField376.setLabelString("Value: ");
@@ -4585,7 +4585,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel128);
 
-        jPanel129.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 124"));
+        jPanel129.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField379.setIdentifier("");
         deviceField379.setLabelString("Value: ");
@@ -4616,7 +4616,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel129);
 
-        jPanel130.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 125"));
+        jPanel130.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField382.setIdentifier("");
         deviceField382.setLabelString("Value: ");
@@ -4647,7 +4647,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel130);
 
-        jPanel131.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 126"));
+        jPanel131.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField385.setIdentifier("");
         deviceField385.setLabelString("Value: ");
@@ -4678,7 +4678,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
 
         jPanel1.add(jPanel131);
 
-        jPanel132.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 127"));
+        jPanel132.setBorder(javax.swing.BorderFactory.createTitledBorder("Signal 8"));
 
         deviceField388.setIdentifier("");
         deviceField388.setLabelString("Value: ");

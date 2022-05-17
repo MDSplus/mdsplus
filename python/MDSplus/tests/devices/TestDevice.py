@@ -25,7 +25,7 @@
 
 import time
 import threading
-from MDSplus import Device, DevUNKOWN_STATE, Int32Array
+from MDSplus import Device, DevUNKNOWN_STATE, Int32Array
 from MDSplus import with_mdsrecords, mdsrecord, cached_property
 
 
@@ -196,8 +196,8 @@ class TestDevice(Device):
         return 'TEST'
 
     def error(self):
-        """Raise an DevUNKOWN_STATE exception."""
-        raise DevUNKOWN_STATE
+        """Raise an DevUNKNOWN_STATE exception."""
+        raise DevUNKNOWN_STATE
 
     def timeout(self):
         """Simulate a long running process."""

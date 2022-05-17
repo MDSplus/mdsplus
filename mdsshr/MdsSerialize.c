@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <mdsshr_messages.h>
 #include <mdstypes.h>
+#include <_ncidef.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -52,6 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FixLength(a) \
   if (a.length == 0) \
   MdsFixDscLength((mdsdsc_t *)&a)
+#define N_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
 void MdsFixDscLength(mdsdsc_t *in);
 
 #ifdef WORDS_BIGENDIAN
@@ -1127,12 +1129,29 @@ EXPORT int MdsSerializeDscOutZ(
       MdsCopyDxXdZ(in, out, 0, fixupNid, fixupNidArg, fixupPath, fixupPathArg);
   if (status == MdsCOMPRESSIBLE)
   {
-    if (compress)
+    // changed the meaning of the compress arg from boolean to:
+    // -1 -don't compress
+    // 0  - use standard delta compression
+    // 1.. - use the compression method with this index
+    if (compress != -1)
     {
+      DEFINE_COMPRESSION_METHODS
+
       tempxd = *out;
       out->l_length = 0;
       out->pointer = 0;
-      status = MdsCompress(0, 0, tempxd.pointer, out);
+      if ((unsigned int)compress >= NUM_COMPRESSION_METHODS)
+          compress = 0;
+      if (compress) 
+      {
+          DESCRIPTOR_FROM_CSTRING(image, compression_methods[compress].image);
+          DESCRIPTOR_FROM_CSTRING(method, compression_methods[compress].method);
+          status = MdsCompress(&image, &method, tempxd.pointer, out);
+      }
+      else
+      {
+          status = MdsCompress(NULL, NULL, tempxd.pointer, out);
+      }
       MdsFree1Dx(&tempxd, NULL);
       compressible = 0;
     }
@@ -1219,5 +1238,5 @@ EXPORT int MdsSerializeDscOutZ(
 
 EXPORT int MdsSerializeDscOut(mdsdsc_t const *in, mdsdsc_xd_t *out)
 {
-  return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0);
 }

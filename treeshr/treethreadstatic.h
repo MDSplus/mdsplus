@@ -1,13 +1,16 @@
-#pragma once
+#ifndef _TREETHREADSTATIC_H
+#define _TREETHREADSTATIC_H
+
 #include "../mdsshr/mdsthreadstatic.h"
 #include "treeshrp.h"
 
+#define HOST_UNIQUE_SIZE 64
 typedef struct host
 {
   struct host *next;
   int conid;
   int links;
-  char *unique;
+  char unique[HOST_UNIQUE_SIZE];
 } Host;
 #define HOST_PRI "Host(conid=%d, links=%d, unique='%s')"
 #define HOST_VAR(h) (h)->conid, (h)->links, (h)->unique
@@ -41,3 +44,4 @@ extern DEFINE_GETTHREADSTATIC(TREETHREADSTATIC_TYPE, TreeGetThreadStatic);
 
 extern void **TreeCtx();
 extern EXPORT int TreeUsePrivateCtx(int onoff);
+#endif // ifndef _TREETHREADSTATIC_H

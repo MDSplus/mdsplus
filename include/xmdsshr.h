@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _XMDSSHR_H
+#define _XMDSSHR_H
 #include <Mrm/MrmPublic.h>
 #include <X11/Intrinsic.h>
 #include <Xmds/ListTreeP.h>
@@ -74,3 +75,4 @@ extern EXPORT Pixmap *XmdsUsageGrayIcons();
 
 extern EXPORT WidgetClass xmdsWaveformWidgetClass;
 extern EXPORT XmdsWaveformClassRec xmdsWaveformClassRec;
+#endif

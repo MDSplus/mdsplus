@@ -94,6 +94,8 @@ static const struct item
     {"CLASS_STR", 0, 0, NciCLASS_STR, DTYPE_T, 0},
     {"COMPRESSIBLE", NciM_COMPRESSIBLE, NciM_COMPRESSIBLE, NciGET_FLAGS,
      DTYPE_BU, 1},
+     {"COMPRESSION_METHOD", 0, 0, NciCOMPRESSION_METHOD, DTYPE_BU, 1},
+     {"COMPRESSION_METHOD_STR", 0, 0, NciCOMPRESSION_METHOD_STR, DTYPE_T, 0},
     {"COMPRESS_ON_PUT", NciM_COMPRESS_ON_PUT, NciM_COMPRESS_ON_PUT,
      NciGET_FLAGS, DTYPE_BU, 1},
     {"COMPRESS_SEGMENTS", NciM_COMPRESS_SEGMENTS, NciM_COMPRESS_SEGMENTS,
@@ -656,7 +658,16 @@ int Tdi1GetNci(opcode_t opcode __attribute__((unused)), int narg,
     out_ptr->pointer->dtype = DTYPE_NID;
   if (STATUS_OK && out_ptr->pointer && out_ptr->pointer->class == CLASS_A &&
       ((struct descriptor_a *)(out_ptr->pointer))->arsize == 0)
-    status = TreeNNF;
+  {
+    if (key_ptr->item_code != RECORDIDX) {
+      status = TreeNNF; // Keep previous behaviour when not asking for RECORD
+    }
+    else if (out_ptr->pointer->length == 0)
+    {
+      status = TreeNODATA; // If RECORD is truly empty, return TreeNODATA error
+    }
+    // If RECORD is not empty but has zero size, no action is needed
+  }
 
   return status;
 }

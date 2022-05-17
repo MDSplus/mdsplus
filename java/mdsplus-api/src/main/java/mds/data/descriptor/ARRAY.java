@@ -1,19 +1,10 @@
 package mds.data.descriptor;
 
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
-import mds.data.descriptor_a.EmptyArray;
-import mds.data.descriptor_a.Float32Array;
-import mds.data.descriptor_a.Float64Array;
-import mds.data.descriptor_a.Int128Array;
-import mds.data.descriptor_a.Int32Array;
-import mds.data.descriptor_a.Int64Array;
-import mds.data.descriptor_a.Int8Array;
-import mds.data.descriptor_a.Uint128Array;
-import mds.data.descriptor_a.Uint32Array;
-import mds.data.descriptor_a.Uint64Array;
-import mds.data.descriptor_a.Uint8Array;
+import mds.data.descriptor_a.*;
 
 /** Array Descriptor **/
 public abstract class ARRAY<T> extends Descriptor<T>
@@ -86,7 +77,6 @@ public abstract class ARRAY<T> extends Descriptor<T>
 	public static final int _aszI = 12;
 	public static final int _a0I = 16;
 	public static final int _dmsIa = 20;
-	public static final byte CLASS = 4;
 	protected static final aflags f_array = new aflags(false, true, true, false, false);
 	protected static final aflags f_bounds = new aflags(false, true, true, true, true);
 	protected static final aflags f_coeff = new aflags(false, true, true, true, false);
@@ -221,9 +211,9 @@ public abstract class ARRAY<T> extends Descriptor<T>
 	{
 		return this.arsize() / this.length();
 		/*
-		 * final int dimct = this.dimct(); if(dimct == 0) return 0; int array_length =
-		 * 1; for(int i = 0; i < dimct; i++) array_length *= this.dims(i); return
-		 * array_length;
+		 * final int dimct = this.dimct(); if(dimct == 0) return 0; int
+		 * array_length = 1; for(int i = 0; i < dimct; i++) array_length *=
+		 * this.dims(i); return array_length;
 		 */
 	}
 

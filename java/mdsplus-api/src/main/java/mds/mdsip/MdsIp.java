@@ -1,12 +1,12 @@
 package mds.mdsip;
 
 import java.io.*;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.IntConsumer;
 import java.util.regex.Matcher;
 import java.util.stream.IntStream;
 
@@ -21,28 +21,90 @@ import mds.data.descriptor_s.*;
 
 public class MdsIp extends Mds
 {
-	public interface Connection extends AutoCloseable, ReadableByteChannel, WritableByteChannel
+	public static abstract class Connection implements ReadableByteChannel, WritableByteChannel
 	{
 		static final long internal_timeout = 1000L; // ms
+		private static final int minIdx = 1;
+		private int currentIdx = -1;
+		private int maxIdx = -1;
+
+		/** Check message index to early detect invalid headers. */
+		public void checkMsgIdx(final byte msgIdx) throws IOException
+		{
+			final int thisIdx = 0xFF & msgIdx;
+			if (this.currentIdx == -1)
+			{ // satisfy very old mdsip servers that failed to initialize msgidx
+				// to 1
+				this.currentIdx = 2;
+				if (thisIdx > 1)
+					throw new IOException("Invalid Message: MSGIDX");
+				return;
+			}
+			else if (this.maxIdx < 0)
+			{
+				if (msgIdx == Connection.minIdx && this.currentIdx > Connection.minIdx)
+				{ // adjust max index
+					this.maxIdx = this.currentIdx;
+					this.currentIdx = Connection.minIdx;
+				}
+			}
+			else if (this.currentIdx >= this.maxIdx)
+			{
+				this.currentIdx = Connection.minIdx;
+			}
+			if (DEBUG.D)
+				System.out.println(this + " currentIdx = " + this.currentIdx + " thisIdx = " + thisIdx);
+			if (thisIdx != this.currentIdx++)
+				throw new IOException("Invalid Message: MSGIDX");
+		}
 	}
 
-	public abstract static class MdsIpIOStream implements Connection
+	private final class EventProcessorThread extends Thread
+	{
+		int eventId = -1;
+		String eventName;
+
+		public EventProcessorThread()
+		{
+			super(MdsIp.this.getName("EventProcessorThread"));
+			this.setDaemon(true);
+		}
+
+		@Override
+		public void run()
+		{
+			if (this.eventName != null)
+				MdsIp.this.dispatchUpdateEvent(this.eventName);
+			else if (this.eventId != -1)
+				MdsIp.this.dispatchUpdateEvent(this.eventId);
+		}
+
+		public void setEventid(final int id)
+		{
+			if (DEBUG.M)
+				System.out.println("Received Event ID " + id);
+			this.eventId = id;
+			this.eventName = null;
+		}
+	} // end EventProcessorThread class
+
+	public abstract static class MdsIpIOStream extends Connection
 	{
 		protected InputStream dis;
 		protected OutputStream dos;
 
 		@Override
-		public int read(ByteBuffer b) throws IOException
+		public int read(final ByteBuffer b) throws IOException
 		{
 			final int rem = b.remaining();
 			if (!this.isOpen())
 				return -1;
-			if (wait_available() == 0)
+			if (this.wait_available() == 0)
 				return 0;
 			assert (rem > 0);
 			if (b.hasArray())
 			{
-				final int read = dis.read(b.array(), b.arrayOffset() + b.position(), b.remaining());
+				final int read = this.dis.read(b.array(), b.arrayOffset() + b.position(), b.remaining());
 				if (read <= 0)
 				{
 					if (read < 0)
@@ -53,48 +115,47 @@ public class MdsIp extends Mds
 					b.position(b.position() + read);
 				return read;
 			}
-			else
+			final byte buf[] = new byte[Math.min(0x8000, b.remaining())];
+			while (b.hasRemaining())
 			{
-				final byte buf[] = new byte[Math.min(0x8000, b.remaining())];
-				while (b.hasRemaining())
+				final int read = this.dis.read(buf);
+				if (read == buf.length)
+					b.put(buf);
+				else
 				{
-					final int read = dis.read(buf);
-					if (read == buf.length)
-						b.put(buf);
-					else
-					{
-						if (read < 0)
-							return read;
-						b.put(buf, 0, read);
-						break;
-					}
+					if (read < 0)
+						return read;
+					b.put(buf, 0, read);
+					break;
 				}
-				return rem - b.remaining();
 			}
+			return rem - b.remaining();
 		}
 
 		private final int wait_available() throws IOException
 		{
 			int i = 1, tot = 0;
 			int avail = 0;
-			synchronized (dis)
+			synchronized (this.dis)
 			{
 				try
 				{
-					while ((avail = dis.available()) == 0 && tot < internal_timeout)
+					while ((avail = this.dis.available()) == 0 && tot < Connection.internal_timeout)
 					{
-						dis.wait(i);
+						this.dis.wait(i);
 						tot += i++;
 					}
 				}
 				catch (final InterruptedException e)
-				{}
+				{
+					// abort
+				}
 			}
 			return avail;
 		}
 
 		@Override
-		public int write(ByteBuffer b) throws IOException
+		public int write(final ByteBuffer b) throws IOException
 		{
 			final int rem = b.remaining();
 			assert (rem > 0);
@@ -102,32 +163,93 @@ public class MdsIp extends Mds
 				return -1;
 			if (b.hasArray())
 			{
-				dos.write(b.array(), b.arrayOffset() + b.position(), b.remaining());
+				this.dos.write(b.array(), b.arrayOffset() + b.position(), b.remaining());
 				b.position(b.limit());
 			}
 			else
 			{
 				while (b.hasRemaining())
-					dos.write(b.get());
+					this.dos.write(b.get());
 			}
 			final int left = b.remaining();
 			if (left == 0)
 			{
-				dos.flush();
+				this.dos.flush();
 				return rem;
 			}
 			return rem - left;
 		}
 	}
 
-	private final class MRT extends Thread // mds Receive Thread
+	public final static class Provider
+	{
+		private static final String DEFAULT_LOCAL = "local";
+		private static final String PREFIX_LOCAL = "local";
+		private static final String PREFIX_FILE = "file";
+		private static final String PREFIX_SSH = "ssh";
+		private static final String PREFIX_TCP = "tcp";
+		private static final String DEFAULT_PREFIX = Provider.PREFIX_TCP;
+		private final String prefix;
+		private final String suffix;
+
+		public Provider()
+		{
+			this(null);// local
+		}
+
+		public Provider(final String provider)
+		{
+			if (provider == null || provider.isEmpty())
+			{
+				this.prefix = Provider.PREFIX_LOCAL;
+				this.suffix = Provider.DEFAULT_LOCAL;
+				return;
+			}
+			final String pre_post[] = provider.split("://", 2);
+			if (pre_post.length > 1)
+			{
+				this.prefix = pre_post[0];
+				this.suffix = pre_post[1];
+			}
+			else
+			{
+				this.prefix = Provider.DEFAULT_PREFIX;
+				this.suffix = pre_post[0];
+			}
+		}
+
+		@Override
+		public final boolean equals(final Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj == null || !(obj instanceof Provider))
+				return false;
+			final Provider provider = (Provider) obj;
+			return this.prefix.equals(provider.prefix) && this.suffix.equals(provider.suffix);
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return this.prefix.hashCode() ^ this.suffix.hashCode();
+		}
+
+		@Override
+		public final String toString()
+		{
+			return this.prefix + "://" + this.suffix;
+		}
+	}
+
+	private final class ReceiverThread extends Thread
 	{
 		private boolean killed = false;
 		private Message message;
 
-		public MRT()
+		public ReceiverThread()
 		{
-			super(MdsIp.this.getName("MRT"));
+			super(MdsIp.this.getName("ReceiverThread"));
 			this.setDaemon(true);
 			this.message = null;
 		}
@@ -144,7 +266,7 @@ public class MdsIp extends Mds
 			{
 				synchronized (this)
 				{
-					for (;;)
+					while (MdsIp.this.connected)
 					{
 						if (this.killed)
 							return null;
@@ -181,9 +303,9 @@ public class MdsIp extends Mds
 					final Message new_message = Message.receive(MdsIp.this.connection, MdsIp.this.translisteners, -1);
 					if (new_message.getDType() == DTYPE.EVENT)
 					{
-						final PMET PmdsEvent = new PMET();
-						PmdsEvent.setEventid(new_message.getBody().get(12));
-						PmdsEvent.start();
+						final EventProcessorThread thread = new EventProcessorThread();
+						thread.setEventid(new_message.getBody().get(12));
+						thread.start();
 					}
 					else
 						synchronized (this)
@@ -200,12 +322,13 @@ public class MdsIp extends Mds
 					this.killed = true;
 					this.notifyAll();
 				}
-				if (MdsIp.this.connected)
+				synchronized (MdsIp.this)
 				{
-					MdsIp.this.lostConnection();
-					if (!(e instanceof SocketException || e instanceof EOFException))// EOF if socket shuts down on
-																						// abort
-						e.printStackTrace();
+					if (MdsIp.this.connected)
+					{
+						MdsIp.this.receiverThread = null;
+						MdsIp.this.lostConnection();
+					}
 				}
 			}
 		}
@@ -223,202 +346,7 @@ public class MdsIp extends Mds
 					System.err.println(this.getName() + ": isInterrupted");
 				}
 		}
-	} // End MRT class
-
-	private final class PMET extends Thread // Process mds Event Thread
-	{
-		int eventId = -1;
-		String eventName;
-
-		public PMET()
-		{
-			super(MdsIp.this.getName("PMET"));
-			this.setDaemon(true);
-		}
-
-		@Override
-		public void run()
-		{
-			if (this.eventName != null)
-				MdsIp.this.dispatchUpdateEvent(this.eventName);
-			else if (this.eventId != -1)
-				MdsIp.this.dispatchUpdateEvent(this.eventId);
-		}
-
-		public void setEventid(final int id)
-		{
-			if (DEBUG.M)
-				System.out.println("Received Event ID " + id);
-			this.eventId = id;
-			this.eventName = null;
-		}
-		/*
-		 * public void setEventName(final String name) { if(DEBUG.M)
-		 * System.out.println("Received Event Name " + name); this.eventId = -1;
-		 * this.eventName = name; }
-		 */
-	} // end PMET class
-
-	public final static class Provider
-	{
-		// Must ensure host field is never null
-		private static final String DEFAULT_LOCAL = "local";
-		private static final int DEFAULT_PORT = 8000;
-		private static final String DEFAULT_USER = System.getProperty("user.name");
-		private static final String PREFIX_LOCAL = "local://";
-		private static final String PREFIX_SSH = "ssh://";
-		private final String host;
-		private final int port;
-		private boolean use_local;
-		private boolean use_ssh;
-		private final String user;
-
-		public Provider()
-		{
-			this(null);// local
-		}
-
-		public Provider(final String provider)
-		{
-			this(provider, false);
-		}
-
-		public Provider(String provider, final boolean use_ssh)
-		{
-			if (provider == null || provider.isEmpty())
-			{
-				this.use_local = true;
-				this.user = null;
-				this.host = null;
-				this.port = 0;
-				this.use_ssh = false;
-			}
-			else if (provider.toLowerCase().startsWith(PREFIX_LOCAL))
-			{
-				this.use_local = true;
-				this.user = null;
-				this.host = provider.substring(PREFIX_LOCAL.length());
-				this.port = 0;
-				this.use_ssh = false;
-			}
-			else
-			{
-				this.use_local = false;
-				final boolean sshstr = provider.toLowerCase().startsWith(PREFIX_SSH);
-				if (sshstr)
-					provider = provider.substring(PREFIX_SSH.length());
-				this.use_ssh = sshstr || use_ssh;
-				final int at = provider.indexOf("@");
-				final int cn = provider.indexOf(":");
-				this.user = at < 0 ? null : provider.substring(0, at);
-				this.host = cn < 0 ? provider.substring(at + 1).toLowerCase()
-						: provider.substring(at + 1, cn).toLowerCase();
-				this.port = cn < 0 ? 0 : Short.parseShort(provider.substring(cn + 1));
-			}
-		}
-
-		public Provider(final String host, final int port)
-		{
-			this(host, port, null, false);
-		}
-
-		public Provider(final String host, final int port, final String user)
-		{
-			this(host, port, user, user != null);
-		}
-
-		public Provider(String host, final int port, final String user, final boolean use_ssh)
-		{
-			if (host == null)
-			{
-				this.use_local = true;
-				this.user = null;
-				this.host = null;
-				this.port = 0;
-				this.use_ssh = false;
-			}
-			else
-			{
-				this.user = user;
-				host = host.toLowerCase();
-				this.use_local = host.startsWith(PREFIX_LOCAL);
-				if (this.use_local)
-				{
-					this.use_ssh = false;
-					host = host.substring(PREFIX_LOCAL.length());
-				}
-				else
-				{
-					final boolean sshstr = host.startsWith(PREFIX_SSH);
-					if (sshstr)
-					{
-						host = host.substring(PREFIX_SSH.length());
-						this.use_ssh = true;
-					}
-					else
-						this.use_ssh = use_ssh;
-				}
-				this.host = host;
-				this.port = port;
-			}
-		}
-
-		@Override
-		public final boolean equals(final Object obj)
-		{
-			if (this == obj)
-				return true;
-			if (obj == null || !(obj instanceof Provider))
-				return false;
-			final Provider provider = (Provider) obj;
-			return use_ssh == provider.use_ssh && use_local == provider.use_local
-					&& this.getHost().equals(provider.getHost()) && this.getPort() == provider.getPort()
-					&& this.getUser().equals(provider.getUser());
-		}
-
-		public final MdsIp getConnection()
-		{ return new MdsIp(this); }
-
-		public String getHost()
-		{ return host == null || host.isEmpty() ? DEFAULT_LOCAL : host; }
-
-		public int getPort()
-		{ return port != 0 ? port : (use_ssh ? 0 : Provider.DEFAULT_PORT); }
-
-		public final String getUser()
-		{ return user == null || user.isEmpty() ? Provider.DEFAULT_USER : user; }
-
-		@Override
-		public final String toString()
-		{
-			final StringBuilder sb = new StringBuilder();
-			if (use_local)
-				sb.append(PREFIX_LOCAL);
-			else if (use_ssh)
-				sb.append(PREFIX_SSH);
-			if (user != null)
-				sb.append(user).append('@');
-			sb.append(getHost());
-			if (port != 0)
-				sb.append(':').append(this.port);
-			return sb.toString();
-		}
-
-		public boolean useLocal()
-		{
-			return use_local;
-		}
-
-		public final boolean useSSH()
-		{
-			return this.use_ssh;
-		}
-
-		public final void useSSH(final boolean usessh)
-		{
-			this.use_ssh = usessh;
-		}
-	}
+	} // End ReceiverThread class
 
 	public static final int LOGIN_OK = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
 	private static final byte MAX_MSGS = 8;
@@ -500,7 +428,6 @@ public class MdsIp extends Mds
 			for (final MdsIp con : MdsIp.open_connections)
 				if (con.provider.equals(provider))
 				{
-					con.provider.use_ssh = provider.use_ssh;
 					con.connect();
 					return con;
 				}
@@ -520,7 +447,7 @@ public class MdsIp extends Mds
 	private byte msg_id = 0;
 	private final Object mutex = new Object();
 	private final Provider provider;
-	private MRT receiveThread = null;
+	private ReceiverThread receiverThread = null;
 	private boolean use_compression = false;
 
 	public MdsIp()
@@ -575,8 +502,14 @@ public class MdsIp extends Mds
 			return (T) new Int32(msg.asIntArray()[0]);
 		}
 		final StringBuilder sb = new StringBuilder().append("List(*,EXECUTE(($;)");
-		IntStream.range(0, req.args.length).forEach((i) ->
-		{ sb.append(",($;)"); });
+		IntStream.range(0, req.args.length).forEach(new IntConsumer()
+		{
+			@Override
+			public void accept(final int i)
+			{
+				sb.append(",($;)");
+			}
+		});
 		sb.append("),__$sw(`_$c_=__$sw(($;))))");
 		final Vector<Descriptor<?>> vec = new Vector<>();
 		vec.add(Descriptor.valueOf(req.expr));
@@ -636,40 +569,61 @@ public class MdsIp extends Mds
 	{
 		if (this.connected)
 			return;
-		/* connect to server */
+		// connect to server
 		this.defined_funs.clear();
-		if (this.provider.useLocal())
+		final String prefix = this.provider.prefix;
+		String user = System.getProperty("user.name");
+		if (Provider.PREFIX_LOCAL.equals(prefix))
 		{
-			this.connection = new MdsIpTunnel();
+			this.connection = new MdsIpFile("mdsip", "-P", "tunnel");
 		}
-		else if (this.provider.useSSH())
+		else if (Provider.PREFIX_SSH.equals(prefix))
 		{
-			this.connection = new MdsIpJsch(this.provider.user, this.provider.host, provider.getPort());
+			this.connection = MdsIpJsch.fromString(this.provider.suffix);
 		}
 		else
 		{
-			this.connection = new MdsIpTcp(this.provider.host, this.provider.getPort());
+			String host;
+			final String parts[] = this.provider.suffix.split("@", 2);
+			if (parts.length > 1)
+			{
+				user = parts[0];
+				host = parts[1];
+			}
+			else
+			{
+				host = parts[0];
+			}
+			if (Provider.PREFIX_FILE.equals(prefix))
+			{
+				this.connection = MdsIpFile.fromString(host);
+			}
+			else
+			{
+				this.connection = MdsIpTcp.fromString(host);
+			}
 		}
 		if (DEBUG.D)
 			System.out.println(this.connection.toString());
-		/* connect to mdsip */
-		final Message message = new Message(this.provider.getUser(), this.getMsgId());
+		// connect to mdsip
+		final Message message = new Message(user, this.getMsgId());
 		message.useCompression(this.use_compression);
 		long tictoc = -System.nanoTime();
 		message.send(this.connection);
-		final Message msg = Message.receive(this.connection, null, 10_000);
+		final Message msg = Message.receive(this.connection, null, 20_000);
 		tictoc += System.nanoTime();
 		if (DEBUG.N)
 			System.out.println(tictoc);
-		this.isLowLatency = tictoc < 50_000_000;// if response is faster than 50ms
+		// if response is faster than 50ms
+		this.isLowLatency = tictoc < 50_000_000;
 		if (msg.getStatus() == 0)
 		{
 			this.close();
 			throw new IOException("Server responded status == 0");
 		}
-		this.receiveThread = new MRT();
+		this.receiverThread = new ReceiverThread();
 		this.connected = true;
-		this.receiveThread.start();
+		this.receiverThread.start();
 		this.setup();
 		this.dispatchContextEvent("Connected to " + this.provider.toString(), false);
 	}
@@ -685,12 +639,12 @@ public class MdsIp extends Mds
 		{
 			System.err.println("The closing of connection failed:\n" + e.getMessage());
 		}
-		if (this.receiveThread != null)
-			this.receiveThread.waitExited();
+		if (this.receiverThread != null)
+			this.receiverThread.waitExited();
 		this.connected = false;
 	}
 
-	protected final void dispatchContextEvent(String msg, boolean ok)
+	protected final void dispatchContextEvent(final String msg, final boolean ok)
 	{
 		if (this.ctxlisteners != null)
 			synchronized (this.ctxlisteners)
@@ -700,7 +654,7 @@ public class MdsIp extends Mds
 			}
 	}
 
-	protected final void dispatchTransferEvent(final String info, int pos, int total)
+	protected final void dispatchTransferEvent(final String info, final int pos, final int total)
 	{
 		if (this.translisteners != null)
 			synchronized (this.translisteners)
@@ -726,7 +680,7 @@ public class MdsIp extends Mds
 
 	private final Message getAnswer() throws MdsException
 	{
-		final Message message = this.receiveThread.getMessage();
+		final Message message = this.receiverThread.getMessage();
 		if (message == null)
 			throw new MdsException("Null response from server", 0);
 		final int status = message.getStatus();
@@ -760,11 +714,10 @@ public class MdsIp extends Mds
 		{
 			final byte mid = this.getMsgId();
 			final byte totalarg = (byte) (args.length + 1);
-			/** enter exclusive communication **/
 			try
-			{
+			{ // enter exclusive communication
 				if (totalarg > 1)
-				{ /** execute main request **/
+				{ // execute main request
 					this.sendArg(idx++, DTYPE.T, totalarg, null, cmd.toString(), mid);
 					for (final Descriptor<?> d : args)
 						d.toMessage(idx++, totalarg, mid).send(this.connection);
@@ -774,7 +727,7 @@ public class MdsIp extends Mds
 				this.dispatchTransferEvent("waiting for server", 0, 0);
 				msg = this.getAnswer();
 				if (msg == null)
-					throw new MdsException("Could not get IO for " + this.provider.host, 0);
+					throw new MdsException("Could not get IO for " + this.provider, 0);
 			}
 			finally
 			{
@@ -800,14 +753,20 @@ public class MdsIp extends Mds
 	}
 
 	public final Provider getProvider()
-	{ return this.provider; }
+	{
+		return this.provider;
+	}
 
 	public final boolean isConnected()
-	{ return this.connected; }
+	{
+		return this.connected;
+	}
 
 	@Override
 	public boolean isLowLatency()
-	{ return this.isLowLatency; }
+	{
+		return this.isLowLatency;
+	}
 
 	@Override
 	public final String isReady()
@@ -820,7 +779,7 @@ public class MdsIp extends Mds
 	private void lostConnection()
 	{
 		this.disconnectFromServer();
-		this.dispatchContextEvent(this.provider.host, false);
+		this.dispatchContextEvent(this.provider.toString(), false);
 	}
 
 	synchronized public final void mdsRemoveEvent(final UpdateEventListener l, final String event)
@@ -836,7 +795,7 @@ public class MdsIp extends Mds
 		}
 		catch (final IOException e)
 		{
-			System.err.print("Could not get IO for " + this.provider.host + ":\n" + e.getMessage());
+			System.err.print("Could not get IO for " + this.provider + ":\n" + e.getMessage());
 		}
 	}
 
@@ -852,7 +811,7 @@ public class MdsIp extends Mds
 		}
 		catch (final IOException e)
 		{
-			System.err.print("Could not get IO for " + this.provider.host + ":\n" + e.getMessage());
+			System.err.print("Could not get IO for " + this.provider + ":\n" + e.getMessage());
 		}
 	}
 
@@ -888,35 +847,54 @@ public class MdsIp extends Mds
 	private final void sendArg(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[],
 			final String body, final byte msgid) throws MdsException
 	{
-		this.sendArg(descr_idx, bu, nargs, dims, StandardCharsets.UTF_8.encode(body).order(Descriptor.BYTEORDER),
-				msgid);
+		final ByteBuffer payload = StandardCharsets.UTF_8.encode(body).order(Descriptor.BYTEORDER);
+		this.sendArg(descr_idx, bu, nargs, dims, payload, msgid);
 	}
 
 	private final void setup() throws MdsException
 	{
 		this.defineFunctions(//
-				"public fun __$sw(in _in){return(TreeShr->TreeSwitchDbid:P(val(_in)));}", // compatible with almost
-																							// every server
-				"public fun __$so(optional in _in){_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);}", // 'optional'
-																														// to
-																														// support
-																														// $Missing
-				"public fun __$si(in _in){_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);}");
+				// compatible with almost every server
+				"public fun __$sw(in _in){return(TreeShr->TreeSwitchDbid:P(val(_in)));}", //
+				// for results; 'optional' prefix to support $Missing
+				"public fun __$so(optional in _in){_out=*;MdsShr->MdsSerializeDscOut(xd(_in),xd(_out));return(_out);}", //
+				// for arguments
+				"public fun __$si(in _in){_out=*;MdsShr->MdsSerializeDscIn(ref(_in),xd(_out));return(_out);}", //
+				// built-in list() will override this fall-back implementation
+				"public fun list(optional inout _l,"
+						+ "optional in _a0,optional in _a1,optional in _a2,optional in _a3,"
+						+ "optional in _a4,optional in _a5,optional in _a6,optional in _a7,"
+						+ "optional in _a8,optional in _a9,optional in _a10,optional in _a11,"
+						+ "optional in _a12,optional in _a13,optional in _a14,optional in _a15){"
+						+ "fun i2bu(in _i){return(execute('serializeout(`_i)[8:12]'));};"
+						+ "fun append(inout _l,in _a){_l=[_l,_a];};"
+						+ "fun cat(in _p,in _i){return(_p//execute('decompile(`_i)'));};"
+						+ "fun listlen(optional in _l){_n=0;if(present('_l'))if(class(_l)==196)for(;if_error(kind(_l[_n]),-1)>0;_n++);return(_n);};"
+						+ "_o=byte_unsigned([4,0,214,196,16,0,0,0,0,0,0,1]);" + "_nl=listlen(_l);"
+						+ "for(_na=0;_na<16;_na++){if(not(execute('present(_a'//execute('decompile(`_na)')//')')))break;};"
+						+ "_offset=4*(_na+_nl);" + "append(_o,i2bu(_offset));" + "_offset+=4;"
+						+ "for(_i=0;_i<_nl;_i++){_offset+=size(execute('equals('//cat('_l',_i)//',serializeout(`_l[_i]))'));"
+						+ "append(_o,i2bu(_offset));};"
+						+ "for(_i=0;_i<_na;_i++){_offset+=size(execute('equals('//cat('_a',_i)//',serializeout(`'//cat('_a',_i)//'))'));"
+						+ "append(_o,i2bu(_offset));};"
+						+ "for(_i=0;_i<_nl;_i++)execute('append(_o,'//cat('_l',_i)//')');"
+						+ "for(_i=0;_i<_na;_i++)execute('append(_o,'//cat('_a',_i)//')');"
+						+ "return(_l=serializein(_o));}");
 		this.getAPI().treeUsePrivateCtx(true);
 	}
 
 	@Override
 	public final String toString()
 	{
-		if (this.provider.use_local)
-			return this.provider.getHost();
-		final String provider_str = this.provider.toString();
-		return new StringBuilder(provider_str.length() + 12).append("MdsIp(").append(provider_str).append(")")
-				.toString();
+		if (Provider.PREFIX_LOCAL.equals(this.provider.prefix))
+		{
+			return this.provider.suffix;
+		}
+		return this.provider.toString();
 	}
 
-	public final void useCompression(final boolean use_compression)
+	public final void useCompression(final boolean compression)
 	{
-		this.use_compression = use_compression;
+		this.use_compression = compression;
 	}
 }

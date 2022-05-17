@@ -165,16 +165,9 @@ class _ACQ2106_423ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_423ST.MDSWorker, self).__init__(name=dev.path)
 
-            self.dev = dev.copy()
+            self.dev = dev
 
-            self.chans = []
-            self.decim = []
             self.nchans = self.dev.sites*32
-
-            for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
@@ -198,8 +191,17 @@ class _ACQ2106_423ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
+            self.dev = self.dev.copy()
+
             if self.dev.debug:
                 print("MDSWorker running")
+
+            self.chans = []
+            self.decim = []
+            for i in range(self.nchans):
+                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                self.decim.append(
+                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
@@ -222,6 +224,10 @@ class _ACQ2106_423ST(MDSplus.Device):
                 except Empty:
                     continue
 
+                if self.dev.trig_time.getDataNoRaise() is None:
+                    self.dev.trig_time.record = self.device_thread.trig_time - \
+                        ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
+
                 buffer = np.frombuffer(buf, dtype='int16')
                 i = 0
                 for c in self.chans:
@@ -239,8 +245,6 @@ class _ACQ2106_423ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time - \
-                ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -340,7 +344,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         'wrtt1'         # White Rabbit Trigger
     ]
 
-    def init(self):
+    def init(self, armed_by_transient = False):
         uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
@@ -415,8 +419,13 @@ class _ACQ2106_423ST(MDSplus.Device):
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
 
         self.running.on = True
-        thread = self.MDSWorker(self)
-        thread.start()
+
+        if not armed_by_transient:
+            # Then, the following will armed by this super-class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
     INIT = init
 
     def stop(self):
@@ -458,8 +467,9 @@ def assemble(cls):
                 'type': 'NUMERIC',
                 'options': ('no_write_model', 'write_once',)
             },
+
             {
-                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),     
+                'path': ':INPUT_%3.3d:OFFSET' % (i+1,),    
                 'type': 'NUMERIC',
                 'options': ('no_write_model', 'write_once',)
             },
