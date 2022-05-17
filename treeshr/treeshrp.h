@@ -302,6 +302,10 @@ typedef struct nid
 typedef char NODE_NAME[MAX_NAME_LEN + 1];
 typedef char TREE_NAME[MAX_NAME_LEN + 1];
 
+/* note V1NODE_NAME does not have trailing \0 */
+#define V1_MAX_NAME_LEN 12
+typedef char V1NODE_NAME[V1_MAX_NAME_LEN];
+
 /*********************************************
  Linkages to other nodes via parent, brother,
  member and child node links are expressed in
@@ -324,6 +328,19 @@ typedef struct node
   int tag_link; /* Index of tag info block pointing to this node (index of first
                    tag is 1) */
 } NODE;
+typedef struct v1node
+{
+  V1NODE_NAME name;
+  int parent;
+  int member;
+  int brother;
+  int child;
+  unsigned char usage;             // packed! is aligned(32bit)
+  unsigned short conglomerate_elt; // packed! is not aligned
+  char fill;
+  int tag_link; /* Index of tag info block pointing to this node (index of first
+                   tag is 1) */
+} V1NODE;
 #pragma pack(pop)
 
 /*
@@ -591,7 +608,7 @@ typedef struct tree_info
   int vm_pages;                      /* Number of pages and address of virtual memory    */
   void *vm_addr;                     /*  allocated for mapping the tree file             */
   char *section_addr[2];             /* Beginning and ending addresses of mapped section */
-  TREE_HEADER *header;               /* Pointer to file header                           */
+  TREE_HEADER  *header;               /* Pointer to file header                           */
   NODE *node;                        /* Pointer to nodes                                 */
   int *tags;                         /* Pointer to tag indexes                           */
   TAG_INFO *tag_info;                /* Pointer to tag information blocks                */
@@ -600,8 +617,8 @@ typedef struct tree_info
   int alq;                           /* Blocks allocated to tree file                    */
   int speclen;                       /* length of filespec part defined by local treepath*/
   char *filespec;                    /* Pointer to full file spec of tree file           */
-  char dvi[16];                      /* Tree file disk info                              */
-  unsigned short tree_info_w_fid[3]; /* Tree file file id */
+  //char dvi[16];                      /* Tree file disk info                              */
+  //unsigned short tree_info_w_fid[3]; /* Tree file file id */
   unsigned flush : 1;                /* Flush I/O's buffers                              */
   unsigned rundown : 1;              /* Doing rundown                                    */
   unsigned mapped : 1;               /* Tree is mapped into memory                       */

@@ -1080,9 +1080,38 @@ void FixupHeader(TREE_HEADER *hdr)
 #define FixupHeader(arg)
 #endif
 
+static inline int v1_offset_to_v2(int offset)
+{
+  return offset/(int)sizeof(V1NODE)*(int)sizeof(NODE);
+}
+
 static int MapFile(int fd, TREE_INFO *info, int nomap)
 {
   int status;
+  TREE_HEADER header;
+  int file_blocks;
+
+  /*
+   * We need to read in the tree header to find out
+   * if it is a V1 tree (short node names)
+   * If so, recalculate info->alq to have room for long names
+   * and set no map
+   */
+
+  status = (MDS_IO_READ(fd, (void *)&header, sizeof(TREE_HEADER)) == sizeof(TREE_HEADER));
+  if (STATUS_OK)
+  {  
+    if (header.version < 2) {
+      file_blocks = info->alq;
+      info->alq -= (header.nodes*sizeof(V1NODE)+511)/512;
+      info->alq += (header.nodes*sizeof(NODE)+511)/512;
+      nomap=1;
+    }
+  }
+  else
+     return TreeREADERR;
+
+  
 
   /********************************************
   First we get virtual memory for the tree to
@@ -1092,12 +1121,54 @@ static int MapFile(int fd, TREE_INFO *info, int nomap)
   status = GetVmForTree(info, nomap);
   if (status == TreeSUCCESS)
   {
+    info->blockid = TreeBLOCKID;
+    info->header = (TREE_HEADER *)info->section_addr[0];
+    FixupHeader(info->header);
+    info->node = (NODE *)(info->section_addr[0] +
+                            (((int)sizeof(TREE_HEADER) + 511) / 512) * 512);
+    TreeEstablishRundownEvent(info);
     if (nomap)
     {
-      status = (MDS_IO_READ(fd, (void *)info->section_addr[0],
-                            (size_t)info->alq * 512) == (512 * info->alq))
-                   ? TreeSUCCESS
-                   : TreeTREEFILEREADERR;
+      if (header.version < 2)
+      {
+        int idx;
+        memcpy((void *)info->header, (void *)&header, sizeof(header));
+        V1NODE *v1nodes = (V1NODE *)calloc(header.nodes*sizeof(V1NODE), 1);
+        V1NODE *head=v1nodes;
+        status = (MDS_IO_READ(fd, (void *)v1nodes, (header.nodes*sizeof(V1NODE)+511)/512*512)
+                   == (ssize_t)(header.nodes*sizeof(V1NODE)+511)/512*512);
+        for (idx=0; idx<header.nodes; idx++, v1nodes++)
+        {
+          info->node[idx].parent=v1_offset_to_v2(v1nodes->parent);
+          info->node[idx].brother=v1_offset_to_v2(v1nodes->brother);
+          info->node[idx].member=v1_offset_to_v2(v1nodes->member);
+          info->node[idx].child=v1_offset_to_v2(v1nodes->child);
+          info->node[idx].usage=v1nodes->usage;
+          info->node[idx].conglomerate_elt=v1nodes->conglomerate_elt;
+          info->node[idx].tag_link=v1nodes->tag_link;
+          strncpy(info->node[idx].name, v1nodes->name, V1_MAX_NAME_LEN);
+          int i;
+          for (i=0; i<V1_MAX_NAME_LEN; i++)
+            if(info->node[idx].name[i] == ' ')
+              info->node[idx].name[i] = 0;
+          info->node[idx].name[i] = 0;
+        }
+        free(head);
+        ssize_t bytes_to_read = file_blocks*512 - (sizeof(TREE_HEADER)+511)/512*512-(header.nodes*sizeof(V1NODE)+511)/512*512 ;
+  //      ssize_t bytes_to_read = (ssize_t)(info->alq*512 - ((sizeof(TREE_HEADER)+511)/512 + header.nodes*sizeof(V1NODE)+511)/512);
+        ssize_t bytes_read = (ssize_t)MDS_IO_READ(fd, (void *)info->section_addr[0] + 
+                                  ((sizeof(TREE_HEADER)+511)/512)*512 +
+                                  (header.nodes*sizeof(NODE)+511)/512*512,
+                                 bytes_to_read);
+        status= (bytes_read == bytes_to_read);
+      }
+      else 
+      {
+        status = (MDS_IO_READ(fd, (void *)info->section_addr[0],
+                             (size_t)info->alq * 512) == (512 * info->alq))
+                     ? TreeSUCCESS
+                     : TreeTREEFILEREADERR;
+      }
     }
 #ifndef _WIN32
     else
