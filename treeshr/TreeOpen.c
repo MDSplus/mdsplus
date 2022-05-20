@@ -1132,7 +1132,8 @@ static int MapFile(int fd, TREE_INFO *info, int nomap)
       if (header.version < 2)
       {
         int idx;
-        memcpy((void *)info->header, (void *)&header, sizeof(header));
+        header.free = (ssize_t)(header.free)/sizeof(V1NODE)*sizeof(NODE);
+	memcpy((void *)info->header, (void *)&header, sizeof(header));
         V1NODE *v1nodes = (V1NODE *)calloc(header.nodes*sizeof(V1NODE), 1);
         V1NODE *head=v1nodes;
         status = (MDS_IO_READ(fd, (void *)v1nodes, (header.nodes*sizeof(V1NODE)+511)/512*512)

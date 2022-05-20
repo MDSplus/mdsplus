@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void TreeSerializeNciOut(const NCI *in, char *out)
 {
   char *ptr = out;
-  memset(out, 0, 42);
+  memset(out, 0, sizeof(NCI));
   putint32(&ptr, &in->flags);
   putint8(&ptr, &in->flags2);
   putint8(&ptr, &in->spare);
