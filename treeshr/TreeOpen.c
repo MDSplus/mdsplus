@@ -1126,7 +1126,7 @@ static int MapFile(int fd, TREE_INFO *info, int nomap)
     FixupHeader(info->header);
     info->node = (NODE *)(info->section_addr[0] +
                             (((int)sizeof(TREE_HEADER) + 511) / 512) * 512);
-    TreeEstablishRundownEvent(info);
+//    TreeEstablishRundownEvent(info);
     if (nomap)
     {
       if (header.version < 2)
