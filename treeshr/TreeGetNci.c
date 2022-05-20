@@ -935,7 +935,7 @@ int tree_get_nci(TREE_INFO *info, int node_num, NCI *nci, unsigned int version,
   if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
   {
     int deleted = TRUE;
-    char nci_bytes[42];
+    char nci_bytes[sizeof(NCI)];
     unsigned int n_version = 0;
     int64_t viewDate;
     RETURN_IF_NOT_OK(TreeOpenNciR(info));
