@@ -43,10 +43,11 @@ typedef struct
   char data[12];
   char eventid;
 } JMdsEventInfo;
-
+struct _connection;
 typedef struct _eventlist
 {
-  int conid;
+  //int conid;
+  struct _connection *connection;
   int eventid;
   char jeventid;
   MdsEventInfo *info;
