@@ -612,12 +612,12 @@ static inline void _client_event_ast(MdsEventList *e, int data_len, char *data, 
   (*m)->h.dtype = DTYPE_EVENT_NOTIFY;
   if (data_len > 0)
     memcpy(e->info->data, data, (data_len < 12) ? data_len : 12);
-  SendMdsMsg(e->conid, *m, MSG_DONTWAIT);
+  SendMdsMsgC(e->connection, *m, MSG_DONTWAIT);
 }
 
 static void client_event_ast(MdsEventList *e, int data_len, char *data)
 {
-  const client_t client_type = GetConnectionClientType(e->conid);
+  const client_t client_type = e->connection->client_type;
   // Check Connection: if down, cancel the event and return
   if (client_type == INVALID_CLIENT)
   {
@@ -723,7 +723,7 @@ static int execute_message(Connection *connection, Message *message)
     DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *newe = (MdsEventList *)malloc(sizeof(MdsEventList));
     struct descriptor_a *info = (struct descriptor_a *)connection->descrip[2];
-    newe->conid = connection->id;
+    newe->connection = connection;
 
     evname = malloc(connection->descrip[1]->length + 1);
     memcpy(evname, connection->descrip[1]->pointer,
