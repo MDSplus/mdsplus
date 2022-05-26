@@ -76,6 +76,41 @@ typedef struct nci
   } DATA_INFO;
   unsigned char nci_fill;
 } NCI;
+#pragma pack(push, 1)
+typedef struct packed_nci
+{
+  unsigned int flags;
+  unsigned char flags2;
+  unsigned char spare;
+  int64_t time_inserted;
+  unsigned int owner_identifier;
+  class_t class;
+  dtype_t dtype;
+  l_length_t length;
+  unsigned char compression_method;
+  unsigned int status;
+  union {
+    struct
+    {
+      unsigned char file_level;
+      unsigned char file_version;
+      unsigned char rfa[6];
+      unsigned int record_length;
+    } DATA_LOCATION;
+    struct
+    {
+      unsigned char element_length;
+      unsigned char data[11];
+    } DATA_IN_RECORD;
+    struct
+    {
+      unsigned int error_status;
+      unsigned int stv;
+    } ERROR_INFO;
+  } DATA_INFO;
+  unsigned char nci_fill;
+} PACKED_NCI;
+#pragma pack(pop)
 
 #define FACILITIES_PER_EA 8
 typedef struct extended_attributes

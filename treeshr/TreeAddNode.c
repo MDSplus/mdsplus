@@ -1022,7 +1022,7 @@ static int TreeWriteNci(TREE_INFO *info)
     int numnodes = info->header->nodes - info->edit->first_in_mem;
     int i;
     NCI nci;
-    char nci_bytes[42];
+    char nci_bytes[sizeof(PACKED_NCI)];
     int nbytes = (int)sizeof(nci_bytes);
     int offset;
     for (i = 0, offset = info->edit->first_in_mem * nbytes;

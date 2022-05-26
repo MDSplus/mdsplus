@@ -105,8 +105,8 @@ int tree_lock_nci(TREE_INFO *info, int readonly, int nodenum, int *deleted,
     if (*locked == 0)
     { // acquire lock
       status = MDS_IO_LOCK(
-          readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42,
-          42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted_ptr);
+          readonly ? info->nci_file->get : info->nci_file->put, nodenum * sizeof(PACKED_NCI),
+          sizeof(PACKED_NCI), readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted_ptr);
       if (STATUS_OK)
       {
         if (!*deleted_ptr)
@@ -138,7 +138,7 @@ void tree_unlock_nci(TREE_INFO *info, int readonly, int nodenum, int *locked)
     if (*locked == 1)
     { // last lock and lock acquired -> release lock
       MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
-                  nodenum * 42, 42, MDS_IO_LOCK_NONE, 0);
+                  nodenum * sizeof(PACKED_NCI), sizeof(PACKED_NCI), MDS_IO_LOCK_NONE, 0);
       *locked = 0;
     }
   }
@@ -335,7 +335,7 @@ int tree_get_and_lock_nci(TREE_INFO *info, int node_num, NCI *nci,
   if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
   {
     int deleted = TRUE;
-    char nci_bytes[42];
+    char nci_bytes[sizeof(PACKED_NCI)];
     if ((info->nci_file == 0) || (info->nci_file->put == 0))
       RETURN_IF_NOT_OK(TreeOpenNciW(info, 0));
     while (STATUS_OK)
@@ -474,7 +474,7 @@ int _TreeOpenNciW(TREE_INFO *info, int tmpfile)
     if (info->edit)
     {
       info->edit->first_in_mem =
-          (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / 42;
+          (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / sizeof(PACKED_NCI);
     }
   }
   if (STATUS_OK)
@@ -521,7 +521,7 @@ int tree_put_nci(TREE_INFO *info, int node_num, NCI *nci, int *locked)
     ***********************/
     if (!*locked)
       RETURN_IF_NOT_OK(tree_lock_nci(info, 0, node_num, NULL, locked));
-    char nci_bytes[42] = {0};
+    char nci_bytes[sizeof(PACKED_NCI)] = {0};
     TreeSerializeNciOut(nci, nci_bytes);
     MDS_IO_LSEEK(info->nci_file->put, sizeof(nci_bytes) * node_num, SEEK_SET);
     status = (MDS_IO_WRITE(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==

@@ -591,7 +591,7 @@ static int put_datafile(TREE_INFO *info, int nodenum, NCI *nci_ptr,
       }
       if (nci_ptr->flags & NciM_VERSIONS)
       {
-        char nci_bytes[42];
+        char nci_bytes[sizeof(PACKED_NCI)];
         int64_t seek_end;
         TreeSerializeNciOut(old_nci_ptr, nci_bytes);
         seek_end = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
