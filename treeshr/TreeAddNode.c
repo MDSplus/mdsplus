@@ -821,6 +821,27 @@ int64_t _TreeGetDatafileSize(void *dbid)
   return MDS_IO_LSEEK(info->data_file->get, 0, SEEK_END);
 }
 
+static inline int v2_offset_to_v1(int offset)
+{
+  return offset/(int)sizeof(NODE)*(int)sizeof(V1NODE);
+}
+
+static inline void copy_V1_Node_2_V2(NODE *src, V1NODE *dst)
+{
+  dst->parent=v2_offset_to_v1(src->parent);
+  dst->brother=v2_offset_to_v1(src->brother);
+  dst->member=v2_offset_to_v1(src->member);
+  dst->child=v2_offset_to_v1(src->child);
+  dst->usage=src->usage;
+  dst->conglomerate_elt=src->conglomerate_elt;
+  dst->tag_link=src->tag_link;
+  /* change the padding of the V1 name back to ' ' */
+  for(int i=0; i<V1_MAX_NAME_LEN; i++)
+    if(src->name[i] == '\0')
+      src->name[i] = ' ';
+  strncpy(dst->name, src->name, V1_MAX_NAME_LEN);
+}
+
 int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 {
   INIT_STATUS_AS TreeNOT_OPEN;
@@ -881,8 +902,12 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
       _TreeDeleteNodesWrite(*dbid);
       trim_excess_nodes(info_ptr);
       header_pages = (sizeof(TREE_HEADER) + 511u) / 512u;
-      node_pages =
-          ((size_t)info_ptr->header->nodes * sizeof(NODE) + 511u) / 512u;
+      if (info_ptr->header->version > 1)
+        node_pages =
+            ((size_t)info_ptr->header->nodes * sizeof(NODE) + 511u) / 512u;
+      else
+	node_pages =
+            ((size_t)info_ptr->header->nodes * sizeof(V1NODE) + 511u) / 512u;
       tags_pages = ((size_t)info_ptr->header->tags * 4u + 511u) / 512u;
       tag_info_pages =
           ((size_t)info_ptr->header->tags * sizeof(TAG_INFO) + 511u) / 512u;
@@ -900,15 +925,31 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
       {
         status = MDSplusERROR;
         ssize_t num;
-        TREE_HEADER *header = HeaderOut(info_ptr->header);
-        num = MDS_IO_WRITE(ntreefd, header, 512 * header_pages);
+	if (info_ptr->header->version < 2)
+	  info_ptr->header->free = info_ptr->header->free/sizeof(NODE)*sizeof(V1NODE);
+	TREE_HEADER *header = HeaderOut(info_ptr->header);
+	num = MDS_IO_WRITE(ntreefd, header, 512 * header_pages);
         FreeHeaderOut(header);
         status = TreeWRITETREEERR;
         if (num != (ssize_t)(header_pages * 512))
           GOTO_ERROR_CLOSE;
-        num = MDS_IO_WRITE(ntreefd, info_ptr->node, 512 * node_pages);
-        if (num != (ssize_t)(node_pages * 512))
-          GOTO_ERROR_CLOSE;
+	if (info_ptr->header->version > 1) 
+	{
+          num = MDS_IO_WRITE(ntreefd, info_ptr->node, 512 * node_pages);
+          if (num != (ssize_t)(node_pages * 512))
+            GOTO_ERROR_CLOSE;
+	}
+	else
+	{
+	  V1NODE *v1nodes=(V1NODE *)calloc(1, (sizeof(V1NODE)*info_ptr->header->nodes+511u)/512 * 512);
+	  int idx=0;
+	  for (idx=0; idx<info_ptr->header->nodes; idx++)
+            copy_V1_Node_2_V2(&info_ptr->node[idx], &v1nodes[idx]);
+	  num = MDS_IO_WRITE(ntreefd, v1nodes, (sizeof(V1NODE)*info_ptr->header->nodes+511u)/512*512);
+          if (num != (sizeof(V1NODE)*info_ptr->header->nodes+511u)/512*512)
+            GOTO_ERROR_CLOSE;
+          free(v1nodes);
+	}
         num = MDS_IO_WRITE(ntreefd, info_ptr->tags, 512 * tags_pages);
         if (num != (ssize_t)(tags_pages * 512))
           GOTO_ERROR_CLOSE;
@@ -1022,7 +1063,7 @@ static int TreeWriteNci(TREE_INFO *info)
     int numnodes = info->header->nodes - info->edit->first_in_mem;
     int i;
     NCI nci;
-    char nci_bytes[sizeof(NCI)];
+    char nci_bytes[sizeof(PACKED_NCI)];
     int nbytes = (int)sizeof(nci_bytes);
     int offset;
     for (i = 0, offset = info->edit->first_in_mem * nbytes;
