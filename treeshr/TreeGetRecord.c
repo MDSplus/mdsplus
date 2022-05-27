@@ -522,7 +522,7 @@ int TreeGetViewDate(int64_t *date)
 
 int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
 {
-  char nci_bytes[sizeof(NCI)];
+  char nci_bytes[sizeof(PACKED_NCI)];
   int status = TreeOpenDatafileR(info);
   if (STATUS_OK)
   {
@@ -538,7 +538,7 @@ int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
     do
     {
       status = (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)nci_bytes,
-                              sizeof(NCI), &deleted) == sizeof(NCI))
+                              sizeof(PACKED_NCI), &deleted) == sizeof(PACKED_NCI))
                    ? TreeSUCCESS
                    : TreeDFREAD;
       if (STATUS_OK && deleted)
