@@ -43,30 +43,17 @@
 #define NciM_32BIT_UID_NCI 0x20
 #define NciV_32BIT_UID_NCI 5
 
-/*******************************************
-  NOTE:  This structure was never packed.
-
-  as of this release, padding bytes explicitly
-  added to match gcc version 9.4.0 default packing
-
-  THIS HAS EVIDENTLY NOT CHANGED SINCE VAX/VMS !
-
-  pragma to request packing added.
-********************************************/
-#pragma pack(push, 1)
 typedef struct nci
 {
   unsigned int flags;
   unsigned char flags2;
-  unsigned char spare[3];
+  unsigned char spare;
   int64_t time_inserted;
   unsigned int owner_identifier;
   class_t class;
   dtype_t dtype;
-  unsigned char spare2[2];
   l_length_t length;
   unsigned char compression_method;
-  unsigned char spare3[3];
   unsigned int status;
   union {
     struct
@@ -89,6 +76,41 @@ typedef struct nci
   } DATA_INFO;
   unsigned char nci_fill;
 } NCI;
+
+#pragma pack(push, 1)
+typedef struct packed_nci
+{
+  unsigned int flags;
+  unsigned char flags2;
+  unsigned char spare;
+  int64_t time_inserted;
+  unsigned int owner_identifier;
+  class_t class;
+  dtype_t dtype;
+  l_length_t length;
+  unsigned char compression_method;
+  unsigned int status;
+  union {
+    struct
+    {
+      unsigned char file_level;
+      unsigned char file_version;
+      unsigned char rfa[6];
+      unsigned int record_length;
+    } DATA_LOCATION;
+    struct
+    {
+      unsigned char element_length;
+      unsigned char data[11];
+    } DATA_IN_RECORD;
+    struct
+    {
+      unsigned int error_status;
+      unsigned int stv;
+    } ERROR_INFO;
+  } DATA_INFO;
+  unsigned char nci_fill;
+} PACKED_NCI;
 #pragma pack(pop)
 
 #define FACILITIES_PER_EA 8
