@@ -142,6 +142,10 @@ class _ACQ2106_435SM(MDSplus.Device):
             self.postsamples = mdsplus_device.postsamples.data()
             self.clock_period  = 1.0 / mdsplus_device.freq.data()
             self.sites = mdsplus_device.sites
+            self.mev_path = mdsplus_device.mev_path.data()
+
+            # WR Nanosec per Tick:
+            self.wrtd_tickns = float(uut.cC.WRTD_TICKNS)
 
         def run(self):
             self.mdsplus_device = self.mdsplus_device.copy()
@@ -153,34 +157,39 @@ class _ACQ2106_435SM(MDSplus.Device):
             self.chans = []
             nchans = self.sites * 32
             for i in range(nchans):
-                self.chans.append(getattr(self.mdsplus_device, 'INPUT_%3.3d:TRANSIENT'%(i+1)))
+                self.chans.append(getattr(self.mdsplus_device, 'INPUT_%3.3d:TRANSIENT'%(i + 1)))
 
             stride = nchans + 4
 
             while running.on:
                 mev_latest = self.uut.s1.MEV_LATEST
-                
+
+                filename = mev_latest.split(' ')[1]
+                filepath = os.path.join(self.mev_path, filename)
+
+                #if mev_latest == last_mev_latest and os.path.exists(mev_latest): 
                 if mev_latest == last_mev_latest: 
                     time.sleep(1)
                     continue
                 
                 last_mev_latest = mev_latest
 
-                filename = mev_latest.split(' ')[1]
-                filepath = os.path.join(self.mev_path.data(), filename)
-
                 data = None
+                data_t = None
                 try:
-                    data = np.fromfile(filepath, dtype='int32', count=-1, sep='')
+                    data = np.right_shift(np.fromfile(filepath, dtype='int32', count=-1, sep=''), 8)
+                    data_t = np.fromfile(filepath, dtype='int32', count=-1, sep='')
                 except FileNotFoundError:
                     print("Unable to open multi-event data file", filepath)
                     continue
                 
-                tai_cur = np.uint32(data[nchans + 1])
-                tai_ver = np.uint32(data[nchans + 2])
+                print(f"MEV:LATEST {mev_latest} ", data_t[nchans + 1], data_t[nchans + 2])
+                
+                tai_cur = np.uint32(data_t[nchans + 1])
+                tai_ver = np.uint32(data_t[nchans + 2])
 
                 vernier   = (tai_ver & 0x0FFFFFFF)
-                vernier_ns = vernier * self.mdsplus_device.wrtd_tickns
+                vernier_ns = vernier * self.wrtd_tickns
                 tai_time = (tai_cur * 1_000_000_000) + vernier_ns # TAI time in ns
 
                 # For now, TAI time is 37 secs ahead of UTC
@@ -190,11 +199,10 @@ class _ACQ2106_435SM(MDSplus.Device):
                 deltat = self.clock_period * 1_000_000_000
 
                 end = begin + (duration * 1_000_000_000)
-                dim = MDSplus.Range(begin, end, deltat)
-
+                dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(deltat))
+                
                 for i, ch in enumerate(self.chans):
                     if ch.on:
-
                         channel_data = data[ i :: stride ]
                         ch.makeSegment(begin, end, dim, channel_data)
 
@@ -258,9 +266,9 @@ class _ACQ2106_435SM(MDSplus.Device):
                     continue
                 
                 samples = np.right_shift(np.frombuffer(data_point.buffer, dtype='int32'), 8)
-                spad    = np.frombuffer(data_point.buffer, dtype='uint32', count=-1, offset=self.nchans * np.int32(0).nbytes)
+                #spad    = np.frombuffer(data_point.buffer, dtype='uint32', count=-1, offset=self.nchans * np.int32(0).nbytes)
 
-                spad_stride = int(self.nchans / 2) + 4
+                #spad_stride = int(self.nchans / 2) + 4
 
                 # tai_cur = spad[1::spad_stride] # sec
                 # tai_ver = spad[2::spad_stride]
@@ -323,9 +331,6 @@ class _ACQ2106_435SM(MDSplus.Device):
                 s.connect((self.node_addr, 53666))
                 s.settimeout(6)
 
-                # Trigger ACQ to starts:
-                #self.uut.s0.CONTINUOUS = 1
-
                 self.running = True
                 while self.running:
                     try:
@@ -337,13 +342,13 @@ class _ACQ2106_435SM(MDSplus.Device):
 
                     first = True
                     toread = len(sample.buffer)
-                    print("*toread =", toread)
+                    #print("*toread =", toread)
                     try:
                         view = memoryview(sample.buffer)
                         while toread:
                             nbytes = s.recv_into(view, toread)
-                            print("nbytes =", nbytes)
-                            print("toread =", toread)
+                            #print("nbytes =", nbytes)
+                            #print("toread =", toread)
                             if first:
                                 sample.time = time.time_ns()
                                 first = False
@@ -406,12 +411,6 @@ class _ACQ2106_435SM(MDSplus.Device):
     def init(self):
         uut = self.getUUT()
 
-        # Setting the slow monitoring frequency to 1Hz
-        uut.s0.SLOWMON_FS = 1 #Hz
-
-        # WR Nanosec per Tick:
-        self.wrtd_tickns = float(uut.cC.WRTD_TICKNS)
-
         freq = int(self.freq.data())
         # D-Tacq Recommendation: 
         #      - for fast rates, the minimum sample rate is 10kHz.
@@ -466,13 +465,6 @@ class _ACQ2106_435SM(MDSplus.Device):
         if src_trg_1:
             uut.s0.SIG_SRC_TRG_1 = src_trg_1.upper()
 
-        # Setting Capture/Transient trigger event:
-        uut.s1.EVENT0          = 'enable'
-        uut.s1.EVENT0_DX       = 'd1'
-        uut.s1.EVENT0_SENSE    = 'rising'
-        uut.s0.SIG_EVENT_SRC_1 = 'TRG'
-
-
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
@@ -497,6 +489,18 @@ class _ACQ2106_435SM(MDSplus.Device):
         uut.s1.MEV_POST = self.postsamples.data()
         uut.s1.MEV_MAX = 10
 
+        # Trigger ACQ to starts:
+        uut.s0.CONTINUOUS = 1
+
+        # Setting the slow monitoring frequency to 1Hz
+        uut.s0.SLOWMON_FS = 1 #Hz
+
+        # Setting Capture/Transient trigger event:
+        uut.s1.EVENT0          = 'enable'
+        uut.s1.EVENT0_DX       = 'd1'
+        uut.s1.EVENT0_SENSE    = 'rising'
+        uut.s0.SIG_EVENT_SRC_1 = 'TRG'
+
         self.running.on = True
 
         mev_thread = self.MultiEventWorker(self, uut)
@@ -515,7 +519,6 @@ class _ACQ2106_435SM(MDSplus.Device):
         
     def stop(self):
         uut = self.getUUT()
-
         self.running.on = False
         # Trigger ACQ to stop:
         uut.s0.CONTINUOUS = 0
@@ -529,6 +532,10 @@ class _ACQ2106_435SM(MDSplus.Device):
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
+    
+    def setTransientChanScale(self, num):
+        chan = self.__getattr__('INPUT_%3.3d' % num)
+        chan.TRANSIENT.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
     
 
 def assemble(cls):
@@ -555,7 +562,7 @@ def assemble(cls):
                  # Capture transient signal goes here:
                 'path': ':INPUT_%3.3d:TRANSIENT' % (i + 1,),
                 'type': 'SIGNAL',
-                'valueExpr': 'head.setChanScale(%d)' % (i + 1,),
+                'valueExpr': 'head.setTransientChanScale(%d)' % (i + 1,),
                 #'options': ('no_write_model',)
             },
         ]
