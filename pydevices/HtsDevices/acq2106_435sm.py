@@ -144,9 +144,6 @@ class _ACQ2106_435SM(MDSplus.Device):
             self.sites = mdsplus_device.sites
             self.mev_path = mdsplus_device.mev_path.data()
 
-            # WR Nanosec per Tick:
-            self.wrtd_tickns = float(uut.cC.WRTD_TICKNS)
-
         def run(self):
             self.mdsplus_device = self.mdsplus_device.copy()
 
@@ -172,29 +169,33 @@ class _ACQ2106_435SM(MDSplus.Device):
                     time.sleep(1)
                     continue
                 
-                last_mev_latest = mev_latest
+                time.sleep(2)
 
                 data = None
                 data_t = None
                 try:
-                    data = np.right_shift(np.fromfile(filepath, dtype='int32', count=-1, sep=''), 8)
-                    data_t = np.fromfile(filepath, dtype='int32', count=-1, sep='')
+                    data = np.fromfile(filepath, dtype='int32', count=-1, sep='')
+                    data_435 = np.right_shift(data, 8)
                 except FileNotFoundError:
                     print("Unable to open multi-event data file", filepath)
                     continue
                 
-                print(f"MEV:LATEST {mev_latest} ", data_t[nchans + 1], data_t[nchans + 2])
+                last_mev_latest = mev_latest
                 
-                tai_cur = np.uint32(data_t[nchans + 1])
-                tai_ver = np.uint32(data_t[nchans + 2])
+                tai_cur = np.uint32(data[nchans + 1])
+                tai_ver = np.uint32(data[nchans + 2])
 
+                # WR Nanosec per Tick:
+                self.wrtd_tickns = float(self.uut.cC.WRTD_TICKNS)
                 vernier   = (tai_ver & 0x0FFFFFFF)
                 vernier_ns = vernier * self.wrtd_tickns
                 tai_time = (tai_cur * 1_000_000_000) + vernier_ns # TAI time in ns
 
                 # For now, TAI time is 37 secs ahead of UTC
                 begin = tai_time - 37_000_000_000
-                
+                print("Begin   %20d" %(begin,))
+                print("Time_ns %20d" %(time.time_ns(),))
+
                 duration = (self.presamples + self.postsamples) * self.clock_period
                 deltat = self.clock_period * 1_000_000_000
 
@@ -203,9 +204,10 @@ class _ACQ2106_435SM(MDSplus.Device):
                 
                 for i, ch in enumerate(self.chans):
                     if ch.on:
-                        channel_data = data[ i :: stride ]
+                        channel_data = data_435[ i :: stride ]
                         ch.makeSegment(begin, end, dim, channel_data)
 
+                os.unlink(filepath)
         
     class SlowMonitorWorker(threading.Thread):
         INITIAL_BUFFER_COUNT = 10
@@ -239,6 +241,9 @@ class _ACQ2106_435SM(MDSplus.Device):
 
             self.mdsplus_device = self.mdsplus_device.copy()
 
+            uut = self.mdsplus_device.getUUT()
+            wrtd_tickns = float(uut.cC.WRTD_TICKNS)
+
             event_name = self.mdsplus_device.data_event.data()
 
             channel_list = []
@@ -266,18 +271,6 @@ class _ACQ2106_435SM(MDSplus.Device):
                     continue
                 
                 samples = np.right_shift(np.frombuffer(data_point.buffer, dtype='int32'), 8)
-                #spad    = np.frombuffer(data_point.buffer, dtype='uint32', count=-1, offset=self.nchans * np.int32(0).nbytes)
-
-                #spad_stride = int(self.nchans / 2) + 4
-
-                # tai_cur = spad[1::spad_stride] # sec
-                # tai_ver = spad[2::spad_stride]
-
-                # vernier   = (tai_ver & 0x0FFFFFFF)
-                # vernierns = vernier * self.mdsplus_device.wrtd_tickns
-                # timeStamp = (tai_cur * 1e9) + vernierns # TAI time in ns
-
-                # print("#### time stamp ", tai_cur[0], vernierns[0], timeStamp[0], data_point.time)
 
                 influx_points = []
                 mdsplus_points= []
@@ -293,18 +286,12 @@ class _ACQ2106_435SM(MDSplus.Device):
                                 'sample': calibrated
                             }
                         })
-                        #mdsplus_points.append('PutRow(%s, %d, %dQ, %d)' % (ch, 1, data_point.time, samples[i]))
-                        #ch.putRow(1000, samples[i], MDSplus.Uint64(data_point.time))
+
                         ch.putRow(3600, samples[i], data_point.time)
 
                 # start = time.time()               
                 self.client.write_points(influx_points, time_precision='n')
-
-                # start = time.time()
-                # self.mdsplus_device.tree.tdiExecute(','.join(mdsplus_points))            
-                # end  = time.time()
-                # print('tdiExecute', end - start)
-               
+             
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(data_point)
@@ -330,6 +317,8 @@ class _ACQ2106_435SM(MDSplus.Device):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((self.node_addr, 53666))
                 s.settimeout(6)
+                
+                first_sample = True
 
                 self.running = True
                 while self.running:
@@ -340,7 +329,7 @@ class _ACQ2106_435SM(MDSplus.Device):
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         sample = self.data_worker.DataPoint(self.data_worker.nchans)
 
-                    first = True
+                    first_recv = True
                     toread = len(sample.buffer)
                     #print("*toread =", toread)
                     try:
@@ -349,9 +338,9 @@ class _ACQ2106_435SM(MDSplus.Device):
                             nbytes = s.recv_into(view, toread)
                             #print("nbytes =", nbytes)
                             #print("toread =", toread)
-                            if first:
+                            if first_recv:
                                 sample.time = time.time_ns()
-                                first = False
+                                first_recv = False
                             view = view[nbytes:]  # slicing views is cheap
                             toread -= nbytes
 
@@ -380,7 +369,12 @@ class _ACQ2106_435SM(MDSplus.Device):
                             print ('orderly shutdown on server end')
                             break
                         else:
-                            self.data_worker.full_buffers.put(sample)
+                            if first_sample:
+                                # The very first sample is carried over from previous shot and should be discarded
+                                first_sample = False
+                                self.data_worker.empty_buffers.put(sample)
+                            else:
+                                self.data_worker.full_buffers.put(sample)
     
     # The minimum frequency we can operate at                   
     MIN_FREQUENCY = 10000
