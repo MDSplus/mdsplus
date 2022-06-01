@@ -148,6 +148,7 @@ class _ACQ2106_435SM(MDSplus.Device):
             self.mdsplus_device = self.mdsplus_device.copy()
 
             running = self.mdsplus_device.running
+
             # Note: This value is not cleared between shots.
             last_mev_latest = self.uut.s1.MEV_LATEST
 
@@ -157,6 +158,7 @@ class _ACQ2106_435SM(MDSplus.Device):
                 self.chans.append(getattr(self.mdsplus_device, 'INPUT_%3.3d:TRANSIENT'%(i + 1)))
 
             stride = nchans + 4
+            segment = 0
 
             while running.on:
                 mev_latest = self.uut.s1.MEV_LATEST
@@ -175,15 +177,23 @@ class _ACQ2106_435SM(MDSplus.Device):
                 data_t = None
                 try:
                     data = np.fromfile(filepath, dtype='int32', count=-1, sep='')
-                    data_435 = np.right_shift(data, 8)
                 except FileNotFoundError:
                     print("Unable to open multi-event data file", filepath)
                     continue
                 
+                # The data is 24-bit stored in 32-bit numbers, so we need to >>8
+                data_435 = np.right_shift(data, 8)
+                
+                # We need to remove the fake row of data that serves as the marker for the trigger
+                data_435 = np.concatenate((data_435[:self.presamples * stride], data_435[(self.presamples + 1) * stride:]))
+
                 last_mev_latest = mev_latest
                 
                 tai_cur = np.uint32(data[nchans + 1])
                 tai_ver = np.uint32(data[nchans + 2])
+
+                # Quick check: (TAI_SEC&0xf) == (TAI_VERNIER >> 28)
+                print(tai_cur&0xf, tai_ver>>28)
 
                 # WR Nanosec per Tick:
                 self.wrtd_tickns = float(self.uut.cC.WRTD_TICKNS)
@@ -193,8 +203,6 @@ class _ACQ2106_435SM(MDSplus.Device):
 
                 # For now, TAI time is 37 secs ahead of UTC
                 begin = tai_time - 37_000_000_000
-                print("Begin   %20d" %(begin,))
-                print("Time_ns %20d" %(time.time_ns(),))
 
                 duration = (self.presamples + self.postsamples) * self.clock_period
                 deltat = self.clock_period * 1_000_000_000
@@ -202,6 +210,12 @@ class _ACQ2106_435SM(MDSplus.Device):
                 end = begin + (duration * 1_000_000_000)
                 dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(deltat))
                 
+                print("Clock period:", self.clock_period)
+                print("duration:    ", duration)
+                print("detalt:      ", deltat)
+                print("Begin %20d   " %(begin,))
+                print("End   %20d   " %(end,))
+
                 for i, ch in enumerate(self.chans):
                     if ch.on:
                         channel_data = data_435[ i :: stride ]
@@ -371,6 +385,7 @@ class _ACQ2106_435SM(MDSplus.Device):
                         else:
                             if first_sample:
                                 # The very first sample is carried over from previous shot and should be discarded
+                                print("Discarding first sample...")
                                 first_sample = False
                                 self.data_worker.empty_buffers.put(sample)
                             else:
@@ -508,6 +523,7 @@ class _ACQ2106_435SM(MDSplus.Device):
 
     def trigger_mev(self):
         uut = self.getUUT()
+        print("Trigger:", time.time_ns())
         uut.s0.soft_trigger
     TRIGGER_MEV = trigger_mev
         
