@@ -185,6 +185,11 @@ class MARTE2_COMPONENT(Device):
                           'type': 'numeric', 'value': Data.compile(str(input['dimensions']))})
             parts.append({'path': '.INPUTS.'+sigName+':COL_ORDER',
                           'type': 'text', 'value': 'NO'})
+            #Gabriele June 2022
+            if 'samples' in input:
+                parts.append({'path': '.INPUTS.'+sigName+':SAMPLES',
+                          'type': 'numeric', 'value': input['samples']})
+            ##################    
             parts.append({'path': '.INPUTS.'+sigName +
                           ':VALUE', 'type': 'signal'})
             if 'name' in input:
@@ -456,6 +461,12 @@ class MARTE2_COMPONENT(Device):
                     except:
                         isStruct = False
 
+                    #Gabriele June 2022: Optional samples input info
+                    try:
+                        inputDict['samples'] = input.getNode('samples').data()
+                    except:
+                        pass
+                    ###########################################
                     if not isStruct:
                         inputDict['dimensions'] = input.getNode(
                             'dimensions').data()
@@ -980,8 +991,13 @@ class MARTE2_COMPONENT(Device):
             signalDict = {}
             # This is a Time field referring to this timebase
             if 'value' in inputDict and isinstance(inputDict['value'], TreeNode) and inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent() == self:
-                gamText += '      Time = {\n'
-                gamText += '      DataSource = ' + timerDDB+'\n'
+                gamText += '      '+inputDict['name'] + ' = {\n'
+                gamText += '          DataSource = ' + timerDDB+'\n'
+                if inputDict['type'] == 'counter':
+                    gamText += '          Alias = Counter\n'
+                else:
+                    gamText += '          Alias = Time\n'
+                gamText += '          Type = uint32\n'
             else:  # Normal reference
                 isTreeRef = False
                 forceUsingSamples = False
@@ -2758,12 +2774,18 @@ class MARTE2_COMPONENT(Device):
         for inputDict in inputDicts:
             # This is a Time field referring to this timebase
             if 'value' in inputDict and isinstance(inputDict['value'], TreeNode) and inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid():
-                signalNames.append('Time')
-                gamText += '      Time = {\n'
-                gamText += '      DataSource = ' + timerDDB+'\n'
+ #Gabriele June 2022
+                signalNames.append(inputDict['name'])
+                gamText += '      '+inputDict['name'] + ' = {\n'
+                gamText += '          DataSource = ' + timerDDB+'\n'
+                if inputDict['type'] == 'counter':
+                    gamText += '          Alias = Counter\n'
+                else:
+                    gamText += '          Alias = Time\n'
+                gamText += '          Type = uint32\n'
                 try:
                     syncDiv = self.timebase_div.data()
-                    gamText += '        Samples = ' + \
+                    gamText += '            Samples = ' + \
                         str(syncDiv)+'\n'
                     signalSamples.append(syncDiv)
                     forceUsingSamples = True
@@ -2869,7 +2891,10 @@ class MARTE2_COMPONENT(Device):
                 gamText += '        Samples = '+str(syncDiv)+'\n'               
             idx = idx+1
             gamText += '        DataSource = '+dataSourceName+'\n'
-            gamText += '        Type = '+outputDict['type']+'\n'
+            if outputDict['type'] == 'time' or outputDict['type'] == 'counter':
+                gamText += '        Type = uint32\n'
+            else:
+                gamText += '        Type = '+outputDict['type']+'\n'
 
             if outputDict['dimensions'] == 0:
                 numberOfElements = 1
@@ -2881,7 +2906,12 @@ class MARTE2_COMPONENT(Device):
                     numberOfElements *= currDim
             gamText += '        NumberOfDimensions = ' + \
                 str(numberOfDimensions)+'\n'
-            gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+            #Gabriele June 2022: if samples are defined IN ADDITION to number of elements, they take precedence for IOGAM output
+            if 'samples' in outputDict:
+                gamText += '        Samples = '+str(outputDict['samples'])+'\n'
+            else:
+                gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+            ###################################
             gamText = self.addSignalParameters(outputDict['value_nid'].getParent().getNode(
                 'parameters'), gamText)  # For output devices parameters are copied to out
             gamText += '      }\n'
@@ -2953,22 +2983,30 @@ class MARTE2_COMPONENT(Device):
         for inputDict in inputDicts:
             dataSourceText += '      '+signalNames[idx]+' = {\n'
             idx = idx+1
+        #Gabriele June 2022 If Samples are defined, they take precedence over NumberOfElememnts
             if 'type' in inputDict:
-                dataSourceText += '        Type = '+inputDict['type']+'\n'
-            if 'dimensions' in inputDict:
-                dimensions = inputDict['dimensions']
-                if dimensions == 0:
-                    numberOfElements = 1
-                    numberOfDimensions = 0
+                if inputDict['type'] == 'time' or inputDict['type'] == 'counter':
+                    dataSourceText += '        Type = uint32\n'
                 else:
-                    numberOfDimensions = len(inputDict['dimensions'])
-                    numberOfElements = 1
-                    for currDim in inputDict['dimensions']:
-                        numberOfElements *= currDim
-                dataSourceText += '        NumberOfDimensions = ' + \
-                    str(numberOfDimensions)+'\n'
-                dataSourceText += '        NumberOfElements = ' + \
-                    str(numberOfElements)+'\n'
+                    dataSourceText += '        Type = '+inputDict['type']+'\n'
+            if 'samples' in inputDict:
+                dataSourceText += '        Samples = ' + str(inputDict['samples']) + '\n'
+            else:
+                if 'dimensions' in inputDict:
+                    dimensions = inputDict['dimensions']
+                    if dimensions == 0:
+                        numberOfElements = 1
+                        numberOfDimensions = 0
+                    else:
+                        numberOfDimensions = len(inputDict['dimensions'])
+                        numberOfElements = 1
+                        for currDim in inputDict['dimensions']:
+                            numberOfElements *= currDim
+                    dataSourceText += '        NumberOfDimensions = ' + \
+                        str(numberOfDimensions)+'\n'
+                    dataSourceText += '        NumberOfElements = ' + \
+                        str(numberOfElements)+'\n'
+        #############################################
             dataSourceText = self.addSignalParameters(
                 inputDict['value_nid'].getParent().getNode('parameters'), dataSourceText)
             dataSourceText += '      }\n'
