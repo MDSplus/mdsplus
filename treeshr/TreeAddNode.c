@@ -839,7 +839,14 @@ static inline void copy_V1_Node_2_V2(NODE *src, V1NODE *dst)
   for(int i=0; i<V1_MAX_NAME_LEN; i++)
     if(src->name[i] == '\0')
       src->name[i] = ' ';
+#if (__GNUC__ > 8)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
   strncpy(dst->name, src->name, V1_MAX_NAME_LEN);
+#if (__GNUC__ > 8)
+# pragma GCC diagnostic pop
+#endif
 }
 
 int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
@@ -946,7 +953,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 	  for (idx=0; idx<info_ptr->header->nodes; idx++)
             copy_V1_Node_2_V2(&info_ptr->node[idx], &v1nodes[idx]);
 	  num = MDS_IO_WRITE(ntreefd, v1nodes, (sizeof(V1NODE)*info_ptr->header->nodes+511u)/512*512);
-          if (num != (sizeof(V1NODE)*info_ptr->header->nodes+511u)/512*512)
+          if (num != ((ssize_t)sizeof(V1NODE)*info_ptr->header->nodes+511u)/512*512)
             GOTO_ERROR_CLOSE;
           free(v1nodes);
 	}
