@@ -45,8 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace std;
 
-extern "C" void *getManyObj(char *serializedIn) throw(MdsException);
-extern "C" void *putManyObj(char *serializedIn) throw(MdsException);
+extern "C" void *getManyObj(char *serializedIn);
+extern "C" void *putManyObj(char *serializedIn);
 extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args,
                                          void *tree);
 extern "C" int SendArg(int sock, unsigned char idx, char dtype,
@@ -108,7 +108,7 @@ static int convertType(int mdsType)
   }
 }
 
-void *getManyObj(char *serializedIn) throw(MdsException)
+void *getManyObj(char *serializedIn) 
 {
   AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
   if (inArgs->clazz != CLASS_APD) // || inArgs->dtype != DTYPE_LIST)
@@ -241,7 +241,7 @@ void *getManyObj(char *serializedIn) throw(MdsException)
   return result->convertToDsc();
 }
 
-void *putManyObj(char *serializedIn) throw(MdsException)
+void *putManyObj(char *serializedIn) 
 {
   AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
   if (inArgs->clazz != CLASS_APD) // || inArgs->dtype != DTYPE_LIST)
