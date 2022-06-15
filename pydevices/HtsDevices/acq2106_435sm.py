@@ -96,7 +96,7 @@ class _ACQ2106_435SM(MDSplus.Device):
         {
             'path': ':TRIG_MODE', 
             'type': 'text',
-            'value': 'master:hard', 
+            'value': 'master:soft', 
             'options': ('no_write_shot',)
         },
         # PRE and POST samples
@@ -115,9 +115,15 @@ class _ACQ2106_435SM(MDSplus.Device):
         {
             'path':':MEV_PATH',
             'type':'text',  
-            'value': '/srv/acq-multi-event/acq2106_161/', 
+            'value': '/srv/acq-multi-event/acq2106_XXX/', 
             'options':('no_write_shot',)
         },
+        {
+            'path': ':TRIG_TIME',   
+            'type': 'numeric',
+            'options': ('write_shot',)
+        },
+
     ]
 
 
@@ -138,27 +144,33 @@ class _ACQ2106_435SM(MDSplus.Device):
             super(_ACQ2106_435SM.MultiEventWorker, self).__init__(name=mdsplus_device.path)
             self.mdsplus_device = mdsplus_device
             self.uut = uut
+            self.nchans = mdsplus_device.sites * 32
             self.presamples = mdsplus_device.presamples.data()
             self.postsamples = mdsplus_device.postsamples.data()
-            self.clock_period  = 1.0 / mdsplus_device.freq.data()
-            self.sites = mdsplus_device.sites
+            self.seconds_per_sample  = 1.0 / mdsplus_device.freq.data() # Clock period
             self.mev_path = mdsplus_device.mev_path.data()
 
         def run(self):
             self.mdsplus_device = self.mdsplus_device.copy()
 
+            SECONDS_TO_NANOSECONDS = 1_000_000_000
+
             running = self.mdsplus_device.running
+
+            # WR Nanosec per Tick:
+            wrtd_tickns = float(self.uut.cC.WRTD_TICKNS) # TODO: Move this elsewhere?
+
+            duration = ((self.presamples + self.postsamples) * self.seconds_per_sample) * SECONDS_TO_NANOSECONDS
+            delta = self.seconds_per_sample * SECONDS_TO_NANOSECONDS
 
             # Note: This value is not cleared between shots.
             last_mev_latest = self.uut.s1.MEV_LATEST
 
             self.chans = []
-            nchans = self.sites * 32
-            for i in range(nchans):
+            for i in range(self.nchans):
                 self.chans.append(getattr(self.mdsplus_device, 'INPUT_%3.3d:TRANSIENT'%(i + 1)))
 
-            stride = nchans + 4
-            segment = 0
+            stride = self.nchans + 4
 
             while running.on:
                 mev_latest = self.uut.s1.MEV_LATEST
@@ -174,7 +186,6 @@ class _ACQ2106_435SM(MDSplus.Device):
                 time.sleep(2)
 
                 data = None
-                data_t = None
                 try:
                     data = np.fromfile(filepath, dtype='int32', count=-1, sep='')
                 except FileNotFoundError:
@@ -187,41 +198,22 @@ class _ACQ2106_435SM(MDSplus.Device):
                 # We need to remove the fake row of data that serves as the marker for the trigger
                 data_435 = np.concatenate((data_435[:self.presamples * stride], data_435[(self.presamples + 1) * stride:]))
 
+                # The SPAD are stored as 4 extra "channels"
+                spad = data[self.nchans:]
+
                 last_mev_latest = mev_latest
                 
-                tai_cur = np.uint32(data[nchans + 1])
-                tai_ver = np.uint32(data[nchans + 2])
-
-                # Quick check: (TAI_SEC&0xf) == (TAI_VERNIER >> 28)
-                print(tai_cur&0xf, tai_ver>>28)
-
-                # WR Nanosec per Tick:
-                self.wrtd_tickns = float(self.uut.cC.WRTD_TICKNS)
-                vernier   = (tai_ver & 0x0FFFFFFF)
-                vernier_ns = vernier * self.wrtd_tickns
-                tai_time = (tai_cur * 1_000_000_000) + vernier_ns # TAI time in ns
-
-                # For now, TAI time is 37 secs ahead of UTC
-                begin = tai_time - 37_000_000_000
-
-                duration = (self.presamples + self.postsamples) * self.clock_period
-                deltat = self.clock_period * 1_000_000_000
-
-                end = begin + (duration * 1_000_000_000)
-                dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(deltat))
+                begin = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
+                end = begin + duration
+                dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(delta))
                 
-                print("Clock period:", self.clock_period)
-                print("duration:    ", duration)
-                print("detalt:      ", deltat)
-                print("Begin %20d   " %(begin,))
-                print("End   %20d   " %(end,))
-
                 for i, ch in enumerate(self.chans):
                     if ch.on:
                         channel_data = data_435[ i :: stride ]
                         ch.makeSegment(begin, end, dim, channel_data)
-
-                os.unlink(filepath)
+                
+                print(f"Done processing multi-event data file {filepath}")
+                #os.unlink(filepath)
         
     class SlowMonitorWorker(threading.Thread):
         INITIAL_BUFFER_COUNT = 10
@@ -237,8 +229,8 @@ class _ACQ2106_435SM(MDSplus.Device):
         def __init__(self, mdsplus_device, uut):
             super(_ACQ2106_435SM.SlowMonitorWorker, self).__init__(name=mdsplus_device.path)
             
+            self.uut = uut
             self.mdsplus_device = mdsplus_device
-
             self.nchans = self.mdsplus_device.sites * 32
 
             self.empty_buffers = Queue()
@@ -250,8 +242,8 @@ class _ACQ2106_435SM(MDSplus.Device):
             self.acq_thread = self.ACQWorker(self, uut)
 
         def run(self):
-            from influxdb import InfluxDBClient
-            self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon435')
+            # from influxdb import InfluxDBClient
+            # self.client = InfluxDBClient('localhost', 8086, 'admin', 'password', 'slowmon435')
 
             self.mdsplus_device = self.mdsplus_device.copy()
 
@@ -284,27 +276,32 @@ class _ACQ2106_435SM(MDSplus.Device):
                 except Empty:
                     continue
                 
-                samples = np.right_shift(np.frombuffer(data_point.buffer, dtype='int32'), 8)
+                data = np.frombuffer(data_point.buffer, dtype='int32')
+                data_435 = np.right_shift(data, 8)
 
-                influx_points = []
+                spad = data[self.nchans:]
+                timestamp = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
+
+                # influx_points = []
                 mdsplus_points= []
 
                 for i, ch in enumerate(channel_list):
                     if ch.on:
-                        calibrated = samples[i] * coefficient_list[i] + offset_list[i]
+                        # calibrated = data_435[i] * coefficient_list[i] + offset_list[i]
                         
-                        influx_points.append({
-                            "measurement": 'INPUT_%3.3d' % (i+1),
-                            "time": data_point.time,
-                            "fields": {
-                                'sample': calibrated
-                            }
-                        })
+                        # influx_points.append({
+                        #     "measurement": 'INPUT_%3.3d' % (i+1),
+                        #     "time": timestamp,
+                        #     "fields": {
+                        #         'sample': calibrated
+                        #     }
+                        # })
 
-                        ch.putRow(3600, samples[i], data_point.time)
+                        #ch.putRow(3600, data_435[i], data_point.time)
+                        ch.putRow(3600, data_435[i], timestamp)
 
                 # start = time.time()               
-                self.client.write_points(influx_points, time_precision='n')
+                # self.client.write_points(influx_points, time_precision='n')
              
                 MDSplus.Event.setevent(event_name)
 
@@ -445,34 +442,9 @@ class _ACQ2106_435SM(MDSplus.Device):
         if self.debug:
             print("Role is %s and %s trigger" % (role, trg))
 
-
-        src_trg_0 = None
-        src_trg_1 = None
-
-        if trg == 'hard':
-            trg_dx = 'd0'
-            src_trg_0 = 'EXT' # External Trigger
-        elif trg == 'soft' or trg == 'automatic':
-            trg_dx = 'd1'
-            src_trg_1 = 'STRIG' # Soft Trigger
-        elif trg in self.TRIG_SRC_OPTS_0:
-            trg_dx = 'd0'
-            src_trg_0 = trg
-        elif trg in self.TRIG_SRC_OPTS_1:
-            trg_dx = 'd1'
-            src_trg_1 = trg
-        elif trg != 'none':
-            raise MDSplus.DevBAD_PARAMETER("TRIG_MODE does not contain a valid trigger source")
- 
-        uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
-
-        # snyc_role will set a default trigger source, we need to override it to the selected trigger source
-        # These must be uppercase
-        if src_trg_0:
-            uut.s0.SIG_SRC_TRG_0 = src_trg_0.upper()
-
-        if src_trg_1:
-            uut.s0.SIG_SRC_TRG_1 = src_trg_1.upper()
+        # For Slow Mon. the box needs to be configured for software trigger
+        uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), 'd1')
+        uut.s0.SIG_SRC_TRG_1 = 'STRIG'
 
         # Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
@@ -496,19 +468,45 @@ class _ACQ2106_435SM(MDSplus.Device):
 
         uut.s1.MEV_PRE = self.presamples.data()
         uut.s1.MEV_POST = self.postsamples.data()
-        uut.s1.MEV_MAX = 10
+        uut.s1.MEV_MAX = 20 # TODO: Find out the actual maximum limit
 
-        # Trigger ACQ to starts:
+        # Trigger ACQ to start:
         uut.s0.CONTINUOUS = 1
 
         # Setting the slow monitoring frequency to 1Hz
         uut.s0.SLOWMON_FS = 1 #Hz
 
         # Setting Capture/Transient trigger event:
+        src_trg_0 = None
+        src_trg_1 = None
+
+        # Selecting the trigger source, i.e. EXT, STRIG, WRTT0, WRTT1, etc
+        if trg == 'hard':
+            trg_dx = 'd0'
+            src_trg_0 = 'EXT' # External Trigger
+        elif trg == 'soft' or trg == 'automatic':
+            trg_dx = 'd1'
+            src_trg_1 = 'STRIG' # Soft Trigger
+        elif trg in self.TRIG_SRC_OPTS_0:
+            trg_dx = 'd0'
+            src_trg_0 = trg
+        elif trg in self.TRIG_SRC_OPTS_1:
+            trg_dx = 'd1'
+            src_trg_1 = trg
+        elif trg != 'none':
+            raise MDSplus.DevBAD_PARAMETER("TRIG_MODE does not contain a valid trigger source")
+
         uut.s1.EVENT0          = 'enable'
-        uut.s1.EVENT0_DX       = 'd1'
+        uut.s1.EVENT0_DX       = trg_dx
         uut.s1.EVENT0_SENSE    = 'rising'
-        uut.s0.SIG_EVENT_SRC_1 = 'TRG'
+
+        if src_trg_0:
+            uut.s0.SIG_EVENT_SRC_0 = 'TRG'
+            uut.s0.SIG_SRC_TRG_0 = src_trg_0.upper()
+
+        if src_trg_1:
+            uut.s0.SIG_EVENT_SRC_1 = 'TRG'
+            uut.s0.SIG_SRC_TRG_1 = src_trg_1.upper()
 
         self.running.on = True
 
@@ -523,7 +521,8 @@ class _ACQ2106_435SM(MDSplus.Device):
 
     def trigger_mev(self):
         uut = self.getUUT()
-        print("Trigger:", time.time_ns())
+        print("Trigger time [ns]:", time.time_ns())
+        self.trig_time.record = time.time_ns()
         uut.s0.soft_trigger
     TRIGGER_MEV = trigger_mev
         
@@ -547,6 +546,20 @@ class _ACQ2106_435SM(MDSplus.Device):
         chan = self.__getattr__('INPUT_%3.3d' % num)
         chan.TRANSIENT.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
     
+    def getTimeFromSPAD(self, spad, nanoseconds_per_tick):
+        TAI_TO_UTC_OFFSET_SECONDS = 37
+        SECONDS_TO_NANOSECONDS = 1_000_000_000
+
+        tai_seconds = np.uint32(spad[1])
+        tai_ticks = np.uint32(spad[2]) & 0x0FFFFFFF # The vernier
+        tai_nanoseconds = tai_ticks * nanoseconds_per_tick
+
+        # Calculate the TAI time in nanoseconds
+        tai_timestamp = (tai_seconds * SECONDS_TO_NANOSECONDS) + tai_nanoseconds
+        # For now, TAI time is 37 secs ahead of UTC
+        utc_timestamp = tai_timestamp - (TAI_TO_UTC_OFFSET_SECONDS * SECONDS_TO_NANOSECONDS)
+
+        return int(utc_timestamp)
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SM.carrier_parts)
