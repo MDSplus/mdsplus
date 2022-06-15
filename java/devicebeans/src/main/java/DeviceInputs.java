@@ -77,7 +77,10 @@ public class DeviceInputs extends DeviceComponent
                     inputName = "";
                 }
                 JPanel jp1 = new JPanel();
-                jp1.setBorder(new TitledBorder(inputName));
+                TitledBorder titledBorder = new TitledBorder(inputName);
+                titledBorder.setTitleColor(Color.red);
+                jp1.setBorder(titledBorder);
+                
                 jp1.setLayout(new GridLayout(1 + numFields[i],1));
                 JPanel jp2 = new JPanel();
                 jp2.setLayout(new BorderLayout());
