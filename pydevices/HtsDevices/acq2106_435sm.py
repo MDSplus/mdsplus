@@ -183,7 +183,7 @@ class _ACQ2106_435SM(MDSplus.Device):
                     time.sleep(1)
                     continue
                 
-                time.sleep(2)
+                time.sleep(5) # delay processing to be sure that the event file has made it to the NFS mounted disk.
 
                 data = None
                 try:
@@ -192,29 +192,39 @@ class _ACQ2106_435SM(MDSplus.Device):
                     print("Unable to open multi-event data file", filepath)
                     continue
                 
-                # The data is 24-bit stored in 32-bit numbers, so we need to >>8
-                data_435 = np.right_shift(data, 8)
-                
                 # We need to remove the fake row of data that serves as the marker for the trigger
-                data_435 = np.concatenate((data_435[:self.presamples * stride], data_435[(self.presamples + 1) * stride:]))
-
-                # The SPAD are stored as 4 extra "channels"
-                spad = data[self.nchans:]
+                data_snip = np.concatenate((data[ : self.presamples * stride], data[(self.presamples + 1) * stride : ]))
+                
+                # The data is 24-bit stored in 32-bit numbers, so we need to >>8
+                data_435 = np.right_shift(data_snip, 8)
 
                 last_mev_latest = mev_latest
+
+                # The SPAD are stored as 4 extra "channels"
+                # spad = data_snip[self.nchans:] # first SPAD
                 
-                begin = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
-                end = begin + duration
-                dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(delta))
+                # begin = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
+                # end = begin + duration
+                # dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(delta))
+
+                times = []
+                for i in range(self.presamples + self.postsamples):
+                    offset = (i * stride) + self.nchans
+                    spad = data_snip[offset : offset + 4]
+                    times.append(self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns))
+
+                dim = MDSplus.Uint64Array(times)
                 
                 for i, ch in enumerate(self.chans):
                     if ch.on:
                         channel_data = data_435[ i :: stride ]
-                        ch.makeSegment(begin, end, dim, channel_data)
+                        ch.makeSegment(dim[0], dim[-1], dim, channel_data)
+                        # ch.makeSegment(begin, end, dim, channel_data)
                 
                 print(f"Done processing multi-event data file {filepath}")
-                #os.unlink(filepath)
-        
+                os.unlink(filepath)
+                print(f"Done deleting the multi-event date file")
+
     class SlowMonitorWorker(threading.Thread):
         INITIAL_BUFFER_COUNT = 10
         
@@ -280,7 +290,11 @@ class _ACQ2106_435SM(MDSplus.Device):
                 data_435 = np.right_shift(data, 8)
 
                 spad = data[self.nchans:]
+                print('sample before, sample after', spad[0], spad[3])
                 timestamp = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
+
+                # Perhaps the timestamps are from the *end* of the averaged time range?
+                timestamp -= (1e9 / 2)
 
                 # influx_points = []
                 mdsplus_points= []
@@ -552,7 +566,8 @@ class _ACQ2106_435SM(MDSplus.Device):
 
         tai_seconds = np.uint32(spad[1])
         tai_ticks = np.uint32(spad[2]) & 0x0FFFFFFF # The vernier
-        tai_nanoseconds = tai_ticks * nanoseconds_per_tick
+        # SPAD[3]
+        tai_nanoseconds = (tai_ticks * nanoseconds_per_tick) - np.int32(spad[3])
 
         # Calculate the TAI time in nanoseconds
         tai_timestamp = (tai_seconds * SECONDS_TO_NANOSECONDS) + tai_nanoseconds
