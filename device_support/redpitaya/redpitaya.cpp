@@ -97,8 +97,6 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
   regs.post_register_enable = 1;
   regs.post_register = config->post_samples;
 
-  regs.trig_event_code_enable = 1;
-  regs.trig_event_code = config->event_code;
 
   regs.decimator_register_enable = 1;
 
@@ -184,7 +182,6 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   config->post_samples = regs.post_register;
   config->pre_samples = regs.pre_register;
   config->decimation = regs.decimator_register + 1;
-  config->event_code = regs.trig_event_code;
 }
 
 static void fifoFlush(int fd) { ioctl(fd, RFX_STREAM_FIFO_FLUSH, NULL); }
