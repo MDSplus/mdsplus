@@ -280,7 +280,6 @@ class _ACQ2106_435SM(MDSplus.Device):
                 if not running.on and self.acq_thread.running:
                     self.acq_thread.stop()
 
-                # start = time.time()
                 try:
                     data_point = self.full_buffers.get()
                 except Empty:
@@ -290,10 +289,11 @@ class _ACQ2106_435SM(MDSplus.Device):
                 data_435 = np.right_shift(data, 8)
 
                 spad = data[self.nchans:]
-                print('sample before, sample after', spad[0], spad[3])
+                
                 timestamp = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
 
                 # Perhaps the timestamps are from the *end* of the averaged time range?
+                # The slow sampling rate happens at 1Hz, that is 1 sec of data, implies 1e9 nsec. So, we use the middle of the time range instead:
                 timestamp -= (1e9 / 2)
 
                 # influx_points = []
@@ -311,18 +311,14 @@ class _ACQ2106_435SM(MDSplus.Device):
                         #     }
                         # })
 
-                        #ch.putRow(3600, data_435[i], data_point.time)
                         ch.putRow(3600, data_435[i], timestamp)
-
-                # start = time.time()               
+            
                 # self.client.write_points(influx_points, time_precision='n')
              
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(data_point)
 
-                # end  = time.time()
-                # print('putRow and write_points', end - start)
 
             if self.acq_thread.running:
                 self.acq_thread.stop()
