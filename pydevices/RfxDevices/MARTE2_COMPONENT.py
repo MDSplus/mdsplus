@@ -2477,7 +2477,8 @@ class MARTE2_COMPONENT(Device):
                     gamText += '        Type = '+outputDict['type']+'\n'
                     gamText += '        Samples = ' + \
                         str(outputDict['samples'])+'\n'
-                    if outputDict['dimensions'] == 0:
+#                    if outputDict['dimensions'] == 0:
+                    if outputDict['dimensions'] == 0 or outputDict['samples'] > 1:  #Gabriele June 2022
                         numberOfElements = 1
                         numberOfDimensions = 0
                     else:
