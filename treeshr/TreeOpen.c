@@ -1514,7 +1514,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
             info->external = calloc(1, 512);
             info->edit->external_pages = 1;
             info->edit->first_in_mem = 0;
-            info->header->version = 1;
+            info->header->version = 2;
             info->header->sort_children = 1;
             info->header->sort_members = 1;
             info->header->free = sizeof(NODE);
