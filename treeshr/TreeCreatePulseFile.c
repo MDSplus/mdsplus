@@ -136,7 +136,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   for (i = 0; i < num; i++)
   {
     int sts, skip = 0;
-    char name[13];
+    char name[MAX_NAME_LEN+1];
     if (nids[i])
     { // for subtree nodes, i.e. nid!=0
       int flags;
