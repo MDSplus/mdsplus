@@ -718,8 +718,10 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
     {
       if (itm->buffer_length && itm->pointer)
       {
-        retlen = minInt(strlen(string), itm->buffer_length);
+        retlen = minInt(strlen(string), itm->buffer_length-1);
         memcpy(itm->pointer, string, retlen);
+        char *cptr = (char *)itm->pointer;
+	cptr[retlen] = '\0';
         free(string);
       }
       else
