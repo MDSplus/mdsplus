@@ -100,7 +100,6 @@ int tree_lock_nci(TREE_INFO *info, int readonly, int nodenum, int *deleted,
 {
   int status = TreeSUCCESS;
   int deleted_loc, *deleted_ptr = deleted ? deleted : &deleted_loc;
-  printf("TREE_LOCK_NCI info = %p, readonly = %d, nodenum = %d, deleted=%p, locked = %p\n", info, readonly, nodenum, deleted, locked);
   if (!info->header->readonly)
   {
     if (*locked == 0)
@@ -129,7 +128,6 @@ int tree_lock_nci(TREE_INFO *info, int readonly, int nodenum, int *deleted,
 }
 void tree_unlock_nci(TREE_INFO *info, int readonly, int nodenum, int *locked)
 {
-  printf("\tTREE_UNLOCK_NCI info = %p, readonly = %d, nodenum = %d, locked = %p\n", info, readonly, nodenum, locked);
   if (!info->header->readonly)
   {
 #ifdef DEBUG
