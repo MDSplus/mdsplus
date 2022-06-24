@@ -33,6 +33,7 @@ class MARTE2_COMPONENT(Device):
     MODE_INPUT = 2
     MODE_SYNCH_INPUT = 3
     MODE_OUTPUT = 4
+    MODE_SYNCH_OUTPUT = 5
 
     TIMEBASE_GENERATOR = 1
     TIMEBASE_FROM_SAME_THREAD = 2
@@ -254,10 +255,10 @@ class MARTE2_COMPONENT(Device):
                           'value': Data.compile(timebaseExpr)})
 
         cls.buildParameters(parts)
-        if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT:
+        if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT or mode == MARTE2_COMPONENT.MODE_SYNCH_OUTPUT:
             cls.buildInputs(parts)
 
-        if mode != MARTE2_COMPONENT.MODE_OUTPUT:
+        if mode != MARTE2_COMPONENT.MODE_OUTPUT and mode != MARTE2_COMPONENT.MODE_SYNCH_OUTPUT:
             cls.buildOutputs(parts)
 
 # add timebase division, valid only if the timebase refers to a MARTE2 device belonging to a different thread
@@ -448,7 +449,7 @@ class MARTE2_COMPONENT(Device):
             except:
                 pass
         inputDicts = []
-        if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT:
+        if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT or mode == MARTE2_COMPONENT.MODE_SYNCH_OUTPUT:
             inputNids = np.sort(self.getNode('inputs').getChildren())
             for inputNid in inputNids:
                 try:
@@ -517,7 +518,7 @@ class MARTE2_COMPONENT(Device):
                 except:
                     pass
         outputDicts = []
-        if mode != MARTE2_COMPONENT.MODE_OUTPUT:
+        if mode != MARTE2_COMPONENT.MODE_OUTPUT and mode != MARTE2_COMPONENT.MODE_SYNCH_OUTPUT:
             storeSignals = False
             streamSignals = False
             outputNids = np.sort(self.getNode('outputs').getChildren())
@@ -585,7 +586,7 @@ class MARTE2_COMPONENT(Device):
         except:
             outputTrigger = None
 
-        if mode != MARTE2_COMPONENT.MODE_OUTPUT:
+        if mode != MARTE2_COMPONENT.MODE_OUTPUT and mode != MARTE2_COMPONENT.MODE_SYNCH_OUTPUT:
             outTimeNid = self.outputs_out_time
             outTimeIdx = self.outputs_time_idx.data()
             try:
@@ -925,13 +926,14 @@ class MARTE2_COMPONENT(Device):
                     prevTimebase = TreeNode(timebase, self.getTree())
                     timebase = prevTimebase.getData()
             origName = self.convertPath(prevTimebase.getParent().getFullPath())
+            origTimer = prevTimebase.getParent()
             # Check whether the synchronization source is a Synch Input. Only in this case, the origin DDB is its output DDB since that device is expected to produce Time
             originMode = prevTimebase.getParent().getNode('mode').data()
             try:
                 startTime = timebase.getDescAt(0).data()
             except:
                 startTime = 0
-            if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
+            if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT or originMode == MARTE2_COMPONENT.MODE_SYNCH_OUTPUT:
                 if self.onSameThread(threadMap, prevTimebase.getParent()):
                     timerDDB = origName+'_Output_DDB'
                 else:
@@ -994,9 +996,9 @@ class MARTE2_COMPONENT(Device):
                 gamText += '      '+inputDict['name'] + ' = {\n'
                 gamText += '          DataSource = ' + timerDDB+'\n'
                 if inputDict['type'] == 'counter':
-                    gamText += '          Alias = Counter\n'
+                    gamText += '          Alias = '+origTimer.getCounterName()+'\n'
                 else:
-                    gamText += '          Alias = Time\n'
+                    gamText += '          Alias = '+origTimer.getTimeName()+'\n'
                 gamText += '          Type = uint32\n'
             else:  # Normal reference
                 isTreeRef = False
@@ -2643,7 +2645,7 @@ class MARTE2_COMPONENT(Device):
 
 # OUTPUT
 
-    def getMarteOutputInfo(self, threadMap, gams, dataSources, gamList):
+    def getMarteOutputInfo(self, threadMap, gams, dataSources, gamList, isSync = False):
         configDict = self.getGamInfo()
         dataSourceName = configDict['gamName']
         dataSourceClass = configDict['gamClass']
@@ -2653,118 +2655,176 @@ class MARTE2_COMPONENT(Device):
         outputDicts = configDict['outputDicts']  # TODO: unused
         outPeriod = 0  # If different from 0, this means that the corresponing component is driving the thread timing
 
-
+        print('INUT DICTS')
+        print(inputDicts)
 # timebase
-        if isinstance(timebase, Range):
-            period = timebase.getDescAt(2).data()
-            outPeriod = period  # driving thread timing
-            dataSourceText = '  +'+dataSourceName+'_Timer' + ' = {\n'
-            dataSourceText += '    Class = LinuxTimer\n'
-            dataSourceText += '    SleepNature = "Default"\n'
-            dataSourceText += '    Signals = {\n'
-            dataSourceText += '      Counter = {\n'
-            dataSourceText += '        Type = uint32\n'
-            dataSourceText += '      }\n'
-            dataSourceText += '      Time = {\n'
-            dataSourceText += '        Type = uint32\n'
-            dataSourceText += '      }\n'
-            dataSourceText += '    }\n'
-            dataSourceText += '  }\n'
-            dataSources.append(dataSourceText)
+        if not isSync:
+            if isinstance(timebase, Range):
+                period = timebase.getDescAt(2).data()
+                outPeriod = period  # driving thread timing
+                dataSourceText = '  +'+dataSourceName+'_Timer' + ' = {\n'
+                dataSourceText += '    Class = LinuxTimer\n'
+                dataSourceText += '    SleepNature = "Default"\n'
+                dataSourceText += '    Signals = {\n'
+                dataSourceText += '      Counter = {\n'
+                dataSourceText += '        Type = uint32\n'
+                dataSourceText += '      }\n'
+                dataSourceText += '      Time = {\n'
+                dataSourceText += '        Type = uint32\n'
+                dataSourceText += '      }\n'
+                dataSourceText += '    }\n'
+                dataSourceText += '  }\n'
+                dataSources.append(dataSourceText)
+
+                dataSourceText = '  +'+dataSourceName+'_Timer_DDB = {\n'
+                dataSourceText += '    Class = GAMDataSource\n'
+                dataSourceText += ' }\n'
+                dataSources.append(dataSourceText)
+
+                gamList.append(dataSourceName+'Timer_IOGAM')
+                gamText = '  +'+dataSourceName+'Timer_IOGAM = {\n'
+                gamText += '    Class = IOGAM\n'
+                gamText += '    InputSignals = {\n'
+                gamText += '      Counter = {\n'
+                gamText += '        DataSource = '+dataSourceName+'_Timer\n'
+                gamText += '        Type = uint32\n'
+                gamText += '        NumberOfElements = 1\n'
+                gamText += '      }\n'
+                gamText += '      Time = {\n'
+                gamText += '        DataSource = '+dataSourceName+'_Timer\n'
+                gamText += '        Type = uint32\n'
+                gamText += '        NumberOfElements = 1\n'
+                gamText += '        Frequency = '+str(round(1./period, 4))+'\n'
+                gamText += '      }\n'
+                gamText += '    }\n'
+                gamText += '    OutputSignals = {\n'
+                gamText += '      Counter = {\n'
+                gamText += '        DataSource = '+dataSourceName+'_Timer_DDB\n'
+                gamText += '        Type = uint32\n'
+                gamText += '      }\n'
+                gamText += '      Time = {\n'
+                gamText += '        DataSource = '+dataSourceName+'_Timer_DDB\n'
+                gamText += '        Type = uint32\n'
+                gamText += '        NumberOfElements = 1\n'
+                gamText += '      }\n'
+                gamText += '    }\n'
+                gamText += '  }\n'
+                gams.append(gamText)
+
+                timerDDB = dataSourceName+'_Timer_DDB'
+
+            # Link to other component up in the chain
+            elif isinstance(timebase, TreeNode) or isinstance(timebase, TreePath):
+                prevTimebase = timebase
+                while isinstance(timebase, TreeNode) or isinstance(timebase, TreePath):
+                    if isinstance(timebase, TreeNode):
+                        prevTimebase = timebase
+                        timebase = timebase.getData()
+                    else:
+                        prevTimebase = TreeNode(timebase, self.getTree())
+                        timebase = prevTimebase.getData()
+                origName = self.convertPath(prevTimebase.getParent().getFullPath())
+                # Check whether the synchronization source is a Synch Input. Only in this case, the origin DDB is its output DDB
+                originMode = prevTimebase.getParent().getNode('mode').data()
+
+                if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
+                    if self.onSameThread(threadMap, prevTimebase.getParent()):
+                        timerDDB = origName+'_Output_DDB'
+                    else:
+                       # timerDDB = origName+'_Output_Synch' Gabriele Jan 2022
+                        timerDDB = origName+'_Output_Synch'
+                        try:
+                            # Get period from driving synchronizing device
+                            outPeriod = timebase.getDescAt(2).data()
+                        except:
+                            outPeriod = 0
+                else:
+                    if self.onSameThread(threadMap, prevTimebase.getParent()):
+                        timerDDB = origName+'_Timer_DDB'
+                    else:
+                        timerDDB = origName+'_Timer_Synch'
+                        try:
+                            # Get period from driving synchronizing device
+                            outPeriod = timebase.getDescAt(2).data()
+                        except:
+                            outPeriod = 0
+            else:
+                print('ERROR: Invalid timebase definition')
+                return 0
+        else:  # isSynch
+            currTimebase = self.getNode('timebase').evaluate()
+            if isinstance(currTimebase, Range):
+                outPeriod = currTimebase.delta.data()
+                try:
+                    startTime = currTimebase.begin.data()
+                except:
+                    startTime = 0
+            else:
+                currTimebase = currTimebase.data()
+                outPeriod = currTimebase[1] - currTimebase[0]
+                startTime = currTimebase[0]
+                
+                
+                
+          # Check if time information is required by another synchronized thread Gabriele Jan 2022
+          # for sync input devices, the check has to be performed on output Time
+            if self.isUsedOnAnotherThread(threadMap, self.timebase, True):
+                synchThreadSignals.append({'name':'Time', 'type':'uint32', 'dimensions':0, 'elements': 1}) 
+            
+            gamList.append(dataSourceName+'_Timer_IOGAM')
+            gamText = '  +'+dataSourceName + '_Timer_IOGAM = {\n'
+            gamText += '    class = IOGAM\n'
+            gamText += '    InputSignals={\n'
+            gamText += '      '+self.getCounterName()+' = {\n'
+            gamText += '        DataSource = '+dataSourceName+'\n'
+            gamText += '        Type = uint32\n'
+            gamText += '      }\n'
+            gamText += '      '+self.getTimeName()+' = {\n'
+            gamText += '        DataSource = '+dataSourceName+'\n'
+            gamText += '        Type = uint32\n'
+            gamText += '      }\n'
+            gamText += '    }\n'
+            gamText += '    OutputSignals={\n'
+            gamText += '      '+self.getCounterName()+' = {\n'
+            gamText += '        DataSource = '+dataSourceName+'_TimerDDB\n'
+            gamText += '        Type = uint32\n'
+            gamText += '      }\n'
+            gamText += '      '+self.getTimeName()+' = {\n'
+            gamText += '        DataSource = '+dataSourceName+'_TimerDDB\n'
+            gamText += '        Type = uint32\n'
+            gamText += '      }\n'
+            gamText += '    }\n'
+            gamText += '  }\n'
+            gams.append(gamText)
 
             dataSourceText = '  +'+dataSourceName+'_Timer_DDB = {\n'
             dataSourceText += '    Class = GAMDataSource\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
-            gamList.append(dataSourceName+'Timer_IOGAM')
-            gamText = '  +'+dataSourceName+'Timer_IOGAM = {\n'
-            gamText += '    Class = IOGAM\n'
-            gamText += '    InputSignals = {\n'
-            gamText += '      Counter = {\n'
-            gamText += '        DataSource = '+dataSourceName+'_Timer\n'
-            gamText += '        Type = uint32\n'
-            gamText += '        NumberOfElements = 1\n'
-            gamText += '      }\n'
-            gamText += '      Time = {\n'
-            gamText += '        DataSource = '+dataSourceName+'_Timer\n'
-            gamText += '        Type = uint32\n'
-            gamText += '        NumberOfElements = 1\n'
-            gamText += '        Frequency = '+str(round(1./period, 4))+'\n'
-            gamText += '      }\n'
-            gamText += '    }\n'
-            gamText += '    OutputSignals = {\n'
-            gamText += '      Counter = {\n'
-            gamText += '        DataSource = '+dataSourceName+'_Timer_DDB\n'
-            gamText += '        Type = uint32\n'
-            gamText += '      }\n'
-            gamText += '      Time = {\n'
-            gamText += '        DataSource = '+dataSourceName+'_Timer_DDB\n'
-            gamText += '        Type = uint32\n'
-            gamText += '        NumberOfElements = 1\n'
-            gamText += '      }\n'
-            gamText += '    }\n'
-            gamText += '  }\n'
-            gams.append(gamText)
+ # endif isSynch
 
-            timerDDB = dataSourceName+'_Timer_DDB'
-
-        # Link to other component up in the chain
-        elif isinstance(timebase, TreeNode) or isinstance(timebase, TreePath):
-            prevTimebase = timebase
-            while isinstance(timebase, TreeNode) or isinstance(timebase, TreePath):
-                if isinstance(timebase, TreeNode):
-                    prevTimebase = timebase
-                    timebase = timebase.getData()
-                else:
-                    prevTimebase = TreeNode(timebase, self.getTree())
-                    timebase = prevTimebase.getData()
-            origName = self.convertPath(prevTimebase.getParent().getFullPath())
-            # Check whether the synchronization source is a Synch Input. Only in this case, the origin DDB is its output DDB
-            originMode = prevTimebase.getParent().getNode('mode').data()
-
-            if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
-                if self.onSameThread(threadMap, prevTimebase.getParent()):
-                    timerDDB = origName+'_Output_DDB'
-                else:
-                   # timerDDB = origName+'_Output_Synch' Gabriele Jan 2022
-                    timerDDB = origName+'_Output_Synch'
-                    try:
-                        # Get period from driving synchronizing device
-                        outPeriod = timebase.getDescAt(2).data()
-                    except:
-                        outPeriod = 0
-            else:
-                if self.onSameThread(threadMap, prevTimebase.getParent()):
-                    timerDDB = origName+'_Timer_DDB'
-                else:
-                    timerDDB = origName+'_Timer_Synch'
-                    try:
-                        # Get period from driving synchronizing device
-                        outPeriod = timebase.getDescAt(2).data()
-                    except:
-                        outPeriod = 0
-        else:
-            print('ERROR: Invalid timebase definition')
-            return 0
-
+        
        #Head and parameters
         gamList.append(dataSourceName+'_IOGAM')
         gamText = '  +'+dataSourceName+'_IOGAM = {\n'
-#        gamText += '    Class = IOGAM\n'
-#NOTE: default behavior for Output is different from that of GAM. Here a single sample is picked when subsampling is defined (syncDiv > 1)
-        gamText += '    Class = ResamplerGAM\n'
         try:
             syncDivMode = self.div_mode.data().upper()
         except:
             synchDivMode = 'JUST_PICK'
-        if syncDivMode == 'JUST_PICK' or syncDivMode == 'NO_PICK':
-            gamText += '    ResampleMode = 1\n'
-            gamText += '    SamplingPeriod = '+str(outPeriod)+'\n'
-        elif syncDivMode == 'PICK_FILTERED':
-            gamText += '    ResampleMode = 2\n'
-        else: #Pick averaged
-            gamText += '    ResampleMode = 3\n'
+        if syncDivMode == 'NO_PICK':
+            gamText += '    Class = IOGAM\n'
+            syncDiv = 1
+        else:
+#NOTE: default behavior for Output is different from that of GAM. Here a single sample is picked when subsampling is defined (syncDiv > 1)
+            gamText += '    Class = ResamplerGAM\n'
+            if syncDivMode == 'JUST_PICK' or syncDivMode == 'NO_PICK':
+                gamText += '    ResampleMode = 1\n'
+                gamText += '    SamplingPeriod = '+str(outPeriod)+'\n'
+            elif syncDivMode == 'PICK_FILTERED':
+                gamText += '    ResampleMode = 2\n'
+            else: #Pick averaged
+                gamText += '    ResampleMode = 3\n'
 
 # input Signals
         gamText += '    InputSignals = {\n'
@@ -2773,6 +2833,10 @@ class MARTE2_COMPONENT(Device):
         signalSamples = []  # to record the same number of samples for the output IOGAM fields
 
         for inputDict in inputDicts:
+        
+            print('INUT DCT')
+            print(inputDict)
+        
             # This is a Time field referring to this timebase
             if 'value' in inputDict and isinstance(inputDict['value'], TreeNode) and inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent().getNid() == self.getNid():
  #Gabriele June 2022
@@ -2980,6 +3044,15 @@ class MARTE2_COMPONENT(Device):
 
 # input Signals
         dataSourceText += '    Signals = {\n'
+#Gabriele June 2022        
+        if isSync:
+            dataSourceText += '      '+self.getCounterName()+' = {\n'        
+            dataSourceText += '        Type = uint32\n'
+            dataSourceText += '                 }\n'
+            dataSourceText += '      '+self.getTimeName()+ '= {\n' 
+            dataSourceText += '        Type = uint32\n'
+            dataSourceText += '                 }\n'
+######        
         idx = 0
         for inputDict in inputDicts:
             dataSourceText += '      '+signalNames[idx]+' = {\n'
@@ -3026,9 +3099,11 @@ class MARTE2_COMPONENT(Device):
             return self.getMarteInputInfo(threadMap, gams, dataSources, gamList, True)
         elif mode == MARTE2_COMPONENT.MODE_INPUT:
             return self.getMarteInputInfo(threadMap, gams, dataSources, gamList, False)
-        else:
+        elif mode == MARTE2_COMPONENT.MODE_OUTPUT:
             return self.getMarteOutputInfo(threadMap, gams, dataSources, gamList)
-
+        else:  #mode == MARTE2_COMPONENT.MODE_SYNCH_OUTPUT
+            return self.getMarteOutputInfo(threadMap, gams, dataSources, gamList, True)
+ 
 
 # Utility methods
 
@@ -3179,6 +3254,12 @@ class MARTE2_COMPONENT(Device):
                 return 'Dimension mismatch for input '+str(inputIdx)+': expected '+str(inputDict['dimensions'])+'  found '+str(inDimensions)
 
         return ''
+
+    def getTimeName(self):
+        return 'Time'
+        
+    def getCounterName(self):
+        return 'Counter'
 
 # Specific consistency check to be implemented by MARTE2_COMPONENT subclasses
     def checkSpecific(self):

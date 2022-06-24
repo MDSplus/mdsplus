@@ -112,7 +112,7 @@ class MARTE2_AD20XXADC(MC.MARTE2_COMPONENT):
     parts = []
 
     def prepareMarteInfo(self):
-        self.timebase.putData(Data.compile('0:1000000 : 1.25E-5*build_path("\\'+self.getFullPath()+'.parameters:par_7:value")'))
+        self.timebase.putData(Data.compile('0:1000000 : 1.25E-8*'+str(self.outputs_adc0_0_samples.data())+'*build_path("\\'+self.getFullPath()+'.parameters:par_7:value")'))
 
         self.outputs_time_idx = 1  # The second produced signal is time
 # put the same value of Samples and segment lengthin all output nodes

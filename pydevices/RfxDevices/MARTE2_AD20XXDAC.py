@@ -26,11 +26,9 @@
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('AD20xxADC::AD20xxDAC', MC.MARTE2_COMPONENT.MODE_OUTPUT)
+@MC.BUILDER('AD20xxADC::AD20xxDAC', MC.MARTE2_COMPONENT.MODE_SYNCH_OUTPUT)
 class MARTE2_AD20XXDAC(MC.MARTE2_COMPONENT):
     inputs = [
-        {'name': 'Counter_da', 'type': 'counter', 'dimensions': 0, 'parameters': []},
-        {'name': 'Time_da', 'type': 'time', 'dimensions': 0, 'parameters': []},
         {'name': 'DAC0_0', 'type': 'uint16', 'samples': 4000, 'dimensions': 0, 'parameters': [{'name': 'ChannelId', 'type': 'int', 'value': 0},
                                                                                 {'name': 'OutputRange', 'type': 'float32', 'value': 10}]},
         {'name': 'DAC0_1', 'type': 'uint16', 'samples': 4000, 'dimensions': 0, 'parameters': [{'name': 'ChannelId', 'type': 'int', 'value': 1},
@@ -46,3 +44,10 @@ class MARTE2_AD20XXDAC(MC.MARTE2_COMPONENT):
                   {'name': 'Model', 'type': 'int32', 'value': 2010},
                   ]
     parts = []
+    
+    def getCounterName(self):
+        return 'Counter_da'
+    def getTimeName(self):
+        return 'Time_da'
+        
+        
