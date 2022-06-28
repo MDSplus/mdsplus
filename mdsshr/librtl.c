@@ -1133,14 +1133,22 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t *const qtime)
 EXPORT int LibTimeToVMSTime(const time_t *const time_in,
                             int64_t *const time_out)
 {
-  time_t time_to_use = time_in ? *time_in : time(NULL);
   struct timeval tv;
   if (time_in)
+  {
+    tv.tv_sec  = *time_in;
     tv.tv_usec = 0;
+  }
   else
     gettimeofday(&tv, 0);
+#ifdef _WIN32
+  /* MinGW defines timeval as (long,long) so an explicit cast is needed */
+  time_t time_to_use = tv.tv_sec;
   time_t tz_offset = get_tz_offset(&time_to_use);
-  *time_out = (int64_t)(time_to_use + tz_offset) * (int64_t)10000000 +
+#else
+  time_t tz_offset = get_tz_offset(&tv.tv_sec);
+#endif
+  *time_out = (int64_t)(tv.tv_sec + tz_offset) * (int64_t)10000000 +
               tv.tv_usec * 10 + VMS_TIME_OFFSET;
   return MDSplusSUCCESS;
 }
