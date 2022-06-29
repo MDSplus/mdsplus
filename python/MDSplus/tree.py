@@ -3874,6 +3874,10 @@ If you did intend to write to a subnode of the device you should check the prope
                 if 'options' in elt:
                     for option in elt['options']:
                         node.__setattr__(option, True)
+                if 'ext_options' in elt:
+                   if isinstance(elt['ext_options'], dict):
+                       for ext_option in elt['ext_options'].keys():
+                           node.setExtendedAttribute(ext_option, elt['ext_options'][ext_option])
             except:
                 _sys.stderr.write('ERROR: %s\n' % str(elt))
                 raise
