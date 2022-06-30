@@ -127,7 +127,7 @@ static const struct item
     {"NID_NUMBER", 0, 0, NID_NUMBER, DTYPE_L, 4},
     {"NID_REFERENCE", NciM_NID_REFERENCE, NciM_NID_REFERENCE, NciGET_FLAGS,
      DTYPE_BU, 1},
-    {"NODE_NAME", 0, 0, NciNODE_NAME, DTYPE_T, 12},
+    {"NODE_NAME", 0, 0, NciNODE_NAME, DTYPE_T, 64},
     {"NO_WRITE_MODEL", NciM_NO_WRITE_MODEL, NciM_NO_WRITE_MODEL, NciGET_FLAGS,
      DTYPE_BU, 1},
     {"NO_WRITE_SHOT", NciM_NO_WRITE_SHOT, NciM_NO_WRITE_SHOT, NciGET_FLAGS,
@@ -590,6 +590,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__((unused)), int narg,
       status = TreeGetNci(nid, fixed);
       if (retlen == 0)
         goto skip;
+      holda_ptr->length = retlen;
     }
     ++outcount;
     hold_ptr += step;
