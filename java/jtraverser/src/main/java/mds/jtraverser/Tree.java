@@ -452,9 +452,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 	public static Node addDevice(String name, String type, Node toNode)
 	{
 		DefaultMutableTreeNode new_tree_node = null;
-		if (name == null || name.length() == 0 || name.length() > 12)
+		if (name == null || name.length() == 0 || name.length() > 63)
 		{
-			JOptionPane.showMessageDialog(frame, "Name length must range between 1 and 12 characters",
+			JOptionPane.showMessageDialog(frame, "Name length must range between 1 and 63 characters",
 					"Error adding Node", JOptionPane.WARNING_MESSAGE);
 			return null;
 		}
@@ -501,9 +501,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 		Node new_node;
 		DefaultMutableTreeNode new_tree_node;
 		final DefaultMutableTreeNode toTreeNode = toNode.getTreeNode();
-		if (name == null || name.length() == 0 || name.length() > 12)
+		if (name == null || name.length() == 0 || name.length() > 63)
 		{
-			JOptionPane.showMessageDialog(frame, "Name length must range between 1 and 12 characters",
+			JOptionPane.showMessageDialog(frame, "Name length must range between 1 and 63 characters",
 					"Error adding Node", JOptionPane.WARNING_MESSAGE);
 			return null;
 		}
