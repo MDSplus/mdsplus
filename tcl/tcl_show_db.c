@@ -80,7 +80,7 @@ EXPORT int TclShowDB(void *ctx __attribute__((unused)),
       };
       sts = TreeGetDbi(itm2);
       dbi_name = itm2[1].pointer;
-      dbi_default = itm2[5].pointer;
+      dbi_default = itm2[3].pointer;
       outstr_length = strlen(dbi_name) + strlen(dbi_default) + 100;
       outstr = (char *)malloc(outstr_length);
       snprintf(outstr, outstr_length,
