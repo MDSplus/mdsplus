@@ -24,7 +24,7 @@ static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, tag };
 
 static void buildtag()
 {
-	RELEASE_D.length = snprintf(tag, sizeof(tag), "%s_release_%d.%d.%d",
+	RELEASE_D.length = snprintf(tag, sizeof(tag), "%.12s_release_%d.%d.%d",
 	VERSIONCONST.BRANCH,
 	VERSIONCONST.MAJOR,
 	VERSIONCONST.MINOR,
