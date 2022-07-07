@@ -26,7 +26,7 @@ static const char release_date[64] = "@RELEASE_DATE@";
 
 static void buildtag()
 {
-	RELEASE_D.length = snprintf(tag, sizeof(tag), "%.12s_release-%d-%d-%d",
+	RELEASE_D.length = snprintf(tag, sizeof(tag), "%.12s_release_%d.%d.%d",
 	VERSIONCONST.BRANCH,
 	VERSIONCONST.MAJOR,
 	VERSIONCONST.MINOR,
