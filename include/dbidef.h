@@ -26,6 +26,7 @@
 #define DbiVERSIONS_IN_PULSE 11 /* True if using versioning in pulse files */
 #define DbiREADONLY 12          /* True if making tree readonly */
 #define DbiDISPATCH_TABLE 13    /* Tree dispatch table */
+#define DbiTREE_VERSION 14      /* Tree format version number */
 
 typedef struct dbi_itm
 {
