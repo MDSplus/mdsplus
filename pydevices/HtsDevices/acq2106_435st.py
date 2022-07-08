@@ -188,10 +188,17 @@ class _ACQ2106_435ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
-            self.dev = dev
+            self.dev = dev.copy()
 
-            self.nchans     = self.dev.sites * 32
+            self.chans = []
+            self.decim = []
+            self.nchans     = self.dev.sites*32
             self.resampling = self.dev.resampling
+
+            for i in range(self.nchans):
+                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                self.decim.append(
+                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
             
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
@@ -218,17 +225,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            self.dev = self.dev.copy()
-
             if self.dev.debug:
                 print("MDSWorker running")
-            
-            self.chans = []
-            self.decim = []
-            for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
