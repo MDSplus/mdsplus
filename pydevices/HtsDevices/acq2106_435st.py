@@ -190,15 +190,8 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             self.dev = dev.copy()
 
-            self.chans = []
-            self.decim = []
             self.nchans     = self.dev.sites*32
             self.resampling = self.dev.resampling
-
-            for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
             
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
@@ -227,6 +220,12 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             if self.dev.debug:
                 print("MDSWorker running")
+            
+            chans = []
+            decim = []
+            for i in range(self.nchans):
+                chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                decim.append(getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
@@ -251,7 +250,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 print("The SR is {} and timebase delta t is {}".format(
                     self.dev.freq.data(), dt))
 
-            decimator = lcma(self.decim)
+            decimator = lcma(decim)
 
             if self.seg_length % decimator:
                 self.seg_length = (self.seg_length //
@@ -279,19 +278,19 @@ class _ACQ2106_435ST(MDSplus.Device):
 
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
-                for c in self.chans:
-                    slength   = self.seg_length/self.decim[i]
-                    deltat    = dt * self.decim[i]
+                for c in chans:
+                    slength   = self.seg_length/decim[i]
+                    deltat    = dt * decim[i]
                     #Choice between executing resampling or not:
                     if c.on and self.resampling:
                         resampled = getattr(self.dev, str(c) + ':RESAMPLED')
-                        b = buffer[i::self.nchans*self.decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
                         c.makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
                     elif c.on:
-                        b = buffer[i::self.nchans*self.decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
@@ -467,12 +466,12 @@ class _ACQ2106_435ST(MDSplus.Device):
         coeffs = uut.cal_eslo[1:]
         eoff = uut.cal_eoff[1:]
 
-        self.chans = []
-        nchans = self.sites * 32
+        chans = []
+        nchans = uut.nchan()
         for ii in range(nchans):
-            self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
+            chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
-        for ic, ch in enumerate(self.chans):
+        for ic, ch in enumerate(chans):
             if ch.on:
                 ch.OFFSET.putData(float(eoff[ic]))
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
