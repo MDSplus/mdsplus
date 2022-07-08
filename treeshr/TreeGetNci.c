@@ -503,7 +503,6 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
         string = strncpy(malloc(sizeof(NODE_NAME) + 1), node->name,
                          sizeof(NODE_NAME));
         int length = minInt(strlen(node->name), sizeof(NODE_NAME));
-        string[length] = '\0';
         memset(string + length, '\0', sizeof(NODE_NAME) - length + 1);
       }
       else
