@@ -81,7 +81,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
         return uut
 
-    def computeGains(g):
+    def computeGains(self, g):
         g1opts = [ 1000, 100, 10, 1 ]
         g2opts = [ 1, 2, 5, 10 ]
 
