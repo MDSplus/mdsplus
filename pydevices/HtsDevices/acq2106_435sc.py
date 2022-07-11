@@ -201,7 +201,7 @@ def assemble(cls):
                 # Re-sampling streaming data goes here:
                 'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),
                 'type': 'SIGNAL', 
-                'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", %d)' % (i+1, i+1),
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d:RESAMPLED", "INPUT_%3.3d")' % (i+1, i+1),
                 'options': ('no_write_model', 'write_once',)
             },
         ]
