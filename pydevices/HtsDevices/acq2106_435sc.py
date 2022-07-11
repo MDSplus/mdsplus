@@ -81,80 +81,79 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         uut = acq400_hapi.Acq2106(self.node.data(), monitor=False, has_wr=True)
         return uut
 
+    def computeGains(g):
+        g1opts = [ 1000, 100, 10, 1 ]
+        g2opts = [ 1, 2, 5, 10 ]
+
+        for g1opt in g1opts:
+            if g >= g1opt:
+                g1 = g1opt
+                g2 = g // g1opt
+                if g2 not in g2opts:
+                    raise MDSplus.DevBAD_PARAMETER(
+                            "SC_GAIN must be computable from (one of: 1000, 100, 10, 1) * (one of: 1, 2, 5, 10) ; not %d" % (g,))
+                return (g1, g2)
 
     def setGainsOffsets(self, card):
         import epics
         import socket
+
+        if card not in [1, 3, 5]:
+            return
 
         domainName = socket.gethostbyaddr(str(self.node.data()))[0]
         splitDomainName = domainName.split(".")
 
         #For EPICS PV definitions hardcoded in D-Tacq's "/tmp/records.dbl", 
         # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
-        if "-" in splitDomainName[0]:
-            epicsDomainName = splitDomainName[0].replace("-", "_")
-        else:
-            epicsDomainName = splitDomainName[0]
+        epicsDomainName = splitDomainName[0].replace("-", "_")
 
-        for ic in range(1,32+1):
-            if card == 1:
-                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg1)
-                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
-                pv.put(valueg1, wait=True)
+        for i in range(32):
 
-                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg2)
-                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
-                pv.put(valueg2, wait=True)
+            gain = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (i + 1,)).data()
+            gain1, gain2 = computeGains(gain)
+            offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + 1,)).data()
 
-                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg3)
-                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
-                pv.put(valueg3, wait=True)
+            pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, i + 1)
+            pv = epics.PV(pvg1)
+            valueg1 = str(gain1)
+            pv.put(valueg1, wait=True)
 
-            elif card == 3:
-                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg1)
-                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
-                pv.put(valueg1, wait=True)
+            pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, i + 1)
+            pv = epics.PV(pvg2)
+            valueg2 = str(gain2)
+            pv.put(valueg2, wait=True)
 
-                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg2)
-                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
-                pv.put(valueg2, wait=True)
+            pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, i + 1)
+            pv = epics.PV(pvg3)
+            valueg3 = str(offset)
+            pv.put(valueg3, wait=True)
 
-                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg3)
-                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
-                pv.put(valueg3, wait=True)
 
-            elif card == 5:
-                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg1)
-                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
-                pv.put(valueg1, wait=True)
-
-                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg2)
-                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
-                pv.put(valueg2, wait=True)
-
-                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg3)
-                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
-                pv.put(valueg3, wait=True)
-
-    def setChanScale(self, node, num):
+    def setChanScale(self, node):
         #Raw input channel, where the conditioning has been applied:
-        input_chan = self.__getattr__('INPUT_%3.3d' % num)
+        #input_chan = self.__getattr__('INPUT_%3.3d' % num)
         chan       = self.__getattr__(node)
-        #Un-conditioning the signal:
+        # Un-conditioning the signal:
+        # = ((coefficient * value) / gain) + offset
         chan.setSegmentScale(
-            MDSplus.ADD(MDSplus.DIVIDE(MDSplus.MULTIPLY(input_chan.COEFFICIENT, MDSplus.dVALUE()), 
-                                       MDSplus.MULTIPLY(input_chan.SC_GAIN1, input_chan.SC_GAIN2)), 
-                                       MDSplus.SUBTRACT(input_chan.OFFSET, input_chan.SC_OFFSET))
+            MDSplus.ADD(
+                MDSplus.DIVIDE(
+                    MDSplus.MULTIPLY(
+                        chan.COEFFICIENT, 
+                        MDSplus.dVALUE()
+                    ), 
+                    MDSplus.MULTIPLY(
+                        chan.SC_GAIN1, 
+                        chan.SC_GAIN2
+                    )
+                ), 
+                MDSplus.SUBTRACT(
+                    chan.OFFSET, 
+                    chan.SC_OFFSET
+                )
             )
+        )
 
 
 def assemble(cls):
@@ -164,7 +163,7 @@ def assemble(cls):
             {
                 'path': ':INPUT_%3.3d' % (i+1,),
                 'type': 'SIGNAL', 
-                'valueExpr': 'head.setChanScale("INPUT_%3.3d", %d)' % (i+1, i+1),
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d")' % (i+1,),
                 'options': ('no_write_model', 'write_once',)
             },
             {
@@ -186,14 +185,7 @@ def assemble(cls):
             },
             {
                 # Local (per channel) SC gains
-                'path': ':INPUT_%3.3d:SC_GAIN1' % (i+1,),
-                'type':'NUMERIC', 
-                'value':1,
-                'options':('no_write_shot',)
-            },
-            {
-                # Local (per channel) SC gains
-                'path': ':INPUT_%3.3d:SC_GAIN2' % (i+1,),
+                'path': ':INPUT_%3.3d:SC_GAIN' % (i+1,),
                 'type':'NUMERIC', 
                 'value':1,
                 'options':('no_write_shot',)
@@ -205,15 +197,6 @@ def assemble(cls):
                 'value':0,
                 'options':('no_write_shot',)
             },   
-            {
-                 # Conditioned signal goes here:
-                'path': ':INPUT_%3.3d:SC_INPUT' % (i+1,),
-                'type': 'SIGNAL',
-                'valueExpr': 
-                     'ADD(MULTIPLY(head.INPUT_%3.3d, MULTIPLY(head.INPUT_%3.3d.SC_GAIN1, head.INPUT_%3.3d.SC_GAIN2)), head.INPUT_%3.3d.SC_OFFSET)'
-                      % (i+1,i+1,i+1,i+1),
-                'options': ('no_write_model','write_once',)
-            },
             {
                 # Re-sampling streaming data goes here:
                 'path': ':INPUT_%3.3d:RESAMPLED' % (i+1,),
