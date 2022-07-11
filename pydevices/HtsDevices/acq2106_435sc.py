@@ -129,25 +129,28 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             valueg3 = str(offset)
             pv.put(valueg3, wait=True)
 
+    # target_path = path to the node to call setSegmentScale on.
+    # input_path = path to parent node for the input channel, typically INPUT_xxx, default to target_path
+    def setChanScale(self, target_path, input_path=None):
+        target_node = self.__getattr__(target_path)
+        input_node = target_node
 
-    def setChanScale(self, node):
-        #Raw input channel, where the conditioning has been applied:
-        #input_chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan       = self.__getattr__(node)
-        # Un-conditioning the signal:
+        if input_path:
+            input_node = self.__getattr__(input_path)
+
         # = ((coefficient * value) / gain) + offset
-        chan.setSegmentScale(
+        target_node.setSegmentScale(
             MDSplus.ADD(
                 MDSplus.DIVIDE(
                     MDSplus.MULTIPLY(
-                        chan.COEFFICIENT, 
+                        input_node.COEFFICIENT, 
                         MDSplus.dVALUE()
                     ), 
-                    chan.SC_GAIN
+                    input_node.SC_GAIN
                 ), 
                 MDSplus.SUBTRACT(
-                    chan.OFFSET, 
-                    chan.SC_OFFSET
+                    input_node.OFFSET, 
+                    input_node.SC_OFFSET
                 )
             )
         )
