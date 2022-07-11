@@ -111,7 +111,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         for i in range(32):
 
             gain = getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + 1,)).data()
-            gain1, gain2 = computeGains(gain)
+            gain1, gain2 = self.computeGains(gain)
             offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + 1,)).data()
 
             pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, i + 1)
