@@ -110,7 +110,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
         for i in range(32):
 
-            gain = getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (i + 1,)).data()
+            gain = getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + 1,)).data()
             gain1, gain2 = computeGains(gain)
             offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + 1,)).data()
 
@@ -143,10 +143,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                         chan.COEFFICIENT, 
                         MDSplus.dVALUE()
                     ), 
-                    MDSplus.MULTIPLY(
-                        chan.SC_GAIN1, 
-                        chan.SC_GAIN2
-                    )
+                    chan.SC_GAIN
                 ), 
                 MDSplus.SUBTRACT(
                     chan.OFFSET, 
