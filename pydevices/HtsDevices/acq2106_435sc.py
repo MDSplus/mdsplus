@@ -109,7 +109,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         epicsDomainName = splitDomainName[0].replace("-", "_")
 
         for i in range(32):
-
             gain = getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + 1,)).data()
             gain1, gain2 = self.computeGains(gain)
             offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + 1,)).data()
@@ -138,20 +137,19 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         if input_path:
             input_node = self.__getattr__(input_path)
 
-        # = ((coefficient * value) / gain) + offset
+        # For versions of the firmware v498 or greater: 
+        # coefficients and offsets takes into account the gains and offsets of the Signal Conditioning.
+        
+        # = (coefficient * value) + offset
         target_node.setSegmentScale(
             MDSplus.ADD(
-                MDSplus.DIVIDE(
-                    MDSplus.MULTIPLY(
-                        input_node.COEFFICIENT, 
-                        MDSplus.dVALUE()
-                    ), 
-                    input_node.SC_GAIN
+
+                MDSplus.MULTIPLY(
+                    input_node.COEFFICIENT, 
+                    MDSplus.dVALUE()
                 ), 
-                MDSplus.SUBTRACT(
-                    input_node.OFFSET, 
-                    input_node.SC_OFFSET
-                )
+
+                input_node.OFFSET
             )
         )
 
