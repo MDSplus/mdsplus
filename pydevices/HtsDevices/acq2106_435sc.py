@@ -137,18 +137,16 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         if input_path:
             input_node = self.__getattr__(input_path)
 
-        # For versions of the firmware v498 or greater: 
-        # coefficients and offsets takes into account the gains and offsets of the Signal Conditioning.
+        # For versions of the firmware v498 or greater in all the ACQ SC32 the calibration coefficients and offsets 
+        # already take into account the gains and offsets of the signal conditioning stages.
         
         # = (coefficient * value) + offset
         target_node.setSegmentScale(
             MDSplus.ADD(
-
                 MDSplus.MULTIPLY(
                     input_node.COEFFICIENT, 
                     MDSplus.dVALUE()
                 ), 
-
                 input_node.OFFSET
             )
         )
