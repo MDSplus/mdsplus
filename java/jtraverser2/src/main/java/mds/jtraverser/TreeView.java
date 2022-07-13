@@ -94,10 +94,10 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	{
 		Node new_node;
 		DefaultMutableTreeNode new_tree_node;
-		if (name == null || name.length() == 0 || name.length() > 12)
+		if (name == null || name.length() == 0 || name.length() > 63)
 		{
 			JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
-					"Name length must range between 1 and 12 characters", "Error adding Node",
+					"Name length must range between 1 and 63 characters", "Error adding Node",
 					JOptionPane.WARNING_MESSAGE);
 			return null;
 		}
