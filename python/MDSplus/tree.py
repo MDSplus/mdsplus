@@ -144,6 +144,7 @@ class Dbi(object):
     VERSIONS_IN_MODEL = (10, bool, 4)  # settable
     VERSIONS_IN_PULSE = (11, bool, 4)  # settable
     DISPATCH_TABLE = (13, bool, 4)
+    TREE_VERSION = (14, int, 4)
 
     class _dbi_item(_C.Structure):
         """ Ctype structure class for making calls into _TreeGetDbi() """
@@ -652,6 +653,8 @@ class Tree(object):
         Dbi.VERSIONS_IN_PULSE, "Support versioning of data in pulse.", True)
     dispatch_table = Dbi._dbiProp(
         Dbi.DISPATCH_TABLE,   "True if dispatch table is built")
+    tree_version = Dbi._dbiProp(
+        Dbi.TREE_VERSION,     "Tree format version number")
 
     @property
     def default(self):
