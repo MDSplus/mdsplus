@@ -52,7 +52,10 @@ class RFX_RPADC(Device):
              {'path': ':STOP_ACTION', 'type': 'action',
               'valueExpr': "Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
               'options': ('no_write_shot',)},
-             {'path': ':START_TIME', 'type': 'numeric', 'value': 0}]
+             {'path': ':START_TIME', 'type': 'numeric', 'value': 0},
+             {'path': ':ABS_TRIGGER', 'type': 'numeric', 'value': 0},
+             {'path': ':DEAD_TIME', 'type': 'numeric', 'value': 1E-3}
+             ]
 
     class TriggerEvent(Event):
         def __init__(self, evName, device):
@@ -64,7 +67,7 @@ class RFX_RPADC(Device):
 
     class Configuration:
         def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples,
-                      postSamples, segmentSamples, frequency, frequency1, single):
+                      postSamples, segmentSamples, frequency, frequency1, single, absTriggerTimeFromFPGA, absTriggerNid):
             self.lib = lib
             self.fd = fd
             self.name = name
@@ -79,6 +82,8 @@ class RFX_RPADC(Device):
             self.frequency = frequency
             self.frequency1 = frequency1
             self.single = single
+            self.absTriggerTimeFromFPGA = absTriggerTimeFromFPGA
+            self.absTriggerNid = absTriggerNid
 
     class AsynchStore(Thread):
         def configure(self, conf):
@@ -96,16 +101,16 @@ class RFX_RPADC(Device):
             self.frequency = conf.frequency
             self.frequency1 = conf.frequency1
             self.single = conf.single
+            self.absTriggerTimeFromFPGA = conf.absTriggerTimeFromFPGA
+            self.absTriggerNid = conf.absTriggerNid
 
         def run(self):
             print('START THREAD', self.name, self.shot)
             try:
-                self.lib.rpadcStream(
-                    c_int(self.fd), c_char_p(self.name), c_int(
-                        self.shot), c_int(self.chanANid), c_int(self.chanBNid),
-                    c_int(self.triggerNid), c_int(
-                        self.preSamples), c_int(self.postSamples),
-                    c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single))
+               self.lib.rpadcStream(
+                    c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
+                    c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
+                    c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single), c_int(self.absTriggerTimeFromFPGA), c_int(self.absTriggerNid))
             except ValueError as e:
                 print(e)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -141,8 +146,8 @@ class RFX_RPADC(Device):
                 isSingle = 1
             else:
                 isSingle = 0
-            clockModeDict = {'INTERNAL': 0, 'TRIG_EXTERNAL': 1,
-                             'EXTERNAL': 2, 'TRIG_EVENT': 3, 'EXT_EVENT': 4, 'HIGHWAY': 5}
+            clockModeDict = {'INTERNAL': 0, 'TRIG_EXTERNAL': 1, 'TRIG_SYNC': 2, 
+                             'EXTERNAL': 3, 'SYNC': 4}
             print('CLOCK MODE XXX')
             print(self.clock_mode.data())
             print('ccc')
@@ -152,6 +157,10 @@ class RFX_RPADC(Device):
             except:
                 print('Invalid clock mode: ' + self.clock_mode.data())
                 raise mdsExceptions.TclFAILED_ESSENTIAL
+            if clockMode == 4 or clockMode == 2:
+                absTriggerTimeFromFPGA = 1
+            else:
+                absTriggerTimeFromFPGA = 0
             print(self.mode.data)
             if self.mode.data() == 'STREAMING':
                 preSamples = 0
@@ -180,39 +189,42 @@ class RFX_RPADC(Device):
             print('CLOCK')
             if self.clock_mode.data() != 'INTERNAL':
                 try:
-                    if self.clock_mode.data() == 'HIGHWAY':
-                        period = 1E-6 * decimation
-                    else:
+                    if self.clock_mode.data() == 'TRIG_SYNC':
+                        frequency1 = 1E6
+                        frequency = 125E6/decimation
+                    elif self.clock_mode.data() == 'SYNC':
+                        frequency = 1E6 / decimation
+                        frequency1 = 1E6
+                    elif self.clock_mode.data() == 'TRIG_EXTERNAL':
                         period = Data.execute(
-                            'slope_of($)', self.ext_clock) * decimation
-                    frequency = 1./period
-                    if self.clock_mode.data() == 'EXTERNAL' or self.clock_mode.data() == 'HIGHWAY':
-                        frequency1 = frequency
+                            'slope_of($)', self.ext_clock)
+                        frequency1 = 1./period
+                        frequency = 125E6 / decimation
+                    else:  #EXTERNAL
+                        period = Data.execute(
+                            'slope_of($)', self.ext_clock)
+                        frequency1 = 1./period
+                        frequency = frequency1 / decimation
                 except:
                     print('Cannot resolve external clock')
                     raise mdsExceptions.TclFAILED_ESSENTIAL
             segSize = self.seg_size.data()
-            print('HIGHWAY')
-            if self.clock_mode.data() == 'HIGHWAY':
-                try:
-                    event_code = self.event_code.data()
-                except:
-                    print('Cannot resolve event code')
-                    raise mdsExceptions.TclFAILED_ESSENTIAL
-            else:
-                event_code = 0
-
+            try:
+                deadTime = self.dead_time.data()
+                deadTime = int(deadTime * frequency)
+            except:
+                print('Cannot resolve dead time')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             print('opening device')
             self.fd = self.lib.rpadcInit(c_int(mode), c_int(clockMode), c_int(preSamples), c_int(postSamples), c_int(trigFromChanA),
-                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation), c_int(event_code))
+                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation), c_int(deadTime))
             if self.fd < 0:
                 print("Error opening device")
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             print('device opened')
             self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
-                                self.trigger.getNid(), self.start_time.getNid(
-            ), preSamples, postSamples, segSize, frequency,
-                frequency1, isSingle)
+                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency,
+                frequency1, isSingle, absTriggerTimeFromFPGA, self.abs_trigger.getNid())
             print('configured')
             aChan = self.getTree().tdiCompile(
                 '($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a)
@@ -224,7 +236,8 @@ class RFX_RPADC(Device):
             self.chan_b.putData(self.getTree().tdiCompile(
                 '($1*$2/8192.)*$3 + $4', self.raw_b, self.range_b, self.gain_b, self.offset_b))
             print('scritto')
-        except:
+        except Exception as e:
+            print(str(e))
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
     def start_store(self):
