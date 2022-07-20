@@ -461,9 +461,10 @@ public class Node
 		cal.setTimeInMillis(time);
 		final SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
 		final String dateStr = sdf.format(cal.getTime());
-		return new NodeInfo(nid.getDclass(), nid.getDtype(), nid.getUsage(), nid.getNciFlags(), nid.getOwnerId(),
-				nid.getLength(), nid.getConglomerateNodes().size(), nid.getConglomerateElt(), dateStr,
+ 		NodeInfo info =  new NodeInfo(nid.getDclass(), nid.getDtype(), nid.getUsage(), nid.getNciFlags(), nid.getOwnerId(),
+				nid.getLength(), nid.getNumElts(), nid.getConglomerateElt(), dateStr,
 				nid.getNodeName(), nid.getFullPath(), nid.getMinPath(), nid.getPath(), nid.getNumSegments());
+                return info;
 	}
 
 	public final int getLength()
@@ -562,7 +563,8 @@ public class Node
 		}
 		catch (final Exception exc)
 		{
-			jTraverser.stderr("Error getting default", exc);
+			//jTraverser.stderr("Error getting default", exc);
+			//exc.printStackTrace();
 			return false;
 		}
 		try

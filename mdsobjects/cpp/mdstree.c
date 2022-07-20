@@ -89,7 +89,7 @@ int getTreeData(void *dbid, int nid, void **data, void *tree)
   int status;
 
   status = _TreeGetRecord(dbid, nid, &xd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
 
   *data = convertFromDsc(&xd, tree);
@@ -327,7 +327,7 @@ int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc,
   if (segIdx == -1)
   {
     status = _TreeGetNumSegments(dbid, nid, &numSegments);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       return status;
     segmentIdx = numSegments - 1;
   }
@@ -459,7 +459,7 @@ int getTreeXNci(void *dbid, int nid, const char *name, void **data,
   int status;
 
   status = _TreeGetXNci(dbid, nid, name, &xd);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   *data = convertFromDsc(&xd, tree);
   MdsFree1Dx(&xd, 0);

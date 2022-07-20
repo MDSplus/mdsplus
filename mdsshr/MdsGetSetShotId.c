@@ -47,7 +47,6 @@ int MdsGetCurrentShotId(experiment,shot)
    use without specific written approval of MIT Plasma Fusion Center
    Management.
 ------------------------------------------------------------------------------*/
-#include <STATICdef.h>
 #include <stdio.h>
 
 int MdsGetCurrentShotId()

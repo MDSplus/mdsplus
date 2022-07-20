@@ -8,7 +8,7 @@
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 
-static struct descriptor_xd const EMPTY_XD = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+static struct descriptor_xd const EMPTY_XD = MDSDSC_XD_INITIALIZER;
 
 #define TdiRefStandard(name)                                \
   int name(int opcode, int narg, struct descriptor *list[], \

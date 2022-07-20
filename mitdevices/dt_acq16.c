@@ -46,7 +46,7 @@ EXPORT int dt_acq16__dw_setup(struct descriptor *niddsc __attribute__ ((unused))
   static NCI_ITM nci[] =
       { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
   TreeGetNci(nid, nci);
-  uilnames[0].value = (XtPointer) (nid + (char *)0);
+  uilnames[0].value = (void *)(intptr_t)nid;
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "DT_ACQ16", uilnames,
 			 XtNumber(uilnames), 0);
 }

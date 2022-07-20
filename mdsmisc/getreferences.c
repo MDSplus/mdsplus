@@ -37,7 +37,7 @@ EXPORT int GetReferenceCount(int *nid)
 {
   int cnt = 0;
   int status = TreeGetRecord(*nid, &src);
-  if (status & 1)
+  if (STATUS_OK)
   {
     cnt = CountRefs((struct descriptor *)&src);
   }
@@ -118,7 +118,7 @@ static int GetNid(struct descriptor *dsc)
     tmp[dsc->length] = 0;
     status = TreeFindNode(tmp, &ans);
     free(tmp);
-    if ((status & 1) == 0)
+    if ((STATUS_OK) == 0)
       return -1;
     else
       return ans;

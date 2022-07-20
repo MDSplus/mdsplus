@@ -90,10 +90,7 @@ static double to_doublex(const void *const ptr, const dtype_t dtype,
     return defval;
   }
 }
-inline static double to_double(const void *const ptr, const dtype_t dtype)
-{
-  return to_doublex(ptr, dtype, 0, FALSE);
-}
+
 static int recIsSegmented(const mdsdsc_t *const dsc)
 {
   /* returns nid of the first segmented node found
@@ -188,7 +185,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc)
   return 0;
 }
 
-#define NUM_SEGMENTS_THRESHOLD 10
+#define NUM_SEGMENTS_THRESHOLD 2
 #define NUM_SAMPLES_THRESHOLD 500000
 
 /**
@@ -889,6 +886,9 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
     return TdiNULL_PTR;
   EMPTYXD(yXd);
   EMPTYXD(xXd);
+  EMPTYXD(title);
+  EMPTYXD(xLabel);
+  EMPTYXD(yLabel);
   int estimatedSegmentSamples = 0;
   int isLong = FALSE;
   double xmin = -INFINITY, xmax = INFINITY; // requested
@@ -939,9 +939,6 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX,
   if (STATUS_NOT_OK)
     goto return_err;
   // Get Y, title, and yLabel, if any
-  EMPTYXD(title);
-  EMPTYXD(xLabel);
-  EMPTYXD(yLabel);
   recGetHelp(yXd.pointer, &title);
   recGetUnits(yXd.pointer, &yLabel);
   // Get X

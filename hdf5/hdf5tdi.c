@@ -152,7 +152,7 @@ static int find_attr(hid_t attr_id, const char *name, void *op_data)
   h5item *item = (h5item *)malloc(sizeof(h5item));
   h5item *itm;
   item->item_type = -1;
-  item->name = strcpy(malloc(strlen(name) + 1), name);
+  item->name = strdup(name);
   item->child = 0;
   item->brother = 0;
   item->parent = parent;
@@ -189,7 +189,7 @@ static int find_objs(hid_t group, const char *name, void *op_data)
   h5item *item = (h5item *)malloc(sizeof(h5item));
   h5item *itm;
   item->item_type = 0;
-  item->name = strcpy(malloc(strlen(name) + 1), name);
+  item->name = strdup(name);
   item->child = 0;
   item->brother = 0;
   item->parent = parent;
@@ -236,7 +236,7 @@ static int find_objs(hid_t group, const char *name, void *op_data)
 /*
 static void ListItem(h5item * item)
 {
-  char *name = strcpy(malloc(strlen(item->name) + 1), item->name);
+  char *name = strdup(item->name);
   char *tmp;
   h5item *itm;
   for (itm = item->parent; itm; itm = itm->parent) {
@@ -258,7 +258,7 @@ static void ListItem(h5item * item)
 */
 static void list_one(h5item *item, struct descriptor *xd)
 {
-  char *name = strcpy(malloc(strlen(item->name) + 1), item->name);
+  char *name = strdup(item->name);
   char *tmp;
   h5item *itm;
   for (itm = item->parent; itm; itm = itm->parent)
@@ -296,7 +296,7 @@ EXPORT void hdf5list(struct descriptor *xd)
 static int find_one(h5item *item, char *findname, hid_t *obj, int *item_type)
 {
   int status = 0;
-  char *name = strcpy(malloc(strlen(item->name) + 1), item->name);
+  char *name = strdup(item->name);
   char *tmp;
   h5item *itm;
   for (itm = item->parent; itm; itm = itm->parent)
@@ -331,7 +331,7 @@ static int FindItem(char *namein, hid_t *obj, int *item_type)
 {
   int status;
   int i;
-  char *name = strcpy(malloc(strlen(namein) + 1), namein);
+  char *name = strdup(namein);
   for (i = strlen(name) - 1; i >= 0; i--)
     if (name[i] == 32)
       name[i] = 0;
@@ -347,7 +347,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
   hid_t obj, type;
   int item_type;
   int status = FindItem(name, &obj, &item_type);
-  if (status & 1)
+  if (STATUS_OK)
   {
     if (item_type == H5G_DATASET)
     {

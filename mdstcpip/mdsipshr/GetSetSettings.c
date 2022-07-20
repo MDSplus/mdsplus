@@ -23,76 +23,136 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "../mdsip_connections.h"
+#include "mdsipthreadstatic.h"
 #include <stdlib.h>
 #include <string.h>
 
+//#define DEBUG
+#include <mdsmsg.h>
+
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+#define GET_THREAD_SAFE(var) ({ \
+  typeof(var) ans;              \
+  pthread_mutex_lock(&lock);    \
+  ans = var;                    \
+  pthread_mutex_unlock(&lock);  \
+  ans;                          \
+})
+#define SET_THREAD_SAFE(var, val) ({ \
+  typeof(var) ans;                   \
+  pthread_mutex_lock(&lock);         \
+  ans = var;                         \
+  var = val;                         \
+  pthread_mutex_unlock(&lock);       \
+  ans;                               \
+})
+
+static SOCKET socket_handle = 0;
+SOCKET GetSocketHandle()
+{
+  return GET_THREAD_SAFE(socket_handle);
+}
+SOCKET SetSocketHandle(SOCKET handle)
+{
+  return SET_THREAD_SAFE(socket_handle, handle);
+}
+
+static int flags = 0;
+int GetFlags()
+{
+  return GET_THREAD_SAFE(flags);
+}
+int SetFlags(int f)
+{
+  return SET_THREAD_SAFE(flags, f);
+}
+
+static char *protocol = "tcp";
+char *GetProtocol()
+{
+  return GET_THREAD_SAFE(protocol);
+}
+char *SetProtocol(char *p)
+{
+  return SET_THREAD_SAFE(protocol, p);
+}
+
+static char *portname = 0;
+char *GetPortname()
+{
+  return GET_THREAD_SAFE(portname);
+}
+char *SetPortname(char *p)
+{
+  return SET_THREAD_SAFE(portname, p);
+}
+
 #ifdef _WIN32
-#define DEFAULT_HOSTFILE "C:\\MDSIP.HOSTS"
+#define DEFAULT_HOSTFILE "C:\\mdsip.hosts"
 #else
 #define DEFAULT_HOSTFILE "/etc/mdsip.hosts"
 #endif
-
-static unsigned char multi = 0;
-static int ContextSwitching = 0;
-static int MaxCompressionLevel = 9;
-static int CompressionLevel = 0;
-static char *Portname = 0;
-static char *protocol = "tcp";
-static char *hostfile = 0;
-static int flags = 0;
-static SOCKET socketHandle = 0;
-
-SOCKET GetSocketHandle() { return socketHandle; }
-
-SOCKET SetSocketHandle(SOCKET handle)
+static char *hostfile = NULL;
+char *GetHostfile()
 {
-  SOCKET old = socketHandle;
-  socketHandle = handle;
-  return old;
+  char *ans = GET_THREAD_SAFE(hostfile);
+  return ans ? ans : DEFAULT_HOSTFILE;
 }
-
-int GetFlags() { return flags; }
-
-int SetFlags(int f)
-{
-  int old = flags;
-  flags = f;
-  return old;
-}
-
-char *GetProtocol() { return protocol; }
-
-char *SetProtocol(char *p)
-{
-  char *old = protocol;
-  protocol = p;
-  return old;
-}
-
-char *GetPortname() { return Portname; }
-
-char *MdsGetServerPortname() { return Portname; }
-
-char *SetPortname(char *p)
-{
-  char *old = Portname;
-  Portname = p;
-  return old;
-}
-
-char *GetHostfile() { return hostfile ? hostfile : DEFAULT_HOSTFILE; }
-
 char *SetHostfile(char *newhostfile)
 {
-  char *old = hostfile;
-  hostfile = newhostfile;
-  return old;
+  return SET_THREAD_SAFE(hostfile, newhostfile);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  CONTEXT  ///////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+/// Set multi mode active in this scope.
+/// Mutiple connection mode (accepts multiple connections each with own context)
+static unsigned char multi = 0;
+unsigned char GetMulti()
+{
+  return GET_THREAD_SAFE(multi);
+}
+unsigned char SetMulti(unsigned char s)
+{
+  return SET_THREAD_SAFE(multi, s);
+}
 
+static int ContextSwitching = 0;
+int GetContextSwitching()
+{
+  return GET_THREAD_SAFE(ContextSwitching);
+}
+int SetContextSwitching(int s)
+{
+  return SET_THREAD_SAFE(ContextSwitching, s);
+}
+
+//  COMPRESSION
+static int compression = 0;
+/// used in ConnectToMds, mdsip_service
+int GetCompressionLevel()
+{
+  return GET_THREAD_SAFE(compression);
+}
+int SetCompressionLevel(int level)
+{
+  return SET_THREAD_SAFE(compression, level);
+}
+
+/// CLIENT ADDRESS
+/// used in ServerShr
+int MdsGetClientAddr()
+{
+  MDSIPTHREADSTATIC_INIT;
+  MDSDBG("GET CLIENT " IPADDRPRI, IPADDRVAR(&MDSIP_CLIENTADDR));
+  return MDSIP_CLIENTADDR;
+}
+void MdsSetClientAddr(int addr)
+{
+  MDSIPTHREADSTATIC_INIT;
+  MDSIP_CLIENTADDR = addr;
+  MDSDBG("SET CLIENT " IPADDRPRI, IPADDRVAR(&MDSIP_CLIENTADDR));
+}
+
+#ifdef _WIN32
 char *GetLogDir()
 {
   char *logdir = getenv("MDSIP_SERVICE_LOGDIR");
@@ -111,96 +171,4 @@ char *GetLogDir()
   }
   return logdir;
 }
-
-unsigned char GetMulti() { return multi; }
-
-///
-/// Set multi mode active in this scope.
-/// Mutiple connection mode (accepts multiple connections each with own context)
-///
-unsigned char SetMulti(unsigned char s)
-{
-  unsigned char old_multi = multi;
-  multi = s;
-  return old_multi;
-}
-
-int GetContextSwitching() { return ContextSwitching; }
-
-int SetContextSwitching(int s)
-{
-  int old_ctx_switching = ContextSwitching;
-  ContextSwitching = s;
-  return old_ctx_switching;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  COMPRESSION  ///////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-int GetMaxCompressionLevel() { return MaxCompressionLevel; }
-
-int SetMaxCompressionLevel(int s)
-{
-  int old_max_compression = MaxCompressionLevel;
-  MaxCompressionLevel = s;
-  return old_max_compression;
-}
-
-int SetCompressionLevel(int level)
-{
-  int old_level = CompressionLevel;
-  CompressionLevel = level;
-  return old_level;
-}
-
-int GetCompressionLevel() { return CompressionLevel; }
-
-////////////////////////////////////////////////////////////////////////////////
-//  CONNECTION TIMEOUT  ////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-static int timeout_value = 0;
-static pthread_once_t timeout_once = PTHREAD_ONCE_INIT;
-static pthread_mutex_t timeout_mutex = PTHREAD_MUTEX_INITIALIZER;
-static void timeout_init()
-{
-  char *timeout = getenv("MDSIP_CONNECT_TIMEOUT");
-  if (timeout)
-    timeout_value = strtol(timeout, NULL, 0);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  GetMdsConnectTimeout  //////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-int GetMdsConnectTimeout()
-{
-  int connect_timeout;
-  pthread_mutex_lock(&timeout_mutex);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &timeout_mutex);
-  pthread_once(&timeout_once, timeout_init);
-  connect_timeout = timeout_value;
-  pthread_cleanup_pop(1);
-  return connect_timeout;
-}
-
-int SetMdsConnectTimeout(int sec)
-{
-  int old;
-  pthread_mutex_lock(&timeout_mutex);
-  pthread_cleanup_push((void *)pthread_mutex_unlock, &timeout_mutex);
-  pthread_once(&timeout_once, timeout_init);
-  old = timeout_value;
-  timeout_value = sec;
-  pthread_cleanup_pop(1);
-  return old;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  CLIENT ADDRESS  ////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-static int ClientAddr = 0;
-int MdsGetClientAddr() { return ClientAddr; }
-
-/// Address of current client structure
-void MdsSetClientAddr(int addr) { ClientAddr = addr; }
+#endif

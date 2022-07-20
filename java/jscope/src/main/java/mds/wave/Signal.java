@@ -501,6 +501,8 @@ public class Signal implements WaveDataListener
 	private int x2D_points = 0;
 	private int y2D_points = 0;
 	private int z2D_points = 0;
+        
+        double prevSetXMin, prevSetXMax;
 
 	/**
 	 * Constructs a zero Signal with 100 points.
@@ -2767,7 +2769,14 @@ public class Signal implements WaveDataListener
 
 	public void setXLimits(double xmin, double xmax, int mode)
 	{
-		xLimitsInitialized = true;
+ 		if(xLimitsInitialized && prevSetXMin == xmin && prevSetXMax == xmax)
+                {
+                    return;
+                }
+                xLimitsInitialized = true;
+                prevSetXMin = xmin;
+                prevSetXMax = xmax;
+                
 		if (xmin != -Double.MAX_VALUE)
 		{
 			this.xmin = xmin;
@@ -2817,7 +2826,9 @@ public class Signal implements WaveDataListener
 			}
 			if (((mode & DO_NOT_UPDATE) == 0)
 					&& (currLower != saved_xmin || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
+                        {
 				data.getDataAsync(currLower, currUpper, NUM_POINTS);
+                        }
 		}
 		// fireSignalUpdated();
 	}

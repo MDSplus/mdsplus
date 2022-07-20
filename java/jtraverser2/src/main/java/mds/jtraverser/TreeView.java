@@ -5,25 +5,12 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Vector;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JTree;
-import javax.swing.ToolTipManager;
-import javax.swing.TransferHandler;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.text.Position;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 
 import mds.Mds;
 import mds.MdsException;
@@ -142,6 +129,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	private String lastName;
 	private DefaultMutableTreeNode top;
 
+	@SuppressWarnings("resource")
 	public TreeView(final Mds mds, final String expt, final int shot, final TREE.MODE mode) throws MdsException
 	{
 		this(new TREE(mds, expt, shot), mode);
@@ -153,7 +141,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 		this.addMouseListener(mdsview.treeman.getContextMenu());
 	}
 
-	public TreeView(final TREE tree, TREE.MODE mode) throws MdsException
+	public TreeView(final TREE tree, final TREE.MODE mode) throws MdsException
 	{
 		super();
 		this.tree = tree;
@@ -224,7 +212,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 			this.updateDefault();
 		}
 		catch (final MdsException e1)
-		{/**/}
+		{
+			/**/}
 	}
 
 	public void addChangeReportListener(final Job job)
@@ -358,7 +347,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 			job.program();
 	}
 
-	public final int expandPath(NODE<?> node)
+	public final int expandPath(final NODE<?> node)
 	{
 		int row = 0;
 		try
@@ -383,7 +372,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	}
 
 	@Override
-	public final void expandPath(TreePath path)
+	public final void expandPath(final TreePath path)
 	{
 		final DefaultMutableTreeNode tree_node = (DefaultMutableTreeNode) path.getLastPathComponent();
 		final Node currnode = Node.getNode(tree_node);
@@ -460,7 +449,9 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	}
 
 	public final Node getCurrentNode()
-	{ return this.curr_node; }
+	{
+		return this.curr_node;
+	}
 
 	public final DefaultMutableTreeNode getCurrTreeNode()
 	{
@@ -471,10 +462,14 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	}
 
 	public final Nid getDefault()
-	{ return this.tree.getDefaultC(); }
+	{
+		return this.tree.getDefaultC();
+	}
 
 	public final String getExpt()
-	{ return this.tree.expt; }
+	{
+		return this.tree.expt;
+	}
 
 	public String getLabel()
 	{
@@ -486,22 +481,34 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	}
 
 	public final Mds getMds()
-	{ return this.tree.getMds(); }
+	{
+		return this.tree.getMds();
+	}
 
 	public final TREE.MODE getMode()
-	{ return this.tree.getMode(); }
+	{
+		return this.tree.getMode();
+	}
 
 	public final int getShot()
-	{ return this.tree.shot; }
+	{
+		return this.tree.shot;
+	}
 
 	public final TREE getTree()
-	{ return this.tree; }
+	{
+		return this.tree;
+	}
 
 	public final boolean isModel()
-	{ return this.tree.shot == -1; }
+	{
+		return this.tree.shot == -1;
+	}
 
 	public final boolean isReadOnly()
-	{ return this.tree.is_readonly(); }
+	{
+		return this.tree.is_readonly();
+	}
 
 	public void pasteSubtree(final Node fromNode, final Node toNode, final boolean isMember)
 	{
@@ -539,7 +546,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 						newNode.setData(data);
 				}
 				catch (final MdsException exc)
-				{/**/}
+				{
+					/**/}
 				for (final Node child : fromNode.getChildren())
 					this.pasteSubtree(child, newNode, false);
 				for (final Node member : fromNode.getMembers())
@@ -588,7 +596,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 			topnode.setDefault();
 		}
 		catch (final MdsException e)
-		{/**/}
+		{
+			/**/}
 		this.reportChange();
 	}
 
@@ -628,7 +637,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 
 	@Override
 	public void treeWillCollapse(final TreeExpansionEvent e) throws ExpandVetoException
-	{/* stub */}
+	{
+		/* stub */}
 
 	@Override
 	public void treeWillExpand(final TreeExpansionEvent e) throws ExpandVetoException

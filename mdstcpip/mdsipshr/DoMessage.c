@@ -22,38 +22,38 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <libroutines.h>
 #include <status.h>
 #include <stdlib.h>
 
 #include "../mdsip_connections.h"
+#include <pthread_port.h>
+#include <libroutines.h>
 
-extern void ProcessMessage(Connection *, Message *);
+/// returns true if message cleanup is handled
+extern int ProcessMessage(Connection *, Message *);
 ////////////////////////////////////////////////////////////////////////////////
 //  DoMessage  /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-int DoMessageC(Connection *connection)
+int ConnectionDoMessage(Connection *connection)
 {
-  int status = MDSplusFATAL;
   if (!connection)
-    return status; // will cause tunnel to terminate
-  Message *message = GetMdsMsgTOC(connection, &status, -1);
-  if (STATUS_OK && !message)
-    status = MDSplusFATAL;
-  if (STATUS_OK)
-  {
-    ProcessMessage(connection, message);
-  }
-  else
-  {
-    free(message);
-    CloseConnectionC(connection);
-  }
-  return status;
+    return 0; // will cause tunnel to terminate
+  int err;
+  INIT_AND_FREE_ON_EXIT(Message *, message);
+  err = 1;
+  int status = MDSplusFATAL;
+  message = GetMdsMsgTOC(connection, &status, -1);
+  err = !(message && STATUS_OK && ProcessMessage(connection, message));
+  FREE_IF(message, err);
+  return !err;
 }
 
 int DoMessage(int id)
 {
-  Connection *connection = FindConnection(id, NULL);
-  return DoMessageC(connection);
+  Connection *connection = FindConnectionWithLock(id, CON_ACTIVITY);
+  int ok = ConnectionDoMessage(connection);
+  UnlockConnection(connection);
+  if (!ok)
+    CloseConnection(id);
+  return ok;
 }

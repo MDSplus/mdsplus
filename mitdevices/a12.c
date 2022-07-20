@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
+#include "mds_gendevice.h"
 #include <strroutines.h>
 #include <treeshr.h>
 #include <mdsshr.h>
@@ -133,16 +133,16 @@ EXPORT int a12__store(struct descriptor *niddsc_ptr __attribute__ ((unused)))
   fast = TreeIsOn(c_nids[A12_N_COMMENT]) & 1;
   if ((max_samples == 8192) && ((TreeIsOn(c_nids[A12_N_NAME]) & 1) == 0))
     max_samples = 32767;
-  for (chan = 0; ((chan < 6) && (status & 1)); chan++) {
+  for (chan = 0; ((chan < 6) && (STATUS_OK)); chan++) {
     if (TreeIsOn(CHAN_NID(chan, A12_N_INP_HEAD)) & 1) {
       status = DevLong(&CHAN_NID(chan, A12_N_INP_STARTIDX), (int *)&raw.bounds[0].l);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].l = min(max_samples - 1, max(0, raw.bounds[0].l));
       else
 	raw.bounds[0].l = 0;
 
       status = DevLong(&CHAN_NID(chan, A12_N_INP_ENDIDX), (int *)&raw.bounds[0].u);
-      if (status & 1)
+      if (STATUS_OK)
 	raw.bounds[0].u = min(max_samples - 1, max(0, raw.bounds[0].u));
       else
 	raw.bounds[0].u = max_samples - 1;
@@ -151,7 +151,7 @@ EXPORT int a12__store(struct descriptor *niddsc_ptr __attribute__ ((unused)))
       if (raw.m[0] > 0) {
 	samples_to_read = raw.bounds[0].u + 1;
 	status = ReadChannel(name, fast, &max_samples, chan, channel_data);
-	if (status & 1) {
+	if (STATUS_OK) {
 	  offset = ((1 << chan) & polarity) != 0 ? -2048 : 0;
 	  raw.pointer = (char *)(channel_data + (raw.bounds[0].l));
 	  raw.a0 = (char *)channel_data;
@@ -179,7 +179,7 @@ static int ReadSetup(char *name, float *freq_ptr, int *offset)
   int status;
   int one = 1;
   status = DevCamChk(CamPiow(name, 0, 0, &setup, 16, 0), &one, 0);
-  if (status & 1) {
+  if (STATUS_OK) {
     *offset = setup.a12_setup_v_offset;
     *freq_ptr = freq[setup.a12_setup_v_period];
   }

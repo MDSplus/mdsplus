@@ -58,15 +58,15 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     carrier_parts = [
         {
-            'path': ':NODE',
-            'type': 'text',
+            'path': ':NODE', 
+            'type': 'text', 
             'value': '192.168.0.254',
             'options': ('no_write_shot',)
         },
         {
-            'path': ':SITE',
+            'path': ':SITE', 
             'type': 'numeric',
-            'value': 1,
+            'value': 1, 
             'options': ('no_write_shot',)
         },
         {
@@ -75,60 +75,60 @@ class _ACQ2106_435ST(MDSplus.Device):
             'options': ('no_write_shot',)
         },
         {
-            'path': ':TRIGGER',
+            'path': ':TRIGGER', 
             'type': 'numeric',
-            'value': 0.0,
+            'value': 0.0, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':TRIG_MODE',
+            'path': ':TRIG_MODE', 
             'type': 'text',
-            'value': 'master:hard',
+            'value': 'master:hard', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':EXT_CLOCK',
-            'type': 'axis',
+            'path': ':EXT_CLOCK', 
+            'type': 'axis', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':FREQ',
+            'path': ':FREQ', 
             'type': 'numeric',
-            'value': 16000,
+            'value': 16000, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':HW_FILTER',
-            'type': 'numeric',
-            'value': 0,
-            'options': ('no_write_shot',)
-        },
-        {
-            'path': ':DEF_DCIM',
+            'path': ':HW_FILTER', 
             'type': 'numeric',
             'value': 1,
             'options': ('no_write_shot',)
         },
         {
-            'path': ':SEG_LENGTH',
+            'path': ':DEF_DCIM', 
             'type': 'numeric',
-            'value': 8000,
+            'value': 1, 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':MAX_SEGMENTS',
+            'path': ':SEG_LENGTH', 
             'type': 'numeric',
-            'value': 1000,
+            'value': 8000, 
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':MAX_SEGMENTS', 
+            'type': 'numeric',
+            'value': 1000, 
             'options': ('no_write_shot',)
         },
         {
             'path': ':SEG_EVENT', 
             'type': 'text',
-            'value': 'STREAM',
+            'value': 'STREAM', 
             'options': ('no_write_shot',)
         },
         {
-            'path': ':STATUS_CMDS',
+            'path': ':STATUS_CMDS', 
             'type': 'text', 
             'value': MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']), 
             'options':('no_write_shot',)
@@ -146,7 +146,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {
             'path': ':TRIG_STR',
             'type': 'text',
-            'options': ('nowrite_shot',), 
+            'options': ('no_write_shot',), 
             'valueExpr': "EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"
         },
         {
@@ -188,18 +188,11 @@ class _ACQ2106_435ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
-            self.dev = dev.copy()
+            self.dev = dev
 
-            self.chans = []
-            self.decim = []
             self.nchans     = self.dev.sites*32
             self.resampling = self.dev.resampling
-
-            for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
-
+            
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
 
@@ -225,8 +218,17 @@ class _ACQ2106_435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
+            self.dev = self.dev.copy()
+
             if self.dev.debug:
                 print("MDSWorker running")
+            
+            self.chans = []
+            self.decim = []
+            for i in range(self.nchans):
+                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                self.decim.append(
+                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
@@ -273,6 +275,10 @@ class _ACQ2106_435ST(MDSplus.Device):
                 except Empty:
                     continue
 
+                if self.dev.trig_time.getDataNoRaise() is None:
+                    self.dev.trig_time.record = self.device_thread.trig_time - \
+                        ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
+
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
                 for c in self.chans:
@@ -297,9 +303,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
-
-            self.dev.trig_time.record = self.device_thread.trig_time - \
-                ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
+            
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -400,7 +404,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         'wrtt1'         # White Rabbit Trigger
     ]
 
-    def init(self, resampling=False):
+    def init(self, resampling = False, armed_by_transient = False):
         uut = self.getUUT()
         uut.s0.set_knob('set_abort', '1')
 
@@ -493,15 +497,21 @@ class _ACQ2106_435ST(MDSplus.Device):
             for card in self.slots:
                 self.slots[card].nacc = ('%d' % nacc_samp).strip()
         else:
-            print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
-            self.slots[card].nacc = '1'
+            print("WARNING: Hardware Filter samples must be in the range [1,32]. A value of 0 => Disabled == 1")
+            for card in self.slots:
+                self.slots[card].nacc = '1'
 
         self.running.on = True
-        # If resampling == 1, then resampling is used during streaming:
+        # If resampling is True, then resampling is used during streaming:
         self.resampling = resampling
 
-        thread = self.MDSWorker(self)
-        thread.start()
+        if not armed_by_transient:
+            # Then, the following will be armed by this super-class
+            thread = self.MDSWorker(self)
+            thread.start()
+        else:
+            print('Skip streaming from MDSWorker thread. ACQ will be armed by the transient sub-class device')
+
     INIT = init
 
     def getSlots(self):
@@ -536,13 +546,12 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     def getUUT(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False, has_wr=True)
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         return uut
 
     def setChanScale(self, num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(
-            chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
+        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT, MDSplus.dVALUE()), chan.OFFSET))
 
 
 def assemble(cls):

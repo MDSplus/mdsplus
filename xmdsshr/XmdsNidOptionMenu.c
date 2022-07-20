@@ -176,7 +176,7 @@ _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
         b = XmCreatePushButtonGadget(info->pulldown, "", arglist,
                                      XtNumber(arglist));
         XtAddCallback(b, XmNactivateCallback, (XtCallbackProc)ButtonPushed,
-                      (XtPointer)(idx + (char *)0));
+                      (XtPointer)(void *)(intptr_t)(idx));
       }
     }
   }
@@ -413,7 +413,7 @@ static void MenuChanged(Widget w, Resources *info,
   if (cb->reason == XmCR_ACTIVATE)
   {
     int num;
-    int bnum = (char *)cb->data - (char *)0;
+    int bnum = (int)(intptr_t)cb->data;
     Widget *buttons;
     struct descriptor_xd *xd = 0;
     XtVaGetValues(info->pulldown, XtNnumChildren, &num, XtNchildren, &buttons,

@@ -165,11 +165,13 @@ public class TreeManager extends JPanel
 
 		@Override
 		public void mouseEntered(final MouseEvent e)
-		{/* stub */}
+		{
+			/* stub */}
 
 		@Override
 		public void mouseExited(final MouseEvent e)
-		{/* stub */}
+		{
+			/* stub */}
 
 		@Override
 		public void mousePressed(final MouseEvent e)
@@ -233,6 +235,7 @@ public class TreeManager extends JPanel
 					try
 					{
 						final NODE<?> datanode = currnode.nid.followReference();
+						@SuppressWarnings("resource")
 						final TREE tree = DisplayDataMenu.this.treeman.getCurrentTree();
 						aedata = tree.getMds().getAPI().tdiDecompile(tree, this.evalexpr, datanode);
 						if (aedata == null)
@@ -277,7 +280,9 @@ public class TreeManager extends JPanel
 			}
 
 			public JMenuItem getMenu()
-			{ return (JMenuItem) this.menu; }
+			{
+				return (JMenuItem) this.menu;
+			}
 		}
 
 		public final class DisplayNci implements ActionListener
@@ -511,7 +516,8 @@ public class TreeManager extends JPanel
 				menu.add(submenu);
 			else
 				menu.add(submenu, this.gbc);
-			new TreeManager.AddNodeMenu(treeman, submenu);
+			@SuppressWarnings("unused")
+			final Menu unused = new TreeManager.AddNodeMenu(treeman, submenu);
 			this.addMenuItem("Delete Node", new DeleteNode());
 			this.addMenuItem("Rename Node", new RenameNode());
 			this.addMenuItem("Edit Tags", new EditTags());
@@ -612,6 +618,7 @@ public class TreeManager extends JPanel
 			@Override
 			public final void actionPerformed(final ActionEvent e)
 			{
+				@SuppressWarnings("resource")
 				final Mds mds = ExtrasMenu.this.treeman.getMds();
 				final TCL tcl = mds.getTCL();
 				final String msg = tcl.showDatabase();
@@ -646,7 +653,10 @@ public class TreeManager extends JPanel
 				scollpane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 				final Thread thread = new Thread("ShowTags")
 				{
-					{/** worker to list the tags and the full path of the target node **/
+					{/**
+						 * worker to list the tags and the full path of the
+						 * target node
+						 **/
 						this.setDaemon(true);
 						this.setPriority(Thread.MIN_PRIORITY);
 					}
@@ -655,6 +665,7 @@ public class TreeManager extends JPanel
 					public final void run()
 					{
 						final TreeView treeview = ExtrasMenu.this.treeman.getCurrentTreeView();
+						@SuppressWarnings("resource")
 						final TREE tree = treeview.getTree();
 						try
 						{
@@ -669,7 +680,8 @@ public class TreeManager extends JPanel
 							}
 						}
 						catch (final MdsException me)
-						{/**/}
+						{
+							/**/}
 					}
 				};
 				thread.start();
@@ -727,8 +739,8 @@ public class TreeManager extends JPanel
 		} /*
 			 * private final class Compile implements ActionListener{
 			 *
-			 * @Override public final void actionPerformed(final ActionEvent e) {
-			 * FileMenu.this.treeman.compile(); } }
+			 * @Override public final void actionPerformed(final ActionEvent e)
+			 * { FileMenu.this.treeman.compile(); } }
 			 */
 
 		private final class Decompile implements ActionListener
@@ -757,11 +769,13 @@ public class TreeManager extends JPanel
 
 					@Override
 					public void ancestorMoved(final AncestorEvent ae)
-					{/**/}
+					{
+						/**/}
 
 					@Override
 					public void ancestorRemoved(final AncestorEvent ae)
-					{/**/}
+					{
+						/**/}
 				});
 				final Object[] ob =
 				{ "[ssh://][<user>@]<hostname>[:<port>]", provider };
@@ -936,7 +950,9 @@ public class TreeManager extends JPanel
 		}
 
 		public void checkSupport()
-		{/* stub */}
+		{
+			// stub
+		}
 	}
 
 	public static final class ModifyMenu extends Menu
@@ -1103,6 +1119,7 @@ public class TreeManager extends JPanel
 			@Override
 			public final void stateChanged(final ChangeEvent ce)
 			{
+				@SuppressWarnings("resource")
 				final TREE tree = TreeManager.this.getCurrentTree();
 				if (tree == null)
 					return;
@@ -1111,7 +1128,8 @@ public class TreeManager extends JPanel
 					tree.setActive();
 				}
 				catch (final MdsException e)
-				{/**/}
+				{
+					/**/}
 				TreeManager.this.reportChange();
 			}
 		});
@@ -1122,6 +1140,7 @@ public class TreeManager extends JPanel
 				new StringBuilder(64).append("jTaverser started (Version: ").append(version).append(")").toString());
 		this.progress.setLayout(new BorderLayout(0, 0));
 		this.progress.add(this.status, BorderLayout.CENTER);
+		@SuppressWarnings("resource")
 		final Mds mdslocal = Mds.getLocal();
 		if (mdslocal != null)
 			this.addMds(mdslocal.setActive());
@@ -1211,7 +1230,9 @@ public class TreeManager extends JPanel
 	}
 
 	public final MouseListener getContextMenu()
-	{ return new TreeManager.ContextMenuML(); }
+	{
+		return new TreeManager.ContextMenuML();
+	}
 
 	public final MdsView getCurrentMdsView()
 	{
@@ -1257,6 +1278,7 @@ public class TreeManager extends JPanel
 		return (MdsView) this.tabs.getComponentAt(index);
 	}
 
+	@SuppressWarnings("resource")
 	public final MdsView openMds(final Provider provider)
 	{
 		FileMenu.prev_provider = provider.toString();
@@ -1336,6 +1358,7 @@ public class TreeManager extends JPanel
 		this.progress.setMaximum(max);
 	}
 
+	@SuppressWarnings("resource")
 	public final void setTreePathEnv(final String exp, final String path)
 	{
 		final Mds mds;

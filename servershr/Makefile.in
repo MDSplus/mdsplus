@@ -18,6 +18,8 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@ $(IMPLIB)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsServerShr.a
 
+$(OBJECTS): servershrp.h
+ServerSendMessage.o: Job.h Client.h
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 

@@ -142,7 +142,6 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
 
   regs.deadtime_register_enable = 1;
   regs.deadtime_register = config->deadtime;
-
   ioctl(fd, RFX_STREAM_SET_REGISTERS, &regs);
   usleep(10000);
 
@@ -225,7 +224,6 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   config->deadtime = regs.deadtime_register;
   
   printf("Mode Register: %x\t Aux Mode Register: %x\n", regs.mode_register, regs.aux_mode_reg);
-  
 }
 
 static void fifoFlush(int fd) { ioctl(fd, RFX_STREAM_FIFO_FLUSH, NULL); }
@@ -320,6 +318,7 @@ void rpadcStop(int fd)
   usleep(100000);
   fifoFlush(fd);
   stopped = true;
+  std::cout << "TIRATO SU STOP\n";
   usleep(100000);
   usleep(100000);
   // dmaStop(fd);
@@ -516,7 +515,6 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
                              startTimes, endTimes,
                              currBlock * blockSamples + currSample,
                              currBlock + 1, freq, saveList);
-//                             currBlock + 1, freq1, saveList); Gabriele Dec 2021
               }
             }
             else // Some windows have been read before and the segment is
@@ -525,7 +523,6 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
               writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes,
                            endTimes, currBlock * blockSamples + currSample,
                            currBlock, freq, saveList);
-//                           currBlock, freq1, saveList); Gabriele Dec 2021
             }
           }
           deviceFd = 0;
@@ -541,6 +538,10 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
           return;
         }
       }
+      // signal to FPGA that block has been read
+      ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
+      trig_lev_count++;
+      ioctl(fd, RFX_STREAM_SET_LEV_TRIG_COUNT, &trig_lev_count);
       // Here the block been filled. It may refer to the same window
       // (isSingle)or to a different time window
       
@@ -604,8 +605,8 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
     segmentIdx++;
     writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes, endTimes,
                  segmentSamples, blocksInSegment, freq, saveList);
- //                segmentSamples, blocksInSegment, freq1, saveList); Gabriele Dec 2021
   }
+  std::cout << "ULTIMAO RPADCSTREAM\n";
 }
 static void printConfig(struct rpadc_configuration *config)
 {

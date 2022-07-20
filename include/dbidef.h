@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _DBIDEF_H
+#define _DBIDEF_H
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element DBIDEF.H */
 /*  *3     1-APR-1991 17:29:45 TWF "Add readonly open" */
 /*  *2    16-FEB-1990 10:28:18 TWF "Add itmlst struct" */
@@ -33,3 +34,4 @@ typedef struct dbi_itm
   void *pointer;
   int *return_length_address;
 } DBI_ITM;
+#endif

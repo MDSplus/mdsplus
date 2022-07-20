@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 
 #include <treeshr.h>
@@ -46,7 +46,7 @@ EXPORT int mit__gate__get_setup(struct descriptor *niddsc_ptr __attribute__ ((un
   int status;
   InGet_setupStruct s;
   status = mit__gate___get_setup(niddsc_ptr, &s);
-  if (status & 1) {
+  if (STATUS_OK) {
     float delay = s.pulse_time - s.trigger;
     float max_period = max(delay, s.duration);
     float period;
@@ -87,7 +87,7 @@ EXPORT int mit__gate__get_setup(struct descriptor *niddsc_ptr __attribute__ ((un
     if (s.trigger_mode == TM_EVENT_TRIGGER) {
       int event_nid = s.head_nid + MIT__GATE_N_EVENT;
       status = mit_decoder__get_event(&event_nid, event_mask);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
 	goto error;
     } else
       memset(event_mask, 0, sizeof(EventMask));

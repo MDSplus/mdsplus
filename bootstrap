@@ -41,6 +41,8 @@ conf/update_submodules
 
 python/generate_tests
 
+deploy/git_revision.sh  # must be done before autoconf
+
 aclocal -I ./m4
 
 autoheader

@@ -65,11 +65,8 @@ static inline int filter_string(char **const str_ptr, const int upcase)
   return c - str; // is strlen
 }
 
-#define ACCESS_NOMATCH 0
-#define ACCESS_GRANTED 1
-#define ACCESS_DENIED 2
 #ifdef _WIN32
-#define become_user(remote_user, local_user) 1
+#define become_user(remote_user, local_user) ACCESS_GRANTED
 #else
 static int become_user(const char *remote_user,
                        const char *local_user)

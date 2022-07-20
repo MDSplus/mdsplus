@@ -626,7 +626,7 @@ static void Initialize(Widget req, Widget new, ArgList args,
       int status;
       itms[0].pointer = (unsigned char *)&w->xdbox.usage;
       status = TreeGetNci(nid, itms);
-      if ((status & 1) == 0)
+      if ((STATUS_OK) == 0)
         w->xdbox.usage = 0;
     }
     else
@@ -1219,7 +1219,7 @@ static struct descriptor_xd *ExpressionUnload(Widget w)
       ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
       *ans = empty_xd;
       status = TdiCompile(&w_units, data, units, ans MDS_END_ARG);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         TdiComplain(w);
         ans = 0;
@@ -2223,7 +2223,7 @@ static void UpdateTags(Widget w, int nid, char *tags)
   while (t_ptr)
   {
     status = TreeAddTag(nid, t_ptr);
-    if (!status & 1)
+    if (STATUS_NOT_OK)
       XmdsComplain(w, "Error adding tag %s to node number %d", t_ptr, nid);
     t_ptr = strtok(NULL, ", ");
   }

@@ -40,6 +40,8 @@
 #define NciV_NON_VMS 3
 #define NciM_EXTENDED_NCI 0x10
 #define NciV_EXTENDED_NCI 4
+#define NciM_32BIT_UID_NCI 0x20
+#define NciV_32BIT_UID_NCI 5
 
 typedef struct nci
 {
@@ -51,7 +53,7 @@ typedef struct nci
   class_t class;
   dtype_t dtype;
   l_length_t length;
-  unsigned char spare2;
+  unsigned char compression_method;
   unsigned int status;
   union {
     struct

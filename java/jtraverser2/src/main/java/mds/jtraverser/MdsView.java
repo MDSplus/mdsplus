@@ -1,30 +1,18 @@
 package mds.jtraverser;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Stack;
 import java.util.Vector;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import mds.Mds;
-import mds.MdsException;
-import mds.TransferEventListener;
+import mds.*;
 import mds.data.TREE;
 import mds.jtraverser.TreeManager.Job;
 import mds.mdsip.MdsIp;
@@ -76,11 +64,13 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 
 			@Override
 			public void mousePressed(final MouseEvent e)
-			{/**/}
+			{
+				/**/}
 
 			@Override
 			public void mouseReleased(final MouseEvent e)
-			{/**/}
+			{
+				/**/}
 
 			@Override
 			protected void paintComponent(final Graphics g)
@@ -100,7 +90,8 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 
 			@Override
 			public void updateUI()
-			{/**/}
+			{
+				/**/}
 		}
 
 		private static final long serialVersionUID = 1L;
@@ -154,6 +145,7 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 			@Override
 			public void stateChanged(final ChangeEvent ce)
 			{
+				@SuppressWarnings("resource")
 				final TREE tree = MdsView.this.getCurrentTree();
 				if (tree == null)
 					return;
@@ -162,7 +154,8 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 					tree.setActive();
 				}
 				catch (final MdsException e)
-				{/**/}
+				{
+					/**/}
 				MdsView.this.reportChange();
 			}
 		});
@@ -231,7 +224,9 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 	}
 
 	public final Mds getMds()
-	{ return this.mds; }
+	{
+		return this.mds;
+	}
 
 	private final TreeView getTreeAt(final int index)
 	{
@@ -239,7 +234,7 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 	}
 
 	@Override
-	public void handleTransferEvent(final ReadableByteChannel is, String info, int read, int to_read)
+	public void handleTransferEvent(final ReadableByteChannel is, final String info, final int read, final int to_read)
 	{
 		if (to_read == 0)
 		{
@@ -262,7 +257,8 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 				shot = this.mds.getAPI().treeGetCurrentShotId(null, expt);
 			}
 			catch (final MdsException e)
-			{/**/}
+			{
+				/**/}
 		int index = -1;
 		for (int i = this.getTabCount(); i-- > 0;)
 		{

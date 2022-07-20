@@ -49,7 +49,7 @@ int MdsEventAst(int id, char *eventnam, void (*astadr)(), void *astprm,
                   eventnam),
       MakeDescrip((struct descrip *)&infoarg, DTYPE_UCHAR, 1, &size, &info),
       (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
+  if ((STATUS_OK) && (ansarg.dtype == DTYPE_LONG))
   {
     *eventid = *(int *)ansarg.ptr;
   }

@@ -44,31 +44,42 @@ endif #SHARETYPE
 
 
 ## MdsIpShr sources ##
-LIB_SOURCES = $(wildcard @srcdir@/mdsipshr/*.c)
-LIB_OBJECTS = $(LIB_SOURCES:@srcdir@/%.c=%.o)
-$(LIB_OBJECTS): | --mdsipshr-dir
+shr_srcdir = $(srcdir)/mdsipshr
 --mdsipshr-dir:
 	@$(MKDIR_P) mdsipshr
+LIB_SOURCES = $(wildcard $(shr_srcdir)/*.c)
+LIB_OBJECTS = $(LIB_SOURCES:$(srcdir)/%.c=%.o)
+LIB_HEADERS = $(srcdir)/mdsip_connections.h
+$(LIB_OBJECTS): $(LIB_HEADERS) | --mdsipshr-dir
 
 SERVER_SOURCES = mdsip.c
 SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
 
-
+io_srcdir = $(srcdir)/io_routines
 --io_routines-dir:
 	@$(MKDIR_P) io_routines
+ETH_HEADERS = $(addprefix $(io_srcdir)/,ioroutines.h ioroutinesx.h)
+ETHV6_HEADERS = $(addprefix $(io_srcdir)/,ioroutinesV6.h ioroutinesx.h)
+TCP_HEADERS = $(ETH_HEADERS) $(io_srcdir)/ioroutinestcp.h
+UDT_HEADERS = $(ETH_HEADERS) $(io_srcdir)/ioroutinesudt.h
 
-TCP_SOURCES = @srcdir@/io_routines/IoRoutinesTcp.c
-TCP_OBJECTS = $(TCP_SOURCES:@srcdir@/%.c=%.o)
-$(TCP_OBJECTS): | --io_routines-dir
+TCP_SOURCES = $(io_srcdir)/IoRoutinesTcp.c
+TCP_OBJECTS = $(TCP_SOURCES:$(srcdir)/%.c=%.o)
+TCPV6_SOURCES = $(io_srcdir)/IoRoutinesTcpV6.c
+TCPV6_OBJECTS = $(TCPV6_SOURCES:$(srcdir)/%.c=%.o)
 
-TCPV6_SOURCES = @srcdir@/io_routines/IoRoutinesTcpV6.c
-TCPV6_OBJECTS = $(TCPV6_SOURCES:@srcdir@/%.c=%.o)
-$(TCPV6_OBJECTS): | --io_routines-dir
+UDT_SOURCES = $(io_srcdir)/IoRoutinesUdt.c
+UDT_OBJECTS = $(UDT_SOURCES:$(srcdir)/%.c=%.o)
+UDTV6_SOURCES = $(io_srcdir)/IoRoutinesUdtV6.c
+UDTV6_OBJECTS = $(UDTV6_SOURCES:$(srcdir)/%.c=%.o)
 
+$(TCP_OBJECTS) $(TCPV6_OBJECTS): $(TCP_HEADERS) | --io_routines-dir
+$(UDT_OBJECTS) $(UDTV6_OBJECTS): $(UDT_HEADERS) $(UDT4_OBJECTS) | --io_routines-dir
 
-PIPE_SOURCES = $(addprefix @srcdir@/io_routines/, IoRoutinesTunnel.c IoRoutinesThread.c)
-PIPE_OBJECTS = $(PIPE_SOURCES:@srcdir@/%.c=%.o)
-$(PIPE_OBJECTS): | --io_routines-dir
+PIPE_SOURCES = $(addprefix $(io_srcdir)/,IoRoutinesTunnel.c IoRoutinesThread.c)
+PIPE_OBJECTS = $(PIPE_SOURCES:$(srcdir)/%.c=%.o)
+PIPE_HEADERS = $(io_srcdir)/ioroutines_pipes.h
+$(PIPE_OBJECTS): $(PIPE_HEADERS) | --io_routines-dir
 LIB_SOURCES += $(PIPE_SOURCES)
 LIB_OBJECTS += $(PIPE_OBJECTS)
 
@@ -78,15 +89,11 @@ LIB_OBJECTS += $(PIPE_OBJECTS)
 UDT4_SOURCES = $(wildcard @srcdir@/udt4/src/*.cpp)  $(wildcard @srcdir@/udt4/udtc/*.cpp)
 UDT4_OBJECTS = $(UDT4_SOURCES:@srcdir@/%.cpp=%.o)
 $(UDT4_OBJECTS): | --udt4-dirs
-UDT_OBJECTS = io_routines/IoRoutinesUdt.o $(UDT4_OBJECTS)
-
-$(UDT_OBJECTS): | --io_routines-dir
-UDTV6_OBJECTS = io_routines/IoRoutinesUdtV6.o $(UDT4_OBJECTS)
-$(UDTV6_OBJECTS): | --io_routines-dir
 
 
-CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TCP_OBJECTS) $(TCPV6_OBJECTS) $(UDT_OBJECTS) $(UDTV6_OBJECTS)
-ALL_SOURCES = $(LIB_SOURCES) $(TCP_SOURCES)
+CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(UDT4_OBJECTS)\
+ $(TCP_OBJECTS) $(UDT_OBJECTS) $(TCPV6_OBJECTS) $(UDTV6_OBJECTS)
+ALL_SOURCES = $(LIB_SOURCES) $(TCP_SOURCES) $(TCPV6_SOURCES) $(UDT_SOURCES) $(UDTV6_SOURCES)
 
 bin_SCRIPTS =
 @MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip_service.exe.manifest
@@ -212,11 +219,11 @@ $(MdsIpTCP): $(TCP_OBJECTS) $(MdsIpShr)
 $(MdsIpTCPV6): $(TCPV6_OBJECTS) $(MdsIpShr)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(TCPV6_OBJECTS) $(LINK_MDSIPSHR) $(LIBS)
 
-$(MdsIpUDT): $(UDT_OBJECTS) $(MdsIpShr)
-	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDT_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
+$(MdsIpUDT): $(UDT_OBJECTS) $(UDT4_OBJECTS) $(MdsIpShr)
+	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDT_OBJECTS) $(UDT4_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
-$(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
-	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDTV6_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
+$(MdsIpUDTV6): $(UDTV6_OBJECTS) $(UDT4_OBJECTS) $(MdsIpShr)
+	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDTV6_OBJECTS) $(UDT4_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts$(WIN)
 	cp $< $@

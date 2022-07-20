@@ -35,53 +35,60 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MdsValue  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  {              \
-  }
-#endif
+#include <mdsmsg.h>
+
+#define SERIAL
+#define DEF_SERIAL_IN                          \
+  "public fun __si(in _i)"                     \
+  "{"                                          \
+  "_o=*;"                                      \
+  "MdsShr->MdsSerializeDscIn(ref(_i),xd(_o));" \
+  "return(_o);"                                \
+  "};"
+#define DEF_SERIAL_OUT                         \
+  "public fun __so(optional in _i)"            \
+  "{"                                          \
+  "_o=*;"                                      \
+  "MdsShr->MdsSerializeDscOut(xd(_i),xd(_o));" \
+  "return(_o);"                                \
+  "};"
 
 EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
-                              struct descriptor **arglist_in,
-                              struct descriptor_xd *ans_ptr)
+                              mdsdsc_t **arglist_in,
+                              mdsdsc_xd_t *ans_ptr)
 {
   int dim = 0;
   int i, status;
-  Connection *c = FindConnection(id, NULL);
-  if (c->version >= MDSIP_VERSION_DSC_ARGS)
+  int version = MdsIpGetConnectionVersion(id);
+  const int expect_serial = version >= MDSIP_VERSION_DSC_ARGS;
+  if (expect_serial)
   {
-    status =
-        SendArg(id, 0, DTYPE_CSTRING, ++nargs, 0, 0, &dim, (char *)expression);
+    DESCRIPTOR_FROM_CSTRING(exp_dsc, expression);
+    status = SendDsc(id, 0, ++nargs, &exp_dsc);
     for (i = 1; i < nargs && STATUS_OK; i++)
       status = SendDsc(id, i, nargs, arglist_in[i - 1]);
   }
   else
   {
     EMPTYXD(xd);
-    char *newexp = malloc(strlen(expression) + 256 + nargs * 8);
-    strcpy(newexp, "public fun __si(in "
-                   "_i){_o=*;MdsShr->MdsSerializeDscIn(ref(_i),xd(_o));return(_"
-                   "o);};public fun __so(optional in "
-                   "_i){_o=*;MdsShr->MdsSerializeDscOut(xd(_i),xd(_o));return(_"
-                   "o);};__so(execute($");
+    char *newexp = malloc(16 + 8 * 8 + sizeof(DEF_SERIAL_OUT) + sizeof(DEF_SERIAL_IN));
+    strcpy(newexp, DEF_SERIAL_IN DEF_SERIAL_OUT "__so(execute($");
     for (i = 0; i < nargs; i++)
       strcat(newexp, ",__si($)");
     strcat(newexp, "))");
     nargs += 2;
-    DBG("%s\n", newexp);
+    MDSDBG(newexp);
     status = SendArg(id, 0, DTYPE_CSTRING, nargs, strlen(newexp), 0, &dim,
                      (char *)newexp);
     free(newexp);
-    DBG("%s\n", expression);
+    MDSDBG(expression);
     struct descriptor_a *arr;
     status = SendArg(id, 1, DTYPE_CSTRING, nargs, strlen(expression), 0, &dim,
                      (char *)expression);
     for (i = 2; i < nargs && STATUS_OK; i++)
     {
       status = MdsSerializeDscOut(arglist_in[i - 2], &xd);
-      arr = (struct descriptor_a *)xd.pointer;
+      arr = (mdsdsc_a_t *)xd.pointer;
       if (STATUS_OK)
         status = SendArg(id, i, arr->dtype, nargs, arr->length, 1,
                          (int *)&arr->arsize, arr->pointer);
@@ -93,16 +100,19 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
     char ndims;
     void *mem = 0;
     int dims[MAX_DIMS] = {0};
-    struct descriptor_a ser = {0};
+    mdsdsc_a_t ser = {0};
     status = GetAnswerInfoTS(id, (char *)&ser.dtype, (short int *)&ser.length,
                              &ndims, dims, (int *)&ser.arsize,
                              (void **)&ser.pointer, &mem);
-    ser.class = CLASS_A;
-    if (ser.dtype == DTYPE_SERIAL || ser.dtype == DTYPE_B)
-      status = MdsSerializeDscIn(ser.pointer, ans_ptr);
-    else
-      status = MDSplusERROR;
-    free(mem);
+    if (STATUS_OK)
+    {
+      ser.class = CLASS_A;
+      if ((expect_serial && ser.dtype == DTYPE_SERIAL) || ser.dtype == DTYPE_B)
+        status = MdsSerializeDscIn(ser.pointer, ans_ptr);
+      else
+        status = MdsCopyDxXd((mdsdsc_t *)&ser, ans_ptr);
+      free(mem);
+    }
   }
   return status;
 }
@@ -110,7 +120,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char *expression, int nargs,
 EXPORT int _MdsValue(int id, int nargs, struct descrip **arglist,
                      struct descrip *ans_arg)
 {
-  DBG("mdstcpip.MdsValue> '%s'\n", (char *)(**arglist).ptr);
+  MDSDBG("mdstcpip.MdsValue> '%s'", (char *)(**arglist).ptr);
   int i, status = 1;
   for (i = 0; i < nargs && STATUS_OK; i++)
     status = SendArg(id, i, arglist[i]->dtype, nargs, ArgLen(arglist[i]),

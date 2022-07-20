@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _TREESHR_H
+#define _TREESHR_H
 
 /********** define this in case user code is checking it ************/
 
@@ -377,4 +378,5 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
 #endif

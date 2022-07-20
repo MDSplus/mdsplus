@@ -101,12 +101,14 @@
 #define Endian(c) (c & BigEndian)
 #define CType(c) (c & 0x0f)
 #define IsCompressed(c) (c & COMPRESSED)
+
+// somewhat jScope only message->h.status
 #ifdef NOCOMPRESSION
 #define SUPPORTS_COMPRESSION 0
 #else
 #define SUPPORTS_COMPRESSION 0x8000
 #endif
-#define SupportsCompression(c) (c & SUPPORTS_COMPRESSION)
+#define SupportsCompression(s) (s & SUPPORTS_COMPRESSION)
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST "---EVENTCAN---REQUEST---"

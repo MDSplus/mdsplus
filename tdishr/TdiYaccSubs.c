@@ -40,13 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 //#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define DBG(...) \
-  { /**/         \
-  }
-#endif
+#include <mdsmsg.h>
 
 extern int Tdi1Build();
 extern int TdiEvaluate();
@@ -179,10 +173,10 @@ int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG)
     ptr = (mdsdsc_xd_t *)ptr->pointer;
 
   ++TDI_STACK_IDX;
-  DBG("TDI_STACK_IDX = %d\n", TDI_STACK_IDX);
+  MDSDBG("TDI_STACK_IDX = %d\n", TDI_STACK_IDX);
   int status = TdiEvaluate(ptr, &xd MDS_END_ARG);
   --TDI_STACK_IDX;
-  DBG("TDI_STACK_IDX = %d\n", TDI_STACK_IDX);
+  MDSDBG("TDI_STACK_IDX = %d\n", TDI_STACK_IDX);
 
   /*******************
   Copy it to our zone.

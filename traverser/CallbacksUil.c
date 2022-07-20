@@ -415,7 +415,7 @@ static ListTreeItem *insert_item(Widget tree, ListTreeItem *parent, int nid)
     int parent_nid = get_nid(parent);
     char *name = get_node_name(parent_nid);
     status = TreeGetDefaultNid(&def_nid);
-    if ((status & 1) && (parent_nid == def_nid))
+    if ((STATUS_OK) && (parent_nid == def_nid))
     {
       char *tmp = malloc(strlen(name) + 3 + 3 + 1);
       strcpy(tmp, "<<<");
@@ -531,7 +531,7 @@ static void set_default(Widget w, ListTreeItem *item)
     ListTreeRenameItem(tree, default_item, name);
   }
   status = TreeSetDefaultNid(nid);
-  if (status & 1)
+  if (STATUS_OK)
   {
     char *name = get_node_name(nid);
     char *new_name = malloc(strlen(name) + 3 + 3 + 1);
@@ -560,7 +560,7 @@ static void Init(Widget tree)
     item = add_item(tree, NULL, 0); /* add the top with no parent */
     default_item = 0;
     status = TreeGetDefaultNid(&nid);
-    if (status & 1)
+    if (STATUS_OK)
     {
       item = Open(tree, nid);
       set_default(tree, item);
@@ -621,7 +621,7 @@ static void CommandLineOpen(Display *display __attribute__((unused)),
       }
       else
         status = TreeOpen(options.tree, options.shot, options.read_only);
-      if (status & 1)
+      if (STATUS_OK)
         Init(tree);
     }
   }
@@ -796,12 +796,12 @@ static void TCLOutput(char *text)
 static void InitializeCommandInterface(Widget w)
 {
   int status = mdsdcl_do_command("set command tcl");
-  if (status & 1)
+  if (STATUS_OK)
   {
     int (*set_callbacks)() = NULL;
     status =
         LibFindImageSymbol_C("tcl_commands", "TclSetCallbacks", &set_callbacks);
-    if (status & 1)
+    if (STATUS_OK)
       status = set_callbacks(TCLOutput, TCLOutput, NodeTouched);
   }
   toplevel = BxFindTopShell(w);
@@ -1035,7 +1035,7 @@ void DeleteNodeNow(Widget w, XtPointer client_data __attribute__((unused)),
   TreeDeleteNodeExecute();
 
   status = TreeGetDefaultNid(&def_nid);
-  if ((status & 1) == 0)
+  if ((STATUS_OK) == 0)
     def_nid = 0;
   for (i = 0; i < NUM_TO_DELETE; i++)
   {
@@ -1113,7 +1113,7 @@ void DeleteNode(Widget w, XtPointer client_data __attribute__((unused)),
 void RenameNodeNow(Widget w, XtPointer client_data,
                    XtPointer call_data __attribute__((unused)))
 {
-  int nid = (int)((char *)client_data - (char *)0);
+  int nid = (int)(intptr_t)client_data;
   Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
   Widget tw = XtNameToWidget(w, "*.new_name");
   char *new_name = (char *)XmTextFieldGetString(tw);
@@ -1121,7 +1121,7 @@ void RenameNodeNow(Widget w, XtPointer client_data,
   int status;
   parent = parent_nid(nid);
   status = TreeRenameNode(nid, new_name);
-  if (status & 1)
+  if (STATUS_OK)
   {
     int new_parent = parent_nid(nid);
     if (new_parent != parent)
@@ -1166,7 +1166,7 @@ void RenameNode(Widget w, XtPointer client_data __attribute__((unused)),
       };
       Widget qdlog;
       Widget widg;
-      ok_callback_list[0].closure = (char *)0 + nid;
+      ok_callback_list[0].closure = (void *)(intptr_t)nid;
       qargs[0].value =
           (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
       qargs[1].value =
@@ -1392,7 +1392,7 @@ void CloseTree(Widget w, XtPointer client_data __attribute__((unused)),
   {
     int status = TreeClose(NULL, 0);
     ListTreeRefreshOff(tree);
-    if ((status & 1) && (top != NULL))
+    if ((STATUS_OK) && (top != NULL))
       ListTreeDelete(tree, top);
     Init(tree);
     ListTreeRefreshOn(tree);
@@ -1412,12 +1412,12 @@ void WriteTree(Widget w, XtPointer client_data,
   }
   else
     status = TreeQuitTree(0, 0);
-  if (status & 1)
+  if (STATUS_OK)
   {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
     ListTreeRefreshOff(tree);
-    if ((status & 1) && (top != NULL))
+    if ((STATUS_OK) && (top != NULL))
       ListTreeDelete(tree, top);
     Init(tree);
     ListTreeRefreshOn(tree);
@@ -1452,7 +1452,7 @@ void CreateTree(Widget w, XtPointer client_data __attribute__((unused)),
   status = TreeOpenNew(treeid->tree, treeid->shot);
   free(treeid->tree);
   free(treeid);
-  if (status & 1)
+  if (STATUS_OK)
   {
     Widget tree = TREE;
     ListTreeItem *top = ListTreeFirstItem(tree);
@@ -1479,7 +1479,7 @@ void open_tree(Widget w, char *tree, int shot)
     Widget r_o = XtNameToWidget(BxFindTopShell(w), "*.r_o_toggle");
     status = TreeOpen(tree, shot, XmToggleButtonGetState(r_o));
   }
-  if (status & 1)
+  if (STATUS_OK)
   {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
@@ -1609,7 +1609,7 @@ Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage,
       notify_on = FALSE;
       status = TreeAddConglom(full_path, device_type, &new_nid);
       notify_on = TRUE;
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
         XmdsComplain(BxFindTopShell(w), "Error adding device");
     }
     else
@@ -1619,15 +1619,15 @@ Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage,
   else
   {
     status = TreeAddNode(full_path, &new_nid, usage);
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       XmdsComplain(BxFindTopShell(w), "Error adding node");
   }
-  if (status & 1)
+  if (STATUS_OK)
   {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     *itm = insert_item(tree, parent, new_nid);
   }
-  return status & 1;
+  return STATUS_OK;
 }
 
 void add_tags(ListTreeItem *itm __attribute__((unused)),
@@ -1802,7 +1802,7 @@ static Boolean TagsApply(Widget w, int nid)
     if (tag_txt)
     {
       status = TreeAddTag(nid, tag_txt);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         retstatus = status;
         XmdsComplain(toplevel, "Error Adding tag\n%s", tag_txt);

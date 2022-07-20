@@ -1,94 +1,14 @@
 #define _TCP
-DEFINE_INITIALIZESOCKETS;
-#ifdef _WIN32
-static void socketerror()
-{
-  int err;
-  switch (err = WSAGetLastError())
-  {
-  case 0:
-    perror("");
-    break;
-  case WSANOTINITIALISED:
-    fprintf(stderr, "WSANOTINITIALISED\n");
-    break;
-  case WSAENETDOWN:
-    fprintf(stderr, "WSAENETDOWN\n");
-    break;
-  case WSAEADDRINUSE:
-    fprintf(stderr, "WSAEADDRINUSE\n");
-    break;
-  case WSAEINTR:
-    fprintf(stderr, "WSAEINTR\n");
-    break;
-  case WSAENOTCONN:
-    fprintf(stderr, "WSAENOTCONN\n");
-    break;
-  case WSAEINPROGRESS:
-    fprintf(stderr, "WSAEINPROGRESS\n");
-    break;
-  case WSAEALREADY:
-    fprintf(stderr, "WSAEALREADY\n");
-    break;
-  case WSAEADDRNOTAVAIL:
-    fprintf(stderr, "WSAEADDRNOTAVAIL\n");
-    break;
-  case WSAEAFNOSUPPORT:
-    fprintf(stderr, "WSAEAFNOSUPPORT\n");
-    break;
-  case WSAECONNREFUSED:
-    fprintf(stderr, "WSAECONNREFUSED\n");
-    break;
-  case WSAENOPROTOOPT:
-    fprintf(stderr, "WSAENOPROTOOPT\n");
-    break;
-  case WSAEFAULT:
-    fprintf(stderr, "WSAEFAULT\n");
-    break;
-  case WSAENOTSOCK:
-    fprintf(stderr, "WSAENOTSOCK\n");
-    break;
-  case WSAESHUTDOWN:
-    fprintf(stderr, "WSAESHUTDOWN\n");
-    break;
-  case WSAEHOSTUNREACH:
-    fprintf(stderr, "WSAEHOSTUNREACH\n");
-    break;
-  case WSAEACCES:
-    fprintf(stderr, "WSAEACCES\n");
-    break;
-  default:
-    fprintf(stderr, "WSA %d\n", err);
-  }
-}
-#define PERROR(...)               \
-  do                              \
-  {                               \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, ": ");        \
-    socketerror();                \
-  } while (0)
-#else
-#define PERROR(...)               \
-  do                              \
-  {                               \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, ": ");        \
-    perror("");                   \
-  } while (0)
-#include <netinet/tcp.h>
-#endif
 #define SOCKLEN_T socklen_t
 #define GETPEERNAME getpeername
 #define SEND send
 #define RECV recv
 // active select file descriptor
-static fd_set fdactive;
 static int io_flush(Connection *c);
 #include "ioroutinesx.h"
-////////////////////////////////////////////////////////////////////////////////
-//  CONNECT  ///////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+
+// CONNECT //
+
 ///
 /// set socket options on the socket s for TCP protocol. This sets the receive
 /// buffer, the send buffer, the SO_OOBINLINE, the SO_KEEPALIVE and TCP_NODELAY
@@ -97,7 +17,7 @@ static int io_flush(Connection *c);
 /// \param s socket to set options to
 /// \param reuse set SO_REUSEADDR to be able to reuse the same address.
 ///
-static void SetSocketOptions(SOCKET s, int reuse)
+static void set_socket_options(SOCKET s, int reuse)
 {
   int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
   int one = 1;
@@ -118,26 +38,153 @@ static void SetSocketOptions(SOCKET s, int reuse)
   setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *)&one, sizeof(one));
 }
 
+static int io_check(Connection *c)
+{
+  SOCKET sock = getSocket(c);
+  ssize_t err = -1;
+  if (sock != INVALID_SOCKET)
+  {
+    PushSocket(sock);
+    MSG_NOSIGNAL_ALT_PUSH();
+    struct timeval timeout = {0, 0};
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sock, &readfds);
+    err = select(sock + 1, &readfds, NULL, NULL, &timeout);
+    switch (err)
+    {
+    case -1:
+      break; // Error
+    case 0:
+      break; // Timeout
+    default:
+    { // for select this will be 1
+      char bptr[1];
+      err = RECV(sock, bptr, 1, MSG_NOSIGNAL | MSG_PEEK);
+      err = (err == 1) ? 0 : -1;
+      break;
+    }
+    }
+    MSG_NOSIGNAL_ALT_POP();
+    PopSocket(sock);
+  }
+  return (int)err;
+}
+
 /* io_connect()
  * interruptable connect implementation with optional timeout
  * _WIN32 requires hack to break out of select():
  *   create a self connected DGRAM socket and close it on SIGINT
  */
-#ifdef _WIN32
-static SOCKET int_sock = INVALID_SOCKET;
-static void *old_handler;
+#ifdef WIN32
+pthread_mutex_t int_mutex = PTHREAD_MUTEX_INITIALIZER;
+static SOCKET int_socket = INVALID_SOCKET;
+static uint32_t int_parallel = 0;
+static void *int_handler;
 static void int_select(int signo)
 {
-  signal(signo, old_handler);
+  signal(signo, int_handler);
+  pthread_mutex_lock(&int_mutex);
+  if (int_socket != INVALID_SOCKET)
+  {
+    closesocket(int_socket);
+    int_socket = INVALID_SOCKET;
+  }
+  pthread_mutex_unlock(&int_mutex);
   raise(signo);
-  if (int_sock != INVALID_SOCKET)
-    close(int_sock);
 }
+/// ends with int_socket set up and handler installed
+static int int_setup()
+{
+  int sock;
+  pthread_mutex_lock(&int_mutex);
+  if (int_socket == INVALID_SOCKET)
+  {
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = INADDR_LOOPBACK;
+    int len = sizeof(addr);
+    int_socket = socket(AF_INET, SOCK_STREAM, 0);
+    bind(int_socket, (struct sockaddr *)&addr, len);
+    getsockname(int_socket, (struct sockaddr *)&addr, &len);
+    connect(int_socket, (struct sockaddr *)&addr, len);
+    int_handler = signal(SIGINT, int_select);
+  }
+  else if (int_parallel == 0)
+  {
+    int_handler = signal(SIGINT, int_select);
+  }
+  int_parallel++;
+  sock = int_socket;
+  pthread_mutex_unlock(&int_mutex);
+  return sock;
+}
+static void int_cleanup(void *null)
+{
+  (void)null;
+  pthread_mutex_lock(&int_mutex);
+  int_parallel--;
+  if (int_parallel == 0)
+  {
+    signal(SIGINT, int_handler);
+    int_handler = NULL;
+  }
+  pthread_mutex_unlock(&int_mutex);
+}
+
+int interruptable_select(int nfds, fd_set *restrict readfds,
+                         fd_set *restrict writefds, fd_set *restrict exceptfds,
+                         struct timeval *restrict timeout)
+{
+  int err, lerrno;
+  static fd_set rd;
+  int sock = int_setup();
+  pthread_cleanup_push(int_cleanup, NULL);
+  if (!readfds)
+  {
+    FD_ZERO(&rd);
+    readfds = &rd;
+  }
+  FD_SET(sock, readfds);
+  if (sock >= nfds)
+    nfds = sock + 1;
+  err = select(nfds, readfds, writefds, exceptfds, timeout);
+  lerrno = errno;
+  if (FD_ISSET(sock, readfds))
+  {
+    FD_CLR(sock, readfds);
+    if (err > 0)
+    {
+      lerrno = EINTR;
+      err = -1;
+    }
+  }
+  pthread_cleanup_pop(1);
+  errno = lerrno;
+  return err;
+}
+#define IS_EINPROGRESS (WSAGetLastError() == WSAEWOULDBLOCK)
+#define socket_set_nonblocking(sock) ({u_long ul = TRUE;  ioctlsocket(sock, FIONBIO, &ul); })
+#define socket_set_blocking(sock) ({u_long ul = FALSE; ioctlsocket(sock, FIONBIO, &ul); })
+#else
+#define IS_EINPROGRESS (errno == EINPROGRESS)
+#define interruptable_select select
+#define socket_set_nonblocking(sock) fcntl(sock, F_SETFL, O_NONBLOCK)
+#define socket_set_blocking(sock) fcntl(sock, F_SETFL, 0)
 #endif
+
+static inline long get_timeout_sec()
+{
+  const char *timeout = getenv("MDSIP_CONNECT_TIMEOUT");
+  if (timeout)
+    return strtol(timeout, NULL, 0);
+  return 10;
+}
+
 static int io_connect(Connection *c, char *protocol __attribute__((unused)),
                       char *host)
 {
-  struct SOCKADDR_IN sin;
+  struct sockaddr sin;
   SOCKET sock;
   if (IS_NOT_OK(GetHostAndPort(host, &sin)))
   {
@@ -148,112 +195,54 @@ static int io_connect(Connection *c, char *protocol __attribute__((unused)),
   sock = socket(AF_T, SOCK_STREAM, 0);
   if (sock == INVALID_SOCKET)
   {
-    PERROR("Error creating socket");
+    print_socket_error("Error creating socket");
     return C_ERROR;
   }
-  struct timeval connectTimer = {0, 0};
-  connectTimer.tv_sec = GetMdsConnectTimeout();
-  int err;
-#ifdef _WIN32
-  struct timeval *timeout = connectTimer.tv_sec > 0 ? &connectTimer : NULL;
-  u_long ul = TRUE;
-  struct sockaddr_in addr;
-  addr.sin_family = AF_INET;
-  addr.sin_port = 0;
-  addr.sin_addr.s_addr = INADDR_LOOPBACK;
-  int len = sizeof(addr);
-  int_sock = socket(AF_INET, SOCK_DGRAM, 0);
-  bind(int_sock, (struct sockaddr *)&addr, len);
-  getsockname(int_sock, (struct sockaddr *)&addr, &len);
-  connect(int_sock, (struct sockaddr *)&addr, len);
-  SOCKET maxsock = sock > int_sock ? sock + 1 : int_sock + 1;
-  err = ioctlsocket(sock, FIONBIO, &ul);
-  if (err == 0)
-    err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
-  if ((err == -1) && (WSAGetLastError() == WSAEWOULDBLOCK))
+  struct timeval connectTimer = {.tv_sec = get_timeout_sec(), .tv_usec = 0};
+  socket_set_nonblocking(sock);
+  int err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
+  if (err == -1)
   {
-    fd_set rdfds, wrfds;
-    FD_ZERO(&wrfds);
-    FD_ZERO(&rdfds);
-    FD_SET(sock, &wrfds);
-    FD_SET(int_sock, &rdfds);
-    old_handler = signal(SIGINT, int_select);
-    err = select(maxsock, &rdfds, &wrfds, NULL, timeout);
-    signal(SIGINT, old_handler);
-    if (err < 1)
-    {
-      if (err < 0)
-        PERROR("Error in connect");
-      else
-        fprintf(stderr, "Error in connect: timeout ?!\n");
-      close(int_sock);
-      goto error;
-    }
-    if (FD_ISSET(int_sock, &rdfds))
-    {
-      errno = EINTR;
-      perror("Error in connect");
-      goto error;
-    }
-    close(int_sock);
-    socklen_t len = sizeof(err);
-    getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
-  }
-  ul = FALSE;
-  ioctlsocket(sock, FIONBIO, &ul);
-#else  // _WIN32
-  if (connectTimer.tv_sec)
-  {
-    err = fcntl(sock, F_SETFL, O_NONBLOCK);
-    if (err == 0)
-      err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
-    if ((err == -1) && (errno == EINPROGRESS))
+    if (IS_EINPROGRESS)
     {
       fd_set writefds;
       FD_ZERO(&writefds);
       FD_SET(sock, &writefds);
-      sigset_t sigmask, origmask;
-      sigemptyset(&sigmask);
-      pthread_sigmask(SIG_SETMASK, &sigmask, &origmask);
       err = select(sock + 1, NULL, &writefds, NULL, &connectTimer);
-      pthread_sigmask(SIG_SETMASK, &origmask, NULL);
       if (err < 1)
       {
         if (err == 0)
           fprintf(stderr, "Error in connect: timeout\n");
         else
           perror("Error in connect");
-        goto error;
       }
-      socklen_t len = sizeof(err);
-      getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
+      else
+      {
+        socklen_t len = sizeof(err);
+        getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
+        if (err)
+          print_socket_error("Error in connect to service");
+        else
+          socket_set_blocking(sock);
+      }
     }
-    if (err != -1)
-      fcntl(sock, F_SETFL, 0);
   }
-  else
-    err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
-#endif // !_WIN32
   if (err == -1)
   {
-    PERROR("Error in connect to service");
-  error:;
     shutdown(sock, SHUT_RDWR);
-    close(sock);
+    closesocket(sock);
     return C_ERROR;
   }
-  SetSocketOptions(sock, 0);
-  SetConnectionInfoC(c, PROT, sock, NULL, 0);
+  set_socket_options(sock, 0);
+  ConnectionSetInfo(c, PROT, sock, NULL, 0);
   return C_OK;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  FLUSH  /////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+// FLUSH //
 
 static int io_flush(Connection *c)
 {
-#if !defined(__sparc__)
+#ifndef __sparc__
   SOCKET sock = getSocket(c);
   if (sock != INVALID_SOCKET)
   {
@@ -265,9 +254,11 @@ static int io_flush(Connection *c)
     fd_set readfds, writefds;
     FD_ZERO(&readfds);
     FD_SET(sock, &readfds);
+    // why write? is this how it detects a disconnection?
     FD_ZERO(&writefds);
     FD_SET(sock, &writefds);
-    while (((((err = select(sock + 1, &readfds, &writefds, 0, &timout)) > 0) &&
+    MSG_NOSIGNAL_ALT_PUSH();
+    while (((((err = select(sock + 1, &readfds, NULL, NULL, &timout)) > 0) &&
              FD_ISSET(sock, &readfds)) ||
             (err == -1 && errno == EINTR)) &&
            tries < 10)
@@ -275,7 +266,7 @@ static int io_flush(Connection *c)
       tries++;
       if (FD_ISSET(sock, &readfds))
       {
-        err = ioctl(sock, FIONREAD, &nbytes);
+        err = ioctlsocket(sock, FIONREAD, &nbytes);
         if (nbytes > 0 && err != -1)
         {
           nbytes = recv(sock, buffer,
@@ -292,38 +283,92 @@ static int io_flush(Connection *c)
       timout.tv_usec = 100000;
       FD_CLR(sock, &writefds);
     }
+    MSG_NOSIGNAL_ALT_POP();
   }
 #endif
   return C_OK;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//  LISTEN  ////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+// LISTEN //
 
-static short getPort(char *name)
+static uint16_t get_nport(char *name)
 {
-  short port;
-  struct servent *sp;
-  port = htons((short)strtol(name, NULL, 0));
-  if (port == 0)
+  int port = strtol(name, NULL, 0);
+  if (port && port <= 0xFFFF)
+    return htons((uint16_t)port);
+  struct servent *sp = getservbyname(name, "tcp");
+  if (!sp)
   {
-    sp = getservbyname(name, "tcp");
-    if (!sp)
+    if (errno)
     {
-      if (errno)
-      {
-        fprintf(stderr, "Error: unknown service port %s/%s; %s\n", name, PROT,
-                strerror(errno));
-        exit(0);
-      }
-      fprintf(stderr, "Error: unknown service port %s/%s; default to 8000\n",
-              name, PROT);
-      return 8000;
+      fprintf(stderr, "Error: unknown service port %s/%s; %s\n", name, PROT,
+              strerror(errno));
+      return 0;
     }
-    port = sp->s_port;
+    fprintf(stderr, "Error: unknown service port %s/%s; default to 8000\n",
+            name, PROT);
+    return htons(8000);
   }
-  return port;
+  return sp->s_port;
+}
+
+static inline void listen_loop(SOCKET ssock, int *go)
+{
+  pthread_cleanup_push(destroyClientList, NULL);
+  struct timeval readto, timeout = {1, 0};
+  fd_set readfds;
+  FD_ZERO(&readfds);
+  while (go)
+  {
+    readto = timeout;
+    FD_SET(ssock, &readfds);
+    int num = select(FD_SETSIZE, &readfds, NULL, NULL, &readto);
+    MDSDBG("io_listen: select = %d.", num);
+    if (num == 0)
+    {
+      continue; // timeout
+    }
+    else if (num > 0)
+    { // read ready from socket list
+      if (FD_ISSET(ssock, &readfds))
+      {
+        struct sockaddr sin;
+        socklen_t len = sizeof(sin);
+        int id = -1;
+        char *username;
+        // ACCEPT new connection and register new socket
+        SOCKET sock = accept(ssock, (struct sockaddr *)&sin, &len);
+        if (sock == INVALID_SOCKET)
+          print_socket_error("Error accepting socket");
+        else
+          set_socket_options(sock, 0);
+        if (IS_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)))
+        {
+          // add client to client list //
+          Client *client = calloc(1, sizeof(Client));
+          client->connection = PopConnection(id);
+          client->sock = sock;
+          client->username = username;
+          client->iphost = getHostInfo(sock, &client->host);
+          if (sin.sa_family == AF_INET)
+          {
+            client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
+          }
+          dispatch_client(client);
+        }
+      }
+    }
+    else if (errno == EINTR)
+    {
+      continue;
+    }
+    else
+    {
+      print_socket_error("Error in server select, shutting down");
+      break;
+    }
+  } // end LISTEN LOOP //
+  pthread_cleanup_pop(1);
 }
 
 static int io_listen(int argc, char **argv)
@@ -350,150 +395,49 @@ static int io_listen(int argc, char **argv)
   else if (GetPortname() == 0)
     SetPortname("mdsip");
   INITIALIZESOCKETS;
+  uint16_t nport = get_nport(GetPortname());
+  if (nport == 0)
+    return C_ERROR;
   if (!GetMulti())
     return run_server_mode(&options[1]);
   /// MULTIPLE CONNECTION MODE              ///
   /// multiple connections with own context ///
   char *matchString[] = {"multi"};
   if (CheckClient(0, 1, matchString) == ACCESS_DENIED)
-#ifdef _WIN32
+  {
+#ifdef WIN32
     // cannot change user on Windows
     fprintf(stderr, "WARNING: 'multi' user found hostfile but Windows cannot "
                     "change user.\n");
 #else
-    exit(EX_NOPERM);
+    errno = EX_NOPERM;
+    return C_ERROR;
 #endif
-  // SOCKET //
-  /* Create the socket and set it up to accept connections. */
+  }
+  // Create the socket and set it up to accept connections.
   SOCKET ssock = socket(AF_T, SOCK_STREAM, 0);
   if (ssock == INVALID_SOCKET)
   {
-    PERROR("Error getting Connection Socket");
-    exit(EXIT_FAILURE);
+    print_socket_error("Error getting Connection Socket");
+    return C_ERROR;
   }
-  FD_ZERO(&fdactive);
-  FD_SET(ssock, &fdactive);
-  // OPTIONS //
-  SetSocketOptions(ssock, 1);
-  // BIND //
-  unsigned short port = getPort(GetPortname());
+  set_socket_options(ssock, 1);
   struct SOCKADDR_IN sin;
   memset(&sin, 0, sizeof(sin));
-  sin.SIN_PORT = port;
   sin.SIN_FAMILY = AF_T;
-  sin.SIN_ADDR = _INADDR_ANY;
+  sin.SIN_PORT = nport;
   if (bind(ssock, (struct sockaddr *)&sin, sizeof(sin)) < 0)
   {
-    PERROR("Error binding to service (tcp_listen)");
-    exit(EXIT_FAILURE);
+    print_socket_error("Error binding to service (tcp_listen)");
+    return C_ERROR;
   }
   // LISTEN //
   if (listen(ssock, 128) < 0)
   {
-    PERROR("Error from listen");
-    exit(EXIT_FAILURE);
+    print_socket_error("Error from listen");
+    return C_ERROR;
   }
-  // LISTEN LOOP ///////////////////////////////////////////////////////////
-  struct timeval readto, timeout = {1, 0};
-  int error_count = 0;
-  fd_set readfds;
-  for (;;)
-  {
-    readfds = fdactive;
-    readto = timeout;
-    int num = select(FD_SETSIZE, &readfds, NULL, NULL, &readto);
-    if (num == 0)
-      continue; // timeout
-    if (num > 0)
-    {
-      // read ready from socket list //
-      error_count = 0;
-      if (FD_ISSET(ssock, &readfds))
-      {
-        socklen_t len = sizeof(sin);
-        int id = -1;
-        char *username;
-        // ACCEPT new connection and register new socket //
-        SOCKET sock = accept(ssock, (struct sockaddr *)&sin, &len);
-        if (sock == INVALID_SOCKET)
-          PERROR("Error accepting socket");
-        else
-          SetSocketOptions(sock, 0);
-        if (IS_OK(AcceptConnection(PROT, PROT, sock, 0, 0, &id, &username)))
-        {
-          // add client to client list //
-          Client *client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
-          client->id = id;
-          client->sock = sock;
-          client->next = ClientList;
-          client->username = username;
-          client->addr = ((struct sockaddr_in *)&sin)->sin_addr.s_addr;
-          client->iphost = getHostInfo(sock, &client->host);
-          ClientList = client;
-          // add socket to active sockets //
-          FD_SET(sock, &fdactive);
-        }
-      }
-      // Process Clients in list searching for active sockets //
-      Client *c = ClientList;
-      while (c)
-      {
-        if (FD_ISSET(c->sock, &readfds))
-        {
-          // process active socket client //
-          MdsSetClientAddr(c->addr);
-          // DO MESSAGE ---> ProcessMessage() on client c //
-          DoMessage(c->id);
-          Client *c_chk;
-          for (c_chk = ClientList; c_chk && c_chk != c; c_chk = c_chk->next)
-            ;
-          if (c_chk)
-            FD_CLR(c->sock, &readfds);
-          c = ClientList;
-        }
-        else
-          c = c->next;
-      }
-    }
-    else if (errno == EINTR)
-    {
-      continue; // exit(EINTR);// signal interrupt; can be triggered by python
-                // os.system()
-    }
-    else
-    { // Select returned -1 error code
-      error_count++;
-      PERROR("error in main select");
-      fprintf(stderr, "Error count=%d\n", error_count);
-      fflush(stderr);
-      if (error_count > 100)
-      {
-        fprintf(stderr, "Error count exceeded, shutting down\n");
-        exit(EXIT_FAILURE);
-      }
-      else
-      {
-        Client *c;
-        FD_ZERO(&fdactive);
-        if (ssock != INVALID_SOCKET)
-          FD_SET(ssock, &fdactive);
-        for (c = ClientList; c; c = c->next)
-        {
-          struct SOCKADDR_IN sin;
-          socklen_t n = sizeof(sin);
-          LockAsts();
-          if (getpeername(c->sock, (struct sockaddr *)&sin, &n))
-          {
-            fprintf(stderr, "Removed disconnected client\n");
-            fflush(stderr);
-            CloseConnection(c->id);
-          }
-          else
-            FD_SET(c->sock, &fdactive);
-          UnlockAsts();
-        }
-      }
-    }
-  } // end LISTEN LOOP //
+  int run = 1;
+  listen_loop(ssock, &run);
   return C_ERROR;
 }

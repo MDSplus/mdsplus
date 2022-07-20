@@ -38,12 +38,13 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         jPanel4 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
+        deviceField8 = new DeviceField();
 
-        setDeviceProvider("scdevail.rfx.local:8100");
-        setDeviceTitle("NI6368 Synch Digital In");
-        setDeviceType("MARTE2_NI6368_SYNCH_DI");
+        setDeviceProvider("spilds.rfx.local:8100");
+        setDeviceTitle("NI6259 Synch Digital In");
+        setDeviceType("MARTE2_NI6259_SYNCH_DI");
         setHeight(200);
-        setWidth(600);
+        setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 1));
@@ -94,6 +95,12 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
         deviceField7.setOffsetNid(49);
         jPanel4.add(deviceField7);
 
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("Write CPU Mask: ");
+        deviceField8.setNumCols(8);
+        deviceField8.setOffsetNid(35);
+        jPanel4.add(deviceField8);
+
         jPanel1.add(jPanel4);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -109,6 +116,7 @@ public class MARTE2_NI6368_SYNCH_DISetup extends DeviceSetup {
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
+    private DeviceField deviceField8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

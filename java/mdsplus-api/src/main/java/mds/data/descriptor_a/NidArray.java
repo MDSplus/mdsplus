@@ -2,6 +2,7 @@ package mds.data.descriptor_a;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -33,7 +34,8 @@ public final class NidArray extends Descriptor_A<Nid>
 	public NidArray(final Nid... nids)
 	{
 		super(DTYPE.NID, NidArray.getByteBuffer(nids), nids.length);
-		this.setTree(nids[0].getTree());
+		if (nids.length > 0)
+			this.setTree(nids[0].getTree());
 	}
 
 	public NidArray(final TREE tree, final Int32Array nid_num)
@@ -68,7 +70,9 @@ public final class NidArray extends Descriptor_A<Nid>
 
 	@Override
 	protected final String getSuffix()
-	{ return ""; }
+	{
+		return "";
+	}
 
 	@Override
 	protected final Nid[] initArray(final int size)

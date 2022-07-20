@@ -20,8 +20,8 @@
 ./usr/local/mdsplus/python/MDSplus/tests/connection_case.py
 ./usr/local/mdsplus/python/MDSplus/tests/data_case.py
 ./usr/local/mdsplus/python/MDSplus/tests/dcl_case.py
-./usr/local/mdsplus/python/MDSplus/tests/devices_case.py
 ./usr/local/mdsplus/python/MDSplus/tests/devices/TestDevice.py
+./usr/local/mdsplus/python/MDSplus/tests/devices_case.py
 ./usr/local/mdsplus/python/MDSplus/tests/exception_case.py
 ./usr/local/mdsplus/python/MDSplus/tests/images/test.gif
 ./usr/local/mdsplus/python/MDSplus/tests/images/test.jpg

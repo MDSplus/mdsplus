@@ -23,51 +23,56 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import ctypes as _C
+import numpy as _N
+
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
-import ctypes as _C
-import numpy as _N
 
-_ver=_mimport('version')
-_dsc=_mimport('descriptor')
-_dat=_mimport('mdsdata')
-_tre=_mimport('tree')
-_exc=_mimport('mdsExceptions')
+_ver = _mimport('version')
+_dsc = _mimport('descriptor')
+_dat = _mimport('mdsdata')
+_tre = _mimport('tree')
+_exc = _mimport('mdsExceptions')
+
 
 class Compound(_dat.DataX):
     maxdesc = 255
     fields = tuple()
+
     def __dir__(self):
         """used for tab completion"""
-        return list(self.fields)+_ver.superdir(Compound,self)
+        return list(self.fields)+_ver.superdir(Compound, self)
 
-    def __init__(self,*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """MDSplus compound data."""
-        if len(args)==1 and args[0] is self: return
+        if len(args) == 1 and args[0] is self:
+            return
         if self.__class__ is Compound:
             raise TypeError("Cannot create instances of class Compound")
-        self._fields={}
+        self._fields = {}
         for idx in range(len(self.fields)):
-            self._fields[self.fields[idx]]=idx
-        self._argOffset=len(self.fields)
+            self._fields[self.fields[idx]] = idx
+        self._argOffset = len(self.fields)
         self.setDescs(args)
-        for k,v in kwargs:
+        for k, v in kwargs:
             if k in self.fields:
-                self.setDescAt(self._fields[k],v)
+                self.setDescAt(self._fields[k], v)
 
     @property
     def deref(self):
         for i in range(self.getNumDescs()):
             ans = self.getDescAt(i)
-            if isinstance(ans,(_dat.Data,_tre.TreeNode)):
-                self.setDescAt(i,ans.deref)
+            if isinstance(ans, (_dat.Data, _tre.TreeNode)):
+                self.setDescAt(i, ans.deref)
         return self
 
-    def __getattr__(self,name):
+    def __getattr__(self, name):
         if name == '_fields':
             return {}
         if name in self._fields:
@@ -78,18 +83,17 @@ class Compound(_dat.DataX):
             return getter
         elif name.startswith('set') and name[3:].lower() in self._fields:
             def setter(value):
-                self.__setattr__(name[3:].lower(),value)
+                self.__setattr__(name[3:].lower(), value)
             return setter
-        return super(Compound,self).__getattr__(name)
-        #raise AttributeError("No such attribute '%s' in %s"%(name,self.__class__.__name__))
+        return super(Compound, self).__getattr__(name)
 
-    def __setattr__(self,name,value):
+    def __setattr__(self, name, value):
         if name in self._fields:
-            self.setDescAt(self._fields[name],value)
+            self.setDescAt(self._fields[name], value)
         else:
-            super(Compound,self).__setattr__(name,value)
+            super(Compound, self).__setattr__(name, value)
 
-    def getArgumentAt(self,idx):
+    def getArgumentAt(self, idx):
         """Return argument at index idx (indexes start at 0)
         @rtype: Data,None
         """
@@ -99,65 +103,68 @@ class Compound(_dat.DataX):
         """Return arguments
         @rtype: Data,None
         """
-        return self.getDescAt(slice(self._argOffset,None))
+        return self.getDescAt(slice(self._argOffset, None))
 
-    def setArgumentAt(self,idx,value):
+    def setArgumentAt(self, idx, value):
         """Set argument at index idx (indexes start at 0)"""
         return self.setDescAt(self._argOffset+idx, value)
 
-    def setArguments(self,args):
+    def setArguments(self, args):
         """Set arguments
         @type args: tuple
         """
         self._descs = self._descs[:self._argOffset+len(args)]
-        return self.setDescAt(slice(self._argOffset,None),args)
+        return self.setDescAt(slice(self._argOffset, None), args)
 
     def removeTail(self):
-       """ removes tailing None args """
-       if len(self._descs) <= self._argOffset: return
-       for last in range(len(self._descs)-1,self._argOffset-1,-1):
-           if self._descs[last] is not None: break
-       if last < len(self._descs):
-           self._descs = self._descs[:last+1]
+        """ removes tailing None args """
+        if len(self._descs) <= self._argOffset:
+            return
+        for last in range(len(self._descs)-1, self._argOffset-1, -1):
+            if self._descs[last] is not None:
+                break
+        if last < len(self._descs):
+            self._descs = self._descs[:last+1]
 
-    def setDescs(self,args):
+    def setDescs(self, args):
         """Set descriptors
         @type args: tuple
         """
         self._descs = [_dat.Data(arg) for arg in args]
         self._setTree(*args)
-        while self.getNumDescs()<self._argOffset:
+        while self.getNumDescs() < self._argOffset:
             self._descs.append(None)
 
     @staticmethod
-    def _descriptorWithProps(value,dsc):
-        dsc.original=value
+    def _descriptorWithProps(value, dsc):
+        dsc.original = value
         if value._units is not None:
-            dunits=WithUnits(None,value._units).descriptor
-            dunits.dscptrs[0]=dsc.ptr_
-            dunits.array[0]  =dsc
-            dunits.tree=value.tree
+            dunits = WithUnits(None, value._units).descriptor
+            dunits.dscptrs[0] = dsc.ptr_
+            dunits.array[0] = dsc
+            dunits.tree = value.tree
             dsc = dunits
         if value._error is not None:
-            derror=WithError(None,value._error).descriptor
-            derror.dscptrs[0]=dsc.ptr_
-            derror.array[0]  =dsc
-            derror.tree=value.tree
+            derror = WithError(None, value._error).descriptor
+            derror.dscptrs[0] = dsc.ptr_
+            derror.array[0] = dsc
+            derror.tree = value.tree
             dsc = derror
         if value._help is not None or value._validation is not None:
-            dparam=Parameter(None,value._help,value._validation).descriptor
-            dparam.dscptrs[0]=dsc.ptr_
-            dparam.array[0]  =dsc
-            dparam.tree=value.tree
+            dparam = Parameter(None, value._help, value._validation).descriptor
+            dparam.dscptrs[0] = dsc.ptr_
+            dparam.array[0] = dsc
+            dparam.tree = value.tree
             dsc = dparam
         return dsc
 
     @property
     def _descriptor(self):
-        d=_dsc.Descriptor_r()
-        if hasattr(self,'opcode'):
+        d = _dsc.DescriptorR()
+        if hasattr(self, 'opcode'):
             d.length = 2
-            d.pointer= _C.cast(_C.pointer(_C.c_uint16(self.opcode)),_C.c_void_p)
+            d.pointer = _C.cast(_C.pointer(
+                _C.c_uint16(self.opcode)), _C.c_void_p)
         d.dtype = self.dtype_id
         d.ndesc = self.getNumDescs()
         # to store the refs of the descriptors to prevent premature gc
@@ -167,170 +174,208 @@ class Compound(_dat.DataX):
             if data is None:
                 d.dscptrs[idx] = None
             else:
-                if isinstance(data,_dsc.Descriptor):
+                if isinstance(data, _dsc.Descriptor):
                     d.array[idx] = data
                 else:
                     d.array[idx] = _dat.Data(data)._descriptor
                 d.dscptrs[idx] = d.array[idx].ptr_
-        return self._descriptorWithProps(self,d)
+        return self._descriptorWithProps(self, d)
 
     @classmethod
-    def fromDescriptor(cls,d):
-        args = [_dsc.pointerToObject(d.dscptrs[i],d.tree) for i in _ver.xrange(d.ndesc)]
-        ans=cls(*args)
-        if d.length>0:
+    def fromDescriptor(cls, d):
+        args = [_dsc.pointerToObject(d.dscptrs[i], d.tree)
+                for i in _ver.xrange(d.ndesc)]
+        ans = cls(*args)
+        if d.length > 0:
             if d.length == 1:
-                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint8))
+                opcptr = _C.cast(d.pointer, _C.POINTER(_C.c_uint8))
             elif d.length == 2:
-                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint16))
+                opcptr = _C.cast(d.pointer, _C.POINTER(_C.c_uint16))
             else:
-                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
+                opcptr = _C.cast(d.pointer, _C.POINTER(_C.c_uint32))
             ans.opcode = opcptr.contents.value
         return ans._setTree(d.tree)
 
-class Action(_dat.TreeRefX,Compound):
+
+class Action(_dat.TreeRefX, Compound):
     """
     An Action is used for describing an operation to be performed by an
     MDSplus action server. Actions are typically dispatched using the
     mdstcl DISPATCH command
     """
-    fields=('dispatch','task','errorLog','completionMessage','performance')
-    dtype_id=202
-_dsc.addDtypeToClass(Action)
+    fields = ('dispatch', 'task', 'errorLog',
+              'completionMessage', 'performance')
+    dtype_id = 202
 
-class Call(_dat.TreeRef,Compound):
+
+_dsc._add_dtype_to_class(Action)
+
+
+class Call(_dat.TreeRef, Compound):
     """
     A Call is used to call routines in shared libraries.
     """
-    fields=('image','routine')
-    dtype_id=212
-    def setRType(self,data):
-        if isinstance(data,_dat.Data) or (isinstance(data,type) and issubclass(data,_dat.Data)):
-            self.opcode=data.dtype_id
+    fields = ('image', 'routine')
+    dtype_id = 212
+
+    def setRType(self, data):
+        if isinstance(data, _dat.Data) or (isinstance(data, type) and issubclass(data, _dat.Data)):
+            self.opcode = data.dtype_id
         else:
             self.opcode = int(data)
         return self
-_dsc.addDtypeToClass(Call)
 
-class Conglom(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Call)
+
+
+class Conglom(_dat.TreeRefX, Compound):
     """A Conglom is used at the head of an MDSplus conglomerate. A conglomerate is a set of tree nodes used
     to define a device such as a piece of data acquisition hardware. A conglomerate is associated with some
     external code providing various methods which can be performed on the device. The Conglom class contains
     information used for locating the external code.
     """
-    fields=('image','model','name','qualifiers')
-    dtype_id=200
+    fields = ('image', 'model', 'name', 'qualifiers')
+    dtype_id = 200
 
     @property
     def __model_unique(self):
         model = str(self.model)
         hashval = self.name.data()
         if hashval is None:
-            return model,None
-        return model, '%s_%016x'%(model,hashval)
+            return model, None
+        return model, '%s_%016x' % (model, hashval)
 
-    def getDevice(self,*args,**kwargs):
-        if not self.image=='__python__':
+    def getDevice(self, *args, **kwargs):
+        if not self.image == '__python__':
             raise _exc.DevNOT_A_PYDEVICE
-        import imp,sys
-        model,unique = self.__model_unique
+        import imp
+        import sys
+        model, unique = self.__model_unique
         if unique is None:
             module = imp.new_module(model)
             qualifiers = self.qualifiers.data()
-            if isinstance(qualifiers,_ver.basestring):
+            if isinstance(qualifiers, _ver.basestring):
                 try:
                     if qualifiers.startswith("Device.PyDevice("):
-                        module.__dict__[model] = eval(compile(qualifiers,model,'eval'),{'Device':_tre.Device},module.__dict__)
-                    else:                        exec(compile(qualifiers,model,'exec'),{},module.__dict__)
-                except: pass
+                        module.__dict__[model] = eval(compile(qualifiers, model, 'eval'), {
+                                                      'Device': _tre.Device}, module.__dict__)
+                    else:
+                        exec(compile(qualifiers, model, 'exec'),
+                             {}, module.__dict__)
+                except:
+                    pass
         else:
             if unique in sys.modules:
                 module = sys.modules[unique]
             else:
                 module = imp.new_module(unique)
                 qualifiers = self.qualifiers.data()
-                if isinstance(qualifiers,_N.ndarray) and qualifiers.dtype == _N.uint8:
+                if isinstance(qualifiers, _N.ndarray) and qualifiers.dtype == _N.uint8:
                     qualifiers = qualifiers.tostring()
-                elif isinstance(qualifiers,_N.generic):
+                elif isinstance(qualifiers, _N.generic):
                     qualifiers = qualifiers.tolist()
-                    if isinstance(qualifiers,list):
-                        qualifiers = '\n'.join(qualifiers)  # treat as line-by-line
-                try:    exec(compile(qualifiers,model,'exec'),module.__dict__,module.__dict__)
-                except: pass
-                else:   sys.modules[unique] = module
+                    if isinstance(qualifiers, list):
+                        # treat as line-by-line
+                        qualifiers = '\n'.join(qualifiers)
+                try:
+                    exec(compile(qualifiers, model, 'exec'),
+                         module.__dict__, module.__dict__)
+                except:
+                    pass
+                else:
+                    sys.modules[unique] = module
         if model in module.__dict__:
             cls = module.__dict__[model]
         else:
             cls = _tre.Device.PyDevice(model)
-        if issubclass(cls,(_tre.Device,)):
-            return cls if len(args)+len(kwargs)==0 else cls(*args,**kwargs)
+        if issubclass(cls, (_tre.Device,)):
+            return cls if len(args)+len(kwargs) == 0 else cls(*args, **kwargs)
         raise _exc.DevPYDEVICE_NOT_FOUND
-_dsc.addDtypeToClass(Conglom)
 
-class Dependency(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Conglom)
+
+
+class Dependency(_dat.TreeRefX, Compound):
     """A Dependency object is used to describe action dependencies. This is a legacy class and may not be recognized by
     some dispatching systems
     """
-    fields=('arg1','arg2')
-    dtype_id=208
-_dsc.addDtypeToClass(Dependency)
+    fields = ('arg1', 'arg2')
+    dtype_id = 208
 
-class Dimension(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Dependency)
+
+
+class Dimension(_dat.TreeRefX, Compound):
     """A dimension object is used to describe a signal dimension, typically a time axis. It provides a compact description
     of the timing information of measurements recorded by devices such as transient recorders. It associates a Window
     object with an axis. The axis is generally a range with possibly no start or end but simply a delta. The Window
     object is then used to bracket the axis to resolve the appropriate timestamps.
     """
-    fields=('window','axis')
-    dtype_id=196
-_dsc.addDtypeToClass(Dimension)
+    fields = ('window', 'axis')
+    dtype_id = 196
 
-class Dispatch(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Dimension)
+
+
+class Dispatch(_dat.TreeRefX, Compound):
     """A Dispatch object is used to describe when an where an action should be dispatched to an MDSplus action server.
     """
-    fields=('ident','phase','when','completion')
-    dtype_id=203
+    fields = ('ident', 'phase', 'when', 'completion')
+    dtype_id = 203
 
-    def __init__(self,*args,**kwargs):
-        if len(args)==1 and args[0] is self: return
+    def __init__(self, *args, **kwargs):
+        if len(args) == 1 and args[0] is self:
+            return
         if 'type' in kwargs:
-            self.opcode=kwargs['type']
+            self.opcode = kwargs['type']
         else:
-            self.opcode=2
-        super(Dispatch,self).__init__(*args,**kwargs)
-_dsc.addDtypeToClass(Dispatch)
+            self.opcode = 2
+        super(Dispatch, self).__init__(*args, **kwargs)
 
-_TdiShr=_ver.load_library('TdiShr')
+
+_dsc._add_dtype_to_class(Dispatch)
+
+_TdiShr = _ver.load_library('TdiShr')
+
 
 class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
     is represented in as Function instance created by Function(opcode='ADD',args=(1,2))
     """
-    fields=tuple()
-    dtype_id=199
-    opcodeToClass={}
+    fields = tuple()
+    dtype_id = 199
+    opcodeToClass = {}
 
     @classmethod
-    def fromDescriptor(cls,d):
-        opc  = _C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
-        args = [_dsc.pointerToObject(d.dscptrs[i],d.tree) for i in _ver.xrange(d.ndesc)]
+    def fromDescriptor(cls, d):
+        opc = _C.cast(d.pointer, _C.POINTER(_C.c_uint16)).contents.value
+        args = [_dsc.pointerToObject(d.dscptrs[i], d.tree)
+                for i in _ver.xrange(d.ndesc)]
         return cls.opcodeToClass[opc](*args)
 
-    def __init__(self,*args):
+    def __init__(self, *args):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
         """
-        if len(args)==1 and args[0] is self: return
-        if len(args)>self.max_args or (self.max_args>0 and len(args)<self.min_args):
-            if self.max_args==0 or self.max_args==self.min_args:
-                raise TypeError("Requires %d input arguments for %s but %d given"%(self.max_args,self.__class__.__name__,len(args)))
+        if len(args) == 1 and args[0] is self:
+            return
+        if len(args) > self.max_args or (self.max_args > 0 and len(args) < self.min_args):
+            if self.max_args == 0 or self.max_args == self.min_args:
+                raise TypeError("Requires %d input arguments for %s but %d given" % (
+                    self.max_args, self.__class__.__name__, len(args)))
             else:
-                raise TypeError("Requires %d to %d input arguments for %s but %d given"%(self.min_args,self.max_args,self.__class__.__name__,len(args)))
-        super(Function,self).__init__(*args)
+                raise TypeError("Requires %d to %d input arguments for %s but %d given" % (
+                    self.min_args, self.max_args, self.__class__.__name__, len(args)))
+        super(Function, self).__init__(*args)
+
     @classmethod
     def name(cls):
         if cls.__name__.startswith('d'):
-            return '$%s'%cls.__name__[1:]
+            return '$%s' % cls.__name__[1:]
         return cls.__name__
 
     def evaluate(self):
@@ -338,92 +383,116 @@ class Function(Compound):
         nargs = len(dargs)
         argslist = (_C.c_void_p*nargs)()
         for i in _ver.xrange(nargs):
-            argslist[i] = _C.cast(_dat.Data.pointer(dargs[i]),_C.c_void_p)
-        xd = _dsc.Descriptor_xd()
-        if isinstance(self,_dat.TreeRef):
+            argslist[i] = _C.cast(_dat.Data.pointer(dargs[i]), _C.c_void_p)
+        xd = _dsc.DescriptorXD()
+        if isinstance(self, _dat.TreeRef):
             tree = self.tree
-            if isinstance(tree,_tre.Tree):
-                _exc.checkStatus(_TdiShr._TdiIntrinsic(tree.pctx,self.opcode,nargs,argslist,xd.ref))
+            if isinstance(tree, _tre.Tree):
+                _exc.checkStatus(_TdiShr._TdiIntrinsic(
+                    tree.pctx, self.opcode, nargs, argslist, xd.ref))
                 return xd._setTree(tree).value
-        _exc.checkStatus(_TdiShr. TdiIntrinsic(               self.opcode,nargs,argslist,xd.ref))
+        _exc.checkStatus(_TdiShr. TdiIntrinsic(
+            self.opcode, nargs, argslist, xd.ref))
         return xd.value
-_dsc.addDtypeToClass(Function)
 
-class Method(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Function)
+
+
+class Method(_dat.TreeRefX, Compound):
     """A Method object is used to describe an operation to be performed on an MDSplus conglomerate/device
     """
-    fields=('timeout','method','object')
-    dtype_id=207
-_dsc.addDtypeToClass(Method)
+    fields = ('timeout', 'method', 'object')
+    dtype_id = 207
 
-class Procedure(_dat.TreeRef,Compound):
+
+_dsc._add_dtype_to_class(Method)
+
+
+class Procedure(_dat.TreeRef, Compound):
     """A Procedure is a deprecated object
     """
-    fields=('timeout','language','procedure')
-    dtype_id=206
-_dsc.addDtypeToClass(Procedure)
+    fields = ('timeout', 'language', 'procedure')
+    dtype_id = 206
 
-class Program(_dat.TreeRef,Compound):
+
+_dsc._add_dtype_to_class(Procedure)
+
+
+class Program(_dat.TreeRef, Compound):
     """A Program is a deprecated object"""
-    fields=('timeout','program')
-    dtype_id=204
-_dsc.addDtypeToClass(Program)
+    fields = ('timeout', 'program')
+    dtype_id = 204
 
-class Range(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Program)
+
+
+class Range(_dat.TreeRefX, Compound):
     """A Range describes a ramp. When used as an axis in a Dimension object along with a Window object it can be
     used to describe a clock. In this context it is possible to have missing begin and ending values or even have the
     begin, ending, and delta fields specified as arrays to indicate a multi-speed clock.
     """
-    fields=('begin','ending','delta')
-    dtype_id=201
+    fields = ('begin', 'ending', 'delta')
+    dtype_id = 201
     @property
     def slice(self):
-        return slice(self.begin.data(),self.ending.data(),self.delta.data())
-_dsc.addDtypeToClass(Range)
+        return slice(self.begin.data(), self.ending.data(), self.delta.data())
 
-class Routine(_dat.TreeRef,Compound):
+
+_dsc._add_dtype_to_class(Range)
+
+
+class Routine(_dat.TreeRef, Compound):
     """A Routine is a deprecated object"""
-    fields=('timeout','image','routine')
-    dtype_id=205
-_dsc.addDtypeToClass(Routine)
+    fields = ('timeout', 'image', 'routine')
+    dtype_id = 205
 
-class Slope(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Routine)
+
+
+class Slope(_dat.TreeRefX, Compound):
     """A Slope is a deprecated object. You should use Range instead."""
-    fields=('slope','begin','end')
-    dtype_id=198
-    def slice(self):
-        return slice(self.begin.data(),self.end.data(),self.slope.data())
-_dsc.addDtypeToClass(Slope)
+    fields = ('slope', 'begin', 'end')
+    dtype_id = 198
 
-class Signal(_dat.TreeRefX,Compound):
+    def slice(self):
+        return slice(self.begin.data(), self.end.data(), self.slope.data())
+
+
+_dsc._add_dtype_to_class(Slope)
+
+
+class Signal(_dat.TreeRefX, Compound):
     """A Signal is used to describe a measurement, usually time dependent, and associated the data with its independent
     axis (Dimensions). When Signals are indexed using s[idx], the index is resolved using the dimension of the signal
     """
-    fields=('value','raw')
-    dtype_id=195
+    fields = ('value', 'raw')
+    dtype_id = 195
 
     @property
     def dims(self):
         """The dimensions of the signal"""
         return self.getArguments()
 
-    def dim_of(self,idx=0):
+    def dim_of(self, idx=0):
         """Return the signals dimension
         @rtype: Data
         """
         return self.getDimensionAt(idx)
 
-    def __getitem__(self,idx):
+    def __getitem__(self, idx):
         """Subscripting <==> signal[subscript]. Uses the dimension information for subscripting
         @param idx: index or Range used for subscripting the signal based on the signals dimensions
         @type idx: Data
         @rtype: Signal
         """
-        if isinstance(idx,slice):
-          idx = Range(idx.start,idx.stop,idx.step)
-        return _dat.Data.execute('$[$]',self,idx)
+        if isinstance(idx, slice):
+            idx = Range(idx.start, idx.stop, idx.step)
+        return _dat.Data.execute('$[$]', self, idx)
 
-    def getDimensionAt(self,idx=0):
+    def getDimensionAt(self, idx=0):
         """Return the dimension of the signal
         @param idx: The index of the desired dimension. Indexes start at 0. 0=default
         @type idx: int
@@ -437,44 +506,50 @@ class Signal(_dat.TreeRefX,Compound):
         """
         return self.getArguments()
 
-    def setDimensionAt(self,idx,value):
+    def setDimensionAt(self, idx, value):
         """Set the dimension
         @param idx: The index into the dimensions of the signal.
         @rtype: None
         """
-        return self.setArgumentAt(idx,value)
+        return self.setArgumentAt(idx, value)
 
-    def setDimensions(self,value):
+    def setDimensions(self, value):
         """Set all the dimensions of a signal
         @param value: The dimensions
         @type value: tuple
         @rtype: None
         """
         return self.setArguments(value)
-_dsc.addDtypeToClass(Signal)
 
-class Window(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Signal)
+
+
+class Window(_dat.TreeRefX, Compound):
     """A Window object can be used to construct a Dimension object. It brackets the axis information stored in the
     Dimension to construct the independent axis of a signal.
     """
-    fields=('startIdx','endIdx','timeAt0')
-    dtype_id=197
-_dsc.addDtypeToClass(Window)
+    fields = ('startIdx', 'endIdx', 'timeAt0')
+    dtype_id = 197
 
-class Opaque(_dat.TreeRefX,Compound):
+
+_dsc._add_dtype_to_class(Window)
+
+
+class Opaque(_dat.TreeRefX, Compound):
     """An Opaque object containing a binary uint8 array and a string identifying the type.
     """
-    fields=('value','otype')
-    dtype_id=217
-
+    fields = ('value', 'otype')
+    dtype_id = 217
 
     @property
     def value(self):
         "Data portion of Opaque object"
         return self.getDescAt(0)
+
     @value.setter
-    def value(self,value):
-        self.setDescAt(0,value)
+    def value(self, value):
+        self.setDescAt(0, value)
 
     @property
     def image(self):
@@ -482,8 +557,10 @@ class Opaque(_dat.TreeRefX,Compound):
         return self.getImage()
 
     def getImage(self):
-        try: from PIL import Image
-        except:       import Image
+        try:
+            from PIL import Image
+        except:
+            import Image
         if _ver.ispy3:
             from io import BytesIO as io
         else:
@@ -491,7 +568,7 @@ class Opaque(_dat.TreeRefX,Compound):
         return Image.open(io(self.value.data().tostring()))
 
     @classmethod
-    def fromFile(cls,filename,typestring=None):
+    def fromFile(cls, filename, typestring=None):
         """Read a file and return an Opaque object
         @param filename: Name of file to read in
         @type filename: str
@@ -502,35 +579,48 @@ class Opaque(_dat.TreeRefX,Compound):
         import os
         if typestring is None:
             fn, typestring = os.path.splitext(filename)
-        f = open(filename,'rb')
+        f = open(filename, 'rb')
         try:
-            opq=cls(_dat.Data(_N.fromstring(f.read(),dtype="uint8")),typestring)
+            opq = cls(_dat.Data(_N.fromstring(
+                f.read(), dtype="uint8")), typestring)
         finally:
             f.close()
         return opq
-_dsc.addDtypeToClass(Opaque)
+
+
+_dsc._add_dtype_to_class(Opaque)
+
 
 class WithCompound(Compound):
     def __str__(self): return str(self.__getattr__('data'))
     def __bytes__(self): return bytes(self.__getattr__('data'))
 
-class WithUnits(_dat.TreeRefX,WithCompound):
+
+class WithUnits(_dat.TreeRefX, WithCompound):
     """Specifies a units for any kind of data.
     """
-    fields=('data','units')
-    dtype_id=211
-_dsc.addDtypeToClass(WithUnits)
+    fields = ('data', 'units')
+    dtype_id = 211
 
-class WithError(_dat.TreeRefX,WithCompound):
+
+_dsc._add_dtype_to_class(WithUnits)
+
+
+class WithError(_dat.TreeRefX, WithCompound):
     """Specifies error information for any kind of data.
     """
-    fields=('data','error')
-    dtype_id=213
-_dsc.addDtypeToClass(WithError)
+    fields = ('data', 'error')
+    dtype_id = 213
 
-class Parameter(_dat.TreeRefX,WithCompound):
+
+_dsc._add_dtype_to_class(WithError)
+
+
+class Parameter(_dat.TreeRefX, WithCompound):
     """Specifies a help text and validation information for any kind of data.
     """
-    fields=('data','help','validation')
-    dtype_id=194
-_dsc.addDtypeToClass(Parameter)
+    fields = ('data', 'help', 'validation')
+    dtype_id = 194
+
+
+_dsc._add_dtype_to_class(Parameter)

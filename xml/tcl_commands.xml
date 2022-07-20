@@ -1113,7 +1113,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       [NO]ESSENTIAL         - make this node 'essential' for DISPATCH/CHECK
       LOG                   - log node changes
       STATUS=n              - Write a status value to a node (usually action nodes).
-      
+      COMPRESSION_METHOD={standard | gzip} - set the compression method for this node.
       All nodes in an MDSplus tree have a set of attributes, some are set automatically
       when data is stored, some are set when the nodes are first added to a tree and
       some are modifiable by this command. The options indicated with a '[NO]' prefix
@@ -1141,6 +1141,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <qualifier name="LOG"/>
     <qualifier name="ESSENTIAL"/>
     <qualifier name="STATUS" required="True"/>
+    <qualifier name="COMPRESSION_METHOD" nonnegatable="True" type="string"/>
   </syntax>
 
   <syntax name="set_server">

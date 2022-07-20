@@ -185,14 +185,18 @@ namespace MDSplus
     /// Friendship declaration for TDI expression compilation
     friend EXPORT Data *compile(const char *expr);
     friend EXPORT Data *compileWithArgs(const char *expr, int nArgs...);
+    friend EXPORT Data *compileWithArgs(const char *expr, Data **args, int nArgs);
     friend EXPORT Data *compile(const char *expr, Tree *tree);
     friend EXPORT Data *compileWithArgs(const char *expr, Tree *tree,
                                         int nArgs...);
+    friend EXPORT Data *compileWithArgs(const char *expr, Tree *tree, Data **args, int nArgs);
     friend EXPORT Data *execute(const char *expr);
     friend EXPORT Data *executeWithArgs(const char *expr, int nArgs...);
+    friend EXPORT Data *executeWithArgs(const char *expr, Data **args, int nArgs);
     friend EXPORT Data *execute(const char *expr, Tree *tree);
     friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree,
                                         int nArgs...);
+    friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree, Data **args, int nArgs);
     friend EXPORT Data *deserialize(char const *serialized);
     friend EXPORT Data *deserialize(Data *serialized);
     ///@}
@@ -2970,6 +2974,43 @@ namespace MDSplus
     void *operator new(size_t sz);
     void operator delete(void *p);
 
+    //From Data
+    virtual char getByte();
+    virtual short getShort();
+    virtual int getInt();
+    virtual int64_t getLong();
+    virtual unsigned char getByteUnsigned();
+    virtual unsigned short getShortUnsigned();
+    virtual unsigned int getIntUnsigned();
+    virtual uint64_t getLongUnsigned();
+    virtual float getFloat();
+    virtual double getDouble();
+    virtual std::complex<double> getComplex();
+    virtual char *getByteArray(int *numElements);
+    virtual std::vector<char> getByteArray();
+    virtual short *getShortArray(int *numElements);
+    virtual std::vector<short> getShortArray();
+    virtual int *getIntArray(int *numElements);
+    virtual std::vector<int> getIntArray();
+    virtual int64_t *getLongArray(int *numElements);
+    virtual std::vector<int64_t> getLongArray();
+    virtual float *getFloatArray(int *numElements);
+    virtual std::vector<float> getFloatArray();
+    virtual unsigned char *getByteUnsignedArray(int *numElements);
+    virtual std::vector<unsigned char> getByteUnsignedArray();
+    virtual unsigned short *getShortUnsignedArray(int *numElements);
+    virtual std::vector<unsigned short> getShortUnsignedArray();
+    virtual unsigned int *getIntUnsignedArray(int *numElements);
+    virtual std::vector<unsigned int> getIntUnsignedArray();
+    virtual uint64_t *getLongUnsignedArray(int *numElements);
+    virtual std::vector<uint64_t> getLongUnsignedArray();
+    virtual double *getDoubleArray(int *numElements);
+    virtual std::vector<double> getDoubleArray();
+    virtual std::complex<double> *getComplexArray(int *numElements
+                                                  __attribute__((unused)));
+    virtual std::vector<std::complex<double> > getComplexArray();
+    virtual char **getStringArray(int *numElements);
+    
     /// Get the associated tree instance
     virtual Tree *getTree() { return tree; }
 
@@ -3614,13 +3655,15 @@ namespace MDSplus
     // version
     virtual void makeSegmentResampled(Data *start, Data *end, Data *time,
                                       Array *initialData,
-                                      TreeNode *resampledNode)
+                                      TreeNode *resampledNode,
+                                      int resFactor = 100)
     {
       (void)start;
       (void)end;
       (void)initialData;
       (void)time;
       (void)resampledNode;
+      (void)resFactor;
       throw MdsException(
           "makeSegmentResampled() not supported for TreeNodeThinClient object");
     }
@@ -3887,18 +3930,34 @@ namespace MDSplus
   ///      0 - current shot
   ///     >1 - pulse files
   ///
+  struct TreeThreadContextInfo
+  {
+    public: 
+#ifdef _MSC_VER
+      DWORD tid;
+#else
+      pthread_t tid;
+#endif
+      void *ctx;
+  };
 
   class EXPORT Tree
   {
     friend void setActiveTree(Tree *tree);
     friend Tree *getActiveTree();
-
+    friend class TreeNode;
+    
   protected:
     std::string name;
     int shot;
-    void *ctx;
     bool fromActiveTree;
+    bool isEdit;
+    bool ronly;
+    
+    std::vector<TreeThreadContextInfo> threadContextV;
+    Mutex treeContextMutex;
 
+    
   public:
     /// Builds a new Tree object instance creating or attaching to the named
     /// tree. The tree name has to match the path envoronment variable
@@ -3933,8 +3992,11 @@ namespace MDSplus
     /// Get current shot number
     static int getCurrent(char const *treeName);
 
+    //Check context validity 
+    void checkContext();
+    
     /// Return current tree context (see treeshr library)
-    void *getCtx() { return ctx; }
+    void *getCtx(); 
 
     /// Reopen target tree in edit mode or in normal mode according to the
     /// value passed as argument. The default behavior is to reopen for edit.
@@ -4506,12 +4568,16 @@ namespace MDSplus
   EXPORT Data *deserialize(Data *serializedData);
   EXPORT Data *compile(const char *expr);
   EXPORT Data *compileWithArgs(const char *expr, int nArgs...);
+  EXPORT Data *compileWithArgs(const char *expr, Data **argsData, int nArgs);
   EXPORT Data *compile(const char *expr, Tree *tree);
   EXPORT Data *compileWithArgs(const char *expr, Tree *tree, int nArgs...);
+  EXPORT Data *compileWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs);
   EXPORT Data *execute(const char *expr);
   EXPORT Data *executeWithArgs(const char *expr, int nArgs...);
+  EXPORT Data *executeWithArgs(const char *expr, Data **argsData, int nArgs);
   EXPORT Data *execute(const char *expr, Tree *tree);
   EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs...);
+  EXPORT Data *executeWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs);
   // EXPORT Tree *getActiveTree();
   // EXPORT void setActiveTree(Tree *tree);
   // Required for handling dynamic memory allocated in a different DLL on windows

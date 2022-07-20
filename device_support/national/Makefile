@@ -15,7 +15,7 @@ CFLAGS_RELEASE := -fPIC  -O3
 LDFLAGS_RELEASE =
 
 CFLAGS =   -fPIC -O3 -I${MDSPLUS_DIR}/include -I${CODAC_ROOT}/include -std=c++11 
-LDFLAGS =  -fPIC -O0 -L${MDSPLUS_DIR}/lib -L${CODAC_ROOT}/lib/ -lm -lNiFpga -lpxi6259 -lnixseries -lpthread -lMdsObjectsCppShr 
+LDFLAGS =  -fPIC -O0 -L${MDSPLUS_DIR}/lib -L${CODAC_ROOT}/lib/ -lm -lNiFpga -lpxi6259 -lnixseries -lpthread -lMdsObjectsCppShr -ltcn
 
 # Debug builds (make debug)
 
@@ -29,7 +29,7 @@ SOURCES_EXE=generateWave.cpp probeTermControl.cpp startStopTermControl.cpp  writ
 BIN = $(patsubst %.cpp,%,$(SOURCES_EXE))
 
 
-all: libNiInterface $(EXE_PROGRAM) 
+all: libNiInterface $(EXE_PROGRAM) ni6683_info
 
 
 libNiInterface : $(OBJECTS)
@@ -41,6 +41,8 @@ libNiInterface : $(OBJECTS)
 $(BIN):	$(SOURCES_EXE)
 	$(CC) $(LDFLAGS) -L . -lNiInterface $(CFLAGS)  -o $@ $@.cpp
 
+ni6683_info : ni6683_info.c
+	$(CC) -L${CODAC_ROOT}/lib -lnisync $(CFLAGS)  -o $@ $@.c
 
 clean:
 	rm -f $(OBJECTS)

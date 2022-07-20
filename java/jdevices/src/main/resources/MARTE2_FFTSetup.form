@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdevail.rfx.local:8200"/>
+    <Property name="deviceProvider" type="java.lang.String" value="spilds:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 FFT GAM"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_FFT"/>
     <Property name="height" type="int" value="300"/>
@@ -131,7 +131,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase div:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="39"/>
+                <Property name="offsetNid" type="int" value="41"/>
               </Properties>
             </Component>
           </SubComponents>

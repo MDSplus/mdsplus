@@ -69,7 +69,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 +-----------------------------------------------------------------------------*/
 
-#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <stdlib.h>

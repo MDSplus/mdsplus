@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _USAGEDEF_H
+#define _USAGEDEF_H
 /*  USAGEDEF.H ************************************
 
 Node Usage definitions
@@ -28,3 +29,4 @@ TYPEDEF(1){TreeUSAGE_ANY = 0, TreeUSAGE_STRUCTURE = 1, TreeUSAGE_ACTION = 2,
 #undef TYPEDEF
 #undef ENDDEF
 #define TreeUSAGE_NONE TreeUSAGE_STRUCTURE
+#endif

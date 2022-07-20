@@ -1,25 +1,9 @@
 package mds.jtraverser.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
+import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import mds.MdsException;
@@ -36,7 +20,8 @@ public abstract class CheckBoxList extends JDialog
 	{
 		@Override
 		public void actionPerformed(final ActionEvent ce)
-		{/* stub */}
+		{
+			/* stub */}
 	}
 
 	public final class JCheckList extends JList<JCheckBox>
@@ -236,40 +221,42 @@ public abstract class CheckBoxList extends JDialog
 			{
 				this.checkboxes.clear();
 				this.checklist.readonly = true;
-				final TREE tree = this.treeview.getTree();
-				if (tree.getMds().isLowLatency())
-					synchronized (tree.getMds())
-					{
-						final int usage_mask = 1 << usage;
-						tree.holdDbid();
-						try
+				try (final TREE tree = this.treeview.getTree())
+				{
+					if (tree.getMds().isLowLatency())
+						synchronized (tree.getMds())
 						{
-							NodeRefStatus ref = NodeRefStatus.init;
-							while ((ref = tree.api.treeFindNodeWild(null, "***", usage_mask, ref)).ok())
+							final int usage_mask = 1 << usage;
+							tree.holdDbid();
+							try
 							{
-								final Nid nid = new Nid(ref.data, tree);
-								try
+								NodeRefStatus ref = NodeRefStatus.init;
+								while ((ref = tree.api.treeFindNodeWild(null, "***", usage_mask, ref)).ok())
 								{
-									this.addCheckBox(nid, nid.getNciFullPath());
-								}
-								catch (final MdsException e)
-								{
-									System.err.println(nid.decompile());
+									final Nid nid = new Nid(ref.data, tree);
+									try
+									{
+										this.addCheckBox(nid, nid.getNciFullPath());
+									}
+									catch (final MdsException e)
+									{
+										System.err.println(nid.decompile());
+									}
 								}
 							}
+							finally
+							{
+								tree.releaseDbid();
+							}
 						}
-						finally
-						{
-							tree.releaseDbid();
-						}
+					else
+					{
+						final Nid[] nid = tree.findNodesWild(usage);
+						final String[] fp = tree.getMds().getStringArray(tree.ctx, "GETNCI($,'FULLPATH')",
+								new NidArray(nid));
+						for (int i = 0; i < nid.length; i++)
+							this.addCheckBox(nid[i], fp[i]);
 					}
-				else
-				{
-					final Nid[] nid = tree.findNodesWild(usage);
-					final String[] fp = tree.getMds().getStringArray(tree.ctx, "GETNCI($,'FULLPATH')",
-							new NidArray(nid));
-					for (int i = 0; i < nid.length; i++)
-						this.addCheckBox(nid[i], fp[i]);
 				}
 			}
 			catch (final MdsException e)

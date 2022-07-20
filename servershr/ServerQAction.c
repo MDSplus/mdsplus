@@ -22,6 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <socket_port.h>
 #include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,17 +40,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef _WIN32
-#include <windows.h>
-#define MSG_DONTWAIT 0 // TODO: implement workaround usiing select
-#else
-typedef int SOCKET;
-#define INVALID_SOCKET -1
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
-#endif
 #include <sys/time.h>
+
+//#define DEBUG
+#include <mdsmsg.h>
 
 typedef struct _MonitorList
 {
@@ -72,8 +66,8 @@ extern int TdiExecute();
 extern int mdsdcl_do_command(char *command);
 extern int is_broken_socket(SOCKET sock);
 
-static int SendReply(SrvJob *job, int replyType, int status, int length,
-                     char *msg);
+static int send_reply(SrvJob *job, int replyType, int status, int length,
+                      char *msg);
 
 static int DoSrvCommand(SrvJob *job_in);
 static int DoSrvAction(SrvJob *job_in);
@@ -83,7 +77,7 @@ static void DoSrvMonitor(SrvJob *job_in);
 
 static void RemoveClient(SrvJob *job);
 extern uint32_t MdsGetClientAddr();
-extern char *MdsGetServerPortname();
+extern char *GetPortname();
 static ClientList *Clients = NULL;
 
 static MonitorList *Monitors = NULL;
@@ -115,14 +109,19 @@ static SrvJob *CurrentJob = NULL;
 static Condition_p JobQueueCond = CONDITION_INITIALIZER;
 #define JobQueue (JobQueueCond.value)
 
-static char *current_job_text = NULL;
-
-static int Logging = 1;
-static int Debug = 0;
-static int QueueLocked = 0;
-static int WorkerDied = 0;
-static int LeftWorkerLoop = 0;
-static int CondWStat = 0;
+static pthread_mutex_t STATIC_lock = PTHREAD_MUTEX_INITIALIZER;
+static char *STATIC_current_job_text = NULL;
+static int STATIC_Logging = 1;
+static int STATIC_Debug
+#ifdef DEBUG
+    = 1;
+#else
+    = 0;
+#endif
+static int STATIC_QueueLocked = 0;
+static int STATIC_WorkerDied = 0;
+static int STATIC_LeftWorkerLoop = 0;
+static int STATIC_CondWStat = 0;
 int ProgLoc = 0;
 
 EXPORT struct descriptor *ServerInfo()
@@ -138,15 +137,21 @@ EXPORT struct descriptor *ServerInfo()
 
 EXPORT int ServerDebug(int setting)
 {
-  int old = Debug;
-  Debug = setting;
+  int old;
+  pthread_mutex_lock(&STATIC_lock);
+  old = STATIC_Debug;
+  STATIC_Debug = setting;
+  pthread_mutex_unlock(&STATIC_lock);
   return old;
 }
+
 // main
-EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
+EXPORT int ServerQAction(uint32_t *addrp, uint16_t *portp, int *op, int *flags,
                          int *jobid, void *p1, void *p2, void *p3, void *p4,
                          void *p5, void *p6, void *p7, void *p8)
 {
+  uint32_t addr = addrp ? *addrp : MdsGetClientAddr();
+  MDSDBG(IPADDRPRI ":%d", IPADDRVAR(&addr), portp ? *portp : -1);
   int status = ServerINVALID_ACTION_OPERATION;
   switch (*op)
   {
@@ -180,97 +185,129 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   case SrvAction:
   {
     SrvActionJob job;
-    job.h.addr = addr ? *addr : MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.tree = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
+    job.tree = strdup((char *)p1);
     job.shot = *(int *)p2;
     job.nid = *(int *)p3;
     if (job.h.addr)
+    {
+      MDSDBG(SVRACTIONJOB_PRI, SVRACTIONJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      MDSWRN(SVRACTIONJOB_PRI " No Addr", SVRACTIONJOB_VAR(&job));
       status = DoSrvAction((SrvJob *)&job);
+    }
     break;
   }
   case SrvClose:
   {
     SrvCloseJob job;
-    job.h.addr = MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
     if (job.h.addr)
+    {
+      MDSDBG(SVRCLOSEJOB_PRI, SVRCLOSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      MDSWRN(SVRCLOSEJOB_PRI " No Addr", SVRCLOSEJOB_VAR(&job));
       status = DoSrvClose((SrvJob *)&job);
+    }
     break;
   }
   case SrvCreatePulse:
   {
     SrvCreatePulseJob job;
-    job.h.addr = MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.tree = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
+    job.tree = strdup((char *)p1);
     job.shot = *(int *)p2;
     if (job.h.addr)
+    {
+      MDSDBG(SVRCREATEPULSEJOB_PRI, SVRCREATEPULSEJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      MDSWRN(SVRCREATEPULSEJOB_PRI " No Addr", SVRCREATEPULSEJOB_VAR(&job));
       status = DoSrvCreatePulse((SrvJob *)&job);
+    }
     break;
   }
   case SrvSetLogging:
   {
-    Logging = *(int *)p1;
+    pthread_mutex_lock(&STATIC_lock);
+    STATIC_Logging = *(int *)p1;
+    pthread_mutex_unlock(&STATIC_lock);
     status = MDSplusSUCCESS;
     break;
   }
   case SrvCommand:
   {
     SrvCommandJob job;
-    job.h.addr = MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.table = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
-    job.command = strcpy(malloc(strlen((char *)p2) + 1), (char *)p2);
+    job.table = strdup((char *)p1);
+    job.command = strdup((char *)p2);
     if (job.h.addr)
+    {
+      MDSDBG(SVRCOMMANDJOB_PRI, SVRCOMMANDJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      MDSWRN(SVRCOMMANDJOB_PRI " No Addr", SVRCOMMANDJOB_VAR(&job));
       status = DoSrvCommand((SrvJob *)&job);
+    }
     break;
   }
   case SrvMonitor:
   {
     SrvMonitorJob job;
-    job.h.addr = MdsGetClientAddr();
-    job.h.port = *port;
+    job.h.addr = addr;
+    job.h.port = *portp;
     job.h.op = *op;
     job.h.length = sizeof(job);
     job.h.flags = *flags;
     job.h.jobid = *jobid;
-    job.tree = strcpy(malloc(strlen((char *)p1) + 1), (char *)p1);
+    job.tree = strdup((char *)p1);
     job.shot = *(int *)p2;
     job.phase = *(int *)p3;
     job.nid = *(int *)p4;
     job.on = *(int *)p5;
     job.mode = *(int *)p6;
-    job.server = strcpy(malloc(strlen((char *)p7) + 1), (char *)p7);
+    job.server = strdup((char *)p7);
     job.status = *(int *)p8;
     if (job.h.addr)
+    {
+      MDSDBG(SVRMONITORJOB_PRI, SVRMONITORJOB_VAR(&job));
       status = QJob((SrvJob *)&job);
+    }
     else
+    {
+      MDSWRN(SVRMONITORJOB_PRI " No Addr", SVRMONITORJOB_VAR(&job));
       status = MDSplusERROR;
+    }
     break;
   }
   case SrvShow:
@@ -289,18 +326,21 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags,
   }
   return status;
 }
+
 // main
 static void AbortJob(SrvJob *job)
 {
   if (job)
   {
-    SendReply(job, SrvJobFINISHED, ServerABORT, 0, 0);
+    send_reply(job, SrvJobFINISHED, ServerABORT, 0, 0);
     FreeJob(job);
   }
 }
+
 // main
 static int QJob(SrvJob *job)
 {
+  MDSDBG("Queued job %d for " IPADDRPRI ":%d", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
   SrvJob *qjob = (SrvJob *)memcpy(malloc(job->h.length), job, job->h.length);
   QUEUE_LOCK;
   if (JobQueueNext)
@@ -315,37 +355,37 @@ static int QJob(SrvJob *job)
   return StartWorker();
 }
 // main
-static void LogPrefix(char *ans_c)
+static void STATIC_log_prefix_locked(char *ans_c)
 {
   if (ans_c)
   {
     char hname[512];
-    char *port = MdsGetServerPortname();
+    char *port = GetPortname();
     gethostname(hname, 512);
     char now[32];
     Now32(now);
     sprintf(ans_c, "%s, %s:%s, %s, ", now, hname, port ? port : "?",
-            Logging == 0 ? "logging disabled" : "logging enabled");
-    if (Debug)
+            STATIC_Logging ? "logging enabled" : "logging disabled");
+    if (STATIC_Debug)
     {
       sprintf(ans_c + strlen(ans_c),
-              "\nDebug info: QueueLocked = %d ProgLoc = %d WorkerDied = %d"
-              "\n            LeftWorkerLoop = %d CondWStat = %d\n",
-              QueueLocked, ProgLoc, WorkerDied, LeftWorkerLoop, CondWStat);
+              "\nDebug info: QueueLocked=%d, ProgLoc=%d, WorkerDied=%d, LeftWorkerLoop=%d, CondWStat=%d,\n",
+              STATIC_QueueLocked, ProgLoc, STATIC_WorkerDied, STATIC_LeftWorkerLoop, STATIC_CondWStat);
     }
   }
 }
+
 // main
 static int ShowCurrentJob(struct descriptor_xd *ans)
 {
   char *ans_c;
   struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
-  QUEUE_LOCK;
-  char *job_text = current_job_text;
+  pthread_mutex_lock(&STATIC_lock);
+  char *job_text = STATIC_current_job_text;
   if (job_text == 0)
   {
     ans_c = malloc(1024);
-    LogPrefix(ans_c);
+    STATIC_log_prefix_locked(ans_c);
     strcat(ans_c, "Inactive");
   }
   else
@@ -356,7 +396,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
         ((detail = (*detail_proc)(1)) != 0))
     {
       ans_c = malloc(1024 + strlen(job_text) + strlen(detail));
-      LogPrefix(ans_c);
+      STATIC_log_prefix_locked(ans_c);
       strcat(ans_c, job_text);
       strcat(ans_c, detail);
       free(detail);
@@ -364,11 +404,11 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
     else
     {
       ans_c = malloc(1024 + strlen(job_text));
-      LogPrefix(ans_c);
+      STATIC_log_prefix_locked(ans_c);
       strcat(ans_c, job_text);
     }
   }
-  QUEUE_UNLOCK;
+  pthread_mutex_unlock(&STATIC_lock);
   ans_d.length = strlen(ans_c);
   ans_d.pointer = ans_c;
   MdsCopyDxXd(&ans_d, ans);
@@ -389,8 +429,8 @@ static int RemoveLast()
       JobQueueNext->h.next = 0;
     else
       JobQueue = 0;
+    MDSMSG(SVRJOB_PRI "Removed pending action", SVRJOB_VAR(job));
     FreeJob(job);
-    printf("Removed pending action");
     status = MDSplusSUCCESS;
   }
   else
@@ -455,13 +495,17 @@ static void SetCurrentJob(SrvJob *job)
 static inline void LockQueue()
 {
   _CONDITION_LOCK(&JobQueueCond);
-  QueueLocked = 1;
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_QueueLocked = 1;
+  pthread_mutex_unlock(&STATIC_lock);
 }
 // thread
 static inline void UnlockQueue()
 {
-  QueueLocked = 0;
   _CONDITION_UNLOCK(&JobQueueCond);
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_QueueLocked = 0;
+  pthread_mutex_unlock(&STATIC_lock);
 }
 // main
 static int doingNid;
@@ -476,12 +520,14 @@ EXPORT int GetDoingNid()
 // thread
 static int DoSrvAction(SrvJob *job_in)
 {
-  INIT_STATUS_ERROR;
+  int status;
   SrvActionJob *job = (SrvActionJob *)job_in;
   char *job_text, *old_job_text;
   sprintf((job_text = (char *)malloc(100)), "Doing nid %d in %s shot %d",
           job->nid, job->tree, job->shot);
-  current_job_text = job_text;
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_current_job_text = job_text;
+  pthread_mutex_unlock(&STATIC_lock);
   void *dbid = NULL;
   status = _TreeNewDbid(&dbid);
   if (STATUS_NOT_OK)
@@ -506,29 +552,33 @@ static int DoSrvAction(SrvJob *job_in)
     job_text = malloc(fullpath.length + 1024);
     sprintf(job_text, "Doing %s in %s shot %d", fullpath.pointer, job->tree,
             job->shot);
-    old_job_text = current_job_text;
-    current_job_text = job_text;
-    free(old_job_text);
     StrFree1Dx(&fullpath);
     nid_dsc.pointer = (char *)&job->nid;
     ans_dsc.pointer = (char *)&retstatus;
     TreeSetDefaultNid(0);
-    if (Logging)
+    pthread_mutex_lock(&STATIC_lock);
+    old_job_text = STATIC_current_job_text;
+    STATIC_current_job_text = job_text;
+    free(old_job_text);
+    if (STATIC_Logging)
     {
       char now[32];
       Now32(now);
-      printf("%s, %s\n", now, current_job_text);
+      printf("%s, %s\n", now, STATIC_current_job_text);
       fflush(stdout);
     }
+    pthread_mutex_unlock(&STATIC_lock);
     status = TdiDoTask(&nid_dsc, &ans_dsc MDS_END_ARG);
-    if (Logging)
+    pthread_mutex_lock(&STATIC_lock);
+    memcpy(STATIC_current_job_text, "Done ", 5);
+    if (STATIC_Logging)
     {
       char now[32];
       Now32(now);
-      memcpy(current_job_text, "Done ", 5);
-      printf("%s, %s\n", now, current_job_text);
+      printf("%s, %s\n", now, STATIC_current_job_text);
       fflush(stdout);
     }
+    pthread_mutex_unlock(&STATIC_lock);
     if (STATUS_OK)
       status = retstatus;
   }
@@ -536,7 +586,7 @@ static int DoSrvAction(SrvJob *job_in)
 end:;
   TreeFreeDbid(dbid);
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
 // thread
@@ -544,28 +594,31 @@ static int DoSrvClose(SrvJob *job_in)
 {
   INIT_STATUS_ERROR;
   char *job_text = strcpy((char *)malloc(32), "Closing trees");
-  current_job_text = job_text;
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_current_job_text = job_text;
+  pthread_mutex_unlock(&STATIC_lock);
   do
   {
     status = TreeClose(0, 0);
   } while (STATUS_OK);
   status = (status == TreeNOT_OPEN) ? TreeSUCCESS : status;
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
 // thread
 static int DoSrvCreatePulse(SrvJob *job_in)
 {
-  INIT_STATUS_ERROR;
   SrvCreatePulseJob *job = (SrvCreatePulseJob *)job_in;
   char *job_text = malloc(100);
   sprintf(job_text, "Creating pulse for %s shot %d",
           ((SrvCreatePulseJob *)job)->tree, ((SrvCreatePulseJob *)job)->shot);
-  current_job_text = job_text;
-  status = TreeCreateTreeFiles(job->tree, job->shot, -1);
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_current_job_text = job_text;
+  pthread_mutex_unlock(&STATIC_lock);
+  int status = TreeCreateTreeFiles(job->tree, job->shot, -1);
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
 // thread
@@ -576,28 +629,20 @@ static int DoSrvCommand(SrvJob *job_in)
   char *set_table = strcpy(malloc(strlen(job->table) + 24), "set command ");
   char *job_text =
       (char *)malloc(strlen(job->command) + strlen(job->table) + 60);
-  ProgLoc = 61;
   sprintf(job_text, "Doing command %s in command table %s", job->command,
           job->table);
-  ProgLoc = 62;
-  current_job_text = job_text;
-  ProgLoc = 63;
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_current_job_text = job_text;
+  pthread_mutex_unlock(&STATIC_lock);
   strcat(set_table, job->table);
-  ProgLoc = 64;
   status = mdsdcl_do_command(set_table);
-  ProgLoc = 65;
   free(set_table);
-  ProgLoc = 66;
   if (STATUS_OK)
   {
-    ProgLoc = 67;
     status = mdsdcl_do_command(job->command);
-    // ProgLoc = 68;
   }
-  ProgLoc = 69;
   if (job_in->h.addr)
-    SendReply(job_in, SrvJobFINISHED, status, 0, 0);
-  ProgLoc = 70;
+    send_reply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;
 }
 // thread
@@ -656,7 +701,7 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
             job->phase, job->nid, job->on, job->mode, job->server, job->status,
             now, status_text);
   }
-  status = SendReply(job_in, SrvJobFINISHED, 1, strlen(msg), msg);
+  status = send_reply(job_in, SrvJobFINISHED, 1, strlen(msg), msg);
   free(msg);
   if (STATUS_NOT_OK)
   {
@@ -691,42 +736,41 @@ static void DoSrvMonitor(SrvJob *job_in)
   SrvMonitorJob *job = (SrvMonitorJob *)job_in;
   status = (job->mode == MonitorCheckin) ? AddMonitorClient(job_in)
                                          : SendToMonitors(job_in);
-  SendReply(job_in,
-            (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED,
-            status, 0, 0);
+  send_reply(job_in,
+             (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED,
+             status, 0, 0);
 }
 // thread
 static void WorkerExit(void *arg __attribute__((unused)))
 {
-  if (QueueLocked)
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_WorkerDied++;
+  if (STATIC_QueueLocked)
     UnlockQueue();
+  pthread_mutex_unlock(&STATIC_lock);
   CONDITION_RESET(&WorkerRunning);
-  WorkerDied++;
-  fprintf(stderr, "Worker thread exitted\n");
+  MDSWRN("Worker thread exitted");
 }
 // thread
 static void WorkerThread(void *arg __attribute__((unused)))
 {
   SrvJob *job;
   pthread_cleanup_push(WorkerExit, NULL);
-  ProgLoc = 1;
   CONDITION_SET(&WorkerRunning);
   while ((job = NextJob(1)))
   {
-    if (Debug)
+    MDSDBG("Starting job %d for " IPADDRPRI ":%d", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+    pthread_mutex_lock(&STATIC_lock);
+    if (STATIC_Debug)
       fprintf(stderr, "job started.\n");
-    char *save_text;
-    ProgLoc = 2;
+    ProgLoc = 1;
+    pthread_mutex_unlock(&STATIC_lock);
     ServerSetDetailProc(0);
-    ProgLoc = 3;
     SetCurrentJob(job);
-    ProgLoc = 4;
     if ((job->h.flags & SrvJobBEFORE_NOTIFY) != 0)
     {
-      ProgLoc = 5;
-      SendReply(job, SrvJobSTARTING, 1, 0, 0);
+      send_reply(job, SrvJobSTARTING, 1, 0, 0);
     }
-    ProgLoc = 6;
     switch (job->h.op)
     {
     case SrvAction:
@@ -745,19 +789,22 @@ static void WorkerThread(void *arg __attribute__((unused)))
       DoSrvMonitor(job);
       break;
     }
-    ProgLoc = 7;
-    SetCurrentJob(0);
-    ProgLoc = 8;
+    MDSDBG("Finished job %d for " IPADDRPRI ":%d", job->h.jobid, IPADDRVAR(&job->h.addr), job->h.port);
+    SetCurrentJob(NULL);
     FreeJob(job);
-    ProgLoc = 9;
-    save_text = current_job_text;
-    current_job_text = 0;
+    pthread_mutex_lock(&STATIC_lock);
+    ProgLoc = 7;
+    char *save_text = STATIC_current_job_text;
+    STATIC_current_job_text = NULL;
     free(save_text);
-    ProgLoc = 10;
-    if (Debug)
+    if (STATIC_Debug)
       fprintf(stderr, "job done.\n");
+    pthread_mutex_unlock(&STATIC_lock);
   }
-  LeftWorkerLoop++;
+  pthread_mutex_lock(&STATIC_lock);
+  STATIC_LeftWorkerLoop++;
+  ProgLoc = 9;
+  pthread_mutex_unlock(&STATIC_lock);
   pthread_cleanup_pop(1);
   pthread_exit(NULL);
 }
@@ -773,10 +820,18 @@ static int StartWorker()
 // main
 static void KillWorker()
 {
+  MDSDBG("enter");
   _CONDITION_LOCK(&WorkerRunning);
   if (WorkerRunning.value)
   {
-    pthread_cancel(Worker);
+#ifndef WIN32
+    MDSDBG("cancel");
+    if (pthread_cancel(Worker))
+#endif
+    {
+      MDSWRN("kill");
+      pthread_kill(Worker, SIGINT);
+    }
     _CONDITION_WAIT_RESET(&WorkerRunning);
   }
   _CONDITION_UNLOCK(&WorkerRunning);
@@ -795,20 +850,20 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port)
   sin.sin_family = AF_INET;
   *(uint32_t *)(&sin.sin_addr) = addr;
   sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock != INVALID_SOCKET)
+  if (sock == INVALID_SOCKET)
+  {
+    MDSERR("Cannot get socket for " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
+  }
+  else
   {
     if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1)
     {
+      MDSERR("Cannot connect to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
       shutdown(sock, 2);
       close(sock);
-      uint8_t *ip = (uint8_t *)&addr;
-      char now[32];
-      Now32(now);
-      fprintf(stderr, "%s, ERROR Cannot connect to %u.%u.%u.%u:%u", now, ip[0],
-              ip[1], ip[2], ip[3], port);
-      perror(" ");
       return INVALID_SOCKET;
     }
+    MDSDBG("Connected to " IPADDRPRI ":%u", IPADDRVAR(&addr), port);
     new = (ClientList *)malloc(sizeof(ClientList));
     l = Clients;
     Clients = new;
@@ -844,39 +899,47 @@ static void RemoveClient(SrvJob *job)
   }
 }
 
-#ifndef _WIN32
-static void reset_sigpipe_handler()
+/// returns the number of bytes sent
+static int send_all(SOCKET sock, char *msg, int len)
 {
-  signal(SIGPIPE, SIG_DFL);
+  int sent;
+  MSG_NOSIGNAL_ALT_PUSH();
+  sent = 0;
+  do
+  {
+    const int bytes = send(sock, msg + sent, len - sent, MSG_NOSIGNAL);
+    if (bytes <= 0)
+    {
+      sent = bytes;
+      break;
+    }
+    sent += bytes;
+  } while (sent < len);
+  MSG_NOSIGNAL_ALT_POP();
+  return sent;
 }
-#endif
-// both
-static int SendReply(SrvJob *job, int replyType, int status_in, int length,
-                     char *msg)
+
+static int send_reply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
+  MDSDBG(SVRJOB_PRI " %d", SVRJOB_VAR(job), replyType);
   int status;
-#ifndef _WIN32
-  signal(SIGPIPE, SIG_IGN);
-  pthread_cleanup_push((void *)reset_sigpipe_handler, NULL);
-#endif
   status = MDSplusERROR;
   SOCKET sock;
   long msg_len = msg ? (long)strlen(msg) : 0;
-  int try_again = TRUE;
+  int try_again = FALSE;
+  char reply[60];
+  memset(reply, 0, 60);
+  sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg_len);
   do
   {
     errno = 0;
     sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
     if (sock == INVALID_SOCKET)
       break;
-    char reply[60];
-    int bytes;
-    memset(reply, 0, 60);
-    sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg_len);
-    bytes = send(sock, reply, 60, MSG_DONTWAIT);
+    int bytes = send_all(sock, reply, 60);
     if (bytes == 60)
     {
-      bytes = send(sock, msg, length, MSG_DONTWAIT);
+      bytes = send_all(sock, msg, length);
       if (bytes == length)
       {
         status = MDSplusSUCCESS;
@@ -886,20 +949,16 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length,
     if (STATUS_NOT_OK)
     {
       try_again = errno == EPIPE;
-      if (Debug)
+      int debug;
+      pthread_mutex_lock(&STATIC_lock);
+      debug = STATIC_Debug;
+      pthread_mutex_unlock(&STATIC_lock);
+      if (debug)
       {
-        uint8_t *ip = (uint8_t *)&job->h.addr;
-        char now[32];
-        Now32(now);
-        fprintf(stderr, "%s, Dropped connection to %u.%u.%u.%u:%u", now,
-                ip[0], ip[1], ip[2], ip[3], job->h.port);
-        perror(" ");
+        MDSMSG(SVRJOB_PRI " drop connection", SVRJOB_VAR(job));
       }
       RemoveClient(job);
     }
   } while (try_again--);
-#ifndef _WIN32
-  pthread_cleanup_pop(1);
-#endif
   return status;
 }

@@ -22,57 +22,56 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "../zlib/zlib.h"
+#include "../mdsip_connections.h"
+
 #include <errno.h>
 #include <status.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../zlib/zlib.h"
+//#define DEBUG
+#include <mdsmsg.h>
 
-#include "../mdsip_connections.h"
-
-static int SendBytes(Connection *c, void *buffer, size_t bytes_to_send,
-                     int options)
+static int send_bytes(Connection *c, void *buffer, size_t bytes_to_send, int options)
 {
+  if (!c || !c->io)
+    return MDSplusERROR;
   char *bptr = (char *)buffer;
-  if (c && c->io)
+  int tries = 0;
+  MDSDBG(CON_PRI " %ld bytes", CON_VAR(c), (long)bytes_to_send);
+  while ((bytes_to_send > 0) && (tries < 10))
   {
-    int tries = 0;
-    while ((bytes_to_send > 0) && (tries < 10))
+    ssize_t bytes_sent;
+    bytes_sent = c->io->send(c, bptr, bytes_to_send, options);
+    if (bytes_sent < 0)
     {
-      ssize_t bytes_sent;
-      bytes_sent = c->io->send(c, bptr, bytes_to_send, options);
-      if (bytes_sent < 0)
+      if (errno != EINTR)
       {
-        if (errno != EINTR)
-        {
-          perror("Error sending data to remote server");
-          return MDSplusERROR;
-        }
-        tries++;
+        MDSDBG(CON_PRI " error %d: %s", CON_VAR(c), errno, strerror(errno));
+        perror("send_bytes: Error sending data to remote server");
+        return MDSplusERROR;
       }
+      tries++;
+    }
+    else
+    {
+      bytes_to_send -= bytes_sent;
+      bptr += bytes_sent;
+      if (bytes_sent)
+        tries = 0;
       else
-      {
-        bytes_to_send -= bytes_sent;
-        bptr += bytes_sent;
-        if (bytes_sent)
-          tries = 0;
-        else
-          tries++;
-      }
+        tries++;
     }
-    if (tries >= 10)
-    {
-      char msg[256];
-      sprintf(msg, "\rsend failed, shutting down connection %d", c->id);
-      perror(msg);
-      return SsINTERNAL;
-    }
-    return MDSplusSUCCESS;
   }
-  printf("Connection to remote server failed");
-  return MDSplusERROR;
+  if (tries >= 10)
+  {
+    MDSERR(CON_PRI " send failed; shutting down", CON_VAR(c));
+    return SsINTERNAL;
+  }
+  MDSDBG(CON_PRI " sent all bytes", CON_VAR(c));
+  return MDSplusSUCCESS;
 }
 
 int SendMdsMsgC(Connection *c, Message *m, int msg_options)
@@ -82,7 +81,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
   Message *cm = 0;
   int status;
   int do_swap = 0; /*Added to handle byte swapping with compression */
-  if (len > 0 && GetCompressionLevel() > 0 &&
+  if (len > 0 && c->compression_level > 0 &&
       m->h.client_type != SENDCAPABILITIES)
   {
     clength = len;
@@ -91,7 +90,7 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
   if (!msg_options && c && c->io && c->io->flush)
     c->io->flush(c);
   if (m->h.client_type == SENDCAPABILITIES)
-    m->h.status = GetCompressionLevel();
+    m->h.status = c->compression_level;
   if ((m->h.client_type & SwapEndianOnServer) != 0)
   {
     if (Endian(m->h.client_type) != Endian(ClientType()))
@@ -105,19 +104,20 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
     m->h.client_type = ClientType();
   if (clength &&
       compress2((unsigned char *)cm->bytes + 4, &clength,
-                (unsigned char *)m->bytes, len, GetCompressionLevel()) == 0 &&
+                (unsigned char *)m->bytes, len, c->compression_level) == 0 &&
       clength < len)
   {
     cm->h = m->h;
     cm->h.client_type |= COMPRESSED;
     memcpy(cm->bytes, &cm->h.msglen, 4);
     int msglen = cm->h.msglen = clength + 4 + sizeof(MsgHdr);
+    MDSDBG(MESSAGE_PRI, MESSAGE_VAR(cm));
     if (do_swap)
       FlipBytes(4, (char *)&cm->h.msglen);
-    status = SendBytes(c, (char *)cm, msglen, msg_options);
+    status = send_bytes(c, (char *)cm, msglen, msg_options);
   }
   else
-    status = SendBytes(c, (char *)m, len + sizeof(MsgHdr), msg_options);
+    status = send_bytes(c, (char *)m, len + sizeof(MsgHdr), msg_options);
   if (clength)
     free(cm);
   return status;
@@ -125,10 +125,12 @@ int SendMdsMsgC(Connection *c, Message *m, int msg_options)
 
 int SendMdsMsg(int id, Message *m, int msg_options)
 {
-  Connection *c = FindConnection(id, NULL);
-  if (SendMdsMsgC(c, m, msg_options) == SsINTERNAL)
+  Connection *c = FindConnectionWithLock(id, CON_REQUEST);
+  int status = SendMdsMsgC(c, m, msg_options);
+  if (status == SsINTERNAL)
   {
-    DisconnectConnection(id);
+    UnlockConnection(c);
+    CloseConnection(id);
     return MDSplusFATAL;
   }
   return MDSplusSUCCESS;

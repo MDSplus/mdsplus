@@ -1,0 +1,46 @@
+#include <string.h>
+
+#include <pthread_port.h>
+#include <mdsversion.h>
+
+#define CONCAT2(a, b) a##b
+#define CONCAT(a, b) CONCAT2(a, b)
+#define VERSIONCONST CONCAT(LIBPREFIX, Version)
+#define GETRELEASE CONCAT(LIBPREFIX, Release)
+#define GETRELEASEDSC CONCAT(LIBPREFIX, ReleaseDsc)
+
+EXPORT
+const mds_version_t VERSIONCONST = {
+	@RELEASE_MAJOR@,
+	@RELEASE_MINOR@,
+	@RELEASE_RELEASE@,
+	"@RELEASE_BRANCH@",
+};
+
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static char tag[64];
+static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, tag };
+
+static void buildtag()
+{
+	RELEASE_D.length = snprintf(tag, sizeof(tag), "%.12s_release_%d.%d.%d",
+	VERSIONCONST.BRANCH,
+	VERSIONCONST.MAJOR,
+	VERSIONCONST.MINOR,
+	VERSIONCONST.MICRO);
+}
+
+EXPORT
+const char *GETRELEASE()
+{
+	pthread_once(&once, buildtag);
+	return tag;
+}
+
+EXPORT
+const mdsdsc_t *GETRELEASEDSC()
+{
+	pthread_once(&once, buildtag);
+	return &RELEASE_D;
+}

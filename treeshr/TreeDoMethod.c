@@ -52,7 +52,6 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 
 ------------------------------------------------------------------------------*/
 #include "treeshrp.h"
-#include <STATICdef.h>
 #include <ctype.h>
 #include <libroutines.h>
 #include <mds_stdarg.h>

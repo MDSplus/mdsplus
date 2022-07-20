@@ -844,7 +844,38 @@ Data *MDSplus::compileWithArgs(const char *expr, int nArgs...)
                                           &status);
   }
 
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
+    throw MdsException(status);
+  return res;
+}
+
+Data *MDSplus::compileWithArgs(const char *expr, Data **argsData, int nArgs)
+{
+  void **args = new void *[nArgs];
+  int i;
+  for (i = 0; i < nArgs; i++)
+  {
+    args[i] = argsData[i]->convertToDsc();
+  }
+  int status;
+  Data *res;
+  try
+  {
+    AutoPointer<Tree> actTree(getActiveTree());
+    res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree,
+                                          (actTree) ? actTree->getCtx() : NULL,
+                                          &status);
+  }
+  catch (MdsException &exc)
+  {
+    res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], NULL, NULL,
+                                          &status);
+  }
+  for (i = 0; i < nArgs; i++)
+    freeDsc(args[i]);
+  delete [] args;
+
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return res;
 }
@@ -883,7 +914,27 @@ Data *MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs...)
       expr, nArgs, (void *)args, tree, (tree) ? tree->getCtx() : NULL, &status);
   for (i = 0; i < nArgs; i++)
     freeDsc(args[i]);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
+    throw MdsException(status);
+  return res;
+}
+
+Data *MDSplus::compileWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs)
+{
+  int i;
+  void **args = new void *[nArgs];
+
+  for (i = 0; i < nArgs; i++)
+  {
+    args[i] = argsData[i]->convertToDsc();
+  }
+  int status;
+  Data *res = (Data *)compileFromExprWithArgs(
+      expr, nArgs, (void *)args, tree, (tree) ? tree->getCtx() : NULL, &status);
+  for (i = 0; i < nArgs; i++)
+    freeDsc(args[i]);
+  delete [] args;
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   return res;
 }
@@ -915,12 +966,46 @@ Data *MDSplus::executeWithArgs(const char *expr, int nArgs...)
   Data *compData = (Data *)compileFromExprWithArgs(
       expr, nArgs, (void *)args, actTree, (actTree) ? actTree->getCtx() : NULL,
       &status);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   Data *evalData = compData->data();
   deleteData(compData);
   for (int i = 0; i < nArgs; i++)
     freeDsc(args[i]);
+  if (actTree)
+    delete (actTree);
+
+  return evalData;
+}
+Data *MDSplus::executeWithArgs(const char *expr, Data **argsData, int nArgs)
+{
+  void **args = new void *[nArgs];
+
+
+  for (int i = 0; i < nArgs; i++)
+  {
+    args[i] = argsData[i]->convertToDsc();
+  }
+  int status;
+  Tree *actTree = 0;
+  try
+  {
+    actTree = getActiveTree();
+  }
+  catch (MdsException const &exc)
+  {
+    actTree = 0;
+  }
+  Data *compData = (Data *)compileFromExprWithArgs(
+      expr, nArgs, (void *)args, actTree, (actTree) ? actTree->getCtx() : NULL,
+      &status);
+  if (STATUS_NOT_OK)
+    throw MdsException(status);
+  Data *evalData = compData->data();
+  deleteData(compData);
+  for (int i = 0; i < nArgs; i++)
+    freeDsc(args[i]);
+  delete [] args;
   if (actTree)
     delete (actTree);
 
@@ -947,7 +1032,7 @@ Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs...)
   Data *compData =
       (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree,
                                       (tree) ? tree->getCtx() : NULL, &status);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     throw MdsException(status);
   if (!compData)
     throw MdsException("Cannot compile expression");
@@ -956,6 +1041,30 @@ Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs...)
   deleteData(compData);
   for (int i = 0; i < nArgs; i++)
     freeDsc(args[i]);
+  return evalData;
+}
+Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, Data **argsData, int nArgs)
+{
+  void **args = new void *[nArgs];
+
+  for (int i = 0; i < nArgs; i++)
+  {
+    args[i] = argsData[i]->convertToDsc();
+  }
+  int status;
+  Data *compData =
+      (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree,
+                                      (tree) ? tree->getCtx() : NULL, &status);
+  if (STATUS_NOT_OK)
+    throw MdsException(status);
+  if (!compData)
+    throw MdsException("Cannot compile expression");
+
+  Data *evalData = compData->data();
+  deleteData(compData);
+  for (int i = 0; i < nArgs; i++)
+    freeDsc(args[i]);
+  delete [] args;
   return evalData;
 }
 

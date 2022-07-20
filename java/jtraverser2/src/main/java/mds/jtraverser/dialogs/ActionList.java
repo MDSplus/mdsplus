@@ -1,6 +1,7 @@
 package mds.jtraverser.dialogs;
 
 import java.awt.Color;
+
 import javax.swing.JCheckBox;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -63,20 +64,22 @@ public class ActionList extends CheckBoxList
 			int[] status;
 			try
 			{
-				final TREE tree = this.treeview.getTree();
-				isoff = tree.getMds().getByteArray(this.treeview.getTree().ctx,
-						"_n=$;OR(GETNCI(_n,'PARENT_STATE'),GETNCI(_n,'STATE'))", new Int32Array(nid));
-				status = tree.getMds().getIntegerArray(this.treeview.getTree().ctx, "GETNCI($,'STATUS')",
-						new Int32Array(nid));
-				for (int i = 0; i < this.checkboxes.size(); i++)
+				try (final TREE tree = this.treeview.getTree())
 				{
-					final JCheckBox cb = this.checkboxes.getElementAt(i);
-					cb.setSelected(isoff[i] == 0);
-					cb.putClientProperty(CheckBoxList.PROP_OLD, Boolean.valueOf(isoff[i] == 0));
-					if (this.treeview.isModel())
-						continue;
-					cb.setToolTipText(Action.getStatusMsg(status[i]));
-					cb.setForeground((status[i] & 1) == 0 ? Color.RED : Color.BLACK);
+					isoff = tree.getMds().getByteArray(this.treeview.getTree().ctx,
+							"_n=$;OR(GETNCI(_n,'PARENT_STATE'),GETNCI(_n,'STATE'))", new Int32Array(nid));
+					status = tree.getMds().getIntegerArray(this.treeview.getTree().ctx, "GETNCI($,'STATUS')",
+							new Int32Array(nid));
+					for (int i = 0; i < this.checkboxes.size(); i++)
+					{
+						final JCheckBox cb = this.checkboxes.getElementAt(i);
+						cb.setSelected(isoff[i] == 0);
+						cb.putClientProperty(CheckBoxList.PROP_OLD, Boolean.valueOf(isoff[i] == 0));
+						if (this.treeview.isModel())
+							continue;
+						cb.setToolTipText(Action.getStatusMsg(status[i]));
+						cb.setForeground((status[i] & 1) == 0 ? Color.RED : Color.BLACK);
+					}
 				}
 			}
 			catch (final MdsException e)

@@ -46,7 +46,7 @@ int _TreeSetDefault(void *dbid, char *path, int *nid)
 {
   int status;
   status = _TreeFindNode(dbid, path, nid);
-  if (status & 1)
+  if (STATUS_OK)
     status = _TreeSetDefaultNid(dbid, *nid);
   return status;
 }

@@ -24,7 +24,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "../mdsip_connections.h"
-#include <STATICdef.h>
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,9 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int MdsClose(int id)
 {
   struct descrip ansarg;
-  STATIC_CONSTANT char *expression = "TreeClose()";
+  static char *expression = "TreeClose()";
   int status = MdsValue(id, expression, &ansarg, NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
+  if ((STATUS_OK) && (ansarg.dtype == DTYPE_LONG))
     status = *(int *)ansarg.ptr;
   free(ansarg.ptr);
   return status;

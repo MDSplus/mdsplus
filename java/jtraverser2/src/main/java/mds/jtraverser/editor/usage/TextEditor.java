@@ -1,24 +1,15 @@
 package mds.jtraverser.editor.usage;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+
+import javax.swing.*;
 
 import mds.MdsException;
 import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
-import mds.jtraverser.editor.Editor;
-import mds.jtraverser.editor.ExprEditor;
-import mds.jtraverser.editor.ParameterEditor;
+import mds.jtraverser.editor.*;
 
 public class TextEditor extends Editor implements ActionListener
 {
@@ -107,6 +98,7 @@ public class TextEditor extends Editor implements ActionListener
 				BorderLayout.CENTER);
 	}
 
+	@SuppressWarnings("static-method")
 	protected boolean addExtraEditor()
 	{
 		return false;
@@ -124,6 +116,7 @@ public class TextEditor extends Editor implements ActionListener
 			this.mode_idx = 1;
 	}
 
+	@SuppressWarnings("static-method")
 	protected boolean checkUsrData()
 	{
 		return false;
@@ -140,7 +133,9 @@ public class TextEditor extends Editor implements ActionListener
 	}
 
 	protected Descriptor<?> getUsrData() throws MdsException
-	{ return this.data_edit.getData(); }
+	{
+		return this.data_edit.getData();
+	}
 
 	@Override
 	public void interrupt()
@@ -152,7 +147,9 @@ public class TextEditor extends Editor implements ActionListener
 
 	@Override
 	public final boolean isNull()
-	{ return this.curr_mode_idx == 0; }
+	{
+		return this.curr_mode_idx == 0;
+	}
 
 	protected final void refresh()
 	{

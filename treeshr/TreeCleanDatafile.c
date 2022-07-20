@@ -23,7 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "treeshrp.h"
-#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
@@ -52,7 +51,7 @@ static void treeclose(void *dbid_p)
   _TreeClose(dbid_p, 0, 0);
   free(*(void **)dbid_p);
 }
-STATIC_ROUTINE int RewriteDatafile(char const *tree, int shot, int compress)
+static int RewriteDatafile(char const *tree, int shot, int compress)
 {
   int status, stat1;
   void *dbid1 = 0, *dbid2 = 0;

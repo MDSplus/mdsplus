@@ -38,76 +38,184 @@ class ACQ2106_WRTD(MDSplus.Device):
     """
 
     parts = [
-        {'path': ':NODE',        'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':HOSTNAME',    'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':COMMENT',     'type': 'text',
-            'options': ('no_write_shot',)},
-        {'path': ':TRIG_MSG',    'type': 'text',
-            'options': ('write_shot',)},
-        {'path': ':TRIG_SRC',    'type': 'text',
-            'value': 'FPTRG', 'options': ('write_shot',)},
-        {'path': ':TRIG_TIME',   'type': 'numeric',
-            'value': 0.,       'options': ('write_shot',)},
-        {'path': ':T0',          'type': 'numeric',
-            'value': 0.,       'options': ('write_shot',)},
+        {
+            'path': ':NODE',
+            'type': 'text',
+            'value': '192.168.0.254',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':COMMENT',
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_MSG',
+            'type': 'text',
+            'options': ('write_shot',)
+        },
+        {
+            'path': ':TRIG_SRC',
+            'type': 'text',
+            'value': 'FPTRG',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':TRIG_TIME',
+            'type': 'numeric',
+            'value': 0.,
+            'options': ('write_shot',)
+        },
         # If DIO-PG is present:
-        {'path': ':DIO_SITE',    'type': 'numeric',
-            'value': 0.,       'options': ('write_shot',)},
+        {
+            'path': ':DIO_SITE',
+            'type': 'numeric',
+            'value': 0.,
+            'options': ('no_write_shot',)
+        },
         # A DIO-PG source can be one of [d0...d5, TRGIN, WRTT]
-        {'path': ':PG_TRIG_SRC', 'type': 'text',
-            'value': 'dx', 'options': ('write_shot',)},
-
-        {'path': ':WR_INIT',     'type': 'text',   'options': ('write_shot',)},
+        {
+            'path': ':PG_TRIG_SRC',
+            'type': 'text',
+            'value': 'dx',
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT',
+            'type': 'text',
+            'options': ('no_write_shot',)
+        },
         # ns per tick. (tick size in ns). uut.cC.WRTD_TICKNS: For SR=20MHz. It's the Si5326 tick at 20MHz ..
-        {'path': ':WR_INIT:WRTD_TICKNS', 'type': 'numeric',
-            'value': 50, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_TICKNS',
+            'type': 'numeric',
+            'value': 50.0,
+            'options': ('write_shot',)
+        },
         # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
-        {'path': ':WR_INIT:WRTD_DNS',    'type': 'numeric',
-         'value': 50000000, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_DNS',
+            'type': 'numeric',
+            'value': 50000000,
+            'options': ('no_write_shot',)
+        },
         # uut.cC.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
-        {'path': ':WR_INIT:WRTD_VBOSE',  'type': 'numeric',
-         'value': 2, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_VBOSE',
+            'type': 'numeric',
+            'value': 2,
+            'options': ('no_write_shot',)
+        },
         # uut.cC.WRTD_RX_MATCHES: match any of these triggers to initiate WRTT0
-        {'path': ':WR_INIT:WRTD_RX_M',   'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_RX_M',
+            'type': 'text',
+            'value': "acq2106_999,wrtt0_message",
+            'options': ('no_write_shot',)
+        },
         # uut.cC.WRTD_RX_MATCHES1: match any of these triggers to initiate WRTT1
-        {'path': ':WR_INIT:WRTD_RX_M1',  'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
-        # From uut.cC.WRTD_DELAY01: WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
-        # Double Tap, which is:
+        {
+            'path': ':WR_INIT:WRTD_RX_M1',
+            'type': 'text',
+            'value': "acq2106_999,wrtt1_message",
+            'options': ('no_write_shot',)
+        },
+        # WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
+        # Double Tap, which means that:
         # 1. WRTT0
         # 2. Delay WRTD_DELAY01 nsec.
         # 3. WRTT1
-        {'path': ':WR_INIT:WRTD_RX_DTP', 'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
-        {'path': ':WR_INIT:WRTD_DELAY',  'type': 'numeric',
-         'value': 5000000, 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_RX_DTP',
+            'type': 'text',
+            'value': "acq2106_999",
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT:WRTD_DELAY',
+            'type': 'numeric',
+            'value': 5000000,
+            'options': ('no_write_shot',)
+        },
         # WRTD_ID
         # For Global ID
-        {'path': ':WR_INIT:WRTD_ID_GLB',     'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_ID_GLB',
+            'type': 'text',
+            'value': "acq2106_999",
+            'options': ('no_write_shot',)
+        },
         # For an individual DIO 482 site WRTD ID. This is used only in TIGA systems.
-        {'path': ':WR_INIT:WRTD_ID_TIGA',    'type': 'text',
-         'value': "acq2106_999", 'options': ('write_shot',)},
-
-        {'path': ':WR_INIT:WRTD_TX',     'type': 'numeric',
-         'value': 1, 'options': ('write_shot',)},
-        {'path': ':WR_INIT:WRTD_RX',     'type': 'numeric',
-         'value': 1, 'options': ('write_shot',)},
-
-
-        {'path': ':RUNNING',     'type': 'numeric',
-            'options': ('no_write_model',)},
-        {'path': ':LOG_OUTPUT',  'type': 'text',    'options': (
-            'no_write_model', 'write_once', 'write_shot',)},
-        {'path': ':INIT_ACTION', 'type': 'action',
-            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))", 'options': ('no_write_shot',)},
+        {
+            'path': ':WR_INIT:WRTD_ID_TIGA',
+            'type': 'text',
+            'value': "acq2106_999",
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT:WRTD_TX',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':WR_INIT:WRTD_RX',
+            'type': 'numeric',
+            'value': 1,
+            'options': ('no_write_shot',)
+        },
+        {
+            'path': ':RUNNING',
+            'type': 'numeric',
+            'options': ('no_write_model',)
+        },
+        {
+            'path': ':LOG_OUTPUT',
+            'type': 'text',
+            'options': ('no_write_model', 'write_once', 'write_shot',)
+        },
+        {
+            'path': ':INIT_ACTION',
+            'type': 'action',
+            'valueExpr': "Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))", 
+            'options': ('no_write_shot',)
+        },
     ]
 
     def init(self):
         uut = self.getUUT()
+
+        # Sets WRTD TICKNS in nsecs: defined by 1/MBCLK
+        # We can take MBCLK from the name of the clock plan that is going to be used when 
+        # the desired sample rate is set by the acq2106 device's INIT function.
+        #
+        # 1- Quering sync_role() will give us the clock plan name (FIN):
+        sync_role_query = uut.s0.sync_role
+        if 'FIN_DEF=' in sync_role_query:
+            mbclk_plan = '31M25-' + sync_role_query.split('FIN_DEF=')[1]
+        else:
+            mbclk_plan = ''
+
+        # 2- Quering SYS:CLK:CONFIG will also give us the clock plan's name:
+        # sys_clk_plan = uut.s0.SYS_CLK_CONFIG
+        # mbclk_plan        = sys_clk_plan.split(' ')[1]
+
+        to_nano = 1E9
+        allowed_plans = {'31M25-5M12':(1./5120000)*to_nano, '31M25-10M24':(1./10240000)*to_nano, '31M25-20M48':(1./20480000)*to_nano, 
+                        '31M25-32M768':(1./32768000)*to_nano, '31M25-40M':25.0000, '31M25-20M':50.0000}
+        
+        # In TIGA systems the clock plan is 31M25-40M, but MBCLK = 10 MHz, and is set at boot-time to WRTD_TICKNS = 100.
+
+        if not self.is_tiga():
+            if mbclk_plan:
+                if mbclk_plan in allowed_plans:
+                    uut.cC.WRTD_TICKNS = allowed_plans.get(mbclk_plan)
+                    self.wr_init_wrtd_tickns.record = allowed_plans.get(mbclk_plan)
+                else:
+                    raise MDSplus.DevBAD_PARAMETER(
+                        "MBCLK plan must be 31M25-5M12, 31M25-10M24, 31M25-20M48, 31M25-32M768, 31M25-40M or 31M25-20M; not %d" % (mbclk_plan,))
+            else:
+                raise MDSplus.DevBAD_PARAMETER("MBCLK plan name is missing from the query uut.s0.sync_role")
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
@@ -138,34 +246,11 @@ class ACQ2106_WRTD(MDSplus.Device):
         uut = self.getUUT()
         pg_slot = self.getDioSlot()
 
-        # Is the System a TIGA system?
-        # In embedded software there is also a command:
-        # /usr/local/bin/is_tiga
-        #
-        # it's not a knob and it's totally silent, it contains the following:
-        # #!/bin/sh
-        # [ -e /dev/acq400.0.knobs/wr_tai_trg_s1 ] && exit 0
-        # exit 1
-        #
-        # We can emulate that in HAPI the following way:
-        try:
-            is_tiga = uut.s0.wr_tai_trg_s1 is not None
-        except:
-            is_tiga = False
+        is_tiga = self.is_tiga()
 
         message = str(msg)
 
         self.TRIG_MSG.record = message
-
-        if message in uut.cC.WRTD_RX_MATCHES:
-            # To be sure that the EVENT bus is set to TRG
-            uut.s0.SIG_EVENT_SRC_0 = 'TRG'
-        elif message in uut.cC.WRTD_RX_MATCHES1:
-            # To be sure that the EVENT bus is set to TRG
-            uut.s0.SIG_EVENT_SRC_1 = 'TRG'
-        else:
-            print('Message does not match either of the WRTTs available')
-            self.running.on = False
 
         if not message.strip():
             # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI is used to trigger.
@@ -193,6 +278,25 @@ class ACQ2106_WRTD(MDSplus.Device):
             uut.cC.wrtd_txi = message
 
     TRIG = trig
+
+    def is_tiga(self):
+        uut = self.getUUT()
+        # Is the System a TIGA system?
+        # In embedded software there is also a command:
+        # /usr/local/bin/is_tiga
+        #
+        # it's not a knob and it's totally silent, it contains the following:
+        # #!/bin/sh
+        # [ -e /dev/acq400.0.knobs/wr_tai_trg_s1 ] && exit 0
+        # exit 1
+        #
+        # We can emulate that in HAPI the following way:
+        try:
+            tiga = uut.s0.wr_tai_trg_s1 is not None
+        except:
+            tiga = False
+        
+        return tiga
 
     def getUUT(self):
         import acq400_hapi

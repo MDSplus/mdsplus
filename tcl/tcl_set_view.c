@@ -59,7 +59,7 @@ EXPORT int TclSetView(void *ctx, char **error,
   {
     status = TreeSetViewDate(&viewDate);
   }
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
   {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 200);

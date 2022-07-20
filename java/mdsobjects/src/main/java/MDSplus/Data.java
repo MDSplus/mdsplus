@@ -203,7 +203,11 @@ public class Data
 	public java.lang.String toString()
 	{
 		if (ctxTree != null)
+                {
+                    try {
 			return decompile(ctxTree.getCtx());
+                    }catch(Exception exc) {return "";}
+                }
 		else
 			return decompile(0);
 	}
@@ -240,8 +244,10 @@ public class Data
 	public String evaluate()
 	{
 		if (ctxTree != null && ctxTree.isOpen())
-		{
+		{   
+                    try {
 			return evaluateData(ctxTree.getCtx());
+                    }catch(Exception exc){return new MDSplus.String("");}
 		}
 		else
 			return evaluateData(0l);

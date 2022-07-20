@@ -55,6 +55,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 /*------------------------------------------------------------------------------
 
  Macros:                                                                      */
+#include <inttypes.h>
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -3292,7 +3293,7 @@ static Boolean UpdateLimit(float *old, float *req, float **new)
 {
   if (old == req)
     return FALSE;
-  else if ((((char *)req - (char *)0) & 0xffffffff) == 0xffffffff)
+  else if ((((intptr_t)req) & 0xffffffff) == 0xffffffff)
   {
     *new = old;
     return FALSE;

@@ -52,7 +52,7 @@ __attribute__((deprecated)) int GetAnswerInfo(int id, char *dtype,
 ////////////////////////////////////////////////////////////////////////////////
 
 int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
-                           int *dims, int *numbytes, void **dptr, void **mout)
+                    int *dims, int *numbytes, void **dptr, void **mout)
 {
   return GetAnswerInfoTO(id, dtype, length, ndims, dims, numbytes, dptr, mout,
                          -1);
@@ -71,7 +71,7 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims,
   UnlockConnection(c);
   if (!m && status == SsINTERNAL)
   {
-    DisconnectConnection(id);
+    CloseConnection(id);
     status = MDSplusERROR;
   }
   if (STATUS_NOT_OK)
@@ -95,7 +95,7 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims,
       dims[i] =
           i % 2 ? m->h.dims[i / 2] & 0xffffffff : (*m)->h.dims[i / 2] >> 32;
 #else
-      if (m->h.dims[i])
+      if (m->h.dims[i] || !datalen)
         dims[i] = m->h.dims[i];
       else
       {

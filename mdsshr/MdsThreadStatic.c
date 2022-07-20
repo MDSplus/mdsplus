@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mdsshr.h>
 
-#include "../mdsshr/version.h"
+#include <_mdsversion.h>
 #include "mdsthreadstatic.h"
 
 /* Key for the thread-specific buffer */
@@ -105,9 +105,14 @@ static inline MDSTHREADSTATIC_TYPE *buffer_alloc()
   MDS_MDSGETMSG_DESC.pointer = MDS_MDSGETMSG_CSTR;
   return MDSTHREADSTATIC_VAR;
 }
+static inline void buffer_free(MDSTHREADSTATIC_ARG)
+{
+  free(MDS_FIS_ERROR);
+  free(MDSTHREADSTATIC_VAR);
+}
 
 IMPLEMENT_GETTHREADSTATIC(MDSTHREADSTATIC_TYPE, MdsGetThreadStatic,
-                          THREADSTATIC_MDSSHR, buffer_alloc, free)
+                          THREADSTATIC_MDSSHR, buffer_alloc, buffer_free)
 
 EXPORT void LockMdsShrMutex(pthread_mutex_t *mutex, int *initialized)
 {

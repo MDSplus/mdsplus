@@ -24,20 +24,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdarg.h>
 #include <unistd.h>
-#ifdef _WIN32
-#include <winsock2.h>
-#include <windows.h>
-#define syscall(__NR_gettid) GetCurrentThreadId()
-#else
-#include <sys/syscall.h>
-#endif
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "../UdpEvents.c"
+#include <mdsmsg.h>
 #include "testing.h"
-#include <../UdpEvents.c>
 
 ////////////////////////////////////////////////////////////////////////////////
 //  utils   ////////////////////////////////////////////////////////////////////
@@ -55,13 +48,20 @@ static char *_new_unique_event_name(const char *prefix, ...)
   return strdup(buffer);
 }
 
+pthread_mutex_t astCount_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int astCount = 0;
-void eventAst(void *arg, int len __attribute__((unused)),
-              char *buf __attribute__((unused)))
+void eventAst(void *arg, int len, char *buf)
 {
-  printf("received event in thread %ld, name=%s\n", syscall(__NR_gettid),
-         (char *)arg);
+  printf("received event in thread %ld, name=%s, len=%d\n", CURRENT_THREAD_ID(), (char *)arg, len);
+  char access = 0;
+  int i;
+  for (i = 0; i < len; i++)
+  { // this will trigger asan if len is invalid
+    access ^= buf[i];
+  }
+  pthread_mutex_lock(&astCount_mutex);
   astCount++;
+  pthread_mutex_unlock(&astCount_mutex);
   pthread_exit(0);
 }
 
@@ -91,14 +91,8 @@ void test_handleMessage()
   BEGIN_TESTING(UdpEvents handleMessage);
 
   char *eventName = new_unique_event_name("test_event");
-  //    char * eventName = strdup("event");
   struct sockaddr_in serverAddr;
-#ifdef _WIN32
-  char flag = 1;
-#else
-  int flag = 1;
-  int const SOCKET_ERROR = -1;
-#endif
+  int one = 1;
   SOCKET udpSocket;
   char ipAddress[64];
   struct ip_mreq ipMreq;
@@ -117,22 +111,15 @@ void test_handleMessage()
   serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   // Allow multiple connections
-  TEST1(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) !=
-        SOCKET_ERROR);
+  TEST0(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one)));
 
   // bind
-#ifdef _WIN32
-  TEST0(bind(udpSocket, (SOCKADDR *)&serverAddr, sizeof(serverAddr)));
-#else
-  TEST0(bind(udpSocket, (struct sockaddr *)&serverAddr,
-             sizeof(struct sockaddr_in)));
-#endif
+  TEST0(bind(udpSocket, (void *)&serverAddr, sizeof(serverAddr)));
 
   getMulticastAddr(eventName, ipAddress);
   ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
   ipMreq.imr_interface.s_addr = INADDR_ANY;
-  TEST0(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq,
-                   sizeof(ipMreq)) < 0);
+  TEST0(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)));
 
   currInfo = (struct EventInfo *)malloc(sizeof(struct EventInfo));
   currInfo->eventName = strdup(eventName);
@@ -142,15 +129,9 @@ void test_handleMessage()
 
   pthread_t thread;
   pthread_create(&thread, NULL, handleMessage, currInfo);
-  usleep(200000);
   MDSUdpEvent(eventName, strlen(eventName), eventName);
   pthread_join(thread, NULL);
-
   free(eventName);
-  //    free(currInfo->eventName);
-  //    free(currInfo);
-  //    *eventid = pushEvent(thread, udpSocket);
-
   END_TESTING;
 }
 
@@ -204,40 +185,6 @@ void test_popEvent()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Suppression  ///////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-static void *_thread_action(void *arg)
-{
-  (void)arg;
-  int status __attribute__((unused));
-  status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, 0);
-  status = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
-  while (1)
-  {
-    // do nothing .. //
-  }
-  return NULL;
-}
-
-void test_pthread_cancel_Suppresstion()
-{
-  pthread_t thread[10];
-  int i;
-  for (i = 0; i < 10; ++i)
-  {
-    pthread_create(&thread[i], NULL, _thread_action, NULL);
-    pthread_detach(thread[i]);
-  }
-  usleep(10000);
-  for (i = 0; i < 10; ++i)
-  {
-    while (pthread_cancel(thread[i]) != 0)
-      ;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 //  MAIN   /////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -247,9 +194,5 @@ int main(int argc __attribute__((unused)),
   test_handleMessage();
   test_pushEvent();
   test_popEvent();
-
-  // generate a suppression for pthread_cancel valgrind issue //
-  // test_pthread_cancel_Suppresstion();
-
   return 0;
 }

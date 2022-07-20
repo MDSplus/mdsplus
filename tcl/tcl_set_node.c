@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
@@ -35,11 +36,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
+#include <_ncidef.h>
 #include <strroutines.h>
 #include <treeshr.h>
 #include <usagedef.h>
 
 #include "tcl_p.h"
+
+DEFINE_COMPRESSION_METHODS
 
 /**********************************************************************
  * TCL_SET_NODE.C --
@@ -63,9 +67,41 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
   void *ctx1 = 0;
   char *nodename = 0;
   char *statusStr = 0;
+  unsigned char compression_method=0;
+
   cli_get_value(ctx, "NODENAME", &nodename);
   cli_get_value(ctx, "STATUS", &statusStr);
   log = cli_present(ctx, "LOG") & 1;
+
+  if (cli_present(ctx, "COMPRESSION_METHOD"))
+  {
+    char *compression_method_str = 0;
+    if(cli_get_value(ctx, "COMPRESSION_METHOD", &compression_method_str) & 1)
+    {
+      char *p = compression_method_str;
+      unsigned int i;
+      for ( ; *p; ++p) *p = tolower(*p);
+      for (i=0; i < NUM_COMPRESSION_METHODS; i++)
+      {
+        if(strcmp(compression_method_str, compression_methods[i].name) == 0)
+        {
+            compression_method=i;
+            break;
+        }
+      }
+      if(i >= NUM_COMPRESSION_METHODS)
+      {
+        *error = malloc(strlen(nodename) + strlen(compression_method_str) + 100);
+        sprintf(*error,
+        "Error: Problem setting compression method for node %s\n"
+        "\t%s not a valid compression method\n",
+        nodename, compression_method_str);
+          
+      }
+      free(compression_method_str);
+    }
+  }
+
 
   usageMask = -1;
   while ((status = TreeFindNodeWild(nodename, &nid, &ctx1, usageMask)) & 1)
@@ -78,11 +114,19 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       setnci[0].pointer = (unsigned char *)&statval;
       TreeSetNci(nid, setnci);
     }
+    if (cli_present(ctx, "COMPRESSION_METHOD"))
+    {
+      NCI_ITM setnci[] = {{sizeof(compression_method), NciCOMPRESSION_METHOD, 0, 0},
+                          {0, NciEND_OF_LIST, 0, 0}};
+      setnci[0].pointer = (unsigned char *)&compression_method;
+      TreeSetNci(nid, setnci);
+    }
+ 
     switch (cli_present(ctx, "SUBTREE"))
     {
     case MdsdclPRESENT:
       status = TreeSetSubtree(nid);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
@@ -95,7 +139,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       break;
     case MdsdclNEGATED:
       status = TreeSetNoSubtree(nid);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
       {
         char *msg = MdsGetMsg(status);
         *error = malloc(strlen(nodename) + strlen(msg) + 100);
@@ -107,12 +151,12 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       }
       break;
     }
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       goto error;
     if (cli_present(ctx, "ON") & 1)
     {
       status = TreeTurnOn(nid);
-      if (status & 1)
+      if (STATUS_OK)
         TclNodeTouched(nid, on_off);
       else
       {
@@ -128,7 +172,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
     else if (cli_present(ctx, "OFF") & 1)
     {
       status = TreeTurnOff(nid);
-      if (status & 1)
+      if (STATUS_OK)
         TclNodeTouched(nid, on_off);
       else
       {
@@ -237,7 +281,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
         status = TreeSetNci(nid, set_itmlst);
       if (clear_flags)
         status = TreeSetNci(nid, clear_itmlst);
-      if (status & 1)
+      if (STATUS_OK)
       {
         if (log)
         {

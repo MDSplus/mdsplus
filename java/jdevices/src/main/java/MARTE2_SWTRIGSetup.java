@@ -127,26 +127,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Trigger Event:");
-        deviceField6.setOffsetNid(53);
+        deviceField6.setOffsetNid(56);
         deviceField6.setTextOnly(true);
         jPanel5.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Wait cycles: ");
         deviceField7.setNumCols(6);
-        deviceField7.setOffsetNid(56);
+        deviceField7.setOffsetNid(59);
         jPanel5.add(deviceField7);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Trigger cycles:");
         deviceField8.setNumCols(6);
-        deviceField8.setOffsetNid(59);
+        deviceField8.setOffsetNid(62);
         jPanel5.add(deviceField8);
 
         deviceField30.setIdentifier("");
         deviceField30.setLabelString("Segment len.:");
         deviceField30.setNumCols(4);
-        deviceField30.setOffsetNid(48);
+        deviceField30.setOffsetNid(50);
         jPanel5.add(deviceField30);
 
         jPanel4.add(jPanel5);
@@ -155,26 +155,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Trigger Event:");
-        deviceField9.setOffsetNid(70);
+        deviceField9.setOffsetNid(74);
         deviceField9.setTextOnly(true);
         jPanel6.add(deviceField9);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Wait cycles: ");
         deviceField10.setNumCols(6);
-        deviceField10.setOffsetNid(73);
+        deviceField10.setOffsetNid(77);
         jPanel6.add(deviceField10);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Trigger cycles:");
         deviceField11.setNumCols(6);
-        deviceField11.setOffsetNid(76);
+        deviceField11.setOffsetNid(80);
         jPanel6.add(deviceField11);
 
         deviceField31.setIdentifier("");
         deviceField31.setLabelString("Segment len.:");
         deviceField31.setNumCols(4);
-        deviceField31.setOffsetNid(65);
+        deviceField31.setOffsetNid(68);
         jPanel6.add(deviceField31);
 
         jPanel4.add(jPanel6);
@@ -183,26 +183,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Trigger Event:");
-        deviceField12.setOffsetNid(87);
+        deviceField12.setOffsetNid(92);
         deviceField12.setTextOnly(true);
         jPanel7.add(deviceField12);
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Wait cycles: ");
         deviceField13.setNumCols(6);
-        deviceField13.setOffsetNid(90);
+        deviceField13.setOffsetNid(95);
         jPanel7.add(deviceField13);
 
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Trigger cycles:");
         deviceField14.setNumCols(6);
-        deviceField14.setOffsetNid(93);
+        deviceField14.setOffsetNid(98);
         jPanel7.add(deviceField14);
 
         deviceField32.setIdentifier("");
         deviceField32.setLabelString("Segment len.:");
         deviceField32.setNumCols(4);
-        deviceField32.setOffsetNid(82);
+        deviceField32.setOffsetNid(86);
         jPanel7.add(deviceField32);
 
         jPanel4.add(jPanel7);
@@ -211,26 +211,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField15.setIdentifier("");
         deviceField15.setLabelString("Trigger Event:");
-        deviceField15.setOffsetNid(104);
+        deviceField15.setOffsetNid(110);
         deviceField15.setTextOnly(true);
         jPanel8.add(deviceField15);
 
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Wait cycles: ");
         deviceField16.setNumCols(6);
-        deviceField16.setOffsetNid(107);
+        deviceField16.setOffsetNid(113);
         jPanel8.add(deviceField16);
 
         deviceField17.setIdentifier("");
         deviceField17.setLabelString("Trigger cycles:");
         deviceField17.setNumCols(6);
-        deviceField17.setOffsetNid(110);
+        deviceField17.setOffsetNid(116);
         jPanel8.add(deviceField17);
 
         deviceField33.setIdentifier("");
         deviceField33.setLabelString("Segment len.:");
         deviceField33.setNumCols(4);
-        deviceField33.setOffsetNid(99);
+        deviceField33.setOffsetNid(104);
         jPanel8.add(deviceField33);
 
         jPanel4.add(jPanel8);
@@ -239,26 +239,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Trigger Event:");
-        deviceField18.setOffsetNid(121);
+        deviceField18.setOffsetNid(128);
         deviceField18.setTextOnly(true);
         jPanel9.add(deviceField18);
 
         deviceField19.setIdentifier("");
         deviceField19.setLabelString("Wait cycles: ");
         deviceField19.setNumCols(6);
-        deviceField19.setOffsetNid(124);
+        deviceField19.setOffsetNid(131);
         jPanel9.add(deviceField19);
 
         deviceField20.setIdentifier("");
         deviceField20.setLabelString("Trigger cycles:");
         deviceField20.setNumCols(6);
-        deviceField20.setOffsetNid(127);
+        deviceField20.setOffsetNid(134);
         jPanel9.add(deviceField20);
 
         deviceField34.setIdentifier("");
         deviceField34.setLabelString("Segment len.:");
         deviceField34.setNumCols(4);
-        deviceField34.setOffsetNid(116);
+        deviceField34.setOffsetNid(122);
         jPanel9.add(deviceField34);
 
         jPanel4.add(jPanel9);
@@ -267,26 +267,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField21.setIdentifier("");
         deviceField21.setLabelString("Trigger Event:");
-        deviceField21.setOffsetNid(138);
+        deviceField21.setOffsetNid(146);
         deviceField21.setTextOnly(true);
         jPanel10.add(deviceField21);
 
         deviceField22.setIdentifier("");
         deviceField22.setLabelString("Wait cycles: ");
         deviceField22.setNumCols(6);
-        deviceField22.setOffsetNid(141);
+        deviceField22.setOffsetNid(149);
         jPanel10.add(deviceField22);
 
         deviceField23.setIdentifier("");
         deviceField23.setLabelString("Trigger cycles:");
         deviceField23.setNumCols(6);
-        deviceField23.setOffsetNid(144);
+        deviceField23.setOffsetNid(152);
         jPanel10.add(deviceField23);
 
         deviceField35.setIdentifier("");
         deviceField35.setLabelString("Segment len.:");
         deviceField35.setNumCols(4);
-        deviceField35.setOffsetNid(133);
+        deviceField35.setOffsetNid(140);
         jPanel10.add(deviceField35);
 
         jPanel4.add(jPanel10);
@@ -295,26 +295,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField24.setIdentifier("");
         deviceField24.setLabelString("Trigger Event:");
-        deviceField24.setOffsetNid(155);
+        deviceField24.setOffsetNid(164);
         deviceField24.setTextOnly(true);
         jPanel11.add(deviceField24);
 
         deviceField25.setIdentifier("");
         deviceField25.setLabelString("Wait cycles: ");
         deviceField25.setNumCols(6);
-        deviceField25.setOffsetNid(158);
+        deviceField25.setOffsetNid(167);
         jPanel11.add(deviceField25);
 
         deviceField26.setIdentifier("");
         deviceField26.setLabelString("Trigger cycles:");
         deviceField26.setNumCols(6);
-        deviceField26.setOffsetNid(161);
+        deviceField26.setOffsetNid(170);
         jPanel11.add(deviceField26);
 
         deviceField36.setIdentifier("");
         deviceField36.setLabelString("Segment len.:");
         deviceField36.setNumCols(4);
-        deviceField36.setOffsetNid(150);
+        deviceField36.setOffsetNid(158);
         jPanel11.add(deviceField36);
 
         jPanel4.add(jPanel11);
@@ -323,26 +323,26 @@ public class MARTE2_SWTRIGSetup extends DeviceSetup {
 
         deviceField27.setIdentifier("");
         deviceField27.setLabelString("Trigger Event:");
-        deviceField27.setOffsetNid(172);
+        deviceField27.setOffsetNid(182);
         deviceField27.setTextOnly(true);
         jPanel12.add(deviceField27);
 
         deviceField28.setIdentifier("");
         deviceField28.setLabelString("Wait cycles: ");
         deviceField28.setNumCols(6);
-        deviceField28.setOffsetNid(175);
+        deviceField28.setOffsetNid(185);
         jPanel12.add(deviceField28);
 
         deviceField29.setIdentifier("");
         deviceField29.setLabelString("Trigger cycles:");
         deviceField29.setNumCols(6);
-        deviceField29.setOffsetNid(178);
+        deviceField29.setOffsetNid(188);
         jPanel12.add(deviceField29);
 
         deviceField37.setIdentifier("");
         deviceField37.setLabelString("Segment len.:");
         deviceField37.setNumCols(4);
-        deviceField37.setOffsetNid(167);
+        deviceField37.setOffsetNid(176);
         jPanel12.add(deviceField37);
 
         jPanel4.add(jPanel12);

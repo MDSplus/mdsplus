@@ -109,6 +109,7 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret, String
 #include <ctype.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <status.h>
 #ifndef _toupper
 #define _toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c)&0xDF : (c))
 #endif
@@ -272,7 +273,7 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
           status = (TdiDimOf(&sig, &x_xd MDS_END_ARG) & 1) &&
                    (TdiData(&x_xd, &x_xd MDS_END_ARG) & 1) &&
                    (TdiCvt(&x_xd, &float_dsc, &x_xd MDS_END_ARG) & 1);
-        if (!(status & 1) && (y_a->class == CLASS_S))
+        if (STATUS_NOT_OK && (y_a->class == CLASS_S))
         {
           static int zero = 0;
           static DESCRIPTOR_LONG(zero_d, &zero);
@@ -871,7 +872,7 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
         else
           status =
               MdsValue(sock, "f_float(data(dim_of(_y$$dwscope)))", &xans, NULL);
-        if (status & 1)
+        if (STATUS_OK)
         {
           int xcount = Nelements(&xans);
           if (xcount < count)

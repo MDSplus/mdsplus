@@ -22,7 +22,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,2,-78"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,3,-75"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -122,7 +122,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="53"/>
+                    <Property name="offsetNid" type="int" value="56"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -131,7 +131,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="56"/>
+                    <Property name="offsetNid" type="int" value="59"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField8">
@@ -139,7 +139,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="59"/>
+                    <Property name="offsetNid" type="int" value="62"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField30">
@@ -147,7 +147,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="48"/>
+                    <Property name="offsetNid" type="int" value="50"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -167,7 +167,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="70"/>
+                    <Property name="offsetNid" type="int" value="74"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -176,7 +176,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="73"/>
+                    <Property name="offsetNid" type="int" value="77"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField11">
@@ -184,7 +184,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="76"/>
+                    <Property name="offsetNid" type="int" value="80"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField31">
@@ -192,7 +192,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="65"/>
+                    <Property name="offsetNid" type="int" value="68"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -212,7 +212,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="87"/>
+                    <Property name="offsetNid" type="int" value="92"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -221,7 +221,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="90"/>
+                    <Property name="offsetNid" type="int" value="95"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField14">
@@ -229,7 +229,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="93"/>
+                    <Property name="offsetNid" type="int" value="98"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField32">
@@ -237,7 +237,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="82"/>
+                    <Property name="offsetNid" type="int" value="86"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -257,7 +257,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="104"/>
+                    <Property name="offsetNid" type="int" value="110"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -266,7 +266,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="107"/>
+                    <Property name="offsetNid" type="int" value="113"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField17">
@@ -274,7 +274,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="110"/>
+                    <Property name="offsetNid" type="int" value="116"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField33">
@@ -282,7 +282,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="99"/>
+                    <Property name="offsetNid" type="int" value="104"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -302,7 +302,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="121"/>
+                    <Property name="offsetNid" type="int" value="128"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -311,7 +311,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="124"/>
+                    <Property name="offsetNid" type="int" value="131"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField20">
@@ -319,7 +319,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="127"/>
+                    <Property name="offsetNid" type="int" value="134"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField34">
@@ -327,7 +327,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="116"/>
+                    <Property name="offsetNid" type="int" value="122"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -347,7 +347,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="138"/>
+                    <Property name="offsetNid" type="int" value="146"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -356,7 +356,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="141"/>
+                    <Property name="offsetNid" type="int" value="149"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField23">
@@ -364,7 +364,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="144"/>
+                    <Property name="offsetNid" type="int" value="152"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField35">
@@ -372,7 +372,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="133"/>
+                    <Property name="offsetNid" type="int" value="140"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -392,7 +392,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="155"/>
+                    <Property name="offsetNid" type="int" value="164"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -401,7 +401,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="158"/>
+                    <Property name="offsetNid" type="int" value="167"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField26">
@@ -409,7 +409,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="161"/>
+                    <Property name="offsetNid" type="int" value="170"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField36">
@@ -417,7 +417,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="150"/>
+                    <Property name="offsetNid" type="int" value="158"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -437,7 +437,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger Event:"/>
-                    <Property name="offsetNid" type="int" value="172"/>
+                    <Property name="offsetNid" type="int" value="182"/>
                     <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
@@ -446,7 +446,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Wait cycles: "/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="175"/>
+                    <Property name="offsetNid" type="int" value="185"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField29">
@@ -454,7 +454,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trigger cycles:"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="178"/>
+                    <Property name="offsetNid" type="int" value="188"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceField" name="deviceField37">
@@ -462,7 +462,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Segment len.:"/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="167"/>
+                    <Property name="offsetNid" type="int" value="176"/>
                   </Properties>
                 </Component>
               </SubComponents>

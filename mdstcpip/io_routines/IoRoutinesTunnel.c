@@ -22,16 +22,20 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #define PROTOCOL "tunnel"
 #define PROT_TUNNEL
 #include "ioroutines_pipes.h"
+
+// #define DEBUG
+#include <mdsmsg.h>
 
 static int io_disconnect(Connection *c)
 {
   io_pipes_t *p = get_pipes(c);
   if (p)
   {
-#ifdef _WIN32
+#ifdef WIN32
     if (p->pid)
     {
       DWORD exitcode;
@@ -64,7 +68,7 @@ static int io_disconnect(Connection *c)
   return C_OK;
 }
 
-#ifndef _WIN32
+#ifndef WIN32
 static void ChildSignalHandler(int num __attribute__((unused)))
 {
   // Ensure that the handler does not spoil errno.
@@ -90,7 +94,7 @@ static void ChildSignalHandler(int num __attribute__((unused)))
       if (info_name && strcmp(info_name, PROTOCOL) == 0 &&
           ((io_pipes_t *)info)->pid == pid)
       {
-        DisconnectConnection(id);
+        CloseConnection(id);
         break;
       }
     }
@@ -101,7 +105,7 @@ static void ChildSignalHandler(int num __attribute__((unused)))
 
 static int io_connect(Connection *c, char *protocol, char *host)
 {
-#ifdef _WIN32
+#ifdef WIN32
   size_t len = strlen(protocol) * 2 + strlen(host) + 512;
   char *cmd = (char *)malloc(len);
   _snprintf_s(cmd, len, len - 1,
@@ -160,7 +164,7 @@ static int io_connect(Connection *c, char *protocol, char *host)
     CloseHandle(pipe_c2p.wr);
     CloseHandle(pipe_p2c.rd);
     CloseHandle(piProcInfo.hThread);
-    SetConnectionInfoC(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
+    ConnectionSetInfo(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
     return C_OK;
   }
   fprintf(stderr, "CreateProcess");
@@ -186,7 +190,7 @@ err:;
   int err_c2p = pipe((int *)&pipe_c2p);
   if (err_p2c || err_c2p)
   {
-    perror("Error in mdsip io_connect creating pipes\n");
+    perror("Error in mdsip io_connect creating pipes");
     if (!err_p2c)
     {
       close(pipe_p2c.rd);
@@ -202,7 +206,7 @@ err:;
   pid_t pid = fork();
   if (pid < 0)
   { // error
-    fprintf(stderr, "Error %d from fork()\n", errno);
+    perror("Error from fork()");
     close(pipe_c2p.rd);
     close(pipe_c2p.wr);
     close(pipe_p2c.rd);
@@ -227,7 +231,7 @@ err:;
     sigaddset(&handler.sa_mask, SIGPIPE);
     sigaction(SIGCHLD, &handler, NULL);
     sigaction(SIGPIPE, &handler, NULL);
-    SetConnectionInfoC(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
+    ConnectionSetInfo(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
     return C_OK;
   }
   /*if (pid==0)*/ { // child
@@ -247,6 +251,8 @@ err:;
     fcntl(pipe_p2c.rd, F_SETFD, FD_CLOEXEC);
     close(pipe_c2p.rd);
     fcntl(pipe_c2p.wr, F_SETFD, FD_CLOEXEC);
+    // sleep(1); // uncomment to simulate slow clients
+    MDSDBG("Starting client process for protocol '%s'", protocol);
     int err = execvp(localcmd, arglist) ? errno : 0;
     if (err == 2)
     {
@@ -257,6 +263,10 @@ err:;
     }
     else if ((errno = err))
       perror("Client process terminated");
+    else
+    {
+      MDSDBG("Client process terminated");
+    }
     exit(err);
   }
 #endif
@@ -265,29 +275,35 @@ err:;
 static int io_listen(int argc __attribute__((unused)),
                      char **argv __attribute__((unused)))
 {
-  int id, status;
-  INIT_AND_FREE_ON_EXIT(char *, username);
-#ifdef _WIN32
-  io_pipes_t p;
-  p.in = GetStdHandle(STD_INPUT_HANDLE);
-  p.out = GetStdHandle(STD_OUTPUT_HANDLE);
-  p.pid = NULL;
+  io_pipes_t pipes;
+  memset(&pipes, 0, sizeof(pipes));
+#ifdef WIN32
+  pipes.in = (HANDLE)_get_osfhandle(0);
+  pipes.out = (HANDLE)_get_osfhandle(_dup(1));
+  close(1);
+  _dup2(2, 1);
 #else
-  io_pipes_t p = {0, 1, 0};
-  p.in = dup(0);
-  p.out = dup(1);
-  fcntl(p.in, F_SETFD, FD_CLOEXEC);
-  fcntl(p.out, F_SETFD, FD_CLOEXEC);
-  fcntl(0, F_SETFD, FD_CLOEXEC);
-  close(1); // fcntl(1,F_SETFD,FD_CLOEXEC);
+  pipes.in = 0;       // use stdin directly
+  pipes.out = dup(1); // use copy of stdout so we can redirect to stderr
+  close(1);
   dup2(2, 1);
+  fcntl(pipes.in, F_SETFD, FD_CLOEXEC);
+  fcntl(pipes.out, F_SETFD, FD_CLOEXEC);
 #endif
-  status = AcceptConnection(GetProtocol(), PROTOCOL, 0, &p, sizeof(p), &id,
-                            &username);
-  FREE_NOW(username);
-  while (STATUS_OK)
-    status = DoMessage(id);
-  return C_OK;
+  int id;
+  int status = AcceptConnection(
+      GetProtocol(), PROTOCOL, 0, &pipes, sizeof(io_pipes_t), &id, NULL);
+  if (STATUS_OK)
+  {
+    Connection *connection = PopConnection(id);
+    pthread_cleanup_push((void *)destroyConnection, (void *)connection);
+    do
+      status = ConnectionDoMessage(connection);
+    while (STATUS_OK);
+    pthread_cleanup_pop(1);
+    return C_OK;
+  }
+  return C_ERROR;
 }
 
 const IoRoutines tunnel_routines = {io_connect, io_send, io_recv, NULL,

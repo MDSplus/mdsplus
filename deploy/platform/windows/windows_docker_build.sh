@@ -3,10 +3,10 @@
 # windows_docker_build.sh - build windows installer
 #
 # release:
-# /release/$branch/MDSplus-*.exe
+# /release/$flavor/MDSplus-*.exe
 #
 # publish:
-# /publish/$branch/MDSplus-*.exe
+# /publish/$flavor/MDSplus-*.exe
 #
 
 srcdir=$(readlink -e $(dirname ${0})/../..)
@@ -35,7 +35,7 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
-    config ${test64} ${ALPHA_DEBUG_INFO}
+    config ${test64} ${CONFIGURE_EXTRA}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -43,15 +43,18 @@ buildrelease() {
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
-    config ${test32} ${ALPHA_DEBUG_INFO}
+    config ${test32} ${CONFIGURE_EXTRA}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
     fi
     popd
     if [ -z "$NOMAKE" ]; then
+      pushd /workspace/releasebld/32/mdsobjects/cpp
+      $MAKE generate-libs-from-dlls
+      popd
       pushd /workspace/releasebld/64/mdsobjects/cpp
-      $MAKE defs
+      $MAKE generate-libs-from-dlls
       HOME=/workspace/winebottle64 WINEARCH=win64\
 	wine cmd /C ${srcdir}/deploy/platform/windows/visual-studio-build.bat
       cp /workspace/releasebld/64/bin_x86_64/MdsObjectsCppShr-VS.dll ${MDSPLUS_DIR}/bin_x86_64/
@@ -71,11 +74,5 @@ publish() {
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
     minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
     release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-    if [ "${BRANCH}" = "stable" ]
-    then
-        bname=""
-    else
-        bname="-${BRANCH}"
-    fi
-    rsync -a /release/${BRANCH}/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}
+    rsync -a /release/${FLAVOR}/MDSplus${BNAME}-${major}.${minor}-${release}.exe /publish/${FLAVOR}
 }

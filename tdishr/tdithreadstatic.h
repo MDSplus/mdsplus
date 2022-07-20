@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _TDITHREADSTATIC_H
+#define _TDITHREADSTATIC_H
+
 #include "../mdsshr/mdsthreadstatic.h"
 #include "tdirefzone.h"
 
@@ -72,3 +74,4 @@ typedef struct
 #define TDI_BALANCE (TDI_STACK.balance.all)
 
 extern DEFINE_GETTHREADSTATIC(TDITHREADSTATIC_TYPE, TdiGetThreadStatic);
+#endif // ifndef _TDITHREADSTATIC_H

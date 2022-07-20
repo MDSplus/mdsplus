@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _STATUS_H
+#define _STATUS_H
 #include <mdsshr_messages.h>
 #define STATUS_H(x) x
 #define FALSE 0
@@ -18,8 +19,10 @@
 #define STATUS_TO_CODE TO_CODE(status)
 #define RETURN_IF_STATUS_NOT_OK \
   if (STATUS_NOT_OK)            \
-    return status;              \
-#define BREAK_IF_STATUS_NOT_OK if (STATUS_NOT_OK) break;
+    return status;
+#define BREAK_IF_STATUS_NOT_OK \
+  if (STATUS_NOT_OK)           \
+    break;
 #define GOTO_IF_STATUS_NOT_OK(MARK) \
   if (STATUS_NOT_OK)                \
     goto MARK;
@@ -32,3 +35,4 @@
 #define GOTO_IF_NOT_OK(MARK, CHECK)  \
   if (IS_NOT_OK((status = (CHECK)))) \
     goto MARK;
+#endif

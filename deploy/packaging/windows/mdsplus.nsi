@@ -1,9 +1,9 @@
-Name   "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
-OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
+Name   "MDSplus${BNAME} ${MAJOR}.${MINOR}-${RELEASE}"
+OutFile ${OUTDIR}/MDSplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}.exe
 ;SetCompress off
 SetCompressor /FINAL LZMA
 ShowInstDetails show
-InstType "Typical" 
+InstType "Typical"
 InstType "Full"
 InstType "Minimal"
 
@@ -153,7 +153,7 @@ Function install_core_pre
 	File MDSplus-License.rtf
 
 	# Registry information for add/remove programs
-	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${FLAVOR}"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${BNAME}"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe" /$MultiUser.InstallMode'
 	${WriteKeyStr} "${UNINSTALL_KEY}" "QuietUninstallString" '"$INSTDIR\uninstall.exe" /S /$MultiUser.InstallMode'
 	${WriteKeyStr} "${UNINSTALL_KEY}" "Uninstaller"	"$INSTDIR\uninstall.exe"
@@ -691,7 +691,7 @@ functionEnd ; un.onInit
 Function un.onGUIEnd
 	SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 FunctionEnd
- 
+
 Section uninstall
 	Push $R0
 	Push $R1

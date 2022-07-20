@@ -51,7 +51,7 @@ EXPORT int GEN_DEVICE$CVT_STRING_CODE( )
 #include <string.h>
 #include <mdsshr_messages.h>
 #include <treeshr.h>
-#include <mds_gendevice.h>
+#include "mds_gendevice.h"
 
 struct _table {
   short code;

@@ -62,7 +62,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase Div: "/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="43"/>
+                <Property name="offsetNid" type="int" value="44"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -99,6 +99,14 @@
                 <Property name="labelString" type="java.lang.String" value="Out CPUs"/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="34"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField6">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Stream:"/>
+                <Property name="offsetNid" type="int" value="41"/>
+                <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
           </SubComponents>

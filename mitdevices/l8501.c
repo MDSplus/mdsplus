@@ -24,8 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
-#include <mds_gendevice.h>
-#include <mitdevices_msg.h>
+#include "mds_gendevice.h"
+#include "mitdevices_msg.h"
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include "l8501_gen.h"
@@ -243,7 +243,7 @@ EXPORT int l8501___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
 	 time of the stop trigger and
 	 write it out.
 	******************************/
-      if (status & 1 && TreeIsOn(stop_out_nid) & 1) {
+      if (STATUS_OK && TreeIsOn(stop_out_nid) & 1) {
 	static DESCRIPTOR_FUNCTION_2(trig_mult_exp, &OpcMultiply, &dt3, &f3_count);
 	static DESCRIPTOR_FUNCTION_2(trig_add_exp, &OpcAdd, &fswitch,
 				     &trig_mult_exp);
@@ -395,7 +395,7 @@ EXPORT int l8501__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), s
   static NCI_ITM nci[] =
       { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (char *)0 + nid;
+  uilnames[0].value = (void *)(intptr_t)nid;
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "L8501", uilnames,
 			 XtNumber(uilnames), 0);
 }

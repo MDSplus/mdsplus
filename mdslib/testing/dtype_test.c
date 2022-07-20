@@ -23,6 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "mdslib.h"
+#include <status.h>
 #include <limits.h>
 
 #include <testing.h>
@@ -91,82 +92,82 @@ int main(int argc __attribute__((unused)),
 
   dsc = descr(&dtype_uchar, &vUChar, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vUChar == UCHAR_MAX - 1);
 
   dsc = descr(&dtype_ushort, &vUShort, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vUShort == USHRT_MAX - 1);
 
   dsc = descr(&dtype_ulong, &vULong, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vULong == UINT_MAX - 1);
 
   dsc = descr(&dtype_ulonglong, vULongLong, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
   /* do the test right on big endian machines */
 #if defined(_QUAD_HIGHWORD) && defined(_QUAD_LOWWORD)
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1((vULongLong[_QUAD_LOWWORD] == UINT_MAX - 1) &&
         (vULongLong[_QUAD_HIGHWORD] == UINT_MAX));
 #else
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1((vULongLong[0] == UINT_MAX - 1) && (vULongLong[1] == UINT_MAX));
 #endif
 
   dsc = descr(&dtype_char, &vChar, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vChar == CHAR_MAX - 1);
 
   dsc = descr(&dtype_short, &vShort, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vShort == SHRT_MAX - 1);
 
   dsc = descr(&dtype_long, &vLong, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vLong == INT_MAX - 1);
 
   dsc = descr(&dtype_longlong, vLongLong, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
 #if defined(_QUAD_HIGHWORD) && defined(_QUAD_LOWWORD)
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1((vLongLong[_QUAD_LOWWORD] == INT_MAX - 1) &&
         (vLongLong[_QUAD_HIGHWORD] == INT_MAX));
 #else
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1((vLongLong[0] == INT_MAX - 1) && (vLongLong[1] == INT_MAX));
 #endif
 
   dsc = descr(&dtype_float, &vFloat, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vFloat - FLOAT_TEST + 1 < 1.e-7);
 
   dsc = descr(&dtype_double, &vDouble, &null);
   status = MdsValue("$-1", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(vDouble == DOUBLE_TEST - 1);
 
   dsc = descr(&dtype_complex, vComplex, &null);
   status = MdsValue("$-CMPLX(0,1)", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1((vComplex[0] == COMPLEX_TEST0) && (vComplex[1] == COMPLEX_TEST1 - 1));
 
   dsc = descr(&dtype_complex_double, vComplexDouble, &null);
   status = MdsValue("$-CMPLX(0,1)", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1((vComplexDouble[0] == COMPLEX_DOUBLE_TEST0) &&
         (vComplexDouble[1] == COMPLEX_DOUBLE_TEST1 - 1));
 
   len = 14;
   dsc = descr(&dtype_cstring, vCstring, &null, &len);
   status = MdsValue("UPCASE($)", &dsc, &dsc, &null, &len);
-  TEST1(status & 1);
+  TEST1(STATUS_OK);
   TEST1(strcmp(vCstring, CSTRING_TEST1) == 0);
 
   END_TESTING;

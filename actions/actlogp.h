@@ -108,7 +108,7 @@ static int parseMsg(char *msg, LinkedEvent *event)
   char *tmp;
   if (!msg)
     return C_ERROR;
-  event->msg = strcpy(malloc(strlen(msg) + 1), msg);
+  event->msg = strdup(msg);
   event->tree = strtok(event->msg, " ");
   if (!event->tree)
     return C_ERROR;

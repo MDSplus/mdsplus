@@ -22,8 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mitdevices_msg.h>
-#include <mds_gendevice.h>
+#include "mitdevices_msg.h"
+#include "mds_gendevice.h"
 #include "a12_gen.h"
 EXPORT int a12__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
@@ -142,7 +142,7 @@ EXPORT int a12__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)),
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
   nci_list[0].pointer = (unsigned char *)&element;
   status = TreeGetNci(*(int *)nid_d_ptr->pointer, nci_list);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   switch (element) {
   case (A12_N_HEAD + 1):

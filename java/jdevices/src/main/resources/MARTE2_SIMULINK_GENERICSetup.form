@@ -699,6 +699,14 @@
                         <Property name="offsetNid" type="int" value="107"/>
                       </Properties>
                     </Component>
+                    <Component class="DeviceField" name="deviceField69">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="108"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="jPanel31">
@@ -720,7 +728,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name:"/>
-                        <Property name="offsetNid" type="int" value="111"/>
+                        <Property name="offsetNid" type="int" value="112"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -738,7 +746,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="112"/>
+                        <Property name="offsetNid" type="int" value="113"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -747,7 +755,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimension (0 for scalar, -1 to disable)"/>
                         <Property name="numCols" type="int" value="8"/>
-                        <Property name="offsetNid" type="int" value="114"/>
+                        <Property name="offsetNid" type="int" value="115"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField34">
@@ -755,7 +763,15 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
                         <Property name="numCols" type="int" value="14"/>
-                        <Property name="offsetNid" type="int" value="115"/>
+                        <Property name="offsetNid" type="int" value="116"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField70">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="117"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -779,7 +795,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name:"/>
-                        <Property name="offsetNid" type="int" value="119"/>
+                        <Property name="offsetNid" type="int" value="121"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -797,7 +813,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="120"/>
+                        <Property name="offsetNid" type="int" value="122"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -806,7 +822,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimension (0 for scalar, -1 to disable)"/>
                         <Property name="numCols" type="int" value="8"/>
-                        <Property name="offsetNid" type="int" value="122"/>
+                        <Property name="offsetNid" type="int" value="124"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField37">
@@ -814,7 +830,15 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
                         <Property name="numCols" type="int" value="14"/>
-                        <Property name="offsetNid" type="int" value="123"/>
+                        <Property name="offsetNid" type="int" value="125"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField71">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="126"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -838,7 +862,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name:"/>
-                        <Property name="offsetNid" type="int" value="127"/>
+                        <Property name="offsetNid" type="int" value="130"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -856,7 +880,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="128"/>
+                        <Property name="offsetNid" type="int" value="131"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -865,7 +889,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimension (0 for scalar, -1 to disable)"/>
                         <Property name="numCols" type="int" value="8"/>
-                        <Property name="offsetNid" type="int" value="130"/>
+                        <Property name="offsetNid" type="int" value="133"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField40">
@@ -873,7 +897,15 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
                         <Property name="numCols" type="int" value="14"/>
-                        <Property name="offsetNid" type="int" value="131"/>
+                        <Property name="offsetNid" type="int" value="134"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField72">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="135"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -897,7 +929,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name:"/>
-                        <Property name="offsetNid" type="int" value="135"/>
+                        <Property name="offsetNid" type="int" value="139"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -915,7 +947,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="136"/>
+                        <Property name="offsetNid" type="int" value="140"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -924,7 +956,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimension (0 for scalar, -1 to disable)"/>
                         <Property name="numCols" type="int" value="8"/>
-                        <Property name="offsetNid" type="int" value="138"/>
+                        <Property name="offsetNid" type="int" value="142"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField43">
@@ -932,7 +964,15 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
                         <Property name="numCols" type="int" value="14"/>
-                        <Property name="offsetNid" type="int" value="139"/>
+                        <Property name="offsetNid" type="int" value="143"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField73">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="144"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -956,7 +996,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name:"/>
-                        <Property name="offsetNid" type="int" value="143"/>
+                        <Property name="offsetNid" type="int" value="148"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -974,7 +1014,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="144"/>
+                        <Property name="offsetNid" type="int" value="149"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -983,7 +1023,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimension (0 for scalar, -1 to disable)"/>
                         <Property name="numCols" type="int" value="8"/>
-                        <Property name="offsetNid" type="int" value="146"/>
+                        <Property name="offsetNid" type="int" value="151"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField46">
@@ -991,7 +1031,15 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
                         <Property name="numCols" type="int" value="14"/>
-                        <Property name="offsetNid" type="int" value="147"/>
+                        <Property name="offsetNid" type="int" value="152"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField74">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="153"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1015,7 +1063,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name:"/>
-                        <Property name="offsetNid" type="int" value="151"/>
+                        <Property name="offsetNid" type="int" value="157"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1033,7 +1081,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="152"/>
+                        <Property name="offsetNid" type="int" value="158"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1042,7 +1090,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimension (0 for scalar, -1 to disable)"/>
                         <Property name="numCols" type="int" value="8"/>
-                        <Property name="offsetNid" type="int" value="154"/>
+                        <Property name="offsetNid" type="int" value="160"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField49">
@@ -1050,7 +1098,15 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
                         <Property name="numCols" type="int" value="14"/>
-                        <Property name="offsetNid" type="int" value="155"/>
+                        <Property name="offsetNid" type="int" value="161"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField75">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="162"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1074,7 +1130,7 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Name:"/>
-                        <Property name="offsetNid" type="int" value="159"/>
+                        <Property name="offsetNid" type="int" value="166"/>
                         <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1092,7 +1148,7 @@
                         </Property>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Type:"/>
-                        <Property name="offsetNid" type="int" value="160"/>
+                        <Property name="offsetNid" type="int" value="167"/>
                         <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
@@ -1101,7 +1157,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Dimension (0 for scalar, -1 to disable)"/>
                         <Property name="numCols" type="int" value="8"/>
-                        <Property name="offsetNid" type="int" value="162"/>
+                        <Property name="offsetNid" type="int" value="169"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField52">
@@ -1109,7 +1165,15 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
                         <Property name="numCols" type="int" value="14"/>
-                        <Property name="offsetNid" type="int" value="163"/>
+                        <Property name="offsetNid" type="int" value="170"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField76">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Stream: "/>
+                        <Property name="offsetNid" type="int" value="171"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1395,7 +1459,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase div. (if from another thread):"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="166"/>
+                <Property name="offsetNid" type="int" value="174"/>
               </Properties>
             </Component>
           </SubComponents>

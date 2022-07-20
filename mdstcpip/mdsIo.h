@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef _MDSIO_H
+#define _MDSIO_H
 #ifndef DOXYGEN // hide this part from documentation
 
 typedef enum
@@ -31,10 +32,6 @@ typedef enum
 #define MDS_IO_LOCK_NONE 0x00
 #define MDS_IO_LOCK_NOWAIT 0x08
 
-#ifndef MSG_DONTWAIT
-#define MSG_DONTWAIT 0
-#endif
-
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
@@ -45,7 +42,8 @@ typedef enum
 
 #define MDSIP_VERSION_DSC_ARGS 1
 #define MDSIP_VERSION_OPEN_ONE 2
-#define MDSIP_VERSION MDSIP_VERSION_OPEN_ONE
+#define MDSIP_VERSION_DSC_ANS 3
+#define MDSIP_VERSION MDSIP_VERSION_DSC_ANS
 
 #define MAX_DIMS 8
 
@@ -131,3 +129,4 @@ typedef union {
   }
 #endif
 #endif // DOXYGEN end of hidden code
+#endif // ifndef _MDSIO_H

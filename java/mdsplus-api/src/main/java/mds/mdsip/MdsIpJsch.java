@@ -12,16 +12,19 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 import com.jcraft.jsch.*;
-import com.jcraft.jsch.ConfigRepository.Config;
 
+import mds.mdsip.MdsIp.Connection;
 import mds.mdsip.MdsIp.MdsIpIOStream;
 
 public final class MdsIpJsch extends MdsIpIOStream
 {
+	private static final int FIELD_LENGTH = 32;
+
 	private static class Logger implements com.jcraft.jsch.Logger
 	{
 		public Logger()
-		{}
+		{
+		}
 
 		@Override
 		public boolean isEnabled(final int level)
@@ -59,7 +62,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 
 	static private final class SshServerInfo
 	{
-		static public SshServerInfo parse(final String serverstring, ConfigRepository cr)
+		static public SshServerInfo parse(final String serverstring, final ConfigRepository cr)
 		{
 			final int at = serverstring.indexOf("@");
 			final int cn = serverstring.indexOf(":");
@@ -73,59 +76,55 @@ public final class MdsIpJsch extends MdsIpIOStream
 		final SshServerInfo proxy;
 		final String proxyjump;
 		final String user;
-		final String hostname;
-		final Config config;
+		final String host;
+		final ConfigRepository config;
 		final int port;
 
 		public SshServerInfo(final String user, final String host, final int port)
 		{
-			this(user, host, port, MdsIpJsch.getConfigRepository());
+			this(user, host,  port, MdsIpJsch.getConfigRepository());
 		}
 
-		private SshServerInfo(final String user, final String host, final int port, ConfigRepository cr)
+		private SshServerInfo(final String user, final String host, final int port, final ConfigRepository cr)
 		{
-			config = cr.getConfig(host);
-			final String hostname = config.getHostname();
-			this.hostname = hostname != null ? hostname : host;
-			if (user != null)
-				this.user = user;
-			else
-			{
-				final String cuser = config.getUser();
-				this.user = cuser != null ? cuser : System.getProperty("user.name");
-			}
-			if (port != 0)
-				this.port = port;
-			else
-			{
-				final int pport = config.getPort();
-				this.port = pport > 0 ? pport : 22;
-			}
-			this.proxyjump = config.getValue("ProxyJump");
+			this.config = cr;
+			this.host = host;
+			this.user = user;
+			this.port = port;
+			this.proxyjump = this.config.getConfig(host).getValue("ProxyJump");
 			this.proxy = this.proxyjump == null ? null : SshServerInfo.parse(this.proxyjump, cr);
 		}
 
-		public Vector<Session> connect(int timeout) throws JSchException
+		public Vector<Session> connect(final int timeout) throws JSchException
 		{
-			Vector<Session> sessions;
-			Session session;
-			if (this.proxy != null)
+
+			final Vector<Session> sessions;
+			final int pport;
+			final String hostname;
+			final String username;
+			if (proxy != null)
 			{
-				sessions = this.proxy.connect(timeout);
-				final int pport = sessions.firstElement().setPortForwardingL(0, this.hostname, this.port);
-				session = ((JSch) MdsIpJsch.jsch).getSession(this.user, "127.0.0.1", pport);
+				hostname = "127.0.0.1";
+				sessions = proxy.connect(timeout);
+				username = config.getConfig(hostname).getUser();
+				pport = sessions.firstElement().setPortForwardingL(0, hostname, port);
 			}
 			else
 			{
+				((JSch) MdsIpJsch.jsch).setConfigRepository(config);
 				sessions = new Vector<>();
-				session = ((JSch) MdsIpJsch.jsch).getSession(this.user, this.hostname, this.port);
+				username = user;
+				hostname = null;
+				pport = port;
 			}
-			final String strictHostKeyChecking = config.getValue("StrictHostKeyChecking");
-			if (strictHostKeyChecking != null)
-				session.setConfig("StrictHostKeyChecking", strictHostKeyChecking);
+			Session session = ((JSch) MdsIpJsch.jsch).getSession(username, host);
+			if (hostname != null)
+				session.setHost(hostname);
+			if (pport > 0)
+				session.setPort(pport);
 			sessions.insertElementAt(session, 0);
-			session.setUserInfo(userinfo);
-			userinfo.tried_pw = false;
+			session.setUserInfo(MdsIpJsch.userinfo);
+			MdsIpJsch.userinfo.tried_pw = false;
 			session.connect(timeout);
 			return sessions;
 		}
@@ -135,8 +134,8 @@ public final class MdsIpJsch extends MdsIpIOStream
 	{
 		static HashMap<String, String[]> keyboard_ans = new HashMap<>();
 		static HashMap<String, UserInfo> keyboard_this = new HashMap<>();
-		private final JTextField passphraseField = new JPasswordField(20);
-		private final JTextField passwordField = new JPasswordField(20);
+		private final JTextField passphraseField = new JPasswordField(FIELD_LENGTH);
+		private final JTextField passwordField = new JPasswordField(FIELD_LENGTH);
 		private final AncestorListener RequestFocusListener = new AncestorListener()
 		{
 			@Override
@@ -150,11 +149,15 @@ public final class MdsIpJsch extends MdsIpIOStream
 
 			@Override
 			public void ancestorMoved(final AncestorEvent arg0)
-			{}
+			{
+				// noting to do
+			}
 
 			@Override
 			public void ancestorRemoved(final AncestorEvent arg0)
-			{}
+			{
+				// noting to do
+			}
 		};
 		public boolean tried_pw = false;
 		{
@@ -164,11 +167,15 @@ public final class MdsIpJsch extends MdsIpIOStream
 
 		@Override
 		public final String getPassphrase()
-		{ return this.passphraseField.getText(); }
+		{
+			return this.passphraseField.getText();
+		}
 
 		@Override
 		public final String getPassword()
-		{ return this.passwordField.getText(); }
+		{
+			return this.passwordField.getText();
+		}
 
 		@Override
 		public String[] promptKeyboardInteractive(final String destination, final String name, final String instruction,
@@ -183,7 +190,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 			for (int i = 0; i < prompt.length; i++)
 			{
 				ob[i * 2 + 2] = prompt[i];
-				ob[i * 2 + 3] = echo[i] ? new JTextField(20) : new JPasswordField(20);
+				ob[i * 2 + 3] = echo[i] ? new JTextField(FIELD_LENGTH) : new JPasswordField(FIELD_LENGTH);
 			}
 			if (prompt.length > 0)
 				((JTextField) ob[3]).addAncestorListener(this.RequestFocusListener);
@@ -261,10 +268,9 @@ public final class MdsIpJsch extends MdsIpIOStream
 		try
 		{
 			_jsch = new JSch();
-			final File known_hosts = new File(dotssh, "known_hosts");
-			final File id_rsa = new File(dotssh, "id_rsa");
-			if (!dotssh.exists())
-				dotssh.mkdirs();
+			final File known_hosts = new File(MdsIpJsch.dotssh, "known_hosts");
+			if (!MdsIpJsch.dotssh.exists())
+				MdsIpJsch.dotssh.mkdirs();
 			if (known_hosts.exists())
 				try
 				{
@@ -280,15 +286,6 @@ public final class MdsIpJsch extends MdsIpIOStream
 					known_hosts.createNewFile();
 				}
 				catch (final IOException e)
-				{
-					e.printStackTrace();
-				}
-			if (id_rsa.exists())
-				try
-				{
-					_jsch.addIdentity(id_rsa.getAbsolutePath());
-				}
-				catch (final JSchException e)
 				{
 					e.printStackTrace();
 				}
@@ -311,9 +308,19 @@ public final class MdsIpJsch extends MdsIpIOStream
 		userinfo = _userinfo;
 	}
 
+	public static Connection fromString(final String string) throws IOException
+	{
+		final String usersplit[] = string.split("@", 2);
+		final String user = usersplit.length == 1 ? null : usersplit[1];
+		final String rest = usersplit.length == 1 ? usersplit[0] : usersplit[1];
+		final String portsplit[] = rest.split(":", 2);
+		final int port = portsplit.length == 1 ? 0 : Integer.parseInt(portsplit[1]);
+		return new MdsIpJsch(user, portsplit[0], port);
+	}
+
 	private static final ConfigRepository getConfigRepository()
 	{
-		final File config = new File(dotssh, "config");
+		final File config = new File(MdsIpJsch.dotssh, "config");
 		if (config.exists())
 			try
 			{
@@ -329,7 +336,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 	private final Channel channel;
 	private final Vector<Session> sessions;
 
-	public MdsIpJsch(String user, String host, int port) throws IOException
+	public MdsIpJsch(final String user, final String host, final int port) throws IOException
 	{
 		if (MdsIpJsch.jsch == null)
 			throw new IOException("JSch not found! SSH connection not available.");
@@ -338,10 +345,10 @@ public final class MdsIpJsch extends MdsIpIOStream
 			if (debug.DEBUG.ON)
 				JSch.setLogger(new MdsIpJsch.Logger());
 			final SshServerInfo serverinfo = new SshServerInfo(user, host, port);
-			sessions = serverinfo.connect(10_000); // timeout in ms
-			channel = sessions.firstElement().openChannel("exec");
-			((ChannelExec) channel).setCommand("/bin/sh -l -c mdsip-server-ssh");
-			channel.connect();
+			this.sessions = serverinfo.connect(10_000); // timeout in ms
+			this.channel = this.sessions.firstElement().openChannel("exec");
+			((ChannelExec) this.channel).setCommand("/bin/sh -l -c mdsip-server-ssh");
+			this.channel.connect();
 		}
 		catch (final Exception e)
 		{
@@ -376,7 +383,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 					}
 					finally
 					{
-						for (final Session session : sessions)
+						for (final Session session : this.sessions)
 							session.disconnect();
 					}
 				}
@@ -390,7 +397,14 @@ public final class MdsIpJsch extends MdsIpIOStream
 		}
 	}
 
+	public String getUser()
+	{
+		return this.sessions.firstElement().getUserName();
+	}
+
 	@Override
 	public boolean isOpen()
-	{ return !this.channel.isClosed() && this.channel.isConnected() && !this.channel.isEOF(); }
+	{
+		return !this.channel.isClosed() && this.channel.isConnected() && !this.channel.isEOF();
+	}
 }

@@ -149,7 +149,7 @@ int main(int argc, char **argv)
   }
   event = argv[optind];
   status = MDSWfeventTimed(event, MAXDATA, data, &len, timeout);
-  if (status & 1)
+  if (STATUS_OK)
   {
     if (showdata && len)
     {
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
         EMPTYXD(xd);
         struct descriptor ans = {0, DTYPE_T, CLASS_D, 0};
         status = MdsSerializeDscIn(data, &xd);
-        if (status & 1)
+        if (STATUS_OK)
         {
           TdiDecompile(&xd, &ans MDS_END_ARG);
           if (ans.pointer)

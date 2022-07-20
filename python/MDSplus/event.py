@@ -27,7 +27,7 @@
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
 
@@ -224,40 +224,40 @@ the e.join() would return exiting the problem.
         return eventid.value
 
     @staticmethod
-    def stream(shot, signal, timeData, sampleData):
-        """Builds the payload for the MDS event STREAMING. This event will be received by a Node.js server 
+    def stream(shot, signal, time_data, sample_data):
+        """Builds the payload for the MDS event STREAMING. This event will be received by a Node.js server
         that will serve web applications for waveform streaming
         @param shot: shot number
         @param signal: name of the signal. The choice of name is free
         @type signal: str
-        @param timeData: Time associated with samples
+        @param time_data: Time associated with samples
         @type signal: Data
-        @param sampleData: Data samples 
-        @type sampleData: Data
+        @param sample_data: Data samples
+        @type sample_data: Data
         """
-        if isinstance(timeData, _sca.Uint64) or isinstance(timeData, _arr.Uint64Array) or isinstance(timeData, _sca.Int64) or isinstance(timeData, _arr.Int64Array):
-            times = timeData.data()
+        if isinstance(time_data, _sca.Uint64) or isinstance(time_data, _arr.Uint64Array) or isinstance(time_data, _sca.Int64) or isinstance(time_data, _arr.Int64Array):
+            times = time_data.data()
             if _N.isscalar(times):
                 times = [int(times)]
             else:
                 times = times.astype(int).tolist()
-            isAbsoluteTime = 1
+            is_absolute_time = 1
         else:
-            times = timeData.data()
+            times = time_data.data()
             if _N.isscalar(times):
                 times = [times.astype(float)]
             else:
                 times = times.astype(float).tolist()
-            isAbsoluteTime = 0
-        samples = sampleData.data()
+            is_absolute_time = 0
+        samples = sample_data.data()
         if _N.isscalar(samples):
             samples = [samples.astype(float)]
         else:
             samples = samples.astype(float).tolist()
-        payloadDict = {'name': signal, 'shot':shot, 'samples': samples, 'times': times,
-            'timestamp':0, 'absolute_time': isAbsoluteTime}
+        payload_dict = {'name': signal, 'shot':shot, 'samples': samples, 'times': times,
+            'timestamp':0, 'absolute_time': is_absolute_time}
 
-        payload = json.dumps(payloadDict)
+        payload = json.dumps(payload_dict)
         Event.seteventRaw(signal, _N.uint8(bytearray(payload, 'utf8')))
 
     def getQueue(self):

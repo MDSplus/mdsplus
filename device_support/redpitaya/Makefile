@@ -5,7 +5,7 @@ CFLAGS =  -fPIC  -o2  -Wall -DLINUX -I${MDSPLUS_DIR}/include -I. -Wno-unused-var
 LDFLAGS =  -L${MDSPLUS_DIR}/lib  -lpthread -lMdsObjectsCppShr 
 
 
-SOURCES=redpitaya.cpp 
+SOURCES=redpitaya.cpp AsyncStoreManager.cpp redpitaya_dac.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 SHAREDLIB=libredpitaya.so
 EXE=test

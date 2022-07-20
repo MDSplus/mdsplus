@@ -135,7 +135,8 @@ MDSplusException.statusDict[%(msgnum)d] = %(fac)s%(msgnam)s
 """
 
 inc_head = """
-#pragma once
+#ifndef _{base}_{ext}
+#define _{base}_{ext}
 #include <status.h>
 
 """
@@ -296,7 +297,8 @@ def gen_include(root, filename, faclist, msglistm, f_test):
     print(filename)
     with open("%s/include/%sh" % (sourcedir, filename[0:-3]), 'w') as f_inc:
         add_c_header(f_inc, filename)
-        f_inc.write(inc_head)
+        parts = filename.upper().split('.')
+        f_inc.write(inc_head.format(base=parts[0],ext=parts[1]))
         for f in root.iter('facility'):
             facnam = f.get('name')
             facnum = int(f.get('value'))
@@ -352,6 +354,7 @@ def gen_include(root, filename, faclist, msglistm, f_test):
                 if not facnam in pfaclist:
                     pfaclist.append(facnam)
                 msglist.append(msg)
+        f_inc.write("#endif")
 
 
 # gen_msglist():

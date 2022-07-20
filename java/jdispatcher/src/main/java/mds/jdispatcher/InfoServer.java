@@ -6,6 +6,8 @@ import mds.connection.MdsConnection;
 
 class InfoServer implements Server
 {
+
+/*
       static class TreeRepo
       {
         static Hashtable<Integer, MDSplus.Tree> treeHash = new Hashtable<Integer, MDSplus.Tree>();
@@ -17,6 +19,7 @@ class InfoServer implements Server
           {
             try {
                 retTree = new MDSplus.Tree(name, shot);
+System.out.println("Opening tree " + name + " shot " + shot + " thread " + Thread.currentThread().getName());
                 treeHash.put(shot, retTree);
             } catch(Exception exc){System.out.println("Error opening tree " + name + " shot " + shot+": "+exc);} 
           }
@@ -27,7 +30,7 @@ class InfoServer implements Server
           treeHash.remove(new Integer(shot));
         }
       }
-
+*/
         static MDSplus.Tree model_database;
 
 	public static MDSplus.Tree getDatabase()
@@ -66,9 +69,10 @@ class InfoServer implements Server
 		System.out.println("InfoServer: beginSequence...");
 		try
 		{
-			//model_database = new MDSplus.Tree(tree, -1);
-			model_database = TreeRepo.getTree(tree, -1);
+		        model_database = new MDSplus.Tree(tree, -1);
+			//model_database = TreeRepo.getTree(tree, -1);
 			model_database.createPulse(shot);
+System.out.println("beginSequence Tree " + tree + " shot " + shot + " thread " + Thread.currentThread().getName());
 		}
 		catch (final Exception exc)
 		{
@@ -85,19 +89,29 @@ class InfoServer implements Server
 		final Vector<Action> action_vect = new Vector<>();
 		int num_actions;
 		final Hashtable<Integer, MDSplus.Action> action_table = new Hashtable<>();
+
+System.out.println("model_database " + model_database );
+System.out.println("Tree " + tree + " shot " + shot + " thread " + Thread.currentThread().getName());
+
+model_database = null;
 		if (model_database == null)
 		{
+/*
+boooo
 			if (tree == null || shot == -1)
 				return null;
+*/
 			try
 			{
-                               // model_database = new MDSplus.Tree(tree, shot);
-                                model_database = TreeRepo.getTree(tree, shot);
+                                model_database = new MDSplus.Tree(tree, shot);
+                                //model_database = TreeRepo.getTree(tree, shot);
 			}
 			catch (final Exception exc)
 			{
+exc.printStackTrace();
 				return null;
 			}
+
 		}
 		MDSplus.TreeNodeArray nids = null;
 		try
@@ -106,6 +120,7 @@ class InfoServer implements Server
 		}
 		catch (final Exception exc)
 		{
+exc.printStackTrace();
 			return null;
 		}
 		if (nids == null)
@@ -117,9 +132,14 @@ class InfoServer implements Server
 			try
 			{
 				nid = nids.getElementAt(i);
+
+System.out.println("1 - " + nid.isOn() + " Path " +  nid.getFullPath());
+
 				if (!nid.isOn())
 					continue;
+
 				// check dispatch and task fields
+
 				final MDSplus.Action action_data = (MDSplus.Action) nid.getData();
 				if (action_data.getDispatch() == null || action_data.getTask() == null)
 					continue;
@@ -128,6 +148,10 @@ class InfoServer implements Server
 				nid_array[num_actions] = nid.getNid();
 				action_table.put(new Integer(nid.getNid()), action_data);
 				num_actions++;
+
+System.out.println("2 - " + nid);
+System.out.println();
+
 			}
 			catch (final Exception exc)
 			{
@@ -145,7 +169,7 @@ class InfoServer implements Server
 			}
 			catch (final Exception exc)
 			{}
-		// System.out.println("End collectAction()");
+System.out.println("End collectAction()");
 		return actions;
 	}
 
@@ -156,8 +180,8 @@ class InfoServer implements Server
 		{
 			try
 			{
- //                               model_database = new MDSplus.Tree(tree, shot);
-                                model_database = TreeRepo.getTree(tree, shot);
+                                model_database = new MDSplus.Tree(tree, shot);
+                                //model_database = TreeRepo.getTree(tree, shot);
 			}
 			catch (final Exception exc)
 			{
@@ -182,17 +206,18 @@ class InfoServer implements Server
 	@Override
 	public void endSequence(final int shot)
 	{
+                System.out.println("endSequence for shot "+shot);
 		if (model_database != null)
 		{
                        // MdsConnection.tryClose(model_database);
-                  model_database = TreeRepo.getTree(tree, shot);
+                  //model_database = TreeRepo.getTree(tree, shot);
                   try {
                       model_database.close();
                   }catch(Exception exc)
                   {
                     System.out.println("Cannot close tree "+tree+" Shot " + shot+": "+exc);
                   }
-                  TreeRepo.discardTree(shot);
+                  //TreeRepo.discardTree(shot);
                 }
 		model_database = null;
 	}

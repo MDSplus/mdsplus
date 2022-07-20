@@ -51,7 +51,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
             unsigned short length, char ndims, int *dims, char *bytes)
 {
   Connection *c = (idx == 0 || idx > nargs)
-                      ? FindConnectionWithLock(id, CON_SENDARG)
+                      ? FindConnectionWithLock(id, CON_REQUEST)
                       : FindConnectionSending(id);
   if (!c)
     return MDSplusERROR; // both methods will leave connection id unlocked
@@ -84,7 +84,6 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
   msglen = sizeof(MsgHdr) + nbytes;
   m = malloc(msglen);
   memset(&m->h, 0, sizeof(m->h));
-  m->h.client_type = 0;
   m->h.msglen = msglen;
   m->h.descriptor_idx = idx;
   m->h.dtype = dtype;
@@ -101,7 +100,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs,
 #endif
   if (nbytes > 0)
     memcpy(m->bytes, bytes, nbytes);
-  m->h.message_id = (idx == 0 || nargs == 0) ? IncrementConnectionMessageIdC(c)
+  m->h.message_id = (idx == 0 || nargs == 0) ? ConnectionIncMessageId(c)
                                              : c->message_id;
   int status = m->h.message_id ? SendMdsMsgC(c, m, 0) : MDSplusERROR;
   free(m);

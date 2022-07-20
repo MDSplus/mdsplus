@@ -91,7 +91,7 @@ int SingleThreadTest(int idx, int repeats)
           std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
           err = 1;
         }
-        else if (!(status & 1))
+        else if (STATUS_NOT_OK)
           throw MDSplus::MdsException(status);
       }
       catch (MDSplus::MdsException e)
@@ -121,24 +121,18 @@ void *ThreadTest(void *args)
 void MultiThreadTest()
 {
   pthread_t threads[NUM_THREADS];
-  pthread_attr_t attr, *attrp;
-  if (pthread_attr_init(&attr))
-    attrp = NULL;
-  else
-  {
-    attrp = &attr;
-    pthread_attr_setstacksize(&attr, 0x40000);
-  }
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, 0x40000);
   int thread_idx, results[NUM_THREADS];
   for (thread_idx = 0; thread_idx < NUM_THREADS; thread_idx++)
   {
     results[thread_idx] = thread_idx;
-    if (pthread_create(&threads[thread_idx], attrp, ThreadTest,
+    if (pthread_create(&threads[thread_idx], &attr, ThreadTest,
                        &results[thread_idx]))
       break;
   }
-  if (attrp)
-    pthread_attr_destroy(attrp);
+  pthread_attr_destroy(&attr);
   if (thread_idx < NUM_THREADS)
     fprintf(stderr, "Could not create all %d threads\n", NUM_THREADS);
   for (thread_idx = 0; thread_idx < NUM_THREADS; thread_idx++)

@@ -26,13 +26,13 @@
 import subprocess
 import os
 import sys
-import xml.etree.ElementTree as ET
 import fnmatch
-import tempfile
-import shutil
 
-linux_xml = "%s/linux.xml" % (os.path.dirname(
-    os.path.dirname(os.path.realpath(__file__))),)
+
+srcdir = os.path.realpath(os.path.dirname(__file__)+'/../../..')
+sys.path.insert(0, os.path.join(srcdir, 'deploy', 'packaging'))
+import linux_build_packages as common
+
 pkg_exclusions = ('repo', 'gsi', 'gsi_bin', 'idl', 'idl_bin',
                   'labview', 'labview_bin', 'php', 'd3d', 'matlab')
 noarch_builder = "x86_64"
@@ -94,7 +94,7 @@ def getPackageFiles(buildroot, includes, excludes):
                 hasuid = True
         excludefiles = getPackageFiles(buildroot, excludes, [])
         if hasuid:
-            print "Found %d" % len(excludefiles)
+            print("Found %d" % len(excludefiles))
             for exclude in excludefiles:
                 print("excluding: %s" % exclude)
         for exclude in excludefiles:
@@ -103,43 +103,15 @@ def getPackageFiles(buildroot, includes, excludes):
     return files
 
 
-def externalPackage(info, root, package):
-    ans = None
-    for extpackages in root.getiterator('external_packages'):
-        platform = extpackages.attrib['platform']
-        if platform == "alpine":
-            pkg = extpackages.find(package)
-            if pkg is not None:
-                if 'package' in pkg.attrib:
-                    ans = pkg.attrib['package']
-            break
-    return ans
-
-
 def doRequire(info, out, root, require):
     if 'external' in require.attrib:
-        pkg = externalPackage(info, root, require.attrib['package'])
-        if pkg is not None:
-            os.write(out, "Requires: %s\n" % pkg)
+        pkg = common.external_package(info, root, require.attrib['package'])
+        if pkg:
+            os.write(out, "Depends: %s\n" % pkg)
     else:
         info['reqpkg'] = require.attrib['package']
     os.write(
-        out, "Depends: mdsplus%(rflavor)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
-
-
-def getInfo():
-    version = os.environ['RELEASE_VERSION'].split('.')
-    branch = os.environ['BRANCH']
-    return {
-        'major': int(version[0]),
-        'minor': int(version[1]),
-        'release': int(version[2]),
-        'buildroot': os.environ['BUILDROOT'],
-        'dist': os.environ['DISTNAME'],
-        'arch': os.environ['ARCH'],
-        'flavor': branch,
-        'rflavor': "-%s" % branch if not branch == "stable" else "",
-    }
+        out, "Depends: mdsplus%(bname)s-%(reqpkg)s (>= %(major)d.%(minor)d.%(release)d\n" % info)
 
 
 def run_cmd(cmd, quiet=False):
@@ -187,21 +159,21 @@ def getDependencies(info, root, package):
     depends = []
     for require in package.getiterator("requires"):
         if 'external' in require.attrib:
-            pkg = externalPackage(info, root, require.attrib['package'])
-            if pkg is not None:
+            pkg = common.external_package(info, root, require.attrib['package'])
+            if pkg:
                 depends.append(pkg)
         else:
             depends.append(
-                "mdsplus%s-%s" % (info['rflavor'], require.attrib['package'].replace('_', '-')))
+                "mdsplus%s-%s" % (info['bname'], require.attrib['package'].replace('_', '-')))
     return ' '.join(depends)
 
 
 def getScripts(info, package):
-    scriptname = "mdsplus%(rflavor)s%(name)s.%%s" % info
+    scriptname = "mdsplus%(bname)s%(name)s.%%s" % info
     scripts = []
     for s in ("pre-install", "post-install", "pre-deinstall", "post-deinstall", "pre-upgrade", "post-upgrade"):
         scriptcls = package.find(s)
-        if scriptcls is not None and ("type" not in scriptcls.attrib or scriptcls.attrib["type"] != "rpm"):
+        if scriptcls and ("type" not in scriptcls.attrib or scriptcls.attrib["type"] != "rpm"):
             script = scriptname % s
             scripts.append(script)
             with open("/workspace/%s" % script, "w+") as f:
@@ -211,14 +183,12 @@ def getScripts(info, package):
     return 'install="%s"' % " ".join(scripts)
 
 
-def buildApks():
-    info = getInfo()
-    tree = ET.parse(linux_xml)
-    root = tree.getroot()
-    apks = []
+def build():
+    info = common.get_info()
+    root = common.get_root()
     noarch = "noarch"
-    noarchdir = "/release/%(flavor)s/noarch" % info
     archdir = "/release/%(flavor)s/%(arch)s" % info
+    noarchdir = "/release/%(flavor)s/noarch" % info
     os.system("rm -Rf %s/*" % archdir)
     if info['arch'] == noarch_builder:
         os.system("rm -Rf %s" % noarchdir)
@@ -244,7 +214,7 @@ def buildApks():
         with open("/workspace/APKBUILD", "w+") as f:
             f.write("# Contributor: MDSplus Developer Team\n")
             f.write("#Maintainer: Tom Fredian <twf@mdsplus.org>\n")
-            f.write("pkgname=mdsplus%(rflavor)s%(name)s\n" % info)
+            f.write("pkgname=mdsplus%(bname)s%(name)s\n" % info)
             f.write("pkgver=%(major)d.%(minor)d\n" % info)
             f.write("pkgrel=%(release)d\n" % info)
             f.write('pkgdesc="%(description)s"\n' % info)
@@ -272,9 +242,9 @@ mkdir -p "$pkgdir"
         if not run_cmd("abuild checksum && abuild -cqdP /release/%(flavor)s" % info):
             raise Exception("Problem building package")
         if info['pkg_arch'] == noarch:
-            fnm = "mdsplus%(rflavor)s%(name)s-%(major)d.%(minor)d-r%(release)d.apk" % info
+            fnm = "mdsplus%(bname)s%(name)s-%(major)d.%(minor)d-r%(release)d.apk" % info
             os.rename("%s/%s" % (archdir, fnm), "%s/%s" % (noarchdir, fnm))
     clean_ws()
 
-
-buildApks()
+if __name__ == "__main__":
+    build()

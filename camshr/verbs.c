@@ -465,7 +465,7 @@ EXPORT int SetCrate(void *ctx, char **error,
   {
 
     status = turn_crate_on_off_line(cratename, (on) ? ON : OFF);
-    if (!(status & 1) && !quiet)
+    if (STATUS_NOT_OK && !quiet)
     {
       if (*error == NULL)
         *error = strdup("");

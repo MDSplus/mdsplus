@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tcl_messages.h>
 #include <treeshr.h>
+#include <mdsmsg.h>
 
 #include "tcl_p.h"
 
@@ -509,6 +510,7 @@ EXPORT int TclDispatch_command(void *ctx, char **error,
                                    CommandDone, c.cmd, iostatusp, NULL, 0);
     if (STATUS_NOT_OK)
     {
+      MDSMSG("ServerDispatchCommand failed.");
       char *msg = MdsGetMsg(status);
       *error = malloc(100 + strlen(msg));
       sprintf(*error,

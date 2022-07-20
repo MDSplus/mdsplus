@@ -68,6 +68,10 @@ class MARTE2_RTSM(MC.MARTE2_COMPONENT):
                                '.Next'+str(nextIdx+1)+'.State', 'type': 'int32'})
             
     parameters.append({'name': 'OutBitsMask', 'type': 'int32', 'value': 0})
+    for stateIdx in range(16):
+        parameters.append({'name': 'State'+str(stateIdx+1) +
+                           '.Comment', 'type': 'string'})
+      
 
     parts = []
 
