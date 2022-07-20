@@ -240,8 +240,10 @@ class _ACQ2106_435ST(MDSplus.Device):
                 if nacc_str == '0,0,0':
                     nacc_sample = 1
                 else:
-                    nacc_tuple = ast.literal_eval(nacc_str)
-                    nacc_sample = nacc_tuple[0]
+                    #nacc_tuple = ast.literal_eval(nacc_str)
+                    #nacc_sample = nacc_tuple[0]
+                    nacc_sample = int(nacc_str.split(",")[0])
+
 
             if self.dev.debug:
                 print("The ACQ NACC sample value is {}".format(nacc_sample))

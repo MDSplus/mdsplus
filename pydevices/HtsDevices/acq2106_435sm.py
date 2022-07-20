@@ -151,6 +151,8 @@ class _ACQ2106_435SM(MDSplus.Device):
             self.mev_path = mdsplus_device.mev_path.data()
 
         def run(self):
+            import glob
+
             self.mdsplus_device = self.mdsplus_device.copy()
 
             SECONDS_TO_NANOSECONDS = 1_000_000_000
@@ -163,8 +165,8 @@ class _ACQ2106_435SM(MDSplus.Device):
             duration = ((self.presamples + self.postsamples) * self.seconds_per_sample) * SECONDS_TO_NANOSECONDS
             delta = self.seconds_per_sample * SECONDS_TO_NANOSECONDS
 
-            # Note: This value is not cleared between shots.
-            last_mev_latest = self.uut.s1.MEV_LATEST
+            # Any files in this directory at the beginning of a shot should be ignored
+            ignored_filename_list = [f for f in glob.glob(os.path.join(self.mev_path, "event-*"))]
 
             self.chans = []
             for i in range(self.nchans):
@@ -173,57 +175,53 @@ class _ACQ2106_435SM(MDSplus.Device):
             stride = self.nchans + 4
 
             while running.on:
-                mev_latest = self.uut.s1.MEV_LATEST
+                filename_list = glob.glob(os.path.join(self.mev_path, "event-*"))
 
-                filename = mev_latest.split(' ')[1]
-                filepath = os.path.join(self.mev_path, filename)
+                for filename in filename_list:
+                    
+                    if filename in ignored_filename_list:
+                        continue
+                    
+                    time.sleep(5) # delay processing to be sure that the event file has made it to the NFS mounted disk.
+                    print("Processing event file.")
 
-                #if mev_latest == last_mev_latest and os.path.exists(mev_latest): 
-                if mev_latest == last_mev_latest: 
-                    time.sleep(1)
-                    continue
-                
-                time.sleep(5) # delay processing to be sure that the event file has made it to the NFS mounted disk.
+                    data = None
+                    try:
+                        data = np.fromfile(filename, dtype='int32', count=-1, sep='')
+                    except FileNotFoundError:
+                        print("Unable to open multi-event data file", filename)
+                        continue
+                    
+                    # We need to remove the fake row of data that serves as the marker for the trigger
+                    data_snip = np.concatenate((data[ : self.presamples * stride], data[(self.presamples + 1) * stride : ]))
+                    
+                    # The data is 24-bit stored in 32-bit numbers, so we need to >>8
+                    data_435 = np.right_shift(data_snip, 8)
 
-                data = None
-                try:
-                    data = np.fromfile(filepath, dtype='int32', count=-1, sep='')
-                except FileNotFoundError:
-                    print("Unable to open multi-event data file", filepath)
-                    continue
-                
-                # We need to remove the fake row of data that serves as the marker for the trigger
-                data_snip = np.concatenate((data[ : self.presamples * stride], data[(self.presamples + 1) * stride : ]))
-                
-                # The data is 24-bit stored in 32-bit numbers, so we need to >>8
-                data_435 = np.right_shift(data_snip, 8)
+                    # # The SPAD are stored as 4 extra "channels"
+                    # spad = data_snip[self.nchans:] # first SPAD
+                    
+                    # begin = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
+                    # end = begin + duration
+                    # dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(delta))
 
-                last_mev_latest = mev_latest
+                    times = []
+                    for i in range(self.presamples + self.postsamples):
+                        offset = (i * stride) + self.nchans
+                        spad = data_snip[offset : offset + 4]
+                        times.append(self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns))
 
-                # The SPAD are stored as 4 extra "channels"
-                # spad = data_snip[self.nchans:] # first SPAD
-                
-                # begin = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
-                # end = begin + duration
-                # dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(delta))
-
-                times = []
-                for i in range(self.presamples + self.postsamples):
-                    offset = (i * stride) + self.nchans
-                    spad = data_snip[offset : offset + 4]
-                    times.append(self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns))
-
-                dim = MDSplus.Uint64Array(times)
-                
-                for i, ch in enumerate(self.chans):
-                    if ch.on:
-                        channel_data = data_435[ i :: stride ]
-                        ch.makeSegment(dim[0], dim[-1], dim, channel_data)
-                        # ch.makeSegment(begin, end, dim, channel_data)
-                
-                print(f"Done processing multi-event data file {filepath}")
-                os.unlink(filepath)
-                print(f"Done deleting the multi-event date file")
+                    dim = MDSplus.Uint64Array(times)
+                    
+                    for i, ch in enumerate(self.chans):
+                        if ch.on:
+                            channel_data = data_435[ i :: stride ]
+                            ch.makeSegment(dim[0], dim[-1], dim, channel_data)
+                            # ch.makeSegment(begin, end, dim, channel_data)
+                    
+                    print(f"Done processing multi-event data file {filename}")
+                    # os.unlink(filename)
+                    # print(f"Done deleting the multi-event date file")
 
     class SlowMonitorWorker(threading.Thread):
         INITIAL_BUFFER_COUNT = 10
