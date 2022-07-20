@@ -224,7 +224,7 @@ class _ACQ2106_435SM(MDSplus.Device):
                     # print(f"Done deleting the multi-event date file")
 
                     # For testing purposes: adding the file to the ignore list, instead of deleting it.
-                    ignored_filename_list.add(filename)
+                    ignored_filename_list.append(filename)
 
     class SlowMonitorWorker(threading.Thread):
         INITIAL_BUFFER_COUNT = 10
