@@ -11,7 +11,6 @@
 #include <signal.h>
 #include <AsyncStoreManager.h>
 
-
 #define COUNT_SIZE 2000000
 
 static void checkUpdateFreq(int fd);
@@ -22,7 +21,7 @@ extern "C"
                    int inSegmentSamples, double freq, double freq1, int single, int absTriggerTimeFromFPGA, int absTriggerNid);
   int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
                 int trigFromChanA, int trigAboveThreshold, int trigThreshold,
-                int thresholdSamples, int decimation, int deadtime, int offsa, int offsb);
+                int thresholdSamples, int decimation, int deadtime);
   int rpadcTrigger(int fd);
   void rpadcStop(int fd);
   void openTree(char *name, int shot, MDSplus::Tree **treePtr);
@@ -43,9 +42,9 @@ enum rpadc_clock_mode
 {
   INTERNAL = 0,  //Internal clock and trigger timestamping Sampling direct from ADC (125MHz divided for decimation)
   TRIG_EXTERNAL, //Internal clock, but trigger timestamping from external clock
-  TRIG_SYNC,      //Internal clock, but trigger timestamping from 1MHz clock internally generated
-  EXTERNAL,      //External sampling clock, same clock used for trigger timestamping  
-  SYNC 		//Synchronized 1MHz clock internally generated
+  TRIG_ABS,      //Internal clock, use absolute time for trigger timestamping (however use relative times in the saved signal, a separate node will contain the absolute time of the first trigger)
+  EXTERNAL,      //External sampling clock, same clock used for trigger timestamping   
+  SYNC   	 //Synchronized (NTP) sampling clock, use absolute time for trigger timestamping (however use relative times in the saved signal, a separate node will contain the absolute time of the first trigger)
 };
 
 #define DMA_STREAMING_SAMPLES 1024
@@ -64,7 +63,6 @@ struct rpadc_configuration
   unsigned int post_samples;     // Number of post-trigger samples
   unsigned int decimation;       // Decimation factor (base frequency: 125MHz if internal clock, 1 MHz if synch clock, Clock frequency if external clock)
   unsigned int deadtime;         // Deadtime count, valis when trigger on level, referred to sample count
-  unsigned int offset;           // offset to be applied to both channels (16+16)
 };
 
 static bool stopped = false;
@@ -83,7 +81,8 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
   struct rfx_stream_registers regs;
   memset(&regs, 0, sizeof(regs));
   unsigned int currVal = 0;
- 
+  unsigned int auxVal = 0;
+
   if (config->mode == STREAMING)
     currVal |= 0x00000001;
   if (config->trig_from_chana)
@@ -99,19 +98,21 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
       break;
     case TRIG_EXTERNAL: //Internal clock, but trigger timestamping from external clock
       currVal |= 0x00000020;
+      auxVal |= 4;
       break;
-   case TRIG_SYNC: //Internal clock, but trigger timestamping from 1MHz clock internally generated trigger)
-      currVal |= 0x00000020;   
-      currVal |= 0x00000080; 
+    case TRIG_ABS:      //Internal clock, use absolute time for trigger timestamping (however use relative times in the saved signal, a separate node will contain the absolute time of the first trigger)  
+      currVal |= 0x00000020;
+      auxVal |= 0x00000002;
       break;
     case EXTERNAL:      //External sampling clock, same clock used for trigger timestamping
       currVal |= 0x00000020;   
       currVal |= 0x00000040;   
+      auxVal |= 0x00000004;
       break;
-   case SYNC: //Synchronized 1MHz clock internally generated
+   case SYNC: //Synchronized (NTP) sampling clock, use absolute time for trigger timestamping (however use relative times in the saved signal, a separate node will contain the absolute time of the first trigger)
       currVal |= 0x00000020;   
-      currVal |= 0x00000040;  
-      currVal |= 0x00000080; 
+      currVal |= 0x00000040;   
+      auxVal |= 0x00000001;
       break;
   } 
    
@@ -125,13 +126,14 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
   currVal |= ((config->trig_threshold << 16) & 0xFFFF0000);
   regs.mode_register_enable = 1;
   regs.mode_register = currVal;
- 
+  regs.aux_mode_reg_enable = 1;
+  regs.aux_mode_reg = auxVal;
+
   regs.pre_register_enable = 1;
   regs.pre_register = config->pre_samples & 0x0000FFFF;
 
   regs.post_register_enable = 1;
   regs.post_register = config->post_samples;
-
 
   regs.decimator_register_enable = 1;
   regs.decimator_register = 10;
@@ -140,11 +142,6 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
 
   regs.deadtime_register_enable = 1;
   regs.deadtime_register = config->deadtime;
-
-//AGGIUNTA OFFSET
-  regs.offset_reg_enable = 1;
-  regs.offset_reg = config->offset;
-
   ioctl(fd, RFX_STREAM_SET_REGISTERS, &regs);
   usleep(10000);
 
@@ -162,10 +159,11 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
 
 static void readConfig(int fd, struct rpadc_configuration *config)
 {
-  unsigned int currVal;
+  unsigned int currVal, auxVal;
   struct rfx_stream_registers regs;
   ioctl(fd, RFX_STREAM_GET_REGISTERS, &regs);
   currVal = regs.mode_register;
+  auxVal = regs.aux_mode_reg;
   if (currVal & 0x00000001)
     config->mode = STREAMING;
   else
@@ -193,11 +191,17 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   {
     if (currVal & 0x00000040)
     {
-      	config->clock_mode = EXTERNAL;
+    	if (auxVal & 0x0000004)
+      	  config->clock_mode = EXTERNAL;
+        else
+          config->clock_mode = SYNC;
     }
     else
     {
+    	if (auxVal & 0x0000004)
       	  config->clock_mode = TRIG_EXTERNAL;
+        else 
+          config->clock_mode = TRIG_ABS;
     }
   }
   
@@ -217,6 +221,9 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   config->post_samples = regs.post_register;
   config->pre_samples = regs.pre_register;
   config->decimation = regs.decimator_register + 1;
+  config->deadtime = regs.deadtime_register;
+  
+  printf("Mode Register: %x\t Aux Mode Register: %x\n", regs.mode_register, regs.aux_mode_reg);
 }
 
 static void fifoFlush(int fd) { ioctl(fd, RFX_STREAM_FIFO_FLUSH, NULL); }
@@ -285,7 +292,6 @@ static void writeSegment(MDSplus::Tree *t, MDSplus::TreeNode *chan1,
                          double *endTimes, int segmentSamples,
                          int blocksInSegment, double freq, SaveList *saveList, char *trigReceived)
 {
-
   if (segmentSamples == 0)
     return;
   short *chan1Samples, *chan2Samples;
@@ -337,15 +343,14 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
   int blocksInSegment; // 1 fir cintinous streaming
   unsigned int *dataSamples;
   double *startTimes, *endTimes;
-  char *trigFlags;
   stopped = false;
   unsigned int trig_lev_count = 0;
-   long long firstAbsTriggerTime = -1;
+  unsigned long long firstAbsTriggerTime = 0;
   unsigned long long lastAbsTriggerTime = 0;
   unsigned long long currTime, savedTime;
   
+  std::cout << "rpadcStream freq1: " << freq1 << "   FREQ:  " << freq << std::endl;
   
-  fifoFlush(fd);
   
   
   
@@ -355,8 +360,8 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
   MDSplus::Tree *tree = new MDSplus::Tree(treeName, shot);
   MDSplus::TreeNode *chan1 = new MDSplus::TreeNode(chan1Nid, tree);
   MDSplus::TreeNode *chan2 = new MDSplus::TreeNode(chan2Nid, tree);
-  MDSplus::TreeNode *trigRecv = new MDSplus::TreeNode(trigRecvNid, tree);
   MDSplus::TreeNode *absTrigger = new MDSplus::TreeNode(absTriggerNid, tree);
+
   MDSplus::TreeNode *trigger = new MDSplus::TreeNode(triggerNid, tree);
   
   if ((preSamples == 0 &&
@@ -408,12 +413,8 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
   adcArm(fd);
   usleep(1000);
   int segmentIdx = 0;
-  
-  //SaveList *saveList = new SaveList();
-  //saveList->start(); 
-  SaveList *saveList = new SaveList();
-  saveList->start(); 
-
+  SaveList *saveList = new SaveList;
+  saveList->start();
   // START WITH A INITIAL VALUE FOR TRIG_LEV_COUNT
   ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
   trig_lev_count++;
@@ -437,24 +438,13 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
         }
     }
 
-  
-  */
-  
-  
-  
-
   struct timeval selWaitTime;
-  unsigned int prevTime = 0;
-  char trigReceived = 0;
-  while (!stopped)
+  while (true)
   {
     for (int currBlock = 0; currBlock < blocksInSegment;currBlock++)
     {
       unsigned int currSample = 0;
       bool firstRead = true;
-
-
-/////////////////////
       while (currSample < blockSamples)
       {
 //std::cout<<"Reading...\n";
@@ -503,9 +493,9 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
                 endTimes[0] =
                     ((segmentIdx + 1) * segmentSamples - preSamples) / freq;
 //                    ((segmentIdx + 1) * segmentSamples - preSamples) / freq1; Gabriele Dec 2021
-                writeSegment(tree, chan1, chan2, NULL, trigger, dataSamples,
+                writeSegment(tree, chan1, chan2, trigger, dataSamples,
                              startTimes, endTimes,
-                             currBlock * blockSamples + currSample, 1, freq, saveList, NULL);
+                             currBlock * blockSamples + currSample, 1, freq, saveList);
                         //    currBlock * blockSamples + currSample, 1, freq1, saveList); Gabriele Dec 2021
               }
               else // Some data for new window have been read
@@ -519,14 +509,11 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
                 currTime = (unsigned long long)time1 |
                            (((unsigned long long)time2) << 32);
                            
-		//if(currTime >= 2)  Only when counter for trigger is internal data
-                //    currTime -= 2;
-                 
-                           
                            
                 if(absTriggerTimeFromFPGA)
                 {
-                    if(firstAbsTriggerTime == -1)
+         std::cout << "TRIGGER TIME: " << currTime << std::endl;
+                    if(firstAbsTriggerTime == 0)
                     {
                     	firstAbsTriggerTime = lastAbsTriggerTime = currTime;
                     	currTime = 0;
@@ -546,12 +533,10 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
                 endTimes[currBlock] =
                     currTime/freq1 + (postSamples - 1) / freq; // include last sample
 //                    (currTime + postSamples - 1) / freq; // include last sample Gabriele Dec 2021
-		trigFlags[currBlock] = trigReceived;
-                writeSegment(tree, chan1, chan2, trigRecv, trigger, dataSamples,
+                writeSegment(tree, chan1, chan2, trigger, dataSamples,
                              startTimes, endTimes,
                              currBlock * blockSamples + currSample,
-                             currBlock + 1, freq, saveList, trigFlags);
-//                             currBlock + 1, freq1, saveList); Gabriele Dec 2021
+                             currBlock + 1, freq, saveList);
               }
             }
             else // Some windows have been read before and the segment is
@@ -559,8 +544,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
             {
               writeSegment(tree, chan1, chan2, trigRecv, trigger, dataSamples, startTimes,
                            endTimes, currBlock * blockSamples + currSample,
-                           currBlock, freq, saveList, trigFlags);
-//                           currBlock, freq1, saveList); Gabriele Dec 2021
+                           currBlock, freq, saveList);
             }
           }
           deviceFd = 0;
@@ -579,72 +563,53 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
       // Here the block been filled. It may refer to the same window
       // (isSingle)or to a different time window
       
-     if(stopped) return;
-      
-      
       unsigned long long currTime;
-      unsigned int time1, time2, len;
-      
-      if (preSamples != 0 || postSamples != 0) // not continuous
+      unsigned int time1, time2;
+      ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
+      ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
+      currTime =(unsigned long long)time1 | (((unsigned long long)time2) << 32);
+      std::cout << "TRIGGER TIME: " << currTime << std::endl;
+      if(absTriggerTimeFromFPGA)
       {
-      	for(int i = 0; i < 10000; i++)
-      	{
-      	  ioctl(fd, RFX_STREAM_GET_TIME_FIFO_LEN, &len);
-      	  if(len >= 2) break; 
-	  usleep(100);
-        }
-        if(len < 2)
+         std::cout << "TRIGGER TIME: " << currTime << std::endl;
+      	if(firstAbsTriggerTime == 0)
         {
-      	  std::cout << "DOLORE!!!! TRIGGER TIME NOT FOUND IN FIFO\n";
-      	  return;
+          firstAbsTriggerTime = lastAbsTriggerTime = currTime;
+          currTime = 0;
+          MDSplus::Data *triggerData = new MDSplus::Uint64(firstAbsTriggerTime);
+          absTrigger->putData(triggerData);
+          MDSplus::deleteData(triggerData);
         }
-      
-        ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
-        ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
-        trigReceived = (time2 & 0x80000000)?1:0;
-        if(trigReceived) std::cout << "TRIGGER RECEIVED\n";
-        currTime =(unsigned long long)time1 | (((unsigned long long)(time2 & 0x7FFFFFFF)) << 32);
-        if(currTime < prevTime)
-      	  std::cout << "OHIBO! currTime: " << currTime << "  PrevTime: " << prevTime << std::endl;
-        prevTime = currTime;
-        if(absTriggerTimeFromFPGA)
+        else
         {
-           std::cout << "TRIGGER TIME: " << currTime << std::endl;
-      	  if(firstAbsTriggerTime == 0)
-          {
-            firstAbsTriggerTime = lastAbsTriggerTime = currTime;
-            currTime = 0;
-            MDSplus::Data *triggerData = new MDSplus::Uint64(firstAbsTriggerTime);
-            absTrigger->putData(triggerData);
-            MDSplus::deleteData(triggerData);
-          }
-          else
-          {
             currTime -= firstAbsTriggerTime;
-          }
         }
       }
-      
+
       if (preSamples != 0 || postSamples != 0) // not continuous
       {
         if (single)
         {
           startTimes[0] = (segmentIdx * segmentSamples - preSamples) / freq;
+//          startTimes[0] = (segmentIdx * segmentSamples - preSamples) / freq1; Gabriele Dec 2021
           endTimes[0] =((segmentIdx + 1) * segmentSamples - preSamples) / freq;
-	  trigFlags[0] = 0;
+//              ((segmentIdx + 1) * segmentSamples - preSamples) / freq1; Gabriele Dec 2021
         }
         else // If referring to a new window, the time must be read
         {
           
           if (currBlock == 0)
           {
-            startTimes[currBlock] = ((long long)currTime)/freq1 - (preSamples) / freq;
+            startTimes[currBlock] = ((long long)currTime)/freq1 - (preSamples - 1) / freq;
+//                ((long long)currTime - preSamples - 1) / freq; Gabriele Dec 2021 
           }
+          else
           {
             startTimes[currBlock] = (long long)currTime/freq1 - preSamples / freq;
+//            startTimes[currBlock] = ((long long)currTime - preSamples) / freq; Gabriele Dec 2021
           }
           endTimes[currBlock] = currTime/freq1 + (postSamples - 1 + 0.1) / freq;
-          trigFlags[currBlock] = trigReceived;
+ //             (currTime + postSamples - 1 + 0.1) / freq; Gabriele Dec 2021
         }
       }
     }
@@ -654,11 +619,10 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
 //      endTimes[0] = (segmentIdx + 1) * segmentSamples / freq1; Gabriele Dec 2021
       startTimes[0] = segmentIdx * segmentSamples / freq;
       endTimes[0] = (segmentIdx + 1) * segmentSamples / freq;
-      trigFlags[0] = 0;
     }
     segmentIdx++;
-    writeSegment(tree, chan1, chan2, trigRecv, trigger, dataSamples, startTimes, endTimes,
-                 segmentSamples, blocksInSegment, freq, saveList, trigFlags);
+    writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes, endTimes,
+                 segmentSamples, blocksInSegment, freq, saveList);
   }
 }
 static void printConfig(struct rpadc_configuration *config)
@@ -690,8 +654,8 @@ static void printConfig(struct rpadc_configuration *config)
   case TRIG_EXTERNAL:
     printf("\tclock_mode: TRIG_EXTERNAL\n");
     break;
-  case TRIG_SYNC:
-    printf("\tclock_mode: TRIG_SYNC\n");
+  case TRIG_ABS:
+    printf("\tclock_mode: TRIG_ABS\n");
     break;
   case EXTERNAL:
     printf("\tclock_mode: EXTERNAL\n");
@@ -717,14 +681,12 @@ static void printConfig(struct rpadc_configuration *config)
   printf("\tpost_samples: %d\n", config->post_samples);
   printf("\tdecimation: %d\n", config->decimation);
   printf("\tdeadtime: %d\n", config->deadtime);
-  printf("\toffsa: %d\n", config->offset & 0x0000ffff);
-  printf("\toffsb: %d\n", (config->offset >> 16) & 0x0000ffff);
 }
 
 // return either NULL or an error string
 int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
               int trigFromChanA, int trigAboveThreshold, int trigThreshold,
-              int thresholdSamples, int decimation, int deadtime, int offsa, int offsb)
+              int thresholdSamples, int decimation, int deadtime)
 {
   struct rpadc_configuration inConfig, outConfig;
   int fd = open("/dev/rfx_stream", O_RDWR | O_SYNC);
@@ -750,11 +712,7 @@ int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
   inConfig.pre_samples = preSamples;
   inConfig.post_samples = postSamples; // Watch!!!!!
   inConfig.decimation = decimation;
-  if(deadtime > preSamples)
-  	inConfig.deadtime = deadtime;
-  else
-  	inConfig.deadtime = preSamples;
-  inConfig.offset = (offsa & 0x0000FFFF)|((offsb << 16)&0xffff0000);
+  inConfig.deadtime = deadtime;
   printConfig(&inConfig);
   writeConfig(fd, &inConfig);
   memset(&outConfig, 0, sizeof(outConfig));
@@ -792,6 +750,193 @@ void openTree(char *name, int shot, MDSplus::Tree **treePtr)
   catch (MDSplus::MdsException &exc)
   {
     *treePtr = 0;
+  }
+}
+
+////////////////////Clock related stuff
+
+
+
+
+
+ static double getFrequency(int fd)
+{
+    double K, step, periodFPGA, period;
+    unsigned int Kr, C, stepLo, stepHi, reg, K1, K2;
+    unsigned long long stepR;
+    ioctl(fd, RFX_STREAM_GET_K1_REG, &K1);
+
+    ioctl(fd, RFX_STREAM_GET_K2_REG, &K2);
+
+    ioctl(fd, RFX_STREAM_GET_STEP_LO_REG, &stepLo);
+  
+    ioctl(fd, RFX_STREAM_GET_STEP_HI_REG, &stepHi);
+    
+    stepR = stepHi;
+    stepR = (stepR << 32)|stepLo;
+    step = (double)stepR/pow(2, 44);
+
+    periodFPGA = 1./125E6;
+    period = (periodFPGA * K1)*step + (periodFPGA * K2)*(1.-step);
+    return 0.5/period;
+}
+
+ 
+static void setFrequency(int fd, double reqFreq)
+{
+    double K, step;
+    unsigned int Kr, C, stepLo, stepHi, reg, K1, K2;
+    unsigned long long stepR;
+    
+    K = 0.25E7 * 25. /reqFreq;  //125MHz clock
+    Kr = round(K);
+    if (Kr > K)
+    {
+      C = round(COUNT_SIZE*(1 - (Kr -K)));
+      K1 = Kr;
+      K2 = Kr - 1;
+    }
+    else if (Kr < K)
+    {
+      C = round(COUNT_SIZE*(1- (K - Kr)));
+      K1 = Kr;
+      K2 = Kr+1;
+    }
+    else
+    {
+        K1 = K2 = K;
+        C = COUNT_SIZE/2;
+    }
+    step = C/(double)COUNT_SIZE;
+    step *= pow(2, 44);
+    stepR = round(step);
+    stepLo = (unsigned int)(stepR & 0xFFFFFFFF);
+    stepHi = (unsigned int)((stepR >> 32) & 0xFFFFFFFF);
+    printf("K1: %d, K2: %d, C: %u, Step: %lld\n", K1, K2, C, stepR);
+    ioctl(fd, RFX_STREAM_SET_K1_REG, &K1);
+
+    ioctl(fd, RFX_STREAM_SET_K2_REG, &K2);
+
+    ioctl(fd, RFX_STREAM_SET_STEP_LO_REG, &stepLo);
+  
+    ioctl(fd, RFX_STREAM_SET_STEP_HI_REG, &stepHi);
+ 
+    reg = 0;
+    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+    usleep(1000);
+    reg = 1;
+    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+    reg = 0;
+    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+}
+  
+    
+
+
+static unsigned long long getTime(int fd, double actFrequency)
+{
+  unsigned int reg, lo, hi = 0, len;
+  unsigned long  long time;
+  reg = 0;
+  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+  reg = 2;
+  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+  reg = 0;
+  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+  len = -1;
+  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_LEN, &len);
+ if(len != 2)
+        printf("\n\nERRORE ERRORRISSIMO  %d\n\n\n", len);
+  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_VAL, &lo);
+  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_VAL, &hi);
+
+  
+  
+  time = hi;
+  time = (time << 32) | lo;
+
+  time = round(1E6 * (double)time/actFrequency);
+  return time;
+}
+
+static void setTime(int fd, unsigned long long timeUs, double actFreq)
+{
+  unsigned long long fpgaTime, ofsTime;
+  unsigned int reg = 0, reg1 = 0, reg2 = 0;
+
+
+  //Reset offset register
+  reg = 0; 
+  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_HI_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_LO_REG, &reg);
+
+  fpgaTime = getTime(fd, actFreq);
+  ofsTime = round((timeUs - fpgaTime)*actFreq / 1E6);
+  reg = ofsTime & 0x00000000FFFFFFFFL;
+  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_LO_REG, &reg);
+  reg = (ofsTime >> 32) & 0x00000000FFFFFFFFL;
+  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_HI_REG, &reg);
+  
+  ioctl(fd, RFX_STREAM_GET_TIME_OFFSET_LO_REG, &reg1);
+  ioctl(fd, RFX_STREAM_GET_TIME_OFFSET_HI_REG, &reg2);
+ 
+  
+  
+}
+  
+static void updateFreq(int fd, unsigned long long *prevTimeUs, unsigned long long *prevFpgaTimeUs, double kp, double ki, double *prevFreq, double actFreq)
+{
+  struct timeval currTime;
+  unsigned long long timeUs, fpgaTimeUs;
+  double steps;
+  long long stepErr, totErr, elapsedSteps, elapsedStepsFpga;
+  double newFreq = *prevFreq;
+  gettimeofday(&currTime, NULL);
+  timeUs = (unsigned long long)currTime.tv_sec * 1000000L + currTime.tv_usec;
+  fpgaTimeUs = getTime(fd, actFreq);
+  totErr = fpgaTimeUs - timeUs;
+  
+  printf("TIME: %lld\tFPGA Time: %lld\n", timeUs, fpgaTimeUs);
+  
+  if(*prevTimeUs)  //The first time only measurements performed, no correction
+  {
+      elapsedSteps = timeUs - *prevTimeUs;
+      elapsedStepsFpga = fpgaTimeUs - *prevFpgaTimeUs;
+      stepErr = elapsedStepsFpga - elapsedSteps;
+  
+      steps = kp*(double)stepErr + ki *(double) totErr;
+      //printf("STEPS: %e\n", steps);
+      //printf("ELAPSED STEP FPGA: %llu\tELAPSET STEPS: %llu\n", elapsedStepsFpga, elapsedSteps);
+      newFreq = 1./(1./ *prevFreq + (steps * 16 * 1E-9)/(2*1E6)); //Attuale conteggio fpga
+      printf("Step Err: %lld\t Tot err: %lld\tSteps: %d\n", stepErr, totErr, (int)steps);
+      setFrequency(fd, actFreq * newFreq/1E6);
+      *prevFreq = newFreq;
+  }
+  else
+  {
+      *prevFreq = getFrequency(fd);
+  }
+  *prevTimeUs = timeUs;
+  *prevFpgaTimeUs = fpgaTimeUs;
+}
+// 
+#define UPDATE_SECS 1
+static unsigned long long prevTimeUs = 0;
+static unsigned long long prevFpgaTimeUs = 0;
+static double prevFreq = 1E6;
+
+void checkUpdateFreq(int fd)
+{
+  unsigned long long timeS;
+  struct timeval currTime;
+  double targetFreq = 1E6;  
+  static unsigned long prevTimeS = 0;
+  gettimeofday(&currTime, NULL);
+  timeS = (unsigned long long)currTime.tv_sec;
+  if((timeS - prevTimeS) > UPDATE_SECS)
+  {
+    prevTimeS = timeS;
+    updateFreq(fd, &prevTimeUs, &prevFpgaTimeUs, 6., 5.,&prevFreq, targetFreq)   ; 
   }
 }
 
