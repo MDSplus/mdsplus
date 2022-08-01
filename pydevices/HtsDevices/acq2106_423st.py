@@ -194,18 +194,18 @@ class _ACQ2106_423ST(MDSplus.Device):
             if self.dev.debug:
                 print("MDSWorker running")
 
-            self.chans = []
-            self.decim = []
+            chans = []
+            decim = []
             for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
+                chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                decim.append(
                     getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
             dt = 1./self.dev.freq.data()
 
-            decimator = lcma(self.decim)
+            decimator = lcma(decim)
 
             if self.seg_length % decimator:
                 self.seg_length = (self.seg_length //
@@ -228,11 +228,11 @@ class _ACQ2106_423ST(MDSplus.Device):
 
                 buffer = np.frombuffer(buf, dtype='int16')
                 i = 0
-                for c in self.chans:
-                    slength = self.seg_length/self.decim[i]
-                    deltat = dt * self.decim[i]
+                for c in chans:
+                    slength = self.seg_length/decim[i]
+                    deltat = dt * decim[i]
                     if c.on:
-                        b = buffer[i::self.nchans*self.decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
@@ -406,12 +406,12 @@ class _ACQ2106_423ST(MDSplus.Device):
         coeffs = uut.cal_eslo[1:]
         eoff = uut.cal_eoff[1:]
 
-        self.chans = []
+        chans = []
         nchans = self.sites*32
         for ii in range(nchans):
-            self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
+            chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
-        for ic, ch in enumerate(self.chans):
+        for ic, ch in enumerate(chans):
             if ch.on:
                 ch.OFFSET.putData(float(eoff[ic]))
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
