@@ -165,7 +165,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_423ST.MDSWorker, self).__init__(name=dev.path)
 
-            self.dev = dev
+            self.dev = dev.copy()
 
             self.nchans = self.dev.sites*32
 
@@ -190,8 +190,6 @@ class _ACQ2106_423ST(MDSplus.Device):
                 for e in arr:
                     ans = lcm(ans, e)
                 return int(ans)
-
-            self.dev = self.dev.copy()
 
             if self.dev.debug:
                 print("MDSWorker running")
@@ -409,7 +407,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         eoff = uut.cal_eoff[1:]
 
         self.chans = []
-        nchans = uut.nchan()
+        nchans = self.sites*32
         for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
