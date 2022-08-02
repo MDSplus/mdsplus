@@ -182,6 +182,8 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     data_socket = -1
 
+    NUM_CHANS_PER_SITE = 32
+
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
 
@@ -190,7 +192,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             self.dev = dev.copy()
 
-            self.nchans     = self.dev.sites * 32
+            self.nchans     = self.dev.sites * NUM_CHANS_PER_SITE
             self.resampling = self.dev.resampling
             
             self.seg_length = self.dev.seg_length.data()
@@ -467,7 +469,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         eoff = uut.cal_eoff[1:]
 
         chans = []
-        nchans = self.sites * 32
+        nchans = self.sites * NUM_CHANS_PER_SITE
         for ii in range(nchans):
             chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
@@ -553,7 +555,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435ST.carrier_parts)
-    for i in range(cls.sites*32):
+    for i in range(cls.sites * cls.NUM_CHANS_PER_SITE):
         cls.parts += [
             {
                 'path': ':INPUT_%3.3d' % (i+1,),
