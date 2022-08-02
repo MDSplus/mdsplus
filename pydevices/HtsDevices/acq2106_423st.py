@@ -169,7 +169,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
             self.dev = dev.copy()
 
-            self.nchans = self.dev.sites * NUM_CHANS_PER_SITE
+            self.nchans = self.dev.sites * self.dev.NUM_CHANS_PER_SITE
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
@@ -409,7 +409,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         eoff = uut.cal_eoff[1:]
 
         chans = []
-        nchans = self.sites * NUM_CHANS_PER_SITE
+        nchans = self.sites * self.NUM_CHANS_PER_SITE
         for ii in range(nchans):
             chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
