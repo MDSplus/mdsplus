@@ -65,14 +65,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
 
         for card in self.slots:
-            self.resetGainsOffsetsDefaults(card)
-            self.slots[card].SC32_GAIN_COMMIT = 1
-            if self.debug:
-                print("GAINs Resetted to Default value (1) and Committed for site %s" % (card,))
-
-        time.sleep(1)
-
-        for card in self.slots:
             self.setGainsOffsets(card)
             self.slots[card].SC32_GAIN_COMMIT = 1
             if self.debug:
@@ -103,41 +95,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                     raise MDSplus.DevBAD_PARAMETER(
                             "SC_GAIN must be computable from (one of: 1000, 100, 10, 1) * (one of: 1, 2, 5, 10) ; not %d" % (g,))
                 return (g1, g2)
-
-    def resetGainsOffsetsDefaults(self, card):
-        import epics
-        import socket
-
-        if card not in [1, 3, 5]:
-            return
-
-        domainName = socket.gethostbyaddr(str(self.node.data()))[0]
-        splitDomainName = domainName.split(".")
-
-        #For EPICS PV definitions hardcoded in D-Tacq's "/tmp/records.dbl", 
-        # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
-        epicsDomainName = splitDomainName[0].replace("-", "_")
-
-        for i in range(32):
-            # Resetting Gains and Offset to default values
-            # GAIN1 = 1
-            # GAIN2 = 1
-            # OFFSET = 0
-            pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, i + 1)
-            pv = epics.PV(pvg1)
-            valueg1 = str(1)
-            pv.put(valueg1, wait=True)
-
-            pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, i + 1)
-            pv = epics.PV(pvg2)
-            valueg2 = str(1)
-            pv.put(valueg2, wait=True)
-
-            pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, i + 1)
-            pv = epics.PV(pvg3)
-            valueg3 = str(0)
-            pv.put(valueg3, wait=True)
-
 
     def setGainsOffsets(self, card):
         import epics
