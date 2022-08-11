@@ -64,11 +64,10 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             raise MDSplus.DevBAD_PARAMETER(
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %d" % (freq,))
 
-        for card in self.slots:
-            self.setGainsOffsets(card)
-            self.slots[card].SC32_GAIN_COMMIT = 1
+        for site in self.slots:
+            self.setGainsOffsets(site)
             if self.debug:
-                print("GAINs Committed for site %s" % (card,))
+                print("GAINs Committed for site %s" % (site,))
                 
         # Here, the argument to the init of the superclass:
         # - init(True) => use resampling function:
@@ -96,11 +95,13 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                             "SC_GAIN must be computable from (one of: 1000, 100, 10, 1) * (one of: 1, 2, 5, 10) ; not %d" % (g,))
                 return (g1, g2)
 
-    def setGainsOffsets(self, card):
+    def setGainsOffsets(self, site):
         import epics
         import socket
 
-        if card not in [1, 3, 5]:
+        if site not in [1, 3, 5]:
+            # (slw) TODO: Improve
+            print('site is not 1, 3, or 5')
             return
 
         domainName = socket.gethostbyaddr(str(self.node.data()))[0]
@@ -110,25 +111,31 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
         epicsDomainName = splitDomainName[0].replace("-", "_")
 
-        for i in range(32):
-            gain = getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + 1,)).data()
-            gain1, gain2 = self.computeGains(gain)
-            offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + 1,)).data()
+        # Choosing the input offset (0, 32, 64) depending of the selected site:
+        input_offset = { 1: 0, 3: 32, 5: 64 }[site]
 
-            pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, i + 1)
+        for i in range(32):
+            gain = getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + input_offset + 1,)).data()
+            gain1, gain2 = self.computeGains(gain)
+            offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + input_offset + 1,)).data()
+
+            pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, site, i + 1)
             pv = epics.PV(pvg1)
             valueg1 = str(gain1)
             pv.put(valueg1, wait=True)
 
-            pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, i + 1)
+            pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, site, i + 1)
             pv = epics.PV(pvg2)
             valueg2 = str(gain2)
             pv.put(valueg2, wait=True)
 
-            pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, i + 1)
+            pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, site, i + 1)
             pv = epics.PV(pvg3)
             valueg3 = str(offset)
             pv.put(valueg3, wait=True)
+
+        pv = epics.PV('{}:{}:SC32:GAIN:COMMIT'.format(epicsDomainName, site))
+        pv.put('1')
 
     # target_path = path to the node to call setSegmentScale on.
     # input_path = path to parent node for the input channel, typically INPUT_xxx, default to target_path
