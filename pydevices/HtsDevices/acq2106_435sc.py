@@ -46,7 +46,6 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     ]
 
     def init(self):
-        import time
         
         self.slots = super(_ACQ2106_435SC, self).getSlots()
         freq = int(self.freq.data())
@@ -85,7 +84,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
     def computeGains(self, g):
         g1opts = [ 1000, 100, 10, 1 ]
         g2opts = [ 1, 2, 5, 10 ]
-
+        
         for g1opt in g1opts:
             if g >= g1opt:
                 g1 = g1opt
@@ -104,6 +103,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             print('site is not 1, 3, or 5')
             return
 
+        # TODO: we should probably replace this with a EPICS_NAME node instead of asking for the hostname
         domainName = socket.gethostbyaddr(str(self.node.data()))[0]
         splitDomainName = domainName.split(".")
 
@@ -116,7 +116,12 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
         for i in range(32):
             gain = getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + input_offset + 1,)).data()
-            gain1, gain2 = self.computeGains(gain)
+
+            if type(gain) is int:
+                gain1, gain2 = self.computeGains(gain)
+            else:
+                gain1, gain2 = gain
+
             offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + input_offset + 1,)).data()
 
             pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, site, i + 1)
