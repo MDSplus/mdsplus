@@ -115,12 +115,14 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         input_offset = { 1: 0, 3: 32, 5: 64 }[site]
 
         for i in range(32):
-            gain = getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + input_offset + 1,)).data()
+            gain = str(getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + input_offset + 1,)).data())
 
-            if type(gain) is int:
-                gain1, gain2 = self.computeGains(gain)
+            parts = gain.split(",")
+            if len(parts) == 2:
+                gain1 = int(parts[0])
+                gain2 = int(parts[1])
             else:
-                gain1, gain2 = gain
+                gain1, gain2 = self.computeGains(int(gain))
 
             offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + input_offset + 1,)).data()
 
@@ -196,7 +198,7 @@ def assemble(cls):
             {
                 # Local (per channel) SC gains
                 'path': ':INPUT_%3.3d:SC_GAIN' % (i+1,),
-                'type':'NUMERIC', 
+                'type':'TEXT', 
                 'value':1,
                 'options':('no_write_shot',)
             },
