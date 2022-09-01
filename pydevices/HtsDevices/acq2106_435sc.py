@@ -126,7 +126,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 else:
                     gain1, gain2 = self.computeGains(int(gain))
             except:
-                print("Cannot convert", gain1, "and/or", gain2, "to integer. Gains values needs to be integers.")
+                print("Cannot convert", gain1, "and/or", gain2, "to integer. Gains need to be integers.")
 
             offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + input_offset + 1,)).data()
 
