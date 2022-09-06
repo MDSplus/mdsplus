@@ -3,11 +3,9 @@
 #include <pthread_port.h>
 #include <mdsversion.h>
 
-#define CONCAT2(a, b) a##b
-#define CONCAT(a, b) CONCAT2(a, b)
-#define VERSIONCONST CONCAT(LIBPREFIX, Version)
-#define GETRELEASE CONCAT(LIBPREFIX, Release)
-#define GETRELEASEDSC CONCAT(LIBPREFIX, ReleaseDsc)
+#define VERSIONCONST @LIBPREFIX@Version
+#define GETRELEASE @LIBPREFIX@Release
+#define GETRELEASEDSC @LIBPREFIX@ReleaseDsc
 
 EXPORT
 const mds_version_t VERSIONCONST = {
