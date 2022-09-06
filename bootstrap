@@ -39,22 +39,22 @@ fi
 
 conf/update_submodules
 
-python/generate_tests
+# python/generate_tests
 
-deploy/git_revision.sh  # must be done before autoconf
+# deploy/git_revision.sh  # must be done before autoconf
 
-aclocal -I ./m4
+# aclocal -I ./m4
 
-autoheader
+# autoheader
 
 # libtoolize
 
-automake --add-missing
+# automake --add-missing
 
-autoconf
+# autoconf
 
-$PYTHON deploy/gen_messages.py
-$PYTHON deploy/gen_compound_opcbuiltins.py
+# $PYTHON deploy/gen_messages.py
+# $PYTHON deploy/gen_compound_opcbuiltins.py
 
 deploy/yylex.gen tdishr
 deploy/yylex.gen treeshr

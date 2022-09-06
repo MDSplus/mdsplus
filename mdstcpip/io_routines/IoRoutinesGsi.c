@@ -29,15 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globus_xio_tcp_driver.h"
 
 // Undefine symbols defined again in config.h
-#ifdef HAVE_STDARG_H
-#undef HAVE_STDARG_H
-#endif
-#ifdef HAVE_GETADDRINFO
-#undef HAVE_GETADDRINFO
-#endif
-#ifdef HAVE_GETPWUID
-#undef HAVE_GETPWUID
-#endif
 #ifdef _GNU_SOURCE
 #undef _GNU_SOURCE
 #endif

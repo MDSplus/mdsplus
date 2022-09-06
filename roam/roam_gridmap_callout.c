@@ -28,14 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <gssapi.h>
 #include <stdlib.h>
 
-#ifdef HAVE_STDARG_H
-#undef HAVE_STDARG_H
-#endif
 #ifdef HAVE_GETADDRINFO
 #undef HAVE_GETADDRINFO
-#endif
-#ifdef HAVE_GETPWUID
-#undef HAVE_GETPWUID
 #endif
 #ifdef SIZEOF_LONG
 #undef SIZEOF_LONG
