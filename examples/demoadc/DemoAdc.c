@@ -90,6 +90,7 @@ int initialize(char *name, int clockFreq, int postTriggerSamples)
 
 int acquire(char *name __attribute__((unused)), short *c1, short *c2, short *c3, short *c4)
 {
+  (void)name;
   int i;
   printf("ACQUIRE\n");
   //      it is assumed that c1,c2,c3,c4 arrays have totSamples elements
