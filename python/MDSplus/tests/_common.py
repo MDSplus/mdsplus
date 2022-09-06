@@ -206,7 +206,10 @@ class Tests(TestCase):
             if len(sys.argv) == 2 and sys.argv[1] == 'all':
                 cls.runTests()
             elif len(sys.argv) > 1:
-                cls.runTests(sys.argv[1:])
+                tests = sys.argv[1:]
+                for i in range(len(tests)):
+                    tests[i] = tests[i].strip()
+                cls.runTests(tests)
             elif cls.__module__.endswith("_test"):
                 cls.runTests()
             else:
