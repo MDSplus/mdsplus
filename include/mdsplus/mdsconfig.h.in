@@ -1,0 +1,140 @@
+#ifndef _MDSCONFIG_H
+#define _MDSCONFIG_H
+
+#ifdef _MSC_VER
+#define __attribute__(...)
+#define EXPORT __declspec(dllexport)
+#define MDS_ATTR_FALLTHROUGH
+#else
+
+// Either unsigned int or int
+#if !defined(ASSERT_LINE_TYPE)
+#define ASSERT_LINE_TYPE unsigned int
+#endif
+
+#if !defined(EVENT_THREAD_STACK_SIZE_MIN)
+#define EVENT_THREAD_STACK_SIZE_MIN 1048576
+#endif
+
+/* Define to 1 if you have the <alloca.h> header file. */
+#cmakedefine01 HAVE_ALLOCA_H
+
+/* "Define if you have the clock_gettime function." */
+#cmakedefine HAVE_CLOCK_GETTIME 
+
+/* Define to 1 if you have the `fork' function. */
+#cmakedefine01 HAVE_FORK
+
+/* "Define if you have the getaddrinfo routine" */
+#cmakedefine HAVE_GETADDRINFO 
+
+/* "Define if you have getpwuid." */
+#cmakedefine HAVE_GETPWUID 
+
+/* Define to 1 if you have the <sys/resource.h> header file. */
+#cmakedefine01 HAVE_SYS_RESOURCE_H
+
+/* "Define if you have the getrusage routine" */
+#cmakedefine HAVE_GETRUSAGE 
+
+/* Define to 1 if you have the <grp.h> header file. */
+#cmakedefine01 HAVE_GRP_H
+
+/* Define to 1 if you have the `mkstemp' function. */
+#cmakedefine01 HAVE_MKSTEMP
+
+/* Define to 1 if you have the <pthread.h> header file. */
+#cmakedefine01 HAVE_PTHREAD_H
+
+/* Define to 1 if you have the `pthread_lock_global_np' function. */
+#cmakedefine01 HAVE_PTHREAD_LOCK_GLOBAL_NP
+
+/* Define to 1 if you have the <pwd.h> header file. */
+#cmakedefine01 HAVE_PWD_H
+
+/* Define to 1 if you have the <readline/readline.h> header file. */
+#cmakedefine01 HAVE_READLINE_READLINE_H
+
+/* Define to 1 if you have the `rl_set_signals' function. */
+#cmakedefine01 HAVE_RL_SET_SIGNALS
+
+/* "Define if you have the sybase includes (freetds)" */
+#cmakedefine HAVE_SYBASE
+
+/* Define if you have the <sys/filio.h> header file. */
+#cmakedefine HAVE_SYS_FILIO_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#cmakedefine01 HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine01 HAVE_UNISTD_H
+
+/* Define to 1 if you have the <valgrind/valgrind.h> header file. */
+#cmakedefine01 HAVE_VALGRIND_H
+
+/* Define to 1 or 0, depending whether the compiler supports simple visibility
+   declarations. */
+#cmakedefine01 HAVE_VISIBILITY
+
+/* Define if you have the <vxWorks.h> header file. */
+#cmakedefine HAVE_VXWORKS_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#cmakedefine01 HAVE_STDINT_H
+
+/* Set SHARELIB_TYPE to ".so",".sl",".a" etc... */
+#define SHARELIB_TYPE "@SHARELIB_TYPE@"
+
+/* The size of `int *', as computed by sizeof. */
+#define SIZEOF_INT_P sizeof(int *)
+
+/* The size of `long', as computed by sizeof. */
+#define SIZEOF_LONG sizeof(long)
+
+/* Define if you want to collect performance statistics -- linux only */
+#cmakedefine USE_PERF
+
+/* Version number of package */
+#define VERSION "7a"
+
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+/* #  undef WORDS_BIGENDIAN */
+# endif
+#endif
+
+/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE
+#endif
+
+#ifdef HAVE_LL_CONSTANTS
+#define LONG_LONG_CONSTANT(value) value##ll
+#else
+#define LONG_LONG_CONSTANT(value) value
+#endif
+
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)
+#elif HAVE_VISIBILITY
+# define EXPORT __attribute__((__visibility__("default")))
+#else
+#define EXPORT
+#endif
+
+// (SLW) FIX
+/* Define to empty if `const' does not conform to ANSI C. */
+/* #undef const */
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* #undef size_t */
+
+#endif // _MSC_VER else
+#endif // ifndef _MDSCONFIG_H
