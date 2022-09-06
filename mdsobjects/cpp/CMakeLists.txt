@@ -19,7 +19,7 @@ INSTALL(TARGETS MdsObjectsCppShr)
 TARGET_LINK_LIBRARIES(
     MdsObjectsCppShr
     PUBLIC
-        JavaMds
+        MdsIpShr
 )
 
 ADD_STATIC_COPY(MdsObjectsCppShr)
