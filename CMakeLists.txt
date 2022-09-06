@@ -583,6 +583,13 @@ IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/python/MDSplus/compound.py")
 ENDIF()
 
 ###
+### bison / flex
+###
+
+# TODO: Find Bison and Flex and gperf?
+# TODO: Macro for running bison/flex?
+
+###
 ### Documentation
 ###
 
