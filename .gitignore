@@ -125,7 +125,7 @@ dwscope/Makefile.in
 include/camshr_messages.h
 include/mdsplus/mdsconfig.h
 include/mdsdcl_messages.h
-include/mdsplus/mdsconfig.h.in
+# include/mdsplus/mdsconfig.h.in
 include/mdsshr_messages.h
 include/mitdevices_messages.h
 include/servershr_messages.h
