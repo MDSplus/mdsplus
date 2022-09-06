@@ -1,19 +1,23 @@
 
-###
-### JavaMds
-###
+IF(ENABLE_JAVA)
 
-ADD_LIBRARY(
-    JavaMds SHARED
-    ServerSupport.c
-    mdsobjects.c
-)
+    ###
+    ### JavaMds
+    ###
 
-INSTALL(TARGETS JavaMds)
+    ADD_LIBRARY(
+        JavaMds SHARED
+        ServerSupport.c
+        mdsobjects.c
+    )
 
-TARGET_LINK_LIBRARIES(
-    JavaMds
-    PUBLIC
-        MdsIpShr
-        JNI::JNI
-)
+    INSTALL(TARGETS JavaMds)
+
+    TARGET_LINK_LIBRARIES(
+        JavaMds
+        PUBLIC
+            MdsIpShr
+            JNI::JNI
+    )
+
+ENDIF()
