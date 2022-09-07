@@ -119,14 +119,11 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
             parts = gain.split(",")
 
-            try:
-                if len(parts) == 2:
-                    gain1 = int(parts[0])
-                    gain2 = int(parts[1])
-                else:
-                    gain1, gain2 = self.computeGains(int(gain))
-            except:
-                print("Cannot convert", gain1, "and/or", gain2, "to integer. Gains need to be integers.")
+            if len(parts) == 2:
+                gain1 = int(float(parts[0]))
+                gain2 = int(float(parts[1]))
+            else:
+                gain1, gain2 = self.computeGains(int(float(gain)))
 
             offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + input_offset + 1,)).data()
 
