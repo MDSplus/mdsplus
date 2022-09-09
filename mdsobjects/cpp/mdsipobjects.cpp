@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace std;
 
-extern "C" void *getManyObj(char *serializedIn); 
+extern "C" void *getManyObj(char *serializedIn);
 extern "C" void *putManyObj(char *serializedIn);
 extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args,
                                          void *tree);
@@ -241,7 +241,7 @@ void *getManyObj(char *serializedIn)
   return result->convertToDsc();
 }
 
-void *putManyObj(char *serializedIn)
+void *putManyObj(char *serializedIn) 
 {
   AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
   if (inArgs->clazz != CLASS_APD) // || inArgs->dtype != DTYPE_LIST)
