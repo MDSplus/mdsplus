@@ -43,6 +43,12 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
             'value': 100,
             'options': ('write_shot',)
         },
+        {
+            'path': ':EPICS_NAME',
+            'type': 'string',
+            'value': 'acq2106_xxx',
+            'options': ('write_model',)
+        }
     ]
 
     def init(self):
@@ -86,15 +92,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         import epics
         import socket
 
-        domainName = socket.gethostbyaddr(str(self.node.data()))[0]
-        splitDomainName = domainName.split(".")
-
-        #For EPICS PV definitions hardcoded in D-Tacq's "/tmp/records.dbl", 
-        # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
-        if "-" in splitDomainName[0]:
-            epicsDomainName = splitDomainName[0].replace("-", "_")
-        else:
-            epicsDomainName = splitDomainName[0]
+        epicsDomainName = self.epics_name.data()
 
         for ic in range(1,32+1):
             if card == 1:

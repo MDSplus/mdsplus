@@ -33,6 +33,15 @@ class _ACQ2106_435SCSM(acq2106_435sm._ACQ2106_435SM):
     """
     D-Tacq ACQ2106 Signal Conditioning support.
     """
+    
+    sc_parts = [
+        {
+            'path': ':EPICS_NAME',
+            'type': 'string',
+            'value': 'acq2106_xxx',
+            'options': ('write_model',)
+        }
+    ]
 
     def getSlots(self):
         uut = self.getUUT()
@@ -96,17 +105,8 @@ class _ACQ2106_435SCSM(acq2106_435sm._ACQ2106_435SM):
 
     def setGainsOffsets(self, card):
         import epics
-        import socket
 
-        domainName = socket.gethostbyaddr(str(self.node.data()))[0]
-        splitDomainName = domainName.split(".")
-
-        #For EPICS PV definitions hardcoded in D-Tacq's "/tmp/records.dbl", 
-        # the ACQs DNS hostnames/domain names should be of the format <chassis name> _ <three digits serial number>
-        if "-" in splitDomainName[0]:
-            epicsDomainName = splitDomainName[0].replace("-", "_")
-        else:
-            epicsDomainName = splitDomainName[0]
+        epicsDomainName = self.epics_name.data()
 
         for ic in range(1,32+1):
             if card == 1:
@@ -181,7 +181,7 @@ class _ACQ2106_435SCSM(acq2106_435sm._ACQ2106_435SM):
 
 
 def assemble(cls):
-    cls.parts = list(_ACQ2106_435SCSM.carrier_parts)
+    cls.parts = list(_ACQ2106_435SCSM.carrier_parts + _ACQ2106_435SCSM.sc_parts)
     for i in range(cls.sites*32):
         cls.parts += [
             {
