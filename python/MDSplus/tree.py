@@ -145,6 +145,7 @@ class Dbi(object):
     VERSIONS_IN_PULSE = (11, bool, 4)  # settable
     DISPATCH_TABLE = (13, bool, 4)
     ALTERNATE_COMPRESSION = (14, bool, 4) #settable
+    TREE_VERSION = (15, int, 4)
 
     class _dbi_item(_C.Structure):
         """ Ctype structure class for making calls into _TreeGetDbi() """
@@ -653,8 +654,13 @@ class Tree(object):
         Dbi.VERSIONS_IN_PULSE, "Support versioning of data in pulse.", True)
     dispatch_table = Dbi._dbiProp(
         Dbi.DISPATCH_TABLE,   "True if dispatch table is built")
+<<<<<<< HEAD
     alternate_compression = Dbi._dbiProp(
         Dbi.ALTERNATE_COMPRESSION,  "Set to True to enable alternate compression methods", False)
+=======
+    tree_version = Dbi._dbiProp(
+        Dbi.TREE_VERSION,     "Tree format version number")
+>>>>>>> 9d5f29516 (Add DbiTREE_VERSION, add version to `show db` (#2476))
 
     @property
     def default(self):

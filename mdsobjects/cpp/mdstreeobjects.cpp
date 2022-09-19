@@ -581,6 +581,23 @@ bool Tree::isOpenForEdit() { return dbiTest(getCtx(), DbiOPEN_FOR_EDIT); }
 
 bool Tree::isReadOnly() { return dbiTest(getCtx(), DbiOPEN_READONLY); }
 
+int Tree::getTreeVersion()
+{
+  int treeVersion;
+  
+  int len;
+  struct dbi_itm dbiList[] = {
+    {sizeof(int), DbiTREE_VERSION, &treeVersion, &len},
+    {0, DbiEND_OF_LIST, 0, 0}
+  };
+
+  int status = _TreeGetDbi(getCtx(), dbiList);
+  if (STATUS_NOT_OK)
+    throw MdsException(status);
+
+  return treeVersion;  
+}
+
 static void dbiSet(void *ctx, short int code, bool value)
 {
   int len;

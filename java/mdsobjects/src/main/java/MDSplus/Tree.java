@@ -24,7 +24,7 @@ public class Tree
     
 	static final int DbiNAME = 1, DbiSHOTID = 2, DbiMODIFIED = 3, DbiOPEN_FOR_EDIT = 4, DbiINDEX = 5,
 			DbiNUMBER_OPENED = 6, DbiMAX_OPEN = 7, DbiDEFAULT = 8, DbiOPEN_READONLY = 9, DbiVERSIONS_IN_MODEL = 10,
-			DbiVERSIONS_IN_PULSE = 11;
+			DbiVERSIONS_IN_PULSE = 11, DbiTREE_VERSION = 14;
 	static public final int TreeUSAGE_ANY = 0, TreeUSAGE_NONE = 1, TreeUSAGE_STRUCTURE = 1, TreeUSAGE_ACTION = 2,
 			TreeUSAGE_DEVICE = 3, TreeUSAGE_DISPATCH = 4, TreeUSAGE_NUMERIC = 5, TreeUSAGE_SIGNAL = 6,
 			TreeUSAGE_TASK = 7, TreeUSAGE_TEXT = 8, TreeUSAGE_WINDOW = 9, TreeUSAGE_AXIS = 10, TreeUSAGE_SUBTREE = 11,
@@ -172,6 +172,8 @@ public class Tree
 
 	private static native void setDbiFlag(long ctx, boolean flag, int dbiType) throws MdsException;
 
+	private static native int getDbiInt(long ctx, int dbiType) throws MdsException;
+
 	private static native void setTreeViewDate(java.lang.String date) throws MdsException;
 
 	private static native void setTreeTimeContext(long ctx, Data start, Data end, Data delta);
@@ -313,6 +315,9 @@ public class Tree
 
 	public boolean isReadOnly() throws MdsException
 	{ return getDbiFlag(getCtx(), DbiOPEN_READONLY); }
+	
+	public int getTreeVersion() throws MdsException
+	{ return getDbiInt(getCtx(), DbiTREE_VERSION); }
 
 	/**
 	 * Set the version date: all read data will refer to the version active to that

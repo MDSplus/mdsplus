@@ -1930,6 +1930,29 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag(JNIEnv *env,
 
 /*
  * Class:     MDSplus_Tree
+ * Method:    getDbiInt
+ * Signature: (JI)I
+ */
+JNIEXPORT jint JNICALL Java_MDSplus_Tree_getDbiInt(JNIEnv *env,
+                                                   jclass cls
+                                                   __attribute__((unused)),
+                                                   jlong jctx, jint code)
+{
+  int value, len = sizeof(jint), status;
+  void * ctx = JLONG2PTR(jctx);
+  struct dbi_itm dbiList[] = {
+    {sizeof(int), 0, &value, &len},
+    {0, DbiEND_OF_LIST, 0, 0}
+  };
+  dbiList[0].code = (short)code;
+  status = CTXCALLN(TreeGetDbi, dbiList);
+  if (STATUS_NOT_OK)
+    throwMdsException(env, status);
+  return value;
+}
+
+/*
+ * Class:     MDSplus_Tree
  * Method:    setTreeViewDate
  * Signature: (Ljava/lang/String;)V
  */

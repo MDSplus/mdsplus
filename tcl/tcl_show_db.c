@@ -50,7 +50,9 @@ EXPORT int TclShowDB(void *ctx __attribute__((unused)),
 {
   int sts;
   int open;
-  DBI_ITM itm1[] = {{sizeof(open), DbiNUMBER_OPENED, &open, 0}, {0}};
+  DBI_ITM itm1[] = {
+    {sizeof(open), DbiNUMBER_OPENED, &open, 0}, {0}
+  };
   sts = TreeGetDbi(itm1);
   if (sts & 1)
   {
@@ -59,23 +61,40 @@ EXPORT int TclShowDB(void *ctx __attribute__((unused)),
     for (idx = 0; idx < open; idx++)
     {
       int shotid;
+      int tree_version;
       char modified;
       char edit;
       char *outstr = 0;
-      DBI_ITM itm2[] = {{sizeof(idx), DbiINDEX, &idx, 0},
-                        {0, DbiNAME, 0, 0},
-                        {sizeof(shotid), DbiSHOTID, &shotid, 0},
-                        {sizeof(modified), DbiMODIFIED, &modified, 0},
-                        {sizeof(edit), DbiOPEN_FOR_EDIT, &edit, 0},
-                        {0, DbiDEFAULT, 0, 0},
-                        {0}};
+      char * dbi_name = 0;
+      char * dbi_default = 0;
+      size_t outstr_length = 0;
+      DBI_ITM itm2[] = {
+        {sizeof(idx), DbiINDEX, &idx, 0},
+        {0, DbiNAME, 0, 0},
+        {sizeof(shotid), DbiSHOTID, &shotid, 0},
+        {0, DbiDEFAULT, 0, 0},
+        {sizeof(edit), DbiOPEN_FOR_EDIT, &edit, 0},
+        {sizeof(modified), DbiMODIFIED, &modified, 0},
+        {sizeof(tree_version), DbiTREE_VERSION, &tree_version, 0},
+        {0}
+      };
       sts = TreeGetDbi(itm2);
-      outstr = malloc(strlen(itm2[1].pointer) + strlen(itm2[5].pointer) + 100);
-      sprintf(outstr, "%03d  %-12s  shot: %d [%s] %s%s\n", idx,
-              (char *)itm2[1].pointer, shotid, (char *)itm2[5].pointer,
-              edit ? "open for edit" : " ", modified ? ",modified" : " ");
-      free(itm2[1].pointer);
-      free(itm2[5].pointer);
+      dbi_name = itm2[1].pointer;
+      dbi_default = itm2[3].pointer;
+      outstr_length = strlen(dbi_name) + strlen(dbi_default) + 100;
+      outstr = (char *)malloc(outstr_length);
+      snprintf(outstr, outstr_length,
+        "%03d  %-12s  shot: %d [%s] %s%s version: %d\n",
+        idx,
+        dbi_name,
+        shotid,
+        dbi_default,
+        edit ? "open for edit" : " ",
+        modified ? ",modified" : " ",
+        tree_version
+      );
+      free(dbi_name);
+      free(dbi_default);
       tclAppend(output, outstr);
       free(outstr);
     }

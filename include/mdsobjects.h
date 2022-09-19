@@ -4141,6 +4141,11 @@ namespace MDSplus
     /// for segmented data.
     ///
     void setVersionsInPulse(bool enable);
+    
+    /// This function returns the tree file format version number. See treeshr
+    /// function \ref TreeGetDbi() called with code DbiTREE_VERSION.
+    ///
+    int getTreeVersion();
 
     /// This function returns true if the tree allows for alternate compression
     /// methods (gzip).  \note this can only be changed in edit mode.
