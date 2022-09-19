@@ -61,6 +61,7 @@ static const struct item
     {"OPEN_FOR_EDIT", DbiOPEN_FOR_EDIT, DTYPE_BU, 1},
     {"OPEN_READONLY", DbiOPEN_READONLY, DTYPE_BU, 1},
     {"SHOTID", DbiSHOTID, DTYPE_L, 4},
+    {"TREE_VERSION", DbiTREE_VERSION, DTYPE_L, 4}
 };
 
 #define siztab sizeof(struct item)

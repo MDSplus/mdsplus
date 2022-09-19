@@ -66,76 +66,67 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
     switch (lst->code)
     {
     case DbiNAME:
-
       CheckOpen(db);
       string = strdup(db->main_treenam);
       break;
 
     case DbiSHOTID:
-
       CheckOpen(db);
       set_retlen(sizeof(db->shotid));
       *(int *)lst->pointer = db->shotid;
       break;
 
     case DbiMODIFIED:
-
       CheckOpen(db);
       set_ret_char(db->modified);
       break;
 
     case DbiOPEN_FOR_EDIT:
-
       CheckOpen(db);
       set_ret_char(db->open_for_edit);
       break;
 
     case DbiOPEN_READONLY:
-
       CheckOpen(db);
       set_ret_char(db->open_readonly);
       break;
 
     case DbiINDEX:
-
-    {
-      int idx;
-      for (idx = 0, db = (PINO_DATABASE *)dbid;
-           db && (idx < (*(int *)(lst->pointer) & 0xff)); idx++, db = db->next)
-        ;
+      {
+        int idx;
+        for (idx = 0, db = (PINO_DATABASE *)dbid;
+            db && (idx < (*(int *)(lst->pointer) & 0xff)); idx++, db = db->next)
+          ;
+      }
       break;
-    }
 
     case DbiNUMBER_OPENED:
-
-    {
-      int count;
-      PINO_DATABASE *db_tmp;
-      for (count = 0, db_tmp = (PINO_DATABASE *)dbid; db_tmp ? db_tmp->open : 0;
-           count++, db_tmp = db_tmp->next)
-        ;
-      memset(lst->pointer, 0, (size_t)lst->buffer_length);
-      int length = minInt(lst->buffer_length, sizeof(int));
-      memcpy(lst->pointer, &count, (size_t)length);
-      if (lst->return_length_address)
-        *lst->return_length_address = length;
+      {
+        int count;
+        PINO_DATABASE *db_tmp;
+        for (count = 0, db_tmp = (PINO_DATABASE *)dbid; db_tmp ? db_tmp->open : 0;
+            count++, db_tmp = db_tmp->next)
+          ;
+        memset(lst->pointer, 0, (size_t)lst->buffer_length);
+        int length = minInt(lst->buffer_length, sizeof(int));
+        memcpy(lst->pointer, &count, (size_t)length);
+        if (lst->return_length_address)
+          *lst->return_length_address = length;
+      }
       break;
-    }
 
     case DbiMAX_OPEN:
-
-    {
-      int count = db->stack_size;
-      memset(lst->pointer, 0, (size_t)lst->buffer_length);
-      int length = minInt(lst->buffer_length, sizeof(int));
-      memcpy(lst->pointer, &count, (size_t)length);
-      if (lst->return_length_address)
-        *lst->return_length_address = length;
+      {
+        int count = db->stack_size;
+        memset(lst->pointer, 0, (size_t)lst->buffer_length);
+        int length = minInt(lst->buffer_length, sizeof(int));
+        memcpy(lst->pointer, &count, (size_t)length);
+        if (lst->return_length_address)
+          *lst->return_length_address = length;
+      }
       break;
-    }
 
     case DbiDEFAULT:
-
       CheckOpen(db);
       {
         int nid;
@@ -153,8 +144,8 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
         memcpy(lst->pointer, &value, (size_t)length);
         if (lst->return_length_address)
           *lst->return_length_address = length;
-        break;
       }
+      break;
 
     case DbiVERSIONS_IN_PULSE:
       CheckOpen(db);
@@ -165,8 +156,8 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
         memcpy(lst->pointer, &value, (size_t)length);
         if (lst->return_length_address)
           *lst->return_length_address = length;
-        break;
       }
+      break;
 
     case DbiDISPATCH_TABLE:
       CheckOpen(db);
@@ -177,8 +168,17 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
         memcpy(lst->pointer, &value, (size_t)length);
         if (lst->return_length_address)
           *lst->return_length_address = length;
-        break;
       }
+      break;
+      
+    case DbiTREE_VERSION:
+      CheckOpen(db);
+      {
+        // TREE_HEADER::version is a char, but upcast it to an int for ease of use
+        set_retlen(sizeof(int));
+        *(int *)lst->pointer = (int)db->tree_info->header->version;
+      }
+      break;
 
     default:
       status = TreeILLEGAL_ITEM;

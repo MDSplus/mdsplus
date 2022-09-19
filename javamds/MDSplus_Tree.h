@@ -30,6 +30,8 @@ extern "C"
 #define MDSplus_Tree_DbiVERSIONS_IN_MODEL 10L
 #undef MDSplus_Tree_DbiVERSIONS_IN_PULSE
 #define MDSplus_Tree_DbiVERSIONS_IN_PULSE 11L
+#undef MDSplus_Tree_DbiTREE_VERSION
+#define MDSplus_Tree_DbiTREE_VERSION 14L
 #undef MDSplus_Tree_TreeUSAGE_ANY
 #define MDSplus_Tree_TreeUSAGE_ANY 0L
 #undef MDSplus_Tree_TreeUSAGE_NONE
@@ -144,6 +146,14 @@ extern "C"
  */
   JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag(JNIEnv *, jclass, jlong,
                                                       jboolean, jint);
+
+  /*
+ * Class:     MDSplus_Tree
+ * Method:    getDbiInt
+ * Signature: (JI)Z
+ */
+  JNIEXPORT jint JNICALL Java_MDSplus_Tree_getDbiInt(JNIEnv *, jclass, jlong,
+                                                     jint);
 
   /*
  * Class:     MDSplus_Tree
