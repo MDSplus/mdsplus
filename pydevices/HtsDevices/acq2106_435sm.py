@@ -103,13 +103,13 @@ class _ACQ2106_435SM(MDSplus.Device):
         {
             'path':':PRESAMPLES',
             'type':'numeric',   
-            'value': int(1e5), 
+            'value': int(1e4), 
             'options':('no_write_shot',)
         },
         {
             'path':':POSTSAMPLES',
             'type':'numeric',  
-            'value': int(1e5), 
+            'value': int(1e4), 
             'options':('no_write_shot',)
         },
         {
