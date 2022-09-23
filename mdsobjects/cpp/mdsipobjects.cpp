@@ -301,7 +301,7 @@ Connection::Connection(char *mdsipAddr,
   SetCompressionLevel(clevel);
   sockId = ConnectToMds(mdsipAddr);
   unlockGlobal();
-  if (sockId <= 0)
+  if (sockId < 0)
   {
     std::string msg("Cannot connect to ");
     msg += mdsipAddr;
