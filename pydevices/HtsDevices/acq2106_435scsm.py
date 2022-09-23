@@ -37,7 +37,7 @@ class _ACQ2106_435SCSM(acq2106_435sm._ACQ2106_435SM):
     sc_parts = [
         {
             'path': ':EPICS_NAME',
-            'type': 'string',
+            'type': 'text',
             'value': 'acq2106_xxx',
             'options': ('write_model',)
         }

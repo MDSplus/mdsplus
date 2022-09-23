@@ -45,7 +45,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         },
         {
             'path': ':EPICS_NAME',
-            'type': 'string',
+            'type': 'text',
             'value': 'acq2106_xxx',
             'options': ('write_model',)
         }
