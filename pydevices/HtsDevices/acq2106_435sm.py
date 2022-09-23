@@ -199,25 +199,25 @@ class _ACQ2106_435SM(MDSplus.Device):
                     data_435 = np.right_shift(data_snip, 8)
 
                     # # The SPAD are stored as 4 extra "channels"
-                    # spad = data_snip[self.nchans:] # first SPAD
+                    spad = data_snip[self.nchans:] # first SPAD
                     
-                    # begin = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
-                    # end = begin + duration
-                    # dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(delta))
+                    begin = self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns)
+                    end = begin + duration
+                    dim = MDSplus.Range(MDSplus.Uint64(begin), MDSplus.Uint64(end), MDSplus.Uint64(delta))
 
-                    times = []
-                    for i in range(self.presamples + self.postsamples):
-                        offset = (i * stride) + self.nchans
-                        spad = data_snip[offset : offset + 4]
-                        times.append(self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns))
+                    # times = []
+                    # for i in range(self.presamples + self.postsamples):
+                    #     offset = (i * stride) + self.nchans
+                    #     spad = data_snip[offset : offset + 4]
+                    #     times.append(self.mdsplus_device.getTimeFromSPAD(spad, wrtd_tickns))
 
-                    dim = MDSplus.Uint64Array(times)
+                    # dim = MDSplus.Uint64Array(times)
                     
                     for i, ch in enumerate(self.chans):
                         if ch.on:
                             channel_data = data_435[ i :: stride ]
-                            ch.makeSegment(dim[0], dim[-1], dim, channel_data)
-                            # ch.makeSegment(begin, end, dim, channel_data)
+                            # ch.makeSegment(dim[0], dim[-1], dim, channel_data)
+                            ch.makeSegment(begin, end, dim, channel_data)
                     
                     print(f"Done processing multi-event data file {filename}")
                     # os.unlink(filename)

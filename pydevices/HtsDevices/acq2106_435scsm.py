@@ -82,16 +82,15 @@ class _ACQ2106_435SCSM(acq2106_435sm._ACQ2106_435SM):
                         '80000':(1./20480000)*to_nano, '128000':1./32768000*to_nano}
 
         if freq in allowed_freqs_tickns:
-            uut.cC.WRTD_TICKNS = allowed_freqs.get(freq)
+            uut.cC.WRTD_TICKNS = allowed_freqs_tickns.get(freq)
         else:
             raise MDSplus.DevBAD_PARAMETER(
                 "FREQ must be 10000, 20000, 40000, 80000 or 128000; not %s" % (freq,))
 
-        for card in self.slots:
-            self.setGainsOffsets(card)
-            self.slots[card].SC32_GAIN_COMMIT = 1
+        for site in self.slots:
+            self.setGainsOffsets(site)
             if self.debug:
-                print("GAINs Committed for site %s" % (card,))
+                print("GAINs Committed for site %s" % (site,))
                 
         super(_ACQ2106_435SCSM, self).init()
 
@@ -102,83 +101,109 @@ class _ACQ2106_435SCSM(acq2106_435sm._ACQ2106_435SM):
         uut = acq400_hapi.factory(self.node.data())
         return uut
 
+    def computeGains(self, g):
+        g1opts = [ 1000, 100, 10, 1 ]
+        g2opts = [ 1, 2, 5, 10 ]
+        
+        for g1opt in g1opts:
+            if g >= g1opt:
+                g1 = g1opt
+                g2 = g // g1opt
+                if g2 not in g2opts:
+                    raise MDSplus.DevBAD_PARAMETER(
+                            "SC_GAIN must be computable from (one of: 1000, 100, 10, 1) * (one of: 1, 2, 5, 10) ; not %d" % (g,))
+                return (g1, g2)
 
-    def setGainsOffsets(self, card):
+    def setGainsOffsets(self, site):
         import epics
+
+        if site not in [1, 3, 5]:
+            # (slw) TODO: Improve
+            print('site is not 1, 3, or 5')
+            return
 
         epicsDomainName = self.epics_name.data()
 
-        for ic in range(1,32+1):
-            if card == 1:
-                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg1)
-                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic,)).data())
-                pv.put(valueg1, wait=True)
+        # Choosing the input offset (0, 32, 64) depending of the selected site:
+        input_offset = { 1: 0, 3: 32, 5: 64 }[site]
 
-                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg2)
-                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic,)).data())
-                pv.put(valueg2, wait=True)
+        for i in range(32):
+            gain = str(getattr(self, 'INPUT_%3.3d:SC_GAIN' % (i + input_offset + 1,)).data())
 
-                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg3)
-                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic,)).data())
-                pv.put(valueg3, wait=True)
+            parts = gain.split(",")
 
-            elif card == 3:
-                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg1)
-                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+32,)).data())
-                pv.put(valueg1, wait=True)
+            if len(parts) == 2:
+                gain1 = int(float(parts[0]))
+                gain2 = int(float(parts[1]))
+            else:
+                gain1, gain2 = self.computeGains(int(float(gain)))
 
-                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg2)
-                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+32,)).data())
-                pv.put(valueg2, wait=True)
+            offset = getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (i + input_offset + 1,)).data()
 
-                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg3)
-                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+32,)).data())
-                pv.put(valueg3, wait=True)
+            pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, site, i + 1)
+            pv = epics.PV(pvg1)
+            valueg1 = str(gain1)
+            pv.put(valueg1, wait=True)
 
-            elif card == 5:
-                pvg1 = "{}:{}:SC32:G1:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg1)
-                valueg1 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN1' % (ic+64,)).data())
-                pv.put(valueg1, wait=True)
+            pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, site, i + 1)
+            pv = epics.PV(pvg2)
+            valueg2 = str(gain2)
+            pv.put(valueg2, wait=True)
 
-                pvg2 = "{}:{}:SC32:G2:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg2)
-                valueg2 = str(getattr(self, 'INPUT_%3.3d:SC_GAIN2' % (ic+64,)).data())
-                pv.put(valueg2, wait=True)
+            pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, site, i + 1)
+            pv = epics.PV(pvg3)
+            valueg3 = str(offset)
+            pv.put(valueg3, wait=True)
 
-                pvg3 = "{}:{}:SC32:OFFSET:{:02d}".format(epicsDomainName, card, ic)
-                pv = epics.PV(pvg3)
-                valueg3 = str(getattr(self, 'INPUT_%3.3d:SC_OFFSET' % (ic+64,)).data())
-                pv.put(valueg3, wait=True)
+        pv = epics.PV('{}:{}:SC32:GAIN:COMMIT'.format(epicsDomainName, site))
+        pv.put('1')
 
-    def setChanScale(self, node, num):
-        #Raw input channel, where the conditioning has been applied:
-        input_chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan       = self.__getattr__(node)
-        #Un-conditioning the signal:
-        chan.setSegmentScale(
-            MDSplus.ADD(MDSplus.DIVIDE(MDSplus.MULTIPLY(input_chan.COEFFICIENT, MDSplus.dVALUE()), 
-                                       MDSplus.MULTIPLY(input_chan.SC_GAIN1, input_chan.SC_GAIN2)), 
-                                       MDSplus.SUBTRACT(input_chan.OFFSET, input_chan.SC_OFFSET))
+ 
+    # target_path = path to the node to call setSegmentScale on.
+    # input_path = path to parent node for the input channel, typically INPUT_xxx, default to target_path
+    def setChanScale(self, target_path, input_path=None):
+        target_node = self.__getattr__(target_path)
+        input_node = target_node
+
+        if input_path:
+            input_node = self.__getattr__(input_path)
+
+        # Attention: For versions of the firmware v498 or greater in all the ACQ SC32 the calibration coefficients and offsets 
+        # already take into account the gains and offsets of the signal conditioning stages.
+        
+        # = (coefficient * value) + offset
+        target_node.setSegmentScale(
+            MDSplus.ADD(
+                MDSplus.MULTIPLY(
+                    input_node.COEFFICIENT, 
+                    MDSplus.dVALUE()
+                ), 
+                input_node.OFFSET
             )
+        )
 
-    def setTransientChanScale(self, node, num):
-        #Raw input channel, where the conditioning has been applied:
-        input_chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan       = self.__getattr__(node)
-        #Un-conditioning the signal:
-        chan.TRANSIENT.setSegmentScale(
-            MDSplus.ADD(MDSplus.DIVIDE(MDSplus.MULTIPLY(input_chan.COEFFICIENT, MDSplus.dVALUE()), 
-                                       MDSplus.MULTIPLY(input_chan.SC_GAIN1, input_chan.SC_GAIN2)), 
-                                       MDSplus.SUBTRACT(input_chan.OFFSET, input_chan.SC_OFFSET))
+        # target_path = path to the node to call setSegmentScale on.
+    # input_path = path to parent node for the input channel, typically INPUT_xxx, default to target_path
+    def setTransientChanScale(self, target_path, input_path=None):
+        target_node = self.__getattr__(target_path)
+        input_node = target_node
+
+        if input_path:
+            input_node = self.__getattr__(input_path)
+
+        # Attention: For versions of the firmware v498 or greater in all the ACQ SC32 the calibration coefficients and offsets 
+        # already take into account the gains and offsets of the signal conditioning stages.
+        
+        # = (coefficient * value) + offset
+        target_node.TRANSIENT.setSegmentScale(
+            MDSplus.ADD(
+                MDSplus.MULTIPLY(
+                    input_node.COEFFICIENT, 
+                    MDSplus.dVALUE()
+                ), 
+                input_node.OFFSET
             )
-
+        )
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SCSM.carrier_parts + _ACQ2106_435SCSM.sc_parts)
@@ -187,9 +212,9 @@ def assemble(cls):
             {
                 'path': ':INPUT_%3.3d' % (i+1,),
                 'type': 'SIGNAL', 
-                'valueExpr': 'head.setChanScale("INPUT_%3.3d", %d)' % (i + 1, i + 1),
-                #'options': ('no_write_model', 'write_once',)
-            },          
+                'valueExpr': 'head.setChanScale("INPUT_%3.3d")' % (i + 1,),
+                'options': ('no_write_model', 'write_once',)
+            },        
             {
                 'path': ':INPUT_%3.3d:COEFFICIENT' % (i+1,), 
                 'type':'NUMERIC',
@@ -204,19 +229,12 @@ def assemble(cls):
                  # Capture transient signal goes here:
                 'path': ':INPUT_%3.3d:TRANSIENT' % (i + 1,),
                 'type': 'SIGNAL',
-                'valueExpr': 'head.setTransientChanScale("INPUT_%3.3d", %d)' % (i + 1, i + 1),
+                'valueExpr': 'head.setTransientChanScale("INPUT_%3.3d")' % (i + 1,),
                 #'options': ('no_write_model',)
             },
             {
                 # Local (per channel) SC gains
-                'path': ':INPUT_%3.3d:SC_GAIN1' % (i+1,),
-                'type':'NUMERIC', 
-                'value':1,
-                'options':('no_write_shot',)
-            },
-            {
-                # Local (per channel) SC gains
-                'path': ':INPUT_%3.3d:SC_GAIN2' % (i+1,),
+                'path': ':INPUT_%3.3d:SC_GAIN' % (i+1,),
                 'type':'NUMERIC', 
                 'value':1,
                 'options':('no_write_shot',)
