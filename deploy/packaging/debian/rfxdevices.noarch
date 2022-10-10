@@ -72,6 +72,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SWTRIG.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_UDP_RECEIVER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_UDP_SENDER.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_WRTDTIMER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_BREAKDOWN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_COMMON.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_CONFIG.py
