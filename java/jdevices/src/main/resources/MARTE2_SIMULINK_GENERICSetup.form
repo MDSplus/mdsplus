@@ -115,7 +115,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="0"/>
-        <Property name="rows" type="int" value="2"/>
+        <Property name="rows" type="int" value="3"/>
       </Layout>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel2">
@@ -197,7 +197,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="MDS write trigger:"/>
                 <Property name="numCols" type="int" value="30"/>
-                <Property name="offsetNid" type="int" value="131"/>
+                <Property name="offsetNid" type="int" value="96"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField78">
@@ -205,7 +205,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Post trig. Samples: "/>
                 <Property name="numCols" type="int" value="6"/>
-                <Property name="offsetNid" type="int" value="133"/>
+                <Property name="offsetNid" type="int" value="98"/>
               </Properties>
             </Component>
           </SubComponents>

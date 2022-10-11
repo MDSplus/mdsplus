@@ -1794,9 +1794,10 @@ class MARTE2_COMPONENT(MDSplus.Device):
                             nonGamInputNodes.append(
                                 {'expr': inputDict['value'], 'dimensions': inputDict['dimensions'], 'name': signalName, 'col_order': inputDict['col_order']})
                         gamText += '      '+signalName+' = {\n'
-                        gamText += '        DataSource = '+gamName+'_TreeInput\n'
+                        gamText += '        DataSource = '+gamName+'_TreeInDDB\n'
                         signalDict['name'] = signalName
-                        signalDict['datasource'] = gamName+'_TreeInput_Logger'
+ #GAB 2022                       signalDict['datasource'] = gamName+'_TreeInput_Logger'
+                        signalDict['datasource'] = gamName+'_TreeInput_LoggerDDB'
                     else:
                         gamText += '      '+signalGamName+' = {\n'
                         if isInputStructField:
@@ -1896,6 +1897,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
             dataSourceText += '  }\n'
             dataSources.append(dataSourceText)
 
+        if len(nonGamInputNodes) > 0:
+            gamList.append(gamName+'_TreeIn')
         gamList.append(gamName)
         ######################################################### Output Signals
         outputSignals = []  # For debug printout
@@ -2482,6 +2485,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 dataSourceText += '      }\n'
 # Time Management
             dataSourceText += '      Time = {\n'
+            dataSourceText += '        DiscontinuityFactor = 1\n'
+            dataSourceText += '        Type = int32\n'
             dataSourceText += '        NodeName = "' + \
                 configDict['outTimeNid'].getFullPath()+'"\n'
 # keep into account possibl sample information for that GAM
@@ -2508,6 +2513,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                         outputDict['value_nid'].getFullPath()+'"\n'
                     dataSourceText += '        Period = ' + \
                         str(period/currSamples)+'\n'
+                    dataSourceText += '        DiscontinuityFactor = 1\n'
                     dataSourceText += '        MakeSegmentAfterNWrites = ' + \
                         str(outputDict['seg_len'])+'\n'
                     dataSourceText += '        AutomaticSegmentation = 0\n'
@@ -2577,7 +2583,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     nonGamInputNodes.append({'expr': outputTrigger.decompile(
                     ), 'dimensions': 0, 'name': 'Trigger', 'col_order': False})
                     gamText += '      '+'Trigger'+' = {\n'
-                    gamText += '        DataSource = '+gamName+'_TreeInput\n'
+                    gamText += '        DataSource = '+gamName+'_TreeInDDB\n'
                     gamText += '        Type = uint8\n'
                     gamText += '      }\n'
 # end Trigger Management
@@ -2585,7 +2591,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
 # Time signal management
             gamText += '      Time = {\n'
             gamText += '        DataSource = ' + timerDDB+'\n'
-            gamText += '        Type = uint32\n'
+#            gamText += '        Type = uint32\n' GAB2022
+            gamText += '        Type = int32\n'
             gamText += '      }\n'
 # Other output signals
 # first non struct outputs
@@ -2617,7 +2624,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
 # Time signal
             gamText += '      Time = {\n'
             gamText += '        DataSource = '+gamName+'_TreeOutput\n'
-            gamText += '        Type = uint32\n'
+#            gamText += '        Type = uint32\n'  GAB2022
+            gamText += '        Type = int32\n' 
             gamText += '      }\n'
 # Other signals
             for outputDict in outputDicts:
@@ -2881,7 +2889,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                                 nonGamInputNodes.append(
                                     {'expr': fieldDict['value'], 'dimensions': fieldDict['dimensions'], 'name': signalName, 'col_order': fieldDict['col_order']})
                             gamText += '      '+signalName+' = {\n'
-                            gamText += '        DataSource = '+gamName+'_TreeInput\n'
+# GAB 2022                           gamText += '        DataSource = '+gamName+'_TreeInput\n'
+                            gamText += '        DataSource = '+gamName+'_TreeInDDB\n'
                         else:
                             gamText += '      '+signalGamName+' = {\n'
                             if isInputStructField:
@@ -2945,68 +2954,59 @@ class MARTE2_COMPONENT(MDSplus.Device):
         # endif needInputBusConversion
 
         # There are input references to tree nodes, we need to build a MdsReader DataSource named <gam name>_TreeInput
+        # GAB 2022 here are input references to tree nodes, we need to build a MDSReaderGAM instance named <gam name>_TreeInput and a DDB
+        # named <gam name>_TreeInput_DDB
         if len(nonGamInputNodes) > 0:
-            # if debugEnabled, we need to write TWO instances of MDSReaderNS (_TreeInput and _TreeInput_Debug)
+            # if debugEnabled, we need to write TWO instances of MDSReaderGAB (_TreeInput and _TreeInput_Debug)
             treeInputExtensions = []
-            treeInputExtensions.append('_TreeInput')
+            treeInputExtensions.append('_TreeIn')
             if debugEnabled:
-                treeInputExtensions.append('_TreeInput_Logger')
+                treeInputExtensions.append('_TreeIn_Logger')
 
             for treeInputExtension in treeInputExtensions:
-                #dataSourceText = '  +'+gamName+'_TreeInput = {\n'
-                dataSourceText = '  +'+gamName+treeInputExtension + ' = {\n'
-                dataSourceText += '    Class = MDSReaderNS\n'
-                dataSourceText += '    UseColumnOrder = 0\n'
-                dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
-                dataSourceText += '    ShotNumber = ' + \
-                    str(self.getTree().shot)+'\n'
-                currTimebase = self.getNode('timebase').evaluate()
-                if isinstance(currTimebase, Range):
-                    startTime = currTimebase.begin.data()
-                    period = currTimebase.delta.data()
-                else:
-                    currTimebase = currTimebase.data()
-                    startTime = currTimebase[0]
-                    period = currTimebase[1] - currTimebase[0]
-                frequency = 1./period
+                dataSourceText = '  +'+gamName+treeInputExtension+'DDB = {\n'
+                dataSourceText += '    Class = GAMDataSource\n'
+                dataSourceText += ' }\n'
+                dataSources.append(dataSourceText)
 
-                dataSourceText += '    StartTime = '+str(startTime)+'\n'
-                dataSourceText += '    Frequency = ' + \
-                    str(round(frequency, 4))+'\n'
-                dataSourceText += '    Signals = { \n'
+                mdsReaderText =  '  +'+gamName+treeInputExtension + ' = {\n'
+                mdsReaderText += '    Class = MDSReaderGAM\n'
+                mdsReaderText += '    TreeName = "'+self.getTree().name+'"\n'
+                mdsReaderText += '    ShotNumber = ' + \
+                    str(self.getTree().shot)+'\n'
+                mdsReaderText += '    InputSignals = { \n'
+                mdsReaderText += '      Time = {\n'
+                mdsReaderText += '          DataSource = '+timerDDB + '\n' 
+                mdsReaderText += '      } \n'
+                mdsReaderText += '    } \n'
+                mdsReaderText += '    OutputSignals = { \n'
                 for nodeDict in nonGamInputNodes:
-                    dataSourceText += '      '+nodeDict['name']+' = {\n'
+                    mdsReaderText += '      '+nodeDict['name']+' = {\n'
+                    mdsReaderText += '        DataSource = '+gamName+treeInputExtension+'DDB\n'
                     valExpr = nodeDict['expr']
                     if isinstance(valExpr, TreeNode):
-#                        valExpr = valExpr.getPath()
                         valExpr = str(valExpr)
                     else:
                         valExpr = str(valExpr)
                     valExpr = valExpr.replace('"', "'")
-                    dataSourceText += '        DataExpr = "'+valExpr+'"\n'
-                    dataSourceText += '        TimebaseExpr = "dim_of(' + \
+                    mdsReaderText += '        DataExpr = "'+valExpr+'"\n'
+                    mdsReaderText += '        TimebaseExpr = "dim_of(' + \
                         valExpr+')"\n'
-                    numberOfElements = 1
                     if not (np.isscalar(nodeDict['dimensions'])):
                         for currDim in nodeDict['dimensions']:
                             numberOfElements *= currDim
-                    dataSourceText += '        NumberOfElements = ' + \
+                    mdsReaderText += '        NumberOfElements = ' + \
                         str(numberOfElements)+'\n'
                     if nodeDict['col_order']:
-                        dataSourceText += '        UseColumnOrder = 1\n'
+                        mdsReaderText += '        UseColumnOrder = 1\n'
                     else:
-                        dataSourceText += '        UseColumnOrder = 0\n'
-                    dataSourceText += '        DataManagement = 1\n'
-                    dataSourceText += '      }\n'
-                dataSourceText += '      timebase = {\n'
-                dataSourceText += '        NumberOfElements = 1\n'
-                dataSourceText += '        Type = uint64\n'
-                dataSourceText += '         }\n'
-                dataSourceText += '    }\n'
-                dataSourceText += '  }\n'
-                dataSources.append(dataSourceText)
-
-        # Some outputs are connected to devices on separate synchronized threads
+                        mdsReaderText += '        UseColumnOrder = 0\n'
+                    mdsReaderText += '        DataManagement = 1\n'
+                    mdsReaderText += '      }\n'
+                mdsReaderText += '    }\n'
+                mdsReaderText += '  }\n'
+                gams.append(mdsReaderText)
+# Some outputs are connected to devices on separate synchronized threads
         if len(synchThreadSignals) > 0:
             dataSourceText = '  +'+gamName+'_Output_Synch = {\n'
             dataSourceText += '    Class = RealTimeThreadSynchronisation\n'
@@ -3421,6 +3421,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
 # If the Input device is not synchronising, store time in outputs:time
             if not isSynch:
                 dataSourceText += '      Time = {\n'
+                dataSourceText += '        DiscontinuityFactor = 1\n'
+                dataSourceText += '        Type = int32\n'
                 dataSourceText += '        NodeName = "' + \
                     configDict['outTimeNid'].getFullPath()+'"\n'
                 # We must keep into account the number of samples in an input device
@@ -3438,6 +3440,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             for outputDict in outputDicts:
                 if outputDict['seg_len'] > 0:
                     dataSourceText += '      '+outputDict['name']+' = {\n'
+                    dataSourceText += '        DiscontinuityFactor = 1\n'
                     dataSourceText += '        NodeName = "' + \
                         outputDict['value_nid'].getFullPath()+'"\n'
                     # We must keep into account the number of samples in an input device
@@ -3464,7 +3467,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
         dataSourceText += '    Class = GAMDataSource\n'
         dataSourceText += '  }\n'
         dataSources.append(dataSourceText)
-
+        if len(nonGamInputNodes) > 0:
+            gamList.append(dataSourceName+'_TreeIn')
         gamList.append(dataSourceName+'_DDBOutIOGAM')
         gamText = '  +'+dataSourceName+'_DDBOutIOGAM = {\n'
         gamText += '    Class = IOGAM\n'
@@ -3563,7 +3567,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     nonGamInputNodes.append({'expr': outputTrigger.decompile(
                     ), 'dimensions': 0, 'name': 'Trigger', 'col_order': False})
                     gamText += '      '+'Trigger'+' = {\n'
-                    gamText += '        DataSource = '+dataSourceName+'_TreeInput\n'
+# GAB2022                    gamText += '        DataSource = '+dataSourceName+'_TreeInput\n'
+                    gamText += '        DataSource = '+dataSourceName+'_TreeInDDB\n'
                     gamText += '        Type = uint8\n'
                     gamText += '      }\n'
 # end Trigger Management
@@ -3573,6 +3578,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 gamText += '      Time = {\n'
 # GABRIELE SEPT 2020          gamText += '      DataSource = '+dataSourceName+'_Timer_DDB'
                 gamText += '      DataSource = '+timerDDB
+                gamText += '        Type = int32\n'
                 gamText += '    }\n'
 
 # Other signals
@@ -3594,6 +3600,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
        # If the Input device is not synchronising, transfer also time towards MdsWriter
             if not isSynch:
                 gamText += '      Time = {\n'
+                gamText += '        Type = int32\n'
                 gamText += '      DataSource = '+dataSourceName + \
                     '_TreeOutput'  # GABRIELE SEPT 2020
                 gamText += '    }\n'
@@ -3624,56 +3631,48 @@ class MARTE2_COMPONENT(MDSplus.Device):
             gams.append(gamText)
 
 # endif configDict['storeSignals']
-
+# GAB 2022
         if len(nonGamInputNodes) > 0:  # For input devices this happens only if a trigger signal for MdsWriter is derived from a waveform stored in the tree
-            dataSourceText = '  +'+dataSourceName+'_TreeInput = {\n'
-            dataSourceText += '    Class = MDSReaderNS\n'
-            dataSourceText += '    UseColumnOrder = 0\n'
-            dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
-            dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
-            currTimebase = self.getNode('timebase').evaluate()
-            if isinstance(currTimebase, Range):
-                startTime = currTimebase.begin.data()
-                period = currTimebase.delta.data()
-            else:
-                currTimebase = currTimebase.data()
-                startTime = currTimebase[0]
-                period = currTimebase[1] - currTimebase[0]
-            frequency = 1./period
+            dataSourceText = '  +'+DataSourceName+'_TreeInDDB = {\n'
+            dataSourceText += '    Class = GAMDataSource\n'
+            dataSourceText += ' }\n'
+            dataSources.append(dataSourceText)
 
-            dataSourceText += '    StartTime = '+str(startTime)+'\n'
-            dataSourceText += '    Frequency = '+str(round(frequency, 4))+'\n'
-            dataSourceText += '    Signals = { \n'
+            mdsReaderText =  '  +'+dataSourceName+ '_TreeIn = {\n'
+            mdsReaderText += '    Class = MDSReaderGAM\n'
+            mdsReaderText += '    TreeName = "'+self.getTree().name+'"\n'
+            mdsReaderText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
+            mdsReaderText += '    InputSignals = { \n'
+            mdsReaderText += '      Time = {\n'
+            mdsReaderText += '          DataSource = '+timerDDB + '\n' 
+            mdsReaderText += '      } \n'
+            mdsReaderText += '    } \n'
+            mdsReaderText += '    OutputSignals = { \n'
             for nodeDict in nonGamInputNodes:
-                dataSourceText += '      '+nodeDict['name']+' = {\n'
+                mdsReaderText += '      '+nodeDict['name']+' = {\n'
+                mdsReaderText += '        DataSource = '+dataSourceName+ '_TreeInDDB\n'
                 valExpr = nodeDict['expr']
                 if isinstance(valExpr, TreeNode):
                     valExpr = valExpr.getFullPath()
                 valExpr = valExpr.replace('"', "'")
-                dataSourceText += '        DataExpr = "'+valExpr+'"\n'
-                dataSourceText += '        TimebaseExpr = "dim_of(' + \
+                mdsReaderText += '        DataExpr = "'+valExpr+'"\n'
+                mdsReaderText += '        TimebaseExpr = "dim_of(' + \
                     valExpr+')"\n'
                 numberOfElements = 1
                 if not (np.isscalar(nodeDict['dimensions'])):
                     for currDim in nodeDict['dimensions']:
                         numberOfElements *= currDim
-                dataSourceText += '        NumberOfElements = ' + \
+                mdsReaderText += '        NumberOfElements = ' + \
                     str(numberOfElements)+'\n'
                 if nodeDict['col_order']:
-                    dataSourceText += '        UseColumnOrder = 1\n'
+                    mdsReaderText += '        UseColumnOrder = 1\n'
                 else:
-                    dataSourceText += '        UseColumnOrder = 0\n'
-                dataSourceText += '        DataManagement = 1\n'
-                dataSourceText += '      }\n'
-            dataSourceText += '      timebase = {\n'
-            dataSourceText += '        NumberOfElements = 1\n'
-            dataSourceText += '        Type = uint64\n'
-            dataSourceText += '         }\n'
-            dataSourceText += '    }\n'
-            dataSourceText += '  }\n'
-            dataSources.append(dataSourceText)
-
-        # Some outputs are connected to devices on separate synchronized theads
+                    mdsReaderText += '        UseColumnOrder = 0\n'
+                mdsReaderText += '        DataManagement = 1\n'
+                mdsReaderText += '      }\n'
+                mdsReaderText += '  }\n'
+            gams.append(mdsReaderText)
+         # Some outputs are connected to devices on separate synchronized theads
         if len(synchThreadSignals) > 0:
             dataSourceText = '  +'+dataSourceName+'_Output_Synch = {\n'
             dataSourceText += '    Class = RealTimeThreadSynchronisation\n'
@@ -3681,7 +3680,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
-            gamList.append(dataSourceName+'_Output_Synch_IOGAM')
+            
 
             gamText = '  +'+dataSourceName+'_Output_Synch_IOGAM = {\n'
 
@@ -3876,7 +3875,6 @@ class MARTE2_COMPONENT(MDSplus.Device):
             return 0
 
        #Head and parameters
-        gamList.append(dataSourceName+'_IOGAM')
         gamText = '  +'+dataSourceName+'_IOGAM = {\n'
 #        gamText += '    Class = IOGAM\n'
 #NOTE: default behavior for Output is different from that of GAM. Here a single sample is picked when subsampling is defined (syncDiv > 1)
@@ -3935,7 +3933,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     nonGamInputNodes.append(
                         {'expr': inputDict['value'], 'dimensions': inputDict['dimensions'], 'name': signalName, 'col_order': inputDict['col_order']})
                     gamText += '      '+signalName+' = {\n'
-                    gamText += '        DataSource = '+dataSourceName+'_TreeInput\n'
+# GAB 2022                    gamText += '        DataSource = '+dataSourceName+'_TreeInput\n'
+                    gamText += '        DataSource = '+dataSourceName+'_TreeInDDB\n'
                     if 'type' in inputDict:
                         gamText += '        Type = '+inputDict['type']+'\n'
                 else:
@@ -4019,58 +4018,51 @@ class MARTE2_COMPONENT(MDSplus.Device):
         gamText += '  }\n'
         gams.append(gamText)
 
+        if len(nonGamInputNodes) > 0: #GAB 2022
+            gamList.append(dataSourceName+'_TreeIn')
+        gamList.append(dataSourceName+'_IOGAM')
+
         # There are input references to tree nodes, we need to build a MdsReader DataSource named <gam name>_TreeInput
         if len(nonGamInputNodes) > 0:
-            dataSourceText = '  +'+dataSourceName+'_TreeInput = {\n'
-            dataSourceText += '    Class = MDSReaderNS\n'
-            dataSourceText += '    UseColumnOrder = 0\n'
-            dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
-            dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
-            currTimebase = self.getNode('timebase').evaluate()
-            if isinstance(currTimebase, Range):
-                startTime = currTimebase.begin.data()
-                period = currTimebase.delta.data()
-            else:
-                currTimebase = currTimebase.data()
-                startTime = currTimebase[0]
-                period = currTimebase[1] - currTimebase[0]
-            frequency = 1./period
+            dataSourceText = '  +'+DataSourceName+'_TreeInDDB = {\n'
+            dataSourceText += '    Class = GAMDataSource\n'
+            dataSourceText += ' }\n'
+            dataSources.append(dataSourceText)
 
-            dataSourceText += '    StartTime = '+str(startTime)+'\n'
-#        dataSourceText += '    Frequency = '+str(int(round(frequency)))+'\n'
-            dataSourceText += '    Frequency = '+str(round(frequency, 4))+'\n'
-            dataSourceText += '    Signals = { \n'
+            mdsReaderText =  '  +'+dataSourceName+ '_TreeIn = {\n'
+            mdsReaderText += '    Class = MDSReaderGAM\n'
+            mdsReaderText += '    TreeName = "'+self.getTree().name+'"\n'
+            mdsReaderText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
+            mdsReaderText += '    InputSignals = { \n'
+            mdsReaderText += '      Time = {\n'
+            mdsReaderText += '          DataSource = '+timerDDB + '\n' 
+            mdsReaderText += '      } \n'
+            mdsReaderText += '    } \n'
+            mdsReaderText += '    OutputSignals = { \n'
             for nodeDict in nonGamInputNodes:
-                dataSourceText += '      '+nodeDict['name']+' = {\n'
+                mdsReaderText += '      '+nodeDict['name']+' = {\n'
+                mdsReaderText += '        DataSource = '+dataSourceName+ '_TreeInDDB\n'
                 valExpr = nodeDict['expr']
                 if isinstance(valExpr, TreeNode):
                     valExpr = valExpr.getFullPath()
-                if isinstance(valExpr, str):
-                  valExpr = valExpr.replace('"', "'")
-                dataSourceText += '        DataExpr = "'+str(valExpr)+'"\n'
-                dataSourceText += '        TimebaseExpr = "dim_of(' + \
-                    str(valExpr)+')"\n'
+                valExpr = valExpr.replace('"', "'")
+                mdsReaderText += '        DataExpr = "'+valExpr+'"\n'
+                mdsReaderText += '        TimebaseExpr = "dim_of(' + \
+                    valExpr+')"\n'
                 numberOfElements = 1
                 if not (np.isscalar(nodeDict['dimensions'])):
                     for currDim in nodeDict['dimensions']:
                         numberOfElements *= currDim
-                dataSourceText += '        NumberOfElements = ' + \
+                mdsReaderText += '        NumberOfElements = ' + \
                     str(numberOfElements)+'\n'
-                dataSourceText += '        DataManagement = 1\n'
                 if nodeDict['col_order']:
-                    dataSourceText += '        UseColumnOrder = 1\n'
+                    mdsReaderText += '        UseColumnOrder = 1\n'
                 else:
-                    dataSourceText += '        UseColumnOrder = 0\n'
-                dataSourceText += '      }\n'
-            dataSourceText += '      timebase = {\n'
-            dataSourceText += '        NumberOfElements = 1\n'
-            dataSourceText += '        Type = uint64\n'
-            dataSourceText += '         }\n'
-
-            dataSourceText += '    }\n'
-            dataSourceText += '  }\n'
-            dataSources.append(dataSourceText)
-
+                    mdsReaderText += '        UseColumnOrder = 0\n'
+                mdsReaderText += '        DataManagement = 1\n'
+                mdsReaderText += '      }\n'
+                mdsReaderText += '  }\n'
+            gams.append(mdsReaderText)
        #Head and parameters
         dataSourceText = '  +'+dataSourceName+' = {\n'
         dataSourceText += '    Class = '+dataSourceClass+'\n'
