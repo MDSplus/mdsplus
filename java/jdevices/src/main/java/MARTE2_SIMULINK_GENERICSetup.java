@@ -174,8 +174,11 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField4 = new DeviceField();
         jButton1 = new javax.swing.JButton();
         deviceChoice17 = new DeviceChoice();
+        jPanel47 = new javax.swing.JPanel();
+        deviceField77 = new DeviceField();
+        deviceField78 = new DeviceField();
 
-        setDeviceProvider("spilds:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Simulink Generic device");
         setDeviceType("MARTE2_SIMULINK_GENERIC");
         setHeight(400);
@@ -874,7 +877,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Timebase:");
@@ -919,6 +922,20 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         jPanel3.add(deviceChoice17);
 
         jPanel1.add(jPanel3);
+
+        deviceField77.setIdentifier("");
+        deviceField77.setLabelString("MDS write trigger:");
+        deviceField77.setNumCols(30);
+        deviceField77.setOffsetNid(96);
+        jPanel47.add(deviceField77);
+
+        deviceField78.setIdentifier("");
+        deviceField78.setLabelString("Post trig. Samples: ");
+        deviceField78.setNumCols(6);
+        deviceField78.setOffsetNid(98);
+        jPanel47.add(deviceField78);
+
+        jPanel1.add(jPanel47);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
@@ -1033,6 +1050,8 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceField deviceField74;
     private DeviceField deviceField75;
     private DeviceField deviceField76;
+    private DeviceField deviceField77;
+    private DeviceField deviceField78;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JButton jButton1;
@@ -1077,6 +1096,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel44;
     private javax.swing.JPanel jPanel45;
     private javax.swing.JPanel jPanel46;
+    private javax.swing.JPanel jPanel47;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
