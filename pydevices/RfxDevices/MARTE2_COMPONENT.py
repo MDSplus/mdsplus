@@ -2992,6 +2992,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                     mdsReaderText += '        DataExpr = "'+valExpr+'"\n'
                     mdsReaderText += '        TimebaseExpr = "dim_of(' + \
                         valExpr+')"\n'
+                    numberOfElements = 1
                     if not (np.isscalar(nodeDict['dimensions'])):
                         for currDim in nodeDict['dimensions']:
                             numberOfElements *= currDim
@@ -3434,6 +3435,8 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 #if startTime != 0:
                 #    dataSourceText += '        SamplePhase = ' + \
                 #        str(int(round(startTime/period)))+'\n'
+                if outputTrigger != None:
+                    dataSourceText += '        TimeSignal = 1\n'
                 dataSourceText += '      }\n'
 
             outIdx = 0
