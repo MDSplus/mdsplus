@@ -686,7 +686,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField389 = new DeviceField();
         deviceField390 = new DeviceField();
 
-        setDeviceProvider("spilds.rfx.local:8100");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("MARTe2 Stream");
         setDeviceType("MARTE2_STREAM");
         setHeight(500);
@@ -757,7 +757,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField2.setOffsetNid(31);
         jPanel3.add(deviceField2);
 
-        deviceChoice1.setChoiceItems(new String[] {"float32", "float64", "int16", "int32", "uint16", "uint32"});
+        deviceChoice1.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Type: ");
         deviceChoice1.setOffsetNid(28);
@@ -787,7 +787,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField3.setOffsetNid(41);
         jPanel4.add(deviceField3);
 
-        deviceChoice2.setChoiceItems(new String[] {"float32", "float64", "int16", "int32", "uint16", "uint32"});
+        deviceChoice2.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "uint32"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Type: ");
         deviceChoice2.setOffsetNid(38);
@@ -817,7 +817,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField4.setOffsetNid(51);
         jPanel5.add(deviceField4);
 
-        deviceChoice3.setChoiceItems(new String[] {"float32", "float64", "int16", "int32", "uint16", "uint32"});
+        deviceChoice3.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Type: ");
         deviceChoice3.setOffsetNid(48);
@@ -847,7 +847,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField5.setOffsetNid(61);
         jPanel6.add(deviceField5);
 
-        deviceChoice4.setChoiceItems(new String[] {"float32", "float64", "int16", "int32", "uint16", "uint32"});
+        deviceChoice4.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Type: ");
         deviceChoice4.setOffsetNid(58);
@@ -877,7 +877,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField6.setOffsetNid(71);
         jPanel7.add(deviceField6);
 
-        deviceChoice5.setChoiceItems(new String[] {"float32", "float64", "int16", "int32", "uint16", "uint32"});
+        deviceChoice5.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Type: ");
         deviceChoice5.setOffsetNid(68);
@@ -907,7 +907,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField7.setOffsetNid(81);
         jPanel8.add(deviceField7);
 
-        deviceChoice6.setChoiceItems(new String[] {"float32", "float64", "int16", "int32", "uint16", "uint32"});
+        deviceChoice6.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Type: ");
         deviceChoice6.setOffsetNid(68);
@@ -937,7 +937,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField8.setOffsetNid(91);
         jPanel9.add(deviceField8);
 
-        deviceChoice7.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice7.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Type: ");
         deviceChoice7.setOffsetNid(88);
@@ -967,7 +967,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField9.setOffsetNid(101);
         jPanel10.add(deviceField9);
 
-        deviceChoice8.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice8.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Type: ");
         deviceChoice8.setOffsetNid(98);
@@ -997,7 +997,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField23.setOffsetNid(111);
         jPanel13.add(deviceField23);
 
-        deviceChoice10.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice10.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Type: ");
         deviceChoice10.setOffsetNid(108);
@@ -1028,7 +1028,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField25.setOffsetNid(121);
         jPanel14.add(deviceField25);
 
-        deviceChoice11.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice11.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Type: ");
         deviceChoice11.setOffsetNid(118);
@@ -1059,7 +1059,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField27.setOffsetNid(131);
         jPanel15.add(deviceField27);
 
-        deviceChoice12.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice12.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Type: ");
         deviceChoice12.setOffsetNid(128);
@@ -1090,7 +1090,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField29.setOffsetNid(141);
         jPanel16.add(deviceField29);
 
-        deviceChoice13.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice13.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Type: ");
         deviceChoice13.setOffsetNid(138);
@@ -1121,7 +1121,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField31.setOffsetNid(151);
         jPanel17.add(deviceField31);
 
-        deviceChoice14.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice14.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Type: ");
         deviceChoice14.setOffsetNid(148);
@@ -1152,7 +1152,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField33.setOffsetNid(161);
         jPanel18.add(deviceField33);
 
-        deviceChoice15.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice15.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Type: ");
         deviceChoice15.setOffsetNid(158);
@@ -1183,7 +1183,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField35.setOffsetNid(171);
         jPanel19.add(deviceField35);
 
-        deviceChoice16.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice16.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Type: ");
         deviceChoice16.setOffsetNid(168);
@@ -1214,7 +1214,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField37.setOffsetNid(181);
         jPanel20.add(deviceField37);
 
-        deviceChoice17.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice17.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Type: ");
         deviceChoice17.setOffsetNid(178);
@@ -1245,7 +1245,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField39.setOffsetNid(191);
         jPanel21.add(deviceField39);
 
-        deviceChoice18.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice18.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice18.setIdentifier("");
         deviceChoice18.setLabelString("Type: ");
         deviceChoice18.setOffsetNid(188);
@@ -1276,7 +1276,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField41.setOffsetNid(201);
         jPanel22.add(deviceField41);
 
-        deviceChoice19.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice19.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("Type: ");
         deviceChoice19.setOffsetNid(198);
@@ -1307,7 +1307,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField43.setOffsetNid(211);
         jPanel23.add(deviceField43);
 
-        deviceChoice20.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice20.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice20.setIdentifier("");
         deviceChoice20.setLabelString("Type: ");
         deviceChoice20.setOffsetNid(208);
@@ -1338,7 +1338,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField45.setOffsetNid(221);
         jPanel24.add(deviceField45);
 
-        deviceChoice21.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice21.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("Type: ");
         deviceChoice21.setOffsetNid(218);
@@ -1369,7 +1369,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField47.setOffsetNid(231);
         jPanel25.add(deviceField47);
 
-        deviceChoice22.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice22.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Type: ");
         deviceChoice22.setOffsetNid(228);
@@ -1400,7 +1400,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField49.setOffsetNid(241);
         jPanel26.add(deviceField49);
 
-        deviceChoice23.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice23.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice23.setIdentifier("");
         deviceChoice23.setLabelString("Type: ");
         deviceChoice23.setOffsetNid(238);
@@ -1431,7 +1431,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField51.setOffsetNid(251);
         jPanel27.add(deviceField51);
 
-        deviceChoice24.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice24.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("Type: ");
         deviceChoice24.setOffsetNid(248);
@@ -1462,7 +1462,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField53.setOffsetNid(261);
         jPanel28.add(deviceField53);
 
-        deviceChoice25.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice25.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice25.setIdentifier("");
         deviceChoice25.setLabelString("Type: ");
         deviceChoice25.setOffsetNid(258);
@@ -1493,7 +1493,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField55.setOffsetNid(271);
         jPanel29.add(deviceField55);
 
-        deviceChoice26.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice26.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice26.setIdentifier("");
         deviceChoice26.setLabelString("Type: ");
         deviceChoice26.setOffsetNid(268);
@@ -1524,7 +1524,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField57.setOffsetNid(281);
         jPanel30.add(deviceField57);
 
-        deviceChoice27.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice27.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("Type: ");
         deviceChoice27.setOffsetNid(278);
@@ -1555,7 +1555,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField59.setOffsetNid(291);
         jPanel31.add(deviceField59);
 
-        deviceChoice28.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice28.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice28.setIdentifier("");
         deviceChoice28.setLabelString("Type: ");
         deviceChoice28.setOffsetNid(288);
@@ -1586,7 +1586,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField61.setOffsetNid(301);
         jPanel32.add(deviceField61);
 
-        deviceChoice29.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice29.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice29.setIdentifier("");
         deviceChoice29.setLabelString("Type: ");
         deviceChoice29.setOffsetNid(298);
@@ -1617,7 +1617,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField63.setOffsetNid(311);
         jPanel33.add(deviceField63);
 
-        deviceChoice30.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice30.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice30.setIdentifier("");
         deviceChoice30.setLabelString("Type: ");
         deviceChoice30.setOffsetNid(308);
@@ -1648,7 +1648,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField65.setOffsetNid(321);
         jPanel34.add(deviceField65);
 
-        deviceChoice31.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice31.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice31.setIdentifier("");
         deviceChoice31.setLabelString("Type: ");
         deviceChoice31.setOffsetNid(318);
@@ -1679,7 +1679,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField67.setOffsetNid(331);
         jPanel35.add(deviceField67);
 
-        deviceChoice32.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice32.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice32.setIdentifier("");
         deviceChoice32.setLabelString("Type: ");
         deviceChoice32.setOffsetNid(328);
@@ -1710,7 +1710,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField69.setOffsetNid(341);
         jPanel36.add(deviceField69);
 
-        deviceChoice33.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice33.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice33.setIdentifier("");
         deviceChoice33.setLabelString("Type: ");
         deviceChoice33.setOffsetNid(338);
@@ -1741,7 +1741,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField71.setOffsetNid(351);
         jPanel37.add(deviceField71);
 
-        deviceChoice34.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice34.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice34.setIdentifier("");
         deviceChoice34.setLabelString("Type: ");
         deviceChoice34.setOffsetNid(348);
@@ -1772,7 +1772,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField73.setOffsetNid(361);
         jPanel38.add(deviceField73);
 
-        deviceChoice35.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice35.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice35.setIdentifier("");
         deviceChoice35.setLabelString("Type: ");
         deviceChoice35.setOffsetNid(358);
@@ -1803,7 +1803,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField75.setOffsetNid(371);
         jPanel39.add(deviceField75);
 
-        deviceChoice36.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice36.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice36.setIdentifier("");
         deviceChoice36.setLabelString("Type: ");
         deviceChoice36.setOffsetNid(368);
@@ -1834,7 +1834,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField77.setOffsetNid(381);
         jPanel40.add(deviceField77);
 
-        deviceChoice37.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice37.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice37.setIdentifier("");
         deviceChoice37.setLabelString("Type: ");
         deviceChoice37.setOffsetNid(378);
@@ -1865,7 +1865,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField79.setOffsetNid(391);
         jPanel41.add(deviceField79);
 
-        deviceChoice38.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice38.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice38.setIdentifier("");
         deviceChoice38.setLabelString("Type: ");
         deviceChoice38.setOffsetNid(388);
@@ -1896,7 +1896,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField81.setOffsetNid(401);
         jPanel42.add(deviceField81);
 
-        deviceChoice39.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice39.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice39.setIdentifier("");
         deviceChoice39.setLabelString("Type: ");
         deviceChoice39.setOffsetNid(398);
@@ -1927,7 +1927,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField83.setOffsetNid(411);
         jPanel43.add(deviceField83);
 
-        deviceChoice40.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice40.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice40.setIdentifier("");
         deviceChoice40.setLabelString("Type: ");
         deviceChoice40.setOffsetNid(408);
@@ -1958,7 +1958,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField85.setOffsetNid(421);
         jPanel44.add(deviceField85);
 
-        deviceChoice41.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice41.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice41.setIdentifier("");
         deviceChoice41.setLabelString("Type: ");
         deviceChoice41.setOffsetNid(418);
@@ -1989,7 +1989,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField87.setOffsetNid(431);
         jPanel45.add(deviceField87);
 
-        deviceChoice42.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice42.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice42.setIdentifier("");
         deviceChoice42.setLabelString("Type: ");
         deviceChoice42.setOffsetNid(428);
@@ -2020,7 +2020,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField89.setOffsetNid(441);
         jPanel46.add(deviceField89);
 
-        deviceChoice43.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice43.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice43.setIdentifier("");
         deviceChoice43.setLabelString("Type: ");
         deviceChoice43.setOffsetNid(438);
@@ -2051,7 +2051,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField91.setOffsetNid(451);
         jPanel47.add(deviceField91);
 
-        deviceChoice44.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice44.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice44.setIdentifier("");
         deviceChoice44.setLabelString("Type: ");
         deviceChoice44.setOffsetNid(448);
@@ -2082,7 +2082,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField93.setOffsetNid(461);
         jPanel48.add(deviceField93);
 
-        deviceChoice45.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice45.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice45.setIdentifier("");
         deviceChoice45.setLabelString("Type: ");
         deviceChoice45.setOffsetNid(458);
@@ -2113,7 +2113,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField95.setOffsetNid(471);
         jPanel49.add(deviceField95);
 
-        deviceChoice46.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice46.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice46.setIdentifier("");
         deviceChoice46.setLabelString("Type: ");
         deviceChoice46.setOffsetNid(468);
@@ -2144,7 +2144,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField97.setOffsetNid(481);
         jPanel50.add(deviceField97);
 
-        deviceChoice47.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice47.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice47.setIdentifier("");
         deviceChoice47.setLabelString("Type: ");
         deviceChoice47.setOffsetNid(478);
@@ -2175,7 +2175,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField99.setOffsetNid(491);
         jPanel51.add(deviceField99);
 
-        deviceChoice48.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice48.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice48.setIdentifier("");
         deviceChoice48.setLabelString("Type: ");
         deviceChoice48.setOffsetNid(488);
@@ -2206,7 +2206,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField101.setOffsetNid(501);
         jPanel52.add(deviceField101);
 
-        deviceChoice49.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice49.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice49.setIdentifier("");
         deviceChoice49.setLabelString("Type: ");
         deviceChoice49.setOffsetNid(498);
@@ -2237,7 +2237,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField103.setOffsetNid(511);
         jPanel53.add(deviceField103);
 
-        deviceChoice50.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice50.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice50.setIdentifier("");
         deviceChoice50.setLabelString("Type: ");
         deviceChoice50.setOffsetNid(508);
@@ -2268,7 +2268,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField105.setOffsetNid(521);
         jPanel54.add(deviceField105);
 
-        deviceChoice51.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice51.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice51.setIdentifier("");
         deviceChoice51.setLabelString("Type: ");
         deviceChoice51.setOffsetNid(518);
@@ -2299,7 +2299,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField107.setOffsetNid(531);
         jPanel55.add(deviceField107);
 
-        deviceChoice52.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice52.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice52.setIdentifier("");
         deviceChoice52.setLabelString("Type: ");
         deviceChoice52.setOffsetNid(528);
@@ -2330,7 +2330,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField109.setOffsetNid(541);
         jPanel56.add(deviceField109);
 
-        deviceChoice53.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice53.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice53.setIdentifier("");
         deviceChoice53.setLabelString("Type: ");
         deviceChoice53.setOffsetNid(538);
@@ -2361,7 +2361,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField111.setOffsetNid(551);
         jPanel57.add(deviceField111);
 
-        deviceChoice54.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice54.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice54.setIdentifier("");
         deviceChoice54.setLabelString("Type: ");
         deviceChoice54.setOffsetNid(548);
@@ -2392,7 +2392,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField113.setOffsetNid(561);
         jPanel58.add(deviceField113);
 
-        deviceChoice55.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice55.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice55.setIdentifier("");
         deviceChoice55.setLabelString("Type: ");
         deviceChoice55.setOffsetNid(558);
@@ -2423,7 +2423,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField115.setOffsetNid(571);
         jPanel59.add(deviceField115);
 
-        deviceChoice56.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice56.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice56.setIdentifier("");
         deviceChoice56.setLabelString("Type: ");
         deviceChoice56.setOffsetNid(568);
@@ -2454,7 +2454,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField117.setOffsetNid(581);
         jPanel60.add(deviceField117);
 
-        deviceChoice57.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice57.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice57.setIdentifier("");
         deviceChoice57.setLabelString("Type: ");
         deviceChoice57.setOffsetNid(578);
@@ -2485,7 +2485,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField119.setOffsetNid(591);
         jPanel61.add(deviceField119);
 
-        deviceChoice58.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice58.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice58.setIdentifier("");
         deviceChoice58.setLabelString("Type: ");
         deviceChoice58.setOffsetNid(588);
@@ -2516,7 +2516,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField121.setOffsetNid(601);
         jPanel62.add(deviceField121);
 
-        deviceChoice59.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice59.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice59.setIdentifier("");
         deviceChoice59.setLabelString("Type: ");
         deviceChoice59.setOffsetNid(598);
@@ -2547,7 +2547,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField123.setOffsetNid(611);
         jPanel63.add(deviceField123);
 
-        deviceChoice60.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice60.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice60.setIdentifier("");
         deviceChoice60.setLabelString("Type: ");
         deviceChoice60.setOffsetNid(608);
@@ -2578,7 +2578,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField125.setOffsetNid(621);
         jPanel64.add(deviceField125);
 
-        deviceChoice61.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice61.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice61.setIdentifier("");
         deviceChoice61.setLabelString("Type: ");
         deviceChoice61.setOffsetNid(618);
@@ -2609,7 +2609,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField127.setOffsetNid(631);
         jPanel65.add(deviceField127);
 
-        deviceChoice62.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice62.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice62.setIdentifier("");
         deviceChoice62.setLabelString("Type: ");
         deviceChoice62.setOffsetNid(628);
@@ -2640,7 +2640,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField129.setOffsetNid(641);
         jPanel66.add(deviceField129);
 
-        deviceChoice63.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice63.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice63.setIdentifier("");
         deviceChoice63.setLabelString("Type: ");
         deviceChoice63.setOffsetNid(638);
@@ -2671,7 +2671,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField131.setOffsetNid(651);
         jPanel67.add(deviceField131);
 
-        deviceChoice64.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice64.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice64.setIdentifier("");
         deviceChoice64.setLabelString("Type: ");
         deviceChoice64.setOffsetNid(648);
@@ -2702,7 +2702,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField133.setOffsetNid(661);
         jPanel68.add(deviceField133);
 
-        deviceChoice65.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice65.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice65.setIdentifier("");
         deviceChoice65.setLabelString("Type: ");
         deviceChoice65.setOffsetNid(658);
@@ -2733,7 +2733,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField135.setOffsetNid(671);
         jPanel69.add(deviceField135);
 
-        deviceChoice66.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice66.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice66.setIdentifier("");
         deviceChoice66.setLabelString("Type: ");
         deviceChoice66.setOffsetNid(668);
@@ -2764,7 +2764,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField137.setOffsetNid(681);
         jPanel70.add(deviceField137);
 
-        deviceChoice67.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice67.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice67.setIdentifier("");
         deviceChoice67.setLabelString("Type: ");
         deviceChoice67.setOffsetNid(678);
@@ -2795,7 +2795,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField139.setOffsetNid(691);
         jPanel71.add(deviceField139);
 
-        deviceChoice68.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice68.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice68.setIdentifier("");
         deviceChoice68.setLabelString("Type: ");
         deviceChoice68.setOffsetNid(688);
@@ -2826,7 +2826,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField141.setOffsetNid(701);
         jPanel72.add(deviceField141);
 
-        deviceChoice69.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice69.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice69.setIdentifier("");
         deviceChoice69.setLabelString("Type: ");
         deviceChoice69.setOffsetNid(698);
@@ -2857,7 +2857,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField143.setOffsetNid(711);
         jPanel73.add(deviceField143);
 
-        deviceChoice70.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice70.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice70.setIdentifier("");
         deviceChoice70.setLabelString("Type: ");
         deviceChoice70.setOffsetNid(708);
@@ -2888,7 +2888,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField145.setOffsetNid(721);
         jPanel74.add(deviceField145);
 
-        deviceChoice71.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice71.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice71.setIdentifier("");
         deviceChoice71.setLabelString("Type: ");
         deviceChoice71.setOffsetNid(718);
@@ -2919,7 +2919,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField147.setOffsetNid(731);
         jPanel75.add(deviceField147);
 
-        deviceChoice72.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice72.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice72.setIdentifier("");
         deviceChoice72.setLabelString("Type: ");
         deviceChoice72.setOffsetNid(728);
@@ -2950,7 +2950,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField149.setOffsetNid(741);
         jPanel76.add(deviceField149);
 
-        deviceChoice73.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice73.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice73.setIdentifier("");
         deviceChoice73.setLabelString("Type: ");
         deviceChoice73.setOffsetNid(738);
@@ -2981,7 +2981,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField151.setOffsetNid(751);
         jPanel77.add(deviceField151);
 
-        deviceChoice74.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice74.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice74.setIdentifier("");
         deviceChoice74.setLabelString("Type: ");
         deviceChoice74.setOffsetNid(748);
@@ -3012,7 +3012,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField153.setOffsetNid(761);
         jPanel78.add(deviceField153);
 
-        deviceChoice75.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice75.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice75.setIdentifier("");
         deviceChoice75.setLabelString("Type: ");
         deviceChoice75.setOffsetNid(758);
@@ -3043,7 +3043,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField155.setOffsetNid(771);
         jPanel79.add(deviceField155);
 
-        deviceChoice76.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice76.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice76.setIdentifier("");
         deviceChoice76.setLabelString("Type: ");
         deviceChoice76.setOffsetNid(768);
@@ -3074,7 +3074,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField157.setOffsetNid(781);
         jPanel80.add(deviceField157);
 
-        deviceChoice77.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice77.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice77.setIdentifier("");
         deviceChoice77.setLabelString("Type: ");
         deviceChoice77.setOffsetNid(778);
@@ -3105,7 +3105,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField159.setOffsetNid(791);
         jPanel81.add(deviceField159);
 
-        deviceChoice78.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice78.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice78.setIdentifier("");
         deviceChoice78.setLabelString("Type: ");
         deviceChoice78.setOffsetNid(788);
@@ -3136,7 +3136,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField161.setOffsetNid(801);
         jPanel82.add(deviceField161);
 
-        deviceChoice79.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice79.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice79.setIdentifier("");
         deviceChoice79.setLabelString("Type: ");
         deviceChoice79.setOffsetNid(798);
@@ -3167,7 +3167,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField163.setOffsetNid(811);
         jPanel83.add(deviceField163);
 
-        deviceChoice80.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice80.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice80.setIdentifier("");
         deviceChoice80.setLabelString("Type: ");
         deviceChoice80.setOffsetNid(808);
@@ -3198,7 +3198,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField165.setOffsetNid(821);
         jPanel84.add(deviceField165);
 
-        deviceChoice81.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice81.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice81.setIdentifier("");
         deviceChoice81.setLabelString("Type: ");
         deviceChoice81.setOffsetNid(818);
@@ -3229,7 +3229,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField167.setOffsetNid(831);
         jPanel85.add(deviceField167);
 
-        deviceChoice82.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice82.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice82.setIdentifier("");
         deviceChoice82.setLabelString("Type: ");
         deviceChoice82.setOffsetNid(828);
@@ -3260,7 +3260,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField169.setOffsetNid(841);
         jPanel86.add(deviceField169);
 
-        deviceChoice83.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice83.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice83.setIdentifier("");
         deviceChoice83.setLabelString("Type: ");
         deviceChoice83.setOffsetNid(838);
@@ -3291,7 +3291,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField171.setOffsetNid(851);
         jPanel87.add(deviceField171);
 
-        deviceChoice84.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice84.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice84.setIdentifier("");
         deviceChoice84.setLabelString("Type: ");
         deviceChoice84.setOffsetNid(848);
@@ -3322,7 +3322,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField173.setOffsetNid(861);
         jPanel88.add(deviceField173);
 
-        deviceChoice85.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice85.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice85.setIdentifier("");
         deviceChoice85.setLabelString("Type: ");
         deviceChoice85.setOffsetNid(858);
@@ -3353,7 +3353,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField175.setOffsetNid(871);
         jPanel89.add(deviceField175);
 
-        deviceChoice86.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice86.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice86.setIdentifier("");
         deviceChoice86.setLabelString("Type: ");
         deviceChoice86.setOffsetNid(868);
@@ -3384,7 +3384,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField177.setOffsetNid(881);
         jPanel90.add(deviceField177);
 
-        deviceChoice87.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice87.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice87.setIdentifier("");
         deviceChoice87.setLabelString("Type: ");
         deviceChoice87.setOffsetNid(878);
@@ -3415,7 +3415,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField179.setOffsetNid(891);
         jPanel91.add(deviceField179);
 
-        deviceChoice88.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice88.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice88.setIdentifier("");
         deviceChoice88.setLabelString("Type: ");
         deviceChoice88.setOffsetNid(888);
@@ -3446,7 +3446,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField181.setOffsetNid(901);
         jPanel92.add(deviceField181);
 
-        deviceChoice89.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice89.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice89.setIdentifier("");
         deviceChoice89.setLabelString("Type: ");
         deviceChoice89.setOffsetNid(898);
@@ -3477,7 +3477,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField183.setOffsetNid(911);
         jPanel93.add(deviceField183);
 
-        deviceChoice90.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice90.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice90.setIdentifier("");
         deviceChoice90.setLabelString("Type: ");
         deviceChoice90.setOffsetNid(908);
@@ -3508,7 +3508,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField185.setOffsetNid(921);
         jPanel94.add(deviceField185);
 
-        deviceChoice91.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice91.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice91.setIdentifier("");
         deviceChoice91.setLabelString("Type: ");
         deviceChoice91.setOffsetNid(918);
@@ -3539,7 +3539,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField187.setOffsetNid(931);
         jPanel95.add(deviceField187);
 
-        deviceChoice92.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice92.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice92.setIdentifier("");
         deviceChoice92.setLabelString("Type: ");
         deviceChoice92.setOffsetNid(928);
@@ -3570,7 +3570,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField189.setOffsetNid(941);
         jPanel96.add(deviceField189);
 
-        deviceChoice93.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice93.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice93.setIdentifier("");
         deviceChoice93.setLabelString("Type: ");
         deviceChoice93.setOffsetNid(938);
@@ -3601,7 +3601,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField191.setOffsetNid(951);
         jPanel97.add(deviceField191);
 
-        deviceChoice94.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice94.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice94.setIdentifier("");
         deviceChoice94.setLabelString("Type: ");
         deviceChoice94.setOffsetNid(948);
@@ -3632,7 +3632,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField193.setOffsetNid(961);
         jPanel98.add(deviceField193);
 
-        deviceChoice95.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice95.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice95.setIdentifier("");
         deviceChoice95.setLabelString("Type: ");
         deviceChoice95.setOffsetNid(958);
@@ -3663,7 +3663,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField195.setOffsetNid(971);
         jPanel99.add(deviceField195);
 
-        deviceChoice96.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice96.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice96.setIdentifier("");
         deviceChoice96.setLabelString("Type: ");
         deviceChoice96.setOffsetNid(968);
@@ -3694,7 +3694,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField197.setOffsetNid(981);
         jPanel100.add(deviceField197);
 
-        deviceChoice97.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice97.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice97.setIdentifier("");
         deviceChoice97.setLabelString("Type: ");
         deviceChoice97.setOffsetNid(978);
@@ -3725,7 +3725,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField295.setOffsetNid(991);
         jPanel101.add(deviceField295);
 
-        deviceChoice98.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice98.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice98.setIdentifier("");
         deviceChoice98.setLabelString("Type: ");
         deviceChoice98.setOffsetNid(988);
@@ -3756,7 +3756,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField298.setOffsetNid(1001);
         jPanel102.add(deviceField298);
 
-        deviceChoice99.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice99.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice99.setIdentifier("");
         deviceChoice99.setLabelString("Type: ");
         deviceChoice99.setOffsetNid(998);
@@ -3787,7 +3787,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField301.setOffsetNid(1011);
         jPanel103.add(deviceField301);
 
-        deviceChoice100.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice100.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice100.setIdentifier("");
         deviceChoice100.setLabelString("Type: ");
         deviceChoice100.setOffsetNid(1008);
@@ -3818,7 +3818,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField304.setOffsetNid(1021);
         jPanel104.add(deviceField304);
 
-        deviceChoice101.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice101.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice101.setIdentifier("");
         deviceChoice101.setLabelString("Type: ");
         deviceChoice101.setOffsetNid(1018);
@@ -3849,7 +3849,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField307.setOffsetNid(1031);
         jPanel105.add(deviceField307);
 
-        deviceChoice102.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice102.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice102.setIdentifier("");
         deviceChoice102.setLabelString("Type: ");
         deviceChoice102.setOffsetNid(1028);
@@ -3880,7 +3880,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField310.setOffsetNid(1041);
         jPanel106.add(deviceField310);
 
-        deviceChoice103.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice103.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice103.setIdentifier("");
         deviceChoice103.setLabelString("Type: ");
         deviceChoice103.setOffsetNid(1038);
@@ -3911,7 +3911,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField313.setOffsetNid(1051);
         jPanel107.add(deviceField313);
 
-        deviceChoice104.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice104.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice104.setIdentifier("");
         deviceChoice104.setLabelString("Type: ");
         deviceChoice104.setOffsetNid(1048);
@@ -3942,7 +3942,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField316.setOffsetNid(1061);
         jPanel108.add(deviceField316);
 
-        deviceChoice105.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice105.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice105.setIdentifier("");
         deviceChoice105.setLabelString("Type: ");
         deviceChoice105.setOffsetNid(1058);
@@ -3973,7 +3973,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField319.setOffsetNid(1071);
         jPanel109.add(deviceField319);
 
-        deviceChoice106.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice106.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice106.setIdentifier("");
         deviceChoice106.setLabelString("Type: ");
         deviceChoice106.setOffsetNid(1068);
@@ -4004,7 +4004,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField322.setOffsetNid(1081);
         jPanel110.add(deviceField322);
 
-        deviceChoice107.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice107.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice107.setIdentifier("");
         deviceChoice107.setLabelString("Type: ");
         deviceChoice107.setOffsetNid(1078);
@@ -4035,7 +4035,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField325.setOffsetNid(1091);
         jPanel111.add(deviceField325);
 
-        deviceChoice108.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice108.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice108.setIdentifier("");
         deviceChoice108.setLabelString("Type: ");
         deviceChoice108.setOffsetNid(1088);
@@ -4066,7 +4066,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField328.setOffsetNid(1101);
         jPanel112.add(deviceField328);
 
-        deviceChoice109.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice109.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice109.setIdentifier("");
         deviceChoice109.setLabelString("Type: ");
         deviceChoice109.setOffsetNid(1098);
@@ -4097,7 +4097,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField331.setOffsetNid(1111);
         jPanel113.add(deviceField331);
 
-        deviceChoice110.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice110.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice110.setIdentifier("");
         deviceChoice110.setLabelString("Type: ");
         deviceChoice110.setOffsetNid(1108);
@@ -4128,7 +4128,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField334.setOffsetNid(1121);
         jPanel114.add(deviceField334);
 
-        deviceChoice111.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice111.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice111.setIdentifier("");
         deviceChoice111.setLabelString("Type: ");
         deviceChoice111.setOffsetNid(1118);
@@ -4159,7 +4159,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField337.setOffsetNid(1131);
         jPanel115.add(deviceField337);
 
-        deviceChoice112.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice112.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice112.setIdentifier("");
         deviceChoice112.setLabelString("Type: ");
         deviceChoice112.setOffsetNid(1128);
@@ -4190,7 +4190,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField340.setOffsetNid(1141);
         jPanel116.add(deviceField340);
 
-        deviceChoice113.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice113.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice113.setIdentifier("");
         deviceChoice113.setLabelString("Type: ");
         deviceChoice113.setOffsetNid(1138);
@@ -4221,7 +4221,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField343.setOffsetNid(1151);
         jPanel117.add(deviceField343);
 
-        deviceChoice114.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice114.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice114.setIdentifier("");
         deviceChoice114.setLabelString("Type: ");
         deviceChoice114.setOffsetNid(1148);
@@ -4252,7 +4252,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField346.setOffsetNid(1161);
         jPanel118.add(deviceField346);
 
-        deviceChoice115.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice115.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice115.setIdentifier("");
         deviceChoice115.setLabelString("Type: ");
         deviceChoice115.setOffsetNid(1158);
@@ -4283,7 +4283,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField349.setOffsetNid(1171);
         jPanel119.add(deviceField349);
 
-        deviceChoice116.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice116.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice116.setIdentifier("");
         deviceChoice116.setLabelString("Type: ");
         deviceChoice116.setOffsetNid(1168);
@@ -4314,7 +4314,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField352.setOffsetNid(1181);
         jPanel120.add(deviceField352);
 
-        deviceChoice117.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice117.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice117.setIdentifier("");
         deviceChoice117.setLabelString("Type: ");
         deviceChoice117.setOffsetNid(1178);
@@ -4345,7 +4345,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField355.setOffsetNid(1191);
         jPanel121.add(deviceField355);
 
-        deviceChoice118.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice118.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice118.setIdentifier("");
         deviceChoice118.setLabelString("Type: ");
         deviceChoice118.setOffsetNid(1188);
@@ -4376,7 +4376,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField358.setOffsetNid(1201);
         jPanel122.add(deviceField358);
 
-        deviceChoice119.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice119.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice119.setIdentifier("");
         deviceChoice119.setLabelString("Type: ");
         deviceChoice119.setOffsetNid(1198);
@@ -4407,7 +4407,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField361.setOffsetNid(1211);
         jPanel123.add(deviceField361);
 
-        deviceChoice120.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice120.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice120.setIdentifier("");
         deviceChoice120.setLabelString("Type: ");
         deviceChoice120.setOffsetNid(1208);
@@ -4438,7 +4438,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField364.setOffsetNid(1221);
         jPanel124.add(deviceField364);
 
-        deviceChoice121.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice121.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice121.setIdentifier("");
         deviceChoice121.setLabelString("Type: ");
         deviceChoice121.setOffsetNid(1218);
@@ -4469,7 +4469,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField367.setOffsetNid(1231);
         jPanel125.add(deviceField367);
 
-        deviceChoice122.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice122.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice122.setIdentifier("");
         deviceChoice122.setLabelString("Type: ");
         deviceChoice122.setOffsetNid(1228);
@@ -4500,7 +4500,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField370.setOffsetNid(1241);
         jPanel126.add(deviceField370);
 
-        deviceChoice123.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice123.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice123.setIdentifier("");
         deviceChoice123.setLabelString("Type: ");
         deviceChoice123.setOffsetNid(1238);
@@ -4531,7 +4531,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField373.setOffsetNid(1251);
         jPanel127.add(deviceField373);
 
-        deviceChoice124.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice124.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice124.setIdentifier("");
         deviceChoice124.setLabelString("Type: ");
         deviceChoice124.setOffsetNid(1248);
@@ -4562,7 +4562,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField376.setOffsetNid(1261);
         jPanel128.add(deviceField376);
 
-        deviceChoice125.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice125.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice125.setIdentifier("");
         deviceChoice125.setLabelString("Type: ");
         deviceChoice125.setOffsetNid(1258);
@@ -4593,7 +4593,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField379.setOffsetNid(1271);
         jPanel129.add(deviceField379);
 
-        deviceChoice126.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice126.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice126.setIdentifier("");
         deviceChoice126.setLabelString("Type: ");
         deviceChoice126.setOffsetNid(1268);
@@ -4624,7 +4624,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField382.setOffsetNid(1281);
         jPanel130.add(deviceField382);
 
-        deviceChoice127.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice127.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice127.setIdentifier("");
         deviceChoice127.setLabelString("Type: ");
         deviceChoice127.setOffsetNid(1278);
@@ -4655,7 +4655,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField385.setOffsetNid(1291);
         jPanel131.add(deviceField385);
 
-        deviceChoice128.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice128.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
         deviceChoice128.setIdentifier("");
         deviceChoice128.setLabelString("Type: ");
         deviceChoice128.setOffsetNid(1288);
@@ -4686,7 +4686,8 @@ public class MARTE2_STREAMSetup extends DeviceSetup
         deviceField388.setOffsetNid(1301);
         jPanel132.add(deviceField388);
 
-        deviceChoice129.setChoiceItems(new String[] {"float32", "float63", "int16", "int32", "uint16", "uint32"});
+        deviceChoice129.setChoiceItems(new String[] {"float32", "float64", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64"});
+        deviceChoice129.setConvert(true);
         deviceChoice129.setIdentifier("");
         deviceChoice129.setLabelString("Type: ");
         deviceChoice129.setOffsetNid(1298);
