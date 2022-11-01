@@ -311,12 +311,6 @@ inline static void begin_extended_nci(vars_t *vars)
   {
     vars->attr_offset =
         RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
-    if (vars->attr.facility_offset[STANDARD_RECORD_FACILITY] != -1)
-    {
-      vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = -1;
-      vars->attr.facility_length[STANDARD_RECORD_FACILITY] = 0;
-      vars->attr_update = 1;
-    }
   }
   else
   {
@@ -565,11 +559,13 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset)
   {
     value_offset = vars->xnci_header_offset;
     value_length = -1;
+    printf("is_offset value_offset=%ld\n", value_offset);
   }
   else
   {
     if (value)
     { // NULL means delete
+      printf("calling tree_put_dsc()\n");
       RETURN_IF_NOT_OK(tree_put_dsc(
           vars->dblist, vars->tinfo, *(int *)vars->nid_ptr, (mdsdsc_t *)value,
           &value_offset, &value_length, vars->compress));
@@ -581,13 +577,16 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset)
    */
   if (vars->attr_offset == -1)
   {
+    printf("vars->attr_offset == -1\n");
     if (value_length == 0)
       return status; // has not xnci; nothing to delete
     if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) &&
         vars->local_nci.length > 0)
     {
+      printf("((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0\n");
       if (vars->local_nci.flags2 & NciM_DATA_IN_ATT_BLOCK)
       {
+        printf("vars->local_nci.flags2 & NciM_DATA_IN_ATT_BLOCK\n");
         EMPTYXD(dsc);
         mdsdsc_t *dptr;
         dtype_t dsc_dtype = DTYPE_DSC;
