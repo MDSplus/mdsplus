@@ -500,7 +500,7 @@ class Tree(object):
         self.open('EDIT', shot)
 
     def normal(self, shot=None):
-        self.open('NORMAL')
+        self.open('NORMAL', shot)
 
     def open(self, mode='NORMAL', shot=None):
         if shot is not None:
