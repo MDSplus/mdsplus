@@ -138,6 +138,14 @@ public class DeviceInputs extends DeviceComponent
             int currInputNid = baseNid + offsetNid + 1;
             for(int inputIdx = 0; inputIdx < numInputs; inputIdx++)
             {
+               try {
+                     int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
+                     int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
+                     numInputChildren = children + members;
+                }catch(Exception exc)
+                {
+                    System.out.println("Error getting number of input children");
+                }
                 try {
                      subtree.putDataExpr(currInputNid + 4, valuesTF[inputIdx].getText());
                 }catch(Exception exc)
