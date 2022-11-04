@@ -219,26 +219,13 @@ public class DeviceInputs extends DeviceComponent
             int currInputNid = baseNid + offsetNid + 1;
             for(int inputIdx = 0; inputIdx < numInputs; inputIdx++)
             {
-                int numInputChildren = 0;
-                try {
-                    int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
-                    int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
-                    numInputChildren = children + members;
+               try {
+                     int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
+                     int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
+                     numInputChildren = children + members;
                 }catch(Exception exc)
                 {
                     System.out.println("Error getting number of input children");
-                }
-                try {
-                     subtree.putDataExpr(currInputNid + 1, "\""+typesTF[inputIdx].getText()+"\"");
-                }catch(Exception exc)
-                {
-                    JOptionPane.showMessageDialog(null, ""+exc, "Error in input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
-                }
-                try {
-                     subtree.putDataExpr(currInputNid + 2, dimensionsTF[inputIdx].getText());
-                }catch(Exception exc)
-                {
-                    JOptionPane.showMessageDialog(null, ""+exc, "Error in input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
                 }
                 try {
                      subtree.putDataExpr(currInputNid + 4, valuesTF[inputIdx].getText());
