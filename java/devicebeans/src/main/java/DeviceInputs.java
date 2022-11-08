@@ -16,7 +16,6 @@ public class DeviceInputs extends DeviceComponent
 	private JTextField valuesTF[], fieldsTF[][];
 	private JLabel labels[];
         int numParameters[], numFields[];
-        private int numInputChildren = 0;
 	public DeviceInputs()
 	{
  	}
@@ -41,17 +40,18 @@ public class DeviceInputs extends DeviceComponent
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(numInputs, 1));
             int currInputNid = currNid + 1;
-            try {
-                int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
-                int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
-                numInputChildren = children + members;
-           }catch(Exception exc)
-            {
-                System.out.println("Error getting number of input children");
-             }
             for(int i = 0; i < numInputs; i++)
             {   
-                 try {
+                int numInputChildren = 0;
+                try {
+                    int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
+                    int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
+                    numInputChildren = children + members;
+                }catch(Exception exc)
+                {
+                    System.out.println("Error getting number of input children");
+                }
+                try {
                     numParameters[i] = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid+6)+",\'NUMBER_OF_CHILDREN\')");
                 }catch(Exception exc)
                 {
@@ -114,6 +114,15 @@ public class DeviceInputs extends DeviceComponent
             int currInputNid = baseNid + offsetNid + 1;
             for(int inputIdx = 0; inputIdx < numInputs; inputIdx++)
             {
+                int numInputChildren = 0;
+                try {
+                    int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
+                    int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
+                    numInputChildren = children + members;
+                }catch(Exception exc)
+                {
+                    System.out.println("Error getting number of input children");
+                }
                 try {
                      valuesTF[inputIdx].setText(subtree.getDataExpr(currInputNid + 4));
                 }catch(Exception exc)
@@ -138,10 +147,11 @@ public class DeviceInputs extends DeviceComponent
             int currInputNid = baseNid + offsetNid + 1;
             for(int inputIdx = 0; inputIdx < numInputs; inputIdx++)
             {
-               try {
-                     int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
-                     int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
-                     numInputChildren = children + members;
+                int numInputChildren = 0;
+                try {
+                    int children  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_CHILDREN\')");
+                    int members  = subtree.getInt("GETNCI("+subtree.getFullPath(currInputNid)+",\'NUMBER_OF_MEMBERS\')");
+                    numInputChildren = children + members;
                 }catch(Exception exc)
                 {
                     System.out.println("Error getting number of input children");
