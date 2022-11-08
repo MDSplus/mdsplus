@@ -8,12 +8,12 @@
  *
  * @author mdsplus
  */
-public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
+public class MARTE2_SIMULINK_DTT_VSSetup extends DeviceSetup {
 
     /**
-     * Creates new form MARTE2_SIMULINK_DTTSetup
+     * Creates new form MARTE2_SIMULINK_DTT_VSSetup
      */
-    public MARTE2_SIMULINK_DTTSetup() {
+    public MARTE2_SIMULINK_DTT_VSSetup() {
         initComponents();
     }
 
@@ -27,67 +27,44 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
     private void initComponents() {
 
         deviceButtons1 = new DeviceButtons();
-        jPanel2 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
         deviceInputs1 = new DeviceInputs();
-        jPanel3 = new javax.swing.JPanel();
         deviceOutputs1 = new DeviceOutputs();
-        jPanel4 = new javax.swing.JPanel();
-        deviceParameters1 = new DeviceParameters();
 
         setDeviceProvider("localhost:8100");
-        setDeviceTitle("DTT Simularot");
-        setDeviceType("MARTE2_SIMULINK_DTT");
-        setHeight(500);
-        setWidth(700);
+        setDeviceTitle("DTT VS Control");
+        setDeviceType("MARTE2_SIMULINK_DTT_VS");
+        setHeight(400);
+        setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Timebase");
-        deviceField1.setNumCols(20);
+        deviceField1.setLabelString("Timebase: ");
+        deviceField1.setNumCols(25);
         deviceField1.setOffsetNid(3);
-        jPanel2.add(deviceField1);
+        jPanel1.add(deviceField1);
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Time Div.:");
+        deviceField2.setLabelString("Time Div.: ");
         deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(253);
-        jPanel2.add(deviceField2);
+        deviceField2.setOffsetNid(54);
+        jPanel1.add(deviceField2);
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Write CPU Mask: ");
-        deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(120);
-        jPanel2.add(deviceField3);
+        deviceField3.setNumCols(6);
+        deviceField3.setOffsetNid(44);
+        jPanel1.add(deviceField3);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
-
-        deviceInputs1.setOffsetNid(26);
-        jPanel1.add(deviceInputs1, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Inputs", jPanel1);
-
-        jPanel3.setLayout(new java.awt.BorderLayout());
-
-        deviceOutputs1.setOffsetNid(114);
-        jPanel3.add(deviceOutputs1, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Outputs", jPanel3);
-
-        jPanel4.setLayout(new java.awt.BorderLayout());
-
-        deviceParameters1.setNumParameters(3);
-        deviceParameters1.setOffsetNid(4);
-        deviceParameters1.setParameterOffset(4);
-        jPanel4.add(deviceParameters1, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Parameters", jPanel4);
+        deviceInputs1.setOffsetNid(17);
+        jTabbedPane1.addTab("Inputs", deviceInputs1);
+        jTabbedPane1.addTab("Outputs", deviceOutputs1);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -100,11 +77,7 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
     private DeviceField deviceField3;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
-    private DeviceParameters deviceParameters1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }

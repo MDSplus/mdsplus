@@ -2218,6 +2218,7 @@ class MARTE2_COMPONENT(Device):
         if len(asynchThreadSignals) > 0:
             dataSourceText = '  +'+gamName+'_Output_Asynch = {\n'
             dataSourceText += '    Class = RealTimeThreadAsyncBridge\n'
+            dataSourceText += '    BlockingMode = 1\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
