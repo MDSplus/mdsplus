@@ -20,11 +20,32 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import mds.connection.*;
 import mds.provider.*;
 import mds.wave.*;
+import java.io.*;
+import java.util.Date;
+import java.text.*;
 
 public class jScopeFacade extends JFrame implements ActionListener, ItemListener, WindowListener, WaveContainerListener,
 		UpdateEventListener, ConnectionListener, Printable
 {
 	private static final long serialVersionUID = 1L;
+        public static String logFileName = null;
+        public static void logAction(String line)
+        {
+            if (logFileName != null && logFileName.trim() != "")
+            {
+                try {
+                    FileWriter fw = new FileWriter(logFileName, true); 
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    
+                    fw.write(dateFormat.format(new Date())+ "    " + line + "\n");
+                    fw.close();
+                }
+                catch(IOException ioe)
+                {
+                    System.out.println("Cannot write logFile");
+                }
+            }
+        }
 
 	class FileFilter implements FilenameFilter
 	{
@@ -498,7 +519,8 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		String propertiesFile = null;
 		final Properties props = System.getProperties();
 		final String debug = props.getProperty("debug");
-		if (debug != null && debug.equals("true"))
+                logFileName = props.getProperty("log");
+ 		if (debug != null && debug.equals("true"))
 		{
 			is_debug = true;
 			Waveform.is_debug = true;

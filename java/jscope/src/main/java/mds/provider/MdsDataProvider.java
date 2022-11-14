@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import mds.connection.*;
 import mds.provider.mds.SshTunneling;
 import mds.wave.*;
+import mds.jscope.jScopeFacade;
 
 public class MdsDataProvider implements DataProvider
 {
@@ -427,6 +428,7 @@ public class MdsDataProvider implements DataProvider
 		static final int SEGMENTED_YES = 1, SEGMENTED_NO = 2, SEGMENTED_UNKNOWN = 3;
 		static final int UNKNOWN = -1;
 		String in_x, in_y;
+                String orig_in_y;
 		boolean _jscope_set = false;
 		int numDimensions = UNKNOWN;
 		int segmentMode = SEGMENTED_UNKNOWN;
@@ -449,8 +451,9 @@ public class MdsDataProvider implements DataProvider
 		// Async update management
 		Vector<WaveDataListener> waveDataListenersV = new Vector<>();
 
-		public SimpleWaveData(String in_y, String experiment, long shot, String defaultNode)
+		public SimpleWaveData(String in_y, String experiment, long shot, String defaultNode, String orig_in_y)
 		{
+                        this.orig_in_y = orig_in_y;
 			this.wd_experiment = experiment;
 			this.wd_shot = shot;
 			this.defaultNode = defaultNode;
@@ -492,8 +495,9 @@ public class MdsDataProvider implements DataProvider
 			}
 		}
 
-		public SimpleWaveData(String in_y, String in_x, String experiment, long shot, String defaultNode)
+		public SimpleWaveData(String in_y, String in_x, String experiment, long shot, String defaultNode, String orig_in_y)
 		{
+                        this.orig_in_y = orig_in_y;
 			this.wd_experiment = experiment;
 			this.wd_shot = shot;
 			this.defaultNode = defaultNode;
@@ -576,7 +580,22 @@ public class MdsDataProvider implements DataProvider
 		@Override
 		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
 		{
-			return getData(xmin, xmax, numPoints, false);
+                    try{
+			XYData res = getData(xmin, xmax, numPoints, false);
+                        if(res != null)
+                        {
+                            jScopeFacade.logAction("Data: "+orig_in_y+" Experiment: "+this.wd_experiment+" Shot: " + this.wd_shot+ " Status: Success");
+                        }
+                        else
+                        {
+                            jScopeFacade.logAction("Data: "+orig_in_y+" Experiment: "+this.wd_experiment+" Shot: " + this.wd_shot+ " Status: Failure");
+                        }
+                        return res;
+                    }catch(Exception exc)
+                    {
+                        System.out.println(" FAILURE");
+                        throw(exc);
+                     }
 		}
 
 		public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws IOException
@@ -2062,7 +2081,7 @@ public class MdsDataProvider implements DataProvider
 	public WaveData getWaveData(String in, int row, int col, int index)
 	{
 		return new SimpleWaveData("( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in + " ; )",
-				experiment, shot, default_node);
+				experiment, shot, default_node, in);
 	}
 
 	@Override
@@ -2070,7 +2089,7 @@ public class MdsDataProvider implements DataProvider
 	{
 		return new SimpleWaveData(
 				"( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in_y + " ; )", in_x,
-				experiment, shot, default_node);
+				experiment, shot, default_node, in_y);
 	}
 
 	@Override
