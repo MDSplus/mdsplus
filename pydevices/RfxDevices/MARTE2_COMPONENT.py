@@ -1532,9 +1532,13 @@ class MARTE2_COMPONENT(Device):
                 currSamples = outputDict['samples']
             except:
                 currSamples = 1
+            timeSegLen = 1000
+            for outputDict in outputDicts:
+                if outputDict['seg_len'] > 0:
+                    timeSegLen = outputDict['seg_len']
 
             dataSourceText += '        Period = '+str(period/currSamples)+'\n'
-            dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
+            dataSourceText += '        MakeSegmentAfterNWrites = '+str(timeSegLen) + '\n'
             dataSourceText += '        AutomaticSegmentation = 0\n'
             if outputTrigger != None:
                 dataSourceText += '        TimeSignal = 1\n'
@@ -2218,6 +2222,7 @@ class MARTE2_COMPONENT(Device):
         if len(asynchThreadSignals) > 0:
             dataSourceText = '  +'+gamName+'_Output_Asynch = {\n'
             dataSourceText += '    Class = RealTimeThreadAsyncBridge\n'
+            dataSourceText += '    BlockingMode = 1\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
@@ -2594,7 +2599,14 @@ class MARTE2_COMPONENT(Device):
                 # We must keep into account the number of samples in an input device
                 dataSourceText += '        Period = ' + \
                     str(period/outputDict['samples'])+'\n'
-                dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
+
+
+                timeSegLen = 1000
+                for outputDict in outputDicts:
+                    if outputDict['seg_len'] > 0:
+                        timeSegLen = outputDict['seg_len']
+                dataSourceText += '        MakeSegmentAfterNWrites = '+str(timeSegLen) + '\n'
+ #               dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
                 dataSourceText += '        AutomaticSegmentation = 0\n'
                 dataSourceText += '        Type = uint32\n'
                 #if startTime != 0:
