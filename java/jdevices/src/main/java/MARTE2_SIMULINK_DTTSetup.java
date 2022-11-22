@@ -29,6 +29,8 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
+        deviceField2 = new DeviceField();
+        deviceField3 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         deviceInputs1 = new DeviceInputs();
@@ -41,7 +43,7 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         setDeviceTitle("DTT Simularot");
         setDeviceType("MARTE2_SIMULINK_DTT");
         setHeight(500);
-        setWidth(400);
+        setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         deviceField1.setIdentifier("");
@@ -50,25 +52,37 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
         deviceField1.setOffsetNid(3);
         jPanel2.add(deviceField1);
 
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("Time Div.:");
+        deviceField2.setNumCols(4);
+        deviceField2.setOffsetNid(253);
+        jPanel2.add(deviceField2);
+
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("Write CPU Mask: ");
+        deviceField3.setNumCols(4);
+        deviceField3.setOffsetNid(120);
+        jPanel2.add(deviceField3);
+
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        deviceInputs1.setOffsetNid(23);
+        deviceInputs1.setOffsetNid(26);
         jPanel1.add(deviceInputs1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Inputs", jPanel1);
 
         jPanel3.setLayout(new java.awt.BorderLayout());
 
-        deviceOutputs1.setOffsetNid(104);
+        deviceOutputs1.setOffsetNid(114);
         jPanel3.add(deviceOutputs1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Outputs", jPanel3);
 
         jPanel4.setLayout(new java.awt.BorderLayout());
 
-        deviceParameters1.setNumParameters(1);
+        deviceParameters1.setNumParameters(3);
         deviceParameters1.setOffsetNid(4);
         deviceParameters1.setParameterOffset(4);
         jPanel4.add(deviceParameters1, java.awt.BorderLayout.CENTER);
@@ -82,6 +96,8 @@ public class MARTE2_SIMULINK_DTTSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
+    private DeviceField deviceField2;
+    private DeviceField deviceField3;
     private DeviceInputs deviceInputs1;
     private DeviceOutputs deviceOutputs1;
     private DeviceParameters deviceParameters1;
