@@ -593,7 +593,7 @@ public class MdsDataProvider implements DataProvider
                         return res;
                     }catch(Exception exc)
                     {
-                        jScopeFacade.logAction("Data: "+orig_in_y+" Experiment: "+this.wd_experiment+" Shot: " + this.wd_shot+ " Status: Failure");
+                        jScopeFacade.logAction("Data: "+orig_in_y+" Experiment: "+this.wd_experiment+" Shot: " + this.wd_shot+ " Status: Exception "+ "Reason: "+ exc);
                         throw(exc);
                      }
 		}
