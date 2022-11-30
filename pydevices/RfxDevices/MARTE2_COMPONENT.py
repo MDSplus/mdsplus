@@ -671,7 +671,7 @@ class MARTE2_COMPONENT(Device):
 
 
 #GAB NOVEMBER 2022     
-#Get Synchornizing device. Note that for Synchronized inputs timebase will contain a range descriptor      
+#Get Synchronizing device. Note that for Synchronized inputs timebase will contain a range descriptor      
     def getSynchDev(self):
         timebase = self.timebase.getData()
         if not isinstance(timebase, TreeNode):
@@ -689,46 +689,17 @@ class MARTE2_COMPONENT(Device):
         return synch
 
 
+   
 
-    def getDevForOutput(self, threadMap, outValueNode):
-        devList = self.getDevList(threadMap)
-        for dev in devList:
-            inputSigs = dev.getNode('.INPUTS')
-            for inputChan in inputSigs.getChildren():
-                    # check first the case of a structure
-                try:
-                    fieldsChan = inputChan.getNode('FIELDS')
-                    for fieldChan in fieldsChan.getChildren():
-                        try:
-                            fieldNid = fieldChan.getNode('VALUE').getNid()
-                            if fieldNid == outValueNode.getNid():
-                                return dev
-                        except:
-                            continue
-                except:
-                        pass
-                    # Non structure case
-                try:
-                    inputNid = inputChan.getNode('VALUE').getNid()
-                except:
-                    continue
-                if inputNid == outValueNode.getNid():
-                    return dev
-#nothing found
-        print('ERRORE in getDevForOutput: '+ str(outValueNode))
-        return None              
-        
-
-
-
-      
+    #Get devices connected to the passed node 
     def getConnectedDev(self, threadMap, outValueNode):
+        outDevs = []
         devList = self.getDevList(threadMap)
         for dev in devList:
             try:
                 timebaseNode = TreeNode(dev, self.getTree()).getNode(':TIMEBASE')
                 if timebaseNode.getData().getNid() == outValueNode.getNid():
-                    return dev
+                    outDevs.append(dev)
             except:
                 print('WARNING: timebase not defined for '+str(timebaseNode))
                 pass
@@ -742,7 +713,7 @@ class MARTE2_COMPONENT(Device):
                             try:
                                 fieldNid = fieldChan.getNode('VALUE').getData().getNid()
                                 if fieldNid == outValueNode.getNid():
-                                    return dev
+                                    outDevs.append(dev)
                             except:
                                 continue
                     except:
@@ -753,115 +724,64 @@ class MARTE2_COMPONENT(Device):
                     except:
                         continue
                     if inputNid == outValueNode.getNid():
-                        return dev
+                        outDevs.append(dev)
             except:
                 pass
                 # We need to check also Output Trigger
             try:
                 outputTriggerNid = dev.getNode('.OUTPUTS:TRIGGER').getData().getNid()
                 if outputTriggerNid == outValueNode.getNid():
-                    return dev
+                    outDevs.append(dev)
             except:
                 pass
-#nothing found
-        return None              
+
+        return outDevs              
         
 
     def isUsedOnAnotherThreadSynch(self, threadMap, outValueNode): 
 #return True if outValueNode is refrenced by a device in a different synchronized thread, BUT NOT the sychronizing one
         connectedDev = self.getConnectedDev(threadMap, outValueNode)
-        if connectedDev == None:
+        if len(connectedDev) == 0:
             return False  #out not referenced by any other devices
-        if self.onSameThread(threadMap, connectedDev):
-            return False  #out referenced by another device on the same thread
-        if self.sameSynchSource(connectedDev): #if referenced by a device belonging to a synchronized thread
-            synchDev = self.getSynchDev()
-            if self.onSameThread(threadMap, synchDev, connectedDev):
-                return False  #out referenced by a synchronized device belonging to the synchronizingThread
-            else:
-                return True   #out referenced by a synchronized device not belonging to the synchronizing Thread
-        else:
-            return False  #out not referenced by a synchronized device
+        isUsed = False
+        for dev in connectedDev:
+            if not self.onSameThread(threadMap, dev):
+                if self.sameSynchSource(dev): #if referenced by a device belonging to a synchronized thread
+                    synchDev = self.getSynchDev()
+                    if not self.onSameThread(threadMap, synchDev, dev): 
+                        #out referenced by a synchronized device not belonging to the synchronizing Thread
+                        isUsed = True
+        return isUsed    
+
+    def isUsedOnAnotherThreadAsynch(self, threadMap, outValueNode): 
+#return True if outValueNode is refrenced by a device in a different synchronized thread, BUT NOT the sychronizing one
+        connectedDev = self.getConnectedDev(threadMap, outValueNode)
+        if len(connectedDev) == 0:
+            return False  #out not referenced by any other devices
+        isUsed = False
+        for dev in connectedDev:
+            if not self.onSameThread(threadMap, dev):
+                if self.sameSynchSource(dev): #if referenced by a device belonging to a synchronized thread
+                    synchDev = self.getSynchDev()
+                    if self.onSameThread(threadMap, synchDev, dev): 
+                        #out referenced by a synchronized device  belonging to the synchronizing Thread
+                        isUsed = True
+                else:
+                    isUsed = True
+        return isUsed    
 
     def isUsedOnAnotherThread(self, threadMap, outValueNode): 
 #return True if refers to a device in another thread
         connectedDev = self.getConnectedDev(threadMap, outValueNode)
-        if connectedDev == None:
+        if len(connectedDev) == 0:
             return False  #out not referenced by any other devices
-        if self.onSameThread(threadMap, connectedDev):
-            return False  #out referenced by another device on the same thread
-        return True  #out referenced by a device in another thread
-    
-
-    def isUsedOnAnotherThreadVECCHIA(self, threadMap, outValueNode, isSynch):
-        devList = self.getDevList(threadMap)
-        for dev in devList:
+        isUsed = False
+        for dev in connectedDev:
             if not self.onSameThread(threadMap, dev):
-                 # Check first timebase dependency
-                print('NON IN SAME THREAD')
-                try:
-                    timebaseNode = TreeNode(
-                        dev, self.getTree()).getNode(':TIMEBASE')
-                    if timebaseNode.getData().getNid() == outValueNode.getNid():
-                        return isSynch
-                except:
-                    pass
-                try:  # If it is an input device it has an INPUTS subtree
-                    inputSigs = dev.getNode('.INPUTS')
-                    for inputChan in inputSigs.getChildren():
-                        # check first the case of a structure
-                        try:
-                            print(inputChan)
-                            fieldsChan = inputChan.getNode('FIELDS')
-                            print(fieldsChan)
-                            for fieldChan in fieldsChan.getChildren():
-                                print(fieldChan)
-                                try:
-                                    fieldNid = fieldChan.getNode(
-                                        'VALUE').getData().getNid()
-                                    print('FIELD NID : '+str(fieldNid) + '   '+str(outValueNode))
-                                    if fieldNid == outValueNode.getNid():
-                                        print('ECCOLO!!!!!!!!!!!!!!!!!!!!!!!')
-                                        if self.sameSynchSource(dev):
-                                            print('SAME SYNC')
-                                            return isSynch
-                                        else:
-                                            return not isSynch
-                                except:
-                                    continue
-                        except:
-                            pass
-                        # Non structure case
-                        try:
-                            inputNid = inputChan.getNode(
-                                'VALUE').getData().getNid()
-                        except:
-                            continue
-                          
-                        if inputNid == outValueNode.getNid():
+                isUsed = True
+        return isUsed
 
-                            if self.sameSynchSource(dev):
-                                return isSynch
-                            else:
-                                return not isSynch
-
-                except:
-                    pass
-                # We need to check also Output Trigger
-                try:
-                    outputTriggerNid = dev.getNode(
-                        '.OUTPUTS:TRIGGER').getData().getNid()
-                    if outputTriggerNid == outValueNode.getNid():
-                        if self.sameSynchSource(dev):
-                            return isSynch
-                        else:
-                            return not isSynch
-                except:  # No Output Trigger defined
-                    pass
-
-        return False
-# Check if the outout is used by any input (regardless the thread)
-
+ 
     def isUsed(self, threadMap, outValueNode):
         devList = self.getDevList(threadMap)
         for dev in devList:
@@ -902,12 +822,9 @@ class MARTE2_COMPONENT(Device):
 
 # Check if any field of this output structure is used
     def isAnyFieldUsed(self, threadMap, outputDict):
-        print('IS ANY USED')
-        print(outputDict)
         for fieldDict in outputDict['fields']:
             if self.isUsed(threadMap, fieldDict['value_nid']):
                 return True
-        print('NO\n************************')
         return False
 
 #get alias for struct fields
@@ -1193,7 +1110,6 @@ class MARTE2_COMPONENT(Device):
                                 '_Output_DDB'
                         ##elif self.sameSynchSource(sourceNode):
                         elif self.isUsedOnAnotherThreadSynch(threadMap, sourceNode):
-                            print('aho BIMBO  syncDiv: '+str(syncDiv))
                             signalDict['type'] = inputDict['type']
                             if syncDiv > 1:
                                 gamText += '        DataSource = '+gamName+'_Res_DDB\n'
@@ -1249,14 +1165,12 @@ class MARTE2_COMPONENT(Device):
                     except:
                         isTreeRef = True
                         
-                    print(inputDict)    
                     if isTreeRef:
                         if 'name' in inputDict:
                             signalName = inputDict['name']
                             aliasName = self.convertPath(
                                 inputDict['value_nid'].getPath())
                             signalDict['alias'] = aliasName
-                            print(inputDict)
                             try:
                                 nonGamInputNodes.append(
                                     {'expr': inputDict['value'], 'dimensions': inputDict['dimensions'], 'name': aliasName, 'col_order': inputDict['col_order']})
@@ -1281,12 +1195,13 @@ class MARTE2_COMPONENT(Device):
                                 signalDict['datasource'] = sourceGamName + '_Expanded_Output_DDB'
                                 aliasName = inputDict['value'].getParent().getParent().getParent().getNode(
                                         ':name').data()+'_'+inputDict['value'].getParent().getNode(':name').data()
-                                gamText += '        Alias = '+aliasname+'\n'
+                                gamText += '        Alias = '+aliasName+'\n'
                                
                             else:
                                 synchDev = self.getSynchDev()
-                                fromDev = self.getDevForOutput(threadMap, sourceNode)
-                                if synchDev.getNid() == fromDev.getNid():  #If input derives from synchronizing thread
+                                if self.isUsedOnAnotherThreadSync(threadMap, sourceNode):
+                                #fromDev = self.getDevForOutput(threadMap, sourceNode)
+                                #if synchDev.getNid() == fromDev.getNid():  #If input derives from synchronizing thread
                                     if syncDiv > 1:
                                         gamText += '        DataSource = '+gamName+'_Res_DDB\n'
                                         signalDict['datasource'] = sourceGamName + '_OutputSynch'
@@ -1301,7 +1216,7 @@ class MARTE2_COMPONENT(Device):
                                     else:
                                         gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
                                         signalDict['datasource'] = sourceGamName + '_Output_Synch'
-                                else:
+                                if self.isUsedOnAnotherThreadAsync(threadMap, sourceNode):
                                     gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
                                     signalDict['datasource'] = sourceGamName + '_Output_Asynch'
                                
@@ -1317,7 +1232,6 @@ class MARTE2_COMPONENT(Device):
                                 signalDict['datasource'] = sourceGamName + \
                                     '_Output_DDB'
                             elif self.sameSynchSource(sourceNode):
-                                print('CACCA sync: '+str(syncDiv))
                                 if syncDiv > 1:
                                     gamText += '        DataSource = '+gamName+'_Res_DDB\n'
                                 elif self.isUsedOnAnotherThreadSynch(threadMap, sourceNode):
@@ -1412,7 +1326,6 @@ class MARTE2_COMPONENT(Device):
             if self.isUsedOnAnotherThreadSynch(threadMap, outputDict['value_nid']):
                 synchThreadSignals.append(outputSignalDict)
             elif self.isUsedOnAnotherThread(threadMap, outputDict['value_nid']):
-                print(outputSignalDict['elements'])
                 asynchThreadSignals.append(outputSignalDict)
             outputSignals.append(outputSignalDict)
             # --------------------------------------------If this is a structured output
@@ -1448,12 +1361,9 @@ class MARTE2_COMPONENT(Device):
             gamText += '    OutputSignals = {\n'
             for outputDict in outputsToBeExpanded:
                 for fieldDict in outputDict['fields']:
-                    print('FIELD')
-                    print(fieldDict)
                     if self.isUsedOnAnotherThreadSynch(threadMap, fieldDict['value_nid']):
                         synchThreadSignals.append(fieldDict)
                     elif self.isUsedOnAnotherThread(threadMap, fieldDict['value_nid']):
-                        print(fieldDict['elements'])
                         asynchThreadSignals.append(fieldDict)
                         
                     gamText += '      ' + \
@@ -1532,9 +1442,13 @@ class MARTE2_COMPONENT(Device):
                 currSamples = outputDict['samples']
             except:
                 currSamples = 1
+            timeSegLen = 1000
+            for outputDict in outputDicts:
+                if outputDict['seg_len'] > 0:
+                    timeSegLen = outputDict['seg_len']
 
             dataSourceText += '        Period = '+str(period/currSamples)+'\n'
-            dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
+            dataSourceText += '        MakeSegmentAfterNWrites = '+str(timeSegLen) + '\n'
             dataSourceText += '        AutomaticSegmentation = 0\n'
             if outputTrigger != None:
                 dataSourceText += '        TimeSignal = 1\n'
@@ -1884,7 +1798,10 @@ class MARTE2_COMPONENT(Device):
 # IOGAM and DDB DDB will be created
         if needInputBusConversion:
             gamText = '  +'+gamName+'_Input_Bus_IOGAM = {\n'
-            gamText += '    Class = IOGAM\n'
+            if syncDiv > 1:
+                gamText += '    Class = PickSampleGAM\n'
+            else:
+                gamText += '    Class = IOGAM\n'
             gamText += '    InputSignals = {\n'
             for inputDict in inputDicts:
                 if len(inputDict['fields']) > 0 and not 'value' in inputDict:
@@ -1945,9 +1862,9 @@ class MARTE2_COMPONENT(Device):
                                     gamText += '        DataSource = '+sourceGamName+'_Expanded_Output_DDB\n'
                                     gamText += '        Alias = '+aliasName+'\n'
                                 else:
-                                    print('BOMBO sync: '+str(syncDiv))
                                     synchDev = self.getSynchDev()
-                                    if synchDev.getNid() == sourceNode.getNid():  #If input derives from syncheonizing thread
+                                    if synchDev.sameSynchSource(sourceNode):
+                                    #if synchDev.getNid() == sourceNode.getNid():  #If input derives from synchronizing thread
                                         if syncDiv > 1:
                                             gamText += '        DataSource = '+gamName+'_Res_DDB\n'
                                             signalDict = {}
@@ -1970,8 +1887,8 @@ class MARTE2_COMPONENT(Device):
                                     gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
                                 else:
                                     synchDev = self.getSynchDev()
-                                    print('CICCI sync: '+str(syncDiv))
-                                    if synchDev.getNid() == sourceNode.getNid():  #If input derives from syncheonizing thread
+                                    if synchDev.sameSynchSource(sourceNode):
+                                   # if synchDev.getNid() == sourceNode.getNid():  #If input derives from syncheonizing thread
                                         gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
                                         try:
                                             syncDiv = self.timebase_div.data()
@@ -2031,16 +1948,12 @@ class MARTE2_COMPONENT(Device):
 
 #If some inputs derive from resampled synch sources, instantiate PickSampleGAM
         if len(resampledSyncSigs) > 0:
-          
-            print('CI SONO RESAMPLE!!!!!!!!!!!!!!!!!!')
-          
 #            gamList.append(gamName+'Resampler')
             preGamList.append(gamName+'Resampler')
             pickGamText = '  +'+gamName+'Resampler = {\n'
             pickGamText += '    Class = PickSampleGAM\n'
             pickGamText += '    InputSignals = {\n'
             for sigDict in resampledSyncSigs:
-                print(sigDict)
                 pickGamText += '      '+sigDict['name']+' = {\n'
                 pickGamText +=  '        DataSource = '+sigDict['datasource']+'\n'
                 if 'alias' in sigDict:
@@ -2161,7 +2074,6 @@ class MARTE2_COMPONENT(Device):
             gamText += '    Class = IOGAM\n'
             gamText += '    InputSignals = {\n'
             for signalDict in synchThreadSignals:
-                print(signalDict)
                 try:
                     isInputStructField = (signalDict['value_nid'].getParent().getParent().getName() == 'FIELDS')
                 except:
@@ -2218,6 +2130,7 @@ class MARTE2_COMPONENT(Device):
         if len(asynchThreadSignals) > 0:
             dataSourceText = '  +'+gamName+'_Output_Asynch = {\n'
             dataSourceText += '    Class = RealTimeThreadAsyncBridge\n'
+            dataSourceText += '    BlockingMode = 1\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
 
@@ -2594,7 +2507,14 @@ class MARTE2_COMPONENT(Device):
                 # We must keep into account the number of samples in an input device
                 dataSourceText += '        Period = ' + \
                     str(period/outputDict['samples'])+'\n'
-                dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
+
+
+                timeSegLen = 1000
+                for outputDict in outputDicts:
+                    if outputDict['seg_len'] > 0:
+                        timeSegLen = outputDict['seg_len']
+                dataSourceText += '        MakeSegmentAfterNWrites = '+str(timeSegLen) + '\n'
+ #               dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
                 dataSourceText += '        AutomaticSegmentation = 0\n'
                 dataSourceText += '        Type = uint32\n'
                 #if startTime != 0:
@@ -2684,7 +2604,6 @@ class MARTE2_COMPONENT(Device):
             if self.isUsedOnAnotherThreadSynch(threadMap, outputDict['value_nid']):
                 synchThreadSignals.append(outputDict)
             elif self.isUsedOnAnotherThread(threadMap, outputDict['value_nid']):
-                print(outputDict['elements'])
                 asynchThreadSignals.append(outputDict)
         gamText += '    }\n'
         gamText += '  }\n'
@@ -3130,7 +3049,7 @@ class MARTE2_COMPONENT(Device):
 
                     signalNames.append(signalGamName)
                     gamText += '      '+signalGamName+' = {\n'
-                    if isInputStructField:  # Input struct fields are supported only within the same thread
+                    if isInputStructField:  
                         gamText += '        DataSource = '+sourceGamName+'_Expanded_Output_DDB\n'
                         signalSamples.append(1)
                     else:
