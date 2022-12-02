@@ -3426,7 +3426,7 @@ class MARTE2_COMPONENT(MDSplus.Device):
                 dataSourceText += '        MakeSegmentAfterNWrites = '+str(timeSegLen) + '\n'
  #               dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
                 dataSourceText += '        AutomaticSegmentation = 0\n'
-                dataSourceText += '        Type = uint32\n'
+#                dataSourceText += '        Type = uint32\n'
                 #if startTime != 0:
                 #    dataSourceText += '        SamplePhase = ' + \
                 #        str(int(round(startTime/period)))+'\n'
