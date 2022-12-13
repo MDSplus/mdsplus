@@ -9,5 +9,5 @@ dist_rpm_SCRIPTS = post_install_script python_module_install.sh python_module_re
 if GLOBUSLICENSE
 dist_rpm_DATA = fusiongrid-mdsip.xinetd fusiongrid-mdsips.xinetd globus-gatekeeper.xinetd globus-gridftp.xinetd
 else
-dist_rpm_DATA = mdsipd.xinetd mdsipsd.xinetd
+dist_rpm_DATA = mdsipd.xinetd mdsipsd.xinetd mdsip.socket mdsip@.service
 endif

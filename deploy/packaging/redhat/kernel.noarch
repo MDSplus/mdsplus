@@ -41,6 +41,8 @@
 ./usr/local/mdsplus/rpm
 ./usr/local/mdsplus/rpm/mdsipd.xinetd
 ./usr/local/mdsplus/rpm/mdsipsd.xinetd
+./usr/local/mdsplus/rpm/mdsip.socket
+./usr/local/mdsplus/rpm/mdsip@.service
 ./usr/local/mdsplus/rpm/post_install_script
 ./usr/local/mdsplus/rpm/post_uninstall_script
 ./usr/local/mdsplus/rpm/python_module_install.sh
