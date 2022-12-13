@@ -167,7 +167,10 @@ class _ACQ2106_423ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_423ST.MDSWorker, self).__init__(name=dev.path)
 
-            self.dev = dev.copy()
+            # Tuple designed to bring a copy of the tree to the MDSWorker thread
+            self.info = (dev.tree.name, dev.tree.shot, dev.path)
+
+            self.dev = dev
 
             self.nchans = self.dev.sites * self.dev.NUM_CHANS_PER_SITE
 
@@ -192,6 +195,9 @@ class _ACQ2106_423ST(MDSplus.Device):
                 for e in arr:
                     ans = lcm(ans, e)
                 return int(ans)
+
+            tree = MDSplus.Tree(self.info[0], self.info[1])
+            self.dev = tree.getNode(self.info[2])
 
             if self.dev.debug:
                 print("MDSWorker running")
