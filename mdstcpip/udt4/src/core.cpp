@@ -688,7 +688,7 @@ void CUDT::connect(const sockaddr *serv_addr) {
 }
 #pragma GCC diagnostic pop
 
-int CUDT::connect(const CPacket &response) throw() {
+int CUDT::connect(const CPacket &response) {
   // this is the 2nd half of a connection request. If the connection is setup
   // successfully this returns 0. returning -1 means there is an error.
   // returning 1 or 2 means the connection is in process and needs more

@@ -254,8 +254,10 @@ static inline int mergeArrays(struct descriptor_a *signalsApd,
       (struct descriptor_xd *)malloc(numSignals * sizeof(struct descriptor_xd));
   for (i = 0; i < numSignals; i++)
     (*dimensionsXd)[i] = emptyXd;
-  arraysD = (struct descriptor_a **)(*arraysBuf =
-                                         malloc(numSignals * sizeof(char *)));
+  size_t arraysDsize = numSignals * sizeof(char *);
+  *arraysBuf = malloc(arraysDsize);
+  arraysD = (struct descriptor_a **)(*arraysBuf);
+  memset(arraysD, 0, arraysDsize);
   // Evaluate first dimension for all segments
   int totSize = 0;
   for (i = 0; i < numSignals; i++)
