@@ -37,6 +37,7 @@ from numpy import version as npver
 from sys import version_info as pyver
 import os
 ispy3 = pyver > (3,)
+ispy38 = pyver >= (3,8)
 ispy2 = pyver < (3,)
 iswin = os.sys.platform.startswith('win')
 isdarwin = os.sys.platform.startswith('darwin')
@@ -72,7 +73,10 @@ def load_library(name):
             os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
     try:
         if iswin:
-            return C.CDLL(name)
+            if ispy38:
+                return C.CDLL(name, winmode=C.RTLD_GLOBAL)
+            else:
+                return C.CDLL(name)
         if isdarwin:
             return C.CDLL('lib%s.dylib' % name)
         return C.CDLL('lib%s.so' % name)
