@@ -327,8 +327,15 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     }
     pmask = (mdsdsc_t *)&ncopies;
     /** scalar to simple vector **/
-    if (rank == 0)
-      memcpy((char *)&arr, (char *)pa, head);
+    if (rank == 0) {
+      memcpy((char *)&arr, (char *)pa, sizeof(struct descriptor));
+      arr.dimct = 1;
+      arr.aflags.coeff = 0;
+      arr.a0 = arr.pointer;
+      arr.arsize = arr.length;
+      arr.m[1] = arr.m[0] = 1;
+      arr.m[dim] = ncopies;
+    }
     else if (rank >= MAX_DIMS)
       status = TdiNDIM_OVER;
     /** coefficient vector **/
