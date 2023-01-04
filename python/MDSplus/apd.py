@@ -231,9 +231,6 @@ class List(list, Apd):
 
 
 descriptor = _mimport('descriptor')
-descriptor.dtypeToClass[Apd.dtype_id] = Apd
-descriptor.dtypeToClass[List.dtype_id] = List
-descriptor.dtypeToClass[Dictionary.dtype_id] = Dictionary
 descriptor.dtypeToArrayClass[Apd.dtype_id] = Apd
 descriptor.dtypeToArrayClass[List.dtype_id] = List
 descriptor.dtypeToArrayClass[Dictionary.dtype_id] = Dictionary
