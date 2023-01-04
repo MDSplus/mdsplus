@@ -297,7 +297,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       arr.aflags.coeff = 0;
       arr.a0 = arr.pointer;
       arr.arsize = arr.length;
-      arr.m[1] = arr.m[0] = 1;
+      arr.m[0] = 1;
+      arr.m[1] = 1;
       arr.m[dim] = ncopies;
     }
     /** simple and coefficient vector **/
@@ -340,7 +341,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       arr.aflags.coeff = 0;
       arr.a0 = arr.pointer;
       arr.arsize = arr.length;
-      arr.m[1] = arr.m[0] = 1;
+      arr.m[0] = 1;
+      arr.m[1] = 1;
       arr.m[dim] = ncopies;
     }
     else if (rank >= MAX_DIMS)
@@ -366,7 +368,8 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       arr.dimct = 2;
       arr.aflags.coeff = 1;
       arr.a0 = arr.pointer;
-      arr.m[1] = arr.m[0] = (int)pa->arsize / (int)pa->length;
+      arr.m[0] = (int)pa->arsize / (int)pa->length;
+      arr.m[1] = arr.m[0];
       arr.m[dim] = ncopies;
     }
     arr.arsize *= ncopies;
