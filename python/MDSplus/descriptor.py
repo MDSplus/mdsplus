@@ -133,15 +133,25 @@ class Descriptor(object):
         self.ptr = _C.pointer(self._structure)
         self.ptr_ = _C.cast(self.ptr, Descriptor.PTR)
 
-    def __getattr__(self, name):
-        if name != '_structure' and name in dict(self._structure._fields_):
-            return self._structure.__getattribute__(name)
-        return super(Descriptor, self).__getattr__(name)
+    @property
+    def length(self): return self._structure.length
+    @length.setter
+    def length(self, value): self._structure.length = value
 
-    def __setattr__(self, name, value):
-        if name != '_structure' and name in dict(self._structure._fields_):
-            return self._structure.__setattr__(name, value)
-        return super(Descriptor, self).__setattr__(name, value)
+    @property
+    def dclass(self): return self._structure.dclass
+    @dclass.setter
+    def dclass(self, value): self._structure.dclass = value
+
+    @property
+    def dtype(self): return self._structure.dtype
+    @dtype.setter
+    def dtype(self, value): self._structure.dtype = value
+
+    @property
+    def pointer(self): return self._structure.pointer
+    @pointer.setter
+    def pointer(self, value): self._structure.pointer = value
 
     @property
     def addressof(self):
@@ -192,9 +202,19 @@ class DescriptorXS(DescriptorS):
     null = _C.cast(0, PTR)
 
     @property
-    def value(self):
+    def descriptor(self):
         if self.l_length and self.pointer:
-            return Descriptor(self.pointer, self.__dict__)._setTree(self.tree).value
+            return Descriptor(self.pointer, self.__dict__)._setTree(self.tree)
+        return DescriptorNULL
+
+    @property
+    def value(self):
+        return self.descriptor.value
+
+    @property
+    def l_length(self): return self._structure.l_length
+    @l_length.setter
+    def l_length(self, value): self._structure.l_length = value
 
 
 class DescriptorXD(DescriptorXS):
@@ -215,6 +235,16 @@ class DescriptorR(DescriptorS):
             ("dscptrs", Descriptor.PTR*256)]
     PTR = _C.POINTER(_structure_class)
     null = _C.cast(0, PTR)
+
+    @property
+    def ndesc(self): return self._structure.ndesc
+    @ndesc.setter
+    def ndesc(self, value): self._structure.ndesc = value
+
+    @property
+    def dscptrs(self): return self._structure.dscptrs
+    @dscptrs.setter
+    def dscptrs(self, value): self._structure.dscptrs = value
 
 # HINT: arrays
 
@@ -301,6 +331,45 @@ class DescriptorA(Descriptor):
         else:
             self.aflags &= ~128
 
+    @property
+    def scale(self): return self._structure.scale
+    @scale.setter
+    def scale(self, value): self._structure.scale = value
+
+    @property
+    def digits(self): return self._structure.digits
+    @digits.setter
+    def digits(self, value): self._structure.digits = value
+
+    @property
+    def aflags(self): return self._structure.aflags
+    @aflags.setter
+    def aflags(self, value): self._structure.aflags = value
+
+    @property
+    def dimct(self): return self._structure.dimct
+    @dimct.setter
+    def dimct(self, value): self._structure.dimct = value
+
+    @property
+    def arsize(self): return self._structure.arsize
+    @arsize.setter
+    def arsize(self, value): self._structure.arsize = value
+
+    @property
+    def a0(self): return self._structure.a0
+    @a0.setter
+    def a0(self, value): self._structure.a0 = value
+
+    @property
+    def coeff_and_bounds(self): return self._structure.coeff_and_bounds
+    @coeff_and_bounds.setter
+    def coeff_and_bounds(self, value): self._structure.coeff_and_bounds = value
+
+    @property
+    def size(self):
+        return self._structure.arsize // self._structure.length
+
 
 class DescriptorCA(DescriptorA):
     dclass_id = 195
@@ -314,6 +383,12 @@ class DescriptorCA(DescriptorA):
 
 class DescriptorAPD(DescriptorA):
     dclass_id = 196
+
+    @property
+    def descriptors(self):
+        tree = self.tree
+        dptrs = _C.cast(self.pointer, _C.POINTER(_C.c_void_p*self.size)).contents
+        return [Descriptor(dptr)._setTree(tree) for dptr in dptrs]
 
 
 dclassToClass = {DescriptorS.dclass_id: DescriptorS,

@@ -79,10 +79,7 @@ class Apd(_dat.TreeRefX, _arr.Array):
 
     @classmethod
     def fromDescriptor(cls, d):
-        num = d.arsize//d.length
-        dptrs = _C.cast(d.pointer, _C.POINTER(_C.c_void_p*num)).contents
-        descs = [_dsc.pointerToObject(dptr, d.tree) for dptr in dptrs]
-        return cls(descs)._setTree(d.tree)
+        return cls([dptr.value for dptr in d.descriptors])._setTree(d.tree)
 
     def __init__(self, value=None, dtype=0):
         """Initializes a Apd instance
