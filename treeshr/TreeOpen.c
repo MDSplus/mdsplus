@@ -612,9 +612,7 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent,
     for (i = 0; i < info->header->externals; i++)
     {
       NODE *external_node = info->node + swapint32(&info->external[i]);
-      char *subtree = strncpy(calloc(1, sizeof(NODE_NAME) + 1),
-                              external_node->name, sizeof(NODE_NAME));
-      subtree[sizeof(NODE_NAME)] = '\0';
+      char *subtree = strndup(external_node->name, sizeof(NODE_NAME));
       char *blank = strchr(subtree, ' ');
       if (blank)
         *blank = '\0';
@@ -1148,6 +1146,7 @@ static int MapFile(int fd, TREE_INFO *info, int nomap)
           info->node[idx].conglomerate_elt=v1nodes->conglomerate_elt;
           info->node[idx].tag_link=v1nodes->tag_link;
           strncpy(info->node[idx].name, v1nodes->name, V1_MAX_NAME_LEN);
+          info->node[idx].name[V1_MAX_NAME_LEN]=0;
           int i;
           for (i=0; i<V1_MAX_NAME_LEN; i++)
             if(info->node[idx].name[i] == ' ')
@@ -1231,7 +1230,7 @@ static int GetVmForTree(TREE_INFO *info, int nomap)
   info->vm_pages = info->alq;
   if (nomap)
   {
-    info->vm_addr = calloc(512, (size_t)info->vm_pages);
+    info->vm_addr = calloc((size_t)info->vm_pages, 512);
     if (info->vm_addr)
       info->section_addr[0] = info->vm_addr;
     else
@@ -1509,7 +1508,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
             bitassign(1, info->edit->nci->flags, NciM_INCLUDE_IN_PULSE);
             info->tags = calloc(1, 512);
             info->edit->tags_pages = 1;
-            info->tag_info = calloc(sizeof(TAG_INFO), 512);
+            info->tag_info = calloc(512, sizeof(TAG_INFO));
             info->edit->tag_info_pages = sizeof(TAG_INFO);
             info->external = calloc(1, 512);
             info->edit->external_pages = 1;
