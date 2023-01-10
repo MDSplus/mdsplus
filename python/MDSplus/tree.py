@@ -574,7 +574,7 @@ class Tree(object):
         return self
 
     def __del__(self):
-        if not self.public:
+        if not self.public and _TreeShr is not None:
             self.__exit__()
             _TreeShr.TreeFreeDbid(self._ctx)
 
