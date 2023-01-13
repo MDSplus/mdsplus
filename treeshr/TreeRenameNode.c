@@ -218,8 +218,8 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   strncpy(oldnode_ptr->name, newnode_name, sizeof(oldnode_ptr->name));
 #pragma GCC diagnostic pop
   for (i = strlen(newnode_name); i < (int) sizeof(oldnode_ptr->name); i++)
-    oldnode_ptr->name[i] = 0;
-  oldnode_ptr->name[MAX_NAME_LEN] = 0;  // null terminate truncated names
+    oldnode_ptr->name[i] = '\0';
+  oldnode_ptr->name[MAX_NAME_LEN] = '\0';
   if (is_child)
     status = TreeInsertChild(newnode, oldnode_ptr,
                              dblist->tree_info->header->sort_children);

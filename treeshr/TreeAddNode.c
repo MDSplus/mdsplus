@@ -159,8 +159,8 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
               strncpy(new_ptr->name, node_name, sizeof(new_ptr->name));
 #pragma GCC diagnostic pop
           for (i = strlen(node_name); i < sizeof(new_ptr->name); i++)
-            new_ptr->name[i] = 0;
-          new_ptr->name[MAX_NAME_LEN] = 0;  // null terminate truncated names
+            new_ptr->name[i] = '\0';
+          new_ptr->name[MAX_NAME_LEN] = '\0';
           new_ptr->child = 0;
           loadint16(&new_ptr->conglomerate_elt, &idx);
           if ((is_child && (usage == TreeUSAGE_ANY)) ||
