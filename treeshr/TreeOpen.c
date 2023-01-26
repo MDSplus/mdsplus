@@ -612,12 +612,7 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent,
     for (i = 0; i < info->header->externals; i++)
     {
       NODE *external_node = info->node + swapint32(&info->external[i]);
-      char *subtree = strndup(external_node->name, sizeof(NODE_NAME));
-      char *blank = strchr(subtree, ' ');
-      if (blank)
-        *blank = '\0';
-      ext_status = ConnectTree(dblist, subtree, external_node, subtree_list);
-      free(subtree);
+      ext_status = ConnectTree(dblist, external_node->name, external_node, subtree_list);
       if (IS_NOT_OK(ext_status))
       {
         status = TreeNOTALLSUBS;
