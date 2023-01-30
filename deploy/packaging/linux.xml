@@ -439,6 +439,14 @@ then
     echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
   fi
 fi
+if [ ! -r /etc/systemd/system/mdsip.socket ]
+then
+  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsip.socket /etc/systemd/system/mdsip.socket
+fi
+if [ ! -r /etc/systemd/system/mdsip@.service ]
+then
+  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsip@.service /etc/systemd/system/mdsip@.service
+fi
     </post>
     <preun>
 if [ "$1" == "0" ]
