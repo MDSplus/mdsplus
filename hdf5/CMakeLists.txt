@@ -1,68 +1,64 @@
 
-###
-### hdf5tdi
-###
+if(HDF5_FOUND)
 
-ADD_LIBRARY(
-    hdf5tdi SHARED
-    hdf5tdi.c
-)
-
-TARGET_LINK_LIBRARIES(
-    hdf5tdi
-    PUBLIC
-        TdiShr
-        ${LIBHDF5}
-)
-
-TARGET_COMPILE_DEFINITIONS(
-    hdf5tdi
-    PUBLIC
+    compile_definitions(
         -DH5_USE_16_API
-)
+    )
 
-ADD_STATIC_COPY(hdf5tdi)
+    ###
+    ### hdf5tdi
+    ###
 
-###
-### hdf5ToMds
-###
+    add_library(
+        hdf5tdi SHARED
+        hdf5tdi.c
+    )
 
-ADD_EXECUTABLE(
-    hdf5ToMds
-    hdf5ToMds.c
-)
+    install(TARGETS hdf5tdi)
 
-TARGET_LINK_LIBRARIES(
-    hdf5ToMds
-    PUBLIC
-        TdiShr
-        ${LIBHDF5}
-)
+    target_link_libraries(
+        hdf5tdi
+        PUBLIC
+            TdiShr
+            HDF5::HDF5
+    )
 
-TARGET_COMPILE_DEFINITIONS(
-    hdf5ToMds
-    PUBLIC
-        -DH5_USE_16_API
-)
+    add_static_copy(hdf5tdi)
 
-###
-### MDSplus2HDF5
-###
+    ###
+    ### hdf5ToMds
+    ###
 
-ADD_EXECUTABLE(
-    MDSplus2HDF5
-    MDSplus2HDF5.c
-)
+    add_executable(
+        hdf5ToMds
+        hdf5ToMds.c
+    )
 
-TARGET_LINK_LIBRARIES(
-    MDSplus2HDF5
-    PUBLIC
-        TdiShr
-        ${LIBHDF5}
-)
+    install(TARGETS hdf5ToMds)
 
-TARGET_COMPILE_DEFINITIONS(
-    MDSplus2HDF5
-    PUBLIC
-        -DH5_USE_16_API
-)
+    target_link_libraries(
+        hdf5ToMds
+        PUBLIC
+            TdiShr
+            HDF5::HDF5
+    )
+
+    ###
+    ### MDSplus2HDF5
+    ###
+
+    add_executable(
+        MDSplus2HDF5
+        MDSplus2HDF5.c
+    )
+
+    install(TARGETS MDSplus2HDF5)
+
+    target_link_libraries(
+        MDSplus2HDF5
+        PUBLIC
+            TdiShr
+            HDF5::HDF5
+    )
+
+endif()

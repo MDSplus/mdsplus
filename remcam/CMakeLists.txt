@@ -3,22 +3,22 @@
 ### RemCamShr / CamShr
 ###
 
-IF(TARGET CamShr)
-    SET(_target "RemCamShr")
-ELSE()
-    SET(_target "CamShr")
-ENDIF()
+if(TARGET CamShr)
+    set(_target "RemCamShr")
+else()
+    set(_target "CamShr")
+endif()
 
-ADD_LIBRARY(
-    ${_target} SHARED
+add_library(
+    ${_target}
     CamIosb.c
     CamMulti.c
     CamSingle.c
 )
 
-INSTALL(TARGETS ${_target})
+install(TARGETS ${_target})
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     ${_target}
     PUBLIC
         MdsIpShr

@@ -1,15 +1,15 @@
 
-IF(HAVE_SCSI_SG_H AND NOT MSVC)
+if(HAVE_SCSI_SG_H AND NOT MSVC)
 
     ###
     ### CamShr
     ###
 
-    SET(MAJOR 1)
-    SET(MINOR 8)
+    set(MAJOR 1)
+    set(MINOR 8)
 
-    ADD_LIBRARY(
-        CamShr SHARED
+    add_library(
+        CamShr
         add_entry.c
         bisearch.c
         cam_functions.c
@@ -48,15 +48,15 @@ IF(HAVE_SCSI_SG_H AND NOT MSVC)
         RemCamIosb.c
     )
 
-    INSTALL(TARGETS CamShr)
+    install(TARGETS CamShr)
 
-    TARGET_LINK_OPTIONS(
+    target_link_options(
         CamShr
         PRIVATE
             -nostartfiles
     )
 
-    SET_TARGET_PROPERTIES(
+    set_target_properties(
         CamShr
         PROPERTIES
             # Creates symlink for .so -> .so.MAJOR.MINOR
@@ -69,24 +69,28 @@ IF(HAVE_SCSI_SG_H AND NOT MSVC)
     ### cts_commands
     ###
 
-    ADD_LIBRARY(
-        cts_commands SHARED
+    add_library(
+        cts_commands
         verbs.c
     )
 
-    TARGET_LINK_LIBRARIES(
+    install(TARGETS cts_commands)
+
+    target_link_libraries(
         cts_commands
         PUBLIC
             Mdsdcl
             CamShr
     )
 
-    INSTALL(TARGETS cts_commands)
+    ###
+    ### Scripts
+    ###
 
-    INSTALL(
+    install(
         FILES cts RENAME mdscts
         PERMISSIONS ${MODE_755}
         TYPE BIN
     )
 
-ENDIF()
+endif()

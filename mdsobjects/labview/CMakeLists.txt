@@ -1,5 +1,5 @@
 
-INSTALL(
+install(
     DIRECTORY
         MDSplus
         MDSplus_LV2012
@@ -8,56 +8,58 @@ INSTALL(
     USE_SOURCE_PERMISSIONS
 )
 
-IF(WIN32)
-    IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        SET(_host_cpu "i686")
-    ELSE()
-        SET(_host_cpu "x86_64")
-    ENDIF()
+if(WIN32)
 
-    SET(LV_LIB ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools/labview-${_host_cpu}.lib)
-ELSE()
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        SET(_host_cpu "i686")
+    else()
+        SET(_host_cpu "x86_64")
+    endif()
+
+    set(LV_LIB ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools/labview-${_host_cpu}.lib)
+
+else()
 
     ###
     ### LV
     ###
 
-    ADD_LIBRARY(
+    add_library(
         LV SHARED
         lv.c
     )
 
-    INSTALL(TARGETS LV)
+    install(TARGETS LV)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         LV
         PUBLIC
             MdsShr
     )
 
-    TARGET_INCLUDE_DIRECTORIES(
+    target_include_directories(
         LV PUBLIC ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools
     )
 
-    SET(LV_LIB LV)
-    
-ENDIF()
+    set(LV_LIB LV)
+
+endif()
 
 ###
 ### MDSobjectsLVShr
 ###
 
-ADD_LIBRARY(
-    MDSobjectsLVShr SHARED
+add_library(
+    MDSobjectsLVShr
     mdsdataobjectswrp.cpp
     mdseventobjectswrp.cpp
     mdsipobjectswrp.cpp
     mdstreeobjectswrp.cpp
 )
 
-INSTALL(TARGETS MDSobjectsLVShr)
+install(TARGETS MDSobjectsLVShr)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MDSobjectsLVShr
     PUBLIC
         MdsIpShr
@@ -65,11 +67,11 @@ TARGET_LINK_LIBRARIES(
         ${LV_LIB}
 )
 
-IF(NOT WIN32)
-    SET(_lv_name1 "MDSobjectsLVShr")
-    SET(_lv_name2 "${CMAKE_SHARED_LIBRARY_PREFIX}MDSobjectsLVShr")
+if(NOT WIN32)
+    set(_lv_name1 "MDSobjectsLVShr")
+    set(_lv_name2 "${CMAKE_SHARED_LIBRARY_PREFIX}MDSobjectsLVShr")
 
-    ADD_CUSTOM_COMMAND(
+    add_custom_command(
         TARGET MDSobjectsLVShr POST_BUILD
         BYPRODUCTS ${_lv_name1} ${_lv_name2}
         COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:MDSobjectsLVShr> ${_lv_name1}
@@ -77,10 +79,10 @@ IF(NOT WIN32)
         WORKING_DIRECTORY ${LIB_DIR}
     )
 
-    INSTALL(
+    install(
         FILES
             ${LIB_DIR}/${_lv_name1}
             ${LIB_DIR}/${_lv_name2}
         TYPE LIB
     )
-ENDIF()
+endif()

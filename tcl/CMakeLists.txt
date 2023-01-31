@@ -3,39 +3,34 @@
 ### tcl_commands
 ###
 
-FILE(GLOB
+file(GLOB
     _source_list
-    "tcl_*.c"
+    "*.c"
 )
 
-ADD_LIBRARY(
-    tcl_commands SHARED
+add_library(
+    tcl_commands
     ${_source_list}
 )
 
-TARGET_LINK_LIBRARIES(
+install(TARGETS tcl_commands)
+
+target_link_libraries(
     tcl_commands
     PUBLIC
         MdsServerShr
 )
 
 ###
-### Install
+### Scripts
 ###
 
-INSTALL(
-    TARGETS tcl_commands
-)
+if(WIN32)
+    set(_ext ".bat")
+endif()
 
-IF(WIN32)
-    INSTALL(
-        FILES mdstcl.bat
-        TYPE BIN
-    )
-ELSE()
-    INSTALL(
-        FILES mdstcl
-        PERMISSIONS ${MODE_755}
-        TYPE BIN
-    )
-ENDIF()
+install(
+    FILES mdstcl${_ext}
+    PERMISSIONS ${MODE_755}
+    TYPE BIN
+)

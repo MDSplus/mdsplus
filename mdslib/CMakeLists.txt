@@ -3,67 +3,67 @@
 ### MdsLib
 ###
 
-ADD_LIBRARY(
-    MdsLib SHARED
+add_library(
+    MdsLib
     MdsLib.c
 )
 
-INSTALL(TARGETS MdsLib)
+install(TARGETS MdsLib)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsLib
     PUBLIC
         TdiShr
 )
 
-ADD_STATIC_COPY(MdsLib)
+add_static_copy(MdsLib)
 
 ###
 ### MdsLib_client
 ###
 
-ADD_LIBRARY(
-    MdsLib_client SHARED
+add_library(
+    MdsLib_client
     MdsLib.c
 )
 
-INSTALL(TARGETS MdsLib_client)
+install(TARGETS MdsLib_client)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsLib_client
     PUBLIC
         TdiShr
 )
 
-TARGET_COMPILE_DEFINITIONS(
+target_compile_definitions(
     MdsLib_client
     PRIVATE
         -D_CLIENT_ONLY
 )
 
-ADD_STATIC_COPY(MdsLib_client)
+add_static_copy(MdsLib_client)
 
 ###
 ### MdsLib_fortran
 ###
 
-ADD_LIBRARY(
-    MdsLib_fortran SHARED
+add_library(
+    MdsLib_fortran
     MdsLib.c
 )
 
-INSTALL(TARGETS MdsLib_fortran)
+install(TARGETS MdsLib_fortran)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsLib_fortran
     PUBLIC
         TdiShr
 )
 
-TARGET_COMPILE_DEFINITIONS(
+target_compile_definitions(
     MdsLib_fortran
     PRIVATE
         -DOLD_FORTRAN_API
 )
 
-ADD_STATIC_COPY(MdsLib_fortran)
+add_static_copy(MdsLib_fortran)

@@ -3,7 +3,7 @@
 ### Scripts
 ###
 
-INSTALL(
+install(
     FILES
         job_finish
         job_functions

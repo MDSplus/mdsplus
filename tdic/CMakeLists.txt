@@ -3,33 +3,33 @@
 ### TdiShrExt
 ###
 
-ADD_LIBRARY(
-    TdiShrExt SHARED
+add_library(
+    TdiShrExt
     TdiShrExt.c
 )
 
-INSTALL(TARGETS TdiShrExt)
+install(TARGETS TdiShrExt)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     TdiShrExt
     PUBLIC
         MdsIpShr
 )
 
-ADD_STATIC_COPY(TdiShrExt)
+add_static_copy(TdiShrExt)
 
 ###
 ### tdic
 ###
 
-ADD_EXECUTABLE(
+add_executable(
     tdic
     tdic.c
 )
 
-INSTALL(TARGETS tdic)
+install(TARGETS tdic)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     tdic
     PUBLIC
         MdsIpShr

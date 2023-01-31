@@ -1,24 +1,24 @@
 
-IF(Sybase_FOUND)
+if(Sybase_FOUND)
 
     ###
     ### MdsSql
     ###
 
-    ADD_LIBRARY(
-        MdsSql SHARED
+    add_library(
+        MdsSql
         dynamic_syb.c
         dbstubs.c
     )
 
-    INSTALL(TARGETS MdsSql)
+    install(TARGETS MdsSql)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         MdsSql
         PUBLIC
             Sybase::Sybase
     )
 
-    ADD_STATIC_COPY(MdsSql)
+    add_static_copy(MdsSql)
 
-ENDIF()
+endif()

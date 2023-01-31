@@ -3,9 +3,9 @@
 ### UDT4
 ###
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
-FILE(GLOB
+file(GLOB
     _udt4_source_list
     "udt4/src/*.h"
     "udt4/src/*.cpp"
@@ -13,19 +13,19 @@ FILE(GLOB
     "udt4/udtc/*.cpp"
 )
 
-ADD_LIBRARY(
+add_library(
     UDT4 OBJECT
     ${_udt4_source_list}
 )
 
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     UDT4
     PUBLIC
         "udt4/src/"
         "udt4/udtc/"
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     UDT4
     PROPERTIES
         POSITION_INDEPENDENT_CODE ON
@@ -35,23 +35,23 @@ SET_TARGET_PROPERTIES(
 ### compression
 ###
 
-FILE(GLOB
+file(GLOB
     _compression_source_list
     "zlib/*.c"
 )
 
-ADD_LIBRARY(
+add_library(
     compression OBJECT
     ${_compression_source_list}
 )
 
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     compression
     PUBLIC
         "zlib/"
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     compression
     PROPERTIES
         POSITION_INDEPENDENT_CODE ON
@@ -61,110 +61,110 @@ SET_TARGET_PROPERTIES(
 ### MdsIpShr
 ###
 
-FILE(GLOB
+file(GLOB
     _mdsipshr_source_list
     "mdsipshr/*.c"
 )
 
-ADD_LIBRARY(
-    MdsIpShr SHARED
+add_library(
+    MdsIpShr
     ${_mdsipshr_source_list}
     io_routines/IoRoutinesTunnel.c
     io_routines/IoRoutinesThread.c
 )
 
-INSTALL(TARGETS MdsIpShr)
+install(TARGETS MdsIpShr)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsIpShr
     PUBLIC
         TdiShr
         compression
 )
 
-ADD_STATIC_COPY(MdsIpShr)
+add_static_copy(MdsIpShr)
 
 ###
 ### MdsIpTCP / MdsIpTCPV6
 ###
 
-ADD_LIBRARY(
-    MdsIpTCP SHARED
+add_library(
+    MdsIpTCP
     io_routines/IoRoutinesTcp.c
 )
 
-INSTALL(TARGETS MdsIpTCP)
+install(TARGETS MdsIpTCP)
 
-ADD_LIBRARY(
-    MdsIpTCPV6 SHARED
+add_library(
+    MdsIpTCPV6
     io_routines/IoRoutinesTcpV6.c
 )
 
-INSTALL(TARGETS MdsIpTCPV6)
+install(TARGETS MdsIpTCPV6)
 
 ###
 ### MdsIpUDT / MdsIpUDTV6
 ###
 
-ADD_LIBRARY(
-    MdsIpUDT SHARED
+add_library(
+    MdsIpUDT
     io_routines/IoRoutinesUdt.c
 )
 
-INSTALL(TARGETS MdsIpUDT)
+install(TARGETS MdsIpUDT)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsIpUDT
     PRIVATE
         UDT4
 )
 
-ADD_LIBRARY(
-    MdsIpUDTV6 SHARED
+add_library(
+    MdsIpUDTV6
     io_routines/IoRoutinesUdtV6.c
 )
 
-INSTALL(TARGETS MdsIpUDTV6)
+install(TARGETS MdsIpUDTV6)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsIpUDTV6
     PRIVATE
         UDT4
 )
 
-IF(Globus_FOUND AND Globus_FLAVOR)
+if(Globus_FOUND AND Globus_FLAVOR)
 
     ###
     ### MdsIpGSI
     ###
 
-    ADD_LIBRARY(
-        MdsIpGSI SHARED
+    add_library(
+        MdsIpGSI
         io_routines/IoRoutinesGsi.c 
     )
 
-    INSTALL(TARGETS MdsIpGSI)
+    install(TARGETS MdsIpGSI)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         MdsIpGSI
         PUBLIC
             Globus::Globus
     )
 
-ENDIF()
+endif()
 
 ###
 ### mdsip
 ###
 
-ADD_EXECUTABLE(
+add_executable(
     mdsip
     mdsip.c
 )
 
-INSTALL(TARGETS mdsip)
+install(TARGETS mdsip)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     mdsip
     PUBLIC
         MdsIpShr
@@ -174,35 +174,35 @@ TARGET_LINK_LIBRARIES(
 ### mdsip_service
 ###
 
-IF(WIN32)
-    ADD_EXECUTABLE(
+if(WIN32)
+    add_executable(
         mdsip_service
         mdsip_service.c
     )
 
-    INSTALL(TARGETS mdsip_service)
+    install(TARGETS mdsip_service)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         mdsip_service
         PUBLIC
             MdsIpShr
     )
-ENDIF()
+endif()
 
 ###
 ### mdsip.hosts / multi.hosts
 ###
 
-IF(WIN32)
+if(WIN32)
     SET(_win ".win")
 ENDIF()
 
-INSTALL(
+install(
     FILES mdsip.hosts RENAME mdsip.hosts${_win}
     DESTINATION etc 
 )
 
-INSTALL(
+install(
     FILES multi.hosts RENAME multi.hosts${_win}
     DESTINATION etc 
 )
@@ -211,8 +211,8 @@ INSTALL(
 ### Scripts
 ###
 
-IF(WIN32)
-    INSTALL(
+if(WIN32)
+    install(
         FILES
             # mdsip_service.exe.manifest # TODO: ???
             mdsip-client-ssh.bat
@@ -220,8 +220,8 @@ IF(WIN32)
             mdsip-client-local.bat
         TYPE BIN
     )
-ELSE()
-    INSTALL(
+else()
+    install(
         FILES
             mdsipd
             mdsipsd
@@ -240,12 +240,12 @@ ENDIF()
 ### Documentation
 ###
 
-ADD_CUSTOM_TARGET(
+add_custom_target(
     mdstcpip-docs
-    COMMAND ${DOXYGEN_PROGRAM} docs/doxy.conf
+    COMMAND ${doxygen_EXECUTABLE} docs/doxy.conf
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-ADD_DEPENDENCIES(
+add_dependencies(
     docs mdstcpip-docs
 )

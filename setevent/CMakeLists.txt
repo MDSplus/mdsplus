@@ -3,19 +3,14 @@
 ### setevent
 ###
 
-FILE(GLOB
-    _source_list
-    "*.c"
-)
-
-ADD_EXECUTABLE(
+add_executable(
     setevent
-    ${_source_list}
+    setevent.c
 )
 
-INSTALL(TARGETS setevent)
+install(TARGETS setevent)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     setevent
     PUBLIC
         MdsShr

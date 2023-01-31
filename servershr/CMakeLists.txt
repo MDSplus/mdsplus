@@ -3,22 +3,22 @@
 ### MdsServerShr
 ###
 
-FILE(GLOB
+file(GLOB
     _source_list
-    "Server*.c"
+    "*.c"
 )
 
-ADD_LIBRARY(
-    MdsServerShr SHARED
+add_library(
+    MdsServerShr
     ${_source_list}
 )
 
-INSTALL(TARGETS MdsServerShr)
+install(TARGETS MdsServerShr)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsServerShr
     PUBLIC
         Mdsdcl
 )
 
-ADD_STATIC_COPY(MdsServerShr)
+add_static_copy(MdsServerShr)

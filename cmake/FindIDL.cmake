@@ -16,7 +16,7 @@
 #   IDL_ROOT_DIR
 #
 
-FIND_PATH(
+find_path(
     IDL_INCLUDE_DIRS
     NAMES export.h
     PATHS 
@@ -25,24 +25,24 @@ FIND_PATH(
         external
 )
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
     IDL
     HANDLE_COMPONENTS
     REQUIRED_VARS 
         IDL_INCLUDE_DIRS
 )
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
     IDL_INCLUDE_DIRS
 )
 
-IF(IDL_FOUND)
-    IF(NOT TARGET IDL::IDL)
+if(IDL_FOUND)
+    if(NOT TARGET IDL::IDL)
         ADD_LIBRARY(IDL::IDL INTERFACE IMPORTED)
         SET_TARGET_PROPERTIES(
             IDL::IDL PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${IDL_INCLUDE_DIRS}"
         )
-    ENDIF()
-ENDIF()
+    endif()
+endif()

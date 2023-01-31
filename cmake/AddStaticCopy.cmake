@@ -1,82 +1,90 @@
 
-MACRO(ADD_STATIC_COPY _target)
+macro(add_static_copy _target)
 
-    ADD_LIBRARY(
-        "${_target}-static" STATIC
-        $<TARGET_OBJECTS:${_target}>
-    )
+    if(BUILD_SHARED_LIBS)
 
-    INSTALL(TARGETS "${_target}-static")
-
-    SET_TARGET_PROPERTIES(
-        "${_target}-static"
-        PROPERTIES
-            OUTPUT_NAME "${_target}"
-    )
-    
-    GET_TARGET_PROPERTY(
-        _include_directories
-        ${_target} INTERFACE_INCLUDE_DIRECTORIES
-    )
-
-    IF(_include_directories)
-        TARGET_INCLUDE_DIRECTORIES(
-            "${_target}-static"
-            PUBLIC
-                "${_include_directories}"
+        add_library(
+            "${_target}-static" STATIC
+            $<TARGET_OBJECTS:${_target}>
         )
-    ENDIF()
 
-    GET_TARGET_PROPERTY(
-        _compile_definitions
-        ${_target} INTERFACE_COMPILE_DEFINITIONS
-    )
+        install(TARGETS "${_target}-static")
 
-    IF(_compile_definitions)
-        TARGET_COMPILE_DEFINITIONS(
+        set_target_properties(
             "${_target}-static"
-            PUBLIC
-                ${_compile_definitions}
+            PROPERTIES
+                OUTPUT_NAME "${_target}"
         )
-    ENDIF()
-
-    GET_TARGET_PROPERTY(
-        _compile_options
-        ${_target} INTERFACE_COMPILE_OPTIONS
-    )
-
-    IF(_compile_options)
-        TARGET_COMPILE_DEFINITIONS(
-            "${_target}-static"
-            PUBLIC
-                ${_compile_options}
+        
+        get_target_property(
+            _include_directories
+            ${_target} INTERFACE_INCLUDE_DIRECTORIES
         )
-    ENDIF()
 
-    GET_TARGET_PROPERTY(
-        _link_libraries
-        ${_target} INTERFACE_LINK_LIBRARIES
-    )
+        if(_include_directories)
+            target_include_directories(
+                "${_target}-static"
+                PUBLIC
+                    "${_include_directories}"
+            )
+        endif()
 
-    IF(_link_libraries)
-        TARGET_LINK_LIBRARIES(
-            "${_target}-static"
-            PUBLIC
-                ${_link_libraries}
+        get_target_property(
+            _compile_definitions
+            ${_target} INTERFACE_COMPILE_DEFINITIONS
         )
-    ENDIF()
 
-    GET_TARGET_PROPERTY(
-        _link_options
-        ${_target} INTERFACE_LINK_OPTIONS
-    )
+        if(_compile_definitions)
+            target_compile_definitions(
+                "${_target}-static"
+                PUBLIC
+                    ${_compile_definitions}
+            )
+        endif()
 
-    IF(_link_options)
-        TARGET_LINK_OPTIONS(
-            "${_target}-static"
-            PUBLIC
-                ${_link_options}
+        get_target_property(
+            _compile_options
+            ${_target} INTERFACE_COMPILE_OPTIONS
         )
-    ENDIF()
 
-ENDMACRO()
+        if(_compile_options)
+            target_compile_definitions(
+                "${_target}-static"
+                PUBLIC
+                    ${_compile_options}
+            )
+        endif()
+
+        get_target_property(
+            _link_libraries
+            ${_target} INTERFACE_LINK_LIBRARIES
+        )
+
+        if(_link_libraries)
+            target_link_libraries(
+                "${_target}-static"
+                PUBLIC
+                    ${_link_libraries}
+            )
+        endif()
+
+        get_target_property(
+            _link_options
+            ${_target} INTERFACE_LINK_OPTIONS
+        )
+
+        if(_link_options)
+            target_link_options(
+                "${_target}-static"
+                PUBLIC
+                    ${_link_options}
+            )
+        endif()
+
+    else()
+
+        add_library(${_target} ALIAS "${_target}-static")
+
+    endif()
+
+endmacro()

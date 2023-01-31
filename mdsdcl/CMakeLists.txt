@@ -5,13 +5,12 @@
 
 # Generated Sources
 
-CONFIGURE_FILE(
+configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/mdsdclVersionInfo.c.in
     ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
 )
 
-SET(
-    _generated_sources
+set(_generated_sources
     cmdParse.c
     cmdParse.output
     cmdParseLex.c
@@ -20,25 +19,25 @@ SET(
     ocldToXml.c
 )
 
-SET(_run_yylex_gen FALSE)
-FOREACH(_filename IN LISTS _generated_sources)
-    IF(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_filename}")
-        MESSAGE("Missing mdsdcl/${_filename}, will run deploy/yylex.gen mdsdcl")
-        SET(_run_yylex_gen TRUE)
-    ENDIF()
-ENDFOREACH()
+set(_run_yylex_gen FALSE)
+foreach(_filename IN LISTS _generated_sources)
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_filename}")
+        message("Missing mdsdcl/${_filename}, will run deploy/yylex.gen mdsdcl")
+        set(_run_yylex_gen TRUE)
+    endif()
+endforeach()
 
-IF(_run_yylex_gen)
-    MESSAGE("Running deploy/yylex.gen mdsdcl")
+if(_run_yylex_gen)
     # TODO: Convert yylex.gen to python
-    EXECUTE_PROCESS(
+    message("Running deploy/yylex.gen mdsdcl")
+    execute_process(
         COMMAND deploy/yylex.gen mdsdcl
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
-ENDIF()
+endif()
 
-ADD_LIBRARY(
-    Mdsdcl SHARED
+add_library(
+    Mdsdcl
     mdsdclThreadStatic.c
     cmdExecute.c
     cmdHelp.c
@@ -51,33 +50,52 @@ ADD_LIBRARY(
     ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
 )
 
-INSTALL(TARGETS Mdsdcl)
+install(TARGETS Mdsdcl)
 
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     Mdsdcl
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     Mdsdcl
     PUBLIC
         MdsIpShr
         Readline::Readline
 )
 
+target_compile_options(
+    Mdsdcl
+    PRIVATE
+        -Wno-sign-compare
+        -Wno-unused-parameter
+)
+
+# set_source_files_properties(
+#     cmdParseLex.c
+#     PROPERTIES
+#         COMPILE_OPTIONS "-Wno-sign-compare;-Wno-unused-parameter"
+# )
+
+# set_source_files_properties(
+#     mdsdclDeltatimeToSeconds.c
+#     PROPERTIES
+#         COMPILE_OPTIONS "-Wno-sign-compare"
+# )
+
 ###
 ### mdsdcl
 ###
 
-ADD_EXECUTABLE(
+add_executable(
     mdsdcl
     mdsdcl.c
 )
 
-INSTALL(TARGETS mdsdcl)
+install(TARGETS mdsdcl)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     mdsdcl
     PUBLIC
         Mdsdcl

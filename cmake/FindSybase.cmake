@@ -18,24 +18,19 @@
 #   Sybase_ROOT_DIR
 #
 
-FIND_PACKAGE(PkgConfig QUIET)
+find_package(PkgConfig QUIET)
 
-# PKG_CHECK_MODULES(_libxml2_PC QUIET libxml2)
-# IF(NOT _libxml2_PC_FOUND)
-#     PKG_CHECK_MODULES(_libxml2_PC QUIET libxml-2.0)
-# ENDIF()
-
-IF(WIN32)
+if(WIN32)
 
     # SET(Sybase_CFLAGS -DSYBASE)
     # SET(Sybase_INCLUDE_DIRS "")
     # SET(Sybase_LIBRARIES ntwdblib${arch})
 
-ELSE()
+else()
 
-    SET(Sybase_COMPILE_DEFINITIONS SYBASE)
+    set(Sybase_COMPILE_DEFINITIONS SYBASE)
 
-    FIND_PATH(
+    find_path(
         Sybase_INCLUDE_DIRS
         NAMES sybdb.h
         PATHS 
@@ -44,7 +39,7 @@ ELSE()
             include
     )
 
-    FIND_LIBRARY(
+    find_library(
         Sybase_LIBRARIES
         NAMES sybdb
         PATHS 
@@ -53,10 +48,10 @@ ELSE()
             lib
     )
 
-ENDIF()
+endif()
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
     Sybase
     HANDLE_COMPONENTS
     REQUIRED_VARS 
@@ -64,21 +59,21 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
         Sybase_LIBRARIES
 )
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
     Sybase_CFLAGS
     Sybase_INCLUDE_DIRS
     Sybase_LIBRARIES
 )
 
-IF(Sybase_FOUND)
-    IF(NOT TARGET Sybase::Sybase)
-        ADD_LIBRARY(Sybase::Sybase INTERFACE IMPORTED)
-        SET_TARGET_PROPERTIES(
+if(Sybase_FOUND)
+    if(NOT TARGET Sybase::Sybase)
+        add_library(Sybase::Sybase INTERFACE IMPORTED)
+        set_target_properties(
             Sybase::Sybase
             PROPERTIES
                 INTERFACE_COMPILE_DEFINITIONS "${Sybase_COMPILE_DEFINITIONS}"
                 INTERFACE_INCLUDE_DIRECTORIES "${Sybase_INCLUDE_DIRS}"
                 INTERFACE_LINK_LIBRARIES "${Sybase_LIBRARIES}"
         )
-    ENDIF()
-ENDIF()
+    endif()
+endif()

@@ -3,22 +3,22 @@
 ### MdsMisc
 ###
 
-FILE(GLOB
+file(GLOB
     _source_list
     "*.c"
 )
 
-ADD_LIBRARY(
-    MdsMisc SHARED
+add_library(
+    MdsMisc
     ${_source_list}
 )
 
-INSTALL(TARGETS MdsMisc)
+install(TARGETS MdsMisc)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsMisc
     PUBLIC
         XTreeShr
 )
 
-ADD_STATIC_COPY(MdsMisc)
+add_static_copy(MdsMisc)

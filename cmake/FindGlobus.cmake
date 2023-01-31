@@ -24,17 +24,17 @@
 #   Globus_ROOT_DIR
 #
 
-FIND_PACKAGE(PkgConfig QUIET)
+find_package(PkgConfig QUIET)
 
-PKG_CHECK_MODULES(_globus_common_PC                 QUIET globus-common)
-PKG_CHECK_MODULES(_globus_gridmap_callout_error_PC  QUIET globus-gridmap-callout-error)
-PKG_CHECK_MODULES(_globus_gss_assist_PC             QUIET globus-gss-assist)
-PKG_CHECK_MODULES(_globus_gssapi_error_PC           QUIET globus-gssapi-error)
-PKG_CHECK_MODULES(_globus_gssapi_gsi_PC             QUIET globus-gssapi-gsi)
-PKG_CHECK_MODULES(_globus_xio_gsi_driver_PC         QUIET globus-xio-gsi-driver)
-PKG_CHECK_MODULES(_globus_xio_PC                    QUIET globus-xio)
+pkg_check_modules(_globus_common_PC                 QUIET globus-common)
+pkg_check_modules(_globus_gridmap_callout_error_PC  QUIET globus-gridmap-callout-error)
+pkg_check_modules(_globus_gss_assist_PC             QUIET globus-gss-assist)
+pkg_check_modules(_globus_gssapi_error_PC           QUIET globus-gssapi-error)
+pkg_check_modules(_globus_gssapi_gsi_PC             QUIET globus-gssapi-gsi)
+pkg_check_modules(_globus_xio_gsi_driver_PC         QUIET globus-xio-gsi-driver)
+pkg_check_modules(_globus_xio_PC                    QUIET globus-xio)
 
-FIND_PATH(
+find_path(
     Globus_INCLUDE_DIR
     NAMES globus_common.h
     PATHS 
@@ -44,7 +44,7 @@ FIND_PATH(
         include
 )
 
-FIND_LIBRARY(
+find_library(
     Globus_globus_common_LIBRARY
     NAMES globus_common
     PATHS 
@@ -54,7 +54,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Globus_globus_gridmap_callout_error_LIBRARY
     NAMES globus_gridmap_callout_error
     PATHS 
@@ -64,7 +64,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Globus_globus_gss_assist_LIBRARY
     NAMES globus_gss_assist
     PATHS 
@@ -74,7 +74,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Globus_globus_gssapi_error_LIBRARY
     NAMES globus_gssapi_error
     PATHS 
@@ -84,7 +84,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Globus_globus_gssapi_gsi_LIBRARY
     NAMES globus_gssapi_gsi
     PATHS 
@@ -94,7 +94,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Globus_globus_xio_LIBRARY
     NAMES globus_xio
     PATHS 
@@ -104,7 +104,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Globus_globus_xio_gsi_driver_LIBRARY
     NAMES globus_xio_gsi_driver
     PATHS 
@@ -114,8 +114,8 @@ FIND_LIBRARY(
         lib
 )
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
     Globus
     HANDLE_COMPONENTS
     REQUIRED_VARS 
@@ -129,7 +129,7 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
         Globus_globus_xio_LIBRARY
 )
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
     Globus_INCLUDE_DIR
     Globus_globus_common_LIBRARY
     Globus_globus_gridmap_callout_error_LIBRARY
@@ -140,8 +140,8 @@ MARK_AS_ADVANCED(
     Globus_globus_xio_LIBRARY
 )
 
-IF(Globus_FOUND)
-    SET(Globus_LIBRARIES
+if(Globus_FOUND)
+    set(Globus_LIBRARIES
         ${Globus_globus_common_LIBRARY}
         ${Globus_globus_gridmap_callout_error_LIBRARY}
         ${Globus_globus_gss_assist_LIBRARY}
@@ -151,13 +151,13 @@ IF(Globus_FOUND)
         ${Globus_globus_xio_LIBRARY}
     )
 
-    IF(NOT TARGET Globus::Globus)
-        ADD_LIBRARY(Globus::Globus INTERFACE IMPORTED)
-        SET_TARGET_PROPERTIES(
+    if(NOT TARGET Globus::Globus)
+        add_library(Globus::Globus INTERFACE IMPORTED)
+        set_target_properties(
             Globus::Globus 
             PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${Globus_INCLUDE_DIR}"
                 INTERFACE_LINK_LIBRARIES "${Globus_LIBRARIES}"
         )
-    ENDIF()
-ENDIF()
+    endif()
+endif()

@@ -1,18 +1,18 @@
 
-IF(IDL_FOUND)
+if(IDL_FOUND)
 
     ###
     ### IdlMdsWidgets
     ###
 
-    ADD_LIBRARY(
+    add_library(
         IdlMdsWidgets SHARED
         cw_wveditv5.c
     )
 
-    INSTALL(TARGETS IdlMdsWidgets)
+    install(TARGETS IdlMdsWidgets)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         IdlMdsWidgets
         PUBLIC
             MdsIpShr
@@ -20,6 +20,6 @@ IF(IDL_FOUND)
             IDL::IDL
     )
 
-    ADD_STATIC_COPY(IdlMdsWidgets)
+    add_static_copy(IdlMdsWidgets)
 
-ENDIF()
+endif()

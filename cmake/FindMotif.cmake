@@ -28,7 +28,7 @@
 #   Motif_ROOT_DIR
 #
 
-FIND_PATH(
+find_path(
     Motif_Xm_INCLUDE_DIR
     NAMES Xm/Xm.h
     PATHS 
@@ -37,7 +37,7 @@ FIND_PATH(
         include
 )
 
-FIND_PATH(
+find_path(
     Motif_Mrm_INCLUDE_DIR
     NAMES Mrm/MrmPublic.h
     PATHS 
@@ -46,7 +46,7 @@ FIND_PATH(
         include
 )
 
-FIND_PATH(
+find_path(
     Motif_Uil_INCLUDE_DIR
     NAMES uil/Uil.h
     PATHS 
@@ -55,7 +55,7 @@ FIND_PATH(
         include
 )
 
-FIND_PATH(
+find_path(
     Motif_X11_INCLUDE_DIR
     NAMES X11/X.h
     PATHS 
@@ -64,7 +64,7 @@ FIND_PATH(
         include
 )
 
-FIND_PATH(
+find_path(
     Motif_Xt_INCLUDE_DIR
     NAMES X11/Core.h
     PATHS 
@@ -73,7 +73,7 @@ FIND_PATH(
         include
 )
 
-FIND_LIBRARY(
+find_library(
     Motif_Xm_LIBRARY
     NAMES Xm
     PATHS 
@@ -82,7 +82,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Motif_Mrm_LIBRARY
     NAMES Mrm
     PATHS 
@@ -91,7 +91,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Motif_Uil_LIBRARY
     NAMES Uil
     PATHS 
@@ -100,7 +100,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Motif_X11_LIBRARY
     NAMES X11
     PATHS 
@@ -109,7 +109,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Motif_Xt_LIBRARY
     NAMES Xt
     PATHS 
@@ -118,7 +118,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_PROGRAM(
+find_program(
     uil_EXECUTABLE
     NAMES uil
     PATHS
@@ -127,8 +127,8 @@ FIND_PROGRAM(
         bin
 )
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
     Motif
     HANDLE_COMPONENTS
     REQUIRED_VARS 
@@ -145,7 +145,7 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
         uil_EXECUTABLE
 )
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
     Motif_Xm_INCLUDE_DIR
     Motif_Mrm_INCLUDE_DIR
     Motif_Uil_INCLUDE_DIR
@@ -159,8 +159,8 @@ MARK_AS_ADVANCED(
     uil_EXECUTABLE
 )
 
-IF(Motif_FOUND)
-    SET(Motif_INCLUDE_DIRS
+if(Motif_FOUND)
+    set(Motif_INCLUDE_DIRS
         ${Motif_Xm_INCLUDE_DIR}
         ${Motif_Mrm_INCLUDE_DIR}
         ${Motif_Uil_INCLUDE_DIR}
@@ -168,7 +168,7 @@ IF(Motif_FOUND)
         ${Motif_Xt_INCLUDE_DIR}
     )
 
-    SET(Motif_LIBRARIES
+    set(Motif_LIBRARIES
         ${Motif_Xm_LIBRARY}
         ${Motif_Mrm_LIBRARY}
         ${Motif_Uil_LIBRARY}
@@ -176,14 +176,14 @@ IF(Motif_FOUND)
         ${Motif_Xt_LIBRARY}
     )
 
-    IF(NOT TARGET Motif::Motif)
-        ADD_LIBRARY(Motif::Motif INTERFACE IMPORTED)
-        SET_TARGET_PROPERTIES(
+    if(NOT TARGET Motif::Motif)
+        add_library(Motif::Motif INTERFACE IMPORTED)
+        set_target_properties(
             Motif::Motif
             PROPERTIES
                 INTERFACE_LINK_LIBRARIES "${Motif_LIBRARIES}"
                 INTERFACE_INCLUDE_DIRECTORIES "${Motif_INCLUDE_DIRS}"
         )
-    ENDIF()
+    endif()
     
-ENDIF()
+endif()

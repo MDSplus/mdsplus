@@ -5,14 +5,14 @@ IF(ENABLE_D3D)
     ### MdsD3D
     ###
 
-    ADD_LIBRARY(
-        MdsD3D SHARED
+    add_library(
+        MdsD3D
         mdsptdata.f
     )
 
-    INSTALL(TARGETS MdsD3D)
+    install(TARGETS MdsD3D)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         MdsD3D
         PUBLIC
             ${LIBD3}

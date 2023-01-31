@@ -3,19 +3,19 @@
 ### MdsShr
 ###
 
-FILE(GLOB
+file(GLOB
     _source_list
     "*.c"
 )
 
-ADD_LIBRARY(
-    MdsShr SHARED
+add_library(
+    MdsShr
     ${_source_list}
 )
 
-INSTALL(TARGETS MdsShr)
+install(TARGETS MdsShr)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsShr
     PUBLIC
         ${LIBM}
@@ -27,27 +27,27 @@ TARGET_LINK_LIBRARIES(
         Threads::Threads
 )
 
-IF(WIN32)
+if(WIN32)
     TARGET_LINK_LIBRARIES(
         MdsShr
         PUBLIC
             iphlpapi
             ws2_32
     )
-ENDIF()
+endif()
 
-ADD_STATIC_COPY(MdsShr)
+add_static_copy(MdsShr)
 
 ###
 ### Documentation
 ###
 
-# ADD_CUSTOM_TARGET(
+# add_custom_target(
 #     mdsshr-docs
-#     COMMAND ${DOXYGEN_PROGRAM} docs/doxy.conf
+#     COMMAND ${doxygen_EXECUTABLE} docs/doxy.conf
 #     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 # )
 
-# ADD_DEPENDENCIES(
+# add_dependencies(
 #     docs mdsshr-docs
 # )

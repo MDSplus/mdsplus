@@ -1,17 +1,17 @@
 
-IF(ENABLE_JAVA)
+if(ENABLE_JAVA)
 
-    MACRO(FAT_JAR _target _source_jar_path)
-        GET_PROPERTY(_target_jar TARGET ${_target} PROPERTY JAR_FILE)
+    macro(fat_jar _target _source_jar_path)
+        get_property(_target_jar TARGET ${_target} PROPERTY JAR_FILE)
 
         # Macro parameters aren't real variables, CMAKE_PATH needs real variables
-        SET(_source_jar_stem "${_source_jar_path}")
-        CMAKE_PATH(GET _source_jar_stem STEM _source_jar_stem)
+        set(_source_jar_stem "${_source_jar_path}")
+        cmake_path(GET _source_jar_stem STEM _source_jar_stem)
 
-        SET(_tmp_dir ${CMAKE_CURRENT_BINARY_DIR}/jar-sources/${_source_jar_stem})
-        FILE(MAKE_DIRECTORY "${_tmp_dir}")
+        set(_tmp_dir ${CMAKE_CURRENT_BINARY_DIR}/jar-sources/${_source_jar_stem})
+        file(MAKE_DIRECTORY "${_tmp_dir}")
 
-        ADD_CUSTOM_COMMAND(
+        add_custom_command(
             TARGET ${_target} POST_BUILD
             COMMENT "Adding ${_source_jar_stem}.jar to ${_target}.jar"
             COMMAND ${CMAKE_COMMAND} -E tar xf ${_source_jar_path}
@@ -19,50 +19,50 @@ IF(ENABLE_JAVA)
             WORKING_DIRECTORY ${_tmp_dir}
         )
 
-    ENDMACRO()
+    endmacro()
 
     ###
     ### Jars
     ###
 
-    SET(JSCH ${CMAKE_CURRENT_BINARY_DIR}/jsch-0.1.54.jar)
-    IF(NOT EXISTS ${JSCH})
-        FILE(DOWNLOAD
+    set(JSCH ${CMAKE_CURRENT_BINARY_DIR}/jsch-0.1.54.jar)
+    if(NOT EXISTS ${JSCH})
+        file(DOWNLOAD
             "http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download"
             ${JSCH}
         )
-    ENDIF()
+    endif()
 
-    ADD_SUBDIRECTORY(mdsplus)
-    ADD_SUBDIRECTORY(mdsplus-api)
-    ADD_SUBDIRECTORY(mdsobjects)
-    ADD_SUBDIRECTORY(jscope)
-    ADD_SUBDIRECTORY(jtraverser)
-    ADD_SUBDIRECTORY(jdispatcher)
-    ADD_SUBDIRECTORY(devicebeans)
-    ADD_SUBDIRECTORY(jdevices)
-    ADD_SUBDIRECTORY(jtraverser2)
+    add_subdirectory(mdsplus)
+    add_subdirectory(mdsplus-api)
+    add_subdirectory(mdsobjects)
+    add_subdirectory(jscope)
+    add_subdirectory(jtraverser)
+    add_subdirectory(jdispatcher)
+    add_subdirectory(devicebeans)
+    add_subdirectory(jdevices)
+    add_subdirectory(jtraverser2)
 
-    IF(mvn_EXECUTABLE)
+    if(mvn_EXECUTABLE)
 
-        INCLUDE(ProcessorCount)
+        include(ProcessorCount)
         ProcessorCount(NPROC)
 
-        IF(NOT NPROC EQUAL 0)
-            SET(_mvn_threads -T 1)
-        ENDIF()
+        if(NOT NPROC EQUAL 0)
+            set(_mvn_threads -T 1)
+        endif()
 
         ###
         ### Maven
         ###
 
-        SET(MVN ${mvn_EXECUTABLE}
+        set(MVN ${mvn_EXECUTABLE}
             # -Dmaven.repo.local=/workspace/.m2/repository
             ${_mvn_threads}
             -DsourceDirectory=${CMAKE_SOURCE_DIR}/java
         )
 
-        ADD_CUSTOM_TARGET(
+        add_custom_target(
             maven-build
             COMMAND ${MVN} package -DskipTests -f ${CMAKE_CURRENT_SOURCE_DIR}/pom.xml
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -73,25 +73,25 @@ IF(ENABLE_JAVA)
         #     "pom.xml"
         # )
 
-        ADD_CUSTOM_TARGET(
+        add_custom_target(
             maven-deploy
             COMMAND ${MVN} versions:set -DgenerateBackupPoms=false -DnewVersion=${RELEASE_VERSION} -DartifactId=*
             COMMAND ${MVN} -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
 
-        ADD_CUSTOM_TARGET(
+        add_custom_target(
             maven-tests
             COMMAND ${MVN} test
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
 
-        ADD_CUSTOM_TARGET(
+        add_custom_target(
             maven-clean
             COMMAND ${MVN} clean
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
 
-    ENDIF()
+    endif()
 
-ENDIF()
+endif()
