@@ -3,38 +3,52 @@
 ### MdsMath
 ###
 
-FILE(GLOB
+file(GLOB
     _source_list
     "*.f"
+    "*.c"
 )
 
-IF(LIBBLAS)
-    FILE(GLOB
-        _blas_source_list
-        "blas/*.f"
-    )
-ENDIF()
-
-ADD_LIBRARY(
+add_library(
     MdsMath SHARED
     ${_source_list}
-    ${_blas_source_list}
 )
 
-INSTALL(
+install(
     TARGETS MdsMath
 )
 
-TARGET_LINK_LIBRARIES(
-    MdsMath
-    PUBLIC
-        ${LIBBLAS}
-)
+IF(LIBBLAS)
+
+    target_link_libraries(
+        MdsMath
+        PUBLIC
+            ${LIBBLAS}
+    )
+
+ELSE()
+
+    message("Unable to find libblas, using local copy")
+
+    file(GLOB
+        _blas_source_list
+        "blas/*.f"
+    )
+
+    target_sources(
+        MdsMath
+        PRIVATE
+            ${_blas_source_list}
+    )
+
+ENDIF()
 
 # (SLW) TODO: Check compatible fortran?
-TARGET_COMPILE_OPTIONS(
+target_compile_options(
     MdsMath
     PRIVATE
-        -Wno-maybe-uninitialized
-        -Wno-compare-reals
+        $<$<COMPILE_LANGUAGE:Fortran>:
+            -Wno-maybe-uninitialized
+            -Wno-compare-reals
+        >
 )

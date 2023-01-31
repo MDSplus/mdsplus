@@ -1,23 +1,23 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 # Allow for custom CMake modules
-LIST(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-PROJECT(MDSplus)
+# Disable "Built target" messages for Makefiles
+set(CMAKE_TARGET_MESSAGES OFF CACHE BOOL "")
 
-ENABLE_LANGUAGE(Fortran)
+project(MDSplus)
 
-ENABLE_TESTING()
+enable_language(Fortran)
+
+enable_testing()
 
 ###
 ### Options
 ###
 
-# MESSAGE("${CMAKE_SYSTEM_NAME}")
-# MESSAGE("${CMAKE_SYSTEM_PROCESSOR}")
-# MESSAGE("${CMAKE_SYSTEM_PREFIX_PATH}")
-# MESSAGE("${CMAKE_SYSTEM_INCLUDE_PATH}")
-# MESSAGE("${CMAKE_SYSTEM_LIBRARY_PATH}")
+# message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+# message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 
 # --x-includes=
 # --x-libraries=
@@ -26,168 +26,177 @@ ENABLE_TESTING()
 # --target= CMAKE_SYSTEM_PROCESSOR?
 
 # replaces --disable-shared
-# BUILD_SHARED_LIBS
-
-# replaces --disable-largefile
-OPTION(ENABLE_LARGEFILE
-    "Enable support for large files"
+option(BUILD_SHARED_LIBS
+    "Build shared libraries"
     ON
 )
 
-IF(NOT WIN32)
+if(WIN32)
+    # replaces --disable-largefile
+    option(ENABLE_LARGEFILE
+        "Enable support for large files"
+        ON
+    )
+endif()
+
+if(NOT WIN32)
     # replaces --enable-perf
-    OPTION(ENABLE_PERF
+    option(ENABLE_PERF
         "Collect performance statistics (linux only)"
         OFF
     )
-ENDIF()
+endif()
 
 # replaces --disable-java
-OPTION(ENABLE_JAVA
+option(ENABLE_JAVA
     "Build java libraries and applications"
     ON
 )
 
 # (SLW) TODO
 # replaces --with-java_only
-OPTION(JAVA_ONLY "")
+option(JAVA_ONLY "")
 
 # replaces --enable-d3d
-OPTION(ENABLE_D3D
+option(ENABLE_D3D
     "Build d3d ptdata access library located in $D3DLIB_PATH."
     OFF
 )
 
 # (SLW) TODO Investigate
 # replaces --disable-xmltest
-OPTION(ENABLE_XMLTEST
+option(ENABLE_XMLTEST
     "Try to compile and run a test LIBXML program."
     ON
 )
 
 # replaces --enable-valgrind
-OPTION(ENABLE_VALGRIND
+option(ENABLE_VALGRIND
     "Enable Valgrind on the unit tests."
     ON
 )
 
 # TODO: doxygen dot, man, rtf, xml, chm, chi, html
 # replaces --disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
-OPTION(ENABLE_DOXYGEN
+option(ENABLE_DOXYGEN
     "Generate doxygen documentation."
     ON
 )
 
 # replaces --enable-werror
-OPTION(ENABLE_WERROR
+option(ENABLE_WERROR
     "Treat all warnings as errors (-Werror)."
     OFF
 )
 
 # replaces --disable-wreturns
-OPTION(ENABLE_WRETURNS
+option(ENABLE_WRETURNS
     "Enable warnings about unused return values from functions (-Wreturns)."
     ON
 )
 
 # replaces --enable-wconversion
-OPTION(ENABLE_WCONVERSION
+option(ENABLE_WCONVERSION
     "Enable warnings about implicit conversions (-Wconversion)."
     OFF
 )
 
 # replaces --enable-sanitize=
-SET(SANITIZER "address"
+set(SANITIZER "address"
     CACHE STRING
     "Enable compile sanitizer with flavor, options are: address or thread. Default is address."
 )
-SET_PROPERTY(
+set_property(
     CACHE SANITIZER
     PROPERTY STRINGS "address" "thread" ""
 )
 
 # replaces --with-jars
-SET(JARS ""
+set(JARS ""
     CACHE STRING
     "???"
 )
 
 # replaces --with-jdk
-SET(JDK_DIR ""
+set(JDK_DIR ""
     CACHE STRING
     "Location of Java JDK"
 )
 
 # replaces --with-java_target=
-SET(JAVA_TARGET_VERSION ""
+set(JAVA_TARGET_VERSION ""
     CACHE STRING
     "Version of compiled mdsobjects classes (i.e. 6)"
 )
 
 # replaces --with-java_bootclasspath=
-SET(JAVA_BOOTCLASSPATH ""
+set(JAVA_BOOTCLASSPATH ""
     CACHE STRING
     "The bootclasspath option for use with JAVA_TARGET_VERSION (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)"
 )
 
 # replaces --with-gsi=globus-location:flavor
-SET(GSI ""
+set(GSI ""
     CACHE STRING
     "Set in the form of globus-location:flavor. Enables globus GSI for mdsip communications."
 )
 
 # replaces --with-srb=
-SET(SRB_DIR ""
+set(SRB_DIR ""
     CACHE STRING
     "Location of SRB to build against"
 )
 
 # replaces --with-labview=
-SET(LABVIEW_DIR ""
+set(LABVIEW_DIR ""
     CACHE STRING
     "Location of labview (i.e. /usr/local/natinst/Labview)"
 )
 
 # replaces --with-idl=
-OPTION(ENABLE_IDL
+option(ENABLE_IDL
     "Build idlmdsevent and idlmdswidgets against the IDL installed in IDL_DIR. If IDL_DIR is not set, the system will be searched for an installation."
     ON
 )
 
-SET(IDL_DIR "" CACHE STRING
+set(IDL_DIR "" CACHE STRING
     "Location of IDL, or empty to indicate the system should be searched for an IDL installation. Setting this also sets ENABLE_IDL=ON."
 )
 
-IF(IDL_DIR AND NOT ENABLE_IDL)
-    MESSAGE("Setting ENABLE_IDL=ON because IDL_DIR was specified")
-    SET(ENABLE_IDL ON)
-ENDIF()
+if(IDL_DIR AND NOT ENABLE_IDL)
+    message("Setting ENABLE_IDL=ON because IDL_DIR was specified")
+    set(ENABLE_IDL ON)
+endif()
 
 # replaces --with-readline=
-SET(READLINE_DIR ""
+set(READLINE_DIR ""
     CACHE STRING
     "Location of the readline library, if not set the system will be searched."
 )
 
 # replaces --with-xml-prefix, --with-xml-exec-prefix
-SET(LIBXML2_DIR ""
+set(LIBXML2_DIR ""
     CACHE STRING
     "Location of libxml2 library"
 )
 
+# TODO:
 # replaces --with-x
-OPTION(
-    ENABLE_X "" OFF
+option(ENABLE_X
+    ""
+    OFF
 )
 
+# TODO:
 # replaces --with-valgrind-lib
-SET(VALGRIND_LIB_DIR ""
+set(VALGRIND_LIB_DIR ""
     CACHE STRING
     ""
 )
 
+# TODO:
 # replaces --with-winebottle
-SET(WINEBOTTLE ""
+set(WINEBOTTLE ""
     CACHE STRING
     ""
 )
@@ -196,102 +205,103 @@ SET(WINEBOTTLE ""
 ### Global Configuration
 ###
 
-SET(CMAKE_C_FLAGS $ENV{CFLAGS})
-SET(CMAKE_CXX_FLAGS $ENV{CXXFLAGS})
-SET(CMAKE_Fortran_FLAGS $ENV{FCFLAGS})
+set(CMAKE_C_FLAGS $ENV{CFLAGS})
+set(CMAKE_CXX_FLAGS $ENV{CXXFLAGS})
+set(CMAKE_Fortran_FLAGS $ENV{FCFLAGS})
 
 # Generate compile_commands.json
-SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-ADD_DEFINITIONS(
+add_definitions(
     # (SLW) TODO: Move to testing/backends/check or remove altogether
     -DHAVE_CONFIG_H # Do we have mdsplus/mdsconfig.h
 )
 
-IF(MSVC)
-    ADD_COMPILE_OPTIONS(/Wall)
-ELSE()
-    ADD_COMPILE_OPTIONS(-Wall -Wextra)
-ENDIF()
+if(MSVC)
+    add_compile_options(/Wall)
+else()
+    add_compile_options(-Wall -Wextra)
+endif()
 
-IF(ENABLE_WERROR)
-    IF(MSVC)
-        ADD_COMPILE_OPTIONS(/WX)
-        ELSE()
-        ADD_COMPILE_OPTIONS(-Werror)
-    ENDIF()
-ENDIF()
+if(ENABLE_WERROR)
+    if(MSVC)
+        add_compile_options(/WX)
+    else()
+        add_compile_options(-Werror)
+    endif()
+endif()
 
-IF(NOT ENABLE_WRETURNS) # -Wunused-result is on by default in gcc and clang
-    IF(NOT MSVC)
-        ADD_COMPILE_OPTIONS(-Wno-unused-result)
-    ENDIF()
-ENDIF()
+if(NOT ENABLE_WRETURNS) # -Wunused-result is on by default in gcc and clang
+    if(NOT MSVC)
+        add_compile_options(-Wno-unused-result)
+    endif()
+endif()
 
-IF(ENABLE_WCONVERSION)
+# if(ENABLE_WCONVERSION)
+#     add_compile_options(-Wconversion)
+# endif()
 
-ENDIF()
-
-IF(ENABLE_LARGEFILE)
-    IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
+if(ENABLE_LARGEFILE)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         ADD_DEFINITIONS(
             -D_FILE_OFFSET_BITS=64
             -D_LARGE_FILES
         )
-    ENDIF()
-ENDIF()
+    endif()
+endif()
 
 ###
 ### Dependencies
 ###
 
-IF(ENABLE_JAVA)
+if(ENABLE_JAVA)
 
-    IF(JDK_DIR)
-        SET(JAVA_HOME "${JDK_DIR}")
-    ENDIF()
+    if(JDK_DIR)
+        set(JAVA_HOME "${JDK_DIR}")
+    endif()
 
-    FIND_PACKAGE(Java COMPONENTS Runtime Development REQUIRED)
-    FIND_PACKAGE(JNI REQUIRED)
+    find_package(Java COMPONENTS Runtime Development REQUIRED)
+    find_package(JNI REQUIRED)
     
-    INCLUDE(UseJava)
+    include(UseJava)
 
-    FIND_PROGRAM(mvn_EXECUTABLE mvn)
+    find_program(mvn_EXECUTABLE mvn)
 
-ENDIF()
+endif()
 
-IF(ENABLE_IDL)
+if(ENABLE_IDL)
 
-    IF(IDL_DIR)
-        SET(IDL_ROOT_DIR "${IDL_DIR}")
-    ELSEIF(NOT IDL_FOUND)
-        SET(IDL_ROOT_DIR 
+    if(IDL_DIR)
+        set(IDL_ROOT_DIR "${IDL_DIR}")
+    elseif(NOT IDL_FOUND)
+        set(IDL_ROOT_DIR 
             /usr/local/harris/idl
             /usr/local/exelis/idl
             /usr/local/itt/idl
             /usr/local/rsi/idl
             ${CMAKE_SOURCE_DIR}/3rd-party-apis/idl
         )
-    ENDIF()
+    endif()
 
-    FIND_PACKAGE(IDL REQUIRED)
+    # cmake/FindIDL.cmake
+    find_package(IDL REQUIRED)
 
-ENDIF()
+endif()
 
-IF(ENABLE_D3D)
+if(ENABLE_D3D)
 
-    FIND_LIBRARY(
+    find_library(
         LIBD3
         NAMES d3
         PATHS $ENV{D3DLIB_PATH}
         REQUIRED
     )
 
-    MARK_AS_ADVANCED(LIBD3)
+    mark_as_advanced(LIBD3)
 
-ENDIF()
+endif()
 
-IF(GSI)
+if(GSI)
 
     STRING(REPLACE ":" ";" _gsi_list "${GSI}")
     LIST(GET _gsi_list 0 Globus_ROOT_DIR)
@@ -299,90 +309,104 @@ IF(GSI)
 
     # (SLW) TODO: pthr???
         
-    FIND_PACKAGE(Globus)
+    # cmake/FindGlobus.cmake
+    find_package(Globus)
 
-ENDIF()
+endif()
 
-FIND_PACKAGE(Python COMPONENTS Interpreter REQUIRED)
+find_package(Python COMPONENTS Interpreter REQUIRED)
 
-FIND_PACKAGE(libxml2 REQUIRED)
+find_package(Threads REQUIRED)
 
-FIND_PACKAGE(Iconv REQUIRED)
+find_package(Iconv REQUIRED)
 
-SET(Readline_ROOT_DIR "${READLINE_DIR}")
-FIND_PACKAGE(Readline REQUIRED)
+# cmake/FindReadline.cmake
+set(Readline_ROOT_DIR "${READLINE_DIR}")
+find_package(Readline REQUIRED)
 
-FIND_PACKAGE(Motif)
+# cmake/Findlibxml2.cmake
+find_package(libxml2 REQUIRED)
 
-FIND_PACKAGE(Sybase)
+# cmake/FindMotif.cmake
+find_package(Motif)
 
-FIND_LIBRARY(LIBM m QUIET)
-FIND_LIBRARY(LIBZ z QUIET)
-FIND_LIBRARY(LIBLZMA lzma QUIET)
-FIND_LIBRARY(LIBBLAS blas QUIET)
-FIND_LIBRARY(LIBRT rt QUIET)
-FIND_LIBRARY(LIBCURL curl QUIET)
-SET(LIBDL "${CMAKE_DL_LIBS}")
+# cmake/FindSybase.cmake
+find_package(Sybase)
 
-FIND_PACKAGE(Threads REQUIRED)
+# cmake/FindHDF5.cmake
+set(HDF5_ROOT_DIR $ENV{HDF5_DIR})
+find_package(HDF5)
 
-MARK_AS_ADVANCED(LIBM LIBZ LIBLZMA LIBBLAS LIBDL)
+find_library(LIBM m QUIET)
+find_library(LIBZ z QUIET)
+find_library(LIBLZMA lzma QUIET)
+find_library(LIBBLAS blas QUIET)
+find_library(LIBRT rt QUIET)
+find_library(LIBCURL curl QUIET)
+set(LIBDL "${CMAKE_DL_LIBS}")
+
+mark_as_advanced(LIBM LIBZ LIBLZMA LIBBLAS LIBRT LIBCURL LIBDL)
 
 ###
-### Check for Includes, Libraries, and Symbols
+### Check for includes, Libraries, and Symbols
 ###
 
-INCLUDE(CheckIncludeFile)
-INCLUDE(CheckIncludeFiles)
-INCLUDE(CheckLibraryExists)
-INCLUDE(CheckSymbolExists)
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+include(CheckLibraryExists)
+include(CheckSymbolExists)
 
-CHECK_INCLUDE_FILE("alloca.h" HAVE_ALLOCA_H)
-CHECK_INCLUDE_FILE("stdint.h" HAVE_STDINT_H)
-CHECK_INCLUDE_FILE("grp.h" HAVE_GRP_H)
-CHECK_INCLUDE_FILE("pwd.h" HAVE_PWD_H)
-CHECK_SYMBOL_EXISTS(getpwuid "pwd.h" HAVE_GETPWUID)
-CHECK_SYMBOL_EXISTS(clock_gettime "time.h" HAVE_CLOCK_GETTIME)
-CHECK_SYMBOL_EXISTS(getaddrinfo "netdb.h" HAVE_GETADDRINFO)
-CHECK_SYMBOL_EXISTS(mkstemp "stdlib.h" HAVE_MKSTEMP)
+# C99
+check_include_file("stdint.h" HAVE_STDINT_H) # TODO: Remove
 
-CHECK_INCLUDE_FILES("unistd.h" HAVE_UNISTD_H)
-CHECK_SYMBOL_EXISTS(fork "unistd.h" HAVE_FORK)
+# POSIX
+check_include_file("alloca.h" HAVE_ALLOCA_H) # TODO: Remove?
+check_include_file("grp.h" HAVE_GRP_H)
+check_include_file("pthread.h" HAVE_PTHREAD_H)
+check_include_file("pwd.h" HAVE_PWD_H)
+check_include_file("sys/resource.h" HAVE_SYS_RESOURCE_H)
+check_include_file("sys/types.h" HAVE_SYS_TYPES_H)
+check_include_file("unistd.h" HAVE_UNISTD_H)
+check_include_file("sys/filio.h" HAVE_SYS_FILIO_H)
+check_symbol_exists(clock_gettime "time.h" HAVE_CLOCK_GETTIME)
+check_symbol_exists(fork "unistd.h" HAVE_FORK)
+check_symbol_exists(getaddrinfo "netdb.h" HAVE_GETADDRINFO)
+check_symbol_exists(getpwuid "pwd.h" HAVE_GETPWUID)
+check_symbol_exists(getrusage "sys/resource.h" HAVE_GETRUSAGE)
+check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
+check_symbol_exists(pthread_lock_global_np "pthread.h" HAVE_PTHREAD_LOCK_GLOBAL_NP)
 
-CHECK_INCLUDE_FILES("sybdb.h;sybfront.h" HAVE_SYBASE) # TODO: Improve
+# FreeTDS / Sybase
+check_include_files("sybdb.h;sybfront.h" HAVE_SYBASE) # TODO: Improve
 
-CHECK_INCLUDE_FILE("vxWorks.h" HAVE_VXWORKS_H)
+# VxWorks Real-Time Operating System
+check_include_file("vxWorks.h" HAVE_VXWORKS_H)
 
-CHECK_INCLUDE_FILES("sys/fileio.h" HAVE_SYS_FILIO_H)
-CHECK_INCLUDE_FILES("sys/types.h" HAVE_SYS_TYPES_H)
-CHECK_INCLUDE_FILE("sys/resource.h" HAVE_SYS_RESOURCE_H)
-CHECK_SYMBOL_EXISTS(getrusage "sys/resource.h" HAVE_GETRUSAGE)
+# Readline
+check_include_file("readline/readline.h" HAVE_READLINE_READLINE_H)
+check_symbol_exists("rl_set_signals" "readline/readline.h" HAVE_RL_SET_SIGNALS)
 
-CHECK_INCLUDE_FILE("pthread.h" HAVE_PTHREAD_H)
-CHECK_SYMBOL_EXISTS(pthread_lock_global_np "pthread.h" HAVE_PTHREAD_LOCK_GLOBAL_NP)
+# Valgrind
+check_include_files("valgrind/valgrind.h" HAVE_VALGRIND_H)
 
-CHECK_INCLUDE_FILE("readline/readline.h" HAVE_READLINE_READLINE_H)
-CHECK_SYMBOL_EXISTS("rl_set_signals" "readline/readline.h" HAVE_RL_SET_SIGNALS)
-
-CHECK_INCLUDE_FILES("valgrind/valgrind.h" HAVE_VALGRIND_H)
-
-CHECK_INCLUDE_FILES("scsi/sg.h" HAVE_SCSI_SG_H)
+# Linux Kernel
+check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
 
 # TODO HAVE_VISIBILITY
-SET(HAVE_VISIBILITY 1)
+set(HAVE_VISIBILITY 1)
 
 ###
 ### Install
 ###
 
-SET(BIN_DIR ${CMAKE_BINARY_DIR}/bin)
-SET(LIB_DIR ${CMAKE_BINARY_DIR}/lib)
-SET(ETC_DIR ${CMAKE_BINARY_DIR}/etc)
-SET(UID_DIR ${CMAKE_BINARY_DIR}/uid)
-SET(BIN_DIR ${CMAKE_BINARY_DIR}/bin)
-SET(RPM_DIR ${CMAKE_BINARY_DIR}/rpm)
+set(BIN_DIR ${CMAKE_BINARY_DIR}/bin)
+set(LIB_DIR ${CMAKE_BINARY_DIR}/lib)
+set(ETC_DIR ${CMAKE_BINARY_DIR}/etc)
+set(UID_DIR ${CMAKE_BINARY_DIR}/uid)
+set(BIN_DIR ${CMAKE_BINARY_DIR}/bin)
+set(RPM_DIR ${CMAKE_BINARY_DIR}/rpm)
 
-FILE(MAKE_DIRECTORY 
+file(MAKE_DIRECTORY 
     ${BIN_DIR}
     ${LIB_DIR}
     ${ETC_DIR}
@@ -391,31 +415,30 @@ FILE(MAKE_DIRECTORY
     ${RPM_DIR}
 )
 
-SET(MODE_777
+set(MODE_777
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_WRITE GROUP_EXECUTE
     WORLD_READ WORLD_WRITE WORLD_EXECUTE
 )
 
-SET(MODE_755
+set(MODE_755
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ             GROUP_EXECUTE
     WORLD_READ             WORLD_EXECUTE
 )
 
-SET(MODE_644
+set(MODE_644
     OWNER_READ OWNER_WRITE
     GROUP_READ            
     WORLD_READ            
 )
 
-INSTALL(
+install(
     DIRECTORY
         desktop
+        epics
         idl
         include
-        ${CMAKE_BINARY_DIR}/include
-        epics
         LabView
         matlab
         nodejs
@@ -425,6 +448,7 @@ INSTALL(
         tdi
         trees
         xml
+        ${CMAKE_BINARY_DIR}/include
         ${CMAKE_BINARY_DIR}/uid
     DESTINATION .
     USE_SOURCE_PERMISSIONS
@@ -435,7 +459,7 @@ INSTALL(
     PATTERN "__pycache__" EXCLUDE
 )
 
-INSTALL(
+install(
     DIRECTORY python/MDSplus
     DESTINATION python
     USE_SOURCE_PERMISSIONS
@@ -446,35 +470,39 @@ INSTALL(
     PATTERN "CMakeLists.txt" EXCLUDE
 )
 
-INSTALL(
-    FILES MDSplus-License.rtf MDSplus-License.txt
+install(
+    FILES
+        MDSplus-License.rtf
+        MDSplus-License.txt
     DESTINATION .
 )
 
-INSTALL(
-    FILES setup.csh setup.sh
+install(
+    FILES
+        setup.csh
+        setup.sh
     DESTINATION .
     PERMISSIONS ${MODE_755}
 )
 
-INSTALL(
+install(
     DIRECTORY
     DESTINATION local/tdi
 )
 
 # (SLW) TODO: 
-SET(LIBPATH "LD_LIBRARY_PATH")
+set(LIBPATH "LD_LIBRARY_PATH")
 
 ###
 ### Generate _include/_mdsversion.h
 ###
 
-INCLUDE(GitRevision)
+include(GitRevision)
 
 # (SLW) TODO
-SET(LIBPREFIX "Mds")
+set(LIBPREFIX "Mds")
 
-CONFIGURE_FILE(
+configure_file(
     ${CMAKE_SOURCE_DIR}/_include/_mdsversion.h.in
     ${CMAKE_BINARY_DIR}/_include/_mdsversion.h
 )
@@ -483,20 +511,21 @@ CONFIGURE_FILE(
 ### Generate include/mdsplus/mdsconfig.h
 ###
 
-SET(SHARELIB_TYPE "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+# (SLW) TODO
+set(SHARELIB_TYPE "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
-CONFIGURE_FILE(
+configure_file(
     ${CMAKE_SOURCE_DIR}/include/mdsplus/mdsconfig.h.in
     ${CMAKE_BINARY_DIR}/include/mdsplus/mdsconfig.h
 )
 
-INCLUDE_DIRECTORIES(
-    ${CMAKE_SOURCE_DIR}/include
+include_directories(
     ${CMAKE_SOURCE_DIR}/_include
+    ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/mdsplus
 
-    ${CMAKE_BINARY_DIR}/include
     ${CMAKE_BINARY_DIR}/_include
+    ${CMAKE_BINARY_DIR}/include
     ${CMAKE_BINARY_DIR}/include/mdsplus
 )
 
@@ -504,19 +533,19 @@ INCLUDE_DIRECTORIES(
 ### python/generate_tests
 ###
 
-# FILE(GLOB
+# file(GLOB
 #     _test_case_list
 #     "python/MDSplus/tests/*_case.py"
 # )
 
-# FOREACH(_test_case IN LISTS _test_case_list)
-#     CMAKE_PATH(GET _test_case STEM _test_case_name)
+# foreach(_test_case IN LISTS _test_case_list)
+#     cmake_path(GET _test_case STEM _test_case_name)
 #     ADD_TEST(
 #         NAME ${_test_case_name}
 #         COMMAND ${Python_EXECUTABLE} ${_test_case}
 #     )
 
-#     SET(_env_mods
+#     set(_env_mods
 #         "PATH=path_list_prepend:${BIN_DIR}"
 #         "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
 #         "PYTHONPATH=path_list_append:${CMAKE_BINARY_DIR}/python"
@@ -528,42 +557,42 @@ INCLUDE_DIRECTORIES(
 #             ENVIRONMENT_MODIFICATION "${_env_mods}"
                 
 #     )
-# ENDFOREACH()
+# endforeach()
 
 ###
 ### Generate include/*_messages.h
 ###
 
-FILE(GLOB_RECURSE
+file(GLOB_RECURSE
     _messages_xml_list
     "*/*messages.xml"
 )
 
-SET(_messages_generated_list "python/MDSplus/mdsExceptions.py")
+set(_messages_generated_list "python/MDSplus/mdsExceptions.py")
 
-FOREACH(_messages_xml IN LISTS _messages_xml_list)
-    CMAKE_PATH(GET _messages_xml STEM _stem)
+foreach(_messages_xml IN LISTS _messages_xml_list)
+    cmake_path(GET _messages_xml STEM _stem)
     LIST(APPEND _messages_generated_list "include/${_stem}.h")
-ENDFOREACH()
+endforeach()
 
-SET(_run_gen_messages FALSE)
-FOREACH(_filename IN LISTS _messages_generated_list)
-    IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/${_filename}")
-        MESSAGE("Missing ${_filename}, will run deploy/gen_messages.py")
-        SET(_run_gen_messages TRUE)
-    ENDIF()
-ENDFOREACH()
+set(_run_gen_messages FALSE)
+foreach(_filename IN LISTS _messages_generated_list)
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/${_filename}")
+        message("Missing ${_filename}, will run deploy/gen_messages.py")
+        set(_run_gen_messages TRUE)
+    endif()
+endforeach()
 
-IF(_run_gen_messages)
-    MESSAGE("Running deploy/gen_messages.py")
-    EXECUTE_PROCESS(
+if(_run_gen_messages)
+    message("Running deploy/gen_messages.py")
+    execute_process(
         COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_messages.py
     )
-ENDIF()
+endif()
 
-# MESSAGE("${_messages_generated_list}")
+# message("${_messages_generated_list}")
 
-# ADD_CUSTOM_COMMAND(
+# add_custom_command(
 #     COMMENT "Running deploy/gen_messages.py"
 #     OUTPUT ${_messages_generated_list}
 #     DEPENDS ${_messages_xml_list}
@@ -575,12 +604,12 @@ ENDIF()
 ### Generate python/MDSplus/compound.py
 ###
 
-IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/python/MDSplus/compound.py")
-    MESSAGE("Missing python/MDSplus/compound.py, will run deploy/gen_compound_opcbuiltins.py")
-    EXECUTE_PROCESS(
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/python/MDSplus/compound.py")
+    message("Missing python/MDSplus/compound.py, will run deploy/gen_compound_opcbuiltins.py")
+    execute_process(
         COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_compound_opcbuiltins.py
     )
-ENDIF()
+endif()
 
 ###
 ### bison / flex
@@ -593,11 +622,11 @@ ENDIF()
 ### Documentation
 ###
 
-FIND_PACKAGE(Doxygen)
+find_package(Doxygen)
 
-SET(DOXYGEN_PROGRAM $<TARGET_FILE:Doxygen::doxygen>)
+set(doxygen_EXECUTABLE $<TARGET_FILE:Doxygen::doxygen>)
 
-ADD_CUSTOM_TARGET(
+add_custom_target(
     docs
 )
 
@@ -605,101 +634,104 @@ ADD_CUSTOM_TARGET(
 ### Libraries, Executables
 ###
 
-INCLUDE(AddStaticCopy)
+include(AddStaticCopy)
 
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIB_DIR})
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIB_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIR})
 
 # Fortran Libraries
 
-ADD_SUBDIRECTORY(math)
-ADD_SUBDIRECTORY(d3dshr)
+add_subdirectory(math)
+add_subdirectory(d3dshr)
 
 # Core Libraries
 
-ADD_SUBDIRECTORY(mdsshr)
-ADD_SUBDIRECTORY(treeshr) # Requires MdsShr
-ADD_SUBDIRECTORY(xtreeshr) # Requires TreeShr
-ADD_SUBDIRECTORY(tdishr) # Requires TreeShr
-ADD_SUBDIRECTORY(mdstcpip) # Requires TdiShr
-ADD_SUBDIRECTORY(mdslib) # Requires TdiShr
-ADD_SUBDIRECTORY(xmdsshr) # Requires TdiShr
-ADD_SUBDIRECTORY(mdsmisc) # Requires XTreeShr
-ADD_SUBDIRECTORY(mdsdcl) # Requires MdsIpShr
-ADD_SUBDIRECTORY(servershr) # Requires Mdsdcl
-ADD_SUBDIRECTORY(mdssql)
+add_subdirectory(mdsshr)
+add_subdirectory(treeshr) # Requires MdsShr
+add_subdirectory(xtreeshr) # Requires TreeShr
+add_subdirectory(tdishr) # Requires TreeShr
+add_subdirectory(mdstcpip) # Requires TdiShr
+add_subdirectory(mdslib) # Requires TdiShr
+add_subdirectory(xmdsshr) # Requires TdiShr
+add_subdirectory(mdsmisc) # Requires XTreeShr
+add_subdirectory(mdsdcl) # Requires MdsIpShr
+add_subdirectory(servershr) # Requires Mdsdcl
+add_subdirectory(mdssql)
+add_subdirectory(mdsvme)
 
 # Language Binding Libraries
 
-ADD_SUBDIRECTORY(mdslibidl) # Requires TdiShr
-ADD_SUBDIRECTORY(javamds) # Requires TdiShr
-ADD_SUBDIRECTORY(mdsobjects/cpp) # Requires JavaMds
-ADD_SUBDIRECTORY(mdsobjects/labview) # Requires MdsObjectsCppShr
-ADD_SUBDIRECTORY(python)
-ADD_SUBDIRECTORY(java)
+add_subdirectory(mdslibidl) # Requires TdiShr
+add_subdirectory(javamds) # Requires TdiShr
+add_subdirectory(mdsobjects/cpp) # Requires JavaMds
+add_subdirectory(mdsobjects/labview) # Requires MdsObjectsCppShr
+add_subdirectory(python)
+add_subdirectory(java)
 
 # Command Line Tools
 
-ADD_SUBDIRECTORY(tdic)
-ADD_SUBDIRECTORY(tditest)
-ADD_SUBDIRECTORY(setevent)
-ADD_SUBDIRECTORY(wfevent)
+add_subdirectory(tdic)
+add_subdirectory(tditest)
+add_subdirectory(setevent)
+add_subdirectory(wfevent)
 # actions has actlog
 
 # Graphical Tools
 
-ADD_SUBDIRECTORY(actions)
-ADD_SUBDIRECTORY(dwscope)
-ADD_SUBDIRECTORY(traverser)
-ADD_SUBDIRECTORY(idlmdsevent)
-ADD_SUBDIRECTORY(idlmdswidgets)
+add_subdirectory(actions)
+add_subdirectory(dwscope)
+add_subdirectory(traverser)
+add_subdirectory(idlmdsevent)
+add_subdirectory(idlmdswidgets)
 
 # Device Support
 
 add_subdirectory(mitdevices)
-ADD_SUBDIRECTORY(camshr)
-ADD_SUBDIRECTORY(remcam) # Requires camshr
-ADD_SUBDIRECTORY(pydevices)
+add_subdirectory(camshr)
+add_subdirectory(remcam) # Requires camshr
+add_subdirectory(pydevices)
 
 # Mdsdcl commands
 
-ADD_SUBDIRECTORY(tcl)
-ADD_SUBDIRECTORY(ccl) # Requires CamShr
+add_subdirectory(tcl)
+add_subdirectory(ccl) # Requires CamShr
 # camshr has cts_commands
 
 # Globus
 
-ADD_SUBDIRECTORY(roam)
+add_subdirectory(roam)
 # mdstcpip has MdsIpGSI
 
 # Configuration
 
-ADD_SUBDIRECTORY(rpm)
-ADD_SUBDIRECTORY(scripts)
-ADD_SUBDIRECTORY(manpages)
+add_subdirectory(rpm)
+add_subdirectory(scripts)
+add_subdirectory(manpages)
 
 ###
 ### Testing
 ###
 
-ADD_SUBDIRECTORY(testing)
-ADD_SUBDIRECTORY(mdsshr/testing)
-# ADD_SUBDIRECTORY(treeshr/testing)
-# ADD_SUBDIRECTORY(mdslib/testing)
-# ADD_SUBDIRECTORY(mdstcpip/testing)
-ADD_SUBDIRECTORY(tdishr/testing)
-# ADD_SUBDIRECTORY(tditest/testing)
-# ADD_SUBDIRECTORY(mdsobjects/cpp/testing)
-ADD_SUBDIRECTORY(python/MDSplus/tests)
+add_subdirectory(testing)
+add_subdirectory(mdsshr/testing)
+# add_subdirectory(treeshr/testing)
+# add_subdirectory(mdslib/testing)
+# add_subdirectory(mdstcpip/testing)
+add_subdirectory(tdishr/testing)
+# add_subdirectory(tditest/testing)
+# add_subdirectory(mdsobjects/cpp/testing)
+add_subdirectory(python/MDSplus/tests)
 
-IF(Motif_FOUND)
+add_subdirectory(examples/demoadc)
+
+if(Motif_FOUND)
 
     ###
     ### Process *.uil
     ###
 
-    FILE(GLOB_RECURSE
+    file(GLOB_RECURSE
         _uil_list
         "actions/*.uil"
         "dwscope/*.uil"
@@ -709,35 +741,35 @@ IF(Motif_FOUND)
         "xmdsshr/*.uil"
     )
 
-    FOREACH(_uil IN LISTS _uil_list)
-        CMAKE_PATH(GET _uil STEM LAST_ONLY _stem)
-        SET(_uid ${UID_DIR}/${_stem}.uid)
+    foreach(_uil IN LISTS _uil_list)
+        cmake_path(GET _uil STEM LAST_ONLY _stem)
+        set(_uid ${UID_DIR}/${_stem}.uid)
         
-        ADD_CUSTOM_COMMAND(
+        add_custom_command(
             OUTPUT ${_uid}
             DEPENDS ${_uil}
             COMMAND ${uil_EXECUTABLE} -I${CMAKE_SOURCE_DIR}/include -o ${_uid} ${_uil}
         )
 
         LIST(APPEND _uid_list ${_uid})
-    ENDFOREACH()
+    endforeach()
 
-    ADD_CUSTOM_TARGET(
+    add_custom_target(
         generate-uids ALL
         DEPENDS ${_uid_list}
     )
 
-ENDIF()
+endif()
 
 ###
 ### ChangeLog
 ###
 
-GIT(GIT_CHANGELOG log --decorate=full --no-merges)
+git(GIT_CHANGELOG log --decorate=full --no-merges)
 
-FILE(WRITE ${CMAKE_BINARY_DIR}/ChangeLog "${GIT_CHANGELOG}")
+file(WRITE ${CMAKE_BINARY_DIR}/ChangeLog "${GIT_CHANGELOG}")
 
-INSTALL(
+install(
     FILES ${CMAKE_BINARY_DIR}/ChangeLog
     DESTINATION .
 )

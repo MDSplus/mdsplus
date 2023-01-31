@@ -3,8 +3,8 @@
 ### MdsObjectsCppShr
 ###
 
-ADD_LIBRARY(
-    MdsObjectsCppShr SHARED
+add_library(
+    MdsObjectsCppShr
     mdsdataobjects.cpp
     mdstreeobjects.cpp
     mdsipobjects.cpp
@@ -14,12 +14,12 @@ ADD_LIBRARY(
     mdstree.c
 )
 
-INSTALL(TARGETS MdsObjectsCppShr)
+install(TARGETS MdsObjectsCppShr)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsObjectsCppShr
     PUBLIC
         MdsIpShr
 )
 
-ADD_STATIC_COPY(MdsObjectsCppShr)
+add_static_copy(MdsObjectsCppShr)

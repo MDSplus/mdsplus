@@ -1,15 +1,15 @@
 
-MACRO(GET_DATE _output_variable)
-    FIND_PROGRAM(DATE_EXECUTABLE date)
-    MARK_AS_ADVANCED(DATE_EXECUTABLE)
-    IF(DATE_EXECUTABLE)
-        EXECUTE_PROCESS(
-            COMMAND "${DATE_EXECUTABLE}"
+macro(get_date _output_variable)
+    find_program(date_EXECUTABLE date)
+    mark_as_advanced(date_EXECUTABLE)
+    if(date_EXECUTABLE)
+        execute_process(
+            COMMAND "${date_EXECUTABLE}"
             OUTPUT_VARIABLE ${_output_variable}
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-    ELSE()
+    else()
         # STRING(TIMESTMAP) is missing AM/PM and the Timezone, so use a sensible fallback
-        STRING(TIMESTAMP ${_output_variable} "%a %d %b %Y %H:%M:%S UTC" UTC)
-    ENDIF()
-ENDMACRO()
+        string(TIMESTAMP ${_output_variable} "%a %d %b %Y %H:%M:%S UTC" UTC)
+    endif()
+endmacro()

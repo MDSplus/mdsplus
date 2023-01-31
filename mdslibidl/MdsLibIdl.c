@@ -360,7 +360,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 {
   int status;
   int arglistlen = 3 + (argc / 2);
-  void **arglist = (void **)alloca(arglistlen * sizeof(void *));
+  void **arglist = (void **)malloc(arglistlen * sizeof(void *));
   struct descriptor expression = {0, DTYPE_T, CLASS_S, 0};
   EMPTYXD(tmp);
   int argidx = 1;
@@ -594,6 +594,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
       arrayArgs[i].pointer = 0;
     }
   }
+  free(arglist);
   TdiDebug(&clear_d, &tmp MDS_END_ARG);
   MdsFree1Dx(&tmp, 0);
   UnBlockSig(SIGALRM);
@@ -604,7 +605,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
 {
   int status;
   int arglistlen = 4 + (argc / 2);
-  void **arglist = (void **)alloca(arglistlen * sizeof(void *));
+  void **arglist = (void **)malloc(arglistlen * sizeof(void *));
   struct descriptor expression = {0, DTYPE_T, CLASS_S, 0};
   EMPTYXD(tmp);
   int argidx = 1;
@@ -641,6 +642,7 @@ EXPORT int IdlMdsPut(int argc, void **argv)
       }
     }
   }
+  free(arglist);
   UnBlockSig(SIGALRM);
   return status;
 }

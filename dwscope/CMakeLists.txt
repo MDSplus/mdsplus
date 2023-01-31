@@ -1,7 +1,7 @@
 
 IF(Motif_FOUND)
 
-    ADD_DEFINITIONS(
+    add_definitions(
         -D_NO_DXm
     )
 
@@ -9,22 +9,22 @@ IF(Motif_FOUND)
     ### dwscope
     ###
 
-    ADD_EXECUTABLE(
+    add_executable(
         dwscope
         dwscope.c
         dwscopesubs.c
         evaluate.c
     )
 
-    INSTALL(TARGETS dwscope)
+    install(TARGETS dwscope)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         dwscope
         PRIVATE
             XmdsShr
     )
 
-    TARGET_COMPILE_DEFINITIONS(
+    target_compile_definitions(
         dwscope
         PRIVATE
             -D_LOCAL_ACCESS
@@ -34,7 +34,7 @@ IF(Motif_FOUND)
     ### dwscope_remote
     ###
 
-    ADD_EXECUTABLE(
+    add_executable(
         dwscope_remote
         dwscope.c
         dwscopesubs.c
@@ -42,9 +42,9 @@ IF(Motif_FOUND)
         RemoteDummies.c
     )
 
-    INSTALL(TARGETS dwscope_remote)
+    install(TARGETS dwscope_remote)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         dwscope_remote
         PRIVATE
             XmdsShr-static
@@ -55,15 +55,15 @@ IF(Motif_FOUND)
     ### dwpad
     ###
 
-    ADD_EXECUTABLE(
+    add_executable(
         dwpad
         dwpad.c
         dwscopesubs.c
     )
 
-    INSTALL(TARGETS dwpad)
+    install(TARGETS dwpad)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         dwpad
         PRIVATE
             XmdsShr
@@ -73,8 +73,10 @@ IF(Motif_FOUND)
     ### Scripts
     ###
 
-    INSTALL(
-        FILES ScopePrinters dwscopePrint
+    install(
+        FILES
+            ScopePrinters
+            dwscopePrint
         PERMISSIONS ${MODE_755}
         TYPE BIN
     )
@@ -83,7 +85,7 @@ IF(Motif_FOUND)
     ### Resources
     ###
 
-    INSTALL(
+    install(
         FILES dwscope_setup.ps
         PERMISSIONS ${MODE_644}
         TYPE LIB

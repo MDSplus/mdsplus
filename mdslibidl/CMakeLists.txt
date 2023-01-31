@@ -3,14 +3,14 @@
 ### MdsLibIdl
 ###
 
-ADD_LIBRARY(
-    MdsLibIdl SHARED
+add_library(
+    MdsLibIdl
     MdsLibIdl.c
 )
 
-INSTALL(TARGETS MdsLibIdl)
+install(TARGETS MdsLibIdl)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsLibIdl
     PUBLIC
         TdiShr

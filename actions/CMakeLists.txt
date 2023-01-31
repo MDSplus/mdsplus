@@ -3,33 +3,33 @@
 ### actlog
 ###
 
-ADD_EXECUTABLE(
+add_executable(
     actlog
     actlog.c
 )
 
-INSTALL(TARGETS actlog)
+install(TARGETS actlog)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     actlog
     PRIVATE
         MdsServerShr
 )
 
-IF(Motif_FOUND)
+if(Motif_FOUND)
 
     ###
     ### actions
     ###
 
-    ADD_EXECUTABLE(
+    add_executable(
         actions
         actions.c
     )
 
-    INSTALL(TARGETS actions)
+    install(TARGETS actions)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         actions
         PRIVATE
             XmdsShr
@@ -39,26 +39,26 @@ IF(Motif_FOUND)
     ### actmon
     ###
 
-    ADD_EXECUTABLE(
+    add_executable(
         actmon
         actmon.c
     )
 
-    INSTALL(TARGETS actmon)
+    install(TARGETS actmon)
 
-    IF(WIN32)
-        TARGET_SOURCES(
+    if(WIN32)
+        target_sources(
             actmon
             PRIVATE
                 icon.rc
         )
-    ENDIF()
+    endif()
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         actmon
         PRIVATE
             Motif::Motif
             MdsServerShr
     )
     
-ENDIF()
+endif()

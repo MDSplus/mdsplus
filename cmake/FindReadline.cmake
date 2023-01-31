@@ -19,11 +19,11 @@
 #   Readline_ROOT_DIR
 #
 
-FIND_PACKAGE(PkgConfig QUIET)
+find_package(PkgConfig QUIET)
 
-PKG_CHECK_MODULES(_Readline_PC QUIET readline)
+pkg_check_modules(_Readline_PC QUIET readline)
 
-FIND_PATH(
+find_path(
     Readline_INCLUDE_DIRS
     NAMES readline/readline.h
     PATHS 
@@ -33,7 +33,7 @@ FIND_PATH(
         include
 )
 
-FIND_LIBRARY(
+find_library(
     Readline_readline_LIBRARY
     NAMES readline
     PATHS 
@@ -43,7 +43,7 @@ FIND_LIBRARY(
         lib
 )
 
-FIND_LIBRARY(
+find_library(
     Readline_history_LIBRARY
     NAMES history
     PATHS 
@@ -53,8 +53,8 @@ FIND_LIBRARY(
         lib
 )
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
     Readline
     HANDLE_COMPONENTS
     REQUIRED_VARS 
@@ -63,25 +63,25 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
         Readline_history_LIBRARY
 )
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
     Readline_INCLUDE_DIRS
     Readline_readline_LIBRARY
     Readline_history_LIBRARY
 )
 
-IF(Readline_FOUND)
-    SET(Readline_LIBRARIES
+if(Readline_FOUND)
+    set(Readline_LIBRARIES
         ${Readline_readline_LIBRARY}
         ${Readline_history_LIBRARY}
     )
 
-    IF(NOT TARGET Readline::Readline)
-        ADD_LIBRARY(Readline::Readline INTERFACE IMPORTED)
-        SET_TARGET_PROPERTIES(
+    if(NOT TARGET Readline::Readline)
+        add_library(Readline::Readline INTERFACE IMPORTED)
+        set_target_properties(
             Readline::Readline
             PROPERTIES
                 INTERFACE_LINK_LIBRARIES "${Readline_LIBRARIES}"
                 INTERFACE_INCLUDE_DIRECTORIES "${Readline_INCLUDE_DIRS}"
         )
-    ENDIF()
-ENDIF()
+    endif()
+endif()

@@ -1,32 +1,23 @@
 
-###
-### mdsipd.xinetd / mdsipsd.xinetd
-###
-
 # (SLW) TODO: GLOBUSLICENSE ?
-
-INSTALL(
-    FILES mdsipd.xinetd mdsipsd.xinetd
-    DESTINATION rpm
-)
 
 ###
 ### post_install_script / post_uninstall_script / python_module_install.sh / python_module_remove.sh
 ###
 
 # (SLW) TODO: HUP_TO_INETD, HUP_TO_INETD, HUP_TO_XINETD_SERVICE
-IF(NOT WIN32)
-    SET(HUP_TO_INETD "kill -HUP `/sbin/pidof inetd`")
-    SET(HUP_TO_XINETD "/etc/rc.d/init.d/xinetd restart")
-    SET(HUP_TO_XINETD_SERVICE "service xinetd restart")
-ENDIF()
+if(NOT WIN32)
+    set(HUP_TO_INETD "kill -HUP `/sbin/pidof inetd`")
+    set(HUP_TO_XINETD "/etc/rc.d/init.d/xinetd restart")
+    set(HUP_TO_XINETD_SERVICE "service xinetd restart")
+endif()
 
-CONFIGURE_FILE(
+configure_file(
     post_install_script.in
     ${RPM_DIR}/post_install_script
 )
 
-INSTALL(
+install(
     FILES
         ${RPM_DIR}/post_install_script
         post_uninstall_script
@@ -40,12 +31,12 @@ INSTALL(
 ### etc/envsyms
 ###
 
-CONFIGURE_FILE(
+configure_file(
     envsyms.in
     ${ETC_DIR}/envsyms
 )
 
-INSTALL(
+install(
     FILES ${ETC_DIR}/envsyms
     DESTINATION etc
 )
@@ -54,7 +45,25 @@ INSTALL(
 ### etc/mdsplus.conf.template
 ###
 
-INSTALL(
+install(
     FILES mdsplus.conf.template
     DESTINATION etc
+)
+
+###
+### xinetd
+###
+
+install(
+    FILES mdsipd.xinetd mdsipsd.xinetd
+    DESTINATION rpm
+)
+
+###
+### systemd
+###
+
+install(
+    FILES mdsip.socket mdsip@.service
+    DESTINATION rpm
 )

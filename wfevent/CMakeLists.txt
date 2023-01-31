@@ -3,19 +3,19 @@
 ### wfevent
 ###
 
-FILE(GLOB
+file(GLOB
     _source_list
     "*.c"
 )
 
-ADD_EXECUTABLE(
+add_executable(
     wfevent
     ${_source_list}
 )
 
-INSTALL(TARGETS wfevent)
+install(TARGETS wfevent)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     wfevent
     PUBLIC
         TdiShr

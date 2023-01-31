@@ -3,19 +3,14 @@
 ### tditest
 ###
 
-FILE(GLOB
-    _source_list
-    "*.c"
-)
-
-ADD_EXECUTABLE(
+add_executable(
     tditest
-    ${_source_list}
+    tditest.c
 )
 
-INSTALL(TARGETS tditest)
+install(TARGETS tditest)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     tditest
     PUBLIC
         TdiShr

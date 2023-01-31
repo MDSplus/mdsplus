@@ -1,11 +1,11 @@
 
-IF(Motif_FOUND)
+if(Motif_FOUND)
 
     ###
     ### traverser
     ###
 
-    ADD_EXECUTABLE(
+    add_executable(
         traverser
         main-uil.c
         bxutils-uil.c
@@ -16,20 +16,20 @@ IF(Motif_FOUND)
         GetSupportedDevices.c
     )
 
-    INSTALL(TARGETS traverser)
+    install(TARGETS traverser)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         traverser
         PRIVATE
             Mdsdcl
             XmdsShr
     )
 
-    TARGET_COMPILE_DEFINITIONS(
+    target_compile_definitions(
         traverser
         PRIVATE
             -D_NO_DXm
             -D_LOCAL_ACCESS
     )
 
-ENDIF()
+endif()

@@ -3,22 +3,22 @@
 ### XTreeShr
 ###
 
-FILE(GLOB
+file(GLOB
     _source_list
     "*.c"
 )
 
-ADD_LIBRARY(
-    XTreeShr SHARED
+add_library(
+    XTreeShr
     ${_source_list}
 )
 
-INSTALL(TARGETS XTreeShr)
+install(TARGETS XTreeShr)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     XTreeShr
     PUBLIC
         TdiShr
 )
 
-ADD_STATIC_COPY(XTreeShr)
+add_static_copy(XTreeShr)

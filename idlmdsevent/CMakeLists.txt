@@ -1,18 +1,18 @@
 
-IF(IDL_FOUND)
+if(IDL_FOUND)
 
     ###
     ### IdlMdsEvent
     ###
 
-    ADD_LIBRARY(
+    add_library(
         IdlMdsEvent SHARED
         mdsevent.c
     )
 
-    INSTALL(TARGETS IdlMdsEvent)
+    install(TARGETS IdlMdsEvent)
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         IdlMdsEvent
         PUBLIC
             MdsIpShr
@@ -20,6 +20,6 @@ IF(IDL_FOUND)
             IDL::IDL
     )
 
-    ADD_STATIC_COPY(IdlMdsEvent)
+    add_static_copy(IdlMdsEvent)
 
-ENDIF()
+endif()

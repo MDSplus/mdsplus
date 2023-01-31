@@ -1,11 +1,11 @@
 
-IF(Motif_FOUND)
+if(Motif_FOUND)
 
     ###
     ### XmdsShr
     ###
 
-    ADD_LIBRARY(
+    add_library(
         XmdsShr SHARED
         ListTree.c
         XmdsBells.c
@@ -36,17 +36,32 @@ IF(Motif_FOUND)
         XmdsXdBoxOnOffButton.c
     )
 
-    INSTALL(
+    install(
         TARGETS XmdsShr
     )
 
-    TARGET_LINK_LIBRARIES(
+    target_link_libraries(
         XmdsShr
         PUBLIC
             TdiShr
             Motif::Motif
     )
 
-    ADD_STATIC_COPY(XmdsShr)
+    add_static_copy(XmdsShr)
+
+    # ###
+    # ### wmdcreate
+    # ###
+
+    # add_executable(
+    #     wmdcreate
+    #     wmldbcreate-xmdsshr.c
+    # )
+
+    # target_link_libraries(
+    #     wmdcreate
+    #     PUBLIC
+    #         XmdsShr
+    # )
     
-ENDIF()
+endif()

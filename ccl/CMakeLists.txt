@@ -3,25 +3,29 @@
 ### ccl_commands
 ###
 
-ADD_LIBRARY(
-    ccl_commands SHARED
+add_library(
+    ccl_commands
     ccl_verbs.c
 )
 
-TARGET_LINK_LIBRARIES(
+install(TARGETS ccl_commands)
+
+target_link_libraries(
     ccl_commands
     PUBLIC
         Mdsdcl
         CamShr
 )
 
-INSTALL(TARGETS ccl_commands)
+###
+### Scripts
+###
 
-IF(WIN32)
-    SET(_ext ".bat")
-ENDIF()
+if(WIN32)
+    set(_ext ".bat")
+endif()
 
-INSTALL(
+install(
     FILES mdsccl${_ext}
     PERMISSIONS ${MODE_755}
     TYPE BIN

@@ -1,28 +1,28 @@
 
-ADD_SUBDIRECTORY(backends/check)
+add_subdirectory(backends/check)
 
 ###
 ### MdsTest
 ###
 
-ADD_LIBRARY(
+add_library(
     MdsTest STATIC
     base_backend.c
 )
 
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     MdsTest
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-TARGET_COMPILE_DEFINITIONS(
+target_compile_definitions(
     MdsTest
     PUBLIC
         -D_TESTING
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     MdsTest
     PROPERTIES
         POSITION_INDEPENDENT_CODE ON
@@ -32,25 +32,25 @@ SET_TARGET_PROPERTIES(
 ### MdsTestBackend
 ###
 
-ADD_LIBRARY(
+add_library(
     MdsTestBackend STATIC
     check_backend.c
 )
 
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     MdsTestBackend
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/backends/check
 )
 
-TARGET_COMPILE_DEFINITIONS(
+target_compile_definitions(
     MdsTestBackend
     PUBLIC
         -D_TESTING
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     MdsTestBackend
     PROPERTIES
         POSITION_INDEPENDENT_CODE ON
@@ -62,19 +62,19 @@ SET_TARGET_PROPERTIES(
 
 # TODO: Improve
 
-ADD_LIBRARY(
-    MdsTestShr SHARED
+add_library(
+    MdsTestShr
     $<TARGET_OBJECTS:Check>
     $<TARGET_OBJECTS:MdsTestBackend>
 )
 
-TARGET_COMPILE_DEFINITIONS(
+target_compile_definitions(
     MdsTestShr
     PUBLIC
         -D_TESTING
 )
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MdsTestShr
     PUBLIC
         # Link to get the links/options/definitions

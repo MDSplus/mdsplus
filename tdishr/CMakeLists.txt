@@ -5,8 +5,7 @@
 
 # Generated Sources
 
-SET(
-    _generated_sources
+set(_generated_sources
     TdiYacc.c
     tdiyacc.h
     TdiYacc.output
@@ -15,39 +14,39 @@ SET(
     tdilex.h
 )
 
-SET(_run_yylex_gen FALSE)
-FOREACH(_filename IN LISTS _generated_sources)
-    IF(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_filename}")
-        MESSAGE("Missing mdsdcl/${_filename}, will run deploy/yylex.gen tdishr")
-        SET(_run_yylex_gen TRUE)
-    ENDIF()
-ENDFOREACH()
+set(_run_yylex_gen FALSE)
+foreach(_filename IN LISTS _generated_sources)
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_filename}")
+        message("Missing mdsdcl/${_filename}, will run deploy/yylex.gen tdishr")
+        set(_run_yylex_gen TRUE)
+    endif()
+endforeach()
 
-IF(_run_yylex_gen)
-    MESSAGE("Running deploy/yylex.gen tdishr")
+if(_run_yylex_gen)
     # TODO: Convert yylex.gen to python
-    EXECUTE_PROCESS(
+    message("Running deploy/yylex.gen tdishr")
+    execute_process(
         COMMAND deploy/yylex.gen tdishr
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
-ENDIF()
+endif()
 
-FILE(GLOB
+file(GLOB
     _source_list
     "*.c"
 )
 
-ADD_LIBRARY(
-    TdiShr SHARED
+add_library(
+    TdiShr
     ${_source_list}
 )
 
-INSTALL(TARGETS TdiShr)
+install(TARGETS TdiShr)
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     TdiShr
     PUBLIC
         TreeShr
 )
 
-ADD_STATIC_COPY(TdiShr)
+add_static_copy(TdiShr)

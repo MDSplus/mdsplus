@@ -17,14 +17,14 @@
 #   libxml2_ROOT_DIR
 #
 
-FIND_PACKAGE(PkgConfig QUIET)
+find_package(PkgConfig QUIET)
 
-PKG_CHECK_MODULES(_libxml2_PC QUIET libxml2)
-IF(NOT _libxml2_PC_FOUND)
+pkg_check_modules(_libxml2_PC QUIET libxml2)
+if(NOT _libxml2_PC_FOUND)
     PKG_CHECK_MODULES(_libxml2_PC QUIET libxml-2.0)
-ENDIF()
+endif()
 
-FIND_PATH(
+find_path(
     libxml2_INCLUDE_DIRS
     NAMES libxml/parser.h
     PATHS 
@@ -34,7 +34,7 @@ FIND_PATH(
         include
 )
 
-FIND_LIBRARY(
+find_library(
     libxml2_LIBRARY
     NAMES xml2
     PATHS 
@@ -44,8 +44,8 @@ FIND_LIBRARY(
         lib
 )
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
     libxml2
     HANDLE_COMPONENTS
     REQUIRED_VARS 
@@ -53,13 +53,13 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
         libxml2_LIBRARY
 )
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
     libxml2_INCLUDE_DIRS
     libxml2_LIBRARY
 )
 
-IF(libxml2_FOUND)
-    IF(NOT TARGET libxml2::libxml2)
+if(libxml2_FOUND)
+    if(NOT TARGET libxml2::libxml2)
         ADD_LIBRARY(libxml2::libxml2 INTERFACE IMPORTED)
         SET_TARGET_PROPERTIES(
             libxml2::libxml2
@@ -67,5 +67,5 @@ IF(libxml2_FOUND)
                 INTERFACE_LINK_LIBRARIES "${libxml2_LIBRARY}"
                 INTERFACE_INCLUDE_DIRECTORIES "${libxml2_INCLUDE_DIRS}"
         )
-    ENDIF()
-ENDIF()
+    endif()
+endif()
