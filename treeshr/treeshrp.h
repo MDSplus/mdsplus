@@ -839,6 +839,7 @@ to databases
 #define TREE_PATH_SUFFIX "_path"
 #define TREE_DEFAULT_PATH "default_tree_path"
 #define TREE_PATH_DELIM "/"
+#define TREE_PATH_LIST_DELIM ";"
 
 /************* Prototypes for internal functions *************/
 extern int ConnectTreeRemote(PINO_DATABASE *dblist, char const *tree,
