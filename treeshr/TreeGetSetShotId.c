@@ -73,6 +73,7 @@ static char * PathToFileName(const char * experiment, char * path)
   strcpy(filename, tmp);
   free(tmp);
   
+  // (slwalsh, jas, fsantoro) NOTE: We have no idea if this is even used anymore, possibly remove?
   if (filename[strlen(filename) - 1] == '+')
   {
     size_t i;
@@ -91,15 +92,15 @@ static char * PathToFileName(const char * experiment, char * path)
   return filename;
 }
 
-int ReadShotId(int fd, int * shot)
+int ReadShotId(char * filename, int * shot)
 {
   int status = TreeFAILURE;
-  
-  if (fd != -1)
-  {
+
+  int fd = MDS_IO_OPEN(filename, O_RDONLY, 0);
+  if (fd != -1) {
     status = MDS_IO_READ(fd, shot, sizeof(*shot)) == sizeof(*shot);
     MDS_IO_CLOSE(fd);
-#ifdef WORDS_BIGENDIAN
+  #ifdef WORDS_BIGENDIAN
     if (STATUS_OK)
     {
       int lshot = shot;
@@ -109,26 +110,26 @@ int ReadShotId(int fd, int * shot)
       for (i = 0; i < 4; i++)
         optr[i] = iptr[3 - i];
     }
-#endif
+  #endif
   }
   
   return status;
 }
 
-int WriteShotId(int fd, int shot)
+int WriteShotId(char * filename, int shot, int mode)
 {
   int status = TreeFAILURE;
-  
-  if (fd != -1)
-  {
+
+  int fd = MDS_IO_OPEN(filename, mode, 0664);
+  if (fd != -1) {
     int lshot = shot;
-#ifdef WORDS_BIGENDIAN
+  #ifdef WORDS_BIGENDIAN
     int i;
     char *optr = (char *)&lshot;
     char *iptr = (char *)&shot;
     for (i = 0; i < 4; i++)
       optr[i] = iptr[3 - i];
-#endif
+  #endif
     status = MDS_IO_WRITE(fd, &lshot, sizeof(shot)) == sizeof(shot);
     MDS_IO_CLOSE(fd);
   }
@@ -159,8 +160,7 @@ int TreeGetCurrentShotId(char const *experiment)
       filename = PathToFileName(experiment, path);
       
       if (MDS_IO_EXISTS(filename)) {
-        int fd = MDS_IO_OPEN(filename, O_RDONLY, 0);
-        status = ReadShotId(fd, &shot);
+        status = ReadShotId(filename, &shot);
       }
     }
     
@@ -196,8 +196,7 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
       filename = PathToFileName(experiment, path);
       
       if (MDS_IO_EXISTS(filename)) {
-        int fd = MDS_IO_OPEN(filename, O_WRONLY, 0);
-        status = WriteShotId(fd, shot);
+        status = WriteShotId(filename, shot, O_WRONLY);
       }
     }
     
@@ -209,9 +208,9 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
   }
   free(pathlist);
   
-  // (slw) NOTE: This will potentially create a shotid.sys on a remote host even if 
+  // (slwalsh) NOTE: This will potentially create a shotid.sys on a remote host even if 
   // there is one further down the path, recommend only putting thick client at the end
-  // of tree paths
+  // of tree paths.
   if (STATUS_NOT_OK) {
     pathlist = TreePath(experiment, exp);
     saveptr = NULL;
@@ -224,8 +223,7 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
       if (!thick) {
         filename = PathToFileName(experiment, path);
 
-        int fd = MDS_IO_OPEN(filename, O_RDWR | O_CREAT | O_TRUNC, 0664);
-        status = WriteShotId(fd, shot);
+        status = WriteShotId(filename, shot, O_RDWR | O_CREAT | O_TRUNC);
       }
       
       if (STATUS_OK) {
