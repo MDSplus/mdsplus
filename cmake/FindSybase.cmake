@@ -53,10 +53,9 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     Sybase
-    HANDLE_COMPONENTS
     REQUIRED_VARS 
-        Sybase_INCLUDE_DIRS
         Sybase_LIBRARIES
+        Sybase_INCLUDE_DIRS
 )
 
 mark_as_advanced(
@@ -66,8 +65,11 @@ mark_as_advanced(
 )
 
 if(Sybase_FOUND)
+
     if(NOT TARGET Sybase::Sybase)
+
         add_library(Sybase::Sybase INTERFACE IMPORTED)
+        
         set_target_properties(
             Sybase::Sybase
             PROPERTIES
@@ -75,5 +77,7 @@ if(Sybase_FOUND)
                 INTERFACE_INCLUDE_DIRECTORIES "${Sybase_INCLUDE_DIRS}"
                 INTERFACE_LINK_LIBRARIES "${Sybase_LIBRARIES}"
         )
+
     endif()
+
 endif()

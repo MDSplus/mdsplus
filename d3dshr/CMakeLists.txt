@@ -15,7 +15,7 @@ IF(ENABLE_D3D)
     target_link_libraries(
         MdsD3D
         PUBLIC
-            ${LIBD3}
+            ${D3}
     )
 
 ENDIF()

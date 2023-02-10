@@ -16,8 +16,6 @@ IF(Motif_FOUND)
         evaluate.c
     )
 
-    install(TARGETS dwscope)
-
     target_link_libraries(
         dwscope
         PRIVATE
@@ -29,6 +27,8 @@ IF(Motif_FOUND)
         PRIVATE
             -D_LOCAL_ACCESS
     )
+
+    install(TARGETS dwscope)
 
     ###
     ### dwscope_remote
@@ -42,14 +42,14 @@ IF(Motif_FOUND)
         RemoteDummies.c
     )
 
-    install(TARGETS dwscope_remote)
-
     target_link_libraries(
         dwscope_remote
         PRIVATE
             XmdsShr-static
             MdsIpShr
     )
+
+    install(TARGETS dwscope_remote)
 
     ###
     ### dwpad
@@ -61,13 +61,13 @@ IF(Motif_FOUND)
         dwscopesubs.c
     )
 
-    install(TARGETS dwpad)
-
     target_link_libraries(
         dwpad
         PRIVATE
             XmdsShr
     )
+
+    install(TARGETS dwpad)
 
     ###
     ### Scripts

@@ -130,14 +130,13 @@ find_program(
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     Motif
-    HANDLE_COMPONENTS
-    REQUIRED_VARS 
+    REQUIRED_VARS # The first one is displayed in the message
+        Motif_Xm_LIBRARY
         Motif_Xm_INCLUDE_DIR
         Motif_Mrm_INCLUDE_DIR
         Motif_Uil_INCLUDE_DIR
         Motif_X11_INCLUDE_DIR
         Motif_Xt_INCLUDE_DIR
-        Motif_Xm_LIBRARY
         Motif_Mrm_LIBRARY
         Motif_Uil_LIBRARY
         Motif_X11_LIBRARY
@@ -160,6 +159,7 @@ mark_as_advanced(
 )
 
 if(Motif_FOUND)
+
     set(Motif_INCLUDE_DIRS
         ${Motif_Xm_INCLUDE_DIR}
         ${Motif_Mrm_INCLUDE_DIR}
@@ -177,13 +177,16 @@ if(Motif_FOUND)
     )
 
     if(NOT TARGET Motif::Motif)
+
         add_library(Motif::Motif INTERFACE IMPORTED)
+
         set_target_properties(
             Motif::Motif
             PROPERTIES
                 INTERFACE_LINK_LIBRARIES "${Motif_LIBRARIES}"
                 INTERFACE_INCLUDE_DIRECTORIES "${Motif_INCLUDE_DIRS}"
         )
+        
     endif()
     
 endif()

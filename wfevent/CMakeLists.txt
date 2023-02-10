@@ -13,10 +13,10 @@ add_executable(
     ${_source_list}
 )
 
-install(TARGETS wfevent)
-
 target_link_libraries(
     wfevent
     PUBLIC
         TdiShr
 )
+
+install(TARGETS wfevent)

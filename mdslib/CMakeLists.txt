@@ -8,15 +8,21 @@ add_library(
     MdsLib.c
 )
 
-install(TARGETS MdsLib)
-
 target_link_libraries(
     MdsLib
     PUBLIC
         TdiShr
 )
 
+target_compile_definitions(
+    MdsLib
+    PRIVATE
+        -DLIBPREFIX=MdsLib
+)
+
 add_static_copy(MdsLib)
+
+install(TARGETS MdsLib MdsLib-static)
 
 ###
 ### MdsLib_client
@@ -26,8 +32,6 @@ add_library(
     MdsLib_client
     MdsLib.c
 )
-
-install(TARGETS MdsLib_client)
 
 target_link_libraries(
     MdsLib_client
@@ -43,6 +47,8 @@ target_compile_definitions(
 
 add_static_copy(MdsLib_client)
 
+install(TARGETS MdsLib_client MdsLib_client-static)
+
 ###
 ### MdsLib_fortran
 ###
@@ -51,8 +57,6 @@ add_library(
     MdsLib_fortran
     MdsLib.c
 )
-
-install(TARGETS MdsLib_fortran)
 
 target_link_libraries(
     MdsLib_fortran
@@ -67,3 +71,5 @@ target_compile_definitions(
 )
 
 add_static_copy(MdsLib_fortran)
+
+install(TARGETS MdsLib_fortran MdsLib_fortran-static)

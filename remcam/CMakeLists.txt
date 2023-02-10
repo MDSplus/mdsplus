@@ -16,10 +16,10 @@ add_library(
     CamSingle.c
 )
 
-install(TARGETS ${_target})
-
 target_link_libraries(
     ${_target}
     PUBLIC
         MdsIpShr
 )
+
+install(TARGETS ${_target})

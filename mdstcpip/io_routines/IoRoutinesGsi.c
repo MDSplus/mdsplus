@@ -22,18 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "globus_common.h"
-#include "globus_gss_assist.h"
-#include "globus_xio.h"
-#include "globus_xio_gsi.h"
-#include "globus_xio_tcp_driver.h"
 
 // Undefine symbols defined again in config.h
 #ifdef _GNU_SOURCE
 #undef _GNU_SOURCE
-#endif
-#ifdef SIZEOF_LONG
-#undef SIZEOF_LONG
 #endif
 
 #include <errno.h>
@@ -46,6 +38,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <sys/wait.h>
 #include <time.h>
+
+#include "globus_common.h"
+#include "globus_gss_assist.h"
+#include "globus_xio.h"
+#include "globus_xio_gsi.h"
+#include "globus_xio_tcp_driver.h"
 
 #include "../mdsip_connections.h"
 

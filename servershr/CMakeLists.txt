@@ -13,8 +13,6 @@ add_library(
     ${_source_list}
 )
 
-install(TARGETS MdsServerShr)
-
 target_link_libraries(
     MdsServerShr
     PUBLIC
@@ -22,3 +20,5 @@ target_link_libraries(
 )
 
 add_static_copy(MdsServerShr)
+
+install(TARGETS MdsServerShr MdsServerShr-static)

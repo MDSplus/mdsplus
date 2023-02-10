@@ -16,7 +16,7 @@ if(WIN32)
         SET(_host_cpu "x86_64")
     endif()
 
-    set(LV_LIB ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools/labview-${_host_cpu}.lib)
+    set(LIBLV ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools/labview-${_host_cpu}.lib)
 
 else()
 
@@ -25,11 +25,9 @@ else()
     ###
 
     add_library(
-        LV SHARED
+        LV
         lv.c
     )
-
-    install(TARGETS LV)
 
     target_link_libraries(
         LV
@@ -41,7 +39,9 @@ else()
         LV PUBLIC ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools
     )
 
-    set(LV_LIB LV)
+    install(TARGETS LV)
+
+    set(LIBLV LV)
 
 endif()
 
@@ -57,15 +57,15 @@ add_library(
     mdstreeobjectswrp.cpp
 )
 
-install(TARGETS MDSobjectsLVShr)
-
 target_link_libraries(
     MDSobjectsLVShr
     PUBLIC
         MdsIpShr
         MdsObjectsCppShr
-        ${LV_LIB}
+        ${LIBLV}
 )
+
+install(TARGETS MDSobjectsLVShr)
 
 if(NOT WIN32)
     set(_lv_name1 "MDSobjectsLVShr")
@@ -76,13 +76,13 @@ if(NOT WIN32)
         BYPRODUCTS ${_lv_name1} ${_lv_name2}
         COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:MDSobjectsLVShr> ${_lv_name1}
         COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:MDSobjectsLVShr> ${_lv_name2}
-        WORKING_DIRECTORY ${LIB_DIR}
+        WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     )
 
     install(
         FILES
-            ${LIB_DIR}/${_lv_name1}
-            ${LIB_DIR}/${_lv_name2}
+            ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${_lv_name1}
+            ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${_lv_name2}
         TYPE LIB
     )
 endif()

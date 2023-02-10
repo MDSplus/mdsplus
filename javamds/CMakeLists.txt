@@ -6,12 +6,10 @@ if(ENABLE_JAVA)
     ###
 
     add_library(
-        JavaMds SHARED
+        JavaMds
         ServerSupport.c
         mdsobjects.c
     )
-
-    install(TARGETS JavaMds)
 
     target_link_libraries(
         JavaMds
@@ -19,5 +17,7 @@ if(ENABLE_JAVA)
             MdsIpShr
             JNI::JNI
     )
+
+    install(TARGETS JavaMds)
 
 endif()

@@ -8,6 +8,4 @@ add_library(
     DemoAdc.c
 )
 
-install(TARGETS DemoAdcShr)
-
 add_static_copy(DemoAdcShr)

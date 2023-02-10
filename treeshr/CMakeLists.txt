@@ -37,12 +37,18 @@ add_library(
     ${_source_list}
 )
 
-install(TARGETS TreeShr)
-
 target_link_libraries(
     TreeShr
     PUBLIC
         MdsShr
 )
 
+target_compile_definitions(
+    TreeShr
+    PRIVATE
+        -DLIBPREFIX=Tree
+)
+
 add_static_copy(TreeShr)
+
+install(TARGETS TreeShr TreeShr-static)

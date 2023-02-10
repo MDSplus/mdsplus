@@ -10,11 +10,9 @@ if(HDF5_FOUND)
     ###
 
     add_library(
-        hdf5tdi SHARED
+        hdf5tdi
         hdf5tdi.c
     )
-
-    install(TARGETS hdf5tdi)
 
     target_link_libraries(
         hdf5tdi
@@ -25,6 +23,8 @@ if(HDF5_FOUND)
 
     add_static_copy(hdf5tdi)
 
+    install(TARGETS hdf5tdi hdf5tdi-static)
+
     ###
     ### hdf5ToMds
     ###
@@ -34,14 +34,14 @@ if(HDF5_FOUND)
         hdf5ToMds.c
     )
 
-    install(TARGETS hdf5ToMds)
-
     target_link_libraries(
         hdf5ToMds
         PUBLIC
             TdiShr
             HDF5::HDF5
     )
+
+    install(TARGETS hdf5ToMds)
 
     ###
     ### MDSplus2HDF5
@@ -52,13 +52,13 @@ if(HDF5_FOUND)
         MDSplus2HDF5.c
     )
 
-    install(TARGETS MDSplus2HDF5)
-
     target_link_libraries(
         MDSplus2HDF5
         PUBLIC
             TdiShr
             HDF5::HDF5
     )
+
+    install(TARGETS MDSplus2HDF5)
 
 endif()

@@ -28,8 +28,7 @@ find_path(
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     IDL
-    HANDLE_COMPONENTS
-    REQUIRED_VARS 
+    REQUIRED_VARS # The first one is displayed in the message
         IDL_INCLUDE_DIRS
 )
 
@@ -38,11 +37,16 @@ mark_as_advanced(
 )
 
 if(IDL_FOUND)
+
     if(NOT TARGET IDL::IDL)
+
         ADD_LIBRARY(IDL::IDL INTERFACE IMPORTED)
+        
         SET_TARGET_PROPERTIES(
             IDL::IDL PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${IDL_INCLUDE_DIRS}"
         )
+
     endif()
+
 endif()

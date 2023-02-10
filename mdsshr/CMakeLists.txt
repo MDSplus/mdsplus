@@ -3,40 +3,62 @@
 ### MdsShr
 ###
 
-file(GLOB
-    _source_list
-    "*.c"
-)
-
 add_library(
     MdsShr
-    ${_source_list}
+    gzipcompress.c
+    librtl.c
+    mds_dsc_string.c
+    MdsCmprs.c
+    MdsCompareXd.c
+    MdsCompress.c
+    MdsEvents.c
+    MdsGet1DxA.c
+    MdsGet1DxS.c
+    MdsGetSetShotId.c
+    MdsGetStdMsg.c
+    mdsmsg.c
+    MdsPk.c
+    MDSprintf.c
+    MdsSandbox.c
+    MdsSerialize.c
+    MdsThreadStatic.c
+    MdsXdRoutines.c
+    UdpEvents.c
+    UdpEventSettings.c
 )
-
-install(TARGETS MdsShr)
 
 target_link_libraries(
     MdsShr
     PUBLIC
-        ${LIBM}
-        ${LIBDL}
-        ${LIBZ}
-        ${LIBLZMA}
-        libxml2::libxml2
+        ${CMAKE_DL_LIBS}
         Iconv::Iconv
+        LibLZMA::LibLZMA
+        LibM::LibM
+        LibXml2::LibXml2
         Threads::Threads
+        ZLIB::ZLIB
+)
+
+target_compile_definitions(
+    MdsShr
+    PRIVATE
+        -DLIBPREFIX=Mds
 )
 
 if(WIN32)
+
     TARGET_LINK_LIBRARIES(
         MdsShr
         PUBLIC
             iphlpapi
             ws2_32
     )
+
 endif()
 
 add_static_copy(MdsShr)
+
+install(TARGETS MdsShr MdsShr-static)
 
 ###
 ### Documentation

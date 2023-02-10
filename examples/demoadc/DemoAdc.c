@@ -52,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PI 3.14159265358
 static int totSamples = 65536;
 static double frequency;
-static int pts;
+// static int pts;
 static int confOk;
 // Return 0 if succesful, -1 if any argument is not correct
 int initialize(char *name, int clockFreq, int postTriggerSamples)
@@ -90,6 +90,7 @@ int initialize(char *name, int clockFreq, int postTriggerSamples)
 
 int acquire(char *name, short *c1, short *c2, short *c3, short *c4)
 {
+  (void)name;
   int i;
   //      it is assumed that c1,c2,c3,c4 arrays have totSamples elements
   if (!confOk)

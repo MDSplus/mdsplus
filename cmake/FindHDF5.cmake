@@ -44,10 +44,9 @@ find_library(
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     HDF5
-    HANDLE_COMPONENTS
-    REQUIRED_VARS
-        HDF5_INCLUDE_DIRS
+    REQUIRED_VARS # The first one is displayed in the message
         HDF5_LIBRARIES
+        HDF5_INCLUDE_DIRS
 )
 
 mark_as_advanced(
@@ -56,13 +55,18 @@ mark_as_advanced(
 )
 
 if(HDF5_FOUND)
+
     if(NOT TARGET HDF5::HDF5)
+
         add_library(HDF5::HDF5 INTERFACE IMPORTED)
+
         set_target_properties(
             HDF5::HDF5
             PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${HDF5_INCLUDE_DIRS}"
                 INTERFACE_LINK_LIBRARIES "${HDF5_LIBRARIES}"
         )
+
     endif()
+    
 endif()

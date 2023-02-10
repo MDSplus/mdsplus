@@ -1,20 +1,11 @@
 
-# (SLW) TODO
-if(VMS)
+###
+### MdsVme
+###
 
-    ###
-    ### MdsVme
-    ###
+add_library(
+    MdsVme
+    mdsvme.c
+)
 
-    add_library(
-        MdsVme
-        mdsvme.c
-    )
-
-    target_link_libraries(
-        MdsVme
-        PRIVATE
-            ${LIBDL}
-    )
-
-endif()
+add_static_copy(MdsVme)

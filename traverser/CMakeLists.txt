@@ -16,8 +16,6 @@ if(Motif_FOUND)
         GetSupportedDevices.c
     )
 
-    install(TARGETS traverser)
-
     target_link_libraries(
         traverser
         PRIVATE
@@ -31,5 +29,7 @@ if(Motif_FOUND)
             -D_NO_DXm
             -D_LOCAL_ACCESS
     )
+
+    install(TARGETS traverser)
 
 endif()

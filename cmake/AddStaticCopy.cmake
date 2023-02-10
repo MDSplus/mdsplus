@@ -8,8 +8,6 @@ macro(add_static_copy _target)
             $<TARGET_OBJECTS:${_target}>
         )
 
-        install(TARGETS "${_target}-static")
-
         set_target_properties(
             "${_target}-static"
             PROPERTIES
@@ -83,7 +81,7 @@ macro(add_static_copy _target)
 
     else()
 
-        add_library(${_target} ALIAS "${_target}-static")
+        add_library("${_target}-static" ALIAS ${_target})
 
     endif()
 

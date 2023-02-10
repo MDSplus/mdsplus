@@ -3,8 +3,8 @@
 ### MitDevices
 ###
 
-ADD_LIBRARY(
-    MitDevices SHARED
+add_library(
+    MitDevices
     
     # Devices
     dt200.c
@@ -101,33 +101,33 @@ ADD_LIBRARY(
     gen_device_msg.c
 )
 
-INSTALL(TARGETS MitDevices)
-
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     MitDevices
     PUBLIC
         IDL::IDL
         Motif::Motif
 )
 
-ADD_STATIC_COPY(MitDevices)
+add_static_copy(MitDevices)
+
+install(TARGETS MitDevices MitDevices-static)
 
 # MIT$DEVICES
 
-SET(_output "${CMAKE_SHARED_LIBRARY_PREFIX}MIT$DEVICES${CMAKE_SHARED_LIBRARY_SUFFIX}")
+set(_output "${CMAKE_SHARED_LIBRARY_PREFIX}MIT$DEVICES${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
 # (SLW) TODO: Test this insane escape sequence on other systems
-STRING(REPLACE "$" "\\\$$" _output_escaped "${_output}")
+string(REPLACE "$" "\\\$$" _output_escaped "${_output}")
 
-ADD_CUSTOM_COMMAND(
+add_custom_command(
     TARGET MitDevices POST_BUILD
     BYPRODUCTS ${_output_escaped}
     COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:MitDevices> ${_output_escaped}
-    WORKING_DIRECTORY ${LIB_DIR}
+    WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
 )
 
-INSTALL(
-    FILES ${LIB_DIR}/${_output}
+install(
+    FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${_output}
     TYPE LIB
 )
 
@@ -135,73 +135,73 @@ INSTALL(
 ### MitDevicesIO
 ###
 
-SET(_io_source_list
+add_library(
+    MitDevicesIO
     io.c
     curvefit.c
 )
 
-ADD_LIBRARY(
-    MitDevicesIO SHARED
-    ${_io_source_list}
-)
-
-INSTALL(TARGETS MitDevicesIO)
+install(TARGETS MitDevicesIO)
 
 ###
 ### MitDevicesMsg
 ###
 
-ADD_LIBRARY(
-    MitDevicesMsg SHARED
+add_library(
+    MitDevicesMsg
     mitdevices_msg.c
 )
 
-INSTALL(TARGETS MitDevicesMsg)
+install(TARGETS MitDevicesMsg)
 
 ###
 ### Idl
 ###
 
-# ADD_LIBRARY(
-#     Idl SHARED
+# add_library(
+#     Idl
 #     callidl.c
 # )
 
-# TARGET_LINK_LIBRARIES(
+# target_link_libraries(
 #     Idl
 #     PUBLIC
 #         IDL::IDL
 #         Motif::Motif
 # )
 
-###
-### dc1394_support2
-###
+if(DC1394_FOUND)
 
-# TODO DC1394_SUPPORT / DC1394_SUPPORT2
+    ###
+    ### dc1394_support2
+    ###
 
-FIND_LIBRARY(LIBDC1394 dc1394)
-FIND_LIBRARY(LIBRAW1394 raw1394)
+    # TODO DC1394_SUPPORT / DC1394_SUPPORT2
 
-ADD_LIBRARY(
-    dc1394_support2 SHARED
-    dc1394_support2.c
-)
+    add_library(
+        dc1394_support2
+        dc1394_support2.c
+    )
 
-INSTALL(TARGETS dc1394_support2)
+    target_link_libraries(
+        dc1394_support2
+        PUBLIC
+            DC1394::DC1394
+    )
 
-TARGET_LINK_LIBRARIES(
-    dc1394_support2
-    PUBLIC
-        ${LIBDC1394}
-        ${LIBRAW1394}
-)
+    install(TARGETS dc1394_support2)
+
+else()
+
+    message(WARNING "Unable to find libdc1394 and libraw1394, not building dc1394_support2")
+
+endif()
 
 ###
 ### reboot_dtaq_satelite / dtacq_update_board.sh
 ###
 
-INSTALL(
+install(
     FILES
         reboot_dtaq_satelite
         dtaq_update_board.sh
@@ -212,7 +212,7 @@ INSTALL(
 ### acq_root_filesystem.tgz / acq_root_filesystem.tgz_ffs
 ###
 
-FILE(GLOB_RECURSE
+file(GLOB_RECURSE
     _dtacq_filesystem
     "acq_root_filesystem/bigffs/*"
     "acq_root_filesystem/bin/*"
@@ -222,33 +222,33 @@ FILE(GLOB_RECURSE
     "acq_root_filesystem/usr/*"
 )
 
-FILE(GLOB_RECURSE
+file(GLOB_RECURSE
     _dtacq_filesystem_ffs
     "acq_root_filesystem/ffs/*"
 )
 
-ADD_CUSTOM_COMMAND(
+add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
     DEPENDS ${_dtacq_filesystem}
     COMMAND ${CMAKE_COMMAND} -E tar -czf ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz ${_dtacq_filesystem}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/acq_root_filesystem
 )
 
-ADD_CUSTOM_COMMAND(
+add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
     DEPENDS ${_dtacq_filesystem_ffs}
     COMMAND ${CMAKE_COMMAND} -E tar -czf ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs ${_dtacq_filesystem_ffs}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/acq_root_filesystem
 )
 
-ADD_CUSTOM_TARGET(
+add_custom_target(
     generate-acq-root-filesystems ALL
     DEPENDS
         ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
         ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs
 )
 
-INSTALL(
+install(
     FILES
         ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz
         ${CMAKE_BINARY_DIR}/acq_root_filesystem.tgz_ffs

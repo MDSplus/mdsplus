@@ -117,10 +117,9 @@ find_library(
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     Globus
-    HANDLE_COMPONENTS
-    REQUIRED_VARS 
-        Globus_INCLUDE_DIR
+    REQUIRED_VARS # The first one is displayed in the message
         Globus_globus_common_LIBRARY
+        Globus_INCLUDE_DIR
         Globus_globus_gridmap_callout_error_LIBRARY
         Globus_globus_gss_assist_LIBRARY
         Globus_globus_gssapi_error_LIBRARY
@@ -141,6 +140,7 @@ mark_as_advanced(
 )
 
 if(Globus_FOUND)
+
     set(Globus_LIBRARIES
         ${Globus_globus_common_LIBRARY}
         ${Globus_globus_gridmap_callout_error_LIBRARY}
@@ -152,12 +152,16 @@ if(Globus_FOUND)
     )
 
     if(NOT TARGET Globus::Globus)
+
         add_library(Globus::Globus INTERFACE IMPORTED)
+
         set_target_properties(
             Globus::Globus 
             PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${Globus_INCLUDE_DIR}"
                 INTERFACE_LINK_LIBRARIES "${Globus_LIBRARIES}"
         )
+        
     endif()
+
 endif()
