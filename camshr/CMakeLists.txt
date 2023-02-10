@@ -48,8 +48,6 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
         RemCamIosb.c
     )
 
-    install(TARGETS CamShr)
-
     target_link_options(
         CamShr
         PRIVATE
@@ -65,6 +63,8 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
             SOVERSION "${MAJOR}"
     )
 
+    install(TARGETS CamShr)
+
     ###
     ### cts_commands
     ###
@@ -74,14 +74,14 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
         verbs.c
     )
 
-    install(TARGETS cts_commands)
-
     target_link_libraries(
         cts_commands
         PUBLIC
             Mdsdcl
             CamShr
     )
+
+    install(TARGETS cts_commands)
 
     ###
     ### Scripts

@@ -5,12 +5,11 @@ list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # Disable "Built target" messages for Makefiles
 set(CMAKE_TARGET_MESSAGES OFF CACHE BOOL "")
+mark_as_advanced(CMAKE_TARGET_MESSAGES)
 
 project(MDSplus)
 
 enable_language(Fortran)
-
-enable_testing()
 
 ###
 ### Options
@@ -21,20 +20,66 @@ enable_testing()
 
 # --x-includes=
 # --x-libraries=
-# --build= CMAKE_BUILD_TYPE?
+# --build=
 # --host= CMAKE_SYSTEM_NAME?
 # --target= CMAKE_SYSTEM_PROCESSOR?
 
 # replaces --disable-shared
 option(BUILD_SHARED_LIBS
-    "Build shared libraries"
+    "Build shared libraries [default: ON]"
+    ON
+)
+
+# replaces --enable-debug
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+
+    set(CMAKE_BUILD_TYPE "Release"
+        CACHE STRING
+        "Type of build to configure, can be one of: Debug, Release, RelWithDebInfo, MinSizeRel [default: Release]"
+        FORCE
+    )
+
+    set_property(
+        CACHE CMAKE_BUILD_TYPE
+        PROPERTY STRINGS
+            "Debug"
+            "Release"
+            "MinSizeRel"
+            "RelWithDebInfo"
+    )
+
+endif()
+
+# replaces --prefix
+# TODO: --exec-prefix
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+  set(CMAKE_INSTALL_PREFIX "/usr/local/mdsplus"
+      CACHE STRING
+      "Where to install architecture-independent files [default: /usr/local/mdsplus]"
+      FORCE
+  )
+
+endif()
+
+# Must be included after CMAKE_INSTALL_PREFIX
+# Defines the following that we use:
+# * CMAKE_INSTALL_BINDIR
+# * CMAKE_INSTALL_LIBDIR
+# * CMAKE_INSTALL_SYSCONFIGDIR
+# * CMAKE_INSTALL_INCLUDEDIR
+# TODO:
+include(GNUInstallDirs)
+
+option(ENABLE_TESTS
+    "Build test frameworks and executables [default: ON]"
     ON
 )
 
 if(WIN32)
     # replaces --disable-largefile
     option(ENABLE_LARGEFILE
-        "Enable support for large files"
+        "Enable support for large files [default: ON]"
         ON
     )
 endif()
@@ -42,14 +87,14 @@ endif()
 if(NOT WIN32)
     # replaces --enable-perf
     option(ENABLE_PERF
-        "Collect performance statistics (linux only)"
+        "Collect performance statistics (linux only) [default: OFF]"
         OFF
     )
 endif()
 
 # replaces --disable-java
 option(ENABLE_JAVA
-    "Build java libraries and applications"
+    "Build java libraries and applications [default: ON]"
     ON
 )
 
@@ -59,45 +104,45 @@ option(JAVA_ONLY "")
 
 # replaces --enable-d3d
 option(ENABLE_D3D
-    "Build d3d ptdata access library located in $D3DLIB_PATH."
+    "Build MdsD3D library against d3 library located in $D3DLIB_PATH [default: OFF]"
     OFF
 )
 
 # (SLW) TODO Investigate
 # replaces --disable-xmltest
 option(ENABLE_XMLTEST
-    "Try to compile and run a test LIBXML program."
+    "Try to compile and run a test LIBXML program [default: ON]"
     ON
 )
 
 # replaces --enable-valgrind
 option(ENABLE_VALGRIND
-    "Enable Valgrind on the unit tests."
+    "Enable Valgrind on the unit tests [default: ON]"
     ON
 )
 
 # TODO: doxygen dot, man, rtf, xml, chm, chi, html
 # replaces --disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
 option(ENABLE_DOXYGEN
-    "Generate doxygen documentation."
+    "Generate doxygen documentation [default: ON]"
     ON
 )
 
 # replaces --enable-werror
 option(ENABLE_WERROR
-    "Treat all warnings as errors (-Werror)."
+    "Treat all warnings as errors (-Werror) [default: ON]"
     OFF
 )
 
 # replaces --disable-wreturns
 option(ENABLE_WRETURNS
-    "Enable warnings about unused return values from functions (-Wreturns)."
+    "Enable warnings about unused return values from functions (-Wreturns) [default: ON]"
     ON
 )
 
 # replaces --enable-wconversion
 option(ENABLE_WCONVERSION
-    "Enable warnings about implicit conversions (-Wconversion)."
+    "Enable warnings about implicit conversions (-Wconversion) [default: ON]"
     OFF
 )
 
@@ -138,7 +183,7 @@ set(JAVA_BOOTCLASSPATH ""
 # replaces --with-gsi=globus-location:flavor
 set(GSI ""
     CACHE STRING
-    "Set in the form of globus-location:flavor. Enables globus GSI for mdsip communications."
+    "Set in the form of flavor or globus-location:flavor. Enables globus GSI for mdsip communications."
 )
 
 # replaces --with-srb=
@@ -180,6 +225,12 @@ set(LIBXML2_DIR ""
     "Location of libxml2 library"
 )
 
+# replaces $PYTHON
+set(PYTHON $ENV{PYTHON}
+    CACHE STRING
+    "The python interpreter to use"
+)
+
 # TODO:
 # replaces --with-x
 option(ENABLE_X
@@ -209,12 +260,27 @@ set(CMAKE_C_FLAGS $ENV{CFLAGS})
 set(CMAKE_CXX_FLAGS $ENV{CXXFLAGS})
 set(CMAKE_Fortran_FLAGS $ENV{FCFLAGS})
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}/_include
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/mdsplus
+
+    ${CMAKE_BINARY_DIR}/_include
+    ${CMAKE_BINARY_DIR}/include
+    ${CMAKE_BINARY_DIR}/include/mdsplus
+)
+
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+mark_as_advanced(CMAKE_EXPORT_COMPILE_COMMANDS)
 
-add_definitions(
+add_compile_definitions(
     # (SLW) TODO: Move to testing/backends/check or remove altogether
-    -DHAVE_CONFIG_H # Do we have mdsplus/mdsconfig.h
+    HAVE_CONFIG_H # Do we have mdsplus/mdsconfig.h
 )
 
 if(MSVC)
@@ -224,17 +290,25 @@ else()
 endif()
 
 if(ENABLE_WERROR)
+
     if(MSVC)
         add_compile_options(/WX)
     else()
         add_compile_options(-Werror)
     endif()
+
 endif()
 
 if(NOT ENABLE_WRETURNS) # -Wunused-result is on by default in gcc and clang
+
     if(NOT MSVC)
         add_compile_options(-Wno-unused-result)
     endif()
+
+endif()
+
+if(ENABLE_TESTS)
+    enable_testing()
 endif()
 
 # if(ENABLE_WCONVERSION)
@@ -242,17 +316,81 @@ endif()
 # endif()
 
 if(ENABLE_LARGEFILE)
+
+    # Check for 32-bit target
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        ADD_DEFINITIONS(
-            -D_FILE_OFFSET_BITS=64
-            -D_LARGE_FILES
+        
+        add_compile_definitions(
+            _FILE_OFFSET_BITS=64
+            _LARGE_FILES
         )
+
     endif()
+
 endif()
 
 ###
 ### Dependencies
 ###
+
+# CMake built-in packages to find
+
+if(PYTHON)
+    set(Python_EXECUTABLE "${PYTHON}")
+else()
+    find_package(Python COMPONENTS Interpreter REQUIRED)
+endif()
+
+# Finds the platform specific threading libraries, usually pthreads
+find_package(Threads REQUIRED)
+
+# Finds the POSIX iconv() family of functions, which might be built into libc
+find_package(Iconv REQUIRED)
+
+# Finds the Basic Linear Algebra Subprograms fortran functions
+find_package(BLAS REQUIRED)
+
+# Finds the LZMA compression library
+find_package(LibLZMA REQUIRED)
+
+# Finds the ZLIB compression library
+find_package(ZLIB REQUIRED)
+
+set(libxml2_ROOT_DIR "${LIBXML2_DIR}")
+find_package(LibXml2 REQUIRED)
+
+# Custom packages to find
+
+# cmake/FindLibM.cmake
+find_package(LibM REQUIRED)
+
+# cmake/FindReadline.cmake
+set(Readline_ROOT_DIR "${READLINE_DIR}")
+find_package(Readline REQUIRED)
+
+# cmake/FindMotif.cmake
+find_package(Motif)
+
+# cmake/FindSybase.cmake
+find_package(Sybase)
+
+# cmake/FindHDF5.cmake
+set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
+find_package(HDF5)
+
+# cmake/FindDC1394.cmake
+find_package(DC1394)
+
+# Configuration-dependent dependencies
+
+if(ENABLE_TESTS)
+
+    # cmake/FindLibRT.cmake
+    find_library(LIBRT rt REQUIRED)
+    # find_package(LibRT REQUIRED)
+    # -lrt
+
+endif()
 
 if(ENABLE_JAVA)
 
@@ -262,7 +400,7 @@ if(ENABLE_JAVA)
 
     find_package(Java COMPONENTS Runtime Development REQUIRED)
     find_package(JNI REQUIRED)
-    
+
     include(UseJava)
 
     find_program(mvn_EXECUTABLE mvn)
@@ -274,7 +412,7 @@ if(ENABLE_IDL)
     if(IDL_DIR)
         set(IDL_ROOT_DIR "${IDL_DIR}")
     elseif(NOT IDL_FOUND)
-        set(IDL_ROOT_DIR 
+        set(IDL_ROOT_DIR
             /usr/local/harris/idl
             /usr/local/exelis/idl
             /usr/local/itt/idl
@@ -291,83 +429,54 @@ endif()
 if(ENABLE_D3D)
 
     find_library(
-        LIBD3
+        D3
         NAMES d3
         PATHS $ENV{D3DLIB_PATH}
         REQUIRED
     )
 
-    mark_as_advanced(LIBD3)
+    mark_as_advanced(D3)
 
 endif()
 
 if(GSI)
 
-    STRING(REPLACE ":" ";" _gsi_list "${GSI}")
-    LIST(GET _gsi_list 0 Globus_ROOT_DIR)
-    LIST(GET _gsi_list 1 Globus_FLAVOR)
+    string(REPLACE ":" ";" _gsi_list "${GSI}")
+    list(LENGTH _gsi_list _gsi_list_length)
+
+    if(_gsi_list_length LESS 2)
+        set(Globus_FLAVOR ${_gsi_list})
+    else()
+        list(GET _gsi_list 0 Globus_ROOT_DIR)
+        list(GET _gsi_list 1 Globus_FLAVOR)
+    endif()
 
     # (SLW) TODO: pthr???
-        
+
     # cmake/FindGlobus.cmake
-    find_package(Globus)
+    find_package(Globus REQUIRED)
+
+    # Only used by Roam, which is only enabled with Globus
+    find_package(CURL REQUIRED)
 
 endif()
-
-find_package(Python COMPONENTS Interpreter REQUIRED)
-
-find_package(Threads REQUIRED)
-
-find_package(Iconv REQUIRED)
-
-# cmake/FindReadline.cmake
-set(Readline_ROOT_DIR "${READLINE_DIR}")
-find_package(Readline REQUIRED)
-
-# cmake/Findlibxml2.cmake
-find_package(libxml2 REQUIRED)
-
-# cmake/FindMotif.cmake
-find_package(Motif)
-
-# cmake/FindSybase.cmake
-find_package(Sybase)
-
-# cmake/FindHDF5.cmake
-set(HDF5_ROOT_DIR $ENV{HDF5_DIR})
-find_package(HDF5)
-
-find_library(LIBM m QUIET)
-find_library(LIBZ z QUIET)
-find_library(LIBLZMA lzma QUIET)
-find_library(LIBBLAS blas QUIET)
-find_library(LIBRT rt QUIET)
-find_library(LIBCURL curl QUIET)
-set(LIBDL "${CMAKE_DL_LIBS}")
-
-mark_as_advanced(LIBM LIBZ LIBLZMA LIBBLAS LIBRT LIBCURL LIBDL)
 
 ###
 ### Check for includes, Libraries, and Symbols
 ###
 
-include(CheckIncludeFile)
 include(CheckIncludeFiles)
-include(CheckLibraryExists)
 include(CheckSymbolExists)
 
-# C99
-check_include_file("stdint.h" HAVE_STDINT_H) # TODO: Remove
-
 # POSIX
-check_include_file("alloca.h" HAVE_ALLOCA_H) # TODO: Remove?
-check_include_file("grp.h" HAVE_GRP_H)
-check_include_file("pthread.h" HAVE_PTHREAD_H)
-check_include_file("pwd.h" HAVE_PWD_H)
-check_include_file("sys/resource.h" HAVE_SYS_RESOURCE_H)
-check_include_file("sys/types.h" HAVE_SYS_TYPES_H)
-check_include_file("unistd.h" HAVE_UNISTD_H)
-check_include_file("sys/filio.h" HAVE_SYS_FILIO_H)
+check_include_files("alloca.h" HAVE_ALLOCA_H) # TODO: Remove?
+check_include_files("grp.h" HAVE_GRP_H)
+check_include_files("pthread.h" HAVE_PTHREAD_H)
+check_include_files("pwd.h" HAVE_PWD_H)
+check_include_files("sys/resource.h" HAVE_SYS_RESOURCE_H)
+check_include_files("sys/types.h" HAVE_SYS_TYPES_H)
+check_include_files("unistd.h" HAVE_UNISTD_H)
+check_include_files("sys/filio.h" HAVE_SYS_FILIO_H)
 check_symbol_exists(clock_gettime "time.h" HAVE_CLOCK_GETTIME)
 check_symbol_exists(fork "unistd.h" HAVE_FORK)
 check_symbol_exists(getaddrinfo "netdb.h" HAVE_GETADDRINFO)
@@ -380,10 +489,10 @@ check_symbol_exists(pthread_lock_global_np "pthread.h" HAVE_PTHREAD_LOCK_GLOBAL_
 check_include_files("sybdb.h;sybfront.h" HAVE_SYBASE) # TODO: Improve
 
 # VxWorks Real-Time Operating System
-check_include_file("vxWorks.h" HAVE_VXWORKS_H)
+check_include_files("vxWorks.h" HAVE_VXWORKS_H)
 
 # Readline
-check_include_file("readline/readline.h" HAVE_READLINE_READLINE_H)
+check_include_files("readline/readline.h" HAVE_READLINE_READLINE_H)
 check_symbol_exists("rl_set_signals" "readline/readline.h" HAVE_RL_SET_SIGNALS)
 
 # Valgrind
@@ -393,27 +502,11 @@ check_include_files("valgrind/valgrind.h" HAVE_VALGRIND_H)
 check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
 
 # TODO HAVE_VISIBILITY
-set(HAVE_VISIBILITY 1)
+set(HAVE_VISIBILITY ON)
 
 ###
 ### Install
 ###
-
-set(BIN_DIR ${CMAKE_BINARY_DIR}/bin)
-set(LIB_DIR ${CMAKE_BINARY_DIR}/lib)
-set(ETC_DIR ${CMAKE_BINARY_DIR}/etc)
-set(UID_DIR ${CMAKE_BINARY_DIR}/uid)
-set(BIN_DIR ${CMAKE_BINARY_DIR}/bin)
-set(RPM_DIR ${CMAKE_BINARY_DIR}/rpm)
-
-file(MAKE_DIRECTORY 
-    ${BIN_DIR}
-    ${LIB_DIR}
-    ${ETC_DIR}
-    ${UID_DIR}
-    ${BIN_DIR}
-    ${RPM_DIR}
-)
 
 set(MODE_777
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
@@ -429,8 +522,8 @@ set(MODE_755
 
 set(MODE_644
     OWNER_READ OWNER_WRITE
-    GROUP_READ            
-    WORLD_READ            
+    GROUP_READ
+    WORLD_READ
 )
 
 install(
@@ -449,25 +542,14 @@ install(
         trees
         xml
         ${CMAKE_BINARY_DIR}/include
-        ${CMAKE_BINARY_DIR}/uid
     DESTINATION .
     USE_SOURCE_PERMISSIONS
     PATTERN "*.in" EXCLUDE
+    PATTERN "Makefile" EXCLUDE
     PATTERN "Makefile.*" EXCLUDE
     PATTERN "CMakeLists.txt" EXCLUDE
     PATTERN "*.pyc" EXCLUDE
     PATTERN "__pycache__" EXCLUDE
-)
-
-install(
-    DIRECTORY python/MDSplus
-    DESTINATION python
-    USE_SOURCE_PERMISSIONS
-    PATTERN "*.pyc" EXCLUDE
-    PATTERN "__pycache__" EXCLUDE
-    PATTERN "*.in" EXCLUDE
-    PATTERN "Makefile.*" EXCLUDE
-    PATTERN "CMakeLists.txt" EXCLUDE
 )
 
 install(
@@ -486,21 +568,15 @@ install(
 )
 
 install(
-    DIRECTORY
+    DIRECTORY tdi
     DESTINATION local/tdi
 )
-
-# (SLW) TODO: 
-set(LIBPATH "LD_LIBRARY_PATH")
 
 ###
 ### Generate _include/_mdsversion.h
 ###
 
 include(GitRevision)
-
-# (SLW) TODO
-set(LIBPREFIX "Mds")
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/_include/_mdsversion.h.in
@@ -511,22 +587,15 @@ configure_file(
 ### Generate include/mdsplus/mdsconfig.h
 ###
 
-# (SLW) TODO
-set(SHARELIB_TYPE "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+if(BUILD_SHARED_LIBS)
+    set(SHARELIB_TYPE "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+else()
+    set(SHARELIB_TYPE "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+endif()
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/include/mdsplus/mdsconfig.h.in
     ${CMAKE_BINARY_DIR}/include/mdsplus/mdsconfig.h
-)
-
-include_directories(
-    ${CMAKE_SOURCE_DIR}/_include
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/mdsplus
-
-    ${CMAKE_BINARY_DIR}/_include
-    ${CMAKE_BINARY_DIR}/include
-    ${CMAKE_BINARY_DIR}/include/mdsplus
 )
 
 ###
@@ -555,7 +624,7 @@ include_directories(
 #         ${_test_case_name}
 #         PROPERTIES
 #             ENVIRONMENT_MODIFICATION "${_env_mods}"
-                
+
 #     )
 # endforeach()
 
@@ -634,11 +703,11 @@ add_custom_target(
 ### Libraries, Executables
 ###
 
+# Some libraries need both a Shared and a Static version, this includes a macro that helps streamline 
+# that and create a second library target with the suffix `-static`. For `MdsShr` for example, it will
+# create the target `MdsShr-static`, which could then produce `libMdsShr.a`. If BUILD_SHARED_LIBS=OFF,
+# then only the static libraries are built, and the `-static` targets will be ALIAS targets instead.
 include(AddStaticCopy)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIB_DIR})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIR})
 
 # Fortran Libraries
 
@@ -658,7 +727,7 @@ add_subdirectory(mdsmisc) # Requires XTreeShr
 add_subdirectory(mdsdcl) # Requires MdsIpShr
 add_subdirectory(servershr) # Requires Mdsdcl
 add_subdirectory(mdssql)
-add_subdirectory(mdsvme)
+# add_subdirectory(mdsvme)
 
 # Language Binding Libraries
 
@@ -675,7 +744,7 @@ add_subdirectory(tdic)
 add_subdirectory(tditest)
 add_subdirectory(setevent)
 add_subdirectory(wfevent)
-# actions has actlog
+# actlog is in actions/
 
 # Graphical Tools
 
@@ -689,19 +758,19 @@ add_subdirectory(idlmdswidgets)
 
 add_subdirectory(mitdevices)
 add_subdirectory(camshr)
-add_subdirectory(remcam) # Requires camshr
+add_subdirectory(remcam) # Requires CamShr
 add_subdirectory(pydevices)
 
 # Mdsdcl commands
 
 add_subdirectory(tcl)
 add_subdirectory(ccl) # Requires CamShr
-# camshr has cts_commands
+# cts_commands is in camshr/
 
 # Globus
 
 add_subdirectory(roam)
-# mdstcpip has MdsIpGSI
+# MdsIpGSI is in mdstcpip/
 
 # Configuration
 
@@ -709,21 +778,27 @@ add_subdirectory(rpm)
 add_subdirectory(scripts)
 add_subdirectory(manpages)
 
-###
-### Testing
-###
-
-add_subdirectory(testing)
-add_subdirectory(mdsshr/testing)
-# add_subdirectory(treeshr/testing)
-# add_subdirectory(mdslib/testing)
-# add_subdirectory(mdstcpip/testing)
-add_subdirectory(tdishr/testing)
-# add_subdirectory(tditest/testing)
-# add_subdirectory(mdsobjects/cpp/testing)
-add_subdirectory(python/MDSplus/tests)
+# Examples
 
 add_subdirectory(examples/demoadc)
+
+if(ENABLE_TESTS)
+
+    ###
+    ### Testing
+    ###
+
+    add_subdirectory(testing)
+    add_subdirectory(mdsshr/testing)
+    # add_subdirectory(treeshr/testing)
+    # add_subdirectory(mdslib/testing)
+    # add_subdirectory(mdstcpip/testing)
+    add_subdirectory(tdishr/testing)
+    # add_subdirectory(tditest/testing)
+    # add_subdirectory(mdsobjects/cpp/testing)
+    add_subdirectory(python/MDSplus/tests)
+
+endif()
 
 if(Motif_FOUND)
 
@@ -741,10 +816,12 @@ if(Motif_FOUND)
         "xmdsshr/*.uil"
     )
 
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/uid)
+
     foreach(_uil IN LISTS _uil_list)
         cmake_path(GET _uil STEM LAST_ONLY _stem)
-        set(_uid ${UID_DIR}/${_stem}.uid)
-        
+        set(_uid ${CMAKE_CURRENT_BINARY_DIR}/uid/${_stem}.uid)
+
         add_custom_command(
             OUTPUT ${_uid}
             DEPENDS ${_uil}
@@ -757,6 +834,11 @@ if(Motif_FOUND)
     add_custom_target(
         generate-uids ALL
         DEPENDS ${_uid_list}
+    )
+
+    install(
+        DIRECTORY ${CMAKE_BINARY_DIR}/uid
+        DESTINATION .
     )
 
 endif()

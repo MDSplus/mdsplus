@@ -6,7 +6,7 @@ if(Motif_FOUND)
     ###
 
     add_library(
-        XmdsShr SHARED
+        XmdsShr
         ListTree.c
         XmdsBells.c
         XmdsComplain.c

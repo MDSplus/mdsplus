@@ -8,11 +8,11 @@ add_executable(
     tditest.c
 )
 
-install(TARGETS tditest)
-
 target_link_libraries(
     tditest
     PUBLIC
         TdiShr
         Readline::Readline
 )
+
+install(TARGETS tditest)

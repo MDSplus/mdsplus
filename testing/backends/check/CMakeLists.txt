@@ -32,4 +32,6 @@ TARGET_LINK_LIBRARIES(
     Check
     PUBLIC
         ${LIBRT}
+        Threads::Threads
+        LibM::LibM
 )

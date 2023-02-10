@@ -77,17 +77,8 @@
 /* Define if you have the <vxWorks.h> header file. */
 #cmakedefine HAVE_VXWORKS_H
 
-/* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine01 HAVE_STDINT_H
-
 /* Set SHARELIB_TYPE to ".so",".sl",".a" etc... */
 #define SHARELIB_TYPE "@SHARELIB_TYPE@"
-
-/* The size of `int *', as computed by sizeof. */
-#define SIZEOF_INT_P sizeof(int *)
-
-/* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG sizeof(long)
 
 /* Define if you want to collect performance statistics -- linux only */
 #cmakedefine USE_PERF

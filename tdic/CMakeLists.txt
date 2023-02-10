@@ -8,8 +8,6 @@ add_library(
     TdiShrExt.c
 )
 
-install(TARGETS TdiShrExt)
-
 target_link_libraries(
     TdiShrExt
     PUBLIC
@@ -17,6 +15,8 @@ target_link_libraries(
 )
 
 add_static_copy(TdiShrExt)
+
+install(TARGETS TdiShrExt TdiShrExt-static)
 
 ###
 ### tdic
@@ -27,11 +27,11 @@ add_executable(
     tdic.c
 )
 
-install(TARGETS tdic)
-
 target_link_libraries(
     tdic
     PUBLIC
         MdsIpShr
         Readline::Readline
 )
+
+install(TARGETS tdic)

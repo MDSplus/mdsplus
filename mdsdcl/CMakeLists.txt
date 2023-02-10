@@ -6,7 +6,7 @@
 # Generated Sources
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/mdsdclVersionInfo.c.in
+    mdsdclVersionInfo.c.in
     ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
 )
 
@@ -50,8 +50,6 @@ add_library(
     ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
 )
 
-install(TARGETS Mdsdcl)
-
 target_include_directories(
     Mdsdcl
     PUBLIC
@@ -71,6 +69,14 @@ target_compile_options(
         -Wno-sign-compare
         -Wno-unused-parameter
 )
+
+target_compile_definitions(
+    Mdsdcl
+    PRIVATE
+        -DLIBPREFIX=Mdsdcl
+)
+
+install(TARGETS Mdsdcl)
 
 # set_source_files_properties(
 #     cmdParseLex.c
@@ -93,10 +99,10 @@ add_executable(
     mdsdcl.c
 )
 
-install(TARGETS mdsdcl)
-
 target_link_libraries(
     mdsdcl
     PUBLIC
         Mdsdcl
 )
+
+install(TARGETS mdsdcl)

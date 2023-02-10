@@ -6,7 +6,7 @@ if(IDL_FOUND)
     ###
 
     add_library(
-        IdlMdsWidgets SHARED
+        IdlMdsWidgets
         cw_wveditv5.c
     )
 

@@ -13,12 +13,18 @@ add_library(
     ${_source_list}
 )
 
-install(TARGETS XTreeShr)
-
 target_link_libraries(
     XTreeShr
     PUBLIC
         TdiShr
 )
 
+target_compile_definitions(
+    XTreeShr
+    PRIVATE
+        -DLIBPREFIX=XTree
+)
+
 add_static_copy(XTreeShr)
+
+install(TARGETS XTreeShr XTreeShr-static)

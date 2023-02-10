@@ -8,14 +8,14 @@ add_library(
     ccl_verbs.c
 )
 
-install(TARGETS ccl_commands)
-
 target_link_libraries(
     ccl_commands
     PUBLIC
         Mdsdcl
         CamShr
 )
+
+install(TARGETS ccl_commands)
 
 ###
 ### Scripts

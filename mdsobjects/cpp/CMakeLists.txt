@@ -14,8 +14,6 @@ add_library(
     mdstree.c
 )
 
-install(TARGETS MdsObjectsCppShr)
-
 target_link_libraries(
     MdsObjectsCppShr
     PUBLIC
@@ -23,3 +21,5 @@ target_link_libraries(
 )
 
 add_static_copy(MdsObjectsCppShr)
+
+install(TARGETS MdsObjectsCppShr MdsObjectsCppShr-static)

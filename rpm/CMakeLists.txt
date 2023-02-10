@@ -14,12 +14,12 @@ endif()
 
 configure_file(
     post_install_script.in
-    ${RPM_DIR}/post_install_script
+    ${CMAKE_CURRENT_BINARY_DIR}/post_install_script
 )
 
 install(
     FILES
-        ${RPM_DIR}/post_install_script
+        ${CMAKE_CURRENT_BINARY_DIR}/post_install_script
         post_uninstall_script
         python_module_install.sh
         python_module_remove.sh
@@ -31,14 +31,18 @@ install(
 ### etc/envsyms
 ###
 
+# (SLW) TODO:
+set(LIBPATH "LD_LIBRARY_PATH")
+
+
 configure_file(
     envsyms.in
-    ${ETC_DIR}/envsyms
+    ${CMAKE_CURRENT_BINARY_DIR}/envsyms
 )
 
 install(
-    FILES ${ETC_DIR}/envsyms
-    DESTINATION etc
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/envsyms
+    TYPE SYSCONF
 )
 
 ###
@@ -47,7 +51,7 @@ install(
 
 install(
     FILES mdsplus.conf.template
-    DESTINATION etc
+    TYPE SYSCONF
 )
 
 ###

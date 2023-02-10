@@ -31,9 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_GETADDRINFO
 #undef HAVE_GETADDRINFO
 #endif
-#ifdef SIZEOF_LONG
-#undef SIZEOF_LONG
-#endif
 
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>

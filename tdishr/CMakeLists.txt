@@ -41,12 +41,18 @@ add_library(
     ${_source_list}
 )
 
-install(TARGETS TdiShr)
-
 target_link_libraries(
     TdiShr
     PUBLIC
         TreeShr
 )
 
+target_compile_definitions(
+    TdiShr
+    PRIVATE
+        -DLIBPREFIX=Tdi
+)
+
 add_static_copy(TdiShr)
+
+install(TARGETS TdiShr TdiShr-static)

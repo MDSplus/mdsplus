@@ -56,11 +56,10 @@ find_library(
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
     Readline
-    HANDLE_COMPONENTS
     REQUIRED_VARS 
-        Readline_INCLUDE_DIRS
         Readline_readline_LIBRARY
         Readline_history_LIBRARY
+        Readline_INCLUDE_DIRS
 )
 
 mark_as_advanced(
@@ -70,18 +69,23 @@ mark_as_advanced(
 )
 
 if(Readline_FOUND)
+
     set(Readline_LIBRARIES
         ${Readline_readline_LIBRARY}
         ${Readline_history_LIBRARY}
     )
 
     if(NOT TARGET Readline::Readline)
+
         add_library(Readline::Readline INTERFACE IMPORTED)
+
         set_target_properties(
             Readline::Readline
             PROPERTIES
                 INTERFACE_LINK_LIBRARIES "${Readline_LIBRARIES}"
                 INTERFACE_INCLUDE_DIRECTORIES "${Readline_INCLUDE_DIRS}"
         )
+
     endif()
+    
 endif()

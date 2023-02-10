@@ -3,45 +3,64 @@
 ### MdsMath
 ###
 
-file(GLOB
-    _source_list
-    "*.f"
-    "*.c"
-)
-
 add_library(
-    MdsMath SHARED
-    ${_source_list}
+    MdsMath
+    boxsmooth.c
+    cmul.f
+    csint.f
+    csval.f
+    dcsint.f
+    dcsval.f
+    dmul.f
+    dpermu.f
+    dppval.f
+    dsrch.f
+    dsvrgn.f
+    gn.f
+    isrch.f
+    msceez.f
+    mskrv1.f
+    mskrv2.f
+    msshch.f
+    mstrms.f
+    permu.f
+    ppval.f
+    smul.f
+    srch.f
+    ssrch.f
+    svign.f
+    svrgn.f
+    toms510.f
+    umach.f
+    zmul.f
 )
 
-install(
-    TARGETS MdsMath
-)
-
-IF(LIBBLAS)
+if(BLAS_FOUND)
 
     target_link_libraries(
         MdsMath
         PUBLIC
-            ${LIBBLAS}
+            BLAS::BLAS
     )
 
-ELSE()
+else()
 
     message("Unable to find libblas, using local copy")
-
-    file(GLOB
-        _blas_source_list
-        "blas/*.f"
-    )
 
     target_sources(
         MdsMath
         PRIVATE
-            ${_blas_source_list}
+            caxpy.f
+            daxpy.f
+            saxpy.f
+            zaxpy.f
+            cgeco.f
+            dgeco.f
+            sgeco.f
+            zgeco.f
     )
 
-ENDIF()
+endif()
 
 # (SLW) TODO: Check compatible fortran?
 target_compile_options(
@@ -51,4 +70,14 @@ target_compile_options(
             -Wno-maybe-uninitialized
             -Wno-compare-reals
         >
+)
+
+target_compile_definitions(
+    MdsMath
+    PRIVATE
+        -DLIBPREFIX=MdsMath
+)
+
+install(
+    TARGETS MdsMath
 )

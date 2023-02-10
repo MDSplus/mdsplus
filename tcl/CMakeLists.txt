@@ -13,13 +13,13 @@ add_library(
     ${_source_list}
 )
 
-install(TARGETS tcl_commands)
-
 target_link_libraries(
     tcl_commands
     PUBLIC
         MdsServerShr
 )
+
+install(TARGETS tcl_commands)
 
 ###
 ### Scripts

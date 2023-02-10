@@ -6,11 +6,9 @@ if(IDL_FOUND)
     ###
 
     add_library(
-        IdlMdsEvent SHARED
+        IdlMdsEvent
         mdsevent.c
     )
-
-    install(TARGETS IdlMdsEvent)
 
     target_link_libraries(
         IdlMdsEvent
@@ -21,5 +19,7 @@ if(IDL_FOUND)
     )
 
     add_static_copy(IdlMdsEvent)
+
+    install(TARGETS IdlMdsEvent IdlMdsEvent-static)
 
 endif()

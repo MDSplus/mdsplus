@@ -13,17 +13,17 @@ if(Globus_FOUND AND Globus_FLAVOR)
         roam_gridmap_callout.c
     )
 
-    install(TARGETS ${_roam_target})
-
     target_link_libraries(
         ${_roam_target}
         PUBLIC
             TdiShr
+            CURL::libcurl
             Globus::Globus
-            ${LIBCURL}
     )
 
     add_static_copy(${_roam_target})
+
+    install(TARGETS ${_roam_target} ${_roam_target}-static)
 
     ###
     ### Roam
@@ -35,11 +35,11 @@ if(Globus_FOUND AND Globus_FLAVOR)
         TARGET ${_roam_target} POST_BUILD
         BYPRODUCTS ${_generic_target}
         COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:${_roam_target}> ${_generic_target}
-        WORKING_DIRECTORY ${LIB_DIR}
+        WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     )
 
     install(
-        FILES ${LIB_DIR}/${_generic_target}
+        FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${_generic_target}
         TYPE LIB
     )
 

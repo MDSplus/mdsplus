@@ -73,8 +73,6 @@ add_library(
     io_routines/IoRoutinesThread.c
 )
 
-install(TARGETS MdsIpShr)
-
 target_link_libraries(
     MdsIpShr
     PUBLIC
@@ -82,10 +80,18 @@ target_link_libraries(
         compression
 )
 
+target_compile_definitions(
+    MdsIpShr
+    PRIVATE
+        -DLIBPREFIX=MdsIp
+)
+
 add_static_copy(MdsIpShr)
 
+install(TARGETS MdsIpShr-static)
+
 ###
-### MdsIpTCP / MdsIpTCPV6
+### MdsIpTCP
 ###
 
 add_library(
@@ -95,6 +101,10 @@ add_library(
 
 install(TARGETS MdsIpTCP)
 
+###
+### MdsIpTCPV6
+###
+
 add_library(
     MdsIpTCPV6
     io_routines/IoRoutinesTcpV6.c
@@ -103,7 +113,7 @@ add_library(
 install(TARGETS MdsIpTCPV6)
 
 ###
-### MdsIpUDT / MdsIpUDTV6
+### MdsIpUDT
 ###
 
 add_library(
@@ -111,20 +121,22 @@ add_library(
     io_routines/IoRoutinesUdt.c
 )
 
-install(TARGETS MdsIpUDT)
-
 target_link_libraries(
     MdsIpUDT
     PRIVATE
         UDT4
 )
 
+install(TARGETS MdsIpUDT)
+
+###
+### MdsIpUDTV6
+###
+
 add_library(
     MdsIpUDTV6
     io_routines/IoRoutinesUdtV6.c
 )
-
-install(TARGETS MdsIpUDTV6)
 
 target_link_libraries(
     MdsIpUDTV6
@@ -132,26 +144,7 @@ target_link_libraries(
         UDT4
 )
 
-if(Globus_FOUND AND Globus_FLAVOR)
-
-    ###
-    ### MdsIpGSI
-    ###
-
-    add_library(
-        MdsIpGSI
-        io_routines/IoRoutinesGsi.c 
-    )
-
-    install(TARGETS MdsIpGSI)
-
-    target_link_libraries(
-        MdsIpGSI
-        PUBLIC
-            Globus::Globus
-    )
-
-endif()
+install(TARGETS MdsIpUDTV6)
 
 ###
 ### mdsip
@@ -162,31 +155,33 @@ add_executable(
     mdsip.c
 )
 
-install(TARGETS mdsip)
-
 target_link_libraries(
     mdsip
     PUBLIC
         MdsIpShr
 )
 
-###
-### mdsip_service
-###
+install(TARGETS mdsip)
 
 if(WIN32)
+
+    ###
+    ### mdsip_service
+    ###
+
     add_executable(
         mdsip_service
         mdsip_service.c
     )
-
-    install(TARGETS mdsip_service)
 
     target_link_libraries(
         mdsip_service
         PUBLIC
             MdsIpShr
     )
+
+    install(TARGETS mdsip_service)
+
 endif()
 
 ###
@@ -199,12 +194,12 @@ ENDIF()
 
 install(
     FILES mdsip.hosts RENAME mdsip.hosts${_win}
-    DESTINATION etc 
+    TYPE SYSCONF
 )
 
 install(
     FILES multi.hosts RENAME multi.hosts${_win}
-    DESTINATION etc 
+    TYPE SYSCONF
 )
 
 ###
@@ -224,7 +219,6 @@ else()
     install(
         FILES
             mdsipd
-            mdsipsd
             mdsip_server
             mdsip-client-ssh
             mdsip-client-sshp
@@ -249,3 +243,33 @@ add_custom_target(
 add_dependencies(
     docs mdstcpip-docs
 )
+
+if(Globus_FOUND AND Globus_FLAVOR)
+
+    ###
+    ### MdsIpGSI
+    ###
+
+    add_library(
+        MdsIpGSI
+        io_routines/IoRoutinesGsi.c 
+    )
+
+    target_link_libraries(
+        MdsIpGSI
+        PUBLIC
+            Globus::Globus
+    )
+
+    install(TARGETS MdsIpGSI)
+
+    ###
+    ### Globus-only Scripts
+    ###
+    
+    install(
+        FILES mdsipsd
+        TYPE BIN
+    )
+
+endif()

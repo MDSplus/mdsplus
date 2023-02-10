@@ -8,10 +8,10 @@ add_library(
     MdsLibIdl.c
 )
 
-install(TARGETS MdsLibIdl)
-
 target_link_libraries(
     MdsLibIdl
     PUBLIC
         TdiShr
 )
+
+install(TARGETS MdsLibIdl)
