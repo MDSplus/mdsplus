@@ -141,9 +141,9 @@ int TreeGetCurrentShotId(char const *experiment)
 {
   int shot = 0;
   int status = TreeFAILURE;
-  char exp[16] = {0};
+  char experiment_lower[16] = {0};
   size_t slen;
-  char * pathlist = TreePath(experiment, exp);
+  char * pathlist = TreePath(experiment, experiment_lower);
   char * filename;
   char * saveptr = NULL;
   char * path = strtok_r(pathlist, TREE_PATH_LIST_DELIM, &saveptr);
@@ -153,11 +153,11 @@ int TreeGetCurrentShotId(char const *experiment)
     if (thick)
     {
       path[slen - 2] = 0;
-      status = TreeGetCurrentShotIdRemote(exp, path, &shot);
+      status = TreeGetCurrentShotIdRemote(experiment_lower, path, &shot);
     }
     else
     {
-      filename = PathToFileName(experiment, path);
+      filename = PathToFileName(experiment_lower, path);
       
       if (MDS_IO_EXISTS(filename)) {
         status = ReadShotId(filename, &shot);
@@ -177,9 +177,9 @@ int TreeGetCurrentShotId(char const *experiment)
 int TreeSetCurrentShotId(char const *experiment, int shot)
 {
   int status = TreeFAILURE;
-  char exp[16] = {0};
+  char experiment_lower[16] = {0};
   size_t slen;
-  char * pathlist = TreePath(experiment, exp);
+  char * pathlist = TreePath(experiment, experiment_lower);
   char * filename;
   char * saveptr = NULL;
   char * path = strtok_r(pathlist, TREE_PATH_LIST_DELIM, &saveptr);
@@ -189,11 +189,11 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
     if (thick)
     {
       path[slen - 2] = 0;
-      status = TreeSetCurrentShotIdRemote(exp, path, shot);
+      status = TreeSetCurrentShotIdRemote(experiment_lower, path, shot);
     }
     else
     {
-      filename = PathToFileName(experiment, path);
+      filename = PathToFileName(experiment_lower, path);
       
       if (MDS_IO_EXISTS(filename)) {
         status = WriteShotId(filename, shot, O_WRONLY);
@@ -212,7 +212,7 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
   // there is one further down the path, recommend only putting thick client at the end
   // of tree paths.
   if (STATUS_NOT_OK) {
-    pathlist = TreePath(experiment, exp);
+    pathlist = TreePath(experiment, experiment_lower);
     saveptr = NULL;
     path = strtok_r(pathlist, TREE_PATH_LIST_DELIM, &saveptr);
     while (path) {
@@ -221,7 +221,7 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
       slen = strlen(path);
       bool thick = (slen > 2) && (path[slen - 1] == ':') && (path[slen - 2] == ':');
       if (!thick) {
-        filename = PathToFileName(experiment, path);
+        filename = PathToFileName(experiment_lower, path);
 
         status = WriteShotId(filename, shot, O_RDWR | O_CREAT | O_TRUNC);
       }
