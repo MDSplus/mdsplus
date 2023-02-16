@@ -199,7 +199,7 @@ Tree::Tree(char const *name, int shot, void *ctx)
 }
 
 Tree::Tree(Tree *tree)
-    : name(tree->name), shot(tree->shot), fromActiveTree(true), ronly(tree->ronly)
+    : name(tree->name), shot(tree->shot), fromActiveTree(true), isEdit(tree->isEdit), ronly(tree->ronly)
 {
   struct TreeThreadContextInfo ttci = {GET_THREAD_ID, tree->getCtx()};
   threadContextV.push_back(ttci);
