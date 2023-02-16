@@ -421,22 +421,22 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   ioctl(fd, RFX_STREAM_SET_LEV_TRIG_COUNT, &trig_lev_count);
   
   
-  //GABRIELE TEST
+  //GABRIELE  FEBR 2023: remove first two fake samples from data fifo
 
+    {
+	int dummy[2];
+	int leftBytes = 8;
+	while(leftBytes > 0)
 	{
-	    int dummy[2];
-	    int leftBytes = 8;
-	    while(leftBytes > 0)
-	    {
-	    	int currRead = read(fd, dummy, leftBytes);
-        	if(currRead < 0)
-        	{
-          	    std::cout << "OHI OHI!\n";
-          	    return;
-          	}
-          	leftBytes -= currRead;
-           }
-	}
+	    int currRead = read(fd, dummy, leftBytes);
+            if(currRead < 0)
+            {
+          	std::cout << "OHI OHI!\n";
+          	return;
+            }
+            leftBytes -= currRead;
+        }
+    }
 
   
   

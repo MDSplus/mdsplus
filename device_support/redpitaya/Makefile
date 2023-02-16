@@ -1,7 +1,7 @@
 
 CC=g++
 
-CFLAGS =  -fPIC  -o2  -Wall -DLINUX -I${MDSPLUS_DIR}/include -I. -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-function
+CFLAGS =  -std=c++11 -fPIC  -o2  -Wall -DLINUX -I${MDSPLUS_DIR}/include -I. -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-function
 LDFLAGS =  -L${MDSPLUS_DIR}/lib  -lpthread -lMdsObjectsCppShr 
 
 
@@ -10,7 +10,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 SHAREDLIB=libredpitaya.so
 EXE=test
 
-all: redpitaya sync_clock
+all: redpitaya 
  
 sync_clock: sync_clock.c
 	$(CC) $(CFLAGS) sync_clock.c -o sync_clock
