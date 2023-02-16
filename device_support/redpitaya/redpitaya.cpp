@@ -21,7 +21,7 @@ extern "C"
                    int inSegmentSamples, double freq, double freq1, int single, int absTriggerTimeFromFPGA, int absTriggerNid);
   int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
                 int trigFromChanA, int trigAboveThreshold, int trigThreshold,
-                int thresholdSamples, int decimation, int deadtime);
+                int thresholdSamples, int decimation, int deadtime, int offsa, int offsb);
   int rpadcTrigger(int fd);
   void rpadcStop(int fd);
   void openTree(char *name, int shot, MDSplus::Tree **treePtr);
@@ -63,6 +63,7 @@ struct rpadc_configuration
   unsigned int post_samples;     // Number of post-trigger samples
   unsigned int decimation;       // Decimation factor (base frequency: 125MHz if internal clock, 1 MHz if synch clock, Clock frequency if external clock)
   unsigned int deadtime;         // Deadtime count, valis when trigger on level, referred to sample count
+  unsigned int offset;           // offset to be applied to both channels (16+16)
 };
 
 static bool stopped = false;
@@ -126,8 +127,8 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
   currVal |= ((config->trig_threshold << 16) & 0xFFFF0000);
   regs.mode_register_enable = 1;
   regs.mode_register = currVal;
-  regs.aux_mode_reg_enable = 1;
-  regs.aux_mode_reg = auxVal;
+  //regs.aux_mode_reg_enable = 1;
+  //regs.aux_mode_reg = auxVal;
 
   regs.pre_register_enable = 1;
   regs.pre_register = config->pre_samples & 0x0000FFFF;
@@ -142,6 +143,11 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
 
   regs.deadtime_register_enable = 1;
   regs.deadtime_register = config->deadtime;
+
+//AGGIUNTA OFFSET
+  regs.offset_reg_enable = 1;
+  regs.offset_reg = config->offset;
+
   ioctl(fd, RFX_STREAM_SET_REGISTERS, &regs);
   usleep(10000);
 
@@ -154,7 +160,7 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
 
   ioctl(fd, RFX_STREAM_CLEAR_DATA_FIFO, NULL);
   // ioctl(fd, RFX_STREAM_FIFO_INT_HALF_SIZE, NULL);
-  ioctl(fd, RFX_STREAM_FIFO_INT_FIRST_SAMPLE, NULL);
+  ioctl(fd, RFX_STREAM_FIFO_INT_FIRST_SAMPLE, NULL); 
 }
 
 static void readConfig(int fd, struct rpadc_configuration *config)
@@ -163,7 +169,7 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   struct rfx_stream_registers regs;
   ioctl(fd, RFX_STREAM_GET_REGISTERS, &regs);
   currVal = regs.mode_register;
-  auxVal = regs.aux_mode_reg;
+  //auxVal = regs.aux_mode_reg;
   if (currVal & 0x00000001)
     config->mode = STREAMING;
   else
@@ -191,17 +197,11 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   {
     if (currVal & 0x00000040)
     {
-    	if (auxVal & 0x0000004)
-      	  config->clock_mode = EXTERNAL;
-        else
-          config->clock_mode = SYNC;
+      	config->clock_mode = EXTERNAL;
     }
     else
     {
-    	if (auxVal & 0x0000004)
       	  config->clock_mode = TRIG_EXTERNAL;
-        else 
-          config->clock_mode = TRIG_ABS;
     }
   }
   
@@ -222,8 +222,8 @@ static void readConfig(int fd, struct rpadc_configuration *config)
   config->pre_samples = regs.pre_register;
   config->decimation = regs.decimator_register + 1;
   config->deadtime = regs.deadtime_register;
+  config->offset = regs.offset_reg;
   
-  printf("Mode Register: %x\t Aux Mode Register: %x\n", regs.mode_register, regs.aux_mode_reg);
 }
 
 static void fifoFlush(int fd) { ioctl(fd, RFX_STREAM_FIFO_FLUSH, NULL); }
@@ -314,11 +314,11 @@ static void writeSegment(MDSplus::Tree *t, MDSplus::TreeNode *chan1,
 // Stop
 void rpadcStop(int fd)
 {
+  std::cout << "RPADC STOP" << std::endl;
   adcStop(fd);
   usleep(100000);
   fifoFlush(fd);
   stopped = true;
-  std::cout << "TIRATO SU STOP\n";
   usleep(100000);
   usleep(100000);
   // dmaStop(fd);
@@ -352,6 +352,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   
   std::cout << "rpadcStream freq1: " << freq1 << "   FREQ:  " << freq << std::endl;
   
+  fifoFlush(fd);
   
   
   
@@ -418,14 +419,41 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
   trig_lev_count++;
   ioctl(fd, RFX_STREAM_SET_LEV_TRIG_COUNT, &trig_lev_count);
+  
+  
+  //GABRIELE TEST
+
+	{
+	    int dummy[2];
+	    int leftBytes = 8;
+	    while(leftBytes > 0)
+	    {
+	    	int currRead = read(fd, dummy, leftBytes);
+        	if(currRead < 0)
+        	{
+          	    std::cout << "OHI OHI!\n";
+          	    return;
+          	}
+          	leftBytes -= currRead;
+           }
+	}
+
+  
+  
+  
+  
+  
 
   struct timeval selWaitTime;
-  while (true)
+  while (!stopped)
   {
-    for (int currBlock = 0; currBlock < blocksInSegment; currBlock++)
+    for (int currBlock = 0; currBlock < blocksInSegment;currBlock++)
     {
       unsigned int currSample = 0;
       bool firstRead = true;
+
+
+/////////////////////
       while (currSample < blockSamples)
       {
 //std::cout<<"Reading...\n";
@@ -487,6 +515,8 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
                 currTime = (unsigned long long)time1 |
                            (((unsigned long long)time2) << 32);
                            
+                currTime -= 2;
+                           
                            
                 if(absTriggerTimeFromFPGA)
                 {
@@ -515,6 +545,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
                              startTimes, endTimes,
                              currBlock * blockSamples + currSample,
                              currBlock + 1, freq, saveList);
+//                             currBlock + 1, freq1, saveList); Gabriele Dec 2021
               }
             }
             else // Some windows have been read before and the segment is
@@ -523,6 +554,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
               writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes,
                            endTimes, currBlock * blockSamples + currSample,
                            currBlock, freq, saveList);
+//                           currBlock, freq1, saveList); Gabriele Dec 2021
             }
           }
           deviceFd = 0;
@@ -538,19 +570,18 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
           return;
         }
       }
-      // signal to FPGA that block has been read
-      ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
-      trig_lev_count++;
-      ioctl(fd, RFX_STREAM_SET_LEV_TRIG_COUNT, &trig_lev_count);
       // Here the block been filled. It may refer to the same window
       // (isSingle)or to a different time window
+      
+     if(stopped) return;
+      
       
       unsigned long long currTime;
       unsigned int time1, time2;
       ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
       ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
       currTime =(unsigned long long)time1 | (((unsigned long long)time2) << 32);
-      std::cout << "TRIGGER TIME: " << currTime << std::endl;
+    // std::cout << "TRIGGER TIME: " << currTime << "   " << stopped << std::endl;
       if(absTriggerTimeFromFPGA)
       {
          std::cout << "TRIGGER TIME: " << currTime << std::endl;
@@ -605,8 +636,8 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
     segmentIdx++;
     writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes, endTimes,
                  segmentSamples, blocksInSegment, freq, saveList);
+ //                segmentSamples, blocksInSegment, freq1, saveList); Gabriele Dec 2021
   }
-  std::cout << "ULTIMAO RPADCSTREAM\n";
 }
 static void printConfig(struct rpadc_configuration *config)
 {
@@ -664,12 +695,14 @@ static void printConfig(struct rpadc_configuration *config)
   printf("\tpost_samples: %d\n", config->post_samples);
   printf("\tdecimation: %d\n", config->decimation);
   printf("\tdeadtime: %d\n", config->deadtime);
+  printf("\toffsa: %d\n", config->offset & 0x0000ffff);
+  printf("\toffsa: %d\n", (config->offset >> 16) & 0x0000ffff);
 }
 
 // return either NULL or an error string
 int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
               int trigFromChanA, int trigAboveThreshold, int trigThreshold,
-              int thresholdSamples, int decimation, int deadtime)
+              int thresholdSamples, int decimation, int deadtime, int offsa, int offsb)
 {
   struct rpadc_configuration inConfig, outConfig;
   int fd = open("/dev/rfx_stream", O_RDWR | O_SYNC);
@@ -696,6 +729,7 @@ int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
   inConfig.post_samples = postSamples; // Watch!!!!!
   inConfig.decimation = decimation;
   inConfig.deadtime = deadtime;
+  inConfig.offset = (offsa & 0x0000FFFF)|((offsb << 16)&0xffff0000);
   printConfig(&inConfig);
   writeConfig(fd, &inConfig);
   memset(&outConfig, 0, sizeof(outConfig));
@@ -736,7 +770,7 @@ void openTree(char *name, int shot, MDSplus::Tree **treePtr)
   }
 }
 
-////////////////////Clock related stuff
+/* Clock related stuff
 
 
 
@@ -922,4 +956,4 @@ void checkUpdateFreq(int fd)
     updateFreq(fd, &prevTimeUs, &prevFpgaTimeUs, 6., 5.,&prevFreq, targetFreq)   ; 
   }
 }
-
+*/
