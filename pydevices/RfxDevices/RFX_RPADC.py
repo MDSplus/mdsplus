@@ -54,7 +54,9 @@ class RFX_RPADC(Device):
               'options': ('no_write_shot',)},
              {'path': ':START_TIME', 'type': 'numeric', 'value': 0},
              {'path': ':ABS_TRIGGER', 'type': 'numeric', 'value': 0},
-             {'path': ':DEAD_TIME', 'type': 'numeric', 'value': 1E-3}
+             {'path': ':DEAD_TIME', 'type': 'numeric', 'value': 1E-3},
+             {'path': ':HW_OFFS_A', 'type': 'numeric', 'value': 0},
+             {'path': ':HW_OFFS_B', 'type': 'numeric', 'value': 0}
              ]
 
     class TriggerEvent(Event):
@@ -187,11 +189,6 @@ class RFX_RPADC(Device):
                 print('Cannot get decimation')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             print('CLOCK')
-            try:
-                trig = self.trigger.getData()
-            except:
-                print('Cannot get trigger')
-                raise mdsExceptions.TclFAILED_ESSENTIAL
             if self.clock_mode.data() != 'INTERNAL':
                 try:
                     if self.clock_mode.data() == 'TRIG_SYNC':
@@ -220,9 +217,21 @@ class RFX_RPADC(Device):
             except:
                 print('Cannot resolve dead time')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
+                
+            try:
+            	offsa = int(self.hw_offs_a)
+            except:
+                print('Cannot  read hw_offs_a')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+            try:
+            	offsb = int(self.hw_offs_b)
+            except:
+                print('Cannot  read hw_offs_b')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+            	
             print('opening device')
             self.fd = self.lib.rpadcInit(c_int(mode), c_int(clockMode), c_int(preSamples), c_int(postSamples), c_int(trigFromChanA),
-                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation), c_int(deadTime))
+                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation-1), c_int(deadTime), c_int(offsa), c_int(offsb))
             if self.fd < 0:
                 print("Error opening device")
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -247,8 +256,6 @@ class RFX_RPADC(Device):
 
     def start_store(self):
         try:
-            self.raw_a.deleteData()
-            self.raw_b.deleteData()
             worker = self.AsynchStore()
             worker.configure(self.conf)
             worker.daemon = True
@@ -266,10 +273,10 @@ class RFX_RPADC(Device):
     def stop_store(self):
         try:
             self.conf.lib.rpadcStop(self.conf.fd)
-            #try:
-                #RFX_RPADC.triggerEv.cancel()
-            #except:
-                #pass
+            try:
+                RFX_RPADC.triggerEv.cancel()
+            except:
+                pass
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
