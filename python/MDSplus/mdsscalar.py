@@ -419,7 +419,7 @@ class String(Scalar):
 
     def __init__(self, value):
         super(String, self).__init__(value)
-        if not isinstance(self._value, _N.str):
+        if not isinstance(self._value, str):
             self._value = _ver.npstr(_ver.tostr(self._value))
 
     @property
