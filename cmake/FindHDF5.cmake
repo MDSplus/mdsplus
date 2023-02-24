@@ -49,11 +49,6 @@ find_package_handle_standard_args(
         HDF5_INCLUDE_DIRS
 )
 
-mark_as_advanced(
-    HDF5_INCLUDE_DIRS
-    HDF5_LIBRARIES
-)
-
 if(HDF5_FOUND)
 
     if(NOT TARGET HDF5::HDF5)
@@ -70,3 +65,8 @@ if(HDF5_FOUND)
     endif()
     
 endif()
+
+mark_as_advanced(
+    HDF5_INCLUDE_DIRS
+    HDF5_LIBRARIES
+)

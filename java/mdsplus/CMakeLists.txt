@@ -5,26 +5,26 @@
 
 # MANIFEST.MF
 
-SET(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)
+set(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)
 
-FILE(WRITE ${_manifest}
+file(WRITE ${_manifest}
     "Specification-Version: ${RELEASE_VERSION}\n"
     "Implementation-Version: ${RELEASE_VERSION}\n"
     "Implementation-Vendor-Id: org.mdsplus\n"
 )
 
-FILE(GLOB_RECURSE
+file(GLOB_RECURSE
     _source_list
     "src/main/java/*"
 )
 
-ADD_JAR(
+add_jar(
     MdsPlus
     SOURCES ${_source_list}
     MANIFEST ${_manifest}
 )
 
-INSTALL_JAR(
+install_jar(
     MdsPlus
     DESTINATION java/classes
 )

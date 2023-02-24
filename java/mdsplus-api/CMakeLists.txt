@@ -5,29 +5,29 @@
 
 # MANIFEST.MF
 
-SET(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)
+set(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)
 
-FILE(WRITE ${_manifest}
+file(WRITE ${_manifest}
     "Specification-Version: ${RELEASE_VERSION}\n"
     "Implementation-Version: ${RELEASE_VERSION}\n"
     "Implementation-Vendor-Id: org.mdsplus\n"
 )
 
-FILE(GLOB_RECURSE
+file(GLOB_RECURSE
     _source_list
     "src/main/java/*"
 )
 
-ADD_JAR(
+add_jar(
     mdsplus-api
     SOURCES ${_source_list} # ${_jsch_source_list}
     INCLUDE_JARS ${JSCH}
     MANIFEST ${_manifest}
 )
 
-INSTALL_JAR(
+install_jar(
     mdsplus-api
     DESTINATION java/classes
 )
 
-FAT_JAR(mdsplus-api ${JSCH})
+fat_jar(mdsplus-api ${JSCH})
