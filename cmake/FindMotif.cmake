@@ -144,20 +144,6 @@ find_package_handle_standard_args(
         uil_EXECUTABLE
 )
 
-mark_as_advanced(
-    Motif_Xm_INCLUDE_DIR
-    Motif_Mrm_INCLUDE_DIR
-    Motif_Uil_INCLUDE_DIR
-    Motif_X11_INCLUDE_DIR
-    Motif_Xt_INCLUDE_DIR
-    Motif_Xm_LIBRARY
-    Motif_Mrm_LIBRARY
-    Motif_Uil_LIBRARY
-    Motif_X11_LIBRARY
-    Motif_Xt_LIBRARY
-    uil_EXECUTABLE
-)
-
 if(Motif_FOUND)
 
     set(Motif_INCLUDE_DIRS
@@ -190,3 +176,17 @@ if(Motif_FOUND)
     endif()
     
 endif()
+
+mark_as_advanced(
+    Motif_Xm_INCLUDE_DIR
+    Motif_Mrm_INCLUDE_DIR
+    Motif_Uil_INCLUDE_DIR
+    Motif_X11_INCLUDE_DIR
+    Motif_Xt_INCLUDE_DIR
+    Motif_Xm_LIBRARY
+    Motif_Mrm_LIBRARY
+    Motif_Uil_LIBRARY
+    Motif_X11_LIBRARY
+    Motif_Xt_LIBRARY
+    uil_EXECUTABLE
+)

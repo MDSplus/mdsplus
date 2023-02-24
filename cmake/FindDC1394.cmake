@@ -19,10 +19,6 @@
 #   DC1394_ROOT_DIR
 #
 
-find_library(LIBDC1394 dc1394)
-find_library(LIBRAW1394 raw1394)
-mark_as_advanced(LIBDC1394 LIBRAW1394)
-
 find_path(
     DC1394_INCLUDE_DIRS
     NAMES dc1394/dc1394.h
@@ -59,12 +55,6 @@ find_package_handle_standard_args(
         DC1394_raw1394_LIBRARY
 )
 
-mark_as_advanced(
-    DC1394_INCLUDE_DIRS
-    DC1394_dc1394_LIBRARY
-    DC1394_raw1394_LIBRARY
-)
-
 if(DC1394_FOUND)
 
     set(DC1394_LIBRARIES
@@ -86,3 +76,10 @@ if(DC1394_FOUND)
     endif()
     
 endif()
+
+mark_as_advanced(
+    DC1394_INCLUDE_DIRS
+    DC1394_LIBRARIES
+    DC1394_dc1394_LIBRARY
+    DC1394_raw1394_LIBRARY
+)
