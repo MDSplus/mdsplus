@@ -32,10 +32,6 @@ find_package_handle_standard_args(
         IDL_INCLUDE_DIRS
 )
 
-mark_as_advanced(
-    IDL_INCLUDE_DIRS
-)
-
 if(IDL_FOUND)
 
     if(NOT TARGET IDL::IDL)
@@ -50,3 +46,7 @@ if(IDL_FOUND)
     endif()
 
 endif()
+
+mark_as_advanced(
+    IDL_INCLUDE_DIRS
+)

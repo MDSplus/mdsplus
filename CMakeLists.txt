@@ -12,6 +12,16 @@ project(MDSplus)
 enable_language(Fortran)
 
 ###
+### Update Submodules
+###
+
+find_package(Git)
+
+execute_process(
+    COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
+)
+
+###
 ### Options
 ###
 
@@ -319,7 +329,7 @@ if(ENABLE_LARGEFILE)
 
     # Check for 32-bit target
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        
+
         add_compile_definitions(
             _FILE_OFFSET_BITS=64
             _LARGE_FILES
@@ -670,6 +680,82 @@ endif()
 # )
 
 ###
+### Generate sources with Bison/Yacc
+###
+
+# Only run this the first time
+if (NOT _yacc_has_run)
+
+    message("Processing Yacc files")
+
+    find_program(
+        yacc_EXECUTABLE
+        NAMES bison yacc
+        REQUIRED
+    )
+
+    file(GLOB_RECURSE
+        _yacc_input_list
+        "*.y"
+    )
+
+    foreach (_file ${_yacc_input_list})
+
+        # Make output directory
+        cmake_path(GET _file PARENT_PATH _parent_path)
+        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _parent_path "${_parent_path}")
+        file(MAKE_DIRECTORY "${_parent_path}")
+
+        message("Running ${yacc_EXECUTABLE} --verbose ${_file}")
+        execute_process(
+            COMMAND ${yacc_EXECUTABLE} --verbose ${_file}
+        )
+
+    endforeach()
+
+    set(_yacc_has_run TRUE CACHE INTERNAL "")
+
+endif()
+
+###
+### Generate sources with Flex/Lex
+###
+
+# Only run this the first time
+if (NOT _lex_has_run)
+
+    message("Processing Lex files")
+
+    find_program(
+        lex_EXECUTABLE
+        NAMES flex lex
+        REQUIRED
+    )
+
+    file(GLOB_RECURSE
+        _lex_input_list
+        "*.l"
+    )
+
+    foreach (_file ${_lex_input_list})
+
+        # Make output directory
+        cmake_path(GET _file PARENT_PATH _parent_path)
+        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _parent_path "${_parent_path}")
+        file(MAKE_DIRECTORY "${_parent_path}")
+
+        message("Running ${lex_EXECUTABLE} -p ${_file}")
+        execute_process(
+            COMMAND ${lex_EXECUTABLE} -p ${_file}
+        )
+
+    endforeach()
+
+    set(_lex_has_run TRUE CACHE INTERNAL "")
+
+endif()
+
+###
 ### Generate python/MDSplus/compound.py
 ###
 
@@ -703,7 +789,7 @@ add_custom_target(
 ### Libraries, Executables
 ###
 
-# Some libraries need both a Shared and a Static version, this includes a macro that helps streamline 
+# Some libraries need both a Shared and a Static version, this includes a macro that helps streamline
 # that and create a second library target with the suffix `-static`. For `MdsShr` for example, it will
 # create the target `MdsShr-static`, which could then produce `libMdsShr.a`. If BUILD_SHARED_LIBS=OFF,
 # then only the static libraries are built, and the `-static` targets will be ALIAS targets instead.
