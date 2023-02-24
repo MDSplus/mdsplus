@@ -3,54 +3,124 @@
 ### TdiShr
 ###
 
-# Generated Sources
+if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c)
 
-set(_generated_sources
-    TdiYacc.c
-    tdiyacc.h
-    TdiYacc.output
-    TdiHash.c
-    TdiLex.c
-    tdilex.h
-)
+    message("Generating tdishr/TdiHash.c with gperf")
 
-set(_run_yylex_gen FALSE)
-foreach(_filename IN LISTS _generated_sources)
-    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_filename}")
-        message("Missing mdsdcl/${_filename}, will run deploy/yylex.gen tdishr")
-        set(_run_yylex_gen TRUE)
-    endif()
-endforeach()
+    find_program(gperf_EXECUTABLE gperf REQUIRED)
 
-if(_run_yylex_gen)
-    # TODO: Convert yylex.gen to python
-    message("Running deploy/yylex.gen tdishr")
     execute_process(
-        COMMAND deploy/yylex.gen tdishr
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E env 
+            CC=${CMAKE_C_COMPILER}
+            CFLAGS=-I${CMAKE_SOURCE_DIR}/include
+            GPERF=${gperf_EXECUTABLE}
+            ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TdiHash.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
-endif()
 
-file(GLOB
-    _source_list
-    "*.c"
-)
+endif()
 
 add_library(
     TdiShr
-    ${_source_list}
+    CvtConvertFloat.c
+    DummyRoutines.c
+    IsRoprand.c
+    TdiAbs.c
+    TdiAdd.c
+    TdiAnd.c
+    TdiApd.c
+    TdiArray.c
+    TdiBinary.c
+    TdiBound.c
+    TdiBuild.c
+    TdiCall.c
+    TdiChar.c
+    TdiCompile.c
+    TdiCompileDependency.c
+    TdiConstant.c
+    TdiConvert.c
+    TdiCull.c
+    TdiCvtArgs.c
+    TdiCvtDxDx.c
+    TdiDecompile.c
+    TdiDecompileDependency.c
+    TdiDecompileR.c
+    TdiDecompress.c
+    TdiDefCat.c
+    TdiDefFunction.c
+    TdiDim.c
+    TdiDivide.c
+    TdiDoTask.c
+    TdiDtypeRange.c
+    TdiEq.c
+    TdiEvaluate.c
+    TdiExponent.c
+    TdiExpt.c
+    TdiExtFunction.c
+    TdiExtPython.c
+    TdiFaultHandler.c
+    TdiGetArgs.c
+    TdiGetData.c
+    TdiGetDbi.c
+    TdiGetNci.c
+    TdiGetShape.c
+    TdiGetSlope.c
+    TdiIand.c
+    TdiIntrinsic.c
+    TdiIo.c
+    TdiItoX.c
+    TdiMakeFunctionTable.c
+    TdiMasterData.c
+    TdiMath1.c
+    TdiMath2.c
+    TdiMatrix.c
+    TdiMaxVal.c
+    TdiMinMax.c
+    TdiOpcDef.c
+    TdiPack.c
+    TdiPower.c
+    TdiReshape.c
+    TdiSame.c
+    TdiScalar.c
+    TdiSetRange.c
+    TdiShowVm.c
+    TdiSort.c
+    TdiSql.c
+    TdiSquare.c
+    TdiStatement.c
+    TdiSubscript.c
+    TdiThreadStatic.c
+    TdiTrans.c
+    TdiTrim.c
+    TdiUnary.c
+    TdiUndef.c
+    TdiVar.c
+    TdiVector.c
+    TdiXxx.c
+    TdiXxxOf.c
+    TdiYaccSubs.c
+    ${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c
+    ${CMAKE_CURRENT_BINARY_DIR}/TdiLex.c
+    ${CMAKE_CURRENT_BINARY_DIR}/TdiYacc.c
 )
 
-target_link_libraries(
+target_include_directories(
     TdiShr
     PUBLIC
-        TreeShr
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_compile_definitions(
     TdiShr
     PRIVATE
         -DLIBPREFIX=Tdi
+)
+
+target_link_libraries(
+    TdiShr
+    PUBLIC
+        TreeShr
 )
 
 add_static_copy(TdiShr)

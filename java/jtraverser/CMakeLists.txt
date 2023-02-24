@@ -7,23 +7,23 @@
 ### Scripts
 ###
 
-IF(WIN32)
-    INSTALL(
+if(WIN32)
+    install(
         FILES
             jTraverser.bat
         TYPE BIN
     )
-ELSE()
-    INSTALL(
+else()
+    install(
         FILES jTraverser.template RENAME jTraverser
         TYPE BIN
     )
-    INSTALL(
+    install(
         FILES CompileTree.template RENAME CompileTree
         TYPE BIN
     )
-    INSTALL(
+    install(
         FILES DecompileTree.template RENAME DecompileTree
         TYPE BIN
     )
-ENDIF()
+endif()
