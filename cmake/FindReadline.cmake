@@ -62,12 +62,6 @@ find_package_handle_standard_args(
         Readline_INCLUDE_DIRS
 )
 
-mark_as_advanced(
-    Readline_INCLUDE_DIRS
-    Readline_readline_LIBRARY
-    Readline_history_LIBRARY
-)
-
 if(Readline_FOUND)
 
     set(Readline_LIBRARIES
@@ -89,3 +83,10 @@ if(Readline_FOUND)
     endif()
     
 endif()
+
+mark_as_advanced(
+    Readline_INCLUDE_DIRS
+    Readline_LIBRARIES
+    Readline_readline_LIBRARY
+    Readline_history_LIBRARY
+)

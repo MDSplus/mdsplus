@@ -7,25 +7,25 @@
 ### Scripts
 ###
 
-IF(WIN32)
-    INSTALL(
+if(WIN32)
+    install(
         FILES
             jDispatcherIp.bat
             jDispatchMonitor.bat
             jServer.bat
         TYPE BIN
     )
-ELSE()
-    INSTALL(
+else()
+    install(
         FILES jDispatcherIp.template RENAME jDispatcherIp
         TYPE BIN
     )
-    INSTALL(
+    install(
         FILES jDispatchMonitor.template RENAME jDispatchMonitor
         TYPE BIN
     )
-    INSTALL(
+    install(
         FILES jServer.template RENAME jServer
         TYPE BIN
     )
-ENDIF()
+endif()
