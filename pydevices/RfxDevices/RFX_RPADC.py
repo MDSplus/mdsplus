@@ -56,7 +56,9 @@ class RFX_RPADC(Device):
              {'path': ':ABS_TRIGGER', 'type': 'numeric', 'value': 0},
              {'path': ':DEAD_TIME', 'type': 'numeric', 'value': 1E-3},
              {'path': ':HW_OFFS_A', 'type': 'numeric', 'value': 0},
-             {'path': ':HW_OFFS_B', 'type': 'numeric', 'value': 0}
+             {'path': ':HW_OFFS_B', 'type': 'numeric', 'value': 0},
+             {'path': ':TRIG_RECV', 'type': 'signal', 'options': (
+                 'no_write_model', 'no_compress_on_put')}
              ]
 
     class TriggerEvent(Event):
@@ -68,7 +70,7 @@ class RFX_RPADC(Device):
             self.device.do_trigger()
 
     class Configuration:
-        def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples,
+        def configure(self, lib, fd, name, shot, chanANid, chanBNid, trigRecvNid, triggerNid, startTimeNid, preSamples,
                       postSamples, segmentSamples, frequency, frequency1, single, absTriggerTimeFromFPGA, absTriggerNid):
             self.lib = lib
             self.fd = fd
@@ -76,6 +78,7 @@ class RFX_RPADC(Device):
             self.shot = shot
             self.chanANid = chanANid
             self.chanBNid = chanBNid
+            self.trigRecvNid = trigRecvNid
             self.triggerNid = triggerNid
             self.startTimeNid = startTimeNid
             self.preSamples = preSamples
@@ -95,6 +98,7 @@ class RFX_RPADC(Device):
             self.shot = conf.shot
             self.chanANid = conf.chanANid
             self.chanBNid = conf.chanBNid
+            self.trigRecvNid = conf.trigRecvNid
             self.triggerNid = conf.triggerNid
             self.startTimeNid = conf.startTimeNid
             self.preSamples = conf.preSamples
@@ -107,10 +111,9 @@ class RFX_RPADC(Device):
             self.absTriggerNid = conf.absTriggerNid
 
         def run(self):
-            print('START THREAD', self.name, self.shot)
             try:
                self.lib.rpadcStream(
-                    c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
+                    c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),c_int(self.trigRecvNid),
                     c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
                     c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single), c_int(self.absTriggerTimeFromFPGA), c_int(self.absTriggerNid))
             except ValueError as e:
@@ -236,7 +239,7 @@ class RFX_RPADC(Device):
                 print("Error opening device")
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             print('device opened')
-            self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
+            self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(), self.trig_recv.getNid(),
                 self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency,
                 frequency1, isSingle, absTriggerTimeFromFPGA, self.abs_trigger.getNid())
             print('configured')

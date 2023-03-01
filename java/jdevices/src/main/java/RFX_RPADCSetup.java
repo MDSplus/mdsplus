@@ -178,7 +178,7 @@ public class RFX_RPADCSetup extends DeviceSetup
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Offset A (raw):");
         deviceField13.setNumCols(6);
-        deviceField13.setOffsetNid(21);
+        deviceField13.setOffsetNid(35);
         jPanel9.add(deviceField13);
 
         deviceField14.setIdentifier("");

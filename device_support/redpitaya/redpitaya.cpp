@@ -11,12 +11,13 @@
 #include <signal.h>
 #include <AsyncStoreManager.h>
 
+
 #define COUNT_SIZE 2000000
 
 static void checkUpdateFreq(int fd);
 extern "C"
 {
-  void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
+  void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, int trigRecvNid, 
                    int triggerNid, int preSamples, int postSamples,
                    int inSegmentSamples, double freq, double freq1, int single, int absTriggerTimeFromFPGA, int absTriggerNid);
   int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
@@ -287,15 +288,14 @@ static void sigHandler(int signo)
 }
 
 static void writeSegment(MDSplus::Tree *t, MDSplus::TreeNode *chan1,
-                         MDSplus::TreeNode *chan2, MDSplus::Data *triggerTime,
+                         MDSplus::TreeNode *chan2, MDSplus::TreeNode *trigRecv, MDSplus::Data *triggerTime,
                          unsigned int *dataSamples, double *startTimes,
                          double *endTimes, int segmentSamples,
-                         int blocksInSegment, double freq, SaveList *saveList)
+                         int blocksInSegment, double freq, SaveList *saveList, char *trigReceived)
 {
   if (segmentSamples == 0)
     return;
   short *chan1Samples, *chan2Samples;
-  //std::cout << "WRITE SEGMENT SAMPLES: " << segmentSamples << std::endl;
   chan1Samples = new short[segmentSamples];
   chan2Samples = new short[segmentSamples];
 
@@ -305,11 +305,11 @@ static void writeSegment(MDSplus::Tree *t, MDSplus::TreeNode *chan1,
     chan2Samples[i] = (dataSamples[i] >> 16) & 0x0000ffff;
   }
 
-  saveList->addItem(chan1Samples, segmentSamples, chan1, triggerTime, t,
-                    startTimes, endTimes, freq, blocksInSegment);
+  saveList->addItem(chan1Samples, segmentSamples, chan1, trigRecv, triggerTime, t,
+                    startTimes, endTimes, freq, blocksInSegment, trigReceived);
 
-  saveList->addItem(chan2Samples, segmentSamples, chan2, triggerTime, t,
-                    startTimes, endTimes, freq, blocksInSegment);
+  saveList->addItem(chan2Samples, segmentSamples, chan2, NULL, triggerTime, t,
+                    startTimes, endTimes, freq, blocksInSegment, 0);
 }
 // Stop
 void rpadcStop(int fd)
@@ -330,7 +330,7 @@ void rpadcStop(int fd)
   std::cout << "CLOSED\n";
 }
 
-void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
+void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, int trigRecvNid, 
                  int triggerNid, int preSamples, int postSamples,
                  int inSegmentSamples, double freq, double freq1, int single, int absTriggerTimeFromFPGA, int absTriggerNid)
 {
@@ -344,13 +344,13 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   int blocksInSegment; // 1 fir cintinous streaming
   unsigned int *dataSamples;
   double *startTimes, *endTimes;
+  char *trigFlags;
   stopped = false;
   unsigned int trig_lev_count = 0;
   unsigned long long firstAbsTriggerTime = 0;
   unsigned long long lastAbsTriggerTime = 0;
   unsigned long long currTime, savedTime;
   
-  std::cout << "rpadcStream freq1: " << freq1 << "   FREQ:  " << freq << std::endl;
   
   fifoFlush(fd);
   
@@ -362,9 +362,10 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   MDSplus::Tree *tree = new MDSplus::Tree(treeName, shot);
   MDSplus::TreeNode *chan1 = new MDSplus::TreeNode(chan1Nid, tree);
   MDSplus::TreeNode *chan2 = new MDSplus::TreeNode(chan2Nid, tree);
+  MDSplus::TreeNode *trigRecv = new MDSplus::TreeNode(trigRecvNid, tree);
   MDSplus::TreeNode *absTrigger = new MDSplus::TreeNode(absTriggerNid, tree);
-
   MDSplus::TreeNode *trigger = new MDSplus::TreeNode(triggerNid, tree);
+  
   if ((preSamples == 0 &&
        postSamples == 0)) // eventSamples == 0 means continuous streaming
   {
@@ -409,12 +410,17 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   memset(dataSamples, 0, segmentSamples * sizeof(int));
   startTimes = new double[blocksInSegment];
   endTimes = new double[blocksInSegment];
+  trigFlags = new char[blocksInSegment];
   ioctl(fd, RFX_STREAM_START_READ, NULL);
   adcArm(fd);
   usleep(1000);
   int segmentIdx = 0;
-  SaveList *saveList = new SaveList;
-  saveList->start();
+  
+  //SaveList *saveList = new SaveList();
+  //saveList->start(); 
+  SaveList *saveList = new SaveList();
+  saveList->start(); 
+
   // START WITH A INITIAL VALUE FOR TRIG_LEV_COUNT
   ioctl(fd, RFX_STREAM_GET_LEV_TRIG_COUNT, &trig_lev_count);
   trig_lev_count++;
@@ -422,7 +428,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
   
   
   //GABRIELE  FEBR 2023: remove first two fake samples from data fifo
-
+/*
     {
 	int dummy[2];
 	int leftBytes = 8;
@@ -439,12 +445,14 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
     }
 
   
-  
+  */
   
   
   
 
   struct timeval selWaitTime;
+  unsigned int prevTime = 0;
+  char trigReceived = 0;
   while (!stopped)
   {
     for (int currBlock = 0; currBlock < blocksInSegment;currBlock++)
@@ -502,9 +510,9 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
                 endTimes[0] =
                     ((segmentIdx + 1) * segmentSamples - preSamples) / freq;
 //                    ((segmentIdx + 1) * segmentSamples - preSamples) / freq1; Gabriele Dec 2021
-                writeSegment(tree, chan1, chan2, trigger, dataSamples,
+                writeSegment(tree, chan1, chan2, NULL, trigger, dataSamples,
                              startTimes, endTimes,
-                             currBlock * blockSamples + currSample, 1, freq, saveList);
+                             currBlock * blockSamples + currSample, 1, freq, saveList, NULL);
                         //    currBlock * blockSamples + currSample, 1, freq1, saveList); Gabriele Dec 2021
               }
               else // Some data for new window have been read
@@ -512,15 +520,18 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
                 unsigned int time1, time2;
                 ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
                 ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
+                trigReceived = (time2 & 0x80000000)?1:0;
+                if(trigReceived) std::cout<< "TRIGGER RICEVUTO!\n";
+                time2 &= 0x7FFFFFFF;
                 currTime = (unsigned long long)time1 |
                            (((unsigned long long)time2) << 32);
                            
                 currTime -= 2;
+                 
                            
                            
                 if(absTriggerTimeFromFPGA)
                 {
-         std::cout << "TRIGGER TIME: " << currTime << std::endl;
                     if(firstAbsTriggerTime == 0)
                     {
                     	firstAbsTriggerTime = lastAbsTriggerTime = currTime;
@@ -541,19 +552,20 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
                 endTimes[currBlock] =
                     currTime/freq1 + (postSamples - 1) / freq; // include last sample
 //                    (currTime + postSamples - 1) / freq; // include last sample Gabriele Dec 2021
-                writeSegment(tree, chan1, chan2, trigger, dataSamples,
+		trigFlags[currBlock] = trigReceived;
+                writeSegment(tree, chan1, chan2, trigRecv, trigger, dataSamples,
                              startTimes, endTimes,
                              currBlock * blockSamples + currSample,
-                             currBlock + 1, freq, saveList);
+                             currBlock + 1, freq, saveList, trigFlags);
 //                             currBlock + 1, freq1, saveList); Gabriele Dec 2021
               }
             }
             else // Some windows have been read before and the segment is
                  // partially filled
             {
-              writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes,
+              writeSegment(tree, chan1, chan2, trigRecv, trigger, dataSamples, startTimes,
                            endTimes, currBlock * blockSamples + currSample,
-                           currBlock, freq, saveList);
+                           currBlock, freq, saveList, trigFlags);
 //                           currBlock, freq1, saveList); Gabriele Dec 2021
             }
           }
@@ -577,52 +589,67 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
       
       
       unsigned long long currTime;
-      unsigned int time1, time2;
-      ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
-      ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
-      currTime =(unsigned long long)time1 | (((unsigned long long)time2) << 32);
-    // std::cout << "TRIGGER TIME: " << currTime << "   " << stopped << std::endl;
-      if(absTriggerTimeFromFPGA)
+      unsigned int time1, time2, len;
+      
+      if (preSamples != 0 || postSamples != 0) // not continuous
       {
-         std::cout << "TRIGGER TIME: " << currTime << std::endl;
-      	if(firstAbsTriggerTime == 0)
-        {
-          firstAbsTriggerTime = lastAbsTriggerTime = currTime;
-          currTime = 0;
-          MDSplus::Data *triggerData = new MDSplus::Uint64(firstAbsTriggerTime);
-          absTrigger->putData(triggerData);
-          MDSplus::deleteData(triggerData);
+      	for(int i = 0; i < 10000; i++)
+      	{
+      	  ioctl(fd, RFX_STREAM_GET_TIME_FIFO_LEN, &len);
+      	  if(len >= 2) break; 
+	  usleep(100);
         }
-        else
+        if(len < 2)
         {
+      	  std::cout << "DOLORE!!!! TRIGGER TIME NOT FOUND IN FIFO\n";
+      	  return;
+        }
+      
+        ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
+        ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
+        trigReceived = (time2 & 0x80000000)?1:0;
+        if(trigReceived) std::cout << "TRIGGER RECEIVED\n";
+        currTime =(unsigned long long)time1 | (((unsigned long long)(time2 & 0x7FFFFFFF)) << 32);
+        if(currTime < prevTime)
+      	  std::cout << "OHIBO! currTime: " << currTime << "  PrevTime: " << prevTime << std::endl;
+        prevTime = currTime;
+        if(absTriggerTimeFromFPGA)
+        {
+           std::cout << "TRIGGER TIME: " << currTime << std::endl;
+      	  if(firstAbsTriggerTime == 0)
+          {
+            firstAbsTriggerTime = lastAbsTriggerTime = currTime;
+            currTime = 0;
+            MDSplus::Data *triggerData = new MDSplus::Uint64(firstAbsTriggerTime);
+            absTrigger->putData(triggerData);
+            MDSplus::deleteData(triggerData);
+          }
+          else
+          {
             currTime -= firstAbsTriggerTime;
+          }
         }
       }
-
       if (preSamples != 0 || postSamples != 0) // not continuous
       {
         if (single)
         {
           startTimes[0] = (segmentIdx * segmentSamples - preSamples) / freq;
-//          startTimes[0] = (segmentIdx * segmentSamples - preSamples) / freq1; Gabriele Dec 2021
           endTimes[0] =((segmentIdx + 1) * segmentSamples - preSamples) / freq;
-//              ((segmentIdx + 1) * segmentSamples - preSamples) / freq1; Gabriele Dec 2021
+	  trigFlags[0] = 0;
         }
         else // If referring to a new window, the time must be read
         {
           
           if (currBlock == 0)
           {
-            startTimes[currBlock] = ((long long)currTime)/freq1 - (preSamples - 1) / freq;
-//                ((long long)currTime - preSamples - 1) / freq; Gabriele Dec 2021 
+            startTimes[currBlock] = ((long long)currTime)/freq1 - (preSamples) / freq;
           }
-          else
           {
             startTimes[currBlock] = (long long)currTime/freq1 - preSamples / freq;
-//            startTimes[currBlock] = ((long long)currTime - preSamples) / freq; Gabriele Dec 2021
           }
           endTimes[currBlock] = currTime/freq1 + (postSamples - 1 + 0.1) / freq;
- //             (currTime + postSamples - 1 + 0.1) / freq; Gabriele Dec 2021
+          trigFlags[currBlock] = trigReceived;
         }
       }
     }
@@ -632,10 +659,11 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid,
 //      endTimes[0] = (segmentIdx + 1) * segmentSamples / freq1; Gabriele Dec 2021
       startTimes[0] = segmentIdx * segmentSamples / freq;
       endTimes[0] = (segmentIdx + 1) * segmentSamples / freq;
+      trigFlags[0] = 0;
     }
     segmentIdx++;
-    writeSegment(tree, chan1, chan2, trigger, dataSamples, startTimes, endTimes,
-                 segmentSamples, blocksInSegment, freq, saveList);
+    writeSegment(tree, chan1, chan2, trigRecv, trigger, dataSamples, startTimes, endTimes,
+                 segmentSamples, blocksInSegment, freq, saveList, trigFlags);
  //                segmentSamples, blocksInSegment, freq1, saveList); Gabriele Dec 2021
   }
 }
@@ -696,7 +724,7 @@ static void printConfig(struct rpadc_configuration *config)
   printf("\tdecimation: %d\n", config->decimation);
   printf("\tdeadtime: %d\n", config->deadtime);
   printf("\toffsa: %d\n", config->offset & 0x0000ffff);
-  printf("\toffsa: %d\n", (config->offset >> 16) & 0x0000ffff);
+  printf("\toffsb: %d\n", (config->offset >> 16) & 0x0000ffff);
 }
 
 // return either NULL or an error string
@@ -728,7 +756,10 @@ int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples,
   inConfig.pre_samples = preSamples;
   inConfig.post_samples = postSamples; // Watch!!!!!
   inConfig.decimation = decimation;
-  inConfig.deadtime = deadtime;
+  if(deadtime > preSamples)
+  	inConfig.deadtime = deadtime;
+  else
+  	inConfig.deadtime = preSamples;
   inConfig.offset = (offsa & 0x0000FFFF)|((offsb << 16)&0xffff0000);
   printConfig(&inConfig);
   writeConfig(fd, &inConfig);
