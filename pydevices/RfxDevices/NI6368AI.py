@@ -244,8 +244,6 @@ class NI6368AI(Device):
         def run(self):
             import os
 
-            self.device.setTree(
-                Tree(self.device.getTree().name, self.device.getTree().shot))
             self.device = self.device.copy()
 
             bufSize = self.device.buf_size.data()
@@ -464,7 +462,7 @@ class NI6368AI(Device):
         #self.debugPrint('Open ai_fd: ', self.ai_fd)
 
         device_info = self.XSERIES_DEV_INFO(
-            0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            0, "".encode('utf-8'), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
         # get card info
         status = NI6368AI.niInterfaceLib._xseries_get_device_info(
@@ -843,15 +841,13 @@ class NI6368AI(Device):
 
         print ('Tree opening')
         treePtr = c_void_p(0)
-        NI6368AI.niInterfaceLib.openTree(
-            c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
+        NI6368AI.niInterfaceLib.openTree(c_char_p(self.getTree().name.encode('utf-8')), c_int(self.getTree().shot), byref(treePtr))
         print ('Tree opened')
 
         stopAcq = c_void_p(0)
         NI6368AI.niInterfaceLib.getStopAcqFlag(byref(stopAcq))
 
-        self.worker.configure(self.copy(), self.ai_fd,
-                              chanMap, self.diffChanMap, treePtr, stopAcq)
+        self.worker.configure(self, self.ai_fd, chanMap, self.diffChanMap, treePtr, stopAcq)
 
         self.saveWorker()
         self.worker.start()

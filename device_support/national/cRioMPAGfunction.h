@@ -36,6 +36,10 @@
 #define STOP_PLC_CMD 0
 #define START_PLC_CMD 1
 
+#define CLOCK_MODE_INTERNAL  1
+#define CLOCK_MODE_EXTERNAL 0
+
+
 static const char *simb = "|/-\\";
 
 extern "C"
@@ -83,6 +87,8 @@ typedef struct t_struct_FPGA_ACQ
   float *streamGains;
   float *streamOffsets;
   int streamFactor;
+  uint8_t clockMode;
+  NiFpga_Status retStatus;
 } struct_FPGA_ACQ;
 
 typedef struct t_struct_FPGA
