@@ -128,13 +128,13 @@ def clean_ws():
 
 def getFiles(info, package):
     includes = []
-    for inc in package.getiterator('include'):
+    for inc in package.iter('include'):
         for inctype in inc.attrib:
             include = inc.attrib[inctype]
             if inctype != "dironly":
                 includes.append(include)
     excludes = []
-    for exc in package.getiterator('exclude'):
+    for exc in package.iter('exclude'):
         for exctype in exc.attrib:
             excludes.append(exc.attrib[exctype])
     if package.find("exclude_staticlibs") is not None:
@@ -157,7 +157,7 @@ def collectFiles(info, package):
 
 def getDependencies(info, root, package):
     depends = []
-    for require in package.getiterator("requires"):
+    for require in package.iter("requires"):
         if 'external' in require.attrib:
             pkg = common.external_package(info, root, require.attrib['package'])
             if pkg:
@@ -193,7 +193,7 @@ def build():
     if info['arch'] == noarch_builder:
         os.system("rm -Rf %s" % noarchdir)
         os.system("mkdir -p %s" % noarchdir)
-    for package in root.getiterator('package'):
+    for package in root.iter('package'):
         pkg = package.attrib['name']
         if pkg in pkg_exclusions:
             continue
