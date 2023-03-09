@@ -40,7 +40,7 @@ class NI6368EV(Device):
             {'path':'.CHANNEL_%d'%(i+1), 'type':'structure'},
             {'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'BURST(FREQ1)'},
             {'path':'.CHANNEL_%d:RANGE'%(i+1), 'type':'numeric', 'value':10},
-            {'path':'.CHANNEL_%d:EVENT_NAME'%(i+1), 'type':'text', 'value':'disabled '}, # EVENTI CON SPAZIO ALLA FINE... NB!!!
+            {'path':'.CHANNEL_%d:EVENT_NAME'%(i+1), 'type':'text', 'value':'disabled '},
             {'path':'.CHANNEL_%d:START_TIME'%(i+1), 'type':'numeric', 'value':0},
             {'path':'.CHANNEL_%d:END_TIME'%(i+1), 'type':'numeric', 'value':2},
             {'path':'.CHANNEL_%d:CALIB_PARAM'%(i+1), 'type':'numeric', 'options':('no_write_model')},
@@ -60,6 +60,10 @@ class NI6368EV(Device):
          'valueExpr': "Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',55,None),Method(None,'wait_store',head))",
          'options': ('no_write_shot',)}
     ])
+
+    for i in range(0, 16):
+        parts.append({'path': '.CHANNEL_%d:RES_RAW' % (
+            i+1), 'type': 'signal', 'options': ('no_write_model', 'no_compress_on_put')})
 
     DEV_IS_OPEN = 1
     DEV_OPEN = 1
@@ -162,6 +166,8 @@ class NI6368EV(Device):
     ni6368chanPreTimes = {}
     ni6368chanPostTimes = {}
 
+    currShot = 0
+
     def debugPrint(self, msg='', obj=''):
         print (self.name + ':' + msg, obj)
 
@@ -178,6 +184,14 @@ class NI6368EV(Device):
             self.ai_fd = NI6368EV.ni6368EvFds[self.getNid()]
             return self.DEV_IS_OPEN # if present, already opened
         except:
+
+            try:
+                NI6368EV.currShot = self.getTree().shot
+                print(NI6368EV.currShot)
+            except Exception as ex:
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing shot number '+str(ex))
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+
             try:
                 boardId = self.board_id.data()
                 #The boardId number refers to device number (/dev/pxie6368.N) 
@@ -249,6 +263,9 @@ class NI6368EV(Device):
             chanPostTimes = NI6368EV.ni6368chanPostTimes[nid]
             chanFd = []
             chanNid = []
+            coeffsNids = []
+            gainDividers = []
+
             f1Div = self.device.freq1_div.data()
             f2Div = self.device.freq2_div.data()
             baseFreq = self.device.clock_freq.data()
@@ -267,34 +284,35 @@ class NI6368EV(Device):
             preTimes_c = (c_double * numChans)()
             postTimes_c = (c_double * numChans)()
             eventNames_c = (c_char_p * numChans)()
+            resNids = []
             
             for chan in range(numChans): #range(numChans)
                 if chanModes[chan] == 'CONTINUOUS(FREQ1)': # continuous at a single frequence Freq1
                     isBurst_c[chan] = 0 # it is not a burst
                     f1Divs_c[chan] = f1Div
                     f2Divs_c[chan] = f1Div
-                    eventNames_c[chan] = c_char_p('') # no events
+                    eventNames_c[chan] = c_char_p(''.encode('utf-8')) # no events
                 elif chanModes[chan] == 'CONTINUOUS(FREQ2)': # continuous at a single frequence Freq2
                     isBurst_c[chan] = 0
                     f1Divs_c[chan] = f2Div
                     f2Divs_c[chan] = f2Div
-                    eventNames_c[chan] = c_char_p('')
+                    eventNames_c[chan] = c_char_p(''.encode('utf-8'))
                 elif chanModes[chan] == 'BURST(FREQ1)': # burst at a single frequence Freq1
                     isBurst_c[chan] = 1
                     f1Divs_c[chan] = f1Div
                     f2Divs_c[chan] = f1Div
-                    eventNames_c[chan] = c_char_p(chanEvents[chan])
-                    print ("CHANEVENTS: " + eventNames_c[chan])
+                    eventNames_c[chan] = c_char_p(chanEvents[chan].encode())
+                    print ("CHANEVENTS: " + eventNames_c[chan].decode())
                 elif chanModes[chan] == 'BURST(FREQ2)': # burst at a single frequence Freq2
                     isBurst_c[chan] = 1
                     f1Divs_c[chan] = f2Div
                     f2Divs_c[chan] = f2Div
-                    eventNames_c[chan] = c_char_p(chanEvents[chan])
+                    eventNames_c[chan] = c_char_p(chanEvents[chan].encode())
                 elif chanModes[chan] == 'DUAL SPEED': # switching frequence from F1 to F2 on defined period
                     isBurst_c[chan] = 0
                     f1Divs_c[chan] = f1Div
                     f2Divs_c[chan] = f2Div
-                    eventNames_c[chan] = c_char_p(chanEvents[chan])
+                    eventNames_c[chan] = c_char_p(chanEvents[chan].encode())
                 elif chanModes[chan] == 'DISABLED':
                     continue
                 else:
@@ -320,13 +338,18 @@ class NI6368EV(Device):
                 
                 chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )
                 #self.device.debugPrint ('chanFd '+'channel_%d_data_raw'%(self.chanMap[chan]+1), chanFd[chan])
+                resNids.append( getattr(self.device, 'channel_%d_res_raw'%(self.chanMap[chan]+1)).getNid() )
+                coeffsNids.append(getattr(self.device, 'channel_%d_calib_param' % (self.chanMap[chan]+1)).getNid())
 
                 # getting gain
                 gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
                 gain_code = self.device.gainDict[gain]
 
+                gainDividers.append(1.)
+
                 # reading calibration params
                 status = NI6368EV.niInterfaceLib.getCalibrationParams(currFd, gain_code, coeff)
+                gainValue = 0
                 if( status < 0 ):
                     errno = NI6368EV.niInterfaceLib.getErrno()
                     msg = 'Error (%d) %s' % (errno, os.strerror( errno ))
@@ -335,9 +358,9 @@ class NI6368EV(Device):
                     gainValue = self.device.gainValueDict[gain] * 2.
                     coeff[0] = coeff[2] = coeff[3] = 0
                     coeff[1] = c_float( gainValue / 32768. )
-                print('SCRIVO CALIBRAZIONE', coeff)
+                #print('SCRIVO CALIBRAZIONE', coeff)
                 getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
-                print('SCRITTO')
+                #print('SCRITTO')
 
             # handling the buffer size for resampling
             if(bufSize > segmentSize):
@@ -350,11 +373,14 @@ class NI6368EV(Device):
             
             # instantiating save list for mdsplus data
             saveList = c_void_p(0)
-            NI6368EV.niInterfaceLib.startSaveEV(byref(saveList), c_char_p(self.device.getTree().name.lower()), c_int(self.device.getTree().shot)) 
+            NI6368EV.niInterfaceLib.startSave(byref(saveList)) 
 
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
             chanMap_c = (c_int * len(chanFd) )(*self.chanMap)
+            resNids_c = (c_int * len(chanFd) )(*resNids)
+            coeffsNid_c = (c_int * len(coeffsNids))(*coeffsNids)
+            gainDividers_c = (c_float * len(gainDividers))(*gainDividers)
             
             print ("STARTING READ AND SAVE...")
             print ("numChans : " + str(numChans) + " chanFd: " + str(len(chanFd_c)) + " isBurst: " + str(len(isBurst_c)) + " fiDivs: " + str(len(f1Divs_c)) + " preTimes: " + str(len(preTimes_c)) + " EventNames: " + str(len(eventNames_c)) + " chanNid: " + str(len(chanNid_c)))
@@ -364,8 +390,8 @@ class NI6368EV(Device):
                     self.ai_fd, c_int(numChans), chanMap_c, chanFd_c, isBurst_c, f1Divs_c, f2Divs_c,
                     c_double(maxDelay), c_double(baseFreq),
                     preTimes_c, postTimes_c, c_double(baseStart),
-                    c_int(bufSize), c_int(segmentSize), eventNames_c,
-                    chanNid_c, self.treePtr, saveList, self.stopAcq)
+                    c_int(bufSize), c_int(int(segmentSize)), eventNames_c,
+                    chanNid_c, self.treePtr, saveList, self.device.clock_source.getNid(), NI6368EV.currShot, resNids_c, coeffsNid_c, gainDividers_c, self.stopAcq)
 
                 except Exception as ex:
                     self.device.debugPrint('Acquisition thread start error : %s'%(str(ex)))
@@ -445,7 +471,7 @@ class NI6368EV(Device):
         fileName = '/dev/pxie-6368.'+str(self.boardId)
         dai_fd = os.open(fileName, os.O_RDWR)
 
-        device_info = self.XSERIES_DEV_INFO(0,"",0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+        device_info = self.XSERIES_DEV_INFO(0,"".encode('utf-8'),0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
         # getting card info
         NI6368EV.niInterfaceLib.xseries_reset(self.ai_fd)
@@ -596,6 +622,9 @@ class NI6368EV(Device):
                 clockLineKey = self.clock_line.data()
                 clockLine = self.clockLineDict[clockLineKey]
                 # clockSource = self.clock_source.evaluate()
+                frequency = self.clock_freq.data()
+                clockSource = Range(None, None, Float64(1./frequency))
+                self.clock_source.putData(clockSource)
                 # self.debugPrint('PXI 6368 External CLOCK: ', clockSource)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(),'Invalid clock definition')
@@ -619,10 +648,7 @@ class NI6368EV(Device):
                 # Program the convert to be the same as START.
                 status = NI6368EV.niLib.xseries_set_ai_convert_clock(aiConf, clockLine, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE)
                 self.debugPrint("xseries_set_ai_convert_clock ", clockLine)
-            # if(status == 0):
-            #     # Program the sample and convert clock timing specifications
-            #     status = NI6368EV.niLib.xseries_set_ai_scan_interval_counter(aiConf, self.XSERIES_SCAN_INTERVAL_COUNTER_TB3, self.XSERIES_SCAN_INTERVAL_COUNTER_POLARITY_RISING_EDGE, c_int(100000000/frequency),  c_int(2))
-            #     self.debugPrint("xseries_set_ai_scan_interval_counter ", self.XSERIES_SCAN_INTERVAL_COUNTER_TB3)
+            
             if(status != 0):
                 errno = NI6368EV.niInterfaceLib.getErrno()
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot configure external device clock: (%d) %s' % (errno, os.strerror(errno)))
@@ -650,7 +676,7 @@ class NI6368EV(Device):
 ################################### START STORE ####################################
 ####################################################################################
     def start_store(self):
-        self.debugPrint('================= PXI 6368 EV start store ===============')
+        self.debugPrint('================= PXI 6368 EV ===============')
 
         # retrieving the opened device info
         if self.restoreInfo() != self.DEV_IS_OPEN: 
@@ -664,7 +690,7 @@ class NI6368EV(Device):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module is in acquisition')
                     return
         except:
-               pass
+            pass
         
         # worker initialization
         self.worker = self.AsynchStore() 
@@ -687,7 +713,7 @@ class NI6368EV(Device):
 
         print ('Tree opening')
         treePtr = c_void_p(0)
-        NI6368EV.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
+        NI6368EV.niInterfaceLib.openTree(c_char_p(self.getTree().name.encode('utf-8')), c_int(self.getTree().shot), byref(treePtr))
         print ('Tree %s opened'%self.getTree().name)
 
         self.worker.configure(self.copy(), self.ai_fd, chanMap, self.diffChanMap, treePtr, stopAcq)

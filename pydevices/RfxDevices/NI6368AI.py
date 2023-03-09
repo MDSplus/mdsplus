@@ -244,8 +244,6 @@ class NI6368AI(Device):
         def run(self):
             import os
 
-            self.device.setTree(
-                Tree(self.device.getTree().name, self.device.getTree().shot))
             self.device = self.device.copy()
 
             bufSize = self.device.buf_size.data()

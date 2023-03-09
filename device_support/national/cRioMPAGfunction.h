@@ -36,6 +36,10 @@
 #define STOP_PLC_CMD 0
 #define START_PLC_CMD 1
 
+#define CLOCK_MODE_INTERNAL  1
+#define CLOCK_MODE_EXTERNAL 0
+
+
 static const char *simb = "|/-\\";
 
 extern "C"

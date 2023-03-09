@@ -39,6 +39,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel76 = new javax.swing.JPanel();
         deviceChoice24 = new DeviceChoice();
         deviceField125 = new DeviceField();
+        deviceField6 = new DeviceField();
         jPanel77 = new javax.swing.JPanel();
         deviceField120 = new DeviceField();
         deviceField121 = new DeviceField();
@@ -50,6 +51,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel80 = new javax.swing.JPanel();
         deviceChoice25 = new DeviceChoice();
         deviceField126 = new DeviceField();
+        deviceField7 = new DeviceField();
         jPanel81 = new javax.swing.JPanel();
         deviceField127 = new DeviceField();
         deviceField128 = new DeviceField();
@@ -61,6 +63,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel84 = new javax.swing.JPanel();
         deviceChoice26 = new DeviceChoice();
         deviceField132 = new DeviceField();
+        deviceField8 = new DeviceField();
         jPanel85 = new javax.swing.JPanel();
         deviceField133 = new DeviceField();
         deviceField134 = new DeviceField();
@@ -215,6 +218,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel140 = new javax.swing.JPanel();
         deviceChoice40 = new DeviceChoice();
         deviceField216 = new DeviceField();
+        deviceField9 = new DeviceField();
         jPanel141 = new javax.swing.JPanel();
         deviceField217 = new DeviceField();
         deviceField218 = new DeviceField();
@@ -226,6 +230,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel144 = new javax.swing.JPanel();
         deviceChoice41 = new DeviceChoice();
         deviceField222 = new DeviceField();
+        deviceField10 = new DeviceField();
         jPanel145 = new javax.swing.JPanel();
         deviceField223 = new DeviceField();
         deviceField224 = new DeviceField();
@@ -237,6 +242,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel148 = new javax.swing.JPanel();
         deviceChoice42 = new DeviceChoice();
         deviceField228 = new DeviceField();
+        deviceField11 = new DeviceField();
         jPanel149 = new javax.swing.JPanel();
         deviceField229 = new DeviceField();
         deviceField230 = new DeviceField();
@@ -248,6 +254,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel152 = new javax.swing.JPanel();
         deviceChoice43 = new DeviceChoice();
         deviceField234 = new DeviceField();
+        deviceField12 = new DeviceField();
         jPanel153 = new javax.swing.JPanel();
         deviceField235 = new DeviceField();
         deviceField236 = new DeviceField();
@@ -259,6 +266,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel156 = new javax.swing.JPanel();
         deviceChoice44 = new DeviceChoice();
         deviceField240 = new DeviceField();
+        deviceField13 = new DeviceField();
         jPanel157 = new javax.swing.JPanel();
         deviceField241 = new DeviceField();
         deviceField242 = new DeviceField();
@@ -270,6 +278,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel160 = new javax.swing.JPanel();
         deviceChoice45 = new DeviceChoice();
         deviceField246 = new DeviceField();
+        deviceField14 = new DeviceField();
         jPanel161 = new javax.swing.JPanel();
         deviceField247 = new DeviceField();
         deviceField248 = new DeviceField();
@@ -281,6 +290,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel164 = new javax.swing.JPanel();
         deviceChoice46 = new DeviceChoice();
         deviceField252 = new DeviceField();
+        deviceField15 = new DeviceField();
         jPanel165 = new javax.swing.JPanel();
         deviceField253 = new DeviceField();
         deviceField254 = new DeviceField();
@@ -292,6 +302,7 @@ public class NI6683Setup extends DeviceSetup
         jPanel168 = new javax.swing.JPanel();
         deviceChoice47 = new DeviceChoice();
         deviceField258 = new DeviceField();
+        deviceField16 = new DeviceField();
         jPanel169 = new javax.swing.JPanel();
         deviceField259 = new DeviceField();
         deviceField260 = new DeviceField();
@@ -306,16 +317,15 @@ public class NI6683Setup extends DeviceSetup
         deviceChoice1 = new DeviceChoice();
         jPanel4 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
-        deviceField5 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
 
-        setDeviceProvider("localhost:8123");
+        setDeviceProvider("mcpsl-pcf:8001");
         setDeviceTitle("NI 6683 Timing Device");
         setDeviceType("NI6683");
         setHeight(400);
-        setWidth(800);
+        setWidth(1000);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
@@ -335,6 +345,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField125.setOffsetNid(14);
         deviceField125.setTextOnly(true);
         jPanel76.add(deviceField125);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("COMMENT");
+        deviceField6.setNumCols(20);
+        deviceField6.setOffsetNid(250);
+        deviceField6.setTextOnly(true);
+        jPanel76.add(deviceField6);
 
         jPanel75.add(jPanel76);
 
@@ -387,6 +404,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField126.setTextOnly(true);
         jPanel80.add(deviceField126);
 
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("COMMENT");
+        deviceField7.setNumCols(20);
+        deviceField7.setOffsetNid(251);
+        deviceField7.setTextOnly(true);
+        jPanel80.add(deviceField7);
+
         jPanel79.add(jPanel80);
 
         deviceField127.setIdentifier("");
@@ -437,6 +461,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField132.setOffsetNid(34);
         deviceField132.setTextOnly(true);
         jPanel84.add(deviceField132);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("COMMENT");
+        deviceField8.setNumCols(20);
+        deviceField8.setOffsetNid(252);
+        deviceField8.setTextOnly(true);
+        jPanel84.add(deviceField8);
 
         jPanel83.add(jPanel84);
 
@@ -1152,6 +1183,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField216.setTextOnly(true);
         jPanel140.add(deviceField216);
 
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("COMMENT");
+        deviceField9.setNumCols(20);
+        deviceField9.setOffsetNid(266);
+        deviceField9.setTextOnly(true);
+        jPanel140.add(deviceField9);
+
         jPanel139.add(jPanel140);
 
         deviceField217.setIdentifier("");
@@ -1202,6 +1240,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField222.setOffsetNid(184);
         deviceField222.setTextOnly(true);
         jPanel144.add(deviceField222);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("COMMENT");
+        deviceField10.setNumCols(20);
+        deviceField10.setOffsetNid(267);
+        deviceField10.setTextOnly(true);
+        jPanel144.add(deviceField10);
 
         jPanel143.add(jPanel144);
 
@@ -1254,6 +1299,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField228.setTextOnly(true);
         jPanel148.add(deviceField228);
 
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("COMMENT");
+        deviceField11.setNumCols(20);
+        deviceField11.setOffsetNid(268);
+        deviceField11.setTextOnly(true);
+        jPanel148.add(deviceField11);
+
         jPanel147.add(jPanel148);
 
         deviceField229.setIdentifier("");
@@ -1304,6 +1356,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField234.setOffsetNid(204);
         deviceField234.setTextOnly(true);
         jPanel152.add(deviceField234);
+
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("COMMENT");
+        deviceField12.setNumCols(20);
+        deviceField12.setOffsetNid(269);
+        deviceField12.setTextOnly(true);
+        jPanel152.add(deviceField12);
 
         jPanel151.add(jPanel152);
 
@@ -1356,6 +1415,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField240.setTextOnly(true);
         jPanel156.add(deviceField240);
 
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("COMMENT");
+        deviceField13.setNumCols(20);
+        deviceField13.setOffsetNid(270);
+        deviceField13.setTextOnly(true);
+        jPanel156.add(deviceField13);
+
         jPanel155.add(jPanel156);
 
         deviceField241.setIdentifier("");
@@ -1406,6 +1472,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField246.setOffsetNid(224);
         deviceField246.setTextOnly(true);
         jPanel160.add(deviceField246);
+
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("COMMENT");
+        deviceField14.setNumCols(20);
+        deviceField14.setOffsetNid(271);
+        deviceField14.setTextOnly(true);
+        jPanel160.add(deviceField14);
 
         jPanel159.add(jPanel160);
 
@@ -1458,6 +1531,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField252.setTextOnly(true);
         jPanel164.add(deviceField252);
 
+        deviceField15.setIdentifier("");
+        deviceField15.setLabelString("COMMENT");
+        deviceField15.setNumCols(20);
+        deviceField15.setOffsetNid(272);
+        deviceField15.setTextOnly(true);
+        jPanel164.add(deviceField15);
+
         jPanel163.add(jPanel164);
 
         deviceField253.setIdentifier("");
@@ -1508,6 +1588,13 @@ public class NI6683Setup extends DeviceSetup
         deviceField258.setOffsetNid(244);
         deviceField258.setTextOnly(true);
         jPanel168.add(deviceField258);
+
+        deviceField16.setIdentifier("");
+        deviceField16.setLabelString("COMMENT");
+        deviceField16.setNumCols(20);
+        deviceField16.setOffsetNid(273);
+        deviceField16.setTextOnly(true);
+        jPanel168.add(deviceField16);
 
         jPanel167.add(jPanel168);
 
@@ -1572,13 +1659,6 @@ public class NI6683Setup extends DeviceSetup
         deviceField2.setTextOnly(true);
         jPanel4.add(deviceField2);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Trigger Event");
-        deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(249);
-        deviceField5.setTextOnly(true);
-        jPanel4.add(deviceField5);
-
         jPanel2.add(jPanel4);
 
         deviceField3.setIdentifier("");
@@ -1628,6 +1708,9 @@ public class NI6683Setup extends DeviceSetup
     private DeviceChoice deviceChoice47;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
+    private DeviceField deviceField12;
     private DeviceField deviceField120;
     private DeviceField deviceField121;
     private DeviceField deviceField122;
@@ -1638,6 +1721,7 @@ public class NI6683Setup extends DeviceSetup
     private DeviceField deviceField127;
     private DeviceField deviceField128;
     private DeviceField deviceField129;
+    private DeviceField deviceField13;
     private DeviceField deviceField130;
     private DeviceField deviceField131;
     private DeviceField deviceField132;
@@ -1648,6 +1732,7 @@ public class NI6683Setup extends DeviceSetup
     private DeviceField deviceField137;
     private DeviceField deviceField138;
     private DeviceField deviceField139;
+    private DeviceField deviceField14;
     private DeviceField deviceField140;
     private DeviceField deviceField141;
     private DeviceField deviceField142;
@@ -1658,6 +1743,7 @@ public class NI6683Setup extends DeviceSetup
     private DeviceField deviceField147;
     private DeviceField deviceField148;
     private DeviceField deviceField149;
+    private DeviceField deviceField15;
     private DeviceField deviceField150;
     private DeviceField deviceField151;
     private DeviceField deviceField152;
@@ -1668,6 +1754,7 @@ public class NI6683Setup extends DeviceSetup
     private DeviceField deviceField157;
     private DeviceField deviceField158;
     private DeviceField deviceField159;
+    private DeviceField deviceField16;
     private DeviceField deviceField160;
     private DeviceField deviceField161;
     private DeviceField deviceField162;
@@ -1775,7 +1862,10 @@ public class NI6683Setup extends DeviceSetup
     private DeviceField deviceField263;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
-    private DeviceField deviceField5;
+    private DeviceField deviceField6;
+    private DeviceField deviceField7;
+    private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel100;
     private javax.swing.JPanel jPanel101;

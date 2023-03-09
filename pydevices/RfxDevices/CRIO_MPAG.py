@@ -1,10 +1,11 @@
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64
+from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Tree
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_uint, c_short, c_byte, c_double, c_uint8, c_int32, c_uint16
 import os
 from time import sleep
 import sys, traceback
+import datetime
 
 class CRIO_MPAG(Device):
     """NI Compact RIO MITICA AGPS analogue signals"""
@@ -119,7 +120,7 @@ class CRIO_MPAG(Device):
            CRIO_MPAG.niInterfaceLib = CDLL("libNiInterface.so")
 
         try:
-            status = CRIO_MPAG.niInterfaceLib.crioMpagInit( byref(self.session), c_char_p(boardId), c_uint(fifoDepthSize) )
+            status = CRIO_MPAG.niInterfaceLib.crioMpagInit( byref(self.session), c_char_p(boardId.encode('utf-8')), c_uint(fifoDepthSize) )
             if status < 0 :
                 raise mdsExceptions.TclFAILED_ESSENTIAL
         except BaseException as e:
@@ -156,6 +157,10 @@ class CRIO_MPAG(Device):
 
         def run(self):
 
+            self.device.setTree(
+                Tree(self.device.getTree().name, self.device.getTree().shot))
+            self.device = self.device.copy()
+
             bufSize = self.device.buf_size.data()
             segmentSize = self.device.seg_length.data()
             trigSource = self.device.trig_source.data() 
@@ -163,7 +168,7 @@ class CRIO_MPAG(Device):
             clockSource = self.device.clock_source.evaluate()
             period = float( clockSource.getDelta() )
             timeAt0 = startTime
-            numSamples = -1 # continuous
+            numSamples = -1 # Forced to continuous acquisition
             clockMode = self.device.clockModeDict[self.device.clock_mode.data()]
 
             print ('startSave')
@@ -243,9 +248,8 @@ class CRIO_MPAG(Device):
             return
 
         def stop(self):
-            #self.stopAcq.value = 1;
             print (self.stopAcq)       
-            CRIO_MPAG.niInterfaceLib.setStopAcqFlag(self.stopAcq);
+            CRIO_MPAG.niInterfaceLib.setStopAcqFlag(self.stopAcq)
 
       
 #############End Inner class AsynchStore
@@ -405,7 +409,7 @@ class CRIO_MPAG(Device):
 
         for slave in ['a','b','c']:
             for chan in range(1, self.NUM_SLAVE_CHANNEL+1):                   
-                #Empy the node which will contain  the segmented data   
+                #Empty the node which will contain  the segmented data   
                 dataRawNode = getattr(self, 'slave_crio_%c_channel_%02d_data_raw'%(slave, chan))
                 dataRawNode.deleteData()
                 dataRawNode.setCompressOnPut(False)
@@ -415,7 +419,7 @@ class CRIO_MPAG(Device):
 
         for adcIdx in ['1','2']:
             for chan in range(1, self.NUM_9220_CHANNEL+1):                   
-                #Empy the node which will contain  the segmented data   
+                #Empty the node which will contain  the segmented data   
                 dataRawNode = getattr(self, 'ni_9220_%c_channel_%02d_data_raw'%(adcIdx, chan))
                 dataRawNode.deleteData()
                 dataRawNode.setCompressOnPut(False)
@@ -452,7 +456,7 @@ class CRIO_MPAG(Device):
  
 
         treePtr = c_void_p(0)
-        CRIO_MPAG.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
+        CRIO_MPAG.niInterfaceLib.openTree(c_char_p((self.getTree().name).encode('utf-8')), c_int(self.getTree().shot), byref(treePtr))
  
         self.worker = self.AsynchStore()        
         self.worker.daemon = True 
@@ -517,7 +521,7 @@ class CRIO_MPAG(Device):
 
         niLib = CDLL("libNiInterface.so")
 
-        status = niLib.executeMpagFpgaCommand( c_char_p(boardIdDev), CRIO_MPAG.START_PLC_COMMAND )
+        status = niLib.executeMpagFpgaCommand( c_char_p(boardIdDev.encode('utf-8')), CRIO_MPAG.START_PLC_COMMAND )
         if status < 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'cRIO MPAG start command error.')
             return 0
@@ -537,7 +541,7 @@ class CRIO_MPAG(Device):
 
         niLib = CDLL("libNiInterface.so")
 
-        status = niLib.executeMpagFpgaCommand( c_char_p(boardIdDev), CRIO_MPAG.STOP_PLC_COMMAND )
+        status = niLib.executeMpagFpgaCommand( c_char_p(boardIdDev.encode('utf-8')), CRIO_MPAG.STOP_PLC_COMMAND )
         if status < 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'cRIO MPAG stop command error.')
             return 0

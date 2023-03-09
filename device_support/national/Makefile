@@ -15,7 +15,7 @@ CFLAGS_RELEASE := -fPIC  -O3
 LDFLAGS_RELEASE =
 
 CFLAGS =   -fPIC -O3 -I${MDSPLUS_DIR}/include -I${CODAC_ROOT}/include -std=c++11 
-LDFLAGS =  -fPIC -O0 -L${MDSPLUS_DIR}/lib -L${CODAC_ROOT}/lib/ -lm -lNiFpga -lpxi6259 -lnixseries -lpthread -lMdsObjectsCppShr -ltcn
+LDFLAGS =  -fPIC -O0 -L${MDSPLUS_DIR}/lib -L${CODAC_ROOT}/lib/ -lm -lNiFpga -lpxi6259 -lnixseries -lpthread -lMdsObjectsCppShr -ltcn -lnisync
 
 # Debug builds (make debug)
 
