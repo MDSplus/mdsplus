@@ -24,6 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <pxi-6259-lib.h>
 #include <xseries-lib.h>
+#include <nisync-lib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>

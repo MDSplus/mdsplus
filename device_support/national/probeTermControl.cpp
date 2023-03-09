@@ -140,8 +140,8 @@ int configureOutput(int *chanOutFD, uint32_t deviceNum, uint32_t outChanRef,
 int configureInput(int *chanInFd, uint32_t deviceNum, uint32_t inChan[],
                    double frequency, int numChan)
 {
-  int diffMapChannel[16] = {-1, 0, 1, 2, 3, 4, 5, 6,
-                            7, 16, 17, 18, 19, 20.21, 22, 23};
+  int diffMapChannel[17] = {-1, 0, 1, 2, 3, 4, 5, 6,
+                            7, 16, 17, 18, 19, 20, 21, 22, 23};
   char filename[256];
   int i;
   pxi6259_ai_conf_t aiConfig;
