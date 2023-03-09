@@ -121,6 +121,10 @@ public class Data
 	public void setCtxTree(Tree ctxTree)
 	{ this.ctxTree = ctxTree; }
 
+        public Tree getCtxTree()
+        {
+            return ctxTree;
+        }
 	static
 	{
 		try
@@ -465,25 +469,41 @@ public class Data
 	 * Return units field. EmptyData is returned if no units defined.
 	 */
 	public Data getUnits()
-	{ return units; }
+	{ 
+            if(units != null)
+                units.setCtxTree(ctxTree);
+            return units; 
+        }
 
 	/**
 	 * Returns help). Returns EmptyData if no help field defined.
 	 */
 	public Data getHelp()
-	{ return help; }
+	{ 
+            if(help != null)
+                help.setCtxTree(ctxTree);
+            return help;
+        }
 
 	/**
 	 * Get the error field. Returns EmptyData if no error defined.
 	 */
 	public Data getError()
-	{ return error; }
+	{ 
+            if(error != null)
+                error.setCtxTree(ctxTree);
+            return error; 
+        }
 
 	/**
 	 * Get the error field. Returns EmptyData if no error defined.
 	 */
 	public Data getValidation()
-	{ return validation; }
+	{ 
+            if(validation != null)
+                validation.setCtxTree(ctxTree);
+            return validation; 
+        }
 
 	/**
 	 *
