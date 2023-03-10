@@ -452,14 +452,6 @@ then
     cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsip@.service /etc/systemd/system/mdsip@.service
   fi
 fi
-if [ ! -r /etc/systemd/system/mdsip.socket ]
-then
-  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsip.socket /etc/systemd/system/mdsip.socket
-fi
-if [ ! -r /etc/systemd/system/mdsip@.service ]
-then
-  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsip@.service /etc/systemd/system/mdsip@.service
-fi
     </post>
     <preun>
 if [ "$1" == "0" ]
@@ -847,7 +839,6 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
  <external_packages dist="Ubuntu22">
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
-   <xinetd package="busybox"/>
    <readline package="libreadline8"/>
  </external_packages>
 
@@ -857,22 +848,9 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
    <readline package="libreadline8"/>
  </external_packages>
 
- <external_packages dist="DebianBookworm">
-   <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
-   <readline package="libreadline8"/>
- </external_packages>
-
  <external_packages dist="DebianBullseye">
    <numpy package="python3-numpy"/>
    <java package="java-runtime"/>
-   <readline package="libreadline8"/>
- </external_packages>
-
- <external_packages dist="DebianBullseye">
-   <numpy package="python3-numpy"/>
-   <java package="java-runtime"/>
-   <xinetd package="busybox"/>
    <readline package="libreadline8"/>
  </external_packages>
 
