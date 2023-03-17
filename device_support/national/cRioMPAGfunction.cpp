@@ -31,6 +31,8 @@ NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName, Ni
   size_t rElem;
   uint64_t dummy;
   uint64_t *dummyElem;
+  int numDmaRead;
+  int maxDmaRead = 1000;
 
   if (DEBUG == 1)
     return status;
@@ -51,9 +53,13 @@ NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName, Ni
   }
 
   printf("Num elements in %s %d\n", fifoName, nElem);
-
-  while (nElem > 0)
+  
+  numDmaRead = 0;
+  while ( nElem > 0 )
   {
+
+    if ( numDmaRead > maxDmaRead )
+       break; 
 
     dummyElem = (uint64_t *)calloc(nElem, sizeof(uint64_t));
 
@@ -70,13 +76,21 @@ NiFpga_Status crioMpagResetFifo(NiFpga_Session session, const char *fifoName, Ni
       return status;
     }
 
-    printf("Remaining elements in %s %d\n", fifoName, rElem);
 
     free(dummyElem);
     nElem = rElem; //fede 20210312
+    numDmaRead++;
+
+    //printf("Remaining elements in %s %d %d\n", fifoName, rElem, numDmaRead);  //20221214
+
   }
 
-  return status;
+  if ( numDmaRead < maxDmaRead )
+  {
+     return status;
+  } else {
+     return -1;
+  }
 }
 
 
@@ -88,7 +102,7 @@ NiFpga_Status crioMpagInit(NiFpga_Session *session, const char *cRioId, size_t f
     return status;
 
   /* opens a session, downloads the bitstream, and runs the FPGA */
-  printf("cRio %d Opening a session... %s \n", cRioId, NiFpga_MainFPGA_9159_Bitfile);
+  printf("cRio %s Opening a session... %s \n", cRioId, NiFpga_MainFPGA_9159_Bitfile);
 
   NiFpga_MergeStatus(&status, status = NiFpga_Open(NiFpga_MainFPGA_9159_Bitfile,
                                                    NiFpga_MainFPGA_9159_Signature,
@@ -347,6 +361,8 @@ void *acquisitionThreadFPGA(void *args)
   char **streamNames = fpgaAcq->streamNames;
   float *streamGains = fpgaAcq->streamGains;
   float *streamOffsets = fpgaAcq->streamOffsets;
+  uint8_t clockMode = fpgaAcq->clockMode;
+
   NiFpga_Bool val;
   NiFpga_MergeStatus(&status, NiFpga_ReadBool(session,
                                               NiFpga_MainFPGA_9159_ControlBool_Start,
@@ -374,6 +390,30 @@ void *acquisitionThreadFPGA(void *args)
   usleep(200000);
 
   status = crioMpagResetFifo(session, fifoName, fifoId);
+  status = NiFpga_Status_Success;//Test 14/02/2023
+  if( status == -1 )
+  {
+    printf("\n\nDMA buffer reset failed for slave index %d. This occurs when the acquisition clock\n is active during initialization. The clock must be active \nafter initialization. The acquisition system must be configured with a Gated Clock.\n", slaveIdx);
+    fpgaAcq->retStatus = status;
+    pthread_exit(NULL);
+  }
+  if ( NiFpga_IsError(status) )
+  {
+    fpgaAcq->retStatus = status;
+    pthread_exit(NULL);
+  }
+
+  //Configure clock mode 
+  if (slaveIdx == SLAVE_A)
+  {
+    /*
+      Only one thread needs to configure the clock mode. 
+      The clock mode is defined by default as external
+    */
+    NiFpga_MergeStatus(&status, NiFpga_WriteBool(session,
+                                               NiFpga_MainFPGA_9159_ControlBool_Internal_ACQ_Trigger,
+                                               clockMode));
+  }
 
   if (DEBUG)
   {
@@ -399,11 +439,8 @@ void *acquisitionThreadFPGA(void *args)
 
   while ((!*(uint8_t *)stopAcq) == 1)
   {
-
     readElem = readMpagFifoData(session, fifoName, fifoId, data, slaveDataSamples, stopAcq);
-
-    //printf("Data Read from DMA %s OK\n", fifoName);
-    printf(".");
+    printf("*");
     fflush(stdout);
 
     if (DEBUG)
@@ -548,9 +585,27 @@ printf("Chan Idx %d  %d %d \n",chanIdx, slaveCh, readChanSmp[slaveCh]);
     //numSamples = readChanSmp[0] + segmentSize;
     numSamples = bufSize + segmentSize;
   }
+  printf("\n");
+
   free(readChanSmp);
   free(bufReadChanSmp);
+
+  //Set clock mode to external 
+  if (slaveIdx == SLAVE_A)  
+  {
+    /*
+      Clock mode is set to external to stop data stream 
+      generation via DMA. NB the external clock source 
+      must be a gated clock and with internal clock there 
+      must not be an external clock
+    */
+    NiFpga_MergeStatus(&status, NiFpga_WriteBool(session,
+                                               NiFpga_MainFPGA_9159_ControlBool_Internal_ACQ_Trigger,
+                                               CLOCK_MODE_EXTERNAL));
+  }
+  fpgaAcq->retStatus = status;
   printf("EXIT thread %s\n", fifoName);
+  pthread_exit(NULL);
 }
 
 /******************************************************************************/
@@ -594,6 +649,7 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
   }
 
   //Delete first all data nids
+  printf("Delete all saved data if present\n");
   TreeNode *currNode;
   for (int i = 0; i < nChan; i++)
   {
@@ -645,6 +701,8 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
       printf("Error deleting data nodes %s : %s\n", currNode->getPath(), exc.what());
     }
   }
+  printf("All saved data deleted\n");
+
 
   struct_FPGA structFpga[3];
   struct_FPGA_ACQ structFpgaAcq;
@@ -684,9 +742,11 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
   structFpgaAcq.streamGains = streamGains;
   structFpgaAcq.streamOffsets = streamOffsets;
   structFpgaAcq.streamFactor = streamFactor;
+  structFpgaAcq.clockMode = clockMode; // Clock mode must be passed to the acquisition threads to configure the clock source correctly
+  
 
   /* Enable DMA */
-
+  printf("Enable DMA link from slave\n");
   status = generateMpagFpgaBoolPule(session, NiFpga_MainFPGA_9159_ControlBool_START_DMA, 0.1);
   if (NiFpga_IsError(status))
   {
@@ -694,10 +754,15 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
     return -1;
   }
 
-  /* Enable interna Externa clock mode*/
+  /* 
+     Force clock mode to External
+     Even if the clok mode is defined as internal during initialization 
+     it is forced to be external. This is necessary to avoid in external 
+     clock mode the system immediately starts receiving data via DMA.
+  */
   NiFpga_MergeStatus(&status, NiFpga_WriteBool(session,
                                                NiFpga_MainFPGA_9159_ControlBool_Internal_ACQ_Trigger,
-                                               clockMode));
+                                               CLOCK_MODE_EXTERNAL));
 
   if (NiFpga_IsError(status))
   {
@@ -723,15 +788,19 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
   err[2] = pthread_create(&threadSlaveC, NULL, &acquisitionThreadFPGA, &structFpga[2]);
   errorBit |= err[2] ? 1 << 2 : 0;
 
+  printf("errorBit %d\n", errorBit);
+
   if (errorBit) //error on one thread creation must be close other thread
   {
-    printf("Error on create thread\n");
+    printf("Error on acquisition thread creation\n");
     *(uint8_t *)stopAcq = 1;
+    return -1;
   }
 
   usleep(30000);
-
+   
   startMpagFpga(session);
+  
   sem_post(&structFpga[0].semThreadStart);
   sem_post(&structFpga[1].semThreadStart);
   sem_post(&structFpga[2].semThreadStart);
@@ -739,11 +808,24 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
   pthread_join(threadSlaveA, NULL);
   pthread_join(threadSlaveB, NULL);
   pthread_join(threadSlaveC, NULL);
+
   sem_destroy(&structFpga[0].semThreadStart);
   sem_destroy(&structFpga[1].semThreadStart);
   sem_destroy(&structFpga[2].semThreadStart);
 
-  printf("EXIT from mpagQueuedAcqData %d \n", (!*(int *)stopAcq));
+  printf("structFpga[0].structFpgaAcq->retStatus %d\n", structFpga[0].structFpgaAcq->retStatus);
+  printf("structFpga[1].structFpgaAcq->retStatus %d\n", structFpga[1].structFpgaAcq->retStatus);
+  printf("structFpga[2].structFpgaAcq->retStatus %d\n", structFpga[2].structFpgaAcq->retStatus);
+
+  if( structFpga[0].structFpgaAcq->retStatus < 0 ||
+      structFpga[1].structFpgaAcq->retStatus < 0 ||
+      structFpga[2].structFpgaAcq->retStatus < 0 )
+  {
+      return -1;
+  }
+
+
+  printf("----- EXIT from mpagQueuedAcqData %d \n", (!*(int *)stopAcq));
 
   return 0;
 }
