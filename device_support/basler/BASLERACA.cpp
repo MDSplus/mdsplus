@@ -877,7 +877,7 @@ int BASLER_ACA::startFramesAcquisition()
     Data *nodeData = t0Node->getData();
     timeStamp0 = (int64_t)nodeData->getLong();
   }
-  catch (MdsException *exc)
+  catch (const MdsException & exc)
   {
     sprintf(error, "%s: Error getting frame0 time\n", this->ipAddress);
   }
@@ -892,7 +892,7 @@ int BASLER_ACA::startFramesAcquisition()
       Data *nodeData = tStartOffset->getData();
       timeOffset = (float)nodeData->getFloatArray()[0];
     }
-    catch (MdsException *exc)
+    catch (const MdsException & exc)
     {
       sprintf(error,
               "%s: Error getting timebaseNid (offset time set to 0.0s)\n",

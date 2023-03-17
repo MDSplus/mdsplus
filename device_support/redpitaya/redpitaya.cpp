@@ -730,7 +730,7 @@ void openTree(char *name, int shot, MDSplus::Tree **treePtr)
   {
     *treePtr = new MDSplus::Tree(name, shot);
   }
-  catch (MDSplus::MdsException &exc)
+  catch (const MDSplus::MdsException & exc)
   {
     *treePtr = 0;
   }

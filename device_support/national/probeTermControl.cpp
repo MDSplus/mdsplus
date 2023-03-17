@@ -325,9 +325,9 @@ int main(int argc, char **argv)
       node[i] = t->getNode(path);
     }
   }
-  catch (MdsException *exc)
+  catch (const MdsException & exc)
   {
-    printf("%s\n", exc->what());
+    printf("%s\n", exc);
     exit(1);
   }
 
@@ -430,9 +430,9 @@ int main(int argc, char **argv)
           node[i]->putRow(currData, &currTime);
         }
       }
-      catch (MdsException *exc)
+      catch (const MdsException & exc)
       {
-        printf("%s\n", exc->what());
+        printf("%s\n", exc);
         error = 1;
         goto out;
       }

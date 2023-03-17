@@ -100,9 +100,9 @@ public:
       currSize);
       */
     }
-    catch (MdsException *exc)
+    catch (const MdsException & exc)
     {
-      printf("Class FAUSaveItem: Error saving data  %s\n", exc->what());
+      printf("Class FAUSaveItem: Error saving data  %s\n", exc);
     }
   }
 };
@@ -597,9 +597,9 @@ int fauSaveAcqData(NiFpga_Session session, double tickPeriod, double trigTime,
       {
         currNode[i] = new TreeNode(dataNids[i], (Tree *)treePtr);
       }
-      catch (MdsException *exc)
+      catch (const MdsException & exc)
       {
-        printf("Error collecting data nodes %s\n", exc->what());
+        printf("Error collecting data nodes %s\n", exc);
       }
     }
 

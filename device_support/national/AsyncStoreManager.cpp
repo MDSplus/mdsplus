@@ -317,9 +317,9 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
       /* Send Event on Segment update <TreeName>_<DeviceNodeName>_CH<numchannel>*/
       // sendChannelSegmentPutEvent(dataNode);
     }
-    catch (MdsException *exc)
+    catch (const MdsException & exc)
     {
-      printf("Cannot put segment: %s\n", exc->what());
+      printf("Cannot put segment: %s\n", exc);
     }
     delete clockNode;
   }
