@@ -396,6 +396,7 @@ static void *handleRemoteAst(void *arg )
   struct MdsipEventInfo *eventInfo = arg;
   int curr_eventid;
 
+  if(!arg) return NULL;
   getServerDefinition("mds_event_server", receive_servers, &num_receive_servers);
   newRemoteId(eventInfo->eventid);
   for (idx = 0; idx < num_receive_servers; idx++)
