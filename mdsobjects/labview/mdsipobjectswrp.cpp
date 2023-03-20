@@ -41,7 +41,7 @@ EXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut,
   catch (const MDSplus::MdsException &e)
   {
     errorCode = bogusError;
-    errorMessage = e;
+    errorMessage = e.what();
     fillErrorCluster(errorCode, errorSource, errorMessage, error);
     return;
   }
@@ -75,7 +75,7 @@ EXPORT void mdsplus_connection_getData(const void *lvConnectionPtr,
   catch (const MDSplus::MdsException &e)
   {
     errorCode = bogusError;
-    errorMessage = e;
+    errorMessage = e.what();
   }
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -102,7 +102,7 @@ EXPORT void mdsplus_connection_putData(const void *lvConnectionPtr,
   catch (const MDSplus::MdsException &e)
   {
     errorCode = bogusError;
-    errorMessage = e;
+    errorMessage = e.what();
     fillErrorCluster(errorCode, errorSource, errorMessage, error);
     return;
   }
@@ -126,7 +126,7 @@ EXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr,
   catch (const MDSplus::MdsException &e)
   {
     errorCode = bogusError;
-    errorMessage = e;
+    errorMessage = e.what();
   }
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -147,7 +147,7 @@ EXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr,
   catch (const MDSplus::MdsException &e)
   {
     errorCode = bogusError;
-    errorMessage = e;
+    errorMessage = e.what();
   }
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -174,7 +174,7 @@ EXPORT void mdsplus_connection_getNode(const void *lvConnectionPtr,
   {
     errorCode = bogusError;
     *lvTreeNodePtrOut = 0;
-    fillErrorCluster(errorCode, errorSource, const_cast<char *>(mdsE),
+    fillErrorCluster(errorCode, errorSource, const_cast<char *>(mdsE.what()),
                      error);
   }
 }
