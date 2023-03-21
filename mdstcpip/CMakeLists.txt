@@ -230,20 +230,6 @@ else()
     )
 ENDIF()
 
-###
-### Documentation
-###
-
-add_custom_target(
-    mdstcpip-docs
-    COMMAND ${doxygen_EXECUTABLE} docs/doxy.conf
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-add_dependencies(
-    docs mdstcpip-docs
-)
-
 if(Globus_FOUND AND Globus_FLAVOR)
 
     ###
@@ -272,4 +258,20 @@ if(Globus_FOUND AND Globus_FLAVOR)
         TYPE BIN
     )
 
+endif()
+
+if(Doxygen_FOUND)
+    ###
+    ### Documentation
+    ###
+
+    add_custom_target(
+        mdstcpip-docs
+        COMMAND ${DOXYGEN_EXECUTABLE} docs/doxy.conf
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
+    add_dependencies(
+        docs mdstcpip-docs
+    )
 endif()

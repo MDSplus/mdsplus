@@ -1,45 +1,21 @@
 
 import os
 from subprocess import *
+import csv
+import argparse
 
-# C compiler to use
-cc = os.environ['CC']
+parser = argparse.ArgumentParser()
 
-# C compiler flags, likely -I/path/to/include
-cflags = os.environ['CFLAGS']
+parser.add_argument('--opcodes', help='Path to opcodes.csv')
+parser.add_argument('--gperf', help='Path to gperf executable')
 
-# gperf exectuable to use
-gperf = os.environ['GPERF']
-
-# Generate a list of opcodes
-proc = Popen(
-    f'{cc} {cflags} -E -x c -'.split(' '),
-    stdin=PIPE,
-    stdout=PIPE,
-)
-
-preproc = b'''
-#define COM
-#define OPC(name, cmd,...) cmd,__LINE__-25
-#include <opcbuiltins.h>
-'''
-
-stdout = proc.communicate(preproc)[0].decode()
-lines = stdout.split('\n')
-
-# Empty lines and comments will cause errors with gperf
-output_lines = []
-for line in lines:
-    if line.startswith('#') or len(line.strip()) == 0:
-        continue
-
-    output_lines.append(line)
+args = parser.parse_args()
 
 # Generate the input file for gperf
-input_filename = 'TdiHash.c.in'
-input_file = open(input_filename, 'wt')
+intermediary_filename = 'TdiHash.c.in'
+intermediary_file = open(intermediary_filename, 'wt')
 
-input_file.write('''
+intermediary_file.write('''
 %language=C
 %ignore-case
 %compare-strncmp
@@ -62,10 +38,26 @@ struct fun { int name; int idx; };
 %%
 ''')
 
-# Insert the opcodes as part of the input to gperf
-input_file.write('\n'.join(output_lines))
+# Generate a list of opcodes for gperf to process
+# Each one must be in the format of `string,index`
 
-input_file.write('''
+input_file = open(args.opcodes, newline='')
+reader = csv.DictReader(input_file)
+
+index = 0
+opcode_lines = []
+for line in reader:
+    opcode_lines.append(
+        '{},{}'.format(
+            line['builtin'],
+            index
+        )
+    )
+    index += 1
+
+intermediary_file.write('\n'.join(opcode_lines))
+
+intermediary_file.write('''
 %%
 int tdi_hash(const int len, const char *const pstring)
 {
@@ -74,11 +66,11 @@ int tdi_hash(const int len, const char *const pstring)
 }
 ''')
 
-input_file.close()
+intermediary_file.close()
 
 # Process the input file with gperf
 proc = Popen(
-    f'{gperf} {input_filename}'.split(' '),
+    f'{args.gperf} {intermediary_filename}'.split(' '),
     stdin=PIPE,
     stdout=PIPE,
 )
