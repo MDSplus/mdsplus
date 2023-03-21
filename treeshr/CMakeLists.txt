@@ -6,7 +6,7 @@
 # TODO: Investigate
 # find_program(_sed_EXECUTABLE sed)
 #
-# if (_sed_EXECUTABLE)
+# if(_sed_EXECUTABLE)
 #     message("${_sed_EXECUTABLE} -i 's/\\(size_t\\|int\)\\ n\\;\\s*\\/typeof(max_size) n\\; \\\\/g' ${_lex_generated_source_list}")
 #     execute_process(
 #         COMMAND "${_sed_EXECUTABLE} -i 's/\\(size_t\\|int\)\\ n\\;\\s*\\/typeof(max_size) n\\; \\\\/g' ${_lex_generated_source_list}"

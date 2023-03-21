@@ -3,18 +3,17 @@
 ### TdiShr
 ###
 
-if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c)
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c)
 
     message("Generating tdishr/TdiHash.c with gperf")
 
     find_program(gperf_EXECUTABLE gperf REQUIRED)
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} -E env 
-            CC=${CMAKE_C_COMPILER}
-            CFLAGS=-I${CMAKE_SOURCE_DIR}/include
-            GPERF=${gperf_EXECUTABLE}
-            ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TdiHash.py
+        COMMAND ${Python_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/TdiHash.py
+            --opcodes=${CMAKE_CURRENT_SOURCE_DIR}/opcodes.csv
+            --gperf=${gperf_EXECUTABLE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 

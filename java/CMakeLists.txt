@@ -11,12 +11,12 @@ if(ENABLE_JAVA)
         set(_tmp_dir ${CMAKE_CURRENT_BINARY_DIR}/jar-sources/${_source_jar_stem})
         file(MAKE_DIRECTORY "${_tmp_dir}")
 
-        # TODO: Fix this always running
+        # TODO: Fix this always running and throwing a warning
         add_custom_command(
             TARGET ${_target} POST_BUILD
             COMMENT "Adding ${_source_jar_stem}.jar to ${_target_jar}"
             COMMAND ${CMAKE_COMMAND} -E tar xf ${_source_jar_path}
-            COMMAND ${Java_JAR_EXECUTABLE} uf ${_target_jar} .
+            COMMAND ${Java_JAR_EXECUTABLE} umf ${_manifest} ${_target_jar} .
             WORKING_DIRECTORY ${_tmp_dir}
         )
 
