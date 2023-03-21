@@ -1,11 +1,10 @@
 
 include(GetDate)
 
-if(NOT GIT_FOUND)
-    find_package(Git QUIET)
-endif()
+find_package(Git QUIET)
 
-macro(git _output_variable)
+# Convenience macro for all the git queries we need to make
+macro(git _output_variable) # additional arguments are in ${ARGN}
     execute_process(
         COMMAND "${GIT_EXECUTABLE}" ${ARGN}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -14,7 +13,7 @@ macro(git _output_variable)
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     if(NOT _result EQUAL 0)
-        SET(${_output_variable} "NOTFOUND")
+        SET(${_output_variable} "NOTFOUND") # NOTFOUND is CMake's version of NULL
     endif()
 endmacro()
 
@@ -30,13 +29,14 @@ if(NOT GIT_REMOTE)
     set(GIT_REMOTE_URL "file:/${CMAKE_SOURCE_DIR}")
 endif()
 
-set(RELEASE_TAG "${GIT_TAG}")
 if(RELEASE_VERSION)
     string(REPLACE "." ";" _version_list "${RELEASE_VERSION}") # 1.2.3 -> 1;2;3
     list(GET _version_list 0 RELEASE_MAJOR)
     list(GET _version_list 1 RELEASE_MINOR)
     list(GET _version_list 2 RELEASE_RELEASE)
 endif()
+
+set(RELEASE_TAG "${GIT_TAG}")
 
 if(NOT RELEASE_MAJOR OR NOT RELEASE_MINOR OR NOT RELEASE_RELEASE)
     string(REPLACE "-" ";" _version_list "${RELEASE_TAG}") # branch-1-2-3 -> branch;1;2;3
@@ -54,7 +54,9 @@ endif()
 set(RELEASE_VERSION "${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_RELEASE}")
 get_date(RELEASE_DATE)
 
-string(SUBSTRING "${BRANCH}" 0 12 RELEASE_BRANCH)
+if(DEFINED ENV{BRANCH})
+    string(SUBSTRING "$ENV{BRANCH}" 0 12 RELEASE_BRANCH)
+endif()
 
 if(NOT RELEASE_BRANCH)
     string(SUBSTRING "${GIT_BRANCH}" 0 12 RELEASE_BRANCH)
@@ -86,4 +88,22 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E echo "   commit: ... ${GIT_COMMIT}"
     COMMAND ${CMAKE_COMMAND} -E echo "   remote_url: ${GIT_REMOTE_URL}"
     COMMAND ${CMAKE_COMMAND} -E echo ""
+)
+
+# There's no way to completely remove the extra CMake output from the git_info and release_tag targets
+# However, we can write this same info into files instead
+
+file(WRITE ${CMAKE_BINARY_DIR}/release_tag
+    "${RELEASE_TAG}\n"
+)
+
+file(WRITE ${CMAKE_BINARY_DIR}/git_info
+    " Git repository status: \n"
+    " ------------------------------ \n"
+    "\n"
+    "   tag: ...... ${GIT_TAG}\n"
+    "   branch: ... ${GIT_BRANCH}\n"
+    "   commit: ... ${GIT_COMMIT}\n"
+    "   remote_url: ${GIT_REMOTE_URL}\n"
+    "\n"
 )
