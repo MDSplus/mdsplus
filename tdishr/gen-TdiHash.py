@@ -8,8 +8,13 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--opcodes', help='Path to opcodes.csv')
 parser.add_argument('--gperf', help='Path to gperf executable')
+parser.add_argument('--output', help='Path to write output to')
 
 args = parser.parse_args()
+
+opcodes_filename = args.opcodes
+gperf_executable = args.gperf
+output_filename = args.output
 
 # Generate the input file for gperf
 intermediary_filename = 'TdiHash.c.in'
@@ -41,19 +46,17 @@ struct fun { int name; int idx; };
 # Generate a list of opcodes for gperf to process
 # Each one must be in the format of `string,index`
 
-input_file = open(args.opcodes, newline='')
-reader = csv.DictReader(input_file)
+opcodes_file = open(opcodes_filename, newline='')
+reader = csv.DictReader(opcodes_file)
 
-index = 0
 opcode_lines = []
 for line in reader:
     opcode_lines.append(
         '{},{}'.format(
             line['builtin'],
-            index
+            line['opcode']
         )
     )
-    index += 1
 
 intermediary_file.write('\n'.join(opcode_lines))
 
@@ -70,7 +73,7 @@ intermediary_file.close()
 
 # Process the input file with gperf
 proc = Popen(
-    f'{args.gperf} {intermediary_filename}'.split(' '),
+    f'{gperf_executable} {intermediary_filename}'.split(' '),
     stdin=PIPE,
     stdout=PIPE,
 )
@@ -87,7 +90,8 @@ for line in lines:
     output_lines.append(line)
 
 # Output the final product
-output_filename = 'TdiHash.c'
 output_file = open(output_filename, 'wt')
 
 output_file.write('\n'.join(output_lines))
+
+os.remove(intermediary_filename)

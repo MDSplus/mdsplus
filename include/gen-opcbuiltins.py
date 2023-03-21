@@ -5,18 +5,22 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--opcodes', help='Path to opcodes.csv')
+parser.add_argument('--output', help='Path to write output to')
 
 args = parser.parse_args()
 
-input_file = open(args.opcodes, newline='')
-output_file = open('opcbuiltins.h', 'wt')
+opcodes_filename = args.opcodes
+output_filename = args.output
+
+opcodes_file = open(opcodes_filename, newline='')
+output_file = open(output_filename, 'wt')
 
 output_file.write('''
 /* <opcbuiltins.h> */
 /*   name,                builtin,               f1,                  f2,       f3,               i1,          i2,         o1,         o2,         m1, m2,         token */
 ''')
 
-reader = csv.DictReader(input_file)
+reader = csv.DictReader(opcodes_file)
 
 for line in reader:
     output_file.write(

@@ -18,20 +18,23 @@ include(GitRevision)
 ### Update Submodules
 ###
 
-find_package(Git QUIET)
+# TODO: Make sure we *should* run git submodule update
 
-if(GIT_FOUND)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
-    )
-endif()
+# find_package(Git QUIET)
+
+# if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
+#     execute_process(
+#         COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
+#     )
+# endif()
 
 ###
 ### Options
 ###
 
-# message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
-# message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message("CMAKE_HOST_SYSTEM_PROCESSOR: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 # --x-includes=
 # --x-libraries=
@@ -339,7 +342,7 @@ if(NOT ENABLE_WRETURNS) # -Wunused-result is on by default in gcc and clang
 endif()
 
 if(ENABLE_TESTS)
-    enable_testing()
+    include(CTest)
 endif()
 
 # if(ENABLE_WCONVERSION)
@@ -380,7 +383,7 @@ find_package(Iconv REQUIRED)
 find_package(BLAS REQUIRED)
 
 # Finds the LZMA compression library
-find_package(LibLZMA REQUIRED)
+find_package(LibLZMA)
 
 # Finds the ZLIB compression library
 find_package(ZLIB REQUIRED)
@@ -572,46 +575,18 @@ if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/include/opcbuiltins.h)
 
     execute_process(
         COMMAND ${Python_EXECUTABLE}
-            ${CMAKE_SOURCE_DIR}/include/opcbuiltins.py
+            ${CMAKE_SOURCE_DIR}/include/gen-opcbuiltins.py
             --opcodes=${CMAKE_SOURCE_DIR}/tdishr/opcodes.csv
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/include
+            --output=${CMAKE_BINARY_DIR}/include/opcbuiltins.h
     )
 
 endif()
 
 ###
-### Generate python/MDSplus/tests/*_case.py
-###
-
-# file(GLOB
-#     _test_case_list
-#     "python/MDSplus/tests/*_case.py"
-# )
-
-# foreach(_test_case IN LISTS _test_case_list)
-#     cmake_path(GET _test_case STEM _test_case_name)
-#     ADD_TEST(
-#         NAME ${_test_case_name}
-#         COMMAND ${Python_EXECUTABLE} ${_test_case}
-#     )
-
-#     set(_env_mods
-#         "PATH=path_list_prepend:${BIN_DIR}"
-#         "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
-#         "PYTHONPATH=path_list_append:${CMAKE_BINARY_DIR}/python"
-#     )
-
-#     SET_TESTS_PROPERTIES(
-#         ${_test_case_name}
-#         PROPERTIES
-#             ENVIRONMENT_MODIFICATION "${_env_mods}"
-
-#     )
-# endforeach()
-
-###
 ### Generate include/*_messages.h
 ###
+
+# TODO: s/CMAKE_SOURCE_DIR/CMAKE_BINARY_DIR/g
 
 file(GLOB_RECURSE
     _messages_xml_list
@@ -619,13 +594,13 @@ file(GLOB_RECURSE
 )
 
 set(_messages_generated_file_list
-    "${CMAKE_BINARY_DIR}/python/MDSplus/mdsExceptions.py"
+    "${CMAKE_SOURCE_DIR}/python/MDSplus/mdsExceptions.py"
 )
 
 # Determine the header filenames that will be created
 foreach(_messages_xml IN LISTS _messages_xml_list)
     cmake_path(GET _messages_xml STEM _stem)
-    LIST(APPEND _messages_generated_file_list "${CMAKE_BINARY_DIR}/include/${_stem}.h")
+    LIST(APPEND _messages_generated_file_list "${CMAKE_SOURCE_DIR}/include/${_stem}.h")
 endforeach()
 
 # Check to see if we already have all the files generated
@@ -662,17 +637,6 @@ endif()
 #         file(MAKE_DIRECTORY ${_directory})
 #     endif()
 # endforeach()
-
-###
-### Generate python/MDSplus/compound.py
-###
-
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/python/MDSplus/compound.py")
-message("Missing python/MDSplus/compound.py, will run deploy/gen_compound_opcbuiltins.py")
-execute_process(
-    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_compound_opcbuiltins.py
-)
-endif()
 
 ###
 ### Generate sources with Yacc/Bison
@@ -768,6 +732,26 @@ endif()
 ### Libraries, Executables
 ###
 
+# Helper variables for setting file permissions during install()
+
+set(MODE_777
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_WRITE GROUP_EXECUTE
+    WORLD_READ WORLD_WRITE WORLD_EXECUTE
+)
+
+set(MODE_755
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ             GROUP_EXECUTE
+    WORLD_READ             WORLD_EXECUTE
+)
+
+set(MODE_644
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
+
 # Some libraries need both a Shared and a Static version, this includes a macro that helps streamline
 # that and create a second library target with the suffix `-static`. For `MdsShr` for example, it will
 # create the target `MdsShr-static`, which could then produce `libMdsShr.a`. If BUILD_SHARED_LIBS=OFF,
@@ -855,9 +839,10 @@ if(ENABLE_TESTS)
 
     add_subdirectory(testing)
     add_subdirectory(mdsshr/testing)
-    # add_subdirectory(treeshr/testing)
-    # add_subdirectory(mdslib/testing)
-    # add_subdirectory(mdstcpip/testing)
+    add_subdirectory(math/testing)
+    add_subdirectory(treeshr/testing)
+    add_subdirectory(mdslib/testing)
+    add_subdirectory(mdstcpip/testing)
     add_subdirectory(tdishr/testing)
     # add_subdirectory(tditest/testing)
     # add_subdirectory(mdsobjects/cpp/testing)
@@ -925,24 +910,6 @@ install(
 ### Install the remaining files
 ###
 
-set(MODE_777
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_WRITE GROUP_EXECUTE
-    WORLD_READ WORLD_WRITE WORLD_EXECUTE
-)
-
-set(MODE_755
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ             GROUP_EXECUTE
-    WORLD_READ             WORLD_EXECUTE
-)
-
-set(MODE_644
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-)
-
 install(
     DIRECTORY
         desktop
@@ -954,13 +921,24 @@ install(
         nodejs
         php
         pixmaps
-        pydevices
-        tdi
         trees
         xml
         ${CMAKE_BINARY_DIR}/include
     DESTINATION .
     USE_SOURCE_PERMISSIONS
+    PATTERN "gen-*" EXCLUDE # Files used to generate other files
+    PATTERN "*.in" EXCLUDE # Templates for generated files
+    PATTERN "Makefile" EXCLUDE # TODO: Remove
+    PATTERN "Makefile.*" EXCLUDE # TODO: Remove
+    PATTERN "CMakeLists.txt" EXCLUDE
+)
+
+install(
+    DIRECTORY
+        pydevices
+        tdi
+    DESTINATION .
+    FILE_PERMISSIONS ${MODE_755}
     PATTERN "*.in" EXCLUDE
     PATTERN "Makefile" EXCLUDE
     PATTERN "Makefile.*" EXCLUDE
@@ -984,7 +962,9 @@ install(
     PERMISSIONS ${MODE_755}
 )
 
-install(
-    DIRECTORY tdi
-    DESTINATION local/tdi
-)
+# mkdir local/tdi/
+
+# install(
+#     DIRECTORY tdi
+#     DESTINATION local/
+# )

@@ -17,4 +17,5 @@ install(
         synchronize_unix
         unix_submit
     TYPE BIN
+    PERMISSIONS ${MODE_755}
 )
