@@ -54,9 +54,11 @@ else()
     install(
         FILES jTraverser2.template RENAME jTraverser2
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
     install(
         FILES setupDevice.template RENAME setupDevice
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
 endif()

@@ -613,19 +613,21 @@ endif()
 ### Generate include/*_messages.h
 ###
 
+# TODO: s/CMAKE_SOURCE_DIR/CMAKE_BINARY_DIR/g
+
 file(GLOB_RECURSE
     _messages_xml_list
     "*/*messages.xml"
 )
 
 set(_messages_generated_file_list
-    "${CMAKE_BINARY_DIR}/python/MDSplus/mdsExceptions.py"
+    "${CMAKE_SOURCE_DIR}/python/MDSplus/mdsExceptions.py"
 )
 
 # Determine the header filenames that will be created
 foreach(_messages_xml IN LISTS _messages_xml_list)
     cmake_path(GET _messages_xml STEM _stem)
-    LIST(APPEND _messages_generated_file_list "${CMAKE_BINARY_DIR}/include/${_stem}.h")
+    LIST(APPEND _messages_generated_file_list "${CMAKE_SOURCE_DIR}/include/${_stem}.h")
 endforeach()
 
 # Check to see if we already have all the files generated
@@ -767,6 +769,26 @@ endif()
 ###
 ### Libraries, Executables
 ###
+
+# Helper variables for setting file permissions during install()
+
+set(MODE_777
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_WRITE GROUP_EXECUTE
+    WORLD_READ WORLD_WRITE WORLD_EXECUTE
+)
+
+set(MODE_755
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ             GROUP_EXECUTE
+    WORLD_READ             WORLD_EXECUTE
+)
+
+set(MODE_644
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
 
 # Some libraries need both a Shared and a Static version, this includes a macro that helps streamline
 # that and create a second library target with the suffix `-static`. For `MdsShr` for example, it will
@@ -925,24 +947,6 @@ install(
 ### Install the remaining files
 ###
 
-set(MODE_777
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_WRITE GROUP_EXECUTE
-    WORLD_READ WORLD_WRITE WORLD_EXECUTE
-)
-
-set(MODE_755
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ             GROUP_EXECUTE
-    WORLD_READ             WORLD_EXECUTE
-)
-
-set(MODE_644
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-)
-
 install(
     DIRECTORY
         desktop
@@ -954,13 +958,24 @@ install(
         nodejs
         php
         pixmaps
-        pydevices
-        tdi
         trees
         xml
         ${CMAKE_BINARY_DIR}/include
     DESTINATION .
     USE_SOURCE_PERMISSIONS
+    PATTERN "*.py" EXCLUDE # Used to generate files 
+    PATTERN "*.in" EXCLUDE # Templates for generated files
+    PATTERN "Makefile" EXCLUDE # TODO: Remove
+    PATTERN "Makefile.*" EXCLUDE # TODO: Remove
+    PATTERN "CMakeLists.txt" EXCLUDE
+)
+
+install(
+    DIRECTORY
+        pydevices
+        tdi
+    DESTINATION .
+    FILE_PERMISSIONS ${MODE_755}
     PATTERN "*.in" EXCLUDE
     PATTERN "Makefile" EXCLUDE
     PATTERN "Makefile.*" EXCLUDE
@@ -984,7 +999,9 @@ install(
     PERMISSIONS ${MODE_755}
 )
 
-install(
-    DIRECTORY tdi
-    DESTINATION local/tdi
-)
+# mkdir local/tdi/
+
+# install(
+#     DIRECTORY tdi
+#     DESTINATION local/
+# )
