@@ -11,7 +11,7 @@ configure_file(
 install(
     DIRECTORY MDSplus
     DESTINATION python
-    USE_SOURCE_PERMISSIONS
+    FILE_PERMISSIONS ${MODE_755}
     PATTERN "*.in" EXCLUDE
     PATTERN "Makefile*" EXCLUDE
     PATTERN "CMakeLists.txt" EXCLUDE

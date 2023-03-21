@@ -36,10 +36,6 @@ if(Motif_FOUND)
         XmdsXdBoxOnOffButton.c
     )
 
-    install(
-        TARGETS XmdsShr
-    )
-
     target_link_libraries(
         XmdsShr
         PUBLIC
@@ -48,6 +44,8 @@ if(Motif_FOUND)
     )
 
     add_static_copy(XmdsShr)
+
+    install(TARGETS XmdsShr XmdsShr-static)
 
     # ###
     # ### wmdcreate

@@ -3,6 +3,7 @@
 ### UDT4
 ###
 
+# TODO: Investigate?
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 file(GLOB
@@ -88,7 +89,7 @@ target_compile_definitions(
 
 add_static_copy(MdsIpShr)
 
-install(TARGETS MdsIpShr-static)
+install(TARGETS MdsIpShr MdsIpShr-static)
 
 ###
 ### MdsIpTCP
@@ -97,6 +98,12 @@ install(TARGETS MdsIpShr-static)
 add_library(
     MdsIpTCP
     io_routines/IoRoutinesTcp.c
+)
+
+target_link_libraries(
+    MdsIpTCP
+    PUBLIC
+        MdsIpShr
 )
 
 install(TARGETS MdsIpTCP)
@@ -108,6 +115,12 @@ install(TARGETS MdsIpTCP)
 add_library(
     MdsIpTCPV6
     io_routines/IoRoutinesTcpV6.c
+)
+
+target_link_libraries(
+    MdsIpTCPV6
+    PUBLIC
+        MdsIpShr
 )
 
 install(TARGETS MdsIpTCPV6)
@@ -123,6 +136,8 @@ add_library(
 
 target_link_libraries(
     MdsIpUDT
+    PUBLIC
+        MdsIpShr
     PRIVATE
         UDT4
 )
@@ -140,6 +155,8 @@ add_library(
 
 target_link_libraries(
     MdsIpUDTV6
+    PUBLIC
+        MdsIpShr
     PRIVATE
         UDT4
 )
@@ -227,6 +244,7 @@ else()
             mdsip-server-ssh
             mdsip-server-http
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
 ENDIF()
 
@@ -244,6 +262,7 @@ if(Globus_FOUND AND Globus_FLAVOR)
     target_link_libraries(
         MdsIpGSI
         PUBLIC
+            MdsIpShr
             Globus::Globus
     )
 
@@ -256,6 +275,7 @@ if(Globus_FOUND AND Globus_FLAVOR)
     install(
         FILES mdsipsd
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
 
 endif()

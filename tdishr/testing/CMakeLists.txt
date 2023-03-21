@@ -16,6 +16,7 @@ TARGET_LINK_LIBRARIES(
     PRIVATE
         TdiShr
         MdsTestShr
+        LibM::LibM
 )
 
 ADD_TEST(

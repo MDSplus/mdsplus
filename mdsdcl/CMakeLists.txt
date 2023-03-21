@@ -20,7 +20,6 @@ add_library(
     ${CMAKE_CURRENT_BINARY_DIR}/cmdParseLex.c
     ${CMAKE_CURRENT_BINARY_DIR}/mdsdclDeltatimeToSeconds.c
     ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
-    
 )
 
 target_include_directories(
