@@ -60,16 +60,18 @@ add_static_copy(MdsShr)
 
 install(TARGETS MdsShr MdsShr-static)
 
-###
-### Documentation
-###
+if(Doxygen_FOUND)
+    ###
+    ### Documentation
+    ###
 
-# add_custom_target(
-#     mdsshr-docs
-#     COMMAND ${doxygen_EXECUTABLE} docs/doxy.conf
-#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-# )
+    add_custom_target(
+        mdsshr-docs
+        COMMAND ${DOXYGEN_EXECUTABLE} docs/doxy.conf
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 
-# add_dependencies(
-#     docs mdsshr-docs
-# )
+    add_dependencies(
+        docs mdsshr-docs
+    )
+endif()
