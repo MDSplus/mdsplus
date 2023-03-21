@@ -23,8 +23,6 @@ add_library(
     ScopeUtilities.c
 )
 
-install(TARGETS MdsMisc)
-
 target_link_libraries(
     MdsMisc
     PUBLIC
@@ -38,3 +36,5 @@ target_compile_definitions(
 )
 
 add_static_copy(MdsMisc)
+
+install(TARGETS MdsMisc MdsMisc-static)

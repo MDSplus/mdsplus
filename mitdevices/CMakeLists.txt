@@ -104,6 +104,9 @@ add_library(
 target_link_libraries(
     MitDevices
     PUBLIC
+        Mdsdcl
+        CamShr
+        XmdsShr
         IDL::IDL
         Motif::Motif
 )
@@ -139,6 +142,12 @@ add_library(
     MitDevicesIO
     io.c
     curvefit.c
+)
+
+target_link_libraries(
+    MitDevicesIO
+    PUBLIC
+        MdsMath
 )
 
 install(TARGETS MitDevicesIO)
@@ -206,6 +215,7 @@ install(
         reboot_dtaq_satelite
         dtaq_update_board.sh
     TYPE BIN
+    PERMISSIONS ${MODE_755}
 )
 
 ###

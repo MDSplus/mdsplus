@@ -11,7 +11,7 @@ add_library(
 target_link_libraries(
     MdsLib
     PUBLIC
-        TdiShr
+        MdsIpShr
 )
 
 target_compile_definitions(
@@ -36,7 +36,7 @@ add_library(
 target_link_libraries(
     MdsLib_client
     PUBLIC
-        TdiShr
+        MdsIpShr
 )
 
 target_compile_definitions(
@@ -61,7 +61,7 @@ add_library(
 target_link_libraries(
     MdsLib_fortran
     PUBLIC
-        TdiShr
+        MdsIpShr
 )
 
 target_compile_definitions(
