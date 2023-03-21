@@ -1,3 +1,7 @@
+# GetDate.cmake
+#
+# Get the current date/timestamp from the `date` executable if available, or fallback to string(TIMESTAMP)
+#
 
 macro(get_date _output_variable)
     find_program(date_EXECUTABLE date)

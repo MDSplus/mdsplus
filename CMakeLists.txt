@@ -11,15 +11,20 @@ project(MDSplus)
 
 enable_language(Fortran)
 
+# Query version and release information from git
+include(GitRevision)
+
 ###
 ### Update Submodules
 ###
 
-find_package(Git)
+find_package(Git QUIET)
 
-execute_process(
-    COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
-)
+if(GIT_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
+    )
+endif()
 
 ###
 ### Options
@@ -37,6 +42,11 @@ execute_process(
 # replaces --disable-shared
 option(BUILD_SHARED_LIBS
     "Build shared libraries [default: ON]"
+    ON
+)
+
+option(ENABLE_TESTS
+    "Build test frameworks and executables [default: ON]"
     ON
 )
 
@@ -60,13 +70,21 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    option(
+        ENABLE_GPROF
+        "Enable profiling with gprof (compile and link with -pg). [default: OFF]"
+        OFF
+    )
+endif()
+
 # replaces --prefix
 # TODO: --exec-prefix
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
   set(CMAKE_INSTALL_PREFIX "/usr/local/mdsplus"
       CACHE STRING
-      "Where to install architecture-independent files [default: /usr/local/mdsplus]"
+      "Where to install files [default: /usr/local/mdsplus]"
       FORCE
   )
 
@@ -78,13 +96,7 @@ endif()
 # * CMAKE_INSTALL_LIBDIR
 # * CMAKE_INSTALL_SYSCONFIGDIR
 # * CMAKE_INSTALL_INCLUDEDIR
-# TODO:
 include(GNUInstallDirs)
-
-option(ENABLE_TESTS
-    "Build test frameworks and executables [default: ON]"
-    ON
-)
 
 if(WIN32)
     # replaces --disable-largefile
@@ -97,7 +109,7 @@ endif()
 if(NOT WIN32)
     # replaces --enable-perf
     option(ENABLE_PERF
-        "Collect performance statistics (linux only) [default: OFF]"
+        "Collect performance statistics [default: OFF]"
         OFF
     )
 endif()
@@ -110,7 +122,7 @@ option(ENABLE_JAVA
 
 # (SLW) TODO
 # replaces --with-java_only
-option(JAVA_ONLY "")
+#option(JAVA_ONLY "")
 
 # replaces --enable-d3d
 option(ENABLE_D3D
@@ -157,12 +169,12 @@ option(ENABLE_WCONVERSION
 )
 
 # replaces --enable-sanitize=
-set(SANITIZER "address"
+set(SANITIZE "address"
     CACHE STRING
     "Enable compile sanitizer with flavor, options are: address or thread. Default is address."
 )
 set_property(
-    CACHE SANITIZER
+    CACHE SANITIZE
     PROPERTY STRINGS "address" "thread" ""
 )
 
@@ -179,12 +191,14 @@ set(JDK_DIR ""
 )
 
 # replaces --with-java_target=
+# TODO: Investigate
 set(JAVA_TARGET_VERSION ""
     CACHE STRING
     "Version of compiled mdsobjects classes (i.e. 6)"
 )
 
 # replaces --with-java_bootclasspath=
+# TODO: Investigate
 set(JAVA_BOOTCLASSPATH ""
     CACHE STRING
     "The bootclasspath option for use with JAVA_TARGET_VERSION (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)"
@@ -197,6 +211,7 @@ set(GSI ""
 )
 
 # replaces --with-srb=
+# TODO: Investigate
 set(SRB_DIR ""
     CACHE STRING
     "Location of SRB to build against"
@@ -235,16 +250,10 @@ set(LIBXML2_DIR ""
     "Location of libxml2 library"
 )
 
-# replaces $PYTHON
-set(PYTHON $ENV{PYTHON}
-    CACHE STRING
-    "The python interpreter to use"
-)
-
 # TODO:
 # replaces --with-x
 option(ENABLE_X
-    ""
+    "" 
     OFF
 )
 
@@ -266,9 +275,10 @@ set(WINEBOTTLE ""
 ### Global Configuration
 ###
 
-set(CMAKE_C_FLAGS $ENV{CFLAGS})
-set(CMAKE_CXX_FLAGS $ENV{CXXFLAGS})
-set(CMAKE_Fortran_FLAGS $ENV{FCFLAGS})
+# $ENV{CFLAGS} is added by default
+# $ENV{CXXFLAGS} is added by default
+# $ENV{FFLAGS} is added by default
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} $ENV{FCFLAGS}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -299,22 +309,33 @@ else()
     add_compile_options(-Wall -Wextra)
 endif()
 
-if(ENABLE_WERROR)
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
 
+    # gprof is only supported with gcc
+    if(ENABLE_GPROF)
+        STRING(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
+        if(NOT _build_type STREQUAL "relwithdebinfo")
+            message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")
+        endif()
+
+        add_compile_options(-pg)
+        add_link_options(-pg)
+    endif()
+    
+endif()
+
+if(ENABLE_WERROR)
     if(MSVC)
         add_compile_options(/WX)
     else()
         add_compile_options(-Werror)
     endif()
-
 endif()
 
 if(NOT ENABLE_WRETURNS) # -Wunused-result is on by default in gcc and clang
-
     if(NOT MSVC)
         add_compile_options(-Wno-unused-result)
     endif()
-
 endif()
 
 if(ENABLE_TESTS)
@@ -329,12 +350,10 @@ if(ENABLE_LARGEFILE)
 
     # Check for 32-bit target
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-
         add_compile_definitions(
             _FILE_OFFSET_BITS=64
             _LARGE_FILES
         )
-
     endif()
 
 endif()
@@ -345,8 +364,8 @@ endif()
 
 # CMake built-in packages to find
 
-if(PYTHON)
-    set(Python_EXECUTABLE "${PYTHON}")
+if(DEFINED ENV{PYTHON})
+    set(Python_EXECUTABLE "$ENV{PYTHON}")
 else()
     find_package(Python COMPONENTS Interpreter REQUIRED)
 endif()
@@ -367,6 +386,7 @@ find_package(LibLZMA REQUIRED)
 find_package(ZLIB REQUIRED)
 
 set(libxml2_ROOT_DIR "${LIBXML2_DIR}")
+mark_as_advanced(libxml2_ROOT_DIR)
 find_package(LibXml2 REQUIRED)
 
 # Custom packages to find
@@ -376,6 +396,7 @@ find_package(LibM REQUIRED)
 
 # cmake/FindReadline.cmake
 set(Readline_ROOT_DIR "${READLINE_DIR}")
+mark_as_advanced(Readline_ROOT_DIR)
 find_package(Readline REQUIRED)
 
 # cmake/FindMotif.cmake
@@ -386,6 +407,7 @@ find_package(Sybase)
 
 # cmake/FindHDF5.cmake
 set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
+mark_as_advanced(HDF5_ROOT_DIR)
 find_package(HDF5)
 
 # cmake/FindDC1394.cmake
@@ -406,6 +428,8 @@ if(ENABLE_JAVA)
 
     if(JDK_DIR)
         set(JAVA_HOME "${JDK_DIR}")
+    else()
+        set(JAVA_HOME "$ENV{JAVA_HOME}")
     endif()
 
     find_package(Java COMPONENTS Runtime Development REQUIRED)
@@ -511,82 +535,9 @@ check_include_files("valgrind/valgrind.h" HAVE_VALGRIND_H)
 # Linux Kernel
 check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
 
-# TODO HAVE_VISIBILITY
-set(HAVE_VISIBILITY ON)
-
-###
-### Install
-###
-
-set(MODE_777
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_WRITE GROUP_EXECUTE
-    WORLD_READ WORLD_WRITE WORLD_EXECUTE
-)
-
-set(MODE_755
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ             GROUP_EXECUTE
-    WORLD_READ             WORLD_EXECUTE
-)
-
-set(MODE_644
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-)
-
-install(
-    DIRECTORY
-        desktop
-        epics
-        idl
-        include
-        LabView
-        matlab
-        nodejs
-        php
-        pixmaps
-        pydevices
-        tdi
-        trees
-        xml
-        ${CMAKE_BINARY_DIR}/include
-    DESTINATION .
-    USE_SOURCE_PERMISSIONS
-    PATTERN "*.in" EXCLUDE
-    PATTERN "Makefile" EXCLUDE
-    PATTERN "Makefile.*" EXCLUDE
-    PATTERN "CMakeLists.txt" EXCLUDE
-    PATTERN "*.pyc" EXCLUDE
-    PATTERN "__pycache__" EXCLUDE
-)
-
-install(
-    FILES
-        MDSplus-License.rtf
-        MDSplus-License.txt
-    DESTINATION .
-)
-
-install(
-    FILES
-        setup.csh
-        setup.sh
-    DESTINATION .
-    PERMISSIONS ${MODE_755}
-)
-
-install(
-    DIRECTORY tdi
-    DESTINATION local/tdi
-)
-
 ###
 ### Generate _include/_mdsversion.h
 ###
-
-include(GitRevision)
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/_include/_mdsversion.h.in
@@ -603,13 +554,33 @@ else()
     set(SHARELIB_TYPE "${CMAKE_STATIC_LIBRARY_SUFFIX}")
 endif()
 
+# TODO HAVE_VISIBILITY
+set(HAVE_VISIBILITY ON)
+
 configure_file(
     ${CMAKE_SOURCE_DIR}/include/mdsplus/mdsconfig.h.in
     ${CMAKE_BINARY_DIR}/include/mdsplus/mdsconfig.h
 )
 
 ###
-### python/generate_tests
+### Generate include/opcbuiltins.h
+###
+
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/include/opcbuiltins.h)
+
+    message("Generating include/opcbuiltins.h")
+
+    execute_process(
+        COMMAND ${Python_EXECUTABLE}
+            ${CMAKE_SOURCE_DIR}/include/opcbuiltins.py
+            --opcodes=${CMAKE_SOURCE_DIR}/tdishr/opcodes.csv
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/include
+    )
+
+endif()
+
+###
+### Generate python/MDSplus/tests/*_case.py
 ###
 
 # file(GLOB
@@ -647,21 +618,26 @@ file(GLOB_RECURSE
     "*/*messages.xml"
 )
 
-set(_messages_generated_list "python/MDSplus/mdsExceptions.py")
+set(_messages_generated_file_list
+    "${CMAKE_BINARY_DIR}/python/MDSplus/mdsExceptions.py"
+)
 
+# Determine the header filenames that will be created
 foreach(_messages_xml IN LISTS _messages_xml_list)
     cmake_path(GET _messages_xml STEM _stem)
-    LIST(APPEND _messages_generated_list "include/${_stem}.h")
+    LIST(APPEND _messages_generated_file_list "${CMAKE_BINARY_DIR}/include/${_stem}.h")
 endforeach()
 
+# Check to see if we already have all the files generated
 set(_run_gen_messages FALSE)
-foreach(_filename IN LISTS _messages_generated_list)
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/${_filename}")
-        message("Missing ${_filename}, will run deploy/gen_messages.py")
+foreach(_file IN LISTS _messages_generated_file_list)
+    if(NOT EXISTS "${_file}")
+        message("Missing ${_file}, will run deploy/gen_messages.py")
         set(_run_gen_messages TRUE)
     endif()
 endforeach()
 
+# If not, generate them
 if(_run_gen_messages)
     message("Running deploy/gen_messages.py")
     execute_process(
@@ -679,12 +655,30 @@ endif()
 #     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 # )
 
+# file(GLOB _directory_list ${CMAKE_SOURCE_DIR}/*)
+# foreach(_directory ${_directory_list})
+#     if(IS_DIRECTORY ${_directory})
+#         string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _directory "${_directory}")
+#         file(MAKE_DIRECTORY ${_directory})
+#     endif()
+# endforeach()
+
 ###
-### Generate sources with Bison/Yacc
+### Generate python/MDSplus/compound.py
 ###
 
-# Only run this the first time
-if (NOT _yacc_has_run)
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/python/MDSplus/compound.py")
+message("Missing python/MDSplus/compound.py, will run deploy/gen_compound_opcbuiltins.py")
+execute_process(
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_compound_opcbuiltins.py
+)
+endif()
+
+###
+### Generate sources with Yacc/Bison
+###
+
+if(NOT _yacc_has_run)
 
     message("Processing Yacc files")
 
@@ -703,8 +697,8 @@ if (NOT _yacc_has_run)
 
         # Make output directory
         cmake_path(GET _file PARENT_PATH _parent_path)
-        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _parent_path "${_parent_path}")
-        file(MAKE_DIRECTORY "${_parent_path}")
+        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
+        file(MAKE_DIRECTORY "${_binary_path}")
 
         message("Running ${yacc_EXECUTABLE} --verbose ${_file}")
         execute_process(
@@ -713,16 +707,16 @@ if (NOT _yacc_has_run)
 
     endforeach()
 
+    # Only run this the first time
     set(_yacc_has_run TRUE CACHE INTERNAL "")
 
 endif()
 
 ###
-### Generate sources with Flex/Lex
+### Generate sources with Lex/Flex
 ###
 
-# Only run this the first time
-if (NOT _lex_has_run)
+if(NOT _lex_has_run)
 
     message("Processing Lex files")
 
@@ -741,8 +735,8 @@ if (NOT _lex_has_run)
 
         # Make output directory
         cmake_path(GET _file PARENT_PATH _parent_path)
-        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _parent_path "${_parent_path}")
-        file(MAKE_DIRECTORY "${_parent_path}")
+        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
+        file(MAKE_DIRECTORY "${_binary_path}")
 
         message("Running ${lex_EXECUTABLE} -p ${_file}")
         execute_process(
@@ -751,39 +745,24 @@ if (NOT _lex_has_run)
 
     endforeach()
 
+    # Only run this the first time
     set(_lex_has_run TRUE CACHE INTERNAL "")
 
 endif()
 
 ###
-### Generate python/MDSplus/compound.py
-###
-
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/python/MDSplus/compound.py")
-    message("Missing python/MDSplus/compound.py, will run deploy/gen_compound_opcbuiltins.py")
-    execute_process(
-        COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_compound_opcbuiltins.py
-    )
-endif()
-
-###
-### bison / flex
-###
-
-# TODO: Find Bison and Flex and gperf?
-# TODO: Macro for running bison/flex?
-
-###
-### Documentation
+### Generate Documentation
 ###
 
 find_package(Doxygen)
 
-set(doxygen_EXECUTABLE $<TARGET_FILE:Doxygen::doxygen>)
+if(Doxygen_FOUND)
 
-add_custom_target(
-    docs
-)
+    add_custom_target(
+        docs
+    )
+
+endif()
 
 ###
 ### Libraries, Executables
@@ -940,4 +919,72 @@ file(WRITE ${CMAKE_BINARY_DIR}/ChangeLog "${GIT_CHANGELOG}")
 install(
     FILES ${CMAKE_BINARY_DIR}/ChangeLog
     DESTINATION .
+)
+
+###
+### Install the remaining files
+###
+
+set(MODE_777
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_WRITE GROUP_EXECUTE
+    WORLD_READ WORLD_WRITE WORLD_EXECUTE
+)
+
+set(MODE_755
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ             GROUP_EXECUTE
+    WORLD_READ             WORLD_EXECUTE
+)
+
+set(MODE_644
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
+
+install(
+    DIRECTORY
+        desktop
+        epics
+        idl
+        include
+        LabView
+        matlab
+        nodejs
+        php
+        pixmaps
+        pydevices
+        tdi
+        trees
+        xml
+        ${CMAKE_BINARY_DIR}/include
+    DESTINATION .
+    USE_SOURCE_PERMISSIONS
+    PATTERN "*.in" EXCLUDE
+    PATTERN "Makefile" EXCLUDE
+    PATTERN "Makefile.*" EXCLUDE
+    PATTERN "CMakeLists.txt" EXCLUDE
+    PATTERN "*.pyc" EXCLUDE
+    PATTERN "__pycache__" EXCLUDE
+)
+
+install(
+    FILES
+        MDSplus-License.rtf
+        MDSplus-License.txt
+    DESTINATION .
+)
+
+install(
+    FILES
+        setup.csh
+        setup.sh
+    DESTINATION .
+    PERMISSIONS ${MODE_755}
+)
+
+install(
+    DIRECTORY tdi
+    DESTINATION local/tdi
 )

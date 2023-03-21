@@ -59,8 +59,9 @@ if(WIN32)
         TYPE BIN
     )
 else()
-    INSTALL(
+    install(
         FILES jScope.template RENAME jScope
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
 endif()
