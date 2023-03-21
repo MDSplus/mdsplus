@@ -48,9 +48,9 @@ int main(int argc, char **argv)
     node = tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAME0_TIME");
     frame0TimeNid = node->getNid();
   }
-  catch (const MdsException & exc)
+  catch (const MdsException &exc)
   {
-    std::cout << "ERROR reading data" << exc << "\n";
+    std::cout << "ERROR reading data" << exc.what() << "\n";
   }
 
   // printf("frame node path: %s\n", node->getPath());

@@ -74,7 +74,7 @@ EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
                 eventPtr = reinterpret_cast<Event *>(const_cast<void
 *>(lvEventPtr)); eventPtr->abort();
         }
-        catch (const MdsException & e)
+        catch (const MdsException &e)
         {
                 errorCode = bogusError;
                 errorMessage = e.what();

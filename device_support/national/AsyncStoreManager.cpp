@@ -126,7 +126,7 @@ void SaveItem::save()
         delete[] samples;
         delete[] times;
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         printf("Cannot convert stream sample: %s\n", exc.what());
       }
@@ -221,7 +221,7 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
           else
             dataNode->beginSegment(startTime, endTime, dim, fData);
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
                  dataNode->getFullPath(), exc.what());
@@ -245,7 +245,7 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
           else
             dataNode->beginSegment(startTime, endTime, dim, fData);
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n",
                  dataNode->getFullPath(), exc.what());
@@ -280,7 +280,7 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
           else
             dataNode->putSegment(data, -1);
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
                  exc.what());
@@ -302,7 +302,7 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
           else
             dataNode->putSegment(data, -1);
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(),
                  exc.what());
@@ -317,9 +317,9 @@ std::cout << "CHIAMO LA FUN.." << std::endl;
       /* Send Event on Segment update <TreeName>_<DeviceNodeName>_CH<numchannel>*/
       // sendChannelSegmentPutEvent(dataNode);
     }
-    catch (const MdsException & exc)
+    catch (const MdsException &exc)
     {
-      printf("Cannot put segment: %s\n", exc);
+      printf("Cannot put segment: %s\n", exc.what());
     }
     delete clockNode;
   }

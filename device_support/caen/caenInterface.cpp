@@ -200,9 +200,9 @@ public:
       deleteData(endTime);
       deleteData(segCount);
     }
-    catch (const MdsException & exc)
+    catch (const MdsException &exc)
     {
-      printf("Cannot put segment: %s\n", exc);
+      printf("Cannot put segment: %s\n", exc.what());
     }
     delete dataNode;
     delete clockNode;
@@ -366,9 +366,9 @@ extern "C" void openTree(char *name, int shot, void **treePtr)
     Tree *tree = new Tree(name, shot);
     *treePtr = (void *)tree;
   }
-  catch (const MdsException & exc)
+  catch (const MdsException &exc)
   {
-    printf("Cannot open tree %s %d: %s\n", name, shot, exc);
+    printf("Cannot open tree %s %d: %s\n", name, shot, exc.what());
   }
 }
 

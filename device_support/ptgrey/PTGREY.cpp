@@ -1289,7 +1289,7 @@ int PTGREY::startFramesAcquisition()
     Data *nodeData = t0Node->getData();
     timeStamp0 = (int64_t)nodeData->getLong();
   }
-  catch (const MdsException & exc)
+  catch (const MdsException &exc)
   {
     printf("Error getting frame0 time\n");
   }
@@ -1303,7 +1303,7 @@ int PTGREY::startFramesAcquisition()
       Data *nodeData = tStartOffset->getData();
       timeOffset = (float)nodeData->getFloatArray()[0];
     }
-    catch (const MdsException & exc)
+    catch (const MdsException &exc)
     {
       printf("Error getting timebaseNid (offset time set to 0.0s)\n");
       timeOffset = 0.0;

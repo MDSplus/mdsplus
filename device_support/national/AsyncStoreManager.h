@@ -87,9 +87,9 @@ private:
               (tokens[1].substr(8)).data());
       Event::setevent(event);
     }
-    catch (const MdsException & exc)
+    catch (const MdsException &exc)
     {
-      printf("Send Event Error: %s\n", exc);
+      printf("Send Event Error: %s\n", exc.what());
     }
   }
 

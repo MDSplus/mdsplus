@@ -668,7 +668,7 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
           Data *streamGainData = currNode->getExtendedAttribute("STREAM_GAIN");
           streamGains[i] = streamGainData->getFloat();
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           streamGains[i] = 1;
         }
@@ -677,12 +677,12 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
           Data *streamOffsetData = currNode->getExtendedAttribute("STREAM_OFFSET");
           streamOffsets[i] = streamOffsetData->getFloat();
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           streamOffsets[i] = 0;
         }
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         streamNames[i] = NULL;
         streamGains[i] = 0;
@@ -696,7 +696,7 @@ int mpag_readAndSaveAllChannels(NiFpga_Session session, int nChan, int *chanStat
         delete currNode;
       }
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("Error deleting data nodes %s : %s\n", currNode->getPath(), exc.what());
     }

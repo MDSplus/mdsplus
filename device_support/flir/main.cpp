@@ -69,9 +69,9 @@ int main(int argc, char **argv)
         tree->getNode((char *)"\\CAMERATEST::TOP:POINTGRAY:FRAMES_METAD");
     dataNid = node->getNid(); // Node id to save the acquired frames
   }
-  catch (const MdsException & exc)
+  catch (const MdsException &exc)
   {
-    std::cout << "ERROR reading data" << exc << "\n";
+    std::cout << "ERROR reading data" << exc.what() << "\n";
   }
 
   printf("frame node path: %s\n", node->getPath());
@@ -113,9 +113,9 @@ int main(int argc, char **argv)
     framePtr = (frameData)->getShortArray(dataDims);
     framePtrMeta = (frameDataMeta)->getByteArray(dataDimsMeta);
   }
-  catch (const MdsException & exc)
+  catch (const MdsException &exc)
   {
-    std::cout << "ERROR reading data" << exc << "\n";
+    std::cout << "ERROR reading data" << exc.what() << "\n";
   }
 
   FLIR_SC65X *FlirCam;
