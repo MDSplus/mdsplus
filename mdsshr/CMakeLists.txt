@@ -32,12 +32,19 @@ target_link_libraries(
     PUBLIC
         ${CMAKE_DL_LIBS}
         Iconv::Iconv
-        LibLZMA::LibLZMA
         LibM::LibM
         LibXml2::LibXml2
         Threads::Threads
         ZLIB::ZLIB
 )
+
+if(TARGET LibLZMA::LibLZMA)
+    target_link_libraries(
+        MdsShr
+        PUBLIC
+            LibLZMA::LibLZMA
+    )
+endif()
 
 target_compile_definitions(
     MdsShr

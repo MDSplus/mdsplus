@@ -11,8 +11,6 @@ if(Sybase_FOUND)
         dbstubs.c
     )
 
-    install(TARGETS MdsSql)
-
     target_link_libraries(
         MdsSql
         PUBLIC
@@ -20,5 +18,7 @@ if(Sybase_FOUND)
     )
 
     add_static_copy(MdsSql)
+
+    install(TARGETS MdsSql MdsSql-static)
 
 endif()

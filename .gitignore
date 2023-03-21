@@ -110,6 +110,7 @@ _version.py
 *.log
 
 .vscode/
+.cache/
 
 testing/MDSplus/
 testing/*Devices/

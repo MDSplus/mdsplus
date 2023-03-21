@@ -50,6 +50,7 @@ if(Globus_FOUND AND Globus_FLAVOR)
     install(
         FILES roam_check_access.sh RENAME roam_check_access
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
 
 endif()

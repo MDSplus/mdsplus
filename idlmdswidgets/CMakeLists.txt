@@ -10,16 +10,17 @@ if(IDL_FOUND)
         cw_wveditv5.c
     )
 
-    install(TARGETS IdlMdsWidgets)
-
     target_link_libraries(
         IdlMdsWidgets
         PUBLIC
             MdsIpShr
+            MdsMath
             XmdsShr
             IDL::IDL
     )
 
     add_static_copy(IdlMdsWidgets)
+
+    install(TARGETS IdlMdsWidgets IdlMdsWidgets-static)
 
 endif()

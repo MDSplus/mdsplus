@@ -66,7 +66,7 @@ if(Readline_FOUND)
 
     set(Readline_LIBRARIES
         ${Readline_readline_LIBRARY}
-        ${Readline_history_LIBRARY}
+        # ${Readline_history_LIBRARY}
     )
 
     if(NOT TARGET Readline::Readline)

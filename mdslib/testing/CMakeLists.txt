@@ -1,7 +1,9 @@
 
 set(_test_source_list
-    UdpEventsTest.c
-    UdpEventsTestStatics.c
+    dtype_test.c
+    mdslib_ctest.c
+    # mdslib_ftest.f
+    # mdslib_fremotetest.f
 )
 
 foreach(_test_source ${_test_source_list})
@@ -16,8 +18,15 @@ foreach(_test_source ${_test_source_list})
     target_link_libraries(
         ${_test_name}
         PRIVATE
-            MdsShr
+            MdsLib
             MdsTestShr
+    )
+
+    # TODO: Remove?
+    target_compile_options(
+        ${_test_name}
+        PRIVATE
+            -Wno-error
     )
 
     add_test(
@@ -32,3 +41,4 @@ endforeach()
 include(SetEnvironmentForTests)
 
 set_environment_for_tests(${_test_target_list})
+

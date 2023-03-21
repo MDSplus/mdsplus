@@ -54,6 +54,12 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
             -nostartfiles
     )
 
+    target_link_libraries(
+        CamShr
+        PUBLIC
+            MdsIpShr
+    )
+
     set_target_properties(
         CamShr
         PROPERTIES

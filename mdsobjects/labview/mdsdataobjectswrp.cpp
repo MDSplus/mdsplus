@@ -4048,7 +4048,7 @@ namespace MDSplus
       fillErrorCluster(errorCode, errorSource, errorMessage, error);
     }
 
-    EXPORT void mdsplus_range_destructor(void **lvRangePtr, ErrorCluster *error)
+    EXPORT void mdsplus_range_destructor(void **lvRangePtr, ErrorCluster *error __attribute__((unused)))
     {
       deleteLvData(lvRangePtr);
     }
@@ -4358,7 +4358,7 @@ namespace MDSplus
       fillErrorCluster(errorCode, errorSource, errorMessage, error);
     }
 
-    EXPORT void mdsplus_signal_destructor(void **lvSignalPtr, ErrorCluster *error)
+    EXPORT void mdsplus_signal_destructor(void **lvSignalPtr, ErrorCluster *error __attribute__((unused)))
     {
       deleteLvData(lvSignalPtr);
     }
