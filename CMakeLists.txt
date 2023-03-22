@@ -20,7 +20,7 @@ include(GitRevision)
 
 find_package(Git QUIET)
 
-if(GIT_FOUND)
+if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
     execute_process(
         COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
     )
@@ -380,7 +380,7 @@ find_package(Iconv REQUIRED)
 find_package(BLAS REQUIRED)
 
 # Finds the LZMA compression library
-find_package(LibLZMA REQUIRED)
+find_package(LibLZMA)
 
 # Finds the ZLIB compression library
 find_package(ZLIB REQUIRED)
