@@ -101,7 +101,7 @@ namespace MDSplus
       f();
       fillErrorCluster(errorCode, src, errorMessage, error);
     }
-    catch (MdsException const &e)
+    catch (const MdsException &e)
     {
       errorCode = bogusError;
       errorMessage = e.what();
@@ -6510,7 +6510,7 @@ namespace MDSplus
       {
         MDSplus::Tree *tree = new Tree("CACCA", -1);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         std::cout << exc.what() << std::endl;
       }
@@ -6756,7 +6756,7 @@ namespace MDSplus
         Data *arrD = new Float32Array(floatArr, 10);
         n->makeSegment(start, end, dim, (Array *)arrD);
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         std::cout << "ERRORE: " << exc.what() << std::endl;
       }

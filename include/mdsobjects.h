@@ -104,7 +104,7 @@ namespace MDSplus
   {
 
     friend EXPORT std::ostream &operator<<(std::ostream &outStream,
-                                           MdsException &exc)
+                                           const MdsException &exc)
     {
       return outStream << exc.what();
     }

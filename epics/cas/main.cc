@@ -26,9 +26,9 @@ extern int main(int argc, const char **argv)
 	    append = true;
 	else
 	    append = false; 
-    }catch(MdsException *exc)
+    }catch(const MdsException &exc)
     {
-	std::cout << "Cannot open experiment " << argv[1] << ": " << exc-> what() << "\n";
+	std::cout << "Cannot open experiment " << argv[1] << ": " << exc.what() << "\n";
 	return -1;
     }
     try {

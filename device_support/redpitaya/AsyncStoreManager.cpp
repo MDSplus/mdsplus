@@ -63,7 +63,7 @@ void SaveItem::save()
     std::cout << "MAKE SEGMENT  SAMPLES:" << segmentSamples << std::endl;
     dataNode->makeSegment(startSegData, endSegData, timebase, chanData);
   }
-  catch (MDSplus::MdsException &exc)
+  catch (const MDSplus::MdsException &exc)
   {
     std::cout << "Error writing segment: " << exc.what() << std::endl;
   }

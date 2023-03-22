@@ -1972,7 +1972,7 @@ int FLIR_SC65X::startFramesAcquisition()
     Data *nodeData = t0Node->getData();
     timeStamp0 = (int64_t)nodeData->getLong();
   }
-  catch (MdsException *exc)
+  catch (const MdsException &exc)
   {
     printf("Error getting frame0 time\n");
   }

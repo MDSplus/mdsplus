@@ -267,9 +267,9 @@ void openTree(char *name, int shot, void **treePtr)
     *treePtr = (void *)tree;
     TreeNode *n = tree->getNode("\\TOP");
   }
-  catch (MdsException *exc)
+  catch (const MdsException &exc)
   {
-    printf("Cannot open tree %s %d: %s\n", name, shot, exc->what());
+    printf("Cannot open tree %s %d: %s\n", name, shot, exc.what());
   }
 }
 
@@ -279,9 +279,9 @@ void closeTree(void *treePtr)
   {
     delete ((Tree *)treePtr);
   }
-  catch (MdsException *exc)
+  catch (const MdsException &exc)
   {
-    printf("Cannot close tree %s %d: %s\n", exc->what());
+    printf("Cannot close tree %s %d: %s\n", exc.what());
   }
 }
 
@@ -577,7 +577,7 @@ int xseriesReadAndSaveAllChannels(int aiFd, int nChan, void *chanFdPtr,
         Data *streamGainData = dataNode->getExtendedAttribute("STREAM_GAIN");
         streamGains[chan] = streamGainData->getFloat();
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         streamGains[chan] = 1;
       }
@@ -587,12 +587,12 @@ int xseriesReadAndSaveAllChannels(int aiFd, int nChan, void *chanFdPtr,
             dataNode->getExtendedAttribute("STREAM_OFFSET");
         streamOffsets[chan] = streamOffsetData->getFloat();
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         streamOffsets[chan] = 0;
       }
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       streamNames[chan] = NULL;
       streamGains[chan] = 0;
@@ -616,7 +616,7 @@ int xseriesReadAndSaveAllChannels(int aiFd, int nChan, void *chanFdPtr,
       coeffs[chanIdx] = rangeData->getFloatArray(&numCoeffs[chanIdx]);
       deleteData(rangeData);
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("%s\n", exc.what());
     }
@@ -927,7 +927,7 @@ int pxi6259_readAndSaveAllChannels(
           Data *streamGainData = currNode->getExtendedAttribute("STREAM_GAIN");
           streamGains[i] = streamGainData->getFloat();
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           streamGains[i] = 1;
         }
@@ -937,12 +937,12 @@ int pxi6259_readAndSaveAllChannels(
               currNode->getExtendedAttribute("STREAM_OFFSET");
           streamOffsets[i] = streamOffsetData->getFloat();
         }
-        catch (MdsException &exc)
+        catch (const MdsException &exc)
         {
           streamOffsets[i] = 0;
         }
       }
-      catch (MdsException &exc)
+      catch (const MdsException &exc)
       {
         streamNames[i] = NULL;
         streamGains[i] = 0;
@@ -956,7 +956,7 @@ int pxi6259_readAndSaveAllChannels(
         delete currNode;
       }
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("Error deleting data nodes\n");
     }
@@ -1719,9 +1719,9 @@ int temperatureProbeControl(uint32_t boardID, uint32_t *inChan, int numChan,
     errorNode = t->getNode((char *)"\\IPP_TC_TREND::ERROR");
     vRefNode = t->getNode((char *)"\\IPP_TC_TREND::VREF");
   }
-  catch (MdsException *exc)
+  catch (const MdsException &exc)
   {
-    printf("%s\n", exc->what());
+    printf("%s\n", exc.what());
     return -1;
   }
 
@@ -1866,9 +1866,9 @@ int temperatureProbeControl(uint32_t boardID, uint32_t *inChan, int numChan,
         currData = new Float32(vRef);
         vRefNode->putRow(currData, &currTime);
       }
-      catch (MdsException *exc)
+      catch (const MdsException &exc)
       {
-        printf("%s\n", exc->what());
+        printf("%s\n", exc.what());
         error = 1;
         goto out;
       }
@@ -2723,7 +2723,7 @@ public:
         MDSplus::deleteData(endData);
         MDSplus::deleteData(dimData);
       }
-      catch (MDSplus::MdsException &exc)
+      catch (const MDSplus::MdsException &exc)
       {
         std::cout << "Error in BeginSegment: " << exc.what() << std::endl;
       }
@@ -2738,7 +2738,7 @@ public:
         MDSplus::deleteData(dimData);
         MDSplus::deleteData(segData);
       }
-      catch (MDSplus::MdsException &exc)
+      catch (const MDSplus::MdsException &exc)
       {
         std::cout << "Error in MakeSegment: " << exc.what() << std::endl;
       }
@@ -2752,7 +2752,7 @@ public:
         MDSplus::deleteData(endData);
         MDSplus::deleteData(dimData);
       }
-      catch (MDSplus::MdsException &exc)
+      catch (const MDSplus::MdsException &exc)
       {
         std::cout << "Error in UpdateSegment: " << exc.what() << std::endl;
       }
@@ -2764,7 +2764,7 @@ public:
         node->putSegment(segData, -1);
         MDSplus::deleteData(segData);
       }
-      catch (MDSplus::MdsException &exc)
+      catch (const MDSplus::MdsException &exc)
       {
         std::cout << "Error in PutSegment: " << exc.what() << std::endl;
       }
@@ -3525,7 +3525,7 @@ int pxi6259EV_readAndSaveAllChannels(
       treeNodes[i] = new TreeNode(dataNid[i], (Tree *)treePtr);
       treeNodes[i]->deleteData();
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("Error deleting data nodes\n");
     }
@@ -3669,7 +3669,7 @@ int pxi6368EV_readAndSaveAllChannels(
       treeNodes[i] = new TreeNode(dataNid[i], (Tree *)treePtr);
       treeNodes[i]->deleteData();
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("Error deleting data nodes\n");
     }
@@ -3696,7 +3696,7 @@ int pxi6368EV_readAndSaveAllChannels(
       coeffs[chan] = rangeData->getFloatArray(&numCoeffs[chan]);
       deleteData(rangeData);
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("%s\n", exc.what());
     }

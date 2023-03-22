@@ -168,9 +168,9 @@ public:
           metaNode->makeSegment(time, time, dim, (Array *)metaData);
         }
       }
-      catch (MdsException *exc)
+      catch (const MdsException &exc)
       {
-        cout << "ERROR WRITING SEGMENT: " << exc->what() << "\n";
+        cout << "ERROR WRITING SEGMENT: " << exc.what() << "\n";
       }
       deleteData(data);
       deleteData(time);
@@ -196,9 +196,9 @@ public:
       {
         dim = compileWithArgs("[$1]", (Tree *)treePtr, 1, time);
       }
-      catch (MdsException *exc)
+      catch (const MdsException &exc)
       {
-        cout << "ERROR CompileWithArgs: " << exc->what() << "\n";
+        cout << "ERROR CompileWithArgs: " << exc.what() << "\n";
       }
 
       try
@@ -212,9 +212,9 @@ public:
           metaNode->makeSegment(time, time, dim, (Array *)metaData);
         }
       }
-      catch (MdsException *exc)
+      catch (const MdsException &exc)
       {
-        cout << "ERROR WRITING SEGMENT " << exc->what() << "\n";
+        cout << "ERROR WRITING SEGMENT " << exc.what() << "\n";
       }
 
       try
@@ -233,9 +233,9 @@ public:
         else if (pixelSize <= 32)
           delete (int *)frame;
       }
-      catch (MdsException *exc)
+      catch (const MdsException &exc)
       {
-        cout << "ERROR deleting data" << exc->what() << "\n";
+        cout << "ERROR deleting data" << exc.what() << "\n";
       }
     }
   }
@@ -426,9 +426,9 @@ int camOpenTree(char *treeName, int shot, void **treePtr)
     *treePtr = (void *)tree;
     return 0;
   }
-  catch (MdsException *exc)
+  catch (const MdsException &exc)
   {
-    cout << "Error opening Tree " << treeName << ": " << exc->what() << "\n";
+    cout << "Error opening Tree " << treeName << ": " << exc.what() << "\n";
     return -1;
   }
 }
