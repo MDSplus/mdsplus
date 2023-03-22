@@ -38,16 +38,19 @@ int main(int argc, char **argv )
   try
   {
     tree = (Tree *)treePtr;
-    node=tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAMES"); 		
-    framesNid=node->getNid();	
-    node=tree->getNode((char *)"\\BASLER::TOP:BASLER.TIMING:TIME_BASE"); 		
-    timebaseNid=node->getNid();						
-    node=tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAMES_METAD");  	
-    framesMetadNid=node->getNid();	
-    node=tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAME0_TIME"); 		
-    frame0TimeNid=node->getNid();	
-  }catch ( MdsException *exc )
-    { std::cout << "ERROR reading data" << exc->what() << "\n"; }
+    node = tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAMES");
+    framesNid = node->getNid();
+    node = tree->getNode((char *)"\\BASLER::TOP:BASLER.TIMING:TIME_BASE");
+    timebaseNid = node->getNid();
+    node = tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAMES_METAD");
+    framesMetadNid = node->getNid();
+    node = tree->getNode((char *)"\\BASLER::TOP:BASLER:FRAME0_TIME");
+    frame0TimeNid = node->getNid();
+  }
+  catch (const MdsException &exc)
+  {
+    std::cout << "ERROR reading data" << exc.what() << "\n";
+  }
 
  // printf("frame node path: %s\n", node->getPath());
 //MDSPLUS END

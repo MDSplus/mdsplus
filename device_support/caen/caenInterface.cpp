@@ -230,7 +230,14 @@ class SaveItem {
  	delete clockNode;
  	delete triggerNode;
     }
-    
+    catch (const MdsException &exc)
+    {
+      printf("Cannot put segment: %s\n", exc.what());
+    }
+    delete dataNode;
+    delete clockNode;
+    delete triggerNode;
+  }
 };
 
 extern "C" void *handleSave(void *listPtr);
@@ -379,14 +386,15 @@ extern "C" void stopSave(void *listPtr)
 
 extern "C" void openTree(char *name, int shot, void **treePtr)
 {
-    try {
-	Tree *tree = new Tree(name, shot);
-	*treePtr = (void *)tree;
-    }
-    catch(MdsException *exc) 
-    {
-	printf("Cannot open tree %s %d: %s\n", name, shot, exc->what());
-    }
+  try
+  {
+    Tree *tree = new Tree(name, shot);
+    *treePtr = (void *)tree;
+  }
+  catch (const MdsException &exc)
+  {
+    printf("Cannot open tree %s %d: %s\n", name, shot, exc.what());
+  }
 }
 
 

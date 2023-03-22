@@ -1565,16 +1565,56 @@ int FLIR_SC65X::startFramesAcquisition()
 	short *metaData;
 	unsigned char *frame8bit;
 
-        struct timeval tv;  //manage frame timestamp in internal mode
-        int64_t timeStamp;
-        int64_t timeStamp0;
-        
-        TreeNode *t0Node;
-        try{
-             t0Node = new TreeNode(frame0TimeNid, (Tree *)treePtr);
-             Data *nodeData = t0Node->getData();
-             timeStamp0 = (int64_t)nodeData->getLong();
-        }catch(MdsException *exc)
+  struct timeval tv; // manage frame timestamp in internal mode
+  int64_t timeStamp;
+  int64_t timeStamp0;
+
+  TreeNode *t0Node;
+  try
+  {
+    t0Node = new TreeNode(frame0TimeNid, (Tree *)treePtr);
+    Data *nodeData = t0Node->getData();
+    timeStamp0 = (int64_t)nodeData->getLong();
+  }
+  catch (const MdsException &exc)
+  {
+    printf("Error getting frame0 time\n");
+  }
+
+  frameBuffer = (short *)calloc(1, width * height * sizeof(short));
+  frame8bit = (unsigned char *)calloc(1, width * height * sizeof(char));
+
+  metaSize = width * 3 * sizeof(short);
+  metaData = (short *)calloc(1, metaSize);
+
+  camStartSave(&saveList); //  # Initialize save frame Linked list reference
+
+  camStartStreaming(
+      &streamingList); //  # Initialize streaming frame Linked list reference
+
+  burstNframe = (int)(burstDuration * frameRate + 1);
+
+  acqFlag = 1;
+  frameTriggerCounter = 0;
+  frameCounter = 0;
+  incompleteFrame = 0;
+  savedFrameNumber = 0;
+
+  startStoreTrg = 0; // manage the mdsplus saving process. SAVE always start
+                     // with a SW or HW trigger. (0=no-save; 1=save)
+
+  while (acqFlag)
+  {
+    getFrame(&frameStatus, frameBuffer, metaData); // get the frame
+
+    if (storeEnabled)
+    {
+      if (triggerMode == 1) // External trigger source
+      {
+
+        if ((frameStatus == 4) &&
+            (startStoreTrg == 0)) // start data storing @ 1st trigger seen
+                                  // (trigger is on image header!)
         {
             printf("Error getting frame0 time\n");
         }

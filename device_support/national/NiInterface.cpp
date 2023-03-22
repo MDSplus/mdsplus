@@ -3671,7 +3671,7 @@ int pxi6368EV_readAndSaveAllChannels(
       treeNodes[i] = new TreeNode(dataNid[i], (Tree *)treePtr);
       treeNodes[i]->deleteData();
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("Error deleting data nodes\n");
     }
@@ -3698,7 +3698,7 @@ int pxi6368EV_readAndSaveAllChannels(
       coeffs[chan] = rangeData->getFloatArray(&numCoeffs[chan]);
       deleteData(rangeData);
     }
-    catch (MdsException &exc)
+    catch (const MdsException &exc)
     {
       printf("%s\n", exc.what());
     }

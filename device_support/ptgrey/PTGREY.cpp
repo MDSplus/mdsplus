@@ -1253,19 +1253,78 @@ int PTGREY::startFramesAcquisition()
             printf("Error getting frame0 time\n");
          }
 
-    
-        //if ( triggerMode != 1 ) //20200901: in internal mode use the timebaseNid as T0 offset (ex. T_START_SPIDER)
-        {                         //20210325: In external trigger, triggered on event must be set timeOffest
-         TreeNode *tStartOffset;
-         try{
-             tStartOffset = new TreeNode(timebaseNid, (Tree *)treePtr);
-             Data *nodeData = tStartOffset->getData();
-             timeOffset = (float)nodeData->getFloatArray()[0];
-         }catch(MdsException *exc)
-          {
-            printf("Error getting timebaseNid (offset time set to 0.0s)\n");
-            timeOffset=0.0;
-          }
+  TreeNode *t0Node;
+  try
+  {
+    t0Node = new TreeNode(frame0TimeNid, (Tree *)treePtr);
+    Data *nodeData = t0Node->getData();
+    timeStamp0 = (int64_t)nodeData->getLong();
+  }
+  catch (const MdsException &exc)
+  {
+    printf("Error getting frame0 time\n");
+  }
+
+  if (triggerMode != 1) //20200901: in internal mode use the timebaseNid as T0 offset (ex. T_START_SPIDER)
+  {
+    TreeNode *tStartOffset;
+    try
+    {
+      tStartOffset = new TreeNode(timebaseNid, (Tree *)treePtr);
+      Data *nodeData = tStartOffset->getData();
+      timeOffset = (float)nodeData->getFloatArray()[0];
+    }
+    catch (const MdsException &exc)
+    {
+      printf("Error getting timebaseNid (offset time set to 0.0s)\n");
+      timeOffset = 0.0;
+    }
+  }
+
+  if (this->Bpp == 1)
+  {
+    frameBuffer = (char *)calloc(1, width * height * sizeof(char));
+  }
+  if (this->Bpp == 2)
+  {
+    frameBuffer = (short *)calloc(1, width * height * sizeof(short));
+  }
+  frame8bit = (unsigned char *)calloc(1, width * height * sizeof(char));
+
+  metaSize = sizeof(PTGREYMETADATA);
+  metaData = (unsigned char *)calloc(1, metaSize);
+
+  camStartSave(&saveList); //  # Initialize save frame Linked list reference
+
+  camStartStreaming(&streamingList); //  # Initialize streaming frame Linked list reference
+
+  burstNframe = (int)(burstDuration * frameRate + 1);
+
+  acqFlag = 1;
+  frameTriggerCounter = 0;
+  frameCounter = 0;
+  incompleteFrame = 0;
+  savedFrameNumber = 0;
+
+  startStoreTrg = 0; //manage the mdsplus saving process. SAVE always start with a SW or HW trigger. (0=no-save; 1=save)
+
+  acqStopped = 0; //CT 2021 02 04
+
+  while (acqFlag)
+  {
+    getFrame(&frameStatus, frameBuffer, metaData); //get the frame
+
+    if (storeEnabled)
+    {
+      if (triggerMode == 1) // External trigger source
+      {
+
+        if ((frameStatus == 4 || eventTrigger == 1) && (startStoreTrg == 0)) //start data storing @ 1st trigger seen (trigger is on image header!)
+                                                                             //CT In External Trigger Mode acquisition is also triggered  on MDSevent
+        {
+          startStoreTrg = 1;
+          eventTrigger = 0; //CT Reset MDSplus trigger event flag
+          printf("TRIGGERED: %d %d\n", frameStatus, eventTrigger);
         }
 
 
