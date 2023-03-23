@@ -11,10 +11,10 @@ if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c)
 
     execute_process(
         COMMAND ${Python_EXECUTABLE}
-            ${CMAKE_CURRENT_SOURCE_DIR}/TdiHash.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/gen-TdiHash.py
             --opcodes=${CMAKE_CURRENT_SOURCE_DIR}/opcodes.csv
             --gperf=${gperf_EXECUTABLE}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            --output=${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c
     )
 
 endif()

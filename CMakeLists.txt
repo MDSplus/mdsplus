@@ -18,20 +18,23 @@ include(GitRevision)
 ### Update Submodules
 ###
 
-find_package(Git QUIET)
+# TODO: Make sure we *should* run git submodule update
 
-if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
-    )
-endif()
+# find_package(Git QUIET)
+
+# if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
+#     execute_process(
+#         COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
+#     )
+# endif()
 
 ###
 ### Options
 ###
 
-# message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
-# message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message("CMAKE_HOST_SYSTEM_PROCESSOR: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 # --x-includes=
 # --x-libraries=
@@ -666,17 +669,6 @@ endif()
 # endforeach()
 
 ###
-### Generate python/MDSplus/compound.py
-###
-
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/python/MDSplus/compound.py")
-message("Missing python/MDSplus/compound.py, will run deploy/gen_compound_opcbuiltins.py")
-execute_process(
-    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_compound_opcbuiltins.py
-)
-endif()
-
-###
 ### Generate sources with Yacc/Bison
 ###
 
@@ -963,7 +955,7 @@ install(
         ${CMAKE_BINARY_DIR}/include
     DESTINATION .
     USE_SOURCE_PERMISSIONS
-    PATTERN "*.py" EXCLUDE # Used to generate files 
+    PATTERN "gen-*" EXCLUDE # Files used to generate other files
     PATTERN "*.in" EXCLUDE # Templates for generated files
     PATTERN "Makefile" EXCLUDE # TODO: Remove
     PATTERN "Makefile.*" EXCLUDE # TODO: Remove
