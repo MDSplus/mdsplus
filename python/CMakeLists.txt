@@ -1,17 +1,11 @@
 
-###
-### MDSplus/_version.py
-###
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/MDSplus/_version.py.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/MDSplus/_version.py
-)
+add_subdirectory(MDSplus)
 
 install(
-    DIRECTORY MDSplus
+    DIRECTORY .
     DESTINATION python
     FILE_PERMISSIONS ${MODE_755}
+    PATTERN "gen-*" EXCLUDE
     PATTERN "*.in" EXCLUDE
     PATTERN "Makefile*" EXCLUDE
     PATTERN "CMakeLists.txt" EXCLUDE
