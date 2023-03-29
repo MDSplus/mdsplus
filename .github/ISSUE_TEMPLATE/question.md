@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Affiliation**
-What Laboratory / Company are you from, if any?
+What University / Laboratory / Company are you from, if any?
 
 **Question**
 What is your question?

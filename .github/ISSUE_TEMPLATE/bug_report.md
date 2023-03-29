@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Affiliation**
-What Laboratory / Company are you from, if any?
+What University / Laboratory / Company are you from, if any?
 
 **Version(s) Affected**
 The MDSplus Version(s) affected, if any.
