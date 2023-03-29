@@ -1122,6 +1122,7 @@ static int MapFile(int fd, TREE_INFO *info, int nomap)
 //    TreeEstablishRundownEvent(info);
     if (nomap)
     {
+      info->mapped = FALSE;
       if (header.version < 2)
       {
         int idx;
