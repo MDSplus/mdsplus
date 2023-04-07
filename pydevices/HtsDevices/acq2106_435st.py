@@ -190,7 +190,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             self.dev = dev
 
-            self.nchans     = self.dev.sites*32
+            self.nchans     = self.dev.sites * 32
             self.resampling = self.dev.resampling
             
             self.seg_length = self.dev.seg_length.data()
@@ -240,8 +240,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 if nacc_str == '0,0,0':
                     nacc_sample = 1
                 else:
-                    nacc_tuple = ast.literal_eval(nacc_str)
-                    nacc_sample = nacc_tuple[0]
+                    nacc_sample = int(nacc_str.split(",")[0])
+
 
             if self.dev.debug:
                 print("The ACQ NACC sample value is {}".format(nacc_sample))
@@ -470,7 +470,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         eoff = uut.cal_eoff[1:]
 
         self.chans = []
-        nchans = uut.nchan()
+        nchans = self.sites * 32
         for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
