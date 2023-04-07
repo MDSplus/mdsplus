@@ -190,9 +190,14 @@ class _ACQ2106_435ST(MDSplus.Device):
         def __init__(self, dev):
             super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
+            # Variables designed to bring a copy of the tree to the MDSWorker thread
+            self.tree = dev.tree.name
+            self.shot = dev.tree.shot
+            self.path = dev.path
+
             self.dev = dev
 
-            self.nchans     = self.dev.sites * 32
+            self.nchans     = self.dev.sites * self.dev.NUM_CHANS_PER_SITE
             self.resampling = self.dev.resampling
             
             self.seg_length = self.dev.seg_length.data()
@@ -220,17 +225,17 @@ class _ACQ2106_435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            self.dev = self.dev.copy()
+            tree = MDSplus.Tree(self.tree, self.shot)
+            self.dev = tree.getNode(self.path)
 
             if self.dev.debug:
                 print("MDSWorker running")
             
-            self.chans = []
-            self.decim = []
+            chans = []
+            decim = []
             for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
+                chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                decim.append(getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
@@ -471,8 +476,8 @@ class _ACQ2106_435ST(MDSplus.Device):
         coeffs = uut.cal_eslo[1:]
         eoff = uut.cal_eoff[1:]
 
-        self.chans = []
-        nchans = self.sites * 32
+        chans = []
+        nchans = self.sites * self.NUM_CHANS_PER_SITE
         for ii in range(nchans):
             chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
