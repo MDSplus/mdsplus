@@ -1,6 +1,7 @@
 from MDSplus import *
 import numpy as np
 from threading import Lock
+import socket
 
 class TRIG_HUB(Device):
     NUM_INPUTS = 6       
@@ -32,6 +33,7 @@ class TRIG_HUB(Device):
             {'path': '.IN_%d:IN_SIG' % (i), 'type': 'any'}, # Only for redPitaya
             {'path': '.IN_%d:OUT_SIG' % (i), 'type': 'signal'}, # Only for redPitaya
         ])
+    parts.append( {'path': ':CONF_COMMAND', 'type': 'text'})
  
     parts.extend([
         {'path': ':START_UPD', 'type': 'action',
@@ -59,7 +61,48 @@ class TRIG_HUB(Device):
                         times[idx] = (sample - firstTimeIdx) * SAMPLE_NS # Record time offset in ns from thre first recorded trigger
         return times
 
- 
+    def configure(self):
+        cmd = self.conf_command.data()
+        if len(cmd) != 80:
+            print('The lengh of the command string  shall be 80 chars')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        try:
+            ipAddr = self.device_ip.data().split()
+        except:
+            print('Missing device IP')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        ip = ipAddr[0]
+        if len(ipAddr)>1:
+            port = int(ipAddr[1])
+        else:
+            port = 5500
+        try:
+            s = sockte(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(ip, port)
+            s.sendall(b'25')
+            s.sendall(bytes(cmd, 'utf-8'))
+        except:
+            print('Cannot communicate to device')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        try:
+            s.sendall(b'30')
+            chunks = []
+            bytesRec = 0
+            while bytesRec < 80:
+                chunk = self.sock.recv(80 - bytesRec)
+                if chunk == b'':
+                    raise RuntimeError("socket connection broken")
+                chunks.append(chunk)
+                bytesRec = bytesRec + len(chunk)
+            if b''.join(chunks).decode() != cmd:
+                print('Invalid message readout: ', b''.join(chunks).decode(), cmd)
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+        except:
+            print('Cannot read from device')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+
+
+
     def update(self):
         TRIG_HUB.lock.acquire()
         try:
