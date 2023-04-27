@@ -2,6 +2,7 @@ from MDSplus import *
 import numpy as np
 from threading import Lock
 import socket
+import time
 
 class TRIG_HUB(Device):
     NUM_INPUTS = 6       
@@ -48,17 +49,18 @@ class TRIG_HUB(Device):
     def getTriggerRelTimes(self, trigSignal):
         #125 MHz Sampling Speed -> 8ns period
         mask = int(0)
-        times = np.zeros(NUM_INPUTS, dtype = int)
+        times = np.zeros(self.NUM_INPUTS, dtype = int)
         firstTimeIdx = -1
         for sample in range(len(trigSignal)):
             if (trigSignal[sample] & ~mask) != 0:
                 newBits = trigSignal[sample] & ~mask
                 mask = mask | newBits
-                for idx in range(NUM_INPUTS):
+                for idx in range(self.NUM_INPUTS):
                     if ((newBits >> idx)&0x1)!=0:  #A new trigger has been recorded
                         if firstTimeIdx < 0:
                             firstTimeIdx = sample #keep track of the index within the signal of the first received trigger (there may be pre trigger samples)
-                        times[idx] = (sample - firstTimeIdx) * SAMPLE_NS # Record time offset in ns from thre first recorded trigger
+                        times[self.NUM_INPUTS - idx - 1] = (sample - firstTimeIdx) * self.SAMPLE_NS # Record time offset in ns from thre first recorded trigger
+# Sono roversi
         return times
 
     def configure(self):
@@ -77,19 +79,27 @@ class TRIG_HUB(Device):
         else:
             port = 5500
         try:
-            s = sockte(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect(ip, port)
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((ip, port))
             s.sendall(b'25')
-            s.sendall(bytes(cmd, 'utf-8'))
-        except:
-            print('Cannot communicate to device')
+            time.sleep(0.3)# 300ms
+            print("1 Write cmd %s "%(cmd))
+            #s.sendall(bytes(cmd, 'utf-8'))
+            print("2 Write cmd %s "%(cmd))
+        except Exception as ex:
+            print('Cannot communicate to device : %s'%(str(ex)))
             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        time.sleep(0.5)# 100ms
+
         try:
+            print("Read ")
             s.sendall(b'30')
+            time.sleep(1)# 100ms
             chunks = []
             bytesRec = 0
             while bytesRec < 80:
-                chunk = self.sock.recv(80 - bytesRec)
+                chunk = s.recv(80 - bytesRec)
                 if chunk == b'':
                     raise RuntimeError("socket connection broken")
                 chunks.append(chunk)
@@ -97,13 +107,20 @@ class TRIG_HUB(Device):
             if b''.join(chunks).decode() != cmd:
                 print('Invalid message readout: ', b''.join(chunks).decode(), cmd)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        except:
-            print('Cannot read from device')
+        except Exception as ex:
+            print('Cannot read from device : %s'%(str(ex)))
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
+    def clear(self):
+        self.raw_times.deleteData()
+        self.corr_times.deleteData()
+        self.true_times.deleteData()
+        self.times.deleteData()
+        self.time_offsets.deleteData()
 
     def update(self):
+        
         TRIG_HUB.lock.acquire()
         try:
             numSavedTriggers = len(self.raw_times.data())
@@ -119,23 +136,23 @@ class TRIG_HUB(Device):
         for i in range(numSavedTriggers, numRpSegments):
             currTrigSignal = rpSigNode.getSegment(i).data()
             rawTimes = self.getTriggerRelTimes(currTrigSignal)
-            delays = np.zeros(NUM_INPUTS, dtype = int)
-            for inIdx in range(NUM_INPUTS):
+            delays = np.zeros(self.NUM_INPUTS, dtype = int)
+            for inIdx in range(self.NUM_INPUTS):
                 delays[inIdx] = self.__getattr__('in_%d_delay' % (inIdx)).data()
             corrTimes = rawTimes - delays
-            self.raw_times.putRow(rawTimes, i)
-            self.corr_times.putRow(corrTimes, i)
+            self.raw_times.putRow(100, rawTimes, i)
+            self.corr_times.putRow(100, corrTimes, i)
             if self.parent_idx.data() < 0:
-                self.true_times.putRow(corrTimes, i) #For the root HUB no offset is applied
+                self.true_times.putRow(100, corrTimes, i) #For the root HUB no offset is applied
                 startTime = rpSigNode.getSegmentStart(i).data()
                 for child in range(4):
-                    childIdx =self.__getattr__('child_%d' % (child)).data()
+                    childIdx =self.__getattr__('child%d_idx' % (child)).data()
                     if childIdx < 0: #children finished
                         break
                     currChildHub = self.__getattr__('in_%d_hub_path' % (child)).getData() #It must be a child HUB
                     currOffset = corrTimes[childIdx]
-                    currChildHub.time_offsets.putRow(currOffset, i)
-                    currChildHub.times.putRow(startTime, i)
+                    currChildHub.time_offsets.putRow(100, currOffset, i)
+                    currChildHub.times.putRow(100, startTime, i)
 
         # second step, affecting only non root HUBs            
         if self.parent_idx.data() >= 0: 
@@ -158,16 +175,16 @@ class TRIG_HUB(Device):
                 for timeIdx in range(numTrueTimes, numOffsets):
                     if timeIdx < numCorrTimes: #We need to already have the corresponding corrected time array
                         trueTimesInst = corrTimes[timeIdx] + offsets[timeIdx] # 1D Array + Scalar -> 1D Array
-                        self.true_times.putRow(trueTimesInst, timeIdx)
+                        self.true_times.putRow(100, trueTimesInst, timeIdx)
                         #propagate offsets to children HUBs
                         for child in range(4):
-                            childIdx =self.__getattr__('child_%d' % (child)).data()
+                            childIdx =self.__getattr__('child%d_idx' % (child)).data()
                             if childIdx < 0: #children finished
                                 break
                             currOffsetInts = trueTimesInst[childIdx]
                             currChildHub = self.__getattr__('in_%d_hub_path' % (child)).getData() #It must be a HUB path
-                            currChildHub.time_offsets.putRow(currOffsetInst, timeIdx) #The index is the same of the index in trueTimes here
-                            currChildHub.times.putRow(times[timeIdx], timeIdx)
+                            currChildHub.time_offsets.putRow(100, currOffsetInst, timeIdx) #The index is the same of the index in trueTimes here
+                            currChildHub.times.putRow(100, times[timeIdx], timeIdx)
                      
             # third step, valid for all: add adjusted segment for inputs from RP
             times = self.times.data() #1 D Array
@@ -177,7 +194,7 @@ class TRIG_HUB(Device):
                 TRIG_HUB.lock.release()
                 raise mdsExceptions.TclFAILED_ESSENTIAL
  
-            for chanIdx in range(NUM_INPUTS):
+            for chanIdx in range(self.NUM_INPUTS):
                 try:
                     inSigNode = self.__getattr__('in_%d_in_sig' % (chanIdx))
                 except:
@@ -193,9 +210,9 @@ class TRIG_HUB(Device):
                         break # No more true time information
                     currSigData = inSigNode.getSegment(segIdx).data()
                     currStart = times[segIdx] + trueTimes[segIdx][chanIdx]
-                    currEnd = currStart + len(currSigData) * SAMPLE_NS * 1E-9
-                    currDelta = SAMPLE_NS * 1E-9
-                    dim = Range(Float64(currStart), Float64(currEnd),Float64(SAMPLE_NS * 1E-9))
+                    currEnd = currStart + len(currSigData) * self.SAMPLE_NS * 1E-9
+                    currDelta = self.SAMPLE_NS * 1E-9
+                    dim = Range(Float64(currStart), Float64(currEnd),Float64(self.SAMPLE_NS * 1E-9))
                     self.__getattr__('in_%d_out_sig' % (chanIdx)).makeSegment(Float64(currStart), Float64(currEnd), dim, Int32Array(currSigData))
             TRIG_HUB.lock.release()
 
