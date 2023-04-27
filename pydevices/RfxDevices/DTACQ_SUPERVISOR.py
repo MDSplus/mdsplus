@@ -1,5 +1,8 @@
 from MDSplus import mdsExceptions, Device, Data, Range, makeArray, Int32, Int32Array, Float64, Float64Array, String
-import acq400_hapi 
+try:
+    import acq400_hapi
+except:
+    print('Cannot import acq400_hapi')
 import socket
 import os
 
