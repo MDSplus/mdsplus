@@ -3,10 +3,10 @@
 pthread_mutex_t globalMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t segmentMutex = PTHREAD_MUTEX_INITIALIZER;
 
-SaveItem::SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,
+SaveItem::SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,MDSplus::TreeNode *trigRecvNode,
                    MDSplus::Data *triggerTime, void *treePtr,
                    double *startTimes, double *endTimes, double freq, int blocksInSegment,
-                   MDSplus::TreeNode *resampledNode)
+                   char *trigReceived, MDSplus::TreeNode *resampledNode)
 {
   this->buffer = buffer;
   this->segmentSamples = segmentSamples;
@@ -23,6 +23,8 @@ SaveItem::SaveItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNod
   }
   this->freq = freq;
   this->resampledNode = resampledNode;
+  this->trigReceived = trigReceived;
+  this->trigRecvNode = trigRecvNode;
   nxt = 0;
 }
 
@@ -67,6 +69,24 @@ void SaveItem::save()
   {
     std::cout << "Error writing segment: " << exc.what() << std::endl;
   }
+  
+  
+   if(trigRecvNode)
+   {
+     MDSplus::Float64Array *trigFlagTimes = new MDSplus::Float64Array(startTimes, blocksInSegment);
+     MDSplus::Int8Array *trigFlags = new MDSplus::Int8Array(trigReceived, blocksInSegment);
+   
+     std::cout << "MAKE SEGMENT  FLAGS:" << std::endl;
+   
+     trigRecvNode->makeSegment(startSegData, endSegData, trigFlagTimes, trigFlags);
+     MDSplus::deleteData(trigFlagTimes);
+     MDSplus::deleteData(trigFlags);
+  }
+
+
+  
+  
+  
   MDSplus::deleteData(chanData);
   MDSplus::deleteData(timebase);
   MDSplus::deleteData(startData);
@@ -76,7 +96,15 @@ void SaveItem::save()
   delete[] buffer;
   delete[] startTimes;
   delete[] endTimes;
+  
+  delete[] trigReceived;
+  
 }
+
+
+
+
+
 
 SaveList::SaveList()
 {
@@ -87,14 +115,14 @@ SaveList::SaveList()
   threadCreated = false;
 }
 
-void SaveList::addItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,
+void SaveList::addItem(short *buffer, int segmentSamples, MDSplus::TreeNode *dataNode,MDSplus::TreeNode *trigRecvNode,
                        MDSplus::Data *triggerTime, void *treePtr,
                        double *startTimes, double *endTimes, double freq, int blocksInSegment,
-                       MDSplus::TreeNode *resampledNode)
+                       char *trigReceived, MDSplus::TreeNode *resampledNode)
 
 {
   SaveItem *newItem = new SaveItem(
-      buffer, segmentSamples, dataNode, triggerTime, treePtr, startTimes, endTimes, freq, blocksInSegment, resampledNode);
+      buffer, segmentSamples, dataNode, trigRecvNode, triggerTime, treePtr, startTimes, endTimes, freq, blocksInSegment, trigReceived, resampledNode);
   pthread_mutex_lock(&mutex);
 
   if (saveHead == NULL)
