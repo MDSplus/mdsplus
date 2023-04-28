@@ -1,2 +1,2 @@
 #!/bin/sh
-exec java -jar $MDSPLUS_DIR/java/classes/jTraverser2.jar "$@"
+exec java -Dsun.java2d.xrender=false -jar $MDSPLUS_DIR/java/classes/jTraverser2.jar "$@"
