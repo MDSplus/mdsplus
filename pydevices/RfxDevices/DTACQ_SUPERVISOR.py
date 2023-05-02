@@ -2,7 +2,7 @@ from MDSplus import mdsExceptions, Device, Data, Range, makeArray, Int32, Int32A
 try:
     import acq400_hapi
 except:
-    print('Cannot import acq400_hapi')
+    pass
 import socket
 import os
 
