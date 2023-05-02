@@ -5,8 +5,6 @@ except:
     pass
 import socket
 import os
-import sys
-import numpy as np
 
 class DTACQ_SUPERVISOR(Device):
     """DTACQ device  supervisor"""
@@ -33,30 +31,6 @@ class DTACQ_SUPERVISOR(Device):
              {'path': ':DIO_BYTE2', 'type': 'text', 'value': 'INPUT'},
              {'path': ':DIO_BYTE3', 'type': 'text', 'value': 'INPUT'},
              {'path': ':DIO_BYTE4', 'type': 'text', 'value': 'INPUT'},
-             {'path': '.PG1', 'type': 'structure'},
-             {'path': '.PG1:SITE', 'type': 'numeric', 'value': 4},
-             {'path': '.PG1:TRIG_SOURCE', 'type': 'text', 'value': 'SOFTWARE'},
-             {'path': '.PG1:MODE', 'type': 'text', 'value': 'SINGLE'},
-             {'path': '.PG1:TIME_DIV', 'type': 'numeric', 'value': 400000},
-             {'path': '.PG1:LOOP_PERIOD', 'type': 'numeric', 'value': 0},
-             {'path': '.PG1:D1_TIMES', 'type': 'numeric'},
-             {'path': '.PG1:D2_TIMES', 'type': 'numeric'},
-             {'path': '.PG1:D3_TIMES', 'type': 'numeric'},
-             {'path': '.PG1:D4_TIMES', 'type': 'numeric'},
-             {'path': '.PG1:D5_TIMES', 'type': 'numeric'},
-             {'path': '.PG2', 'type': 'structure'},
-             {'path': '.PG2:SITE', 'type': 'numeric', 'value': 5},
-             {'path': '.PG2:TRIG_SOURCE', 'type': 'text', 'value': 'SOFTWARE'},
-             {'path': '.PG2:MODE', 'type': 'text', 'value': 'SINGLE'},
-             {'path': '.PG2:TIME_DIV', 'type': 'numeric', 'value': 400000},
-             {'path': '.PG2:LOOP_PERIOD', 'type': 'numeric', 'value': 0},
-             {'path': '.PG2:D1_TIMES', 'type': 'numeric'},
-             {'path': '.PG2:D2_TIMES', 'type': 'numeric'},
-             {'path': '.PG2:D3_TIMES', 'type': 'numeric'},
-             {'path': '.PG2:D4_TIMES', 'type': 'numeric'},
-             {'path': '.PG2:D5_TIMES', 'type': 'numeric'},
-             {'path': ':PASSWD', 'type': 'text', 'value':'d-t1012q'},
-             {'path': ':THIS_UDP_ADD', 'type': 'text'},
              {'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'init',head))",
                   'options': ('no_write_shot',)}]
@@ -78,111 +52,10 @@ class DTACQ_SUPERVISOR(Device):
             self.hudp_relay = hudp_relay
             self.spp = spp
             self.hudp_decim = hudp_decim
-#INITIALIZE Pulse Generator
-    def mergeStl(self, inAlltimes, loopPeriod):
-        print('LOOP PERIOD: ', loopPeriod)
-        alltimes = inAlltimes.copy()
-        outPatterns=[]
-        outTimes = []
-        currPattern = int(0)
-        while True:
-            minTime = sys.maxsize
-            minIdx = -1
-            for idx in range(len(alltimes)):
-                if len(alltimes[idx]) == 0:
-                    continue
-                if alltimes[idx][0] < minTime:
-                    minTime = alltimes[idx][0]
-                    minIdx = idx
-            if minIdx < 0:
-                if loopPeriod > 0:
-                    outTimes.append(int(loopPeriod))
-                    outPatterns.append(outPatterns[-1])
-                return outPatterns, outTimes
-            mask = currPattern & (1 << minIdx)
-            if(mask != 0): #corresponding bit flips to 0
-                currPattern = currPattern & ~(1 << minIdx)
-            else: #flips to 1
-                currPattern = currPattern | (1 << minIdx)
-            alltimes[minIdx] = alltimes[minIdx][1:]
-            #check if other times are equals
-            for idx in range(len(alltimes)):
-                if len(alltimes[idx]) == 0:
-                    continue
-                if alltimes[idx][0] == minTime:
-                    mask = currPattern & (1 << idx)
-                    if(mask != 0): #corresponding bit flips to 0
-                        currPattern = currPattern &  ~(1 << idx)
-                    else: #flips to 1
-                        currPattern = currPattern |  (1 << idx)
-                    alltimes[idx] = alltimes[idx][1:]
-            outPatterns.append(currPattern)
-            outTimes.append(minTime)
-    
-
-
-    def pgInitSpec(self, pgIdx):
-        site = getattr(self, 'pg%d_site' % (pgIdx)).data()
-        try:
-            trigSourceT = getattr(self, 'pg%d_trig_source' % (pgIdx)).data()
-            trigSourceDict = {'TRIG_IN':'1,0,1', 'SOFTWARE': '1,1,1','ADC_TRIG': '1,2,1','SITE4_TRIG': '1,5,1','SITE5_TRIG': '1,6,1'}
-            trigSource = trigSourceDict[trigSourceT]
-        except:
-            print('Invalid trigger source for PG '+str(pgIdx))
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-        try:
-            modeT = getattr(self, 'pg%d_mode' % (pgIdx)).data()
-            modeDict = {'SINGLE': 0, 'LOOP': 2, 'LOOPWAIT': 3}
-            mode = modeDict[modeT]
-        except:
-            print('Invalid mode for PG '+str(pgIdx))
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-        if mode == 2:
-            try:
-                loopPeriod = getattr(self, 'pg%d_loop_period' % (pgIdx)).data()
-            except:
-                print('No period specified for LOOP mode')
-                raise mdsExceptions.TclFAILED_ESSENTIAL
-        else:
-            loopPeriod = -1
-        try:
-            timeDiv = int(getattr(self, 'pg%d_time_div' % (pgIdx)).data())
-        except:
-            print('Cannot get Time division for PG '+str(pgIdx))
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-        alltimes = []    
-        for chIdx in range(1,5):
-            try:
-                times = getattr(self, 'pg%d_d%d_times' % (pgIdx, chIdx)).data()
-            except:
-                print('No time array defined for D'+str(chIdx)+' IN PG'+str(pgIdx))
-                continue 
-            if loopPeriod != -1 and times[-1] > loopPeriod:
-                print('Invalid times definition: times must be less that loop period')
-                raise mdsExceptions.TclFAILED_ESSENTIAL
-            alltimes.append(times)
-        if len(alltimes) == 0:
-            print('No Time signal defined')
-            return
-        outPatterns, outTimes = self.mergeStl(alltimes, loopPeriod)
-        tempF = open('temp.stl', 'w')
-        for i in range(len(outTimes)):
-            tempF.write(str(outTimes[i])+','+str(outPatterns[i])+'\n')
-        tempF.close()
-        command = 'sshpass -p'+self.passwd.data()+' scp temp.stl root@'+self.ip_addr.data()+':'
-        print(command)
-        os.system(command)
-        command =  'sshpass -p'+self.passwd.data()+' ssh root@'+self.ip_addr.data()+' -t \'sh -l -c "CSCALE='+str(timeDiv)+' SITE='+str(site)+' /usr/local/CARE/pg_test ' +str(mode)+' temp.stl"\''
-        print(command)
-        os.system(command)
-        
-    def pgInit(self):
-        self.pgInitSpec(1)
-        self.pgInitSpec(2)
 
 # INIT
     def init(self):
-#        import hudp_setup
+        import hudp_setup
         print('INIT')
         try:
             ipAddr = self.ip_addr.data()
@@ -218,13 +91,6 @@ class DTACQ_SUPERVISOR(Device):
         except:
             print('Cannot read UDP port')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        try:
-            thisUdpAddress = self.this_udp_add.data()
-        except:
-            thisUdpAddress = socket.gethostbyname(socket.gethostname())
-
-
-
 
         try:
             clockMode = self.clock_mode.data()
@@ -371,19 +237,17 @@ class DTACQ_SUPERVISOR(Device):
             try:
                 dtackAi = self.ai_b_device.getData()
                 hasBulkAi = True
-                dtackAi.getNode('.PARAMETERS.PAR_13:VALUE').putData(Int32(clockFreq)) #num samples
-#                dtackAi.parameters_par_1_value.putData(Float64(clockFreq/numSamples))
-                dtackAi.getNode('.PARAMETERS.PAR_1:VALUE').putData(Float64(1)) #1 segment per second
-                dtackAi.getNode('.PARAMETERS.PAR_2:VALUE').putData(Float64(triggerTime))
-                dtackAi.getNode('.PARAMETERS.PAR_3:VALUE').putData(Int32(1))
-                dtackAi.getNode('.PARAMETERS.PAR_4:VALUE').putData(len(aiSites))
-                dtackAi.getNode('.PARAMETERS.PAR_5:VALUE').putData(Int32(numDis))
-                dtackAi.getNode('.PARAMETERS.PAR_6:VALUE').putData(Int32Array(aiChans))
-                dtackAi.getNode('.PARAMETERS.PAR_7:VALUE').putData(Float64Array(cals))
-                dtackAi.getNode('.PARAMETERS.PAR_8:VALUE').putData(Float64Array(offs))
-                dtackAi.getNode('.PARAMETERS.PAR_9:VALUE').putData(String(ipAddr))
-                dtackAi.getNode('.PARAMETERS.PAR_10:VALUE').putData(Int32(4210))
-                dtackAi.getNode('.PARAMETERS.PAR_12:VALUE').putData(Int32(spadSize))
+                dtackAi.parameters_par_1_value.putData(Float64(clockFreq))
+                dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
+                dtackAi.parameters_par_3_value.putData(Int32(1))
+                dtackAi.parameters_par_4_value.putData(len(aiSites))
+                dtackAi.parameters_par_5_value.putData(Int32(numDis))
+                dtackAi.parameters_par_6_value.putData(Int32Array(aiChans))
+                dtackAi.parameters_par_7_value.putData(Float64Array(cals))
+                dtackAi.parameters_par_8_value.putData(Float64Array(offs))
+                dtackAi.parameters_par_9_value.putData(String(ipAddr))
+                dtackAi.parameters_par_10_value.putData(Int32(4210))
+                dtackAi.parameters_par_12_value.putData(Int32(spadSize))
             except:
                 print('No Bulk AI MARTe2 device')
 
@@ -396,20 +260,18 @@ class DTACQ_SUPERVISOR(Device):
                     print('Frequency division not defined for realtime device')
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
-
-                dtackAi.getNode('.PARAMETERS.PAR_13:VALUE').putData(Int32(1)) #num samples
-                dtackAi.getNode('.PARAMETERS.PAR_1:VALUE').putData(Float64(clockFreq/freqDiv))
-                dtackAi.getNode('.PARAMETERS.PAR_2:VALUE').putData(Float64(triggerTime))
-                dtackAi.getNode('.PARAMETERS.PAR_3:VALUE').putData(Int32(2))
-                dtackAi.getNode('.PARAMETERS.PAR_4:VALUE').putData(len(aiSites))
-                dtackAi.getNode('.PARAMETERS.PAR_5:VALUE').putData(Int32(numDis))
-                dtackAi.getNode('.PARAMETERS.PAR_6:VALUE').putData(Int32Array(aiChans))
-                dtackAi.getNode('.PARAMETERS.PAR_7:VALUE').putData(Float64Array(cals))
-                dtackAi.getNode('.PARAMETERS.PAR_8:VALUE').putData(Float64Array(offs))
-                dtackAi.getNode('.PARAMETERS.PAR_9:VALUE').putData(String(udpAddress))
-                dtackAi.getNode('.PARAMETERS.PAR_10:VALUE').putData(Int32(udpPort))
-                dtackAi.getNode('.PARAMETERS.PAR_12:VALUE').putData(Int32(spadSize))
-                dtackAi.getNode('.PARAMETERS.PAR_14:VALUE').putData(Int32(freqDivision))
+                dtackAi.parameters_par_1_value.putData(Float64(clockFreq/freqDiv))
+                dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
+                dtackAi.parameters_par_3_value.putData(Int32(2))
+                dtackAi.parameters_par_4_value.putData(len(aiSites))
+                dtackAi.parameters_par_5_value.putData(Int32(numDis))
+                dtackAi.parameters_par_6_value.putData(Int32Array(aiChans))
+                dtackAi.parameters_par_7_value.putData(Float64Array(cals))
+                dtackAi.parameters_par_8_value.putData(Float64Array(offs))
+                dtackAi.parameters_par_9_value.putData(String(udpAddress))
+                dtackAi.parameters_par_10_value.putData(Int32(udpPort))
+                dtackAi.parameters_par_12_value.putData(Int32(spadSize))
+                dtackAi.parameters_par_14_value.putData(Int32(freqDivision))
             except:
                 print('No Realtime AI MARTe2 device')
 
@@ -423,8 +285,7 @@ class DTACQ_SUPERVISOR(Device):
 #                st += ' 1,'+str(spadSize)+',0'
             st += ' 1,'+str(spadSize/4)+',0'
             if hasRealtimeAi:
-#                args = self.Args('255.255.255.0', udpAddress, socket.gethostbyname(socket.gethostname()), udpGateway, udpPort, st, '', hudp_decim = freqDiv)
-                args = self.Args('255.255.255.0', udpAddress, thisUdpAddress, udpGateway, udpPort, st, '', hudp_decim = freqDiv)
+                args = self.Args('255.255.255.0', udpAddress, socket.gethostbyname(socket.gethostname()), udpGateway, udpPort, st, '', hudp_decim = freqDiv)
                 self.config_tx_uut(uut, args)
             if hasBulkAi:
                 print("BULK ")
@@ -438,12 +299,11 @@ class DTACQ_SUPERVISOR(Device):
             except:
                 print('Cannot fine MARTE2_TACQAO device')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            print(dtackAo)
-            dtackAo.getNode('.PARAMETERS.PAR_1:VALUE').putData(Int32(len(aoSites)))
-            dtackAo.getNode('.PARAMETERS.PAR_2:VALUE').putData(Int32(numDos))
-            dtackAo.getNode('.PARAMETERS.PAR_3:VALUE').putData(Int32Array(aoChans))
-            dtackAo.getNode('.PARAMETERS.PAR_4:VALUE').putData(udpAddress)
-            dtackAo.getNode('.PARAMETERS.PAR_5:VALUE').putData(Int32(udpPort))
+            dtackAo.parameters_par_1_value.putData(Int32(len(aoSites)))
+            dtackAo.parameters_par_2_value.putData(Int32(numDos))
+            dtackAo.parameters_par_3_value.putData(Int32Array(aoChans))
+            dtackAo.parameters_par_4_value.putData(udpAddress)
+            dtackAo.parameters_par_5_value.putData(Int32(udpPort))
 
             st = ''
             for i in range(len(aoSites)):
@@ -454,8 +314,7 @@ class DTACQ_SUPERVISOR(Device):
                 st += ','+str(dioSite)
             st += ' 0'
 
-#            args = self.Args('255.255.255.0', socket.gethostbyname(socket.gethostname()), udpAddress, udpGateway, udpPort, '', st)
-            args = self.Args('255.255.255.0', thisUdpAddress, udpAddress, udpGateway, udpPort, '', st)
+            args = self.Args('255.255.255.0', socket.gethostbyname(socket.gethostname()), udpAddress, udpGateway, udpPort, '', st)
             self.config_rx_uut(uut, args)
     
 ####################HUDP_SEUP Stuff   
