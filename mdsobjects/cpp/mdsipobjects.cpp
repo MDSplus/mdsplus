@@ -48,7 +48,7 @@ using namespace std;
 extern "C" void *getManyObj(char *serializedIn);
 extern "C" void *putManyObj(char *serializedIn);
 extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args,
-                                         void *tree);
+                                         void *tree, void *ctx, int *retStatus);
 extern "C" int SendArg(int sock, unsigned char idx, char dtype,
                        unsigned char nargs, short length, char ndims, int *dims,
                        char *bytes);
@@ -272,9 +272,10 @@ void *putManyObj(char *serializedIn)
     try
     {
       AutoPointer<Tree> tree(getActiveTree());
+      int retStatus;
       AutoData<Data> compiledData = (Data *)compileFromExprWithArgs(
           expr.get(), nPutArgs, (argsData.get()) ? argsData->getDscs() : 0,
-          tree.get());
+          tree.get(), nullptr, &retStatus);
       AutoPointer<TreeNode> node = tree->getNode(nodeNameData.get());
       node->putData(compiledData.get());
       AutoData<String> successData(new String("Success"));
