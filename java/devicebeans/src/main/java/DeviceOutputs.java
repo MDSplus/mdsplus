@@ -214,7 +214,7 @@ public class DeviceOutputs extends DeviceComponent
                 }
             }
 	}
-
+        public void setDisplayDimensions(boolean mode){}
 	protected String getData() {return null;}
  	protected  boolean getState(){return true;}
       
