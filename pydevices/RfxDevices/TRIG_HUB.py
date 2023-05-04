@@ -47,8 +47,12 @@ class TRIG_HUB(Device):
     del(i)
 
     def getTriggerRelTimes(self, trigSignal):
+        parentIdx = self.parent_idx.data() - 1
         #125 MHz Sampling Speed -> 8ns period
-        mask = int(0)
+        if parentIdx >= 0:
+            mask = int(1) << parentIdx
+        else:
+            mask = int(0)
         times = np.zeros(self.NUM_INPUTS, dtype = int)
         firstTimeIdx = -1
         for sample in range(len(trigSignal)):
@@ -81,28 +85,37 @@ class TRIG_HUB(Device):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((ip, port))
-            #s.sendall(b'25')
-            time.sleep(0.3)# 300ms
-            print("1 Write cmd %s "%(cmd))
-            #s.sendall(bytes(cmd, 'utf-8'))
-            print("2 Write cmd %s "%(cmd))
+            time.sleep(0.1)# 100ms
+            s.settimeout(1.0)
+            time.sleep(0.1)# 100ms
+            s.sendall(b'\x19')
+            time.sleep(0.3)# 100ms
+            print("Write cmd %s "%(cmd))
+            s.sendall(bytes(cmd, 'utf-8'))
         except Exception as ex:
             print('Cannot communicate to device : %s'%(str(ex)))
             raise mdsExceptions.TclFAILED_ESSENTIAL
+        
+        s.close() # It's require to close socket after write string
 
-        time.sleep(0.1)# 100ms
+        time.sleep(0.3)# 100ms
 
         try:
-            print("Read ")
-            #s.sendall(b'30')
-            s.sendall(b'\x1B')
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((ip, port))
             time.sleep(0.1)# 100ms
+            s.sendall(b'\x1E')
+            time.sleep(0.3)# 100ms
             chunks = []
             bytesRec = 0
-            
+            count = 0
             while bytesRec < 80:
                 chunk = s.recv(80 - bytesRec)
                 if chunk == b'':
+                    if count < 100:
+                        count = count + 1
+                        time.sleep(0.1)
+                        continue
                     raise RuntimeError("socket connection broken")
                 chunks.append(chunk)
                 bytesRec = bytesRec + len(chunk)
@@ -110,7 +123,7 @@ class TRIG_HUB(Device):
                 print('Invalid message readout: ', b''.join(chunks).decode(), cmd)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             
-            print(chunk)
+            print("Read : %s"%(chunk))
         except Exception as ex:
             print('Cannot read from device : %s'%(str(ex)))
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -124,6 +137,12 @@ class TRIG_HUB(Device):
         self.true_times.deleteData()
         self.times.deleteData()
         self.time_offsets.deleteData()
+        self.in_0_out_sig.deleteData()
+        self.in_1_out_sig.deleteData()
+        self.in_2_out_sig.deleteData()
+        self.in_3_out_sig.deleteData()
+        self.in_4_out_sig.deleteData()
+        self.in_5_out_sig.deleteData()
 
     def update(self):
         
@@ -159,8 +178,8 @@ class TRIG_HUB(Device):
                     currOffset = corrTimes[childIdx]
                     currChildHub.time_offsets.putRow(100, currOffset, i)
                     currChildHub.times.putRow(100, startTime, i)
+                self.times.putRow(100, startTime, i)
 
-        print('1')
         # second step, affecting only non root HUBs            
         if self.parent_idx.data() >= 0: 
             try:
@@ -193,37 +212,41 @@ class TRIG_HUB(Device):
                             currChildHub.time_offsets.putRow(100, currOffsetInst, timeIdx) #The index is the same of the index in trueTimes here
                             currChildHub.times.putRow(100, times[timeIdx], timeIdx)
                      
-            print(2)
-            # third step, valid for all: add adjusted segment for inputs from RP
-            times = self.times.data() #1 D Array
-            trueTimes = self.true_times.data() #2 D Array
-            if len(times) != len(trueTimes):
-                print('INTERNAL ERROR different length in times and trueTimes: ', len(times), len(trueTimes))
+        # third step, valid for all: add adjusted segment for inputs from RP
+        times = self.times.data() #1 D Array
+        trueTimes = self.true_times.data() #2 D Array
+        if len(times) != len(trueTimes):
+            print('INTERNAL ERROR different length in times and trueTimes: ', len(times), len(trueTimes))
+            TRIG_HUB.lock.release()
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        for chanIdx in range(self.NUM_INPUTS):
+            try:
+                inSigNode = self.__getattr__('in_%d_in_sig' % (chanIdx))
+            except:
+                continue # Not RP
+            try:
+                inSegments = inSigNode.getData().getNumSegments()
+            except:
+                inSegments = 0
+            print('segments: ', inSegments)
+            if inSegments == 0:
+                continue #do not consider missing inputs
+            if len(trueTimes) > inSegments:
+                print('INTERNAL ERROR different length for RP signal segments and trueTimes: ', inSegments, len(trueTimes))
                 TRIG_HUB.lock.release()
                 raise mdsExceptions.TclFAILED_ESSENTIAL
- 
-            for chanIdx in range(self.NUM_INPUTS):
-                try:
-                    inSigNode = self.__getattr__('in_%d_in_sig' % (chanIdx+1))
-                except:
-                    continue # Not RP
-                inSegments = inSigNode.getNumSegments()
-                if inSegments == 0:
-                    continue #do not consider missing inputs
-                if len(trueTimes) > inSegments:
-                    print('INTERNAL ERROR different length for RP signal segments and trueTimes: ', inSegments, len(trueTimes))
-                    TRIG_HUB.lock.release()
-                    raise mdsExceptions.TclFAILED_ESSENTIAL
-                outSegments = self.__getattr__('in_%d_out_sig' % (chanIdx+1)).getNumSegments()
-                for segIdx in range(outSegments, inSegments):
-                    if segIdx >= len(trueTimes):
-                        break # No more true time information
-                    currSigData = inSigNode.getSegment(segIdx).data()
-                    currStart = times[segIdx] + trueTimes[segIdx][chanIdx]
-                    currEnd = currStart + len(currSigData) * self.SAMPLE_NS * 1E-9
-                    currDelta = self.SAMPLE_NS * 1E-9
-                    dim = Range(Float64(currStart), Float64(currEnd),Float64(self.SAMPLE_NS * 1E-9))
-                    self.__getattr__('in_%d_out_sig' % (chanIdx+1)).makeSegment(Float64(currStart), Float64(currEnd), dim, Int32Array(currSigData))
+            outSegments = self.__getattr__('in_%d_out_sig' % (chanIdx)).getNumSegments()
+            for segIdx in range(outSegments, inSegments):
+                if segIdx >= len(trueTimes):
+                    break # No more true time information
+                currSigData = inSigNode.getData().getSegment(segIdx).data()
+                currStart = times[segIdx] + trueTimes[segIdx][chanIdx]  * 1E-9
+                print(trueTimes[segIdx][chanIdx])
+                currEnd = currStart + len(currSigData) * self.SAMPLE_NS * 1E-9
+                currDelta = self.SAMPLE_NS * 1E-9
+                dim = Range(Float64(currStart), Float64(currEnd),Float64(self.SAMPLE_NS * 1E-9))
+                self.__getattr__('in_%d_out_sig' % (chanIdx)).makeSegment(Float64(currStart), Float64(currEnd), dim, Int32Array(currSigData))
         TRIG_HUB.lock.release()
 
 
