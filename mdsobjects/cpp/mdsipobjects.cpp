@@ -670,7 +670,7 @@ void Connection::resetConnection()
   char *mdsipAddr = (char *)mdsipAddrStr.c_str();
   sockId = ConnectToMds(mdsipAddr);
   unlockGlobal();
-  if (sockId <= 0)
+  if (sockId < 0)
   {
     std::string msg("Cannot connect to ");
     msg += mdsipAddr;
