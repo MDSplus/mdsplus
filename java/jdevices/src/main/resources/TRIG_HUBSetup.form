@@ -161,7 +161,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Delay: "/>
-                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="15"/>
                   </Properties>
                 </Component>
@@ -213,7 +213,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Delay: "/>
-                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="20"/>
                   </Properties>
                 </Component>
@@ -265,7 +265,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Delay: "/>
-                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="25"/>
                   </Properties>
                 </Component>
@@ -317,7 +317,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Delay: "/>
-                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="30"/>
                   </Properties>
                 </Component>
@@ -369,7 +369,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Delay: "/>
-                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="35"/>
                   </Properties>
                 </Component>
@@ -421,7 +421,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Delay: "/>
-                    <Property name="numCols" type="int" value="8"/>
+                    <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="40"/>
                   </Properties>
                 </Component>

@@ -147,7 +147,7 @@ public class TRIG_HUBSetup extends DeviceSetup {
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Delay: ");
-        deviceField9.setNumCols(8);
+        deviceField9.setNumCols(20);
         deviceField9.setOffsetNid(15);
         jPanel6.add(deviceField9);
 
@@ -173,7 +173,7 @@ public class TRIG_HUBSetup extends DeviceSetup {
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Delay: ");
-        deviceField12.setNumCols(8);
+        deviceField12.setNumCols(20);
         deviceField12.setOffsetNid(20);
         jPanel9.add(deviceField12);
 
@@ -199,7 +199,7 @@ public class TRIG_HUBSetup extends DeviceSetup {
 
         deviceField15.setIdentifier("");
         deviceField15.setLabelString("Delay: ");
-        deviceField15.setNumCols(8);
+        deviceField15.setNumCols(20);
         deviceField15.setOffsetNid(25);
         jPanel12.add(deviceField15);
 
@@ -225,7 +225,7 @@ public class TRIG_HUBSetup extends DeviceSetup {
 
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Delay: ");
-        deviceField18.setNumCols(8);
+        deviceField18.setNumCols(20);
         deviceField18.setOffsetNid(30);
         jPanel15.add(deviceField18);
 
@@ -251,7 +251,7 @@ public class TRIG_HUBSetup extends DeviceSetup {
 
         deviceField21.setIdentifier("");
         deviceField21.setLabelString("Delay: ");
-        deviceField21.setNumCols(8);
+        deviceField21.setNumCols(20);
         deviceField21.setOffsetNid(35);
         jPanel18.add(deviceField21);
 
@@ -277,7 +277,7 @@ public class TRIG_HUBSetup extends DeviceSetup {
 
         deviceField24.setIdentifier("");
         deviceField24.setLabelString("Delay: ");
-        deviceField24.setNumCols(8);
+        deviceField24.setNumCols(20);
         deviceField24.setOffsetNid(40);
         jPanel21.add(deviceField24);
 

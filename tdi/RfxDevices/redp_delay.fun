@@ -15,6 +15,6 @@ public fun redp_delay(as_is _redp, in _trig_delay, in _base_lev_delay)
     _num_trigs = size(_trig_rec);
     _lev_delays = zero(_num_trigs) + _lev_delay;
     _trig_delays = zero(_num_trigs) + _trig_delay;
-    return(conditional(_trig_delays, _lev_delays, _trig_rec));
+    return(int(conditional(_trig_delays, _lev_delays, _trig_rec)));
 }
 

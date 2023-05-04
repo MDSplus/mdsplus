@@ -148,106 +148,117 @@ class TRIG_HUB(Device):
         
         TRIG_HUB.lock.acquire()
         try:
-            numSavedTriggers = len(self.raw_times.data())
-        except:
-            numSavedTriggers = 0
-        try:
-            rpSigNode = self.rp_sig_path.getData()
-        except:
-            print('Cannot get SetPitaya Raw Signal node')
-            TRIG_HUB.lock.release()
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-        numRpSegments = rpSigNode.getNumSegments()
-        for i in range(numSavedTriggers, numRpSegments):
-            currTrigSignal = rpSigNode.getSegment(i).data()
-            rawTimes = self.getTriggerRelTimes(currTrigSignal)
-            delays = np.zeros(self.NUM_INPUTS, dtype = int)
-            for inIdx in range(self.NUM_INPUTS):
-                delays[inIdx] = self.__getattr__('in_%d_delay' % (inIdx)).data()
-            corrTimes = rawTimes - delays
-            self.raw_times.putRow(100, rawTimes, i)
-            self.corr_times.putRow(100, corrTimes, i)
-            if self.parent_idx.data() < 0:
-                self.true_times.putRow(100, corrTimes, i) #For the root HUB no offset is applied
-                startTime = rpSigNode.getSegmentStart(i).data()
-                for child in range(4):
-                    childIdx =self.__getattr__('child%d_idx' % (child)).data() - 1
-                    if childIdx < 0: #children finished
-                        break
-                    currChildHub = self.__getattr__('in_%d_hub_path' % (child)).getData() #It must be a child HUB
-                    currOffset = corrTimes[childIdx]
-                    currChildHub.time_offsets.putRow(100, currOffset, i)
-                    currChildHub.times.putRow(100, startTime, i)
-                self.times.putRow(100, startTime, i)
-
-        # second step, affecting only non root HUBs            
-        if self.parent_idx.data() >= 0: 
             try:
-                numTrueTimes = len(self.true_times.data())
+                numSavedTriggers = len(self.raw_times.data())
             except:
-                numTrueTimes = 0
+                numSavedTriggers = 0
             try:
-                numCorrTimes = len(self.corr_times.data())
+                rpSigNode = self.rp_sig_path.getData()
             except:
-                numCorrTimes = 0
-            try:
-                numOffsets = len(self.time_offsets.data())
-            except:
-                numOffsets = 0
-            if numCorrTimes > 0 and numOffsets > numTrueTimes:
-                offsets = self.time_offsets.data() # 1D Array
-                corrTimes = self.corr_times.data() # 2D Array
-                times = self.times.data() # 1D Array, t will hase as many elements as offsets
-                for timeIdx in range(numTrueTimes, numOffsets):
-                    if timeIdx < numCorrTimes: #We need to already have the corresponding corrected time array
-                        trueTimesInst = corrTimes[timeIdx] + offsets[timeIdx] # 1D Array + Scalar -> 1D Array
-                        self.true_times.putRow(100, trueTimesInst, timeIdx)
-                        #propagate offsets to children HUBs
-                        for child in range(4):
-                            childIdx =self.__getattr__('child%d_idx' % (child)).data()
-                            if childIdx < 0: #children finished
-                                break
-                            currOffsetInts = trueTimesInst[childIdx]
-                            currChildHub = self.__getattr__('in_%d_hub_path' % (child)).getData() #It must be a HUB path
-                            currChildHub.time_offsets.putRow(100, currOffsetInst, timeIdx) #The index is the same of the index in trueTimes here
-                            currChildHub.times.putRow(100, times[timeIdx], timeIdx)
-                     
-        # third step, valid for all: add adjusted segment for inputs from RP
-        times = self.times.data() #1 D Array
-        trueTimes = self.true_times.data() #2 D Array
-        if len(times) != len(trueTimes):
-            print('INTERNAL ERROR different length in times and trueTimes: ', len(times), len(trueTimes))
-            TRIG_HUB.lock.release()
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-
-        for chanIdx in range(self.NUM_INPUTS):
-            try:
-                inSigNode = self.__getattr__('in_%d_in_sig' % (chanIdx))
-            except:
-                continue # Not RP
-            try:
-                inSegments = inSigNode.getData().getNumSegments()
-            except:
-                inSegments = 0
-            print('segments: ', inSegments)
-            if inSegments == 0:
-                continue #do not consider missing inputs
-            if len(trueTimes) > inSegments:
-                print('INTERNAL ERROR different length for RP signal segments and trueTimes: ', inSegments, len(trueTimes))
-                TRIG_HUB.lock.release()
+                print('Cannot get SetPitaya Raw Signal node')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            outSegments = self.__getattr__('in_%d_out_sig' % (chanIdx)).getNumSegments()
-            for segIdx in range(outSegments, inSegments):
-                if segIdx >= len(trueTimes):
-                    break # No more true time information
-                currSigData = inSigNode.getData().getSegment(segIdx).data()
-                currStart = times[segIdx] + trueTimes[segIdx][chanIdx]  * 1E-9
-                print(trueTimes[segIdx][chanIdx])
-                currEnd = currStart + len(currSigData) * self.SAMPLE_NS * 1E-9
-                currDelta = self.SAMPLE_NS * 1E-9
-                dim = Range(Float64(currStart), Float64(currEnd),Float64(self.SAMPLE_NS * 1E-9))
-                self.__getattr__('in_%d_out_sig' % (chanIdx)).makeSegment(Float64(currStart), Float64(currEnd), dim, Int32Array(currSigData))
-        TRIG_HUB.lock.release()
+            numRpSegments = rpSigNode.getNumSegments()
+            for i in range(numSavedTriggers, numRpSegments):
+                currTrigSignal = rpSigNode.getSegment(i).data()
+                rawTimes = self.getTriggerRelTimes(currTrigSignal)
+                delays = np.zeros(self.NUM_INPUTS, dtype = int)
+                for inIdx in range(self.NUM_INPUTS):
+                    currDelay = self.__getattr__('in_%d_delay' % (inIdx)).data()
+                    print(currDelay)
+                    try:
+                        nSegs = len(currDelay)
+                        print("redp_delay fun used!!")
+                        if nSegs <= i:
+                            print("WARNING: Internal Error: not enough signal RedPitaya segments!")
+                            delays[inIdx] = currDelay[nSegs - 1]
+                        else:
+                            delays[inIdx] = currDelay[i]
+                    except:
+                        delays[inIdx] = currDelay
+                corrTimes = rawTimes - delays
+                self.raw_times.putRow(100, rawTimes, i)
+                self.corr_times.putRow(100, corrTimes, i)
+                if self.parent_idx.data() < 0:
+                    self.true_times.putRow(100, corrTimes, i) #For the root HUB no offset is applied
+                    startTime = rpSigNode.getSegmentStart(i).data()
+                    for child in range(4):
+                        childIdx =self.__getattr__('child%d_idx' % (child)).data() - 1
+                        if childIdx < 0: #children finished
+                            break
+                        currChildHub = self.__getattr__('in_%d_hub_path' % (child)).getData() #It must be a child HUB
+                        currOffset = corrTimes[childIdx]
+                        currChildHub.time_offsets.putRow(100, currOffset, i)
+                        currChildHub.times.putRow(100, startTime, i)
+                    self.times.putRow(100, startTime, i)
 
+            # second step, affecting only non root HUBs            
+            if self.parent_idx.data() >= 0: 
+                try:
+                    numTrueTimes = len(self.true_times.data())
+                except:
+                    numTrueTimes = 0
+                try:
+                    numCorrTimes = len(self.corr_times.data())
+                except:
+                    numCorrTimes = 0
+                try:
+                    numOffsets = len(self.time_offsets.data())
+                except:
+                    numOffsets = 0
+                if numCorrTimes > 0 and numOffsets > numTrueTimes:
+                    offsets = self.time_offsets.data() # 1D Array
+                    corrTimes = self.corr_times.data() # 2D Array
+                    times = self.times.data() # 1D Array, t will hase as many elements as offsets
+                    for timeIdx in range(numTrueTimes, numOffsets):
+                        if timeIdx < numCorrTimes: #We need to already have the corresponding corrected time array
+                            trueTimesInst = corrTimes[timeIdx] + offsets[timeIdx] # 1D Array + Scalar -> 1D Array
+                            self.true_times.putRow(100, trueTimesInst, timeIdx)
+                            #propagate offsets to children HUBs
+                            for child in range(4):
+                                childIdx =self.__getattr__('child%d_idx' % (child)).data()
+                                if childIdx < 0: #children finished
+                                    break
+                                currOffsetInts = trueTimesInst[childIdx]
+                                currChildHub = self.__getattr__('in_%d_hub_path' % (child)).getData() #It must be a HUB path
+                                currChildHub.time_offsets.putRow(100, currOffsetInst, timeIdx) #The index is the same of the index in trueTimes here
+                                currChildHub.times.putRow(100, times[timeIdx], timeIdx)
+                        
+            # third step, valid for all: add adjusted segment for inputs from RP
+            times = self.times.data() #1 D Array
+            trueTimes = self.true_times.data() #2 D Array
+            if len(times) != len(trueTimes):
+                print('WARINING Internal error: different length in times and trueTimes: ', len(times), len(trueTimes))
+            minLen = len(times)
+            if minLen > len(trueTimes):
+                minLen = len(trueTimes)
+
+            for chanIdx in range(self.NUM_INPUTS):
+                try:
+                    inSigNode = self.__getattr__('in_%d_in_sig' % (chanIdx))
+                except:
+                    continue # Not RP
+                try:
+                    inSegments = inSigNode.getData().getNumSegments()
+                except:
+                    inSegments = 0
+                print('segments: ', inSegments)
+                if inSegments == 0:
+                    continue #do not consider missing inputs
+                if len(trueTimes) > inSegments:
+                    print('WARNING different length for RP signal segments and trueTimes: ', inSegments, len(trueTimes))
+                outSegments = self.__getattr__('in_%d_out_sig' % (chanIdx)).getNumSegments()
+                for segIdx in range(outSegments, inSegments):
+                    if segIdx >= minLen:
+                        break # No more true time information
+                    currSigData = inSigNode.getData().getSegment(segIdx).data()
+                    currStart = times[segIdx] + trueTimes[segIdx][chanIdx]  * 1E-9
+                    print(trueTimes[segIdx][chanIdx])
+                    currEnd = currStart + len(currSigData) * self.SAMPLE_NS * 1E-9
+                    currDelta = self.SAMPLE_NS * 1E-9
+                    dim = Range(Float64(currStart), Float64(currEnd),Float64(self.SAMPLE_NS * 1E-9))
+                    self.__getattr__('in_%d_out_sig' % (chanIdx)).makeSegment(Float64(currStart), Float64(currEnd), dim, Int32Array(currSigData))
+            
+        finally:
+            TRIG_HUB.lock.release()
 
 
