@@ -545,7 +545,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	    text="Module did not acquire any samples"
 	    facnam="Dt196b$_" facabb="Dt196b"/>
     <status name="CANNOT_LOAD_SETTINGS" value="5300" severity="Error"
-          text="Error loading settings from XML"
+          text="Error loading settings from XML or JSON"
           />
     <status name="CANNOT_GET_BOARD_STATE" value="5301" severity="Error"
           text="Cannot retrieve state of daq board"
