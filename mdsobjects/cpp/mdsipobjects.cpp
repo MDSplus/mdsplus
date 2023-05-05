@@ -440,6 +440,15 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   else
   {
     // nDims > 0
+    if(nDims > 1)
+    {
+        for(int i = 0; i < nDims/2; i++)
+        {
+            int tmp = retDims[i];
+            retDims[i] = retDims[nDims - i - 1];
+             retDims[nDims - i - 1] = tmp;
+        }
+    }
     switch (dtype)
     {
     case DTYPE_CHAR_IP:
@@ -661,7 +670,7 @@ void Connection::resetConnection()
   char *mdsipAddr = (char *)mdsipAddrStr.c_str();
   sockId = ConnectToMds(mdsipAddr);
   unlockGlobal();
-  if (sockId <= 0)
+  if (sockId < 0)
   {
     std::string msg("Cannot connect to ");
     msg += mdsipAddr;
