@@ -45,7 +45,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr.h>
 #include <treeshr.h>
 #include <treeshr_messages.h>
-
 #ifdef _WIN32
 #include <windows.h>
 #define setenv(name, value, overwrite) _putenv_s(name, value)
@@ -354,6 +353,10 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, mdsdsc_t *desc,
       return ris;
       // return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
+    case DTYPE_DSC:
+      if(desc->length == 0)
+        return NULL;
+      return DescripToObject(env, ctx, (mdsdsc_t *)(desc->pointer), 0, 0, 0, 0);
     case DTYPE_MISSING:
       return NULL;
 
@@ -818,10 +821,15 @@ static jobject DescripToObject(JNIEnv *env, void *ctx, mdsdsc_t *desc,
     {
       for (i = 0; i < length; i++)
       {
-        if ((curr_obj = DescripToObject(
+        if(((mdsdsc_t **)array_d->pointer)[i])
+        {
+          if ((curr_obj = DescripToObject(
                  env, ctx, ((mdsdsc_t **)array_d->pointer)[i], 0, 0, 0,
                  0)))
-          (*env)->SetObjectArrayElement(env, jobjects, i, curr_obj);
+          {
+            (*env)->SetObjectArrayElement(env, jobjects, i, curr_obj);
+          }
+        }
       }
     }
     args[0].l = jobjects;
@@ -3891,7 +3899,6 @@ Java_MDSplus_Connection_get(JNIEnv *env, jobject obj __attribute__((unused)),
   }
   if (mem)
     FreeMessage(mem);
-  // printf("FINITO\n");
   return retObj;
 }
 
