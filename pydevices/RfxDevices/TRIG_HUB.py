@@ -50,7 +50,7 @@ class TRIG_HUB(Device):
         parentIdx = self.parent_idx.data() - 1
         #125 MHz Sampling Speed -> 8ns period
         if parentIdx >= 0:
-            mask = int(1) << parentIdx
+            mask = int(1) << self.NUM_INPUTS - parentIdx - 1
         else:
             mask = int(0)
         times = np.zeros(self.NUM_INPUTS, dtype = int)
