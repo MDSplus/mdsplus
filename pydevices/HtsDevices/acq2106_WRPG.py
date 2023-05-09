@@ -108,7 +108,7 @@ class _ACQ2106_WRPG(MDSplus.Device):
 
     def getUUT(self):
         import acq400_hapi
-        uut = acq400_hapi.Acq2106_TIGA(self.node.data())
+        uut = acq400_hapi.factory(self.node.data())
         return uut
 
     def getSlot(self):
