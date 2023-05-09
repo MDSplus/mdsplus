@@ -47,13 +47,12 @@ class _ACQ2106_WRPG(MDSplus.Device):
         {'path':':INIT_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':TRIG_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','TRIG',50,None),Method(None,'TRIG',head))",'options':('no_write_shot',)},
         {'path':':STOP_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",'options':('no_write_shot',)},
-        {'path':':STL_LISTS',   'type':'text',     'options':('write_shot',)},
+        {'path':':STL',         'type':'text',     'options':('write_shot',)},
         {'path':':GPG_TRG_DX',  'type':'text',     'value': 'dx', 'options':('write_shot',)},
     ]
 
 
     def init(self):
-        uut  = self.getUUT()
         slot = self.getSlot()
 
         # Setting the trigger in the PG/GPG module. These settings depends very much on what is the
@@ -73,9 +72,8 @@ class _ACQ2106_WRPG(MDSplus.Device):
             slot.GPG_TRG_DX     = str(self.gpg_trg_dx.data())
             slot.GPG_TRG_SENSE  = 'rising'
 
-        if self.debug >= 2:
-            start_time = time.time()
-            self.dprint(2, "Building STL: start")
+
+        self.dprint(2, "Building STL: start")
 
         #Create the STL table from a series of transition times and states given in OUTPUT.
         #TIGA: PG nchans = 4, or non-TIGA PG nchans = 32
@@ -96,11 +94,9 @@ class _ACQ2106_WRPG(MDSplus.Device):
         self.set_stl(nchans)
 
         #Load the STL into the WRPG hardware: GPG
-        traces = False  # True: shows debug information during loading
-        self.load_stl_data(traces)
+        self.load_stl_data()
         
-        if self.debug >= 1:
-            self.dprint(1,'WRPG has loaded the STL')
+        self.dprint(1, 'WRPG has loaded the STL')
       
     INIT=init
 
@@ -160,18 +156,19 @@ class _ACQ2106_WRPG(MDSplus.Device):
         return is_pg
 
 
-    def load_stl_data(self,traces):
+    def load_stl_data(self):
         uut = self.getUUT()
         # Pair of (transition time, 32 bit channel states):
-        stl_pairs = self.stl_lists.data()
-        # Change from Numpy array to List with toList()
-        pairs = ''.join([ str(item) for item in stl_pairs.tolist() ])     
-
+        stl = str(self.stl.data())
+        
+        is_debug = (self.debug > 0)
+        
         #What follows checks if the system is a GPG module (site 0) or a PG module (site 1..6)
         if self.isPG():
-            uut.load_dio482pg(self.dio_site.data(), pairs, traces)
+            uut.load_dio482pg(self.dio_site.data(), stl, is_debug)
         else:
-            uut.load_wrpg(pairs, traces)
+            uut.load_wrpg(stl, is_debug)
+
 
     def set_stl(self, nchan):
         all_t_times   = []
@@ -239,18 +236,14 @@ class _ACQ2106_WRPG(MDSplus.Device):
         times_usecs = []
         for elements in t_times:
             times_usecs.append(int(elements * 1E6)) #in micro-seconds
-        # Building a pair between the t_times and bin states:
-        stl_tuple = zip(times_usecs, binrows)
-
-        #Record the list of lists into a tree node:
-        stl_list  = []
-        
+         
         # Write to a list with states in HEX form.
-        for s in stl_tuple:
-            stl_list.append('%d,%08X\n' % (s[0], int(s[1], 2)))
+        stl  = ''
+        for time, state in zip(times_usecs, binrows):
+            stl += '%d,%08X\n' % (time, int(state, 2))
 
         # MDSplus wants a numpy array
-        self.stl_lists.putData(numpy.array(stl_list))
+        self.stl.record = stl
 
 OUTFMT3 = ':OUTPUT_%3.3d'
 ACQ2106_CHANNEL_CHOICES = [4, 32]
