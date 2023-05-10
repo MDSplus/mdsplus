@@ -235,7 +235,7 @@ class _ACQ2106_WRPG(MDSplus.Device):
         # Converting the original units of the transtion times in seconds, to micro-seconts:
         times_usecs = []
         for elements in t_times:
-            times_usecs.append(int(elements * 1E6)) #in micro-seconds
+            times_usecs.append(int(elements * 1E7)) #The documention says this is in micro-seconds, but it's actually in 1/10 micro-seconds.
          
         # Write to a list with states in HEX form.
         stl  = ''
