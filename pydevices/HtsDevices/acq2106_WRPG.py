@@ -38,17 +38,67 @@ class _ACQ2106_WRPG(MDSplus.Device):
 
     """
     base_parts=[
-        {'path':':COMMENT',     'type':'text',     'options':('no_write_shot',)},
-        {'path':':NODE',        'type':'text',     'options':('no_write_shot',)},
-        {'path':':DIO_SITE',    'type':'numeric',  'value': int(4), 'options':('no_write_shot',)},
-        {'path':':TRIG_TIME',   'type':'numeric',  'options':('write_shot',)},
-        {'path':':RUNNING',     'type':'numeric',  'options':('no_write_model',)},
-        {'path':':LOG_OUTPUT',  'type':'text',     'options':('no_write_model', 'write_once', 'write_shot',)},
-        {'path':':INIT_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
-        {'path':':TRIG_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','TRIG',50,None),Method(None,'TRIG',head))",'options':('no_write_shot',)},
-        {'path':':STOP_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",'options':('no_write_shot',)},
-        {'path':':STL',         'type':'text',     'options':('write_shot',)},
-        {'path':':GPG_TRG_DX',  'type':'text',     'value': 'dx', 'options':('write_shot',)},
+        {
+            'path':':COMMENT',
+            'type':'text',     
+            'options':('no_write_shot',)
+        },
+        {
+            'path':':NODE',        
+            'type':'text',
+            'value': '192.168.0.254',   
+            'options':('no_write_shot',)
+        },
+        {
+            'path':':DIO_SITE',    
+            'type':'numeric',  
+            'value': int(5), 
+            'options':('no_write_shot',)
+        },
+        {
+            'path':':TRIG_TIME',   
+            'type':'numeric',  
+            'options':('write_shot',)
+        },
+        {
+            'path':':RUNNING',     
+            'type':'numeric',  
+            'options':('no_write_model',)
+        },
+        {
+            'path':':LOG_OUTPUT',  
+            'type':'text',     
+            'options':('no_write_model', 'write_once', 'write_shot',)
+        },
+        {
+            'path':':INIT_ACTION', 
+            'type':'action',   
+            'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+            'options':('no_write_shot',)
+        },
+        {
+            'path':':TRIG_ACTION', 
+            'type':'action',   
+            'valueExpr':"Action(Dispatch('CAMAC_SERVER','TRIG',50,None),Method(None,'TRIG',head))",
+            'options':('no_write_shot',)    
+        },
+        {
+            'path':':STOP_ACTION', 
+            'type':'action',   
+            'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",
+            'options':('no_write_shot',)
+        },
+        {
+            'path':':STL',         
+            'type':'text',     
+            'options':('write_shot',)
+        },
+        {
+            'path':':GPG_TRG_DX',  
+            'type':'text',     
+            'value': 'dx', 
+            'options':('write_shot',)
+        },
     ]
 
 
@@ -75,8 +125,8 @@ class _ACQ2106_WRPG(MDSplus.Device):
 
         self.dprint(2, "Building STL: start")
 
-        #Create the STL table from a series of transition times and states given in OUTPUT.
-        #TIGA: PG nchans = 4, or non-TIGA PG nchans = 32
+        # Create the STL table from a series of transition times and states given in the OUTPUT node in the tree.
+        # TIGA: PG nchans = 4, or non-TIGA PG nchans = 32
         tiga    = '7B'
         nontiga = '6B'
 
@@ -93,7 +143,7 @@ class _ACQ2106_WRPG(MDSplus.Device):
         # Create the STL table:
         self.set_stl(nchans)
 
-        #Load the STL into the WRPG hardware: GPG
+        #Load the STL into the DIO or GPG module.
         self.load_stl_data()
         
         self.dprint(1, 'WRPG has loaded the STL')
@@ -232,10 +282,11 @@ class _ACQ2106_WRPG(MDSplus.Device):
             rowstr = [str(i) for i in numpy.flip(row)]  # flipping the bits so that chan 1 is in the far right position
             binrows.append(''.join(rowstr))
 
-        # Converting the original units of the transtion times in seconds, to micro-seconts:
+        # Converting the original units of the transtion times in seconds, to 1/10th micro-seconds:
         times_usecs = []
         for elements in t_times:
-            times_usecs.append(int(elements * 1E7)) #The documention says this is in micro-seconds, but it's actually in 1/10 micro-seconds.
+            #The documentation and STL examples says time is in micro-seconds, but it's actually in 1/10th of micro-seconds.
+            times_usecs.append(int(elements * 1E7)) 
          
         # Write to a list with states in HEX form.
         stl  = ''
