@@ -84,9 +84,9 @@ class Apd(_dat.TreeRefX, _arr.Array):
     def __init__(self, value=None, dtype=0):
         """Initializes a Apd instance
         """
+        self.dtype_id = Apd.dtype_id
         if value is self:
             return
-        self.dtype_id = dtype
         self._descs = []
         if value is not None:
             if isinstance(value, _ver.listlike):
@@ -130,6 +130,7 @@ class Dictionary(dict, Apd):
     dtype_id = 216
 
     def __init__(self, value=None):
+        self.dtype_id = Dictionary.dtype_id
         if value is self:
             return
         if value is not None:
@@ -206,6 +207,7 @@ class List(list, Apd):
     dtype_id = 214
 
     def __init__(self, value=None):
+        self.dtype_id = List.dtype_id
         if value is self:
             return
         if value is not None:
