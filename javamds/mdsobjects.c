@@ -1282,7 +1282,6 @@ static mdsdsc_t *ObjectToDescrip(JNIEnv *env, jobject obj)
     // ndescs = (*env)->GetArrayLength(env, jdescs);
     apd_d = (mdsdsc_a_t *)malloc(sizeof(mdsdsc_a_t));
     memcpy(apd_d, &template_apd, sizeof(mdsdsc_a_t));
-    printf("APD DTYPE: %d\n", dtype);
     apd_d->dtype = dtype;
     apd_d->class = CLASS_APD;
     apd_d->length = sizeof(mdsdsc_t *);
