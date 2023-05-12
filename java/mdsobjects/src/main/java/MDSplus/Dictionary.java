@@ -18,6 +18,10 @@ public class Dictionary extends Apd
 		super(descs, help, units, error, validation);
  		dtype = DTYPE_DICTIONARY;
 	}
+        public int[] getShape() 
+        {
+            return new int[]{descs.length/2};
+        }
 
 	public static Data getData(Data[] descs, Data help, Data units, Data error, Data validation)
 	{
