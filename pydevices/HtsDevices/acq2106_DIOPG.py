@@ -239,47 +239,11 @@ class _ACQ2106_DIOPG(MDSplus.Device):
 
         all_times = sorted(list(set(all_times)))
 
-        # all_t_times   = []
-        # all_t_times_states = []
-
-        # for i in range(nchan):
-        #     chan_signal = self.__getattr__('OUTPUT_%3.3d' % (i+1))
-
-        #     # Pair of (transition time, state) for each channel:
-        #     chan_states = chan_signal.data()
-        #     chan_times = chan_signal.dim_of().data()
-            
-        #     # Python zip it
-        #     chan_t_states = zip(chan_times, chan_states)
-            
-        #     print(chan_t_states)
-
-        #     # # Creation of an array that contains, as EVERY OTHER element, all the transition times in it, appending them
-        #     # # for each channel:
-        #     # for x in numpy.nditer(chan_t_states):
-        #     #     all_t_times_states.append(x) #Appends arrays made of one element,
-            
-        #     all_t_times_states.extend(chan_t_states)
-
-        # # Choosing only the transition times:
-        # all_t_times = all_t_times_states[0::2]
-
-        # # Removing duplicates and then sorting in ascending manner:
-        # t_times = []
-        # for i in all_t_times:
-        #     if i not in t_times:
-        #         t_times.append(i)
-
-        # t_times contains the unique set of transitions times used in the experiment:
-        # t_times = sorted(numpy.float64(t_times))
-
         # initialize the state matrix
         # state_matrix = [ [ 0 ] * nchan ] * len(all_times)
         state_matrix = numpy.zeros((len(all_times), nchan), dtype='int')
         # state_matrix = [ [ 0 for i in range(cols) ] for j in range(rows) ]
-        
-        # print(state_matrix)
-        
+                
         for c, data in enumerate(data_by_chan):
             # print(c, data)
             for t, time in enumerate(all_times):
@@ -291,37 +255,6 @@ class _ACQ2106_DIOPG(MDSplus.Device):
                     state_matrix[t][c] = state_matrix[t - 1][c]
                     #print('matrix[{}][{}] = last row'.format(t, c))
 
-        # print('1717', state_matrix[1717])
-        # print('1718', state_matrix[1718])
-        # print('1719', state_matrix[1719])
-
-        # print(state_matrix)
-        
-        # Building the state matrix. For each channel, we traverse all the transition times to find those who are 
-        # in the particular channel. 
-        # If the transition time is in the channel, we copied its state into the state[i][j] element. 
-        # If a transition time does not appear in that channel, we keep the previous state for, i.e. the state doesn't change.
-        # for j in range(nchan):
-        #     chan_t_states = self.__getattr__('OUTPUT_%3.3d' % (j+1))
-
-        #     for i in range(len(t_times)):
-
-        #         if i == 0:
-        #             state[i][j] = 0
-        #         else:
-        #             state[i][j] = state[i-1][j]
-                    
-        #             # chan_t_states its elements are pairs of [ttimes, state]. e.g [[0.0, 0],[1.0, 1],...]
-        #             # chan_t_states[0] are all the first elements of those pairs, i.e the trans. times: 
-        #             # e.g [[1D0], [2D0], [3D0], [4D0] ... ]
-        #             # chan_t_states[1] are all the second elements of those pairs, i.e. the states: 
-        #             # e.g [[0],[1],...]
-        #             for t in range(len(chan_t_states[0])):
-        #                 #Check if the transition time is one of the times that belongs to this channel:
-        #                 if t_times[i] == chan_t_states[0][t][0]:
-        #                     state[i][j] = int(chan_t_states[1][t][0])
-
-
         # Building the string of 1s and 0s for each transition time:
         binary_rows = []
         times_usecs = []
@@ -330,16 +263,9 @@ class _ACQ2106_DIOPG(MDSplus.Device):
             if not numpy.array_equal(row, last_row):
                 rowstr = [ str(i) for i in numpy.flip(row) ]  # flipping the bits so that chan 1 is in the far right position
                 binary_rows.append(''.join(rowstr))
-                times_usecs.append(int(time * 1E7))
+                times_usecs.append(int(time * 1E7)) # Converting the original units of the transtion times in seconds, to 1/10th micro-seconds
                 last_row = row
 
-        #print(binary_rows)
-        #print(times_usecs)
-
-        # Converting the original units of the transtion times in seconds, to 1/10th micro-seconds:
-
-        # for time in all_times:
-        #     #The documentation and STL examples says time is in micro-seconds, but it's actually in 1/10th of micro-seconds.
 
         binary_rows = binary_rows[0:96]
         times_usecs = times_usecs[0:96]
