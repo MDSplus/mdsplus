@@ -125,7 +125,7 @@ class SPIDER_FFT(Device):
                             if currMax > maxIdx:
                                 origOffset = origOffset + 1  #keep trak of the shift that may occur removing the index
                         maxIdxs.append(maxIdx)
-                        outFreqSegs[hIdx].append(acqFreq * np.float(maxIdx + origOffset) / burstSize)
+                        outFreqSegs[hIdx].append(acqFreq * float(maxIdx + origOffset) / burstSize)
                         outAmplSegs[hIdx].append(fftAmp[maxIdx])
                         outPhaseSegs[hIdx].append(fftPhs[maxIdx])
                         np.delete(fftAmp, maxIdx)
