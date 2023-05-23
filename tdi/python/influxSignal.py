@@ -168,7 +168,7 @@ def influxSignal(fieldKey, aggregation, where, series=None, database=None, confi
         # any equations stored in it
         # For example:
         #   10*fVal will become 10*MEAN(fVal)
-        fieldKey = re.sub(r'([a-zA-Z]*)', '%s(\\1)' % (aggregation,), fieldKey)
+        fieldKey = re.sub(r'([a-zA-Z]+)', '%s(\\1)' % (aggregation,), fieldKey)
         if debug:
             print(aggregation, fieldKey)
 
