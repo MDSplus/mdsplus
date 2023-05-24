@@ -274,6 +274,7 @@ class _ACQ2106_DIOPG(MDSplus.Device):
         self.stl.record = stl
 
 
+
 OUTFMT3 = ':OUTPUT_%3.3d'
 ACQ2106_CHANNEL_CHOICES = [4, 32]
 
