@@ -293,7 +293,6 @@ class _ACQ2106_WRPG(MDSplus.Device):
         for time, state in zip(times_usecs, binrows):
             stl += '%d,%08X\n' % (time, int(state, 2))
 
-        # MDSplus wants a numpy array
         self.stl.record = stl
 
 OUTFMT3 = ':OUTPUT_%3.3d'
