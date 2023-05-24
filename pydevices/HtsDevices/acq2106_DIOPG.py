@@ -240,20 +240,14 @@ class _ACQ2106_DIOPG(MDSplus.Device):
         all_times = sorted(list(set(all_times)))
 
         # initialize the state matrix
-        # state_matrix = [ [ 0 ] * nchan ] * len(all_times)
         state_matrix = numpy.zeros((len(all_times), nchan), dtype='int')
-        # state_matrix = [ [ 0 for i in range(cols) ] for j in range(rows) ]
                 
         for c, data in enumerate(data_by_chan):
-            # print(c, data)
             for t, time in enumerate(all_times):
-                # print(t, time)
                 if time in data:
                     state_matrix[t][c] = data[time]
-                    #print('matrix[{}] = {}'.format(t, state_matrix[t]))
                 else:
                     state_matrix[t][c] = state_matrix[t - 1][c]
-                    #print('matrix[{}][{}] = last row'.format(t, c))
 
         # Building the string of 1s and 0s for each transition time:
         binary_rows = []
@@ -266,9 +260,9 @@ class _ACQ2106_DIOPG(MDSplus.Device):
                 times_usecs.append(int(time * 1E7)) # Converting the original units of the transtion times in seconds, to 1/10th micro-seconds
                 last_row = row
 
-
-        binary_rows = binary_rows[0:96]
-        times_usecs = times_usecs[0:96]
+        # TODO: depending on the hardware there is a limit number of states allowed. The below lines limited the number of the CMOD's 1800 states table to 510:
+        # binary_rows = binary_rows[0:510]
+        # times_usecs = times_usecs[0:510]
         
         # Write to a list with states in HEX form.
         stl  = ''
@@ -278,14 +272,6 @@ class _ACQ2106_DIOPG(MDSplus.Device):
         print(stl)
         # MDSplus wants a numpy array
         self.stl.record = stl
-
-
-    def set_output_signal(self, num):
-        chan = self.__getattr__('OUTPUT_%3.3d' % num)
-        
-        output_signal = "2 * BUILD_SIGNAL([0, REPLICATE([1,0], 0, ESIZE(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) / 2), MOD(ESIZE(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES), 2) ? [1,1] : 0], *, [MINVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) - .1 * (MAXVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) - MINVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES)), SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES, MAXVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) + .1 * (MAXVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) - MINVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES))])"
-        
-        chan.putData(output_signal)
 
 
 OUTFMT3 = ':OUTPUT_%3.3d'
@@ -306,8 +292,6 @@ def assemble(cls):
         cls.parts.append(
             {'path':outfmt % (ch,), 
              'type':'SIGNAL', 
-             #'valueExpr': 'head.set_output_signal(%d)' % (ch,),
-             #'valueExpr': '2 * BUILD_SIGNAL([0, REPLICATE([1,0], 0, ESIZE(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) / 2), MOD(ESIZE(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES), 2) ? [1,1] : 0], *, [MINVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) - .1 * (MAXVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) - MINVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES)), SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES, MAXVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) + .1 * (MAXVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES) - MINVAL(SIGNALS.YAG.HARDWARE:J221_50HZ:OUTPUT_01:GATES))])'
              'options':('no_write_shot',)}
             )
     return cls
