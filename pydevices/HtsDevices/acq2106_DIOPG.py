@@ -269,8 +269,6 @@ class _ACQ2106_DIOPG(MDSplus.Device):
         for time, state in zip(times_usecs, binary_rows):
             stl += '%d,%08X\n' % (time, int(state, 2))
         
-        print(stl)
-        # MDSplus wants a numpy array
         self.stl.record = stl
 
 
