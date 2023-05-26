@@ -47,7 +47,7 @@ class RGA(Device):
         # Create a datagram socket
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
         
-	s.sendto(msg, (serverAddr, serverPort))
+        s.sendto(msg, (serverAddr, serverPort))
 
 
     def start_store(self):

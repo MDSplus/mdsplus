@@ -67,7 +67,7 @@ class STK_TEMP(Device):
                     deltaT=dt.microseconds/1000000.0+dt.seconds+dt.days*86400
                     dt=timestamp-epoch
                     int64Time=dt.microseconds/1000+dt.seconds*1000+dt.days*86400000
-                  print deltaT, temperature
+                  print (deltaT, temperature)
 
                   temperatureNid.putRow(1, Float32(temperature), Int64(int64Time))
 
@@ -157,9 +157,9 @@ class STK_TEMP(Device):
       try:
           self.restoreWorker()
           if ( self.worker != None and self.worker.isAlive() ):
-     	    self.debugPrint("Stop acquisition Thread...")
+            self.debugPrint("Stop acquisition Thread...")
             self.stopAcquisition()
-     	    self.debugPrint("Initialize...")
+            self.debugPrint("Initialize...")
             self.init()
             self.restoreInfo()
       except:
@@ -182,6 +182,6 @@ class STK_TEMP(Device):
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
       if self.restoreWorker() :
-      	self.worker.stop()
+         self.worker.stop()
       return 1
 
