@@ -43,23 +43,10 @@ public class DeviceOutputs extends DeviceComponent
 	private JScrollPane scrollP; 
 	private int numOutputs;
 	private JTextField segLensTF[], parametersTF[], dimensionsTF[];
-        private JTextField typesTF[];
-        private boolean parametersIsText[];
-        private int segLenNids[], parameterNids[], dimensionNids[], typeNids[];
+        private int segLenNids[], parameterNids[], dimensionNids[];
         private int numOutputChildren = 0;
         private int numItems;
         private int numParItems;
-        static final String types[] = {"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "float32", "float64"};
-        private int stringToIdx(String type)
-        {
-            for(int i = 0; i < types.length; i++)
-            {
-                if(types[i].equals(type))
-                    return i;
-            }
-            return 0;
-        }
-        
 	public DeviceOutputs()
 	{
  	}
@@ -105,15 +92,13 @@ public class DeviceOutputs extends DeviceComponent
                     numItems += numFields;
                     numBusItems++;
                 }
-                currOutNid += 1 + numChildren + numMembers + 2 * numPars + 8 * numFields;
+                numParItems += numPars;
+                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 8 * numFields;
             }
-            typesTF = new JTextField[numItems];
             dimensionsTF = new JTextField[numItems];
             segLensTF = new JTextField[numItems];
             parametersTF = new JTextField[numParItems];
-            parametersIsText = new boolean[numParItems];
-               
-            typeNids = new int[numItems];
+
             dimensionNids = new int[numItems];
             segLenNids = new int[numItems];
             parameterNids = new int[numParItems];
@@ -153,11 +138,8 @@ public class DeviceOutputs extends DeviceComponent
                     jp1.add(new JLabel("Dimensions: "));
                     jp1.add(dimensionsTF[currItem] = new JTextField(4));
                     dimensionNids[currItem] = currOutNid + 4;
-                    jp1.add(new JLabel("Type: "));
-                    jp1.add(typesTF[currItem] = new JTextField(10));
-                    typeNids[currItem] = currOutNid + 2;
                     jp1.add(new JLabel("Segment len.: "));
-                    jp1.add(segLensTF[currItem] = new JTextField(4));
+                    jp1.add(segLensTF[currItem] = new JTextField(10));
                     segLenNids[currItem] = currOutNid + 5;
                     currItem++;
                     for(int parIdx = 0; parIdx < numPars; parIdx++)
@@ -169,13 +151,6 @@ public class DeviceOutputs extends DeviceComponent
                         }catch(Exception exc){parName = "";}
                         jp1.add(new JLabel(parName+":"));
                         jp1.add(parametersTF[numParItems] = new JTextField(10));
-                        try {
-                            parametersIsText[numParItems] = subtree.getUsage(currOutNid + 11 + 3 * parIdx).equals("TEXT");
-                        }catch(Exception exc)
-                        {
-                            System.out.println("Internal error: cannot state whether parameter is text");
-                            parametersIsText[numParItems] = false;
-                        } 
                         parameterNids[numParItems++] = currOutNid + 11 + 3 * parIdx;
                     }
                     jp.add(jp1);
@@ -199,10 +174,8 @@ public class DeviceOutputs extends DeviceComponent
                     jp.add(busLabel);
                     for(int fieldIdx = 0; fieldIdx < numFields; fieldIdx++)
                     {
-                        int fieldNid = currOutNid + numChildren +numMembers +1 + 3 * numPars + 10 * fieldIdx;
+                        int fieldNid = currOutNid + numChildren +numMembers +1 + 3 * numPars + 8 * fieldIdx;
                         segLenNids[currItem] = fieldNid + 5;
-                        dimensionNids[currItem] = currOutNid + 4;
-                        typeNids[currItem] = currOutNid + 2;
                         String fieldName = "";
                         try {
                            fieldName = subtree.getString(subtree.getDataExpr(fieldNid + 1));
@@ -218,8 +191,6 @@ public class DeviceOutputs extends DeviceComponent
                         typesTF[currItem].setVisible(false);
                         jp1.add(new JLabel("Segment len.: "));
                         jp1.add(segLensTF[currItem] = new JTextField(10));
-                        jp1.add(new JLabel("Stream name: "));
-                        jp1.add(streamNamesTF[currItem] = new JTextField(10));
                         
                         try {
                             jp1.setTransferHandler(new FromTransferHandler(subtree.getFullPath(currOutNid)+".FIELDS."+fieldName+":VALUE"));
@@ -237,7 +208,7 @@ public class DeviceOutputs extends DeviceComponent
                         currItem++;
                     }
                 }
-                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 10 * numFields;
+                currOutNid += 1 + numChildren + numMembers + 3 * numPars + 8 * numFields;
  
             }
             numItems = currItem;
@@ -248,7 +219,7 @@ public class DeviceOutputs extends DeviceComponent
         }
 	protected void displayData(String data, boolean is_on)
 	{
-             for(int idx = 0; idx < numItems; idx++)
+for(int idx = 0; idx < numItems; idx++)
             {
                 try {
                      segLensTF[idx].setText(subtree.getDataExpr(segLenNids[idx]));
@@ -257,38 +228,19 @@ public class DeviceOutputs extends DeviceComponent
                     segLensTF[idx].setText("");
                 }
                 try {
-                     if(dimensionsTF[idx].isVisible())
-                        dimensionsTF[idx].setText(subtree.getDataExpr(dimensionNids[idx]));
+                     dimensionsTF[idx].setText(subtree.getDataExpr(dimensionNids[idx]));
                 }catch(Exception exc)
                 {
                     dimensionsTF[idx].setText("");
                 }
-                try {
-                     if(typesTF[idx].isVisible())
-                     {
-                        typesTF[idx].setText(subtree.getDataExpr(typeNids[idx]).replace("\"", ""));
-                     }
-                }catch(Exception exc)
-                {
-                    typesTF[idx].setText("");
-                }
             }
-            for(int parIdx = 0; parIdx < numParItems; parIdx++)
+            for(int idx = 0; idx < numParItems; idx++)
             {
                 try {
-                    String parValue = subtree.getDataExpr(parameterNids[parIdx]);
-                    if(parametersIsText[parIdx])
-                    {
-                        parametersTF[parIdx].setText(parValue.substring(1, parValue.length() - 1));
-                    }
-                    else
-                    {
-                        parametersTF[parIdx].setText(parValue);
-                    }
-
+                     parametersTF[idx].setText(subtree.getDataExpr(parameterNids[idx]));
                 }catch(Exception exc)
                 {
-                    parametersTF[parIdx].setText("");
+                    parametersTF[idx].setText("");
                 }
             }
 	}
@@ -301,21 +253,10 @@ public class DeviceOutputs extends DeviceComponent
             for(int idx = 0; idx < numItems; idx++)
             {
                 try {
-                    if(dimensionsTF[idx].isVisible())
-                        subtree.putDataExpr(dimensionNids[idx], dimensionsTF[idx].getText());
+                    subtree.putDataExpr(dimensionNids[idx], dimensionsTF[idx].getText());
                 }catch(Exception exc)
                 {
                     System.out.println("Error saving Dimensions");
-                }
-                try {
-                    if(typesTF[idx].isVisible())
-                    {
-                        String typeStr = typesTF[idx].getText();
-                        subtree.putDataExpr(typeNids[idx], "\""+typeStr+"\"");
-                    }
-                }catch(Exception exc)
-                {
-                    System.out.println("Error saving Type");
                 }
                 try {
                     subtree.putDataExpr(segLenNids[idx], segLensTF[idx].getText());
@@ -327,15 +268,7 @@ public class DeviceOutputs extends DeviceComponent
            for(int idx = 0; idx < numParItems; idx++)
            {
                 try {
-                    if(parametersIsText[idx])
-                    {
-                        subtree.putDataExpr(parameterNids[idx], "\'"+parametersTF[idx].getText()+"\'");
-                    }
-                    else
-                    {
-                        subtree.putDataExpr(parameterNids[idx], parametersTF[idx].getText());
-                    }
-                        
+                    subtree.putDataExpr(parameterNids[idx], parametersTF[idx].getText());
                 }catch(Exception exc)
                 { 
                     System.out.println("Error saving Parameter");

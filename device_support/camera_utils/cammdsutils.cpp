@@ -84,27 +84,14 @@ class SaveFrame {
 
         if( pixelLevel > 0 && numPixel > 0 )
         {
-          metaNode->makeSegment(time, time, dim, (Array *)metaData);
-        }
-      }
-      catch (const MdsException &exc)
-      {
-        cout << "ERROR WRITING SEGMENT: " << exc.what() << "\n";
-      }
-      deleteData(data);
-      deleteData(time);
-      deleteData(dim);
-      delete dataNode;
-      delete timebaseNode;
-      if (hasMetadata)
-        delete metaNode;
-
-      if (pixelSize <= 8)
-        delete (char *)frame;
-      else if (pixelSize <= 16)
-        delete (short *)frame;
-      else if (pixelSize <= 32)
-        delete (int *)frame;
+		   this->pixelLevel = pixelLevel;
+		   this->numPixel = numPixel; 
+		   this->discardBlackFrame = 1;
+        } 
+        else 
+		   this->discardBlackFrame = 0;
+         
+		nxt = 0;
     }
     SaveFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, int frameIdx)
     {
@@ -118,48 +105,15 @@ class SaveFrame {
 		this->timebaseNid = timebaseNid;
 		this->frameTime = frameTime;
 
-      try
-      {
-        dim = compileWithArgs("[$1]", (Tree *)treePtr, 1, time);
-      }
-      catch (const MdsException &exc)
-      {
-        cout << "ERROR CompileWithArgs: " << exc.what() << "\n";
-      }
+		hasMetadata = false;
+		this->frameMetadata = 0;
+		this->metaSize = 0;
+		this->metaNid = -1;
 
         discardBlackFrame = 0;
 
-        dataNode->makeSegment(time, time, dim, (Array *)data);
-        if (hasMetadata && metaSize > 0)
-        {
-          metaNode->makeSegment(time, time, dim, (Array *)metaData);
-        }
-      }
-      catch (const MdsException &exc)
-      {
-        cout << "ERROR WRITING SEGMENT " << exc.what() << "\n";
-      }
-
-      try
-      {
-        deleteData(data);
-        deleteData(time);
-        deleteData(dim);
-        delete dataNode;
-        if (hasMetadata)
-          delete metaNode;
-
-        if (pixelSize <= 8)
-          delete (char *)frame;
-        else if (pixelSize <= 16)
-          delete (short *)frame;
-        else if (pixelSize <= 32)
-          delete (int *)frame;
-      }
-      catch (const MdsException &exc)
-      {
-        cout << "ERROR deleting data" << exc.what() << "\n";
-      }
+		this->treePtr = treePtr;
+		nxt = 0;
     }
 
     void setNext(SaveFrame *itm)
@@ -605,17 +559,16 @@ void camStopSave(void *listPtr)
 //Open Mdsplus Tree
 int camOpenTree(char *treeName, int shot, void **treePtr)
 {
-  try
-  {
-    Tree *tree = new Tree(treeName, shot);
-    *treePtr = (void *)tree;
-    return 0;
-  }
-  catch (const MdsException &exc)
-  {
-    cout << "Error opening Tree " << treeName << ": " << exc.what() << "\n";
-    return -1;
-  }
+    try
+    {
+	  Tree *tree = new Tree(treeName, shot);
+	  *treePtr = (void *)tree;
+	  return 0;
+    }catch(MdsException *exc)
+    {
+	  cout << "Error opening Tree " << treeName << ": " << exc->what() << "\n";
+      return -1;
+    }
 }
 
 

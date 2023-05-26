@@ -326,30 +326,36 @@ class NI6683REC(Device):
                        dt_str = dt.strftime('%Y-%m-%d %H:%M:%S') +"."+ str(int(( (ts[i].nanos-tai_utc_delay) % 1000000000))).zfill(9)
                        print( dt_str)
 
-                        nids = self.device.timeNid[fd1]
-                        try:
-                            if (len(nids) == 2):
-                                print (nids[0].getPath())
-                                nids[0].putData(Int64(ts[i].nanos))
-                                print (nids[0].getPath())
-                                nids[1].putData(dt_str)
-                            else:
-                                print (nids[0].getPath())
-                                nids[0].putRow(1000, Int64(
-                                    ts[i].nanos), Int64(ts[i].nanos))
-                        except BaseException as e:
-                            print (e)
-                            print('Error save timestamp')
-
-                        ts_nanos_prev = ts[i].nanos
-                      # break
-                    print ("------------------------------------------------")
-                time.sleep(1)
-
-            for fd in self.device.devFd:
-                if fd == -1:
-                    continue
-                poll.unregister(fd)
+                       nids = self.device.timeNid[fd1];
+                       try:
+                           if ( len(nids) == 2 ) :
+                               print( self.device.getNode(nids[0]).getPath())
+                               #nids[0].putData(Int64(ts[i].nanos))
+                               self.device.getNode(nids[0]).putRow(1000, Int64(ts[i].nanos), Int64(ts[i].nanos) )
+                               if first :
+                                  first = 0
+                                  print( self.device.getNode(nids[1]).getPath())
+                                  self.device.getNode(nids[1]).putData(dt_str)
+                           else:
+                               print( self.device.getNode(nids[0]).getPath())
+                               self.device.getNode(nids[0]).putRow(1000, Int64(ts[i].nanos), Int64(ts[i].nanos) )
+                       except BaseException as e:
+                           print( e)
+                           print('Error save timestamp')
+                           
+                       """
+                       try:
+                           self.device.pulse_time_tai_ns.putData( Int64(ts.nanos))
+                           self.device.pulse_time_tai_s.putData(Int64(ts.nanos//1000000000))
+                           self.device.pulse_time_date.putData(dt_str)
+                       except BaseException as e:
+                           print (e)
+                           print('Error save timestamp')
+                       """
+                       ts_nanos_prev = ts[i].nanos
+                     #break
+                   print ("------------------------------------------------")
+               time.sleep(1)
 
             for fd in self.device.devFd :
                if fd == -1 :
@@ -357,6 +363,8 @@ class NI6683REC(Device):
                poll.unregister(fd)
                 
             print ('AsynchStore stop')
+
+            return
 
         def stop(self):
             self.stopReq = True
@@ -371,6 +379,8 @@ class NI6683REC(Device):
             self.stop()
         except:
             print ('Not started')
+            pass
+ 
 
 #Configuration check
 
@@ -385,6 +395,14 @@ class NI6683REC(Device):
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Device number Undefined')
             raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        """
+        try:
+            devTerm = self.trigTermDict[self.trig_term.data()]
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Device terminal Undefined')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        """
 
         try:
             trigDecCnt = c_int(self.trig_dec_cnt.data())
@@ -478,6 +496,8 @@ class NI6683REC(Device):
                 if status < 0 :  
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot enable pulse time timestamp for trigger %d'%(tr+1))
                     continue
+        """ 
+        return 1
 
 #Module in acquisition check
         try:

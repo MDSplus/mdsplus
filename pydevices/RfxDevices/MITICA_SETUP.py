@@ -128,8 +128,8 @@ class MITICA_SETUP(Device):
      parts.append({'path':'.MAGPS.WAVE_REC:MIN_Y', 'type':'numeric'})
      parts.append({'path':'.MAGPS.WAVE_REC:MAX_Y', 'type':'numeric'})
 
-     parts.append({'path':'.MGVS:VC3001_TURNS', 'type':'numeric', 'value':0})
-     parts.append({'path':'.MGVS:VC3002_TURNS', 'type':'numeric', 'value':0})
+     parts.append({'path':'.MGVS:VC5001_TURNS', 'type':'numeric', 'value':0})
+     parts.append({'path':'.MGVS:VC5002_TURNS', 'type':'numeric', 'value':0})
 
      parts.append({'path':'.MITICA:TIME_OF_INTE', 'type':'numeric'})
 
@@ -149,17 +149,30 @@ class MITICA_SETUP(Device):
            parts.append({'path':'.MGVS.WAVE_%d:LABEL'%(i+1), 'type':'text', 'value':'MGVS wave %d'%(i+1)})
            parts.append({'path':'.MAGPS.WAVE_%d:LABEL'%(i+1), 'type':'text', 'value':'MAGPS wave %d'%(i+1)})
  
-
-
-     parts.append({'path':'.MGVS:PRESET_PRES', 'type':'numeric', 'value':0.2})
-     parts.append({'path':'.MGVS:TANK'       , 'type':'text'   , 'value':'3000'})
-     parts.append({'path':'.MGVS:GAS_TYPE'   , 'type':'text'   , 'value':'3090'})
+     parts.append({'path':'.MGVS:GISB_PSP', 'type':'numeric', 'value':0.2})
+     parts.append({'path':'.MGVS:GISB_TANK'       , 'type':'text'   , 'value':'3000'})
+     parts.append({'path':'.MGVS:GISB_GAS_TYP'   , 'type':'text'   , 'value':'H2'})
 
      parts.append({'path':'.MISEPS:ISRF_TE_V'  , 'type':'numeric', 'value':10000})
      parts.append({'path':'.MISEPS:RF_REG_MODE', 'type':'text'   , 'value':'None'})
      parts.append({'path':'.MISEPS:FIL_V_REF'  , 'type':'numeric', 'value':54})
      parts.append({'path':'.MISEPS:CS1_I_REF'  , 'type':'numeric', 'value':0})
      parts.append({'path':'.MISEPS:CS2_I_REF'  , 'type':'numeric', 'value':0})
+
+     parts.append({'path':'.MGVS:VC5003_TURNS', 'type':'numeric', 'value':0})
+     parts.append({'path':'.MGVS:GISC_TANK'       , 'type':'text'   , 'value':'3000'})
+     parts.append({'path':'.MGVS:GISC_GAS_TYP'   , 'type':'text'   , 'value':'H2'})
+     parts.append({'path':'.MGVS:GISC_PSP', 'type':'numeric', 'value':0.2})
+
+
+     for i in range(8,16):
+           parts.append({'path':'.MGVS.WAVE_%d'%(i+1), 'type':'structure'})
+           parts.append({'path':'.MGVS.WAVE_%d:WAVE'%(i+1), 'type':'signal'})
+           parts.append({'path':'.MGVS.WAVE_%d:MIN_X'%(i+1), 'type':'numeric'})
+           parts.append({'path':'.MGVS.WAVE_%d:MAX_X'%(i+1), 'type':'numeric'})
+           parts.append({'path':'.MGVS.WAVE_%d:MIN_Y'%(i+1), 'type':'numeric'})
+           parts.append({'path':'.MGVS.WAVE_%d:MAX_Y'%(i+1), 'type':'numeric'})
+           parts.append({'path':'.MGVS.WAVE_%d:LABEL'%(i+1), 'type':'text', 'value':'MGVS wave %d'%(i+1)})
 
 
 

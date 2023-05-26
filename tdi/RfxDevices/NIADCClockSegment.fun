@@ -3,7 +3,7 @@ public fun NIADCClockSegment(in _clock, in _startIdx, in _endIdx, in _tAtIdx0, i
     _fact = 1;
     if(present( _period ))
     {
-   	_fact = _period / _slope_of(_clock);
+   	_fact = slope_of(_clock) / _period;
     }
 
    _segSmp = ( end_of(_clock) - begin_of(_clock) )/slope_of(_clock) * _fact;
