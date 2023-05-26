@@ -2,8 +2,8 @@
 
 CC=g++
 #TO ENABLE DEBUG MESSAGES ADD OPTION -DDEBUG
-CFLAGSmdsutils=  -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I. -I$(MDSPLUS_DIR)/include
-CFLAGSstreamutils= -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I.
+CFLAGSmdsutils=  -c -std=c++11 -O3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I. -I$(MDSPLUS_DIR)/include
+CFLAGSstreamutils= -c -std=c++11 -O3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I.
 ##############
 LDFLAGSstreamutils = -shared -lrt -pthread 
 LDFLAGSmdsutils = -shared -lrt -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr -lMdsIpShr

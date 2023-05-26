@@ -23,9 +23,9 @@ LDFLAGS =  -fPIC -O0 -L${MDSPLUS_DIR}/lib -L${CODAC_ROOT}/lib/ -lm -lNiFpga -lpx
 SOURCES_LIB=NiInterface.cpp cRioFAUfunction.cpp cRioMPAGfunction.cpp AsyncStoreManager.cpp
 OBJECTS=$(SOURCES_LIB:.cpp=.o)
 SHAREDLIB=libNiInterface.so
-EXE_PROGRAM=generateWave probeTermControl startStopTermControl  writeDigitalOut print_device_info pxi6259devList.sh pxie6368devList.sh
+EXE_PROGRAM=generateWave probeTermControl startStopTermControl  writeDigitalOut testELADDigitalOut testELADDigitalIn print_device_info pxi6259devList.sh pxie6368devList.sh
 
-SOURCES_EXE=generateWave.cpp probeTermControl.cpp startStopTermControl.cpp  writeDigitalOut.cpp print_device_info.cpp
+SOURCES_EXE=generateWave.cpp probeTermControl.cpp startStopTermControl.cpp  writeDigitalOut.cpp print_device_info.cpp testELADDigitalOut.cpp testELADDigitalIn.cpp
 BIN = $(patsubst %.cpp,%,$(SOURCES_EXE))
 
 

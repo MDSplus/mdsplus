@@ -1,8 +1,9 @@
+#include <mdsobjects.h>
 // Include files to use the PYLON API.
 
-#include <GenApi/IEnumerationT.h>
 #include <pylon/PylonIncludes.h>
 #include <pylon/gige/PylonGigEIncludes.h>
+#include <GenApi/IEnumerationT.h>
 
 // Settings for using Basler GigE cameras.
 #include <pylon/gige/BaslerGigEInstantCamera.h>
@@ -13,8 +14,9 @@ typedef Pylon::CBaslerGigEGrabResultPtr
     GrabResultPtr_t; // Or use Camera_t::GrabResultPtr_t
 using namespace Basler_GigECameraParams;
 
-using namespace Pylon;  // Namespace for using pylon objects.
-using namespace GenApi; // Namespace for using GenApi objects.
+using namespace Pylon;   // Namespace for using pylon objects.
+using namespace GenApi;  // Namespace for using GenApi objects.
+using namespace MDSplus;
 
 enum FPS_ENUM
 {
@@ -111,10 +113,46 @@ int Counted<T>::count = 0;
 
 class BASLER_ACA : public Counted<BASLER_ACA>
 {
+
+    class TriggerMdsEvent:public Event
+    {
+    	private:
+           BASLER_ACA* baslerACA;
+    	public:
+	   TriggerMdsEvent(const char *name, BASLER_ACA* bACA):Event(name)
+           {
+              baslerACA = bACA;
+           }
+
+	    void run()
+	    {
+		size_t bufSize;
+		const char *name = getName(); //Get the name of the event
+		char *date = getTime()->getDate(); //Get the event reception date in string format
+		const char *buf =  getRaw(&bufSize); //Get raw data
+		char *str = new char[bufSize+1]; //Make it a string
+		memcpy(str, buf, bufSize);
+		str[bufSize] = 0;
+		//MDSevent trigger is set if camera is in acquisition, Frame store is enabled and camera is not saving frame.
+		//An event trigger received during acquisition can reset the trigger count to extend the acquisition
+		if(baslerACA->acqFlag && baslerACA->storeEnabled && baslerACA->startStoreTrg == 0)
+		{   
+		    printf("%s EVENT Trigger Start!!!!\n", baslerACA->ipAddress);
+		    baslerACA->eventTrigger = 1;
+		} else {
+		    printf("%s EVENT Trigger Reset!!!!\n", baslerACA->ipAddress);
+		    baslerACA->eventTrigger = 0;
+		}
+		printf("%s RECEIVED EVENT %s AT %s WITH DATA %s Event Trig %d (%d,%d,%d)\n", baslerACA->ipAddress, name, date, str, baslerACA->eventTrigger);
+	    }
+     };
+
 private:
-  IPylonDevice *pDevice; // device handle
-  Camera_t *pCamera;     // camera handle
+
+  IPylonDevice *pDevice;	  //device handle
+  Camera_t *pCamera;              //camera handle
   char ipAddress[64];
+  TriggerMdsEvent *trigEvent;
 
   int x;
   int y;
@@ -131,6 +169,7 @@ private:
   int triggerMode;
   int startStoreTrg;
   int autoCalibration;
+  int eventTrigger; //CT on MDSplus event trigger flag
 
   int streamingEnabled;
   int streamingSkipFrameNumber;
