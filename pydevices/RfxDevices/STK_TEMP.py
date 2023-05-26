@@ -3,7 +3,10 @@ from MDSplus import mdsExceptions, Device, Data, version, Int64, Float32
 #from numpy import array
 from threading import Thread
 #import traceback
-import serial
+try:
+  import serial
+except:
+  pass
 from datetime import datetime
 
 class STK_TEMP(Device):
