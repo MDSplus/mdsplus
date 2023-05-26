@@ -353,6 +353,7 @@ public class Grid implements Serializable
 							df.setTimeZone(new SimpleTimeZone(0, "GMT"));
 							dfSubSec.setTimeZone(new SimpleTimeZone(0, "GMT"));
 						}
+
 						final Date date = new Date();
 						date.setTime(datel);
 						currStringSubSec = dfSubSec.format(date);
@@ -473,6 +474,13 @@ public class Grid implements Serializable
 	{
 		if (xin > 2E13)
 			xin = xin / 1E6;
+
+                if( Waveform.timeMode == Waveform.EPICS_TIME )
+                  xin = xin + Waveform.EPICS_BASE;
+
+                if( Waveform.timeMode == Waveform.VMS_TIME )
+                  xin = xin - Waveform.VMS_BASE/10000L;
+
 		return (long) xin;
 	}
 

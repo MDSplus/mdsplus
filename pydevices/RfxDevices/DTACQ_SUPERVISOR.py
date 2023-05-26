@@ -5,6 +5,8 @@ except:
     pass
 import socket
 import os
+import sys
+import numpy as np
 
 class DTACQ_SUPERVISOR(Device):
     """DTACQ device  supervisor"""
@@ -31,6 +33,29 @@ class DTACQ_SUPERVISOR(Device):
              {'path': ':DIO_BYTE2', 'type': 'text', 'value': 'INPUT'},
              {'path': ':DIO_BYTE3', 'type': 'text', 'value': 'INPUT'},
              {'path': ':DIO_BYTE4', 'type': 'text', 'value': 'INPUT'},
+             {'path': '.PG1', 'type': 'structure'},
+             {'path': '.PG1:SITE', 'type': 'numeric', 'value': 4},
+             {'path': '.PG1:TRIG_SOURCE', 'type': 'text', 'value': 'SOFTWARE'},
+             {'path': '.PG1:MODE', 'type': 'text', 'value': 'SINGLE'},
+             {'path': '.PG1:TIME_DIV', 'type': 'numeric', 'value': 400000},
+             {'path': '.PG1:LOOP_PERIOD', 'type': 'numeric', 'value': 0},
+             {'path': '.PG1:D1_TIMES', 'type': 'numeric'},
+             {'path': '.PG1:D2_TIMES', 'type': 'numeric'},
+             {'path': '.PG1:D3_TIMES', 'type': 'numeric'},
+             {'path': '.PG1:D4_TIMES', 'type': 'numeric'},
+             {'path': '.PG1:D5_TIMES', 'type': 'numeric'},
+             {'path': '.PG2', 'type': 'structure'},
+             {'path': '.PG2:SITE', 'type': 'numeric', 'value': 5},
+             {'path': '.PG2:TRIG_SOURCE', 'type': 'text', 'value': 'SOFTWARE'},
+             {'path': '.PG2:MODE', 'type': 'text', 'value': 'SINGLE'},
+             {'path': '.PG2:TIME_DIV', 'type': 'numeric', 'value': 400000},
+             {'path': '.PG2:LOOP_PERIOD', 'type': 'numeric', 'value': 0},
+             {'path': '.PG2:D1_TIMES', 'type': 'numeric'},
+             {'path': '.PG2:D2_TIMES', 'type': 'numeric'},
+             {'path': '.PG2:D3_TIMES', 'type': 'numeric'},
+             {'path': '.PG2:D4_TIMES', 'type': 'numeric'},
+             {'path': '.PG2:D5_TIMES', 'type': 'numeric'},
+             {'path': ':PASSWD', 'type': 'text', 'value':'d-t1012q'},
              {'path': ':INIT', 'type': 'action',
                   'valueExpr': "Action(Dispatch('MARTE_SERVER','INIT',50,None),Method(None,'init',head))",
                   'options': ('no_write_shot',)}]
@@ -52,10 +77,111 @@ class DTACQ_SUPERVISOR(Device):
             self.hudp_relay = hudp_relay
             self.spp = spp
             self.hudp_decim = hudp_decim
+#INITIALIZE Pulse Generator
+    def mergeStl(self, inAlltimes, loopPeriod):
+        print('LOOP PERIOD: ', loopPeriod)
+        alltimes = inAlltimes.copy()
+        outPatterns=[]
+        outTimes = []
+        currPattern = int(0)
+        while True:
+            minTime = sys.maxsize
+            minIdx = -1
+            for idx in range(len(alltimes)):
+                if len(alltimes[idx]) == 0:
+                    continue
+                if alltimes[idx][0] < minTime:
+                    minTime = alltimes[idx][0]
+                    minIdx = idx
+            if minIdx < 0:
+                if loopPeriod > 0:
+                    outTimes.append(int(loopPeriod))
+                    outPatterns.append(outPatterns[-1])
+                return outPatterns, outTimes
+            mask = currPattern & (1 << minIdx)
+            if(mask != 0): #corresponding bit flips to 0
+                currPattern = currPattern & ~(1 << minIdx)
+            else: #flips to 1
+                currPattern = currPattern | (1 << minIdx)
+            alltimes[minIdx] = alltimes[minIdx][1:]
+            #check if other times are equals
+            for idx in range(len(alltimes)):
+                if len(alltimes[idx]) == 0:
+                    continue
+                if alltimes[idx][0] == minTime:
+                    mask = currPattern & (1 << idx)
+                    if(mask != 0): #corresponding bit flips to 0
+                        currPattern = currPattern &  ~(1 << idx)
+                    else: #flips to 1
+                        currPattern = currPattern |  (1 << idx)
+                    alltimes[idx] = alltimes[idx][1:]
+            outPatterns.append(currPattern)
+            outTimes.append(minTime)
+    
+
+
+    def pgInitSpec(self, pgIdx):
+        site = getattr(self, 'pg%d_site' % (pgIdx)).data()
+        try:
+            trigSourceT = getattr(self, 'pg%d_trig_source' % (pgIdx)).data()
+            trigSourceDict = {'TRIG_IN':'1,0,1', 'SOFTWARE': '1,1,1','ADC_TRIG': '1,2,1','SITE4_TRIG': '1,5,1','SITE5_TRIG': '1,6,1'}
+            trigSource = trigSourceDict[trigSourceT]
+        except:
+            print('Invalid trigger source for PG '+str(pgIdx))
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        try:
+            modeT = getattr(self, 'pg%d_mode' % (pgIdx)).data()
+            modeDict = {'SINGLE': 0, 'LOOP': 2, 'LOOPWAIT': 3}
+            mode = modeDict[modeT]
+        except:
+            print('Invalid mode for PG '+str(pgIdx))
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        if mode == 2:
+            try:
+                loopPeriod = getattr(self, 'pg%d_loop_period' % (pgIdx)).data()
+            except:
+                print('No period specified for LOOP mode')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+        else:
+            loopPeriod = -1
+        try:
+            timeDiv = int(getattr(self, 'pg%d_time_div' % (pgIdx)).data())
+        except:
+            print('Cannot get Time division for PG '+str(pgIdx))
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        alltimes = []    
+        for chIdx in range(1,5):
+            try:
+                times = getattr(self, 'pg%d_d%d_times' % (pgIdx, chIdx)).data()
+            except:
+                print('No time array defined for D'+str(chIdx)+' IN PG'+str(pgIdx))
+                continue 
+            if loopPeriod != -1 and times[-1] > loopPeriod:
+                print('Invalid times definition: times must be less that loop period')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+            alltimes.append(times)
+        if len(alltimes) == 0:
+            print('No Time signal defined')
+            return
+        outPatterns, outTimes = self.mergeStl(alltimes, loopPeriod)
+        tempF = open('temp.stl', 'w')
+        for i in range(len(outTimes)):
+            tempF.write(str(outTimes[i])+','+str(outPatterns[i])+'\n')
+        tempF.close()
+        command = 'sshpass -p'+self.passwd.data()+' scp temp.stl root@'+self.ip_addr.data()+':'
+        print(command)
+        os.system(command)
+        command =  'sshpass -p'+self.passwd.data()+' ssh root@'+self.ip_addr.data()+' -t \'sh -l -c "CSCALE='+str(timeDiv)+' SITE='+str(site)+' /usr/local/CARE/pg_test ' +str(mode)+' temp.stl"\''
+        print(command)
+        os.system(command)
+        
+    def pgInit(self):
+        self.pgInitSpec(1)
+        self.pgInitSpec(2)
 
 # INIT
     def init(self):
-        import hudp_setup
+#        import hudp_setup
         print('INIT')
         try:
             ipAddr = self.ip_addr.data()
@@ -237,7 +363,9 @@ class DTACQ_SUPERVISOR(Device):
             try:
                 dtackAi = self.ai_b_device.getData()
                 hasBulkAi = True
-                dtackAi.parameters_par_1_value.putData(Float64(clockFreq))
+                dtackAi.parameters_par13_value.putData(Int32(clockFreq)) #num samples
+#                dtackAi.parameters_par_1_value.putData(Float64(clockFreq/numSamples))
+                dtackAi.parameters_par_1_value.putData(Float64(1)) #1 segment per second
                 dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
                 dtackAi.parameters_par_3_value.putData(Int32(1))
                 dtackAi.parameters_par_4_value.putData(len(aiSites))
@@ -260,6 +388,8 @@ class DTACQ_SUPERVISOR(Device):
                     print('Frequency division not defined for realtime device')
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
+
+                dtackAi.parameters_par13_value.putData(Int32(1)) #num samples
                 dtackAi.parameters_par_1_value.putData(Float64(clockFreq/freqDiv))
                 dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
                 dtackAi.parameters_par_3_value.putData(Int32(2))

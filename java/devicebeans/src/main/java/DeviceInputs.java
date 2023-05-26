@@ -13,7 +13,7 @@ public class DeviceInputs extends DeviceComponent
 	
 	private JScrollPane scrollP; 
 	private int numInputs;
-	private JTextField valuesTF[], fieldsTF[][];
+	private JTextField valuesTF[], fieldsTF[][], parametersTF[][];
 	private JLabel labels[];
         int numParameters[], numFields[];
 	public DeviceInputs()
@@ -37,6 +37,7 @@ public class DeviceInputs extends DeviceComponent
             fieldsTF = new JTextField[numInputs][];
             numParameters = new int[numInputs];
             numFields = new int[numInputs];
+            parametersTF = new JTextField[numInputs][];
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(numInputs, 1));
             int currInputNid = currNid + 1;
@@ -69,6 +70,7 @@ public class DeviceInputs extends DeviceComponent
                     }
                 }
                 fieldsTF[i] = new JTextField[numFields[i]];
+                parametersTF[i] = new JTextField[numParameters[i]];
                 String inputName;
                 try {
                     inputName = subtree.getString(subtree.getDataExpr(currInputNid + 5));
@@ -78,19 +80,32 @@ public class DeviceInputs extends DeviceComponent
                 }
                 JPanel jp1 = new JPanel();
                 TitledBorder titledBorder = new TitledBorder(inputName);
-                titledBorder.setTitleColor(Color.red);
+                //titledBorder.setTitleColor(Color.red);
                 jp1.setBorder(titledBorder);
                 
                 jp1.setLayout(new GridLayout(1 + numFields[i],1));
                 JPanel jp2 = new JPanel();
-                jp2.setLayout(new BorderLayout());
-                jp2.add(valuesTF[i] = new JTextField(), "Center");
+               // jp2.setLayout(new BorderLayout());
+                //jp2.add(valuesTF[i] = new JTextField(), "Center");
+                jp2.add(valuesTF[i] = new JTextField(30));
+                for(int parIdx = 0; parIdx < numParameters[i]; parIdx++)
+                {
+                    java.lang.String parName = "";
+                    try {
+                        parName = subtree.getString(subtree.getDataExpr(currInputNid + 8 + 3 * parIdx));
+                    }catch(Exception exc)
+                    {
+                        System.out.println("Cannot read parameter name");
+                    }
+                    jp2.add(new JLabel(parName+":"));
+                    jp2.add(parametersTF[i][parIdx] = new JTextField(10));
+                }
                 jp1.add(jp2);
                 for (int fieldIdx = 0; fieldIdx < numFields[i]; fieldIdx++)
                 {
                     String fieldName;
                     try {
-                        fieldName = subtree.getString(subtree.getDataExpr(currInputNid + 8 + 2 * numParameters[i] + 6 * fieldIdx +  4));
+                        fieldName = subtree.getString(subtree.getDataExpr(currInputNid + 8 + 3 * numParameters[i] + 6 * fieldIdx +  4));
                     }catch(Exception exc)
                     {
                         fieldName = "";
@@ -101,7 +116,7 @@ public class DeviceInputs extends DeviceComponent
                     jp2.add(fieldsTF[i][fieldIdx] = new JTextField(), "Center");
                     jp1.add(jp2);
                 }
-                currInputNid += numInputChildren + 1 + 2 * numParameters[i] + 6 * numFields[i];
+                currInputNid += numInputChildren + 1 + 3 * numParameters[i] + 6 * numFields[i];
                jp.add(jp1);
            }
             scrollP = new JScrollPane(jp);
@@ -129,13 +144,22 @@ public class DeviceInputs extends DeviceComponent
                 {
                     valuesTF[inputIdx].setText("");
                 }
+                for(int parIdx = 0; parIdx < numParameters[inputIdx]; parIdx++)
+                {
+                    try {
+                        parametersTF[inputIdx][parIdx].setText(subtree.getDataExpr(currInputNid + 9 + 3 * parIdx));
+                    }catch(Exception exc)
+                    {
+                        parametersTF[inputIdx][parIdx].setText("");
+                    }
+                }
                 for(int fieldIdx = 0; fieldIdx < numFields[inputIdx]; fieldIdx++)
                 {
                     try {
-                         fieldsTF[inputIdx][fieldIdx].setText(subtree.getDataExpr(currInputNid + 8 + 2 * numParameters[inputIdx] + 6 * fieldIdx +  5));
+                         fieldsTF[inputIdx][fieldIdx].setText(subtree.getDataExpr(currInputNid + 8 + 3 * numParameters[inputIdx] + 6 * fieldIdx +  5));
                     }catch(Exception exc){fieldsTF[inputIdx][fieldIdx].setText("");}
                }
-               currInputNid += numInputChildren + 1 + 2 * numParameters[inputIdx] + 6 * numFields[inputIdx]; 
+               currInputNid += numInputChildren + 1 + 3 * numParameters[inputIdx] + 6 * numFields[inputIdx]; 
             }
 	}
 
@@ -162,17 +186,26 @@ public class DeviceInputs extends DeviceComponent
                 {
                     JOptionPane.showMessageDialog(null, ""+exc, "Error in input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
                 }
+                for(int parIdx = 0; parIdx < numParameters[inputIdx]; parIdx++)
+                {
+                    try {
+                        subtree.putDataExpr(currInputNid + 9 + 3 * parIdx, parametersTF[inputIdx][parIdx].getText());
+                     }catch(Exception exc)
+                    {
+                        JOptionPane.showMessageDialog(null, ""+exc, "Error in paremeter field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
+                    }
+                }
                 for(int fieldIdx = 0; fieldIdx < numFields[inputIdx]; fieldIdx++)
                 {
                     try {
-                       subtree.putDataExpr(currInputNid + 8 + 2 * numParameters[inputIdx] + 6 * fieldIdx +  5, fieldsTF[inputIdx][fieldIdx].getText());
+                       subtree.putDataExpr(currInputNid + 8 + 3 * numParameters[inputIdx] + 6 * fieldIdx +  5, fieldsTF[inputIdx][fieldIdx].getText());
                     }catch(Exception exc)
                     {
                         JOptionPane.showMessageDialog(null, ""+exc, "Error in subfield of input field "+inputIdx,  JOptionPane.WARNING_MESSAGE);
                     }
              
                 }
-                currInputNid += numInputChildren + 1 + 2 * numParameters[inputIdx] + 6 * numFields[inputIdx]; 
+                currInputNid += numInputChildren + 1 + 3 * numParameters[inputIdx] + 6 * numFields[inputIdx]; 
             }
        }
 }  

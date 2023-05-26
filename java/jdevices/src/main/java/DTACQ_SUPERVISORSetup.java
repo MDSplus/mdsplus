@@ -66,6 +66,44 @@ public class DTACQ_SUPERVISORSetup extends DeviceSetup {
         jPanel16 = new javax.swing.JPanel();
         deviceField15 = new DeviceField();
         deviceField16 = new DeviceField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel17 = new javax.swing.JPanel();
+        jPanel18 = new javax.swing.JPanel();
+        deviceField18 = new DeviceField();
+        deviceChoice6 = new DeviceChoice();
+        jPanel19 = new javax.swing.JPanel();
+        deviceChoice7 = new DeviceChoice();
+        deviceField19 = new DeviceField();
+        deviceField32 = new DeviceField();
+        jPanel20 = new javax.swing.JPanel();
+        deviceField20 = new DeviceField();
+        jPanel21 = new javax.swing.JPanel();
+        deviceField21 = new DeviceField();
+        jPanel22 = new javax.swing.JPanel();
+        deviceField22 = new DeviceField();
+        jPanel23 = new javax.swing.JPanel();
+        deviceField23 = new DeviceField();
+        jPanel24 = new javax.swing.JPanel();
+        deviceField24 = new DeviceField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel25 = new javax.swing.JPanel();
+        jPanel26 = new javax.swing.JPanel();
+        deviceField25 = new DeviceField();
+        deviceChoice8 = new DeviceChoice();
+        jPanel27 = new javax.swing.JPanel();
+        deviceChoice9 = new DeviceChoice();
+        deviceField26 = new DeviceField();
+        deviceField33 = new DeviceField();
+        jPanel28 = new javax.swing.JPanel();
+        deviceField27 = new DeviceField();
+        jPanel29 = new javax.swing.JPanel();
+        deviceField28 = new DeviceField();
+        jPanel30 = new javax.swing.JPanel();
+        deviceField29 = new DeviceField();
+        jPanel31 = new javax.swing.JPanel();
+        deviceField30 = new DeviceField();
+        jPanel32 = new javax.swing.JPanel();
+        deviceField31 = new DeviceField();
 
         setDeviceProvider("localhost:8100");
         setDeviceTitle("DTACQ Supervisor");
@@ -249,6 +287,170 @@ public class DTACQ_SUPERVISORSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Clock/Trigger", jPanel14);
 
+        jPanel17.setLayout(new java.awt.GridLayout(7, 1));
+
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString("Site");
+        deviceField18.setNumCols(5);
+        deviceField18.setOffsetNid(24);
+        jPanel18.add(deviceField18);
+
+        deviceChoice6.setChoiceItems(new String[] {"TRIG_IN", "SOFTWARE", "ADC_TRIG", "SITE4_TRIG", "SITE5_TRIG"});
+        deviceChoice6.setIdentifier("");
+        deviceChoice6.setLabelString("Trig. Source: ");
+        deviceChoice6.setOffsetNid(25);
+        deviceChoice6.setUpdateIdentifier("");
+        jPanel18.add(deviceChoice6);
+
+        jPanel17.add(jPanel18);
+
+        deviceChoice7.setChoiceItems(new String[] {"SINGLE", "LOOP", "LOOPWAIT"});
+        deviceChoice7.setIdentifier("");
+        deviceChoice7.setLabelString("Mode: ");
+        deviceChoice7.setOffsetNid(26);
+        deviceChoice7.setUpdateIdentifier("");
+        jPanel19.add(deviceChoice7);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("Time Division: ");
+        deviceField19.setNumCols(8);
+        deviceField19.setOffsetNid(27);
+        jPanel19.add(deviceField19);
+
+        deviceField32.setIdentifier("");
+        deviceField32.setLabelString("Loop Period: ");
+        deviceField32.setNumCols(8);
+        deviceField32.setOffsetNid(28);
+        jPanel19.add(deviceField32);
+
+        jPanel17.add(jPanel19);
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("D1 Times: ");
+        deviceField20.setNumCols(30);
+        deviceField20.setOffsetNid(29);
+        jPanel20.add(deviceField20);
+
+        jPanel17.add(jPanel20);
+
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("D2 Times: ");
+        deviceField21.setNumCols(30);
+        deviceField21.setOffsetNid(30);
+        jPanel21.add(deviceField21);
+
+        jPanel17.add(jPanel21);
+
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("D3 Times: ");
+        deviceField22.setNumCols(30);
+        deviceField22.setOffsetNid(31);
+        jPanel22.add(deviceField22);
+
+        jPanel17.add(jPanel22);
+
+        deviceField23.setIdentifier("");
+        deviceField23.setLabelString("D4 Times: ");
+        deviceField23.setNumCols(30);
+        deviceField23.setOffsetNid(32);
+        jPanel23.add(deviceField23);
+
+        jPanel17.add(jPanel23);
+
+        deviceField24.setIdentifier("");
+        deviceField24.setLabelString("D5 Times: ");
+        deviceField24.setNumCols(30);
+        deviceField24.setOffsetNid(33);
+        jPanel24.add(deviceField24);
+
+        jPanel17.add(jPanel24);
+
+        jScrollPane1.setViewportView(jPanel17);
+
+        jTabbedPane1.addTab("PG1", jScrollPane1);
+
+        jPanel25.setLayout(new java.awt.GridLayout(7, 1));
+
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("Site");
+        deviceField25.setNumCols(5);
+        deviceField25.setOffsetNid(35);
+        jPanel26.add(deviceField25);
+
+        deviceChoice8.setChoiceItems(new String[] {"TRIG_IN", "SOFTWARE", "ADC_TRIG", "SITE4_TRIG", "SITE5_TRIG"});
+        deviceChoice8.setIdentifier("");
+        deviceChoice8.setLabelString("Trig. Source: ");
+        deviceChoice8.setOffsetNid(36);
+        deviceChoice8.setUpdateIdentifier("");
+        jPanel26.add(deviceChoice8);
+
+        jPanel25.add(jPanel26);
+
+        deviceChoice9.setChoiceItems(new String[] {"SINGLE", "LOOP", "LOOPWAIT"});
+        deviceChoice9.setIdentifier("");
+        deviceChoice9.setLabelString("Mode: ");
+        deviceChoice9.setOffsetNid(37);
+        deviceChoice9.setUpdateIdentifier("");
+        jPanel27.add(deviceChoice9);
+
+        deviceField26.setIdentifier("");
+        deviceField26.setLabelString("Time Division: ");
+        deviceField26.setNumCols(8);
+        deviceField26.setOffsetNid(38);
+        jPanel27.add(deviceField26);
+
+        deviceField33.setIdentifier("");
+        deviceField33.setLabelString("Loop period: ");
+        deviceField33.setNumCols(8);
+        deviceField33.setOffsetNid(39);
+        jPanel27.add(deviceField33);
+
+        jPanel25.add(jPanel27);
+
+        deviceField27.setIdentifier("");
+        deviceField27.setLabelString("D1 Times: ");
+        deviceField27.setNumCols(30);
+        deviceField27.setOffsetNid(40);
+        jPanel28.add(deviceField27);
+
+        jPanel25.add(jPanel28);
+
+        deviceField28.setIdentifier("");
+        deviceField28.setLabelString("D2 Times: ");
+        deviceField28.setNumCols(30);
+        deviceField28.setOffsetNid(41);
+        jPanel29.add(deviceField28);
+
+        jPanel25.add(jPanel29);
+
+        deviceField29.setIdentifier("");
+        deviceField29.setLabelString("D3 Times: ");
+        deviceField29.setNumCols(30);
+        deviceField29.setOffsetNid(42);
+        jPanel30.add(deviceField29);
+
+        jPanel25.add(jPanel30);
+
+        deviceField30.setIdentifier("");
+        deviceField30.setLabelString("D4 Times: ");
+        deviceField30.setNumCols(30);
+        deviceField30.setOffsetNid(43);
+        jPanel31.add(deviceField30);
+
+        jPanel25.add(jPanel31);
+
+        deviceField31.setIdentifier("");
+        deviceField31.setLabelString("D5 Times: ");
+        deviceField31.setNumCols(30);
+        deviceField31.setOffsetNid(44);
+        jPanel32.add(deviceField31);
+
+        jPanel25.add(jPanel32);
+
+        jScrollPane2.setViewportView(jPanel25);
+
+        jTabbedPane1.addTab("PG2", jScrollPane2);
+
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -260,6 +462,10 @@ public class DTACQ_SUPERVISORSetup extends DeviceSetup {
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
     private DeviceChoice deviceChoice5;
+    private DeviceChoice deviceChoice6;
+    private DeviceChoice deviceChoice7;
+    private DeviceChoice deviceChoice8;
+    private DeviceChoice deviceChoice9;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
@@ -269,8 +475,24 @@ public class DTACQ_SUPERVISORSetup extends DeviceSetup {
     private DeviceField deviceField15;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
+    private DeviceField deviceField18;
+    private DeviceField deviceField19;
     private DeviceField deviceField2;
+    private DeviceField deviceField20;
+    private DeviceField deviceField21;
+    private DeviceField deviceField22;
+    private DeviceField deviceField23;
+    private DeviceField deviceField24;
+    private DeviceField deviceField25;
+    private DeviceField deviceField26;
+    private DeviceField deviceField27;
+    private DeviceField deviceField28;
+    private DeviceField deviceField29;
     private DeviceField deviceField3;
+    private DeviceField deviceField30;
+    private DeviceField deviceField31;
+    private DeviceField deviceField32;
+    private DeviceField deviceField33;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
@@ -285,14 +507,32 @@ public class DTACQ_SUPERVISORSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
+    private javax.swing.JPanel jPanel26;
+    private javax.swing.JPanel jPanel27;
+    private javax.swing.JPanel jPanel28;
+    private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel30;
+    private javax.swing.JPanel jPanel31;
+    private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }

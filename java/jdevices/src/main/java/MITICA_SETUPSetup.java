@@ -63,6 +63,12 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         jPanel54 = new javax.swing.JPanel();
         deviceField29 = new DeviceField();
         deviceChoice10 = new DeviceChoice();
+        jPanel34 = new javax.swing.JPanel();
+        jPanel24 = new javax.swing.JPanel();
+        deviceChoice3 = new DeviceChoice();
+        deviceField41 = new DeviceField();
+        deviceField21 = new DeviceField();
+        deviceField22 = new DeviceField();
         jPanel52 = new javax.swing.JPanel();
         deviceField42 = new DeviceField();
         deviceField43 = new DeviceField();
@@ -89,8 +95,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave3 = new DeviceWave();
         jPanel13 = new javax.swing.JPanel();
         deviceWave6 = new DeviceWave();
-        jPanel56 = new javax.swing.JPanel();
-        deviceWave14 = new DeviceWave();
         jTabbedPane7 = new javax.swing.JTabbedPane();
         jPanel10 = new javax.swing.JPanel();
         deviceWave4 = new DeviceWave();
@@ -163,18 +167,15 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceField38 = new DeviceField();
         deviceField39 = new DeviceField();
         jPanel18 = new javax.swing.JPanel();
-        jPanel19 = new javax.swing.JPanel();
-        jPanel41 = new javax.swing.JPanel();
         jPanel20 = new javax.swing.JPanel();
         deviceField12 = new DeviceField();
+        jPanel19 = new javax.swing.JPanel();
+        jTabbedPane11 = new javax.swing.JTabbedPane();
+        jPanel56 = new javax.swing.JPanel();
         jPanel43 = new javax.swing.JPanel();
         jPanel42 = new javax.swing.JPanel();
         deviceField40 = new DeviceField();
         jPanel55 = new javax.swing.JPanel();
-        deviceField26 = new DeviceField();
-        jLabel1 = new javax.swing.JLabel();
-        deviceField27 = new DeviceField();
-        jLabel2 = new javax.swing.JLabel();
         deviceChoice11 = new DeviceChoice();
         deviceChoice12 = new DeviceChoice();
         jTabbedPane4 = new javax.swing.JTabbedPane();
@@ -184,15 +185,38 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave11 = new DeviceWave();
         jPanel23 = new javax.swing.JPanel();
         deviceWave12 = new DeviceWave();
+        jPanel41 = new javax.swing.JPanel();
+        deviceWave18 = new DeviceWave();
+        jPanel75 = new javax.swing.JPanel();
+        deviceWave19 = new DeviceWave();
+        jPanel57 = new javax.swing.JPanel();
+        jPanel58 = new javax.swing.JPanel();
+        jPanel69 = new javax.swing.JPanel();
+        deviceField44 = new DeviceField();
+        jPanel70 = new javax.swing.JPanel();
+        deviceField45 = new DeviceField();
+        jLabel3 = new javax.swing.JLabel();
+        deviceField46 = new DeviceField();
+        jLabel4 = new javax.swing.JLabel();
+        deviceField47 = new DeviceField();
+        jLabel5 = new javax.swing.JLabel();
+        deviceChoice13 = new DeviceChoice();
+        deviceChoice14 = new DeviceChoice();
+        jTabbedPane12 = new javax.swing.JTabbedPane();
+        jPanel71 = new javax.swing.JPanel();
+        deviceWave14 = new DeviceWave();
+        jPanel72 = new javax.swing.JPanel();
+        deviceWave15 = new DeviceWave();
+        jPanel73 = new javax.swing.JPanel();
+        deviceWave16 = new DeviceWave();
+        jPanel74 = new javax.swing.JPanel();
+        deviceWave17 = new DeviceWave();
 
-        setDeviceProvider("soserver.nbtf:9000");
+        setDeviceProvider("saserver.nbtf:9000");
         setDeviceTitle("MITICA Experiment Setup");
         setDeviceType("MITICA_SETUP");
-        setHeight(650);
-        setWidth(1200);
-
-        deviceButtons1.setCheckExpressions(new String[] {});
-        deviceButtons1.setCheckMessages(new String[] {});
+        setHeight(800);
+        setWidth(1000);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jTabbedPane1.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -238,11 +262,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         jPanel28.add(jPanel30);
 
         jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("Reference Waveform Time Limit"));
-        jPanel29.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jPanel29FocusLost(evt);
-            }
-        });
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Start Time: ");
@@ -284,7 +303,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jPanel17.setLayout(new java.awt.BorderLayout());
 
-        jPanel3.setLayout(new java.awt.GridLayout(3, 0));
+        jPanel3.setLayout(new java.awt.GridLayout(4, 0));
 
         jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("EG Modulation"));
 
@@ -329,7 +348,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jPanel33.add(jPanel53);
 
-        deviceField29.setIdentifier("isrf_te_v");
+        deviceField29.setIdentifier("");
         deviceField29.setLabelString("ISRF TE V:");
         deviceField29.setOffsetNid(323);
         jPanel54.add(deviceField29);
@@ -344,6 +363,38 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         jPanel33.add(jPanel54);
 
         jPanel3.add(jPanel33);
+
+        jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("Filament"));
+        jPanel34.setLayout(new java.awt.GridLayout(2, 0));
+
+        deviceChoice3.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("State:");
+        deviceChoice3.setOffsetNid(130);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel24.add(deviceChoice3);
+
+        deviceField41.setIdentifier("");
+        deviceField41.setLabelString("Ref. V:");
+        deviceField41.setNumCols(8);
+        deviceField41.setOffsetNid(325);
+        jPanel24.add(deviceField41);
+
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("Start Time:");
+        deviceField21.setNumCols(20);
+        deviceField21.setOffsetNid(131);
+        jPanel24.add(deviceField21);
+
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("Stop Time:");
+        deviceField22.setNumCols(20);
+        deviceField22.setOffsetNid(132);
+        jPanel24.add(deviceField22);
+
+        jPanel34.add(jPanel24);
+
+        jPanel3.add(jPanel34);
 
         jPanel52.setBorder(javax.swing.BorderFactory.createTitledBorder("Core Snubber"));
 
@@ -478,18 +529,9 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jTabbedPane2.addTab("Bias I/V [A]/[V]", jPanel13);
 
-        jPanel56.setLayout(new java.awt.BorderLayout());
-
-        deviceWave14.setIdentifier("");
-        deviceWave14.setOffsetNid(269);
-        deviceWave14.setUpdateExpression("");
-        jPanel56.add(deviceWave14, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane2.addTab("Filament Bias [V] ", jPanel56);
-
         jPanel10.setLayout(new java.awt.BorderLayout());
 
-        deviceWave4.setIdentifier("rf1_power");
+        deviceWave4.setIdentifier("");
         deviceWave4.setOffsetNid(39);
         deviceWave4.setUpdateExpression("");
         jPanel10.add(deviceWave4, java.awt.BorderLayout.CENTER);
@@ -512,13 +554,13 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave22.setUpdateExpression("");
         jPanel48.add(deviceWave22, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane7.addTab("RF1 Capacitance [pF]", jPanel48);
+        jTabbedPane7.addTab("RF1 Capacitance [nF]", jPanel48);
 
         jTabbedPane2.addTab("RF1 Setup", jTabbedPane7);
 
         jPanel15.setLayout(new java.awt.BorderLayout());
 
-        deviceWave8.setIdentifier("rf2_power");
+        deviceWave8.setIdentifier("");
         deviceWave8.setOffsetNid(57);
         deviceWave8.setUpdateExpression("");
         jPanel15.add(deviceWave8, java.awt.BorderLayout.CENTER);
@@ -541,13 +583,13 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave23.setUpdateExpression("");
         jPanel49.add(deviceWave23, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane8.addTab("RF2 Capacitance [pF]", jPanel49);
+        jTabbedPane8.addTab("RF2 Capacitance [nF]", jPanel49);
 
         jTabbedPane2.addTab("RF2 Setup", jTabbedPane8);
 
         jPanel50.setLayout(new java.awt.BorderLayout());
 
-        deviceWave24.setIdentifier("rf3_power");
+        deviceWave24.setIdentifier("");
         deviceWave24.setOffsetNid(227);
         deviceWave24.setUpdateExpression("");
         jPanel50.add(deviceWave24, java.awt.BorderLayout.CENTER);
@@ -570,13 +612,13 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave26.setUpdateExpression("");
         jPanel65.add(deviceWave26, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane9.addTab("RF3 Capacitance [pF]", jPanel65);
+        jTabbedPane9.addTab("RF3 Capacitance [nF]", jPanel65);
 
         jTabbedPane2.addTab("RF3 Setup", jTabbedPane9);
 
         jPanel66.setLayout(new java.awt.BorderLayout());
 
-        deviceWave27.setIdentifier("rf4_power");
+        deviceWave27.setIdentifier("");
         deviceWave27.setOffsetNid(248);
         deviceWave27.setUpdateExpression("");
         jPanel66.add(deviceWave27, java.awt.BorderLayout.CENTER);
@@ -599,7 +641,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave29.setUpdateExpression("");
         jPanel68.add(deviceWave29, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane10.addTab("RF4 Capacitance [pF]", jPanel68);
+        jTabbedPane10.addTab("RF4 Capacitance [nF]", jPanel68);
 
         jTabbedPane2.addTab("RF4 Setup", jTabbedPane10);
 
@@ -827,10 +869,6 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jPanel18.setLayout(new java.awt.BorderLayout());
 
-        jPanel19.setLayout(new java.awt.BorderLayout());
-
-        jPanel41.setLayout(new java.awt.GridLayout(2, 0));
-
         jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Gas And Vacuum Timing"));
 
         deviceField12.setIdentifier("");
@@ -839,42 +877,27 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceField12.setOffsetNid(69);
         jPanel20.add(deviceField12);
 
-        jPanel41.add(jPanel20);
+        jPanel18.add(jPanel20, java.awt.BorderLayout.NORTH);
+
+        jPanel19.setLayout(new java.awt.BorderLayout());
+
+        jPanel56.setLayout(new java.awt.BorderLayout());
 
         jPanel43.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 5));
 
         jPanel42.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         deviceField40.setIdentifier("");
-        deviceField40.setLabelString("Pre Set Press. [barG]:");
+        deviceField40.setLabelString("GIS-B Pre Set Press. [barG]:");
         deviceField40.setNumCols(5);
         deviceField40.setOffsetNid(320);
         jPanel42.add(deviceField40);
 
         jPanel43.add(jPanel42);
 
-        jPanel55.setBorder(javax.swing.BorderFactory.createTitledBorder("GVS Configuration"));
+        jPanel55.setBorder(javax.swing.BorderFactory.createTitledBorder("GIS-B Configuration"));
 
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("VC3001 Turns:");
-        deviceField26.setNumCols(5);
-        deviceField26.setOffsetNid(209);
-        jPanel55.add(deviceField26);
-
-        jLabel1.setText("/25      ");
-        jPanel55.add(jLabel1);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("VC3002 Turns: ");
-        deviceField27.setNumCols(5);
-        deviceField27.setOffsetNid(210);
-        jPanel55.add(deviceField27);
-
-        jLabel2.setText("/25   ");
-        jLabel2.setToolTipText("");
-        jPanel55.add(jLabel2);
-
-        deviceChoice11.setChoiceItems(new String[] {"3000", "3090"});
+        deviceChoice11.setChoiceItems(new String[] {"4000", "4090"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Tank");
         deviceChoice11.setOffsetNid(321);
@@ -890,9 +913,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
 
         jPanel43.add(jPanel55);
 
-        jPanel41.add(jPanel43);
-
-        jPanel19.add(jPanel41, java.awt.BorderLayout.NORTH);
+        jPanel56.add(jPanel43, java.awt.BorderLayout.NORTH);
 
         jPanel21.setLayout(new java.awt.BorderLayout());
 
@@ -901,7 +922,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave10.setUpdateExpression("");
         jPanel21.add(deviceWave10, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane4.addTab("Pressure Modulation %", jPanel21);
+        jTabbedPane4.addTab("GIS-B Pressure Modulation %", jPanel21);
 
         jPanel22.setLayout(new java.awt.BorderLayout());
 
@@ -911,7 +932,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave11.setUpdateExpression("");
         jPanel22.add(deviceWave11, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane4.addTab("VG-3011 Open(1) / Close(0) ", jPanel22);
+        jTabbedPane4.addTab("HVD2 VG-01 Open(1) / Close(0) ", jPanel22);
 
         jPanel23.setLayout(new java.awt.BorderLayout());
 
@@ -921,9 +942,140 @@ public class MITICA_SETUPSetup extends DeviceSetup {
         deviceWave12.setUpdateExpression("");
         jPanel23.add(deviceWave12, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane4.addTab("VG-3012 Open(1) / Close(0) ", jPanel23);
+        jTabbedPane4.addTab("HVD2 VG-02 Open(1) / Close(0) ", jPanel23);
 
-        jPanel19.add(jTabbedPane4, java.awt.BorderLayout.CENTER);
+        jPanel41.setLayout(new java.awt.BorderLayout());
+
+        deviceWave18.setIdentifier("");
+        deviceWave18.setMaxYVisible(false);
+        deviceWave18.setOffsetNid(89);
+        deviceWave18.setUpdateExpression("");
+        jPanel41.add(deviceWave18, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane4.addTab("HVD2 VG-03 Open(1) / Close(0) ", jPanel41);
+
+        jPanel75.setLayout(new java.awt.BorderLayout());
+
+        deviceWave19.setIdentifier("");
+        deviceWave19.setMaxYVisible(false);
+        deviceWave19.setOffsetNid(95);
+        deviceWave19.setUpdateExpression("");
+        jPanel75.add(deviceWave19, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane4.addTab("HVD2 VG-04 Open(1) / Close(0) ", jPanel75);
+
+        jPanel56.add(jTabbedPane4, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("GIS-B Gas Injection", jPanel56);
+
+        jPanel57.setLayout(new java.awt.BorderLayout());
+
+        jPanel58.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 5));
+
+        jPanel69.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceField44.setIdentifier("");
+        deviceField44.setLabelString("GIS-C Pre Set Press. [barG]:");
+        deviceField44.setNumCols(5);
+        deviceField44.setOffsetNid(331);
+        jPanel69.add(deviceField44);
+
+        jPanel58.add(jPanel69);
+
+        jPanel70.setBorder(javax.swing.BorderFactory.createTitledBorder("GIS-C Configuration"));
+        jPanel70.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 5));
+
+        deviceField45.setIdentifier("");
+        deviceField45.setLabelString("VC5001 Turns:");
+        deviceField45.setNumCols(5);
+        deviceField45.setOffsetNid(209);
+        jPanel70.add(deviceField45);
+
+        jLabel3.setText("/25      ");
+        jPanel70.add(jLabel3);
+
+        deviceField46.setIdentifier("");
+        deviceField46.setLabelString("VC5002 Turns: ");
+        deviceField46.setNumCols(5);
+        deviceField46.setOffsetNid(210);
+        jPanel70.add(deviceField46);
+
+        jLabel4.setText("/25   ");
+        jLabel4.setToolTipText("");
+        jPanel70.add(jLabel4);
+
+        deviceField47.setIdentifier("");
+        deviceField47.setLabelString("VC5003 Turns:");
+        deviceField47.setNumCols(5);
+        deviceField47.setOffsetNid(209);
+        jPanel70.add(deviceField47);
+
+        jLabel5.setText("/25   ");
+        jLabel5.setToolTipText("");
+        jPanel70.add(jLabel5);
+
+        deviceChoice13.setChoiceItems(new String[] {"5000", "5090"});
+        deviceChoice13.setIdentifier("");
+        deviceChoice13.setLabelString("Tank");
+        deviceChoice13.setOffsetNid(329);
+        deviceChoice13.setUpdateIdentifier("");
+        jPanel70.add(deviceChoice13);
+
+        deviceChoice14.setChoiceItems(new String[] {"H2", "D2"});
+        deviceChoice14.setIdentifier("");
+        deviceChoice14.setLabelString("Gas Type:");
+        deviceChoice14.setOffsetNid(330);
+        deviceChoice14.setUpdateIdentifier("");
+        jPanel70.add(deviceChoice14);
+
+        jPanel58.add(jPanel70);
+
+        jPanel57.add(jPanel58, java.awt.BorderLayout.NORTH);
+
+        jPanel71.setLayout(new java.awt.BorderLayout());
+
+        deviceWave14.setIdentifier("");
+        deviceWave14.setOffsetNid(101);
+        deviceWave14.setUpdateExpression("");
+        jPanel71.add(deviceWave14, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane12.addTab("GIS-C Pressure Modulation %", jPanel71);
+
+        jPanel72.setLayout(new java.awt.BorderLayout());
+
+        deviceWave15.setIdentifier("");
+        deviceWave15.setMaxYVisible(false);
+        deviceWave15.setOffsetNid(107);
+        deviceWave15.setUpdateExpression("");
+        jPanel72.add(deviceWave15, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane12.addTab("VG-5011 Open(1) / Close(0) ", jPanel72);
+
+        jPanel73.setLayout(new java.awt.BorderLayout());
+
+        deviceWave16.setIdentifier("");
+        deviceWave16.setMaxYVisible(false);
+        deviceWave16.setOffsetNid(113);
+        deviceWave16.setUpdateExpression("");
+        jPanel73.add(deviceWave16, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane12.addTab("VG-5012 Open(1) / Close(0) ", jPanel73);
+
+        jPanel74.setLayout(new java.awt.BorderLayout());
+
+        deviceWave17.setIdentifier("");
+        deviceWave17.setMaxYVisible(false);
+        deviceWave17.setOffsetNid(333);
+        deviceWave17.setUpdateExpression("");
+        jPanel74.add(deviceWave17, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane12.addTab("VG-5013 Open(1) / Close(0) ", jPanel74);
+
+        jPanel57.add(jTabbedPane12, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("GIS-C Gas Injection", jPanel57);
+
+        jPanel19.add(jTabbedPane11, java.awt.BorderLayout.CENTER);
 
         jPanel18.add(jPanel19, java.awt.BorderLayout.CENTER);
 
@@ -1023,7 +1175,10 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceChoice deviceChoice10;
     private DeviceChoice deviceChoice11;
     private DeviceChoice deviceChoice12;
+    private DeviceChoice deviceChoice13;
+    private DeviceChoice deviceChoice14;
     private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice6;
@@ -1043,11 +1198,11 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceField deviceField19;
     private DeviceField deviceField2;
     private DeviceField deviceField20;
+    private DeviceField deviceField21;
+    private DeviceField deviceField22;
     private DeviceField deviceField23;
     private DeviceField deviceField24;
     private DeviceField deviceField25;
-    private DeviceField deviceField26;
-    private DeviceField deviceField27;
     private DeviceField deviceField28;
     private DeviceField deviceField29;
     private DeviceField deviceField3;
@@ -1063,8 +1218,13 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceField deviceField39;
     private DeviceField deviceField4;
     private DeviceField deviceField40;
+    private DeviceField deviceField41;
     private DeviceField deviceField42;
     private DeviceField deviceField43;
+    private DeviceField deviceField44;
+    private DeviceField deviceField45;
+    private DeviceField deviceField46;
+    private DeviceField deviceField47;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
@@ -1076,6 +1236,11 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceWave deviceWave12;
     private DeviceWave deviceWave13;
     private DeviceWave deviceWave14;
+    private DeviceWave deviceWave15;
+    private DeviceWave deviceWave16;
+    private DeviceWave deviceWave17;
+    private DeviceWave deviceWave18;
+    private DeviceWave deviceWave19;
     private DeviceWave deviceWave2;
     private DeviceWave deviceWave21;
     private DeviceWave deviceWave22;
@@ -1093,8 +1258,9 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private DeviceWave deviceWave7;
     private DeviceWave deviceWave8;
     private DeviceWave deviceWave9;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -1111,6 +1277,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
     private javax.swing.JPanel jPanel25;
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
@@ -1121,6 +1288,7 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel35;
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
@@ -1145,6 +1313,8 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel54;
     private javax.swing.JPanel jPanel55;
     private javax.swing.JPanel jPanel56;
+    private javax.swing.JPanel jPanel57;
+    private javax.swing.JPanel jPanel58;
     private javax.swing.JPanel jPanel59;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel60;
@@ -1156,11 +1326,20 @@ public class MITICA_SETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel66;
     private javax.swing.JPanel jPanel67;
     private javax.swing.JPanel jPanel68;
+    private javax.swing.JPanel jPanel69;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel70;
+    private javax.swing.JPanel jPanel71;
+    private javax.swing.JPanel jPanel72;
+    private javax.swing.JPanel jPanel73;
+    private javax.swing.JPanel jPanel74;
+    private javax.swing.JPanel jPanel75;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane10;
+    private javax.swing.JTabbedPane jTabbedPane11;
+    private javax.swing.JTabbedPane jTabbedPane12;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTabbedPane jTabbedPane4;

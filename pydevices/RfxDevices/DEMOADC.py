@@ -118,12 +118,14 @@ class DEMOADC(Device):
 # we use ctypes functions to convert python variable to appropriate C types to be passed to the external routine
 #        try:
         print(address)
-        try:
-            deviceLibCDLL.initialize(
-                c_char_p(address), c_int(clockMode), c_int(pts))
-        except:
-            print('Error initializing driver')
-            return 0
+        deviceLibCDLL.initialize(
+                c_char_p(address.encode()), c_int(clockMode), c_int(pts))
+        #try:
+         #   deviceLibCDLL.initialize(
+          #      c_char_p(address), c_int(clockMode), c_int(pts))
+        #except:
+         #   print('Error initializing driver')
+          #  return 0
 # return success
         return 1
 
@@ -158,7 +160,7 @@ class DEMOADC(Device):
         rawChan.append(DataArray())
         rawChan.append(DataArray())
 
-        status = deviceLib.acquire(c_char_p(addr), byref(rawChan[0]), byref(
+        status = deviceLib.acquire(c_char_p(addr.encode()), byref(rawChan[0]), byref(
             rawChan[1]), byref(rawChan[2]), byref(rawChan[3]))
         if status == -1:
             print ('Acquisition Failed')

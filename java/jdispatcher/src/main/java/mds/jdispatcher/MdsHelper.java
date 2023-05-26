@@ -64,12 +64,16 @@ class MdsHelper
 		final Vector<ServerInfo> servers = new Vector<>();
 		for (int i = 1;; i++)
 		{
-			final String server_class = properties.getProperty(String.format(SERVER_FMRT, i, "class"));
-			if (server_class == null)
+			String prop = properties.getProperty(String.format(SERVER_FMRT, i, "class"));
+			if (prop == null)
 				break;
-			final String server_ip = properties.getProperty(String.format(SERVER_FMRT, i, "address"));
-			if (server_ip == null)
+                        final String server_class = prop.trim();
+
+			prop = properties.getProperty(String.format(SERVER_FMRT, i, "address"));
+			if (prop == null)
 				break;
+			final String server_ip = prop.trim();
+
 			final String server_subtree = properties.getProperty(String.format(SERVER_FMRT, i, "subtree"));
 			final String javasvr = properties.getProperty(String.format(SERVER_FMRT, i, "use_jserver"));
 			final boolean useJavaServer = javasvr == null || javasvr.equals("true");
@@ -84,8 +88,12 @@ class MdsHelper
 			}
 			final String startScript = properties.getProperty(String.format(SERVER_FMRT, i, "start_script"));
 			final String stopScript = properties.getProperty(String.format(SERVER_FMRT, i, "stop_script"));
+
+			final String showtermScript = properties.getProperty(String.format(SERVER_FMRT, i, "showterm_script"));
+			final String showlogScript = properties.getProperty(String.format(SERVER_FMRT, i, "showlog_script"));
+
 			final ServerInfo srvInfo = new ServerInfo(server_class, server_ip, server_subtree, useJavaServer,
-					watchdogPort, startScript, stopScript);
+					watchdogPort, startScript, stopScript, showtermScript, showlogScript);
 			servers.add(srvInfo);
 		}
 		return servers;
