@@ -3,6 +3,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/BASLERACA.py
 ./usr/local/mdsplus/pydevices/RfxDevices/BCM2835_ADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/BCM2835_DAC.py
+./usr/local/mdsplus/pydevices/RfxDevices/BCM_CONFIG.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CAENDT5720.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CAENDT5724.py
 ./usr/local/mdsplus/pydevices/RfxDevices/CAENV1740.py
@@ -91,6 +92,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_MHD_CTRL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_MHD_I.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_NE.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE_RF_CTRL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_RTSM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_WAVEGEN.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_XRAY.py
@@ -110,6 +112,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/PI_SCT320.py
 ./usr/local/mdsplus/pydevices/RfxDevices/PLFE.py
 ./usr/local/mdsplus/pydevices/RfxDevices/PTGREY.py
+./usr/local/mdsplus/pydevices/RfxDevices/PV2MDSEVENT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/PV_WAVE_SETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/REDPYTADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFXVICONTROL.py
@@ -117,6 +120,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_PROTECTIONS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPDAC.py
+./usr/local/mdsplus/pydevices/RfxDevices/RGA.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIG_SNAPSHOT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIS3820.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SOFT_TRIGGER.py
@@ -126,6 +130,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_PARAMS.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SM.py
+./usr/local/mdsplus/pydevices/RfxDevices/STK_TEMP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/STREAM_SETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/ZELOS2150GV.py
 ./usr/local/mdsplus/pydevices/RfxDevices/__init__.py
@@ -805,6 +810,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/getBradErrorSignal.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getBradErrorSignalName.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getMembersName.fun
+./usr/local/mdsplus/tdi/RfxDevices/getSpiderGasType.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getSpiderShotTime.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getSpiderStateTime.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getVersions.fun
@@ -845,6 +851,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/sigBit.fun
 ./usr/local/mdsplus/tdi/RfxDevices/sigMean.fun
 ./usr/local/mdsplus/tdi/RfxDevices/sigSlopeTimes.py
+./usr/local/mdsplus/tdi/RfxDevices/spiderBlipNumFromTime.py
 ./usr/local/mdsplus/tdi/RfxDevices/spiderBurstClock.fun
 ./usr/local/mdsplus/tdi/RfxDevices/spiderClockSegment.fun
 ./usr/local/mdsplus/tdi/RfxDevices/spider_finish_pulse.fun
