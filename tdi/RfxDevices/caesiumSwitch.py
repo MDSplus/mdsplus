@@ -23,6 +23,11 @@ def caesiumSwitch(sigs, dt) :
    yIn = np.asarray([int(1) if v > 50 else int(0) for v in yIn])
 
 
+   #Check if all RF power are OFF
+   if max(yIn) == 0 :
+      return Data.compile("build_signal($1,,$2)", np.asarray([0,0]), np.asarray([tIn[0],tIn[-1]]))   
+
+
    #Compute the caesium enable signal with pre and post margin
    def checkEdge(val):
       # 0:y 1:y+1 2:y+2 3:t
