@@ -2781,9 +2781,9 @@ class MARTE2_COMPONENT(Device):
                     isInputStructField = False
                 gamText += '      '+signalDict['name']+' = {\n'
                 if isInputStructField:
-                    gamText += '        DataSource = '+gamName+'_Expanded_Output_DDB\n'
+                    gamText += '        DataSource = '+dataSourceName+'_Expanded_Output_DDB\n'
                 else:
-                    gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+                    gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
                 gamText += '        Type = '+signalDict['type']+'\n'
                 if 'dimensions' in signalDict:
                     dimensions = signalDict['dimensions']

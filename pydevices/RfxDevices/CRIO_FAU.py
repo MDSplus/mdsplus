@@ -219,13 +219,13 @@ class CRIO_FAU(Device):
 
 
         bit=0
-        pteEnaMask      = long(0)
-        pteSlowFastMask = long(0)
+        pteEnaMask      = int(0)
+        pteSlowFastMask = int(0)
         for mod in range(0,8):
            for ch in range(0,8):
                pteModeCode = self.TPEModeDict[getattr(self, 'module_%d_channel_%d_pte_mode'%(mod+1,ch)).data()]
-               pteEnaMask      = pteEnaMask      | ((pteModeCode & long(1) == 1) << bit)
-               pteSlowFastMask = pteSlowFastMask | ((pteModeCode & long(2) == 2) << bit)
+               pteEnaMask      = pteEnaMask      | ((pteModeCode & int(1) == 1) << bit)
+               pteSlowFastMask = pteSlowFastMask | ((pteModeCode & int(2) == 2) << bit)
                bit = bit + 1
  
         print ('pteSlowFastMask ', pteSlowFastMask)
@@ -268,7 +268,7 @@ class CRIO_FAU(Device):
  
 
         treePtr = c_void_p(0)
-        CRIO_FAU.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
+        CRIO_FAU.niInterfaceLib.openTree(c_char_p(self.getTree().name.encode('utf-8')), c_int(self.getTree().shot), byref(treePtr))
  
         self.worker = self.AsynchStore()        
         self.worker.daemon = True 
