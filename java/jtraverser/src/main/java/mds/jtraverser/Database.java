@@ -159,7 +159,7 @@ public class Database implements Interface
 		cal.setTimeInMillis(time);
 		final SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
 		final String dateStr = sdf.format(cal);
-		return new NodeInfo(node.getDclass(), node.getDtype(), node.getUsage(), node.getFlags(), node.getOwnerId(),
+ 		return new NodeInfo(node.getDclass(), node.getDtype(), node.getUsage(), node.getFlags(), node.getOwnerId(),
 				node.getLength(), node.getConglomerateNodes().size(), node.getConglomerateElt(), dateStr,
 				node.getNodeName(), node.getFullPath(), node.getMinPath(), node.getPath(), node.getNumSegments());
 	}
