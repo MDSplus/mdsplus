@@ -162,7 +162,6 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   endif
 
   sock = call_external(MdsIPImage(),'IdlConnectToMds',host,value=[byte(!version.os ne 'windows')])
-  print, 'ConnectToMds returned', sock
   sockmin=sockmin()
   if (sock ge sockmin) then begin
     status = 1
