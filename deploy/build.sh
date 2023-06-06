@@ -417,7 +417,7 @@ fi
 #
 if [ -r "${SRCDIR}/deploy/os/${OS}.opts" ]
 then
-    os_opts=$(cat ${SRCDIR}/deploy/os/${OS}.opts)
+    os_opts=$(fgrep -v "#" ${SRCDIR}/deploy/os/${OS}.opts)
 fi
 #
 # See if this build was triggered by a trigger job and use
