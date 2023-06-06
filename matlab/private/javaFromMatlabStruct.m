@@ -9,7 +9,7 @@ function result = javaFromMatlabStruct(value)
         for fieldIdx = 1:length(fields)
             fieldName = fields{fieldIdx};
             fieldValue = value.(fieldName);
-            javaFromMatlab(fieldValue)
+            javaFromMatlab(fieldValue);
             result.setItem(MDSplus.String(fieldName), javaFromMatlab(fieldValue));
         end
     else
