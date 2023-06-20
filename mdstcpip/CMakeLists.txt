@@ -207,7 +207,7 @@ endif()
 
 if(WIN32)
     SET(_win ".win")
-ENDIF()
+endif()
 
 install(
     FILES mdsip.hosts RENAME mdsip.hosts${_win}
@@ -246,7 +246,7 @@ else()
         TYPE BIN
         PERMISSIONS ${MODE_755}
     )
-ENDIF()
+endif()
 
 if(Globus_FOUND AND Globus_FLAVOR)
 

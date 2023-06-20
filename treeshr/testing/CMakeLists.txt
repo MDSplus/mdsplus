@@ -1,7 +1,7 @@
 
 set(_test_source_list
-    UdpEventsTest.c
-    UdpEventsTestStatics.c
+    TreeDeleteNodeTest.c
+    TreeSegmentTest.c
 )
 
 foreach(_test_source ${_test_source_list})
@@ -16,7 +16,7 @@ foreach(_test_source ${_test_source_list})
     target_link_libraries(
         ${_test_name}
         PRIVATE
-            MdsShr
+            TreeShr
             MdsTestShr
     )
 

@@ -1,61 +1,21 @@
-#! /bin/sh
-cd $(dirname $0)
+#!/bin/bash
 
-check() { which $1 > /dev/null 2>&1; }
-unset abort
-testprog() {
-# $1 prog, $2 package
-if ! check $1
-then
-	export abort=$?
-	echo "Please install package providing '$1' in order to bootstrap"
-	shift
-	echo "The required package may be named $@."
-	echo "We recommend using docker if available:"
-	echo "  deploy/build.sh --os=bootstrap"
-fi
-}
+cd "$(dirname "${BASH_SOURCE[0]}")"
 
+PYTHON=${PYTHON:-python3}
+GPERF=${GPERF:-gperf}
 
-if   check python3
-then PYTHON=python3
-elif check python2
-then PYTHON=python2
-else PYTHON=python
-fi
+OPCODES=tdishr/opcodes.csv
 
-testprog aclocal	automake
-testprog autoheader	autoconf
-testprog automake	automake
-testprog autoconf	autoconf
-testprog $PYTHON	python2 or python3
-testprog bison		bison
-testprog flex		flex
+$PYTHON tdishr/gen-TdiHash.py \
+	--opcodes=$OPCODES \
+	--gperf=$GPERF \
+	--output=tdishr/TdiHash.c
 
-if [ ! -z $abort ]
-then
-	exit $abort
-fi
+$PYTHON python/MDSplus/gen-compound.py \
+	--opcodes=$OPCODES \
+	--input=python/MDSplus/compound.py.in \
+	--output=python/MDSplus/compound.py
 
-conf/update_submodules
-
-# python/generate_tests
-
-# deploy/git_revision.sh  # must be done before autoconf
-
-# aclocal -I ./m4
-
-# autoheader
-
-# libtoolize
-
-# automake --add-missing
-
-# autoconf
-
-# $PYTHON deploy/gen_messages.py
-# $PYTHON deploy/gen_compound_opcbuiltins.py
-
-# deploy/yylex.gen tdishr
-# deploy/yylex.gen treeshr
-# deploy/yylex.gen mdsdcl
+$PYTHON deploy/gen-yacc-lex.py \
+	
