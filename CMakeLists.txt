@@ -342,7 +342,7 @@ if(NOT ENABLE_WRETURNS) # -Wunused-result is on by default in gcc and clang
 endif()
 
 if(ENABLE_TESTS)
-    enable_testing()
+    include(CTest)
 endif()
 
 # if(ENABLE_WCONVERSION)
@@ -575,42 +575,12 @@ if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/include/opcbuiltins.h)
 
     execute_process(
         COMMAND ${Python_EXECUTABLE}
-            ${CMAKE_SOURCE_DIR}/include/opcbuiltins.py
+            ${CMAKE_SOURCE_DIR}/include/gen-opcbuiltins.py
             --opcodes=${CMAKE_SOURCE_DIR}/tdishr/opcodes.csv
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/include
+            --output=${CMAKE_BINARY_DIR}/include/opcbuiltins.h
     )
 
 endif()
-
-###
-### Generate python/MDSplus/tests/*_case.py
-###
-
-# file(GLOB
-#     _test_case_list
-#     "python/MDSplus/tests/*_case.py"
-# )
-
-# foreach(_test_case IN LISTS _test_case_list)
-#     cmake_path(GET _test_case STEM _test_case_name)
-#     ADD_TEST(
-#         NAME ${_test_case_name}
-#         COMMAND ${Python_EXECUTABLE} ${_test_case}
-#     )
-
-#     set(_env_mods
-#         "PATH=path_list_prepend:${BIN_DIR}"
-#         "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
-#         "PYTHONPATH=path_list_append:${CMAKE_BINARY_DIR}/python"
-#     )
-
-#     SET_TESTS_PROPERTIES(
-#         ${_test_case_name}
-#         PROPERTIES
-#             ENVIRONMENT_MODIFICATION "${_env_mods}"
-
-#     )
-# endforeach()
 
 ###
 ### Generate include/*_messages.h
@@ -869,9 +839,10 @@ if(ENABLE_TESTS)
 
     add_subdirectory(testing)
     add_subdirectory(mdsshr/testing)
-    # add_subdirectory(treeshr/testing)
-    # add_subdirectory(mdslib/testing)
-    # add_subdirectory(mdstcpip/testing)
+    add_subdirectory(math/testing)
+    add_subdirectory(treeshr/testing)
+    add_subdirectory(mdslib/testing)
+    add_subdirectory(mdstcpip/testing)
     add_subdirectory(tdishr/testing)
     # add_subdirectory(tditest/testing)
     # add_subdirectory(mdsobjects/cpp/testing)
