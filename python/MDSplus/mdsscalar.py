@@ -434,7 +434,7 @@ class String(Scalar):
     def fromDescriptor(cls, d):
         if d.length == 0:
             return cls('')
-        return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tostring())
+        return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tobytes())
 
     def __radd__(self, y):
         """radd: x.__radd__(y) <==> y+x
