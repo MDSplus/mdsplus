@@ -269,6 +269,17 @@ class MARTE2_COMPONENT(Device):
     outputs = []
     parameters = []
 
+    #return the type of the output fielf Time (used to hanfdle bot int32 and int64 times)
+    def getTimeType(self):
+        outputs = self.getNode('.OUTPUTS')
+        for outNode in outputs.getChildren():
+            if outNode.getNode(':NAME').data() == 'Time':
+                return outNode.getNode(':TYPE').data()
+        raise Exception('Cannot get Time Type')
+
+
+
+
     def convertVal(self, valStr):
         # distantiate [ and ]
         currValStr = ''
@@ -999,6 +1010,7 @@ class MARTE2_COMPONENT(Device):
             origName = self.convertPath(prevTimebase.getParent().getFullPath())
             # Check whether the synchronization source is a Synch Input. Only in this case, the origin DDB is its output DDB since that device is expected to produce Time
             originMode = prevTimebase.getParent().getNode('mode').data()
+            timeType = prevTimebase.getParent().getTimeType() #Can be int32 or int64
             try:
                 startTime = timebase.getDescAt(0).data()
             except:
@@ -1009,7 +1021,7 @@ class MARTE2_COMPONENT(Device):
                 else:
                     timerDDB = gamName+'_Res_DDB'
                     resampledSyncSigs.append({'name': 'Time', 'datasource': origName+'_Output_Synch',
-                             'type': 'uint32', 'dimensions': 0, 'elements': 1, 'samples':syncDiv})
+                             'type': timeType, 'dimensions': 0, 'elements': 1, 'samples':syncDiv})
 #                   timerDDB = origName+'_Output_Synch'
                     try:
                         # Get period from driving synchronizing device
@@ -2416,7 +2428,10 @@ class MARTE2_COMPONENT(Device):
           # Check if time information is required by another synchronized thread Gabriele Jan 2022
           # for sync input devices, the check has to be performed on output Time
             if self.isUsedOnAnotherThreadSynch(threadMap, self.timebase):
-                synchThreadSignals.append({'name':'Time', 'type':'uint32', 'dimensions':0, 'elements': 1}) 
+                #We need to check the type of Time that may be 32 or 64 bits
+                for outputDict in outputDicts:
+                    if outputDict['name'] == 'Time':
+                        synchThreadSignals.append({'name':'Time', 'type':outputDict['type'], 'dimensions':0, 'elements': 1}) 
  # endif isSynch
 
 #Head and parameters
@@ -2632,8 +2647,8 @@ class MARTE2_COMPONENT(Device):
                         gamText += '      '+triggerSigName+' = {\n'
                         if self.onSameThread(threadMap, triggerNode):
                             gamText += '        DataSource = '+triggerGamName+'_Output_DDB\n'
-                        # self.sameSynchSource(sourceNode):  # FIXME: sourceNode undefined
-                        elif False:
+                        elif self.sameSynchSource(triggerNode):  # FIXME: sourceNode undefined
+                        #elif False:
                             gamText += '        DataSource = '+triggerGamName+'_Output_Synch\n'
 
                             try:
