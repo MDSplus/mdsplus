@@ -33,6 +33,7 @@ def _mimport(name, level=1):
 
 import numpy as _N
 import ctypes as _C
+import sys
 
 _dat = _mimport('mdsdata')
 _arr = _mimport('mdsarray')
@@ -434,7 +435,10 @@ class String(Scalar):
     def fromDescriptor(cls, d):
         if d.length == 0:
             return cls('')
-        return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tobytes())
+        if sys.version_info.major == 2: # needed for rhel7 and ubuntu14
+            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tostring())
+        else:
+            return cls(_N.array(_C.cast(d.pointer, _C.POINTER((_C.c_byte*d.length))).contents[:], dtype=_N.uint8).tobytes())
 
     def __radd__(self, y):
         """radd: x.__radd__(y) <==> y+x
