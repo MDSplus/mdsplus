@@ -274,9 +274,9 @@ class Connection(object):
         """
         _exc.checkStatus(self.get("TreeClose($,$)", arglist=(tree, shot)))
 
-    def getMany(self, value=None):
+    def getMany(self):
         """Return instance of a connection.GetMany class. See the connection.GetMany documentation for further information."""
-        return GetMany(value, self)
+        return GetMany(self)
 
     def openTree(self, tree, shot):
         """Open an MDSplus tree on a remote server
