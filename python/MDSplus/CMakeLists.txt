@@ -16,16 +16,16 @@ configure_file(
 ### Generate compound.py
 ###
 
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/compound.py")
+# if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/compound.py")
 
-    message("Generating python/MDSplus/compound.py")
+#     message("Generating python/MDSplus/compound.py")
 
-    execute_process(
-        COMMAND ${Python_EXECUTABLE}
-            ${CMAKE_CURRENT_SOURCE_DIR}/MDSplus/gen-compound.py
-            --opcodes=${CMAKE_SOURCE_DIR}/tdishr/opcodes.csv
-            --input=${CMAKE_CURRENT_SOURCE_DIR}/compound.py.in
-            --output=${CMAKE_CURRENT_SOURCE_DIR}/compound.py
-    )
+#     execute_process(
+#         COMMAND ${Python_EXECUTABLE}
+#             ${CMAKE_CURRENT_SOURCE_DIR}/MDSplus/gen-compound.py
+#             --opcodes=${CMAKE_SOURCE_DIR}/tdishr/opcodes.csv
+#             --input=${CMAKE_CURRENT_SOURCE_DIR}/compound.py.in
+#             --output=${CMAKE_CURRENT_SOURCE_DIR}/compound.py
+#     )
 
-endif()
+# endif()

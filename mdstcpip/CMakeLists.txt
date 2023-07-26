@@ -102,7 +102,7 @@ add_library(
 
 target_link_libraries(
     MdsIpTCP
-    PUBLIC
+    PRIVATE
         MdsIpShr
 )
 
@@ -119,7 +119,7 @@ add_library(
 
 target_link_libraries(
     MdsIpTCPV6
-    PUBLIC
+    PRIVATE
         MdsIpShr
 )
 
@@ -139,6 +139,7 @@ target_link_libraries(
     PUBLIC
         MdsIpShr
     PRIVATE
+        MdsIpShr
         UDT4
 )
 
@@ -158,6 +159,7 @@ target_link_libraries(
     PUBLIC
         MdsIpShr
     PRIVATE
+        MdsIpShr
         UDT4
 )
 
@@ -264,6 +266,8 @@ if(Globus_FOUND AND Globus_FLAVOR)
         PUBLIC
             MdsIpShr
             Globus::Globus
+        PRIVATE
+            MdsIpShr
     )
 
     install(TARGETS MdsIpGSI)

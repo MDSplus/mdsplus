@@ -28,10 +28,14 @@ SET_TARGET_PROPERTIES(
         POSITION_INDEPENDENT_CODE ON
 )
 
+if (APPLE)
+    target_compile_definitions(Check PUBLIC _XOPEN_SOURCE=700)
+endif()
+
 TARGET_LINK_LIBRARIES(
     Check
     PUBLIC
-        ${LIBRT}
+        $<$<BOOL:${LIBRT}>:${LIBRT}>
         Threads::Threads
         LibM::LibM
 )

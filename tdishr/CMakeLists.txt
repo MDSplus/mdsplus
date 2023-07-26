@@ -108,6 +108,7 @@ target_include_directories(
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
+        TreeShr
 )
 
 target_compile_definitions(
@@ -121,6 +122,14 @@ target_link_libraries(
     PUBLIC
         TreeShr
 )
+
+if (HAVE_SYBASE)
+    target_link_libraries(
+        TdiShr
+        PRIVATE
+            Sybase::Sybase
+    )
+endif()
 
 add_static_copy(TdiShr)
 
