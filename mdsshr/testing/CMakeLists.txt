@@ -32,3 +32,11 @@ endforeach()
 include(SetEnvironmentForTests)
 
 set_environment_for_tests(${_test_target_list})
+
+# We need to run these serially so the don't use the same socket
+set_tests_properties(
+    UdpEventsTest
+    UdpEventsTestStatics 
+    PROPERTIES 
+        RUN_SERIAL TRUE
+)
