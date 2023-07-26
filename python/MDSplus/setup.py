@@ -67,6 +67,8 @@ def setupkw():
             "physics",
             "mdsplus",
         ],
+        packages = ['MDSplus'],
+        package_dir = {'MDSplus':''},
     )
 
 

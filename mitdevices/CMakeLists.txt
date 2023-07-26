@@ -103,13 +103,20 @@ add_library(
 
 target_link_libraries(
     MitDevices
-    PUBLIC
+    PRIVATE
         Mdsdcl
         CamShr
         XmdsShr
-        IDL::IDL
         Motif::Motif
 )
+
+if (ENABLE_IDL)
+    target_link_libraries(
+        MitDevices
+        PUBLIC
+            IDL::IDL
+    )
+endif()
 
 add_static_copy(MitDevices)
 
@@ -146,11 +153,16 @@ add_library(
 
 target_link_libraries(
     MitDevicesIO
-    PUBLIC
+    PRIVATE
         MdsMath
 )
 
 install(TARGETS MitDevicesIO)
+
+# fix a namespace collision with FREAD and FWRITE
+if (APPLE)
+    target_compile_definitions(MitDevicesIO PRIVATE _POSIX_C_SOURCE)
+endif()
 
 ###
 ### MitDevicesMsg

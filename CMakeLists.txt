@@ -309,7 +309,13 @@ add_compile_definitions(
 if(MSVC)
     add_compile_options(/Wall)
 else()
-    add_compile_options(-Wall -Wextra)
+    # if you are using ifort, then -Wall and -Wextra don't work
+    # add_compile_options seems a little broken for generator expressions, but SHELL fixes it
+    add_compile_options(
+        "SHELL:$<$<COMPILE_LANGUAGE:C>:-Wall -Wextra>"
+        "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-Wall -Wextra>"
+        "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,Intel>:-warn all>"
+    )
 endif()
 
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -331,7 +337,11 @@ if(ENABLE_WERROR)
     if(MSVC)
         add_compile_options(/WX)
     else()
-        add_compile_options(-Werror)
+        add_compile_options(
+            "SHELL:$<$<COMPILE_LANGUAGE:C>:-Werror>"
+            "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-Werror>"
+            "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,Intel>:-warn error>"
+        )
     endif()
 endif()
 
@@ -362,6 +372,27 @@ if(ENABLE_LARGEFILE)
 endif()
 
 ###
+### RPATHS
+### (removing dependence on LD_LIBRARY_PATH )
+
+file(RELATIVE_PATH libdir_relative
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+)
+if(APPLE)
+    list(APPEND CMAKE_INSTALL_RPATH @loader_path) # libs find libs, relatively
+    list(APPEND CMAKE_INSTALL_RPATH @executable_path/${libdir_relative}) # bin finds libs, relatively
+else()
+    list(APPEND CMAKE_INSTALL_RPATH $ORIGIN)
+    list(APPEND CMAKE_INSTALL_RPATH $ORIGIN/${libdir_relative})
+endif()
+# also add the install prefix (delayed evaluation until install)
+list(APPEND CMAKE_INSTALL_RPATH $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>) 
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+##
 ### Dependencies
 ###
 
@@ -370,6 +401,7 @@ endif()
 if(DEFINED ENV{PYTHON})
     set(Python_EXECUTABLE "$ENV{PYTHON}")
 else()
+    set(Python_FIND_FRAMEWORK LAST) # don't prefer system apple python
     find_package(Python COMPONENTS Interpreter REQUIRED)
 endif()
 
@@ -388,8 +420,8 @@ find_package(LibLZMA)
 # Finds the ZLIB compression library
 find_package(ZLIB REQUIRED)
 
-set(libxml2_ROOT_DIR "${LIBXML2_DIR}")
-mark_as_advanced(libxml2_ROOT_DIR)
+set(LibXml2_ROOT_DIR "${LIBXML2_DIR}")
+mark_as_advanced(LibXml2_ROOT_DIR)
 find_package(LibXml2 REQUIRED)
 
 # Custom packages to find
@@ -418,7 +450,7 @@ find_package(DC1394)
 
 # Configuration-dependent dependencies
 
-if(ENABLE_TESTS)
+if(ENABLE_TESTS AND NOT APPLE)
 
     # cmake/FindLibRT.cmake
     find_library(LIBRT rt REQUIRED)
@@ -431,6 +463,19 @@ if(ENABLE_JAVA)
 
     if(JDK_DIR)
         set(JAVA_HOME "${JDK_DIR}")
+    elseif(APPLE AND EXISTS /usr/libexec/java_home)
+        # this is a workaround for broken FindJNI.cmake on MacOS
+        # which only likes EXPLICIT setting of JAVA_HOME
+        # but also allows you to pick the jdk version
+        execute_process(
+            COMMAND /usr/libexec/java_home -v ${JAVA_TARGET_VERSION}
+            OUTPUT_VARIABLE _cmd_java_home
+            OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
+        )
+        if(_cmd_java_home AND IS_DIRECTORY "${_cmd_java_home}")
+            set(JAVA_HOME ${_cmd_java_home})
+        endif()
+        unset(_cmd_java_home)
     else()
         set(JAVA_HOME "$ENV{JAVA_HOME}")
     endif()
@@ -523,7 +568,7 @@ check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
 check_symbol_exists(pthread_lock_global_np "pthread.h" HAVE_PTHREAD_LOCK_GLOBAL_NP)
 
 # FreeTDS / Sybase
-check_include_files("sybdb.h;sybfront.h" HAVE_SYBASE) # TODO: Improve
+set(HAVE_SYBASE Sybase_FOUND)
 
 # VxWorks Real-Time Operating System
 check_include_files("vxWorks.h" HAVE_VXWORKS_H)
@@ -588,37 +633,37 @@ endif()
 
 # TODO: s/CMAKE_SOURCE_DIR/CMAKE_BINARY_DIR/g
 
-file(GLOB_RECURSE
-    _messages_xml_list
-    "*/*messages.xml"
-)
+# file(GLOB_RECURSE
+#     _messages_xml_list
+#     "*/*messages.xml"
+# )
 
-set(_messages_generated_file_list
-    "${CMAKE_SOURCE_DIR}/python/MDSplus/mdsExceptions.py"
-)
+# set(_messages_generated_file_list
+#     "${CMAKE_SOURCE_DIR}/python/MDSplus/mdsExceptions.py"
+# )
 
-# Determine the header filenames that will be created
-foreach(_messages_xml IN LISTS _messages_xml_list)
-    cmake_path(GET _messages_xml STEM _stem)
-    LIST(APPEND _messages_generated_file_list "${CMAKE_SOURCE_DIR}/include/${_stem}.h")
-endforeach()
+# # Determine the header filenames that will be created
+# foreach(_messages_xml IN LISTS _messages_xml_list)
+#     cmake_path(GET _messages_xml STEM _stem)
+#     LIST(APPEND _messages_generated_file_list "${CMAKE_SOURCE_DIR}/include/${_stem}.h")
+# endforeach()
 
-# Check to see if we already have all the files generated
-set(_run_gen_messages FALSE)
-foreach(_file IN LISTS _messages_generated_file_list)
-    if(NOT EXISTS "${_file}")
-        message("Missing ${_file}, will run deploy/gen_messages.py")
-        set(_run_gen_messages TRUE)
-    endif()
-endforeach()
+# # Check to see if we already have all the files generated
+# set(_run_gen_messages FALSE)
+# foreach(_file IN LISTS _messages_generated_file_list)
+#     if(NOT EXISTS "${_file}")
+#         message("Missing ${_file}, will run deploy/gen_messages.py")
+#         set(_run_gen_messages TRUE)
+#     endif()
+# endforeach()
 
-# If not, generate them
-if(_run_gen_messages)
-    message("Running deploy/gen_messages.py")
-    execute_process(
-        COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_messages.py
-    )
-endif()
+# # If not, generate them
+# if(_run_gen_messages)
+#     message("Running deploy/gen_messages.py")
+#     execute_process(
+#         COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_messages.py
+#     )
+# endif()
 
 # message("${_messages_generated_list}")
 
@@ -640,79 +685,79 @@ endif()
 
 ###
 ### Generate sources with Yacc/Bison
-###
+###e
 
-if(NOT _yacc_has_run)
+# if(NOT _yacc_has_run)
 
-    message("Processing Yacc files")
+#     message("Processing Yacc files")
 
-    find_program(
-        yacc_EXECUTABLE
-        NAMES bison yacc
-        REQUIRED
-    )
+#     find_program(
+#         yacc_EXECUTABLE
+#         NAMES bison yacc
+#         REQUIRED
+#     )
 
-    file(GLOB_RECURSE
-        _yacc_input_list
-        "*.y"
-    )
+#     file(GLOB_RECURSE
+#         _yacc_input_list
+#         "*.y"
+#     )
 
-    foreach (_file ${_yacc_input_list})
+#     foreach (_file ${_yacc_input_list})
 
-        # Make output directory
-        cmake_path(GET _file PARENT_PATH _parent_path)
-        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
-        file(MAKE_DIRECTORY "${_binary_path}")
+#         # Make output directory
+#         cmake_path(GET _file PARENT_PATH _parent_path)
+#         string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
+#         file(MAKE_DIRECTORY "${_binary_path}")
 
-        message("Running ${yacc_EXECUTABLE} --verbose ${_file}")
-        execute_process(
-            COMMAND ${yacc_EXECUTABLE} --verbose ${_file}
-        )
+#         message("Running ${yacc_EXECUTABLE} --verbose ${_file}")
+#         execute_process(
+#             COMMAND ${yacc_EXECUTABLE} --verbose ${_file}
+#         )
 
-    endforeach()
+#     endforeach()
 
-    # Only run this the first time
-    set(_yacc_has_run TRUE CACHE INTERNAL "")
+#     # Only run this the first time
+#     set(_yacc_has_run TRUE CACHE INTERNAL "")
 
-endif()
+# endif()
 
 ###
 ### Generate sources with Lex/Flex
 ###
 
-if(NOT _lex_has_run)
+# if(NOT _lex_has_run)
 
-    message("Processing Lex files")
+#     message("Processing Lex files")
 
-    find_program(
-        lex_EXECUTABLE
-        NAMES flex lex
-        REQUIRED
-    )
+#     find_program(
+#         lex_EXECUTABLE
+#         NAMES flex lex
+#         REQUIRED
+#     )
 
-    file(GLOB_RECURSE
-        _lex_input_list
-        "*.l"
-    )
+#     file(GLOB_RECURSE
+#         _lex_input_list
+#         "*.l"
+#     )
 
-    foreach (_file ${_lex_input_list})
+#     foreach (_file ${_lex_input_list})
 
-        # Make output directory
-        cmake_path(GET _file PARENT_PATH _parent_path)
-        string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
-        file(MAKE_DIRECTORY "${_binary_path}")
+#         # Make output directory
+#         cmake_path(GET _file PARENT_PATH _parent_path)
+#         string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
+#         file(MAKE_DIRECTORY "${_binary_path}")
 
-        message("Running ${lex_EXECUTABLE} -p ${_file}")
-        execute_process(
-            COMMAND ${lex_EXECUTABLE} -p ${_file}
-        )
+#         message("Running ${lex_EXECUTABLE} -p ${_file}")
+#         execute_process(
+#             COMMAND ${lex_EXECUTABLE} -p ${_file}
+#         )
 
-    endforeach()
+#     endforeach()
 
-    # Only run this the first time
-    set(_lex_has_run TRUE CACHE INTERNAL "")
+#     # Only run this the first time
+#     set(_lex_has_run TRUE CACHE INTERNAL "")
 
-endif()
+# endif()
 
 ###
 ### Generate Documentation

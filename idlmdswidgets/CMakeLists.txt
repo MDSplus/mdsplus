@@ -1,5 +1,5 @@
 
-if(IDL_FOUND)
+if(ENABLE_IDL AND IDL_FOUND)
 
     ###
     ### IdlMdsWidgets

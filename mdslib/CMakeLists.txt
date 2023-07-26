@@ -11,6 +11,8 @@ add_library(
 target_link_libraries(
     MdsLib
     PUBLIC
+        TdiShr
+    PRIVATE
         MdsIpShr
 )
 
@@ -36,6 +38,8 @@ add_library(
 target_link_libraries(
     MdsLib_client
     PUBLIC
+        TdiShr
+    PRIVATE
         MdsIpShr
 )
 
@@ -61,6 +65,8 @@ add_library(
 target_link_libraries(
     MdsLib_fortran
     PUBLIC
+        TdiShr
+    PRIVATE
         MdsIpShr
 )
 

@@ -10,6 +10,9 @@ For any questions or concerns, please reach out to slwalsh@psfc.mit.edu
 The simplest case for building MDSplus is the following:
 
 ```
+# Run the initial bootstrap, we hope to remove this in a later version
+./bootstrap
+
 # Make a directory to hold the intermediate objects and generated files
 mkdir build
 

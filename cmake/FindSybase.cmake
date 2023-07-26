@@ -37,6 +37,7 @@ else()
             ${Sybase_ROOT_DIR}
         PATH_SUFFIXES 
             include
+            include/freetds
     )
 
     find_library(
