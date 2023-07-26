@@ -66,7 +66,7 @@ void eventAstSecond(void *arg, int len __attribute__((unused)),
   pthread_mutex_unlock(&second_lock);
 }
 
-static void wait()
+static void uet_wait()
 {
   static const struct timespec tspec = {0, 100000000};
   nanosleep(&tspec, 0);
@@ -97,15 +97,15 @@ int main(int argc, char **args)
 
     status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
     TEST0(status % 1);
-    wait();
+    uet_wait();
     status = MDSEvent(eventname, 0, 0);
     TEST0(status % 1);
     status = MDSEvent(eventname, 0, 0);
     TEST0(status % 1);
-    wait();
+    uet_wait();
     status = MDSEventCan(ev_id);
     TEST0(status % 1);
-    wait();
+    uet_wait();
   }
   pthread_mutex_lock(&astCount_lock);
   TEST1(astCount == 2 * iterations);
@@ -116,9 +116,9 @@ int main(int argc, char **args)
   sprintf(eventname, "test_event_%d", getpid());
   status = MDSEventAst(eventname, eventAstFirst, "first", &id1);
   status = MDSEventAst(eventname, eventAstSecond, "second", &id2);
-  wait();
+  uet_wait();
   status = MDSEvent(eventname, 0, 0);
-  wait();
+  uet_wait();
   pthread_mutex_lock(&first_lock);
   pthread_mutex_lock(&second_lock);
   printf("first = %d, second = %d\n", first, second);

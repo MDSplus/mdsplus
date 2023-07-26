@@ -49,6 +49,7 @@ extern char *strsignal(int);
 // Check for HAVE_CHECK and HAVE_FORK //
 #include <mdsplus/mdsconfig.h>
 
+#include "lib/libcompat.h"
 #include "testing.h"
 
 #ifdef _WIN32
