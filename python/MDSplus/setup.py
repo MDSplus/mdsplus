@@ -58,6 +58,8 @@ def setupkw():
             'Topic :: Scientific/Engineering',
         ],
         keywords=['physics', 'mdsplus', ],
+        packages = ['MDSplus'],
+        package_dir = {'MDSplus':''},
     )
 
 
