@@ -1,4 +1,4 @@
-%option prefix="treepath" outfile="treeshr/TreeFindNodeWild.c"
+%option prefix="treepath" outfile="TreeFindNodeWild.c"
 %option stack noyymore nodefault noyywrap noyylineno
 %option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
 %option never-interactive reentrant

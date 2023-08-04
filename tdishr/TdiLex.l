@@ -1,4 +1,4 @@
-%option prefix="tdi" outfile="tdishr/TdiLex.c" header="tdishr/tdilex.h"
+%option prefix="tdi" outfile="TdiLex.c" header="tdilex.h"
 %option stack noyymore nodefault noyywrap noyylineno nodefault
 %option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
 %option noyy_scan_buffer noyy_scan_bytes noyy_scan_string

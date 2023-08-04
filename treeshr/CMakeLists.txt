@@ -13,6 +13,13 @@
 #     )
 # endif()
 
+find_package(FLEX)
+FLEX_TARGET(
+    TreeFindNodeWild
+    TreeFindNodeWild.l
+    ${CMAKE_CURRENT_BINARY_DIR}/TreeFindNodeWild.c
+)
+
 add_library(
     TreeShr
     dummies.c

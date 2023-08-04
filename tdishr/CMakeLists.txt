@@ -103,6 +103,22 @@ add_library(
     ${CMAKE_CURRENT_BINARY_DIR}/TdiYacc.c
 )
 
+find_package(BISON)
+find_package(FLEX)
+BISON_TARGET(
+    TdiYacc
+    TdiYacc.y
+    ${CMAKE_CURRENT_BINARY_DIR}/TdiYacc.c
+    DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/tdiyacc.h
+)
+FLEX_TARGET(
+    TdiLex
+    TdiLex.l
+    ${CMAKE_CURRENT_BINARY_DIR}/TdiLex.c
+)
+ADD_FLEX_BISON_DEPENDENCY(TdiLex TdiYacc)
+# add_dependencies(TdiShr TdiYacc TdiLex)
+
 target_include_directories(
     TdiShr
     PUBLIC

@@ -1,5 +1,5 @@
-%output  "mdsdcl/cmdParse.c"
-%defines "mdsdcl/dclyacc.h"
+%output  "cmdParse.c"
+%defines "dclyacc.h"
 %{
 #define _GNU_SOURCE // required by rhel5 to include stpcpy
 #include <stdio.h>

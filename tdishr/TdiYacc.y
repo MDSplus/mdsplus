@@ -1,5 +1,5 @@
-%output  "tdishr/TdiYacc.c"
-%defines "tdishr/tdiyacc.h"
+%output  "TdiYacc.c"
+%defines "tdiyacc.h"
 %define api.pure full
 %define api.token.prefix {LEX_}
 %lex-param   { TDITHREADSTATIC_TYPE *TDITHREADSTATIC_VAR }
