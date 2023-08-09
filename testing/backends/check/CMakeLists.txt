@@ -3,7 +3,7 @@
 ### Check
 ###
 
-ADD_LIBRARY(
+add_library(
     Check STATIC
     check_error.c
     check_list.c
@@ -16,23 +16,27 @@ ADD_LIBRARY(
 	check.c 
 )
 
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     Check
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-SET_TARGET_PROPERTIES(
+set_target_properties(
     Check
     PROPERTIES
         POSITION_INDEPENDENT_CODE ON
 )
 
 if (APPLE)
-    target_compile_definitions(Check PUBLIC _XOPEN_SOURCE=700)
+    target_compile_definitions(
+        Check
+        PUBLIC
+            _XOPEN_SOURCE=700
+    )
 endif()
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     Check
     PUBLIC
         $<$<BOOL:${LIBRT}>:${LIBRT}>

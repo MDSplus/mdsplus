@@ -232,10 +232,10 @@ static int StartWorker(struct descriptor_xd *task_xd,
   {
     fflush(stdout);
     fprintf(stderr, "Timeout, terminating Worker ..");
-#ifdef WIN32
     if (pthread_cancel(Worker))
-#endif
+    {
       pthread_kill(Worker, SIGINT);
+    }
     _CONDITION_WAIT_1SEC(wa.condition);
     fflush(stdout);
     if (WorkerRunning.value)

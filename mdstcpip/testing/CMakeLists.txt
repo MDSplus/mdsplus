@@ -17,7 +17,7 @@ target_link_libraries(
         MdsTestShr
 )
 
-add_test(
+mdsplus_add_test(
     NAME MdsIpTest
-    COMMAND $<TARGET_FILE:MdsIpTest>
+    COMMAND MdsIpTest
 )
