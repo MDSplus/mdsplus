@@ -1,19 +1,12 @@
 
 import csv
-import argparse
 
-parser = argparse.ArgumentParser()
+OPCODES_FILENAME = 'tdishr/opcodes.csv'
+OUTPUT_FILENAME = 'include/opcbuiltins.h'
 
-parser.add_argument('--opcodes', help='Path to opcodes.csv')
-parser.add_argument('--output', help='Path to write output to')
-
-args = parser.parse_args()
-
-opcodes_filename = args.opcodes
-output_filename = args.output
-
-opcodes_file = open(opcodes_filename, newline='')
-output_file = open(output_filename, 'wt')
+print(f"Generating '{OUTPUT_FILENAME}' from '{OPCODES_FILENAME}'")
+opcodes_file = open(OPCODES_FILENAME, newline='')
+output_file = open(OUTPUT_FILENAME, 'wt')
 
 output_file.write('''
 /* <opcbuiltins.h> */

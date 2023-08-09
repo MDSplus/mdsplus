@@ -12,8 +12,10 @@ if(NOT WIN32)
     set(HUP_TO_XINETD_SERVICE "service xinetd restart")
 endif()
 
+# This must be placed in the binary directory as it contains information
+# specific to the OS/Compiler we're using
 configure_file(
-    post_install_script.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/post_install_script.in
     ${CMAKE_CURRENT_BINARY_DIR}/post_install_script
 )
 
@@ -34,9 +36,10 @@ install(
 # (SLW) TODO:
 set(LIBPATH "LD_LIBRARY_PATH")
 
-
+# This must be placed in the binary directory as it contains information
+# specific to the OS/Compiler we're using
 configure_file(
-    envsyms.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/envsyms.in
     ${CMAKE_CURRENT_BINARY_DIR}/envsyms
 )
 

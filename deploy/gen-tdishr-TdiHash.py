@@ -1,24 +1,26 @@
 
 import os
-from subprocess import *
 import csv
-import argparse
+import shutil
 
-parser = argparse.ArgumentParser()
+from subprocess import *
 
-parser.add_argument('--opcodes', help='Path to opcodes.csv')
-parser.add_argument('--gperf', help='Path to gperf executable')
-parser.add_argument('--output', help='Path to write output to')
+OPCODES_FILENAME = 'tdishr/opcodes.csv'
+OUTPUT_FILENAME = 'tdishr/TdiHash.c'
+INTERMEDIARY_FILENAME = 'tdishr/TdiHash.c.in'
 
-args = parser.parse_args()
+if 'GPERF' in os.environ:
+    gperf = os.environ['GPERF']
+else:
+    gperf = shutil.which('gperf')
 
-opcodes_filename = args.opcodes
-gperf_executable = args.gperf
-output_filename = args.output
+if gperf is None:
+    print('Please install gperf, or set the GPERF environment variable')
+    exit(1)
 
 # Generate the input file for gperf
-intermediary_filename = 'TdiHash.c.in'
-intermediary_file = open(intermediary_filename, 'wt')
+print(f"Generating '{INTERMEDIARY_FILENAME}' from '{OPCODES_FILENAME}'")
+intermediary_file = open(INTERMEDIARY_FILENAME, 'wt')
 
 intermediary_file.write('''
 %language=C
@@ -46,7 +48,7 @@ struct fun { int name; int idx; };
 # Generate a list of opcodes for gperf to process
 # Each one must be in the format of `string,index`
 
-opcodes_file = open(opcodes_filename, newline='')
+opcodes_file = open(OPCODES_FILENAME, newline='')
 reader = csv.DictReader(opcodes_file)
 
 opcode_lines = []
@@ -73,7 +75,7 @@ intermediary_file.close()
 
 # Process the input file with gperf
 proc = Popen(
-    f'{gperf_executable} {intermediary_filename}'.split(' '),
+    f'{gperf} {INTERMEDIARY_FILENAME}'.split(),
     stdin=PIPE,
     stdout=PIPE,
 )
@@ -90,8 +92,9 @@ for line in lines:
     output_lines.append(line)
 
 # Output the final product
-output_file = open(output_filename, 'wt')
+print(f"Generating '{OUTPUT_FILENAME}' from '{INTERMEDIARY_FILENAME}'")
+output_file = open(OUTPUT_FILENAME, 'wt')
 
 output_file.write('\n'.join(output_lines))
 
-os.remove(intermediary_filename)
+os.remove(INTERMEDIARY_FILENAME)
