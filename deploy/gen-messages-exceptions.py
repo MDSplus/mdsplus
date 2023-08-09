@@ -1,9 +1,6 @@
+#!/usr/bin/env python
 
-import glob
-import sys
 import os
-
-from xml.etree import ElementTree
 
 # Move to the root of the repository
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -35,13 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 gen_header = """ This module was generated, do not modify it
  To add new status messages modify '%s' and then do:
-     python3 deploy/gen-messages-exceptions.py"""
+     python3 bootstrap.py"""
 anyfile = 'one of the "*_messages.xml" files'
 
 PYTHON_EXCEPTIONS_FILENAME = "python/MDSplus/mdsExceptions.py"
 GET_STANDARD_MESSAGE_FILENAME = "mdsshr/MdsGetStdMsg.c"
 JAVA_EXCEPTIONS_FILENAME = "java/mdsplus-api/src/main/java/mds/MdsException.java"
-
 
 def add_c_header(f, filename=anyfile):
     f.write("/*")
@@ -291,7 +287,7 @@ jma_tail = """\t\t\tdefault:
 
 # The status code is 32 bits, with these three fields:
 #    16 bit facility code in high order bits,
-#    13 bit message number,
+#    13 bit message number, 
 #     3 bit severity (low order bits).
 #
 # The severity scheme is similar to that used by VAX VMS.
@@ -311,6 +307,11 @@ jma_tail = """\t\t\tdefault:
 # that the STATUS_OK macro will treat it as success (because the low-order
 # bit is set).  See PR #2617 for details.
 
+import sys
+import os
+import glob
+
+from xml.etree import ElementTree
 
 sevs = {
     'warning': 0,
@@ -325,15 +326,14 @@ facnums = {}
 msglist = []
 severities = ["W", "S", "E", "I", "F", "?", "?", "?"]
 
-
 def gen_include(root, filename, faclist, f_test):
     pfaclist = ["MDSplus"]
-    include_filename = 'include/%sh' % (filename[0:-3],)
-    print("Generating '%s' from '%s'" % (include_filename, filename))
+    include_filename = f'include/{filename[0:-3]}h'
+    print(f"Generating '{include_filename}' from '{filename}'")
     with open(include_filename, 'w') as f_inc:
         add_c_header(f_inc, filename)
         parts = filename.upper().split('.')
-        f_inc.write(inc_head.format(base=parts[0], ext=parts[1]))
+        f_inc.write(inc_head.format(base=parts[0],ext=parts[1]))
         for f in root.iter('facility'):
             facnam = f.get('name')
             facnum = int(f.get('value'))
@@ -391,7 +391,6 @@ def gen_include(root, filename, faclist, f_test):
                 msglist.append(msg)
         f_inc.write("#endif")
 
-
 f_test = None
 if len(sys.argv) > 1:
     f_test = open('testmsg.h', 'w')
@@ -410,7 +409,7 @@ if f_test:
 
 msglist = sorted(msglist, key=lambda item: item['msgnum'])
 
-print("Generating '{}'".format(PYTHON_EXCEPTIONS_FILENAME))
+print(f"Generating '{PYTHON_EXCEPTIONS_FILENAME}'")
 with open(PYTHON_EXCEPTIONS_FILENAME, 'w') as f_py:
     add_py_header(f_py)
     f_py.write(py_head)
@@ -422,7 +421,7 @@ with open(PYTHON_EXCEPTIONS_FILENAME, 'w') as f_py:
             facs.add(msg['fac'])
         f_py.write(py_exc_class % msg)
 
-print("Generating '{}'".format(GET_STANDARD_MESSAGE_FILENAME))
+print(f"Generating '{GET_STANDARD_MESSAGE_FILENAME}'")
 with open(GET_STANDARD_MESSAGE_FILENAME, 'w') as f_getmsg:
     add_c_header(f_getmsg)
     f_getmsg.write(msg_head)
@@ -433,7 +432,7 @@ with open(GET_STANDARD_MESSAGE_FILENAME, 'w') as f_getmsg:
         f_getmsg.write(msg_case % msg)
     f_getmsg.write(msg_tail)
 
-print("Generating '{}'".format(JAVA_EXCEPTIONS_FILENAME))
+print(f"Generating '{JAVA_EXCEPTIONS_FILENAME}'")
 with open(JAVA_EXCEPTIONS_FILENAME, 'w') as f_jma:
     add_c_header(f_jma)
     f_jma.write(jma_head)

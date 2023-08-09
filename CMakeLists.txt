@@ -291,8 +291,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/_include
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/mdsplus
-
-    ${CMAKE_BINARY_DIR}/_include
+    # For mdsplus/mdsconfig.h
     ${CMAKE_BINARY_DIR}/include
     ${CMAKE_BINARY_DIR}/include/mdsplus
 )
@@ -589,7 +588,7 @@ check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/_include/_mdsversion.h.in
-    ${CMAKE_BINARY_DIR}/_include/_mdsversion.h
+    ${CMAKE_SOURCE_DIR}/_include/_mdsversion.h
 )
 
 ###
@@ -605,159 +604,62 @@ endif()
 # TODO HAVE_VISIBILITY
 set(HAVE_VISIBILITY ON)
 
+# This must be placed in the binary directory as it contains information
+# specific to the OS/Compiler we're using
 configure_file(
     ${CMAKE_SOURCE_DIR}/include/mdsplus/mdsconfig.h.in
     ${CMAKE_BINARY_DIR}/include/mdsplus/mdsconfig.h
 )
 
 ###
-### Generate include/opcbuiltins.h
+### Ensure that bootstrap.py has been run
 ###
 
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/include/opcbuiltins.h)
+set(
+    _generated_files
+    # deploy/gen-messages-exceptions.py
+    include/treeshr_messages.h
+    include/tdishr_messages.h
+    include/mdsshr_messages.h
+    include/tcl_messages.h
+    include/camshr_messages.h
+    include/servershr_messages.h
+    include/mitdevices_messages.h
+    include/mdsdcl_messages.h
+    python/MDSplus/mdsExceptions.py
+    mdsshr/MdsGetStdMsg.c
+    java/mdsplus-api/src/main/java/mds/MdsException.java
+    # deploy/gen-include-opcbuiltins.py
+    include/opcbuiltins.h
+    # deploy/gen-python-compound.py
+    python/MDSplus/compound.py
+    # deploy/gen-tdishr-TdiHash.py
+    tdishr/TdiHash.c
+    # deploy/gen-yacc-lex.py
+    tdishr/TdiLex.c
+    tdishr/TdiYacc.c
+    treeshr/TreeFindNodeWild.c
+    mdsdcl/cmdParse.c
+    mdsdcl/cmdParseLex.c
+    mdsdcl/mdsdclDeltatimeToSeconds.c
+)
 
-    message("Generating include/opcbuiltins.h")
+# Check to see if we already have all the files generated
+set(_run_bootstrap FALSE)
+foreach(_file IN LISTS _generated_files)
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/${_file}")
+        message("Missing '${_file}', will run bootstrap.py")
+        set(_run_bootstrap TRUE)
+    endif()
+endforeach()
 
+# If not, generate them
+if(_run_bootstrap)
+    message("Running ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py")
     execute_process(
-        COMMAND ${Python_EXECUTABLE}
-            ${CMAKE_SOURCE_DIR}/include/gen-opcbuiltins.py
-            --opcodes=${CMAKE_SOURCE_DIR}/tdishr/opcodes.csv
-            --output=${CMAKE_BINARY_DIR}/include/opcbuiltins.h
+        COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py
     )
-
 endif()
-
-###
-### Generate include/*_messages.h
-###
-
-# TODO: s/CMAKE_SOURCE_DIR/CMAKE_BINARY_DIR/g
-
-# file(GLOB_RECURSE
-#     _messages_xml_list
-#     "*/*messages.xml"
-# )
-
-# set(_messages_generated_file_list
-#     "${CMAKE_SOURCE_DIR}/python/MDSplus/mdsExceptions.py"
-# )
-
-# # Determine the header filenames that will be created
-# foreach(_messages_xml IN LISTS _messages_xml_list)
-#     cmake_path(GET _messages_xml STEM _stem)
-#     LIST(APPEND _messages_generated_file_list "${CMAKE_SOURCE_DIR}/include/${_stem}.h")
-# endforeach()
-
-# # Check to see if we already have all the files generated
-# set(_run_gen_messages FALSE)
-# foreach(_file IN LISTS _messages_generated_file_list)
-#     if(NOT EXISTS "${_file}")
-#         message("Missing ${_file}, will run deploy/gen_messages.py")
-#         set(_run_gen_messages TRUE)
-#     endif()
-# endforeach()
-
-# # If not, generate them
-# if(_run_gen_messages)
-#     message("Running deploy/gen_messages.py")
-#     execute_process(
-#         COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_messages.py
-#     )
-# endif()
-
-# message("${_messages_generated_list}")
-
-# add_custom_command(
-#     COMMENT "Running deploy/gen_messages.py"
-#     OUTPUT ${_messages_generated_list}
-#     DEPENDS ${_messages_xml_list}
-#     COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/deploy/gen_messages.py
-#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-# )
-
-# file(GLOB _directory_list ${CMAKE_SOURCE_DIR}/*)
-# foreach(_directory ${_directory_list})
-#     if(IS_DIRECTORY ${_directory})
-#         string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _directory "${_directory}")
-#         file(MAKE_DIRECTORY ${_directory})
-#     endif()
-# endforeach()
-
-###
-### Generate sources with Yacc/Bison
-###e
-
-# if(NOT _yacc_has_run)
-
-#     message("Processing Yacc files")
-
-#     find_program(
-#         yacc_EXECUTABLE
-#         NAMES bison yacc
-#         REQUIRED
-#     )
-
-#     file(GLOB_RECURSE
-#         _yacc_input_list
-#         "*.y"
-#     )
-
-#     foreach (_file ${_yacc_input_list})
-
-#         # Make output directory
-#         cmake_path(GET _file PARENT_PATH _parent_path)
-#         string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
-#         file(MAKE_DIRECTORY "${_binary_path}")
-
-#         message("Running ${yacc_EXECUTABLE} --verbose ${_file}")
-#         execute_process(
-#             COMMAND ${yacc_EXECUTABLE} --verbose ${_file}
-#         )
-
-#     endforeach()
-
-#     # Only run this the first time
-#     set(_yacc_has_run TRUE CACHE INTERNAL "")
-
-# endif()
-
-###
-### Generate sources with Lex/Flex
-###
-
-# if(NOT _lex_has_run)
-
-#     message("Processing Lex files")
-
-#     find_program(
-#         lex_EXECUTABLE
-#         NAMES flex lex
-#         REQUIRED
-#     )
-
-#     file(GLOB_RECURSE
-#         _lex_input_list
-#         "*.l"
-#     )
-
-#     foreach (_file ${_lex_input_list})
-
-#         # Make output directory
-#         cmake_path(GET _file PARENT_PATH _parent_path)
-#         string(REPLACE "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" _binary_path "${_parent_path}")
-#         file(MAKE_DIRECTORY "${_binary_path}")
-
-#         message("Running ${lex_EXECUTABLE} -p ${_file}")
-#         execute_process(
-#             COMMAND ${lex_EXECUTABLE} -p ${_file}
-#         )
-
-#     endforeach()
-
-#     # Only run this the first time
-#     set(_lex_has_run TRUE CACHE INTERNAL "")
-
-# endif()
 
 ###
 ### Generate Documentation
