@@ -3,22 +3,6 @@
 ### TdiShr
 ###
 
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c)
-
-    message("Generating tdishr/TdiHash.c with gperf")
-
-    find_program(gperf_EXECUTABLE gperf REQUIRED)
-
-    execute_process(
-        COMMAND ${Python_EXECUTABLE}
-            ${CMAKE_CURRENT_SOURCE_DIR}/gen-TdiHash.py
-            --opcodes=${CMAKE_CURRENT_SOURCE_DIR}/opcodes.csv
-            --gperf=${gperf_EXECUTABLE}
-            --output=${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c
-    )
-
-endif()
-
 add_library(
     TdiShr
     CvtConvertFloat.c
@@ -98,9 +82,9 @@ add_library(
     TdiXxx.c
     TdiXxxOf.c
     TdiYaccSubs.c
-    ${CMAKE_CURRENT_BINARY_DIR}/TdiHash.c
-    ${CMAKE_CURRENT_BINARY_DIR}/TdiLex.c
-    ${CMAKE_CURRENT_BINARY_DIR}/TdiYacc.c
+    TdiHash.c
+    TdiLex.c
+    TdiYacc.c
 )
 
 target_include_directories(

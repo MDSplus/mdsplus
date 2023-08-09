@@ -24,13 +24,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-gen_header = """ This module was generated using mdsshr/gen_messages.py
- To add new status messages modify
- %s
- and then do:
-     python mdsshr/gen_messages.py"""
+gen_header = """ This module was generated, do not modify it
+ To add new status messages modify '%s' and then do:
+     python3 bootstrap.py"""
 anyfile = 'one of the "*_messages.xml" files'
 
+PYTHON_EXCEPTIONS_FILENAME = "python/MDSplus/mdsExceptions.py"
+GET_STANDARD_MESSAGE_FILENAME = "mdsshr/MdsGetStdMsg.c"
+JAVA_EXCEPTIONS_FILENAME = "java/mdsplus-api/src/main/java/mds/MdsException.java"
 
 def add_c_header(f, filename=anyfile):
     f.write("/*")
@@ -300,23 +301,30 @@ jma_tail = """\t\t\tdefault:
 # that the STATUS_OK macro will treat it as success (because the low-order
 # bit is set).  See PR #2617 for details.
 
-import xml.etree.ElementTree as ET
 import sys
 import os
+import glob
 
-sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sevs = {'warning': 0, 'success': 1, 'error': 2,
-        'info': 3, 'fatal': 4, 'internal': 7}
+from xml.etree import ElementTree
+
+sevs = {
+    'warning': 0,
+    'success': 1,
+    'error': 2,
+    'info': 3,
+    'fatal': 4,
+    'internal': 7
+}
 faclist = []
 facnums = {}
 msglist = []
 severities = ["W", "S", "E", "I", "F", "?", "?", "?"]
 
-
-def gen_include(root, filename, faclist, msglistm, f_test):
+def gen_include(root, filename, faclist, f_test):
     pfaclist = ["MDSplus"]
-    print(filename)
-    with open("%s/include/%sh" % (sourcedir, filename[0:-3]), 'w') as f_inc:
+    include_filename = f'include/{filename[0:-3]}h'
+    print(f"Generating '{include_filename}' from '{filename}'")
+    with open(include_filename, 'w') as f_inc:
         add_c_header(f_inc, filename)
         parts = filename.upper().split('.')
         f_inc.write(inc_head.format(base=parts[0],ext=parts[1]))
@@ -377,27 +385,26 @@ def gen_include(root, filename, faclist, msglistm, f_test):
                 msglist.append(msg)
         f_inc.write("#endif")
 
-
-# gen_msglist():
-
 f_test = None
 if len(sys.argv) > 1:
-    f_test = open('%s/testmsg.h' % sourcedir, 'w')
-for root, dirs, files in os.walk(sourcedir):
-    for filename in files:
-        if not filename.endswith('messages.xml'):
-            continue
-        try:
-            tree = ET.parse("%s/%s" % (root, filename)).getroot()
-            gen_include(tree, filename.lower(), faclist, msglist, f_test)
-        except Exception as e:
-            print(e)
+    f_test = open('testmsg.h', 'w')
+
+xml_filename_list = glob.glob('**/*_messages.xml')
+for xml_filename in xml_filename_list:
+    try:
+        tree = ElementTree.parse(xml_filename).getroot()
+        basename = os.path.basename(xml_filename)
+        gen_include(tree, basename.lower(), faclist, f_test)
+    except Exception as e:
+        print(e)
+
 if f_test:
     f_test.close()
 
 msglist = sorted(msglist, key=lambda item: item['msgnum'])
 
-with open("%s/python/MDSplus/mdsExceptions.py" % sourcedir, 'w') as f_py:
+print(f"Generating '{PYTHON_EXCEPTIONS_FILENAME}'")
+with open(PYTHON_EXCEPTIONS_FILENAME, 'w') as f_py:
     add_py_header(f_py)
     f_py.write(py_head)
     facs = set([])
@@ -408,7 +415,8 @@ with open("%s/python/MDSplus/mdsExceptions.py" % sourcedir, 'w') as f_py:
             facs.add(msg['fac'])
         f_py.write(py_exc_class % msg)
 
-with open('%s/mdsshr/MdsGetStdMsg.c' % sourcedir, 'w') as f_getmsg:
+print(f"Generating '{GET_STANDARD_MESSAGE_FILENAME}'")
+with open(GET_STANDARD_MESSAGE_FILENAME, 'w') as f_getmsg:
     add_c_header(f_getmsg)
     f_getmsg.write(msg_head)
     for facu in faclist:
@@ -418,7 +426,8 @@ with open('%s/mdsshr/MdsGetStdMsg.c' % sourcedir, 'w') as f_getmsg:
         f_getmsg.write(msg_case % msg)
     f_getmsg.write(msg_tail)
 
-with open("%s/java/mdsplus-api/src/main/java/mds/MdsException.java" % sourcedir, 'w') as f_jma:
+print(f"Generating '{JAVA_EXCEPTIONS_FILENAME}'")
+with open(JAVA_EXCEPTIONS_FILENAME, 'w') as f_jma:
     add_c_header(f_jma)
     f_jma.write(jma_head)
     for msg in msglist:

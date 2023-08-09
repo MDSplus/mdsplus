@@ -4,8 +4,8 @@
 ###
 
 configure_file(
-    mdsdclVersionInfo.c.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/mdsdclVersionInfo.c.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/mdsdclVersionInfo.c
 )
 
 add_library(
@@ -16,10 +16,10 @@ add_library(
     mdsdcl_commands.c
     mdsdclVersionInfo.c
     mdsdcl_show_version.c
-    ${CMAKE_CURRENT_BINARY_DIR}/cmdParse.c
-    ${CMAKE_CURRENT_BINARY_DIR}/cmdParseLex.c
-    ${CMAKE_CURRENT_BINARY_DIR}/mdsdclDeltatimeToSeconds.c
-    ${CMAKE_CURRENT_BINARY_DIR}/mdsdclVersionInfo.c
+    cmdParse.c
+    cmdParseLex.c
+    mdsdclDeltatimeToSeconds.c
+    mdsdclVersionInfo.c
 )
 
 target_include_directories(
