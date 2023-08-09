@@ -29,16 +29,9 @@ foreach(_test_source ${_test_source_list})
             -Wno-error
     )
 
-    add_test(
+    mdsplus_add_test(
         NAME ${_test_name}
-        COMMAND $<TARGET_FILE:${_test_name}>
+        COMMAND ${_test_name}
     )
 
-    list(APPEND _test_target_list ${_test_name})
-
 endforeach()
-
-include(SetEnvironmentForTests)
-
-set_environment_for_tests(${_test_target_list})
-

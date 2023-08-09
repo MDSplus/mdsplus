@@ -11,6 +11,9 @@ project(MDSplus)
 
 enable_language(Fortran)
 
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 98)
+
 # Query version and release information from git
 include(GitRevision)
 
@@ -20,13 +23,13 @@ include(GitRevision)
 
 # TODO: Make sure we *should* run git submodule update
 
-# find_package(Git QUIET)
+find_package(Git QUIET)
 
-# if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
-#     execute_process(
-#         COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
-#     )
-# endif()
+if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
+    )
+endif()
 
 ###
 ### Options
@@ -171,6 +174,11 @@ option(ENABLE_WCONVERSION
     OFF
 )
 
+set(PYTHON "$ENV{PYTHON}"
+    CACHE STRING
+    "Path to python interpreter to use for building / tests."
+)
+
 # replaces --enable-sanitize=
 set(SANITIZE "address"
     CACHE STRING
@@ -218,6 +226,11 @@ set(GSI ""
 set(SRB_DIR ""
     CACHE STRING
     "Location of SRB to build against"
+)
+
+option(ENABLE_LABVIEW
+    "Build LV and MDSobjectsLVShr and install MDSplus LabView projects [default: ON]"
+    ON
 )
 
 # replaces --with-labview=
@@ -397,12 +410,14 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 # CMake built-in packages to find
 
-if(DEFINED ENV{PYTHON})
-    set(Python_EXECUTABLE "$ENV{PYTHON}")
-else()
-    set(Python_FIND_FRAMEWORK LAST) # don't prefer system apple python
-    find_package(Python COMPONENTS Interpreter REQUIRED)
-endif()
+# find_package(Python) needs this to be absolute
+find_program(Python_EXECUTABLE "${PYTHON}")
+mark_as_advanced(Python_EXECUTABLE)
+
+# don't prefer system apple python
+set(Python_FIND_FRAMEWORK LAST)
+
+find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
 
 # Finds the platform specific threading libraries, usually pthreads
 find_package(Threads REQUIRED)
@@ -784,6 +799,8 @@ if(ENABLE_TESTS)
     ### Testing
     ###
 
+    include(MDSplusAddTest)
+
     add_subdirectory(testing)
     add_subdirectory(mdsshr/testing)
     add_subdirectory(math/testing)
@@ -791,9 +808,13 @@ if(ENABLE_TESTS)
     add_subdirectory(mdslib/testing)
     add_subdirectory(mdstcpip/testing)
     add_subdirectory(tdishr/testing)
-    # add_subdirectory(tditest/testing)
-    # add_subdirectory(mdsobjects/cpp/testing)
+    add_subdirectory(tditest/testing)
+    add_subdirectory(mdsobjects/cpp/testing)
     add_subdirectory(python/MDSplus/tests)
+
+    add_subdirectory(java/tests) # defines JAVA_TEST_ENV_MODS, JAVA_TEST_JAR_LIST
+    add_subdirectory(java/mdsobjects/tests)
+    add_subdirectory(java/mdsplus-api/tests)
 
 endif()
 

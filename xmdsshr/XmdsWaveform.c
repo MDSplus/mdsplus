@@ -477,8 +477,10 @@ static void ClassPartInitialize(XmdsWaveformWidgetClass class)
     class->waveform_class.set_wave_proc = SetWave;
 }
 
-static void Initialize(XmdsWaveformWidget req, XmdsWaveformWidget w,
-                       ArgList args, Cardinal *num_args)
+static void Initialize(XmdsWaveformWidget req,
+                       XmdsWaveformWidget w,
+                       ArgList args __attribute__((unused)),
+                       Cardinal *num_args __attribute__((unused)))
 {
   XGCValues values;
   static char dashes[] = {1, 4};
@@ -1004,9 +1006,11 @@ static void Align(XmdsWaveformWidget w, XButtonEvent *event)
   XtCallCallbacks((Widget)w, XmdsNalignCallback, &limits);
 }
 
-static Boolean SetValues(XmdsWaveformWidget old, XmdsWaveformWidget req,
-                         XmdsWaveformWidget new, ArgList args,
-                         Cardinal *num_args)
+static Boolean SetValues(XmdsWaveformWidget old,
+                         XmdsWaveformWidget req,
+                         XmdsWaveformWidget new,
+                         ArgList args __attribute__((unused)),
+                         Cardinal *num_args __attribute__((unused)))
 {
   Boolean values_changed = SetupXandY(old, req, new);
   Boolean limits_changed =
@@ -2088,10 +2092,15 @@ EXPORT void XmdsWaveformSetWave(Widget w, int count, float *x, float *y,
                                        autoscale, defer_update);
 }
 
-static void Update(Widget w_in, XmdsWaveformValStruct *x,
-                   XmdsWaveformValStruct *y, char *title, float *xmin,
-                   float *xmax, float *ymin, float *ymax,
-                   Boolean defer_update)
+static void Update(Widget w_in,
+                   XmdsWaveformValStruct *x,
+                   XmdsWaveformValStruct *y,
+                   char *title,
+                   float *xmin,
+                   float *xmax,
+                   float *ymin,
+                   float *ymax,
+                   Boolean defer_update __attribute__((unused)))
 {
   XmdsWaveformWidget w = (XmdsWaveformWidget)w_in;
   int old_count = waveformCount(w);
@@ -2134,9 +2143,14 @@ static void Update(Widget w_in, XmdsWaveformValStruct *x,
     Plot(w, 1);
 }
 
-static void SetWave(Widget w_in, int count, float *x, float *y,
-                    Boolean *waveformSelections, Boolean *waveformPenDown,
-                    Boolean autoscale, Boolean defer_update)
+static void SetWave(Widget w_in,
+                    int count,
+                    float *x,
+                    float *y,
+                    Boolean *waveformSelections,
+                    Boolean *waveformPenDown,
+                    Boolean autoscale,
+                    Boolean defer_update __attribute__((unused)))
 {
   XmdsWaveformWidget w = (XmdsWaveformWidget)w_in;
   int old_count = waveformCount(w);
@@ -2723,8 +2737,13 @@ static void Print(XmdsWaveformWidget w, FILE *filefid, int inp_total_width,
   fprintf(printfid, "\nshowpage\n");
 }
 
-static void DrawLines(Display *display, Window win, GC gc, XPoint *point,
-                      int kp, Dimension pwidth, Dimension pheight)
+static void DrawLines(Display *display,
+                      Window win,
+                      GC gc,
+                      XPoint *point,
+                      int kp,
+                      Dimension pwidth,
+                      Dimension pheight __attribute__((unused)))
 {
   static int i, imax, imin, ymax, ymin;
   if (!waveformPrint)
@@ -3090,8 +3109,14 @@ static void DrawSegments(Display *display, Window win, GC gc, float *crosshairs,
   }
 }
 
-static void DrawString(XmdsWaveformWidget w, Display *display, Window win,
-                       GC gc, float x, float y, char *label, int length)
+static void DrawString(XmdsWaveformWidget w __attribute__((unused)),
+                       Display *display,
+                       Window win,
+                       GC gc,
+                       float x,
+                       float y,
+                       char *label,
+                       int length)
 {
   if (!waveformPrint)
   {

@@ -10,9 +10,6 @@ For any questions or concerns, please reach out to slwalsh@psfc.mit.edu
 The simplest case for building MDSplus is the following:
 
 ```
-# Run the initial bootstrap, we hope to remove this in a later version
-./bootstrap
-
 # Make a directory to hold the intermediate objects and generated files
 mkdir build
 
@@ -74,7 +71,7 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--with-java_bootclasspath=[CLASSPATH]` | `JAVA_BOOTCLASSPATH=[CLASSPATH]`                        |
 | `--with-gsi=[LOCATION]:[FLAVOR]`        | `GSI=[LOCATION]:[FLAVOR]` or `GSI=[FLAVOR]`             |
 | `--with-srb=[PATH]`                     | `SRB_DIR=[PATH]`                                        |
-| `--with-labview=[PATH]`                 | `LABVIEW_DIR=[PATH]`                                    |
+| `--with-labview=[PATH]`                 | `ENABLE_LABVIEW=ON` or `LABVIEW_DIR=[PATH]`             |
 | `--with-idl=[PATH]`                     | `ENABLE_IDL=ON` or `IDL_DIR=[PATH]`*                    |
 | `--with-readline=[PATH]`                | `READLINE_DIR=[PATH]`                                   |
 | `--with-xml-prefix=[PATH]`              | `LIBXML2_DIR=[PATH]`                                    |
@@ -105,7 +102,7 @@ The following environment variables are used, if present:
 * `$CFLAGS`, flags appended to the compile commands for all C files
 * `$CXXFLAGS`, flags appended to the compile commands for all C++ files
 * `$FCFLAGS` or `$FFLAGS`, flags appended to the compile commands for all Fortran files
-* `$PYTHON`, the python interpreter to use
+* `$PYTHON`, the python interpreter to use (and what `$PyLib` to use when running the tests)
 * `$JAVA_HOME`, the default location to look for java tools (overridden by `JDK_DIR`)
 * `$D3DLIB_PATH`, if `ENABLE_D3D=ON` this path will be searched for `libd3`
 * `$HDF5_ROOT_DIR`, the path to search for the HDF5 libraries
