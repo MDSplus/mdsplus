@@ -1,39 +1,30 @@
 #!/usr/bin/env python
 
-import os
-import sys
 import csv
-import argparse
 
-parser = argparse.ArgumentParser()
+OPCODES_FILENAME = 'tdishr/opcodes.csv'
+INPUT_FILENAME = 'python/MDSplus/compound.py.in'
+OUTPUT_FILENAME = 'python/MDSplus/compound.py'
 
-parser.add_argument('--opcodes', help='Path to opcodes.csv')
-parser.add_argument('--input', help='Path to compound.py.in')
-parser.add_argument('--output', help='Path to write output to')
+FORCEREF_BUILTINS = (
+    'dEXPT', 'dSHOT', 'dSHOTNAME', 'dDEFAULT', 'GETNCI',
+    'MAKE_FUNCTION', 'BUILD_FUNCTION', 'EXT_FUNCTION',
+    'MAKE_PROCEDURE', 'BUILD_PROCEDURE',
+    'MAKE_ROUTINE', 'BUILD_ROUTINE',
+    'MAKE_CALL', 'BUILD_CALL',
+    'COMPILE', 'EXECUTE',
+)
 
-args = parser.parse_args()
-
-forceref = ('dEXPT', 'dSHOT', 'dSHOTNAME', 'dDEFAULT', 'GETNCI',
-            'MAKE_FUNCTION', 'BUILD_FUNCTION', 'EXT_FUNCTION'
-            'MAKE_PROCEDURE', 'BUILD_PROCEDURE',
-            'MAKE_ROUTINE', 'BUILD_ROUTINE',
-            'MAKE_CALL', 'BUILD_CALL',
-            'COMPILE', 'EXECUTE',
-            )
-
-opcodes_filename = args.opcodes
-input_filename = args.input
-output_filename = args.output
-
-with open(output_filename, 'w+') as output_file:
-    with open(input_filename, 'r') as input_file:
+print(f"Generating '{OUTPUT_FILENAME}' from '{INPUT_FILENAME}' and '{OPCODES_FILENAME}'")
+with open(OUTPUT_FILENAME, 'w+') as output_file:
+    with open(INPUT_FILENAME, 'r') as input_file:
         for line in input_file:
             output_file.write(line)
     output_file.write('\n')
 
     output_file.write('MAX_DIMS = 8\n')
     
-    with open(opcodes_filename, newline='') as input_file:
+    with open(OPCODES_FILENAME, newline='') as input_file:
         reader = csv.DictReader(input_file)
         
         for line in reader:
@@ -41,7 +32,7 @@ with open(output_filename, 'w+') as output_file:
             has_m2 = int(eval(line['m2'].replace('MAX_DIMS', '8'))) > 0
             line['min_args_def'] = ('    min_args = %(m1)s\n' % line) if has_m2 else ''
             
-            if line['builtin'] in forceref:
+            if line['builtin'] in FORCEREF_BUILTINS:
                 line['Function'] = '_dat.TreeRef, Function'
             elif has_m2:
                 line['Function'] = '_dat.TreeRefX, Function'

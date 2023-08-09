@@ -44,7 +44,7 @@ add_library(
     TreeSetNci.c
     TreeThreadStatic.c
     TreeVerify.c
-    ${CMAKE_CURRENT_BINARY_DIR}/TreeFindNodeWild.c
+    TreeFindNodeWild.c
 )
 
 target_include_directories(
