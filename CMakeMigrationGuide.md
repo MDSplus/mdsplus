@@ -10,9 +10,6 @@ For any questions or concerns, please reach out to slwalsh@psfc.mit.edu
 The simplest case for building MDSplus is the following:
 
 ```
-# Run the initial bootstrap, we hope to remove this in a later version
-./bootstrap
-
 # Make a directory to hold the intermediate objects and generated files
 mkdir build
 
@@ -74,7 +71,7 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--with-java_bootclasspath=[CLASSPATH]` | `JAVA_BOOTCLASSPATH=[CLASSPATH]`                        |
 | `--with-gsi=[LOCATION]:[FLAVOR]`        | `GSI=[LOCATION]:[FLAVOR]` or `GSI=[FLAVOR]`             |
 | `--with-srb=[PATH]`                     | `SRB_DIR=[PATH]`                                        |
-| `--with-labview=[PATH]`                 | `LABVIEW_DIR=[PATH]`                                    |
+| `--with-labview=[PATH]`                 | `ENABLE_LABVIEW=ON` or `LABVIEW_DIR=[PATH]`             |
 | `--with-idl=[PATH]`                     | `ENABLE_IDL=ON` or `IDL_DIR=[PATH]`*                    |
 | `--with-readline=[PATH]`                | `READLINE_DIR=[PATH]`                                   |
 | `--with-xml-prefix=[PATH]`              | `LIBXML2_DIR=[PATH]`                                    |

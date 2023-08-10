@@ -11,6 +11,9 @@ project(MDSplus)
 
 enable_language(Fortran)
 
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 98)
+
 # Query version and release information from git
 include(GitRevision)
 
@@ -20,13 +23,13 @@ include(GitRevision)
 
 # TODO: Make sure we *should* run git submodule update
 
-# find_package(Git QUIET)
+find_package(Git QUIET)
 
-# if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
-#     execute_process(
-#         COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
-#     )
-# endif()
+if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
+    )
+endif()
 
 ###
 ### Options
@@ -218,6 +221,11 @@ set(GSI ""
 set(SRB_DIR ""
     CACHE STRING
     "Location of SRB to build against"
+)
+
+option(ENABLE_LABVIEW
+    "Build LV and MDSobjectsLVShr and install MDSplus LabView projects [default: ON]"
+    ON
 )
 
 # replaces --with-labview=
