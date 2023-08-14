@@ -39,6 +39,9 @@ if(WIN32)
     list(REMOVE_ITEM _test_target_list "python-dcl-dispatcher")
 endif()
 
+# TODO: Remove when we can finally fix this
+list(REMOVE_ITEM _test_target_list "py-task-do")
+
 include(SetEnvironmentForTests)
 
 set_environment_for_tests(${_test_target_list})

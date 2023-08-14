@@ -39,16 +39,18 @@ if [ ! -z $1 ]; then
     cmd="$TDITEST $zdrv$srcdir/$test.tdi $zdrv$(pwd) 2 3"
   fi
 
+  echo $MDSPLUS_DIR
+
   if [ -z ${MDSPLUS_DIR} ]; then
     MDSPLUS_DIR=$(readlink -f ${srcdir}/../..)
   fi
-  # use tmpdir tobisolate shotdb.sys
+  # use tmpdir to isolate shotdb.sys
   tmpdir=$(mktemp -d)
   trap 'rm -Rf ${tmpdir}' EXIT
-  MDS_PATH=".;${MDSPLUS_DIR}/tdi;."
-  MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/python/MDSplus/tests/devices"
-  subtree_path="${tmpdir};${MDSPLUS_DIR}/trees/subtree"
-  main_path="${tmpdir};${MDSPLUS_DIR}/trees"
+  export MDS_PATH=".;${MDSPLUS_DIR}/tdi"
+  export MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/python/MDSplus/tests/devices"
+  export subtree_path="${tmpdir};${MDSPLUS_DIR}/trees/subtree"
+  export main_path="${tmpdir};${MDSPLUS_DIR}/trees"
 
   if [[ $test == *"py"* ]]; then
     LD_PRELOAD="$TMP_LD_PRELOAD"

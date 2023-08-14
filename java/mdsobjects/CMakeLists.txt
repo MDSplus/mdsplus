@@ -54,8 +54,6 @@ file(GLOB_RECURSE
     "../tests/*.jar"
 )
 
-message(STATUS "${_test_jar_list}")
-
 add_jar(
     mdsobjects-tests
     SOURCES ${_source_list}
@@ -88,7 +86,7 @@ foreach(_test_class IN LISTS _test_class_list)
         NAME "${_test_class}"
         # COMMAND ${Java_JAVA_EXECUTABLE}
         COMMAND ${CMAKE_SOURCE_DIR}/java/junittest ${_test_class}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
     list(APPEND _test_target_list ${_test_class})

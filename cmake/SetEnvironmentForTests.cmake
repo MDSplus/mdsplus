@@ -3,10 +3,12 @@
 macro(set_environment_for_tests ) # ARGN=...
 
     list(APPEND _env_mods
-        "JAVA_PATH_NAME=set:${Java_JAVA_EXECUTABLE}"
-        "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
-        "MDS_PYDEVICE_PATH=set:${CMAKE_SOURCE_DIR}/pydevices"
+        "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
         "MDS_PATH=set:${CMAKE_SOURCE_DIR}/tdi"
+        "MDS_PYDEVICE_PATH=set:${CMAKE_SOURCE_DIR}/pydevices"
+        "JAVA_PATH_NAME=set:${Java_JAVA_EXECUTABLE}"
+        "PYTHON=set:${Python_EXECUTABLE}"
+        "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
     )
 
     # TODO: default_tree_path ?
