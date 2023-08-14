@@ -40,6 +40,9 @@ install_jar(
 
 fat_jar(mdsobjects ${JAVAX_JSON})
 
+###
+### Testing
+###
 
 file(GLOB_RECURSE
     _source_list
@@ -54,14 +57,13 @@ file(GLOB_RECURSE
 message(STATUS "${_test_jar_list}")
 
 add_jar(
-    tests
+    mdsobjects-tests
     SOURCES ${_source_list}
     INCLUDE_JARS ${_test_jar_list} mdsobjects taptest
 )
 
 foreach(_test_jar IN LISTS _test_jar_list)
-    message(STATUS "Adding ${_test_jar} to mdsobjects/tests")
-    fat_jar(tests ${_test_jar})
+    fat_jar(mdsobjects-tests ${_test_jar})
 endforeach()
 
 set(_test_class_list
@@ -98,7 +100,7 @@ include(SetEnvironmentForTests)
 set(_env_mods
     "java_test_path=set:${CMAKE_CURRENT_BINARY_DIR}"
     "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/mdsobjects.jar"
-    "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/tests.jar"
+    "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/mdsobjects-tests.jar"
 )
 
 # hack
