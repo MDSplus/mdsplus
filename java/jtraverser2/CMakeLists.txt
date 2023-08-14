@@ -16,7 +16,7 @@ file(WRITE ${_manifest}
 
 file(GLOB_RECURSE
     _source_list
-    "src/main/java/*"
+    "src/main/java/*.java"
 )
 
 file(GLOB_RECURSE

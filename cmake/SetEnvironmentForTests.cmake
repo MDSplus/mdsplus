@@ -1,7 +1,9 @@
 
+# TODO: Make it clear that _env_mods can be used to add extra environment variables
 macro(set_environment_for_tests ) # ARGN=...
 
-    set(_env_mods
+    list(APPEND _env_mods
+        "JAVA_PATH_NAME=set:${Java_JAVA_EXECUTABLE}"
         "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
         "MDS_PYDEVICE_PATH=set:${CMAKE_SOURCE_DIR}/pydevices"
         "MDS_PATH=set:${CMAKE_SOURCE_DIR}/tdi"
