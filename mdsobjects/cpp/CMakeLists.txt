@@ -23,3 +23,5 @@ target_link_libraries(
 add_static_copy(MdsObjectsCppShr)
 
 install(TARGETS MdsObjectsCppShr MdsObjectsCppShr-static)
+
+add_subdirectory(testing)
