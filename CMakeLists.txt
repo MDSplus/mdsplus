@@ -174,6 +174,11 @@ option(ENABLE_WCONVERSION
     OFF
 )
 
+set(PYTHON "$ENV{PYTHON}"
+    CACHE STRING
+    "Path to python interpreter to use for building / tests."
+)
+
 # replaces --enable-sanitize=
 set(SANITIZE "address"
     CACHE STRING
@@ -405,12 +410,13 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 # CMake built-in packages to find
 
-if(DEFINED ENV{PYTHON})
-    # find_package(Python) needs this to be absolute
-    find_program(Python_EXECUTABLE $ENV{PYTHON})
-endif()
+# find_package(Python) needs this to be absolute
+find_program(Python_EXECUTABLE "${PYTHON}")
+mark_as_advanced(Python_EXECUTABLE)
 
-set(Python_FIND_FRAMEWORK LAST) # don't prefer system apple python
+# don't prefer system apple python
+set(Python_FIND_FRAMEWORK LAST)
+
 find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
 
 # Finds the platform specific threading libraries, usually pthreads
