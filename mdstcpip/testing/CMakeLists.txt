@@ -21,3 +21,7 @@ add_test(
     NAME MdsIpTest
     COMMAND $<TARGET_FILE:MdsIpTest>
 )
+
+include(SetEnvironmentForTests)
+
+set_environment_for_tests(MdsIpTest)

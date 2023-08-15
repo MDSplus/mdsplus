@@ -23,7 +23,6 @@ foreach(_test_case IN LISTS _test_case_list)
 
     foreach(_test IN LISTS _test_list)
         set(_target "py-${_case}-${_test}")
-        # set(_target "python3 ${_test_case} ${_test}")
 
         add_test(
             NAME "${_target}"
@@ -35,12 +34,10 @@ foreach(_test_case IN LISTS _test_case_list)
     endforeach()
 endforeach()
 
+# TODO: Skip instead of remove
 if(WIN32)
-    list(REMOVE_ITEM _test_target_list "python-dcl-dispatcher")
+    list(REMOVE_ITEM _test_target_list "py-dcl-dispatcher")
 endif()
-
-# TODO: Remove when we can finally fix this
-list(REMOVE_ITEM _test_target_list "py-task-do")
 
 include(SetEnvironmentForTests)
 

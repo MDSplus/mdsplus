@@ -9,6 +9,8 @@ macro(set_environment_for_tests ) # ARGN=...
         "JAVA_PATH_NAME=set:${Java_JAVA_EXECUTABLE}"
         "PYTHON=set:${Python_EXECUTABLE}"
         "PYTHONPATH=set:${CMAKE_SOURCE_DIR}/python"
+        "PATH=path_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        "PATH=path_list_prepend:${CMAKE_SOURCE_DIR}/mdstcpip" # mdsip-*
     )
 
     # TODO: default_tree_path ?
