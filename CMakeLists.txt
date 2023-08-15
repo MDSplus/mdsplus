@@ -406,11 +406,12 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 # CMake built-in packages to find
 
 if(DEFINED ENV{PYTHON})
-    set(Python_EXECUTABLE "$ENV{PYTHON}")
-else()
-    set(Python_FIND_FRAMEWORK LAST) # don't prefer system apple python
-    find_package(Python COMPONENTS Interpreter REQUIRED)
+    # find_package(Python) needs this to be absolute
+    find_program(Python_EXECUTABLE $ENV{PYTHON})
 endif()
+
+set(Python_FIND_FRAMEWORK LAST) # don't prefer system apple python
+find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
 
 # Finds the platform specific threading libraries, usually pthreads
 find_package(Threads REQUIRED)
