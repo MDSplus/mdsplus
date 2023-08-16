@@ -22,23 +22,16 @@ foreach(_test_case IN LISTS _test_case_list)
     string(REPLACE "_case" "" _case "${_case}")
 
     foreach(_test IN LISTS _test_list)
-        set(_target "py-${_case}-${_test}")
+        set(_target "${_case}-${_test}")
 
-        add_test(
+        if(WIN32 AND _target STREQUAL "dcl-dispatcher")
+            continue()
+        endif()
+
+        mdsplus_add_test(
             NAME "${_target}"
             COMMAND ${Python_EXECUTABLE} ${_test_case} ${_test}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )
-        
-        list(APPEND _test_target_list ${_target})
     endforeach()
 endforeach()
-
-# TODO: Skip instead of remove
-if(WIN32)
-    list(REMOVE_ITEM _test_target_list "py-dcl-dispatcher")
-endif()
-
-include(SetEnvironmentForTests)
-
-set_environment_for_tests(${_test_target_list})

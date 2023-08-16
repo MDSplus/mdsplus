@@ -20,23 +20,17 @@ foreach(_test_source ${_test_source_list})
             MdsTestShr
     )
 
-    add_test(
-        NAME ${_test_name}
-        COMMAND $<TARGET_FILE:${_test_name}>
+    mdsplus_add_test(
+        NAME "${_test_name}"
+        COMMAND ${_test_name}
     )
-
-    list(APPEND _test_target_list ${_test_name})
 
 endforeach()
 
-include(SetEnvironmentForTests)
-
-set_environment_for_tests(${_test_target_list})
-
 # We need to run these serially so the don't use the same socket
 set_tests_properties(
-    UdpEventsTest
-    UdpEventsTestStatics 
+    mdsshr/testing/UdpEventsTest
+    mdsshr/testing/UdpEventsTestStatics
     PROPERTIES 
         RUN_SERIAL TRUE
 )

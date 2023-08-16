@@ -30,7 +30,7 @@ if(ENABLE_JAVA)
             TARGET ${_target} POST_BUILD
             COMMENT "Adding ${_source_jar_stem}.jar to ${_target_jar}"
             # COMMAND ${CMAKE_COMMAND} -E tar xf ${_source_jar_path}
-            COMMAND ${Java_JAR_EXECUTABLE} umf ${_manifest} ${_target_jar} .
+            COMMAND ${Java_JAR_EXECUTABLE} uf ${_target_jar} .
             WORKING_DIRECTORY ${_tmp_dir}
         )
 
@@ -57,7 +57,6 @@ if(ENABLE_JAVA)
     add_subdirectory(devicebeans)
     add_subdirectory(jdevices)
     add_subdirectory(jtraverser2)
-    add_subdirectory(tests)
 
     if(mvn_EXECUTABLE)
 

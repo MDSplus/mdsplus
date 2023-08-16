@@ -1,0 +1,45 @@
+
+if(ENABLE_JAVA)
+
+    file(GLOB_RECURSE
+        _source_list
+        "../src/test/java/*.java"
+    )
+
+    add_jar(
+        mdsplus-api-tests
+        SOURCES ${_source_list}
+        INCLUDE_JARS mdsplus-api ${JAVA_TEST_JAR_LIST}
+    )
+
+    set(_test_class_list
+        mds.Mds_Test
+        mds.MdsShr_Test
+        mds.TdiShr_Test
+        mds.TreeShr_Test
+        mds.data.CONST_Test
+        mds.data.TREE_Test
+        mds.data.descriptor.Descriptor_A_Test
+        mds.data.descriptor.Descriptor_CA_Test
+        mds.data.descriptor.Descriptor_S_Test
+        mds.data.descriptor_r.Function_Test
+    )
+
+    list(APPEND JAVA_TEST_ENV_MODS
+        "java_test_path=set:${CMAKE_CURRENT_BINARY_DIR}"
+        "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/../mdsplus-api.jar"
+        "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/mdsplus-api-tests.jar"
+    )
+
+    foreach(_test_class IN LISTS _test_class_list)
+
+        mdsplus_add_test(
+            NAME ${_test_class}
+            # TODO: Call ${Java_JAVA_EXECUTABLE} directly
+            COMMAND ${CMAKE_SOURCE_DIR}/java/junittest ${_test_class}
+            ENVIRONMENT_MODIFICATION ${JAVA_TEST_ENV_MODS}
+        )
+
+    endforeach()
+
+endif()

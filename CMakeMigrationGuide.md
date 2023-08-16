@@ -102,7 +102,7 @@ The following environment variables are used, if present:
 * `$CFLAGS`, flags appended to the compile commands for all C files
 * `$CXXFLAGS`, flags appended to the compile commands for all C++ files
 * `$FCFLAGS` or `$FFLAGS`, flags appended to the compile commands for all Fortran files
-* `$PYTHON`, the python interpreter to use
+* `$PYTHON`, the python interpreter to use (and what `$PyLib` to use when running the tests)
 * `$JAVA_HOME`, the default location to look for java tools (overridden by `JDK_DIR`)
 * `$D3DLIB_PATH`, if `ENABLE_D3D=ON` this path will be searched for `libd3`
 * `$HDF5_ROOT_DIR`, the path to search for the HDF5 libraries

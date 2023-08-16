@@ -799,6 +799,8 @@ if(ENABLE_TESTS)
     ### Testing
     ###
 
+    include(MDSplusAddTest)
+
     add_subdirectory(testing)
     add_subdirectory(mdsshr/testing)
     add_subdirectory(math/testing)
@@ -806,9 +808,13 @@ if(ENABLE_TESTS)
     add_subdirectory(mdslib/testing)
     add_subdirectory(mdstcpip/testing)
     add_subdirectory(tdishr/testing)
-    # add_subdirectory(tditest/testing)
-    # add_subdirectory(mdsobjects/cpp/testing)
+    add_subdirectory(tditest/testing)
+    add_subdirectory(mdsobjects/cpp/testing)
     add_subdirectory(python/MDSplus/tests)
+
+    add_subdirectory(java/tests) # defines JAVA_TEST_ENV_MODS, JAVA_TEST_JAR_LIST
+    add_subdirectory(java/mdsobjects/tests)
+    add_subdirectory(java/mdsplus-api/tests)
 
 endif()
 
