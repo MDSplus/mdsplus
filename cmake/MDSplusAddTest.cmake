@@ -48,9 +48,6 @@ macro(mdsplus_add_test)
         "MDS_PATH=set:${CMAKE_CURRENT_SOURCE_DIR}"
         "MDS_PATH=cmake_list_append:${CMAKE_SOURCE_DIR}/tdi"
 
-        # Used to run Java, java.library.path is for loading shared libraries
-        "JAVA_PATH_NAME=set:${Java_JAVA_EXECUTABLE} -Djava.library.path=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-
         # Used to run or load Python
         "PYTHON=set:${Python_EXECUTABLE}"
         "PyLib=set:${Python_LIBRARIES}"
@@ -63,6 +60,10 @@ macro(mdsplus_add_test)
 
         # Needed to run MDSplus executables
         "PATH=path_list_prepend:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+
+        # Several tests make use of the default trees
+        "main_path=set:${CMAKE_SOURCE_DIR}/trees"
+        "subtree_path=set:${CMAKE_SOURCE_DIR}/trees/subtree"
 
         # Needed for mdsip-client-* and mdsip-server-*
         "PATH=path_list_prepend:${CMAKE_SOURCE_DIR}/mdstcpip"
@@ -94,6 +95,7 @@ macro(mdsplus_add_test)
         ${_add_test_target}
         PROPERTIES
             ENVIRONMENT_MODIFICATION "${_add_test_env_mods}"
+            FAIL_REGULAR_EXPRESSION "FAILED"
     )
 
 endmacro()
