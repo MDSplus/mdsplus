@@ -145,8 +145,8 @@ option(ENABLE_XMLTEST
 
 # replaces --enable-valgrind
 option(ENABLE_VALGRIND
-    "Enable Valgrind on the unit tests [default: ON]"
-    ON
+    "Run all of the tests through Valgrind [default: OFF]"
+    OFF
 )
 
 # TODO: doxygen dot, man, rtf, xml, chm, chi, html
@@ -473,6 +473,25 @@ if(ENABLE_TESTS AND NOT APPLE)
 
 endif()
 
+if(ENABLE_VALGRIND)
+
+    find_package(Valgrind REQUIRED)
+
+    set(Valgrind_memcheck_FLAGS
+        --leak-check=full
+        --show-reachable=no
+    )
+
+    set(Valgrind_helgrind_FLAGS
+        --history-level=full
+    )
+
+    set(Valgrind_SUPPRESSION_FILES
+        ${CMAKE_SOURCE_DIR}/conf/valgrind.supp/mdsplus.supp
+    )
+
+endif()
+
 if(ENABLE_JAVA)
 
     if(JDK_DIR)
@@ -590,9 +609,6 @@ check_include_files("vxWorks.h" HAVE_VXWORKS_H)
 # Readline
 check_include_files("readline/readline.h" HAVE_READLINE_READLINE_H)
 check_symbol_exists("rl_set_signals" "readline/readline.h" HAVE_RL_SET_SIGNALS)
-
-# Valgrind
-check_include_files("valgrind/valgrind.h" HAVE_VALGRIND_H)
 
 # Linux Kernel
 check_include_files("scsi/sg.h" HAVE_SCSI_SG_H)
@@ -802,6 +818,7 @@ if(ENABLE_TESTS)
     include(MDSplusAddTest)
 
     add_subdirectory(testing)
+    add_subdirectory(testing/selftest)
     add_subdirectory(mdsshr/testing)
     add_subdirectory(math/testing)
     add_subdirectory(treeshr/testing)
