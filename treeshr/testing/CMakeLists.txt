@@ -20,9 +20,15 @@ foreach(_test_source ${_test_source_list})
             MdsTestShr
     )
 
+    set(_no_valgrind)
+    if (_test_source STREQUAL "TreeSegmentTest.c")
+        set(_no_valgrind NO_VALGRIND)
+    endif()
+
     mdsplus_add_test(
         NAME ${_test_name}
-        COMMAND $<TARGET_FILE:${_test_name}>
+        COMMAND ${_test_name}
+        ${_no_valgrind}
     )
 
 endforeach()
