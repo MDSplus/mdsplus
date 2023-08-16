@@ -3,7 +3,8 @@
 #
 # mdsplus_add_test(NAME <name> COMMAND <command> [<arg>...])
 #                  [WORKING_DIRECTORY <dir>]
-#                  [ENVIRONMENT_MODIFICATIONS <mods>])
+#                  [ENVIRONMENT_MODIFICATIONS <mods>]
+#                  [NO_VALGRIND])
 #
 # https://cmake.org/cmake/help/latest/command/add_test.html
 # https://cmake.org/cmake/help/latest/prop_test/ENVIRONMENT_MODIFICATION.html
@@ -11,9 +12,9 @@
 macro(mdsplus_add_test)
 
     # Boolean options
-    set(_boolean_options)
+    set(_boolean_options NO_VALGRIND)
     # Regular Arguments
-    set(_single_value_options NAME WORKING_DIRECTORY)
+    set(_single_value_options NAME WORKING_DIRECTORY TEST_LIST_VARIABLE)
     # Variable Arguments
     set(_multi_value_options COMMAND ENVIRONMENT_MODIFICATION)
 
@@ -33,14 +34,42 @@ macro(mdsplus_add_test)
     string(REPLACE "\\" "/" _add_test_path "${_add_test_path}")
 
     set(_add_test_target "${_add_test_path}/${_add_test_NAME}")
-    
+
+    set(_add_test_target_list "${_add_test_target}")
+
     add_test(
         NAME ${_add_test_target}
         COMMAND ${_add_test_COMMAND}
         WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
     )
+
+    if(ENABLE_VALGRIND AND NOT _add_test_NO_VALGRIND)
+
+        set(_valgrind_flags)
+        foreach(_supp IN LISTS Valgrind_SUPPRESSION_FILES)
+            list(APPEND _valgrind_flags "--suppressions=${_supp}")
+        endforeach()
+
+        foreach(_tool IN LISTS Valgrind_TOOL_LIST)
+            set(_add_test_target_tool "${_add_test_target} (${_tool})")
+            list(APPEND _add_test_target_list "${_add_test_target_tool}")
+
+            string(REPLACE "-" "_" _tool_no_dash ${_tool})
+
+            add_test(
+                NAME "${_add_test_target_tool}"
+                COMMAND ${Valgrind_EXECUTABLE} --tool=${_tool} ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${_add_test_COMMAND}
+                WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
+            )
+        endforeach()
+        
+    endif()
+
+    if (DEFINED _add_test_TEST_LIST_VARIABLE)
+        set(${_add_test_TEST_LIST_VARIABLE} "${_add_test_target_list}")
+    endif()
     
-    list(APPEND _add_test_env_mods
+    set(_add_test_env_mods
         # Used to find the rest of MDSplus
         "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
 
@@ -92,7 +121,7 @@ macro(mdsplus_add_test)
     list(APPEND _add_test_env_mods ${_add_test_ENVIRONMENT_MODIFICATION})
     
     set_tests_properties(
-        ${_add_test_target}
+        ${_add_test_target_list}
         PROPERTIES
             ENVIRONMENT_MODIFICATION "${_add_test_env_mods}"
             FAIL_REGULAR_EXPRESSION "FAILED"

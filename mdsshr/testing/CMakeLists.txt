@@ -4,6 +4,10 @@ set(_test_source_list
     UdpEventsTestStatics.c
 )
 
+list(APPEND Valgrind_SUPPRESSION_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/valgrind.supp
+)
+
 foreach(_test_source ${_test_source_list})
 
     cmake_path(GET _test_source STEM _test_name)
