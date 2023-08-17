@@ -30,45 +30,6 @@ macro(mdsplus_add_test)
         set(_add_test_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
-    file(RELATIVE_PATH _add_test_path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-    string(REPLACE "\\" "/" _add_test_path "${_add_test_path}")
-
-    set(_add_test_target "${_add_test_path}/${_add_test_NAME}")
-
-    set(_add_test_target_list "${_add_test_target}")
-
-    add_test(
-        NAME ${_add_test_target}
-        COMMAND ${_add_test_COMMAND}
-        WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
-    )
-
-    if(ENABLE_VALGRIND AND NOT _add_test_NO_VALGRIND)
-
-        set(_valgrind_flags)
-        foreach(_supp IN LISTS Valgrind_SUPPRESSION_FILES)
-            list(APPEND _valgrind_flags "--suppressions=${_supp}")
-        endforeach()
-
-        foreach(_tool IN LISTS Valgrind_TOOL_LIST)
-            set(_add_test_target_tool "${_add_test_target} (${_tool})")
-            list(APPEND _add_test_target_list "${_add_test_target_tool}")
-
-            string(REPLACE "-" "_" _tool_no_dash ${_tool})
-
-            add_test(
-                NAME "${_add_test_target_tool}"
-                COMMAND ${Valgrind_EXECUTABLE} --tool=${_tool} ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${_add_test_COMMAND}
-                WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
-            )
-        endforeach()
-        
-    endif()
-
-    if (DEFINED _add_test_TEST_LIST_VARIABLE)
-        set(${_add_test_TEST_LIST_VARIABLE} "${_add_test_target_list}")
-    endif()
-    
     set(_add_test_env_mods
         # Used to find the rest of MDSplus
         "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
@@ -119,6 +80,63 @@ macro(mdsplus_add_test)
     endif()
 
     list(APPEND _add_test_env_mods ${_add_test_ENVIRONMENT_MODIFICATION})
+
+    file(RELATIVE_PATH _add_test_path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    string(REPLACE "\\" "/" _add_test_path "${_add_test_path}")
+
+    set(_add_test_target "${_add_test_path}/${_add_test_NAME}")
+
+    set(_add_test_target_list "${_add_test_target}")
+
+    add_test(
+        NAME ${_add_test_target}
+        COMMAND ${_add_test_COMMAND}
+        WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
+    )
+
+    if(GENERATE_VSCODE_LAUNCH_JSON)
+        message(STATUS "Adding ${_add_test_target} to .vscode/launch.json")
+
+        execute_process(
+            COMMAND ${Python_EXECUTABLE} deploy/add-launch-target.py
+                --name "${_add_test_target}"
+                --command "${_add_test_COMMAND}"
+                --environment "${_add_test_env_mods}"
+                --bin "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                --cwd "${_add_test_WORKING_DIRECTORY}"
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        )
+    endif()
+
+    if(ENABLE_VALGRIND AND NOT _add_test_NO_VALGRIND)
+
+        set(_valgrind_flags ${Valgrind_FLAGS})
+        foreach(_supp IN LISTS Valgrind_SUPPRESSION_FILES)
+            list(APPEND _valgrind_flags "--suppressions=${_supp}")
+        endforeach()
+
+        set(i 1)
+        foreach(_tool IN LISTS Valgrind_TOOL_LIST)
+            set(_add_test_target_tool "${_add_test_target} (${_tool})")
+            list(APPEND _add_test_target_list "${_add_test_target_tool}")
+
+            string(REPLACE "-" "_" _tool_no_dash ${_tool})
+
+            add_test(
+                NAME "${_add_test_target_tool}"
+                COMMAND ${CMAKE_COMMAND} -E env TEST_INDEX=${i}
+                    ${Valgrind_EXECUTABLE} --tool=${_tool} ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${_add_test_COMMAND}
+                WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
+            )
+
+            math(EXPR i "${i}+1")
+        endforeach()
+        
+    endif()
+
+    if (DEFINED _add_test_TEST_LIST_VARIABLE)
+        set(${_add_test_TEST_LIST_VARIABLE} "${_add_test_target_list}")
+    endif()
     
     set_tests_properties(
         ${_add_test_target_list}
