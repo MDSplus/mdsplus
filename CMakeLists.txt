@@ -296,9 +296,9 @@ set(WINEBOTTLE ""
 # $ENV{FFLAGS} is added by default
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} $ENV{FCFLAGS}")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/_include
@@ -384,25 +384,59 @@ if(ENABLE_LARGEFILE)
 endif()
 
 ###
-### RPATHS
-### (removing dependence on LD_LIBRARY_PATH )
+### RPATH Configuration, to remove dependence on LD_LIBRARY_PATH
+###
 
-file(RELATIVE_PATH libdir_relative
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+file(RELATIVE_PATH
+    _rpath_relative
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
 )
+
 if(APPLE)
-    list(APPEND CMAKE_INSTALL_RPATH @loader_path) # libs find libs, relatively
-    list(APPEND CMAKE_INSTALL_RPATH @executable_path/${libdir_relative}) # bin finds libs, relatively
+    set(CMAKE_MACOSX_RPATH ON)
+    list(APPEND CMAKE_INSTALL_RPATH
+        "@loader_path"
+        "@executable_path/${_rpath_relative}"
+    )
 else()
-    list(APPEND CMAKE_INSTALL_RPATH $ORIGIN)
-    list(APPEND CMAKE_INSTALL_RPATH $ORIGIN/${libdir_relative})
+    list(APPEND CMAKE_INSTALL_RPATH
+        "\${ORIGIN}"
+        "\${ORIGIN}/${_rpath_relative}"
+    )
 endif()
-# also add the install prefix (delayed evaluation until install)
-list(APPEND CMAKE_INSTALL_RPATH $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>) 
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+# list(APPEND CMAKE_INSTALL_RPATH
+#     ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
+#     # Delay evaluation until install
+#     # $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>
+# )
+
+# Automatically add libraries we depend on to RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+
+# Ensure we always build with RPATHs enabled
+# set(CMAKE_SKIP_BUILD_RPATH OFF)
+
+# Skip CMake's relink at install time, always link with the install-time RLINK
+# set(CMAKE_BUILD_WITH_INSTALL_RPATH OFF)
+
+# file(RELATIVE_PATH libdir_relative
+#     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+#     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+# )
+# if(APPLE)
+#     list(APPEND CMAKE_INSTALL_RPATH @loader_path) # libs find libs, relatively
+#     list(APPEND CMAKE_INSTALL_RPATH @executable_path/${libdir_relative}) # bin finds libs, relatively
+# else()
+#     list(APPEND CMAKE_INSTALL_RPATH $ORIGIN)
+#     list(APPEND CMAKE_INSTALL_RPATH $ORIGIN/${libdir_relative})
+# endif()
+# # also add the install prefix (delayed evaluation until install)
+# list(APPEND CMAKE_INSTALL_RPATH $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>) 
+# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# set(CMAKE_SKIP_BUILD_RPATH FALSE)
+# set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 ##
 ### Dependencies
@@ -466,16 +500,40 @@ find_package(DC1394)
 
 if(ENABLE_TESTS AND NOT APPLE)
 
-    # cmake/FindLibRT.cmake
     find_library(LIBRT rt REQUIRED)
-    # find_package(LibRT REQUIRED)
-    # -lrt
 
 endif()
 
 if(ENABLE_VALGRIND)
 
+    set(Valgrind_REQUESTED_TOOL_LIST
+        memcheck
+        helgrind
+        drd
+        exp-sgcheck
+    )
+
+    # cmake/FindValgrind.cmake
     find_package(Valgrind REQUIRED)
+
+    if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
+        AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "14"
+        AND Valgrind_VERSION VERSION_LESS "3.20")
+
+        set(_force_dwarf4 "-fdebug-default-version=4")
+        list(APPEND CMAKE_C_FLAGS ${_force_dwarf4})
+        list(APPEND CMAKE_CXX_FLAGS ${_force_dwarf4})
+
+        message(STATUS "Setting ${_force_dwarf4} due to clang >= 14 and valgrind < 3.20")
+    endif()
+
+    set(Valgrind_FLAGS
+        --gen-suppressions=all
+        --num-callers=64
+        --trace-children=yes
+        --child-silent-after-fork=yes
+        --trace-children-skip-by-arg='*SetMdsplusFileProtection*'
+    )
 
     set(Valgrind_memcheck_FLAGS
         --leak-check=full
@@ -689,7 +747,12 @@ if(_run_bootstrap)
     message("Running ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py")
     execute_process(
         COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py
+        RESULT_VARIABLE _result
     )
+
+    if(NOT _result EQUAL 0)
+        message(FATAL_ERROR "Failed to run bootstrap")
+    endif()
 endif()
 
 ###
@@ -815,6 +878,15 @@ if(ENABLE_TESTS)
     ### Testing
     ###
 
+    option(GENERATE_VSCODE_LAUNCH_JSON
+        "Generate .vscode/launch.json, this option disables itself after it is run."
+        OFF
+    )
+
+    if(GENERATE_VSCODE_LAUNCH_JSON)
+        message(STATUS "Generating .vscode/launch.json")
+    endif()
+
     include(MDSplusAddTest)
 
     add_subdirectory(testing)
@@ -832,6 +904,9 @@ if(ENABLE_TESTS)
     add_subdirectory(java/tests) # defines JAVA_TEST_ENV_MODS, JAVA_TEST_JAR_LIST
     add_subdirectory(java/mdsobjects/tests)
     add_subdirectory(java/mdsplus-api/tests)
+
+    # Disable this option after it has been set, otherwise it bogs down every Configure
+    set(GENERATE_VSCODE_LAUNCH_JSON OFF CACHE BOOL "" FORCE)
 
 endif()
 

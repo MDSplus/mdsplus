@@ -46,8 +46,13 @@ int dtype_cstring = DTYPE_CSTRING;
 #endif
 
 #define TREE "TEST"
-#define SHOT 7357
-#define SHOTS "7357"
+
+static int SHOT = 7357;
+
+// (SLW) Removed these in order to use $TEST_INDEX
+// #define SHOT 7357
+// #define SHOTS "7357"
+
 #define TEST(test)                                                             \
   {                                                                            \
     int s = test;                                                              \
@@ -271,6 +276,15 @@ void TestArray2D()
 int main(int argc, char *argv[])
 {
   (void)argv;
+
+  int test_index = 0;
+  const char * test_index_env = getenv("TEST_INDEX");
+  if (test_index_env) {
+    test_index = atoi(test_index_env);
+  }
+
+  SHOT += test_index;
+
   int returnlength = 0;
   int status = 0;
   int dsc = descr(&dtype_long, &status, &null);
@@ -282,15 +296,25 @@ int main(int argc, char *argv[])
     socket = MdsConnect("local://0");
     TEST((socket != INVALID_SOCKET));
   }
-  TEST(
-      MdsValue("TreeOpenNew('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
+
+  char expression[64];
+  
+  snprintf(expression, sizeof(expression), "TreeOpenNew('" TREE "',%d)", SHOT);
+  TEST(MdsValue(expression, &dsc, &null, &returnlength))
+
   TEST(MdsValue("{_=-1;TreeAddNode('A',_,'ANY');}", &dsc, &null, &returnlength))
-  TEST(MdsValue("TreeWrite('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
-  TEST(MdsValue("TreeClose('" TREE "'," SHOTS ")", &dsc, &null, &returnlength))
+
+  snprintf(expression, sizeof(expression), "TreeWrite('" TREE "',%d)", SHOT);
+  TEST(MdsValue(expression, &dsc, &null, &returnlength))
+
+  snprintf(expression, sizeof(expression), "TreeClose('" TREE "',%d)", SHOT);
+  TEST(MdsValue(expression, &dsc, &null, &returnlength))
+
   TestTreeOpenClose();
   TestTdi();
   TestArray1D();
   TestArray2D();
+
   printf("TEST OK\n");
   exit(0);
 }
