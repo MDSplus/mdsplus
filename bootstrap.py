@@ -14,7 +14,7 @@ def run(args):
     print(f"Running '{command}'")
     status = Popen(args).wait()
     if status != 0:
-        print("Failed to run '{command}'")
+        print(f"Failed to run '{command}'")
         exit(1)
 
 run([sys.executable, 'deploy/gen-messages-exceptions.py'])
