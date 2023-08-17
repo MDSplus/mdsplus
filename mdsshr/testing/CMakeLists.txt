@@ -31,10 +31,10 @@ foreach(_test_source ${_test_source_list})
 
 endforeach()
 
-# We need to run these serially so the don't use the same socket
-set_tests_properties(
-    mdsshr/testing/UdpEventsTest
-    mdsshr/testing/UdpEventsTestStatics
-    PROPERTIES 
-        RUN_SERIAL TRUE
-)
+# # We need to run these serially so the don't use the same socket
+# set_tests_properties(
+#     mdsshr/testing/UdpEventsTest
+#     mdsshr/testing/UdpEventsTestStatics
+#     PROPERTIES 
+#         RUN_SERIAL TRUE
+# )

@@ -206,11 +206,21 @@ int main(int argc, char **argv)
   }
   else
   {
+    int test_index = 0;
+    char * test_index_env = getenv("TEST_INDEX");
+    if (test_index_env) {
+      test_index = atoi(test_index_env);
+    }
+
+    int port = 12345 + test_index;
+    char port_str[8];
+    snprintf(port_str, sizeof(port_str), "%d", port);
+
     testio("thread://0");
     testio("local://0");
     char server[32] = "";
     mdsip_t mdsip = {0, NULL, NULL, 0};
-    if (!start_mdsip(&mdsip, "Tcp", MODE_SS, server, "12345"))
+    if (!start_mdsip(&mdsip, "Tcp", MODE_SS, server, port_str))
     {
       sleep(3);
       testio(server);

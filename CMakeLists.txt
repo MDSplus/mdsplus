@@ -466,16 +466,40 @@ find_package(DC1394)
 
 if(ENABLE_TESTS AND NOT APPLE)
 
-    # cmake/FindLibRT.cmake
     find_library(LIBRT rt REQUIRED)
-    # find_package(LibRT REQUIRED)
-    # -lrt
 
 endif()
 
 if(ENABLE_VALGRIND)
 
+    set(Valgrind_REQUESTED_TOOL_LIST
+        memcheck
+        helgrind
+        drd
+        exp-sgcheck
+    )
+
+    # cmake/FindValgrind.cmake
     find_package(Valgrind REQUIRED)
+
+    if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
+        AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "14"
+        AND Valgrind_VERSION VERSION_LESS "3.20")
+
+        set(_force_dwarf4 "-fdebug-default-version=4")
+        list(APPEND CMAKE_C_FLAGS ${_force_dwarf4})
+        list(APPEND CMAKE_CXX_FLAGS ${_force_dwarf4})
+
+        message(STATUS "Setting ${_force_dwarf4} due to clang >= 14 and valgrind < 3.20")
+    endif()
+
+    set(Valgrind_FLAGS
+        --gen-suppressions=all
+        --num-callers=64
+        --trace-children=yes
+        --child-silent-after-fork=yes
+        --trace-children-skip-by-arg='*SetMdsplusFileProtection*'
+    )
 
     set(Valgrind_memcheck_FLAGS
         --leak-check=full
@@ -815,6 +839,15 @@ if(ENABLE_TESTS)
     ### Testing
     ###
 
+    option(GENERATE_VSCODE_LAUNCH_JSON
+        "Generate .vscode/launch.json, this option disables itself after it is run."
+        OFF
+    )
+
+    if(GENERATE_VSCODE_LAUNCH_JSON)
+        message(STATUS "Generating .vscode/launch.json")
+    endif()
+
     include(MDSplusAddTest)
 
     add_subdirectory(testing)
@@ -832,6 +865,9 @@ if(ENABLE_TESTS)
     add_subdirectory(java/tests) # defines JAVA_TEST_ENV_MODS, JAVA_TEST_JAR_LIST
     add_subdirectory(java/mdsobjects/tests)
     add_subdirectory(java/mdsplus-api/tests)
+
+    # Disable this option after it has been set, otherwise it bogs down every Configure
+    set(GENERATE_VSCODE_LAUNCH_JSON OFF CACHE BOOL "" FORCE)
 
 endif()
 

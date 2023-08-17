@@ -98,7 +98,7 @@ foreach(_python_test_source ${_python_test_source_list})
         TEST_LIST_VARIABLE _test_target_list
     )
 
-    if(_python_test IN_LIST _should_fail_source_list)
+    if(_python_test_source IN_LIST _should_fail_source_list)
         list(APPEND _should_fail_target_list ${_test_target_list})
     endif()
 

@@ -70,10 +70,16 @@ void loadCmds(const char *filename)
 
 int SingleThreadTest(int idx, int repeats)
 {
+  int test_index = 0;
+  char * test_index_env = getenv("TEST_INDEX");
+  if (test_index_env) {
+    test_index = atoi(test_index_env);
+  }
+  
   int ii = 0, ic = 0;
   setenv("t_tdi_path", ".", 1);
   delete MDSplus::execute("TreeShr->TreeUsePrivateCtx(1)");
-  MDSplus::Int32 *shot = new MDSplus::Int32(10 * idx + 1);
+  MDSplus::Int32 *shot = new MDSplus::Int32((100 * test_index) + (10 * idx) + 1);
   delete MDSplus::executeWithArgs("_SHOT=$", 1, shot);
   delete shot;
   delete MDSplus::execute("_EXPT='T_TDI'");
@@ -168,6 +174,9 @@ int main(int argc, char *argv[])
       free(filename);
     }
   }
+  
+  TEST_TIMEOUT(100);
+
   int single = 0;
   BEGIN_TESTING(SingleThread);
   setenv("t_tdi_path", ".", 1);
@@ -175,8 +184,6 @@ int main(int argc, char *argv[])
   END_TESTING;
   if (single)
     exit(1);
-
-  TEST_TIMEOUT(100);
 
   if (stksize < 0x40000)
   {
