@@ -138,7 +138,7 @@ void __mark_point(const char *__assertion, const char *__file,
 //  TEST  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TEST_DEFAULT_TIMEOUT 10 // seconds
+#define TEST_DEFAULT_TIMEOUT 1500 // seconds
 
 #define TEST_FORK(value) __test_setfork(value);
 

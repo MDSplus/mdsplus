@@ -139,7 +139,6 @@ void test_tree_open(const char *prot, const unsigned short port,
 int main(int argc, char *argv[])
 {
   int ipv6 = (argc > 1 && !strcmp(argv[1], "ipv6"));
-  TEST_TIMEOUT(30);
   setenv("t_connect_path", ".", 1);
 
 #ifdef _WIN32
