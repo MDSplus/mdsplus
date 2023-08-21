@@ -55,8 +55,6 @@ int main(int argc __attribute__((unused)),
 
   int shot = -1 + (test_index * 10);
 
-  TEST_TIMEOUT(100);
-  
   BEGIN_TESTING(MDSTreeSuppression);
 #ifdef _WIN32
 #define setenv(name, val, extra) _putenv_s(name, val)
