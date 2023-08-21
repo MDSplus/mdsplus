@@ -1,7 +1,8 @@
 
-include(GetDate)
-
 find_package(Git QUIET)
+
+find_program(date_EXECUTABLE date)
+mark_as_advanced(date_EXECUTABLE)
 
 # Convenience macro for all the git queries we need to make
 macro(git _output_variable) # additional arguments are in ${ARGN}
@@ -52,7 +53,17 @@ if(NOT RELEASE_MAJOR OR NOT RELEASE_MINOR OR NOT RELEASE_RELEASE)
 endif()
 
 set(RELEASE_VERSION "${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_RELEASE}")
-get_date(RELEASE_DATE)
+
+if(date_EXECUTABLE)
+    execute_process(
+        COMMAND "${date_EXECUTABLE}"
+        OUTPUT_VARIABLE RELEASE_DATE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+else()
+    # STRING(TIMESTMAP) is missing AM/PM and the Timezone, but it is a sensible fallback
+    string(TIMESTAMP RELEASE_DATE "%a %d %b %Y %H:%M:%S UTC" UTC)
+endif()
 
 if(DEFINED ENV{BRANCH})
     string(SUBSTRING "$ENV{BRANCH}" 0 12 RELEASE_BRANCH)

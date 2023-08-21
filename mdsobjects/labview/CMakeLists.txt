@@ -18,7 +18,7 @@ if(ENABLE_LABVIEW)
             SET(_host_cpu "x86_64")
         endif()
 
-        set(LIBLV ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools/labview-${_host_cpu}.lib)
+        set(LIBLV ${_3rd_party_apis}/labview/cintools/labview-${_host_cpu}.lib)
 
     else()
 
@@ -50,7 +50,7 @@ if(ENABLE_LABVIEW)
             target_include_directories(
                 LV
                 PUBLIC
-                    ${CMAKE_SOURCE_DIR}/3rd-party-apis/labview/cintools
+                    ${_3rd_party_apis}/labview/cintools
             )
 
         endif()

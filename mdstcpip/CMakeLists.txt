@@ -87,7 +87,7 @@ target_compile_definitions(
         -DLIBPREFIX=MdsIp
 )
 
-add_static_copy(MdsIpShr)
+mdsplus_add_static_copy(MdsIpShr)
 
 install(TARGETS MdsIpShr MdsIpShr-static)
 

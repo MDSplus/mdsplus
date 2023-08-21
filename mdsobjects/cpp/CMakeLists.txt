@@ -20,6 +20,6 @@ target_link_libraries(
         MdsIpShr
 )
 
-add_static_copy(MdsObjectsCppShr)
+mdsplus_add_static_copy(MdsObjectsCppShr)
 
 install(TARGETS MdsObjectsCppShr MdsObjectsCppShr-static)

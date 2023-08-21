@@ -19,6 +19,9 @@ if not hasattr(shutil, 'which'):
 # Move to the root of the repository
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Move to the root of the repository
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 have_tools = True
 
 # Yacc/Bison Parser Generator

@@ -1,4 +1,4 @@
-
+#
 # Call add_test() and configure the MDSplus environment variables.
 #
 # mdsplus_add_test(NAME <name> COMMAND <command> [<arg>...])
@@ -11,11 +11,8 @@
 #
 macro(mdsplus_add_test)
 
-    # Boolean options
     set(_boolean_options NO_VALGRIND)
-    # Regular Arguments
     set(_single_value_options NAME WORKING_DIRECTORY TEST_LIST_VARIABLE)
-    # Variable Arguments
     set(_multi_value_options COMMAND ENVIRONMENT_MODIFICATION)
 
     cmake_parse_arguments(

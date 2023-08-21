@@ -8,4 +8,4 @@ add_library(
     DemoAdc.c
 )
 
-add_static_copy(DemoAdcShr)
+mdsplus_add_static_copy(DemoAdcShr)
