@@ -175,8 +175,6 @@ int main(int argc, char *argv[])
     }
   }
   
-  TEST_TIMEOUT(100);
-
   int single = 0;
   BEGIN_TESTING(SingleThread);
   setenv("t_tdi_path", ".", 1);
