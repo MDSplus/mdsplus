@@ -33,8 +33,16 @@ install(
 ### etc/envsyms
 ###
 
-# (SLW) TODO:
-set(LIBPATH "LD_LIBRARY_PATH")
+if(WIN32)
+    set(LIBPATH "PATH")
+    set(LIBPATH_JOIN ";")
+elseif(APPLE)
+    set(LIBPATH "DYLD_LIBRARY_PATH")
+    set(LIBPATH_JOIN ":")
+else()
+    set(LIBPATH "LD_LIBRARY_PATH")
+    set(LIBPATH_JOIN ":")
+endif()
 
 # This must be placed in the binary directory as it contains information
 # specific to the OS/Compiler we're using
