@@ -14,30 +14,41 @@ enable_language(Fortran)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 98)
 
+message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message("CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (${CMAKE_C_COMPILER_ID})")
+message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (${CMAKE_CXX_COMPILER_ID})")
+
 # Query version and release information from git
-include(GitRevision)
+include(MDSplusGitRevision)
 
 ###
-### Update Submodules
+### Download 3rd-party-apis
 ###
 
-# TODO: Make sure we *should* run git submodule update
+set(_3rd_party_apis ${CMAKE_BINARY_DIR}/3rd-party-apis-master)
 
-find_package(Git QUIET)
+if(NOT EXISTS ${_3rd_party_apis})
 
-if(GIT_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule --quiet update --init --recursive
+    set(_3rd_party_apis_url "https://github.com/MDSplus/3rd-party-apis/archive/refs/heads/master.zip")
+    set(_3rd_party_apis_zip ${CMAKE_BINARY_DIR}/3rd-party-apis-master.zip)
+
+    message(STATUS "Downloading and extracting ${_3rd_party_apis_url}")
+
+    file(DOWNLOAD ${_3rd_party_apis_url} ${_3rd_party_apis_zip})
+
+    # We sadly have no control over the name of the folder it gets extracted to
+    # For GitHub, it will always be "REPOSITORY_NAME-BRANCH"
+    file(ARCHIVE_EXTRACT 
+        INPUT ${_3rd_party_apis_zip}
+        DESTINATION ${CMAKE_BINARY_DIR}
     )
+
 endif()
 
 ###
 ### Options
 ###
-
-message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
-message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-message("CMAKE_HOST_SYSTEM_PROCESSOR: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 # --x-includes=
 # --x-libraries=
@@ -74,14 +85,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
             "RelWithDebInfo"
     )
 
-endif()
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    option(
-        ENABLE_GPROF
-        "Enable profiling with gprof (compile and link with -pg). [default: OFF]"
-        OFF
-    )
 endif()
 
 # replaces --prefix
@@ -287,6 +290,22 @@ set(WINEBOTTLE ""
     ""
 )
 
+include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
+
+check_c_compiler_flag(-pg _have_pg_flag_c)
+check_cxx_compiler_flag(-pg _have_pg_flag_cxx)
+
+if(_have_pg_flag_c AND _have_pg_flag_cxx)
+    option(ENABLE_GPROF
+        "Enable profiling with gprof (compile and link with -pg)"
+        OFF
+    )
+else()
+    # TODO: Warning?
+    set(ENABLE_GPROF OFF)
+endif()
+
 ###
 ### Global Configuration
 ###
@@ -330,9 +349,6 @@ else()
     )
 endif()
 
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-
-    # gprof is only supported with gcc
     if(ENABLE_GPROF)
         STRING(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
         if(NOT _build_type STREQUAL "relwithdebinfo")
@@ -343,8 +359,6 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
         add_link_options(-pg)
     endif()
     
-endif()
-
 if(ENABLE_WERROR)
     if(MSVC)
         add_compile_options(/WX)
@@ -384,7 +398,7 @@ if(ENABLE_LARGEFILE)
 endif()
 
 ###
-### RPATH Configuration, to remove dependence on LD_LIBRARY_PATH
+### RPATH Configuration, to remove dependence on [DY]LD_LIBRARY_PATH
 ###
 
 file(RELATIVE_PATH
@@ -398,6 +412,7 @@ if(APPLE)
     list(APPEND CMAKE_INSTALL_RPATH
         "@loader_path"
         "@executable_path/${_rpath_relative}"
+        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
     )
 else()
     list(APPEND CMAKE_INSTALL_RPATH
@@ -406,37 +421,8 @@ else()
     )
 endif()
 
-# list(APPEND CMAKE_INSTALL_RPATH
-#     ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
-#     # Delay evaluation until install
-#     # $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>
-# )
-
 # Automatically add libraries we depend on to RPATH
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
-
-# Ensure we always build with RPATHs enabled
-# set(CMAKE_SKIP_BUILD_RPATH OFF)
-
-# Skip CMake's relink at install time, always link with the install-time RLINK
-# set(CMAKE_BUILD_WITH_INSTALL_RPATH OFF)
-
-# file(RELATIVE_PATH libdir_relative
-#     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
-#     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
-# )
-# if(APPLE)
-#     list(APPEND CMAKE_INSTALL_RPATH @loader_path) # libs find libs, relatively
-#     list(APPEND CMAKE_INSTALL_RPATH @executable_path/${libdir_relative}) # bin finds libs, relatively
-# else()
-#     list(APPEND CMAKE_INSTALL_RPATH $ORIGIN)
-#     list(APPEND CMAKE_INSTALL_RPATH $ORIGIN/${libdir_relative})
-# endif()
-# # also add the install prefix (delayed evaluation until install)
-# list(APPEND CMAKE_INSTALL_RPATH $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>) 
-# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-# set(CMAKE_SKIP_BUILD_RPATH FALSE)
-# set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 ##
 ### Dependencies
@@ -590,7 +576,7 @@ if(ENABLE_IDL)
             /usr/local/exelis/idl
             /usr/local/itt/idl
             /usr/local/rsi/idl
-            ${CMAKE_SOURCE_DIR}/3rd-party-apis/idl
+            ${_3rd_party_apis}/idl
         )
     endif()
 
@@ -701,12 +687,14 @@ configure_file(
 )
 
 ###
-### Ensure that bootstrap.py has been run
+### Ensure gen-* scripts have been run
 ###
 
-set(
-    _generated_files
-    # deploy/gen-messages-exceptions.py
+include(MDSplusGenerateFiles)
+
+mdsplus_generate_files(
+    COMMAND ${Python_EXECUTABLE} deploy/gen-messages-exceptions.py
+    GENERATED_FILES
     include/treeshr_messages.h
     include/tdishr_messages.h
     include/mdsshr_messages.h
@@ -718,13 +706,29 @@ set(
     python/MDSplus/mdsExceptions.py
     mdsshr/MdsGetStdMsg.c
     java/mdsplus-api/src/main/java/mds/MdsException.java
-    # deploy/gen-include-opcbuiltins.py
+)
+
+mdsplus_generate_files(
+    COMMAND ${Python_EXECUTABLE} deploy/gen-include-opcbuiltins.py
+    GENERATED_FILES
     include/opcbuiltins.h
-    # deploy/gen-python-compound.py
+)
+
+mdsplus_generate_files(
+    COMMAND ${Python_EXECUTABLE} deploy/gen-python-compound.py
+    GENERATED_FILES
     python/MDSplus/compound.py
-    # deploy/gen-tdishr-TdiHash.py
+)
+
+mdsplus_generate_files(
+    COMMAND ${Python_EXECUTABLE} deploy/gen-tdishr-TdiHash.py
+    GENERATED_FILES
     tdishr/TdiHash.c
-    # deploy/gen-yacc-lex.py
+)
+
+mdsplus_generate_files(
+    COMMAND ${Python_EXECUTABLE} deploy/gen-yacc-lex.py
+    GENERATED_FILES
     tdishr/TdiLex.c
     tdishr/TdiYacc.c
     treeshr/TreeFindNodeWild.c
@@ -732,28 +736,6 @@ set(
     mdsdcl/cmdParseLex.c
     mdsdcl/mdsdclDeltatimeToSeconds.c
 )
-
-# Check to see if we already have all the files generated
-set(_run_bootstrap FALSE)
-foreach(_file IN LISTS _generated_files)
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/${_file}")
-        message("Missing '${_file}', will run bootstrap.py")
-        set(_run_bootstrap TRUE)
-    endif()
-endforeach()
-
-# If not, generate them
-if(_run_bootstrap)
-    message("Running ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py")
-    execute_process(
-        COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py
-        RESULT_VARIABLE _result
-    )
-
-    if(NOT _result EQUAL 0)
-        message(FATAL_ERROR "Failed to run bootstrap")
-    endif()
-endif()
 
 ###
 ### Generate Documentation
@@ -797,7 +779,7 @@ set(MODE_644
 # that and create a second library target with the suffix `-static`. For `MdsShr` for example, it will
 # create the target `MdsShr-static`, which could then produce `libMdsShr.a`. If BUILD_SHARED_LIBS=OFF,
 # then only the static libraries are built, and the `-static` targets will be ALIAS targets instead.
-include(AddStaticCopy)
+include(MDSplusAddStaticCopy)
 
 # Fortran Libraries
 

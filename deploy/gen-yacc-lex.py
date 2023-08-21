@@ -5,6 +5,9 @@ import shutil
 
 from subprocess import *
 
+# Move to the root of the repository
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 have_tools = True
 
 # Yacc/Bison Parser Generator

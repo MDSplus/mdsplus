@@ -1,5 +1,8 @@
-
-macro(add_static_copy _target)
+#
+# Create a static copy of a shared library, with all the same properties.
+# Note: If BUILD_SHARED_LIBS=OFF, then this creates an ALIAS target instead.
+#
+macro(mdsplus_add_static_copy _target)
 
     if(BUILD_SHARED_LIBS)
 

@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+
+import os
+
+# Move to the root of the repository
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 cpy_header = """
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 

@@ -17,7 +17,7 @@ if(Sybase_FOUND)
             Sybase::Sybase
     )
 
-    add_static_copy(MdsSql)
+    mdsplus_add_static_copy(MdsSql)
 
     install(TARGETS MdsSql MdsSql-static)
 
