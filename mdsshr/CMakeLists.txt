@@ -63,7 +63,7 @@ if(WIN32)
 
 endif()
 
-add_static_copy(MdsShr)
+mdsplus_add_static_copy(MdsShr)
 
 install(TARGETS MdsShr MdsShr-static)
 

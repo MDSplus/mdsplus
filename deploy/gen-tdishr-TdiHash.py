@@ -5,6 +5,9 @@ import shutil
 
 from subprocess import *
 
+# Move to the root of the repository
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 OPCODES_FILENAME = 'tdishr/opcodes.csv'
 OUTPUT_FILENAME = 'tdishr/TdiHash.c'
 INTERMEDIARY_FILENAME = 'tdishr/TdiHash.c.in'

@@ -1,5 +1,9 @@
 
+import os
 import csv
+
+# Move to the root of the repository
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 OPCODES_FILENAME = 'tdishr/opcodes.csv'
 OUTPUT_FILENAME = 'include/opcbuiltins.h'
