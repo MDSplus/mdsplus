@@ -296,9 +296,9 @@ set(WINEBOTTLE ""
 # $ENV{FFLAGS} is added by default
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} $ENV{FCFLAGS}")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/_include
@@ -384,25 +384,59 @@ if(ENABLE_LARGEFILE)
 endif()
 
 ###
-### RPATHS
-### (removing dependence on LD_LIBRARY_PATH )
+### RPATH Configuration, to remove dependence on LD_LIBRARY_PATH
+###
 
-file(RELATIVE_PATH libdir_relative
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+file(RELATIVE_PATH
+    _rpath_relative
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
 )
+
 if(APPLE)
-    list(APPEND CMAKE_INSTALL_RPATH @loader_path) # libs find libs, relatively
-    list(APPEND CMAKE_INSTALL_RPATH @executable_path/${libdir_relative}) # bin finds libs, relatively
+    set(CMAKE_MACOSX_RPATH ON)
+    list(APPEND CMAKE_INSTALL_RPATH
+        "@loader_path"
+        "@executable_path/${_rpath_relative}"
+    )
 else()
-    list(APPEND CMAKE_INSTALL_RPATH $ORIGIN)
-    list(APPEND CMAKE_INSTALL_RPATH $ORIGIN/${libdir_relative})
+    list(APPEND CMAKE_INSTALL_RPATH
+        "\${ORIGIN}"
+        "\${ORIGIN}/${_rpath_relative}"
+    )
 endif()
-# also add the install prefix (delayed evaluation until install)
-list(APPEND CMAKE_INSTALL_RPATH $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>) 
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+# list(APPEND CMAKE_INSTALL_RPATH
+#     ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
+#     # Delay evaluation until install
+#     # $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>
+# )
+
+# Automatically add libraries we depend on to RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+
+# Ensure we always build with RPATHs enabled
+# set(CMAKE_SKIP_BUILD_RPATH OFF)
+
+# Skip CMake's relink at install time, always link with the install-time RLINK
+# set(CMAKE_BUILD_WITH_INSTALL_RPATH OFF)
+
+# file(RELATIVE_PATH libdir_relative
+#     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+#     ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+# )
+# if(APPLE)
+#     list(APPEND CMAKE_INSTALL_RPATH @loader_path) # libs find libs, relatively
+#     list(APPEND CMAKE_INSTALL_RPATH @executable_path/${libdir_relative}) # bin finds libs, relatively
+# else()
+#     list(APPEND CMAKE_INSTALL_RPATH $ORIGIN)
+#     list(APPEND CMAKE_INSTALL_RPATH $ORIGIN/${libdir_relative})
+# endif()
+# # also add the install prefix (delayed evaluation until install)
+# list(APPEND CMAKE_INSTALL_RPATH $<$<BOOL:TRUE>:\${CMAKE_INSTALL_PREFIX}/\${CMAKE_INSTALL_LIBDIR}>) 
+# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# set(CMAKE_SKIP_BUILD_RPATH FALSE)
+# set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 ##
 ### Dependencies
@@ -713,7 +747,12 @@ if(_run_bootstrap)
     message("Running ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py")
     execute_process(
         COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/bootstrap.py
+        RESULT_VARIABLE _result
     )
+
+    if(NOT _result EQUAL 0)
+        message(FATAL_ERROR "Failed to run bootstrap")
+    endif()
 endif()
 
 ###
