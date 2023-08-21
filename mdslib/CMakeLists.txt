@@ -22,7 +22,7 @@ target_compile_definitions(
         -DLIBPREFIX=MdsLib
 )
 
-add_static_copy(MdsLib)
+mdsplus_add_static_copy(MdsLib)
 
 install(TARGETS MdsLib MdsLib-static)
 
@@ -49,7 +49,7 @@ target_compile_definitions(
         -D_CLIENT_ONLY
 )
 
-add_static_copy(MdsLib_client)
+mdsplus_add_static_copy(MdsLib_client)
 
 install(TARGETS MdsLib_client MdsLib_client-static)
 
@@ -76,6 +76,6 @@ target_compile_definitions(
         -DOLD_FORTRAN_API
 )
 
-add_static_copy(MdsLib_fortran)
+mdsplus_add_static_copy(MdsLib_fortran)
 
 install(TARGETS MdsLib_fortran MdsLib_fortran-static)

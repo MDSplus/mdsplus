@@ -66,6 +66,6 @@ target_compile_definitions(
         -DLIBPREFIX=Tree
 )
 
-add_static_copy(TreeShr)
+mdsplus_add_static_copy(TreeShr)
 
 install(TARGETS TreeShr TreeShr-static)

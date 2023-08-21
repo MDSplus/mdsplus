@@ -21,7 +21,7 @@ if(HDF5_FOUND)
             HDF5::HDF5
     )
 
-    add_static_copy(hdf5tdi)
+    mdsplus_add_static_copy(hdf5tdi)
 
     install(TARGETS hdf5tdi hdf5tdi-static)
 

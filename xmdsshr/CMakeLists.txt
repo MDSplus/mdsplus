@@ -43,7 +43,7 @@ if(Motif_FOUND)
             Motif::Motif
     )
 
-    add_static_copy(XmdsShr)
+    mdsplus_add_static_copy(XmdsShr)
 
     install(TARGETS XmdsShr XmdsShr-static)
 

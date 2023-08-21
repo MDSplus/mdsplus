@@ -19,6 +19,6 @@ target_link_libraries(
         Mdsdcl
 )
 
-add_static_copy(MdsServerShr)
+mdsplus_add_static_copy(MdsServerShr)
 
 install(TARGETS MdsServerShr MdsServerShr-static)

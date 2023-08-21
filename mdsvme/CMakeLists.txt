@@ -8,4 +8,4 @@ add_library(
     mdsvme.c
 )
 
-add_static_copy(MdsVme)
+mdsplus_add_static_copy(MdsVme)

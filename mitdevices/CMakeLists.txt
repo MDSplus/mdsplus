@@ -118,7 +118,7 @@ if (ENABLE_IDL)
     )
 endif()
 
-add_static_copy(MitDevices)
+mdsplus_add_static_copy(MitDevices)
 
 install(TARGETS MitDevices MitDevices-static)
 
