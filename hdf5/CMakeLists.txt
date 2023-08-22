@@ -1,6 +1,7 @@
 
 if(HDF5_FOUND)
 
+    # We are currently locked into the 1.6 API
     compile_definitions(
         -DH5_USE_16_API
     )

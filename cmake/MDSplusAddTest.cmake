@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 #
 # Call add_test() and configure the MDSplus environment variables.
 #

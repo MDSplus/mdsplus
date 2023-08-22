@@ -60,8 +60,8 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--enable-valgrind`                     | `ENABLE_VALGRIND=ON`                                    |
 | `--enable-doxygen`                      | `ENABLE_DOXYGEN=ON`                                     |
 | `--enable-werror`                       | `ENABLE_WERROR=ON`                                      |
-| `--enable-wreturns`                     | `ENABLE_WRETURNS=ON`                                    |
-| `--enable-wconversion`                  | `ENABLE_WCONVERSION=ON`                                 |
+| `--enable-wreturns`                     |                                                         |
+| `--enable-wconversion`                  |                                                         |
 | `--enable-sanitize=[FLAVOR]`            | `SANITIZE=[FLAVOR]`                                     |
 | `--enable-silent-rules`                 | `$VERBOSE`*                                             |
 | `--disable-silent-rules`                | `$CMAKE_NO_VERBOSE`*                                    |
