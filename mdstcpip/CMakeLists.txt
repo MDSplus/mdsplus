@@ -94,9 +94,9 @@ target_compile_definitions(
         -DLIBPREFIX=MdsIp
 )
 
-mdsplus_add_static_copy(MdsIpShr)
+mdsplus_add_static_copy(MdsIpShr _static_target)
 
-install(TARGETS MdsIpShr MdsIpShr-static)
+install(TARGETS MdsIpShr ${_static_target})
 
 ###
 ### MdsIpTCP

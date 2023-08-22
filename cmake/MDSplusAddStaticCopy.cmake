@@ -1,20 +1,26 @@
 include_guard(GLOBAL)
 
 #
-# Create a static copy of a shared library, with all the same properties.
-# Note: If BUILD_SHARED_LIBS=OFF, then this creates an ALIAS target instead.
+# Create a static copy of a shared library, with all the same properties,
+# and set ${_out_static_target} to the name of the static library target.
+# Note: If BUILD_SHARED_LIBS=OFF, then ${_out_static_target} will be unset
 #
-macro(mdsplus_add_static_copy _target)
+macro(mdsplus_add_static_copy _target _out_static_target)
+
+    set(${_out_target_list} ${_target})
 
     if(BUILD_SHARED_LIBS)
 
+        set(_static_target "${_target}-static")
+        set(${_out_static_target} ${_static_target})
+
         add_library(
-            "${_target}-static" STATIC
+            ${_static_target} STATIC
             $<TARGET_OBJECTS:${_target}>
         )
 
         set_target_properties(
-            "${_target}-static"
+            ${_static_target}
             PROPERTIES
                 OUTPUT_NAME "${_target}"
         )
@@ -26,7 +32,7 @@ macro(mdsplus_add_static_copy _target)
 
         if(_include_directories)
             target_include_directories(
-                "${_target}-static"
+                ${_static_target}
                 PUBLIC
                     "${_include_directories}"
             )
@@ -39,7 +45,7 @@ macro(mdsplus_add_static_copy _target)
 
         if(_compile_definitions)
             target_compile_definitions(
-                "${_target}-static"
+                ${_static_target}
                 PUBLIC
                     ${_compile_definitions}
             )
@@ -52,7 +58,7 @@ macro(mdsplus_add_static_copy _target)
 
         if(_compile_options)
             target_compile_definitions(
-                "${_target}-static"
+                ${_static_target}
                 PUBLIC
                     ${_compile_options}
             )
@@ -65,7 +71,7 @@ macro(mdsplus_add_static_copy _target)
 
         if(_link_libraries)
             target_link_libraries(
-                "${_target}-static"
+                ${_static_target}
                 PUBLIC
                     ${_link_libraries}
             )
@@ -78,7 +84,7 @@ macro(mdsplus_add_static_copy _target)
 
         if(_link_options)
             target_link_options(
-                "${_target}-static"
+                ${_static_target}
                 PUBLIC
                     ${_link_options}
             )
@@ -86,7 +92,7 @@ macro(mdsplus_add_static_copy _target)
 
     else()
 
-        add_library("${_target}-static" ALIAS ${_target})
+        unset(${_out_static_target})
 
     endif()
 

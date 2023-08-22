@@ -18,8 +18,8 @@ if(ENABLE_IDL AND IDL_FOUND)
             IDL::IDL
     )
 
-    mdsplus_add_static_copy(IdlMdsEvent)
+    mdsplus_add_static_copy(IdlMdsEvent _static_target)
 
-    install(TARGETS IdlMdsEvent IdlMdsEvent-static)
+    install(TARGETS IdlMdsEvent ${_static_target})
 
 endif()

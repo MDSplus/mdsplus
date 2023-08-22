@@ -19,8 +19,8 @@ if(ENABLE_IDL AND IDL_FOUND)
             IDL::IDL
     )
 
-    mdsplus_add_static_copy(IdlMdsWidgets)
+    mdsplus_add_static_copy(IdlMdsWidgets _static_target)
 
-    install(TARGETS IdlMdsWidgets IdlMdsWidgets-static)
+    install(TARGETS IdlMdsWidgets ${_static_target})
 
 endif()
