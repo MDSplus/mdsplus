@@ -25,8 +25,16 @@ if(WIN32)
     set(_ext ".bat")
 endif()
 
+set(_script_list
+    mdsccl${_ext}
+)
+
+file(COPY ${_script_list}
+    DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+)
+
 install(
-    FILES mdsccl${_ext}
-    PERMISSIONS ${MODE_755}
+    FILES ${_script_list}
     TYPE BIN
+    PERMISSIONS ${MODE_755}
 )

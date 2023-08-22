@@ -233,27 +233,22 @@ install(
 ###
 
 if(WIN32)
-    install(
-        FILES
-            # mdsip_service.exe.manifest # TODO: ???
-            mdsip-client-ssh.bat
-            mdsip-client-sshp.bat
-            mdsip-client-local.bat
-        TYPE BIN
+    set(_script_list
+        # mdsip_service.exe.manifest # TODO: ???
+        mdsip-client-ssh.bat
+        mdsip-client-sshp.bat
+        mdsip-client-local.bat
     )
 else()
-    install(
-        FILES
-            mdsipd
-            mdsip_server
-            mdsip-client-ssh
-            mdsip-client-sshp
-            mdsip-client-http
-            mdsip-client-local
-            mdsip-server-ssh
-            mdsip-server-http
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
+    set(_script_list
+        mdsipd
+        mdsip_server
+        mdsip-client-ssh
+        mdsip-client-sshp
+        mdsip-client-http
+        mdsip-client-local
+        mdsip-server-ssh
+        mdsip-server-http
     )
 endif()
 
@@ -283,15 +278,25 @@ if(Globus_FOUND AND Globus_FLAVOR)
     ### Globus-only Scripts
     ###
     
-    install(
-        FILES mdsipsd
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
+    list(APPEND _script_list
+        mdsipsd
     )
 
 endif()
 
+file(COPY ${_script_list}
+    DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+)
+
+install(
+    FILES ${_script_list}
+    TYPE BIN
+    PERMISSIONS ${MODE_755}
+    
+)
+
 if(Doxygen_FOUND)
+
     ###
     ### Documentation
     ###
@@ -305,4 +310,5 @@ if(Doxygen_FOUND)
     add_dependencies(
         docs mdstcpip-docs
     )
+    
 endif()

@@ -86,6 +86,4 @@ target_compile_definitions(
         -DLIBPREFIX=MdsMath
 )
 
-install(
-    TARGETS MdsMath
-)
+install(TARGETS MdsMath)

@@ -10,25 +10,23 @@ list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
 ###
 
 if(WIN32)
-    install(
-        FILES
-            jTraverser.bat
-        TYPE BIN
+    set(_script_list
+        jTraverser.bat
     )
 else()
-    install(
-        FILES jTraverser.template RENAME jTraverser
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
-    )
-    install(
-        FILES CompileTree.template RENAME CompileTree
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
-    )
-    install(
-        FILES DecompileTree.template RENAME DecompileTree
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
+    set(_script_list
+        jTraverser
+        CompileTree
+        DecompileTree
     )
 endif()
+
+file(COPY ${_script_list}
+    DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+install(
+    FILES ${_script_list}
+    TYPE BIN
+    PERMISSIONS ${MODE_755}
+)
