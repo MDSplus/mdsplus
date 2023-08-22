@@ -35,6 +35,6 @@ target_compile_definitions(
         -DLIBPREFIX=MdsMisc
 )
 
-mdsplus_add_static_copy(MdsMisc)
+mdsplus_add_static_copy(MdsMisc _static_target)
 
-install(TARGETS MdsMisc MdsMisc-static)
+install(TARGETS MdsMisc ${_target_list})

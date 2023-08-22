@@ -14,9 +14,9 @@ target_link_libraries(
         MdsIpShr
 )
 
-mdsplus_add_static_copy(TdiShrExt)
+mdsplus_add_static_copy(TdiShrExt _static_target)
 
-install(TARGETS TdiShrExt TdiShrExt-static)
+install(TARGETS TdiShrExt ${_static_target})
 
 ###
 ### tdic
