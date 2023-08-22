@@ -46,21 +46,23 @@ install_jar(
 ###
 
 if(WIN32)
-    install(
-        FILES
-            jTraverser2.bat
-            setupDevice.bat
-        TYPE BIN
+    set(_script_list
+        jTraverser2.bat
+        setupDevice.bat
     )
 else()
-    install(
-        FILES jTraverser2.template RENAME jTraverser2
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
-    )
-    install(
-        FILES setupDevice.template RENAME setupDevice
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
+    set(_script_list
+        jTraverser2
+        setupDevice
     )
 endif()
+
+file(COPY ${_script_list}
+    DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+install(
+    FILES ${_script_list}
+    TYPE BIN
+    PERMISSIONS ${MODE_755}
+)

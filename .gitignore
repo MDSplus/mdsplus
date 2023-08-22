@@ -1,207 +1,92 @@
-Makefile
-.deps
-config.log
-config.status
-Makefile.inc
-stamp-h1
-config.h
-rpm/envsyms
-rpm/Makefile
-rpm/post_install_script
-envsyms
-bin/
-bin32/
-bin64/
-bin_x86/
-bin_x86_64/
-[Bb]uild/
-etc/
-lib/
-lib32/
-lib64/
-*.class
-*.jar
-*.manifest
-*.egg-info
-*.stamp
-*.gcno
-*.gcda
-*.gcov
-actions/actions
-actions/actmon
-cdu/cdu
-dwscope/dwpad
-dwscope/dwscope
-dwscope/dwscope_remote
-*.uid
-javadispatcher/jDispatchMonitor
-javadispatcher/jDispatcherIp
-javadispatcher/jServer
-javascope/scripts/
-javatraverser/jTraverser
-mitdevices/acq_root_filesystem/ffs/user/MitFilesDate
-setevent/setevent
-wfevent/wfevent
-xmdsshr/.dirstamp
-camshr/cts_commands.c
-# Emacs autosave files
-\#*#
 
-# vi autosave files
-*~
-#vs code autosave files
-*.swp
-# python compiled files
-*.pyc
-__pycache__/
+###
+### Generated files
+###
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# automake
-aclocal.m4
-autom4te.cache
-
-# gfortran objects on macintosh
-*.o_i386
-*.dylib_i386
-*.lnk
-
-# python version module
-_version.py
-*.log
-
-.vscode/
-.cache/
-
-testing/MDSplus/
-testing/*Devices/
-
-eclipse/
-target/
-.project
-.settings/
-.classpath
-
-# deploy/trigger.sh output
-trigger.opts
-
-# yacc verbose
-*.output
-
-# bootstrap output files
-LabView/Makefile.in
-configure
-ChangeLog
-MANIFEST.MF
+# configure_file()
 _include/_mdsversion.h
-docs/Makefile.in
-dwscope/Makefile.in
-include/camshr_messages.h
-include/mdsplus/mdsconfig.h
-include/mdsdcl_messages.h
-include/mdsshr_messages.h
-include/mitdevices_messages.h
-include/servershr_messages.h
-include/tcl_messages.h
-include/tdishr_messages.h
+mdsdcl/mdsdclVersionInfo.c
+pydevices/*/_version.py
+python/MDSplus/_version.py
+
+# deploy/gen-messages.py
 include/treeshr_messages.h
-include/opcbuiltins.h
-java/Makefile.in
-java/devicebeans/Makefile.in
-java/jdevices/Makefile.in
-java/jdispatcher/Makefile.in
-java/jscope/Makefile.in
-java/jtraverser/Makefile.in
-java/jtraverser2/Makefile.in
-java/mdsobjects/Makefile.in
-java/mdsobjects/docs/Makefile.in
-java/mdsobjects/tests/Makefile.in
-java/mdsplus-api/Makefile.in
+include/tdishr_messages.h
+include/mdsshr_messages.h
+include/tcl_messages.h
+include/camshr_messages.h
+include/servershr_messages.h
+include/mitdevices_messages.h
+include/mdsdcl_messages.h
+python/MDSplus/mdsExceptions.py
+mdsshr/MdsGetStdMsg.c
 java/mdsplus-api/src/main/java/mds/MdsException.java
-java/mdsplus-api/tests/Makefile.in
-java/mdsplus/Makefile.in
-java/tests/Makefile.in
-macosx/Makefile.in
-manpages/Makefile.in
-math/testing/Makefile.in
+
+# deploy/gen-opcbuiltins.py
+include/opcbuiltins.h
+
+# deploy/gen-python-compound.py
+python/MDSplus/compound.py
+
+# deploy/gen-tdishr-TdiHash.py
+tdishr/TdiHash.c
+
+# deploy/gen-yacc-lex.py
 mdsdcl/cmdParse.c
 mdsdcl/cmdParseLex.c
 mdsdcl/dcllex.h
 mdsdcl/dclyacc.h
 mdsdcl/mdsdclDeltatimeToSeconds.c
 mdsdcl/ocldToXml.c
-mdsdcl/mdsdclVersionInfo.c
-mdslib/docs/Makefile.in
-mdslib/testing/Makefile.in
-mdsobjects/cpp/docs/Makefile.in
-mdsobjects/cpp/testing/Makefile.in
-mdsobjects/cpp/testing/testutils/Makefile.in
-mdsshr/MdsGetStdMsg.c
-mdsshr/docs/Makefile.in
-mdsshr/testing/Makefile.in
-mdstcpip/docs/Makefile.in
-mdstcpip/docs/img/Makefile.in
-mdstcpip/testing/Makefile.in
-mdstcpip/zlib/Makefile.in
-python/MDSplus/docs/Makefile.in
-python/MDSplus/compound.py
-python/MDSplus/mdsExceptions.py
-python/MDSplus/tests/*_test.py
-python/MDSplus/tests/Makefile.in
-rpm/Makefile.in
-scripts/Makefile.in
-setevent/Makefile.in
-tdishr/TdiHash.c
 tdishr/TdiLex.c
-tdishr/TdiYacc.c
 tdishr/tdilex.h
+tdishr/TdiYacc.c
 tdishr/tdiyacc.h
-tdishr/testing/Makefile.in
-tditest/testing/Makefile.in
-testing/Makefile.in
-testing/backends/check/Makefile.in
-testing/selftest/Makefile.in
-treeshr/testing/Makefile.in
 treeshr/TreeFindNodeWild.c
-wfevent/Makefile.in
-m4/ax_git_revision.m4
 
-# Generated Java binaries
-java/*/classes/
-java/jdispatcher/jDispatchMonitor
-java/jdispatcher/jDispatcherIp
-java/jdispatcher/jServer
-java/jscope/jScope
-java/jscope/jScope.properties
-java/jtraverser/CompileTree
-java/jtraverser/DecompileTree
-java/jtraverser/jTraverser
-java/jtraverser2/jTraverser2
-java/jtraverser2/setupDevice
+# python
+*.pyc
+__pycache__/
+*.egg-info
+
+# motif
+*.uid
+
+# yacc verbose
+*.output
+
+###
+### Editors
+###
+
+# visual studio code
+.vscode/
+.cache/
+
+# visual studio
+.vs/
+
+# eclipse
+eclipse/
+target/
+.project
+.settings/
+.classpath
+
+# vi
+*~
+*.swp
+
+# emacs
+\#*#
+
+###
+### Misc
+###
+
+[Bb]uild/
+Testing/Temporary
+mitdevices/acq_root_filesystem/ffs/user/MitFilesDate
+
+# deploy/trigger.sh output
+trigger.opts

@@ -46,9 +46,17 @@ if(Globus_FOUND AND Globus_FLAVOR)
     ###
     ### Scripts
     ###
+    
+    set(_script_list
+        roam_check_access
+    )
+
+    file(COPY ${_script_list}
+        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
 
     install(
-        FILES roam_check_access.sh RENAME roam_check_access
+        FILES ${_script_list}
         TYPE BIN
         PERMISSIONS ${MODE_755}
     )

@@ -56,14 +56,21 @@ fat_jar(jScope ${JSCH})
 ###
 
 if(WIN32)
-    install(
-        FILES jScope.bat
-        TYPE BIN
+    set(_script_list
+        jScope.bat
     )
 else()
-    install(
-        FILES jScope.template RENAME jScope
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
+    set(_script_list
+        jScope
     )
 endif()
+
+file(COPY ${_script_list}
+    DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+install(
+    FILES ${_script_list}
+    TYPE BIN
+    PERMISSIONS ${MODE_755}
+)

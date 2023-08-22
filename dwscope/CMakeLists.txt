@@ -73,12 +73,19 @@ IF(Motif_FOUND)
     ### Scripts
     ###
 
+    set(_script_list
+        ScopePrinters
+        dwscopePrint
+    )
+
+    file(COPY ${_script_list}
+        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+
     install(
-        FILES
-            ScopePrinters
-            dwscopePrint
-        PERMISSIONS ${MODE_755}
+        FILES ${_script_list}
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
 
     ###

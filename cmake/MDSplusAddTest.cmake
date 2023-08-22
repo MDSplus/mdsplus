@@ -1,5 +1,14 @@
 include_guard(GLOBAL)
 
+# if(NOT WIN32 AND NOT EXISTS ${CMAKE_BINARY_DIR}/testenv)
+#     execute_process(
+#         COMMAND ${Python_EXECUTABLE} deploy/gen-testenv.py
+#             --output ${CMAKE_BINARY_DIR}/testenv
+#             --environment "${_TEST_ENV_MODS}"
+#         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#     )
+# endif()
+
 #
 # Call add_test() and configure the MDSplus environment variables.
 #
@@ -34,8 +43,10 @@ macro(mdsplus_add_test)
         "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
 
         # Used to search for TDI and Python scripts, and to add TDI drivers
-        "MDS_PATH=set:${CMAKE_CURRENT_SOURCE_DIR}"
-        "MDS_PATH=cmake_list_append:${CMAKE_SOURCE_DIR}/tdi"
+        "MDS_PATH=set:${CMAKE_SOURCE_DIR}/tdi"
+        
+        # Some tests define their own TDI functions
+        "MDS_PATH=cmake_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}"
 
         # Used to run or load Python
         "PYTHON=set:${Python_EXECUTABLE}"
@@ -53,9 +64,6 @@ macro(mdsplus_add_test)
         # Several tests make use of the default trees
         "main_path=set:${CMAKE_SOURCE_DIR}/trees"
         "subtree_path=set:${CMAKE_SOURCE_DIR}/trees/subtree"
-
-        # Needed for mdsip-client-* and mdsip-server-*
-        "PATH=path_list_prepend:${CMAKE_SOURCE_DIR}/mdstcpip"
     )
 
     if(WIN32)
@@ -79,6 +87,7 @@ macro(mdsplus_add_test)
     endif()
 
     list(APPEND _add_test_env_mods ${_add_test_ENVIRONMENT_MODIFICATION})
+
 
     file(RELATIVE_PATH _add_test_path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     string(REPLACE "\\" "/" _add_test_path "${_add_test_path}")
