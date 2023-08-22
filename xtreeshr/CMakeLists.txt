@@ -25,6 +25,6 @@ target_compile_definitions(
         -DLIBPREFIX=XTree
 )
 
-mdsplus_add_static_copy(XTreeShr)
+mdsplus_add_static_copy(XTreeShr _static_target)
 
-install(TARGETS XTreeShr XTreeShr-static)
+install(TARGETS XTreeShr ${_static_target})

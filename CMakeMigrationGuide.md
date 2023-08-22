@@ -49,7 +49,6 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--enable-debug=yes`                    | `CMAKE_BUILD_TYPE=Debug`*                               |
 | `--enable-debug=info`                   | `CMAKE_BUILD_TYPE=RelWithDebInfo`*                      |
 | `--enable-debug=profile`                | `ENABLE_GPROF=ON` and `CMAKE_BUILD_TYPE=RelWithDebInfo` |
-|                                         | `BUILD_TESTING`                                          |
 | `--prefix=[PATH]`*                      | `CMAKE_INSTALL_PREFIX=[PATH]`*                          |
 | `--exec-prefix=[PATH]`*                 | See below                                               |
 | `--disable-largefile`                   | `ENABLE_LARGEFILE=OFF`                                  |
@@ -63,8 +62,8 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--enable-wreturns`                     |                                                         |
 | `--enable-wconversion`                  |                                                         |
 | `--enable-sanitize=[FLAVOR]`            | `SANITIZE=[FLAVOR]`                                     |
-| `--enable-silent-rules`                 | `$VERBOSE`*                                             |
-| `--disable-silent-rules`                | `$CMAKE_NO_VERBOSE`*                                    |
+| `--enable-silent-rules`                 |                                                         |
+| `--disable-silent-rules`                |                                                         |
 | `--jars`                                | See below                                               |
 | `--with-jdk=[PATH]`                     | `JDK_DIR=[PATH]`                                        |
 | `--with-java_target=[TARGET]`           | `JAVA_TARGET_VERSION=[TARGET]`                          |
