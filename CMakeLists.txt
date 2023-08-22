@@ -72,10 +72,8 @@ option(BUILD_SHARED_LIBS
     ON
 )
 
-option(ENABLE_TESTS
-    "Build test frameworks and executables [default: ON]"
-    ON
-)
+# Defines option(BUILD_TESTING)
+include(CTest)
 
 # replaces --enable-debug
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -187,7 +185,7 @@ option(ENABLE_GPROF
 
 set(PYTHON "$ENV{PYTHON}"
     CACHE STRING
-    "Path to python interpreter to use for building / tests."
+    "Path to python interpreter to use for building / tests. [default: $PYTHON]"
 )
 
 # replaces --enable-sanitize=
@@ -279,24 +277,24 @@ set(LIBXML2_DIR ""
 
 # TODO:
 # replaces --with-x
-option(ENABLE_X
-    "" 
-    OFF
-)
+# option(ENABLE_X
+#     "" 
+#     OFF
+# )
 
 # TODO:
 # replaces --with-valgrind-lib
-set(VALGRIND_LIB_DIR ""
-    CACHE STRING
-    ""
-)
+# set(VALGRIND_LIB_DIR ""
+#     CACHE STRING
+#     ""
+# )
 
 # TODO:
 # replaces --with-winebottle
-set(WINEBOTTLE ""
-    CACHE STRING
-    ""
-)
+# set(WINEBOTTLE ""
+#     CACHE STRING
+#     ""
+# )
 
 ###
 ### Global Configuration
@@ -377,13 +375,13 @@ if(ENABLE_GPROF)
 
         string(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
         if(NOT _build_type STREQUAL "relwithdebinfo")
-            message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")
-endif()
+            message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")    
+        endif()
 
         add_compile_options(-pg)
         add_link_options(-pg)
-
-endif()
+        
+    endif()
 
 endif()
 
@@ -435,20 +433,24 @@ endif()
 # Automatically add libraries we depend on to RPATH
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 
-##
+###
 ### Dependencies
 ###
 
 # CMake built-in packages to find
 
-# find_package(Python) needs this to be absolute
+# Do not prefer system apple python
+set(Python_FIND_FRAMEWORK LAST)
+
+# In order for find_package(Python) to use the python specified with -DPYTHON or $PYTHON
+# we need to convert it to an absolute path
 find_program(Python_EXECUTABLE "${PYTHON}")
 mark_as_advanced(Python_EXECUTABLE)
 
-# don't prefer system apple python
-set(Python_FIND_FRAMEWORK LAST)
-
 find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
+
+# Update the option with the python executable we found
+set(PYTHON "${Python_EXECUTABLE}" CACHE STRING "" FORCE)
 
 # Finds the platform specific threading libraries, usually pthreads
 find_package(Threads REQUIRED)
@@ -495,7 +497,7 @@ find_package(DC1394)
 
 # Configuration-dependent dependencies
 
-if(ENABLE_TESTS AND NOT APPLE)
+if(BUILD_TESTING AND NOT APPLE)
 
     find_library(LIBRT rt REQUIRED)
 
@@ -575,6 +577,7 @@ if(ENABLE_JAVA)
     include(UseJava)
 
     find_program(mvn_EXECUTABLE mvn)
+    mark_as_advanced(mvn_EXECUTABLE)
 
     list(APPEND CMAKE_JAVA_COMPILE_FLAGS -encoding UTF-8)
 
@@ -743,12 +746,17 @@ mdsplus_generate_files(
 mdsplus_generate_files(
     COMMAND ${Python_EXECUTABLE} deploy/gen-yacc-lex.py
     GENERATED_FILES
-    tdishr/TdiLex.c
-    tdishr/TdiYacc.c
-    treeshr/TreeFindNodeWild.c
     mdsdcl/cmdParse.c
     mdsdcl/cmdParseLex.c
+    mdsdcl/dcllex.h
+    mdsdcl/dclyacc.h
     mdsdcl/mdsdclDeltatimeToSeconds.c
+    mdsdcl/ocldToXml.c
+    tdishr/TdiLex.c
+    tdishr/tdilex.h
+    tdishr/TdiYacc.c
+    tdishr/tdiyacc.h
+    treeshr/TreeFindNodeWild.c
 )
 
 ###
@@ -868,7 +876,7 @@ add_subdirectory(manpages)
 
 add_subdirectory(examples/demoadc)
 
-if(ENABLE_TESTS)
+if(BUILD_TESTING)
 
     ###
     ### Testing
@@ -904,8 +912,11 @@ if(ENABLE_TESTS)
     add_subdirectory(java/mdsobjects/tests)
     add_subdirectory(java/mdsplus-api/tests)
 
-    # Disable this option after it has been set, otherwise it bogs down every Configure
-    set(GENERATE_VSCODE_LAUNCH_JSON OFF CACHE BOOL "" FORCE)
+    if(GENERATE_VSCODE_LAUNCH_JSON)
+        message(STATUS "Setting GENERATE_VSCODE_LAUNCH_JSON=OFF, set it again to regenerate .vscode/launch.json")
+        # Disable this option after it has been set, otherwise it bogs down every Configure
+        set(GENERATE_VSCODE_LAUNCH_JSON OFF CACHE BOOL "" FORCE)
+    endif()
 
 endif()
 
