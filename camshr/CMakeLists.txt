@@ -93,10 +93,18 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
     ### Scripts
     ###
 
+    set(_script_list
+        mdscts
+    )
+
+    file(COPY ${_script_list}
+        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+
     install(
-        FILES cts RENAME mdscts
-        PERMISSIONS ${MODE_755}
+        FILES ${_script_list}
         TYPE BIN
+        PERMISSIONS ${MODE_755}
     )
 
 endif()

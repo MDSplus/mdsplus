@@ -49,7 +49,7 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--enable-debug=yes`                    | `CMAKE_BUILD_TYPE=Debug`*                               |
 | `--enable-debug=info`                   | `CMAKE_BUILD_TYPE=RelWithDebInfo`*                      |
 | `--enable-debug=profile`                | `ENABLE_GPROF=ON` and `CMAKE_BUILD_TYPE=RelWithDebInfo` |
-|                                         | `ENABLE_TESTS`                                          |
+|                                         | `BUILD_TESTING`                                          |
 | `--prefix=[PATH]`*                      | `CMAKE_INSTALL_PREFIX=[PATH]`*                          |
 | `--exec-prefix=[PATH]`*                 | See below                                               |
 | `--disable-largefile`                   | `ENABLE_LARGEFILE=OFF`                                  |

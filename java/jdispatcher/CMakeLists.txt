@@ -11,27 +11,25 @@ list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
 ###
 
 if(WIN32)
-    install(
-        FILES
-            jDispatcherIp.bat
-            jDispatchMonitor.bat
-            jServer.bat
-        TYPE BIN
+    set(_script_list
+        jDispatcherIp.bat
+        jDispatchMonitor.bat
+        jServer.bat
     )
 else()
-    install(
-        FILES jDispatcherIp.template RENAME jDispatcherIp
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
-    )
-    install(
-        FILES jDispatchMonitor.template RENAME jDispatchMonitor
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
-    )
-    install(
-        FILES jServer.template RENAME jServer
-        TYPE BIN
-        PERMISSIONS ${MODE_755}
+    set(_script_list
+        jDispatcherIp
+        jDispatchMonitor
+        jServer
     )
 endif()
+
+file(COPY ${_script_list}
+    DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+install(
+    FILES ${_script_list}
+    TYPE BIN
+    PERMISSIONS ${MODE_755}
+)

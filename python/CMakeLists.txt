@@ -10,7 +10,5 @@ install(
     PATTERN "CMakeLists.txt" EXCLUDE
     PATTERN "*.pyc" EXCLUDE
     PATTERN "__pycache__" EXCLUDE
-    # We install the _case.py files, but not the individual _test.py ones
-    PATTERN "tests/*_test.py" EXCLUDE
     PATTERN "docs" EXCLUDE
 )
