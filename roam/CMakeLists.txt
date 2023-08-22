@@ -21,9 +21,9 @@ if(Globus_FOUND AND Globus_FLAVOR)
             Globus::Globus
     )
 
-    mdsplus_add_static_copy(${_roam_target})
+    mdsplus_add_static_copy(${_roam_target} _static_target)
 
-    install(TARGETS ${_roam_target} ${_roam_target}-static)
+    install(TARGETS ${_roam_target} ${_static_target})
 
     ###
     ### Roam

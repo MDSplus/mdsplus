@@ -8,4 +8,6 @@ add_library(
     mdsvme.c
 )
 
-mdsplus_add_static_copy(MdsVme)
+mdsplus_add_static_copy(MdsVme _static_target)
+
+# install(TARGETS MdsVme ${_static_target})

@@ -115,6 +115,6 @@ if (HAVE_SYBASE)
     )
 endif()
 
-mdsplus_add_static_copy(TdiShr)
+mdsplus_add_static_copy(TdiShr _static_target)
 
-install(TARGETS TdiShr TdiShr-static)
+install(TARGETS TdiShr ${_static_target})

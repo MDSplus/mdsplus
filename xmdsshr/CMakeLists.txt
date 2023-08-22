@@ -43,9 +43,9 @@ if(Motif_FOUND)
             Motif::Motif
     )
 
-    mdsplus_add_static_copy(XmdsShr)
+    mdsplus_add_static_copy(XmdsShr _static_target)
 
-    install(TARGETS XmdsShr XmdsShr-static)
+    install(TARGETS XmdsShr ${_static_target})
 
     # ###
     # ### wmdcreate

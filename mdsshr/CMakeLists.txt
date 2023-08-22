@@ -63,9 +63,9 @@ if(WIN32)
 
 endif()
 
-mdsplus_add_static_copy(MdsShr)
+mdsplus_add_static_copy(MdsShr _static_target)
 
-install(TARGETS MdsShr MdsShr-static)
+install(TARGETS MdsShr ${_static_target})
 
 if(Doxygen_FOUND)
     ###
