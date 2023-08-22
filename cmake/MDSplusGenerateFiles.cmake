@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 #
 # Check if any of the GENERATED_FILES are missing, and if so, run COMMAND to generate them. 
 #

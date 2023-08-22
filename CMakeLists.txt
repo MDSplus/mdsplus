@@ -14,10 +14,11 @@ enable_language(Fortran)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 98)
 
-message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
-message("CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-message("CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (${CMAKE_C_COMPILER_ID})")
-message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (${CMAKE_CXX_COMPILER_ID})")
+message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
+message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID})")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID})")
+message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID})")
 
 # Query version and release information from git
 include(MDSplusGitRevision)
@@ -25,6 +26,13 @@ include(MDSplusGitRevision)
 ###
 ### Download 3rd-party-apis
 ###
+
+option(ENABLE_3RD_PARTY_APIS
+    "Download https://github.com/MDSplus/3rd-party-apis to help build IDL and LabView, and to help building on Windows."
+    ON
+)
+
+if(ENABLE_3RD_PARTY_APIS)
 
 set(_3rd_party_apis ${CMAKE_BINARY_DIR}/3rd-party-apis-master)
 
@@ -44,6 +52,8 @@ if(NOT EXISTS ${_3rd_party_apis})
         DESTINATION ${CMAKE_BINARY_DIR}
     )
 
+endif()
+    
 endif()
 
 ###
@@ -146,6 +156,11 @@ option(ENABLE_XMLTEST
     ON
 )
 
+option(ENABLE_SELFTEST
+    "Include the testing/selftest directory [default: OFF]"
+    OFF
+)
+
 # replaces --enable-valgrind
 option(ENABLE_VALGRIND
     "Run all of the tests through Valgrind [default: OFF]"
@@ -165,15 +180,8 @@ option(ENABLE_WERROR
     OFF
 )
 
-# replaces --disable-wreturns
-option(ENABLE_WRETURNS
-    "Enable warnings about unused return values from functions (-Wreturns) [default: ON]"
-    ON
-)
-
-# replaces --enable-wconversion
-option(ENABLE_WCONVERSION
-    "Enable warnings about implicit conversions (-Wconversion) [default: ON]"
+option(ENABLE_GPROF
+    "Enable profiling with gprof (compile and link with -pg)"
     OFF
 )
 
@@ -290,22 +298,6 @@ set(WINEBOTTLE ""
     ""
 )
 
-include(CheckCCompilerFlag)
-include(CheckCXXCompilerFlag)
-
-check_c_compiler_flag(-pg _have_pg_flag_c)
-check_cxx_compiler_flag(-pg _have_pg_flag_cxx)
-
-if(_have_pg_flag_c AND _have_pg_flag_cxx)
-    option(ENABLE_GPROF
-        "Enable profiling with gprof (compile and link with -pg)"
-        OFF
-    )
-else()
-    # TODO: Warning?
-    set(ENABLE_GPROF OFF)
-endif()
-
 ###
 ### Global Configuration
 ###
@@ -337,63 +329,82 @@ add_compile_definitions(
     HAVE_CONFIG_H # Do we have mdsplus/mdsconfig.h
 )
 
-if(MSVC)
-    add_compile_options(/Wall)
-else()
-    # if you are using ifort, then -Wall and -Wextra don't work
-    # add_compile_options seems a little broken for generator expressions, but SHELL fixes it
-    add_compile_options(
-        "SHELL:$<$<COMPILE_LANGUAGE:C>:-Wall -Wextra>"
-        "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-Wall -Wextra>"
-        "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,Intel>:-warn all>"
-    )
-endif()
-
-    if(ENABLE_GPROF)
-        STRING(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
-        if(NOT _build_type STREQUAL "relwithdebinfo")
-            message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")
-        endif()
-
-        add_compile_options(-pg)
-        add_link_options(-pg)
-    endif()
-    
-if(ENABLE_WERROR)
-    if(MSVC)
-        add_compile_options(/WX)
-    else()
-        add_compile_options(
-            "SHELL:$<$<COMPILE_LANGUAGE:C>:-Werror>"
-            "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-Werror>"
-            "SHELL:$<$<COMPILE_LANG_AND_ID:Fortran,Intel>:-warn error>"
-        )
-    endif()
-endif()
-
-if(NOT ENABLE_WRETURNS) # -Wunused-result is on by default in gcc and clang
-    if(NOT MSVC)
-        add_compile_options(-Wno-unused-result)
-    endif()
-endif()
+include(MDSplusCheckFlags)
+include(MDSplusAddCompilerFlag)
 
 if(ENABLE_TESTS)
     include(CTest)
 endif()
 
-# if(ENABLE_WCONVERSION)
-#     add_compile_options(-Wconversion)
-# endif()
+if(MSVC)
+    add_compile_options(/Wall)
+else()
+
+    mdsplus_add_compiler_flag(-Wall)
+    mdsplus_add_compiler_flag(-Wextra)
+
+    if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
+        set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
+        endif()
+
+    endif()
+    
+if(ENABLE_WERROR)
+
+    if(MSVC)
+        add_compile_options(/WX)
+    else()
+
+        mdsplus_add_compiler_flag(-Werror)
+
+        if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
+            set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn error")
+    endif()
+
+endif()
+
+    endif()
+
+if(ENABLE_GPROF)
+
+    if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU"
+        OR NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+        OR NOT CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+
+        message(WARNING "Unable to build with support for gprof, -pg is only supported on GNU compilers")
+
+    else()
+
+        string(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
+        if(NOT _build_type STREQUAL "relwithdebinfo")
+            message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")
+endif()
+
+        add_compile_options(-pg)
+        add_link_options(-pg)
+
+endif()
+
+endif()
 
 if(ENABLE_LARGEFILE)
 
-    # Check for 32-bit target
+    # If we are compiling for 32-bit
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         add_compile_definitions(
             _FILE_OFFSET_BITS=64
             _LARGE_FILES
         )
     endif()
+
+endif()
+
+if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
+    AND CMAKE_C_COMPILER_VERSION GREATER_EQUAL "15")
+
+    # Disables the new strict prototype checking:
+    # a function declaration without a prototype is deprecated in all versions of C and is not supported in C2x
+    add_compile_options(-Wno-deprecated-non-prototype)
 
 endif()
 
@@ -507,10 +518,9 @@ if(ENABLE_VALGRIND)
         AND Valgrind_VERSION VERSION_LESS "3.20")
 
         set(_force_dwarf4 "-fdebug-default-version=4")
-        list(APPEND CMAKE_C_FLAGS ${_force_dwarf4})
-        list(APPEND CMAKE_CXX_FLAGS ${_force_dwarf4})
+        mdsplus_add_compiler_flag(${_force_dwarf4})
 
-        message(STATUS "Setting ${_force_dwarf4} due to clang >= 14 and valgrind < 3.20")
+        message(STATUS "Setting ${_force_dwarf4} due to clang >= 14, and valgrind < 3.20")
     endif()
 
     set(Valgrind_FLAGS
@@ -541,7 +551,7 @@ if(ENABLE_JAVA)
     if(JDK_DIR)
         set(JAVA_HOME "${JDK_DIR}")
     elseif(APPLE AND EXISTS /usr/libexec/java_home)
-        # this is a workaround for broken FindJNI.cmake on MacOS
+        # This is a workaround for broken FindJNI.cmake on MacOS
         # which only likes EXPLICIT setting of JAVA_HOME
         # but also allows you to pick the jdk version
         execute_process(
@@ -549,9 +559,11 @@ if(ENABLE_JAVA)
             OUTPUT_VARIABLE _cmd_java_home
             OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
         )
+
         if(_cmd_java_home AND IS_DIRECTORY "${_cmd_java_home}")
             set(JAVA_HOME ${_cmd_java_home})
         endif()
+        
         unset(_cmd_java_home)
     else()
         set(JAVA_HOME "$ENV{JAVA_HOME}")
@@ -563,6 +575,8 @@ if(ENABLE_JAVA)
     include(UseJava)
 
     find_program(mvn_EXECUTABLE mvn)
+
+    list(APPEND CMAKE_JAVA_COMPILE_FLAGS -encoding UTF-8)
 
 endif()
 
@@ -871,8 +885,11 @@ if(ENABLE_TESTS)
 
     include(MDSplusAddTest)
 
+    if(ENABLE_SELFTEST)
+        add_subdirectory(testing/selftest)
+    endif()
+
     add_subdirectory(testing)
-    add_subdirectory(testing/selftest)
     add_subdirectory(mdsshr/testing)
     add_subdirectory(math/testing)
     add_subdirectory(treeshr/testing)
@@ -895,7 +912,7 @@ endif()
 if(Motif_FOUND)
 
     ###
-    ### Process *.uil
+    ### Process *.uil files
     ###
 
     file(GLOB_RECURSE
@@ -910,22 +927,22 @@ if(Motif_FOUND)
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/uid)
 
-    foreach(_uil IN LISTS _uil_list)
-        cmake_path(GET _uil STEM LAST_ONLY _stem)
-        set(_uid ${CMAKE_CURRENT_BINARY_DIR}/uid/${_stem}.uid)
+    foreach(_uil_file IN LISTS _uil_list)
+        cmake_path(GET _uil_file STEM LAST_ONLY _stem)
+        set(_uid_file ${CMAKE_CURRENT_BINARY_DIR}/uid/${_stem}.uid)
 
         add_custom_command(
-            OUTPUT ${_uid}
-            DEPENDS ${_uil}
-            COMMAND ${uil_EXECUTABLE} -I${CMAKE_SOURCE_DIR}/include -o ${_uid} ${_uil}
+            OUTPUT ${_uid_file}
+            DEPENDS ${_uil_file}
+            COMMAND ${uil_EXECUTABLE} -I${CMAKE_SOURCE_DIR}/include -o ${_uid_file} ${_uil_file}
         )
 
-        LIST(APPEND _uid_list ${_uid})
+        LIST(APPEND _uid_file_list ${_uid_file})
     endforeach()
 
     add_custom_target(
         generate-uids ALL
-        DEPENDS ${_uid_list}
+        DEPENDS ${_uid_file_list}
     )
 
     install(
@@ -939,6 +956,10 @@ endif()
 ### ChangeLog
 ###
 
+find_package(Git)
+
+if(GIT_FOUND)
+
 git(GIT_CHANGELOG log --decorate=full --no-merges)
 
 file(WRITE ${CMAKE_BINARY_DIR}/ChangeLog "${GIT_CHANGELOG}")
@@ -947,6 +968,8 @@ install(
     FILES ${CMAKE_BINARY_DIR}/ChangeLog
     DESTINATION .
 )
+
+endif()
 
 ###
 ### Install the remaining files
@@ -968,11 +991,17 @@ install(
         ${CMAKE_BINARY_DIR}/include
     DESTINATION .
     USE_SOURCE_PERMISSIONS
-    PATTERN "gen-*" EXCLUDE # Files used to generate other files
     PATTERN "*.in" EXCLUDE # Templates for generated files
     PATTERN "Makefile" EXCLUDE # TODO: Remove
     PATTERN "Makefile.*" EXCLUDE # TODO: Remove
     PATTERN "CMakeLists.txt" EXCLUDE
+)
+
+install(
+    FILES
+        MDSplus-License.rtf
+        MDSplus-License.txt
+    DESTINATION .
 )
 
 install(
@@ -987,13 +1016,6 @@ install(
     PATTERN "CMakeLists.txt" EXCLUDE
     PATTERN "*.pyc" EXCLUDE
     PATTERN "__pycache__" EXCLUDE
-)
-
-install(
-    FILES
-        MDSplus-License.rtf
-        MDSplus-License.txt
-    DESTINATION .
 )
 
 install(

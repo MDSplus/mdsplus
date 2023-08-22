@@ -3,6 +3,8 @@
 ### mdsplus-api.jar
 ###
 
+list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
+
 # MANIFEST.MF
 
 set(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)

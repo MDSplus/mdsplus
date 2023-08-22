@@ -32,6 +32,13 @@ set_target_properties(
         POSITION_INDEPENDENT_CODE ON
 )
 
+# TODO: Check if needed
+target_compile_options(
+    UDT4
+    PRIVATE
+       -Wno-null-pointer-subtraction
+)
+
 ###
 ### compression
 ###
