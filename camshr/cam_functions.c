@@ -997,7 +997,7 @@ static int CamAssign(char *Name, CamKey *Key)
   if (strchr(Name, ':'))
   { // physical names contain a ':'
     str2upcase(Name);
-    sscanf(Name, "GK%1s%1d%2d:N%d", &ha, &id, &crate, &slot);
+    sscanf(Name, "GK%c%1d%2d:N%d", &ha, &id, &crate, &slot);
     Key->scsi_port = ha;
     Key->scsi_address = id;
     Key->crate = crate;

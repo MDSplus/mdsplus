@@ -52,7 +52,8 @@ configure_file(
 )
 
 install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/envsyms
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/envsyms
     TYPE SYSCONF
 )
 
@@ -61,7 +62,8 @@ install(
 ###
 
 install(
-    FILES mdsplus.conf.template
+    FILES
+        mdsplus.conf.template
     TYPE SYSCONF
 )
 
@@ -70,7 +72,9 @@ install(
 ###
 
 install(
-    FILES mdsipd.xinetd mdsipsd.xinetd
+    FILES
+        mdsipd.xinetd
+        mdsipsd.xinetd
     DESTINATION rpm
 )
 
@@ -79,6 +83,8 @@ install(
 ###
 
 install(
-    FILES mdsip.socket mdsip@.service
+    FILES
+        mdsip.socket
+        mdsip@.service
     DESTINATION rpm
 )
