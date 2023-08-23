@@ -1,12 +1,10 @@
 
 if(ENABLE_JAVA)
 
-    macro(fat_jar _target _source_jar_path)
+    function(fat_jar _target _source_jar_path)
         get_property(_target_jar TARGET ${_target} PROPERTY JAR_FILE)
 
-        # Macro parameters aren't real variables, CMAKE_PATH needs real variables
-        set(_source_jar_stem "${_source_jar_path}")
-        cmake_path(GET _source_jar_stem STEM _source_jar_stem)
+        cmake_path(GET _source_jar_path STEM _source_jar_stem)
 
         set(_tmp_dir ${CMAKE_CURRENT_BINARY_DIR}/jar-sources/${_source_jar_stem})
         file(MAKE_DIRECTORY "${_tmp_dir}")
@@ -25,6 +23,7 @@ if(ENABLE_JAVA)
             file(REMOVE ${_extra_manifests})
         endif()
 
+        # TODO: Fix this causing a rebuild every other build
         # TODO: Fix this always running and throwing a warning
         add_custom_command(
             TARGET ${_target} POST_BUILD
@@ -34,7 +33,7 @@ if(ENABLE_JAVA)
             WORKING_DIRECTORY ${_tmp_dir}
         )
 
-    endmacro()
+    endfunction()
 
     ###
     ### Jars
