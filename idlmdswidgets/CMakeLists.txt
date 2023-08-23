@@ -1,5 +1,5 @@
 
-if(ENABLE_IDL AND IDL_FOUND)
+if(TARGET IDL::IDL AND TARGET XmdsShr)
 
     ###
     ### IdlMdsWidgets

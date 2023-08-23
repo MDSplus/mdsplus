@@ -9,11 +9,10 @@ include_guard(GLOBAL)
 #
 macro(mdsplus_add_static_copy _target _out_static_target)
 
-    set(${_out_target_list} ${_target})
+    set(_static_target "${_target}-static")
 
     if(BUILD_SHARED_LIBS)
 
-        set(_static_target "${_target}-static")
         set(${_out_static_target} ${_static_target})
 
         add_library(
@@ -95,6 +94,9 @@ macro(mdsplus_add_static_copy _target _out_static_target)
     else()
 
         unset(${_out_static_target})
+
+        # Add an alias for things that link against the static target directly
+        add_library(${_static_target} ALIAS ${_target})
 
     endif()
 

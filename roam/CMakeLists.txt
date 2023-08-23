@@ -1,5 +1,5 @@
 
-if(Globus_FOUND AND Globus_FLAVOR)
+if(TARGET Globus::Globus AND TARGET CURL::libcurl)
 
     ###
     ### Roam_${Globus_FLAVOR}

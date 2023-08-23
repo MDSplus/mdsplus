@@ -61,7 +61,7 @@ if [ ! -z $1 ]; then
   fi
   if [[ $test == *"dev"* ]]; then
     found=0
-    for path in ${LD_LIBRARY_PATH//:/ }; do
+    for path in ${MDSPLUS_LIBRARY_PATH//:/ }; do
       if [ -e $path/libMitDevices.so ] || [ -e $path/libMitDevices.dylib ]; then
         found=1
       fi

@@ -21,7 +21,7 @@ foreach(_test_source ${_test_source_list})
     )
 
     set(_no_valgrind)
-    if (_test_source STREQUAL "TreeSegmentTest.c")
+    if(_test_source STREQUAL "TreeSegmentTest.c")
         set(_no_valgrind NO_VALGRIND)
     endif()
 

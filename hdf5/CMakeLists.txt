@@ -1,5 +1,5 @@
 
-if(HDF5_FOUND)
+if(TARGET HDF5::HDF5)
 
     # We are currently locked into the 1.6 API
     compile_definitions(

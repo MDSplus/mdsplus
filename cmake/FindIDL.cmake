@@ -36,12 +36,22 @@ if(IDL_FOUND)
 
     if(NOT TARGET IDL::IDL)
 
-        ADD_LIBRARY(IDL::IDL INTERFACE IMPORTED)
+        add_library(IDL::IDL INTERFACE IMPORTED)
         
-        SET_TARGET_PROPERTIES(
+        set_target_properties(
             IDL::IDL PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${IDL_INCLUDE_DIRS}"
         )
+
+        if(APPLE)
+
+            # Apple does not support weak linking by default
+            set_target_properties(
+                IDL::IDL PROPERTIES
+                INTERFACE_LINK_OPTIONS "LINKER:-undefined,dynamic_lookup,-no_fixup_chains"
+            )
+
+        endif()
 
     endif()
 
