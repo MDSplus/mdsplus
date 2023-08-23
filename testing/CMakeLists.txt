@@ -28,7 +28,7 @@ set_target_properties(
         POSITION_INDEPENDENT_CODE ON
 )
 
-if (APPLE)
+if(APPLE)
     target_compile_definitions(
         MdsTest
         PUBLIC
@@ -64,7 +64,7 @@ set_target_properties(
         POSITION_INDEPENDENT_CODE ON
 )
 
-if (APPLE)
+if(APPLE)
     target_compile_definitions(
         MdsTestBackend
         PUBLIC
@@ -98,7 +98,7 @@ target_link_libraries(
         MdsTestBackend
 )
 
-if (APPLE)
+if(APPLE)
     target_compile_definitions(
         MdsTestShr
         PUBLIC

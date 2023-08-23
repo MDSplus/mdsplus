@@ -53,14 +53,12 @@ target_compile_definitions(
 )
 
 if(WIN32)
-
     TARGET_LINK_LIBRARIES(
         MdsShr
         PUBLIC
             iphlpapi
             ws2_32
     )
-
 endif()
 
 mdsplus_add_static_copy(MdsShr _static_target)

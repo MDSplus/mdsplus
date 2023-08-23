@@ -28,7 +28,7 @@ function(mdsplus_option _name _type _description)
 
     if(DEFINED ARGS_OPTIONS)
         string(REPLACE ";" ", " _options "${ARGS_OPTIONS}")
-        set(_description "${_description}, options are: ${_options}")
+        set(_description "${_description} Options are: ${_options}")
     endif()
 
     if(DEFINED ARGS_DEFAULT)

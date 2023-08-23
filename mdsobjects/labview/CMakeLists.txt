@@ -90,8 +90,8 @@ if(ENABLE_LABVIEW)
         add_custom_command(
             TARGET MDSobjectsLVShr POST_BUILD
             BYPRODUCTS ${_lv_name1} ${_lv_name2}
-            COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:MDSobjectsLVShr> ${_lv_name1}
-            COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE_NAME:MDSobjectsLVShr> ${_lv_name2}
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE_NAME:MDSobjectsLVShr> ${_lv_name1}
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE_NAME:MDSobjectsLVShr> ${_lv_name2}
             WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         )
 

@@ -50,3 +50,22 @@ if(LIBRT)
             ${LIBRT}
     )
 endif()
+
+# (SLW) TODO: Remove
+###
+### build_test
+###
+
+add_executable(
+    build_test
+    build_test.c
+)
+
+target_link_libraries(
+    build_test
+    PRIVATE
+        Check
+)
+
+# (SLW) TODO: Should we install this?
+install(TARGETS build_test)

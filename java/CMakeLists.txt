@@ -19,7 +19,7 @@ if(ENABLE_JAVA)
             "${_tmp_dir}/**/MANIFEST.MF"
         )
 
-        if (_extra_manifests)
+        if(_extra_manifests)
             file(REMOVE ${_extra_manifests})
         endif()
 
