@@ -83,7 +83,7 @@ if(HAVE_SCSI_SG_H AND NOT MSVC)
     target_link_libraries(
         cts_commands
         PUBLIC
-            Mdsdcl
+            libMdsdcl
             CamShr
     )
 

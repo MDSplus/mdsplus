@@ -1,6 +1,6 @@
 
 ###
-### Mdsdcl
+### libMdsdcl
 ###
 
 configure_file(
@@ -9,7 +9,7 @@ configure_file(
 )
 
 add_library(
-    Mdsdcl
+    libMdsdcl
     mdsdclThreadStatic.c
     cmdExecute.c
     cmdHelp.c
@@ -22,34 +22,41 @@ add_library(
     mdsdclVersionInfo.c
 )
 
+# On case-insensitive filesystems, we can't have both mdstcl and Mdstcl as targets
+set_target_properties(
+    libMdsdcl
+    PROPERTIES
+        OUTPUT_NAME Mdsdcl
+)
+
 target_include_directories(
-    Mdsdcl
+    libMdsdcl
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(
-    Mdsdcl
+    libMdsdcl
     PUBLIC
         MdsIpShr
         Readline::Readline
 )
 
 target_compile_options(
-    Mdsdcl
+    libMdsdcl
     PRIVATE
         -Wno-sign-compare
         -Wno-unused-parameter
 )
 
 target_compile_definitions(
-    Mdsdcl
+    libMdsdcl
     PRIVATE
         -DLIBPREFIX=Mdsdcl
 )
 
-install(TARGETS Mdsdcl)
+install(TARGETS libMdsdcl)
 
 # set_source_files_properties(
 #     cmdParseLex.c
@@ -75,23 +82,7 @@ add_executable(
 target_link_libraries(
     mdsdcl
     PUBLIC
-        Mdsdcl
+        libMdsdcl
 )
 
 install(TARGETS mdsdcl)
-
-
-
-# if(WIN32)
-#     set(_ext ".exe")
-# endif()
-
-# execute_process(
-#     COMMAND ${Python_EXECUTABLE}
-#         ${CMAKE_SOURCE_DIR}/scripts/generate-launch-targets.py
-#         --name "mdsdcl"
-#         --executable "${CMAKE_BINARY_DIR}/bin/mdsdcl${_ext}"
-#         --working-dir "${CMAKE_SOURCE_DIR}"
-#         --runtime-path "${CMAKE_BINARY_DIR}/lib"
-#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-# )

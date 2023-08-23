@@ -40,32 +40,6 @@ target_compile_options(
 )
 
 ###
-### compression
-###
-
-file(GLOB
-    _compression_source_list
-    "zlib/*.c"
-)
-
-add_library(
-    compression OBJECT
-    ${_compression_source_list}
-)
-
-target_include_directories(
-    compression
-    PUBLIC
-        "zlib/"
-)
-
-set_target_properties(
-    compression
-    PROPERTIES
-        POSITION_INDEPENDENT_CODE ON
-)
-
-###
 ### MdsIpShr
 ###
 
@@ -85,7 +59,7 @@ target_link_libraries(
     MdsIpShr
     PUBLIC
         TdiShr
-        compression
+        ZLIB::ZLIB
 )
 
 target_compile_definitions(
@@ -252,7 +226,7 @@ else()
     )
 endif()
 
-if(Globus_FOUND AND Globus_FLAVOR)
+if(TARGET Globus::Globus)
 
     ###
     ### MdsIpGSI

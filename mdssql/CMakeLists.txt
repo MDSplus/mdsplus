@@ -1,5 +1,5 @@
 
-if(Sybase_FOUND)
+if(TARGET Sybase::Sybase)
 
     ###
     ### MdsSql

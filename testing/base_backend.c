@@ -31,19 +31,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <pthread.h>
 
-void __assert_fail(const char *__assertion, const char *__file,
-                   ASSERT_LINE_TYPE __line, const char *__function)
-{
-  printf(" .-----------------------------------. \n"
-         " |  Assertion failed during test     | \n"
-         " '-----------------------------------' \n"
-         " > file: %s ,  function: %s, line: %d \n"
-         "   assertion:  (%s) \n\n",
-         __file, __function, __line, __assertion);
+// void __assert_fail(const char *__assertion, const char *__file,
+//                    ASSERT_LINE_TYPE __line, const char *__function)
+// {
+//   printf(" .-----------------------------------. \n"
+//          " |  Assertion failed during test     | \n"
+//          " '-----------------------------------' \n"
+//          " > file: %s ,  function: %s, line: %d \n"
+//          "   assertion:  (%s) \n\n",
+//          __file, __function, __line, __assertion);
 
-  __test_end();
-  exit(1);
-}
+//   __test_end();
+//   exit(1);
+// }
 
 void __test_abort(int code, const char *__msg, const char *__file,
                   unsigned int __line, const char *__function)

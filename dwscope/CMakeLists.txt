@@ -1,5 +1,5 @@
 
-IF(Motif_FOUND)
+IF(TARGET XmdsShr)
 
     add_definitions(
         -D_NO_DXm

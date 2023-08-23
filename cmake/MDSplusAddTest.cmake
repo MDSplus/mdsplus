@@ -37,6 +37,7 @@ function(mdsplus_add_test)
     set(_env_mods
         # Used to find the rest of MDSplus
         "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
+        "MDSPLUS_LIBRARY_PATH=set:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 
         # Used to search for TDI and Python scripts, and to add TDI drivers
         "MDS_PATH=set:${CMAKE_SOURCE_DIR}/tdi"

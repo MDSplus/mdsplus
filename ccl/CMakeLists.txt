@@ -11,7 +11,7 @@ add_library(
 target_link_libraries(
     ccl_commands
     PUBLIC
-        Mdsdcl
+        libMdsdcl
         CamShr
 )
 

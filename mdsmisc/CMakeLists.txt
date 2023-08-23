@@ -37,4 +37,4 @@ target_compile_definitions(
 
 mdsplus_add_static_copy(MdsMisc _static_target)
 
-install(TARGETS MdsMisc ${_target_list})
+install(TARGETS MdsMisc ${_static_target})
