@@ -1,6 +1,6 @@
 include_guard(GLOBAL)
 
-find_package(Git QUIET)
+find_package(Git)
 
 find_program(date_EXECUTABLE date)
 mark_as_advanced(date_EXECUTABLE)

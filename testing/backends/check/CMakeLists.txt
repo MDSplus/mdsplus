@@ -28,7 +28,7 @@ set_target_properties(
         POSITION_INDEPENDENT_CODE ON
 )
 
-if (APPLE)
+if(APPLE)
     target_compile_definitions(
         Check
         PUBLIC
@@ -39,7 +39,14 @@ endif()
 target_link_libraries(
     Check
     PUBLIC
-        $<$<BOOL:${LIBRT}>:${LIBRT}>
         Threads::Threads
         LibM::LibM
 )
+
+if(LIBRT)
+    target_link_libraries(
+        Check
+        PUBLIC
+            ${LIBRT}
+    )
+endif()

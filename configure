@@ -34,11 +34,10 @@ Optional Features:
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
   --enable-d3d            build d3d ptdata access library
-  --disable-xmltest       Do not try to compile and run a test LIBXML program
   --enable-valgrind       Whether to enable Valgrind on the unit tests
   --enable-sanitize=flavor
-                          Enable compile sanitizer with flavor in (address |
-                          thread | undefined) [[default=address]]
+                          Enable compile sanitizer with flavor in 
+                          (memory | address | thread | undefined)
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -151,16 +150,13 @@ for i in "$@"; do
         CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_LARGEFILE=$on_off"
         ;;
     --*-perf)
-        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_PERF=$on_off"
+        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_TREE_PERF=$on_off"
         ;;
     --*-java)
         CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_JAVA=$on_off"
         ;;
     --*-d3d)
         CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_D3D=$on_off"
-        ;;
-    --*-xmltest)
-        CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_XMLTEST=$on_off"
         ;;
     --*-valgrind)
         CMAKE_OPTIONS="$CMAKE_OPTIONS -DENABLE_VALGRIND=$on_off"
@@ -194,14 +190,6 @@ for i in "$@"; do
         value="${i#*=}"
         CMAKE_OPTIONS="$CMAKE_OPTIONS -DJDK_DIR=$value"
         ;;
-    --with-java_target=*)
-        value="${i#*=}"
-        CMAKE_OPTIONS="$CMAKE_OPTIONS -DJAVA_TARGET_VERSION=$value"
-        ;;
-    --with-java_bootclasspath=*)
-        value="${i#*=}"
-        CMAKE_OPTIONS="$CMAKE_OPTIONS -DJAVA_BOOTCLASSPATH=$value"
-        ;;
     --with-gsi=*)
         value="${i#*=}"
         CMAKE_OPTIONS="$CMAKE_OPTIONS -DGSI=$value"
@@ -232,7 +220,7 @@ for i in "$@"; do
     --program-prefix=*)
         echo "--program-prefix is no longer supported"
         ;;
-    --program-prefix=*)
+    --program-suffix=*)
         echo "--program-suffix is no longer supported"
         ;;
     --program-transform-name=*)
@@ -272,8 +260,9 @@ echo "### These are the commands to use in place of this script, with the equiva
 echo "###"
 echo ""
 
-SOURCE_DIR=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")
-WORKING_DIRECTORY=$(readlink -f "$(pwd)")
+WORKING_DIRECTORY="$(readlink -f "$(pwd)")"
+SOURCE_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+BINARY_DIR="${WORKING_DIRECTORY}"
 
 # in-source builds are no longer supported
 if [[ "$SOURCE_DIR" == "$WORKING_DIRECTORY" ]]; then
@@ -281,9 +270,10 @@ if [[ "$SOURCE_DIR" == "$WORKING_DIRECTORY" ]]; then
 
     echo "mkdir build && cd build"
     mkdir -p build
-    cd build
+    cd build || exit
 
     SOURCE_DIR=".."
+    BINARY_DIR="build"
 fi
 
 CMAKE_OPTIONS="${CMAKE_OPTIONS} ${SOURCE_DIR}"
@@ -298,4 +288,16 @@ echo ""
 # Force reconfigure
 rm -f CMakeCache.txt
 
-env ${ENVIRONMENT} cmake -G"Unix Makefiles" ${CMAKE_OPTIONS}
+env ${ENVIRONMENT} cmake -G"Unix Makefiles" "${CMAKE_OPTIONS}"
+
+echo ""
+echo "###"
+echo "### Now run the following to build."
+echo "###"
+echo ""
+
+if [[ "$BINARY_DIR" != "$WORKING_DIRECTORY" ]]; then
+    echo "cd ${BINARY_DIR}"
+fi
+
+echo "make -j"
