@@ -3,8 +3,6 @@
 ### mdsobjects.jar
 ###
 
-list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 6)
-
 set(JAVAX_JSON "${CMAKE_CURRENT_SOURCE_DIR}/src/main/resources/javax.json-1.0.4.jar")
 
 # MANIFEST.MF

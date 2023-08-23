@@ -3,8 +3,6 @@
 ### MdsPlus.jar
 ###
 
-list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 6)
-
 # MANIFEST.MF
 
 set(_manifest ${CMAKE_CURRENT_BINARY_DIR}/MANIFEST.MF)

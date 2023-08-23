@@ -80,9 +80,6 @@
 /* Set SHARELIB_TYPE to ".so",".sl",".a" etc... */
 #define SHARELIB_TYPE "@SHARELIB_TYPE@"
 
-/* Define if you want to collect performance statistics -- linux only */
-#cmakedefine USE_PERF
-
 /* Version number of package */
 #define VERSION "7a"
 
