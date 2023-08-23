@@ -1,9 +1,11 @@
 include_guard(GLOBAL)
 
 #
+# mdsplus_add_static_copy(<target> <out_static_target>)
+#
 # Create a static copy of a shared library, with all the same properties,
-# and set ${_out_static_target} to the name of the static library target.
-# Note: If BUILD_SHARED_LIBS=OFF, then ${_out_static_target} will be unset
+# and set ${out_static_target} to the name of the static library target.
+# Note: If BUILD_SHARED_LIBS=OFF, then ${out_static_target} will be unset.
 #
 macro(mdsplus_add_static_copy _target _out_static_target)
 

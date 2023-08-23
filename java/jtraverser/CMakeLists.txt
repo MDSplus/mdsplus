@@ -3,8 +3,6 @@
 ### jTraverser.jar
 ###
 
-list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
-
 ###
 ### Scripts
 ###

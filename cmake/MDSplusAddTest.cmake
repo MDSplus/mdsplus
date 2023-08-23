@@ -1,44 +1,40 @@
 include_guard(GLOBAL)
 
-# if(NOT WIN32 AND NOT EXISTS ${CMAKE_BINARY_DIR}/testenv)
-#     execute_process(
-#         COMMAND ${Python_EXECUTABLE} deploy/gen-testenv.py
-#             --output ${CMAKE_BINARY_DIR}/testenv
-#             --environment "${_TEST_ENV_MODS}"
-#         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#     )
-# endif()
-
 #
-# Call add_test() and configure the MDSplus environment variables.
-#
-# mdsplus_add_test(NAME <name> COMMAND <command> [<arg>...])
+# mdsplus_add_test(NAME <name>
+#                  COMMAND <command> [<arg>...])
 #                  [WORKING_DIRECTORY <dir>]
 #                  [ENVIRONMENT_MODIFICATIONS <mods>]
 #                  [NO_VALGRIND])
 #
+# Call add_test() and set_tests_properties() to configure all of the test's properties.
+#
+# If ENABLE_VALGRIND=ON and NO_VALGRIND is not set, then another test will be added
+# for each tool in Valgrind_TOOL_LIST.
+#
+# If GENERATE_VSCODE_LAUNCH_JSON=ON, then deploy/add-launch-target.py will be called
+# for each test as well.
+#
 # https://cmake.org/cmake/help/latest/command/add_test.html
 # https://cmake.org/cmake/help/latest/prop_test/ENVIRONMENT_MODIFICATION.html
 #
-macro(mdsplus_add_test)
-
-    set(_boolean_options NO_VALGRIND)
-    set(_single_value_options NAME WORKING_DIRECTORY TEST_LIST_VARIABLE)
-    set(_multi_value_options COMMAND ENVIRONMENT_MODIFICATION)
+function(mdsplus_add_test)
 
     cmake_parse_arguments(
-        _add_test
-        "${_boolean_options}"
-        "${_single_value_options}"
-        "${_multi_value_options}"
-        ${ARGN}
+        PARSE_ARGV 0 ARGS
+        # Booleans
+        "NO_VALGRIND"
+        # Single-Value
+        "NAME;WORKING_DIRECTORY;TEST_LIST_VARIABLE"
+        # Multi-Value
+        "COMMAND;ENVIRONMENT_MODIFICATION"
     )
 
-    if(NOT DEFINED _add_test_WORKING_DIRECTORY)
-        set(_add_test_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    if(NOT DEFINED ARGS_WORKING_DIRECTORY)
+        set(ARGS_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
-    set(_add_test_env_mods
+    set(_env_mods
         # Used to find the rest of MDSplus
         "MDSPLUS_DIR=set:${CMAKE_SOURCE_DIR}"
 
@@ -68,55 +64,54 @@ macro(mdsplus_add_test)
 
     if(WIN32)
         # Windows searches $PATH for loading .dll's
-        list(APPEND _add_test_env_mods
+        list(APPEND _env_mods
             "PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
         )
     else()
         # Linux searches $LD_LIBRARY_PATH for loading .so's
         # This is set for Apple as well for backwards compatibility
-        list(APPEND _add_test_env_mods
+        list(APPEND _env_mods
             "LD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
         )
 
         if(APPLE)
             # Apple searches $DYLD_LIBRARY_PATH for loading .dylib's
-            list(APPEND _add_test_env_mods
+            list(APPEND _env_mods
                 "DYLD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
             )
         endif()
     endif()
 
-    list(APPEND _add_test_env_mods ${_add_test_ENVIRONMENT_MODIFICATION})
+    list(APPEND _env_mods ${ARGS_ENVIRONMENT_MODIFICATION})
 
+    file(RELATIVE_PATH _path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    string(REPLACE "\\" "/" _path "${_path}")
 
-    file(RELATIVE_PATH _add_test_path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-    string(REPLACE "\\" "/" _add_test_path "${_add_test_path}")
+    set(_target "${_path}/${ARGS_NAME}")
 
-    set(_add_test_target "${_add_test_path}/${_add_test_NAME}")
-
-    set(_add_test_target_list "${_add_test_target}")
+    set(_target_list "${_target}")
 
     add_test(
-        NAME ${_add_test_target}
-        COMMAND ${_add_test_COMMAND}
-        WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
+        NAME ${_target}
+        COMMAND ${ARGS_COMMAND}
+        WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
     )
 
     if(GENERATE_VSCODE_LAUNCH_JSON)
-        message(STATUS "Adding ${_add_test_target} to .vscode/launch.json")
+        message(STATUS "Adding ${_target} to .vscode/launch.json")
 
         execute_process(
             COMMAND ${Python_EXECUTABLE} deploy/add-launch-target.py
-                --name "${_add_test_target}"
-                --command "${_add_test_COMMAND}"
-                --environment "${_add_test_env_mods}"
+                --name "${_target}"
+                --command "${ARGS_COMMAND}"
+                --environment "${_env_mods}"
                 --bin "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-                --cwd "${_add_test_WORKING_DIRECTORY}"
+                --cwd "${ARGS_WORKING_DIRECTORY}"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         )
     endif()
 
-    if(ENABLE_VALGRIND AND NOT _add_test_NO_VALGRIND)
+    if(ENABLE_VALGRIND AND NOT ARGS_NO_VALGRIND)
 
         set(_valgrind_flags ${Valgrind_FLAGS})
         foreach(_supp IN LISTS Valgrind_SUPPRESSION_FILES)
@@ -125,16 +120,16 @@ macro(mdsplus_add_test)
 
         set(i 1)
         foreach(_tool IN LISTS Valgrind_TOOL_LIST)
-            set(_add_test_target_tool "${_add_test_target} (${_tool})")
-            list(APPEND _add_test_target_list "${_add_test_target_tool}")
+            set(_target_tool "${_target} (${_tool})")
+            list(APPEND _target_list "${_target_tool}")
 
             string(REPLACE "-" "_" _tool_no_dash ${_tool})
 
             add_test(
-                NAME "${_add_test_target_tool}"
+                NAME "${_target_tool}"
                 COMMAND ${CMAKE_COMMAND} -E env TEST_INDEX=${i}
-                    ${Valgrind_EXECUTABLE} --tool=${_tool} ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${_add_test_COMMAND}
-                WORKING_DIRECTORY ${_add_test_WORKING_DIRECTORY}
+                    ${Valgrind_EXECUTABLE} --tool=${_tool} ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${ARGS_COMMAND}
+                WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
             )
 
             math(EXPR i "${i}+1")
@@ -142,15 +137,15 @@ macro(mdsplus_add_test)
         
     endif()
 
-    if (DEFINED _add_test_TEST_LIST_VARIABLE)
-        set(${_add_test_TEST_LIST_VARIABLE} "${_add_test_target_list}")
+    if (DEFINED ARGS_TEST_LIST_VARIABLE)
+        set(${ARGS_TEST_LIST_VARIABLE} "${_target_list}" PARENT_SCOPE)
     endif()
     
     set_tests_properties(
-        ${_add_test_target_list}
+        ${_target_list}
         PROPERTIES
-            ENVIRONMENT_MODIFICATION "${_add_test_env_mods}"
+            ENVIRONMENT_MODIFICATION "${_env_mods}"
             FAIL_REGULAR_EXPRESSION "FAILED"
     )
 
-endmacro()
+endfunction()

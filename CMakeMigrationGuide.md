@@ -66,8 +66,8 @@ The options from `./configure` and their CMake counterparts are listed below, al
 | `--disable-silent-rules`                |                                                         |
 | `--jars`                                | See below                                               |
 | `--with-jdk=[PATH]`                     | `JDK_DIR=[PATH]`                                        |
-| `--with-java_target=[TARGET]`           | `JAVA_TARGET_VERSION=[TARGET]`                          |
-| `--with-java_bootclasspath=[CLASSPATH]` | `JAVA_BOOTCLASSPATH=[CLASSPATH]`                        |
+| `--with-java_target=[TARGET]`           |                                                         |
+| `--with-java_bootclasspath=[CLASSPATH]` |                                                         |
 | `--with-gsi=[LOCATION]:[FLAVOR]`        | `GSI=[LOCATION]:[FLAVOR]` or `GSI=[FLAVOR]`             |
 | `--with-srb=[PATH]`                     | `SRB_DIR=[PATH]`                                        |
 | `--with-labview=[PATH]`                 | `ENABLE_LABVIEW=ON` or `LABVIEW_DIR=[PATH]`             |

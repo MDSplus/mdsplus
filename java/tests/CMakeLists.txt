@@ -5,8 +5,6 @@ if(ENABLE_JAVA)
     ### taptest.jar
     ###
 
-    list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
-
     file(GLOB
         _test_jar_list
         "*.jar"

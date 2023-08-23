@@ -3,8 +3,6 @@
 ### DeviceBeans.jar
 ###
 
-list(APPEND CMAKE_JAVA_COMPILE_FLAGS -source 8)
-
 file(GLOB_RECURSE
     _source_list
     "src/main/java/*.java"

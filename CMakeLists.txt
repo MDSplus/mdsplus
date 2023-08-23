@@ -23,36 +23,39 @@ message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_F
 # Query version and release information from git
 include(MDSplusGitRevision)
 
+include(MDSplusOption)
+
 ###
 ### Download 3rd-party-apis
 ###
 
-option(ENABLE_3RD_PARTY_APIS
+mdsplus_option(
+    DOWNLOAD_3RD_PARTY_APIS BOOL
     "Download https://github.com/MDSplus/3rd-party-apis to help build IDL and LabView, and to help building on Windows."
-    ON
+    DEFAULT ON
 )
 
-if(ENABLE_3RD_PARTY_APIS)
+if(DOWNLOAD_3RD_PARTY_APIS)
 
-set(_3rd_party_apis ${CMAKE_BINARY_DIR}/3rd-party-apis-master)
+    set(_3rd_party_apis ${CMAKE_BINARY_DIR}/3rd-party-apis-master)
 
-if(NOT EXISTS ${_3rd_party_apis})
+    if(NOT EXISTS ${_3rd_party_apis})
 
-    set(_3rd_party_apis_url "https://github.com/MDSplus/3rd-party-apis/archive/refs/heads/master.zip")
-    set(_3rd_party_apis_zip ${CMAKE_BINARY_DIR}/3rd-party-apis-master.zip)
+        set(_3rd_party_apis_url "https://github.com/MDSplus/3rd-party-apis/archive/refs/heads/master.zip")
+        set(_3rd_party_apis_zip ${CMAKE_BINARY_DIR}/3rd-party-apis-master.zip)
 
-    message(STATUS "Downloading and extracting ${_3rd_party_apis_url}")
+        message(STATUS "Downloading and extracting ${_3rd_party_apis_url}")
 
-    file(DOWNLOAD ${_3rd_party_apis_url} ${_3rd_party_apis_zip})
+        file(DOWNLOAD ${_3rd_party_apis_url} ${_3rd_party_apis_zip})
 
-    # We sadly have no control over the name of the folder it gets extracted to
-    # For GitHub, it will always be "REPOSITORY_NAME-BRANCH"
-    file(ARCHIVE_EXTRACT 
-        INPUT ${_3rd_party_apis_zip}
-        DESTINATION ${CMAKE_BINARY_DIR}
-    )
+        # We sadly have no control over the name of the folder it gets extracted to
+        # For GitHub, it will always be "REPOSITORY_NAME-BRANCH"
+        file(ARCHIVE_EXTRACT 
+            INPUT ${_3rd_party_apis_zip}
+            DESTINATION ${CMAKE_BINARY_DIR}
+        )
 
-endif()
+    endif()
     
 endif()
 
@@ -67,43 +70,51 @@ endif()
 # --target= CMAKE_SYSTEM_PROCESSOR?
 
 # replaces --disable-shared
-option(BUILD_SHARED_LIBS
-    "Build shared libraries [default: ON]"
-    ON
+mdsplus_option(
+    BUILD_SHARED_LIBS BOOL
+    "Build shared libraries"
+    DEFAULT ON
 )
 
-# Defines option(BUILD_TESTING)
-include(CTest)
-
-# replaces --enable-debug
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-
-    set(CMAKE_BUILD_TYPE "Release"
-        CACHE STRING
-        "Type of build to configure, can be one of: Debug, Release, RelWithDebInfo, MinSizeRel [default: Release]"
-        FORCE
+# If no configuration types are defined, use the default list
+if(NOT DEFINED CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES
+        "Debug"
+        "Release"
+        "MinSizeRel"
+        "RelWithDebInfo"
     )
-
-    set_property(
-        CACHE CMAKE_BUILD_TYPE
-        PROPERTY STRINGS
-            "Debug"
-            "Release"
-            "MinSizeRel"
-            "RelWithDebInfo"
-    )
-
 endif()
 
+# We have to be careful not to overwrite the current CMAKE_BUILD_TYPE, if there is one
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    set(_force_build_type FORCE)
+endif()
+
+# replaces --enable-debug
+mdsplus_option(
+    CMAKE_BUILD_TYPE STRING
+    "Type of build to configure"
+    OPTIONS ${CMAKE_CONFIGURATION_TYPES}
+    DEFAULT "Release"
+    ${_force_build_type}
+)
+
 # replaces --prefix
-# TODO: --exec-prefix
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
-  set(CMAKE_INSTALL_PREFIX "/usr/local/mdsplus"
-      CACHE STRING
-      "Where to install files [default: /usr/local/mdsplus]"
-      FORCE
-  )
+    if(WIN32)
+        set(_default_install_dir "C:\\Program Files\\MDSplus")
+    else()
+        set(_default_install_dir "/usr/local/mdsplus")
+    endif()
+
+    mdsplus_option(
+        CMAKE_INSTALL_PREFIX STRING
+        "Where to install files to"
+        DEFAULT "${_default_install_dir}"
+        FORCE
+    )
 
 endif()
 
@@ -115,26 +126,38 @@ endif()
 # * CMAKE_INSTALL_INCLUDEDIR
 include(GNUInstallDirs)
 
+# Defines option(BUILD_TESTING)
+include(CTest)
+
+mdsplus_option(
+    ENABLE_SELFTEST BOOL
+    "Include the testing/selftest directory"
+    DEFAULT OFF
+)
+
 if(WIN32)
     # replaces --disable-largefile
-    option(ENABLE_LARGEFILE
-        "Enable support for large files [default: ON]"
-        ON
+    mdsplus_option(D
+        ENABLE_LARGEFILE BOOL
+        "Enable support for large files when compiling for 32-bit"
+        DEFAULT ON
     )
 endif()
 
 if(NOT WIN32)
     # replaces --enable-perf
-    option(ENABLE_PERF
-        "Collect performance statistics [default: OFF]"
-        OFF
+    mdsplus_option(
+        ENABLE_TREE_PERF BOOL
+        "Collect Tree I/O performance statistics and store them in $mds_perf_filename"
+        DEFAULT OFF
     )
 endif()
 
 # replaces --disable-java
-option(ENABLE_JAVA
-    "Build java libraries and applications [default: ON]"
-    ON
+mdsplus_option(
+    ENABLE_JAVA BOOL
+    "Build java libraries and applications"
+    DEFAULT ON
 )
 
 # (SLW) TODO
@@ -142,136 +165,146 @@ option(ENABLE_JAVA
 #option(JAVA_ONLY "")
 
 # replaces --enable-d3d
-option(ENABLE_D3D
-    "Build MdsD3D library against d3 library located in $D3DLIB_PATH [default: OFF]"
-    OFF
-)
-
-# (SLW) TODO Investigate
-# replaces --disable-xmltest
-option(ENABLE_XMLTEST
-    "Try to compile and run a test LIBXML program [default: ON]"
-    ON
-)
-
-option(ENABLE_SELFTEST
-    "Include the testing/selftest directory [default: OFF]"
-    OFF
+mdsplus_option(
+    ENABLE_D3D BOOL
+    "Build MdsD3D library against d3 library located in $D3DLIB_PATH"
+    DEFAULT OFF
 )
 
 # replaces --enable-valgrind
-option(ENABLE_VALGRIND
+mdsplus_option(
+    ENABLE_VALGRIND BOOL
     "Run all of the tests through Valgrind [default: OFF]"
-    OFF
+    DEFAULT OFF
+)
+
+set(_sanitize_flavor_list
+    memory      # (msan)  https://clang.llvm.org/docs/MemorySanitizer.html
+    address     # (asan)  https://clang.llvm.org/docs/AddressSanitizer.html
+    thread      # (tsan)  https://clang.llvm.org/docs/ThreadSanitizer.html
+    undefined   # (ubsan) https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+)
+
+mdsplus_option(
+    ENABLE_SANITIZE STRING
+    "Enable compile sanitizer with flavor"
+    OPTIONS 
+        OFF
+        ${_sanitize_flavor_list}
+    DEFAULT OFF
 )
 
 # TODO: doxygen dot, man, rtf, xml, chm, chi, html
-# replaces --disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
-option(ENABLE_DOXYGEN
-    "Generate doxygen documentation [default: ON]"
-    ON
+# replaces --enable/disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
+mdsplus_option(
+    ENABLE_DOXYGEN BOOL
+    "Generate doxygen documentation"
+    DEFAULT ON
 )
 
 # replaces --enable-werror
-option(ENABLE_WERROR
-    "Treat all warnings as errors (-Werror) [default: ON]"
-    OFF
+mdsplus_option(
+    ENABLE_WERROR BOOL
+    "Treat all warnings as errors (-Werror)"
+    DEFAULT OFF
 )
 
-option(ENABLE_GPROF
+# replaces --enable-debug=profile
+mdsplus_option(
+    ENABLE_GPROF BOOL
     "Enable profiling with gprof (compile and link with -pg)"
-    OFF
+    DEFAULT OFF
 )
 
-set(PYTHON "$ENV{PYTHON}"
-    CACHE STRING
-    "Path to python interpreter to use for building / tests. [default: $PYTHON]"
-)
+if(BUILD_TESTING)
+    
+    mdsplus_option(
+        GENERATE_VSCODE_LAUNCH_JSON BOOL
+        "Generate .vscode/launch.json, this option disables itself after it is run."
+        DEFAULT OFF
+    )
 
-# replaces --enable-sanitize=
-set(SANITIZE "address"
-    CACHE STRING
-    "Enable compile sanitizer with flavor, options are: address or thread. Default is address."
+endif()
+
+# TODO: Why does this not show up in ccmake?
+mdsplus_option(
+    PYTHON STRING
+    "Path to python interpreter to use for building and testing"
+    DEFAULT "$PYTHON"
 )
-set_property(
-    CACHE SANITIZE
-    PROPERTY STRINGS "address" "thread" ""
-)
+if(PYTHON STREQUAL "$PYTHON")
+    set(PYTHON "$ENV{PYTHON}")
+endif()
 
 # replaces --with-jars
-set(JARS ""
-    CACHE STRING
-    "???"
-)
+# set(JARS ""
+#     CACHE STRING
+#     "???"
+# )
 
 # replaces --with-jdk
-set(JDK_DIR ""
-    CACHE STRING
-    "Location of Java JDK"
+mdsplus_option(
+    JDK_DIR STRING
+    "Location of Java Development Kit (JDK)"
 )
 
-# replaces --with-java_target=
-# TODO: Investigate
-set(JAVA_TARGET_VERSION ""
-    CACHE STRING
-    "Version of compiled mdsobjects classes (i.e. 6)"
-)
-
-# replaces --with-java_bootclasspath=
-# TODO: Investigate
-set(JAVA_BOOTCLASSPATH ""
-    CACHE STRING
-    "The bootclasspath option for use with JAVA_TARGET_VERSION (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)"
+mdsplus_option(
+    JAVA_VERSION STRING
+    "Minimum version of Java to search for"
+    DEFAULT "1.8"
 )
 
 # replaces --with-gsi=globus-location:flavor
-set(GSI ""
-    CACHE STRING
+mdsplus_option(
+    GSI STRING
     "Set in the form of flavor or globus-location:flavor. Enables globus GSI for mdsip communications."
 )
 
 # replaces --with-srb=
 # TODO: Investigate
-set(SRB_DIR ""
-    CACHE STRING
+mdsplus_option(
+    SRB_DIR STRING
     "Location of SRB to build against"
 )
 
-option(ENABLE_LABVIEW
+mdsplus_option(
+    ENABLE_LABVIEW BOOL
     "Build LV and MDSobjectsLVShr and install MDSplus LabView projects [default: ON]"
-    ON
+    DEFAULT ON
 )
 
 # replaces --with-labview=
-set(LABVIEW_DIR ""
-    CACHE STRING
+mdsplus_option(
+    LABVIEW_DIR STRING
     "Location of labview (i.e. /usr/local/natinst/Labview)"
 )
 
 # replaces --with-idl=
-option(ENABLE_IDL
+mdsplus_option(
+    ENABLE_IDL BOOL
     "Build idlmdsevent and idlmdswidgets against the IDL installed in IDL_DIR. If IDL_DIR is not set, the system will be searched for an installation."
-    ON
+    DEFAULT ON
 )
 
-set(IDL_DIR "" CACHE STRING
+mdsplus_option(
+    IDL_DIR STRING
     "Location of IDL, or empty to indicate the system should be searched for an IDL installation. Setting this also sets ENABLE_IDL=ON."
 )
 
 if(IDL_DIR AND NOT ENABLE_IDL)
-    message("Setting ENABLE_IDL=ON because IDL_DIR was specified")
-    set(ENABLE_IDL ON)
+    message(STATUS "Setting ENABLE_IDL=ON because IDL_DIR was specified")
+    set(ENABLE_IDL ON CACHE BOOL "" FORCE)
 endif()
 
 # replaces --with-readline=
-set(READLINE_DIR ""
-    CACHE STRING
+mdsplus_option(
+    READLINE_DIR STRING
     "Location of the readline library, if not set the system will be searched."
 )
 
 # replaces --with-xml-prefix, --with-xml-exec-prefix
-set(LIBXML2_DIR ""
-    CACHE STRING
+mdsplus_option(
+    LIBXML2_DIR STRING
     "Location of libxml2 library"
 )
 
@@ -334,18 +367,22 @@ if(ENABLE_TESTS)
     include(CTest)
 endif()
 
+if(ENABLE_TREE_PERF)
+    add_compile_definitions(USE_TREE_PERF)
+endif()
+
 if(MSVC)
     add_compile_options(/Wall)
 else()
 
-    mdsplus_add_compiler_flag(-Wall)
-    mdsplus_add_compiler_flag(-Wextra)
+    mdsplus_add_compiler_flags(-Wall)
+    mdsplus_add_compiler_flags(-Wextra)
 
     if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
         set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
-        endif()
-
     endif()
+
+endif()
     
 if(ENABLE_WERROR)
 
@@ -353,30 +390,30 @@ if(ENABLE_WERROR)
         add_compile_options(/WX)
     else()
 
-        mdsplus_add_compiler_flag(-Werror)
+        mdsplus_add_compiler_flags(-Werror)
 
         if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
             set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn error")
+        endif()
+
     endif()
 
 endif()
 
-    endif()
-
 if(ENABLE_GPROF)
 
-    if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU"
-        OR NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
-        OR NOT CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+    string(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
+    if(NOT _build_type STREQUAL "relwithdebinfo")
+        message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")    
+    endif()
+
+    if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
+        NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+        NOT CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
 
         message(WARNING "Unable to build with support for gprof, -pg is only supported on GNU compilers")
 
     else()
-
-        string(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
-        if(NOT _build_type STREQUAL "relwithdebinfo")
-            message(WARNING "It is recommended to use CMAKE_BUILD_TYPE=RelWithDebInfo with ENABLE_GPROF=ON")    
-        endif()
 
         add_compile_options(-pg)
         add_link_options(-pg)
@@ -397,14 +434,35 @@ if(ENABLE_LARGEFILE)
 
 endif()
 
-if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
-    AND CMAKE_C_COMPILER_VERSION GREATER_EQUAL "15")
+if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
 
-    # Disables the new strict prototype checking:
-    # a function declaration without a prototype is deprecated in all versions of C and is not supported in C2x
-    add_compile_options(-Wno-deprecated-non-prototype)
+    set(_prefix "_sanitize_${ENABLE_SANITIZE}")
+
+    mdsplus_check_flags(${_prefix}
+        COMPILER -fsanitize=${ENABLE_SANITIZE} -O3
+        LINKER   -fsanitize=${ENABLE_SANITIZE}
+    )
+
+    foreach(_lang IN ITEMS C CXX)
+        if(${_prefix}_${_lang})
+            set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -fsanitize=${ENABLE_SANITIZE} -O3")
+        endif()
+    endforeach()
+
+    # TODO: Improve
+    add_link_options(-fsanitize=${ENABLE_SANITIZE})
 
 endif()
+
+foreach(_lang IN ITEMS C CXX)
+    if(CMAKE_${_lang}_COMPILER_ID STREQUAL "Clang"
+        AND CMAKE_${_lang}_COMPILER_VERSION GREATER_EQUAL "15")
+
+        # Disables the new strict prototype checking that is on by default in clang >= 15
+        set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -Wno-deprecated-non-prototype")
+
+    endif()
+endforeach()
 
 ###
 ### RPATH Configuration, to remove dependence on [DY]LD_LIBRARY_PATH
@@ -500,6 +558,7 @@ find_package(DC1394)
 if(BUILD_TESTING AND NOT APPLE)
 
     find_library(LIBRT rt REQUIRED)
+    mark_as_advanced(LIBRT)
 
 endif()
 
@@ -557,21 +616,19 @@ if(ENABLE_JAVA)
         # which only likes EXPLICIT setting of JAVA_HOME
         # but also allows you to pick the jdk version
         execute_process(
-            COMMAND /usr/libexec/java_home -v ${JAVA_TARGET_VERSION}
-            OUTPUT_VARIABLE _cmd_java_home
+            COMMAND /usr/libexec/java_home -v ${JAVA_VERSION}
+            OUTPUT_VARIABLE _result
             OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
         )
 
-        if(_cmd_java_home AND IS_DIRECTORY "${_cmd_java_home}")
+        if(_result AND IS_DIRECTORY "${_result}")
             set(JAVA_HOME ${_cmd_java_home})
         endif()
-        
-        unset(_cmd_java_home)
     else()
         set(JAVA_HOME "$ENV{JAVA_HOME}")
     endif()
 
-    find_package(Java COMPONENTS Runtime Development REQUIRED)
+    find_package(Java ${JAVA_VERSION} COMPONENTS Runtime Development REQUIRED)
     find_package(JNI REQUIRED)
 
     include(UseJava)
@@ -587,7 +644,7 @@ if(ENABLE_IDL)
 
     if(IDL_DIR)
         set(IDL_ROOT_DIR "${IDL_DIR}")
-    elseif(NOT IDL_FOUND)
+    else()
         set(IDL_ROOT_DIR
             /usr/local/harris/idl
             /usr/local/exelis/idl
@@ -881,11 +938,6 @@ if(BUILD_TESTING)
     ###
     ### Testing
     ###
-
-    option(GENERATE_VSCODE_LAUNCH_JSON
-        "Generate .vscode/launch.json, this option disables itself after it is run."
-        OFF
-    )
 
     if(GENERATE_VSCODE_LAUNCH_JSON)
         message(STATUS "Generating .vscode/launch.json")
