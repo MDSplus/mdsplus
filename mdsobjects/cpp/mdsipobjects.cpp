@@ -304,7 +304,7 @@ void *putManyObj(char *serializedIn)
 Mutex Connection::globalMutex;
 
 Connection::Connection(char *mdsipAddr,
-                       int clevel):ipAddrStr(mdsipAddr) // mdsipAddr of the form <IP addr>[:<port>]
+                       int clevel)// mdsipAddr of the form <IP addr>[:<port>]
 {
   mdsipAddrStr.assign((const char *)mdsipAddr);
   this->clevel = clevel;
