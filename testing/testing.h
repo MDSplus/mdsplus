@@ -60,10 +60,10 @@ extern "C"
 {
 #endif
 
-  EXPORT void __assert_fail(const char *__assertion, const char *__file,
-                            ASSERT_LINE_TYPE __line,
-                            const char *__function) __THROW
-      __attribute__((__noreturn__));
+  // EXPORT void __assert_fail(const char *__assertion, const char *__file,
+  //                           ASSERT_LINE_TYPE __line,
+  //                           const char *__function) __THROW
+  //     __attribute__((__noreturn__));
 
 #ifdef _TESTING
 

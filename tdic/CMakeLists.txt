@@ -27,11 +27,4 @@ add_executable(
     tdic.c
 )
 
-target_link_libraries(
-    tdic
-    PUBLIC
-        MdsIpShr
-        Readline::Readline
-)
-
 install(TARGETS tdic)

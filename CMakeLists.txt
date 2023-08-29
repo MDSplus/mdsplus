@@ -72,7 +72,7 @@ endif()
 # replaces --disable-shared
 mdsplus_option(
     BUILD_SHARED_LIBS BOOL
-    "Build shared libraries"
+    "Build shared libraries."
     DEFAULT ON
 )
 
@@ -94,7 +94,7 @@ endif()
 # replaces --enable-debug
 mdsplus_option(
     CMAKE_BUILD_TYPE STRING
-    "Type of build to configure"
+    "Type of build to configure."
     OPTIONS ${CMAKE_CONFIGURATION_TYPES}
     DEFAULT "Release"
     ${_force_build_type}
@@ -111,7 +111,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
     mdsplus_option(
         CMAKE_INSTALL_PREFIX STRING
-        "Where to install files to"
+        "Where to install files to."
         DEFAULT "${_default_install_dir}"
         FORCE
     )
@@ -131,7 +131,7 @@ include(CTest)
 
 mdsplus_option(
     ENABLE_SELFTEST BOOL
-    "Include the testing/selftest directory"
+    "Include the testing/selftest directory."
     DEFAULT OFF
 )
 
@@ -139,7 +139,7 @@ if(WIN32)
     # replaces --disable-largefile
     mdsplus_option(D
         ENABLE_LARGEFILE BOOL
-        "Enable support for large files when compiling for 32-bit"
+        "Enable support for large files when compiling for 32-bit."
         DEFAULT ON
     )
 endif()
@@ -148,7 +148,7 @@ if(NOT WIN32)
     # replaces --enable-perf
     mdsplus_option(
         ENABLE_TREE_PERF BOOL
-        "Collect Tree I/O performance statistics and store them in $mds_perf_filename"
+        "Collect Tree I/O performance statistics and store them in $mds_perf_filename."
         DEFAULT OFF
     )
 endif()
@@ -156,7 +156,7 @@ endif()
 # replaces --disable-java
 mdsplus_option(
     ENABLE_JAVA BOOL
-    "Build java libraries and applications"
+    "Build java libraries and applications."
     DEFAULT ON
 )
 
@@ -167,14 +167,14 @@ mdsplus_option(
 # replaces --enable-d3d
 mdsplus_option(
     ENABLE_D3D BOOL
-    "Build MdsD3D library against d3 library located in $D3DLIB_PATH"
+    "Build MdsD3D library against d3 library located in $D3DLIB_PATH."
     DEFAULT OFF
 )
 
 # replaces --enable-valgrind
 mdsplus_option(
     ENABLE_VALGRIND BOOL
-    "Run all of the tests through Valgrind [default: OFF]"
+    "Run all of the tests through Valgrind."
     DEFAULT OFF
 )
 
@@ -187,7 +187,7 @@ set(_sanitize_flavor_list
 
 mdsplus_option(
     ENABLE_SANITIZE STRING
-    "Enable compile sanitizer with flavor"
+    "Enable compile sanitizer with flavor."
     OPTIONS 
         OFF
         ${_sanitize_flavor_list}
@@ -198,21 +198,21 @@ mdsplus_option(
 # replaces --enable/disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
 mdsplus_option(
     ENABLE_DOXYGEN BOOL
-    "Generate doxygen documentation"
+    "Generate doxygen documentation."
     DEFAULT ON
 )
 
 # replaces --enable-werror
 mdsplus_option(
     ENABLE_WERROR BOOL
-    "Treat all warnings as errors (-Werror)"
+    "Treat all warnings as errors (-Werror)."
     DEFAULT OFF
 )
 
 # replaces --enable-debug=profile
 mdsplus_option(
     ENABLE_GPROF BOOL
-    "Enable profiling with gprof (compile and link with -pg)"
+    "Enable profiling with gprof (compile and link with -pg)."
     DEFAULT OFF
 )
 
@@ -226,12 +226,12 @@ if(BUILD_TESTING)
 
 endif()
 
-# TODO: Why does this not show up in ccmake?
 mdsplus_option(
     PYTHON STRING
-    "Path to python interpreter to use for building and testing"
+    "Path to python interpreter to use for building and testing."
     DEFAULT "$PYTHON"
 )
+
 if(PYTHON STREQUAL "$PYTHON")
     set(PYTHON "$ENV{PYTHON}")
 endif()
@@ -245,13 +245,23 @@ endif()
 # replaces --with-jdk
 mdsplus_option(
     JDK_DIR STRING
-    "Location of Java Development Kit (JDK)"
+    "Location of Java Development Kit (JDK)."
+    DEFAULT "$JDK_DIR"
 )
+
+if(JDK_DIR STREQUAL "$JDK_DIR")
+    set(JDK_DIR "$ENV{JDK_DIR}")
+endif()
+
+message(STATUS "$ENV{JDK_DIR}")
+
+if(APPLE)
+    set(_java_version_description ", if JDK_DIR is not set, this will be passed to `/usr/libexec/java_home -v $JAVA_VERSION` to find a specific version")
+endif()
 
 mdsplus_option(
     JAVA_VERSION STRING
-    "Minimum version of Java to search for"
-    DEFAULT "1.8"
+    "Minimum version of Java to search for${_java_version_description}."
 )
 
 # replaces --with-gsi=globus-location:flavor
@@ -264,19 +274,19 @@ mdsplus_option(
 # TODO: Investigate
 mdsplus_option(
     SRB_DIR STRING
-    "Location of SRB to build against"
+    "Location of SRB to build against."
 )
 
 mdsplus_option(
     ENABLE_LABVIEW BOOL
-    "Build LV and MDSobjectsLVShr and install MDSplus LabView projects [default: ON]"
+    "Build LV and MDSobjectsLVShr and install MDSplus LabView projects."
     DEFAULT ON
 )
 
 # replaces --with-labview=
 mdsplus_option(
     LABVIEW_DIR STRING
-    "Location of labview (i.e. /usr/local/natinst/Labview)"
+    "Location of labview (i.e. /usr/local/natinst/Labview)."
 )
 
 # replaces --with-idl=
@@ -293,19 +303,27 @@ mdsplus_option(
 
 if(IDL_DIR AND NOT ENABLE_IDL)
     message(STATUS "Setting ENABLE_IDL=ON because IDL_DIR was specified")
-    set(ENABLE_IDL ON CACHE BOOL "" FORCE)
+
+    get_property(_helpstring CACHE ENABLE_IDL PROPERTY HELPSTRING)
+    set(ENABLE_IDL ON CACHE STRING "${_helpstring}" FORCE)
 endif()
 
 # replaces --with-readline=
 mdsplus_option(
     READLINE_DIR STRING
-    "Location of the readline library, if not set the system will be searched."
+    "Location of the readline library, if not set the system will be searched"
 )
 
 # replaces --with-xml-prefix, --with-xml-exec-prefix
 mdsplus_option(
     LIBXML2_DIR STRING
     "Location of libxml2 library"
+)
+
+# replaces --with-valgrind-lib
+mdsplus_option(
+    VALGRIND_LIB_DIR STRING
+    "Location of the valgrind library"
 )
 
 # TODO:
@@ -315,12 +333,6 @@ mdsplus_option(
 #     OFF
 # )
 
-# TODO:
-# replaces --with-valgrind-lib
-# set(VALGRIND_LIB_DIR ""
-#     CACHE STRING
-#     ""
-# )
 
 # TODO:
 # replaces --with-winebottle
@@ -502,13 +514,12 @@ set(Python_FIND_FRAMEWORK LAST)
 
 # In order for find_package(Python) to use the python specified with -DPYTHON or $PYTHON
 # we need to convert it to an absolute path
-find_program(Python_EXECUTABLE "${PYTHON}")
-mark_as_advanced(Python_EXECUTABLE)
+if(NOT DEFINED Python_EXECUTABLE AND NOT PYTHON STREQUAL "")
+    find_program(Python_EXECUTABLE "${PYTHON}")
+    mark_as_advanced(Python_EXECUTABLE)
+endif()
 
 find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
-
-# Update the option with the python executable we found
-set(PYTHON "${Python_EXECUTABLE}" CACHE STRING "" FORCE)
 
 # Finds the platform specific threading libraries, usually pthreads
 find_package(Threads REQUIRED)
@@ -547,7 +558,6 @@ find_package(Sybase)
 
 # cmake/FindHDF5.cmake
 set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
-mark_as_advanced(HDF5_ROOT_DIR)
 find_package(HDF5)
 
 # cmake/FindDC1394.cmake
@@ -555,11 +565,15 @@ find_package(DC1394)
 
 # Configuration-dependent dependencies
 
-if(BUILD_TESTING AND NOT APPLE)
+if(BUILD_TESTING)
 
-    find_library(LIBRT rt REQUIRED)
+    find_library(LIBRT rt)
     mark_as_advanced(LIBRT)
 
+    if(LIBRT)
+        add_compile_definitions(HAVE_LIBRT)
+    endif()
+    
 endif()
 
 if(ENABLE_VALGRIND)
@@ -572,6 +586,7 @@ if(ENABLE_VALGRIND)
     )
 
     # cmake/FindValgrind.cmake
+    set(Valgrind_ROOT_DIR "${VALGRIND_LIB_DIR}")
     find_package(Valgrind REQUIRED)
 
     if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
@@ -618,11 +633,12 @@ if(ENABLE_JAVA)
         execute_process(
             COMMAND /usr/libexec/java_home -v ${JAVA_VERSION}
             OUTPUT_VARIABLE _result
-            OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
         )
 
         if(_result AND IS_DIRECTORY "${_result}")
-            set(JAVA_HOME ${_cmd_java_home})
+            set(JAVA_HOME ${_result})
         endif()
     else()
         set(JAVA_HOME "$ENV{JAVA_HOME}")
@@ -955,7 +971,6 @@ if(BUILD_TESTING)
     add_subdirectory(treeshr/testing)
     add_subdirectory(mdslib/testing)
     add_subdirectory(mdstcpip/testing)
-    add_subdirectory(tdishr/testing)
     add_subdirectory(tditest/testing)
     add_subdirectory(mdsobjects/cpp/testing)
     add_subdirectory(python/MDSplus/tests)
@@ -1035,7 +1050,7 @@ install(
 endif()
 
 ###
-### Install the remaining files
+### Install the remaining files and directories
 ###
 
 install(
@@ -1049,15 +1064,25 @@ install(
         nodejs
         php
         pixmaps
+        pydevices
+        tdi
         trees
         xml
         ${CMAKE_BINARY_DIR}/include
     DESTINATION .
     USE_SOURCE_PERMISSIONS
+
+    PATTERN "*.php" PERMISSIONS ${MODE_755}
+    PATTERN "*.py" PERMISSIONS ${MODE_755}
+    PATTERN "*.fun" PERMISSIONS ${MODE_755}
+
     PATTERN "*.in" EXCLUDE # Templates for generated files
     PATTERN "Makefile" EXCLUDE # TODO: Remove
     PATTERN "Makefile.*" EXCLUDE # TODO: Remove
     PATTERN "CMakeLists.txt" EXCLUDE
+
+    PATTERN "*.pyc" EXCLUDE
+    PATTERN "__pycache__" EXCLUDE
 )
 
 install(
@@ -1068,20 +1093,6 @@ install(
 )
 
 install(
-    DIRECTORY
-        pydevices
-        tdi
-    DESTINATION .
-    FILE_PERMISSIONS ${MODE_755}
-    PATTERN "*.in" EXCLUDE
-    PATTERN "Makefile" EXCLUDE
-    PATTERN "Makefile.*" EXCLUDE
-    PATTERN "CMakeLists.txt" EXCLUDE
-    PATTERN "*.pyc" EXCLUDE
-    PATTERN "__pycache__" EXCLUDE
-)
-
-install(
     FILES
         setup.csh
         setup.sh
@@ -1089,9 +1100,7 @@ install(
     PERMISSIONS ${MODE_755}
 )
 
-# mkdir local/tdi/
-
-# install(
-#     DIRECTORY tdi
-#     DESTINATION local/
-# )
+install(
+    DIRECTORY
+    DESTINATION local/tdi
+)

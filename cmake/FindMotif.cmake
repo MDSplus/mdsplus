@@ -1,6 +1,6 @@
 # FindMotif.cmake
 #
-# Finds Motif (Xm, Mrm, Uil) and X11 (X11, Xt)
+# Finds Motif (Xm, Mrm, uil) and X11 (X11, Xt)
 #
 # This will define the following variables
 #
@@ -8,13 +8,11 @@
 #   Motif_INCLUDE_DIRS
 #   Motif_Xm_INCLUDE_DIR
 #   Motif_Mrm_INCLUDE_DIR
-#   Motif_Uil_INCLUDE_DIR
 #   Motif_X11_INCLUDE_DIR
 #   Motif_Xt_INCLUDE_DIR
 #   Motif_LIBRARIES
 #   Motif_Xm_LIBRARY
 #   Motif_Mrm_LIBRARY
-#   Motif_Uil_LIBRARY
 #   Motif_X11_LIBRARY
 #   Motif_Xt_LIBRARY
 #   uil_EXECUTABLE
@@ -40,15 +38,6 @@ find_path(
 find_path(
     Motif_Mrm_INCLUDE_DIR
     NAMES Mrm/MrmPublic.h
-    PATHS 
-        ${Motif_ROOT_DIR}
-    PATH_SUFFIXES 
-        include
-)
-
-find_path(
-    Motif_Uil_INCLUDE_DIR
-    NAMES uil/Uil.h
     PATHS 
         ${Motif_ROOT_DIR}
     PATH_SUFFIXES 
@@ -92,15 +81,6 @@ find_library(
 )
 
 find_library(
-    Motif_Uil_LIBRARY
-    NAMES Uil
-    PATHS 
-        ${Motif_ROOT_DIR}
-    PATH_SUFFIXES 
-        lib
-)
-
-find_library(
     Motif_X11_LIBRARY
     NAMES X11
     PATHS 
@@ -134,11 +114,9 @@ find_package_handle_standard_args(
         Motif_Xm_LIBRARY
         Motif_Xm_INCLUDE_DIR
         Motif_Mrm_INCLUDE_DIR
-        Motif_Uil_INCLUDE_DIR
         Motif_X11_INCLUDE_DIR
         Motif_Xt_INCLUDE_DIR
         Motif_Mrm_LIBRARY
-        Motif_Uil_LIBRARY
         Motif_X11_LIBRARY
         Motif_Xt_LIBRARY
         uil_EXECUTABLE
@@ -149,7 +127,6 @@ if(Motif_FOUND)
     set(Motif_INCLUDE_DIRS
         ${Motif_Xm_INCLUDE_DIR}
         ${Motif_Mrm_INCLUDE_DIR}
-        ${Motif_Uil_INCLUDE_DIR}
         ${Motif_X11_INCLUDE_DIR}
         ${Motif_Xt_INCLUDE_DIR}
     )
@@ -157,7 +134,6 @@ if(Motif_FOUND)
     set(Motif_LIBRARIES
         ${Motif_Xm_LIBRARY}
         ${Motif_Mrm_LIBRARY}
-        ${Motif_Uil_LIBRARY}
         ${Motif_X11_LIBRARY}
         ${Motif_Xt_LIBRARY}
     )
@@ -180,12 +156,10 @@ endif()
 mark_as_advanced(
     Motif_Xm_INCLUDE_DIR
     Motif_Mrm_INCLUDE_DIR
-    Motif_Uil_INCLUDE_DIR
     Motif_X11_INCLUDE_DIR
     Motif_Xt_INCLUDE_DIR
     Motif_Xm_LIBRARY
     Motif_Mrm_LIBRARY
-    Motif_Uil_LIBRARY
     Motif_X11_LIBRARY
     Motif_Xt_LIBRARY
     uil_EXECUTABLE
