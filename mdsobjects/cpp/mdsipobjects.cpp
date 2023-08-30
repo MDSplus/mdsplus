@@ -395,7 +395,6 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
   }
 
   lockLocal();
-  //	lockGlobal();
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
                    std::string(expr).size(), 0, 0, (char *)expr);
   if (STATUS_NOT_OK)
@@ -416,7 +415,6 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
       throw MdsException(status);
     }
   }
-  //	unlockGlobal();
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes,
                            &ptr, &mem);
   unlockLocal();
