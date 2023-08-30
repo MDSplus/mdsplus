@@ -312,6 +312,7 @@ Connection::Connection(char *mdsipAddr,
   SetCompressionLevel(clevel);
   int sockId = ConnectToMds(mdsipAddr);
   unlockGlobal();
+  
   if (sockId < 0)
   {
     std::string msg("Cannot connect to ");
@@ -394,22 +395,8 @@ Data *Connection::get(const char *expr, Data **args, int nArgs, bool serialized)
   }
 
   lockLocal();
-
-  if(serialized)
-  {
-    std::string expExpr("serializeout(`(data(");
-    expExpr +=expr;
-    expExpr += ")))";
-    status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
-                   expExpr.size(), 0, 0, (char *)expExpr.c_str());
-  }
-  else
-  {
-     status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
-                   strlen((char *)expr), 0, 0, (char *)expr);
-  }
-//                   std::string(expr).size(), 0, 0, (char *)expr);
-
+  status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
+                   std::string(expr).size(), 0, 0, (char *)expr);
   if (STATUS_NOT_OK)
   {
     unlockLocal();
