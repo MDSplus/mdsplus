@@ -4459,6 +4459,20 @@ namespace MDSplus
     virtual void dataReceived(Data *samples, Data *times, int shot = 0) = 0;
   };
 
+  
+  struct ConnectionThreadContextInfo
+  {
+    public: 
+#ifdef _MSC_VER
+      DWORD tid;
+#else
+      pthread_t tid;
+#endif
+      int sockId;
+  };
+  
+  
+  
   class EXPORT Connection
   {
   public:
@@ -4497,7 +4511,13 @@ namespace MDSplus
 
     std::string mdsipAddrStr;
     int clevel;
-    int sockId;
+    
+
+    std::vector<ConnectionThreadContextInfo> threadContextV;
+    
+    std::string ipAddrStr;
+    int getSockId();
+
     Mutex mutex;
     static Mutex globalMutex;
     std::vector<DataStreamListener *> listenerV;
