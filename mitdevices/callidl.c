@@ -43,7 +43,7 @@ static int init()
   return 1;
 }
 
-EXPORT int execute(char *command)
+int execute(char *command)
 {
   int status;
   sigset_t newsigset;

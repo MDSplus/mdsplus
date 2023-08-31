@@ -1,5 +1,5 @@
 
-if(ENABLE_IDL AND IDL_FOUND)
+if(TARGET IDL::IDL AND TARGET Motif::Motif)
 
     ###
     ### IdlMdsEvent
@@ -14,8 +14,8 @@ if(ENABLE_IDL AND IDL_FOUND)
         IdlMdsEvent
         PUBLIC
             MdsIpShr
-            Motif::Motif
             IDL::IDL
+            Motif::Motif
     )
 
     mdsplus_add_static_copy(IdlMdsEvent _static_target)

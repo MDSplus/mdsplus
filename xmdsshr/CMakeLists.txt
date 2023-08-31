@@ -1,5 +1,5 @@
 
-if(Motif_FOUND)
+if(TARGET Motif::Motif)
 
     ###
     ### XmdsShr

@@ -16,9 +16,9 @@ set(CMAKE_CXX_STANDARD 98)
 
 message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID})")
-message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID})")
-message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID})")
+message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID}, Version: ${CMAKE_C_COMPILER_VERSION})")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID}, Version: ${CMAKE_CXX_COMPILER_VERSION})")
+message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID}, Version: ${CMAKE_Fortran_COMPILER_VERSION})")
 
 # Query version and release information from git
 include(MDSplusGitRevision)
@@ -129,94 +129,42 @@ include(GNUInstallDirs)
 # Defines option(BUILD_TESTING)
 include(CTest)
 
-mdsplus_option(
-    ENABLE_SELFTEST BOOL
-    "Include the testing/selftest directory."
-    DEFAULT OFF
-)
+if(BUILD_TESTING)
 
-if(WIN32)
-    # replaces --disable-largefile
-    mdsplus_option(D
-        ENABLE_LARGEFILE BOOL
-        "Enable support for large files when compiling for 32-bit."
-        DEFAULT ON
-    )
-endif()
-
-if(NOT WIN32)
-    # replaces --enable-perf
     mdsplus_option(
-        ENABLE_TREE_PERF BOOL
-        "Collect Tree I/O performance statistics and store them in $mds_perf_filename."
+        ENABLE_SELFTEST BOOL
+        "Include the testing/selftest directory."
         DEFAULT OFF
     )
-endif()
+    
+    # replaces --enable-valgrind
+    mdsplus_option(
+        ENABLE_VALGRIND BOOL
+        "Run all of the tests through Valgrind."
+        DEFAULT OFF
+    )
 
-# replaces --disable-java
-mdsplus_option(
-    ENABLE_JAVA BOOL
-    "Build java libraries and applications."
-    DEFAULT ON
-)
+    # replaces --with-valgrind-lib
+    mdsplus_option(
+        VALGRIND_LIB_DIR STRING
+        "Location of the valgrind library"
+    )
 
-# (SLW) TODO
-# replaces --with-java_only
-#option(JAVA_ONLY "")
+    set(_sanitize_flavor_list
+        memory      # (msan)  https://clang.llvm.org/docs/MemorySanitizer.html
+        address     # (asan)  https://clang.llvm.org/docs/AddressSanitizer.html
+        thread      # (tsan)  https://clang.llvm.org/docs/ThreadSanitizer.html
+        undefined   # (ubsan) https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+    )
 
-# replaces --enable-d3d
-mdsplus_option(
-    ENABLE_D3D BOOL
-    "Build MdsD3D library against d3 library located in $D3DLIB_PATH."
-    DEFAULT OFF
-)
-
-# replaces --enable-valgrind
-mdsplus_option(
-    ENABLE_VALGRIND BOOL
-    "Run all of the tests through Valgrind."
-    DEFAULT OFF
-)
-
-set(_sanitize_flavor_list
-    memory      # (msan)  https://clang.llvm.org/docs/MemorySanitizer.html
-    address     # (asan)  https://clang.llvm.org/docs/AddressSanitizer.html
-    thread      # (tsan)  https://clang.llvm.org/docs/ThreadSanitizer.html
-    undefined   # (ubsan) https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
-)
-
-mdsplus_option(
-    ENABLE_SANITIZE STRING
-    "Enable compile sanitizer with flavor."
-    OPTIONS 
-        OFF
-        ${_sanitize_flavor_list}
-    DEFAULT OFF
-)
-
-# TODO: doxygen dot, man, rtf, xml, chm, chi, html
-# replaces --enable/disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
-mdsplus_option(
-    ENABLE_DOXYGEN BOOL
-    "Generate doxygen documentation."
-    DEFAULT ON
-)
-
-# replaces --enable-werror
-mdsplus_option(
-    ENABLE_WERROR BOOL
-    "Treat all warnings as errors (-Werror)."
-    DEFAULT OFF
-)
-
-# replaces --enable-debug=profile
-mdsplus_option(
-    ENABLE_GPROF BOOL
-    "Enable profiling with gprof (compile and link with -pg)."
-    DEFAULT OFF
-)
-
-if(BUILD_TESTING)
+    mdsplus_option(
+        ENABLE_SANITIZE STRING
+        "Enable compile sanitizer with flavor."
+        OPTIONS 
+            OFF
+            ${_sanitize_flavor_list}
+        DEFAULT OFF
+    )
     
     mdsplus_option(
         GENERATE_VSCODE_LAUNCH_JSON BOOL
@@ -235,6 +183,47 @@ mdsplus_option(
 if(PYTHON STREQUAL "$PYTHON")
     set(PYTHON "$ENV{PYTHON}")
 endif()
+
+mdsplus_option(
+    JAVA_VERSION STRING
+    "Minimum version of Java to search for${_java_version_description}."
+)
+
+mdsplus_option(
+    ENABLE_MOTIF BOOL
+    "Build motif libraries and applications."
+    DEFAULT ON
+)
+
+mdsplus_option(
+    ENABLE_SYBASE BOOL
+    "Build mdssql library, and Sybase support in TDI."
+    DEFAULT ON
+)
+
+mdsplus_option(
+    ENABLE_HDF5 BOOL
+    "Build HDF5 libraries and applications."
+    DEFAULT ON
+)
+
+# replaces --enable-d3d
+mdsplus_option(
+    ENABLE_D3D BOOL
+    "Build MdsD3D library against d3 library located in $D3DLIB_PATH."
+    DEFAULT OFF
+)
+
+# replaces --disable-java
+mdsplus_option(
+    ENABLE_JAVA BOOL
+    "Build java libraries and applications."
+    DEFAULT ON
+)
+
+# (SLW) TODO
+# replaces --with-java_only
+#option(JAVA_ONLY "")
 
 # replaces --with-jars
 # set(JARS ""
@@ -259,9 +248,36 @@ if(APPLE)
     set(_java_version_description ", if JDK_DIR is not set, this will be passed to `/usr/libexec/java_home -v $JAVA_VERSION` to find a specific version")
 endif()
 
+if(WIN32)
+    # replaces --disable-largefile
+    mdsplus_option(
+        ENABLE_LARGEFILE BOOL
+        "Enable support for large files when compiling for 32-bit."
+        DEFAULT ON
+    )
+endif()
+
+if(NOT WIN32)
+    # replaces --enable-perf
+    mdsplus_option(
+        ENABLE_TREE_PERF BOOL
+        "Collect Tree I/O performance statistics and store them in $mds_perf_filename."
+        DEFAULT OFF
+    )
+endif()
+
+# replaces --enable-werror
 mdsplus_option(
-    JAVA_VERSION STRING
-    "Minimum version of Java to search for${_java_version_description}."
+    ENABLE_WERROR BOOL
+    "Treat all warnings as errors (-Werror)."
+    DEFAULT OFF
+)
+
+# replaces --enable-debug=profile
+mdsplus_option(
+    ENABLE_GPROF BOOL
+    "Enable profiling with gprof (compile and link with -pg)."
+    DEFAULT OFF
 )
 
 # replaces --with-gsi=globus-location:flavor
@@ -270,8 +286,8 @@ mdsplus_option(
     "Set in the form of flavor or globus-location:flavor. Enables globus GSI for mdsip communications."
 )
 
-# replaces --with-srb=
 # TODO: Investigate
+# replaces --with-srb=
 mdsplus_option(
     SRB_DIR STRING
     "Location of SRB to build against."
@@ -286,8 +302,17 @@ mdsplus_option(
 # replaces --with-labview=
 mdsplus_option(
     LABVIEW_DIR STRING
-    "Location of labview (i.e. /usr/local/natinst/Labview)."
+    "Location of labview (i.e. /usr/local/natinst/Labview). Setting this also sets ENABLE_LABVIEW=ON."
 )
+
+if(LABVIEW_DIR AND NOT ENABLE_LABVIEW)
+
+    message(STATUS "Setting ENABLE_LABVIEW=ON because LABVIEW_DIR was specified")
+
+    get_property(_helpstring CACHE ENABLE_LABVIEW PROPERTY HELPSTRING)
+    set(ENABLE_LABVIEW ON CACHE STRING "${_helpstring}" FORCE)
+
+endif()
 
 # replaces --with-idl=
 mdsplus_option(
@@ -302,10 +327,12 @@ mdsplus_option(
 )
 
 if(IDL_DIR AND NOT ENABLE_IDL)
+
     message(STATUS "Setting ENABLE_IDL=ON because IDL_DIR was specified")
 
     get_property(_helpstring CACHE ENABLE_IDL PROPERTY HELPSTRING)
     set(ENABLE_IDL ON CACHE STRING "${_helpstring}" FORCE)
+
 endif()
 
 # replaces --with-readline=
@@ -320,10 +347,12 @@ mdsplus_option(
     "Location of libxml2 library"
 )
 
-# replaces --with-valgrind-lib
+# TODO: doxygen dot, man, rtf, xml, chm, chi, html
+# replaces --enable/disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
 mdsplus_option(
-    VALGRIND_LIB_DIR STRING
-    "Location of the valgrind library"
+    ENABLE_DOXYGEN BOOL
+    "Generate doxygen documentation."
+    DEFAULT ON
 )
 
 # TODO:
@@ -386,6 +415,8 @@ endif()
 if(MSVC)
     add_compile_options(/Wall)
 else()
+
+    # TODO: Disable for flang (family: LLVMFlang)
 
     mdsplus_add_compiler_flags(-Wall)
     mdsplus_add_compiler_flags(-Wextra)
@@ -467,10 +498,10 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
 endif()
 
 foreach(_lang IN ITEMS C CXX)
-    if(CMAKE_${_lang}_COMPILER_ID STREQUAL "Clang"
-        AND CMAKE_${_lang}_COMPILER_VERSION GREATER_EQUAL "15")
+    if((CMAKE_${_lang}_COMPILER_ID STREQUAL "Clang" AND CMAKE_${_lang}_COMPILER_VERSION GREATER_EQUAL "15") 
+        OR (CMAKE_${_lang}_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_${_lang}_COMPILER_VERSION GREATER_EQUAL "14"))
 
-        # Disables the new strict prototype checking that is on by default in clang >= 15
+        # Disables the new strict prototype checking that is on by default in clang >= 15 (or apple clang >= 14)
         set(CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} -Wno-deprecated-non-prototype")
 
     endif()
@@ -527,18 +558,18 @@ find_package(Threads REQUIRED)
 # Finds the POSIX iconv() family of functions, which might be built into libc
 find_package(Iconv REQUIRED)
 
-# Finds the Basic Linear Algebra Subprograms fortran functions
-find_package(BLAS REQUIRED)
-
-# Finds the LZMA compression library
-find_package(LibLZMA)
-
 # Finds the ZLIB compression library
 find_package(ZLIB REQUIRED)
 
 set(LibXml2_ROOT_DIR "${LIBXML2_DIR}")
 mark_as_advanced(LibXml2_ROOT_DIR)
 find_package(LibXml2 REQUIRED)
+
+# Finds the Basic Linear Algebra Subprograms fortran functions
+find_package(BLAS)
+
+# Finds the LZMA compression library
+find_package(LibLZMA)
 
 # Custom packages to find
 
@@ -550,76 +581,25 @@ set(Readline_ROOT_DIR "${READLINE_DIR}")
 mark_as_advanced(Readline_ROOT_DIR)
 find_package(Readline REQUIRED)
 
-# cmake/FindMotif.cmake
-find_package(Motif)
-
-# cmake/FindSybase.cmake
-find_package(Sybase)
-
-# cmake/FindHDF5.cmake
-set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
-find_package(HDF5)
-
 # cmake/FindDC1394.cmake
 find_package(DC1394)
 
 # Configuration-dependent dependencies
 
-if(BUILD_TESTING)
-
-    find_library(LIBRT rt)
-    mark_as_advanced(LIBRT)
-
-    if(LIBRT)
-        add_compile_definitions(HAVE_LIBRT)
-    endif()
-    
+if(ENABLE_MOTIF)
+    # cmake/FindMotif.cmake
+    find_package(Motif)
 endif()
 
-if(ENABLE_VALGRIND)
+if(ENABLE_SYBASE)
+    # cmake/FindSybase.cmake
+    find_package(Sybase)
+endif()
 
-    set(Valgrind_REQUESTED_TOOL_LIST
-        memcheck
-        helgrind
-        drd
-        exp-sgcheck
-    )
-
-    # cmake/FindValgrind.cmake
-    set(Valgrind_ROOT_DIR "${VALGRIND_LIB_DIR}")
-    find_package(Valgrind REQUIRED)
-
-    if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
-        AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "14"
-        AND Valgrind_VERSION VERSION_LESS "3.20")
-
-        set(_force_dwarf4 "-fdebug-default-version=4")
-        mdsplus_add_compiler_flag(${_force_dwarf4})
-
-        message(STATUS "Setting ${_force_dwarf4} due to clang >= 14, and valgrind < 3.20")
-    endif()
-
-    set(Valgrind_FLAGS
-        --gen-suppressions=all
-        --num-callers=64
-        --trace-children=yes
-        --child-silent-after-fork=yes
-        --trace-children-skip-by-arg='*SetMdsplusFileProtection*'
-    )
-
-    set(Valgrind_memcheck_FLAGS
-        --leak-check=full
-        --show-reachable=no
-    )
-
-    set(Valgrind_helgrind_FLAGS
-        --history-level=full
-    )
-
-    set(Valgrind_SUPPRESSION_FILES
-        ${CMAKE_SOURCE_DIR}/conf/valgrind.supp/mdsplus.supp
-    )
-
+if(ENABLE_HDF5)
+    # cmake/FindHDF5.cmake
+    set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
+    find_package(HDF5)
 endif()
 
 if(ENABLE_JAVA)
@@ -707,6 +687,63 @@ if(GSI)
 
     # Only used by Roam, which is only enabled with Globus
     find_package(CURL REQUIRED)
+
+endif()
+
+if(BUILD_TESTING)
+
+    find_library(LIBRT rt)
+    mark_as_advanced(LIBRT)
+
+    if(LIBRT)
+        add_compile_definitions(HAVE_LIBRT)
+    endif()
+
+endif()
+
+if(ENABLE_VALGRIND)
+
+    set(Valgrind_REQUESTED_TOOL_LIST
+        memcheck
+        helgrind
+        drd
+        exp-sgcheck
+    )
+
+    # cmake/FindValgrind.cmake
+    set(Valgrind_ROOT_DIR "${VALGRIND_LIB_DIR}")
+    find_package(Valgrind REQUIRED)
+
+    if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
+        AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "14"
+        AND Valgrind_VERSION VERSION_LESS "3.20")
+
+        set(_force_dwarf4 "-fdebug-default-version=4")
+        mdsplus_add_compiler_flag(${_force_dwarf4})
+
+        message(STATUS "Setting ${_force_dwarf4} due to clang >= 14, and valgrind < 3.20")
+    endif()
+
+    set(Valgrind_FLAGS
+        --gen-suppressions=all
+        --num-callers=64
+        --trace-children=yes
+        --child-silent-after-fork=yes
+        --trace-children-skip-by-arg='*SetMdsplusFileProtection*'
+    )
+
+    set(Valgrind_memcheck_FLAGS
+        --leak-check=full
+        --show-reachable=no
+    )
+
+    set(Valgrind_helgrind_FLAGS
+        --history-level=full
+    )
+
+    set(Valgrind_SUPPRESSION_FILES
+        ${CMAKE_SOURCE_DIR}/conf/valgrind.supp/mdsplus.supp
+    )
 
 endif()
 
@@ -892,7 +929,7 @@ add_subdirectory(mdslib) # Requires TdiShr
 add_subdirectory(xmdsshr) # Requires TdiShr
 add_subdirectory(mdsmisc) # Requires XTreeShr
 add_subdirectory(mdsdcl) # Requires MdsIpShr
-add_subdirectory(servershr) # Requires Mdsdcl
+add_subdirectory(servershr) # Requires libMdsdcl
 add_subdirectory(mdssql)
 # add_subdirectory(mdsvme)
 
@@ -928,7 +965,7 @@ add_subdirectory(camshr)
 add_subdirectory(remcam) # Requires CamShr
 add_subdirectory(pydevices)
 
-# Mdsdcl commands
+# libMdsdcl commands
 
 add_subdirectory(tcl)
 add_subdirectory(ccl) # Requires CamShr

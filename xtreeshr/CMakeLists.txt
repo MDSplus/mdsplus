@@ -3,14 +3,13 @@
 ### XTreeShr
 ###
 
-file(GLOB
-    _source_list
-    "*.c"
-)
-
 add_library(
     XTreeShr
-    ${_source_list}
+    XTreeConvertToLongTime.c
+    XTreeDefaultResample.c
+    XTreeDefaultSquish.c
+    XTreeGetSegmentList.c
+    XTreeGetTimedRecord.c
 )
 
 target_link_libraries(

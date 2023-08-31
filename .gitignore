@@ -88,5 +88,8 @@ target/
 Testing/Temporary
 mitdevices/acq_root_filesystem/ffs/user/MitFilesDate
 
+# valgrind
+core.*
+
 # deploy/trigger.sh output
 trigger.opts

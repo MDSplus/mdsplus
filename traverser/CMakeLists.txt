@@ -1,5 +1,5 @@
 
-if(Motif_FOUND)
+if(TARGET Motif::Motif)
 
     ###
     ### traverser
@@ -19,7 +19,7 @@ if(Motif_FOUND)
     target_link_libraries(
         traverser
         PRIVATE
-            Mdsdcl
+            libMdsdcl
             XmdsShr
     )
 

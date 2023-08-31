@@ -107,7 +107,7 @@ target_link_libraries(
         TreeShr
 )
 
-if (HAVE_SYBASE)
+if(TARGET Sybase::Sybase)
     target_link_libraries(
         TdiShr
         PRIVATE

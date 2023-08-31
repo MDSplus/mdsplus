@@ -3,14 +3,9 @@
 ### wfevent
 ###
 
-file(GLOB
-    _source_list
-    "*.c"
-)
-
 add_executable(
     wfevent
-    ${_source_list}
+    wfevent.c
 )
 
 target_link_libraries(

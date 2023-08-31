@@ -1,5 +1,5 @@
 
-if(ENABLE_JAVA)
+if(TARGET JNI::JNI)
 
     ###
     ### JavaMds

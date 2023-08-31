@@ -35,7 +35,7 @@ add_library(
     zmul.f
 )
 
-if(BLAS_FOUND)
+if(TARGET BLAS::BLAS)
 
     target_link_libraries(
         MdsMath
@@ -45,7 +45,7 @@ if(BLAS_FOUND)
 
 else()
 
-    message("Unable to find libblas, using local copy")
+    message(WARNING "Unable to find blas, using local copy")
 
     target_sources(
         MdsMath

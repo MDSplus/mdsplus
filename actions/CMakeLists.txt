@@ -16,7 +16,7 @@ target_link_libraries(
 
 install(TARGETS actlog)
 
-if(Motif_FOUND)
+if(TARGET XmdsShr)
 
     ###
     ### actions
@@ -34,6 +34,10 @@ if(Motif_FOUND)
     )
 
     install(TARGETS actions)
+
+endif()
+
+if(TARGET Motif::Motif)
 
     ###
     ### actmon
