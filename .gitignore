@@ -85,11 +85,13 @@ target/
 ###
 
 [Bb]uild/
+workspace*/
 Testing/Temporary
 mitdevices/acq_root_filesystem/ffs/user/MitFilesDate
 
 # valgrind
 core.*
+vgcore.*
 
 # deploy/trigger.sh output
 trigger.opts

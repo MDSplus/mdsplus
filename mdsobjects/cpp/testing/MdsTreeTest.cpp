@@ -128,8 +128,8 @@ int main(int argc __attribute__((unused)),
 #define setenv(name, val, extra) _putenv_s(name, val)
 #endif
 
-  setenv("t_tree_path", ".", 1);
-  setenv("t_tree2_path", ".", 1);
+  // setenv("t_tree_path", ".", 1);
+  // setenv("t_tree2_path", ".", 1);
 
   ////////////////////////////////////////////////////////////////////////////////
   //  Constructors
@@ -138,23 +138,23 @@ int main(int argc __attribute__((unused)),
 
   { // CTR
     Tree *tree;
-    tree = new Tree("t_tree", shot_model, "NEW");
+    tree = new Tree("t_tree", -1, "NEW");
     delete tree;
-    tree = new Tree("t_tree", shot_model, "NORMAL");
+    tree = new Tree("t_tree", -1, "NORMAL");
     delete tree;
 
-    tree = new Tree("t_tree", shot_model, "READONLY");
+    tree = new Tree("t_tree", -1, "READONLY");
     TEST1(tree->isReadOnly());
     delete tree;
 
-    tree = new Tree("t_tree", shot_model, "EDIT");
+    tree = new Tree("t_tree", -1, "EDIT");
     TEST1(tree->isOpenForEdit());
     delete tree;
 
-    tree = new Tree("t_tree", shot_model);
+    tree = new Tree("t_tree", -1);
     delete tree;
 
-    TEST_MDS_EXCEPTION(new Tree("t_tree", shot_model, "dumy error"),
+    TEST_MDS_EXCEPTION(new Tree("t_tree", -1, "dumy error"),
                        "Invalid Open mode");
   }
 
@@ -164,14 +164,14 @@ int main(int argc __attribute__((unused)),
   ////////////////////////////////////////////////////////////////////////////////
 
   { // write to parse file node usages //
-    Tree *tree = new Tree("t_tree", shot_model, "NEW");
+    Tree *tree = new Tree("t_tree", -1, "NEW");
 
     // write //
     tree->write();
     delete tree;
 
     // edit  //
-    tree = new Tree("t_tree", shot_model, "NORMAL");
+    tree = new Tree("t_tree", -1, "NORMAL");
     tree->edit();
 
     AutoData<TreeNode> node = tree->addNode("test_usage", "STRUCTURE");
@@ -204,7 +204,7 @@ int main(int argc __attribute__((unused)),
   }
 
   { // get Node
-    unique_ptr<Tree> tree = new Tree("t_tree", shot_model, "READONLY");
+    unique_ptr<Tree> tree = new Tree("t_tree", -1, "READONLY");
     TEST1(AutoData<TreeNode>(tree->getNode("\\t_tree::top.test_usage:ANY"))
               .get() != NULL);
     TEST1(AutoData<TreeNode>(tree->getNode(AutoData<String>(
@@ -273,7 +273,7 @@ int main(int argc __attribute__((unused)),
   }
 
   { // test usage and find by usage
-    unique_ptr<Tree> tree = new Tree("t_tree", shot_model, "NORMAL");
+    unique_ptr<Tree> tree = new Tree("t_tree", -1, "NORMAL");
     unique_ptr<TreeNodeArray> array;
 
     array = tree->getNodeWild("test_usage:*", 1 << TreeUSAGE_ANY);
@@ -327,10 +327,10 @@ int main(int argc __attribute__((unused)),
   ////////////////////////////////////////////////////////////////////////////////
 
   { // test write
-    Tree *tree = new Tree("t_tree", shot_model, "READONLY");
+    Tree *tree = new Tree("t_tree", -1, "READONLY");
     TEST_EXCEPTION(tree->edit(), MdsException);
     delete tree;
-    tree = new Tree("t_tree", shot_model, "NORMAL");
+    tree = new Tree("t_tree", -1, "NORMAL");
 
     // reopen in normal mode //
     tree->edit(false);
@@ -358,7 +358,7 @@ int main(int argc __attribute__((unused)),
 
     delete tree;
     // tests that the node has not been written
-    tree = new Tree("t_tree", shot_model, "NORMAL");
+    tree = new Tree("t_tree", -1, "NORMAL");
     TEST_EXCEPTION(unique_ptr<TreeNode>(tree->getNode("save_me_not")),
                    MdsException);
     delete tree;
@@ -371,7 +371,7 @@ int main(int argc __attribute__((unused)),
 
   // add device
   {
-    unique_ptr<Tree> tree = new Tree("t_tree", shot_model, "EDIT");
+    unique_ptr<Tree> tree = new Tree("t_tree", -1, "EDIT");
     TreeNode *newNode = tree->addDevice("device", "DIO2");
     delete newNode;
     tree->write();
@@ -391,9 +391,9 @@ int main(int argc __attribute__((unused)),
   ////////////////////////////////////////////////////////////////////////////////
 
   { // create and delete
-    unique_ptr<Tree> tree = new Tree("t_tree", shot_model);
-    tree->createPulse(shot1);
-    tree = new Tree("t_tree", shot1);
+    unique_ptr<Tree> tree = new Tree("t_tree", -1);
+    tree->createPulse(1);
+    tree = new Tree("t_tree", 1);
     unique_ptr<TreeNode> node = tree->getNode("test_usage:ANY");
 
     // test that node has been filled in //
@@ -402,10 +402,10 @@ int main(int argc __attribute__((unused)),
     // test that the returned instance is the actual node requested //
     TEST1(node->getNodeNameStr() == "ANY");
 
-    tree->createPulse(shot2);
-    tree = new Tree("t_tree", shot2);
+    tree->createPulse(2);
+    tree = new Tree("t_tree", 2);
 
-    tree->deletePulse(shot2);
+    tree->deletePulse(2);
 
     // try to write data into removed pulse //
     // WARNING: this creates a conditional jump into the tree structure so this
@@ -414,7 +414,7 @@ int main(int argc __attribute__((unused)),
     // Int32(5552368)), MdsException );
 
     // create a pulse without copying from model structure //
-    tree = new Tree("t_tree", shot2, "NEW");
+    tree = new Tree("t_tree", 2, "NEW");
 
     // test that the new pulse has not the model nodes //
     TEST_EXCEPTION(unique_ptr<TreeNode>(tree->getNode("test_usage:ANY")),
@@ -429,7 +429,7 @@ int main(int argc __attribute__((unused)),
   ////////////////////////////////////////////////////////////////////////////////
 
   { //  VERSIONS  IN PULSE //
-    unique_ptr<Tree> tree = new Tree("t_tree", shot_model, "EDIT");
+    unique_ptr<Tree> tree = new Tree("t_tree", -1, "EDIT");
     tree->setVersionsInModel(false);
     tree->write(); // tree open in edit mode so must call write to avoid memory
                    // leak //
@@ -481,7 +481,7 @@ int main(int argc __attribute__((unused)),
   ////////////////////////////////////////////////////////////////////////////////
 
   { // TAGS //
-    Tree *tree = new Tree("t_tree", shot1, "EDIT");
+    Tree *tree = new Tree("t_tree", 1, "EDIT");
     unique_ptr<TreeNode> node = tree->getNode("test_usage:TEXT");
     node->addTag("test_tag");
 
@@ -500,7 +500,7 @@ int main(int argc __attribute__((unused)),
   }
 
   { // tdiData(), tdiEvaluate(), tdiCompile(), tdiExecute()
-    Tree *tree = new Tree("t_tree", shot1, "NEW");
+    Tree *tree = new Tree("t_tree", 1, "NEW");
     AutoData<TreeNode> node = (tree->addNode("VAL", "NUMERIC"));
     AutoData<Data> currVal = new Int32(123);
     node->putData(currVal);

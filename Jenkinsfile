@@ -1,23 +1,22 @@
 
 def OSList = [
-    'windows',
-    'ubuntu18',
-    'ubuntu20',
-    'ubuntu22',
-    'ubuntu24',
-    'rhel7',
-    'rhel8',
-    'rhel9',
-    // 'alpine3.9-armhf',
-    // 'alpine3.9-x86_64',
-    // 'alpine3.9-x86',
-    'debian9-64',
-    'debian10-64',
-    'debian11-64',
-    'debian12-64',
     'test-asan',
     'test-tsan',
     'test-ubsan',
+    'test-helgrind',
+    'test-memcheck',
+    'ubuntu-18-x86_64',
+    'ubuntu-20-x86_64',
+    'ubuntu-22-x86_64',
+    // 'rhel-8-x86_64',
+    'rhel-9-x86_64',
+    'alpine-3.14-x86_64',
+    // 'alpine-3.14-arm64',
+    'debian-11-x86_64',
+    'debian-12-x86_64',
+    'amazonlinux-2-x86_64',
+    // 'windows-x86',
+    // 'windows-x86_64',
 ]
 
 def AdminList = [
@@ -129,10 +128,6 @@ pipeline {
 
                                     stage("${OS} Clone") {
                                         checkout scm;
-
-                                        if (new_tag) {
-                                            sh "git tag ${new_tag} || true"
-                                        }
                                     }
 
                                     stage("${OS} Bootstrap") {
@@ -252,7 +247,11 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: "**/test-suite.tap,**/core", followSymlinks: false
+            
+            junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml', keepLongStdio: true
+
+            // Collect valgrind core dumps
+            archiveArtifacts artifacts: "**/core", allowEmptyArchive: true
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }

@@ -198,6 +198,7 @@ EXPORT int t4012___store(int *niddsc __attribute__ ((unused)), InStoreStruct * s
   int memPerChannel;
   int channels_read;
   int dig;
+  (void) dig; // UNUSED(dig)
   int dig_nid;
   static int memsize = 0;
   static unsigned short *mem;

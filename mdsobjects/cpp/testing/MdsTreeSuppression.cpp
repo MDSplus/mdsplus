@@ -47,25 +47,17 @@ using namespace testing;
 int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
-  int test_index = 0;
-  char * test_index_env = getenv("TEST_INDEX");
-  if (test_index_env) {
-    test_index = atoi(test_index_env);
-  }
-
-  int shot = -1 + (test_index * 10);
-
   BEGIN_TESTING(MDSTreeSuppression);
 #ifdef _WIN32
 #define setenv(name, val, extra) _putenv_s(name, val)
 #endif
-  setenv("t_treesupp_path", ".", 1);
+  // setenv("t_treesupp_path", ".", 1);
 
-  Tree *tree = new Tree("t_treesupp", shot, "NEW");
+  Tree *tree = new Tree("t_treesupp", -1, "NEW");
   tree->write();
   delete tree;
 
-  tree = new Tree("t_treesupp", shot, "EDIT");
+  tree = new Tree("t_treesupp", -1, "EDIT");
 
   TreeNode *node = tree->addNode("dummy_node", "NUMERIC");
   delete node;

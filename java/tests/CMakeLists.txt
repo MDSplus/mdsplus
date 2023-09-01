@@ -18,11 +18,6 @@ if(ENABLE_JAVA)
     )
 
     set(JAVA_TEST_ENV_MODS
-        # Used to run Java, java.library.path is for loading shared libraries
-        "JAVA_PATH_NAME=set:${Java_JAVA_EXECUTABLE} -Djava.library.path=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-
-        # Used to call our custom TapTestRunner instead of the JUnit default
-        "JUNITTEST=set:org.junit.runner.TapTestRunner"
         "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/taptest.jar"
     )
 
@@ -32,8 +27,34 @@ if(ENABLE_JAVA)
         )
     endforeach()
 
+    set(JAVA_TEST_ARGUMENTS
+        # Java doesn't respect [DY]LD_LIBRARY_PATH, so we need to set it directly
+        -Djava.library.path=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    )
+
+    if(ENABLE_VALGRIND)
+
+        # Disable Java runtime optimizations / Just-In-Time (JIT) compilation
+        # as they interfere with valgrind
+        list(APPEND JAVA_TEST_ARGUMENTS
+            -Xint
+            -XX:UseSSE=0
+            -Djava.compiler=NONE
+        )
+
+        if(Java_VERSION VERSION_GREATER_EQUAL 13)
+            # Starting with Java 13, Java defaults to posix_spawn instead of vfork,
+            # which runs a tool called jspawnhelper and cannot run with valgrind
+            list(APPEND JAVA_TEST_ARGUMENTS
+                -Djdk.lang.Process.launchMechanism=vfork
+            )
+        endif()
+
+    endif()
+
     # HACK
     set(JAVA_TEST_JAR_LIST taptest ${_test_jar_list} PARENT_SCOPE)
     set(JAVA_TEST_ENV_MODS "${JAVA_TEST_ENV_MODS}" PARENT_SCOPE)
+    set(JAVA_TEST_ARGUMENTS "${JAVA_TEST_ARGUMENTS}" PARENT_SCOPE)
 
 endif()

@@ -1,1 +1,0 @@
---platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/builder:ubuntu16-32,mdsplus/builder:ubuntu16-64 --distname=Ubuntu16 --arch=i386,amd64

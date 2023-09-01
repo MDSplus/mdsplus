@@ -1,5 +1,8 @@
 include_guard(GLOBAL)
 
+# The BUILD_TESTING option is created by include(CTest), so we just add it to the list manually
+set(MDSPLUS_OPTION_LIST "BUILD_TESTING")
+
 #
 # mdsplus_option(<name> <type> <description>
 #                [DEFAULT <default>]
@@ -50,5 +53,23 @@ function(mdsplus_option _name _type _description)
             PROPERTY STRINGS ${ARGS_OPTIONS}
         )
     endif()
+
+    list(APPEND MDSPLUS_OPTION_LIST "${_name}")
+    set(MDSPLUS_OPTION_LIST "${MDSPLUS_OPTION_LIST}" PARENT_SCOPE)
+
+endfunction()
+
+function(mdsplus_print_options)
+
+    message(STATUS "Configuration Options:")
+    list(APPEND CMAKE_MESSAGE_INDENT "    ")
+
+    list(SORT MDSPLUS_OPTION_LIST)
+
+    foreach(_name IN LISTS MDSPLUS_OPTION_LIST)
+        message(STATUS "${_name}: ${${_name}}")
+    endforeach()
+
+    list(POP_BACK CMAKE_MESSAGE_INDENT)
 
 endfunction()

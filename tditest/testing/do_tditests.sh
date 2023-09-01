@@ -1,5 +1,6 @@
 #!/bin/bash
 TMP_LD_PRELOAD="$LD_PRELOAD"
+TEST_INDEX=${TEST_INDEX:-0}
 unset LD_PRELOAD
 test=$(basename "$1")
 test=${test%.tdi}
@@ -80,11 +81,11 @@ if [ ! -z $1 ]; then
   else
     unset ok
     if diff --help | grep side-by-side &>/dev/null; then
-      run "${cmd}" "${test}-out.log" |
+      run "${cmd}" "${test}-${TEST_INDEX}-out.log" |
         diff $DIFF_Z --side-by-side -W128 /dev/stdin ${srcdir}/$test.ans |
         expand | grep -E -C3 '^.{61} ([|>]\s|<$)' || ok=1
     else
-      run "${cmd}" "${test}-out.log" |
+      run "${cmd}" "${test}-${TEST_INDEX}-out.log" |
         diff $DIFF_Z /dev/stdin ${srcdir}/$test.ans && ok=1
     fi
     echo ok=$ok

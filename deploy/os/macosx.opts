@@ -1,1 +1,1 @@
---platform=macosx --distname=macosx
+--platform=macosx --distname=macosx --workspace=macosx/{BRANCH}

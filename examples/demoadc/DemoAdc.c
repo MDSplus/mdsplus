@@ -118,7 +118,7 @@ int initializeStream(char *name __attribute__((unused)), float clockFreq, float 
     return 0;
 }
 
-int acquireChunk(char *name, short *chunk, int numSamples)
+int acquireChunk(char *name __attribute__((unused)), short *chunk, int numSamples)
 {
     int i;
     double currTime;

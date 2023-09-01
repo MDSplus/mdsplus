@@ -1,1 +1,1 @@
---platform=debian --test=skip --dockerimage=mdsplus/builder:raspberrypi-32 --distname=RaspberryPi --arch=armhf --jars
+--platform=debian --no-test --dockerimage=mdsplus/builder:raspberrypi-32 --distname=RaspberryPi --arch=armhf --jars
