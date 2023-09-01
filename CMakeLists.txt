@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+    message(FATAL_ERROR "In-Source builds are no longer supported. Make a build directory, and run cmake from there instead.")
+endif()
+
 # Allow for custom CMake modules
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -588,18 +592,18 @@ find_package(DC1394)
 
 if(ENABLE_MOTIF)
     # cmake/FindMotif.cmake
-    find_package(Motif)
+    find_package(Motif REQUIRED)
 endif()
 
 if(ENABLE_SYBASE)
     # cmake/FindSybase.cmake
-    find_package(Sybase)
+    find_package(Sybase REQUIRED)
 endif()
 
 if(ENABLE_HDF5)
     # cmake/FindHDF5.cmake
     set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
-    find_package(HDF5)
+    find_package(HDF5 REQUIRED)
 endif()
 
 if(ENABLE_JAVA)
