@@ -206,14 +206,15 @@ int main(int argc, char **argv)
   }
   else
   {
-    int test_index = 0;
-    char * test_index_env = getenv("TEST_INDEX");
-    if (test_index_env) {
-      test_index = atoi(test_index_env);
+    int test_port_offset = 0;
+    char * test_port_offset_env = getenv("TEST_PORT_OFFSET");
+    if (test_port_offset_env) {
+      test_port_offset = atoi(test_port_offset_env);
     }
 
-    int port = 12345 + test_index;
-    char port_str[8];
+	  // See testing/ports.csv
+    int port = 8001 + test_port_offset;
+    char port_str[12];
     snprintf(port_str, sizeof(port_str), "%d", port);
 
     testio("thread://0");

@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+    message(FATAL_ERROR "In-Source builds are no longer supported. Make a build directory, and run cmake from there instead.")
+endif()
+
 # Allow for custom CMake modules
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -13,12 +17,6 @@ enable_language(Fortran)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 98)
-
-message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
-message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID}, Version: ${CMAKE_C_COMPILER_VERSION})")
-message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID}, Version: ${CMAKE_CXX_COMPILER_VERSION})")
-message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID}, Version: ${CMAKE_Fortran_COMPILER_VERSION})")
 
 # Query version and release information from git
 include(MDSplusGitRevision)
@@ -100,23 +98,24 @@ mdsplus_option(
     ${_force_build_type}
 )
 
-# replaces --prefix
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-
-    if(WIN32)
-        set(_default_install_dir "C:\\Program Files\\MDSplus")
-    else()
-        set(_default_install_dir "/usr/local/mdsplus")
-    endif()
-
-    mdsplus_option(
-        CMAKE_INSTALL_PREFIX STRING
-        "Where to install files to."
-        DEFAULT "${_default_install_dir}"
-        FORCE
-    )
-
+# TODO: APPLE?
+if(WIN32)
+    set(_default_install_dir "C:\\Program Files\\MDSplus")
+else()
+    set(_default_install_dir "/usr/local/mdsplus")
 endif()
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(_override_install_dir FORCE)
+endif()
+
+# replaces --prefix
+mdsplus_option(
+    CMAKE_INSTALL_PREFIX STRING
+    "Where to install files to."
+    DEFAULT "${_default_install_dir}"
+    ${_override_install_dir}
+)
 
 # Must be included after CMAKE_INSTALL_PREFIX
 # Defines the following that we use:
@@ -142,6 +141,19 @@ if(BUILD_TESTING)
         ENABLE_VALGRIND BOOL
         "Run all of the tests through Valgrind."
         DEFAULT OFF
+    )
+
+    set(_valgrind_tool_list
+        memcheck    # https://valgrind.org/docs/manual/mc-manual.html
+        helgrind    # https://valgrind.org/docs/manual/hg-manual.html
+        drd         # https://valgrind.org/docs/manual/drd-manual.html
+        exp-sgcheck # https://valgrind.org/docs/manual/sg-manual.html
+    )
+
+    mdsplus_option(
+        VALGRIND_TOOLS STRING
+        "The list of valgrind tools to search for."
+        DEFAULT "${_valgrind_tool_list}"
     )
 
     # replaces --with-valgrind-lib
@@ -185,11 +197,6 @@ if(PYTHON STREQUAL "$PYTHON")
 endif()
 
 mdsplus_option(
-    JAVA_VERSION STRING
-    "Minimum version of Java to search for${_java_version_description}."
-)
-
-mdsplus_option(
     ENABLE_MOTIF BOOL
     "Build motif libraries and applications."
     DEFAULT ON
@@ -198,13 +205,13 @@ mdsplus_option(
 mdsplus_option(
     ENABLE_SYBASE BOOL
     "Build mdssql library, and Sybase support in TDI."
-    DEFAULT ON
+    DEFAULT OFF
 )
 
 mdsplus_option(
     ENABLE_HDF5 BOOL
     "Build HDF5 libraries and applications."
-    DEFAULT ON
+    DEFAULT OFF
 )
 
 # replaces --enable-d3d
@@ -233,20 +240,23 @@ mdsplus_option(
 
 # replaces --with-jdk
 mdsplus_option(
-    JDK_DIR STRING
+    JAVA_HOME STRING
     "Location of Java Development Kit (JDK)."
-    DEFAULT "$JDK_DIR"
+    DEFAULT "$JAVA_HOME"
 )
 
-if(JDK_DIR STREQUAL "$JDK_DIR")
-    set(JDK_DIR "$ENV{JDK_DIR}")
+if(JAVA_HOME STREQUAL "$JAVA_HOME")
+    set(JAVA_HOME "$ENV{JAVA_HOME}")
 endif()
-
-message(STATUS "$ENV{JDK_DIR}")
 
 if(APPLE)
-    set(_java_version_description ", if JDK_DIR is not set, this will be passed to `/usr/libexec/java_home -v $JAVA_VERSION` to find a specific version")
+    set(_java_version_description ", if JAVA_HOME is not set, this will be passed to `/usr/libexec/java_home -v $JAVA_VERSION` to find a specific version")
 endif()
+
+mdsplus_option(
+    JAVA_VERSION STRING
+    "Minimum version of Java to search for${_java_version_description}."
+)
 
 if(WIN32)
     # replaces --disable-largefile
@@ -345,6 +355,12 @@ mdsplus_option(
 mdsplus_option(
     LIBXML2_DIR STRING
     "Location of libxml2 library"
+)
+
+mdsplus_option(
+    NO_SYSTEM_BLAS BOOL
+    "Use the local copy of blas in math/blas/ instead of a system version"
+    DEFAULT OFF
 )
 
 # TODO: doxygen dot, man, rtf, xml, chm, chi, html
@@ -495,6 +511,32 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
     # TODO: Improve
     add_link_options(-fsanitize=${ENABLE_SANITIZE})
 
+    if(ENABLE_SANITIZE STREQUAL "memory")
+        # 
+    elseif(ENABLE_SANITIZE STREQUAL "address")
+        execute_process(
+            COMMAND ${CMAKE_C_COMPILER} -print-file-name=libasan.so
+            OUTPUT_VARIABLE _ld_preload
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    elseif(ENABLE_SANITIZE STREQUAL "thread")
+        execute_process(
+            COMMAND ${CMAKE_C_COMPILER} -print-file-name=libtsan.so
+            OUTPUT_VARIABLE _ld_preload
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    elseif(ENABLE_SANITIZE STREQUAL "undefined")
+        execute_process(
+            COMMAND ${CMAKE_C_COMPILER} -print-file-name=libubsan.so
+            OUTPUT_VARIABLE _ld_preload
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    endif()
+
+    # TODO: Error checking
+
+    set(LD_PRELOAD ${_ld_preload})
+
 endif()
 
 foreach(_lang IN ITEMS C CXX)
@@ -551,6 +593,7 @@ if(NOT DEFINED Python_EXECUTABLE AND NOT PYTHON STREQUAL "")
 endif()
 
 find_package(Python COMPONENTS Interpreter Development.Embed REQUIRED)
+set(PYTHON "${Python_EXECUTABLE}")
 
 # Finds the platform specific threading libraries, usually pthreads
 find_package(Threads REQUIRED)
@@ -565,8 +608,13 @@ set(LibXml2_ROOT_DIR "${LIBXML2_DIR}")
 mark_as_advanced(LibXml2_ROOT_DIR)
 find_package(LibXml2 REQUIRED)
 
-# Finds the Basic Linear Algebra Subprograms fortran functions
-find_package(BLAS)
+if(NOT NO_SYSTEM_BLAS)
+    # Finds the Basic Linear Algebra Subprograms fortran functions
+    find_package(BLAS)
+    if(NOT TARGET BLAS::BLAS)
+        message(SEND_ERROR "Unable to find BLAS, if no package is available for your system, use -DNO_SYSTEM_BLAS=ON")
+    endif()
+endif()
 
 # Finds the LZMA compression library
 find_package(LibLZMA)
@@ -588,25 +636,23 @@ find_package(DC1394)
 
 if(ENABLE_MOTIF)
     # cmake/FindMotif.cmake
-    find_package(Motif)
+    find_package(Motif REQUIRED)
 endif()
 
 if(ENABLE_SYBASE)
     # cmake/FindSybase.cmake
-    find_package(Sybase)
+    find_package(Sybase REQUIRED)
 endif()
 
 if(ENABLE_HDF5)
     # cmake/FindHDF5.cmake
     set(HDF5_ROOT_DIR "$ENV{HDF5_DIR}")
-    find_package(HDF5)
+    find_package(HDF5 REQUIRED)
 endif()
 
 if(ENABLE_JAVA)
 
-    if(JDK_DIR)
-        set(JAVA_HOME "${JDK_DIR}")
-    elseif(APPLE AND EXISTS /usr/libexec/java_home)
+    if(APPLE AND EXISTS /usr/libexec/java_home AND JAVA_HOME STREQUAL "")
         # This is a workaround for broken FindJNI.cmake on MacOS
         # which only likes EXPLICIT setting of JAVA_HOME
         # but also allows you to pick the jdk version
@@ -620,8 +666,6 @@ if(ENABLE_JAVA)
         if(_result AND IS_DIRECTORY "${_result}")
             set(JAVA_HOME ${_result})
         endif()
-    else()
-        set(JAVA_HOME "$ENV{JAVA_HOME}")
     endif()
 
     find_package(Java ${JAVA_VERSION} COMPONENTS Runtime Development REQUIRED)
@@ -633,6 +677,21 @@ if(ENABLE_JAVA)
     mark_as_advanced(mvn_EXECUTABLE)
 
     list(APPEND CMAKE_JAVA_COMPILE_FLAGS -encoding UTF-8)
+
+    if(JAVA_HOME STREQUAL "")
+        execute_process(
+            COMMAND ${Java_JAVA_EXECUTABLE} -XshowSettings:properties -version
+            ERROR_VARIABLE _result # for some reason this outputs to stderr
+        )
+
+        if("${_result}" MATCHES "java\.home = ([^\n]*)")
+            set(JAVA_HOME "${CMAKE_MATCH_1}")
+        endif()
+    endif()
+
+    if(JAVA_VERSION STREQUAL "")
+        set(JAVA_VERSION "${Java_VERSION}")
+    endif()
 
 endif()
 
@@ -703,29 +762,24 @@ endif()
 
 if(ENABLE_VALGRIND)
 
-    set(Valgrind_REQUESTED_TOOL_LIST
-        memcheck
-        helgrind
-        drd
-        exp-sgcheck
-    )
-
     # cmake/FindValgrind.cmake
     set(Valgrind_ROOT_DIR "${VALGRIND_LIB_DIR}")
+    string(REPLACE "," ";" Valgrind_REQUESTED_TOOL_LIST "${VALGRIND_TOOLS}")
     find_package(Valgrind REQUIRED)
 
     if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
         AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "14"
         AND Valgrind_VERSION VERSION_LESS "3.20")
 
-        set(_force_dwarf4 "-fdebug-default-version=4")
-        mdsplus_add_compiler_flag(${_force_dwarf4})
-
         message(STATUS "Setting ${_force_dwarf4} due to clang >= 14, and valgrind < 3.20")
+
+        set(_force_dwarf4 "-fdebug-default-version=4")
+        mdsplus_add_compiler_flags(${_force_dwarf4})
     endif()
 
     set(Valgrind_FLAGS
         --gen-suppressions=all
+        --keep-debuginfo=yes
         --num-callers=64
         --trace-children=yes
         --child-silent-after-fork=yes
@@ -746,6 +800,20 @@ if(ENABLE_VALGRIND)
     )
 
 endif()
+
+###
+### Display user options and CMake configuration
+###
+
+message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME} (Processor: ${CMAKE_SYSTEM_PROCESSOR})")
+message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID}, Version: ${CMAKE_C_COMPILER_VERSION})")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID}, Version: ${CMAKE_CXX_COMPILER_VERSION})")
+message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID}, Version: ${CMAKE_Fortran_COMPILER_VERSION})")
+message(STATUS "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_Fortran_FLAGS: ${CMAKE_Fortran_FLAGS}")
+
+mdsplus_print_options()
 
 ###
 ### Check for includes, Libraries, and Symbols
@@ -772,7 +840,7 @@ check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
 check_symbol_exists(pthread_lock_global_np "pthread.h" HAVE_PTHREAD_LOCK_GLOBAL_NP)
 
 # FreeTDS / Sybase
-set(HAVE_SYBASE Sybase_FOUND)
+set(HAVE_SYBASE ${Sybase_FOUND})
 
 # VxWorks Real-Time Operating System
 check_include_files("vxWorks.h" HAVE_VXWORKS_H)

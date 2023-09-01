@@ -47,6 +47,7 @@ public class AllTests
 		}
 		else
 		{
+			System.out.println("Connecting to " + prefix + command);
 			final MdsIp tmds = MdsIp.sharedConnection(new Provider(prefix + command));
 			if (tmds.isConnected())
 				mds = tmds;
@@ -60,7 +61,7 @@ public class AllTests
 			throw new Exception("Could not connect to mdsip.");
 		mds.setActive();
 		Function.setWindowsLineEnding(AllTests.local ? local_win : AllTests.remote_win);
-		mds.getAPI().setenv(AllTests.tree + "_path", treepath);
+		// mds.getAPI().setenv(AllTests.tree + "_path", treepath);
 		return mds;
 	}
 

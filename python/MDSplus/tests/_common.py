@@ -200,6 +200,9 @@ class Tests(TestCase):
 
     @classmethod
     def main(cls):
+        if 'TEST_INDEX' in os.environ:
+            cls.index = int(os.environ['TEST_INDEX'])
+            
         cls.maxDiff = None  # show full diffs
         if cls.__module__ == '__main__':
             cls.__module__ = os.path.basename(sys.argv[0]).split('.', 1)[0]

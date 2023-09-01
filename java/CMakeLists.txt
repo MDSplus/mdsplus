@@ -1,40 +1,6 @@
 
 if(ENABLE_JAVA)
 
-    function(fat_jar _target _source_jar_path)
-        get_property(_target_jar TARGET ${_target} PROPERTY JAR_FILE)
-
-        cmake_path(GET _source_jar_path STEM _source_jar_stem)
-
-        set(_tmp_dir ${CMAKE_CURRENT_BINARY_DIR}/jar-sources/${_source_jar_stem})
-        file(MAKE_DIRECTORY "${_tmp_dir}")
-
-        file(ARCHIVE_EXTRACT
-            INPUT ${_source_jar_path}
-            DESTINATION ${_tmp_dir}
-        )
-
-        file(GLOB_RECURSE
-            _extra_manifests
-            "${_tmp_dir}/**/MANIFEST.MF"
-        )
-
-        if(_extra_manifests)
-            file(REMOVE ${_extra_manifests})
-        endif()
-
-        # TODO: Fix this causing a rebuild every other build
-        # TODO: Fix this always running and throwing a warning
-        add_custom_command(
-            TARGET ${_target} POST_BUILD
-            COMMENT "Adding ${_source_jar_stem}.jar to ${_target_jar}"
-            # COMMAND ${CMAKE_COMMAND} -E tar xf ${_source_jar_path}
-            COMMAND ${Java_JAR_EXECUTABLE} uf ${_target_jar} .
-            WORKING_DIRECTORY ${_tmp_dir}
-        )
-
-    endfunction()
-
     ###
     ### Jars
     ###
@@ -46,6 +12,8 @@ if(ENABLE_JAVA)
             ${JSCH}
         )
     endif()
+
+    set(JAVAX_JSON "${CMAKE_CURRENT_SOURCE_DIR}/mdsobjects/src/main/resources/javax.json-1.0.4.jar")
 
     add_subdirectory(mdsplus)
     add_subdirectory(mdsplus-api)

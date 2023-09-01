@@ -213,18 +213,12 @@ find_package_handle_standard_args(
         MDSplus_TdiShr_LIBRARY
         MDSplus_MdsLib_LIBRARY
         MDSplus_MdsObjectsCppShr_LIBRARY
-        MDSplus_PYTHONPATH
         MDSplus_tditest_EXECUTABLE
         MDSplus_tdic_EXECUTABLE
         MDSplus_mdstcl_EXECUTABLE
         MDSplus_mdsdcl_EXECUTABLE
         MDSplus_setevent_EXECUTABLE
         MDSplus_wfevent_EXECUTABLE
-        MDSplus_dwscope_EXECUTABLE
-        MDSplus_traverser_EXECUTABLE
-        MDSplus_jScope_EXECUTABLE
-        MDSplus_jTraverser_EXECUTABLE
-        MDSplus_jTraverser2_EXECUTABLE
 )
 
 if(MDSplus_FOUND)

@@ -1,1 +1,0 @@
---platform=redhat --valgrind=memcheck,helgrind --sanitize=address,thread --dockerimage=mdsplus/builder:fc23 --distname=fc23
