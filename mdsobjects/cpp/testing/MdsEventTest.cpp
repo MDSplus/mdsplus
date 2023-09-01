@@ -38,7 +38,7 @@ namespace mds = MDSplus;
 
 static void *sendStream(void *streamName)
 {
-  sleep(1);
+  sleep(5);
   Data *timeD = new Float32(1.0);
   Data *sampleD = new Float32(123.);
   EventStream::send(1, (char *)streamName, timeD, sampleD);
@@ -50,7 +50,7 @@ static void *sendStream(void *streamName)
 
 static void *sendStreamAbs(void *streamName)
 {
-  sleep(1);
+  sleep(5);
   Data *timeD = new Uint64(1);
   Data *sampleD = new Float32(123.);
   EventStream::send(1, (char *)streamName, timeD, sampleD);
@@ -62,7 +62,7 @@ static void *sendStreamAbs(void *streamName)
 
 static void *sendStreamArr(void *streamName)
 {
-  sleep(1);
+  sleep(5);
   float times[] = {1., 2};
   float samples[] = {10, 11};
   Data *timesD = new Float32Array(times, 2);
@@ -76,7 +76,7 @@ static void *sendStreamArr(void *streamName)
 
 static void *sendStreamAbsArr(void *streamName)
 {
-  sleep(1);
+  sleep(5);
   uint64_t times[] = {1, 2};
   float samples[] = {10, 11};
   Data *timesD = new Uint64Array(times, 2);
@@ -90,7 +90,7 @@ static void *sendStreamAbsArr(void *streamName)
 
 static void *setevent(void *evname)
 {
-  sleep(1);
+  sleep(5);
   Event::setEvent((char *)evname);
   // std::cout << "Event set\n" << std::flush;
   pthread_exit(0);
@@ -99,7 +99,7 @@ static void *setevent(void *evname)
 
 static void *seteventraw(void *args)
 {
-  sleep(1);
+  sleep(5);
   std::string *str = ((std::string **)args)[1];
   Event::setEventRaw(((char **)args)[0], str->size(), (char *)str->c_str());
   // std::cout << "EventRaw set\n" << std::flush;
@@ -109,7 +109,7 @@ static void *seteventraw(void *args)
 
 static void *seteventdata(void *args)
 {
-  sleep(1);
+  sleep(5);
   Event::setEvent(((char **)args)[0], ((Data **)args)[1]);
   // std::cout << "EventData set\n" << std::flush;
   pthread_exit(0);

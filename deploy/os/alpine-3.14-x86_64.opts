@@ -1,0 +1,1 @@
+--dockerimage=mdsplus/builder:alpine-3.14-x86_64 --distname=alpine/3.14 -DENABLE_JAVA=OFF

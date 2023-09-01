@@ -1,1 +1,0 @@
---platform=bootstrap --dockerimage=mdsplus/builder:bootstrap --release
