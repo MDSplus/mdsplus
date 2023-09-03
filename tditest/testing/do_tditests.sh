@@ -60,12 +60,12 @@ if [ ! -z $1 ]; then
   if [[ $test == *"dev"* ]]; then
     found=0
     for path in ${LD_LIBRARY_PATH//:/ }; do
-      if [ -e $path/libMitDevices.so ]; then
+      if [ -e $path/libMitDevices.so ] || [ -e $path/libMitDevices.dylib ]; then
         found=1
       fi
     done
     if [ $found == 0 ]; then
-      echo no libMitDevices.so
+      echo "no libMitDevices.so or no libMitDevices.dylib (macOS)"
       exit 77
     fi
   fi

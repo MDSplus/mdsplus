@@ -94,6 +94,13 @@ static int become_user(const char *remote_user,
   else
     user = local_user;
   struct passwd *pwd = user ? getpwnam(user) : 0;
+  // On macOS Ventura, searching for "unknown" in password list 
+  // returns default "_unknown" user, which should be ignored.
+#ifdef __APPLE__
+  if (pwd && (strcmp("_unknown", pwd->pw_name) == 0)) {
+    pwd = 0;
+  }
+#endif
   if (!pwd && user == remote_user)
   {
     int i;
@@ -102,6 +109,11 @@ static int become_user(const char *remote_user,
       lowuser[i] = tolower(remote_user[i]);
     pwd = getpwnam(lowuser);
     free(lowuser);
+#ifdef __APPLE__
+    if (pwd && (strcmp("_unknown", pwd->pw_name) == 0)) {
+      pwd = 0;
+    }
+#endif
   }
   int access;
   if (pwd)
