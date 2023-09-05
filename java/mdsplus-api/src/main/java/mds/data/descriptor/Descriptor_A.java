@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
 
+import mds.Mds;
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.descriptor_a.*;
@@ -95,17 +96,23 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		case O:
 			return new Int128Array(b);
 		case F:
+            return (Float32Array)Mds.getLocal().getDescriptor("FS_FLOAT($)", new Float32Array(b));
 		case FS:
 			return new Float32Array(b);
 		case FC:
+            return (Complex32Array)Mds.getLocal().getDescriptor("FS_FLOAT($)", new Complex32Array(b));
 		case FSC:
 			return new Complex32Array(b);
 		case D:
 		case G:
+		case H:
+            return (Float64Array)Mds.getLocal().getDescriptor("FT_FLOAT($)", new Float64Array(b));
 		case FT:
 			return new Float64Array(b);
 		case DC:
 		case GC:
+		case HC:
+            return (Complex64Array)Mds.getLocal().getDescriptor("FT_FLOAT($)", new Complex64Array(b));
 		case FTC:
 			return new Complex64Array(b);
 		case T:

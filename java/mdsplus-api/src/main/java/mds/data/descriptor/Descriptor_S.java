@@ -3,6 +3,7 @@ package mds.data.descriptor;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
+import mds.Mds;
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.descriptor_s.*;
@@ -43,17 +44,23 @@ public abstract class Descriptor_S<T> extends Descriptor<T>
 		case O:
 			return new Int128(b);
 		case F:
+            return (Float32)Mds.getLocal().getDescriptor("FS_FLOAT($)", new Float32(b));
 		case FS:
 			return new Float32(b);
 		case FC:
+            return (Complex32)Mds.getLocal().getDescriptor("FS_FLOAT($)", new Complex32(b));
 		case FSC:
 			return new Complex32(b);
 		case D:
 		case G:
+		case H:
+            return (Float64)Mds.getLocal().getDescriptor("FT_FLOAT($)", new Float64(b));
 		case FT:
 			return new Float64(b);
 		case DC:
 		case GC:
+		case HC:
+            return (Complex64)Mds.getLocal().getDescriptor("FT_FLOAT($)", new Complex64(b));
 		case FTC:
 			return new Complex64(b);
 		case T:
