@@ -278,13 +278,12 @@ jma_tail = """\t\t\tdefault:
 \t}
 }"""
 
-# Severity scheme is modeled after VAX VMS.
-#
 # The status code is 32 bits, with these three fields:
 #    16 bit facility code in high order bits,
 #    13 bit message number, 
 #     3 bit severity (low order bits).
 #
+# The severity scheme is similar to that used by VAX VMS.
 # Every odd severity is a flavor of success ("status & 0x1" is easy check).
 # Every even severity is a flavor of error.
 #   W = warning = 0   -- bad
@@ -296,11 +295,10 @@ jma_tail = """\t\t\tdefault:
 #   ? = unused = 6    -- bad
 #   ? = internal = 7  -- OK (see usage in mdsshr/mdsshr_messages.xml)
 #
-# SsINTERNAL is all bits set in all fields (= -1), and is unusual because it
-# is both informational (when trapped by calling code) and an error (when
-# it is an unhandled exception that the user sees).  It is also unusual
-# because it has a different facility code (-1) than used by the rest
-# of the Ss exceptions (which are facility code 0).
+# SsINTERNAL is merely a synonym for -1; it is not a status code.
+# If the status variable is ever erroneously set to SsINTERNAL, note
+# that the STATUS_OK macro will treat it as success (because the low-order
+# bit is set).  See PR #2617 for details.
 
 import xml.etree.ElementTree as ET
 import sys
