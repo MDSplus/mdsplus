@@ -28,7 +28,7 @@ cat << EOF_BEFORE
 struct fun { int name; int idx; };
 %%
 EOF_BEFORE
-gcc -Iinclude -E -x c - << EOF_LIST |sed 's/#.*$//;/^$/d'
+${CC:-gcc} -Iinclude -E -x c - << EOF_LIST |sed 's/#.*$//;/^$/d'
 #define COM
 #define OPC(name, cmd,...) cmd,__LINE__-25
 #include <opcbuiltins.h>
