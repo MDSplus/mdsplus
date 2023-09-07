@@ -83,11 +83,12 @@ def use_distutils():
 
 
 def use_setuptools():
-    from setuptools import setup
+    from setuptools import setup, find_namespace_packages
     setup(
         include_package_data=True,
         test_suite='tests.test_all',
         zip_safe=False,
+        packages=find_namespace_packages(where='.'),
         **setupkw()
     )
 
