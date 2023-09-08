@@ -4,7 +4,7 @@ setup(
     name='MDSplus',
     version='7.139.40',
     description='MDSplus Python Objects',
-    url='https://gafusion.github.io/omas',
+    url='https://www.mdsplus.org/',
     author='MDSplus Developers',
     license='MIT',
     classifiers=['License :: OSI Approved :: MIT License', 'Programming Language :: Python :: 3'],
