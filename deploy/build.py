@@ -6,12 +6,13 @@ if not sys.version_info >= (3, 6):
     print('This script must be run with python >= 3.6')
     exit(1)
 
-import os
-import subprocess
 import argparse
-import signal
-import shutil
 import json
+import math
+import os
+import shutil
+import signal
+import subprocess
 
 from datetime import datetime
 
@@ -107,12 +108,16 @@ parser.add_argument(
     '--valgrind',
     metavar='',
     help='',
+    nargs='?',
+    const=True,
 )
 
 parser.add_argument(
     '--sanitize',
     metavar='',
     help='',
+    nargs='?',
+    const=True,
 )
 
 args, unknown_args = parser.parse_known_args()
@@ -124,13 +129,18 @@ if args.os is not None:
     if not os.path.exists(opts_filename):
         print(f'Unsupported --os={args.os}, ensure that deploy/os/{args.os}.opts exists')
         exit(1)
+    
+    opts = open(opts_filename).read().strip().split()
 
     env_filename = os.path.join(deploy_dir, f'os/{args.os}.env')
     if os.path.exists(env_filename):
-        args.env_file = env_filename
-    
-    opts = open(opts_filename).read().strip().split()
-    args, unknown_args = parser.parse_known_args(opts, args)
+        opts.append(f'--env-file={env_filename}')
+
+    args, unknown_args = parser.parse_known_args(args=opts)
+    cmake_args = unknown_args
+
+    # To allow command-line arguments to override .opts file arguments, we need to parse them after the .opts file
+    args, unknown_args = parser.parse_known_args(namespace=args)
     cmake_args.extend(unknown_args)
 
 if args.source is None:
@@ -146,6 +156,8 @@ if args.workspace is None:
 # Convert the workspace to an absolute path
 if not os.path.isabs(args.workspace):
     args.workspace = os.path.join(root_dir, args.workspace)
+
+os.makedirs(args.workspace, exist_ok=True)
 
 build_args = []
 for name in vars(args):
@@ -169,74 +181,70 @@ if args.dockerimage is not None:
         if name.startswith('--os') or name.startswith('--docker'):
             passthrough_args.remove(name)
 
-    docker_image_list = args.dockerimage.split(',')
-    for docker_image in docker_image_list:
+    if args.dockerpull:
+        subprocess.run([ 'docker', 'pull', args.dockerimage ])
+    
+    docker_args = [
+        '--rm',
+        '--volume', f'{root_dir}:{args.source}', # TODO: Improve?
+        '--volume', f'{args.workspace}:/workspace',
+        '--workdir', '/workspace',
+        args.dockerimage,
+        '/bin/bash', '-c',
+        'mkdir -p ~; git config --global --add safe.directory \*; ' # TODO: Fix
+        f"python3 {args.source}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
+    ]
 
-        if args.dockerpull:
-            subprocess.run([ 'docker', 'pull', docker_image ])
+    if args.interactive:
+        subprocess.run(
+            [
+                'docker', 'run',
+                '--interactive',
+                '--tty',
+            ] + docker_args
+        )
+    else:
+        result = subprocess.run(
+            [
+                'docker', 'run',
+                '--detach',
+                '--tty',
+            ] + docker_args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if result.returncode != 0:
+            print(f'Failed to run docker container: {result.stderr.decode()}')
+            exit(1)
         
-        docker_args = [
-            '--rm',
-            '--volume', f'{root_dir}:{args.source}', # TODO: Improve?
-            '--volume', f'{args.workspace}:/workspace',
-            '--workdir', '/workspace',
-            docker_image,
-            '/bin/bash', '-c',
-            'mkdir -p ~; git config --global --add safe.directory \*; ' # TODO: Fix
-            f"python3 {args.source}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
-        ]
+        container_id = result.stdout.decode().strip()
 
-        if args.interactive:
-            subprocess.run(
-                [
-                    'docker', 'run',
-                    '--interactive',
-                    '--tty',
-                ] + docker_args
-            )
-        else:
-            result = subprocess.run(
-                [
-                    'docker', 'run',
-                    '--detach',
-                    '--tty',
-                ] + docker_args,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
+        docker_log = subprocess.Popen(
+            [
+                'docker', 'logs',
+                '--follow',
+                '--timestamps',
+                container_id
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
-            if result.returncode != 0:
-                print(f'Failed to run docker container: {result.stderr.decode()}')
-                exit(1)
-            
-            container_id = result.stdout.decode().strip()
+        def kill_docker(signum, frame):
+            print(f'\nKilling docker container {container_id}')
+            subprocess.run([ 'docker', 'kill', container_id ])
 
-            docker_log = subprocess.Popen(
-                [
-                    'docker', 'logs',
-                    '--follow',
-                    '--timestamps',
-                    container_id
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
+        signal.signal(signal.SIGINT, kill_docker)
 
-            def kill_docker(signum, frame):
-                print(f'\nKilling docker container {container_id}')
-                subprocess.run([ 'docker', 'kill', container_id ])
+        while True:
+            line = docker_log.stdout.readline()
+            if not line:
+                break
 
-            signal.signal(signal.SIGINT, kill_docker)
+            print(line.decode().rstrip())
 
-            while True:
-                line = docker_log.stdout.readline()
-                if not line:
-                    break
-
-                print(line.decode().rstrip())
-
-            signal.signal(signal.SIGINT, signal.SIG_DFL)
-
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 else:
 
@@ -246,7 +254,7 @@ else:
 
     if args.env_file is not None:
         result = subprocess.run(
-            [ shell, '-c', f'. {args.env_file}; env'],
+            [ shell, '-c', f'. {args.env_file}; env' ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -274,7 +282,6 @@ else:
         for name, value in env_changes.items():
             print(f'    {name}: {value}')
         print()
- 
 
     # TODO: Improve
     cmake = shutil.which('cmake')
@@ -287,6 +294,7 @@ else:
         print('Unable to find ctest')
         exit(1)
 
+    # TODO: Improve
     current_generator = None
     cmake_cache_filename = os.path.join(args.workspace, 'CMakeCache.txt')
     if os.path.exists(cmake_cache_filename):
@@ -313,12 +321,33 @@ else:
     elif args.generator == 'Ninja':
         build_command = f'ninja -j{args.parallel}'
 
-    cmake_args.extend([ '-G', args.generator ])
+    cmake_args = [ '-G', args.generator ] + cmake_args
 
     print()
     print('Combined build arguments:')
     print(f"    {' '.join(build_args)}")
     print()
+
+    if args.test:
+        cmake_args.append('-DBUILD_TESTING=ON')
+
+    if args.valgrind == '':
+        args.valgrind = None
+
+    if args.sanitize == '':
+        args.sanitize = None
+
+    if args.sanitize is not None:
+        sanitize_list = args.sanitize.split(',')
+        print(sanitize_list)
+
+    if args.valgrind is not None:
+        cmake_args.append('-DENABLE_VALGRIND=ON')
+
+        if args.valgrind != True:
+            cmake_args.append(f'-DVALGRIND_TOOLS={args.valgrind}')
+    else:
+        cmake_args.append('-DENABLE_VALGRIND=OFF')
 
     print('CMake arguments:')
     print(f"    {' '.join(cmake_args)}")
@@ -374,12 +403,21 @@ else:
                 exit(1)
 
             test_data = json.loads(result.stdout.decode())
-            test_queue = [ test['name'] for test in test_data['tests'] ]
+            test_queue = []
+            for i, test in enumerate(test_data['tests']):
+                test_queue.append({
+                    'index': i + 1,
+                    'name': test['name'],
+                })
 
-            test_index = 0
+            test_times = {}
+
+            start_time = datetime.now()
+            total_time_test = 0
             test_count = len(test_queue)
 
-            running_test_list = [ ]
+            failed_test_list = []
+            running_test_list = []
             while len(test_queue) > 0 or len(running_test_list) > 0:
 
                 for test in running_test_list:
@@ -389,38 +427,68 @@ else:
 
                         delta_time = datetime.now() - test['start']
                         delta_time = delta_time.total_seconds()
+                        total_time_test += delta_time
+
+                        test_times[test['name']] = delta_time
 
                         result_message = 'Success' if result == 0 else 'Failed'
-                        print(f"[{test['index']}/{test_count}] {result_message}: {test['name']} {delta_time:.3f}s")
+                        print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
 
                         if result != 0:
-                            print(f"[{test['index']}/{test_count}] Log File: {test['log']}")
+                            failed_test_list.append({
+                                'index': test['index'],
+                                'name': test['name'],
+                                'log': test['log'],
+                            })
 
                 while len(test_queue) > 0 and len(running_test_list) < int(args.parallel):
-                    test_name = test_queue.pop(0)
+                    test = test_queue.pop(0)
 
-                    log_filename = os.path.join(args.workspace, 'testing', test_name + '.log')
+                    log_filename = os.path.join(args.workspace, 'testing', test['name'] + '.log')
                     os.makedirs(os.path.dirname(log_filename), exist_ok=True)
                     log_file = open(log_filename, 'wb')
 
-                    print(f'[{test_index}/{test_count}] Running: {test_name}')
+                    print(f"[{test['index']:3}/{test_count}] Running: {test['name']}")
 
-                    start_time = datetime.now()
+                    test_start_time = datetime.now()
                     
                     test_process = subprocess.Popen(
-                        [ ctest, '-R', f'^{test_name}$', '-V' ],
+                        [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
                         stdout=log_file,
                         stderr=subprocess.STDOUT,
                         cwd=args.workspace,
                     )
                     
                     running_test_list.append({
-                        'index': test_index,
-                        'start': start_time,
-                        'name': test_name,
+                        'index': test['index'],
+                        'start': test_start_time,
+                        'name': test['name'],
                         'process': test_process,
                         'log': log_filename,
                     })
 
-                    test_index += 1
+            passed_test_count = test_count - len(failed_test_list)
+            percentage = math.floor((passed_test_count / test_count) * 100.0)
+
+            total_time_real = datetime.now() - start_time
+            total_time_real = total_time_real.total_seconds()
+
+            print()
+            print(f"{passed_test_count}/{test_count} tests passed, {percentage:.0f}%")
+            print()
+            print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
+            print()
+
+            if len(failed_test_list) > 0:
+                print("The following tests failed:")
+
+                for test in failed_test_list:
+                    print(f"    {test['index']} {test['name']} ({test['log']})")
             
+            from matplotlib import pyplot
+            
+            test_times = dict(sorted(test_times.items(), key=lambda x: x[1]))
+
+            pyplot.bar(test_times.keys(), test_times.values())
+            pyplot.xticks(rotation=45, ha='right')
+            pyplot.show()

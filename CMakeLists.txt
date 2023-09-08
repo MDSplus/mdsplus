@@ -18,12 +18,6 @@ enable_language(Fortran)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 98)
 
-message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
-message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID}, Version: ${CMAKE_C_COMPILER_VERSION})")
-message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID}, Version: ${CMAKE_CXX_COMPILER_VERSION})")
-message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID}, Version: ${CMAKE_Fortran_COMPILER_VERSION})")
-
 # Query version and release information from git
 include(MDSplusGitRevision)
 
@@ -148,6 +142,19 @@ if(BUILD_TESTING)
         DEFAULT OFF
     )
 
+    set(_valgrind_tool_list
+        memcheck    # https://valgrind.org/docs/manual/mc-manual.html
+        helgrind    # https://valgrind.org/docs/manual/hg-manual.html
+        drd         # https://valgrind.org/docs/manual/drd-manual.html
+        exp-sgcheck # https://valgrind.org/docs/manual/sg-manual.html
+    )
+
+    mdsplus_option(
+        VALGRIND_TOOLS STRING
+        "The list of valgrind tools to search for."
+        DEFAULT "${_valgrind_tool_list}"
+    )
+
     # replaces --with-valgrind-lib
     mdsplus_option(
         VALGRIND_LIB_DIR STRING
@@ -202,13 +209,13 @@ mdsplus_option(
 mdsplus_option(
     ENABLE_SYBASE BOOL
     "Build mdssql library, and Sybase support in TDI."
-    DEFAULT ON
+    DEFAULT OFF
 )
 
 mdsplus_option(
     ENABLE_HDF5 BOOL
     "Build HDF5 libraries and applications."
-    DEFAULT ON
+    DEFAULT OFF
 )
 
 # replaces --enable-d3d
@@ -512,6 +519,20 @@ foreach(_lang IN ITEMS C CXX)
 endforeach()
 
 ###
+### Display user options and CMake configuration
+###
+
+message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME} (Processor: ${CMAKE_SYSTEM_PROCESSOR})")
+message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER} (ID: ${CMAKE_C_COMPILER_ID}, Version: ${CMAKE_C_COMPILER_VERSION})")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER} (ID: ${CMAKE_CXX_COMPILER_ID}, Version: ${CMAKE_CXX_COMPILER_VERSION})")
+message(STATUS "CMAKE_Fortran_COMPILER: ${CMAKE_Fortran_COMPILER} (ID: ${CMAKE_Fortran_COMPILER_ID}, Version: ${CMAKE_Fortran_COMPILER_VERSION})")
+message(STATUS "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_Fortran_FLAGS: ${CMAKE_Fortran_FLAGS}")
+
+mdsplus_print_options()
+
+###
 ### RPATH Configuration, to remove dependence on [DY]LD_LIBRARY_PATH
 ###
 
@@ -707,25 +728,19 @@ endif()
 
 if(ENABLE_VALGRIND)
 
-    set(Valgrind_REQUESTED_TOOL_LIST
-        memcheck
-        helgrind
-        drd
-        exp-sgcheck
-    )
-
     # cmake/FindValgrind.cmake
     set(Valgrind_ROOT_DIR "${VALGRIND_LIB_DIR}")
+    string(REPLACE "," ";" Valgrind_REQUESTED_TOOL_LIST "${VALGRIND_TOOLS}")
     find_package(Valgrind REQUIRED)
 
     if(CMAKE_C_COMPILER_ID STREQUAL "Clang"
         AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL "14"
         AND Valgrind_VERSION VERSION_LESS "3.20")
 
-        set(_force_dwarf4 "-fdebug-default-version=4")
-        mdsplus_add_compiler_flag(${_force_dwarf4})
-
         message(STATUS "Setting ${_force_dwarf4} due to clang >= 14, and valgrind < 3.20")
+
+        set(_force_dwarf4 "-fdebug-default-version=4")
+        mdsplus_add_compiler_flags(${_force_dwarf4})
     endif()
 
     set(Valgrind_FLAGS

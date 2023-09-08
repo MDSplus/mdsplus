@@ -1,1 +1,1 @@
---platform=redhat --valgrind=memcheck,helgrind --sanitize=address,undefined,thread --dockerimage=mdsplus/builder:rhel9 --distname=el9 --arch=amd64
+--platform=redhat --valgrind=memcheck,helgrind --sanitize=address,undefined,thread --dockerimage=mdsplus/builder:rocky-9-x86_64 --distname=el9 --arch=amd64

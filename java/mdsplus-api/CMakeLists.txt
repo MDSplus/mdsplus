@@ -29,5 +29,3 @@ install_jar(
     mdsplus-api
     DESTINATION java/classes
 )
-
-fat_jar(mdsplus-api ${JSCH})
