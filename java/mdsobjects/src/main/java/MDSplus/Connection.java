@@ -96,13 +96,18 @@ public class Connection
 	{
 		if (!checkArgs(args))
 			throw new MdsException(
-					"Invalid arguments: only scalars and arrays arguments can be passed to COnnection.get()");
-		return get(sockId, expr, args);
+					"Invalid arguments: only scalars and arrays arguments can be passed to Connection.get()");
+                java.lang.String expandedExpr = "serializeout(`("+expr+"))";
+                Data serData = get(sockId, expandedExpr, args);
+                return Data.deserialize(serData.getByteArray());
+
 	}
 
 	public Data get(java.lang.String expr) throws MdsException
 	{
-		return get(expr, new Data[0]);
+                java.lang.String expandedExpr = "serializeout(`("+expr+"))";
+                Data serData = get(sockId, expandedExpr, new Data[0]);
+                return Data.deserialize(serData.getByteArray());
 	}
 
 	public void put(java.lang.String path, java.lang.String expr, Data args[]) throws MdsException
@@ -145,7 +150,19 @@ public class Connection
 	{
 		return new PutManyInConnection();
 	}
-
+       public static void main(java.lang.String args[])
+        {
+            try {
+            
+                MDSplus.Connection c = new MDSplus.Connection("localhost:8001");
+                c.openTree("test", -1);
+                System.out.println(c.get("anyapd"));
+            }catch(Exception exc)
+            {
+                System.out.println(exc);
+            }
+        }
+ 
 	////////// GetMany
 	class GetManyInConnection extends List implements GetMany
 	{
@@ -288,5 +305,7 @@ public class Connection
 				throw new MdsException(retMsg.getString());
 		}
 	}
+        
+        
 
 }
