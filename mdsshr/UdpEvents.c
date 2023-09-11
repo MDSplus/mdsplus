@@ -31,6 +31,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _WIN32
+#include <sys/socket.h>
+#include <netinet/in.h>
+#endif
 #include <sys/types.h>
 #include <unistd.h>
 

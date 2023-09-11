@@ -50,6 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <facility name="Ss" value="0">
     <status name="SUCCESS"  value="0"  severity="Success" text="Success"/>
     <status name="INTOVF" value="143" severity="Fatal" text="Integer overflow"/>
+    <!-- SsINTERNAL is merely a synonym for -1 (i.e., 0xFFFFFFFF).  It is not a status code and should not be used with STATUS_OK, etc. -->
     <status name="INTERNAL" value="-1" severity="Internal" text="This status is meant for internal use only, you should never have seen this message."/>
   </facility>
 </messages>
