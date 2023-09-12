@@ -1037,7 +1037,7 @@ Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs...)
   if (!compData)
     throw MdsException("Cannot compile expression");
 
-  Data *evalData = compData->data();
+  Data *evalData = compData->data(tree);
   deleteData(compData);
   for (int i = 0; i < nArgs; i++)
     freeDsc(args[i]);
@@ -1060,7 +1060,7 @@ Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, Data **argsData, in
   if (!compData)
     throw MdsException("Cannot compile expression");
 
-  Data *evalData = compData->data();
+  Data *evalData = compData->data(tree);
   deleteData(compData);
   for (int i = 0; i < nArgs; i++)
     freeDsc(args[i]);
