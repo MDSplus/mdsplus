@@ -745,6 +745,7 @@ if(ENABLE_VALGRIND)
 
     set(Valgrind_FLAGS
         --gen-suppressions=all
+        --keep-debuginfo=yes
         --num-callers=64
         --trace-children=yes
         --child-silent-after-fork=yes
@@ -791,7 +792,7 @@ check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
 check_symbol_exists(pthread_lock_global_np "pthread.h" HAVE_PTHREAD_LOCK_GLOBAL_NP)
 
 # FreeTDS / Sybase
-set(HAVE_SYBASE Sybase_FOUND)
+set(HAVE_SYBASE ${Sybase_FOUND})
 
 # VxWorks Real-Time Operating System
 check_include_files("vxWorks.h" HAVE_VXWORKS_H)

@@ -44,7 +44,6 @@ _common = _mimport("_common")
 
 
 class Tests(_common.TreeTests, _common.MdsIp):
-    index = 0
     trees = ["consub"]
     tree = "con"
     treesub = "consub"

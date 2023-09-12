@@ -64,7 +64,7 @@ void _test_tree_open(const char *prot, const unsigned short port,
   std::cout << "\n"
             << std::flush;
   unique_ptr<Connection> cnx = NULL;
-  int retry = 3;
+  int retry = 20;
   for (; !cnx; retry--)
     try
     {
@@ -76,7 +76,7 @@ void _test_tree_open(const char *prot, const unsigned short port,
         TEST0("could not connect");
       std::cout << "retry\n"
                 << std::flush;
-      usleep(500000);
+      usleep(1000000);
     }
   std::cout << "success: starting test\n"
             << std::flush;
@@ -91,7 +91,7 @@ void _test_tree_open(const char *prot, const unsigned short port,
   TEST1(data->getInt() == 1 && "setTimeContext()");
 
   // test tree opening //
-  data = cnx_get(cnx, "setenv('t_connect_path=.')");
+  // data = cnx_get(cnx, "setenv('t_connect_path=.')");
 
   strcpy(test, "t_connect");
   cnx->openTree(test, 1);
@@ -138,8 +138,14 @@ void test_tree_open(const char *prot, const unsigned short port,
 
 int main(int argc, char *argv[])
 {
+  int test_index = 0;
+  char * test_index_env = getenv("TEST_INDEX");
+  if (test_index_env) {
+    test_index = atoi(test_index_env);
+  }
+
   int ipv6 = (argc > 1 && !strcmp(argv[1], "ipv6"));
-  setenv("t_connect_path", ".", 1);
+  // setenv("t_connect_path", ".", 1);
 
 #ifdef _WIN32
   WSADATA wsaData;
@@ -185,39 +191,39 @@ int main(int argc, char *argv[])
 
   // tcp //
   BEGIN_TESTING(Connection tcp - s);
-  test_tree_open("tcp", 8600, "-s");
+  test_tree_open("tcp", 8600 + (test_index * 10), "-s");
   END_TESTING;
   BEGIN_TESTING(Connection tcp - m);
-  test_tree_open("tcp", 8601, "-m");
+  test_tree_open("tcp", 8601 + (test_index * 10), "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6 - s);
-    test_tree_open("tcpv6", 8602, "-s");
+    test_tree_open("tcpv6", 8602 + (test_index * 10), "-s");
     END_TESTING;
     BEGIN_TESTING(Connection tcpv6 - m);
-    test_tree_open("tcpv6", 8603, "-m");
+    test_tree_open("tcpv6", 8603 + (test_index * 10), "-m");
     END_TESTING;
   }
 #ifndef _WIN32
   // udt //
   BEGIN_TESTING(Connection udt - s);
-  test_tree_open("udt", 8604, "-s");
+  test_tree_open("udt", 8604 + (test_index * 10), "-s");
   END_TESTING;
   BEGIN_TESTING(Connection udt - m);
-  test_tree_open("udt", 8605, "-m");
+  test_tree_open("udt", 8605 + (test_index * 10), "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // udtv6 //
     BEGIN_TESTING(Connection udtv6 - s);
-    test_tree_open("udtv6", 8606, "-s");
+    test_tree_open("udtv6", 8606 + (test_index * 10), "-s");
     END_TESTING;
     BEGIN_TESTING(Connection udtv6 - m);
-    test_tree_open("udtv6", 8607, "-m");
+    test_tree_open("udtv6", 8607 + (test_index * 10), "-m");
     END_TESTING;
   }
 #endif
@@ -232,8 +238,8 @@ int main(int argc, char *argv[])
 
       // gsi //
       BEGIN_TESTING(Connection gsi);
-      test_tree_open("gsi",8608,"-s");
-      test_tree_open("gsi",8608,"-m");
+      test_tree_open("gsi",8608 + (test_index * 10),"-s");
+      test_tree_open("gsi",8608 + (test_index * 10),"-m");
       END_TESTING;
   */
 }

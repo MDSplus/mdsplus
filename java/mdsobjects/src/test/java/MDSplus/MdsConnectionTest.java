@@ -18,6 +18,19 @@ public class MdsConnectionTest
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
+		int test_index = 0;
+		java.lang.String test_index_env = System.getenv("TEST_INDEX");
+		if (test_index_env != null) {
+			try {
+				test_index = Integer.parseInt(test_index_env);
+			}
+			catch (final NumberFormatException exc)
+			{}
+		}
+
+		port += (test_index * 10);
+
+		// (SLW) TODO: Offset with $TEST_INDEX?
 		for (; port < 8800; port++)
 		{
 			try

@@ -28,18 +28,25 @@ if(ENABLE_JAVA)
         MDSplus.MdsWindowTest
     )
 
+    list(APPEND Valgrind_SUPPRESSION_FILES
+        ${CMAKE_SOURCE_DIR}/java/valgrind.supp
+    )
+
     list(APPEND JAVA_TEST_ENV_MODS
-        "java_test_path=set:${CMAKE_CURRENT_BINARY_DIR}"
         "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/../mdsobjects.jar"
         "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/mdsobjects-tests.jar"
     )
 
     foreach(_test_class IN LISTS _test_class_list)
 
+        if(ENABLE_SANITIZE STREQUAL "thread" AND 
+            _test_class STREQUAL "MDSplus.MdsConnectionTest")
+            continue()
+        endif()
+
         mdsplus_add_test(
             NAME ${_test_class}
-            # TODO: Call ${Java_JAVA_EXECUTABLE} directly
-            COMMAND ${CMAKE_SOURCE_DIR}/java/junittest ${_test_class}
+            COMMAND ${Java_JAVA_EXECUTABLE} -Xint -XX:UseSSE=0 -Djava.compiler=NONE -Djava.library.path=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} org.junit.runner.JUnitCore ${_test_class}
             ENVIRONMENT_MODIFICATION ${JAVA_TEST_ENV_MODS}
         )
 

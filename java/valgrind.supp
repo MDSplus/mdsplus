@@ -2,13 +2,37 @@
    Race
    Helgrind:Race
    ...
-   obj:*/libjava.so*
+   obj:*/libjava*
 }
 {
    Race
    Helgrind:Race
    ...
-   obj:*/libjvm.so*
+   obj:*/libjvm*
+}
+{
+   Race
+   Helgrind:Race
+   ...
+   obj:*/libjli*
+}
+{
+   Misc
+   Helgrind:Misc
+   ...
+   obj:*/libjava*
+}
+{
+   Misc
+   Helgrind:Misc
+   ...
+   obj:*/libjvm*
+}
+{
+   Misc
+   Helgrind:Misc
+   ...
+   obj:*/libjli*
 }
 {
    Addr4
@@ -20,35 +44,77 @@
    Addr8
    Memcheck:Addr8
    ...
-   obj:*/libjava.so*
+   obj:*/libjava*
 }
 {
    Addr8
    Memcheck:Addr8
    ...
-   obj:*/libjvm.so*
+   obj:*/libjvm*
 }
 {
    Value4
    Memcheck:Value4
    ...
-   obj:*/libjava.so*
+   obj:*/libjava*
 }
 {
    Value4
    Memcheck:Value4
    ...
-   obj:*/libjvm.so*
+   obj:*/libjvm*
 }
 {
    Value8
    Memcheck:Value8
    ...
-   obj:*/libjava.so*
+   obj:*/libjava*
 }
 {
    Value8
    Memcheck:Value8
    ...
-   obj:*/libjvm.so*
+   obj:*/libjvm*
+}
+{
+   Value8
+   Memcheck:Value8
+   ...
+   obj:*/libjli*
+}
+{
+   Cond
+   Memcheck:Cond
+   ...
+   obj:*/libjvm*
+}
+{
+   Cond
+   Memcheck:Cond
+   ...
+   obj:*/libjava*
+}
+{
+   Cond
+   Memcheck:Cond
+   ...
+   obj:*/libjli*
+}
+{
+   Leak
+   Memcheck:Leak
+   ...
+   obj:*/libjvm*
+}
+{
+   Leak
+   Memcheck:Leak
+   ...
+   obj:*/libjava*
+}
+{
+   Leak
+   Memcheck:Leak
+   ...
+   obj:*/libjli*
 }

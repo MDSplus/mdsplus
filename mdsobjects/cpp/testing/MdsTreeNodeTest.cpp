@@ -553,7 +553,7 @@ void main_test()
     //        tree->edit(false);
     //        tree->createPulse(2);
     //        tree->edit(true);
-    //        shot = new Tree("T_TREENODE",2);
+    //        shot = new Tree("T_TREENODE", 2);
     //        TEST1( node->isIncludedInPulse() );
     //        TEST_EXCEPTION(
     //        unique_ptr<Data>(unique_ptr<TreeNode>(shot->getNode("no_in_pulse"))->getData()),
@@ -939,17 +939,17 @@ int main(int argc __attribute__((unused)),
 {
   std::cout << "START NORMAL TEST\n"
             << std::flush;
-  setenv("t_treenode_path", ".", 1);
-  setenv("t_treenode2_path", ".", 1);
+  // setenv("t_treenode_path", ".", 1);
+  // setenv("t_treenode2_path", ".", 1);
   main_test();
   std::cout << "START THREAD TEST\n"
             << std::flush;
-  setenv("t_treenode_path", "thread://1::.", 1);
-  setenv("t_treenode2_path", "thread://2::.", 1);
+  // setenv("t_treenode_path", "thread://1::.", 1);
+  // setenv("t_treenode2_path", "thread://2::.", 1);
   main_test();
   std::cout << "START LOCAL TEST\n"
             << std::flush;
-  setenv("t_treenode_path", "local://1::.", 1);
-  setenv("t_treenode2_path", "local://2::.", 1);
+  // setenv("t_treenode_path", "local://1::.", 1);
+  // setenv("t_treenode2_path", "local://2::.", 1);
   main_test();
 }

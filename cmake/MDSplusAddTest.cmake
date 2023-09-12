@@ -61,6 +61,12 @@ function(mdsplus_add_test)
         # Several tests make use of the default trees
         "main_path=set:${CMAKE_SOURCE_DIR}/trees"
         "subtree_path=set:${CMAKE_SOURCE_DIR}/trees/subtree"
+
+        # Write all new tree files into the current directory
+        "default_tree_path=set:."
+        
+        # Fix a bug in mdsip-client-local
+        "MDSIP_CLIENT_LOCAL_LOGFILE=set:${CMAKE_CURRENT_BINARY_DIR}/mdsip-local-${ARGS_NAME}.log"
     )
 
     if(WIN32)
@@ -97,6 +103,13 @@ function(mdsplus_add_test)
         COMMAND ${ARGS_COMMAND}
         WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
     )
+    
+    set_tests_properties(
+        ${_target}
+        PROPERTIES
+            ENVIRONMENT_MODIFICATION "${_env_mods}"
+            FAIL_REGULAR_EXPRESSION "FAILED"
+    )
 
     if(GENERATE_VSCODE_LAUNCH_JSON)
         message(STATUS "Adding ${_target} to .vscode/launch.json")
@@ -121,16 +134,30 @@ function(mdsplus_add_test)
 
         set(i 1)
         foreach(_tool IN LISTS Valgrind_TOOL_LIST)
-            set(_target_tool "${_target} (${_tool})")
+            set(_target_tool "${_target}-${_tool}")
             list(APPEND _target_list "${_target_tool}")
 
             string(REPLACE "-" "_" _tool_no_dash ${_tool})
 
+            file(MAKE_DIRECTORY ${ARGS_WORKING_DIRECTORY}/${_tool})
+
             add_test(
                 NAME "${_target_tool}"
-                COMMAND ${CMAKE_COMMAND} -E env TEST_INDEX=${i}
-                    ${Valgrind_EXECUTABLE} --tool=${_tool} ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${ARGS_COMMAND}
-                WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
+                COMMAND ${Valgrind_EXECUTABLE} --tool=${_tool} --quiet ${_valgrind_flags} ${Valgrind_${_tool_no_dash}_FLAGS} ${ARGS_COMMAND}
+                WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}/${_tool}
+            )
+
+            set(_valgrind_env_mods
+                ${_env_mods}
+                "TEST_INDEX=set:${i}"
+                "MDSIP_CLIENT_LOCAL_LOGFILE=set:${CMAKE_CURRENT_BINARY_DIR}/mdsip-local-${ARGS_NAME}-${_tool}-${i}.log"
+            )
+
+            set_tests_properties(
+                "${_target_tool}"
+                PROPERTIES
+                    ENVIRONMENT_MODIFICATION "${_valgrind_env_mods}"
+                    FAIL_REGULAR_EXPRESSION "FAILED"
             )
 
             math(EXPR i "${i}+1")
@@ -141,12 +168,29 @@ function(mdsplus_add_test)
     if (DEFINED ARGS_TEST_LIST_VARIABLE)
         set(${ARGS_TEST_LIST_VARIABLE} "${_target_list}" PARENT_SCOPE)
     endif()
-    
-    set_tests_properties(
-        ${_target_list}
-        PROPERTIES
-            ENVIRONMENT_MODIFICATION "${_env_mods}"
-            FAIL_REGULAR_EXPRESSION "FAILED"
-    )
 
 endfunction()
+
+if(NOT WIN32)
+    set(_test_env_filename "${CMAKE_BINARY_DIR}/test-env.sh")
+    file(WRITE ${_test_env_filename}
+        "#!/bin/bash\n"
+        "export MDSPLUS_DIR=${CMAKE_SOURCE_DIR}\n"
+        "export MDS_PATH=${CMAKE_SOURCE_DIR}/tdi\n"
+        "export PyLib=${Python_LIBRARIES}\n"
+        "export PYTHONPATH=${CMAKE_SOURCE_DIR}/python\n"
+        "export MDS_PYDEVICE_PATH=${CMAKE_SOURCE_DIR}/pydevices\n"
+        "export PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}:$PATH\n"
+        "export LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\n"
+        "export main_path=${CMAKE_SOURCE_DIR}/trees\n"
+        "export subtree_path=${CMAKE_SOURCE_DIR}/trees/subtree\n"
+        "/bin/bash --init-file <(echo \"PS1='MDSplus Test $ '\")\n"
+    )
+    # TODO: Improve
+    file(CHMOD ${_test_env_filename}
+        PERMISSIONS
+            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+            GROUP_READ             GROUP_EXECUTE
+            WORLD_READ             WORLD_EXECUTE
+    )
+endif()

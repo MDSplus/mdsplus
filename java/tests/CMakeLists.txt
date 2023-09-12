@@ -18,11 +18,6 @@ if(ENABLE_JAVA)
     )
 
     set(JAVA_TEST_ENV_MODS
-        # Used to run Java, java.library.path is for loading shared libraries
-        "JAVA_PATH_NAME=set:${Java_JAVA_EXECUTABLE} -Djava.library.path=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-
-        # Used to call our custom TapTestRunner instead of the JUnit default
-        "JUNITTEST=set:org.junit.runner.TapTestRunner"
         "CLASSPATH=path_list_append:${CMAKE_CURRENT_BINARY_DIR}/taptest.jar"
     )
 

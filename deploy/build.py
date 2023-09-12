@@ -120,6 +120,14 @@ parser.add_argument(
     const=True,
 )
 
+parser.add_argument(
+    '--rerun-failed',
+    metavar='',
+    help='',
+    nargs='?',
+    const=True,
+)
+
 args, unknown_args = parser.parse_known_args()
 cmake_args = unknown_args
 
@@ -183,6 +191,13 @@ if args.dockerimage is not None:
 
     if args.dockerpull:
         subprocess.run([ 'docker', 'pull', args.dockerimage ])
+
+    docker_command = f"python3 {args.source}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
+
+    # TODO: Improve
+    # import platform
+    # if platform.system() != 'Windows':
+        # docker_command = f'groupadd -g {os.getgid()} build-group;' + f'useradd -u {os.getuid()} -g build-group -s /bin/bash -d /workspace build-user;' + 'exec su build-user -c "' + docker_command  + '"'
     
     docker_args = [
         '--rm',
@@ -190,10 +205,17 @@ if args.dockerimage is not None:
         '--volume', f'{args.workspace}:/workspace',
         '--workdir', '/workspace',
         args.dockerimage,
-        '/bin/bash', '-c',
-        'mkdir -p ~; git config --global --add safe.directory \*; ' # TODO: Fix
-        f"python3 {args.source}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
+        '/bin/bash', '-c', docker_command
     ]
+
+    print(' '.join(docker_args))
+
+    # groupadd -g os.getgid() group_name
+    # useradd -u os.getuid() -g group_name -h /workspace user_name
+
+    import platform
+    if platform.system() != 'Windows':
+        docker_args = [ '--user', f"{os.getuid()}:{os.getgid()}" ] + docker_args
 
     if args.interactive:
         subprocess.run(
@@ -390,6 +412,8 @@ else:
             # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
             # we iterate over the tests manually.
 
+            TEST_DATA_FILENAME = 'mdsplus-test.json'
+
             result = subprocess.run(
                 [
                     ctest, '-N', '--show-only=json-v1'
@@ -410,14 +434,39 @@ else:
                     'name': test['name'],
                 })
 
-            test_times = {}
-
             start_time = datetime.now()
             total_time_test = 0
             test_count = len(test_queue)
 
-            failed_test_list = []
+            passed_tests = {}
+            failed_tests = {}
             running_test_list = []
+
+            def kill_test_processes(signum, frame):
+                for test in running_test_list:
+                    print(f"Killing {test['name']}")
+                    test['process'].kill()
+
+                test_queue.clear()
+
+            signal.signal(signal.SIGINT, kill_test_processes)
+
+            if args.rerun_failed:
+                print('Re-Running failed tests')
+
+                try:
+                    with open(TEST_DATA_FILENAME, 'rt') as f:
+                        old_tests = json.loads(f.read())
+                        for test in test_queue.copy():
+                            if test['name'] in old_tests.keys():
+                                old_test = old_tests[test['name']]
+                                if old_test['passed']:
+                                    print(f"Skipping {test['name']}")
+                                    test_queue.remove(test)
+                                    passed_tests[test['name']] = old_test
+                except:
+                    print(f'Failed to parse {TEST_DATA_FILENAME}')
+
             while len(test_queue) > 0 or len(running_test_list) > 0:
 
                 for test in running_test_list:
@@ -429,17 +478,22 @@ else:
                         delta_time = delta_time.total_seconds()
                         total_time_test += delta_time
 
-                        test_times[test['name']] = delta_time
+                        passed = (result == 0)
 
-                        result_message = 'Success' if result == 0 else 'Failed'
+                        result_message = 'Success' if passed else 'Failed'
                         print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
 
-                        if result != 0:
-                            failed_test_list.append({
-                                'index': test['index'],
-                                'name': test['name'],
-                                'log': test['log'],
-                            })
+                        test_record = {
+                            'index': test['index'],
+                            'log': test['log'],
+                            'time': delta_time,
+                            'passed': passed,
+                        }
+
+                        if result == 0:
+                            passed_tests[test['name']] = test_record
+                        else:
+                            failed_tests[test['name']] = test_record
 
                 while len(test_queue) > 0 and len(running_test_list) < int(args.parallel):
                     test = test_queue.pop(0)
@@ -467,7 +521,9 @@ else:
                         'log': log_filename,
                     })
 
-            passed_test_count = test_count - len(failed_test_list)
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+            passed_test_count = len(passed_tests)
             percentage = math.floor((passed_test_count / test_count) * 100.0)
 
             total_time_real = datetime.now() - start_time
@@ -479,16 +535,17 @@ else:
             print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
             print()
 
-            if len(failed_test_list) > 0:
+            if len(failed_tests) > 0:
                 print("The following tests failed:")
 
-                for test in failed_test_list:
-                    print(f"    {test['index']} {test['name']} ({test['log']})")
-            
-            from matplotlib import pyplot
-            
-            test_times = dict(sorted(test_times.items(), key=lambda x: x[1]))
+                for name, test in failed_tests.items():
+                    log_filename_escaped = test['log'].replace(' ', '\\ ')
+                    print(f"    {test['index']} {name} ({log_filename_escaped})")
 
-            pyplot.bar(test_times.keys(), test_times.values())
-            pyplot.xticks(rotation=45, ha='right')
-            pyplot.show()
+            with open(TEST_DATA_FILENAME, 'wt') as f:
+                all_tests = dict(passed_tests, **failed_tests)
+                f.write(json.dumps(
+                    all_tests,
+                    indent=2
+                ))
+            
