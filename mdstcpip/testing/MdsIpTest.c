@@ -212,8 +212,8 @@ int main(int argc, char **argv)
       test_index = atoi(test_index_env);
     }
 
-    int port = 12345 + test_index;
-    char port_str[8];
+    int port = 8000 + test_index;
+    char port_str[12];
     snprintf(port_str, sizeof(port_str), "%d", port);
 
     testio("thread://0");

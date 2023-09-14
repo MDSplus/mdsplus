@@ -67,16 +67,10 @@ int dbiTest(void *ctx, short int code)
 int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
-  int test_index = 0;
-  char * test_index_env = getenv("TEST_INDEX");
-  if (test_index_env) {
-    test_index = atoi(test_index_env);
-  }
-
   BEGIN_TESTING(Tree Delete Node);
 
   void *ctx = NULL;
-  int shot = -1 + (test_index * 10);
+  int shot = -1;
   int status;
   const char *tree_name = "tree_test";
   const char *node_name = "test_node";

@@ -196,11 +196,6 @@ if(PYTHON STREQUAL "$PYTHON")
 endif()
 
 mdsplus_option(
-    JAVA_VERSION STRING
-    "Minimum version of Java to search for${_java_version_description}."
-)
-
-mdsplus_option(
     ENABLE_MOTIF BOOL
     "Build motif libraries and applications."
     DEFAULT ON
@@ -244,20 +239,23 @@ mdsplus_option(
 
 # replaces --with-jdk
 mdsplus_option(
-    JDK_DIR STRING
+    JAVA_HOME STRING
     "Location of Java Development Kit (JDK)."
-    DEFAULT "$JDK_DIR"
+    DEFAULT "$JAVA_HOME"
 )
 
-if(JDK_DIR STREQUAL "$JDK_DIR")
-    set(JDK_DIR "$ENV{JDK_DIR}")
+if(JAVA_HOME STREQUAL "$JAVA_HOME")
+    set(JAVA_HOME "$ENV{JAVA_HOME}")
 endif()
-
-message(STATUS "$ENV{JDK_DIR}")
 
 if(APPLE)
-    set(_java_version_description ", if JDK_DIR is not set, this will be passed to `/usr/libexec/java_home -v $JAVA_VERSION` to find a specific version")
+    set(_java_version_description ", if JAVA_HOME is not set, this will be passed to `/usr/libexec/java_home -v $JAVA_VERSION` to find a specific version")
 endif()
+
+mdsplus_option(
+    JAVA_VERSION STRING
+    "Minimum version of Java to search for${_java_version_description}."
+)
 
 if(WIN32)
     # replaces --disable-largefile
@@ -629,9 +627,7 @@ endif()
 
 if(ENABLE_JAVA)
 
-    if(JDK_DIR)
-        set(JAVA_HOME "${JDK_DIR}")
-    elseif(APPLE AND EXISTS /usr/libexec/java_home)
+    if(APPLE AND EXISTS /usr/libexec/java_home AND JAVA_HOME STREQUAL "")
         # This is a workaround for broken FindJNI.cmake on MacOS
         # which only likes EXPLICIT setting of JAVA_HOME
         # but also allows you to pick the jdk version
@@ -645,8 +641,6 @@ if(ENABLE_JAVA)
         if(_result AND IS_DIRECTORY "${_result}")
             set(JAVA_HOME ${_result})
         endif()
-    else()
-        set(JAVA_HOME "$ENV{JAVA_HOME}")
     endif()
 
     find_package(Java ${JAVA_VERSION} COMPONENTS Runtime Development REQUIRED)

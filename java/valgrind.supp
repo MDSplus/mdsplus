@@ -1,120 +1,165 @@
 {
-   Race
+   Helgrind-Race-libjava
    Helgrind:Race
    ...
    obj:*/libjava*
 }
 {
-   Race
+   Helgrind-Race-libjvm
    Helgrind:Race
    ...
    obj:*/libjvm*
 }
 {
-   Race
+   Helgrind-Race-libjli
    Helgrind:Race
    ...
    obj:*/libjli*
 }
 {
-   Misc
+   Helgrind-Misc-libjava
    Helgrind:Misc
    ...
    obj:*/libjava*
 }
 {
-   Misc
+   Helgrind-Misc-libjvm
    Helgrind:Misc
    ...
    obj:*/libjvm*
 }
 {
-   Misc
+   Helgrind-Misc-libjli
    Helgrind:Misc
    ...
    obj:*/libjli*
 }
 {
-   Addr4
+   Memcheck-Addr4-libjava
    Memcheck:Addr4
-   obj:*
-   obj:*
+   ...
+   obj:*/libjava*
 }
 {
-   Addr8
+   Memcheck-Addr4-libjvm
+   Memcheck:Addr4
+   ...
+   obj:*/libjvm*
+}
+{
+   Memcheck-Addr4-libjli
+   Memcheck:Addr4
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Addr8-libjava
    Memcheck:Addr8
    ...
    obj:*/libjava*
 }
 {
-   Addr8
+   Memcheck-Addr8-libjvm
    Memcheck:Addr8
    ...
    obj:*/libjvm*
 }
 {
-   Value4
+   Memcheck-Addr8-libjli
+   Memcheck:Addr8
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Value4-libjava
    Memcheck:Value4
    ...
    obj:*/libjava*
 }
 {
-   Value4
+   Memcheck-Value4-libjvm
    Memcheck:Value4
    ...
    obj:*/libjvm*
 }
 {
-   Value8
+   Memcheck-Value4-libjli
+   Memcheck:Value4
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Value8-libjava
    Memcheck:Value8
    ...
    obj:*/libjava*
 }
 {
-   Value8
+   Memcheck-Value8-libjvm
    Memcheck:Value8
    ...
    obj:*/libjvm*
 }
 {
-   Value8
+   Memcheck-Value8-libjli
    Memcheck:Value8
    ...
    obj:*/libjli*
 }
 {
-   Cond
+   Memcheck-Cond-libjvm
    Memcheck:Cond
    ...
    obj:*/libjvm*
 }
 {
-   Cond
+   Memcheck-Cond-libjava
    Memcheck:Cond
    ...
    obj:*/libjava*
 }
 {
-   Cond
+   Memcheck-Cond-libjli
    Memcheck:Cond
    ...
    obj:*/libjli*
 }
 {
-   Leak
+   Memcheck-Leak-libjvm
    Memcheck:Leak
    ...
    obj:*/libjvm*
 }
 {
-   Leak
+   Memcheck-Leak-libjava
    Memcheck:Leak
    ...
    obj:*/libjava*
 }
 {
-   Leak
+   Memcheck-Leak-libjli
    Memcheck:Leak
+   ...
+   obj:*/libjli*
+}
+{
+   Memcheck-Param-libjvm
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:*/libjvm*
+}
+{
+   Memcheck-Param-libjava
+   Memcheck:Param
+   write(buf)
+   ...
+   obj:*/libjava*
+}
+{
+   Memcheck-Param-libjli
+   Memcheck:Param
+   write(buf)
    ...
    obj:*/libjli*
 }

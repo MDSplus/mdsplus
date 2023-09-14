@@ -38,7 +38,7 @@ if(ENABLE_JAVA)
 
         mdsplus_add_test(
             NAME ${_test_class}
-            COMMAND ${Java_JAVA_EXECUTABLE} -Xint -XX:UseSSE=0 -Djava.compiler=NONE -Djava.library.path=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} org.junit.runner.JUnitCore ${_test_class}
+            COMMAND ${Java_JAVA_EXECUTABLE} ${JAVA_TEST_ARGUMENTS} org.junit.runner.JUnitCore ${_test_class}
             ENVIRONMENT_MODIFICATION ${JAVA_TEST_ENV_MODS}
         )
 

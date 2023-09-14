@@ -52,7 +52,13 @@ public class MdsShr_Test
 	@Test
 	public final void testMdsEvent() throws MdsException
 	{
-		Assert.assertEquals(1, MdsShr_Test.mdsshr.mdsEvent(null, "myevent") & 1);
+		java.lang.String eventName = new java.lang.String("MDSSHR_TEST");
+		java.lang.String testIndexEnv = System.getenv("TEST_INDEX");
+		if (testIndexEnv != null) {
+			eventName += "_" + testIndexEnv;
+		}
+
+		Assert.assertEquals(1, MdsShr_Test.mdsshr.mdsEvent(null, eventName) & 1);
 	}
 
 	@Test

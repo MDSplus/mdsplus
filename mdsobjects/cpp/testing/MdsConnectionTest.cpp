@@ -191,39 +191,39 @@ int main(int argc, char *argv[])
 
   // tcp //
   BEGIN_TESTING(Connection tcp - s);
-  test_tree_open("tcp", 8600 + (test_index * 10), "-s");
+  test_tree_open("tcp", 8000 + (test_index * 10), "-s");
   END_TESTING;
   BEGIN_TESTING(Connection tcp - m);
-  test_tree_open("tcp", 8601 + (test_index * 10), "-m");
+  test_tree_open("tcp", 8001 + (test_index * 10), "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6 - s);
-    test_tree_open("tcpv6", 8602 + (test_index * 10), "-s");
+    test_tree_open("tcpv6", 8002 + (test_index * 10), "-s");
     END_TESTING;
     BEGIN_TESTING(Connection tcpv6 - m);
-    test_tree_open("tcpv6", 8603 + (test_index * 10), "-m");
+    test_tree_open("tcpv6", 8003 + (test_index * 10), "-m");
     END_TESTING;
   }
 #ifndef _WIN32
   // udt //
   BEGIN_TESTING(Connection udt - s);
-  test_tree_open("udt", 8604 + (test_index * 10), "-s");
+  test_tree_open("udt", 8004 + (test_index * 10), "-s");
   END_TESTING;
   BEGIN_TESTING(Connection udt - m);
-  test_tree_open("udt", 8605 + (test_index * 10), "-m");
+  test_tree_open("udt", 8005 + (test_index * 10), "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // udtv6 //
     BEGIN_TESTING(Connection udtv6 - s);
-    test_tree_open("udtv6", 8606 + (test_index * 10), "-s");
+    test_tree_open("udtv6", 8006 + (test_index * 10), "-s");
     END_TESTING;
     BEGIN_TESTING(Connection udtv6 - m);
-    test_tree_open("udtv6", 8607 + (test_index * 10), "-m");
+    test_tree_open("udtv6", 8007 + (test_index * 10), "-m");
     END_TESTING;
   }
 #endif
@@ -238,8 +238,8 @@ int main(int argc, char *argv[])
 
       // gsi //
       BEGIN_TESTING(Connection gsi);
-      test_tree_open("gsi",8608 + (test_index * 10),"-s");
-      test_tree_open("gsi",8608 + (test_index * 10),"-m");
+      test_tree_open("gsi",8008 + (test_index * 10),"-s");
+      test_tree_open("gsi",8008 + (test_index * 10),"-m");
       END_TESTING;
   */
 }

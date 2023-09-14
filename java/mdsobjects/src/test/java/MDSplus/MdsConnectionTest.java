@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class MdsConnectionTest
 {
-	static int port = 8700;
+	static int port = 8000;
 	static Process mdsip;
 
 	@BeforeClass
@@ -28,9 +28,8 @@ public class MdsConnectionTest
 			{}
 		}
 
-		port += (test_index * 10);
+		port += test_index;
 
-		// (SLW) TODO: Offset with $TEST_INDEX?
 		for (; port < 8800; port++)
 		{
 			try
@@ -54,6 +53,11 @@ public class MdsConnectionTest
 			}
 			catch (final SocketException exc)
 			{}
+
+			// If we have $TEST_INDEX set and we cannot bind to that port, searching for another will collide with a different test
+			if (test_index != 0) {
+				break;
+			}
 		}
 		System.out.println("Cannot find free port!");
 		System.exit(6);

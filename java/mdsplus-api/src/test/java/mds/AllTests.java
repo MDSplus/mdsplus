@@ -46,6 +46,7 @@ public class AllTests
 		}
 		else
 		{
+			System.out.println("Connecting to " + prefix + command);
 			final MdsIp tmds = MdsIp.sharedConnection(new Provider(prefix + command));
 			if (tmds.isConnected())
 				mds = tmds;

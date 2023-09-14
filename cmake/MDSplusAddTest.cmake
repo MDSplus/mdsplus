@@ -1,5 +1,7 @@
 include_guard(GLOBAL)
 
+set(MDSPLUS_TEST_INDEX 1 CACHE STRING "" FORCE)
+
 #
 # mdsplus_add_test(NAME <name>
 #                  COMMAND <command> [<arg>...])
@@ -64,9 +66,6 @@ function(mdsplus_add_test)
 
         # Write all new tree files into the current directory
         "default_tree_path=set:."
-        
-        # Fix a bug in mdsip-client-local
-        "MDSIP_CLIENT_LOCAL_LOGFILE=set:${CMAKE_CURRENT_BINARY_DIR}/mdsip-local-${ARGS_NAME}.log"
     )
 
     if(WIN32)
@@ -89,7 +88,15 @@ function(mdsplus_add_test)
         endif()
     endif()
 
+    set(_index ${MDSPLUS_TEST_INDEX})
+
     list(APPEND _env_mods ${ARGS_ENVIRONMENT_MODIFICATION})
+
+    set(_base_env_mods
+        ${_env_mods}
+        "TEST_INDEX=set:${_index}"
+        "MDSIP_CLIENT_LOCAL_LOGFILE=set:${CMAKE_CURRENT_BINARY_DIR}/mdsip-local-${ARGS_NAME}-${_index}.log"
+    )
 
     file(RELATIVE_PATH _path ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     string(REPLACE "\\" "/" _path "${_path}")
@@ -107,9 +114,11 @@ function(mdsplus_add_test)
     set_tests_properties(
         ${_target}
         PROPERTIES
-            ENVIRONMENT_MODIFICATION "${_env_mods}"
+            ENVIRONMENT_MODIFICATION "${_base_env_mods}"
             FAIL_REGULAR_EXPRESSION "FAILED"
     )
+
+    math(EXPR _index "${_index}+1")
 
     if(GENERATE_VSCODE_LAUNCH_JSON)
         message(STATUS "Adding ${_target} to .vscode/launch.json")
@@ -118,7 +127,7 @@ function(mdsplus_add_test)
             COMMAND ${Python_EXECUTABLE} deploy/add-launch-target.py
                 --name "${_target}"
                 --command "${ARGS_COMMAND}"
-                --environment "${_env_mods}"
+                --environment "${_base_env_mods}"
                 --bin "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
                 --cwd "${ARGS_WORKING_DIRECTORY}"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -132,7 +141,6 @@ function(mdsplus_add_test)
             list(APPEND _valgrind_flags "--suppressions=${_supp}")
         endforeach()
 
-        set(i 1)
         foreach(_tool IN LISTS Valgrind_TOOL_LIST)
             set(_target_tool "${_target}-${_tool}")
             list(APPEND _target_list "${_target_tool}")
@@ -149,8 +157,8 @@ function(mdsplus_add_test)
 
             set(_valgrind_env_mods
                 ${_env_mods}
-                "TEST_INDEX=set:${i}"
-                "MDSIP_CLIENT_LOCAL_LOGFILE=set:${CMAKE_CURRENT_BINARY_DIR}/mdsip-local-${ARGS_NAME}-${_tool}-${i}.log"
+                "TEST_INDEX=set:${_index}"
+                "MDSIP_CLIENT_LOCAL_LOGFILE=set:${CMAKE_CURRENT_BINARY_DIR}/mdsip-local-${ARGS_NAME}-${_index}.log"
             )
 
             set_tests_properties(
@@ -160,10 +168,12 @@ function(mdsplus_add_test)
                     FAIL_REGULAR_EXPRESSION "FAILED"
             )
 
-            math(EXPR i "${i}+1")
+            math(EXPR _index "${_index}+1")
         endforeach()
         
     endif()
+
+    set(MDSPLUS_TEST_INDEX "${_index}" CACHE STRING "" FORCE)
 
     if (DEFINED ARGS_TEST_LIST_VARIABLE)
         set(${ARGS_TEST_LIST_VARIABLE} "${_target_list}" PARENT_SCOPE)

@@ -412,7 +412,7 @@ else:
             # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
             # we iterate over the tests manually.
 
-            TEST_DATA_FILENAME = 'mdsplus-test.json'
+            TEST_DATA_FILENAME = os.path.join(args.workspace, 'mdsplus-test.json')
 
             result = subprocess.run(
                 [
@@ -461,7 +461,7 @@ else:
                             if test['name'] in old_tests.keys():
                                 old_test = old_tests[test['name']]
                                 if old_test['passed']:
-                                    print(f"Skipping {test['name']}")
+                                    print(f"Skipping: {test['name']}")
                                     test_queue.remove(test)
                                     passed_tests[test['name']] = old_test
                 except:
@@ -482,6 +482,8 @@ else:
 
                         result_message = 'Success' if passed else 'Failed'
                         print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
+                        if result != 0:
+                            print(f"[{test['index']:3}/{test_count}] Log File: {test['log']}")
 
                         test_record = {
                             'index': test['index'],
