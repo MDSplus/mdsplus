@@ -55,17 +55,21 @@ public class RFX_RPADCSetup extends DeviceSetup
         deviceField10 = new DeviceField();
         deviceField6 = new DeviceField();
         deviceField3 = new DeviceField();
+        jPanel9 = new javax.swing.JPanel();
+        deviceField12 = new DeviceField();
+        deviceField13 = new DeviceField();
+        deviceField14 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceField5 = new DeviceField();
 
-        setDeviceProvider("ropc1.rfx.local:8100");
+        setDeviceProvider("localhost:8000");
         setDeviceTitle("RedPitaya ADC");
         setDeviceType("RFX_RPADC");
         setHeight(300);
         setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(7, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(8, 1));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Comment:");
@@ -112,7 +116,7 @@ public class RFX_RPADCSetup extends DeviceSetup
 
         jPanel1.add(jPanel4);
 
-        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL", "SYNC", "TRIG_EXTERNAL", "TRIG_SYNC"});
+        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "TRIG_EXTERNAL", "EXTERNAL", "HIGHWAY"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Clock Mode:");
         deviceChoice4.setOffsetNid(14);
@@ -158,12 +162,32 @@ public class RFX_RPADCSetup extends DeviceSetup
         jPanel8.add(deviceField6);
 
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Dead time: ");
-        deviceField3.setNumCols(8);
-        deviceField3.setOffsetNid(34);
+        deviceField3.setLabelString("Timing Highway event code: ");
+        deviceField3.setNumCols(4);
+        deviceField3.setOffsetNid(23);
         jPanel8.add(deviceField3);
 
         jPanel1.add(jPanel8);
+
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("Dead Time(s):");
+        deviceField12.setNumCols(6);
+        deviceField12.setOffsetNid(34);
+        jPanel9.add(deviceField12);
+
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("Offset A (raw):");
+        deviceField13.setNumCols(6);
+        deviceField13.setOffsetNid(35);
+        jPanel9.add(deviceField13);
+
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("Offset B (raw): ");
+        deviceField14.setNumCols(6);
+        deviceField14.setOffsetNid(22);
+        jPanel9.add(deviceField14);
+
+        jPanel1.add(jPanel9);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Trigger: ");
@@ -186,6 +210,9 @@ public class RFX_RPADCSetup extends DeviceSetup
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
+    private DeviceField deviceField12;
+    private DeviceField deviceField13;
+    private DeviceField deviceField14;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -202,5 +229,6 @@ public class RFX_RPADCSetup extends DeviceSetup
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     // End of variables declaration//GEN-END:variables
 }
