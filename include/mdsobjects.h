@@ -1,5 +1,13 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
+
+// Prevents errors when using Clang on macOS with LabVIEW
+#ifdef __APPLE__
+#ifndef TARGET_OS_IPHONE
+#define TARGET_OS_IPHONE 0
+#endif
+#endif
+
 #include <mdsplus/mdsconfig.h>
 
 #include <algorithm>
