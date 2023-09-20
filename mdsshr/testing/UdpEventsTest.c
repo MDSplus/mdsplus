@@ -74,6 +74,19 @@ static void uet_wait()
 
 int main(int argc, char **args)
 {
+  // Override the default port in eventsConfig.xml so tests can run in parallel
+  int test_index = 0;
+  char * test_index_env = getenv("TEST_INDEX");
+  if (test_index_env) {
+    test_index = atoi(test_index_env);
+  }
+
+  int port = 8000 + test_index;
+  char port_str[12];
+  snprintf(port_str, sizeof(port_str), "%d", port);
+
+  setenv("mdsevent_port", port_str, 1); 
+
   int status = 0;
   int i, iterations, ev_id;
   char *eventname = alloca(100);
