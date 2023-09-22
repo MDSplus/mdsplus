@@ -1448,7 +1448,8 @@ namespace MDSplus
 
         treePtrIn = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtrIn));
 
-        dataPtrOut = execute(const_cast<char *>(exprIn), treePtrIn);
+      
+        dataPtrOut = treePtrIn->tdiExecute(const_cast<char *>(exprIn));
 
         *lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
       }
