@@ -363,8 +363,7 @@ class DTACQ_SUPERVISOR(Device):
             try:
                 dtackAi = self.ai_b_device.getData()
                 hasBulkAi = True
-                dtackAi.parameters_par13_value.putData(Int32(clockFreq)) #num samples
-#                dtackAi.parameters_par_1_value.putData(Float64(clockFreq/numSamples))
+                dtackAi.parameters_par_13_value.putData(Int32(int(clockFreq))) #num samples
                 dtackAi.parameters_par_1_value.putData(Float64(1)) #1 segment per second
                 dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
                 dtackAi.parameters_par_3_value.putData(Int32(1))
@@ -389,7 +388,7 @@ class DTACQ_SUPERVISOR(Device):
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-                dtackAi.parameters_par13_value.putData(Int32(1)) #num samples
+                dtackAi.parameters_par_13_value.putData(Int32(1)) #num samples
                 dtackAi.parameters_par_1_value.putData(Float64(clockFreq/freqDiv))
                 dtackAi.parameters_par_2_value.putData(Float64(triggerTime))
                 dtackAi.parameters_par_3_value.putData(Int32(2))
