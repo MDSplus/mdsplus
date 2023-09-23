@@ -395,8 +395,12 @@ Data *Connection::get(const char *expr, Data **args, int nArgs, bool serialized)
   }
 
   lockLocal();
+  std::string expExpr("serializeout(`(");
+  expExpr +=expr;
+  expExpr += "))";
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
-                   std::string(expr).size(), 0, 0, (char *)expr);
+                   expExpr.size(), 0, 0, (char *)expExpr.c_str());
+//                   std::string(expr).size(), 0, 0, (char *)expr);
   if (STATUS_NOT_OK)
   {
     unlockLocal();
@@ -519,20 +523,11 @@ Data *Connection::get(const char *expr, Data **args, int nArgs, bool serialized)
 
   if (mem)
     FreeMessage(mem);
-
-
-  if(!serialized || nDims == 0) //Error code returned
-    return resData;
-
   
-  Data *deserData = deserialize(resData);  //Otherwise deserialze it
+  Data *deserData = deserialize(resData);
   deleteData(resData);
   
   return deserData;
-}
-void Connection::put(const char *inPath, Data *data)
-{
-    put(inPath, (char *)"$", &data, 1);
 }
 
 void Connection::put(const char *inPath, char *expr, Data **inArgs, int nArgs)
