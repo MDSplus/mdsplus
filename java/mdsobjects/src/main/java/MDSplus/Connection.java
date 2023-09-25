@@ -110,7 +110,7 @@ public class Connection
                 return Data.deserialize(serData.getByteArray());
 	}
 
-	public void put(java.lang.String path, java.lang.String expr, Data args[]) throws MdsException
+	public void put(java.lang.String path, java.lang.String expr, Data inArgs[]) throws MdsException
 	{
                Data args[] = new Data[inArgs.length];
                 for(int i = 0; i < inArgs.length; i++)
