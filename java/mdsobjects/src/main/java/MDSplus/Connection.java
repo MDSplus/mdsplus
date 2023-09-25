@@ -97,7 +97,7 @@ public class Connection
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to Connection.get()");
-                java.lang.String expandedExpr = "serializeout(`("+expr+"))";
+                java.lang.String expandedExpr = "serializeout(data(`("+expr+")))";
                 Data serData = get(sockId, expandedExpr, args);
                 return Data.deserialize(serData.getByteArray());
 
@@ -105,13 +105,20 @@ public class Connection
 
 	public Data get(java.lang.String expr) throws MdsException
 	{
-                java.lang.String expandedExpr = "serializeout(`("+expr+"))";
+                java.lang.String expandedExpr = "serializeout(data(`("+expr+")))";
                 Data serData = get(sockId, expandedExpr, new Data[0]);
                 return Data.deserialize(serData.getByteArray());
 	}
 
-	public void put(java.lang.String path, java.lang.String expr, Data args[]) throws MdsException
+	public void put(java.lang.String path, java.lang.String expr, Data inArgs[]) throws MdsException
 	{
+               Data args[] = new Data[inArgs.length];
+                for(int i = 0; i < inArgs.length; i++)
+                    args[i] = new Uint8Array(inArgs[i].serialize());
+		if (!checkArgs(args))
+			throw new MdsException(
+					"Invalid arguments: only scalars and arrays arguments can be passed to COnnection.put()");
+		put(sockId, path, expr, args);
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to COnnection.put()");
