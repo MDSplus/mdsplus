@@ -6,7 +6,7 @@ endcase
 end
 
 function sockmin
-  ; Linux connection IDs start at 1 (see Issue #2625 for details).
+  ; Connection IDs start at 1 (see Issue #2625 for details).
   if !version.os eq 'linux' then return, 1 else return, 11-(!version.os eq 'MacOS')
 end
 
