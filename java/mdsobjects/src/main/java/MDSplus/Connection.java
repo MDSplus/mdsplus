@@ -97,7 +97,7 @@ public class Connection
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to Connection.get()");
-                java.lang.String expandedExpr = "serializeout('(data("+expr+")))";
+                java.lang.String expandedExpr = "serializeout((data("+expr+")))";
                 Data serData = get(sockId, expandedExpr, args);
                 return Data.deserialize(serData.getByteArray());
 
