@@ -16,7 +16,7 @@ import subprocess
 
 from datetime import datetime
 
-deploy_dir = os.path.dirname(__file__)
+deploy_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(deploy_dir)
 
 parser = argparse.ArgumentParser()
@@ -29,7 +29,15 @@ parser.add_argument(
 
 parser.add_argument(
     '--test',
-    action=argparse.BooleanOptionalAction,
+    action='store_true',
+    # python 3.9+
+    # action=argparse.BooleanOptionalAction,
+    help='',
+)
+
+parser.add_argument(
+    '--no-test',
+    action='store_true',
     help='',
 )
 
@@ -160,6 +168,10 @@ if args.workspace is None:
     else:
         branch = 'cmake' # TODO:
         args.workspace = f'build/{args.os}/{branch}'
+
+# TODO: Remove and replace with argparse.BooleanOptionalAction
+if args.no_test:
+    args.test = False
 
 # Convert the workspace to an absolute path
 if not os.path.isabs(args.workspace):

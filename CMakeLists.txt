@@ -98,23 +98,24 @@ mdsplus_option(
     ${_force_build_type}
 )
 
-# replaces --prefix
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-
-    if(WIN32)
-        set(_default_install_dir "C:\\Program Files\\MDSplus")
-    else()
-        set(_default_install_dir "/usr/local/mdsplus")
-    endif()
-
-    mdsplus_option(
-        CMAKE_INSTALL_PREFIX STRING
-        "Where to install files to."
-        DEFAULT "${_default_install_dir}"
-        FORCE
-    )
-
+# TODO: APPLE?
+if(WIN32)
+    set(_default_install_dir "C:\\Program Files\\MDSplus")
+else()
+    set(_default_install_dir "/usr/local/mdsplus")
 endif()
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(_override_install_dir FORCE)
+endif()
+
+# replaces --prefix
+mdsplus_option(
+    CMAKE_INSTALL_PREFIX STRING
+    "Where to install files to."
+    DEFAULT "${_default_install_dir}"
+    ${_override_install_dir}
+)
 
 # Must be included after CMAKE_INSTALL_PREFIX
 # Defines the following that we use:
