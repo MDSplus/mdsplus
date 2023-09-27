@@ -104,7 +104,7 @@ public class Connection
                 }
                 else
                 {
-                    expandedExpr = "serializeout(`(data("+expr+")))";
+                    expandedExpr = "serializeout(`(data(("+expr+"))))";
                 }
                 Data serData = get(sockId, expandedExpr, args);
                 return Data.deserialize(serData.getByteArray());
@@ -113,7 +113,7 @@ public class Connection
 
 	public Data get(java.lang.String expr) throws MdsException
 	{
-                java.lang.String expandedExpr = "serializeout(`(data("+expr+")))";
+                java.lang.String expandedExpr = "serializeout(`(data(("+expr+"))))";
                 Data serData = get(sockId, expandedExpr, new Data[0]);
                 if(serData instanceof Array)
                     return Data.deserialize(serData.getByteArray());
