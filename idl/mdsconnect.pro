@@ -6,8 +6,7 @@ endcase
 end
 
 function sockmin
-  ; Connection IDs start at 1 (see Issue #2625 for details).
-  if !version.os eq 'linux' then return, 1 else return, 11-(!version.os eq 'MacOS')
+  if !version.os eq 'linux' then return, 0 else return, 11-(!version.os eq 'MacOS')
 end
 
 function mds$socket,quiet=quiet,status=status,socket=socket
