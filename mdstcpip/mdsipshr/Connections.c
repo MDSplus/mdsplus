@@ -465,17 +465,13 @@ static inline int authorize_client(Connection *c, char *username)
 int AddConnection(Connection *c)
 {
   MDSIPTHREADSTATIC_INIT;
-  
-  // Connection IDs are issued in sequence.
-  // Issue #2625 requires connection IDs starting at 1 to avoid IDL issues.
-  // Use of _FindConnection() is an integrity check of the data structures.
   static int id = INVALID_CONNECTION_ID;
   static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&lock);
   do
   {
-    id++;
-  } while ((id == INVALID_CONNECTION_ID) || (id == 0) || _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR));
+    id++; // find next free id
+  } while (id == INVALID_CONNECTION_ID && _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR));
   c->id = id;
   pthread_mutex_unlock(&lock);
   c->state |= CON_INLIST;
