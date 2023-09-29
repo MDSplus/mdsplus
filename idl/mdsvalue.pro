@@ -46,6 +46,8 @@
 
 
 function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,quiet=quiet,status=status,socket=socket
+  ; Note that Issue #2625 requires the optional "socket" keyword argument 
+  ; to be bound to a regular variable in the calling code.
 
   forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsIPImage,evaluate
   MdsCheckArg,expression,type="STRING",name="expression"
