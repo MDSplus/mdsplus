@@ -230,7 +230,8 @@ if (debug) then $
 ; now execute the query
 ; !!!  if it is a string it is a database error
 ;
-count = mdsvalue(expr, socket=!MDSDB_SOCKET)
+socket_var = !MDSDB_SOCKET
+count = mdsvalue(expr, socket=socket_var)
 
 sz = size(count)
 if (sz(n_elements(sz)-2) eq 7) then begin
@@ -254,7 +255,8 @@ endif else begin
         if (debug) then $
           print, 'Working on arg ', i
         arg = 'a'+string(i, format="(I3.3)")
-        val = MDSVALUE("_"+arg,socket=!MDSDB_SOCKET,/QUIET)
+        socket_var = !MDSDB_SOCKET
+        val = MDSVALUE("_"+arg,socket=socket_var,/QUIET)
         ok = evaluate(arg + ' = val')
         if (ok eq "OK") then status = 1L else status = 0L
         if (debug) then $
@@ -275,8 +277,10 @@ endif else begin
 ;
 ; free all the tdi variables returned by DSQL
 ;
-    if (not debug) then $
-      dummy = MdsValue("DeAllocate('_A%%%')",socket=!MDSDB_SOCKET,/QUIET)
+    if (not debug) then begin
+      socket_var = !MDSDB_SOCKET
+      dummy = MdsValue("DeAllocate('_A%%%')",socket=socket_var,/QUIET)
+    endif
 ;
 ; return the number of row
 ;
