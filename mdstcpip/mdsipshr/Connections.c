@@ -471,7 +471,7 @@ int AddConnection(Connection *c)
   do
   {
     id++; // find next free id
-  } while (id == INVALID_CONNECTION_ID && _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR));
+  } while ((id == INVALID_CONNECTION_ID) || _FindConnection(id, NULL, MDSIPTHREADSTATIC_VAR));
   c->id = id;
   pthread_mutex_unlock(&lock);
   c->state |= CON_INLIST;

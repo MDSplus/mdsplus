@@ -13,7 +13,9 @@ function mds$socket,quiet=quiet,status=status,socket=socket
   status = 1
   sockmin=sockmin()
   sock=sockmin-1
-  if (keyword_set(socket)) then $
+  ; The arg_present() only works if the optional keyword argument 
+  ; is bound to a regular variable in the calling code.
+  if (arg_present(socket)) then $
       if (socket ge sockmin) then $
           return, socket
   defsysv,'!MDS_SOCKET',exists=old_sock
@@ -137,7 +139,7 @@ pro mds$disconnect,status=status,quiet=quiet
   if status then begin
     status = call_external(MdsIPImage(),'IdlDisconnectFromMds',sock,value=[1b])
     if (status eq 0) then status = 1 else status = 0
-    !MDS_SOCKET = 0l
+    !MDS_SOCKET = 0l  ; Is this correct?  Should it be -1?
   endif
   return
 end
@@ -153,7 +155,9 @@ end
 
 pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   on_error,2
-  if (not keyword_set(socket)) then $
+  ; The arg_present() only works if the optional keyword argument 
+  ; is bound to a regular variable in the calling code.
+  if (not arg_present(socket)) then $
     mdsdisconnect,/quiet
   if n_elements(port) ne 0 then begin
     setenv_,'mdsip='+strtrim(port,2)
@@ -165,7 +169,7 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   sockmin=sockmin()
   if (sock ge sockmin) then begin
     status = 1
-    if not keyword_set(socket) then $
+    if not arg_present(socket) then $
       !MDS_SOCKET = sock $
     else $
       socket = sock
