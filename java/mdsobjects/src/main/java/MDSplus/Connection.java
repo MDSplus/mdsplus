@@ -126,7 +126,6 @@ public class Connection
                Data args[] = new Data[inArgs.length];
                 for(int i = 0; i < inArgs.length; i++)
                     args[i] = new Uint8Array(inArgs[i].serialize());
-		put(sockId, path, expr, args);
 		if (!checkArgs(args))
 			throw new MdsException(
 					"Invalid arguments: only scalars and arrays arguments can be passed to COnnection.put()");
