@@ -136,75 +136,105 @@ parser.add_argument(
     const=True,
 )
 
-args, unknown_args = parser.parse_known_args()
+###
+### Helper functions
+###
+
+def build_command_line(args):
+    build_args = []
+    for name, value in args.items():
+        if value is not None:
+            if type(value) is bool:
+                if value:
+                    build_args.append(f'--{name}')
+            else:
+                build_args.append(f'--{name}={value}')
+    return build_args
+
+
+###
+### Parse arguments from the command line and deploy/os/{os}.opts, if --os= is set
+###
+
+cli_args, unknown_args = parser.parse_known_args()
 cmake_args = unknown_args
 
-if args.os is not None:
+if cli_args.os is not None:
 
-    opts_filename = os.path.join(deploy_dir, f'os/{args.os}.opts')
+    opts_filename = os.path.join(deploy_dir, f'os/{cli_args.os}.opts')
     if not os.path.exists(opts_filename):
-        print(f'Unsupported --os={args.os}, ensure that deploy/os/{args.os}.opts exists')
+        print(f'Unsupported --os={cli_args.os}, ensure that deploy/os/{cli_args.os}.opts exists')
         exit(1)
     
     opts = open(opts_filename).read().strip().split()
 
-    env_filename = os.path.join(deploy_dir, f'os/{args.os}.env')
+    env_filename = os.path.join(deploy_dir, f'os/{cli_args.os}.env')
     if os.path.exists(env_filename):
         opts.append(f'--env-file={env_filename}')
 
-    args, unknown_args = parser.parse_known_args(args=opts)
+    cli_args, unknown_args = parser.parse_known_args(args=opts)
     cmake_args = unknown_args
 
     # To allow command-line arguments to override .opts file arguments, we need to parse them after the .opts file
-    args, unknown_args = parser.parse_known_args(namespace=args)
+    cli_args, unknown_args = parser.parse_known_args(namespace=cli_args)
     cmake_args.extend(unknown_args)
 
-if args.source is None:
-    args.source = root_dir
+###
+### Convert the arguments to a dictionary and fill in computed values
+###
 
-if args.workspace is None:
-    if args.os is None:
-        args.workspace = 'build/'
-    else:
-        branch = 'cmake' # TODO:
-        args.workspace = f'build/{args.os}/{branch}'
+args = dict()
+for name in vars(cli_args):
+    # argparse replaces - with _ in the names
+    original_name = name.replace('_', '-')
+    args[original_name] = getattr(cli_args, name)
 
 # TODO: Remove and replace with argparse.BooleanOptionalAction
-if args.no_test:
-    args.test = False
+if args['no-test']:
+    args['test'] = False
+
+if args['valgrind'] == '':
+    args['valgrind'] = None
+
+if args['sanitize'] == '':
+    args['sanitize'] = None
+
+if args['valgrind'] is not None:
+    cmake_args.append('-DENABLE_VALGRIND=ON')
+
+    if args['valgrind'] != True:
+        cmake_args.append(f"-DVALGRIND_TOOLS={args['valgrind']}")
+else:
+    cmake_args.append('-DENABLE_VALGRIND=OFF')
+
+if args['source'] is None:
+    args['source'] = root_dir
+
+if args['workspace'] is None:
+    if args['os'] is None:
+        args['workspace'] = 'build/'
+    else:
+        branch = 'cmake' # TODO:
+        args['workspace'] = f"build/{args['os']}/{branch}"
 
 # Convert the workspace to an absolute path
-if not os.path.isabs(args.workspace):
-    args.workspace = os.path.join(root_dir, args.workspace)
+if not os.path.isabs(args['workspace']):
+    args['workspace'] = os.path.join(root_dir, args['workspace'])
 
-os.makedirs(args.workspace, exist_ok=True)
+os.makedirs(args['workspace'], exist_ok=True)
 
-build_args = []
-for name in vars(args):
-    value = getattr(args, name)
+if args['dockerimage'] is not None:
 
-    # argparse replaces - with _ in the names
-    name = name.replace('_', '-')
-
-    if value is not None:
-        if type(value) is bool:
-            if value:
-                build_args.append(f'--{name}')
-        else:
-            build_args.append(f'--{name}={value}')
-
-if args.dockerimage is not None:
-
-    passthrough_args = build_args.copy()
+    passthrough_args = build_command_line(args)
     for name in passthrough_args:
         # Remove options that aren't applicable in the docker container
         if name.startswith('--os') or name.startswith('--docker'):
             passthrough_args.remove(name)
 
-    if args.dockerpull:
-        subprocess.run([ 'docker', 'pull', args.dockerimage ])
+    if args['dockerpull']:
+        subprocess.run([ 'docker', 'pull', args['dockerimage'] ])
 
-    docker_command = f"python3 {args.source}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
+    docker_command = f"python3 {args['source']}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
 
     # TODO: Improve
     # import platform
@@ -213,10 +243,10 @@ if args.dockerimage is not None:
     
     docker_args = [
         '--rm',
-        '--volume', f'{root_dir}:{args.source}', # TODO: Improve?
-        '--volume', f'{args.workspace}:/workspace',
+        '--volume', f"{root_dir}:{args['source']}", # TODO: Improve?
+        '--volume', f"{args['workspace']}:/workspace",
         '--workdir', '/workspace',
-        args.dockerimage,
+        args['dockerimage'],
         '/bin/bash', '-c', docker_command
     ]
 
@@ -229,7 +259,7 @@ if args.dockerimage is not None:
     if platform.system() != 'Windows':
         docker_args = [ '--user', f"{os.getuid()}:{os.getgid()}" ] + docker_args
 
-    if args.interactive:
+    if args['interactive']:
         subprocess.run(
             [
                 'docker', 'run',
@@ -286,15 +316,15 @@ else:
     if 'SHELL' in os.environ:
         shell = os.environ['SHELL']
 
-    if args.env_file is not None:
+    if args['env-file'] is not None:
         result = subprocess.run(
-            [ shell, '-c', f'. {args.env_file}; env' ],
+            [ shell, '-c', f". {args['env-file']}; env" ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
 
         if result.returncode != 0:
-            print(f'Failed to source {args.env_file}: {result.stderr.decode()}')
+            print(f"Failed to source {args['env-file']}: {result.stderr.decode()}")
             exit(1)
 
         new_environ = {}
@@ -328,74 +358,11 @@ else:
         print('Unable to find ctest')
         exit(1)
 
-    # TODO: Improve
-    current_generator = None
-    cmake_cache_filename = os.path.join(args.workspace, 'CMakeCache.txt')
-    if os.path.exists(cmake_cache_filename):
-       lines = open(cmake_cache_filename).readlines()
-       for line in lines:
-           if line.startswith('CMAKE_GENERATOR'):
-               _, value = line.strip().split('=', maxsplit=1)
-               current_generator = value
-               break
-           
-    if args.generator is None:
-        args.generator = current_generator
-    
-    if args.generator != current_generator:
-        # Perform a clean configure
-        cmake_args.append('--fresh')
-
-    if args.generator is None:
-        args.generator = 'Unix Makefiles'
-
-    build_command = f'{cmake} --build .'
-    if args.generator == 'Unix Makefiles':
-        build_command = f'make -j{args.parallel}'
-    elif args.generator == 'Ninja':
-        build_command = f'ninja -j{args.parallel}'
-
-    cmake_args = [ '-G', args.generator ] + cmake_args
-
-    print()
-    print('Combined build arguments:')
-    print(f"    {' '.join(build_args)}")
-    print()
-
-    if args.test:
-        cmake_args.append('-DBUILD_TESTING=ON')
-
-    if args.valgrind == '':
-        args.valgrind = None
-
-    if args.sanitize == '':
-        args.sanitize = None
-
-    if args.sanitize is not None:
-        sanitize_list = args.sanitize.split(',')
-        print(sanitize_list)
-
-    if args.valgrind is not None:
-        cmake_args.append('-DENABLE_VALGRIND=ON')
-
-        if args.valgrind != True:
-            cmake_args.append(f'-DVALGRIND_TOOLS={args.valgrind}')
-    else:
-        cmake_args.append('-DENABLE_VALGRIND=OFF')
-
-    print('CMake arguments:')
-    print(f"    {' '.join(cmake_args)}")
-    print()
-    
-    subprocess.run(
-        [ cmake ] + cmake_args + [ args.source ],
-        cwd=args.workspace,
-    )
-
-    if args.interactive:
+    if args['interactive']:
+        
         extra_env = {
-            'SOURCE': args.source,
-            'WORKSPACE': args.workspace,
+            'SOURCE': args['source'],
+            'WORKSPACE': args['workspace'],
         }
 
         print()
@@ -403,163 +370,253 @@ else:
         for name, value in extra_env.items():
             print(f'    {name}: {value}')
         print()
-        print(f'To build, run: {build_command}')
         print('When you are done, run exit')
         print()
 
         subprocess.run(
             [ shell ],
-            cwd=args.workspace,
+            cwd=args['workspace'],
         )
+    
     else:
-        subprocess.run(
-            [
-                shell, '-c',
-                build_command
-            ],
-            cwd=args.workspace,
-        )
 
-        if args.test:
-            # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
-            # we iterate over the tests manually.
+        default_build = {
+            'name': 'default',
+            'args': args.copy(),
+            'cmake_args': cmake_args.copy(),
+        }
 
-            TEST_DATA_FILENAME = os.path.join(args.workspace, 'mdsplus-test.json')
+        del default_build['args']['sanitize']
 
-            result = subprocess.run(
-                [
-                    ctest, '-N', '--show-only=json-v1'
-                ],
-                capture_output=True,
-                cwd=args.workspace,
+        build_list = [ default_build ]
+
+        sanitize_list = []
+        if args['sanitize'] is not None:
+            sanitize_list = args['sanitize'].split(',')
+
+        # TODO: Inform the user that multiple builds are going to take place because of --sanitize
+        
+        for sanitizer in sanitize_list:
+            build = {
+                'name': f'sanitize-{sanitizer}',
+                'args': args.copy(),
+                'cmake_args': cmake_args.copy(),
+            }
+
+            build['args']['sanitize'] = sanitizer
+            del build['args']['valgrind']
+
+            build['cmake_args'].append(f'-DENABLE_SANITIZE={sanitizer}')
+            build['args']['workspace'] = os.path.join(build['args']['workspace'], build['name'])
+
+            os.makedirs(build['args']['workspace'], exist_ok=True)
+
+            build_list.append(build)
+        
+        for build in build_list:
+
+            # TODO: Improve
+            current_generator = None
+            cmake_cache_filename = os.path.join(build['args']['workspace'], 'CMakeCache.txt')
+            if os.path.exists(cmake_cache_filename):
+                lines = open(cmake_cache_filename).readlines()
+                for line in lines:
+                    if line.startswith('CMAKE_GENERATOR'):
+                        _, value = line.strip().split('=', maxsplit=1)
+                        current_generator = value
+                        break
+                
+            if build['args']['generator'] is None:
+                build['args']['generator'] = current_generator
+            
+            if build['args']['generator'] != current_generator:
+                # Perform a clean configure
+                build['cmake_args'].append('--fresh')
+
+            if build['args']['generator'] is None:
+                build['args']['generator'] = 'Unix Makefiles'
+
+            # TODO: Add more
+            build_command = f'{cmake} --build .'
+            if build['args']['generator'] == 'Unix Makefiles':
+                build_command = f"make -j{build['args']['parallel']}"
+            elif build['args']['generator'] == 'Ninja':
+                build_command = f"ninja -j{build['args']['parallel']}"
+
+            build['cmake_args'] = [ '-G', build['args']['generator'] ] + build['cmake_args']
+
+            print()
+            print(f"Combined build arguments for {build['name']}:")
+            print(f"    {' '.join(build_command_line(build['args']))}")
+            print()
+
+            if build['args']['test']:
+                build['cmake_args'].append('-DBUILD_TESTING=ON')
+
+            print(f"CMake arguments for {build['name']}:")
+            print(f"    {' '.join(build['cmake_args'])}")
+            print()
+            
+            subprocess.run(
+                [ cmake ] + build['cmake_args'] + [ build['args']['source'] ],
+                cwd=build['args']['workspace'],
             )
 
-            if result.returncode != 0:
-                # TODO:
-                exit(1)
+            subprocess.run(
+                [
+                    shell, '-c',
+                    build_command
+                ],
+                cwd=build['args']['workspace'],
+            )
 
-            test_data = json.loads(result.stdout.decode())
-            test_queue = []
-            for i, test in enumerate(test_data['tests']):
-                test_queue.append({
-                    'index': i + 1,
-                    'name': test['name'],
-                })
+            if args['test']:
+                # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
+                # we iterate over the tests manually.
 
-            start_time = datetime.now()
-            total_time_test = 0
-            test_count = len(test_queue)
+                TEST_DATA_FILENAME = os.path.join(args['workspace'], 'mdsplus-test.json')
 
-            passed_tests = {}
-            failed_tests = {}
-            running_test_list = []
+                result = subprocess.run(
+                    [
+                        ctest, '-N', '--show-only=json-v1'
+                    ],
+                    capture_output=True,
+                    cwd=build['args']['workspace'],
+                )
 
-            def kill_test_processes(signum, frame):
-                for test in running_test_list:
-                    print(f"Killing {test['name']}")
-                    test['process'].kill()
+                if result.returncode != 0:
+                    # TODO:
+                    exit(1)
 
-                test_queue.clear()
+                test_queue = []
+                test_data = json.loads(result.stdout.decode())
 
-            signal.signal(signal.SIGINT, kill_test_processes)
-
-            if args.rerun_failed:
-                print('Re-Running failed tests')
-
-                try:
-                    with open(TEST_DATA_FILENAME, 'rt') as f:
-                        old_tests = json.loads(f.read())
-                        for test in test_queue.copy():
-                            if test['name'] in old_tests.keys():
-                                old_test = old_tests[test['name']]
-                                if old_test['passed']:
-                                    print(f"Skipping: {test['name']}")
-                                    test_queue.remove(test)
-                                    passed_tests[test['name']] = old_test
-                except:
-                    print(f'Failed to parse {TEST_DATA_FILENAME}')
-
-            while len(test_queue) > 0 or len(running_test_list) > 0:
-
-                for test in running_test_list:
-                    result = test['process'].poll()
-                    if result is not None:
-                        running_test_list.remove(test)
-
-                        delta_time = datetime.now() - test['start']
-                        delta_time = delta_time.total_seconds()
-                        total_time_test += delta_time
-
-                        passed = (result == 0)
-
-                        result_message = 'Success' if passed else 'Failed'
-                        print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
-                        if result != 0:
-                            print(f"[{test['index']:3}/{test_count}] Log File: {test['log']}")
-
-                        test_record = {
-                            'index': test['index'],
-                            'log': test['log'],
-                            'time': delta_time,
-                            'passed': passed,
-                        }
-
-                        if result == 0:
-                            passed_tests[test['name']] = test_record
-                        else:
-                            failed_tests[test['name']] = test_record
-
-                while len(test_queue) > 0 and len(running_test_list) < int(args.parallel):
-                    test = test_queue.pop(0)
-
-                    log_filename = os.path.join(args.workspace, 'testing', test['name'] + '.log')
-                    os.makedirs(os.path.dirname(log_filename), exist_ok=True)
-                    log_file = open(log_filename, 'wb')
-
-                    print(f"[{test['index']:3}/{test_count}] Running: {test['name']}")
-
-                    test_start_time = datetime.now()
-                    
-                    test_process = subprocess.Popen(
-                        [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
-                        stdout=log_file,
-                        stderr=subprocess.STDOUT,
-                        cwd=args.workspace,
-                    )
-                    
-                    running_test_list.append({
-                        'index': test['index'],
-                        'start': test_start_time,
-                        'name': test['name'],
-                        'process': test_process,
-                        'log': log_filename,
+                prefix = ''
+                if build['name'] != 'default':
+                    prefix = f"{build['name']}/"
+                
+                for i, test in enumerate(test_data['tests']):
+                    test_queue.append({
+                        'index': i + 1,
+                        'name': prefix + test['name'],
+                        'build': build['name'],
+                        'workspace': build['args']['workspace'],
                     })
 
-            signal.signal(signal.SIGINT, signal.SIG_DFL)
+                start_time = datetime.now()
+                total_time_test = 0
+                test_count = len(test_queue)
 
-            passed_test_count = len(passed_tests)
-            percentage = math.floor((passed_test_count / test_count) * 100.0)
+                passed_tests = {}
+                failed_tests = {}
+                running_test_list = []
 
-            total_time_real = datetime.now() - start_time
-            total_time_real = total_time_real.total_seconds()
+                def kill_test_processes(signum, frame):
+                    for test in running_test_list:
+                        print(f"Killing {test['name']}")
+                        test['process'].kill()
 
-            print()
-            print(f"{passed_test_count}/{test_count} tests passed, {percentage:.0f}%")
-            print()
-            print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
-            print()
+                    test_queue.clear()
 
-            if len(failed_tests) > 0:
-                print("The following tests failed:")
+                signal.signal(signal.SIGINT, kill_test_processes)
 
-                for name, test in failed_tests.items():
-                    log_filename_escaped = test['log'].replace(' ', '\\ ')
-                    print(f"    {test['index']} {name} ({log_filename_escaped})")
+                if args['rerun-failed']:
+                    print('Re-Running failed tests')
 
-            with open(TEST_DATA_FILENAME, 'wt') as f:
-                all_tests = dict(passed_tests, **failed_tests)
-                f.write(json.dumps(
-                    all_tests,
-                    indent=2
-                ))
-            
+                    try:
+                        with open(TEST_DATA_FILENAME, 'rt') as f:
+                            old_tests = json.loads(f.read())
+                            for test in test_queue.copy():
+                                if test['name'] in old_tests.keys():
+                                    old_test = old_tests[test['name']]
+                                    if old_test['passed']:
+                                        print(f"Skipping: {test['name']}")
+                                        test_queue.remove(test)
+                                        passed_tests[test['name']] = old_test
+                    except:
+                        print(f'Failed to parse {TEST_DATA_FILENAME}')
+
+                while len(test_queue) > 0 or len(running_test_list) > 0:
+
+                    for test in running_test_list:
+                        result = test['process'].poll()
+                        if result is not None:
+                            running_test_list.remove(test)
+
+                            delta_time = datetime.now() - test['start']
+                            delta_time = delta_time.total_seconds()
+                            total_time_test += delta_time
+
+                            passed = (result == 0)
+
+                            result_message = 'Success' if passed else 'Failed'
+                            print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
+                            if result != 0:
+                                print(f"[{test['index']:3}/{test_count}] Log File: {test['log']}")
+
+                            test_record = {
+                                'index': test['index'],
+                                'log': test['log'],
+                                'time': delta_time,
+                                'passed': passed,
+                            }
+
+                            if result == 0:
+                                passed_tests[test['name']] = test_record
+                            else:
+                                failed_tests[test['name']] = test_record
+
+                    while len(test_queue) > 0 and len(running_test_list) < int(args['parallel']):
+                        test = test_queue.pop(0)
+
+                        log_filename = os.path.join(test['workspace'], 'testing', test['name'] + '.log')
+                        os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+                        log_file = open(log_filename, 'wb')
+
+                        print(f"[{test['index']:3}/{test_count}] Running: {test['name']}")
+
+                        test_start_time = datetime.now()
+                        
+                        test_process = subprocess.Popen(
+                            [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
+                            stdout=log_file,
+                            stderr=subprocess.STDOUT,
+                            cwd=test['workspace'],
+                        )
+                        
+                        running_test_list.append({
+                            'index': test['index'],
+                            'start': test_start_time,
+                            'name': test['name'],
+                            'process': test_process,
+                            'log': log_filename,
+                        })
+
+                signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+                passed_test_count = len(passed_tests)
+                percentage = math.floor((passed_test_count / test_count) * 100.0)
+
+                total_time_real = datetime.now() - start_time
+                total_time_real = total_time_real.total_seconds()
+
+                print()
+                print(f"{passed_test_count}/{test_count} tests passed, {percentage:.0f}%")
+                print()
+                print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
+                print()
+
+                if len(failed_tests) > 0:
+                    print("The following tests failed:")
+
+                    for name, test in failed_tests.items():
+                        log_filename_escaped = test['log'].replace(' ', '\\ ')
+                        print(f"    {test['index']} {name} ({log_filename_escaped})")
+
+                with open(TEST_DATA_FILENAME, 'wt') as f:
+                    all_tests = dict(passed_tests, **failed_tests)
+                    f.write(json.dumps(
+                        all_tests,
+                        indent=2
+                    ))
+                

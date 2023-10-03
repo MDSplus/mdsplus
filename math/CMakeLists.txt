@@ -50,14 +50,14 @@ else()
     target_sources(
         MdsMath
         PRIVATE
-            caxpy.f
-            daxpy.f
-            saxpy.f
-            zaxpy.f
-            cgeco.f
-            dgeco.f
-            sgeco.f
-            zgeco.f
+            blas/caxpy.f
+            blas/daxpy.f
+            blas/saxpy.f
+            blas/zaxpy.f
+            blas/cgeco.f
+            blas/dgeco.f
+            blas/sgeco.f
+            blas/zgeco.f
     )
 
 endif()
