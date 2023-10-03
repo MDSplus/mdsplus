@@ -54,8 +54,7 @@ pro MDSDbDisconnect
        defsysv, '!MDSDB_SOCKET', -1
        defsysv, '!MDSDB_HOST', ''
    endif
-   socket_var = !MDSDB_SOCKET
-   MdsDisconnect, socket=socket_var
+   MdsDisconnect, socket=!MDSDB_SOCKET
    !MDSDB_SOCKET = -1
    !MDSDB_HOST = ""
 end
@@ -80,8 +79,7 @@ end
 pro set_database, dbname, status=status, quiet=quiet,debug=debug
   status = dbinfo(dbname, host, name, user, pass, mdshost)
   MDSDbconnect, mdshost
-  socket_var = !MDSDB_SOCKET
-  status = mdsvalue("DBLogin($, $, $)", host, user, pass, socket=socket_var)
+  status = mdsvalue("DBLogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
   if (not status) then begin
       if not (keyword_set(quiet)) then begin
           Message, "Error logging on to DbHost "+host, /continue
@@ -90,8 +88,7 @@ pro set_database, dbname, status=status, quiet=quiet,debug=debug
       endelse
       return
   endif
-;  socket_var = !MDSDB_SOCKET
-;  status = mdsvalue("SetDatabase('"+ name+"')", socket=socket_var)
+;  status = mdsvalue("SetDatabase('"+ name+"')", socket=!MDSDB_SOCKET)
   status = dsql('USE ?', name)
   if (status ne 0) then begin
       if not (keyword_set(quiet)) then begin
@@ -245,8 +242,7 @@ if (debug) then $
 ; now execute the query
 ; !!!  if it is a string it is a database error
 ;
-socket_var = !MDSDB_SOCKET
-count = mdsvalue(expr, socket=socket_var)
+count = mdsvalue(expr, socket=!MDSDB_SOCKET)
 sz = size(count)
 if (sz(n_elements(sz)-2) eq 7) then begin
 
@@ -273,8 +269,7 @@ endif else begin
         if (debug) then $
           print, 'Working on arg ', i
         arg = 'a'+string(i, format="(I3.3)")
-        socket_var = !MDSDB_SOCKET
-        cmd = arg+' = MDSVALUE("_'+arg+'",socket=socket_var)'
+        cmd = arg+' = MDSVALUE("_'+arg+'",socket=!MDSDB_SOCKET)'
         status = execute(cmd)
         if (debug) then $
           print, "got back "+arg
@@ -292,10 +287,8 @@ endif else begin
 ;
 ; free all the tdi variables returned by DSQL
 ;
-    if (not debug) then begin
-      socket_var = !MDSDB_SOCKET
-      dummy = MdsValue("DeAllocate('_A%%%')",socket=socket_var)
-    endif
+    if (not debug) then $
+      dummy = MdsValue("DeAllocate('_A%%%')",socket=!MDSDB_SOCKET)
 ;
 ; return the number of row
 ;

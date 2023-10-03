@@ -408,10 +408,8 @@ pro MDSDbDisconnect
        defsysv, '!MDSDB_SOCKET', -1
        defsysv, '!MDSDB_HOST', ''
    endif
-   if !MDSDB_SOCKET ne -1 then begin
-     socket_var = !MDSDB_SOCKET
-     MdsDisconnect, socket=socket_var
-   endif
+   if !MDSDB_SOCKET ne -1 then $
+     MdsDisconnect, socket=!MDSDB_SOCKET
    !MDSDB_SOCKET = -1
    !MDSDB_HOST = ""
 end
@@ -441,8 +439,7 @@ pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset, f
   if (status eq 0) then $
     return
   MDSDbconnect, mdshost
-  socket_var = !MDSDB_SOCKET
-  status = mdsvalue("dblogin($, $, $)", host, user, pass, socket=socket_var)
+  status = mdsvalue("dblogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
   if (not status) then begin
       if not (keyword_set(quiet)) then begin
           Message, mdsvalue('dsc:MdsSql->GetDBMsgText_dsc()'), /continue
