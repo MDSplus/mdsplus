@@ -14,7 +14,7 @@ function mdsisclient,socket=socket
     value= (!MDS_SOCKET ge 0)
     return,value
 
-  ; Went awry, so return INVALID_IDL_CONNECTION
+  ; Went awry, so return INVALID_CONNECTION_ID
   endif else begin
     defsysv,'!MDS_SOCKET',-1
     return,0
