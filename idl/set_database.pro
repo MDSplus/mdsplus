@@ -438,7 +438,26 @@ pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset, f
   status = dbinfo(dbname, mdshost, host, name, user, pass, reset=reset, file=file)
   if (status eq 0) then $
     return
-  MDSDbconnect, mdshost
+
+  ; For issue 2625, must ensure connection ID is greater than zero.
+  ; Most robust solution is to open an extraneous connection if needed.
+  ; Don't disconnect because resets !MDS_SOCKET to -1 (triggers 2625).
+  defsysv, "!MDS_SOCKET", exists=has_mds_socket
+  if (not has_mds_socket) then begin
+    mdsconnect, mdshost
+  endif
+
+  ; The global !MDS_SOCKET should now definitely exist.
+  if (!MDS_SOCKET lt 0) then begin
+    if not (keyword_set(quiet)) then begin
+      Message, "Error connecting to MDSplus host "+mdshost, /continue
+    endif else begin
+      Message, "Error connecting to MDSplus host "+mdshost, /continue, /noprint
+    endelse
+    return
+  endif
+  
+  MDSDbconnect, mdshost   ; increments the socket
   status = mdsvalue("dblogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
   if (not status) then begin
       if not (keyword_set(quiet)) then begin

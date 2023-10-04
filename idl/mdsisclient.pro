@@ -1,5 +1,5 @@
 function mdsisclient,socket=socket
-if (keyword_set(socket)) then $
+if (keyword_set(socket)) then $   ; Fails if socket = 0 (see issue 2625)
   if (socket ge 0) then $
     return, 1 $
   else $
