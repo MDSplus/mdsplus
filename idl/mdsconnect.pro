@@ -153,8 +153,12 @@ end
 
 pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   on_error,2
-  if (not keyword_set(socket)) then $
-    mdsdisconnect,/quiet
+  ; if (not keyword_set(socket)) then $
+  ;  mdsdisconnect,/quiet
+  defsysv, "!MDS_SOCKET", exists=has_mds_socket
+  if (not has_mds_socket) then begin
+    defsysv, "!MDS_SOCKET", -1
+  endif
   if n_elements(port) ne 0 then begin
     setenv_,'mdsip='+strtrim(port,2)
   endif else if getenv('mdsip') eq '' then begin
