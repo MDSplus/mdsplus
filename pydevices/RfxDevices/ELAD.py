@@ -3,6 +3,7 @@ from ctypes import CDLL, c_char_p, c_short, byref, c_int
 import socket
 import numpy as np
 from threading import Thread
+import time
 
 def recvall(sock, n):
 # Helper function to recv n bytes or return None if EOF is hit
@@ -79,9 +80,10 @@ class ELAD(MDSplus.Device):
                 actFreq = 1E6/freqDiv
                 segmentSize = int(0.5* 1E6/freqDiv)  #save a segment every 0.5 seconds
                 print('SEGMENT SIZE: ', segmentSize)
-                chans = []
                 activeChans = self.device.act_chans.data()
-                for chanIdx in range(+1):
+                print('ACTIVE CHANS: ', activeChans)
+                chans = []
+                for chanIdx in range(2*activeChans+1):
                     chans.append(np.zeros(segmentSize, dtype = np.int32))
                 for chanIdx in range(12):
                     getattr(self.device, 'stream_%d_data' % (chanIdx+1)).deleteData()
@@ -162,12 +164,16 @@ class ELAD(MDSplus.Device):
         
         localIp = socket.gethostbyname(socket.gethostname())
 
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            sock.connect((ip, port))
+            sock = ELAD.socketDict[self.getNid()]
         except:
-            print("Cannot connect to "+ip+"  Port "+str(port))
-            raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
+            print('Connecting....')
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                sock.connect((ip, port))
+            except:
+                print("Cannot connect to "+ip+"  Port "+str(port))
+                raise  MDSplus.mdsExceptions.TclFAILED_ESSENTIAL
 
         
         try:
@@ -254,6 +260,8 @@ class ELAD(MDSplus.Device):
         self.worker.daemon = True
         stopAcq[self.getNid()] = False
         self.worker.start()
+
+        time.sleep(1)
         try:
             sock.send(b'STS')
             print(sock.recv(2))
@@ -309,7 +317,7 @@ class ELAD(MDSplus.Device):
             currSig = MDSplus.Signal(samples[chan * numChanSamples:(chan+1) * numChanSamples], None, timebase)
             self.__getattr__('channel_%d_data' % (chan+1)).putData(currSig)
 
-        sock.close()
+        #sock.close()
 
 
     
