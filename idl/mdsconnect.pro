@@ -14,7 +14,7 @@ function mds$socket,quiet=quiet,status=status,socket=socket
   status = 1
   sockmin=sockmin()
   sock=sockmin-1
-  if (keyword_set(socket)) then $
+  if (mds_keyword_set(socket=socket)) then $
       if (socket ge sockmin) then $
           return, socket
   defsysv,'!MDS_SOCKET',exists=old_sock
@@ -155,7 +155,7 @@ end
 pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   forward_function mds_keyword_set
   on_error,2
-  if (not keyword_set(socket)) then $
+  if (not mds_keyword_set(socket=socket)) then $
     mdsdisconnect,/quiet
   if n_elements(port) ne 0 then begin
     setenv_,'mdsip='+strtrim(port,2)
@@ -167,7 +167,7 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   sockmin=sockmin()
   if (sock ge sockmin) then begin
     status = 1
-    if not keyword_set(socket) then $
+    if not mds_keyword_set(socket=socket) then $
       !MDS_SOCKET = sock $
     else $
       socket = sock

@@ -205,16 +205,12 @@ class _Connection:
             args = kwargs['arglist']
         timeout = kwargs.get('timeout', -1)
         num = len(args)+1
-        
-        exp = 'serializeout(`('+exp+'))'
-        
         exp = _ver.tobytes(exp)
         _exc.checkStatus(_SendArg(self.conid, 0, 14, num,
                                   len(exp), 0, 0, ctypes.c_char_p(exp)))
         for i, arg in enumerate(args):
             self._send_arg(arg, i+1, num)
-        retSerialized = self._get_answer(timeout)
-        return retSerialized.deserialize()
+        return self._get_answer(timeout)
 
 
 class Connection(object):
