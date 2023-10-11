@@ -692,8 +692,10 @@ class MARTE2_COMPONENT(Device):
 #Get type (as string) of the Time field of the synchronizing device
     def getTimebaseType(self):
         synchDev = self.getSynchDev()
-        return synchDev.outputs_time_type.data()
-   
+        try:
+            return synchDev.outputs_time_type.data()
+        except:
+            return 'int32'
 
     #Get devices connected to the passed node 
     def getConnectedDev(self, threadMap, outValueNode):
