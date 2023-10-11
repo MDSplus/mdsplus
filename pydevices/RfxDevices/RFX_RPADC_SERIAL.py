@@ -1,7 +1,10 @@
 
 from MDSplus import mdsExceptions, Device, Data, Tree, Range, Float32, Int32Array, Int32
 from threading import Thread
-import serial
+try:
+    import serial
+except:
+    pass
 import time
 import numpy as np
 
