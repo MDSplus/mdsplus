@@ -644,6 +644,11 @@ class MARTE2_SUPERVISOR(Device):
         # KILL MARTe process
         import subprocess
         import os
+
+        command = 'kill -KILL `ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'`' % (marteName)
+        os.system(command)
+        return 1
+
         command = 'ps -Af | grep %s_marte_configuration.cfg | grep MARTeApp.ex | grep -v grep | awk \'{print $2}\'' % (
             marteName)
         pid, error = subprocess.Popen("{cmd}".format(
@@ -655,7 +660,6 @@ class MARTE2_SUPERVISOR(Device):
             for p in pid.split():
                 os.kill(int(p), 9)
                 print('MARTe Process PID : %s Killed\n' % (p))
-        return 1
 
     def check(self):
         t = self.getTree()
