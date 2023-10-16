@@ -2738,6 +2738,8 @@ class MARTE2_COMPONENT(Device):
                 if outputDict['seg_len'] > 0:
                     gamText += '      '+outputDict['name'] + ' = {\n'
                     gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
+                    gamText += '        NumberOfElemenrs = '+str(outputDict['elements'])
+                    gamText += '        Type = '+outputDict['type']
                     gamText += '      }\n'
 
             gamText += '    }\n'
@@ -2891,7 +2893,7 @@ class MARTE2_COMPONENT(Device):
             gamText += '  }\n'
             gams.append(gamText)
 
-        # Some outputs are connected to devices on separate synchronized theads
+        # Some outputs are connected to devices on separate synchronized threads
         if len(asynchThreadSignals) > 0:
             dataSourceText = '  +'+dataSourceName+'_Output_Asynch = {\n'
             dataSourceText += '    Class = RealTimeThreadAsyncBridge\n'
@@ -2910,11 +2912,11 @@ class MARTE2_COMPONENT(Device):
                     isInputStructField = False
                 gamText += '      '+signalDict['name']+' = {\n'
                 if isInputStructField:
-                    gamText += '        DataSource = '+gamName+'_Expanded_Output_DDB\n'
+                    gamText += '        DataSource = '+dataSourceName+'_Expanded_Output_DDB\n'
                 else:
-                    gamText += '        DataSource = '+gamName+'_Output_DDB\n'
-                gamText += '        NumberOfDimensions = ' + \
-                    str(signalDict['dimensions'])+'\n'
+                    gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
+ #               gamText += '        NumberOfDimensions = ' + \
+ #                   str(signalDict['dimensions'])+'\n'
                 gamText += '        NumberOfElements = ' + \
                     str(signalDict['elements'])+'\n'
                 gamText += '      }\n'
@@ -2923,8 +2925,8 @@ class MARTE2_COMPONENT(Device):
             for signalDict in asynchThreadSignals:
                 gamText += '      '+signalDict['name']+' = {\n'
                 gamText += '        DataSource = '+dataSourceName+'_Output_Asynch\n'
-                gamText += '        NumberOfDimensions = ' + \
-                    str(signalDict['dimensions'])+'\n'
+ #               gamText += '        NumberOfDimensions = ' + \
+ #                   str(signalDict['dimensions'])+'\n'
                 gamText += '        NumberOfElements = ' + \
                     str(signalDict['elements'])+'\n'
                 gamText += '      }\n'
