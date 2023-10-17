@@ -21,7 +21,8 @@ switch class(value)
     case 'uint8'
         javaclass = 'MDSplus.Uint8';
     case 'cell'
-        javaclass = 'MDSplus.String';
+        result = javaFromMatlabCell(value);
+        return
     case 'struct'
         result = javaFromMatlabStruct(value);
         return
