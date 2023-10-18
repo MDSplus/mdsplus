@@ -164,6 +164,7 @@ ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
     <requires package="idl_bin"/>
     <include dir="/usr/local/mdsplus/idl"/>
     <exclude dir="/usr/local/mdsplus/idl/camac"/>
+    <exclude dir="/usr/local/mdsplus/idl/testing"/>
   </package>
 
   <package name="idl_bin" arch="bin" summary="ITT IDL Binary Extensions" description="IDL Intereactive Data Language libraries">
