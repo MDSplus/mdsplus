@@ -3,7 +3,7 @@ Description=MDSplus Per-Connection Server
 
 [Service]
 User=root
-Type=forking
+Type=simple
 # NOTE: If you installed MDSplus to a different location, make sure you change the following line
 ExecStart=/usr/local/mdsplus/bin/mdsipd mdsip /var/log/mdsplus/mdsipd
 # This spawns the process inetd-style with the incoming socket bound to stdin
