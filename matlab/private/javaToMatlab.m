@@ -31,7 +31,7 @@ else
             case 'MDSplus.Float32Array'
                 result = reshape(mdsthing.getFloatArray,  shape);
             case 'MDSplus.StringArray'
-                result = reshape(cellstr(string(mdsthing.getStringArray)), shape);
+                result = reshape(string(mdsthing.getStringArray), shape);
             case 'MDSplus.Dictionary'
                 result = javaToMatlabStruct(mdsthing);
             case 'MDSplus.List'
