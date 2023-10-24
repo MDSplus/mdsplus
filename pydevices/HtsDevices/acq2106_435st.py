@@ -354,7 +354,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                     toread = self.segment_bytes
                     try:
                         view = memoryview(buf)
-                        while toread:
+                        while toread and self.running:
                             nbytes = s.recv_into(
                                 view, min(self.io_buffer_size, toread))
                             if first:
