@@ -26,7 +26,13 @@ extern "C"
   void rpadcStop(int fd);
   void openTree(char *name, int shot, MDSplus::Tree **treePtr);
   void setTriggerTime(unsigned long long triggerTime);
-}
+  int rpuartInit(int hi_div, int lo_div);
+  int rpuartGetSegment(int fd, int segment_size, char *c1, char *c2, char *c3, char *c4, char *c5);
+  int rpuartTrigger();
+  int rpuartTriggerFd(int fd);
+  int rpuartStartStore();
+  int rpuartStopStore(int fd);
+ }
 
 
 enum rpadc_mode
@@ -736,190 +742,150 @@ void openTree(char *name, int shot, MDSplus::Tree **treePtr)
   }
 }
 
-////////////////////Clock related stuff
 
 
+////////////////////rfx_triguart related stuff
+
+#undef DEVICE_NAME
+#undef MODULE_NAME
+#include <rfx_triguart.h>
 
 
-
- static double getFrequency(int fd)
+static int rpuartOpenChecked()
 {
-    double K, step, periodFPGA, period;
-    unsigned int Kr, C, stepLo, stepHi, reg, K1, K2;
-    unsigned long long stepR;
-    ioctl(fd, RFX_STREAM_GET_K1_REG, &K1);
-
-    ioctl(fd, RFX_STREAM_GET_K2_REG, &K2);
-
-    ioctl(fd, RFX_STREAM_GET_STEP_LO_REG, &stepLo);
-  
-    ioctl(fd, RFX_STREAM_GET_STEP_HI_REG, &stepHi);
-    
-    stepR = stepHi;
-    stepR = (stepR << 32)|stepLo;
-    step = (double)stepR/pow(2, 44);
-
-    periodFPGA = 1./125E6;
-    period = (periodFPGA * K1)*step + (periodFPGA * K2)*(1.-step);
-    return 0.5/period;
+    int fd;
+    fd = open("/dev/rfx_triguart", O_RDWR | O_SYNC);
+    while(fd < 0)
+    {
+    	printf("retrying open device....\b");
+        sleep(1);
+        fd = open("/dev/rfx_triguart", O_RDWR | O_SYNC);
+    }
+    return fd;
 }
-
  
-static void setFrequency(int fd, double reqFreq)
+
+
+int rpuartInit(int hi_div, int lo_div)
 {
-    double K, step;
-    unsigned int Kr, C, stepLo, stepHi, reg, K1, K2;
-    unsigned long long stepR;
-    
-    K = 0.25E7 * 25. /reqFreq;  //125MHz clock
-    Kr = round(K);
-    if (Kr > K)
-    {
-      C = round(COUNT_SIZE*(1 - (Kr -K)));
-      K1 = Kr;
-      K2 = Kr - 1;
-    }
-    else if (Kr < K)
-    {
-      C = round(COUNT_SIZE*(1- (K - Kr)));
-      K1 = Kr;
-      K2 = Kr+1;
-    }
-    else
-    {
-        K1 = K2 = K;
-        C = COUNT_SIZE/2;
-    }
-    step = C/(double)COUNT_SIZE;
-    step *= pow(2, 44);
-    stepR = round(step);
-    stepLo = (unsigned int)(stepR & 0xFFFFFFFF);
-    stepHi = (unsigned int)((stepR >> 32) & 0xFFFFFFFF);
-    printf("K1: %d, K2: %d, C: %u, Step: %lld\n", K1, K2, C, stepR);
-    ioctl(fd, RFX_STREAM_SET_K1_REG, &K1);
-
-    ioctl(fd, RFX_STREAM_SET_K2_REG, &K2);
-
-    ioctl(fd, RFX_STREAM_SET_STEP_LO_REG, &stepLo);
-  
-    ioctl(fd, RFX_STREAM_SET_STEP_HI_REG, &stepHi);
- 
+    struct rpadc_configuration inConfig, outConfig;
+    int fd = rpuartOpenChecked();
+    int reg;  
+    ioctl(fd, RFX_TRIGUART_SET_DIV_HI_REG, &hi_div);
+    ioctl(fd, RFX_TRIGUART_SET_DIV_LO_REG, &lo_div);
     reg = 0;
-    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
-    usleep(1000);
+    ioctl(fd, RFX_TRIGUART_GET_DIV_HI_REG, &reg);
+    if(reg != hi_div)
+    {
+    	printf("INTERNAL ERROR cannot set hi_div\n");
+    	close(fd);
+    	return -1;
+    }
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_GET_DIV_LO_REG, &reg);
+    if(reg != lo_div)
+    {
+    	printf("INTERNAL ERROR cannot set lo_div\n");
+    	close(fd);
+    	return -1;
+    }
+    
+    // stop device
+    reg = 4;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+
+    // Arm device
     reg = 1;
-    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
     reg = 0;
-    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    close(fd);
+    return 0;
 }
-  
-    
 
-
-static unsigned long long getTime(int fd, double actFrequency)
+int rpuartTrigger()
 {
-  unsigned int reg, lo, hi = 0, len;
-  unsigned long  long time;
+    int fd = rpuartOpenChecked();
+    unsigned int reg = 2;
+    ioctl(fd, RFX_TRIGUART_CLEAR_DATA_FIFO, 0);
+    reg = 8;  //reset UARTs
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 2; //Trigger
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    close(fd);
+    return 0;
+}
+
+int rpuartTriggerFd(int fd)
+{
+    unsigned int reg = 2;
+    ioctl(fd, RFX_TRIGUART_CLEAR_DATA_FIFO, 0);
+    reg = 8;  //reset UARTs
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 2; //Trigger
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    return 0;
+}
+
+int rpuartStartStore()
+{
+    int fd = rpuartOpenChecked();
+     ioctl(fd, RFX_TRIGUART_START_READ, 0);
+    return fd;
+}
+
+
+int rpuartGetSegment(int fd, int segment_size, char *ch1, char *ch2, char *ch3, char *ch4, char *ch5)
+{
+    uint32_t hi, lo, rb;
+    for(int sample = 0; sample < segment_size; sample++)
+    {
+    	do {
+    	  rb = read(fd, &lo, sizeof(int));
+    	}while(rb == 0);
+        if(rb < 0)
+ 	    return -1;
+ 	do {
+   	    rb = read(fd, &hi, sizeof(int));
+   	} while(rb == 0);
+        if(rb < 0)
+ 	    return -1;
+ 	ch1[sample] = lo;
+ 	ch2[sample] = lo >> 8;
+ 	ch3[sample] = lo >> 16;
+ 	ch4[sample] = lo >> 24;
+ 	ch5[sample] = hi;
+ 	ch1[sample] -= 128;
+ 	ch2[sample] -= 128;
+ 	ch3[sample] -= 128;
+ 	ch4[sample] -= 128;
+ 	ch5[sample] -= 128;
+     }
+    return 0;
+ }
+
+int rpuartStopStore(int fd)
+{
+  int reg;
+    // stop device
+  reg = 4;
+  ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
   reg = 0;
-  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
-  reg = 2;
-  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
-  reg = 0;
-  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
-  len = -1;
-  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_LEN, &len);
- if(len != 2)
-        printf("\n\nERRORE ERRORRISSIMO  %d\n\n\n", len);
-  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_VAL, &lo);
-  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_VAL, &hi);
+  ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
 
-  
-  
-  time = hi;
-  time = (time << 32) | lo;
-
-  time = round(1E6 * (double)time/actFrequency);
-  return time;
+  close(fd);
+  return 0;
 }
 
-static void setTime(int fd, unsigned long long timeUs, double actFreq)
-{
-  unsigned long long fpgaTime, ofsTime;
-  unsigned int reg = 0, reg1 = 0, reg2 = 0;
 
-
-  //Reset offset register
-  reg = 0; 
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_HI_REG, &reg);
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_LO_REG, &reg);
-
-  fpgaTime = getTime(fd, actFreq);
-  ofsTime = round((timeUs - fpgaTime)*actFreq / 1E6);
-  reg = ofsTime & 0x00000000FFFFFFFFL;
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_LO_REG, &reg);
-  reg = (ofsTime >> 32) & 0x00000000FFFFFFFFL;
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_HI_REG, &reg);
-  
-  ioctl(fd, RFX_STREAM_GET_TIME_OFFSET_LO_REG, &reg1);
-  ioctl(fd, RFX_STREAM_GET_TIME_OFFSET_HI_REG, &reg2);
- 
-  
-  
-}
-  
-static void updateFreq(int fd, unsigned long long *prevTimeUs, unsigned long long *prevFpgaTimeUs, double kp, double ki, double *prevFreq, double actFreq)
-{
-  struct timeval currTime;
-  unsigned long long timeUs, fpgaTimeUs;
-  double steps;
-  long long stepErr, totErr, elapsedSteps, elapsedStepsFpga;
-  double newFreq = *prevFreq;
-  gettimeofday(&currTime, NULL);
-  timeUs = (unsigned long long)currTime.tv_sec * 1000000L + currTime.tv_usec;
-  fpgaTimeUs = getTime(fd, actFreq);
-  totErr = fpgaTimeUs - timeUs;
-  
-  printf("TIME: %lld\tFPGA Time: %lld\n", timeUs, fpgaTimeUs);
-  
-  if(*prevTimeUs)  //The first time only measurements performed, no correction
-  {
-      elapsedSteps = timeUs - *prevTimeUs;
-      elapsedStepsFpga = fpgaTimeUs - *prevFpgaTimeUs;
-      stepErr = elapsedStepsFpga - elapsedSteps;
-  
-      steps = kp*(double)stepErr + ki *(double) totErr;
-      //printf("STEPS: %e\n", steps);
-      //printf("ELAPSED STEP FPGA: %llu\tELAPSET STEPS: %llu\n", elapsedStepsFpga, elapsedSteps);
-      newFreq = 1./(1./ *prevFreq + (steps * 16 * 1E-9)/(2*1E6)); //Attuale conteggio fpga
-      printf("Step Err: %lld\t Tot err: %lld\tSteps: %d\n", stepErr, totErr, (int)steps);
-      setFrequency(fd, actFreq * newFreq/1E6);
-      *prevFreq = newFreq;
-  }
-  else
-  {
-      *prevFreq = getFrequency(fd);
-  }
-  *prevTimeUs = timeUs;
-  *prevFpgaTimeUs = fpgaTimeUs;
-}
-// 
-#define UPDATE_SECS 1
-static unsigned long long prevTimeUs = 0;
-static unsigned long long prevFpgaTimeUs = 0;
-static double prevFreq = 1E6;
-
-void checkUpdateFreq(int fd)
-{
-  unsigned long long timeS;
-  struct timeval currTime;
-  double targetFreq = 1E6;  
-  static unsigned long prevTimeS = 0;
-  gettimeofday(&currTime, NULL);
-  timeS = (unsigned long long)currTime.tv_sec;
-  if((timeS - prevTimeS) > UPDATE_SECS)
-  {
-    prevTimeS = timeS;
-    updateFreq(fd, &prevTimeUs, &prevFpgaTimeUs, 6., 5.,&prevFreq, targetFreq)   ; 
-  }
-}
 
