@@ -370,21 +370,13 @@ typedef struct tag_info
 typedef struct tree_header
 {
   char version; /* Version of tree file format */
-#ifdef _AIX
-  unsigned sort_children : 1;
-  unsigned sort_members : 1;
-  unsigned versions_in_model : 1;
-  unsigned versions_in_pulse : 1;
-  unsigned readonly : 1;
-  unsigned : 3;
-#else
   unsigned char sort_children : 1; /* Sort children flag */
   unsigned char sort_members : 1;  /* Sort members  flag */
   unsigned char versions_in_model : 1;
   unsigned char versions_in_pulse : 1;
   unsigned char readonly : 1;
-  unsigned char : 3;
-#endif
+  unsigned char advanced_compression : 1;
+  unsigned char : 1;
   char fill1[6];
   int free;      /* First node in free node list (connected by PARENT/CHILD indexes
              */
@@ -640,6 +632,7 @@ typedef struct pino_database
   unsigned modified : 1;      /* Flag indicating tree structure modified */
   unsigned setup_info : 1;    /* Flag indicating setup info is being added */
   unsigned remote : 1;        /* Flag indicating tree is on remote system */
+  unsigned advanced_compression : 1;
   int stack_size;
   timecontext_t timecontext;
   int delete_list_vm;
