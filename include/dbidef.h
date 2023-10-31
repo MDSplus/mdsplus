@@ -23,7 +23,7 @@
 #define DbiVERSIONS_IN_PULSE 11    /* True if using versioning in pulse files */
 #define DbiREADONLY 12             /* True if making tree readonly */
 #define DbiDISPATCH_TABLE 13       /* Tree dispatch table */
-#define DbiADVANCED_COMPRESSION 14 /* Set to true to enable extended compression methods */
+#define DbiALTERNATE_COMPRESSION 14 /* Set to true to enable extended compression methods */
 typedef struct dbi_itm
 {
   short int buffer_length;

@@ -375,8 +375,8 @@ typedef struct tree_header
   unsigned char versions_in_model : 1;
   unsigned char versions_in_pulse : 1;
   unsigned char readonly : 1;
-  unsigned char advanced_compression : 1;
-  unsigned char : 1;
+  unsigned char alternate_compression : 1;
+  unsigned char : 2;
   char fill1[6];
   int free;      /* First node in free node list (connected by PARENT/CHILD indexes
              */
@@ -632,7 +632,8 @@ typedef struct pino_database
   unsigned modified : 1;      /* Flag indicating tree structure modified */
   unsigned setup_info : 1;    /* Flag indicating setup info is being added */
   unsigned remote : 1;        /* Flag indicating tree is on remote system */
-  unsigned advanced_compression : 1;
+  unsigned alternate_compression : 1;
+  unsigned char : 1;
   int stack_size;
   timecontext_t timecontext;
   int delete_list_vm;

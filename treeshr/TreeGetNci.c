@@ -290,7 +290,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
       break_on_no_node;
       read_nci;
       set_retlen(sizeof(nci.compression_method));
-      if (dblist->tree_info->header->advanced_compression) {
+      if (dblist->tree_info->header->alternate_compression) {
         *(unsigned char *)itm->pointer = nci.compression_method;
       } else {
         *(unsigned char *)itm->pointer = 0;
@@ -701,7 +701,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
     {
       break_on_no_node;
       read_nci;
-      if (! dblist->tree_info->header->advanced_compression) nci.compression_method = 0;
+      if (! dblist->tree_info->header->alternate_compression) nci.compression_method = 0;
       if (nci.compression_method >= NUM_COMPRESSION_METHODS)
           nci.compression_method = 0;
       string = strdup(compression_methods[nci.compression_method].name);

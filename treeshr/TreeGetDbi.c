@@ -96,10 +96,10 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       set_ret_char(db->open_readonly);
       break;
 
-    case DbiADVANCED_COMPRESSION:
+    case DbiALTERNATE_COMPRESSION:
 
       CheckOpen(db);
-      set_ret_char(db->advanced_compression);
+      set_ret_char(db->alternate_compression);
       break;
 
     case DbiINDEX:

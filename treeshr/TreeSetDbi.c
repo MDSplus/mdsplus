@@ -111,9 +111,9 @@ int _TreeSetDbi(void *dbid, DBI_ITM *dbi_itm_ptr)
           (*(unsigned int *)itm_ptr->pointer) != 0;
       dblist->modified = 1;
       break;
-    case DbiADVANCED_COMPRESSION:
+    case DbiALTERNATE_COMPRESSION:
       NEED_EDIT
-      dblist->tree_info->header->advanced_compression = 
+      dblist->tree_info->header->alternate_compression = 
                 (*(unsigned int *)itm_ptr->pointer) != 0;
       dblist->modified = 1;
       break;
