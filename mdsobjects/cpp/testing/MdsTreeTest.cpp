@@ -429,11 +429,11 @@ int main(int argc __attribute__((unused)),
     tree->setVersionsInPulse(true);
 
     // alternate compression - default False
-    TEST0(tree->alternateCompression());
+    TEST0(tree->alternateCompressionEnabled());
 
     // alternate compression - set to True
     tree->setAlternateCompression(true);
-    TEST1(tree->alternateCompression());
+    TEST1(tree->alternateCompressionEnabled());
 
     // set alternate compression back to False
     tree->setAlternateCompression(false);
