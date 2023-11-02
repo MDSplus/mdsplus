@@ -460,7 +460,7 @@ int main(int argc __attribute__((unused)),
     TEST1(node->containsVersions());
 
     // alternate compression - should be false
-    TEST0(tree->alternateCompression());
+    TEST0(tree->alternateCompressionEnabled());
 
     // TODO: version in model
   }
