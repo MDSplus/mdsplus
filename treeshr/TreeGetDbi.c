@@ -52,7 +52,7 @@ int TreeGetDbi(struct dbi_itm *itmlst)
   }
 #define set_ret_char(val)                              \
   memset(lst->pointer, 0, (size_t)lst->buffer_length); \
-  *((char *)lst->pointer) = val;
+  *((char *)lst->pointer) = val
 
 int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 {
@@ -94,12 +94,6 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 
       CheckOpen(db);
       set_ret_char(db->open_readonly);
-      break;
-
-    case DbiALTERNATE_COMPRESSION:
-
-      CheckOpen(db);
-      set_ret_char(db->alternate_compression);
       break;
 
     case DbiINDEX:
@@ -178,6 +172,18 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       CheckOpen(db);
       {
         int value = db->dispatch_table != NULL;
+        memset(lst->pointer, 0, (size_t)lst->buffer_length);
+        int length = minInt(lst->buffer_length, sizeof(int));
+        memcpy(lst->pointer, &value, (size_t)length);
+        if (lst->return_length_address)
+          *lst->return_length_address = length;
+        break;
+      }
+
+    case DbiALTERNATE_COMPRESSION:
+      CheckOpen(db);
+      {
+        int value = db->tree_info->header->alternate_compression;
         memset(lst->pointer, 0, (size_t)lst->buffer_length);
         int length = minInt(lst->buffer_length, sizeof(int));
         memcpy(lst->pointer, &value, (size_t)length);

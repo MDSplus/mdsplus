@@ -133,7 +133,7 @@ def _getNodeByAttr(self, name):
 
 class Dbi(object):
     NAME = (1, str, 12)
-    SHOTID = (2, int,  4) 
+    SHOTID = (2, int,  4)
     MODIFIED = (3, bool, 4)
     OPEN_FOR_EDIT = (4, bool, 4)
     INDEX = (5, int,  4)
@@ -1115,7 +1115,7 @@ class Tree(object):
 
     def setVersionsInPulse(self, flag):
         """Enable/Disable versions in pulse
-        @param flag: True or False. True enabled versions
+        @param flag: True or False. True enables versions
         @type flag: bool
         @rtype: None
         """
@@ -1136,16 +1136,16 @@ class Tree(object):
         return self.versions_in_pulse
 
     def setAlternateCompression(self, flag):
-        """Enable/Disable versions in pulse
-        @param flag: True or False. True enabled versions
+        """Enable/Disable alternate compression methods
+        @param flag: True or False. True enables alternate compression methods
         @type flag: bool
         @rtype: None
         """
         self.alternate_compression = bool(flag)
 
     def alternateCompressionEnabled(self):
-        """Check to see if versions in the pulse are enabled
-        @return: True if versions in pulse is enabled
+        """Check to see if alternate compression methods are enabled
+        @return: True if alternate compression methods are enabled
         @rtype: bool
         """
         return self.alternate_compression
