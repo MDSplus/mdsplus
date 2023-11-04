@@ -62,9 +62,6 @@ EXPORT int TclSetAlternateCompression(void *ctx, char **error,
     }
   }
 
-  if (STATUS_NOT_OK)
-    goto error;
-
 error:
   if (STATUS_NOT_OK)
   {
