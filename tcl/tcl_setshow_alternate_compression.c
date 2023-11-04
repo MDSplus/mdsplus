@@ -45,8 +45,10 @@ EXPORT int TclSetAlternateCompression(void *ctx, char **error,
   char * enabled = 0;
   status = cli_get_value(ctx, "ENABLED", &enabled);
   if (STATUS_OK) {
-    for (char * pch = enabled; pch && (*pch) != '\0'; ++pch) {
+    char * pch = enabled;
+    while (pch && (*pch) != '\0') {
       (*pch) = toupper(*pch);
+      ++pch;
     }
 
     if (strcmp(enabled, "ON") == 0) {
