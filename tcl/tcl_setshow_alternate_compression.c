@@ -62,7 +62,6 @@ EXPORT int TclSetAlternateCompression(void *ctx, char **error,
     }
   }
 
-error:
   if (STATUS_NOT_OK)
   {
     char *msg = MdsGetMsg(status);
