@@ -570,6 +570,11 @@ bool Tree::versionsInModelEnabled()
   return dbiTest(getCtx(), DbiVERSIONS_IN_MODEL);
 }
 
+bool Tree::alternateCompressionEnabled()
+{
+  return dbiTest(getCtx(), DbiALTERNATE_COMPRESSION);
+}
+
 bool Tree::isModified() { return dbiTest(getCtx(), DbiMODIFIED); }
 
 bool Tree::isOpenForEdit() { return dbiTest(getCtx(), DbiOPEN_FOR_EDIT); }
@@ -596,6 +601,11 @@ void Tree::setVersionsInModel(bool verEnabled)
 void Tree::setVersionsInPulse(bool verEnabled)
 {
   dbiSet(getCtx(), DbiVERSIONS_IN_PULSE, verEnabled);
+}
+
+void Tree::setAlternateCompression(bool altEnabled)
+{
+  dbiSet(getCtx(), DbiALTERNATE_COMPRESSION, altEnabled);
 }
 
 void Tree::setViewDate(char *date)
