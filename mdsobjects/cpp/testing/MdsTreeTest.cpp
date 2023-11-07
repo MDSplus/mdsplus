@@ -79,11 +79,13 @@ using namespace testing;
 //    TreeNode *getDefault();
 //    bool versionsInModelEnabled();
 //    bool versionsInPulseEnabled();
+//    bool alternateCompressionEnabled();
 //    bool isModified();
 //    bool isOpenForEdit();
 //    bool isReadOnly();
 //    void setVersionsInModel(bool enable);
 //    void setVersionsInPulse(bool enable);
+//    void setAlternateCompression(bool enable);
 //    void setViewDate(char *date);
 //    void setTimeContext(Data *start, Data *end, Data *delta);
 //    void createPulse(int shot);
@@ -425,6 +427,17 @@ int main(int argc __attribute__((unused)),
     tree = new Tree("t_tree", 1, "EDIT");
     unique_ptr<TreeNode> node = tree->addNode("versioned", "NUMERIC");
     tree->setVersionsInPulse(true);
+
+    // alternate compression - default False
+    TEST0(tree->alternateCompressionEnabled());
+
+    // alternate compression - set to True
+    tree->setAlternateCompression(true);
+    TEST1(tree->alternateCompressionEnabled());
+
+    // set alternate compression back to False
+    tree->setAlternateCompression(false);
+
     tree->write();
 
     tree = new Tree("t_tree", 1);
@@ -445,6 +458,9 @@ int main(int argc __attribute__((unused)),
     node->putData(unique_ptr<Int16>(new Int16(555)));
 
     TEST1(node->containsVersions());
+
+    // alternate compression - should be false
+    TEST0(tree->alternateCompressionEnabled());
 
     // TODO: version in model
   }
