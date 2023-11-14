@@ -4142,6 +4142,16 @@ namespace MDSplus
     ///
     void setVersionsInPulse(bool enable);
 
+    /// This function returns true if the tree allows for alternate compression
+    /// methods (gzip).  \note this can only be changed in edit mode.
+    /// 
+    bool alternateCompressionEnabled();
+
+    /// Activates alternate compression methods. See treeshr function \ref
+    /// TreeGetDbi() called with code DbiALTERNATE_COMPRESSION.
+    ///
+    void setAlternateCompression(bool enable);
+
     /// View data stored in tree from given start date when version control is
     /// enabled.
     ///
