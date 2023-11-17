@@ -144,6 +144,7 @@ class Dbi(object):
     VERSIONS_IN_MODEL = (10, bool, 4)  # settable
     VERSIONS_IN_PULSE = (11, bool, 4)  # settable
     DISPATCH_TABLE = (13, bool, 4)
+    ALTERNATE_COMPRESSION = (14, bool, 4) #settable
 
     class _dbi_item(_C.Structure):
         """ Ctype structure class for making calls into _TreeGetDbi() """
@@ -652,6 +653,8 @@ class Tree(object):
         Dbi.VERSIONS_IN_PULSE, "Support versioning of data in pulse.", True)
     dispatch_table = Dbi._dbiProp(
         Dbi.DISPATCH_TABLE,   "True if dispatch table is built")
+    alternate_compression = Dbi._dbiProp(
+        Dbi.ALTERNATE_COMPRESSION,  "Set to True to enable alternate compression methods", False)
 
     @property
     def default(self):
@@ -1112,7 +1115,7 @@ class Tree(object):
 
     def setVersionsInPulse(self, flag):
         """Enable/Disable versions in pulse
-        @param flag: True or False. True enabled versions
+        @param flag: True or False. True enables versions
         @type flag: bool
         @rtype: None
         """
@@ -1131,6 +1134,21 @@ class Tree(object):
         @rtype: bool
         """
         return self.versions_in_pulse
+
+    def setAlternateCompression(self, flag):
+        """Enable/Disable alternate compression methods
+        @param flag: True or False. True enables alternate compression methods
+        @type flag: bool
+        @rtype: None
+        """
+        self.alternate_compression = bool(flag)
+
+    def alternateCompressionEnabled(self):
+        """Check to see if alternate compression methods are enabled
+        @return: True if alternate compression methods are enabled
+        @rtype: bool
+        """
+        return self.alternate_compression
 
     def write(self):
         """Write out edited tree.
