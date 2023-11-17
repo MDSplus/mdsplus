@@ -5,22 +5,20 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <rfx_triguart.h>
+#include <rfx_stream.h>
 #include <signal.h>
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>
 
-#define COUNT_SIZE 200000
+#define COUNT_SIZE 2000000
 int checkUpdateFreq(int fd);
-void alignFreq(int iterations);
-void alignClock();
-void synchClock();
+void alignFreq(int fd, int iterations);
+void alignClock(int fd);
 #ifdef CXX
 extern "C" {
 #endif
-void alignFreq(int iterations);
-void syncClock();
+void alignFreq(int fd, int iterations);
 #ifdef CXX
 }
 #endif
@@ -58,25 +56,25 @@ static void setFrequency(int fd, double reqFreq)
     stepLo = (unsigned int)(stepR & 0xFFFFFFFF);
     stepHi = (unsigned int)((stepR >> 32) & 0xFFFFFFFF);
     printf("K1: %d, K2: %d, C: %u\n", K1, K2, C);
-    ioctl(fd, RFX_TRIGUART_SET_K1_REG, &K1);
+    ioctl(fd, RFX_STREAM_SET_K1_REG, &K1);
 
-    ioctl(fd, RFX_TRIGUART_SET_K2_REG, &K2);
-   ioctl(fd, RFX_TRIGUART_GET_K1_REG, &K1);
+    ioctl(fd, RFX_STREAM_SET_K2_REG, &K2);
+   ioctl(fd, RFX_STREAM_GET_K1_REG, &K1);
 
-    ioctl(fd, RFX_TRIGUART_GET_K2_REG, &K2);
+    ioctl(fd, RFX_STREAM_GET_K2_REG, &K2);
     printf("K1: %d, K2: %d\n", K1, K2);
 
-    ioctl(fd, RFX_TRIGUART_SET_STEP_LO_REG, &stepLo);
+    ioctl(fd, RFX_STREAM_SET_STEP_LO_REG, &stepLo);
   
-    ioctl(fd, RFX_TRIGUART_SET_STEP_HI_REG, &stepHi);
+    ioctl(fd, RFX_STREAM_SET_STEP_HI_REG, &stepHi);
  
     reg = 0;
-    ioctl(fd, RFX_TRIGUART_SET_CMD_REG, &reg);
+    ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
     usleep(1000);
     reg = 1;
-    ioctl(fd, RFX_TRIGUART_SET_CMD_REG, &reg);
+    ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
     reg = 0;
-    ioctl(fd, RFX_TRIGUART_SET_CMD_REG, &reg);
+    ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
 }
   
     
@@ -87,20 +85,20 @@ static unsigned long long getTime(int fd, double actFrequency)
   unsigned int reg, lo, hi = 0, rb, len;
   unsigned long  long time;
   static unsigned long prevCount = 0;
-  //ioctl(fd, RFX_TRIGUART_CLEAR_TIME_FIFO, 0);
+  ioctl(fd, RFX_STREAM_CLEAR_TIMES_FIFO, 0);
   reg = 0;
-  ioctl(fd, RFX_TRIGUART_SET_CMD_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
   reg = 2;
-  ioctl(fd, RFX_TRIGUART_SET_CMD_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
   reg = 0;
-  ioctl(fd, RFX_TRIGUART_SET_CMD_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
   len = -1;
   usleep(10);
-  ioctl(fd, RFX_TRIGUART_GET_TIME_FIFO_LEN, &len);
+  ioctl(fd, RFX_STREAM_GET_TIMES_FIFO_LEN, &len);
  if(len != 2)
         printf("\n\nERRORE ERRORRISSIMO %d\n\n\n", len);
-  ioctl(fd, RFX_TRIGUART_GET_TIME_FIFO_VAL, &lo);
-  ioctl(fd, RFX_TRIGUART_GET_TIME_FIFO_VAL, &hi);
+  ioctl(fd, RFX_STREAM_GET_TIMES_FIFO_VAL, &lo);
+  ioctl(fd, RFX_STREAM_GET_TIMES_FIFO_VAL, &hi);
 
   
   
@@ -120,18 +118,18 @@ static void setTime(int fd, unsigned long long timeUs, double actFreq)
 
   //Reset offset register
   reg = 0; 
-  ioctl(fd, RFX_TRIGUART_SET_TIME_OFS_HI_REG, &reg);
-  ioctl(fd, RFX_TRIGUART_SET_TIME_OFS_LO_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_HI_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_LO_REG, &reg);
 
   fpgaTime = getTime(fd, actFreq);
   ofsTime = round((timeUs - fpgaTime)*actFreq / 1E6);
   reg = ofsTime & 0x00000000FFFFFFFFL;
-  ioctl(fd, RFX_TRIGUART_SET_TIME_OFS_LO_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_LO_REG, &reg);
   reg = (ofsTime >> 32) & 0x00000000FFFFFFFFL;
-  ioctl(fd, RFX_TRIGUART_SET_TIME_OFS_HI_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_HI_REG, &reg);
   
-  ioctl(fd, RFX_TRIGUART_GET_TIME_OFS_LO_REG, &reg1);
-  ioctl(fd, RFX_TRIGUART_GET_TIME_OFS_HI_REG, &reg2);
+  ioctl(fd, RFX_STREAM_GET_TIME_OFS_LO_REG, &reg1);
+  ioctl(fd, RFX_STREAM_GET_TIME_OFS_HI_REG, &reg2);
  
   
   
@@ -172,14 +170,11 @@ static int  updateFreq(int fd, unsigned long long *prevTimeUs, unsigned long lon
 static int openChecked()
 {
     int fd;
-    printf("apro...\n");
-    fd = open("/dev/rfx_triguart", O_RDWR | O_SYNC);
-    printf("aperto: %d\n", fd);
+    fd = open("/dev/rfx_stream", O_RDWR | O_SYNC);
     while(fd < 0)
     {
-    	printf("retrying open device....\b");
         sleep(1);
-        fd = open("/dev/rfx_triguart", O_RDWR | O_SYNC);
+        fd = open("/dev/rfx_stream", O_RDWR | O_SYNC);
     }
     return fd;
 }
@@ -190,13 +185,13 @@ static int openChecked()
     double K, step, periodFPGA, period;
     unsigned int Kr, C, stepLo, stepHi, reg, K1, K2;
     unsigned long long stepR;
-    ioctl(fd, RFX_TRIGUART_GET_K1_REG, &K1);
+    ioctl(fd, RFX_STREAM_GET_K1_REG, &K1);
 
-    ioctl(fd, RFX_TRIGUART_GET_K2_REG, &K2);
+    ioctl(fd, RFX_STREAM_GET_K2_REG, &K2);
 
-    ioctl(fd, RFX_TRIGUART_GET_STEP_LO_REG, &stepLo);
+    ioctl(fd, RFX_STREAM_GET_STEP_LO_REG, &stepLo);
   
-    ioctl(fd, RFX_TRIGUART_GET_STEP_HI_REG, &stepHi);
+    ioctl(fd, RFX_STREAM_GET_STEP_HI_REG, &stepHi);
     
     stepR = stepHi;
     stepR = (stepR << 32)|stepLo;
@@ -217,54 +212,44 @@ static unsigned long long prevFpgaTimeUs = 0;
 int main(int argc, char *argv[])
 {
   int i;    
+  int fd;
   volatile unsigned int reg;
   
   unsigned long long step, timeUs, fpgaTimeUs;
   struct timeval currTime;
   unsigned long long prevTimeUs;
   unsigned long long prevFpgaTimeUs; 
+  double prevFreq ;
   double targetFreq = 1E6;
-
-  alignFreq(60);
-  alignClock();
-  syncClock();
-    
-  return 0;
-}
-
-void syncClockTrhead(int fd, int *stopPtr)
-{
-  while(!(*stopPtr))
-  {
-    checkUpdateFreq(fd);
-    sleep(1);
-  }
-}
-
-void syncClock()
-{
+  
+  fd = openChecked(); 
+  printf("FD: %d\n", fd);
+  printf("ALIGN FREQUENCY\n");
+  prevFreq = 1E6;
+  prevTimeUs = 0;    
+  prevFpgaTimeUs = 0; 
+  alignFreq(fd, 60);
+  printf("ALIGNED\n");
+  alignClock(fd);
+  //close(fd);
   while(1)
   {
-    int fd = openChecked(); 
     checkUpdateFreq(fd);
     sleep(1);
-    close(fd);
   }
+  
+    return 0;
 }
-
-
 
 static double prevTimeS = 0;
 #define UPDATE_SECS 1
 
-void alignFreq(int iterations)
+void alignFreq(int fd, int iterations)
 {
   int i;
   double targetFreq = 1E6;
   struct timeval currTime;
   unsigned long long timeUs, fpgaTimeUs;
-  int fd = openChecked(); 
-
   setFrequency(fd, targetFreq);
   gettimeofday(&currTime, NULL);
   timeUs = (unsigned long long)currTime.tv_sec * 1000000L + currTime.tv_usec;
@@ -275,13 +260,11 @@ void alignFreq(int iterations)
   prevFreq = 1E6;
   prevFpgaTimeUs = timeUs;
   prevTimeUs = 0;
-  close(fd);
   for(i = 0; i < iterations; i++) 
   {
     sleep(1);
-    fd = openChecked(); 	
+
     updateFreq(fd, &prevTimeUs, &prevFpgaTimeUs, 10., 0,&prevFreq, targetFreq); 
-    close(fd);
   }
 }
   
@@ -293,6 +276,7 @@ int checkUpdateFreq(int fd)
   struct timeval currTime;
   double targetFreq = 1E6;  
   int status;
+  //int fd = openChecked(); 
   gettimeofday(&currTime, NULL);
   timeS = (unsigned long long)currTime.tv_sec;
   if((timeS - prevTimeS) > UPDATE_SECS)
@@ -303,18 +287,17 @@ int checkUpdateFreq(int fd)
     printf("******PREV FREQ: %f   %f\n", prevFreq, getFrequency(fd));
     if(status) return status;
   }
+ // close(fd);
   return 0;
 }
 
-void alignClock()
+void alignClock(int fd)
 {
   unsigned long long timeUs;
   double targetFreq = 1E6;  
   struct timeval currTime;
-  int fd = openChecked();
   gettimeofday(&currTime, NULL);
   timeUs = (unsigned long long)currTime.tv_sec * 1000000L + currTime.tv_usec;
   setTime(fd, timeUs, targetFreq);
   prevFpgaTimeUs = prevTimeUs = 0;
-  close(fd);
 }
