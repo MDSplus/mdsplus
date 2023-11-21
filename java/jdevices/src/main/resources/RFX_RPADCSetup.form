@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="localhost:8000"/>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="RedPitaya ADC"/>
     <Property name="deviceType" type="java.lang.String" value="RFX_RPADC"/>
     <Property name="height" type="int" value="300"/>
@@ -140,11 +140,12 @@
             <Component class="DeviceChoice" name="deviceChoice4">
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="4">
+                  <StringArray count="5">
                     <StringItem index="0" value="INTERNAL"/>
                     <StringItem index="1" value="TRIG_EXTERNAL"/>
                     <StringItem index="2" value="EXTERNAL"/>
-                    <StringItem index="3" value="HIGHWAY"/>
+                    <StringItem index="3" value="TRIG_SYNC"/>
+                    <StringItem index="4" value="SYNC"/>
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
