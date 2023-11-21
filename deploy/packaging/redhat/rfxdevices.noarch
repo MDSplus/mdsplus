@@ -123,6 +123,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPADC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPADC_SERIAL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RFX_RPDAC.py
+./usr/local/mdsplus/pydevices/RfxDevices/RFX_TRIGUART.py
 ./usr/local/mdsplus/pydevices/RfxDevices/RGA.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIG_SNAPSHOT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SIS3820.py
