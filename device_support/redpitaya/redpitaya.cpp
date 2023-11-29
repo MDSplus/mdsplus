@@ -27,7 +27,13 @@ extern "C"
   void rpadcStop(int fd);
   void openTree(char *name, int shot, MDSplus::Tree **treePtr);
   void setTriggerTime(unsigned long long triggerTime);
-}
+  int rpuartInit(int hi_div, int lo_div);
+  int rpuartGetSegment(int fd, int segment_size, char *c1, char *c2, char *c3, char *c4, char *c5);
+  int rpuartTrigger();
+  int rpuartTriggerFd(int fd);
+  int rpuartStartStore();
+  int rpuartStopStore(int fd);
+ }
 
 
 enum rpadc_mode
@@ -796,4 +802,151 @@ void openTree(char *name, int shot, MDSplus::Tree **treePtr)
     *treePtr = 0;
   }
 }
+
+
+
+////////////////////rfx_triguart related stuff
+
+#undef DEVICE_NAME
+#undef MODULE_NAME
+#include <rfx_triguart.h>
+
+
+static int rpuartOpenChecked()
+{
+    int fd;
+    fd = open("/dev/rfx_triguart", O_RDWR | O_SYNC);
+    while(fd < 0)
+    {
+    	printf("retrying open device....\b");
+        sleep(1);
+        fd = open("/dev/rfx_triguart", O_RDWR | O_SYNC);
+    }
+    return fd;
+}
+ 
+
+
+int rpuartInit(int hi_div, int lo_div)
+{
+    struct rpadc_configuration inConfig, outConfig;
+    int fd = rpuartOpenChecked();
+    int reg;  
+    ioctl(fd, RFX_TRIGUART_SET_DIV_HI_REG, &hi_div);
+    ioctl(fd, RFX_TRIGUART_SET_DIV_LO_REG, &lo_div);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_GET_DIV_HI_REG, &reg);
+    if(reg != hi_div)
+    {
+    	printf("INTERNAL ERROR cannot set hi_div\n");
+    	close(fd);
+    	return -1;
+    }
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_GET_DIV_LO_REG, &reg);
+    if(reg != lo_div)
+    {
+    	printf("INTERNAL ERROR cannot set lo_div\n");
+    	close(fd);
+    	return -1;
+    }
+    
+    // stop device
+    reg = 4;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+
+    // Arm device
+    reg = 1;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    close(fd);
+    return 0;
+}
+
+int rpuartTrigger()
+{
+    int fd = rpuartOpenChecked();
+    unsigned int reg = 2;
+    ioctl(fd, RFX_TRIGUART_CLEAR_DATA_FIFO, 0);
+    reg = 8;  //reset UARTs
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 2; //Trigger
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    close(fd);
+    return 0;
+}
+
+int rpuartTriggerFd(int fd)
+{
+    unsigned int reg = 2;
+    ioctl(fd, RFX_TRIGUART_CLEAR_DATA_FIFO, 0);
+    reg = 8;  //reset UARTs
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 2; //Trigger
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    reg = 0;
+    ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+    return 0;
+}
+
+int rpuartStartStore()
+{
+    int fd = rpuartOpenChecked();
+     ioctl(fd, RFX_TRIGUART_START_READ, 0);
+    return fd;
+}
+
+
+int rpuartGetSegment(int fd, int segment_size, char *ch1, char *ch2, char *ch3, char *ch4, char *ch5)
+{
+    uint32_t hi, lo, rb;
+    for(int sample = 0; sample < segment_size; sample++)
+    {
+    	do {
+    	  rb = read(fd, &lo, sizeof(int));
+    	}while(rb == 0);
+        if(rb < 0)
+ 	    return -1;
+ 	do {
+   	    rb = read(fd, &hi, sizeof(int));
+   	} while(rb == 0);
+        if(rb < 0)
+ 	    return -1;
+ 	ch1[sample] = lo;
+ 	ch2[sample] = lo >> 8;
+ 	ch3[sample] = lo >> 16;
+ 	ch4[sample] = lo >> 24;
+ 	ch5[sample] = hi;
+ 	ch1[sample] -= 128;
+ 	ch2[sample] -= 128;
+ 	ch3[sample] -= 128;
+ 	ch4[sample] -= 128;
+ 	ch5[sample] -= 128;
+     }
+    return 0;
+ }
+
+int rpuartStopStore(int fd)
+{
+  int reg;
+    // stop device
+  reg = 4;
+  ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+  reg = 0;
+  ioctl(fd, RFX_TRIGUART_SET_CMD_REG_1, &reg);
+
+  close(fd);
+  return 0;
+}
+
+
 
