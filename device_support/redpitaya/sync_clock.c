@@ -69,12 +69,12 @@ static void setFrequency(int fd, double reqFreq)
     ioctl(fd, RFX_STREAM_SET_STEP_HI_REG, &stepHi);
  
     reg = 0;
-    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+    ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
     usleep(1000);
     reg = 1;
-    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+    ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
     reg = 0;
-    ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+    ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
 }
   
     
@@ -85,20 +85,20 @@ static unsigned long long getTime(int fd, double actFrequency)
   unsigned int reg, lo, hi = 0, rb, len;
   unsigned long  long time;
   static unsigned long prevCount = 0;
-  ioctl(fd, RFX_STREAM_CLEAR_SYNC_FIFO, 0);
+  ioctl(fd, RFX_STREAM_CLEAR_TIMES_FIFO, 0);
   reg = 0;
-  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
   reg = 2;
-  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
   reg = 0;
-  ioctl(fd, RFX_STREAM_SET_TIME_COMMAND_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_CMD_REG, &reg);
   len = -1;
   usleep(10);
-  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_LEN, &len);
+  ioctl(fd, RFX_STREAM_GET_TIMES_FIFO_LEN, &len);
  if(len != 2)
         printf("\n\nERRORE ERRORRISSIMO %d\n\n\n", len);
-  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_VAL, &lo);
-  ioctl(fd, RFX_STREAM_GET_SYNC_FIFO_VAL, &hi);
+  ioctl(fd, RFX_STREAM_GET_TIMES_FIFO_VAL, &lo);
+  ioctl(fd, RFX_STREAM_GET_TIMES_FIFO_VAL, &hi);
 
   
   
@@ -118,18 +118,18 @@ static void setTime(int fd, unsigned long long timeUs, double actFreq)
 
   //Reset offset register
   reg = 0; 
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_HI_REG, &reg);
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_LO_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_HI_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_LO_REG, &reg);
 
   fpgaTime = getTime(fd, actFreq);
   ofsTime = round((timeUs - fpgaTime)*actFreq / 1E6);
   reg = ofsTime & 0x00000000FFFFFFFFL;
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_LO_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_LO_REG, &reg);
   reg = (ofsTime >> 32) & 0x00000000FFFFFFFFL;
-  ioctl(fd, RFX_STREAM_SET_TIME_OFFSET_HI_REG, &reg);
+  ioctl(fd, RFX_STREAM_SET_TIME_OFS_HI_REG, &reg);
   
-  ioctl(fd, RFX_STREAM_GET_TIME_OFFSET_LO_REG, &reg1);
-  ioctl(fd, RFX_STREAM_GET_TIME_OFFSET_HI_REG, &reg2);
+  ioctl(fd, RFX_STREAM_GET_TIME_OFS_LO_REG, &reg1);
+  ioctl(fd, RFX_STREAM_GET_TIME_OFS_HI_REG, &reg2);
  
   
   

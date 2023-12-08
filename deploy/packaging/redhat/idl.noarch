@@ -29,6 +29,7 @@
 ./usr/local/mdsplus/idl/cw_wvedit.pro
 ./usr/local/mdsplus/idl/dsql.pro
 ./usr/local/mdsplus/idl/evaluate.pro
+./usr/local/mdsplus/idl/mds_keyword_set.pro
 ./usr/local/mdsplus/idl/mdscheckarg.pro
 ./usr/local/mdsplus/idl/mdsclose.pro
 ./usr/local/mdsplus/idl/mdsconnect.pro
@@ -40,7 +41,6 @@
 ./usr/local/mdsplus/idl/mdsgetmsg.pro
 ./usr/local/mdsplus/idl/mdsidlimage.pro
 ./usr/local/mdsplus/idl/mdsisclient.pro
-./usr/local/mdsplus/idl/mds_keyword_set.pro
 ./usr/local/mdsplus/idl/mdslogin.pro
 ./usr/local/mdsplus/idl/mdsopen.pro
 ./usr/local/mdsplus/idl/mdsput.pro

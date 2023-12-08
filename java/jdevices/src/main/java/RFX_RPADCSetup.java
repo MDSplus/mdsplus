@@ -62,7 +62,7 @@ public class RFX_RPADCSetup extends DeviceSetup
         jPanel5 = new javax.swing.JPanel();
         deviceField5 = new DeviceField();
 
-        setDeviceProvider("localhost:8000");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("RedPitaya ADC");
         setDeviceType("RFX_RPADC");
         setHeight(300);
@@ -116,7 +116,7 @@ public class RFX_RPADCSetup extends DeviceSetup
 
         jPanel1.add(jPanel4);
 
-        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "TRIG_EXTERNAL", "EXTERNAL", "HIGHWAY"});
+        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "TRIG_EXTERNAL", "EXTERNAL", "TRIG_SYNC", "SYNC"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Clock Mode:");
         deviceChoice4.setOffsetNid(14);
@@ -178,7 +178,7 @@ public class RFX_RPADCSetup extends DeviceSetup
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Offset A (raw):");
         deviceField13.setNumCols(6);
-        deviceField13.setOffsetNid(35);
+        deviceField13.setOffsetNid(21);
         jPanel9.add(deviceField13);
 
         deviceField14.setIdentifier("");

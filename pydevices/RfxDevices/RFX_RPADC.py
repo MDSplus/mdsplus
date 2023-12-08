@@ -199,17 +199,21 @@ class RFX_RPADC(Device):
                         frequency = 125E6/decimation
                     elif self.clock_mode.data() == 'SYNC':
                         frequency = 1E6 / decimation
-                        frequency1 = 1E6
+                        frequency1 = 1E6 / decimation
                     elif self.clock_mode.data() == 'TRIG_EXTERNAL':
                         period = Data.execute(
                             'slope_of($)', self.ext_clock)
                         frequency1 = 1./period
                         frequency = 125E6 / decimation
-                    else:  #EXTERNAL
+                    elif self.clock_mode.data() == 'EXTERNAL':
                         period = Data.execute(
                             'slope_of($)', self.ext_clock)
                         frequency1 = 1./period
                         frequency = frequency1 / decimation
+                    else:
+                    	print('Invalid clock mode')
+                    	raise mdsExceptions.TclFAILED_ESSENTIAL
+                    
                 except:
                     print('Cannot resolve external clock')
                     raise mdsExceptions.TclFAILED_ESSENTIAL

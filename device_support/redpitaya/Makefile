@@ -1,7 +1,7 @@
 
 CC=g++
 
-CFLAGS =  -fPIC  -o2  -Wall -DLINUX -I${MDSPLUS_DIR}/include -I. -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-function
+CFLAGS =  -std=c++11 -fPIC  -o2  -Wall -DLINUX -I${MDSPLUS_DIR}/include -I. -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-function
 LDFLAGS =  -L${MDSPLUS_DIR}/lib  -lpthread -lMdsObjectsCppShr 
 
 
