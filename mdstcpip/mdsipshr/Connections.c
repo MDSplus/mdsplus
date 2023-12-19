@@ -558,6 +558,10 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     // reply to client //
     status = SendMdsMsgC(c, msg, 0);
     free(msg);
+    // SsINTERNAL has low order bit set so is erroneously treated as OK.
+    if (status == SsINTERNAL) {
+      status = MDSplusERROR;
+    } 
     if (STATUS_OK)
     {
       if (usr)
