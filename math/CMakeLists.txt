@@ -35,17 +35,9 @@ add_library(
     zmul.f
 )
 
-if(TARGET BLAS::BLAS)
+if(NO_SYSTEM_BLAS)
 
-    target_link_libraries(
-        MdsMath
-        PUBLIC
-            BLAS::BLAS
-    )
-
-else()
-
-    message(WARNING "Unable to find blas, using local copy")
+    message(STATUS "Using local copy of blas")
 
     target_sources(
         MdsMath
@@ -58,6 +50,14 @@ else()
             blas/dgeco.f
             blas/sgeco.f
             blas/zgeco.f
+    )
+
+else()
+
+    target_link_libraries(
+        MdsMath
+        PUBLIC
+            BLAS::BLAS
     )
 
 endif()

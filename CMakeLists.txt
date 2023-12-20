@@ -357,6 +357,12 @@ mdsplus_option(
     "Location of libxml2 library"
 )
 
+mdsplus_option(
+    NO_SYSTEM_BLAS BOOL
+    "Use the local copy of blas in math/blas/ instead of a system version"
+    DEFAULT OFF
+)
+
 # TODO: doxygen dot, man, rtf, xml, chm, chi, html
 # replaces --enable/disable-doxygen-doc/dot/man/rtf/xml/chm/chi/html
 mdsplus_option(
@@ -589,8 +595,13 @@ set(LibXml2_ROOT_DIR "${LIBXML2_DIR}")
 mark_as_advanced(LibXml2_ROOT_DIR)
 find_package(LibXml2 REQUIRED)
 
-# Finds the Basic Linear Algebra Subprograms fortran functions
-find_package(BLAS)
+if(NOT NO_SYSTEM_BLAS)
+    # Finds the Basic Linear Algebra Subprograms fortran functions
+    find_package(BLAS)
+    if(NOT TARGET BLAS::BLAS)
+        message(SEND_ERROR "Unable to find BLAS, if no package is available for your system, use -DNO_SYSTEM_BLAS=ON")
+    endif()
+endif()
 
 # Finds the LZMA compression library
 find_package(LibLZMA)

@@ -151,6 +151,22 @@ def build_command_line(args):
                 build_args.append(f'--{name}={value}')
     return build_args
 
+def parse_cmake_cache(filename):
+    settings = {}
+    try:
+        with open(filename, 'rt') as f:
+            for line in f.readlines():
+                if line.startswith('//'):
+                    continue
+                try:
+                    key, value = line.strip().split('=')
+                    name, type = key.split(':')
+                    settings[name] = value
+                except:
+                    continue
+    except FileNotFoundError:
+        pass
+    return settings
 
 ###
 ### Parse arguments from the command line and deploy/os/{os}.opts, if --os= is set
@@ -198,14 +214,6 @@ if args['valgrind'] == '':
 
 if args['sanitize'] == '':
     args['sanitize'] = None
-
-if args['valgrind'] is not None:
-    cmake_args.append('-DENABLE_VALGRIND=ON')
-
-    if args['valgrind'] != True:
-        cmake_args.append(f"-DVALGRIND_TOOLS={args['valgrind']}")
-else:
-    cmake_args.append('-DENABLE_VALGRIND=OFF')
 
 if args['source'] is None:
     args['source'] = root_dir
@@ -416,15 +424,12 @@ else:
         for build in build_list:
 
             # TODO: Improve
-            current_generator = None
             cmake_cache_filename = os.path.join(build['args']['workspace'], 'CMakeCache.txt')
-            if os.path.exists(cmake_cache_filename):
-                lines = open(cmake_cache_filename).readlines()
-                for line in lines:
-                    if line.startswith('CMAKE_GENERATOR'):
-                        _, value = line.strip().split('=', maxsplit=1)
-                        current_generator = value
-                        break
+            cmake_cache = parse_cmake_cache(cmake_cache_filename)
+
+            current_generator = None
+            if 'CMAKE_GENERATOR' in cmake_cache:
+                current_generator = cmake_cache['CMAKE_GENERATOR']
                 
             if build['args']['generator'] is None:
                 build['args']['generator'] = current_generator
@@ -444,6 +449,15 @@ else:
                 build_command = f"ninja -j{build['args']['parallel']}"
 
             build['cmake_args'] = [ '-G', build['args']['generator'] ] + build['cmake_args']
+
+            if build['args']['valgrind'] is not None:
+                build['cmake_args'].append('-DENABLE_VALGRIND=ON')
+
+                if args['valgrind'] != True:
+                    build['cmake_args'].append(f"-DVALGRIND_TOOLS={args['valgrind']}")
+            else:
+                build['cmake_args'].append('-DENABLE_VALGRIND=OFF')
+
 
             print()
             print(f"Combined build arguments for {build['name']}:")
