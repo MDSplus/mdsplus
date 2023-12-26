@@ -2,17 +2,14 @@
 // Include files to use the PYLON API.
 
 #include <pylon/PylonIncludes.h>
-#include <pylon/gige/PylonGigEIncludes.h>
 #include <GenApi/IEnumerationT.h>
 
-// Settings for using Basler GigE cameras.
-#include <pylon/gige/BaslerGigEInstantCamera.h>
-typedef Pylon::CBaslerGigEInstantCamera Camera_t;
-typedef Pylon::CBaslerGigEImageEventHandler
-    ImageEventHandler_t; // Or use Camera_t::ImageEventHandler_t
-typedef Pylon::CBaslerGigEGrabResultPtr
-    GrabResultPtr_t; // Or use Camera_t::GrabResultPtr_t
-using namespace Basler_GigECameraParams;
+#include <pylon/BaslerUniversalInstantCamera.h>    // 20231030 fede: Universal interface for both USB and GIGE cameras
+typedef Pylon::CBaslerUniversalInstantCamera Camera_t;// 20231030 
+
+using namespace Basler_UniversalCameraParams;  //20231108
+using namespace Basler_UniversalStreamParams;  //20231130 error grabbing gige cameras
+
 
 using namespace Pylon;   // Namespace for using pylon objects.
 using namespace GenApi;  // Namespace for using GenApi objects.
@@ -143,14 +140,14 @@ class BASLER_ACA : public Counted<BASLER_ACA>
 		    printf("%s EVENT Trigger Reset!!!!\n", baslerACA->ipAddress);
 		    baslerACA->eventTrigger = 0;
 		}
-		printf("%s RECEIVED EVENT %s AT %s WITH DATA %s Event Trig %d (%d,%d,%d)\n", baslerACA->ipAddress, name, date, str, baslerACA->eventTrigger);
+		printf("%s RECEIVED EVENT %s AT %s WITH DATA %s Event Trig %d \n", baslerACA->ipAddress, name, date, str, baslerACA->eventTrigger);
 	    }
      };
 
 private:
 
   IPylonDevice *pDevice;	  //device handle
-  Camera_t *pCamera;              //camera handle
+  Camera_t *pCamera;            //camera handle 
   char ipAddress[64];
   TriggerMdsEvent *trigEvent;
 
