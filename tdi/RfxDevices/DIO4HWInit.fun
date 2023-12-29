@@ -1,8 +1,7 @@
 public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _synch_event)
 {
-
 	private _DIO4_CLOCK_SOURCE_TIMING_HIGHWAY =	0x3;
-	private _DIO4_CLOCK_SOURCE_INTERNAL	=	0x0;
+	private _DIO4_CLOCK_SOURCE_INTERNAL	= 0x0;
 	private _DIO4_CLOCK_SOURCE_IO =	0x1;
 	private _DIO4_TH_ASYNCHRONOUS  =  0;
 	private _DIO4_TH_SYNCHRONOUS   =  1;
@@ -25,6 +24,12 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
     private _DIO4_CLOCK_SOURCE_OK = 0x1;
     private _DIO4_CLOCK_SOURCE_NOK = 0x0;
+
+
+    private _CLOCK_SOURCE_INTERNAL = 0; 
+    private _CLOCK_SOURCE_HIGHWAY  = 1; 
+    private _CLOCK_SOURCE_EXTERNAL = 2; 
+
 
 	/* private _NO_EVENT = -1; */
 
@@ -75,19 +80,62 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 
+/******************************************************************************/
+/*
+** The external clock is routed via the PLL to synchronize
+** the timing channel clock to this external clock.
+** The timing channel will count with steps of 100ns.
+**
+** This is not a normal feature and has to be 'hacked'
+** in the following way. Configuring the PLL registers is
+** also needed later on. Because of this synchronizing to an
+** external clock is only discribed in application note.
+** RESET clk2pll feature if it was set on a previous initialization
+*/
+
+	_dwTemp = long(0);
+	_status = DIO4->DIO4_Tst_ReadRegister(val(_handle), val(long(0x008)), ref(_dwTemp));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error reading register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error reading register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+
+write(*,' Reg 0x008 ',  _dwTemp);
+_dwTemp = _dwTemp & ~long(0x800); /* Disable 'hidden' clk2pll feature */
+write(*, ' Reg 0x008 ', _dwTemp);
+
+	_status = DIO4->DIO4_Tst_WriteRegister(val(_handle), val(long(0x008)), val(long(_dwTemp)));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error writing register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error writing register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+/******************************************************************************/
+
 
 
 /* Set clock functions */
-
-	_clock_source = byte(_DIO4_CLOCK_SOURCE_INTERNAL);
-/*
-	_out = byte(_DIO4_TH_OUTPUT_DISABLE); TT
-*/
-	_out = byte(_DIO4_TH_OUTPUT_ENABLE); 
-
-	if(_ext_clock == 1)
+	if( _ext_clock == _CLOCK_SOURCE_INTERNAL || _ext_clock == _CLOCK_SOURCE_EXTERNAL )
 	{
-	    write(*, 'HIGHWAY');
+         write(*, 'Clock source INTERNAL');
+ 	    _clock_source = byte(_DIO4_CLOCK_SOURCE_INTERNAL);
+/*
+	    _out = byte(_DIO4_TH_OUTPUT_DISABLE); TT
+*/
+	    _out = byte(_DIO4_TH_OUTPUT_ENABLE); 
+	}
+	    
+
+	if( _ext_clock == _CLOCK_SOURCE_HIGHWAY )
+	{
+	    write(*, 'Clock source HIGHWAY');
 		_clock_source = byte(_DIO4_CLOCK_SOURCE_TIMING_HIGHWAY);
 	    _out = byte(_DIO4_TH_OUTPUT_DISABLE);/*TT*/
 	}
@@ -115,6 +163,50 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		return(0);
 	}
 
+/******************************************************************************/
+/*
+** To reconfigure the PLL to lock on a external clock an
+** internal divider has to changed.
+**
+** - Read current register value
+** - Clear divider in lower 14 bits (default value is 0x00C8 (= 200)
+** - External clock has to be divided down to 5kHz using an integer
+** - divide value. For 2MHz this is 400 (= 0x190)
+** - Write back new value
+** RESET divider to default value if it was set on a previous initialization
+*/
+
+
+	_dwTemp = long(0);
+	_status = DIO4->DIO4_Tst_ReadRegister(val(_handle), val(long(0x3E0)), ref(_dwTemp));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error reading register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error reading register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+
+write(*,' Reg 0x3E0 ',  ( long(_dwTemp) & 0xFFFFC000U));
+write(*,' Reg 0x3E0 ',  (long(_dwTemp)) );
+
+_dwTemp = _dwTemp & long(0xFFFFC000U);
+_dwTemp = _dwTemp | long(0x000000C8U);/*Set default value to dovider*/
+
+	_status = DIO4->DIO4_Tst_WriteRegister(val(_handle), val(long(0x3E0)), val(long(_dwTemp)));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error writing register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error writing register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+
+/******************************************************************************/
+
+
     wait(1);
 
     /*
@@ -133,6 +225,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	        DIO4->DIO4_Close(val(_handle));
 		    return(0);
         }
+
         if (_bOK == _DIO4_CLOCK_SOURCE_OK) {
             /*
             ** Clock is present and PLL has locked

@@ -522,7 +522,7 @@ public class WaveInterface
 				w_error[curr_wave] = null;
 				try
 				{
-					signals[curr_wave] = GetSignal(curr_wave, -Double.MAX_VALUE, Double.MAX_VALUE);
+					signals[curr_wave] = GetSignal(curr_wave, xmin, xmax);
 					evaluated[curr_wave] = true;
 				}
 				catch (final Exception exc)

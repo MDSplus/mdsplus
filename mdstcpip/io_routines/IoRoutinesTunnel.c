@@ -59,7 +59,8 @@ static int io_disconnect(Connection *c)
         usleep(100000);
       if (!i)
         kill(p_pid, SIGTERM);
-      exit(0);
+      /* Do not call any functions registered with atexit or onexit */
+      _Exit(0);
     }
     if (pid < 0)
       kill(p->pid, SIGTERM);

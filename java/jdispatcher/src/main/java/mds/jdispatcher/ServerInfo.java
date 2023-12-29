@@ -60,6 +60,57 @@ public class ServerInfo
 		}
 	}
 
+	private static void showtermServer(ServerInfo si) throws NoSuchFieldException
+	{
+		try
+		{
+			if (si.server != null)
+				return;
+			if (si.getShowtermScript() != null)
+			{
+				// final Process p =
+				Runtime.getRuntime().exec(si.getShowtermScript());
+				// p could be logged here
+			}
+                        else
+                        {
+                                final String msg = "For server class "+ si.getClassName() +" the showterm_script property value is undefined in properties file";
+                                System.out.println(msg);
+                                throw new NoSuchFieldException(msg);
+                        }
+		}
+		catch (final Exception exc) 
+		{
+			System.out.println("For server class "+ si.getClassName() + " exception in show terminal " + exc);
+		}
+	}
+
+	private static void showlogServer(ServerInfo si) throws NoSuchFieldException
+	{
+		try
+		{
+			if (si.server != null)
+				return;
+			if (si.getShowlogScript() != null)
+			{
+				// final Process p =
+				Runtime.getRuntime().exec(si.getShowlogScript());
+				// p could be logged here
+			}
+                        else
+                        {
+                               final String msg = "For server class "+ si.getClassName() +" showlog_script property value is undefined in properties file";
+                               System.out.println(msg);
+                               throw new NoSuchFieldException(msg);
+                        }
+		}
+		catch (final IOException exc)
+		{
+			System.out.println("For server class "+ si.getClassName() + " exception in show log file " + exc);
+		}
+	}
+
+
 	private final String className;
 	private final String address;
 	private final String subTree;
@@ -67,6 +118,8 @@ public class ServerInfo
 	private final int watchdogPort;
 	private final String startScript;
 	private final String stopScript;
+	private final String showtermScript;
+	private final String showlogScript;
 	private MdsMonitorEvent monitorEvent;
 	private int pos;
 	boolean killed = false;
@@ -74,7 +127,7 @@ public class ServerInfo
 	private boolean active;
 
 	public ServerInfo(String className, String address, String subTree, boolean isJava, int watchdogPort,
-			String startScript, String stopScript)
+			String startScript, String stopScript, String showtermScript, String showlogScript)
 	{
 		this.active = false;
 		this.className = className;
@@ -84,6 +137,8 @@ public class ServerInfo
 		this.watchdogPort = watchdogPort;
 		this.startScript = startScript;
 		this.stopScript = stopScript;
+		this.showtermScript = showtermScript;
+		this.showlogScript = showlogScript;
 	}
 
 	public MdsMonitorEvent getAction()
@@ -139,6 +194,12 @@ public class ServerInfo
 	public String getStopScript()
 	{ return stopScript; }
 
+	public String getShowtermScript()
+	{ return showtermScript; }
+
+	public String getShowlogScript()
+	{ return showlogScript; }
+
 	public String getSubTree()
 	{ return subTree; }
 
@@ -174,6 +235,17 @@ public class ServerInfo
 		stopServer(this);
 	}
 
+	public void showtermServer() throws NoSuchFieldException
+	{
+		showtermServer(this);
+	}
+
+	public void showlogServer() throws NoSuchFieldException
+	{
+		showlogServer(this);
+	}
+
+
 	public void stopServer(ServerInfo si)
 	{
 		try
@@ -200,6 +272,7 @@ public class ServerInfo
 	{
 		return "Class :" + className + "\n" + "Address : " + address + "\n" + "Sub Tree : " + subTree + "\n"
 				+ "Java Server : " + isJava + "\n" + "Watchdog port  : " + watchdogPort + "\n" + "Start Script : "
-				+ startScript + "\n" + "Stop  Script : " + stopScript + "\n";
+				+ startScript + "\n" + "Stop  Script : " + stopScript + "\n"
+				+ "Open Term Script : " + showtermScript + "\n" + "Open Log  Script : " + showlogScript + "\n";
 	}
 }// End ServerInfo class

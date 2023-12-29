@@ -209,6 +209,9 @@ OPTIONS
     --disable-java
        Do not compile java programs (passes --disable-java to configure)
 
+    --disable-labview
+       Do not compile LabVIEW programs (passes --without-labview to configure)
+
     --docker-srcdir=dir
        Specify the directory to use inside the docker containers used to build
        the code. If not specified the docker containers will use the
@@ -386,6 +389,9 @@ parsecmd() {
 	    --disable-java)
 		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --disable-java"
 		;;
+	    --disable-labview)
+		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --without-labview"
+		;;
 	    --docker-srcdir=*)
 		eval "DOCKER_SRCDIR=${i#*=}"
 		;;
@@ -417,7 +423,7 @@ fi
 #
 if [ -r "${SRCDIR}/deploy/os/${OS}.opts" ]
 then
-    os_opts=$(cat ${SRCDIR}/deploy/os/${OS}.opts)
+    os_opts=$(grep -v "#" ${SRCDIR}/deploy/os/${OS}.opts)
 fi
 #
 # See if this build was triggered by a trigger job and use

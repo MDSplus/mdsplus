@@ -57,12 +57,11 @@ class DEMOSTREAM(Device):
 
             while not self.stopped:
                 status = self.deviceLib.acquireChunk(
-                    c_char_p(self.addr), byref(rawChan), c_int(self.NUM_CHUNK_SAMPLES))
+                    c_char_p(self.addr.encode()), byref(rawChan), c_int(self.NUM_CHUNK_SAMPLES))
                 if status == -1:
                     print ('Acquisition Failed')
                     return
 
-                Event.stream(0, 'demostream_chan', Float32(self.currTime), Float32(rawChan[0]))
                 dataArr = Int16Array(rawChan)
                 startTime = Float64(self.currTime)
                 endTime = Float64(
@@ -113,7 +112,7 @@ class DEMOSTREAM(Device):
         self.worker.configure(deviceLib, addr, period, self.sig, self.NUM_CHUNK_SAMPLES, trigTime)
         self.saveWorker()
         
-        status = deviceLib.initializeStream(c_char_p(addr), c_float(frequency), c_float(trigTime))
+        status = deviceLib.initializeStream(c_char_p(addr.encode()), c_float(frequency), c_float(trigTime))
         self.worker.start()
         return 1
 
@@ -139,13 +138,15 @@ class DEMOSTREAM(Device):
             print ('Missing Address in device')
             return 0
 
-        clockDict = {1000: 1, 5000: 2, 10000: 3, 50000: 4, 100000: 5}
         try:
-            clockFreq = self.clock_freq.data()
-            clockMode = clockDict[clockFreq]
+            frequency = self.clock_freq.data()
         except:
-            print ('Missing or invalid clock frequency')
+            print ('Missing clock frequency')
+            return 0
+        try:
+            trigTime = self.trig_source.data()
+        except:
+            print ('Missing trigger time')
             return 0
 
-        deviceLib.initialize(c_char_p(addr), c_int(clockMode), c_int(0))
         return 1

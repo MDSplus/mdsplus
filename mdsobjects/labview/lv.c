@@ -33,6 +33,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *   Josh Stillerman 10/19/12
  */
+
+// Prevents errors when using Clang on macOS with LabVIEW
+#ifdef __APPLE__
+#ifndef TARGET_OS_IPHONE
+#define TARGET_OS_IPHONE 0
+#endif
+#endif
+
 #include <extcode.h>
 #include <fundtypes.h>
 #include <libroutines.h>

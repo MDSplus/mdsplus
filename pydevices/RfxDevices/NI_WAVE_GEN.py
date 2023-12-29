@@ -54,6 +54,31 @@ class NI_WAVE_GEN(Device):
 
     AO_DAC_POLARITY_UNIPOLAR = c_int(0)
     AO_DAC_POLARITY_BIPOLAR = c_int(1)
+    
+    
+    XSERIES_AO_EXTERNAL_GATE_DISABLED = c_int(0)
+    XSERIES_AO_POLARITY_RISING_EDGE  = c_int(0)
+    XSERIES_AO_POLARITY_FALLING_EDGE  = c_int(1)
+    XSERIES_AO_START_TRIGGER_SW_PULSE = c_int(0)
+    XSERIES_AO_START_TRIGGER_PFI0 = c_int(1)
+    XSERIES_AO_START_TRIGGER_PFI1 = c_int(2)
+    XSERIES_AO_START_TRIGGER_PFI2 = c_int(3)
+    XSERIES_AO_START_TRIGGER_PFI3 = c_int(4)
+    XSERIES_OUTTIMER_UPDATE_INTERVAL_COUNTER_TB3 = c_int(0) #100MHz
+    XSERIES_OUTTIMER_UPDATE_INTERVAL_COUNTER_PFI0 = c_int(1)
+    XSERIES_OUTTIMER_UPDATE_INTERVAL_COUNTER_PFI1 = c_int(2)
+    XSERIES_OUTTIMER_UPDATE_INTERVAL_COUNTER_PFI2 = c_int(3)
+    XSERIES_OUTTIMER_UPDATE_INTERVAL_COUNTER_PFI3 = c_int(4)
+    XSERIES_OUTTIMER_POLARITY_RISING_EDGE = c_int(0)
+    XSERIES_OUTTIMER_POLARITY_FALLING_EDGE = c_int(1)
+    XSERIES_OUTPUT_RANGE_10V = c_int(0)
+    XSERIES_OUTPUT_RANGE_5V = c_int(1)
+    XSERIES_START_TRIGGER = c_int(2)
+    XSERIES_AO_UPDATE_COUNTER_UI_TC = c_int(0)
+    XSERIES_AO_UPDATE_COUNTER_PFI0 = c_int(1)
+    XSERIES_AO_UPDATE_COUNTER_PFI1 = c_int(2)
+    XSERIES_AO_UPDATE_COUNTER_PFI2 = c_int(3)
+    XSERIES_AO_UPDATE_COUNTER_PFI3 = c_int(4)
 
     # File descriptor
     #ao_fd = 0
@@ -64,11 +89,11 @@ class NI_WAVE_GEN(Device):
     waveAOChFds = {}
     updateEvents = {}
     niLib6259 = None
-    niLib6368 = None
+    niLibXseries = None
     niInterfaceLib = None
 
     MIN_FREQ = 0.01
-    MAX_FREQ = 1000.
+    MAX_FREQ = 100000.
 
 
 #Dictionaries and maps
@@ -97,6 +122,8 @@ class NI_WAVE_GEN(Device):
     def restoreInfo(self, openFlag):
         if NI_WAVE_GEN.niLib6259 is None:
             NI_WAVE_GEN.niLib6259 = CDLL("libpxi6259.so")
+        if NI_WAVE_GEN.niLibXseries is None:
+            NI_WAVE_GEN.niLibXseries = CDLL("libnixseries.so")
         if NI_WAVE_GEN.niInterfaceLib is None:
             NI_WAVE_GEN.niInterfaceLib = CDLL("libNiInterface.so")
 
@@ -126,9 +153,9 @@ class NI_WAVE_GEN(Device):
                         boardId)+'.ao'
                     self.ao_fd = os.open(fileName, os.O_RDWR | os.O_NONBLOCK)
                     print('Open fileName : ', fileName)
-                except IOError(error, message):
-                    print (error, repr(message))
-                    print (errno.errorcode[error])
+                except IOError as e:
+                    print( 'IOError : %s'%(str(e)) )
+                    return NI_WAVE_GEN.ERROR
                 except Exception as exc:
                     Data.execute('DevLogErr($1,$2)', self.getNid(
                     ), 'Cannot open device ' + fileName + " " + str(exc))
@@ -143,7 +170,7 @@ class NI_WAVE_GEN(Device):
             self.ao_fd = -1
         except:
             pass
-            #print('CLOSE INFO: HANDLE NOT FOUND')
+            print('CLOSE INFO: HANDLE NOT FOUND')
         return 1
 
 # Update Event Management
@@ -190,26 +217,35 @@ class NI_WAVE_GEN(Device):
             print("Event %s occurred at %s with data: %s " %
                   (str(self.event), str(self.qtime.date), str(self.raw)))
             jcmd = self.raw.deserialize()
-            print (jcmd)
+            #print (jcmd)
 
             cmdEventName = self.device.cmd_event.data()
+            boardType = self.device.board_type.data()
 
             if jcmd["command"] == 'pause':
                 try:
-                    self.device.__stopGeneration__()
+                    boardType = self.device.board_type.data()
+                    wavePoint = self.device.wave_point.data()
+                    self.device.__initialize_module__(boardType, wavePoint, True)
+                    self.device.__stopGeneration__()                    
                 except Exception as ex:
+                    time.sleep(1)
                     Event.setevent(cmdEventName+'_REPLY',
                                    'Cannot pause waveform generation : '+str(ex))
+                    return
             elif jcmd["command"] == 'resume':
                 try:
-                    self.device.configChannels(False)
+                    boardType = self.device.board_type.data()
+                    wavePoint = self.device.wave_point.data()
+                    self.device.__initialize_module__(boardType, wavePoint, False)
                     self.device.__startGeneration__()
                 except Exception as ex:
+                    time.sleep(1)
                     Event.setevent(cmdEventName+'_REPLY',
                                    'Cannot resume waveform generation : '+str(ex))
+                    return
             elif jcmd["command"] == 'update':
                 boardId = self.device.board_id.data()
-                boardType = self.device.board_type.data()
                 wavePoint = self.device.wave_point.data()
                 gain = self.device.gain.data()
 
@@ -230,7 +266,20 @@ class NI_WAVE_GEN(Device):
                 numPeriod = (np.asarray(chFreqAr) / minFreq + 0.5).astype(int)
 
                 sampleRate = wavePoint * minFreq
-                periodDivisor = int(20000000 / sampleRate)
+                
+                if boardType == 'NI6259':
+                    factor = 20000000
+                else:
+                    factor = 100000000
+                    
+                periodDivisor = int(factor / sampleRate)
+                """
+                while periodDivisor < 20 :
+                    wavePoint -= 10
+                    sampleRate = wavePoint * minFreq
+                    periodDivisor = int(factor / sampleRate)
+                """
+                    
                 print ('==update periodDivisor ', periodDivisor)
                 print ('==update Num Period ', chFreqAr, numPeriod, minFreq)
 
@@ -244,12 +293,14 @@ class NI_WAVE_GEN(Device):
                     self.device.saveInfo()
 
                     aoConfig = c_void_p(0)
-                    NI_WAVE_GEN.niInterfaceLib.pxi6259_create_ao_conf_ptr(
-                        byref(aoConfig))
-
-                    #  initialize AO configuration
-                    self.device.__aoConfiguration__(
-                        aoConfig, self.device.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
+                    if boardType == 'NI6259':
+                    	NI_WAVE_GEN.niInterfaceLib.pxi6259_create_ao_conf_ptr(byref(aoConfig))
+                    	#initialize AO configuration
+                    	self.device.__aoConfiguration_6259__(aoConfig, self.device.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
+                    else :
+                        NI_WAVE_GEN.niInterfaceLib.nixseries_create_ao_conf_ptr(byref(aoConfig), c_int(wavePoint) )
+                        #initialize AO configuration
+                        self.device.__aoConfiguration_xseries__(aoConfig, self.device.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
 
                     for ch in range(4):
                         self.device.configChannel(boardType, boardId, ch, False, wavePoint, chMaxAr[ch], chMinAr[ch], chTypeAr[ch].strip(
@@ -258,22 +309,26 @@ class NI_WAVE_GEN(Device):
                     self.device.__startGeneration__()
 
                 except Exception as ex:
+                    time.sleep(1)
                     Event.setevent(
                         cmdEventName+'_REPLY', 'Cannot update waveforms generation : '+str(ex))
-
+                    return
+            
+            print('Generate REPLY event ' + cmdEventName+'_REPLY')
+            time.sleep(1)
             Event.setevent(cmdEventName+'_REPLY', msg)
             return
 
         def stop(self):
             self.stopReq = True
-            NI6259AI.niInterfaceLib.setStopAcqFlag(self.stopAcq)
+            NI_WAVE_GEN.niInterfaceLib.setStopAcqFlag(self.stopAcq)
 
         def hasError(self):
             return (self.error != self.ACQ_NOERROR)
 
         def closeTree(self):
             # On first test dosen't work
-            NI6259AI.niInterfaceLib.closeTree(self.treePtr)
+            NI_WAVE_GEN.niInterfaceLib.closeTree(self.treePtr)
             self.device.debugPrint('CLOSE TREE')
 
 # End Inner class AsynchStore
@@ -356,18 +411,24 @@ class NI_WAVE_GEN(Device):
             ), "Invalid waveform type -%s- for channel %d " % (chType, ch))
             zero_arr = np.zeros(wavePoint)
             scaledWriteArray = (c_float * len(zero_arr))(*zero_arr)
+            
+        print(scaledWriteArray[100:110], wavePoint)
 
-        retval = NI_WAVE_GEN.niLib6259.pxi6259_write_ao(
-            aoChFd, scaledWriteArray, c_uint(wavePoint))
-        if retval != wavePoint:
-            errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
-            Data.execute('DevLogErr($1,$2)', self.getNid(
-            ), "Failed while writing! Written samples %d : %s (%d)" % (retval, os.strerror(errno), errno))
-            raise mdsExceptions.DevIO_STUCK
+        if boardType == 'NI6259' :
+            retval = NI_WAVE_GEN.niLib6259.pxi6259_write_ao(aoChFd, scaledWriteArray, c_uint(wavePoint))
+        else :
+            retval = NI_WAVE_GEN.niLibXseries.xseries_write_ao(aoChFd, scaledWriteArray, c_uint(wavePoint))
+
+        if retval < 0 :
+        	errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+        	Data.execute('DevLogErr($1,$2)', self.getNid(
+        	), "Failed while writing! Written samples %d : %s (%d)" % (retval, os.strerror(errno), errno))
+        	raise mdsExceptions.DevIO_STUCK
 
         os.close(aoChFd)
 
-    def __checkChanneParam__(self, ch, gain):
+
+    def __checkChannelParams__(self, ch, gain):
 
         chAOX = []
         chAOY = []
@@ -460,12 +521,86 @@ class NI_WAVE_GEN(Device):
         print ('Num Period ', freq, numPeriod, minFreq)
 
         for ch in range(4):
-            self.__checkChanneParam__(ch, gain)
+            self.__checkChannelParams__(ch, gain)
 
             self.configChannel(boardType, boardId, ch, reset, wavePoint, self.chMax,
                                self.chMin, self.chType, self.chAOX, self.chAOY, numPeriod[ch])
 
-    def __aoConfiguration__(self, aoConfig, polarity, wavePoint, periodDivisor):
+
+    def __aoConfiguration_xseries__(self, aoConfig, polarity, wavePoint, periodDivisor):
+        
+        
+        print( '__aoConfiguration_xseries__', wavePoint, periodDivisor)
+
+        # Disable external gating of the sample clock 
+        if NI_WAVE_GEN.niLibXseries.xseries_set_ao_external_gate( aoConfig,
+      														  self.XSERIES_AO_EXTERNAL_GATE_DISABLED, # No external pause signal
+      														  self.XSERIES_AO_POLARITY_RISING_EDGE,   # Don't care
+      													      c_int(0)) !=  0  :                                    # Disable
+
+              Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         "Failed to set AO waveform generation!")
+              raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
+
+
+
+  		#Program the START1 signal (start trigger) to assert from a software rising edge 
+        if NI_WAVE_GEN.niLibXseries.xseries_set_ao_start_trigger( aoConfig,
+                                                                 self.XSERIES_AO_START_TRIGGER_SW_PULSE, # Set the line to software-driven
+                                                                 self.XSERIES_AO_POLARITY_RISING_EDGE,   # Make line active on rising...
+                                                                 c_int(1)) !=  0 :                                #   ...edge (not high level)
+
+
+              Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         "Error setting start trigger!")
+              raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
+
+
+        #Program the Update source 
+        if NI_WAVE_GEN.niLibXseries.xseries_set_ao_update_counter( aoConfig,
+                                                                  self.XSERIES_AO_UPDATE_COUNTER_UI_TC,  # Derive the clock line from the Update
+                                                                                                    # Interval Terminal Count
+                                                                  self.XSERIES_AO_POLARITY_RISING_EDGE) !=  0 : # Make the line active on rising edge
+              Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         "Error setting update counter!")
+              raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
+
+  		#Program the Update Interval counter */
+        print('periodDivisor', periodDivisor)
+        if NI_WAVE_GEN.niLibXseries.xseries_set_ao_update_interval_counter( aoConfig,
+      																		self.XSERIES_OUTTIMER_UPDATE_INTERVAL_COUNTER_TB3, # Source the Update
+                                                    																	  # Interval from the
+                                                    																	  # internal timebase
+      																		self.XSERIES_OUTTIMER_POLARITY_RISING_EDGE,        # Make the line active on rising
+                                                    																	  # edge
+      																		c_uint(periodDivisor),                        # Number of clock intervals between successive
+                                                    																	  # updates
+      																		c_int(2)											  # Number of clock intervals after the start trigger before the first
+                                                    																	  # update
+                                                                           ) !=  0 :
+              Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         "Error setting update interval counter!")
+              raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
+        
+        for ch in range(4):
+            if NI_WAVE_GEN.niLibXseries.xseries_add_ao_channel(aoConfig, c_int(ch), self.XSERIES_OUTPUT_RANGE_10V) !=  0 :
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Cannot add AI channel %d to configuration!'%(ch))
+                raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
+
+  		# load configuration to the device 
+        #if NI_WAVE_GEN.niLibXseries.xseries_load_ao_conf(c_int(self.ao_fd), aoConfig) != 0 :
+        if NI_WAVE_GEN.niInterfaceLib.nixseries_load_ao_conf_ptr(c_int(self.ao_fd), aoConfig) != 0 :
+            errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+            Data.execute('DevLogErr($1,$2)', self.getNid(
+            ), 'Failed to load configuration! (%d) %s' % (errno, os.strerror(errno)))
+            raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
+
+        # wait for the AO devices 
+        time.sleep(1)
+
+
+    def __aoConfiguration_6259__(self, aoConfig, polarity, wavePoint, periodDivisor):
 
         # enable waveform generation (Retrasmit mode)
         if NI_WAVE_GEN.niLib6259.pxi6259_set_ao_waveform_generation(aoConfig, c_ubyte(1)):
@@ -508,40 +643,149 @@ class NI_WAVE_GEN(Device):
 
         time.sleep(1)
 
+
+    def __initialize_module__(self, boardType, wavePoint, reset):
+
+        # configure AO update clock
+        freq = []
+        for ch in range(4):
+            if getattr(self, 'ao_%d' % (ch+1)).isOn():
+                try:
+                    fr = getattr(self, 'ao_%d_freq' % (ch+1)).data()
+                    freq.append(fr)
+                except Exception as ex:
+                    Data.execute('DevLogErr($1,$2)', self.getNid(
+                    ), 'Invalid channel %d waveform frequency : %s' % (ch, str(ex)))
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
+                if fr < (self.MIN_FREQ - 1e-6) or fr > (self.MAX_FREQ + 1e-4):
+                    Data.execute('DevLogErr($1,$2)', self.getNid(
+                    ), 'Invalid channel %d waveform frequency %f out of limit (%0.2f:%0.2f)' % (ch, fr, self.MIN_FREQ, self.MAX_FREQ))
+                    raise mdsExceptions.DevBAD_FREQ
+
+        minFreq = min(freq)
+        print ("Frequency ", freq)
+        print ((np.asarray(freq)*10).astype(int) % int(minFreq*10))
+        
+        if sum((np.asarray(freq)*10).astype(int) % int(minFreq*10)):
+            Data.execute('DevLogErr($1,$2)', self.getNid(
+            ), 'Minimum waveform frequency must be multiple of the other wavefoms frequency')
+            raise mdsExceptions.DevBAD_FREQ
+
+        """     
+        self.numPeriod = (np.asarray(freq) / minFreq + 0.5).astype(int)
+        print 'Num Period ',self.numPeriod
+        """
+
+        wavePoint = 4000
+
+        """
+        currWavePoint = wavePoint
+        ch = 0
+        for c in range(0, 4):
+            if getattr(self, 'ao_%d' % (c+1)).isOn():
+                fr = freq[ch]
+                if freq[ch] < 1.:
+                    fr = freq[ch] * 10.
+                if wavePoint % freq[ch]:
+                    wp = int(int(float(wavePoint) / fr) * fr + fr)
+                    if wp % 2:
+                        wp = wp + fr
+                    if wp > currWavePoint:
+                        currWavePoint = wp
+
+                print (currWavePoint, wavePoint, freq[ch])
+                
+                #if ( wavePoint / freq[ch] ) < 10. :
+                #   Data.execute('DevLogErr($1,$2)', self.getNid(), 'Waveform %d has less than 10 points for period'%(ch))
+                #   raise mdsExceptions.TclFAILED_ESSENTIAL;
+                
+                ch = ch + 1
+
+        if currWavePoint != wavePoint:
+            wavePoint = currWavePoint
+            self.wave_point.putData(wavePoint)
+        """
+        
+        sampleRate = wavePoint * minFreq
+        
+        """
+        if boardType == 'NI6259':
+            periodDivisor = int(20000000 / sampleRate)
+        else:
+            periodDivisor = int(100000000 / sampleRate)
+
+        """    
+        if boardType == 'NI6259':
+            factor = 20000000
+        else:
+            factor = 100000000
+
+        sampleInPeriod = int( factor / minFreq )
+        numPeriod = int(wavePoint / sampleInPeriod)
+        
+        print('sampleInPeriod', sampleInPeriod)
+        print('numPeriod', numPeriod)
+        print('minFreq', minFreq)
+
+        periodDivisor = int(factor / sampleRate)
+
+        while periodDivisor < 30 :
+            wavePoint -= 10
+            sampleRate = wavePoint * minFreq
+            periodDivisor = factor / sampleRate 
+            #print('periodDivisor ',  periodDivisor, wavePoint)       
+    
+        
+        print ('periodDivisor ', periodDivisor)
+        print ('wavePoint ', wavePoint)
+
+        self.wave_point.putData(wavePoint)
+
+        aoConfig = c_void_p(0)
+        if boardType == 'NI6259':
+            NI_WAVE_GEN.niInterfaceLib.pxi6259_create_ao_conf_ptr(byref(aoConfig))
+        else :
+            if NI_WAVE_GEN.niLibXseries.xseries_stop_ao(c_int(self.ao_fd)) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                            "Failed to stop AO!: %s" % (os.strerror(errno)))
+                
+            if NI_WAVE_GEN.niLibXseries.xseries_reset_ao(c_int(self.ao_fd)) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                            "Failed to reset AO!: %s" % (os.strerror(errno)))
+            
+            NI_WAVE_GEN.niInterfaceLib.nixseries_create_ao_conf_ptr(byref(aoConfig), c_int(wavePoint) )
+
+        #  initialize AO configuration
+        if boardType == 'NI6259':
+            self.__aoConfiguration_6259__(aoConfig, self.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
+        else:
+            self.__aoConfiguration_xseries__(aoConfig, self.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
+
+        self.configChannels(reset)
+
+        if boardType == 'NI6259':
+            NI_WAVE_GEN.niInterfaceLib.pxi6259_free_ao_conf_ptr(aoConfig)
+        else:
+            NI_WAVE_GEN.niInterfaceLib.nixseries_free_ai_conf_ptr(aoConfig)
+
+
     def init(self):
 
-        print ('================= NI Wavefor Generation Init ===============')
-
-        if self.board_type.data() == 'NI6368':
-            Data.execute('DevLogErr($1,$2)', self.getNid(),
-                         'Device NI6368 not yet supported')
-            raise mdsExceptions.DevINV_SETUP
+        print ('================= NI Waveform Generation Init ===============')
 
         if self.restoreInfo(True) == NI_WAVE_GEN.ERROR:
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Cannot open device')
             raise mdsExceptions.DevINV_SETUP
-
-        # Stop the segment
-        """ 
-	NI_WAVE_GEN.niLib6259.xseries_stop_ao(c_int(self.ao_fd))
-
-	retval = NI_WAVE_GEN.niLib6259.xseries_reset_ao(self.ao_fd);
-        if retval :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetiing device')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
         
-	retval = NI_WAVE_GEN.niLib6259.pxi6259_stop_ao(c_int(self.ao_fd))
-        if retval :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetting device')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-
-
-	retval = NI_WAVE_GEN.niLib6259.pxi6259_reset_ao(c_int(self.ao_fd));
-        if retval :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetting device')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
-        """
+        try:
+            boardType = self.board_type.data()
+        except Exception as ex:
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         'Board Type parameter undefined')
+            raise mdsExceptions.DevBAD_PARAMETER
 
         try:
             wavePoint = self.wave_point.data()
@@ -549,7 +793,10 @@ class NI_WAVE_GEN(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Invalid waveform points number')
             raise mdsExceptions.DevBAD_PARAMETER
+        
+        self.__initialize_module__(boardType, wavePoint, False)
 
+        """
         # configure AO update clock
         freq = []
         for ch in range(4):
@@ -575,10 +822,10 @@ class NI_WAVE_GEN(Device):
             ), 'Minimum waveform frequency must be multiple of the other wavefoms frequency')
             raise mdsExceptions.DevBAD_FREQ
 
-        """     
-        self.numPeriod = (np.asarray(freq) / minFreq + 0.5).astype(int)
-        print 'Num Period ',self.numPeriod
-        """
+             
+        #self.numPeriod = (np.asarray(freq) / minFreq + 0.5).astype(int)
+        #print 'Num Period ',self.numPeriod
+        
 
         currWavePoint = wavePoint
         ch = 0
@@ -595,11 +842,11 @@ class NI_WAVE_GEN(Device):
                         currWavePoint = wp
 
                 print (currWavePoint, wavePoint, freq[ch])
-                """
-               if ( wavePoint / freq[ch] ) < 10. :
-                   Data.execute('DevLogErr($1,$2)', self.getNid(), 'Waveform %d has less than 10 points for period'%(ch))
-                   raise mdsExceptions.TclFAILED_ESSENTIAL;
-               """
+                
+               #if ( wavePoint / freq[ch] ) < 10. :
+               #    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Waveform %d has less than 10 points for period'%(ch))
+               #    raise mdsExceptions.TclFAILED_ESSENTIAL;
+               
                 ch = ch + 1
 
         if currWavePoint != wavePoint:
@@ -607,34 +854,48 @@ class NI_WAVE_GEN(Device):
             self.wave_point.putData(wavePoint)
 
         sampleRate = wavePoint * minFreq
-        periodDivisor = int(20000000 / sampleRate)
+        if boardType == 'NI6259':
+            periodDivisor = int(20000000 / sampleRate)
+        else:
+            periodDivisor = int(100000000 / sampleRate)
+
         print ('periodDivisor ', periodDivisor)
 
         print ('OK 1')
 
         aoConfig = c_void_p(0)
-        NI_WAVE_GEN.niInterfaceLib.pxi6259_create_ao_conf_ptr(byref(aoConfig))
+        if boardType == 'NI6259':
+		    NI_WAVE_GEN.niInterfaceLib.pxi6259_create_ao_conf_ptr(byref(aoConfig))
+        else :
+            if NI_WAVE_GEN.niLibXseries.xseries_stop_ao(c_int(self.ao_fd)) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                            "Failed to stop AO!: %s" % (os.strerror(errno)))
+                
+            if NI_WAVE_GEN.niLibXseries.xseries_reset_ao(c_int(self.ao_fd)) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                            "Failed to reset AO!: %s" % (os.strerror(errno)))
+            
+            NI_WAVE_GEN.niInterfaceLib.nixseries_create_ao_conf_ptr(byref(aoConfig), c_int(wavePoint) )
 
         print ('OK 2')
 
         #  initialize AO configuration
-        self.__aoConfiguration__(
-            aoConfig, self.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
-
-        print ('OK 3')
+        if boardType == 'NI6259':
+            self.__aoConfiguration_6259__(aoConfig, self.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
+        else:
+            self.__aoConfiguration_xseries__(aoConfig, self.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
 
         self.configChannels(False)
 
-        print ('OK 4')
-
-        NI_WAVE_GEN.niInterfaceLib.pxi6259_free_ao_conf_ptr(aoConfig)
-
-        print ('OK 5')
-
+        if boardType == 'NI6259':
+            NI_WAVE_GEN.niInterfaceLib.pxi6259_free_ao_conf_ptr(aoConfig)
+        else:
+            NI_WAVE_GEN.niInterfaceLib.nixseries_free_ai_conf_ptr(aoConfig)
+        """
+        
         self.saveInfo()
-
-        print ('OK 6')
-
         return NI_WAVE_GEN.NO_ERROR
 
 
@@ -645,18 +906,32 @@ class NI_WAVE_GEN(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Module not initialized')
             raise mdsExceptions.DevINV_SETUP
+        
+        boardType = self.board_type.data()
 
         # start AO segment (signal generation)
-        if NI_WAVE_GEN.niLib6259.pxi6259_start_ao(c_int(self.ao_fd)) != 0:
-            errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
-            Data.execute('DevLogErr($1,$2)', self.getNid(),
-                         "Failed to start AO!: %s" % (os.strerror(errno)))
-            raise mdsExceptions.DevIO_STUCK
+        if boardType == 'NI6259' :
+            if NI_WAVE_GEN.niLib6259.pxi6259_start_ao(c_int(self.ao_fd)) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+		                     "Failed to start AO!: %s" % (os.strerror(errno)))
+                raise mdsExceptions.DevIO_STUCK
+        else:
+            if NI_WAVE_GEN.niLibXseries.xseries_start_ao(c_int(self.ao_fd)) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+		                     "Failed to start AO!: %s" % (os.strerror(errno)))
+  			# pulse start trigger
+            if NI_WAVE_GEN.niLibXseries.xseries_pulse_ao(self.ao_fd, self.XSERIES_START_TRIGGER) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+		                     "Failed to software trigger: %s" % (os.strerror(errno)))
+                raise mdsExceptions.DevIO_STUCK
 
         return NI_WAVE_GEN.NO_ERROR
 
     def start_gen(self):
-        print ("================ NI Waveform Geneation Start Store =============")
+        print ("================ NI Waveform Generation Start =============")
 
         self.__startGeneration__()
 
@@ -668,20 +943,47 @@ class NI_WAVE_GEN(Device):
             raise mdsExceptions.DevBAD_PARAMETER
 
         self.updEvent = self.AsynchUpdateGen(cmdEventName)
-        self.updEvent.configure(self)
+        self.updEvent.configure(self.copy())
 
         self.saveUpdateEvent()
 
         return NI_WAVE_GEN.NO_ERROR
 
 # Stop generation
-    # private method
-    def __stopGeneration__(self):
 
+    # private method
+    
+    def __stopGeneration__(self):
+        
         if self.restoreInfo(False) != NI_WAVE_GEN.HANDLE_FOUND:
             Data.execute('DevLogErr($1,$2)', self.getNid(),
                          'Module not initialized')
             raise mdsExceptions.DevINV_SETUP
+
+        boardType = self.board_type.data()
+
+        if boardType == 'NI6259' :
+            self.__stopGeneration_6259__()
+        else:
+            self.__stopGeneration_xseries__()
+            if NI_WAVE_GEN.niLibXseries.xseries_reset_ao(c_int(self.ao_fd)) != 0:
+                errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+                Data.execute('DevLogErr($1,$2)', self.getNid(),
+                            "Failed to reset AO!: %s" % (os.strerror(errno)))
+    
+    
+    def __stopGeneration_xseries__(self):
+    
+        # stop AO segment
+        if NI_WAVE_GEN.niLibXseries.xseries_stop_ao(c_int(self.ao_fd)) != 0:
+            errno = NI_WAVE_GEN.niInterfaceLib.getErrno()
+            Data.execute('DevLogErr($1,$2)', self.getNid(),
+                         "Failed to stop AO!: %s" % (os.strerror(errno)))
+            raise mdsExceptions.DevIO_STUCK
+
+
+    # private method
+    def __stopGeneration_6259__(self):
 
         # stop AO segment
         if NI_WAVE_GEN.niLib6259.pxi6259_stop_ao(c_int(self.ao_fd)) != 0:
@@ -690,7 +992,7 @@ class NI_WAVE_GEN(Device):
                          "Failed to stop AO!: %s" % (os.strerror(errno)))
             raise mdsExceptions.DevIO_STUCK
 
-        self.configChannels(True)
+        self.configChannels(True) #Configure output to generate 0V
 
         # start AO segment (signal generation)
         if NI_WAVE_GEN.niLib6259.pxi6259_start_ao(self.ao_fd):
@@ -706,14 +1008,22 @@ class NI_WAVE_GEN(Device):
             raise mdsExceptions.DevIO_STUCK
 
     def stop_gen(self):
-        print ("================ NI Waveform Geneation Stop Store =============")
-
-        self.__stopGeneration__()
-
+        print ("================ NI Waveform Generation Stop =============")
+        
         if self.restoreInfo(False) != NI_WAVE_GEN.HANDLE_FOUND:
             Data.execute('DevLogErr($1,$2)', self.getNid(),
-                         'Wavefor generation not initialized')
+                         'Module not initialized')
             raise mdsExceptions.DevINV_SETUP
+
+        boardType = self.board_type.getData()
+        
+        if boardType == 'NI6259' :
+            self.__stopGeneration_6259__()
+        else:
+            boardType = self.board_type.data()
+            wavePoint = self.wave_point.data()
+            self.__initialize_module__(boardType, wavePoint, True)
+            self.__stopGeneration__()
 
         self.closeInfo()
 
@@ -741,7 +1051,8 @@ class NI_WAVE_GEN(Device):
         Event.setevent(cmdEventName, cmd)
 
         rep = self.waitForAnswer(cmdEventName+'_REPLY')
-        timeout = 5
+        timeout = 10
+        print('Wait for REPLY event ' + cmdEventName+'_REPLY')
         rep.join(timeout)
         time.sleep(.1)
         if rep.isAlive():
@@ -775,7 +1086,7 @@ class NI_WAVE_GEN(Device):
 
         gain = self.gain.data()
         for ch in range(4):
-            self.__checkChanneParam__(ch, gain)
+            self.__checkChannelParams__(ch, gain)
 
             chStateAr.append(self.chState)
             chMaxAr.append(self.chMax)

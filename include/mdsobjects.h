@@ -1,5 +1,13 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
+
+// Prevents errors when using Clang on macOS with LabVIEW
+#ifdef __APPLE__
+#ifndef TARGET_OS_IPHONE
+#define TARGET_OS_IPHONE 0
+#endif
+#endif
+
 #include <mdsplus/mdsconfig.h>
 
 #include <algorithm>
@@ -4134,6 +4142,16 @@ namespace MDSplus
     ///
     void setVersionsInPulse(bool enable);
 
+    /// This function returns true if the tree allows for alternate compression
+    /// methods (gzip).  \note this can only be changed in edit mode.
+    /// 
+    bool alternateCompressionEnabled();
+
+    /// Activates alternate compression methods. See treeshr function \ref
+    /// TreeGetDbi() called with code DbiALTERNATE_COMPRESSION.
+    ///
+    void setAlternateCompression(bool enable);
+
     /// View data stored in tree from given start date when version control is
     /// enabled.
     ///
@@ -4459,6 +4477,20 @@ namespace MDSplus
     virtual void dataReceived(Data *samples, Data *times, int shot = 0) = 0;
   };
 
+  
+  struct ConnectionThreadContextInfo
+  {
+    public: 
+#ifdef _MSC_VER
+      DWORD tid;
+#else
+      pthread_t tid;
+#endif
+      int sockId;
+  };
+  
+  
+  
   class EXPORT Connection
   {
   public:
@@ -4497,7 +4529,13 @@ namespace MDSplus
 
     std::string mdsipAddrStr;
     int clevel;
-    int sockId;
+    
+
+    std::vector<ConnectionThreadContextInfo> threadContextV;
+    
+    std::string ipAddrStr;
+    int getSockId();
+
     Mutex mutex;
     static Mutex globalMutex;
     std::vector<DataStreamListener *> listenerV;

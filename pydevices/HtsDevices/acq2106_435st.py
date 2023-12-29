@@ -182,15 +182,22 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     data_socket = -1
 
+    NUM_CHANS_PER_SITE = 32
+
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
 
         def __init__(self, dev):
             super(_ACQ2106_435ST.MDSWorker, self).__init__(name=dev.path)
 
+            # Variables designed to bring a copy of the tree to the MDSWorker thread
+            self.tree = dev.tree.name
+            self.shot = dev.tree.shot
+            self.path = dev.path
+
             self.dev = dev
 
-            self.nchans     = self.dev.sites*32
+            self.nchans     = self.dev.sites * self.dev.NUM_CHANS_PER_SITE
             self.resampling = self.dev.resampling
             
             self.seg_length = self.dev.seg_length.data()
@@ -218,17 +225,17 @@ class _ACQ2106_435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            self.dev = self.dev.copy()
+            tree = MDSplus.Tree(self.tree, self.shot)
+            self.dev = tree.getNode(self.path)
 
             if self.dev.debug:
                 print("MDSWorker running")
             
-            self.chans = []
-            self.decim = []
+            chans = []
+            decim = []
             for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
-                self.decim.append(
-                    getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
+                chans.append(getattr(self.dev, 'input_%3.3d' % (i+1)))
+                decim.append(getattr(self.dev, 'input_%3.3d_decimate' % (i+1)).data())
 
             event_name = self.dev.seg_event.data()
 
@@ -240,8 +247,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 if nacc_str == '0,0,0':
                     nacc_sample = 1
                 else:
-                    nacc_tuple = ast.literal_eval(nacc_str)
-                    nacc_sample = nacc_tuple[0]
+                    nacc_sample = int(nacc_str.split(",")[0])
+
 
             if self.dev.debug:
                 print("The ACQ NACC sample value is {}".format(nacc_sample))
@@ -253,7 +260,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 print("The SR is {} and timebase delta t is {}".format(
                     self.dev.freq.data(), dt))
 
-            decimator = lcma(self.decim)
+            decimator = lcma(decim)
 
             if self.seg_length % decimator:
                 self.seg_length = (self.seg_length //
@@ -281,19 +288,19 @@ class _ACQ2106_435ST(MDSplus.Device):
 
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32'), 8)
                 i = 0
-                for c in self.chans:
-                    slength   = self.seg_length/self.decim[i]
-                    deltat    = dt * self.decim[i]
+                for c in chans:
+                    slength   = self.seg_length/decim[i]
+                    deltat    = dt * decim[i]
                     #Choice between executing resampling or not:
                     if c.on and self.resampling:
                         resampled = getattr(self.dev, str(c) + ':RESAMPLED')
-                        b = buffer[i::self.nchans*self.decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
                         c.makeSegmentResampled(begin, end, dim, b, resampled, res_factor)
                     elif c.on:
-                        b = buffer[i::self.nchans*self.decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         begin = segment * slength * deltat
                         end = begin + (slength - 1) * deltat
                         dim = MDSplus.Range(begin, end, deltat)
@@ -469,12 +476,12 @@ class _ACQ2106_435ST(MDSplus.Device):
         coeffs = uut.cal_eslo[1:]
         eoff = uut.cal_eoff[1:]
 
-        self.chans = []
-        nchans = uut.nchan()
+        chans = []
+        nchans = self.sites * self.NUM_CHANS_PER_SITE
         for ii in range(nchans):
-            self.chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
+            chans.append(getattr(self, 'INPUT_%3.3d' % (ii+1)))
 
-        for ic, ch in enumerate(self.chans):
+        for ic, ch in enumerate(chans):
             if ch.on:
                 ch.OFFSET.putData(float(eoff[ic]))
                 ch.COEFFICIENT.putData(float(coeffs[ic]))
@@ -556,7 +563,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435ST.carrier_parts)
-    for i in range(cls.sites*32):
+    for i in range(cls.sites * cls.NUM_CHANS_PER_SITE):
         cls.parts += [
             {
                 'path': ':INPUT_%3.3d' % (i+1,),

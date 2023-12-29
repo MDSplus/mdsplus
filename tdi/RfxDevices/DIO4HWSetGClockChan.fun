@@ -1,5 +1,4 @@
-public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode, in _frequency, 
-	in _delay, in _duration, in _event, in _duty_cycle, in _cyclic, in _evTermCode)
+public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode, in _frequency, in _delay, in _duration, in _event, in _duty_cycle, in _cyclic, in _evTermCode)
 {
 
 
@@ -104,8 +103,10 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 		_mode = byte(_DIO4_TC_SINGLE_SHOT);
 
 
-
+/*
 	if(_duration > 214)
+*/
+	if(_duration > 420)
 	{
 		write(*, 'continuous');
 		_mode = byte(_mode | _DIO4_TC_TERMINATE_PHASE_2);
@@ -125,22 +126,41 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 
 
 /* Timing setting */
-	_delay_cycles = long(_delay / 1E-7 + 0.5) - 1 ;
+/*
+	_delay_cycles = long_unsigned(_delay / 1E-7 + 0.5) - 1 ;
         if(_delay_cycles < 0)	_delay_cycles = 0;
+*/
+        _delay_cycles = 0;
+        if( _delay > 0 )
+	    _delay_cycles = long_unsigned(_delay * 10000000UL );
  
-	_duration_cycles = long(_duration / 1E-7 + 0.5) - 1;
+	write(*, '_delay_cycles', _delay, _delay_cycles);
+
+
+/* 
+Molto strano perche fare una divisione invece di una motiplicazione
+	_duration_cycles = long_unsigned(_duration / 1E-7 + 0.5) - 1;
+*/
+        _duration_cycles = 0;
+        if( _duration > 0 )
+	    _duration_cycles = long_unsigned( _duration * 10000000UL );
+
+/*
+Molto strano comunque un unsigned long viene rilevato negativo
         if(_duration_cycles < 0) _duration_cycles = 0;
-	write(*, '_duration_cycles', _duration_cycles);
+*/
+
+	write(*, '_duration_cycles', _duration, _duration_cycles);
 
 
 	_period = 1./_frequency;
-	_tot_cycles = long(_period / 1E-7 + 0.5);
+	_tot_cycles = long_unsigned(_period / 1E-7 + 0.5);
 
 
-	_cycles_1 = long(_tot_cycles * _duty_cycle / 100.) - 1; 
+	_cycles_1 = long_unsigned(f_float(_tot_cycles) * f_float(_duty_cycle / 100.)) - 1; 
 	if(_cycles_1 < 0) _cycles_1 = 0;
 
-	_cycles_2 = long(_tot_cycles - _cycles_1 - 2); 
+	_cycles_2 = long_unsigned(_tot_cycles - _cycles_1 - 2); 
 	if(_cycles_2 < 0) _cycles_2 = 0;
 
 
@@ -150,18 +170,24 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 	_cycles_1--;
 	_cycles_2--;
 */
-	_cycles = [long(1), long(1), long(_cycles_1), long(_cycles_2)];
+	_cycles = [long_unsigned(1), long_unsigned(1), long_unsigned(_cycles_1), long_unsigned(_cycles_2)];
 
 	write(*,'------>',_cycles);
 
+	if( _duration > 420 )
+	{
+		_duration_cycles = 0;
+	}
 
+/* Non capisco questo controllo lo commento
 	if(_duration > 214)
 	{
 		_duration_cycles = 0;
+*/
 /*
 		_duration_cycles = 99999999;
-*/
 	}
+*/
 
 
 	_status = DIO4->DIO4_TC_SetPhaseTiming(val(_handle), val(byte(_channel + 1)), _cycles, val(_delay_cycles), 

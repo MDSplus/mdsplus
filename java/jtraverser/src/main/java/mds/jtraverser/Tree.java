@@ -630,7 +630,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 	private JTextField add_device_type, add_device_name;
 	private String lastName;
 	// Temporary, to overcome Java's bugs on inner classes
-	JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b, add_window_b,
+	JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_any_b, add_task_b, add_text_b, add_window_b,
 			add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b;
 	JButton ok_cb, add_node_ok;
 
@@ -676,6 +676,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 			addNode("NUMERIC");
 		if (jb == add_signal_b)
 			addNode("SIGNAL");
+		if (jb == add_any_b)
+			addNode("ANY");
 		if (jb == add_task_b)
 			addNode("TASK");
 		if (jb == add_text_b)
@@ -1216,6 +1218,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 					add_numeric_b.addActionListener(this);
 					jm.add(add_signal_b = new JMenuItem("Signal"));
 					add_signal_b.addActionListener(this);
+					jm.add(add_any_b = new JMenuItem("Any"));
+					add_any_b.addActionListener(this);
 					jm.add(add_task_b = new JMenuItem("Task"));
 					add_task_b.addActionListener(this);
 					jm.add(add_text_b = new JMenuItem("Text"));
