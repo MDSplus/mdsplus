@@ -65,6 +65,7 @@ pipeline {
                     }
                 }
 
+                // This shouldn't be needed, but just in case
                 cleanWs disableDeferredWipeout: true, deleteDirs: true
             }
         }
@@ -102,6 +103,11 @@ pipeline {
                     }
                 ])
             }
+        }
+    }
+    post {
+        always {
+            cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
     }
 }
