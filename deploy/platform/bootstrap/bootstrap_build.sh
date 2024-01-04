@@ -1,12 +1,13 @@
 #!/bin/bash
 #
 # runs $srcdir/bootstrap in a controlled manner
-cid=/tmp/bootstrap-docker-cid
+cid=$(mktemp -d)/bootstrap-docker-cid
 cleanup() {
  if [ -f $cid ]
  then
   docker rm -f $(cat $cid)
   rm -f $cid
+  rmdir $(dirname $cid)
  fi
 }
 trap cleanup EXIT INT
