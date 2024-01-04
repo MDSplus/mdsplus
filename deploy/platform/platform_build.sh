@@ -78,19 +78,6 @@ rundocker() {
       port_forwarding="-p ${FORWARD_PORT}:${FORWARD_PORT}"
       echo $port_forwarding
     fi
-    if docker network >/dev/null 2>&1; then
-      #docker supports --network
-      if [ -z ${DOCKER_NETWORK} ]; then
-        docker network rm ${OS} || :
-        docker network create ${OS}
-        NETWORK=--network=${OS}
-      else
-        NETWORK=--network=${DOCKER_NETWORK}
-      fi
-    else
-      DOCKER_NETWORK=bridge
-      NETWORK=
-    fi
 
     function kill_docker() {
       if [ -r ${WORKSPACE}/${OS}_docker-cid ]; then
@@ -117,7 +104,6 @@ rundocker() {
       docker run --cap-add=SYS_PTRACE -t $stdio \
         --rm \
         --cidfile=${WORKSPACE}/${OS}_docker-cid \
-        ${NETWORK} \
         -u $(id -u):$(id -g) --privileged -h $DISTNAME -e "srcdir=${DOCKER_SRCDIR}" \
         -e "ARCH=${arch}" \
         -e "ARCHES=${ARCH}" \
@@ -157,9 +143,6 @@ rundocker() {
         docker logs -f $(cat ${WORKSPACE}/${OS}_docker-cid)
       fi
     done
-    if [ -z ${DOCKER_NETWORK} ]; then
-      docker network rm ${OS}
-    fi
     if [ ! "$status" = "0" ]; then
       RED
       cat <<EOF >&2

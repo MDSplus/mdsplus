@@ -43,7 +43,6 @@ pipeline {
         stage('Setup') {
             steps {
                 sh 'printenv'
-                echo schedule
 
                 script {
                     
