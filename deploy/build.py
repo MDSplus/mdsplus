@@ -13,6 +13,7 @@ import os
 import shutil
 import signal
 import subprocess
+import platform
 
 from datetime import datetime
 
@@ -136,6 +137,14 @@ parser.add_argument(
     const=True,
 )
 
+parser.add_argument(
+    '--skip-default',
+    metavar='',
+    help='',
+    nargs='?',
+    const=True,
+)
+
 ###
 ### Helper functions
 ###
@@ -179,14 +188,20 @@ if cli_args.os is not None:
 
     opts_filename = os.path.join(deploy_dir, f'os/{cli_args.os}.opts')
     if not os.path.exists(opts_filename):
-        print(f'Unsupported --os={cli_args.os}, ensure that deploy/os/{cli_args.os}.opts exists')
-        exit(1)
+        opts_filename = os.path.join(deploy_dir, f'os/{cli_args.os}-{platform.machine()}.opts')
+        if not os.path.exists(opts_filename):
+            print(f'Unsupported --os={cli_args.os}, ensure that deploy/os/{cli_args.os}.opts exists')
+            exit(1)
     
     opts = open(opts_filename).read().strip().split()
 
     env_filename = os.path.join(deploy_dir, f'os/{cli_args.os}.env')
     if os.path.exists(env_filename):
         opts.append(f'--env-file={env_filename}')
+    else:
+        env_filename = os.path.join(deploy_dir, f'os/{cli_args.os}-{platform.machine()}.env')
+        if os.path.exists(opts_filename):
+            opts.append(f'--env-file={env_filename}')
 
     cli_args, unknown_args = parser.parse_known_args(args=opts)
     cmake_args = unknown_args
@@ -240,6 +255,7 @@ if args['dockerimage'] is not None:
             passthrough_args.remove(name)
 
     if args['dockerpull']:
+        # TODO: Make this visible to the user
         subprocess.run([ 'docker', 'pull', args['dockerimage'] ])
 
     docker_command = f"python3 {args['source']}/deploy/build.py {' '.join(passthrough_args)} {' '.join(cmake_args)}"
@@ -381,22 +397,28 @@ else:
         print('When you are done, run exit')
         print()
 
+        env = dict(os.environ)
+        env.update(extra_env)
+
         subprocess.run(
             [ shell ],
             cwd=args['workspace'],
+            env=env
         )
     
     else:
 
-        default_build = {
-            'name': 'default',
-            'args': args.copy(),
-            'cmake_args': cmake_args.copy(),
-        }
+        build_list = []
 
-        del default_build['args']['sanitize']
+        if 'skip-default' in args and args['skip-default'] != True:
+            default_build = {
+                'name': 'default',
+                'args': args.copy(),
+                'cmake_args': cmake_args.copy(),
+            }
+            del default_build['args']['sanitize']
 
-        build_list = [ default_build ]
+            build_list.append(default_build)
 
         sanitize_list = []
         if args['sanitize'] is not None:
@@ -450,7 +472,7 @@ else:
 
             build['cmake_args'] = [ '-G', build['args']['generator'] ] + build['cmake_args']
 
-            if build['args']['valgrind'] is not None:
+            if 'valgrind' in build['args'] and build['args']['valgrind'] is not None:
                 build['cmake_args'].append('-DENABLE_VALGRIND=ON')
 
                 if args['valgrind'] != True:

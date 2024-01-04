@@ -1,1 +1,1 @@
---platform=redhat --dockerimage=mdsplus/builder:fc32 --distname=fc32 --arch=amd64 --test=skip --sanitize --sanitize=undefined
+--dockerimage=mdsplus/builder:ubuntu-22.04-x86_64 --skip-default --sanitize=undefined --test

@@ -1,1 +1,0 @@
---platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/builder:ubuntu-22.04-x86_64 --distname=Ubuntu22 --arch=amd64
