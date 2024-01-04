@@ -315,7 +315,7 @@ int main(int argc, char **argv)
       }
       else if (!strncmp(line_in, "tcl", 3))
       {
-        strcpy(line_in, "$MDSPLUS/bin/tcl"); /* move the text to the left */
+        strcpy(line_in, "$MDSPLUS_DIR/bin/mdstcl"); /* move the text to the left */
         system(line_in);
       }
 #ifdef NEVER
