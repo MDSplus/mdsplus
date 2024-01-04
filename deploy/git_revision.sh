@@ -2,7 +2,9 @@
 SRC=$(realpath "$(dirname "$0")/..")
 GIT="git --git-dir=${SRC}/.git --work-tree=${SRC}"
 GIT_TAG="$(${GIT} describe --tag)"
-GIT_BRANCH="$(${GIT} rev-parse --abbrev-ref HEAD)"
+if [ -z "${GIT_BRANCH}" ]; then
+	GIT_BRANCH="$(${GIT} rev-parse --abbrev-ref HEAD)"
+fi
 GIT_REMOTE="$(${GIT} config branch.${GIT_BRANCH}.remote)"
 GIT_REMOTE_URL="$(${GIT} config remote.${GIT_REMOTE}.url)"
 GIT_COMMIT="$(${GIT} rev-parse HEAD)"
