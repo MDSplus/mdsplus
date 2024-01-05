@@ -238,11 +238,18 @@ os.makedirs(args['workspace'], exist_ok=True)
 
 if args['dockerimage'] is not None:
 
-    passthrough_args = build_command_line(args)
-    for name in passthrough_args:
-        # Remove options that aren't applicable in the docker container
-        if name.startswith('--os') or name.startswith('--docker'):
-            passthrough_args.remove(name)
+    passthrough_args = []
+    for arg in build_command_line(args):
+
+        # We don't want the .opts files to be parsed recursively
+        if arg.startswith('--os'):
+            continue
+
+        # We don't want docker to run recursively
+        if arg.startswith('--docker'):
+            continue
+
+        passthrough_args.append(arg)
 
     if args['dockerpull']:
         # TODO: Make this visible to the user
