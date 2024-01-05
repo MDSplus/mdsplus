@@ -1,1 +1,1 @@
---dockerimage=mdsplus/builder:ubuntu-22.04-x86_64 --sanitize=address --test
+--dockerimage=mdsplus/builder:ubuntu-22.04-x86_64 --sanitize=address

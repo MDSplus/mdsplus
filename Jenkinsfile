@@ -101,6 +101,7 @@ pipeline {
                             }
 
                             stage("${OS} Test") {
+                                sh 'printenv'
                                 sh "./deploy/build.py -j --os=${OS} --test -DMDSPLUS_TEST_INDEX_OFFSET=\$((1000*\${EXECUTOR_NUMBER}))"
                             }
 
