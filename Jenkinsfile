@@ -1,5 +1,7 @@
 @Library('camunda-community') _
 
+def MAX_CONCURRENT_TESTS = 1000;
+
 def OSList = [
     'test-asan',
     'test-tsan',
@@ -16,6 +18,8 @@ def OSList = [
     'debian-11-x86_64',
     'debian-12-x86_64',
     'amazonlinux-2-x86_64',
+    // 'windows-x86',
+    // 'windows-x86_64',
 ]
 
 def AdminList = [
@@ -86,6 +90,7 @@ pipeline {
                         OS: OSList
                     ],
                     actions: {
+
                         ws("${WORKSPACE}/${OS}") {
 
                             stage("${OS} Clone") {
@@ -97,12 +102,12 @@ pipeline {
                             }
 
                             stage("${OS} Build") {
-                                sh "./deploy/build.py -j --os=${OS} -DCMAKE_BUILD_TYPE=Debug"
+                                sh "./deploy/build.py -j --os=${OS} --dockerpull -DCMAKE_BUILD_TYPE=Debug"
                             }
 
                             stage("${OS} Test") {
-                                sh 'printenv'
-                                sh "./deploy/build.py -j --os=${OS} --test -DMDSPLUS_TEST_INDEX_OFFSET=\$((1000*\${EXECUTOR_NUMBER}))"
+                                TEST_INDEX_OFFSET = OSList.indexOf(OS) * MAX_CONCURRENT_TESTS
+                                sh "./deploy/build.py -j --os=${OS} --test -DMDSPLUS_TEST_INDEX_OFFSET=${TEST_INDEX_OFFSET}"
                             }
 
                             post {
