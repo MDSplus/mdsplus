@@ -89,7 +89,7 @@ rundocker() {
 
     function abort() {
       kill_docker
-      status=1
+      exit 1
     }
 
     trap abort SIGINT
@@ -102,7 +102,6 @@ rundocker() {
       kill_docker
 
       docker run --cap-add=SYS_PTRACE -t $stdio \
-        --rm \
         --cidfile=${WORKSPACE}/${OS}_docker-cid \
         -u $(id -u):$(id -g) --privileged -h $DISTNAME -e "srcdir=${DOCKER_SRCDIR}" \
         -e "ARCH=${arch}" \
@@ -140,7 +139,14 @@ rundocker() {
       status=$?
 
       if [ -z "$INTERACTIVE" ]; then
-        docker logs -f $(cat ${WORKSPACE}/${OS}_docker-cid)
+        cid=$(cat ${WORKSPACE}/${OS}_docker-cid)
+
+        # Wait for the container to exit
+        docker logs --follow $cid
+
+        status=$(docker inspect $cid --format='{{.State.ExitCode}}')
+
+        docker rm $cid
       fi
     done
     if [ ! "$status" = "0" ]; then
