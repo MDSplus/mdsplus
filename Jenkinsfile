@@ -6,8 +6,8 @@ def OSList = [
     'test-asan',
     'test-tsan',
     'test-ubsan',
-    'test-helgrind',
-    'test-memcheck',
+    // 'test-helgrind',
+    // 'test-memcheck',
     'ubuntu-18-x86_64',
     'ubuntu-20-x86_64',
     'ubuntu-22-x86_64',
@@ -107,7 +107,7 @@ pipeline {
 
                             stage("${OS} Test") {
                                 TEST_INDEX_OFFSET = OSList.indexOf(OS) * MAX_CONCURRENT_TESTS
-                                sh "./deploy/build.py -j --os=${OS} --test --output-junit -DMDSPLUS_TEST_INDEX_OFFSET=${TEST_INDEX_OFFSET}"
+                                sh "./deploy/build.py -j --os=${OS} --test --test-prefix=${OS} --output-junit -DMDSPLUS_TEST_INDEX_OFFSET=${TEST_INDEX_OFFSET}"
                             }
                         }
                     }

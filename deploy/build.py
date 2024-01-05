@@ -136,6 +136,12 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--test-prefix',
+    metavar='',
+    help='',
+)
+
+parser.add_argument(
     '--output-junit',
     metavar='',
     help='',
@@ -668,12 +674,8 @@ else:
             if args['output-junit']:
                 import xml.etree.ElementTree as xml
 
-                name = 'MDSplus'
-                if 'os' in args and args['os'] is not None:
-                    name = 'MDSplus/' + args['os']
-
                 root = xml.Element('testsuites')
-                root.attrib['name'] = name
+                root.attrib['name'] = 'MDSplus Test Suite'
                 root.attrib['tests'] = str(len(all_tests))
                 root.attrib['failures'] = str(len(failed_tests))
 
@@ -689,6 +691,12 @@ else:
 
                 for suite_name, tests in test_suites.items():
                     testsuite = xml.SubElement(root, 'testsuite')
+
+                    # TODO: Improve
+                    if 'test-prefix' in args and args['test-prefix'] is not None:
+                        if args['test-prefix'] != '':
+                            suite_name = args['test-prefix'] + '/' + suite_name
+                            
                     testsuite.attrib['name'] = suite_name
 
                     total_time_suite = 0
@@ -701,6 +709,10 @@ else:
 
                         system_out = xml.SubElement(testcase, 'system-out')
                         system_out.text = open(test['log']).read()
+
+                        if not test['passed']:
+                            failure = xml.SubElement(testcase, 'failure')
+                            failure.attrib['message'] = 'Failed'
 
                     testsuite.attrib['time'] = str(total_time_suite)
                 
