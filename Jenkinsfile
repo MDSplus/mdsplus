@@ -101,7 +101,7 @@ pipeline {
                             }
 
                             stage("${OS} Test") {
-                                sh "./deploy/build.py -j --os=${OS} --test -MDSPLUS_TEST_INDEX_OFFSET=\$((1000*\${EXECUTOR_NUMBER}))"
+                                sh "./deploy/build.py -j --os=${OS} --test -DMDSPLUS_TEST_INDEX_OFFSET=\$((1000*\${EXECUTOR_NUMBER}))"
                             }
 
                             post {
