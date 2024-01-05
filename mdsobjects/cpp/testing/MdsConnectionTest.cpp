@@ -189,41 +189,43 @@ int main(int argc, char *argv[])
   test_tree_open("local", 0, NULL);
   END_TESTING;
 
+  unsigned short port = 8000 + test_index;
+
   // tcp //
   BEGIN_TESTING(Connection tcp - s);
-  test_tree_open("tcp", 8000 + (test_index * 10), "-s");
+  test_tree_open("tcp", port, "-s");
   END_TESTING;
   BEGIN_TESTING(Connection tcp - m);
-  test_tree_open("tcp", 8001 + (test_index * 10), "-m");
+  test_tree_open("tcp", port, "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // tcpv6 //
     BEGIN_TESTING(Connection tcpv6 - s);
-    test_tree_open("tcpv6", 8002 + (test_index * 10), "-s");
+    test_tree_open("tcpv6", port, "-s");
     END_TESTING;
     BEGIN_TESTING(Connection tcpv6 - m);
-    test_tree_open("tcpv6", 8003 + (test_index * 10), "-m");
+    test_tree_open("tcpv6", port, "-m");
     END_TESTING;
   }
 #ifndef _WIN32
   // udt //
   BEGIN_TESTING(Connection udt - s);
-  test_tree_open("udt", 8004 + (test_index * 10), "-s");
+  test_tree_open("udt", port, "-s");
   END_TESTING;
   BEGIN_TESTING(Connection udt - m);
-  test_tree_open("udt", 8005 + (test_index * 10), "-m");
+  test_tree_open("udt", port, "-m");
   END_TESTING;
 
   if (ipv6)
   {
     // udtv6 //
     BEGIN_TESTING(Connection udtv6 - s);
-    test_tree_open("udtv6", 8006 + (test_index * 10), "-s");
+    test_tree_open("udtv6", port, "-s");
     END_TESTING;
     BEGIN_TESTING(Connection udtv6 - m);
-    test_tree_open("udtv6", 8007 + (test_index * 10), "-m");
+    test_tree_open("udtv6", port, "-m");
     END_TESTING;
   }
 #endif

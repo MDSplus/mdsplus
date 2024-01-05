@@ -125,20 +125,10 @@ parser.add_argument(
     '--sanitize',
     metavar='',
     help='',
-    nargs='?',
-    const=True,
 )
 
 parser.add_argument(
     '--rerun-failed',
-    metavar='',
-    help='',
-    nargs='?',
-    const=True,
-)
-
-parser.add_argument(
-    '--skip-default',
     metavar='',
     help='',
     nargs='?',
@@ -323,6 +313,7 @@ if args['dockerimage'] is not None:
             print(f'\nKilling docker container {container_id}')
             subprocess.run([ 'docker', 'kill', container_id ])
             subprocess.run([ 'docker', 'rm', container_id ])
+            exit(1)
 
         signal.signal(signal.SIGINT, kill_docker)
 
@@ -427,265 +418,235 @@ else:
         )
     
     else:
+        # TODO: Improve
+        cmake_cache_filename = os.path.join(args['workspace'], 'CMakeCache.txt')
+        cmake_cache = parse_cmake_cache(cmake_cache_filename)
 
-        build_list = []
-
-        if 'skip-default' in args and args['skip-default'] != True:
-            default_build = {
-                'name': 'default',
-                'args': args.copy(),
-                'cmake_args': cmake_args.copy(),
-            }
-            del default_build['args']['sanitize']
-
-            build_list.append(default_build)
-
-        sanitize_list = []
-        if args['sanitize'] is not None:
-            sanitize_list = args['sanitize'].split(',')
-
-        # TODO: Inform the user that multiple builds are going to take place because of --sanitize
-        
-        for sanitizer in sanitize_list:
-            build = {
-                'name': f'sanitize-{sanitizer}',
-                'args': args.copy(),
-                'cmake_args': cmake_args.copy(),
-            }
-
-            build['args']['sanitize'] = sanitizer
-            del build['args']['valgrind']
-
-            build['cmake_args'].append(f'-DENABLE_SANITIZE={sanitizer}')
-            build['args']['workspace'] = os.path.join(build['args']['workspace'], build['name'])
-
-            os.makedirs(build['args']['workspace'], exist_ok=True)
-
-            build_list.append(build)
-        
-        for build in build_list:
-
-            # TODO: Improve
-            cmake_cache_filename = os.path.join(build['args']['workspace'], 'CMakeCache.txt')
-            cmake_cache = parse_cmake_cache(cmake_cache_filename)
-
-            current_generator = None
-            if 'CMAKE_GENERATOR' in cmake_cache:
-                current_generator = cmake_cache['CMAKE_GENERATOR']
-                
-            if build['args']['generator'] is None:
-                build['args']['generator'] = current_generator
+        current_generator = None
+        if 'CMAKE_GENERATOR' in cmake_cache:
+            current_generator = cmake_cache['CMAKE_GENERATOR']
             
-            if build['args']['generator'] != current_generator:
-                # Perform a clean configure
-                build['cmake_args'].append('--fresh')
+        if args['generator'] is None:
+            args['generator'] = current_generator
+        
+        if args['generator'] != current_generator:
+            # Perform a clean configure
+            cmake_args.append('--fresh')
 
-            if build['args']['generator'] is None:
-                build['args']['generator'] = 'Unix Makefiles'
+        if args['generator'] is None:
+            args['generator'] = 'Unix Makefiles'
 
-            # TODO: Add more
-            build_command = f'{cmake} --build .'
-            if build['args']['generator'] == 'Unix Makefiles':
-                build_command = f"make -j{build['args']['parallel']}"
-            elif build['args']['generator'] == 'Ninja':
-                build_command = f"ninja -j{build['args']['parallel']}"
+        # TODO: Add more
+        build_command = f'{cmake} --build .'
+        if args['generator'] == 'Unix Makefiles':
+            build_command = f"make -j{args['parallel']}"
+        elif args['generator'] == 'Ninja':
+            build_command = f"ninja -j{args['parallel']}"
 
-            build['cmake_args'] = [ '-G', build['args']['generator'] ] + build['cmake_args']
+        cmake_args = [ '-G', args['generator'] ] + cmake_args
 
-            if 'valgrind' in build['args'] and build['args']['valgrind'] is not None:
-                build['cmake_args'].append('-DENABLE_VALGRIND=ON')
-
-                if args['valgrind'] != True:
-                    build['cmake_args'].append(f"-DVALGRIND_TOOLS={args['valgrind']}")
-            else:
-                build['cmake_args'].append('-DENABLE_VALGRIND=OFF')
-
-
+        if 'sanitize' in args and 'valgrind' in args:
             print()
-            print(f"Combined build arguments for {build['name']}:")
-            print(f"    {' '.join(build_command_line(build['args']))}")
+            print('It is not recommended to run valgrind with a sanitizer')
             print()
 
-            if build['args']['test']:
-                build['cmake_args'].append('-DBUILD_TESTING=ON')
+        if 'sanitize' in args:
+            flavor = args['sanitize']
+            cmake_args.append(f'-DENABLE_SANITIZE={flavor}')
 
-            print(f"CMake arguments for {build['name']}:")
-            print(f"    {' '.join(build['cmake_args'])}")
-            print()
-            
-            result = subprocess.run(
-                [ cmake ] + build['cmake_args'] + [ build['args']['source'] ],
-                cwd=build['args']['workspace'],
-            )
+        if 'valgrind' in args and args['valgrind'] is not None:
+            cmake_args.append('-DENABLE_VALGRIND=ON')
 
-            if result.returncode != 0:
-                print('CMake Configure failed')
-                exit(result.returncode)
+            if args['valgrind'] != True:
+                cmake_args.append(f"-DVALGRIND_TOOLS={args['valgrind']}")
+        else:
+            cmake_args.append('-DENABLE_VALGRIND=OFF')
+
+
+        print()
+        print(f"Combined build arguments:")
+        print(f"    {' '.join(build_command_line(args))}")
+        print()
+
+        if args['test']:
+            cmake_args.append('-DBUILD_TESTING=ON')
+
+        print(f"CMake arguments:")
+        print(f"    {' '.join(cmake_args)}")
+        print()
+        
+        result = subprocess.run(
+            [ cmake ] + cmake_args + [ args['source'] ],
+            cwd=args['workspace'],
+        )
+
+        if result.returncode != 0:
+            print('CMake Configure failed')
+            exit(result.returncode)
+
+        result = subprocess.run(
+            [
+                shell, '-c',
+                build_command
+            ],
+            cwd=args['workspace'],
+        )
+
+        if result.returncode != 0:
+            print('CMake Build failed')
+            exit(result.returncode)
+
+        if args['test']:
+            # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
+            # we iterate over the tests manually.
+
+            TEST_DATA_FILENAME = os.path.join(args['workspace'], 'mdsplus-test.json')
 
             result = subprocess.run(
                 [
-                    shell, '-c',
-                    build_command
+                    ctest, '-N', '--show-only=json-v1'
                 ],
-                cwd=build['args']['workspace'],
+                capture_output=True,
+                cwd=args['workspace'],
             )
 
             if result.returncode != 0:
-                print('CMake Build failed')
-                exit(result.returncode)
+                # TODO:
+                exit(1)
 
-            if args['test']:
-                # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
-                # we iterate over the tests manually.
+            test_queue = []
+            test_data = json.loads(result.stdout.decode())
+            
+            for i, test in enumerate(test_data['tests']):
+                test_queue.append({
+                    'index': i + 1,
+                    'name': test['name'],
+                    'workspace': args['workspace'],
+                })
 
-                TEST_DATA_FILENAME = os.path.join(args['workspace'], 'mdsplus-test.json')
+            start_time = datetime.now()
+            total_time_test = 0
+            test_count = len(test_queue)
 
-                result = subprocess.run(
-                    [
-                        ctest, '-N', '--show-only=json-v1'
-                    ],
-                    capture_output=True,
-                    cwd=build['args']['workspace'],
-                )
+            passed_tests = {}
+            failed_tests = {}
+            running_test_list = []
 
-                if result.returncode != 0:
-                    # TODO:
-                    exit(1)
+            def kill_test_processes(signum, frame):
+                for test in running_test_list:
+                    print(f"Killing {test['name']}")
+                    test['process'].kill()
 
-                test_queue = []
-                test_data = json.loads(result.stdout.decode())
+                test_queue.clear()
 
-                prefix = ''
-                if build['name'] != 'default':
-                    prefix = f"{build['name']}/"
-                
-                for i, test in enumerate(test_data['tests']):
-                    test_queue.append({
-                        'index': i + 1,
-                        'name': prefix + test['name'],
-                        'build': build['name'],
-                        'workspace': build['args']['workspace'],
+            signal.signal(signal.SIGINT, kill_test_processes)
+
+            if args['rerun-failed']:
+                print('Re-Running failed tests')
+
+                try:
+                    with open(TEST_DATA_FILENAME, 'rt') as f:
+                        old_tests = json.loads(f.read())
+                        for test in test_queue.copy():
+                            if test['name'] in old_tests.keys():
+                                old_test = old_tests[test['name']]
+                                if old_test['passed']:
+                                    print(f"Skipping: {test['name']}")
+                                    test_queue.remove(test)
+                                    passed_tests[test['name']] = old_test
+                except:
+                    print(f'Failed to parse {TEST_DATA_FILENAME}')
+
+            while len(test_queue) > 0 or len(running_test_list) > 0:
+
+                for test in running_test_list:
+                    result = test['process'].poll()
+                    if result is not None:
+                        running_test_list.remove(test)
+
+                        delta_time = datetime.now() - test['start']
+                        delta_time = delta_time.total_seconds()
+                        total_time_test += delta_time
+
+                        passed = (result == 0)
+
+                        result_message = 'Success' if passed else 'Failed'
+                        print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
+                        if result != 0:
+                            print(f"[{test['index']:3}/{test_count}] Log File: {test['log']}")
+
+                        test_record = {
+                            'index': test['index'],
+                            'log': test['log'],
+                            'time': delta_time,
+                            'passed': passed,
+                        }
+
+                        if result == 0:
+                            passed_tests[test['name']] = test_record
+                        else:
+                            failed_tests[test['name']] = test_record
+
+                while len(test_queue) > 0 and len(running_test_list) < int(args['parallel']):
+                    test = test_queue.pop(0)
+
+                    log_filename = os.path.join(test['workspace'], 'testing', test['name'] + '.log')
+                    os.makedirs(os.path.dirname(log_filename), exist_ok=True)
+                    log_file = open(log_filename, 'wb')
+
+                    print(f"[{test['index']:3}/{test_count}] Running: {test['name']}")
+
+                    test_start_time = datetime.now()
+
+                    test_env = dict(os.environ)
+                    test_env['mdsevent_port'] = ''
+                    
+                    test_process = subprocess.Popen(
+                        [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
+                        stdout=log_file,
+                        stderr=subprocess.STDOUT,
+                        cwd=test['workspace'],
+                        env=test_env,
+                    )
+                    
+                    running_test_list.append({
+                        'index': test['index'],
+                        'start': test_start_time,
+                        'name': test['name'],
+                        'process': test_process,
+                        'log': log_filename,
                     })
 
-                start_time = datetime.now()
-                total_time_test = 0
-                test_count = len(test_queue)
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-                passed_tests = {}
-                failed_tests = {}
-                running_test_list = []
+            passed_test_count = len(passed_tests)
 
-                def kill_test_processes(signum, frame):
-                    for test in running_test_list:
-                        print(f"Killing {test['name']}")
-                        test['process'].kill()
+            percentage = 0
+            if test_count > 0:
+                percentage = math.floor((passed_test_count / test_count) * 100.0)
 
-                    test_queue.clear()
+            total_time_real = datetime.now() - start_time
+            total_time_real = total_time_real.total_seconds()
 
-                signal.signal(signal.SIGINT, kill_test_processes)
+            print()
+            print(f"{passed_test_count}/{test_count} tests passed, {percentage:.0f}%")
+            print()
+            print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
+            print()
 
-                if args['rerun-failed']:
-                    print('Re-Running failed tests')
+            with open(TEST_DATA_FILENAME, 'wt') as f:
+                all_tests = dict(passed_tests, **failed_tests)
+                f.write(json.dumps(
+                    all_tests,
+                    indent=2
+                ))
 
-                    try:
-                        with open(TEST_DATA_FILENAME, 'rt') as f:
-                            old_tests = json.loads(f.read())
-                            for test in test_queue.copy():
-                                if test['name'] in old_tests.keys():
-                                    old_test = old_tests[test['name']]
-                                    if old_test['passed']:
-                                        print(f"Skipping: {test['name']}")
-                                        test_queue.remove(test)
-                                        passed_tests[test['name']] = old_test
-                    except:
-                        print(f'Failed to parse {TEST_DATA_FILENAME}')
+            if len(failed_tests) > 0:
+                print("The following tests failed:")
 
-                while len(test_queue) > 0 or len(running_test_list) > 0:
-
-                    for test in running_test_list:
-                        result = test['process'].poll()
-                        if result is not None:
-                            running_test_list.remove(test)
-
-                            delta_time = datetime.now() - test['start']
-                            delta_time = delta_time.total_seconds()
-                            total_time_test += delta_time
-
-                            passed = (result == 0)
-
-                            result_message = 'Success' if passed else 'Failed'
-                            print(f"[{test['index']:3}/{test_count}] {result_message}: {test['name']} ({delta_time:.3f}s)")
-                            if result != 0:
-                                print(f"[{test['index']:3}/{test_count}] Log File: {test['log']}")
-
-                            test_record = {
-                                'index': test['index'],
-                                'log': test['log'],
-                                'time': delta_time,
-                                'passed': passed,
-                            }
-
-                            if result == 0:
-                                passed_tests[test['name']] = test_record
-                            else:
-                                failed_tests[test['name']] = test_record
-
-                    while len(test_queue) > 0 and len(running_test_list) < int(args['parallel']):
-                        test = test_queue.pop(0)
-
-                        log_filename = os.path.join(test['workspace'], 'testing', test['name'] + '.log')
-                        os.makedirs(os.path.dirname(log_filename), exist_ok=True)
-                        log_file = open(log_filename, 'wb')
-
-                        print(f"[{test['index']:3}/{test_count}] Running: {test['name']}")
-
-                        test_start_time = datetime.now()
-                        
-                        test_process = subprocess.Popen(
-                            [ ctest, '-I', f"{test['index']},{test['index']}", '-V' ],
-                            stdout=log_file,
-                            stderr=subprocess.STDOUT,
-                            cwd=test['workspace'],
-                        )
-                        
-                        running_test_list.append({
-                            'index': test['index'],
-                            'start': test_start_time,
-                            'name': test['name'],
-                            'process': test_process,
-                            'log': log_filename,
-                        })
-
-                signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-                passed_test_count = len(passed_tests)
-
-                percentage = 0
-                if test_count > 0:
-                    percentage = math.floor((passed_test_count / test_count) * 100.0)
-
-                total_time_real = datetime.now() - start_time
-                total_time_real = total_time_real.total_seconds()
-
-                print()
-                print(f"{passed_test_count}/{test_count} tests passed, {percentage:.0f}%")
-                print()
-                print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
-                print()
-
-                with open(TEST_DATA_FILENAME, 'wt') as f:
-                    all_tests = dict(passed_tests, **failed_tests)
-                    f.write(json.dumps(
-                        all_tests,
-                        indent=2
-                    ))
-
-                if len(failed_tests) > 0:
-                    print("The following tests failed:")
-
-                    for name, test in failed_tests.items():
-                        log_filename_escaped = test['log'].replace(' ', '\\ ')
-                        print(f"    {test['index']} {name} ({log_filename_escaped})")
-                    
-                    # Report the failure to Jenkins
-                    exit(1)
+                for name, test in failed_tests.items():
+                    log_filename_escaped = test['log'].replace(' ', '\\ ')
+                    print(f"    {test['index']} {name} ({log_filename_escaped})")
+                
+                # Report the failure to Jenkins
+                exit(1)

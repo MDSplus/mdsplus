@@ -101,9 +101,13 @@ pipeline {
                             }
 
                             stage("${OS} Test") {
-                                sh "./deploy/build.py -j --os=${OS} --test"
+                                sh "./deploy/build.py -j --os=${OS} --test -MDSPLUS_TEST_INDEX_OFFSET=\$((1000*\${EXECUTOR_NUMBER}))"
+                            }
 
-                                archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/core'
+                            post {
+                                always {
+                                    archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/core'
+                                }
                             }
                         }
                     }

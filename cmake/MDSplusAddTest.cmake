@@ -1,6 +1,6 @@
 include_guard(GLOBAL)
 
-set(MDSPLUS_TEST_INDEX 1 CACHE STRING "" FORCE)
+set(MDSPLUS_TEST_INDEX ${MDSPLUS_TEST_INDEX_OFFSET} CACHE STRING "" FORCE)
 
 #
 # mdsplus_add_test(NAME <name>

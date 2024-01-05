@@ -131,6 +131,12 @@ include(CTest)
 if(BUILD_TESTING)
 
     mdsplus_option(
+        MDSPLUS_TEST_INDEX_OFFSET STRING
+        "An offset to the $TEST_INDEX passed to each test, used to isolate parallel tests."
+        DEFAULT "1"
+    )
+
+    mdsplus_option(
         ENABLE_SELFTEST BOOL
         "Include the testing/selftest directory."
         DEFAULT OFF
