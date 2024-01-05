@@ -107,13 +107,7 @@ pipeline {
 
                             stage("${OS} Test") {
                                 TEST_INDEX_OFFSET = OSList.indexOf(OS) * MAX_CONCURRENT_TESTS
-                                sh "./deploy/build.py -j --os=${OS} --test -DMDSPLUS_TEST_INDEX_OFFSET=${TEST_INDEX_OFFSET}"
-                            }
-
-                            post {
-                                always {
-                                    archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/core'
-                                }
+                                sh "./deploy/build.py -j --os=${OS} --test --output-junit -DMDSPLUS_TEST_INDEX_OFFSET=${TEST_INDEX_OFFSET}"
                             }
                         }
                     }
@@ -123,6 +117,10 @@ pipeline {
     }
     post {
         always {
+            junit '**/mdsplus-junit.xml'
+
+            archiveArtifacts artifacts: "**/test.log"
+
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
     }

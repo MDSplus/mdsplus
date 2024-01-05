@@ -135,6 +135,14 @@ parser.add_argument(
     const=True,
 )
 
+parser.add_argument(
+    '--output-junit',
+    metavar='',
+    help='',
+    nargs='?',
+    const=True,
+)
+
 ###
 ### Helper functions
 ###
@@ -508,6 +516,7 @@ else:
             # we iterate over the tests manually.
 
             TEST_DATA_FILENAME = os.path.join(args['workspace'], 'mdsplus-test.json')
+            JUNIT_FILENAME = os.path.join(args['workspace'], 'mdsplus-junit.xml')
 
             result = subprocess.run(
                 [
@@ -641,8 +650,9 @@ else:
             print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
             print()
 
+            all_tests = dict(passed_tests, **failed_tests)
+
             with open(TEST_DATA_FILENAME, 'wt') as f:
-                all_tests = dict(passed_tests, **failed_tests)
                 f.write(json.dumps(
                     all_tests,
                     indent=2
@@ -654,6 +664,50 @@ else:
                 for name, test in failed_tests.items():
                     log_filename_escaped = test['log'].replace(' ', '\\ ')
                     print(f"    {test['index']} {name} ({log_filename_escaped})")
+
+            if args['output-junit']:
+                import xml.etree.ElementTree as xml
+
+                name = 'MDSplus'
+                if 'os' in args and args['os'] is not None:
+                    name = 'MDSplus/' + args['os']
+
+                root = xml.Element('testsuites')
+                root.attrib['name'] = name
+                root.attrib['tests'] = str(len(all_tests))
+                root.attrib['failures'] = str(len(failed_tests))
+
+                test_suites = {}
+
+                for name, test in all_tests.items():
+                    path, name = name.rsplit('/', 1)
+
+                    if path not in test_suites:
+                        test_suites[path] = {}
+
+                    test_suites[path][name] = test
+
+                for suite_name, tests in test_suites.items():
+                    testsuite = xml.SubElement(root, 'testsuite')
+                    testsuite.attrib['name'] = suite_name
+
+                    total_time_suite = 0
+
+                    for test_name, test in tests.items():
+                        testcase = xml.SubElement(testsuite, 'testcase')
+                        testcase.attrib['name'] = test_name
+                        testcase.attrib['time'] = str(test['time'])
+                        total_time_suite += test['time']
+
+                        system_out = xml.SubElement(testcase, 'system-out')
+                        system_out.text = open(test['log']).read()
+
+                    testsuite.attrib['time'] = str(total_time_suite)
                 
-                # Report the failure to Jenkins
+                print(f'Writing JUnit output to {JUNIT_FILENAME}')
+                with open(JUNIT_FILENAME, 'wb') as f:
+                    f.write(xml.tostring(root))
+            
+            # Report the failure to Jenkins
+            if len(failed_tests) > 0:
                 exit(1)
