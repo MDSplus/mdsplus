@@ -96,10 +96,14 @@ pipeline {
                                 // }
                             }
 
+                            stage("${OS} Build") {
+                                sh "./deploy/build.py -j --os=${OS} -DCMAKE_BUILD_TYPE=Debug"
+                            }
+
                             stage("${OS} Test") {
                                 sh "./deploy/build.py -j --os=${OS} --test"
 
-                                archiveArtifacts artifacts: 'tests/**/*.log,tests/**/test-suite.tap,tests/**/core'
+                                archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/core'
                             }
                         }
                     }

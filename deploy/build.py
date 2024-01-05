@@ -266,7 +266,6 @@ if args['dockerimage'] is not None:
         # docker_command = f'groupadd -g {os.getgid()} build-group;' + f'useradd -u {os.getuid()} -g build-group -s /bin/bash -d /workspace build-user;' + 'exec su build-user -c "' + docker_command  + '"'
     
     docker_args = [
-        '--rm',
         '--volume', f"{root_dir}:{args['source']}", # TODO: Improve?
         '--volume', f"{args['workspace']}:/workspace",
         '--workdir', '/workspace',
@@ -289,6 +288,7 @@ if args['dockerimage'] is not None:
                 'docker', 'run',
                 '--interactive',
                 '--tty',
+                '--rm',
             ] + docker_args
         )
     else:
@@ -322,6 +322,7 @@ if args['dockerimage'] is not None:
         def kill_docker(signum, frame):
             print(f'\nKilling docker container {container_id}')
             subprocess.run([ 'docker', 'kill', container_id ])
+            subprocess.run([ 'docker', 'rm', container_id ])
 
         signal.signal(signal.SIGINT, kill_docker)
 
@@ -333,6 +334,25 @@ if args['dockerimage'] is not None:
             print(line.decode().rstrip())
 
         signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        result = subprocess.run(
+            [
+                'docker',
+                'inspect',
+                container_id,
+                '--format="{{.State.ExitCode}}"'
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        # TODO: Improve
+        exit_code = int(result.stdout.decode().strip().strip('"'))
+        
+        subprocess.run([ 'docker', 'rm', container_id ])
+
+        if exit_code != 0:
+            exit(exit_code)
 
 else:
 
@@ -493,18 +513,26 @@ else:
             print(f"    {' '.join(build['cmake_args'])}")
             print()
             
-            subprocess.run(
+            result = subprocess.run(
                 [ cmake ] + build['cmake_args'] + [ build['args']['source'] ],
                 cwd=build['args']['workspace'],
             )
 
-            subprocess.run(
+            if result.returncode != 0:
+                print('CMake Configure failed')
+                exit(result.returncode)
+
+            result = subprocess.run(
                 [
                     shell, '-c',
                     build_command
                 ],
                 cwd=build['args']['workspace'],
             )
+
+            if result.returncode != 0:
+                print('CMake Build failed')
+                exit(result.returncode)
 
             if args['test']:
                 # You can run ctest -j to run tests in parallel, but in order to capture the output in log files
@@ -631,7 +659,10 @@ else:
                 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
                 passed_test_count = len(passed_tests)
-                percentage = math.floor((passed_test_count / test_count) * 100.0)
+
+                percentage = 0
+                if test_count > 0:
+                    percentage = math.floor((passed_test_count / test_count) * 100.0)
 
                 total_time_real = datetime.now() - start_time
                 total_time_real = total_time_real.total_seconds()
@@ -642,17 +673,19 @@ else:
                 print(f"Took {total_time_test:.3f}s (real {total_time_real:.3f}s)")
                 print()
 
-                if len(failed_tests) > 0:
-                    print("The following tests failed:")
-
-                    for name, test in failed_tests.items():
-                        log_filename_escaped = test['log'].replace(' ', '\\ ')
-                        print(f"    {test['index']} {name} ({log_filename_escaped})")
-
                 with open(TEST_DATA_FILENAME, 'wt') as f:
                     all_tests = dict(passed_tests, **failed_tests)
                     f.write(json.dumps(
                         all_tests,
                         indent=2
                     ))
-                
+
+                if len(failed_tests) > 0:
+                    print("The following tests failed:")
+
+                    for name, test in failed_tests.items():
+                        log_filename_escaped = test['log'].replace(' ', '\\ ')
+                        print(f"    {test['index']} {name} ({log_filename_escaped})")
+                    
+                    # Report the failure to Jenkins
+                    exit(1)
