@@ -68,7 +68,7 @@ class Tests(_common.TreeTests, _common.MdsIp):
                 print(nci, t, l, c)
                 raise
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 8000+(self.index * 10), True)
+            'ACTION_SERVER', 'ACTION_PORT', 8000+self.index, True)
 
         svr, svr_log = self._start_mdsip(server, server_port, 'thick')
         try:
@@ -176,7 +176,7 @@ class Tests(_common.TreeTests, _common.MdsIp):
 
     def tcp(self):
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 8001+(self.index * 10), True)
+            'ACTION_SERVER', 'ACTION_PORT', 8001+self.index, True)
         svr, svr_log = self._start_mdsip(server, server_port, 'tcp')
         try:
             self._thread_test(server)
@@ -211,7 +211,7 @@ class Tests(_common.TreeTests, _common.MdsIp):
                   (name, i / (end-start), max_period))
 
         server, server_port = self._setup_mdsip(
-            'ACTION_SERVER', 'ACTION_PORT', 8002+(self.index * 10), True)
+            'ACTION_SERVER', 'ACTION_PORT', 8002+self.index, True)
         tempdir = tempfile.mkdtemp()
         try:
             svr, svr_log = self._start_mdsip(server, server_port, 'tcp')
