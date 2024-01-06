@@ -30,7 +30,7 @@ public class MdsConnectionTest
 
 		port += test_index;
 
-		for (; port < 8800; port++)
+		for (; port < 8000 + test_index + 800; port++)
 		{
 			try
 			{
@@ -55,9 +55,9 @@ public class MdsConnectionTest
 			{}
 
 			// If we have $TEST_INDEX set and we cannot bind to that port, searching for another will collide with a different test
-			if (test_index != 0) {
-				break;
-			}
+			// if (test_index != 0) {
+			// 	break;
+			// }
 		}
 		System.out.println("Cannot find free port!");
 		System.exit(6);
