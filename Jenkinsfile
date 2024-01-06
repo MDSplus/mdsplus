@@ -6,8 +6,8 @@ def OSList = [
     'test-asan',
     'test-tsan',
     'test-ubsan',
-    // 'test-helgrind',
-    // 'test-memcheck',
+    'test-helgrind',
+    'test-memcheck',
     'ubuntu-18-x86_64',
     'ubuntu-20-x86_64',
     'ubuntu-22-x86_64',
@@ -117,7 +117,8 @@ pipeline {
     }
     post {
         always {
-            junit '**/mdsplus-junit.xml'
+            
+            junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml'
 
             // Collect valgrind core dumps
             archiveArtifacts artifacts: "**/core", allowEmptyArchive: true

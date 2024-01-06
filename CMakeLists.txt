@@ -517,6 +517,32 @@ if(ENABLE_SANITIZE IN_LIST _sanitize_flavor_list)
     # TODO: Improve
     add_link_options(-fsanitize=${ENABLE_SANITIZE})
 
+    if(ENABLE_SANITIZE STREQUAL "memory")
+        # 
+    elseif(ENABLE_SANITIZE STREQUAL "address")
+        execute_process(
+            COMMAND ${CMAKE_C_COMPILER} -print-file-name=libasan.so
+            OUTPUT_VARIABLE _ld_preload
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    elseif(ENABLE_SANITIZE STREQUAL "thread")
+        execute_process(
+            COMMAND ${CMAKE_C_COMPILER} -print-file-name=libtsan.so
+            OUTPUT_VARIABLE _ld_preload
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    elseif(ENABLE_SANITIZE STREQUAL "undefined")
+        execute_process(
+            COMMAND ${CMAKE_C_COMPILER} -print-file-name=libubsan.so
+            OUTPUT_VARIABLE _ld_preload
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    endif()
+
+    # TODO: Error checking
+
+    set(LD_PRELOAD ${_ld_preload})
+
 endif()
 
 foreach(_lang IN ITEMS C CXX)

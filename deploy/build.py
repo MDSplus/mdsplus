@@ -532,7 +532,8 @@ else:
                 [
                     ctest, '-N', '--show-only=json-v1'
                 ],
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 cwd=args['workspace'],
             )
 

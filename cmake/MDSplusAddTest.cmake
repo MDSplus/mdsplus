@@ -78,6 +78,9 @@ function(mdsplus_add_test)
         # This is set for Apple as well for backwards compatibility
         list(APPEND _env_mods
             "LD_LIBRARY_PATH=path_list_prepend:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+            
+            # Sometimes required by the sanitizers
+            "LD_PRELOAD=set:${LD_PRELOAD}"
         )
 
         if(APPLE)
