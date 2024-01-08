@@ -114,9 +114,11 @@ pipeline {
     post {
         always {
 
-            for (OS in OSList) {
-                ws("${WORKSPACE}/${OS}") {
-                    sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
+            script {
+                for (OS in OSList) {
+                    ws("${WORKSPACE}/${OS}") {
+                        sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
+                    }
                 }
             }
             
