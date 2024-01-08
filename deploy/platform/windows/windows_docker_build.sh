@@ -55,8 +55,8 @@ buildrelease() {
       popd
       pushd /workspace/releasebld/64/mdsobjects/cpp
       $MAKE generate-libs-from-dlls
-      HOME=/tmp/winebottle64 WINEARCH=win64\
-	wine cmd /C ${srcdir}/deploy/platform/windows/visual-studio-build.bat
+      HOME=/tmp/winebottle64 WINEPREFIX=/tmp/winebottle64 WINEARCH=win64\
+	        wine cmd /C ${srcdir}/deploy/platform/windows/visual-studio-build.bat
       cp /workspace/releasebld/64/bin_x86_64/MdsObjectsCppShr-VS.dll ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/64/bin_x86_64/*.lib ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/32/bin_x86/*.lib ${MDSPLUS_DIR}/bin_x86/

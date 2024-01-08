@@ -121,11 +121,11 @@ pipeline {
                     }
                 }
             }
-            
+
             junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml'
 
-            // TODO: Why does this hang on windows?
-            // archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/test-suite.tap,**/tests/**/core' excludes: 'windows/**/*'
+            // Collect TAP results, valgrind core dumps
+            archiveArtifacts artifacts: "**/test-suite.tap,**/core"
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
