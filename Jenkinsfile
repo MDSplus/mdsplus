@@ -114,8 +114,16 @@ pipeline {
     post {
         always {
 
+            for (OS in OSList) {
+                ws("${WORKSPACE}/${OS}") {
+                    sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
+                }
+            }
+            
+            junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml'
+
             // TODO: Why does this hang on windows?
-            archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/test-suite.tap,**/tests/**/core' excludes: 'windows/**/*'
+            // archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/test-suite.tap,**/tests/**/core' excludes: 'windows/**/*'
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
