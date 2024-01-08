@@ -2,11 +2,21 @@
 
 def OSList = [
     'windows',
-    'ubuntu18', 'ubuntu20', 'ubuntu22',
-    'rhel7', 'rhel8', 'rhel9',
-    // 'alpine3.9-armhf', 'alpine3.9-x86_64', 'alpine3.9-x86',
-    'debian9-64', 'debian10-64', 'debian11-64',
-    'test-asan', 'test-tsan', 'test-ubsan',
+    'ubuntu18',
+    'ubuntu20',
+    'ubuntu22',
+    'rhel7',
+    'rhel8',
+    'rhel9',
+    // 'alpine3.9-armhf',
+    // 'alpine3.9-x86_64',
+    // 'alpine3.9-x86',
+    'debian9-64',
+    'debian10-64',
+    'debian11-64',
+    'test-asan',
+    'test-tsan',
+    'test-ubsan',
 ]
 
 def AdminList = [
@@ -92,12 +102,8 @@ pipeline {
                             }
 
                             stage("${OS} Test") {
-                                sh "./deploy/build.sh --os=${OS} --test --eventport=\$((4100+\${EXECUTOR_NUMBER}))"
-
-                                // TODO: Why does this hang on windows?
-                                if (env.OS != "windows") {
-                                    archiveArtifacts artifacts: 'tests/**/*.log,tests/**/test-suite.tap,tests/**/core'
-                                }
+                                EVENT_PORT = OSList.indexOf(OS) + 4100
+                                sh "./deploy/build.sh --os=${OS} --test --eventport=${EVENT_PORT}"
                             }
                         }
                     }
@@ -107,6 +113,9 @@ pipeline {
     }
     post {
         always {
+
+            archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/test-suite.tap,**/tests/**/core'
+
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
     }
