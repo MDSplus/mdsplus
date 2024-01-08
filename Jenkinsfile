@@ -114,7 +114,8 @@ pipeline {
     post {
         always {
 
-            archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/test-suite.tap,**/tests/**/core'
+            // TODO: Why does this hang on windows?
+            archiveArtifacts artifacts: '**/tests/**/*.log,**/tests/**/test-suite.tap,**/tests/**/core' excludes: 'windows/**/*'
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
