@@ -118,14 +118,13 @@ pipeline {
                 for (OS in OSList) {
                     ws("${WORKSPACE}/${OS}") {
                         sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
+                        junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml'
                     }
                 }
             }
 
-            junit skipPublishingChecks: true, testResults: '**/mdsplus-junit.xml'
-
             // Collect TAP results, valgrind core dumps
-            archiveArtifacts artifacts: "**/test-suite.tap,**/core"
+            archiveArtifacts artifacts: "**/test-suite.tap,**/core", exclude: '**/.wine'
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
