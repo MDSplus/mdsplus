@@ -87,8 +87,6 @@ pipeline {
                         OS: OSList
                     ],
                     actions: {
-                        network="jenkins-${EXECUTOR_NUMBER}-${OS}"
-
                         ws("${WORKSPACE}/${OS}") {
 
                             stage("${OS} Clone") {
@@ -104,6 +102,7 @@ pipeline {
                             }
 
                             stage("${OS} Test") {
+                                network="jenkins-${EXECUTOR_NUMBER}-${OS}"
                                 sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
                             }
                         }
