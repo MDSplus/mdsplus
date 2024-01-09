@@ -124,7 +124,7 @@ pipeline {
             }
 
             // Collect TAP results, valgrind core dumps
-            archiveArtifacts artifacts: "**/test-suite.tap,**/core", exclude: '**/.wine'
+            archiveArtifacts artifacts: "**/test-suite.tap,**/core"
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
         }
