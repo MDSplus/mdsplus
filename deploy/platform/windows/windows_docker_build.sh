@@ -23,6 +23,8 @@ runtests() {
     testarch ${test64}
     testarch ${test32};
     checktests;
+
+    rm -Rf /workspace/.wine
 }
 
 buildrelease() {
@@ -69,10 +71,14 @@ buildrelease() {
     if [ -z "$NOMAKE" ]; then
       source ${srcdir}/deploy/packaging/windows/create_installer.sh
     fi # NOMAKE
+
+    rm -Rf /workspace/.wine
 }
 publish() {
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
     minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
     release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     rsync -a /release/${FLAVOR}/MDSplus${BNAME}-${major}.${minor}-${release}.exe /publish/${FLAVOR}
+    
+    rm -Rf /workspace/.wine
 }
