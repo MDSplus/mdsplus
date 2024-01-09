@@ -40,6 +40,7 @@ if (BRANCH_NAME == "stable") {
 
 pipeline {
     agent any
+    
     options {
         skipDefaultCheckout()
         timeout(time: 1, unit: 'HOURS')
@@ -94,9 +95,9 @@ pipeline {
                             }
 
                             stage("${OS} Bootstrap") {
-                                sh "GIT_BRANCH=${BRANCH_NAME} ./deploy/build.sh --os=bootstrap"
+                                sh "GIT_BRANCH=\$BRANCH_NAME ./deploy/build.sh --os=bootstrap"
 
-                                if (env.OS.endsWith("armhf")) {
+                                if (OS.endsWith("armhf")) {
                                     sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
                                 }
                             }
@@ -104,6 +105,18 @@ pipeline {
                             stage("${OS} Test") {
                                 network="jenkins-${EXECUTOR_NUMBER}-${OS}"
                                 sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
+                            }
+
+                            // The IDL/MATLAB tests need to be run the same OS as the build server
+                            if (OS == "ubuntu22") {
+                                stage("IDL") {
+                                    env.MDSPLUS_DIR = "${WORKSPACE}/tests/64/buildroot"
+                                    sh ". \$MDSPLUS_DIR/setup.sh; ./idl/testing/run_tests.py"
+                                }
+
+                                stage("MATLAB") {
+                                    // TODO
+                                }
                             }
                         }
                     }
