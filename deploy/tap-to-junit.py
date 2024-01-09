@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import glob
 import os
 import sys
+
+from pathlib import Path
 
 import xml.etree.ElementTree as xml
 
@@ -17,10 +18,9 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-tap_filename_list = glob.glob(
-    '**/*.trs',
-    recursive=True
-)
+# Using pathlib.Path.glob instead of glob.glob because it doesn't follow symlinks
+# and the windows build directory has recursive symlinks
+tap_filename_list = Path('.').glob('**/*.trs')
 
 all_tests = {}
 failed_test_count = 0
