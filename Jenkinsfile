@@ -87,6 +87,8 @@ pipeline {
                         OS: OSList
                     ],
                     actions: {
+                        network="jenkins-${EXECUTOR_NUMBER}-${OS}"
+
                         ws("${WORKSPACE}/${OS}") {
 
                             stage("${OS} Clone") {
@@ -102,8 +104,7 @@ pipeline {
                             }
 
                             stage("${OS} Test") {
-                                EVENT_PORT = OSList.indexOf(OS) + 4100
-                                sh "./deploy/build.sh --os=${OS} --test --eventport=${EVENT_PORT}"
+                                sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
                             }
                         }
                     }
