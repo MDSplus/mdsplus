@@ -102,8 +102,8 @@ pipeline {
                             }
 
                             stage("${OS} Test") {
-                                EVENT_PORT = OSList.indexOf(OS) + 4100
-                                sh "./deploy/build.sh --os=${OS} --test --eventport=${EVENT_PORT}"
+                                network="jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
                             }
                         }
                     }
