@@ -111,15 +111,14 @@ using namespace testing;
 int main(int argc __attribute__((unused)),
          char *argv[] __attribute__((unused)))
 {
-  TEST_TIMEOUT(100);
   BEGIN_TESTING(Tree);
 
 #ifdef _WIN32
 #define setenv(name, val, extra) _putenv_s(name, val)
 #endif
 
-  setenv("t_tree_path", ".", 1);
-  setenv("t_tree2_path", ".", 1);
+  // setenv("t_tree_path", ".", 1);
+  // setenv("t_tree2_path", ".", 1);
 
   ////////////////////////////////////////////////////////////////////////////////
   //  Constructors

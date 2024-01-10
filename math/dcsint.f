@@ -248,7 +248,7 @@
       Do j = 1,ndata
             idx(j) = j
       Enddo
-      Call DSVRGP(ndata,xdata,break,1,idx)
+      Call DSVRGP(ndata,xdata,break,.true.,idx)
       Do j = 1,ndata
             c(1,idx(j)) = fdata(j)
             c(2,idx(j)) = dfdata(j)

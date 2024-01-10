@@ -49,6 +49,7 @@ extern char *strsignal(int);
 // Check for HAVE_CHECK and HAVE_FORK //
 #include <mdsplus/mdsconfig.h>
 
+#include "lib/libcompat.h"
 #include "testing.h"
 
 #ifdef _WIN32
@@ -225,18 +226,18 @@ void __mark_point(const char *__assertion, const char *__file,
 /// Assert fail
 ///
 
-void __assert_fail(const char *__assertion, const char *__file,
-                   ASSERT_LINE_TYPE __line,
-                   const char *__function __attribute__((unused)))
-{
-  if (!suite)
-    __test_init(__assertion, __file, __line);
-  __test_assert_fail(__file, __line, __assertion, NULL);
+// void __assert_fail(const char *__assertion, const char *__file,
+//                    ASSERT_LINE_TYPE __line,
+//                    const char *__function __attribute__((unused)))
+// {
+//   if (!suite)
+//     __test_init(__assertion, __file, __line);
+//   __test_assert_fail(__file, __line, __assertion, NULL);
 
-  // FIX
-  __test_end();
-  abort();
-}
+//   // FIX
+//   __test_end();
+//   abort();
+// }
 
 static char *pass_msg(void)
 {

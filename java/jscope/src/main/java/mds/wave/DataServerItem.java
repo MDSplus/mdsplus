@@ -109,6 +109,10 @@ public class DataServerItem
 
 	public static final Set<Class<?>> getClasses(String packageName, Class<?> type)
 	{
+		// (SLW) This is unsafe and adds a restriction that the jar file be generated with explicit directory entries
+		// Can we remove this, or are labs injecting their own provider class files? Can we convince them to patch
+		// and rebuild instead?
+
 		final Set<Class<?>> classes = new HashSet<>();
 		try
 		{

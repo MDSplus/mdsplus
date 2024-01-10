@@ -200,13 +200,19 @@ class Tests(TestCase):
 
     @classmethod
     def main(cls):
+        if 'TEST_INDEX' in os.environ:
+            cls.index = int(os.environ['TEST_INDEX'])
+            
         cls.maxDiff = None  # show full diffs
         if cls.__module__ == '__main__':
             cls.__module__ = os.path.basename(sys.argv[0]).split('.', 1)[0]
             if len(sys.argv) == 2 and sys.argv[1] == 'all':
                 cls.runTests()
             elif len(sys.argv) > 1:
-                cls.runTests(sys.argv[1:])
+                tests = sys.argv[1:]
+                for i in range(len(tests)):
+                    tests[i] = tests[i].strip()
+                cls.runTests(tests)
             elif cls.__module__.endswith("_test"):
                 cls.runTests()
             else:

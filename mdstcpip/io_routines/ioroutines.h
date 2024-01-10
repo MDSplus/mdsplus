@@ -18,9 +18,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>
-#endif
 
 #include <socket_port.h>
 DEFINE_INITIALIZESOCKETS;

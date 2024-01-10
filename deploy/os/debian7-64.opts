@@ -1,1 +1,0 @@
---platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/builder:debian_wheezy-64 --distname=DebianWheezy --arch=amd64 --jars

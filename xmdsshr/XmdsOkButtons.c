@@ -155,7 +155,8 @@ static int Apply(Widget w, XtCallbackList callbacks)
   return status;
 }
 
-static void Destroy(Widget w, XtCallbackList callbacks)
+static void Destroy(Widget w __attribute__((unused)),
+                    XtCallbackList callbacks)
 {
   XtFree((char *)callbacks);
 }

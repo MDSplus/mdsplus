@@ -1,0 +1,9 @@
+Test, Ports
+mdstcpip/testing/MdsIpTest, 8001
+mdsobjects/cpp/testing/MdsConnectionTest, 8002-8011
+java/mdsobjects/test/MdsConnectionTest, 8012
+python/MDSplus/tests/connection-thick, 8013
+python/MDSplus/tests/connection-tcp, 8014
+python/MDSplus/tests/connection-write, 8015
+python/MDSplus/tests/dcl-dispatcher, 8016-8017
+python/MDSplus/tests/dcl-timeout, 8018

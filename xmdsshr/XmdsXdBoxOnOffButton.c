@@ -138,13 +138,16 @@ EXPORT Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name,
   return w;
 }
 
-static void SetXdState(Widget w, Widget xd_w,
+static void SetXdState(Widget w __attribute__((unused)),
+                       Widget xd_w,
                        XmToggleButtonCallbackStruct *cb)
 {
   XmdsXdBoxSetState(xd_w, cb->set);
 }
 
-static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct *cb)
+static void SetTbState(Widget w __attribute__((unused)),
+                       Widget oo_w,
+                       XmdsButtonCallbackStruct *cb)
 {
   XmToggleButtonSetState(oo_w, cb->on_off, 0);
 }

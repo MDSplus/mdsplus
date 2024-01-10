@@ -2443,7 +2443,7 @@ TreeNodeThinClient::TreeNodeThinClient(int nid, Connection *connection,
 std::string TreeNodeThinClient::getNciString(int itm)
 {
   char expr[64];
-  sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+  snprintf(expr, sizeof(expr), "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retStringData(connection->get(expr));
   if (!retStringData.get())
     throw MdsException("Error in Remote evaluation of getnci");
@@ -2455,7 +2455,7 @@ std::string TreeNodeThinClient::getNciString(int itm)
 char TreeNodeThinClient::getNciChar(int itm)
 {
   char expr[64];
-  sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+  snprintf(expr, sizeof(expr), "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retData(connection->get(expr));
   if (!retData.get())
     throw MdsException("Error in Remote evaluation of getnci");
@@ -2466,7 +2466,7 @@ char TreeNodeThinClient::getNciChar(int itm)
 int TreeNodeThinClient::getNciInt(int itm)
 {
   char expr[64];
-  sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+  snprintf(expr, sizeof(expr), "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retData(connection->get(expr));
   if (!retData.get())
     throw MdsException("Error in Remote evaluation of getnci");
@@ -2476,7 +2476,7 @@ int TreeNodeThinClient::getNciInt(int itm)
 int64_t TreeNodeThinClient::getNciInt64(int itm)
 {
   char expr[64];
-  sprintf(expr, "GETNCI(%d,%s)", nid, convertNciItm(itm));
+  snprintf(expr, sizeof(expr), "GETNCI(%d,%s)", nid, convertNciItm(itm));
   AutoData<Data> retData(connection->get(expr));
   if (!retData.get())
     throw MdsException("Error in Remote evaluation of getnci");
@@ -2486,7 +2486,7 @@ int64_t TreeNodeThinClient::getNciInt64(int itm)
 char *TreeNodeThinClient::getPath()
 {
   char expr[64];
-  sprintf(expr, "GETNCI(%d,\'PATH\')", nid);
+  snprintf(expr, sizeof(expr), "GETNCI(%d,\'PATH\')", nid);
   AutoData<Data> retData(connection->get(expr));
   if (!retData.get())
     throw MdsException("Error in Remote evaluation of getnci(path)");
@@ -2496,7 +2496,7 @@ char *TreeNodeThinClient::getPath()
 EXPORT Data *TreeNodeThinClient::getData()
 {
   char expr[64];
-  sprintf(expr, "GETNCI(%d,\'RECORD\')", nid);
+  snprintf(expr, sizeof(expr), "GETNCI(%d,\'RECORD\')", nid);
   Data *retData = connection->get(expr);
   if (!retData)
     throw MdsException("Error in Remote evaluation of getnci(record)");
@@ -2521,7 +2521,7 @@ EXPORT void TreeNodeThinClient::deleteData()
 EXPORT bool TreeNodeThinClient::isOn()
 {
   char expr[64];
-  sprintf(expr, "GETNCI(%d,\'STATE\')", nid);
+  snprintf(expr, sizeof(expr), "GETNCI(%d,\'STATE\')", nid);
   AutoData<Data> retData(connection->get(expr));
   if (!retData.get())
     throw MdsException("Error in Remote evaluation of getnci(state)");
@@ -2534,9 +2534,9 @@ EXPORT void TreeNodeThinClient::setOn(bool on)
 {
   char expr[64];
   if (on)
-    sprintf(expr, "TreeTurnOn(%d)", nid);
+    snprintf(expr, sizeof(expr), "TreeTurnOn(%d)", nid);
   else
-    sprintf(expr, "TreeTurnOff(%d)", nid);
+    snprintf(expr, sizeof(expr), "TreeTurnOff(%d)", nid);
   AutoData<Data> retData(connection->get(expr));
 }
 
@@ -2548,7 +2548,7 @@ EXPORT void TreeNodeThinClient::beginSegment(Data *start, Data *end, Data *time,
                             initialData->data()};
   Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(),
                   argsD[3].get()};
-  sprintf(expr, "BeginSegment(%d, $1, $2, $3, $4, -1)", nid);
+  snprintf(expr, sizeof(expr), "BeginSegment(%d, $1, $2, $3, $4, -1)", nid);
   AutoData<Data> retData(connection->get(expr, args, 4));
 }
 
@@ -2560,7 +2560,7 @@ EXPORT void TreeNodeThinClient::makeSegment(Data *start, Data *end, Data *time,
                             initialData->data()};
   Data *args[] = {argsD[0].get(), argsD[1].get(), argsD[2].get(),
                   argsD[3].get()};
-  sprintf(expr, "MakeSegment(%d, $1, $2, $3, $4, -1, size($4))", nid);
+  snprintf(expr, sizeof(expr), "MakeSegment(%d, $1, $2, $3, $4, -1, size($4))", nid);
   AutoData<Data> retData(connection->get(expr, args, 4));
 }
 
@@ -2569,14 +2569,14 @@ EXPORT void TreeNodeThinClient::putSegment(Array *data, int ofs)
   char expr[256];
   AutoData<Data> argsD[] = {data->data()};
   Data *args[] = {argsD[0].get()};
-  sprintf(expr, "PutSegment(%d, %d, $1)", nid, ofs);
+  snprintf(expr, sizeof(expr), "PutSegment(%d, %d, $1)", nid, ofs);
   AutoData<Data> retData(connection->get(expr, args, 1));
 }
 
 EXPORT int TreeNodeThinClient::getNumSegments()
 {
   char expr[64];
-  sprintf(expr, "GetNumSegments(%d)", nid);
+  snprintf(expr, sizeof(expr), "GetNumSegments(%d)", nid);
   AutoData<Data> data(connection->get(expr));
   if (!data.get())
     throw MdsException("Error in Remote evaluation of GetNumSegmentss");
@@ -2587,7 +2587,7 @@ EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start,
                                                  Data **end)
 {
   char expr[64];
-  sprintf(expr, "GetSegmentLimits(%d, %d)", nid, segmentIdx);
+  snprintf(expr, sizeof(expr), "GetSegmentLimits(%d, %d)", nid, segmentIdx);
   AutoData<Array> limitsArr((Array *)connection->get(expr));
   if (!limitsArr)
     throw MdsException("Error in Remote evaluation of GetSegmentLimits");
@@ -2599,7 +2599,7 @@ EXPORT void TreeNodeThinClient::getSegmentLimits(int segmentIdx, Data **start,
 EXPORT Array *TreeNodeThinClient::getSegment(int segIdx)
 {
   char expr[64];
-  sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
+  snprintf(expr, sizeof(expr), "GetSegment(%d, %d)", nid, segIdx);
   Array *retSegment = (Array *)connection->get(expr);
   if (!retSegment)
     throw MdsException("Error in Remote evaluation of GetSegment");
@@ -2609,7 +2609,7 @@ EXPORT Array *TreeNodeThinClient::getSegment(int segIdx)
 EXPORT Data *TreeNodeThinClient::getSegmentDim(int segIdx)
 {
   char expr[64];
-  sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
+  snprintf(expr, sizeof(expr), "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
   Data *retDim = connection->get(expr);
   if (!retDim)
     throw MdsException("Error in Remote evaluation of dim_of(GetSegment)");
@@ -2621,9 +2621,9 @@ EXPORT void TreeNodeThinClient::getSegmentAndDimension(int segIdx,
                                                        Data *&dimension)
 {
   char expr[64];
-  sprintf(expr, "GetSegment(%d, %d)", nid, segIdx);
+  snprintf(expr, sizeof(expr), "GetSegment(%d, %d)", nid, segIdx);
   segment = (Array *)connection->get(expr);
-  sprintf(expr, "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
+  snprintf(expr, sizeof(expr), "DIM_OF(GetSegment(%d, %d))", nid, segIdx);
   dimension = connection->get(expr);
   if (!segment || !dimension)
     throw MdsException("Error in Remote evaluation of GetSegment");
@@ -2634,7 +2634,7 @@ EXPORT void TreeNodeThinClient::beginTimestampedSegment(Array *initData)
   char expr[64];
   AutoData<Data> argsD[] = {initData->data()};
   Data *args[] = {argsD[0].get()};
-  sprintf(expr, "BeginTimestampedSegment(%d, $1, -1)", nid);
+  snprintf(expr, sizeof(expr), "BeginTimestampedSegment(%d, $1, -1)", nid);
   AutoData<Data> retData(connection->get(expr, args, 1));
 }
 
@@ -2645,7 +2645,7 @@ EXPORT void TreeNodeThinClient::putTimestampedSegment(Array *data,
   int len = data->getSize();
   AutoData<Data> argsD[] = {new Int64Array(times, len), data->data()};
   Data *args[] = {argsD[0].get(), argsD[1].get()};
-  sprintf(expr, "PutTimestampedSegment(%d, $1, $2)", nid);
+  snprintf(expr, sizeof(expr), "PutTimestampedSegment(%d, $1, $2)", nid);
   AutoData<Data> retData(connection->get(expr, args, 2));
 }
 
@@ -2661,14 +2661,14 @@ EXPORT void TreeNodeThinClient::putRow(Data *data, int64_t *time, int size)
   AutoData<Data> argsD[] = {new Int64(*time), data->data()};
   Data *args[] = {argsD[0].get(), argsD[1].get()};
   char expr[64];
-  sprintf(expr, "PutRow(%d, %d, $1, $2)", nid, size);
+  snprintf(expr, sizeof(expr), "PutRow(%d, %d, $1, $2)", nid, size);
   AutoData<Data> retData(connection->get(expr, args, 2));
 }
 
 EXPORT StringArray *TreeNodeThinClient::findTags()
 {
   char expr[64];
-  sprintf(expr, "TreeFindNodeTags(%d)", nid);
+  snprintf(expr, sizeof(expr), "TreeFindNodeTags(%d)", nid);
   AutoData<Data> retData(connection->get(expr));
   if (!retData.get())
     throw MdsException("Error in Remote evaluation of TreeFindNodeTags");

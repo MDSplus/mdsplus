@@ -18,7 +18,7 @@ IDL_PATH	\+$MDSPLUS_DIR/idl <:
 PATH		$MDSPLUS_DIR/bin >:
 MANPATH		$MDSPLUS_DIR/man: >:
 MDS_LIB_PS	$MDSPLUS_DIR/lib/dwscope_setup.ps
-@LIBPATH@       $MDSPLUS_DIR/lib >:
+@LIBPATH@       $MDSPLUS_DIR/lib >@LIBPATH_JOIN@
 MDSMSG_PATH     $MDSPLUS_DIR/lib >;
 UDP_EVENTS      yes
 # Define mdsevent_address as compat when using UDP_EVENTS for compatibility with older releases.

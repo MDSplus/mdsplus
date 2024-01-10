@@ -1095,7 +1095,7 @@ static inline int mdsio_read_k(Connection *connection, Message *message)
   size_t count = mdsio->read.count;
   void *buf = malloc(count);
   ssize_t nbytes = MDS_IO_READ(fd, buf, count);
-#ifdef USE_PERF
+#ifdef USE_TREE_PERF
   TreePerfRead(nbytes);
 #endif
   int freed_message;

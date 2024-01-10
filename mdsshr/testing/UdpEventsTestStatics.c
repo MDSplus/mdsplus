@@ -59,6 +59,7 @@ void eventAst(void *arg, int len, char *buf)
   { // this will trigger asan if len is invalid
     access ^= buf[i];
   }
+  (void)access;  // silence set but unused warning
   pthread_mutex_lock(&astCount_mutex);
   astCount++;
   pthread_mutex_unlock(&astCount_mutex);

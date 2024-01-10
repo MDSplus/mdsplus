@@ -81,7 +81,7 @@ static char *ShowType(int type);
 int QueryHighwayType(char *serial_hwy_driver)
 {
   char line[80];
-  char tmpVendor[9], tmpModel[17], tmpRev[5];
+  char tmpVendor[9], tmpModel[17], tmpRev[6];
   int foundHost, foundVendor, highwayType = TYPE_UNKNOWN, host_adapter, scsi_id,
                               tmpHost, tmpId;
   int status = SUCCESS; // optimistic

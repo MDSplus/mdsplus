@@ -1,2 +1,2 @@
 #!/bin/sh
-exec mdsip -P local 2>> ~/mdsip-local.log
+exec mdsip -P local 2>> "${MDSIP_CLIENT_LOCAL_LOGFILE:-~/mdsip-local.log}"

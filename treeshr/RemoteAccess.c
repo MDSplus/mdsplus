@@ -1388,7 +1388,7 @@ EXPORT ssize_t MDS_IO_WRITE(int idx, void *buff, size_t count)
     return 0;
   if (i.conid >= 0)
     return io_write_remote(i.conid, i.fd, buff, count);
-#ifdef USE_PERF
+#ifdef USE_TREE_PERF
   TreePerfWrite(count);
 #endif
   return write(i.fd, buff, (uint32_t)count);
@@ -1424,7 +1424,7 @@ EXPORT ssize_t MDS_IO_READ(int idx, void *buff, size_t count)
     return 0;
   if (i.conid >= 0)
     return io_read_remote(i.conid, i.fd, buff, count);
-#ifdef USE_PERF
+#ifdef USE_TREE_PERF
   TreePerfRead(count);
 #endif
   return read(i.fd, buff, count);
@@ -1482,7 +1482,7 @@ EXPORT ssize_t MDS_IO_READ_X(int idx, off_t offset, void *buff, size_t count,
   ssize_t ans;
   IO_RDLOCK_FILE(io_lock_local, i, offset, count, deleted);
   lseek(i.fd, offset, SEEK_SET);
-#ifdef USE_PERF
+#ifdef USE_TREE_PERF
   TreePerfRead(count);
 #endif
   ans = read(i.fd, buff, (unsigned int)count);

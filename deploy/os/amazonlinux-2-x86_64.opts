@@ -1,0 +1,1 @@
+--dockerimage=mdsplus/builder:amazonlinux-2-x86_64 --distname=amzn2

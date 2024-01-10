@@ -121,12 +121,16 @@ EXPORT Widget XmdsCreateXdBoxDialogButton(Widget parent, String name,
   return w;
 }
 
-static void Destroy(Widget w, Resources *info, XtPointer cb)
+static void Destroy(Widget w __attribute__((unused)),
+                    Resources *info,
+                    XtPointer cb __attribute__((unused)))
 {
   XtFree((char *)info);
 }
 
-static void Popup(Widget w, Resources *info, XtPointer cb)
+static void Popup(Widget w __attribute__((unused)),
+                  Resources *info,
+                  XtPointer cb __attribute__((unused)))
 {
   if (info->popup_w)
     XmdsManageWindow(info->popup_w);
