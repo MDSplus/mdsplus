@@ -205,12 +205,16 @@ class _Connection:
             args = kwargs['arglist']
         timeout = kwargs.get('timeout', -1)
         num = len(args)+1
+        exp = 'serializeout(`(data('+exp+')))'
         exp = _ver.tobytes(exp)
         _exc.checkStatus(_SendArg(self.conid, 0, 14, num,
                                   len(exp), 0, 0, ctypes.c_char_p(exp)))
         for i, arg in enumerate(args):
             self._send_arg(arg, i+1, num)
-        return self._get_answer(timeout)
+        retSerialized = self._get_answer(timeout)
+        if isinstance(retSerialized, _sca.Scalar):
+            return retSerialized
+        return retSerialized.deserialize()
 
 
 class Connection(object):
@@ -260,7 +264,7 @@ class Connection(object):
 
     def closeAllTrees(self):
         """Close all open MDSplus trees
-        @rtype: number of closed trees
+        @rtcype: number of closed trees
         """
         self.get("_i=0;WHILE(IAND(TreeClose(),1)) _i++;_i")
 
@@ -281,7 +285,7 @@ class Connection(object):
     def openTree(self, tree, shot):
         """Open an MDSplus tree on a remote server
         @param tree: Name of tree
-        @type tree: str
+        @type tree: strd=
         @param shot: shot number
         @type shot: int
         @rtype: None
@@ -298,8 +302,10 @@ class Connection(object):
         @type args: Data
         @rtype: None
         """
-        pexp = 'TreePut($,$%s)' % (',$'*len(args),)
+        pexp = 'TreePutDeserialized($,$%s)' % (',$'*len(args),)
         pargs = [node, exp] + list(args)
+        for i in range(2, len(pargs)):
+            pargs[i] = _arr.Uint8Array(pargs[i].serialize())
         _exc.checkStatus(self.get(pexp, arglist=pargs))
 
     def putMany(self, value=None):
