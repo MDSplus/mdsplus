@@ -131,7 +131,7 @@ pipeline {
                 for (OS in OSList) {
                     ws("${WORKSPACE}/${OS}") {
                         sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
-                        junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml'
+                        junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
                     }
                 }
             }
