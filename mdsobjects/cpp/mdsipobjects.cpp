@@ -395,9 +395,9 @@ Data *Connection::get(const char *expr, Data **args, int nArgs, bool serialized)
   }
 
   lockLocal();
-  std::string expExpr("serializeout(`(");
+  std::string expExpr("serializeout(`(data(");
   expExpr +=expr;
-  expExpr += "))";
+  expExpr += ")))";
   status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs + 1,
                    expExpr.size(), 0, 0, (char *)expExpr.c_str());
 //                   std::string(expr).size(), 0, 0, (char *)expr);
@@ -524,10 +524,18 @@ Data *Connection::get(const char *expr, Data **args, int nArgs, bool serialized)
   if (mem)
     FreeMessage(mem);
   
-  Data *deserData = deserialize(resData);
+
+  if(nDims == 0) //Error code returned
+    return resData;
+
+  Data *deserData = deserialize(resData);  //Otherwise deserialze it
   deleteData(resData);
   
   return deserData;
+}
+void Connection::put(const char *inPath, Data *data)
+{
+    put(inPath, (char *)"$", &data, 1);
 }
 
 void Connection::put(const char *inPath, char *expr, Data **inArgs, int nArgs)
@@ -540,50 +548,24 @@ void Connection::put(const char *inPath, char *expr, Data **inArgs, int nArgs)
   
   int sockId = getSockId();
 
-
-  Data **args;
-
-  //Check id any passed argument is APD. Serialize arguments only in this case
-  bool serialized = false;
-
-  for(int i = 0; i < nArgs; i++)
-  {
-    if (inArgs[i]->clazz == CLASS_APD)
-      serialized = true;
-  }
-
+  
 //Serialize Arguments
-  if(serialized)
+  Data **args = new Data*[nArgs];
+  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
   {
-    args = new Data*[nArgs];
-    for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
-    {
-        int currSerSize;
-        char *currSer = inArgs[argIdx]->serialize(&currSerSize);
-        args[argIdx] = new Uint8Array((unsigned char *)currSer, currSerSize);
-        delete []currSer;
-    }
+      int currSerSize;
+      char *currSer = inArgs[argIdx]->serialize(&currSerSize);
+      args[argIdx] = new Uint8Array((unsigned char *)currSer, currSerSize);
+      delete []currSer;
   }
-  else
-  {
-    args = inArgs;
-  }
+
 
   // Double backslashes!!
   std::string path(inPath);
   if (path.at(0) == '\\')
     path.insert(path.begin(), '\\');
 
-  std::string putExpr;
-  if(serialized)
-  {
-    putExpr += "TreePutDeserialized(\'";
-  }
-  else
-  {
-    putExpr += "TreePut(\'";
-  }
-
+  std::string putExpr("TreePutDeserialized(\'");
   putExpr += path + "\',\'" + expr + "\'";
   for (int varIdx = 0; varIdx < nArgs; ++varIdx)
     putExpr += ",$";
@@ -625,15 +607,11 @@ void Connection::put(const char *inPath, char *expr, Data **inArgs, int nArgs)
     FreeMessage(mem);
 
 //Delete serialize args
-  if (serialized)
+  for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
   {
-    for (std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx)
-    {
-        deleteData(args[argIdx]);
-    }
-    delete [] args;
+      deleteData(args[argIdx]);
   }
-
+  delete [] args;
 
   if (STATUS_NOT_OK)
     throw MdsException(status);

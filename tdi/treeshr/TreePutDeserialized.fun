@@ -4,6 +4,7 @@ public fun TreePutDeserialized(in _nodename, in _expression, optional in _a, opt
        optional in _o, optional in _p, optional in _q, optional in _r, optional in _s, optional in _t,
        optional in _u, optional in _v, optional in _w, optional in _x, optional in _y, optional in _z)
 {
+  write(*, 'TREE PUT DESRIALIZED');
   _list = List(*,_expression);
   for (_narg=1;_narg <= 26; _narg++)
   {
