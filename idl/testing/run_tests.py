@@ -1,18 +1,64 @@
+#!/usr/bin/env python3
 
 import os
 import subprocess
+import argparse
 
-server = 'localhost'
-if 'TEST_MDSIP_SERVER' in os.environ:
-    server = os.environ['TEST_MDSIP_SERVER']
+# The default values are intended to be used from within the PSFC network
+# If you want to run these tests on your own infrastructure, provide the
+# details as arguments to customize the tests to your servers/trees/nodes
 
-tree = os.environ['TEST_TREE']
-shot = os.environ['TEST_SHOT']
-node1 = os.environ['TEST_NODE1']
-node1_value = os.environ['TEST_NODE1_VALUE']
-node2 = os.environ['TEST_NODE2']
-node2_value = os.environ['TEST_NODE2_VALUE']
-dbname = os.environ['TEST_DB_NAME']
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    '--mdsip-server',
+    default='alcdaq6',
+    help='The server to call mdsconnect() on'
+)
+
+parser.add_argument(
+    '--database-name',
+    default='logbook',
+    help='The database to call set_database() on'
+)
+
+parser.add_argument(
+    '--tree',
+    default='cmod',
+    help='The tree to mdsopen()'
+)
+
+parser.add_argument(
+    '--shot',
+    default=1090909009,
+    help='The shot to mdsopen()'
+)
+
+parser.add_argument(
+    '--node1',
+    default='SUM(\\IP)',
+    help='An expression to evaluate and compare against --node1-value'
+)
+
+parser.add_argument(
+    '--node1-value',
+    default='-6.96628e+07',
+    help='The value of evaluating the --node1 expression, ignoring leading/trailing whitespace'
+)
+
+parser.add_argument(
+    '--node2',
+    default='TSTART',
+    help='An expression to evaluate and compare against --node2-value'
+)
+
+parser.add_argument(
+    '--node2-value',
+    default='-4.00000',
+    help='The value of evaluating the --node2 expression, ignoring leading/trailing whitespace'
+)
+
+args = parser.parse_args()
 
 all_tests_passed = True
 def idl_test(code, expected_output):
@@ -22,6 +68,9 @@ def idl_test(code, expected_output):
     code_lines = list(filter(None, code_lines))
     code = '\n'.join(code_lines)
 
+    # Running IDL code at the IDL> prompt vs running it as a script causes
+    # weird differences in the evaluation, so we use a test.pro file
+
     code = 'pro test\n' + code + '\nend'
     open('test.pro', 'wt').write(code)
 
@@ -30,8 +79,6 @@ def idl_test(code, expected_output):
 
     print('Running:')
     for line in code_lines:
-        line = line.replace(server, '******')
-        line = line.replace(dbname, '******')
         print(f'IDL> {line}')
     print()
 
@@ -47,6 +94,8 @@ def idl_test(code, expected_output):
         stderr=subprocess.STDOUT
     )
 
+    # We call our test.pro module
+
     proc.stdin.write('test\nexit\n'.encode())
     proc.stdin.flush()
     
@@ -61,24 +110,16 @@ def idl_test(code, expected_output):
 
         line = line.strip()
 
-        if not hide_output:
+        if line is not None and not hide_output:
             print(line)
             if line != '':
                 lines.append(line.strip())
         
+        # Skip the IDL header and licenseing information, which is everything
+        # above this line
         if line == '% Compiled module: TEST.':
             hide_output = False
     print()
-
-    #stdout, _ = proc.communicate('test\n'.encode())
-    #lines = [line.strip() for line in stdout.splitlines() ]
-    lines = list(filter(None, lines))
-
-    # Skip the IDL header and License information
-    for i, line in enumerate(lines):
-        if line == '% Compiled module: TEST.':
-            lines = lines[i + 1:]
-
 
     this_test_passed = True
  
@@ -102,11 +143,11 @@ def idl_test(code, expected_output):
 idl_test(f'''
          
 testid = 'IDL-tree-read'
-mdsconnect, '{server}'
-mdsopen, '{tree}', {shot}
-print, mdsvalue('{node1}')
-print, mdsvalue('{node2}')
-mdsclose, '{tree}', '{shot}'
+mdsconnect, '{args.mdsip_server}'
+mdsopen, '{args.tree}', {args.shot}
+print, mdsvalue('{args.node1}')
+print, mdsvalue('{args.node2}')
+mdsclose, '{args.tree}', '{args.shot}'
 
 ''',
 f'''
@@ -118,8 +159,8 @@ f'''
 % Compiled module: MDSVALUE.
 % Compiled module: MDSCHECKARG.
 % Compiled module: MDSISCLIENT.
-{node1_value}
-{node2_value}
+{args.node1_value}
+{args.node2_value}
 % Compiled module: MDSCLOSE.
 
 ''')
@@ -133,7 +174,7 @@ testid = 'IDL-2580-connect'
 PASS = 1
 FAIL = 0
 BOGUS = -77
-mdsip_server = '{server}'
+mdsip_server = '{args.mdsip_server}'
 test_status = PASS
 
 mdsconnect, mdsip_server
@@ -167,7 +208,7 @@ SUCCESS
 
 ''')
 
-if dbname != '':
+if args.database_name != '':
 
     # Issue #2625: database on socket 0, subsequent connect doesn't break proxy.
     # If the queries work, the "val" variables will be changed to a text timestamp.
@@ -177,8 +218,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77                  
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -225,8 +266,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77                  
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -271,8 +312,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77                  
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -326,8 +367,8 @@ if dbname != '':
     FAIL = 0
     BOGUS = -77
     NLOOPS = 100                           
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -477,7 +518,7 @@ testid = "IDL-2638-loop"
 PASS = 1
 FAIL = 0
 NLOOPS = 100
-mdsip_server = '{server}'
+mdsip_server = '{args.mdsip_server}'
 test_status = FAIL
 
 for i = 1, NLOOPS do begin
@@ -610,7 +651,7 @@ testid = 'IDL-2639-no-socket'
 PASS = 1
 FAIL = 0
 DATA = '55'
-mdsip_server = '{server}'
+mdsip_server = '{args.mdsip_server}'
 test_status = PASS
 
 result = mdsvalue(DATA)
@@ -644,7 +685,7 @@ SUCCESS
 # PASS = 1
 # FAIL = 0
 # DATA = '55'
-# mdsip_server = '{server}'
+# mdsip_server = '{args.mdsip_server}'
 # test_status = PASS
 
 # mdsconnect, mdsip_server
@@ -689,7 +730,7 @@ testid = 'IDL-2639-kill-first-socket'
 PASS = 1
 FAIL = 0
 DATA = '55'
-mdsip_server = '{server}'
+mdsip_server = '{args.mdsip_server}'
 test_status = PASS
 
 mdsconnect, mdsip_server
@@ -734,7 +775,7 @@ testid = 'IDL-2639-kill-default-socket'
 PASS = 1
 FAIL = 0
 DATA = '55'
-mdsip_server = '{server}'
+mdsip_server = '{args.mdsip_server}'
 test_status = PASS
 
 mdsconnect, mdsip_server
@@ -780,7 +821,7 @@ testid = 'IDL-2639-kill-single-socket'
 PASS = 1
 FAIL = 0
 DATA = '55'
-mdsip_server = '{server}'
+mdsip_server = '{args.mdsip_server}'
 test_status = PASS
 
 result = mdsvalue(DATA)
@@ -825,7 +866,7 @@ SUCCESS
 # PASS = 1
 # FAIL = 0
 # DATA = '55'
-# mdsip_server = '{server}'
+# mdsip_server = '{args.mdsip_server}'
 # test_status = PASS
 
 # result = mdsvalue(DATA)
@@ -871,7 +912,7 @@ SUCCESS
 # PASS = 1
 # FAIL = 0
 # BOGUS = -77
-# mdsip_server = '{server}'
+# mdsip_server = '{args.mdsip_server}'
 # test_status = PASS
 
 # mdsconnect, mdsip_server
@@ -907,7 +948,7 @@ SUCCESS
 # ''')
 
 
-if dbname != '':
+if args.database_name != '':
 
     # Database: dbdisconnect kills database proxy
     idl_test(f'''
@@ -916,8 +957,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -971,8 +1012,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -1034,8 +1075,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -1112,8 +1153,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
@@ -1167,8 +1208,8 @@ if dbname != '':
     PASS = 1
     FAIL = 0
     BOGUS = -77
-    proxy = '{dbname}'
-    mdsip_server = '{server}'
+    proxy = '{args.database_name}'
+    mdsip_server = '{args.mdsip_server}'
     query = 'select getdate()'
     test_status = PASS
 
