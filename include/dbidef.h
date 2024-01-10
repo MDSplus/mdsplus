@@ -24,6 +24,7 @@
 #define DbiREADONLY 12             /* True if making tree readonly */
 #define DbiDISPATCH_TABLE 13       /* Tree dispatch table */
 #define DbiALTERNATE_COMPRESSION 14 /* Set to true to enable extended compression methods */
+#define DbiTREE_VERSION 15         /* Tree format version number, reserved for MDSplus 8 */
 typedef struct dbi_itm
 {
   short int buffer_length;
