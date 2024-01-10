@@ -85,6 +85,9 @@ rundocker() {
         docker rm $(cat ${WORKSPACE}/${OS}_docker-cid) || true
         rm -f ${WORKSPACE}/${OS}_docker-cid
       fi
+      if [ ! -z $DOCKERNETWORK ]; then
+        docker network rm ${DOCKERNETWORK} || true
+      fi
     }
 
     function abort() {
@@ -99,9 +102,13 @@ rundocker() {
     while [ $status = 127 -a $loop_count -lt 5 ]; do
       let loop_count=$loop_count+1
 
-      kill_docker
+      network=""
+      if [ ! -z $DOCKERNETWORK ]; then
+        docker network create ${DOCKERNETWORK}
+        network="--network=${DOCKERNETWORK}"
+      fi
 
-      docker run --cap-add=SYS_PTRACE -t $stdio \
+      docker run --cap-add=SYS_PTRACE -t $stdio $network \
         --cidfile=${WORKSPACE}/${OS}_docker-cid \
         -u $(id -u):$(id -g) --privileged -h $DISTNAME -e "srcdir=${DOCKER_SRCDIR}" \
         -e "ARCH=${arch}" \
@@ -145,9 +152,10 @@ rundocker() {
         docker logs --follow $cid
 
         status=$(docker inspect $cid --format='{{.State.ExitCode}}')
-
-        docker rm $cid
       fi
+
+      kill_docker
+
     done
     if [ ! "$status" = "0" ]; then
       RED
