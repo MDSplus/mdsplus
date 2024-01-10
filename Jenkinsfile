@@ -111,7 +111,12 @@ pipeline {
                             if (OS == "ubuntu22") {
                                 stage("IDL") {
                                     env.MDSPLUS_DIR = "${WORKSPACE}/tests/64/buildroot"
-                                    sh ". \$MDSPLUS_DIR/setup.sh; ./idl/testing/run_tests.py"
+                                    sh """
+                                        set +x
+                                        . \$MDSPLUS_DIR/setup.sh
+                                        set -x
+                                        ./idl/testing/run_tests.py
+                                    """
                                 }
 
                                 stage("MATLAB") {
