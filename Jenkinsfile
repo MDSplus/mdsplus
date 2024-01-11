@@ -1,4 +1,3 @@
-@Library('camunda-community') _
 
 def OSList = [
     'windows',
@@ -56,7 +55,6 @@ pipeline {
                 sh 'printenv'
 
                 script {
-                    
                     // is PR
                     if (env.CHANGE_ID) {
                         // This is safe because untrusted PRs will use Jenkinsfile from the target branch
@@ -82,66 +80,72 @@ pipeline {
         }
         stage('Distributions') {
             steps {
-                dynamicMatrix([
-                    failFast: false,
-                    axes: [
-                        OS: OSList
-                    ],
-                    actions: {
-                        ws("${WORKSPACE}/${OS}") {
+                script {
+                    parallel OSList.collectEntries {
+                        OS -> [ "${OS}": {
+                            stage("${OS}") {
+                                ws("${WORKSPACE}/${OS}") {
+                                    stage("${OS} Clone") {
+                                        checkout scm;
+                                    }
 
-                            stage("${OS} Clone") {
-                                checkout scm;
-                            }
+                                    stage("${OS} Bootstrap") {
+                                        sh "GIT_BRANCH=\$BRANCH_NAME ./deploy/build.sh --os=bootstrap"
 
-                            stage("${OS} Bootstrap") {
-                                sh "GIT_BRANCH=\$BRANCH_NAME ./deploy/build.sh --os=bootstrap"
+                                        if (OS.endsWith("armhf")) {
+                                            sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
+                                        }
+                                    }
 
-                                if (OS.endsWith("armhf")) {
-                                    sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
+                                    stage("${OS} Test") {
+                                        try {
+                                            def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                            sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
+                                        }
+                                        finally {
+                                            sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
+                                            junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
+
+                                            echo "Testing complete"
+                                        }
+                                    }
                                 }
                             }
+                        }]
+                    }
+                }
+            }
+        }
 
-                            stage("${OS} Test") {
-                                network="jenkins-${EXECUTOR_NUMBER}-${OS}"
-                                sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
-                            }
-
-                            // The IDL/MATLAB tests need to be run the same OS as the build server
-                            if (OS == "ubuntu22") {
-                                stage("IDL") {
-                                    env.MDSPLUS_DIR = "${WORKSPACE}/tests/64/buildroot"
-                                    sh """
-                                        set +x
-                                        . \$MDSPLUS_DIR/setup.sh
-                                        set -x
-                                        ./idl/testing/run_tests.py
-                                    """
-                                }
-
-                                stage("MATLAB") {
-                                    // TODO
-                                }
+        stage('Additional Testing') {
+            parallel {
+                stage("Test IDL") {
+                    steps {
+                        // The IDL tests have to be run with the same OS as the builder
+                        ws("${WORKSPACE}/ubuntu22") {
+                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot"]) {
+                                sh """
+                                    set +x
+                                    . \$MDSPLUS_DIR/setup.sh
+                                    set -x
+                                    ./idl/testing/run_tests.py
+                                """
                             }
                         }
                     }
-                ])
+                }
+
+                stage("Test MATLAB") {
+                    steps {
+                        echo "Testing MATLAB"
+                        // TODO
+                    }
+                }
             }
         }
     }
     post {
         always {
-
-            script {
-                for (OS in OSList) {
-                    ws("${WORKSPACE}/${OS}") {
-                        sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
-                        junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
-                    }
-                }
-            }
-
-            // Collect TAP results, valgrind core dumps
             archiveArtifacts artifacts: "**/test-suite.tap,**/core", followSymlinks: false
 
             cleanWs disableDeferredWipeout: true, deleteDirs: true
