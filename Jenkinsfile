@@ -198,9 +198,9 @@ pipeline {
                         OS -> [ "${OS}": {
                             stage("${OS}") {
                                 ws("${WORKSPACE}/${OS}") {
-
-                                stage("${OS} Publish") {
-                                    sh "./deploy/build.sh --os=${OS} --publish=\$VERSION --publishdir=/tmp/publish"
+                                    stage("${OS} Publish") {
+                                        sh "./deploy/build.sh --os=${OS} --publish=\$VERSION --publishdir=/tmp/publish"
+                                    }
                                 }
                             }
                         }]
