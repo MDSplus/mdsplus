@@ -120,20 +120,24 @@ pipeline {
         stage('Additional Testing') {
             parallel {
                 stage("Test IDL") {
-                    // The IDL tests have to be run with the same OS as the builder
-                    ws("${WORKSPACE}/ubuntu22") {
-                        env.MDSPLUS_DIR = "${WORKSPACE}/tests/64/buildroot"
-                        sh """
-                            set +x
-                            . \$MDSPLUS_DIR/setup.sh
-                            set -x
-                            ./idl/testing/run_tests.py
-                        """
+                    steps {
+                        // The IDL tests have to be run with the same OS as the builder
+                        ws("${WORKSPACE}/ubuntu22") {
+                            env.MDSPLUS_DIR = "${WORKSPACE}/tests/64/buildroot"
+                            sh """
+                                set +x
+                                . \$MDSPLUS_DIR/setup.sh
+                                set -x
+                                ./idl/testing/run_tests.py
+                            """
+                        }
                     }
                 }
 
                 stage("Test MATLAB") {
-                    // TODO
+                    steps {
+                        // TODO
+                    }
                 }
             }
         }
