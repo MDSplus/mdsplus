@@ -136,7 +136,10 @@ pipeline {
                 }
 
                 stage("Test MATLAB") {
-                    // TODO
+                    steps {
+                        echo "Testing MATLAB"
+                        // TODO
+                    }
                 }
             }
         }
