@@ -50,6 +50,7 @@ pipeline {
     }
 
     stages {
+
         stage('Setup') {
             steps {
                 sh 'printenv'
@@ -78,6 +79,32 @@ pipeline {
                 cleanWs disableDeferredWipeout: true, deleteDirs: true
             }
         }
+
+        stage("Calculate Version") {
+            // when {
+            //     allOf {
+            //         anyOf {
+            //             branch 'alpha';
+            //             branch 'stable';
+            //         }
+
+            //         triggeredBy 'TimerTrigger'
+            //     }
+            // }
+            steps {
+                ws("${WORKSPACE}/publish") {
+                    checkout scm;
+
+                    env.VERSION = sh(
+                        script: "./deploy/get-new-version.py",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Calculated new version to be \$VERSION"
+                }
+            }
+        }
+
         stage('Distributions') {
             steps {
                 script {
@@ -107,6 +134,15 @@ pipeline {
                                             junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
 
                                             echo "Testing complete"
+                                        }
+                                    }
+
+                                    stage("${OS} Build Release") {
+                                        if (env.VERSION) {
+                                            sh "./deploy/build.sh --os=${OS} --release=\$VERSION"
+                                        }
+                                        else {
+                                            sh "./deploy/build.sh --os=${OS} --release"
                                         }
                                     }
                                 }
@@ -139,6 +175,45 @@ pipeline {
                     steps {
                         echo "Testing MATLAB"
                         // TODO
+                    }
+                }
+            }
+        }
+
+        // TODO: Only publish when the $VERSION is newer than the last release
+        stage('Publish') {
+            // when {
+            //     allOf {
+            //         anyOf {
+            //             branch 'alpha';
+            //             branch 'stable';
+            //         }
+
+            //         triggeredBy 'TimerTrigger'
+            //     }
+            // }
+            steps {
+                script {
+                    parallel OSList.collectEntries {
+                        OS -> [ "${OS}": {
+                            stage("${OS}") {
+                                ws("${WORKSPACE}/${OS}") {
+
+                                stage("${OS} Publish") {
+                                    sh "./deploy/build.sh --os=${OS} --publish=\$VERSION --publishdir=/tmp/publish"
+                                }
+                            }
+                        }]
+                    }
+                }
+
+                stage("Publish Version") {
+                    ws("${WORKSPACE}/publish") {
+                        def tag = "${BRANCH_NAME}_release-" + env.VERSION.replaceAll(".", "-")
+                        sh "git tag ${tag}"
+
+                        echo "Publishing tag ${tag}"
+                        // git push --tags
                     }
                 }
             }
