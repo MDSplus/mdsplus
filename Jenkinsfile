@@ -136,9 +136,7 @@ pipeline {
                 }
 
                 stage("Test MATLAB") {
-                    steps {
-                        // TODO
-                    }
+                    // TODO
                 }
             }
         }
