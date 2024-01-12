@@ -181,22 +181,20 @@ pipeline {
                         }
                     }
 
-                    parallel OSList.collectEntries {
-                        if (!OS.startsWith("test-")) {
-                            OS -> [ "${OS}": {
-                                stage("${OS} Release & Publish") {
-                                    ws("${WORKSPACE}/${OS}") {
-                                        stage("${OS} Release") {
-                                            sh "./deploy/build.sh --os=${OS} --release=${new_version}"
-                                        }
+                    parallel OSList.findAll{ (!var.startsWith("test-")) }.collectEntries {
+                        OS -> [ "${OS}": {
+                            stage("${OS} Release & Publish") {
+                                ws("${WORKSPACE}/${OS}") {
+                                    stage("${OS} Release") {
+                                        sh "./deploy/build.sh --os=${OS} --release=${new_version}"
+                                    }
 
-                                        stage("${OS} Publish") {
-                                            sh "./deploy/build.sh --os=${OS} --publish=${new_version} --publishdir=/tmp/publish"
-                                        }
+                                    stage("${OS} Publish") {
+                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --publishdir=/tmp/publish"
                                     }
                                 }
-                            }]
-                        }
+                            }
+                        }]
                     }
 
                     stage("Publish Version") {
