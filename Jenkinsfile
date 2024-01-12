@@ -93,14 +93,16 @@ pipeline {
             // }
             steps {
                 ws("${WORKSPACE}/publish") {
-                    checkout scm;
+                    script {
+                        checkout scm;
 
-                    env.VERSION = sh(
-                        script: "./deploy/get-new-version.py",
-                        returnStdout: true
-                    ).trim()
+                        env.VERSION = sh(
+                            script: "./deploy/get-new-version.py",
+                            returnStdout: true
+                        ).trim()
 
-                    echo "Calculated new version to be \$VERSION"
+                        echo "Calculated new version to be \$VERSION"
+                    }
                 }
             }
         }
