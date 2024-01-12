@@ -166,11 +166,13 @@ pipeline {
             // }
             steps {
                 script {
+                    def new_version = ''
+
                     stage("Calculate Version") {
                         ws("${WORKSPACE}/publish") {
                             checkout scm;
 
-                            def new_version = sh(
+                            new_version = sh(
                                 script: "./deploy/get_new_version.py",
                                 returnStdout: true
                             ).trim()
