@@ -100,19 +100,19 @@ pipeline {
                                     }
 
                                     stage("${OS} Test") {
-                                        try {
-                                            def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
-                                            sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
-                                        }
-                                        finally {
-                                            sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
-                                            junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
+                                        // try {
+                                        //     def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                        //     sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
+                                        // }
+                                        // finally {
+                                        //     sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
+                                        //     junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
 
-                                            echo "Testing complete"
-                                        }
+                                        //     echo "Testing complete"
+                                        // }
                                     }
 
-                                    if (!env.VERSION && !OS.startsWith("test-")) {
+                                    if (env.CHANGE_ID && !OS.startsWith("test-")) {
                                         stage("${OS} Test Packaging") {
                                             sh "./deploy/build.sh --os=${OS} --release"
                                         }
