@@ -97,7 +97,7 @@ pipeline {
                         checkout scm;
 
                         env.VERSION = sh(
-                            script: "./deploy/get-new-version.py",
+                            script: "./deploy/get_new_version.py",
                             returnStdout: true
                         ).trim()
 
