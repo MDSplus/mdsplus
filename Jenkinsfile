@@ -84,7 +84,7 @@ pipeline {
             steps {
                 script {
                     parallel OSList.collectEntries {
-                        OS -> [ "${OS}": {
+                        OS -> [ "${OS} Build & Test": {
                             stage("${OS} Build & Test") {
                                 ws("${WORKSPACE}/${OS}") {
                                     stage("${OS} Clone") {
@@ -182,7 +182,7 @@ pipeline {
                     }
 
                     parallel OSList.findAll{ (!var.startsWith("test-")) }.collectEntries {
-                        OS -> [ "${OS}": {
+                        OS -> [ "${OS} Release & Publish": {
                             stage("${OS} Release & Publish") {
                                 ws("${WORKSPACE}/${OS}") {
                                     stage("${OS} Release") {
