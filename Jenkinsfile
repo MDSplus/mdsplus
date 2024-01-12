@@ -181,7 +181,7 @@ pipeline {
                         }
                     }
 
-                    parallel OSList.findAll{ (!var.startsWith("test-")) }.collectEntries {
+                    parallel OSList.findAll{ OS -> (!OS.startsWith("test-")) }.collectEntries {
                         OS -> [ "${OS} Release & Publish": {
                             stage("${OS} Release & Publish") {
                                 ws("${WORKSPACE}/${OS}") {
