@@ -80,33 +80,6 @@ pipeline {
             }
         }
 
-        stage("Calculate Version") {
-            // when {
-            //     allOf {
-            //         anyOf {
-            //             branch 'alpha';
-            //             branch 'stable';
-            //         }
-
-            //         triggeredBy 'TimerTrigger'
-            //     }
-            // }
-            steps {
-                ws("${WORKSPACE}/publish") {
-                    script {
-                        checkout scm;
-
-                        env.VERSION = sh(
-                            script: "./deploy/get_new_version.py",
-                            returnStdout: true
-                        ).trim()
-
-                        echo "Calculated new version to be ${VERSION}"
-                    }
-                }
-            }
-        }
-
         stage('Distributions') {
             steps {
                 script {
@@ -139,14 +112,9 @@ pipeline {
                                         }
                                     }
 
-                                    if (!OS.startsWith("test-")) {
-                                        stage("${OS} Build Release") {
-                                            if (env.VERSION) {
-                                                sh "./deploy/build.sh --os=${OS} --release=\$VERSION"
-                                            }
-                                            else {
-                                                sh "./deploy/build.sh --os=${OS} --release"
-                                            }
+                                    if (!env.VERSION && !OS.startsWith("test-")) {
+                                        stage("${OS} Test Packaging") {
+                                            sh "./deploy/build.sh --os=${OS} --release"
                                         }
                                     }
                                 }
@@ -198,12 +166,33 @@ pipeline {
             // }
             steps {
                 script {
+                    stage("Calculate Version") {
+                        ws("${WORKSPACE}/publish") {
+                            script {
+                                checkout scm;
+
+                                def new_version = sh(
+                                    script: "./deploy/get_new_version.py",
+                                    returnStdout: true
+                                ).trim()
+
+                                echo "Calculated new version to be ${new_version}"
+                            }
+                        }
+                    }
+
                     parallel OSList.collectEntries {
                         OS -> [ "${OS}": {
-                            stage("${OS}") {
-                                ws("${WORKSPACE}/${OS}") {
-                                    stage("${OS} Publish") {
-                                        sh "./deploy/build.sh --os=${OS} --publish=\$VERSION --publishdir=/tmp/publish"
+                            if (!OS.startsWith("test-")) {
+                                stage("${OS}") {
+                                    ws("${WORKSPACE}/${OS}") {
+                                        stage("${OS} Release") {
+                                            sh "./deploy/build.sh --os=${OS} --release=${new_version}"
+                                        }
+
+                                        stage("${OS} Publish") {
+                                            sh "./deploy/build.sh --os=${OS} --publish=${new_version} --publishdir=/tmp/publish"
+                                        }
                                     }
                                 }
                             }
@@ -212,7 +201,7 @@ pipeline {
 
                     stage("Publish Version") {
                         ws("${WORKSPACE}/publish") {
-                            def tag = "${BRANCH_NAME}_release-" + env.VERSION.replaceAll(".", "-")
+                            def tag = "${BRANCH_NAME}_release-" + new_version.replaceAll(".", "-")
                             sh "git tag ${tag}"
 
                             echo "Publishing tag ${tag}"
