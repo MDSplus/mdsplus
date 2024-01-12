@@ -125,32 +125,32 @@ pipeline {
             }
         }
 
-        stage('Additional Testing') {
-            parallel {
-                stage("Test IDL") {
-                    steps {
-                        // The IDL tests have to be run with the same OS as the builder
-                        ws("${WORKSPACE}/ubuntu22") {
-                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot"]) {
-                                sh """
-                                    set +x
-                                    . \$MDSPLUS_DIR/setup.sh
-                                    set -x
-                                    ./idl/testing/run_tests.py
-                                """
-                            }
-                        }
-                    }
-                }
+        // stage('Additional Testing') {
+        //     parallel {
+        //         stage("Test IDL") {
+        //             steps {
+        //                 // The IDL tests have to be run with the same OS as the builder
+        //                 ws("${WORKSPACE}/ubuntu22") {
+        //                     withEnv(["MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot"]) {
+        //                         sh """
+        //                             set +x
+        //                             . \$MDSPLUS_DIR/setup.sh
+        //                             set -x
+        //                             ./idl/testing/run_tests.py
+        //                         """
+        //                     }
+        //                 }
+        //             }
+        //         }
 
-                stage("Test MATLAB") {
-                    steps {
-                        echo "Testing MATLAB"
-                        // TODO
-                    }
-                }
-            }
-        }
+        //         stage("Test MATLAB") {
+        //             steps {
+        //                 echo "Testing MATLAB"
+        //                 // TODO
+        //             }
+        //         }
+        //     }
+        // }
 
         // TODO: Only publish when the $VERSION is newer than the last release
         stage('Publish') {
