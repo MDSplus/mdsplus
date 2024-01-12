@@ -101,7 +101,7 @@ pipeline {
                             returnStdout: true
                         ).trim()
 
-                        echo "Calculated new version to be \$VERSION"
+                        echo "Calculated new version to be ${VERSION}"
                     }
                 }
             }
@@ -139,12 +139,14 @@ pipeline {
                                         }
                                     }
 
-                                    stage("${OS} Build Release") {
-                                        if (env.VERSION) {
-                                            sh "./deploy/build.sh --os=${OS} --release=\$VERSION"
-                                        }
-                                        else {
-                                            sh "./deploy/build.sh --os=${OS} --release"
+                                    if (!OS.startsWith("test-")) {
+                                        stage("${OS} Build Release") {
+                                            if (env.VERSION) {
+                                                sh "./deploy/build.sh --os=${OS} --release=\$VERSION"
+                                            }
+                                            else {
+                                                sh "./deploy/build.sh --os=${OS} --release"
+                                            }
                                         }
                                     }
                                 }
