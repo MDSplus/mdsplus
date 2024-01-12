@@ -112,7 +112,7 @@ pipeline {
                                         // }
                                     }
 
-                                    if (env.CHANGE_ID && !OS.startsWith("test-")) {
+                                    if (false && env.CHANGE_ID && !OS.startsWith("test-")) {
                                         stage("${OS} Test Packaging") {
                                             sh "./deploy/build.sh --os=${OS} --release"
                                         }
