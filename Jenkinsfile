@@ -85,7 +85,7 @@ pipeline {
                 script {
                     parallel OSList.collectEntries {
                         OS -> [ "${OS}": {
-                            stage("${OS}") {
+                            stage("${OS} Build & Test") {
                                 ws("${WORKSPACE}/${OS}") {
                                     stage("${OS} Clone") {
                                         checkout scm;
@@ -182,9 +182,9 @@ pipeline {
                     }
 
                     parallel OSList.collectEntries {
-                        OS -> [ "${OS}": {
-                            if (!OS.startsWith("test-")) {
-                                stage("${OS}") {
+                        if (!OS.startsWith("test-")) {
+                            OS -> [ "${OS}": {
+                                stage("${OS} Release & Publish") {
                                     ws("${WORKSPACE}/${OS}") {
                                         stage("${OS} Release") {
                                             sh "./deploy/build.sh --os=${OS} --release=${new_version}"
@@ -195,8 +195,8 @@ pipeline {
                                         }
                                     }
                                 }
-                            }
-                        }]
+                            }]
+                        }
                     }
 
                     stage("Publish Version") {
