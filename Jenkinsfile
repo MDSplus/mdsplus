@@ -205,15 +205,15 @@ pipeline {
                             }
                         }]
                     }
-                }
 
-                stage("Publish Version") {
-                    ws("${WORKSPACE}/publish") {
-                        def tag = "${BRANCH_NAME}_release-" + env.VERSION.replaceAll(".", "-")
-                        sh "git tag ${tag}"
+                    stage("Publish Version") {
+                        ws("${WORKSPACE}/publish") {
+                            def tag = "${BRANCH_NAME}_release-" + env.VERSION.replaceAll(".", "-")
+                            sh "git tag ${tag}"
 
-                        echo "Publishing tag ${tag}"
-                        // git push --tags
+                            echo "Publishing tag ${tag}"
+                            // git push --tags
+                        }
                     }
                 }
             }
