@@ -50,6 +50,7 @@ pipeline {
     }
 
     stages {
+
         stage('Setup') {
             steps {
                 sh 'printenv'
@@ -78,12 +79,13 @@ pipeline {
                 cleanWs disableDeferredWipeout: true, deleteDirs: true
             }
         }
+
         stage('Distributions') {
             steps {
                 script {
                     parallel OSList.collectEntries {
-                        OS -> [ "${OS}": {
-                            stage("${OS}") {
+                        OS -> [ "${OS} Build & Test": {
+                            stage("${OS} Build & Test") {
                                 ws("${WORKSPACE}/${OS}") {
                                     stage("${OS} Clone") {
                                         checkout scm;
@@ -107,6 +109,12 @@ pipeline {
                                             junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
 
                                             echo "Testing complete"
+                                        }
+                                    }
+
+                                    if (env.CHANGE_ID && !OS.startsWith("test-")) {
+                                        stage("${OS} Test Packaging") {
+                                            sh "./deploy/build.sh --os=${OS} --release"
                                         }
                                     }
                                 }
@@ -139,6 +147,83 @@ pipeline {
                     steps {
                         echo "Testing MATLAB"
                         // TODO
+                    }
+                }
+            }
+        }
+
+        stage('Publish') {
+            when {
+                allOf {
+                    anyOf {
+                        branch 'alpha';
+                        branch 'stable';
+                    }
+
+                    triggeredBy 'TimerTrigger'
+                }
+            }
+            steps {
+                script {
+                    def new_version = '0.0.0'
+
+                    stage("Calculate Version") {
+                        ws("${WORKSPACE}/publish") {
+                            checkout scm;
+
+                            new_version = sh(
+                                script: "./deploy/get_new_version.py",
+                                returnStdout: true
+                            ).trim()
+
+                            if (new_version == '0.0.0') {
+                                error "Failed to calculate new version"
+                            }
+
+                            echo "Calculated new version to be ${new_version}"
+                        }
+                    }
+
+                    release_file_list = []
+
+                    parallel OSList.findAll{ OS -> (!OS.startsWith("test-")) }.collectEntries {
+                        OS -> [ "${OS} Release & Publish": {
+                            stage("${OS} Release & Publish") {
+                                ws("${WORKSPACE}/${OS}") {
+                                    stage("${OS} Release") {
+                                        sh "./deploy/build.sh --os=${OS} --release=${new_version}"
+                                        
+                                        findFiles(glob: "tarfiles/*.tgz").each {
+                                            file -> release_file_list.add(file.path)
+                                        }
+                                    }
+
+                                    stage("${OS} Publish") {
+                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --publishdir=/tmp/publish"
+                                    }
+                                }
+                            }
+                        }]
+                    }
+
+                    stage("Publish Version") {
+                        ws("${WORKSPACE}/publish") {
+                            def tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
+
+                            echo "Creating GitHub Release and Tag for ${tag}"
+                            withCredentials([
+                                usernamePassword(
+                                    credentialsId: 'MDSplusJenkins',
+                                    usernameVariable: 'GITHUB_APP',
+                                    passwordVariable: 'GITHUB_ACCESS_TOKEN'
+                                )]) {
+
+                                // TODO: Protect against spaces in filenames
+                                def release_file_list_arg = release_file_list.join(" ")
+                                sh "./deploy/create_github_release.py --tag ${tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
+                            }
+
+                        }
                     }
                 }
             }
