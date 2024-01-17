@@ -81,8 +81,8 @@ rundocker() {
 
     function kill_docker() {
       if [ -r ${WORKSPACE}/${OS}_docker-cid ]; then
-        docker kill $(cat ${WORKSPACE}/${OS}_docker-cid) || true
-        docker rm $(cat ${WORKSPACE}/${OS}_docker-cid) || true
+        docker kill $(cat ${WORKSPACE}/${OS}_docker-cid) 2>/dev/null || true
+        docker rm $(cat ${WORKSPACE}/${OS}_docker-cid) 2>/dev/null || true
         rm -f ${WORKSPACE}/${OS}_docker-cid
       fi
       if [ ! -z $DOCKERNETWORK ]; then

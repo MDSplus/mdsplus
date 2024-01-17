@@ -100,19 +100,19 @@ pipeline {
                                     }
 
                                     stage("${OS} Test") {
-                                        // try {
-                                        //     def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
-                                        //     sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
-                                        // }
-                                        // finally {
-                                        //     sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
-                                        //     junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
+                                        try {
+                                            def network = "jenkins-${EXECUTOR_NUMBER}-${OS}"
+                                            sh "./deploy/build.sh --os=${OS} --test --dockernetwork=${network}"
+                                        }
+                                        finally {
+                                            sh "./deploy/tap-to-junit.py --junit-suite-name=${OS}"
+                                            junit skipPublishingChecks: true, testResults: 'mdsplus-junit.xml', keepLongStdio: true
 
-                                        //     echo "Testing complete"
-                                        // }
+                                            echo "Testing complete"
+                                        }
                                     }
 
-                                    if (false && env.CHANGE_ID && !OS.startsWith("test-")) {
+                                    if (env.CHANGE_ID && !OS.startsWith("test-")) {
                                         stage("${OS} Test Packaging") {
                                             sh "./deploy/build.sh --os=${OS} --release"
                                         }
@@ -125,48 +125,47 @@ pipeline {
             }
         }
 
-        // stage('Additional Testing') {
-        //     parallel {
-        //         stage("Test IDL") {
-        //             steps {
-        //                 // The IDL tests have to be run with the same OS as the builder
-        //                 ws("${WORKSPACE}/ubuntu22") {
-        //                     withEnv(["MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot"]) {
-        //                         sh """
-        //                             set +x
-        //                             . \$MDSPLUS_DIR/setup.sh
-        //                             set -x
-        //                             ./idl/testing/run_tests.py
-        //                         """
-        //                     }
-        //                 }
-        //             }
-        //         }
+        stage('Additional Testing') {
+            parallel {
+                stage("Test IDL") {
+                    steps {
+                        // The IDL tests have to be run with the same OS as the builder
+                        ws("${WORKSPACE}/ubuntu22") {
+                            withEnv(["MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot"]) {
+                                sh """
+                                    set +x
+                                    . \$MDSPLUS_DIR/setup.sh
+                                    set -x
+                                    ./idl/testing/run_tests.py
+                                """
+                            }
+                        }
+                    }
+                }
 
-        //         stage("Test MATLAB") {
-        //             steps {
-        //                 echo "Testing MATLAB"
-        //                 // TODO
-        //             }
-        //         }
-        //     }
-        // }
+                stage("Test MATLAB") {
+                    steps {
+                        echo "Testing MATLAB"
+                        // TODO
+                    }
+                }
+            }
+        }
 
-        // TODO: Only publish when the $VERSION is newer than the last release
         stage('Publish') {
-            // when {
-            //     allOf {
-            //         anyOf {
-            //             branch 'alpha';
-            //             branch 'stable';
-            //         }
+            when {
+                allOf {
+                    anyOf {
+                        branch 'alpha';
+                        branch 'stable';
+                    }
 
-            //         triggeredBy 'TimerTrigger'
-            //     }
-            // }
+                    triggeredBy 'TimerTrigger'
+                }
+            }
             steps {
                 script {
-                    def new_version = ''
+                    def new_version = '0.0.0'
 
                     stage("Calculate Version") {
                         ws("${WORKSPACE}/publish") {
@@ -177,9 +176,15 @@ pipeline {
                                 returnStdout: true
                             ).trim()
 
+                            if (new_version == '0.0.0') {
+                                error "Failed to calculate new version"
+                            }
+
                             echo "Calculated new version to be ${new_version}"
                         }
                     }
+
+                    release_file_list = []
 
                     parallel OSList.findAll{ OS -> (!OS.startsWith("test-")) }.collectEntries {
                         OS -> [ "${OS} Release & Publish": {
@@ -187,6 +192,10 @@ pipeline {
                                 ws("${WORKSPACE}/${OS}") {
                                     stage("${OS} Release") {
                                         sh "./deploy/build.sh --os=${OS} --release=${new_version}"
+                                        
+                                        findFiles(glob: "tarfiles/*.tgz").each {
+                                            file -> release_file_list.add(file.path)
+                                        }
                                     }
 
                                     stage("${OS} Publish") {
@@ -199,11 +208,21 @@ pipeline {
 
                     stage("Publish Version") {
                         ws("${WORKSPACE}/publish") {
-                            def tag = "${BRANCH_NAME}_release-" + new_version.replaceAll(".", "-")
-                            sh "git tag ${tag}"
+                            def tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
 
-                            echo "Publishing tag ${tag}"
-                            // git push --tags
+                            echo "Creating GitHub Release and Tag for ${tag}"
+                            withCredentials([
+                                usernamePassword(
+                                    credentialsId: 'MDSplusJenkins',
+                                    usernameVariable: 'GITHUB_APP',
+                                    passwordVariable: 'GITHUB_ACCESS_TOKEN'
+                                )]) {
+
+                                // TODO: Protect against spaces in filenames
+                                def release_file_list_arg = release_file_list.join(" ")
+                                sh "./deploy/create_github_release.py --tag ${tag} --api-token \$GITHUB_ACCESS_TOKEN ${release_file_list_arg}"
+                            }
+
                         }
                     }
                 }

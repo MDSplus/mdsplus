@@ -42,7 +42,7 @@ for commit in commit_log.splitlines():
 
 version_parts = last_release.split('-')
 if len(version_parts) < 4:
-    print('1.2.3')
+    print('0.0.0')
     exit(1)
 else:
     major = int(version_parts[-3])
