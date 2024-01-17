@@ -57,10 +57,10 @@ buildrelease() {
   set -e
   RELEASEBLD=/workspace/releasebld
   BUILDROOT=${RELEASEBLD}/buildroot
-  PACKAGESDIR=/workspace/packages
+  TARFILES=/workspace/tarfiles
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
-  rm -Rf ${RELEASEBLD} /release/${FLAVOR} ${PACKAGESDIR}
-  mkdir -p ${RELEASEBLD}/64 ${BUILDROOT} ${MDSPLUS_DIR} ${PACKAGESDIR}
+  rm -Rf ${RELEASEBLD} /release/${FLAVOR} ${TARFILES}
+  mkdir -p ${RELEASEBLD}/64 ${BUILDROOT} ${MDSPLUS_DIR} ${TARFILES}
   pushd ${RELEASEBLD}/64
   config ${test64} ${CONFIGURE_EXTRA}
   if [ -z "$NOMAKE" ]; then
@@ -135,11 +135,11 @@ EOF
     checkstatus abort "Failure: Problem with contents of one or more rpms. (see above)" $badrpm
 
     pushd ${MDSPLUS_DIR}
-    tar -czf $PACKAGESDIR/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}.tgz *
+    tar -czf $TARFILES/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}.tgz *
     popd
 
     pushd /release/${FLAVOR}/RPMS
-    tar -czf $PACKAGESDIR/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}_rpms.tgz */*.rpm
+    tar -czf $TARFILES/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}_rpms.tgz */*.rpm
     popd
   fi #nomake
 }
