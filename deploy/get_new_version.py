@@ -6,7 +6,6 @@ import shutil
 git_executable = shutil.which('git')
 
 def git(command):
-    # print(f'git {command}')
     proc = subprocess.Popen(
         [ git_executable ] + command.split(),
         stdout=subprocess.PIPE,
@@ -39,6 +38,10 @@ for commit in commit_log.splitlines():
 
     elif commit.startswith('docs') or commit.startswith('revert "docs'):
         pass
+
+    else: # Treat all unprefixed commits as 'Fix:'
+        if version_bump != 'MINOR':
+            version_bump = 'PATCH'
 
 version_parts = last_release.split('-')
 if len(version_parts) < 4:
