@@ -199,7 +199,7 @@ pipeline {
                                     }
 
                                     stage("${OS} Publish") {
-                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --publishdir=/tmp/publish"
+                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --publishdir=/mdsplus"
                                     }
                                 }
                             }
