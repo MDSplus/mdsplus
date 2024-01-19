@@ -194,7 +194,7 @@ pipeline {
                                         sh "./deploy/build.sh --os=${OS} --release=${new_version}"
                                         
                                         findFiles(glob: "tarfiles/*.tgz").each {
-                                            file -> release_file_list.add(file.path)
+                                            file -> release_file_list.add(WORKSPACE + "/" + file.path)
                                         }
                                     }
 
