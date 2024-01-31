@@ -27,6 +27,7 @@ def AdminList = [
     'tfredian',
     'WhoBrokeTheBuild',
     'zack-vii',
+    'dgarnier',
 ]
 
 def schedule = "";
