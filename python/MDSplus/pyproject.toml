@@ -1,0 +1,52 @@
+[build-system]
+    requires = ["setuptools>=40.8.0", "wheel"]
+    build-backend = "setuptools.build_meta"
+
+[project]
+    name='MDSplus'
+    authors = [
+        {name = "MDSplus Development Team", email = "twf@www.mdsplus.org"},
+    ]
+    license = {text = "MIT License"}
+    description = "MDSplus Python Object interface"
+    classifiers = [
+        "Programming Language :: Python",
+        "Intended Audience :: Science/Research",
+        "Environment :: Console",
+        "Topic :: Scientific/Engineering",
+        "License :: OSI Approved :: MIT License",
+    ]
+    keywords=['physics', 'mdsplus']
+    dynamic = ["version"]
+    dependencies = [
+        'numpy',
+    ]
+
+[project.urls]
+    Homepage = "http://www.mdsplus.org/"
+    Repository = "https://github.com/MDSplus/mdsplus"
+    Issues = "https://github.com/MDSplus/mdsplus/issues"
+
+[project.optional-dependencies]
+    widgets = ["gtk", "gobject"]
+
+[tool.setuptools]
+    packages = [
+        'MDSplus',
+        'MDSplus.widgets', 
+        'MDSplus.wsgi',
+        'MDSplus.tests',
+    ]
+    package-dir = { 'MDSplus' = '.' }
+    include-package-data = false  # use package-data below
+
+[tool.setuptools.package-data]
+    '*' = [ 
+        'wsgi/html/*',
+        'wsgi/conf/*',
+        'wsgi/js/*',
+        'wsgi/*.tbl',
+    ]
+
+[tool.setuptools.dynamic]
+    version = {attr = '_version.version'}
