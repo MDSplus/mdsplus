@@ -24,5 +24,90 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import sys
+import os
+
+import setuptools
 from setuptools import setup
-setup()
+
+
+def setupkw():
+    try:
+        loc = {}
+        mod_dir = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(mod_dir, "_version.py")) as f:
+            exec(f.read(), None, loc)
+        version = loc["version"]
+        release = "%d.%d.%d" % version
+        release_tag = loc["release_tag"]
+
+    except Exception:
+        release = "0.0.0"
+        release_tag = "Unknown"
+    pth_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return dict(
+        name="MDSplus",
+        extra_path=("mdsplus", pth_dir),
+        version=release,
+        description="MDSplus Python Objects - " + release_tag,
+        long_description=(
+            "This module provides all of the functionality of MDSplus TDI natively in python.\n"
+            "All of the MDSplus data types such as signal are represented as python classes.\n"
+        ),
+        author="MDSplus Development Team",
+        author_email="twf@www.mdsplus.org",
+        url="http://www.mdsplus.org/",
+        license="MIT",
+        classifiers=[
+            "Programming Language :: Python",
+            "Intended Audience :: Science/Research",
+            "Environment :: Console",
+            "Topic :: Scientific/Engineering",
+        ],
+        keywords=[
+            "physics",
+            "mdsplus",
+        ],
+    )
+
+
+if setuptools.__version__ < "60.0.0":
+    # assume that setuptools can't directly use pyproject.toml
+    # for the [project] section, so need the old setup.py
+
+    print(sys.argv)
+    if "develop" in sys.argv:
+        # old setuptools can't have both --editable and --user
+        # but it defaults to user anyway!
+        if "--user" in sys.argv:
+            import site
+
+            print("Removing --user")
+            argv = sys.argv
+            argv.remove("--user")
+            argv.append("--install-dir")
+            argv.append(site.getusersitepackages())
+            sys.argv = argv
+
+    setup(
+        test_suite="tests.test_all",
+        zip_safe=False,
+        packages=["MDSplus",
+                  "MDSplus.wsgi",
+                  "MDSplus.widgets",
+                  "MDSplus.tests"],
+        package_dir={"MDSplus": ".",
+                    "MDSplus.widgets":"widgets",
+                    "MDSplus.wsgi":"wsgi",
+                    "MDSplus.tests":"tests"},
+        package_data={"MDSplus.wsgi":[
+            'html/*',
+            'conf/*',
+            'js/*',
+            '*.tbl']},
+        **setupkw()
+    )
+
+else:
+    # setuptools can use pyproject.toml
+    setup()
