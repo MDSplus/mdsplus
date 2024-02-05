@@ -33,36 +33,42 @@ class MARTE2_COMPONENT(Device):
     MODE_INPUT = 2
     MODE_SYNCH_INPUT = 3
     MODE_OUTPUT = 4
+    MODE_INTERFACE = 5
 
     TIMEBASE_GENERATOR = 1
     TIMEBASE_FROM_SAME_THREAD = 2
     TIMEBASE_FROM_ANOTHER_THREAD = 2
 
     @classmethod
-    def buildParameters(cls, parts):
-        parts.append({'path': '.PARAMETERS', 'type': 'structure'})
+    def buildParameters(cls, parts, prefix = 'PARAMETERS', buildParameters = None):
         idx = 1
-        for parameter in cls.parameters:
-            parts.append({'path': '.PARAMETERS.PAR_' +
+        if buildParameters == None:
+            buildParameters = cls.parameters
+        for parameter in buildParameters:
+            parts.append({'path': prefix + '.PAR_' +
                           str(idx), 'type': 'structure'})
-            parts.append({'path': '.PARAMETERS.PAR_'+str(idx) +
+            parts.append({'path': prefix + '.PAR_'+str(idx) +
                           ':NAME', 'type': 'text', 'value': parameter['name']})
-            if(parameter['type'] == 'string'):
+            if(parameter['type'] == 'structure'):
+                parts.append({'path': prefix + '.PAR_'+str(idx) +
+                                  '.VALUE', 'type': 'structure'}) 
+                cls.buildParameters(parts,  prefix = prefix + '.PAR_'+str(idx) +'.VALUE', buildParameters = parameter['value'])
+            elif(parameter['type'] == 'string'):
                 if 'value' in parameter:
-                    parts.append({'path': '.PARAMETERS.PAR_'+str(idx) +
+                    parts.append({'path': prefix + '.PAR_'+str(idx) +
                                   ':VALUE', 'type': 'text', 'value': parameter['value']})
                 else:
-                    parts.append({'path': '.PARAMETERS.PAR_' +
+                    parts.append({'path': prefix + '.PAR_' +
                                   str(idx)+':VALUE', 'type': 'text'})
             else:
                 if 'value' in parameter:
-                    parts.append({'path': '.PARAMETERS.PAR_'+str(idx)+':VALUE',
+                    parts.append({'path': prefix + '.PAR_'+str(idx)+':VALUE',
                                   'type': 'numeric', 'value': parameter['value']})
                 else:
-                    parts.append({'path': '.PARAMETERS.PAR_' +
+                    parts.append({'path': prefix + '.PAR_' +
                                   str(idx)+':VALUE', 'type': 'numeric'})
             idx = idx+1
-
+ 
     @classmethod
     def buildOutputs(cls, parts):
         parts.append({'path': '.OUTPUTS', 'type': 'structure'})
@@ -240,26 +246,29 @@ class MARTE2_COMPONENT(Device):
 
     @classmethod
     def buildGam(cls, parts, clazz, mode, timebaseExpr=None):
+
         parts.append({'path': ':GAM_CLASS', 'type': 'text', 'value': clazz})
         parts.append({'path': ':MODE', 'type': 'numeric', 'value': mode})
-        if timebaseExpr == None:
-            parts.append({'path': ':TIMEBASE', 'type': 'numeric'})
-        else:
-            parts.append({'path': ':TIMEBASE', 'type': 'numeric',
-                          'value': Data.compile(timebaseExpr)})
+        if mode != MARTE2_COMPONENT.MODE_INTERFACE:
+            if timebaseExpr == None:
+                parts.append({'path': ':TIMEBASE', 'type': 'numeric'})
+            else:
+                parts.append({'path': ':TIMEBASE', 'type': 'numeric',
+                            'value': Data.compile(timebaseExpr)})
 
+        parts.append({'path': '.PARAMETERS', 'type': 'structure'})
         cls.buildParameters(parts)
-        if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT:
+        if (mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT) and mode != MARTE2_COMPONENT.MODE_INTERFACE:
             cls.buildInputs(parts)
 
-        if mode != MARTE2_COMPONENT.MODE_OUTPUT:
+        if mode != MARTE2_COMPONENT.MODE_OUTPUT and mode != MARTE2_COMPONENT.MODE_INTERFACE:
             cls.buildOutputs(parts)
-
-# add timebase division, valid only if the timebase refers to a MASRTE2 device belonging to a different thread
-        parts.append({'path': ':TIMEBASE_DIV', 'type': 'numeric'})
-# add debug definition. When 'ENABLED' input and outputs will be printed via LoggetDataSOurce
-        parts.append(
-            {'path': ':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
+        if mode != MARTE2_COMPONENT.MODE_INTERFACE:
+    # add timebase division, valid only if the timebase refers to a MASRTE2 device belonging to a different thread
+            parts.append({'path': ':TIMEBASE_DIV', 'type': 'numeric'})
+    # add debug definition. When 'ENABLED' input and outputs will be printed via LoggetDataSOurce
+            parts.append(
+                {'path': ':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
 
 #        for part in parts:
 #          print(part)
@@ -2671,7 +2680,7 @@ class MARTE2_COMPONENT(Device):
             try:
                 syncDiv = self.timebase_div.data()
             except:
-                synchDiv = 1
+                syncDiv = 1
 
             if outputTrigger != None  and syncDiv == 1:  # If using output trigger, the trigger must be converted to uint8 GAB OCTOBER 2023
                 gamText += '    Class = ConversionGAM\n'
@@ -2825,6 +2834,7 @@ class MARTE2_COMPONENT(Device):
                     mdsReaderText += '        UseColumnOrder = 0\n'
                 mdsReaderText += '        DataManagement = 1\n'
                 mdsReaderText += '      }\n'
+                mdsReaderText += '    }\n'
                 mdsReaderText += '  }\n'
             gams.append(mdsReaderText)
          # Some outputs are connected to devices on separate synchronized theads
@@ -3089,7 +3099,7 @@ class MARTE2_COMPONENT(Device):
                         aliasName = inputDict['value'].getParent().getNode(
                             ':name').data()
 
-               #   signalGamName = inputDict['value'].getParent().getNode(':name').data()
+                    #signalGamName = inputDict['value'].getParent().getNode(':name').data()
                     signalGamName = inputDict['name']
                     aliasName = inputDict['value'].getParent().getNode(
                         ':name').data()
@@ -3115,7 +3125,8 @@ class MARTE2_COMPONENT(Device):
                     forceUsingSamples = False
 
                     signalNames.append(signalGamName)
-                    gamText += '      '+signalGamName+' = {\n'
+ #                   gamText += '      '+signalGamName+' = {\n'
+                    gamText += '      '+aliasName+' = {\n'
                     if isInputStructField:  
                         gamText += '        DataSource = '+sourceGamName+'_Expanded_Output_DDB\n'
                         signalSamples.append(1)
@@ -3198,7 +3209,7 @@ class MARTE2_COMPONENT(Device):
 
         # There are input references to tree nodes, we need to build a MdsReader DataSource named <gam name>_TreeInput
         if len(nonGamInputNodes) > 0:
-            dataSourceText = '  +'+DataSourceName+'_TreeInDDB = {\n'
+            dataSourceText = '  +'+dataSourceName+'_TreeInDDB = {\n'
             dataSourceText += '    Class = GAMDataSource\n'
             dataSourceText += ' }\n'
             dataSources.append(dataSourceText)
@@ -3235,6 +3246,7 @@ class MARTE2_COMPONENT(Device):
                     mdsReaderText += '        UseColumnOrder = 0\n'
                 mdsReaderText += '        DataManagement = 1\n'
                 mdsReaderText += '      }\n'
+                mdsReaderText += '    }\n'
                 mdsReaderText += '  }\n'
             gams.append(mdsReaderText)
        #Head and parameters
