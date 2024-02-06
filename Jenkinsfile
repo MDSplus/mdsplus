@@ -194,13 +194,17 @@ pipeline {
                                     stage("${OS} Release") {
                                         sh "./deploy/build.sh --os=${OS} --release=${new_version}"
                                         
-                                        findFiles(glob: "tarfiles/*.tgz").each {
+                                        findFiles(glob: "packages/*.tgz").each {
+                                            file -> release_file_list.add(WORKSPACE + "/" + file.path)
+                                        }
+
+                                        findFiles(glob: "packages/*.exe").each {
                                             file -> release_file_list.add(WORKSPACE + "/" + file.path)
                                         }
                                     }
 
                                     stage("${OS} Publish") {
-                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --publishdir=/tmp/publish"
+                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --keys=/mdsplus/certs --publishdir=/tmp/publish"
                                     }
                                 }
                             }

@@ -65,11 +65,11 @@ buildrelease() {
   # ${RELEASEDIR}/${FLAVOR}/DEBS will be cleaned in debian_build.sh
   RELEASEDEBS=/release/${FLAVOR}/DEBS/${ARCH}
   RELEASEBLD=/workspace/releasebld
-  TARFILES=/workspace/tarfiles
+  PACKAGESDIR=/workspace/packages
   BUILDROOT=${RELEASEBLD}/buildroot
   MDSPLUS_DIR=${BUILDROOT}/usr/local/mdsplus
-  rm -Rf ${RELEASEBLD}/${bits} ${BUILDROOT} ${TARFILES}
-  mkdir -p ${RELEASEBLD}/${bits} ${BUILDROOT} ${MDSPLUS_DIR} ${TARFILES}
+  rm -Rf ${RELEASEBLD}/${bits} ${BUILDROOT} ${PACKAGESDIR}
+  mkdir -p ${RELEASEBLD}/${bits} ${BUILDROOT} ${MDSPLUS_DIR} ${PACKAGESDIR}
   pushd ${RELEASEBLD}/${bits}
   config ${config_param} ${CONFIGURE_EXTRA}
   if [ -z "$NOMAKE" ]; then
@@ -155,11 +155,11 @@ EOF
       popd
 
       pushd ${MDSPLUS_DIR}
-      tar -czf $TARFILES/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}.tgz *
+      tar -czf $PACKAGESDIR/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}.tgz *
       popd
 
       pushd ${RELEASEDEBS}
-      tar -czf $TARFILES/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}_debs.tgz *.deb
+      tar -czf $PACKAGESDIR/mdsplus_${FLAVOR}_${RELEASE_VERSION}_${OS}_${ARCH}_debs.tgz *.deb
       popd
     fi #abort
   fi   #nomake
