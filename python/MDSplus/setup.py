@@ -32,14 +32,13 @@ from setuptools import setup
 
 
 def setupkw():
+    from runpy import run_path
     try:
-        loc = {}
         mod_dir = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(mod_dir, "_version.py")) as f:
-            exec(f.read(), None, loc)
-        version = loc["version"]
+        ver_data = run_path(os.path.join(mod_dir, "_version.py"))
+        version = ver_data["version"]
         release = "%d.%d.%d" % version
-        release_tag = loc["release_tag"]
+        release_tag = ver_data["release_tag"]
 
     except Exception:
         release = "0.0.0"
@@ -64,10 +63,7 @@ def setupkw():
             "Environment :: Console",
             "Topic :: Scientific/Engineering",
         ],
-        keywords=[
-            "physics",
-            "mdsplus",
-        ],
+        keywords=["physics", "mdsplus",],
     )
 
 
@@ -97,9 +93,9 @@ if setuptools.__version__ < "60.0.0":
                   "MDSplus.widgets",
                   "MDSplus.tests"],
         package_dir={"MDSplus": ".",
-                    "MDSplus.widgets":"widgets",
-                    "MDSplus.wsgi":"wsgi",
-                    "MDSplus.tests":"tests"},
+                     "MDSplus.widgets":"widgets",
+                     "MDSplus.wsgi":"wsgi",
+                     "MDSplus.tests":"tests"},
         package_data={"MDSplus.wsgi":[
             'html/*',
             'conf/*',
