@@ -204,7 +204,7 @@ pipeline {
                                     }
 
                                     stage("${OS} Publish") {
-                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --keys=/mdsplus/certs --publishdir=/tmp/publish"
+                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
                                     }
                                 }
                             }
