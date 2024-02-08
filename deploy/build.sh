@@ -321,6 +321,9 @@ parsecmd() {
 		eval "RELEASE_VERSION=${i#*=}"
 		PUBLISH=yes
 		;;
+	    --version=*)
+		eval "RELEASE_VERSION=${i#*=}"
+		;;
 	    --platform=*)
 		eval "PLATFORM=${i#*=}"
 		;;

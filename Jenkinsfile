@@ -93,7 +93,7 @@ pipeline {
                                     }
 
                                     stage("${OS} Bootstrap") {
-                                        sh "GIT_BRANCH=\$BRANCH_NAME ./deploy/build.sh --os=bootstrap"
+                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME}"
 
                                         if (OS.endsWith("armhf")) {
                                             sh "docker run --rm --privileged multiarch/qemu-user-static:register --reset"
@@ -191,8 +191,12 @@ pipeline {
                         OS -> [ "${OS} Release & Publish": {
                             stage("${OS} Release & Publish") {
                                 ws("${WORKSPACE}/${OS}") {
+                                    stage("${OS} Bootstrap") {
+                                        sh "./deploy/build.sh --os=bootstrap --branch=${BRANCH_NAME} --version=${new_version}"
+                                    }
+
                                     stage("${OS} Release") {
-                                        sh "./deploy/build.sh --os=${OS} --release=${new_version}"
+                                        sh "./deploy/build.sh --os=${OS} --release --branch=${BRANCH_NAME} --version=${new_version}"
                                         
                                         findFiles(glob: "packages/*.tgz").each {
                                             file -> release_file_list.add(WORKSPACE + "/" + file.path)
@@ -204,7 +208,7 @@ pipeline {
                                     }
 
                                     stage("${OS} Publish") {
-                                        sh "./deploy/build.sh --os=${OS} --publish=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
+                                        sh "./deploy/build.sh --os=${OS} --publish --branch=${BRANCH_NAME} --version=${new_version} --keys=/mdsplus/certs --publishdir=/mdsplus/dist"
                                     }
                                 }
                             }
@@ -214,7 +218,6 @@ pipeline {
                     stage("Publish Version") {
                         ws("${WORKSPACE}/publish") {
                             def tag = "${BRANCH_NAME}_release-" + new_version.replaceAll("\\.", "-")
-
                             echo "Creating GitHub Release and Tag for ${tag}"
                             withCredentials([
                                 usernamePassword(
